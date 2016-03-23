@@ -158,12 +158,12 @@
 #include <CoProcessors/AdjustForcingCoProcessor.h>
 #include <CoProcessors/ForcesCoProcessor.h>
 #include <CoProcessors/MacroscopicQuantitiesCoProcessor.h>
-#include <CoProcessors/PathLineCoProcessor.h>
-#include <CoProcessors/PathLineCoProcessorMcpart.h>
+//#include <CoProcessors/PathLineCoProcessor.h>
+//#include <CoProcessors/PathLineCoProcessorMcpart.h>
 #include <CoProcessors/PressureDifferenceCoProcessor.h>
 #include <CoProcessors/EmergencyExitCoProcessor.h>
 #include <CoProcessors/NUPSCounterCoProcessor.h>
-#include <CoProcessors/Particles.h>
+//#include <CoProcessors/Particles.h>
 #include <CoProcessors/CoProcessor.h>
 #include <CoProcessors/RestartCoProcessor.h>
 #include <CoProcessors/TurbulenceIntensityCoProcessor.h>
@@ -173,7 +173,7 @@
 #include <CoProcessors/ShearStressCoProcessor.h>
 #include <CoProcessors/QCriterionCoProcessor.h>
 #include <CoProcessors/InSituVTKCoProcessor.h>
-#include <CoProcessors/MeanValuesCoProcessor.h>
+//#include <CoProcessors/MeanValuesCoProcessor.h>
 #include <CoProcessors/TimeAveragedValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
 #include <LBM/D3Q27CompactInterpolationProcessor.h>
