@@ -1,0 +1,162 @@
+################################################################
+###               SET_SWIG_STUFF                             ###
+################################################################
+MACRO(SET_SWIG_STUFF )
+
+   IF(NOT SWIG_FOUND)
+      FIND_PACKAGE(SWIG REQUIRED)
+   ENDIF()
+
+   IF(NOT SWIG_FOUND)
+      MESSAGE(FATAL_ERROR "SET_SWIG_STUFF::could not find SWIG")
+   ENDIF()
+
+   STRING(REGEX REPLACE "([0-9]*).([0-9]*).([0-9]*)" "\\1" CAB_SWIG_VERSION_MAJOR ${SWIG_VERSION})
+   STRING(REGEX REPLACE "([0-9]*).([0-9]*).([0-9]*)" "\\2" CAB_SWIG_VERSION_MINOR ${SWIG_VERSION})
+   STRING(REGEX REPLACE "([0-9]*).([0-9]*).([0-9]*)" "\\3" CAB_SWIG_VERSION_PATCH ${SWIG_VERSION})
+
+   MATH(EXPR CAB_SWIG_VERSION "${CAB_SWIG_VERSION_MAJOR}*10000 + ${CAB_SWIG_VERSION_MINOR}*100 + ${CAB_SWIG_VERSION_PATCH}")
+   LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS   "-DCAB_SWIG=${CAB_SWIG_VERSION}")
+
+   IF( CAB_SWIG_VERSION} LESS 10340 )
+      MESSAGE(FATAL_ERROR "SET_SWIG_STUFF: to get correct SWIG wrapper files SWIG version must be >= 1.3.40")
+   ENDIF()
+
+   IF(MSVC)   
+      LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS "-DNT=1")
+      LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS "-DIMPORT")
+   ENDIF()
+
+ENDMACRO(SET_SWIG_STUFF )
+
+
+################################################################
+###               SET_SWIG_STUFF                             ###
+################################################################
+# swigfiles: e.g. vf.i
+# language: e.g. ruby
+# outfiles: list generated files AND swig files will be append on!
+MACRO(SWIG_WAPP_CPP swigfiles language outFiles)
+   IF(NOT SWIG_FOUND)
+      MESSAGE(FATAL_ERROR "SWIG_WAPP_CPP::error SWIG package was not loaded")
+   ENDIF()
+
+   IF(${swigfiles})
+      FOREACH(swigfileName ${${swigfiles}}) 
+
+         ################################################################
+         # Dateiabhaengigkeiten ermitteln (includes in xxx.i ermitteln)
+         ################################################################
+         FILE(READ "${swigfileName}" swigfile)
+         SET(header_file_var "") #var initialisieren bzw. reseten
+
+         ################################################################
+         # Include directories ermitteln (um fuer dependency vollen pfad ermitteln zu koennen
+         GET_DIRECTORY_PROPERTY(cmake_include_directories INCLUDE_DIRECTORIES)
+         SET(swig_include_dirs)
+
+
+         MESSAGE(STATUS "scanning swigfile dependencies")
+#    WHILE(NOT header_file_var STREQUAL swigfile)
+#       #1. headerfile finden (mit #include "foo.h")
+#       #STRING(REGEX REPLACE ".*#include[ ]*[<\"]([^%]*)[>\"].*" "\\1" header_file_var "${swigfile}")
+#       STRING(REGEX REPLACE ".*#include[ ]*[\"]([^\"]*)[>\"].*" "\\1" header_file_var "${swigfile}")
+#       IF(NOT header_file_var STREQUAL swigfile) #wenn nichts zu ersetzen ist.. -> steht in className wieder komplettes file
+#         #headerfile aus swigfile löschen!
+#         STRING(REGEX REPLACE "(.*)#include[ ]*[<\"][ ]*${header_file_var}[ ]*[>\"].*" "\\1" swigfile "${swigfile}")
+#         SET(i_dependencies ${i_dependencies} ${header_file_var} )
+#       ENDIF()
+#
+#       #1. headerfile finden (mit #include <foo.h> --> es wird mit Hilfe der include pfade der vollstaendige Pfadname ermittelt )
+#       STRING(REGEX REPLACE ".*#include[ ]*[<]([^>]*)[>\"].*" "\\1" header_file_var "${swigfile}")
+#       IF(NOT header_file_var STREQUAL swigfile) #wenn nichts zu ersetzen ist.. -> steht in className wieder komplettes file
+#         #headerfile aus swigfile löschen!
+#         STRING(REGEX REPLACE "(.*)#include[ ]*[<\"][ ]*${header_file_var}[ ]*[>\"].*" "\\1" swigfile "${swigfile}")
+#         
+#         #vollstaendigen pfadnamen ermitteln
+#         SET(TEMP_FOUND FALSE)
+#         FOREACH(id ${cmake_include_directories})
+#           IF(NOT TEMP_FOUND)
+#             IF(EXISTS ${id}/${header_file_var})
+#               SET(i_dependencies ${i_dependencies} ${id}/${header_file_var} )
+#               SET(TEMP_FOUND TRUE)
+#             ENDIF()
+#           ENDIF()
+#         ENDFOREACH()
+#       ENDIF()
+#
+#    ENDWHILE()
+         MESSAGE(STATUS "scanning swigfile dependencies: done")
+
+         ################################################################
+         # Regel erstellen
+         ################################################################
+         ################################################################
+         # dateinamen fuer zu generiertes file erzeugen
+         GET_FILENAME_COMPONENT(outname      ${swigfileName} NAME_WE)
+         GET_FILENAME_COMPONENT(swigfiledir  ${swigfileName} PATH)
+         STRING(REGEX REPLACE "${SOURCE_ROOT}/" "" outdir ${swigfiledir})
+         SET(tempSourceGroupName ${outdir})
+         SET(outdir ${CMAKE_CURRENT_BINARY_DIR}/swig_cpp/${outdir}) 
+         FILE(MAKE_DIRECTORY ${outdir})
+         SET(wrapper_file ${outdir}/${outname}_wrapp.cpp)
+
+ 	 #IF(NOT EXISTS ${wrapper_file})
+         #  FILE(WRITE ${wrapper_file} "")
+         #ENDIF()
+    
+         
+         ################################################################
+         # Include directories uebernehmen
+         GET_DIRECTORY_PROPERTY(cmake_include_directories INCLUDE_DIRECTORIES)
+         SET(swig_include_dirs)
+         FOREACH(id ${cmake_include_directories})
+            SET(swig_include_dirs ${swig_include_dirs} "-I${id}")
+         ENDFOREACH(id)
+
+         ################################################################
+         # praeprozessor defines uebernehmen
+         GET_DIRECTORY_PROPERTY(preProcessorDefs COMPILE_DEFINITIONS)
+         SET(swigPreProcessorDefs "")
+         FOREACH(define ${preProcessorDefs})
+            LIST(APPEND swigPreProcessorDefs "-D${define}" )   
+         ENDFOREACH()
+         #auf die aus CAB_ADDTIONAL_COMPILER_FLAGS herausfinden
+         FOREACH(flag ${CAB_ADDTIONAL_COMPILER_FLAGS})
+            IF(flag MATCHES "[ ]?-D.*")
+               LIST(APPEND swigPreProcessorDefs ${flag} )   
+            ENDIF()
+         ENDFOREACH()
+         
+
+         ################################################################
+         # pre compile commando auf das interface file mappen
+         GET_FILENAME_COMPONENT(swigfiledir  ${swigfileName} PATH)
+         ADD_CUSTOM_COMMAND(OUTPUT ${wrapper_file}
+                            PRE_BUILD
+                            COMMAND echo on && ${SWIG_EXECUTABLE}
+                            ARGS -c++ 
+                                 -${language} 
+                                 ${swig_include_dirs} 
+                                 ${swigPreProcessorDefs} 
+                                 -o ${wrapper_file} 
+                                 ${swigfileName}
+                            WORKING_DIRECTORY ${swigfiledir}                            
+                            MAIN_DEPENDENCY ${swigfileName} 
+                            DEPENDS ${i_dependencies} 
+                            COMMENT SWIG: generating ${wrapper_file} )
+
+          #SET_SOURCE_FILES_PROPERTIES("${wrapper_file}" PROPERTIES GENERATED 1)
+          SET(GENERATED_FILES ${GENERATED_FILES} ${wrapper_file})
+          SET(${outFiles}  ${${outFiles}} ${wrapper_file} )
+
+         ################################################################
+         # SOURCE GROUP
+         ################################################################
+         STRING(REGEX REPLACE "${CMAKE_CURRENT_BINARY_DIR}/swig_cpp/" "" tempSourceGroupName ${outdir})
+         CAB_SOURCE_GROUP( ${tempSourceGroupName} ${swigfileName} ${wrapper_file} )
+
+      ENDFOREACH()
+   ENDIF()
+
+ENDMACRO(SWIG_WAPP_CPP swigfiles outFiles)

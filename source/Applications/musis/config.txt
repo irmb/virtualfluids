@@ -1,0 +1,46 @@
+#number of threads
+numOfThreads = 1
+
+#block dimensions
+blocknx1 = 12
+blocknx2 = 12
+blocknx3 = 12
+
+#grid refinement
+refineLevel = 2
+numBaseBlock_L1 = 1
+
+#physical length
+L1 = 0.07
+L2 = 0.07
+L3 = 0.4169
+
+#material parameter
+nueLB = 0.0016666666667
+
+#Forcing
+ForcingX1 = 1.0e-7
+
+path = "J:/TBL/scratch/C100_DrySampleTest/"
+
+# musis sample
+geoFile = "J:/TBL/TBL_Sw_Geos/C100/C100MulTest.geo.00000000.raw"
+geoDimX1 = 78
+geoDimX2 = 78
+geoDimX3 = 45
+
+#paraview visualization
+outTime = 1.0
+endTime = 7.0
+
+#retart parameters
+restartDump = 3.0
+
+#data measurement
+calcBegin = 500.0
+calcEnd	 = 1000.0
+calcIntervall = 50.0
+
+
+#BGK=0, CLB=1, CCLB=2
+kernel = 2

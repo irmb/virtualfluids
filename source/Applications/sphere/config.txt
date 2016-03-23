@@ -1,0 +1,20 @@
+#Ordner für Simulationsergebnisse
+path=d:/temp/insitu_demo
+
+#Verfügbare Arbeitsspeicher in Byte
+memory=21e9
+
+#Pfad zum Metafile
+metafile=d:/Data/insituDemo/metafile.csv
+
+#Ausgabezeitschritt
+outstep=1
+
+#maximale Anzahl Simulationszeitschritte
+endstep=100000
+
+#Anzahl von Threads
+threads=4
+
+#max refierment level (1 - 5)
+level=1
