@@ -68,7 +68,7 @@ void Calculator2::calculate(const double& endTime, CalculationManagerPtr cm, boo
          ////wait for write dump files
          //sync->wait();
          //write dump 
-         if (mainThread) grid->doPostProcess((double)(calcStep-1));
+         if (mainThread) grid->coProcess((double)(calcStep-1));
          sync->wait();
 
 //////////////////////////////////////////////////////////////////////////

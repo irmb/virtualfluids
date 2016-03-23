@@ -15,10 +15,10 @@
 #include <D3Q27Interactor.h>
 #include <Communicator.h>
 #include <MPICommunicator.h>
-#include <Postprocessor.h>
-#include <D3Q27MacroscopicQuantitiesPostprocessor.h>
-#include <D3Q27ShearStressPostprocessor.h>
-#include <AverageValuesPostprocessor.h>
+#include <CoProcessor.h>
+#include <MacroscopicQuantitiesCoProcessor.h>
+#include <ShearStressCoProcessor.h>
+#include <AverageValuesCoProcessor.h>
 #include <basics/container/CbArray4D.h>
 #include <basics/writer/WbWriter.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>
@@ -55,10 +55,10 @@ BOOST_CLASS_EXPORT(D3Q27ETForThinWallBCProcessor)
 BOOST_CLASS_EXPORT(DataSet3D)
 BOOST_CLASS_EXPORT(Interactor3D)
 BOOST_CLASS_EXPORT(D3Q27Interactor)
-BOOST_CLASS_EXPORT(Postprocessor)
-BOOST_CLASS_EXPORT(D3Q27MacroscopicQuantitiesPostprocessor)
-BOOST_CLASS_EXPORT(D3Q27ShearStressPostprocessor)
-BOOST_CLASS_EXPORT(AverageValuesPostprocessor)
+BOOST_CLASS_EXPORT(CoProcessor)
+BOOST_CLASS_EXPORT(MacroscopicQuantitiesCoProcessor)
+BOOST_CLASS_EXPORT(ShearStressCoProcessor)
+BOOST_CLASS_EXPORT(AverageValuesCoProcessor)
 BOOST_CLASS_EXPORT(WbWriterVtkXmlASCII)
 BOOST_CLASS_EXPORT(WbWriterVtkXmlBinary)
 

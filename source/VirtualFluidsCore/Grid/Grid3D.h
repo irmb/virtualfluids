@@ -139,7 +139,7 @@ public:
    //post processing
    connection_t connect(signal_t::slot_function_type subscriber);
    void disconnect(connection_t subscriber);
-   void doPostProcess(double step);
+   void coProcess(double step);
    //////////////////////////////////////////////////////////////////////////
    //bundle and rank for distributed memory
    void setBundle(int bundle);

@@ -399,7 +399,7 @@ void Grid3D::disconnect(Grid3D::connection_t subscriber)
    subscriber.disconnect();
 }
 //////////////////////////////////////////////////////////////////////////
-void Grid3D::doPostProcess(double step)
+void Grid3D::coProcess(double step)
 {
    timeStep = step;
    sig(step);

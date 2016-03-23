@@ -97,7 +97,7 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
-      RestartPostprocessor rp(grid, rSch, comm, pathname, RestartPostprocessor::TXT);
+      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
       if (grid->getTimeStep() == 0)
@@ -226,8 +226,8 @@ void run(string configname)
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
 
-         BlocksPostprocessorPtr ppblocks(new BlocksPostprocessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppblocks->update(0);
+         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         ppblocks->process(0);
          ppblocks.reset();
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -396,9 +396,9 @@ void run(string configname)
 
          //Postrozess
          UbSchedulerPtr geoSch(new UbScheduler(1));
-         D3Q27MacroscopicQuantitiesPostprocessorPtr ppgeo(
-            new D3Q27MacroscopicQuantitiesPostprocessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-         ppgeo->update(0);
+         MacroscopicQuantitiesCoProcessorPtr ppgeo(
+            new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         ppgeo->process(0);
          ppgeo.reset();
 
          coord[0] = g_minX1;
@@ -469,7 +469,7 @@ void run(string configname)
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterPostprocessor npr(grid, nupsSch, numOfThreads, comm);
+      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
       UbSchedulerPtr stepSch(new UbScheduler(outTime));
 
@@ -497,7 +497,7 @@ void run(string configname)
       if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathname + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
       double vxTarget=u_LB;
-      D3Q27AdjustForcingPostprocessor AdjForcPPPtr(grid, AdjForcSch, pathname, intValHelp, vxTarget, forcing, comm);
+      AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathname, intValHelp, vxTarget, forcing, comm);
 
       //mu::Parser decrViscFunc;
       //decrViscFunc.SetExpr("nue0+c0/(t+1)/(t+1)");
@@ -522,8 +522,8 @@ void run(string configname)
       //TimeAveragedValuesPostprocessor tav(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, 
       //   TimeAveragedValuesPostprocessor::Velocity|TimeAveragedValuesPostprocessor::Fluctuations|TimeAveragedValuesPostprocessor::Triplecorrelations);
       
-      UbSchedulerPtr catalystSch(new UbScheduler(1));
-      InSituCatalystPostprocessor catalyst(grid, catalystSch, "pchannel.py");
+      //UbSchedulerPtr catalystSch(new UbScheduler(1));
+      //InSituCatalystCoProcessor catalyst(grid, catalystSch, "pchannel.py");
 
       if (myid == 0)
       {
