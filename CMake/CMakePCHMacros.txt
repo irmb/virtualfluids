@@ -1,0 +1,44 @@
+#usage:
+#SET_PCH_FLAGS(precompile.h precompile.cpp main.cpp a.cpp b.cpp)
+#
+# precompile.h muss alle header inkluden
+# precompile.cpp muss precompile.h inkluden
+# main.cpp, a.cpp, b.cpp muess precompile.h inkluden
+#makro setzt die entsprechenden compiler flags
+
+MACRO(SET_PCH_FLAGS pre_h pre_cpp ) #argn = cpps_using_pch
+   IF(NOT CMAKE_CXX_COMPILER)
+      MESSAGE(FATAL_ERROR "before SET_CAB_COMPILER-Macro PROJECT-Macro has to be called")
+   ENDIF()
+   
+   IF(MSVC)
+	   LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DUSE_PRECOMPILED_HEADER_FILE)
+		##################################      
+		# precompiled.pch
+	   ##################################      
+		get_filename_component(PRE_NAME ${pre_h} NAME_WE)
+	   SET(PRE_PCH $(IntDir)/${PRE_NAME}.pch)
+
+	   ##################################      
+		# precompiled.cpp (=creating) anpassen
+	   ##################################      
+	   GET_TARGET_PROPERTY(oldProps ${pre_cpp} COMPILE_FLAGS)
+		  if (${oldProps} MATCHES NOTFOUND)
+		    SET(oldProps "")
+		  endif(${oldProps} MATCHES NOTFOUND)
+	   SET_SOURCE_FILES_PROPERTIES(${pre_cpp} PROPERTIES COMPILE_FLAGS "${oldProps} /Yc\"${pre_h}\" /Fp\"${PRE_PCH}\"")
+
+	   ##################################      
+		# restliche cpps (=using) anpassen
+		##################################      
+		FOREACH(cpp_file ${ARGN})
+			GET_TARGET_PROPERTY(oldProps ${cpp_file} COMPILE_FLAGS)
+			if (${oldProps} MATCHES NOTFOUND)
+				SET(oldProps "")
+			endif(${oldProps} MATCHES NOTFOUND)
+			SET_SOURCE_FILES_PROPERTIES(${cpp_file} PROPERTIES COMPILE_FLAGS "${oldProps} /Yu\"${pre_h}\" /Fp\"${PRE_PCH}\"")
+		ENDFOREACH()
+   ELSE()
+      MESSAGE(FATAL_ERROR "SET_PCH_FLAGS not working for anything else than MSVC right now")
+   ENDIF()
+ENDMACRO()

@@ -1,0 +1,46 @@
+#
+#Simulation parameters for determitatoin of permeability
+#SBP120
+
+pathname = d:/temp/bbone2
+pathGeo = d:/Data/Bone/BigBone
+numOfThreads = 4
+availMem = 3e9
+logToFile = false
+
+#porous media
+#rawFile = false
+sampleFilename = /cyl_bone2.raw
+
+#diminsions [voxel]
+pmNX1 = 1164
+pmNX2 = 972
+pmNX3 = 900
+
+#threshold
+lthreshold = 109
+uthreshold = 255
+
+#diminsions [m]
+#pmL1 = 1.87e-3
+#pmL2 = 1.87e-3
+#pmL3 = 1.87e-3
+
+#grid
+#blocknx = 30
+#nx3 = 5
+#blocknx = 50
+#nx3 = 10
+#spongeLayer=true
+
+#physic
+dp_real = 1
+
+timeSeriesFile = /timeseries/bone1
+timeSeriesOutTime = 10
+
+restartStep = 20000
+restartStepStart=20000
+
+endTime = 60000
+outTime = 100

@@ -1,0 +1,80 @@
+#ifndef BOOSTSERIALIZATIONCLASSEXPORTHELPER_H
+#define BOOSTSERIALIZATIONCLASSEXPORTHELPER_H
+
+#include <LBMKernelETD3Q27.h>
+#include <LBMKernelETD3Q27Cascaded.h>
+#include <D3Q27EsoTwist3DSplittedVector.h>
+#include <D3Q27ETBCProcessor.h>
+#include <D3Q27ETForThinWallBCProcessor.h>
+#include <LBMKernelETD3Q27CascadedTI.h>
+#include <DataSet3D.h>
+#include <LBMKernelETD3Q27BGK.h>
+#include <LBMKernelETD3Q27CCLB.h>
+#include <LBMKernelETD3Q27CCLBWithSpongeLayer.h>
+#include <Interactor3D.h>
+#include <D3Q27Interactor.h>
+#include <Communicator.h>
+#include <MPICommunicator.h>
+#include <Postprocessor.h>
+#include <D3Q27MacroscopicQuantitiesPostprocessor.h>
+#include <D3Q27ShearStressPostprocessor.h>
+#include <AverageValuesPostprocessor.h>
+#include <basics/container/CbArray4D.h>
+#include <basics/writer/WbWriter.h>
+#include <basics/writer/WbWriterVtkXmlASCII.h>
+#include <basics/writer/WbWriterVtkXmlBinary.h>
+
+#include <BoundaryCondition.h>
+#include <VelocityBoundaryCondition.h>
+#include <NonEqDensityBoundaryCondition.h>
+#include <EqDensityBoundaryCondition.h>
+#include <NoSlipBoundaryCondition.h>
+#include <HighViscosityNoSlipBoundaryCondition.h>
+#include <SlipBoundaryCondition.h>
+#include <NonReflectingDensityBoundaryCondition.h>
+#include <NonReflectingVelocityBoundaryCondition.h>
+
+#include <D3Q27BoundaryConditionAdapter.h>
+#include <D3Q27DensityBCAdapter.h>
+#include <D3Q27NoSlipBCAdapter.h>
+#include <D3Q27SlipBCAdapter.h>
+#include <D3Q27VelocityBCAdapter.h>
+
+
+#include <boost/serialization/export.hpp>
+
+BOOST_CLASS_EXPORT(LBMKernelETD3Q27)
+BOOST_CLASS_EXPORT(LBMKernelETD3Q27Cascaded)
+BOOST_CLASS_EXPORT(LBMKernelETD3Q27CascadedTI)
+BOOST_CLASS_EXPORT(LBMKernelETD3Q27BGK)
+BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLB)
+BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLBWithSpongeLayer)
+BOOST_CLASS_EXPORT(D3Q27EsoTwist3DSplittedVector)
+BOOST_CLASS_EXPORT(D3Q27ETBCProcessor)
+BOOST_CLASS_EXPORT(D3Q27ETForThinWallBCProcessor)
+BOOST_CLASS_EXPORT(DataSet3D)
+BOOST_CLASS_EXPORT(Interactor3D)
+BOOST_CLASS_EXPORT(D3Q27Interactor)
+BOOST_CLASS_EXPORT(Postprocessor)
+BOOST_CLASS_EXPORT(D3Q27MacroscopicQuantitiesPostprocessor)
+BOOST_CLASS_EXPORT(D3Q27ShearStressPostprocessor)
+BOOST_CLASS_EXPORT(AverageValuesPostprocessor)
+BOOST_CLASS_EXPORT(WbWriterVtkXmlASCII)
+BOOST_CLASS_EXPORT(WbWriterVtkXmlBinary)
+
+BOOST_CLASS_EXPORT(BoundaryCondition)
+BOOST_CLASS_EXPORT(VelocityBoundaryCondition)
+BOOST_CLASS_EXPORT(NonEqDensityBoundaryCondition)
+BOOST_CLASS_EXPORT(EqDensityBoundaryCondition)
+BOOST_CLASS_EXPORT(NoSlipBoundaryCondition)
+BOOST_CLASS_EXPORT(HighViscosityNoSlipBoundaryCondition)
+BOOST_CLASS_EXPORT(SlipBoundaryCondition)
+BOOST_CLASS_EXPORT(NonReflectingDensityBoundaryCondition)
+BOOST_CLASS_EXPORT(NonReflectingVelocityBoundaryCondition)
+
+BOOST_CLASS_EXPORT(D3Q27BoundaryConditionAdapter)
+BOOST_CLASS_EXPORT(D3Q27DensityBCAdapter)
+BOOST_CLASS_EXPORT(D3Q27NoSlipBCAdapter)
+BOOST_CLASS_EXPORT(D3Q27SlipBCAdapter)
+BOOST_CLASS_EXPORT(D3Q27VelocityBCAdapter)
+#endif

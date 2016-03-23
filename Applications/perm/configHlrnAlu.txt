@@ -1,0 +1,34 @@
+pathname = /gfs1/work/niikonst/scratch/permAlu80
+pathGeo = /gfs1/work/niikonst/data/materials
+
+numOfTreads = 1
+
+#poroeses Medium
+
+sampleFilename = /alu_80-110.vti
+
+#Diminsion in Voxel
+pmNX1 = 200
+pmNX2 = 200
+pmNX3 = 200
+
+#Threshold
+lthreshold = 29041
+uthreshold = 65535
+
+#Diminsion in m
+pmL1 = 0.726e-3
+pmL2 = 0.75e-3
+pmL3 = 0.786e-3
+
+dp_LB = 0.001
+nu_LB = 0.15
+
+timeSeriesOut = /timeseries/simAlu80_1
+
+restartStep = 20
+#immer 40000 pro Job
+#endTime = 140000
+endTime = 60
+outTime = 10
+nupsStep = 10 80010 80100
