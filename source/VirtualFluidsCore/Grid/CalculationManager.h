@@ -22,6 +22,7 @@ public:
    void calculate();
    void setVisScheduler(UbSchedulerPtr s);
    bool balance();
+   void setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorPtr coProcessor);
 private:
    void init();
    void calculateMain();

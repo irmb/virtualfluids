@@ -156,7 +156,7 @@
 #include <Interactors/InteractorsHelper.h>
 #include <CoProcessors/WriteBlocksCoProcessor.h>
 #include <CoProcessors/AdjustForcingCoProcessor.h>
-#include <CoProcessors/ForcesCoProcessor.h>
+#include <CoProcessors/CalculateForcesCoProcessor.h>
 #include <CoProcessors/MacroscopicQuantitiesCoProcessor.h>
 //#include <CoProcessors/PathLineCoProcessor.h>
 //#include <CoProcessors/PathLineCoProcessorMcpart.h>

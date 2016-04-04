@@ -8,4 +8,4 @@ coupling grids of different resolutions.
 The software framework is based on object-oriented technology and uses tree-like data structures. 
 These data structures are also suitable for hierarchical parallelization using a combination of PThreads and MPI and dynamic load balancing. 
 
-[Installation](md__d_1__projects_b_fluid_source_doc_doc_intstall.html)
+[Installation](md__d_1__projects__virtual_fluids_source__documentation_doc_intstall.html)

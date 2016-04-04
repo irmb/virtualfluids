@@ -28,6 +28,8 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
    minInitLevel = this->grid->getCoarsestInitializedLevel();
    maxInitLevel = this->grid->getFinestInitializedLevel();
 
+   counter = 0;
+
    blockVector.resize(maxInitLevel+1);
 
    for (int level = minInitLevel; level<=maxInitLevel; level++)
@@ -67,6 +69,14 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
       }
    }
 
+   breakStep = scheduler->getMaxEnd() - scheduler->getMinBegin() + 1;
+   //UBLOG(logINFO, "breakSteps = " << breakStep);
+   breakStep = breakStep * (double)(1 << maxInitLevel) + breakStep;
+   //UBLOG(logINFO, "breakSteps = " << breakStep);
+
+   iMinX1 = 1;
+   iMinX2 = 1;
+   iMinX3 = 1;
 }
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::process(double step)
@@ -74,13 +84,18 @@ void TimeAveragedValuesCoProcessor::process(double step)
    if (scheduler->isDue(step))
    {
       calculateSubtotal();
+      counter++;
+      //UBLOG(logINFO, "step = " << step<<", counter = " << counter);
    }
 
-   if (step == scheduler->getMaxEnd())
+
+   //if (step == scheduler->getMaxEnd())
+   if (counter == (int)breakStep)
    {
-      calculateAverageValues(scheduler->getMaxEnd() - scheduler->getMinBegin());
+      calculateAverageValues(breakStep);
       collectData(step);
       clearData();
+      counter = 0;
    }
 
    UBLOG(logDEBUG3, "AverageValues2Postprocessor::update:" << step);
@@ -190,9 +205,9 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    //knotennummerierung faengt immer bei 0 an!
    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
-   int minX1 = 0;
-   int minX2 = 0;
-   int minX3 = 0;
+   int minX1 = iMinX1;
+   int minX2 = iMinX2;
+   int minX3 = iMinX3;
 
    int maxX1 = int(distributions->getNX1());
    int maxX2 = int(distributions->getNX2());
@@ -291,6 +306,7 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
 {
+   timeSteps = breakStep;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
       int i;
@@ -310,9 +326,9 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
             AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
             AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
 
-            int minX1 = 0;
-            int minX2 = 0;
-            int minX3 = 0;
+            int minX1 = iMinX1;
+            int minX2 = iMinX2;
+            int minX3 = iMinX3;
 
             int maxX1 = int(distributions->getNX1());
             int maxX2 = int(distributions->getNX2());
@@ -430,9 +446,9 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal()
                AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
                AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
 
-               int minX1 = 0;
-               int minX2 = 0;
-               int minX3 = 0;
+               int minX1 = iMinX1;
+               int minX2 = iMinX2;
+               int minX3 = iMinX3;
 
                int maxX1 = int(distributions->getNX1());
                int maxX2 = int(distributions->getNX2());

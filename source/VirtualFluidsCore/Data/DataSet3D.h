@@ -69,6 +69,9 @@ private:
       ar & mFdistributions;
       ar & mAverageValues;
       ar & mShearStressValues;
+      ar & mAverageVelocity;
+      ar & mAverageFluktuations;
+      ar & mAverageTriplecorrelations;
    }
 };
 

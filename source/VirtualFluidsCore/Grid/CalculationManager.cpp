@@ -206,6 +206,10 @@ CalculatorPtr CalculationManager::createCalculator(Grid3DPtr grid, SynchronizerP
       UB_THROW(UbException(UB_EXARGS,"This Calculator is not defined!"));
    }
 }
-
+//////////////////////////////////////////////////////////////////////////
+void CalculationManager::setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorPtr coProcessor)
+{
+   calcThreads[0]->setTimeAveragedValuesCoProcessor(coProcessor);
+}
 
 

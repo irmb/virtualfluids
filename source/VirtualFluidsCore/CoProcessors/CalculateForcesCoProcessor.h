@@ -12,16 +12,16 @@
 #include "Communicator.h"
 #include "D3Q27Interactor.h"
 
-class ForcesCoProcessor: public CoProcessor 
+class CalculateForcesCoProcessor: public CoProcessor 
 {
 public:
    //! Constructor
    //! \param v - velocity of fluid in LB units
    //! \param a - area of object in LB units
-   ForcesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+   CalculateForcesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                             const std::string &path,
                             CommunicatorPtr comm, double v, double a);
-	virtual ~ForcesCoProcessor();             
+	virtual ~CalculateForcesCoProcessor();             
 	void process(double step); 
    void addInteractor(D3Q27InteractorPtr interactor);
 protected:

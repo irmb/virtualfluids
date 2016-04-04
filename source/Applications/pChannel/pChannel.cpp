@@ -518,9 +518,9 @@ void run(string configname)
 	  //}
 
 
-      //UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      //TimeAveragedValuesPostprocessor tav(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, 
-      //   TimeAveragedValuesPostprocessor::Velocity|TimeAveragedValuesPostprocessor::Fluctuations|TimeAveragedValuesPostprocessor::Triplecorrelations);
+      UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch,
+         TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations));
       
       //UbSchedulerPtr catalystSch(new UbScheduler(1));
       //InSituCatalystCoProcessor catalyst(grid, catalystSch, "pchannel.py");
@@ -533,6 +533,7 @@ void run(string configname)
       }
 
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      calculation->setTimeAveragedValuesCoProcessor(tav);
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");

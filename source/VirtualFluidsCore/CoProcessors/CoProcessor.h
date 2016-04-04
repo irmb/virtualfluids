@@ -48,8 +48,9 @@ public:
 protected:
    Grid3DPtr grid;
    UbSchedulerPtr scheduler;
-private:
    Grid3D::connection_t connection;
+private:
+   
 
 private:
    friend class boost::serialization::access;

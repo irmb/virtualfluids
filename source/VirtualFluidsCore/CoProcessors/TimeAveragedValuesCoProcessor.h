@@ -17,8 +17,14 @@ typedef boost::shared_ptr<TimeAveragedValuesCoProcessor> TimeAveragedValuesCoPro
 //! \details writes at given time intervals specified in scheduler (s), does averaging according to scheduler (Avs) and resets according to scheduler (rs).  <br>
 //!  Computes  the time averaged mean velocity  \f$ u_{mean}=\frac{1}{N}\sum\limits_{i=1}^n u_{i} \f$  and RMS of fluctuations. You need to calculate a square root before plotting RMS. <br>
 //           
-//! \author  Sonja Uphoff, Kostyantyn Kucher 
+//! \author  Konstantin Kutscher 
 // \f$ u_{mean}=\frac{1}{N}\sum\limits_{i=1}^n u_{i} \f$
+
+//struct plotZ
+//{
+//
+//};
+
 class TimeAveragedValuesCoProcessor : public CoProcessor
 {
 public:
@@ -73,9 +79,16 @@ private:
    //enum Pressure { P, Prms };
 
    int options;
+   int counter;
+   double breakStep;
+
+   int iMinX1, iMinX2, iMinX3;
+   int iMaxX1, iMaxX2, iMaxX3;
 
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
+
+   
 
    //friend class boost::serialization::access;
    //template<class Archive>

@@ -1,8 +1,8 @@
-#include "ForcesCoProcessor.h"
+#include "CalculateForcesCoProcessor.h"
 #include "D3Q27ETBCProcessor.h"
 #include <boost/foreach.hpp>
 
-ForcesCoProcessor::ForcesCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
+CalculateForcesCoProcessor::CalculateForcesCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
                                                     const std::string &path,
                                                     CommunicatorPtr comm ,
                                                     double v, double a) : 
@@ -35,12 +35,12 @@ ForcesCoProcessor::ForcesCoProcessor( Grid3DPtr grid, UbSchedulerPtr s,
    }
 }
 //////////////////////////////////////////////////////////////////////////
-ForcesCoProcessor::~ForcesCoProcessor()
+CalculateForcesCoProcessor::~CalculateForcesCoProcessor()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ForcesCoProcessor::process( double step )
+void CalculateForcesCoProcessor::process( double step )
 {
    if(scheduler->isDue(step) )
       collectData(step);
@@ -48,7 +48,7 @@ void ForcesCoProcessor::process( double step )
    UBLOG(logDEBUG3, "D3Q27ForcesPostprocessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
-void ForcesCoProcessor::collectData( double step )
+void CalculateForcesCoProcessor::collectData( double step )
 {
    calculateForces();
 
@@ -79,7 +79,7 @@ void ForcesCoProcessor::collectData( double step )
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void ForcesCoProcessor::calculateForces()
+void CalculateForcesCoProcessor::calculateForces()
 {
    forceX1global = 0.0;
    forceX2global = 0.0;
@@ -164,7 +164,7 @@ void ForcesCoProcessor::calculateForces()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleDouble3 ForcesCoProcessor::getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, D3Q27BoundaryConditionPtr bc)
+UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, D3Q27BoundaryConditionPtr bc)
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
    
@@ -194,7 +194,7 @@ UbTupleDouble3 ForcesCoProcessor::getForces(int x1, int x2, int x3, Distribution
    return force;
 }
 //////////////////////////////////////////////////////////////////////////
-void ForcesCoProcessor::calculateCoefficients()
+void CalculateForcesCoProcessor::calculateCoefficients()
 {
    double F1 = forceX1global;
    double F2 = forceX2global;
@@ -206,12 +206,12 @@ void ForcesCoProcessor::calculateCoefficients()
    C3 = 2.0*F3/(v*v*a);
 }
 //////////////////////////////////////////////////////////////////////////
-void ForcesCoProcessor::addInteractor( D3Q27InteractorPtr interactor )
+void CalculateForcesCoProcessor::addInteractor( D3Q27InteractorPtr interactor )
 {
    interactors.push_back(interactor);
 }
 //////////////////////////////////////////////////////////////////////////
-void ForcesCoProcessor::write(std::ofstream *fileObject, double value, char *separator) 
+void CalculateForcesCoProcessor::write(std::ofstream *fileObject, double value, char *separator) 
 { 
    (*fileObject).width(12); 
    //(*fileObject).precision(2); 

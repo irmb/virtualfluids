@@ -9,6 +9,7 @@
 #include "basics/utilities/UbTiming.h"
 #include "LoadBalancer.h"
 #include "BoundaryConditionProcessor.h"
+#include "TimeAveragedValuesCoProcessor.h"
 
 
 class Calculator;
@@ -31,6 +32,9 @@ public:
    std::vector< std::vector< Block3DPtr > > getBlocks(); 
    void deleteBlocks();
    void deleteConnectors();
+
+   void setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorPtr coProcessor);
+
 protected:
    void calculateBlocks(int startLevel, int maxInitLevel);
    void calculateBlocks(int minInitLevel, int maxInitLevel, int staggeredStep);
@@ -79,6 +83,8 @@ private:
 
    //UbTimer timer, timer2, timer3;
    bool loadBalancingComp;
+
+   TimeAveragedValuesCoProcessorPtr taValuesCoProcessor;
 
 };
 

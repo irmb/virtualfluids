@@ -5,7 +5,7 @@ LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -D__UNIX__)
 ##                            BOOST ALLGMEINGUELTIG                                   ##
 ########################################################################################
 #standard boost
-SET(BOOST_VERSION "1.55.0" CACHE STRING "std: 1.55.0")
+SET(BOOST_VERSION "1.54.0" CACHE STRING "std: 1.54.0")
 
 #SET(USE_MPI_CXX_SYNTAX OFF)
 

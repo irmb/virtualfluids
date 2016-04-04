@@ -126,6 +126,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
             //applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
 
+             
             calculateBlocks(straightStartLevel, maxInitLevel);
             ////calculateBlocks(minInitLevel, maxInitLevel, staggeredStep);
 //////////////////////////////////////////////////////////////////////////
@@ -192,6 +193,12 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 #endif
 //////////////////////////////////////////////////////////////////////////
             }
+
+            if (taValuesCoProcessor && mainThread)
+            {
+               taValuesCoProcessor->process(calcStep-1);
+            }
+            sync->wait();
             
          }
          //exchange data between blocks for visualization
@@ -208,6 +215,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
          //{
          //   loadBalancingComp = cm->balance();
          //}
+
       }
       error = boost::exception_ptr();
       UBLOG(logDEBUG1, "Calculator::calculate() - stoped");
@@ -578,6 +586,12 @@ void Calculator::deleteConnectors(std::vector< std::vector< Block3DConnectorPtr 
    BOOST_FOREACH(std::vector< Block3DConnectorPtr > &c, conns)
       c.resize(0);
 }
+//////////////////////////////////////////////////////////////////////////
+void Calculator::setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorPtr coProcessor)
+{
+   taValuesCoProcessor = coProcessor;
+}
+
 //////////////////////////////////////////////////////////////////////////
 void Calculator::applyBCs( int startLevel, int maxInitLevel )
 {
