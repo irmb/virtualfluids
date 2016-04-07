@@ -1,5 +1,5 @@
-#ifndef TimeAveragedValuesPostprocessor_H
-#define TimeAveragedValuesPostprocessor_H
+#ifndef TimeAveragedValuesCoProcessor_H
+#define TimeAveragedValuesCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Grid3D.h"
@@ -94,7 +94,7 @@ private:
    //template<class Archive>
    //void serialize(Archive & ar, const unsigned int version)
    //{
-   //   ar & boost::serialization::base_object<Postprocessor>(*this);
+   //   ar & boost::serialization::base_object<CoProcessor>(*this);
    //   ar & path;
    //   ar & blockVector;
    //   ar & minInitLevel;

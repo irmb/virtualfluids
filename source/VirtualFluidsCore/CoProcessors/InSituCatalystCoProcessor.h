@@ -1,7 +1,7 @@
 #ifdef VF_CATALYST
 
-#ifndef InSituCatalystPostprocessor_h__
-#define InSituCatalystPostprocessor_h__
+#ifndef InSituCatalystCoProcessor_h__
+#define InSituCatalystCoProcessor_h__
 
 
 #include <CoProcessor.h>
@@ -49,6 +49,6 @@ private:
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
 };
-#endif // InSituCatalystPostprocessor_h__
+#endif // InSituCatalystCoProcessor_h__
 
 #endif

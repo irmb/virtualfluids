@@ -59,25 +59,25 @@ void RestartCoProcessor::process(double step)
    {
       doCheckPoint(int(step));
 
-      if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"RestartPostprocessor save step: " << step);
+      if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"RestartCoProcessor save step: " << step);
 
-      UBLOG(logDEBUG3, "RestartPostprocessor::update:" << step);
+      UBLOG(logDEBUG3, "RestartCoProcessor::update:" << step);
    }   
 }
 //////////////////////////////////////////////////////////////////////////
-void RestartCoProcessor::addCoProcessor( PostprocessorPtr p )
+void RestartCoProcessor::addCoProcessor( CoProcessorPtr p )
 {
-   postprocessors.push_back(p);
+   CoProcessors.push_back(p);
 }
 //////////////////////////////////////////////////////////////////////////
-PostprocessorPtr RestartCoProcessor::getCoProcessor(int index)
+CoProcessorPtr RestartCoProcessor::getCoProcessor(int index)
 {
-   return postprocessors[index];
+   return CoProcessors[index];
 }
 //////////////////////////////////////////////////////////////////////////
-std::vector<PostprocessorPtr> RestartCoProcessor::getPostprocessors()
+std::vector<CoProcessorPtr> RestartCoProcessor::getCoProcessors()
 {
-   return postprocessors;
+   return CoProcessors;
 }
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::doCheckPoint(int step)
@@ -130,7 +130,7 @@ Grid3DPtr RestartCoProcessor::restart()
       this->reconnect(grid);
       if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"Load check point - end");
 
-      if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"RestartPostprocessor restart step: " << restartStep);
+      if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"RestartCoProcessor restart step: " << restartStep);
 
       return grid;
    } 
@@ -181,11 +181,11 @@ void RestartCoProcessor::saveTxtArchive(std::string filename)
    oa.register_type<Grid3D>();
    oa << grid;
 
-   int psize = (int)postprocessors.size(); 
+   int psize = (int)CoProcessors.size(); 
    oa << psize;
 
-   oa.register_type<PostprocessorPtr>();
-   BOOST_FOREACH(PostprocessorPtr pp, postprocessors)
+   oa.register_type<CoProcessorPtr>();
+   BOOST_FOREACH(CoProcessorPtr pp, CoProcessors)
    {
       oa << pp;
    }
@@ -202,13 +202,13 @@ void RestartCoProcessor::loadTxtArchive( std::string filename )
    int psize;
    ia >> psize;
 
-   ia.register_type<PostprocessorPtr>();
+   ia.register_type<CoProcessorPtr>();
    for (int i = 0; i < psize; i++)
    {
-      PostprocessorPtr pp;
+      CoProcessorPtr pp;
       ia >> pp;
       pp->reconnect(grid);
-      postprocessors.push_back(pp);
+      CoProcessors.push_back(pp);
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -227,11 +227,11 @@ void RestartCoProcessor::saveBinArchive( std::string filename )
    oa.register_type<Grid3D>();
    oa << grid;
 
-   int psize = (int)postprocessors.size(); 
+   int psize = (int)CoProcessors.size(); 
    oa << psize;
 
-   oa.register_type<PostprocessorPtr>();
-   BOOST_FOREACH(PostprocessorPtr pp, postprocessors)
+   oa.register_type<CoProcessorPtr>();
+   BOOST_FOREACH(CoProcessorPtr pp, CoProcessors)
    {
       oa << pp;
    }
@@ -249,13 +249,13 @@ void RestartCoProcessor::loadBinArchive( std::string filename )
    int psize;
    ia >> psize;
 
-   ia.register_type<PostprocessorPtr>();
+   ia.register_type<CoProcessorPtr>();
    for (int i = 0; i < psize; i++)
    {
-      PostprocessorPtr pp;
+      CoProcessorPtr pp;
       ia >> pp;
       pp->reconnect(grid);
-      postprocessors.push_back(pp);
+      CoProcessors.push_back(pp);
    }
 }
 //////////////////////////////////////////////////////////////////////////

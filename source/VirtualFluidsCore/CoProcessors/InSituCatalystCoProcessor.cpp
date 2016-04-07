@@ -53,7 +53,7 @@ void InSituCatalystCoProcessor::process(double step)
    if (scheduler->isDue(step))
       collectData(step);
 
-   UBLOG(logDEBUG3, "InSituCatalystPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "InSituCatalystCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void InSituCatalystCoProcessor::collectData(double step)
@@ -96,7 +96,7 @@ void InSituCatalystCoProcessor::collectData(double step)
       Processor->CoProcess(dataDescription.GetPointer());
    }
 
-   UBLOG(logINFO, "InSituCatalystPostprocessor step: " << istep);
+   UBLOG(logINFO, "InSituCatalystCoProcessor step: " << istep);
 }
 //////////////////////////////////////////////////////////////////////////
 void InSituCatalystCoProcessor::addData(Block3DPtr block)

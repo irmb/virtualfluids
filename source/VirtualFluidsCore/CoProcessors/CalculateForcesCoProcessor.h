@@ -1,12 +1,12 @@
 /*
- *  D3Q27ForcesPostprocessor.h
+ *  D3Q27ForcesCoProcessor.h
  *
  *  Created on: 29.09.2012
  *  Author: K. Kucher
  */
 
-#ifndef D3Q27ForcesPostprocessor_H
-#define D3Q27ForcesPostprocessor_H
+#ifndef D3Q27ForcesCoProcessor_H
+#define D3Q27ForcesCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Communicator.h"
@@ -56,4 +56,4 @@ private:
 };
 
 
-#endif /* D3Q27ForcesPostprocessor_H */
+#endif /* D3Q27ForcesCoProcessor_H */

@@ -60,7 +60,7 @@ void InSituVTKCoProcessor::process( double step )
    if(scheduler->isDue(step) )
       collectData(step);
 
-   UBLOG(logDEBUG3, "InSituVTKPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "InSituVTKCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void InSituVTKCoProcessor::collectData( double step )
@@ -122,7 +122,7 @@ void InSituVTKCoProcessor::collectData( double step )
    //writer->SetDataModeToAscii();
    //writer->Update();
 
-   UBLOG(logINFO,"InSituVTKPostprocessor step: " << istep);
+   UBLOG(logINFO,"InSituVTKCoProcessor step: " << istep);
 }
 //////////////////////////////////////////////////////////////////////////
 void InSituVTKCoProcessor::addData( Block3DPtr block )

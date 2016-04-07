@@ -17,7 +17,7 @@ void TimeDependentBCCoProcessor::process(double step)
 {
    BOOST_FOREACH(Interactor3DPtr inter, interactors)
       inter->updateInteractor( step );
-   UBLOG(logDEBUG3, "TimeDependentBCPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "TimeDependentBCCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void TimeDependentBCCoProcessor::addInteractor( Interactor3DPtr interactor )

@@ -1,5 +1,5 @@
 /*
-* D3Q27AdjustForcingPostprocessor.cpp
+* D3Q27AdjustForcingCoProcessor.cpp
 *
 *  
 *  Author: Sonja Uphoff
@@ -63,7 +63,7 @@ void AdjustForcingCoProcessor::collectData(double step)
 {
    integrateValues->calculateMQ();
 
-   UBLOG(logDEBUG3, "D3Q27AdjustForcingPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "D3Q27AdjustForcingCoProcessor::update:" << step);
    int gridRank = grid->getRank();
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();
@@ -109,7 +109,7 @@ void AdjustForcingCoProcessor::collectData(double step)
 
    if (comm->getProcessID() == comm->getRoot())
    {
-      //UBLOG(logINFO, "D3Q27AdjustForcingPostprocessor step: " << static_cast<int>(step));
+      //UBLOG(logINFO, "D3Q27AdjustForcingCoProcessor step: " << static_cast<int>(step));
       //UBLOG(logINFO, "new forcing is: " << forcing);
       std::string fname = path+"/forcing/forcing.csv";
       std::ofstream ostr;

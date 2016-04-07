@@ -1,5 +1,5 @@
 /*
-*  TimeseriesWriterPostprocessor.h
+*  TimeseriesWriterCoProcessor.h
 *
 *  Created on: 08.05.2013
 *  Author: uphoff
@@ -26,7 +26,7 @@ TimeseriesCoProcessor::TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
       std::ofstream ostr;
       //fname = path+"/timeseries/timeseries"+UbSystem::toString(grid->getTimeStep())+".csv";
       fname = path+".csv";
-      UBLOG(logINFO, "TimeseriesWriterPostprocessor::fname:" << fname);
+      UBLOG(logINFO, "TimeseriesWriterCoProcessor::fname:" << fname);
       ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
       if(!ostr)
       { 
@@ -37,7 +37,7 @@ TimeseriesCoProcessor::TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
       }
       ostr << "step;rho;vx;vy;vz;volume\n";
       ostr.close();
-      UBLOG(logINFO, "TimeseriesWriterPostprocessor::Constructor:end");
+      UBLOG(logINFO, "TimeseriesWriterCoProcessor::Constructor:end");
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ void TimeseriesCoProcessor::collectData(double step)
 {
    h1->calculateMQ();
 
-   UBLOG(logDEBUG3, "TimeseriesWriterPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "TimeseriesWriterCoProcessor::update:" << step);
 
    if (comm->getProcessID() == comm->getRoot())
    {

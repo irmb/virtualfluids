@@ -1,5 +1,5 @@
-#ifndef POSTPROCESSOR_H
-#define POSTPROCESSOR_H
+#ifndef CoProcessor_H
+#define CoProcessor_H
 
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
@@ -9,7 +9,7 @@
 #include <basics/utilities/UbScheduler.h>
 
 class CoProcessor;
-typedef boost::shared_ptr<CoProcessor> PostprocessorPtr;
+typedef boost::shared_ptr<CoProcessor> CoProcessorPtr;
 
 class CoProcessor
 {

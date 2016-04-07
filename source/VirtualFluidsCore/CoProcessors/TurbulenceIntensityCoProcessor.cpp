@@ -49,7 +49,7 @@ void TurbulenceIntensityCoProcessor::process(double step)
    if(scheduler->isDue(step) )
       collectData(step);
 
-   UBLOG(logDEBUG3, "TurbulenceIntensityPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "TurbulenceIntensityCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void TurbulenceIntensityCoProcessor::collectData(double step)
@@ -88,7 +88,7 @@ void TurbulenceIntensityCoProcessor::collectData(double step)
       {
          WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(path+"_collection",filenames,istep,false);
       }
-      UBLOG(logINFO,"TurbulenceIntensityPostprocessor step: " << istep);
+      UBLOG(logINFO,"TurbulenceIntensityCoProcessor step: " << istep);
    }
 
    clearData();

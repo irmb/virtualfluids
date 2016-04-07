@@ -32,7 +32,7 @@ void QCriterionCoProcessor::init()
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		grid->getBlocks(level, gridRank, true, blockVector[level]); //grid: private variable in Postprocessor. Initialized by filling with blocks
+		grid->getBlocks(level, gridRank, true, blockVector[level]); //grid: private variable in CoProcessor. Initialized by filling with blocks
 	}
 }
 //////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ void QCriterionCoProcessor::process(double step)
 	if(scheduler->isDue(step) )
 		collectData(step);
 
-	UBLOG(logDEBUG3, "QCriterionPostprocessor::update:" << step);
+	UBLOG(logDEBUG3, "QCriterionCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void QCriterionCoProcessor::collectData(double step)
@@ -66,7 +66,7 @@ void QCriterionCoProcessor::collectData(double step)
 
 	vector<string> cellDataNames;
 
-	//distributed writing as in MacroscopicValuesPostprocessor.cpp
+	//distributed writing as in MacroscopicValuesCoProcessor.cpp
 	vector<string> pieces = comm->gather(piece); //comm: MPI-Wrapper
 	if (comm->getProcessID() == comm->getRoot())
 	{
@@ -82,7 +82,7 @@ void QCriterionCoProcessor::collectData(double step)
 		{
 			WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(path+"_collection",filenames,istep,false);
 		}
-		UBLOG(logINFO,"QCriterionPostprocessor step: " << istep);
+		UBLOG(logINFO,"QCriterionCoProcessor step: " << istep);
 	}
 
 	clearData();
@@ -229,7 +229,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 	int maxX1 = (int)(distributions->getNX1());
 	int maxX2 = (int)(distributions->getNX2());
 	int maxX3 = (int)(distributions->getNX3());
-	if (maxX1<3) throw UbException(UB_EXARGS,"QCriterionPostprocessor: NX1 too small for FD stencils!");
+	if (maxX1<3) throw UbException(UB_EXARGS,"QCriterionCoProcessor: NX1 too small for FD stencils!");
 	maxX1 -= 2;
 	maxX2 -= 2;
 	maxX3 -= 2;

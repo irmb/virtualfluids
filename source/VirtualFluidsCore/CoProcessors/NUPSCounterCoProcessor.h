@@ -1,12 +1,12 @@
 /*
-*  NUPSCounterPostprocessor.h
+*  NUPSCounterCoProcessor.h
 *
 *  Created on: 03.05.2011
 *  Author: K. Kucher
 */
 
-#ifndef NUPSCOUNTERPOSTPROCESSOR_H_
-#define NUPSCOUNTERPOSTPROCESSOR_H_
+#ifndef NUPSCOUNTERCoProcessor_H_
+#define NUPSCOUNTERCoProcessor_H_
 
 #include "CoProcessor.h"
 #include "Communicator.h"

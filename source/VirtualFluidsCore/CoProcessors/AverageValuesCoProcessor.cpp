@@ -79,7 +79,7 @@ void AverageValuesCoProcessor::process(double step)
 
 		}
 
-		UBLOG(logDEBUG3, "AverageValuesPostprocessor::update:" << step);
+		UBLOG(logDEBUG3, "AverageValuesCoProcessor::update:" << step);
 }
 
 void AverageValuesCoProcessor::resetDataRMS(double step)
@@ -226,7 +226,7 @@ void AverageValuesCoProcessor::collectData(double step)
       {
          WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath,filenames,istep,false);
       }
-      UBLOG(logINFO,"AverageValuesPostprocessor step: " << istep);
+      UBLOG(logINFO,"AverageValuesCoProcessor step: " << istep);
    }
 
 	clearData();
@@ -470,7 +470,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 	}
 }
 ////////////////////////////////////////////////////////////////////////////
-//void AverageValuesPostprocessor::initPlotData(double step)
+//void AverageValuesCoProcessor::initPlotData(double step)
 //{
 //   CommunicatorPtr comm = Communicator::getInstance();
 //	if (comm->getProcessID() == comm->getRoot())
@@ -493,7 +493,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 //	}
 //}
 //////////////////////////////////////////////////////////////////////////////
-//void AverageValuesPostprocessor::collectPlotData(double step)
+//void AverageValuesCoProcessor::collectPlotData(double step)
 //{
 //
 //	double hminX1 = 0.9;

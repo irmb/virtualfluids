@@ -45,7 +45,7 @@ void CalculateForcesCoProcessor::process( double step )
    if(scheduler->isDue(step) )
       collectData(step);
 
-   UBLOG(logDEBUG3, "D3Q27ForcesPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "D3Q27ForcesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void CalculateForcesCoProcessor::collectData( double step )

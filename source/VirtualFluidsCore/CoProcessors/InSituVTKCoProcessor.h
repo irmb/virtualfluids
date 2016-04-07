@@ -1,7 +1,7 @@
 #ifdef VF_VTK
 
-#ifndef InSituVTKPostprocessor_h__
-#define InSituVTKPostprocessor_h__
+#ifndef InSituVTKCoProcessor_h__
+#define InSituVTKCoProcessor_h__
 
 #include <CoProcessor.h>
 #include <Grid3D.h>
@@ -46,7 +46,7 @@ private:
    std::string wIP;
 };
 
-#endif // InSituVTKPostprocessor_h__
+#endif // InSituVTKCoProcessor_h__
 
 #endif
 

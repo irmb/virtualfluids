@@ -1,5 +1,5 @@
-#ifndef DecreaseViscosityPOSTPROCESSOR_H
-#define DecreaseViscosityPOSTPROCESSOR_H
+#ifndef DecreaseViscosityCoProcessor_H
+#define DecreaseViscosityCoProcessor_H
 
 #include "CoProcessor.h"
 #include "D3Q27IntegrateValuesHelper.h"
@@ -17,9 +17,9 @@ typedef boost::shared_ptr<DecreaseViscosityCoProcessor> DecreaseViscosityCoProce
 //! decrViscFunc.SetExpr("nue0+c0/(t+1)/(t+1)");   //this function is time-dependent, the viscosity decreases a 1/t^2 
 //! decrViscFunc.DefineConst("nue0", nueLB);       
 //! decrViscFunc.DefineConst("c0", 0.1);           //constants such as c0 controll how fast the viscosity decreasis 
-//! UbSchedulerPtr DecrViscSch(new UbScheduler()); //the postprocessor is called according to a Scheduler
+//! UbSchedulerPtr DecrViscSch(new UbScheduler()); //the CoProcessor is called according to a Scheduler
 //! DecrViscSch->addSchedule(10,10,1000);          //in this case the viscosity is reset every 10 timesteps for the first 1000 timesteps 
-//! DecreaseViscosityPostprocessor decrViscPPPtr(grid, DecrViscSch,&decrViscFunc, comm); 
+//! DecreaseViscosityCoProcessor decrViscPPPtr(grid, DecrViscSch,&decrViscFunc, comm); 
 //! \endcode
 //! \author Sonja Uphoff
 
@@ -41,4 +41,4 @@ private:
 };
 
 
-#endif /* DecreaseViscosityPOSTPROCESSOR_H_ */
+#endif /* DecreaseViscosityCoProcessor_H_ */

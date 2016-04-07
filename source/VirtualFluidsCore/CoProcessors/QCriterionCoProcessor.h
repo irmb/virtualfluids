@@ -1,10 +1,10 @@
-//! \file QCriterionPostprocessor.h
+//! \file QCriterionCoProcessor.h
 //!  \brief Created on: 25.08.2013
 //!  \author: Sonja Uphoff
 
 
-#ifndef QCriterionPostprocessor_H
-#define QCriterionPostprocessor_H
+#ifndef QCriterionCoProcessor_H
+#define QCriterionCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Grid3D.h"
@@ -46,7 +46,7 @@ private:
 	void init();
 	std::vector<UbTupleFloat3> nodes;
 	std::vector<UbTupleInt8> cells;
-	std::vector<std::string> datanames; //only one entry for QKrit-Postprocessor: Q
+	std::vector<std::string> datanames; //only one entry for QKrit-CoProcessor: Q
 	std::vector<std::vector<double> > data; 
 	std::vector<std::vector<Block3DPtr> > blockVector;
 	int minInitLevel; //go through all levels for block vector of current process from minInitLevel to maxInitLevel

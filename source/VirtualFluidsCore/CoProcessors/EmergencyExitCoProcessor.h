@@ -1,12 +1,12 @@
 /*
- *  EmergencyExitPostprocessor.h
+ *  EmergencyExitCoProcessor.h
  *
  *  Created on: 05.10.2012
  *  Author: K. Kucher
  */
 
-#ifndef EmergencyExitPostprocessor_H
-#define EmergencyExitPostprocessor_H
+#ifndef EmergencyExitCoProcessor_H
+#define EmergencyExitCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Communicator.h"
@@ -14,7 +14,7 @@
 
 #include <boost/shared_ptr.hpp>
 class EmergencyExitCoProcessor;
-typedef boost::shared_ptr<EmergencyExitCoProcessor> EmergencyExitPostprocessorPtr;
+typedef boost::shared_ptr<EmergencyExitCoProcessor> EmergencyExitCoProcessorPtr;
 
 class EmergencyExitCoProcessor: public CoProcessor 
 {
@@ -37,4 +37,4 @@ private:
 };
 
 
-#endif /* EmergencyExitPostprocessor_H */
+#endif /* EmergencyExitCoProcessor_H */

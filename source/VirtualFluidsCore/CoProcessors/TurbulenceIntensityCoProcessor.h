@@ -1,5 +1,5 @@
-#ifndef TurbulenceIntensityPostprocessor_H
-#define TurbulenceIntensityPostprocessor_H
+#ifndef TurbulenceIntensityCoProcessor_H
+#define TurbulenceIntensityCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Grid3D.h"

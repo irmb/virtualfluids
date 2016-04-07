@@ -22,7 +22,7 @@ MacroscopicQuantitiesCoProcessor::MacroscopicQuantitiesCoProcessor(Grid3DPtr gri
                                                                                  writer(writer),
                                                                                  conv(conv),
                                                                                  bcInformation(bcInformation)
-//D3Q27MacroscopicQuantitiesPostprocessor::D3Q27MacroscopicQuantitiesPostprocessor(Grid3DPtr grid, UbSchedulerPtr s,
+//D3Q27MacroscopicQuantitiesCoProcessor::D3Q27MacroscopicQuantitiesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
 //                                                                                 const std::string& path, WbWriter* const writer, 
 //                                                                                 const LBMUnitConverterPtr conv, CommunicatorPtr comm, 
 //                                                                                 bool bcInformation)
@@ -55,7 +55,7 @@ void MacroscopicQuantitiesCoProcessor::process(double step)
    if(scheduler->isDue(step) )
       collectData(step);
 
-   UBLOG(logDEBUG3, "D3Q27MacroscopicQuantitiesPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "D3Q27MacroscopicQuantitiesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void MacroscopicQuantitiesCoProcessor::collectData(double step)
@@ -121,7 +121,7 @@ void MacroscopicQuantitiesCoProcessor::collectData(double step)
       {
          WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath,filenames,istep,false);
       }
-      UBLOG(logINFO,"D3Q27MacroscopicQuantitiesPostprocessor step: " << istep);
+      UBLOG(logINFO,"D3Q27MacroscopicQuantitiesCoProcessor step: " << istep);
    }
 
    clearData();

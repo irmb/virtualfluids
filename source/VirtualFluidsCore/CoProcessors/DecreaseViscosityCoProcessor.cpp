@@ -1,5 +1,5 @@
 /*
-*  DecreaseViscosityPostprocessor
+*  DecreaseViscosityCoProcessor
 *
 *  Created on: 10.05.2013
 *  Author: uphoff
@@ -39,7 +39,7 @@ void DecreaseViscosityCoProcessor::process(double step)
 void DecreaseViscosityCoProcessor::setViscosity(double step)
 {
 
-   UBLOG(logDEBUG3, "DecreaseViscosityPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "DecreaseViscosityCoProcessor::update:" << step);
    int gridRank = grid->getRank();
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();

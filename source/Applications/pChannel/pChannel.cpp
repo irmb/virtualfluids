@@ -473,7 +473,7 @@ void run(string configname)
 
       UbSchedulerPtr stepSch(new UbScheduler(outTime));
 
-      //D3Q27MacroscopicQuantitiesPostprocessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
+      MacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
 
       double startStep = grid->getTimeStep();
 
@@ -485,7 +485,7 @@ void run(string configname)
       //resSchMeans->addSchedule(40000, startStep, 40000000);
       //UbSchedulerPtr stepAvSch(new UbScheduler());
       //stepAvSch->addSchedule(100, 0, 10000000);
-      //AverageValuesPostprocessor Avpp(grid, pathname, WbWriterVtkXmlBinary::getInstance(),
+      //AverageValuesCoProcessor Avpp(grid, pathname, WbWriterVtkXmlBinary::getInstance(),
       //   stepSch/*wann wird rausgeschrieben*/, stepAvSch/*wann wird gemittelt*/, resSchMeans, resSchRMS/*wann wird resettet*/, restart);
 
 
@@ -505,7 +505,7 @@ void run(string configname)
       //decrViscFunc.DefineConst("c0", 0.1);
       //UbSchedulerPtr DecrViscSch(new UbScheduler());
       //DecrViscSch->addSchedule(10, 0, 1000);
-      //DecreaseViscosityPostprocessor decrViscPPPtr(grid, DecrViscSch, &decrViscFunc, comm);
+      //DecreaseViscosityCoProcessor decrViscPPPtr(grid, DecrViscSch, &decrViscFunc, comm);
 
 	  //if (changeQs)
 	  //{

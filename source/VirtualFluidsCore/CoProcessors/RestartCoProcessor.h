@@ -19,9 +19,9 @@ public:
    RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, int restartStep, ArchiveType typetype = BINARY);
    ~RestartCoProcessor();
    void process(double step);
-   void addCoProcessor(PostprocessorPtr p);
-   PostprocessorPtr getCoProcessor(int index);
-   std::vector<PostprocessorPtr> getPostprocessors();
+   void addCoProcessor(CoProcessorPtr p);
+   CoProcessorPtr getCoProcessor(int index);
+   std::vector<CoProcessorPtr> getCoProcessors();
    void addGridVisitor(Grid3DVisitorPtr v);
    void addBlockVisitor(Block3DVisitorPtr v);
    void doCheckPoint(int step);
@@ -37,7 +37,7 @@ protected:
    int readMetafile();
    void checkMetafile();
 private:
-   std::vector<PostprocessorPtr> postprocessors;
+   std::vector<CoProcessorPtr> CoProcessors;
    std::vector<Grid3DVisitorPtr> gridVisitors;
    std::vector<Block3DVisitorPtr> blockVisitors;
    Grid3DPtr grid;

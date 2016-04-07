@@ -98,7 +98,7 @@ void TimeAveragedValuesCoProcessor::process(double step)
       counter = 0;
    }
 
-   UBLOG(logDEBUG3, "AverageValues2Postprocessor::update:" << step);
+   UBLOG(logDEBUG3, "AverageValues2CoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::collectData(double step)
@@ -132,7 +132,7 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
    if (comm->getProcessID() == comm->getRoot())
    {
       string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
-      UBLOG(logINFO, "TimeAveragedValuesPostprocessor step: " << istep);
+      UBLOG(logINFO, "TimeAveragedValuesCoProcessor step: " << istep);
    }
 
    clearData();

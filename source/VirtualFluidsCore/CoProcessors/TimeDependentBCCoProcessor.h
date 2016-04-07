@@ -1,5 +1,5 @@
-#ifndef TimeDependentBCPOSTPROCESSOR_H
-#define TimeDependentBCPOSTPROCESSOR_H
+#ifndef TimeDependentBCCoProcessor_H
+#define TimeDependentBCCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Interactor3D.h"
@@ -16,7 +16,7 @@ public:
 	TimeDependentBCCoProcessor(Grid3DPtr grid);
 	virtual ~TimeDependentBCCoProcessor();
 	void process(double step);
-   //! add interactors to Postprocessor
+   //! add interactors to CoProcessor
    void addInteractor(Interactor3DPtr interactor);
 protected:
 private:
@@ -24,4 +24,4 @@ private:
 };
 
 
-#endif /* TimeDependentBCPOSTPROCESSOR_H */
+#endif /* TimeDependentBCCoProcessor_H */

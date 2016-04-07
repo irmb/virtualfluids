@@ -1,12 +1,12 @@
 /*
- *  D3Q27PressureDifferencePostprocessor.h
+ *  D3Q27PressureDifferenceCoProcessor.h
  *
  *  Created on: 28.12.2010
  *  Author: kucher
  */
 
-#ifndef D3Q27PRESSUREDIFFERENCEPOSTPROCESSOR_H
-#define D3Q27PRESSUREDIFFERENCEPOSTPROCESSOR_H
+#ifndef D3Q27PRESSUREDIFFERENCECoProcessor_H
+#define D3Q27PRESSUREDIFFERENCECoProcessor_H
 
 #include "CoProcessor.h"
 #include "D3Q27IntegrateValuesHelper.h"
@@ -32,4 +32,4 @@ protected:
 };
 
 
-#endif /* D3Q27RHODIFFERENCEPOSTPROCESSOR_H_ */
+#endif /* D3Q27RHODIFFERENCECoProcessor_H_ */

@@ -1,5 +1,5 @@
-#ifndef D3Q27ShearStressPostprocessor_H
-#define D3Q27ShearStressPostprocessor_H
+#ifndef D3Q27ShearStressCoProcessor_H
+#define D3Q27ShearStressCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Communicator.h"
@@ -73,4 +73,4 @@ private:
 };
 
 
-#endif /* D3Q27ShearStressPostprocessor_H */
+#endif /* D3Q27ShearStressCoProcessor_H */

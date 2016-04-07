@@ -1,12 +1,12 @@
 /*
-*  BlocksPostprocessor.h
+*  BlocksCoProcessor.h
 *
 *  Created on: 24.09.2012
 *  Author: K. Kucher
 */
 
-#ifndef BlocksPostprocessor_H_
-#define BlocksPostprocessor_H_
+#ifndef BlocksCoProcessor_H_
+#define BlocksCoProcessor_H_
 
 #include "CoProcessor.h"
 #include "Communicator.h"

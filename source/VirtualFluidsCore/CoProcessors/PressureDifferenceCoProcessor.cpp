@@ -1,5 +1,5 @@
 /*
- * D3Q27RhoPostprocessor.cpp
+ * D3Q27RhoCoProcessor.cpp
  *
  *  Created on: 28.12.2010
  *      Author: kucher

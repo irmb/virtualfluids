@@ -46,7 +46,7 @@ void ShearStressCoProcessor::process( double step )
    calculateShearStress(step);
    if(scheduler->isDue(step) )
       collectData(step);
-   UBLOG(logDEBUG3, "D3Q27ShearStressPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "D3Q27ShearStressCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::collectData(double step)
@@ -70,7 +70,7 @@ void ShearStressCoProcessor::collectData(double step)
 
    //   vector<string> filenames;
    //   filenames.push_back(pname);
-   //   if (step == Postprocessor::scheduler->getMinBegin())
+   //   if (step == CoProcessor::scheduler->getMinBegin())
    //   {
    //      WbWriterVtkXmlASCII::getInstance()->writeCollection(path+"__Shear_collection",filenames,istep,false);
    //   } 
@@ -78,7 +78,7 @@ void ShearStressCoProcessor::collectData(double step)
    //   {
    //      WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(path+"__Shear_collection",filenames,istep,false);
    //   }
-   //   UBLOG(logINFO,"D3Q27ShearStressPostprocessor step: " << istep);
+   //   UBLOG(logINFO,"D3Q27ShearStressCoProcessor step: " << istep);
    //}
 
    string pfilePath, partPath, subfolder, cfilePath;
@@ -111,7 +111,7 @@ void ShearStressCoProcessor::collectData(double step)
       {
          WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath,filenames,istep,false);
       }
-      UBLOG(logINFO,"D3Q27ShearStressPostprocessor step: " << istep);
+      UBLOG(logINFO,"D3Q27ShearStressCoProcessor step: " << istep);
    }
 
    clearData();
@@ -346,7 +346,7 @@ void ShearStressCoProcessor::reset(double step)
    if(Resetscheduler->isDue(step) )
       resetData(step);
 
-   UBLOG(logDEBUG3, "resetPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "resetCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::resetData(double step)

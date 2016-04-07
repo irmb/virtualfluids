@@ -30,7 +30,7 @@ void EmergencyExitCoProcessor::process( double step )
    if(scheduler->isDue(step) )
       collectData(step);
 
-   UBLOG(logDEBUG3, "EmergencyExitPostprocessor::update:" << step);
+   UBLOG(logDEBUG3, "EmergencyExitCoProcessor::update:" << step);
 }
 
 void EmergencyExitCoProcessor::collectData( double step )
@@ -38,7 +38,7 @@ void EmergencyExitCoProcessor::collectData( double step )
    if(readMetafile())
    {
       rp->doCheckPoint((int)step);
-      if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"EmergencyExitPostprocessor save step: " << step);
+      if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"EmergencyExitCoProcessor save step: " << step);
       comm->barrier();
       exit(EXIT_SUCCESS);
    }

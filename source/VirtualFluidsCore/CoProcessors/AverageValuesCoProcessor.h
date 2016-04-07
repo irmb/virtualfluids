@@ -1,5 +1,5 @@
-#ifndef AverageValuesPostprocessor_H
-#define AverageValuesPostprocessor_H
+#ifndef AverageValuesCoProcessor_H
+#define AverageValuesCoProcessor_H
 
 #include "CoProcessor.h"
 #include "Grid3D.h"

@@ -1,12 +1,12 @@
 /*
- *  TimeseriesPostprocessor.h
+ *  TimeseriesCoProcessor.h
  *
  *  Created on: 08.05.2013
  *  Author: uphoff
  */
 
-#ifndef TimeseriesPOSTPROCESSOR_H
-#define TimeseriesPOSTPROCESSOR_H
+#ifndef TimeseriesCoProcessor_H
+#define TimeseriesCoProcessor_H
 
 #include "CoProcessor.h"
 #include "D3Q27IntegrateValuesHelper.h"
@@ -42,4 +42,4 @@ private:
 };
 
 
-#endif /* TimeseriesPOSTPROCESSOR_H */
+#endif /* TimeseriesCoProcessor_H */

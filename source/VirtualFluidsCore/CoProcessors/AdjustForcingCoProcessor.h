@@ -1,5 +1,5 @@
-#ifndef D3Q27ADJUSTFORCINGPOSTPROCESSOR_H
-#define D3Q27ADJUSTFORCINGPOSTPROCESSOR_H
+#ifndef D3Q27ADJUSTFORCINGCoProcessor_H
+#define D3Q27ADJUSTFORCINGCoProcessor_H
 
 #include "CoProcessor.h"
 #include "D3Q27IntegrateValuesHelper.h"
@@ -38,4 +38,4 @@ private:
 };
 
 
-#endif /* D3Q27RHODIFFERENCEPOSTPROCESSOR_H_ */
+#endif /* D3Q27RHODIFFERENCECoProcessor_H_ */
