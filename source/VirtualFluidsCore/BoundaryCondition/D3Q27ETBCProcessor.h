@@ -21,7 +21,7 @@ public:
    D3Q27ETBCProcessor();
    D3Q27ETBCProcessor(LBMKernel3DPtr kernel);
    virtual ~D3Q27ETBCProcessor();
-   virtual void applyBC();
+   //virtual void applyBC();
    virtual BCArray3D<D3Q27BoundaryCondition>& getBCArray();
    virtual BCProcessorPtr clone(LBMKernel3DPtr kernel);
 
@@ -34,20 +34,20 @@ protected:
    std::vector<BoundaryConditionPtr> preBC;
    std::vector<BoundaryConditionPtr> postBC;
 
-   int minX1, minX2, minX3, maxX1, maxX2, maxX3;
-   D3Q27BoundaryConditionPtr bcPtr;
-   LBMReal f[D3Q27System::ENDF+1];
-   LBMReal ftemp[D3Q27System::ENDF+1];
-   LBMReal feq[D3Q27System::ENDF+1];
-   LBMReal rho, vx1, vx2, vx3, rho0;
+   //int minX1, minX2, minX3, maxX1, maxX2, maxX3;
+   //D3Q27BoundaryConditionPtr bcPtr;
+   //LBMReal f[D3Q27System::ENDF+1];
+   //LBMReal ftemp[D3Q27System::ENDF+1];
+   //LBMReal feq[D3Q27System::ENDF+1];
+   //LBMReal rho, vx1, vx2, vx3, rho0;
 
    //void init(LBMKernel3DPtr kernel);
    BCArray3D<D3Q27BoundaryCondition> bcArray;
-   EsoTwist3DPtr distributions;
-   int ghostLayerWitdh;
-   LBMReal collFactor;
-   bool compressible;
-   EsoTwist3DPtr distributionsTemp;
+   //EsoTwist3DPtr distributions;
+   //int ghostLayerWitdh;
+   //LBMReal collFactor;
+   //bool compressible;
+   //EsoTwist3DPtr distributionsTemp;
 
    //std::vector <int> sizeVector;
    //std::vector <int> nodeVector;
@@ -66,17 +66,17 @@ private:
    {
       ar & boost::serialization::base_object<BCProcessor>(*this);
       ar & bcArray;
-      ar & distributions;
-      ar & ghostLayerWitdh;
-      ar & collFactor;
-      ar & compressible;
-      ar & minX1;
-      ar & minX2;
-      ar & minX3;
-      ar & maxX1;
-      ar & maxX2;
-      ar & maxX3;
-      ar & distributionsTemp;
+      //ar & distributions;
+      //ar & ghostLayerWitdh;
+      //ar & collFactor;
+      //ar & compressible;
+      //ar & minX1;
+      //ar & minX2;
+      //ar & minX3;
+      //ar & maxX1;
+      //ar & maxX2;
+      //ar & maxX3;
+      //ar & distributionsTemp;
       ar & preBC;
       ar & postBC;
    }

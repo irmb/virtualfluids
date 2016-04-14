@@ -2,7 +2,6 @@
 #define BoundaryConditionBlockVisitor_h__
 
 #include "Block3DVisitor.h"
-#include "BoundaryConditionProcessor.h"
 
 class BoundaryConditionBlockVisitor : public Block3DVisitor
 {

@@ -17,7 +17,6 @@ public:
    CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, CalculatorType calcType = CalculationManager::MPI);
    CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, 
                       CommunicatorPtr comm, int endDir, LBMReal nu, CalculatorType calcType = CalculationManager::MPI);
-   CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, BoundaryConditionProcessorPtr bcProcessor, CalculatorType calcType = CalculationManager::MPI);
    virtual ~CalculationManager();
    void calculate();
    void setVisScheduler(UbSchedulerPtr s);
@@ -42,7 +41,6 @@ private:
    LoadBalancerPtr loadBalancer;
    int rank;
    LBMReal nu;
-   BoundaryConditionProcessorPtr bcProcessor;
 }; 
 
 #endif 

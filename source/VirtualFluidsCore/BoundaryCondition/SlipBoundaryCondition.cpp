@@ -17,6 +17,11 @@ BoundaryConditionPtr SlipBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void SlipBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void SlipBoundaryCondition::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];

@@ -124,7 +124,9 @@ void run(string configname)
 
          //set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         ConnectorFactoryPtr factory(new Block3DConnectorFactory());
+         ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor,factory);
          grid->accept(setConnsVisitor);
 
          //domain decomposition for threads
@@ -164,11 +166,13 @@ void run(string configname)
          kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
 
          //
-         BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
+         //BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
+         BCProcessorPtr bcProc(new D3Q27ETForThinWallBCProcessor());
          BoundaryConditionPtr noSlipBC;
          BoundaryConditionPtr velBC;
          BoundaryConditionPtr denBC;
-         noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
+         //noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
+         noSlipBC = BoundaryConditionPtr(new ThinWallNoSlipBoundaryCondition());
          velBC = BoundaryConditionPtr(new VelocityBoundaryCondition());
          denBC = BoundaryConditionPtr(new NonEqDensityBoundaryCondition());
          bcProc->addBC(noSlipBC);

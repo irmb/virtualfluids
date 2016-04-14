@@ -94,25 +94,21 @@ void BoundaryConditionBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       }
       if (vCount > 0)
       {
-         //velocity->addNnode(vCount);
          velocity->addDistributions(distributions);
          velocity->setCollFactor(collFactor);
       }
       if (dCount > 0)
       {
-         //density->addNnode(dCount);
          density->addDistributions(distributions);
          density->setCollFactor(collFactor);
       }
       if (nsCount > 0)
       {
-         //noSlip->addNnode(nsCount);
          noSlip->addDistributions(distributions);
          noSlip->setCollFactor(collFactor);
       }
       if (sCount > 0)
       {
-         //slip->addNnode(sCount);
          slip->addDistributions(distributions);
          slip->setCollFactor(collFactor);
       }

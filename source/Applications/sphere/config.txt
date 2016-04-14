@@ -1,5 +1,5 @@
 #Ordner für Simulationsergebnisse
-path=d:/temp/insitu_demo
+path=d:/temp/sphere
 
 #Verfügbare Arbeitsspeicher in Byte
 memory=21e9
@@ -14,7 +14,9 @@ outstep=1
 endstep=100000
 
 #Anzahl von Threads
-threads=4
+threads=1
 
 #max refierment level (1 - 5)
 level=1
+
+test = true

@@ -17,6 +17,11 @@ BoundaryConditionPtr NonEqDensityBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void NonEqDensityBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void NonEqDensityBoundaryCondition::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];

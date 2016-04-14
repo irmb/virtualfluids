@@ -56,10 +56,10 @@ public:
    bool   getBool(const std::string& key) const;
    std::string  getString(const std::string& key) const;
    template<class T>
-   std::vector<T> getVector(const std::string& Key) const;
+   std::vector<T> getVector(const std::string& key) const;
 
    template<class T>
-   T get(const std::string& Key) const;
+   T getValue(const std::string& key) const;
 
 private:
    // the container
@@ -81,7 +81,7 @@ void ConfigurationFile::clear()
 {
    data.clear();
 }
-
+//////////////////////////////////////////////////////////////////////////
 bool ConfigurationFile::load(const std::string& file)
 {
    std::ifstream inFile(file.c_str());
@@ -127,12 +127,12 @@ bool ConfigurationFile::load(const std::string& file)
 
    return true;
 }
-
+//////////////////////////////////////////////////////////////////////////
 bool ConfigurationFile::contains(const std::string& key) const
 {
    return data.find(key) != data.end();
 }
-
+//////////////////////////////////////////////////////////////////////////
 std::string ConfigurationFile::getString(const std::string& key) const
 {
    std::map<std::string, std::string>::const_iterator iter = data.find(key);
@@ -147,42 +147,42 @@ std::string ConfigurationFile::getString(const std::string& key) const
       UB_THROW(UbException(UB_EXARGS, "The parameter \"" + key + "\" is missing!"));
    }
 }
-
+//////////////////////////////////////////////////////////////////////////
 int ConfigurationFile::getInt(const std::string& key) const
 {
    std::string str = getString(key);
    int value = std::atoi(str.c_str());
    return value;
 }
-
+//////////////////////////////////////////////////////////////////////////
 long ConfigurationFile::getLong(const std::string& key) const
 {
    std::string str = getString(key);
    long value = std::atol(str.c_str());
    return value;
 }
-
+//////////////////////////////////////////////////////////////////////////
 float ConfigurationFile::getFloat(const std::string& key) const
 {
    std::string str = getString(key);
    float value = (float)std::atof(str.c_str());
    return value;
 }
-
+//////////////////////////////////////////////////////////////////////////
 double ConfigurationFile::getDouble(const std::string& key) const
 {
    std::string str = getString(key);
    double value = std::atof(str.c_str());
    return value;
 }
-
+//////////////////////////////////////////////////////////////////////////
 bool ConfigurationFile::getBool(const std::string& key) const
 {
    std::string str = getString(key);
    bool value = (str == "true");
    return value;
 }
-
+//////////////////////////////////////////////////////////////////////////
 std::string ConfigurationFile::trim(const std::string& str)
 {
    size_t first = str.find_first_not_of(" \t\n\r");
@@ -198,7 +198,7 @@ std::string ConfigurationFile::trim(const std::string& str)
       return "";
    }
 }
-
+//////////////////////////////////////////////////////////////////////////
 template<class T>
 std::vector<T> ConfigurationFile::getVector(const std::string& key) const
 {
@@ -215,7 +215,7 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
    }
    return v;
 }
-
+//////////////////////////////////////////////////////////////////////////
 template<class T>
 T ConfigurationFile::fromString(const std::string& str) const
 {
@@ -230,5 +230,29 @@ T ConfigurationFile::fromString(const std::string& str) const
    stream >> t;
    return t;
 }
+//////////////////////////////////////////////////////////////////////////
+template<class T>
+T ConfigurationFile::getValue(const std::string& key) const
+{
+   std::string str = getString(key);
+   bool bFlag = false;
+   if ((std::string)typeid(T).name() == (std::string)typeid(bool).name()) 
+   {
+      bFlag = true;
+   }
+      
+   std::istringstream iss(str);
+   T x;
+   iss >> x;
+   if (!iss && !bFlag)
+      UB_THROW(UbException(UB_EXARGS, " cannot convert \"" + str + "\" to type <" + static_cast<std::string>(typeid(x).name()) + ">"));
 
+   if (bFlag)
+   {
+      bool value = (str == "true");
+      x = value;
+   }
+
+   return x;
+}
 #endif // Configuration_h__

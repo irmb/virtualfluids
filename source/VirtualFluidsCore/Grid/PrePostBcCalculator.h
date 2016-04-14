@@ -8,7 +8,6 @@
 #include "basics/utilities/UbScheduler.h"
 #include "basics/utilities/UbTiming.h"
 #include "LoadBalancer.h"
-#include "BoundaryConditionProcessor.h"
 #include "PrePostBcCalculator.h"
 
 
@@ -22,7 +21,6 @@ class PrePostBcCalculator : public Calculator
 public:
    PrePostBcCalculator();
    PrePostBcCalculator(Grid3DPtr grid, SynchronizerPtr sync, bool mainThread = true);
-   PrePostBcCalculator(Grid3DPtr grid, SynchronizerPtr sync, BoundaryConditionProcessorPtr bcProcessor, bool mainThread = true);
    virtual ~PrePostBcCalculator(){}
    virtual void calculate(const double& endTime, CalculationManagerPtr cm, boost::exception_ptr& error);
 protected:

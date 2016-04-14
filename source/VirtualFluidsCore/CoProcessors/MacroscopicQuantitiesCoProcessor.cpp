@@ -55,7 +55,7 @@ void MacroscopicQuantitiesCoProcessor::process(double step)
    if(scheduler->isDue(step) )
       collectData(step);
 
-   UBLOG(logDEBUG3, "D3Q27MacroscopicQuantitiesCoProcessor::update:" << step);
+   UBLOG(logDEBUG3, "MacroscopicQuantitiesCoProcessor::update:" << step);
 }
 //////////////////////////////////////////////////////////////////////////
 void MacroscopicQuantitiesCoProcessor::collectData(double step)
@@ -121,7 +121,7 @@ void MacroscopicQuantitiesCoProcessor::collectData(double step)
       {
          WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath,filenames,istep,false);
       }
-      UBLOG(logINFO,"D3Q27MacroscopicQuantitiesCoProcessor step: " << istep);
+      UBLOG(logINFO,"MacroscopicQuantitiesCoProcessor step: " << istep);
    }
 
    clearData();
@@ -152,8 +152,8 @@ void MacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
    datanames.push_back("Vy");
    datanames.push_back("Vz");
    //datanames.push_back("Press");
-   //datanames.push_back("Level");
-   //datanames.push_back("BlockID");
+   datanames.push_back("Level");
+   datanames.push_back("BlockID");
 
      
 
@@ -255,8 +255,8 @@ void MacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
                //data[index++].push_back(vx2 * conv->getFactorVelocityLbToW2());
                //data[index++].push_back(vx3 * conv->getFactorVelocityLbToW2());
                //data[index++].push_back(press * conv->getFactorPressureLbToW2());
-               //data[index++].push_back(level);
-               //data[index++].push_back(blockID);
+               data[index++].push_back(level);
+               data[index++].push_back(blockID);
             }
          }
       }

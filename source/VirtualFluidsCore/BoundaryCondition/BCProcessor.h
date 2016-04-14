@@ -18,7 +18,6 @@ class BCProcessor
 public:
    BCProcessor();
    virtual ~BCProcessor();
-   virtual void applyBC() = 0;
    virtual void applyPreCollisionBC() = 0;
    virtual void applyPostCollisionBC() = 0;
    virtual void addBC(BoundaryConditionPtr bc) = 0;

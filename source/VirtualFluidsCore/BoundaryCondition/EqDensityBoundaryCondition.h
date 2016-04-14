@@ -12,6 +12,7 @@ public:
    EqDensityBoundaryCondition();
    ~EqDensityBoundaryCondition();
    BoundaryConditionPtr clone();
+   void addDistributions(DistributionArray3DPtr distributions);
 protected:
    void applyBC();
 private:

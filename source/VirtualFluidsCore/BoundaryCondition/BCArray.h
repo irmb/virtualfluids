@@ -1,265 +1,103 @@
 #ifndef BCArray_H
 #define BCArray_H
 
+#include "D3Q27BoundaryCondition.h"
+#include "basics/container/CbArray3D.h"
+
 #include <typeinfo>
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/shared_ptr.hpp>
 
+typedef boost::shared_ptr<D3Q27BoundaryCondition> BCClassPtr;
+
+class BCArray;
+typedef boost::shared_ptr<BCArray> BCArrayPtr;
+
 class BCArray
 {
 public:
-   typedef typename boost::shared_ptr<BCArray> BCArrayPtr;
-   typedef std::size_t size_type;
-   typedef int IndexType;
-
-public:
    //////////////////////////////////////////////////////////////////////////
-   BCArray() {}
+   BCArray();
+   //////////////////////////////////////////////////////////////////////////
+   BCArray(std::size_t nx1, std::size_t nx2, std::size_t nx3);
+   //////////////////////////////////////////////////////////////////////////
+   BCArray(std::size_t nx1, std::size_t nx2, std::size_t nx3, int val);
    //////////////////////////////////////////////////////////////////////////
    virtual ~BCArray();
    //////////////////////////////////////////////////////////////////////////
-   virtual inline size_type getNX1() const = 0;
+   inline std::size_t getNX1() const;
    //////////////////////////////////////////////////////////////////////////
-   virtual inline size_type getNX2() const = 0;
+   inline std::size_t getNX2() const;
    //////////////////////////////////////////////////////////////////////////
-   virtual inline size_type getNX3() const = 0;
+   inline std::size_t getNX3() const;
    //////////////////////////////////////////////////////////////////////////
-   void resize(const size_type& nx1, const size_type& nx2, const size_type& nx3) = 0;
+   void resize(std::size_t nx1, std::size_t nx2, std::size_t nx3);
    //////////////////////////////////////////////////////////////////////////
-   void resize(const size_type& nx1, const size_type& nx2, const size_type& nx3, const IndexType& val) = 0;
+   void resize(std::size_t nx1, std::size_t nx2, std::size_t nx3, int val);
    //////////////////////////////////////////////////////////////////////////
-   bool validIndices(const size_type& x1, const size_type& x2, const size_type& x3)  const = 0;
+   bool validIndices(std::size_t x1, std::size_t x2, std::size_t x3)  const;
    //////////////////////////////////////////////////////////////////////////
-   inline bool hasBC(const size_type& x1, const size_type& x2, const size_type& x3)  const = 0;
+   inline bool hasBC(std::size_t x1, std::size_t x2, std::size_t x3)  const;
    //////////////////////////////////////////////////////////////////////////
-   void setBC(const size_type& x1, const size_type& x2, const size_type& x3, BCClassPtr const& bc)
-   {
-      if( this->hasBC(x1,x2,x3) )
-      {
-         if( this->getBC(x1,x2,x3)==bc ) return;
-         else                            this->deleteBC(x1,x2,x3);
-      }
-
-      //wenn keine frei gewordene BCs vorhanden
-      if( indexContainer.empty() )
-      {
-         bcvector.push_back(bc);
-         bcindexmatrix(x1,x2,x3) = (IndexType)bcvector.size()-1;
-      }
-      else
-      {
-         IndexType index = indexContainer.back();
-         bcindexmatrix(x1,x2,x3) = index;
-         bcvector[index] = bc;
-         indexContainer.pop_back();
-      }
-   }
+   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, BCClassPtr const& bc);
    //////////////////////////////////////////////////////////////////////////
-   inline IndexType getBCVectorIndex(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      return bcindexmatrix(x1,x2,x3);
-   }
+   inline int getBCVectorIndex(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline const BCClassPtr getBC(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      IndexType index = bcindexmatrix(x1,x2,x3);
-      if(index<0) return BCClassPtr(); //=> NULL Pointer
-
-      return bcvector[index];
-   }
+   inline const BCClassPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline BCClassPtr getBC(const size_type& x1, const size_type& x2, const size_type& x3)
-   {
-      IndexType index = bcindexmatrix(x1,x2,x3);
-      if(index<0) return BCClassPtr(); //=> NULL Pointer
-
-      return bcvector[index];
-   }
+   inline BCClassPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
-   void setSolid(const size_type& x1, const size_type& x2, const size_type& x3)
-   {
-      if( this->hasBC(x1,x2,x3) ) this->deleteBC(x1,x2,x3);
-      bcindexmatrix(x1,x2,x3)=SOLID;
-   }
+   void setSolid(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
-   inline bool isSolid(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      return bcindexmatrix(x1,x2,x3)==SOLID;
-   }
+   inline bool isSolid(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   void setFluid(const size_type& x1, const size_type& x2, const size_type& x3)
-   {
-      if( this->hasBC(x1,x2,x3) ) this->deleteBC(x1,x2,x3);
-      bcindexmatrix(x1,x2,x3)=FLUID;
-   }
+   void setFluid(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
    //true : FLUID or BC
    //false: UNDEFINED or SOLID
-   inline bool isFluid(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      int tmp = bcindexmatrix(x1,x2,x3);
-      return (tmp==FLUID || tmp>=0);
-   }
+   inline bool isFluid(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline bool isFluidWithoutBC(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      return bcindexmatrix(x1,x2,x3)==FLUID;
-   }
+   inline bool isFluidWithoutBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline bool isUndefined(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      return bcindexmatrix(x1,x2,x3)==UNDEFINED;
-   }
+   inline bool isUndefined(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   void setUndefined(const size_type& x1, const size_type& x2, const size_type& x3)
-   {
-      if( this->hasBC(x1,x2,x3) ) this->deleteBC(x1,x2,x3);
-      bcindexmatrix(x1,x2,x3)=UNDEFINED;
-   }
+   void setUndefined(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
-   inline bool isInterface(const size_type& x1, const size_type& x2, const size_type& x3) const
-   {
-      return bcindexmatrix(x1,x2,x3)==INTERFACE;
-   }
+   inline bool isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   void setInterface(const size_type& x1, const size_type& x2, const size_type& x3)
-   {
-      if( this->hasBC(x1,x2,x3) ) this->deleteBC(x1,x2,x3);
-      bcindexmatrix(x1,x2,x3)=INTERFACE;
-   }
+   void setInterfaceCF(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
-   std::size_t getNumberOfSolidEntries() const 
-   {
-      const std::vector<IndexType>& data = bcindexmatrix.getDataVector();
-      std::size_t counter = 0;
-      for(std::size_t i=0; i<data.size(); i++)
-         if(data[i]==SOLID) counter++;
-      return counter;
-   }
+   inline bool isInterfaceFC(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   std::size_t getNumberOfFluidEntries() const 
-   {
-      const std::vector<IndexType>& data = bcindexmatrix.getDataVector();
-      std::size_t counter = 0;
-      for(std::size_t i=0; i<data.size(); i++)
-      {
-         const IndexType& tmp = data[i];
-         if(tmp==FLUID || tmp>=0) counter++;
-      }
-      return counter;
-   }
+   void setInterfaceFC(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
-   std::size_t getNumberOfFluidWithoutBCEntries() const
-   {
-      const std::vector<IndexType>& data = bcindexmatrix.getDataVector();
-      std::size_t counter = 0;
-      for(std::size_t i=0; i<data.size(); i++)
-         if(data[i]==FLUID) counter++;
-      return counter;
-   }
+   std::size_t getNumberOfSolidEntries() const;
    //////////////////////////////////////////////////////////////////////////
-   std::size_t getNumberOfBCEntries() const
-   {
-      const std::vector<IndexType>& data = bcindexmatrix.getDataVector();
-      std::size_t counter = 0;
-      for(std::size_t i=0; i<data.size(); i++)
-         if(data[i]>=0) counter++;
-      return counter;
-   }
+   std::size_t getNumberOfFluidEntries() const;
    //////////////////////////////////////////////////////////////////////////
-   std::size_t getNumberOfUndefinedEntries() const
-   {
-      const std::vector<IndexType>& data = bcindexmatrix.getDataVector();
-      std::size_t counter = 0;
-      for(std::size_t i=0; i<data.size(); i++)
-         if(data[i]==UNDEFINED) counter++;
-      return counter;
-   }
+   std::size_t getNumberOfFluidWithoutBCEntries() const;
    //////////////////////////////////////////////////////////////////////////
-   std::size_t getBCVectorSize() const
-   {
-      return this->bcvector.size();
-   }
+   std::size_t getNumberOfBCEntries() const;
    //////////////////////////////////////////////////////////////////////////
-   std::string toString() const
-   {
-      std::size_t solidCounter = 0;
-      std::size_t fluidCounter = 0;
-      std::size_t bcCounter    = 0;
-      std::size_t undefCounter = 0;
-
-      for(int x1=0; x1<bcindexmatrix.getNX1(); x1++)
-      {
-         for(int x2=0; x2<bcindexmatrix.getNX2(); x2++)
-         {
-            for(int x3=0; x3<bcindexmatrix.getNX3(); x3++)
-            {
-               if(bcindexmatrix(x1,x2,x3)>=0             ) bcCounter++;
-               else if(bcindexmatrix(x1,x2,x3)==FLUID    ) fluidCounter++;
-               else if(bcindexmatrix(x1,x2,x3)==SOLID    ) solidCounter++;
-               else if(bcindexmatrix(x1,x2,x3)==UNDEFINED) undefCounter++;
-               else throw UbException(UB_EXARGS,"invalid matrixEntry");
-            }
-         }
-      }
-
-      std::size_t unrefEntriesInBcVector=0;
-      for(std::size_t i=0; i<bcvector.size(); i++) if(!bcvector[i]) unrefEntriesInBcVector++;
-
-      std::stringstream text;
-      text<<"BCArray<"<<typeid(BCClass).name()<<","<<typeid(IndexType).name()<<">";
-      text<<"[ entries: "<<bcindexmatrix.getNX1()<<"x"<<bcindexmatrix.getNX2();
-      text<<"x"<<bcindexmatrix.getNX3()<<"=";
-      text<<bcindexmatrix.getNX1()*bcindexmatrix.getNX2()*bcindexmatrix.getNX3()<<" ]:\n";
-      text<<" - #fluid entries : "<<fluidCounter<<std::endl;
-      text<<" - #bc    entries : "<<bcCounter<<std::endl;
-      text<<" - #solid entries : "<<solidCounter<<std::endl;
-      text<<" - #undef entries : "<<undefCounter<<std::endl;
-      text<<" - bcvector-entries      : "<<bcvector.size()<<" (empty ones: "<<unrefEntriesInBcVector<<")\n";
-      text<<" - indexContainer-entries: "<<indexContainer.size()<<std::endl;
-
-      return text.str();
-   }
+   std::size_t getNumberOfUndefinedEntries() const;
+   //////////////////////////////////////////////////////////////////////////
+   std::size_t getBCVectorSize() const;
+   //////////////////////////////////////////////////////////////////////////
+   std::string toString() const;
    //////////////////////////////////////////////////////////////////////////
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      ar & bcindexmatrix;
-      ar & bcvector;
-      ar & indexContainer;
-   }
-#endif //CAB_RCF
-
-   static const IndexType SOLID;     //definiton erfolgt ausserhalb!!!
-   static const IndexType FLUID;     //definiton erfolgt ausserhalb!!!
-   static const IndexType INTERFACE; //definiton erfolgt ausserhalb!!!
-   static const IndexType UNDEFINED; //definiton erfolgt ausserhalb!!!
+   static const int SOLID;     
+   static const int FLUID;     
+   static const int INTERFACECF; 
+   static const int INTERFACEFC; 
+   static const int UNDEFINED; 
 
 private:
    //////////////////////////////////////////////////////////////////////////
-   void deleteBCAndSetType(const size_type& x1, const size_type& x2, const size_type& x3, const IndexType& type)
-   {
-      this->deleteBC(x1,x2,x3);
-
-      //matrix neuen Typ zuweisen
-      bcindexmatrix(x1,x2,x3) = type;
-   }
+   void deleteBCAndSetType(std::size_t x1, std::size_t x2, std::size_t x3, int type);
    //////////////////////////////////////////////////////////////////////////
-   void deleteBC(const size_type& x1,const size_type& x2, const size_type& x3)
-   {
-      //ueberpruefen, ob ueberhaupt BC vorhanden
-      IndexType index = bcindexmatrix(x1,x2,x3);
-      if(index<0) return;
-
-      //frei gewordenen Index in den Indexcontainer schieben
-      indexContainer.push_back(index);
-
-      //element "loeschen"
-      bcvector[index] = BCClassPtr();
-   }
+   void deleteBC(std::size_t x1, std::size_t x2, std::size_t x3);
 
    friend class boost::serialization::access;
    template<class Archive>
@@ -271,19 +109,77 @@ private:
    }
 protected:
    //////////////////////////////////////////////////////////////////////////
-   //CbArray3D<IndexType,IndexerX1X2X3> bcindexmatrix;  //-1 solid // -2 fluid -...
-   CbArray3D<IndexType,IndexerX3X2X1> bcindexmatrix;
+   //-1 solid // -2 fluid -...
+   CbArray3D<int, IndexerX3X2X1> bcindexmatrix;
    std::vector<BCClassPtr> bcvector;
-   std::vector<IndexType> indexContainer;
+   std::vector<int> indexContainer;
 };
 
-template< typename BCClass , class IndexType>
-const IndexType BCArray<BCClass,IndexType>::SOLID  = -1;
-template< typename BCClass , class IndexType>
-const IndexType BCArray<BCClass,IndexType>::FLUID  = -2;
-template< typename BCClass , class IndexType> 
-const IndexType BCArray<BCClass,IndexType>::INTERFACE = -3;
-template< typename BCClass , class IndexType>
-const IndexType BCArray<BCClass,IndexType>::UNDEFINED = -4;
 
-#endif //D3Q19BCMATRIX_H
+//////////////////////////////////////////////////////////////////////////
+inline std::size_t BCArray::getNX1() const { return bcindexmatrix.getNX1(); }
+//////////////////////////////////////////////////////////////////////////
+inline std::size_t BCArray::getNX2() const { return bcindexmatrix.getNX2(); }
+//////////////////////////////////////////////////////////////////////////
+inline std::size_t BCArray::getNX3() const { return bcindexmatrix.getNX3(); }
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray::hasBC(std::size_t x1, std::size_t x2, std::size_t x3)  const
+{
+   return bcindexmatrix(x1, x2, x3) >= 0;
+}
+//////////////////////////////////////////////////////////////////////////
+inline int BCArray::getBCVectorIndex(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   return bcindexmatrix(x1, x2, x3);
+}
+//////////////////////////////////////////////////////////////////////////
+inline const BCClassPtr  BCArray::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   int index = bcindexmatrix(x1, x2, x3);
+   if (index < 0) return BCClassPtr(); //=> NULL Pointer
+
+   return bcvector[index];
+}
+//////////////////////////////////////////////////////////////////////////
+inline BCClassPtr BCArray::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
+{
+   int index = bcindexmatrix(x1, x2, x3);
+   if (index < 0) return BCClassPtr(); //=> NULL Pointer
+
+   return bcvector[index];
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray::isSolid(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   return bcindexmatrix(x1, x2, x3) == SOLID;
+}
+//////////////////////////////////////////////////////////////////////////
+//true : FLUID or BC
+//false: UNDEFINED or SOLID
+inline bool BCArray::isFluid(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   int tmp = bcindexmatrix(x1, x2, x3);
+   return (tmp == FLUID || tmp >= 0);
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray::isFluidWithoutBC(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   return bcindexmatrix(x1, x2, x3) == FLUID;
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray::isUndefined(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   return bcindexmatrix(x1, x2, x3) == UNDEFINED;
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray::isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   return bcindexmatrix(x1, x2, x3) == INTERFACECF;
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray::isInterfaceFC(std::size_t x1, std::size_t x2, std::size_t x3) const
+{
+   return bcindexmatrix(x1, x2, x3) == INTERFACEFC;
+}
+
+#endif 

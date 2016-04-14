@@ -17,6 +17,11 @@ BoundaryConditionPtr NoSlipBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void NoSlipBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void NoSlipBoundaryCondition::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];

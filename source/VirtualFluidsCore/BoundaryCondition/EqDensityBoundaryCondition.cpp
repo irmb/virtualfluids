@@ -17,6 +17,11 @@ BoundaryConditionPtr EqDensityBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void EqDensityBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void EqDensityBoundaryCondition::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];

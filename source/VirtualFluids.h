@@ -104,7 +104,7 @@
 #include <BoundaryCondition/D3Q27SlipBCAdapter.h>
 #include <BoundaryCondition/D3Q27VelocityBCAdapter.h>
 
-#include <BoundaryCondition/BoundaryConditionProcessor.h>
+//#include <BoundaryCondition/BoundaryConditionProcessor.h>
 #include <BoundaryCondition/BoundaryCondition.h>
 #include <BoundaryCondition/VelocityBoundaryCondition.h>
 #include <BoundaryCondition/NonEqDensityBoundaryCondition.h>
@@ -147,7 +147,7 @@
 //#include <Grid/BoostSerializationClassExportHelper.h>
 #include <Grid/CalculationManager.h>
 #include <Grid/Calculator.h>
-#include <Grid/Calculator2.h>
+//#include <Grid/Calculator2.h>
 #include <Grid/Grid3D.h>
 #include <Grid/Grid3DSystem.h>
 #include <Interactors/D3Q27Interactor.h>

@@ -17,6 +17,11 @@ BoundaryConditionPtr VelocityBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void VelocityBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void VelocityBoundaryCondition::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];

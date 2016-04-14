@@ -16,6 +16,11 @@ BoundaryConditionPtr HighViscosityNoSlipBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void HighViscosityNoSlipBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void HighViscosityNoSlipBoundaryCondition::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];

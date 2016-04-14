@@ -6,16 +6,18 @@
 class ThinWallNoSlipBoundaryCondition;
 typedef boost::shared_ptr<ThinWallNoSlipBoundaryCondition> ThinWallNoSlipBoundaryConditionPtr;
 
-class ThinWallNoSlipBoundaryCondition : public NoSlipBoundaryCondition
+class ThinWallNoSlipBoundaryCondition : public BoundaryCondition
 {
 public:
    ThinWallNoSlipBoundaryCondition();
    virtual ~ThinWallNoSlipBoundaryCondition();
    BoundaryConditionPtr clone();
-   void addDistributions(EsoTwist3DPtr distributions);
+   void addDistributions(DistributionArray3DPtr distributions);
+   void setPass(int pass);
 protected:
    void applyBC();
 private:
+   int pass;
    friend class boost::serialization::access;
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)

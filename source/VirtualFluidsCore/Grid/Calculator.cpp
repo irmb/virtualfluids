@@ -34,29 +34,6 @@ Calculator::Calculator(Grid3DPtr grid, SynchronizerPtr sync, bool mainThread) :
    loadBalancingComp = false;
 }
 //////////////////////////////////////////////////////////////////////////
-Calculator::Calculator(Grid3DPtr grid, SynchronizerPtr sync, BoundaryConditionProcessorPtr bcProcessor, bool mainThread) :
-grid(grid),
-sync(sync),
-bcProcessor(bcProcessor),
-mainThread(mainThread),
-refinement(false)
-{
-   minLevel = grid->getCoarsestInitializedLevel();
-   maxLevel = grid->getFinestInitializedLevel();
-   if (maxLevel > 0)
-      refinement = true;
-   else
-      refinement = false;
-   blocks.resize(maxLevel+1);
-   localConns.resize(maxLevel+1);
-   remoteConns.resize(maxLevel+1);
-   localInterfaceBlockConns.resize(maxLevel+1);
-   remoteInterfaceBlockConns.resize(maxLevel+1);
-   localInterConns.resize(maxLevel);
-   remoteInterConns.resize(maxLevel);
-   loadBalancingComp = false;
-}
-//////////////////////////////////////////////////////////////////////////
 void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boost::exception_ptr& error)
 {
    UBLOG(logDEBUG1, "Calculator::calculate() - started");
@@ -593,18 +570,18 @@ void Calculator::setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorP
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Calculator::applyBCs( int startLevel, int maxInitLevel )
-{
-   //startLevel bis maxInitLevel
-   for(int level=startLevel; level<=maxInitLevel; level++)
-   {
-      //call LBM kernel
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
-      {
-         block->getKernel()->getBCProcessor()->applyBC();
-      }
-   }
-}
+//void Calculator::applyBCs( int startLevel, int maxInitLevel )
+//{
+//   //startLevel bis maxInitLevel
+//   for(int level=startLevel; level<=maxInitLevel; level++)
+//   {
+//      //call LBM kernel
+//      BOOST_FOREACH(Block3DPtr block, blocks[level])
+//      {
+//         block->getKernel()->getBCProcessor()->applyBC();
+//      }
+//   }
+//}
 //////////////////////////////////////////////////////////////////////////
 void Calculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 {

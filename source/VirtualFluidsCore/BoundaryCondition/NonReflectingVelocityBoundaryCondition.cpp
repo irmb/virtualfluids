@@ -17,6 +17,11 @@ BoundaryConditionPtr NonReflectingVelocityBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void NonReflectingVelocityBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void NonReflectingVelocityBoundaryCondition::applyBC()
 {
    //velocity bc for non reflecting pressure bc

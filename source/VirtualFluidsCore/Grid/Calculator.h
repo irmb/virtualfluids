@@ -8,7 +8,6 @@
 #include "basics/utilities/UbScheduler.h"
 #include "basics/utilities/UbTiming.h"
 #include "LoadBalancer.h"
-#include "BoundaryConditionProcessor.h"
 #include "TimeAveragedValuesCoProcessor.h"
 
 
@@ -22,7 +21,6 @@ class Calculator
 public:
    Calculator();
    Calculator(Grid3DPtr grid, SynchronizerPtr sync, bool mainThread = true);
-   Calculator(Grid3DPtr grid, SynchronizerPtr sync, BoundaryConditionProcessorPtr bcProcessor, bool mainThread = true);
    virtual ~Calculator(){}
    virtual void calculate(const double& endTime, CalculationManagerPtr cm, boost::exception_ptr& error);
    void addBlock(Block3DPtr block);
@@ -49,7 +47,7 @@ protected:
    void connectorsSetInvStep(std::vector< Block3DConnectorPtr >& connectors, bool invStep);
    void interpolation(int startLevel, int maxInitLevel);
    void deleteConnectors(std::vector< std::vector< Block3DConnectorPtr > >& conns);
-   void applyBCs(int startLevel, int maxInitLevel);
+   //void applyBCs(int startLevel, int maxInitLevel);
    void applyPreCollisionBC(int startLevel, int maxInitLevel);
    void applyPostCollisionBC(int startLevel, int maxInitLevel);
    int minLevel, maxLevel;
@@ -65,7 +63,6 @@ protected:
    Grid3DPtr grid;
    UbSchedulerPtr visScheduler;
    int calcStep;
-   BoundaryConditionProcessorPtr bcProcessor;
    std::vector< std::vector<Block3DPtr> > blocks;
 
 private:

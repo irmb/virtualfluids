@@ -18,11 +18,6 @@ Calculator(grid, sync, mainThread)
 
 }
 //////////////////////////////////////////////////////////////////////////
-PrePostBcCalculator::PrePostBcCalculator(Grid3DPtr grid, SynchronizerPtr sync, BoundaryConditionProcessorPtr bcProcessor, bool mainThread) :
-Calculator(grid, sync, bcProcessor, mainThread)
-{
-}
-//////////////////////////////////////////////////////////////////////////
 void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr cm, boost::exception_ptr& error)
 {
    UBLOG(logDEBUG1, "PrePostBcCalculator::calculate() - started");

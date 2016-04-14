@@ -12,6 +12,7 @@ public:
    NonReflectingDensityBoundaryCondition();
    ~NonReflectingDensityBoundaryCondition();
    BoundaryConditionPtr clone();
+   void addDistributions(DistributionArray3DPtr distributions);
 protected:
    void applyBC();
 private:

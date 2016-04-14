@@ -5,7 +5,6 @@
 #include <LBMKernelETD3Q27Cascaded.h>
 #include <D3Q27EsoTwist3DSplittedVector.h>
 #include <D3Q27ETBCProcessor.h>
-#include <D3Q27ETForThinWallBCProcessor.h>
 #include <LBMKernelETD3Q27CascadedTI.h>
 #include <DataSet3D.h>
 #include <LBMKernelETD3Q27BGK.h>
@@ -51,7 +50,6 @@ BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLB)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLBWithSpongeLayer)
 BOOST_CLASS_EXPORT(D3Q27EsoTwist3DSplittedVector)
 BOOST_CLASS_EXPORT(D3Q27ETBCProcessor)
-BOOST_CLASS_EXPORT(D3Q27ETForThinWallBCProcessor)
 BOOST_CLASS_EXPORT(DataSet3D)
 BOOST_CLASS_EXPORT(Interactor3D)
 BOOST_CLASS_EXPORT(D3Q27Interactor)

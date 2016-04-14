@@ -90,8 +90,6 @@ void run(string configname)
       //real velocity is 49.63 m/s
       double nu_LB;
 
-      BoundaryConditionProcessorPtr bcProcessor(new BoundaryConditionProcessor());
-
       Grid3DPtr grid(new Grid3D(comm));
 
       //////////////////////////////////////////////////////////////////////////
@@ -388,6 +386,8 @@ void run(string configname)
          ////set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
          D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
+         //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
+         //ConnectorBlockVisitor setConnsVisitor(comm, nu_LB, iProcessor, factory);
          grid->accept(setConnsVisitor);
 
          //domain decomposition for threads

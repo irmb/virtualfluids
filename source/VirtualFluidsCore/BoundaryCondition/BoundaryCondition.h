@@ -29,18 +29,8 @@ public:
    BoundaryCondition();
    virtual ~BoundaryCondition() {}
    
-   //void apply(int level);
-
-   //void addDistribution(int level, EsoTwist3DPtr distribution);
-   //void addNnode(int level, int nnode);
-   //void addNode(int level, int x1, int x2, int x3);
-   //void addBcPointer(int level, D3Q27BoundaryConditionPtr bcPtr);
-   //void setCompressible(bool c);
-   //void setCollFactor(int level, double cf);
    void apply();
-
-   void addDistributions(EsoTwist3DPtr distributions);
-   //void addNnode(int nnode);
+   virtual void addDistributions(DistributionArray3DPtr distributions) = 0;
    void addNode(int x1, int x2, int x3);
    void addBcPointer(D3Q27BoundaryConditionPtr bcPtr);
    void setCompressible(bool c);
@@ -51,8 +41,6 @@ public:
 protected:
    virtual void applyBC() = 0;
    
-   //std::vector <EsoTwist3DPtr> distVector;
-   //std::vector <int> sizeVector;
    std::vector <int> nodeVector;
    std::vector <D3Q27BoundaryConditionPtr> bcVector;
 
@@ -61,8 +49,8 @@ protected:
    bool preCollision;
 
    D3Q27BoundaryConditionPtr bcPtr;
-   EsoTwist3DPtr distributions;
-   EsoTwist3DPtr distributionsTemp;
+   DistributionArray3DPtr distributions;
+   DistributionArray3DPtr distributionsTemp;
    LBMReal collFactor;
    int x1, x2, x3;
 

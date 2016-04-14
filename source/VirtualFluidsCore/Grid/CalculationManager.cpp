@@ -43,17 +43,6 @@ CalculationManager::CalculationManager(Grid3DPtr grid, int numOfThreads, double 
    loadBalancer = LoadBalancerPtr(new LoadBalancer(grid, comm, endDir));
 }
 //////////////////////////////////////////////////////////////////////////
-CalculationManager::CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, BoundaryConditionProcessorPtr bcProcessor, CalculationManager::CalculatorType calcType)
-   : grid(grid),
-   numOfThreads(numOfThreads),
-   endTime(endTime),
-   visScheduler(visScheduler),
-   bcProcessor(bcProcessor),
-   calcType(calcType)
-{
-   init();
-}
-//////////////////////////////////////////////////////////////////////////
 CalculationManager::~CalculationManager()
 {
 }
@@ -195,13 +184,13 @@ CalculatorPtr CalculationManager::createCalculator(Grid3DPtr grid, SynchronizerP
    switch (calcType)
    {
    case CalculationManager::MPI:
-      return CalculatorPtr (new Calculator(grid, sync, bcProcessor, mainThread));
+      return CalculatorPtr (new Calculator(grid, sync, mainThread));
 #if defined VF_FETOL
    case CalculationManager::FETOL:
       return CalculatorPtr (new FETOLCalculator(grid, sync, mainThread));
 #endif
    case CalculationManager::PrePostBc:
-      return CalculatorPtr(new PrePostBcCalculator(grid, sync, bcProcessor, mainThread));
+      return CalculatorPtr(new PrePostBcCalculator(grid, sync, mainThread));
    default:
       UB_THROW(UbException(UB_EXARGS,"This Calculator is not defined!"));
    }

@@ -19,7 +19,6 @@ public:
    D3Q27ETForThinWallBCProcessor();
    D3Q27ETForThinWallBCProcessor(LBMKernel3DPtr kernel);
    virtual ~D3Q27ETForThinWallBCProcessor();
-   virtual void applyBC();
    virtual BCProcessorPtr clone(LBMKernel3DPtr kernel);
    void applyPostCollisionBC();
 protected:

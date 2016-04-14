@@ -18,6 +18,11 @@ BoundaryConditionPtr NonReflectingDensityBoundaryCondition::clone()
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
+void NonReflectingDensityBoundaryCondition::addDistributions(DistributionArray3DPtr distributions)
+{
+   this->distributions = distributions;
+}
+//////////////////////////////////////////////////////////////////////////
 void NonReflectingDensityBoundaryCondition::applyBC()
 {
    distributions->swap();
