@@ -4,6 +4,7 @@
 #include <LBMKernelETD3Q27.h>
 #include <LBMKernelETD3Q27Cascaded.h>
 #include <D3Q27EsoTwist3DSplittedVector.h>
+#include <BCProcessor.h>
 #include <D3Q27ETBCProcessor.h>
 #include <LBMKernelETD3Q27CascadedTI.h>
 #include <DataSet3D.h>
@@ -38,7 +39,8 @@
 #include <D3Q27NoSlipBCAdapter.h>
 #include <D3Q27SlipBCAdapter.h>
 #include <D3Q27VelocityBCAdapter.h>
-
+#include "ThinWallNoSlipBoundaryCondition.h"
+#include "D3Q27ETForThinWallBCProcessor.h"
 
 #include <boost/serialization/export.hpp>
 
@@ -49,7 +51,9 @@ BOOST_CLASS_EXPORT(LBMKernelETD3Q27BGK)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLB)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLBWithSpongeLayer)
 BOOST_CLASS_EXPORT(D3Q27EsoTwist3DSplittedVector)
+BOOST_CLASS_EXPORT(BCProcessor)
 BOOST_CLASS_EXPORT(D3Q27ETBCProcessor)
+BOOST_CLASS_EXPORT(D3Q27ETForThinWallBCProcessor)
 BOOST_CLASS_EXPORT(DataSet3D)
 BOOST_CLASS_EXPORT(Interactor3D)
 BOOST_CLASS_EXPORT(D3Q27Interactor)
@@ -69,6 +73,7 @@ BOOST_CLASS_EXPORT(HighViscosityNoSlipBoundaryCondition)
 BOOST_CLASS_EXPORT(SlipBoundaryCondition)
 BOOST_CLASS_EXPORT(NonReflectingDensityBoundaryCondition)
 BOOST_CLASS_EXPORT(NonReflectingVelocityBoundaryCondition)
+BOOST_CLASS_EXPORT(ThinWallNoSlipBoundaryCondition)
 
 BOOST_CLASS_EXPORT(D3Q27BoundaryConditionAdapter)
 BOOST_CLASS_EXPORT(D3Q27DensityBCAdapter)

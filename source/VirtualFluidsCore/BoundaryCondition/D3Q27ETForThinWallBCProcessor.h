@@ -22,14 +22,12 @@ public:
    virtual BCProcessorPtr clone(LBMKernel3DPtr kernel);
    void applyPostCollisionBC();
 protected:
-   //EsoTwist3DPtr distributionsTemp;
 private:
    friend class boost::serialization::access;
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)
    {
       ar & boost::serialization::base_object<D3Q27ETBCProcessor>(*this);
-      //ar & distributionsTemp;
    }
 };
 

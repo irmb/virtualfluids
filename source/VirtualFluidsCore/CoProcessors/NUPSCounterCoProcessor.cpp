@@ -18,7 +18,7 @@ NUPSCounterCoProcessor::NUPSCounterCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
       int maxInitLevel = grid->getFinestInitializedLevel();
       int gl = 2;
       UbTupleInt3 blocknx = grid->getBlockNX();
-      //int nod = (val<1>(blocknx)+gl) * (val<2>(blocknx)+gl) * (val<3>(blocknx)+gl);
+      //double nod = (val<1>(blocknx)+gl) * (val<2>(blocknx)+gl) * (val<3>(blocknx)+gl);
       double nod = (double)(val<1>(blocknx)) * (double)(val<2>(blocknx)) * (double)(val<3>(blocknx));
       nup = 0;
 
@@ -67,8 +67,8 @@ void NUPSCounterCoProcessor::collectData(double step)
       UBLOG(logINFO, "Performance per process = "<<nups<<" NUPS");
       UBLOG(logINFO, "Performance per thread = "<<tnups<<" NUPS");
       UBLOG(logINFO, "Time for " << step-nupsStep <<" steps = "<< time <<" s");
-      //timer.resetAndStart();
       //timer.restart();
       nupsStep = step;
+      timer.resetAndStart();
    }
 }

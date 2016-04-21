@@ -88,8 +88,6 @@ void run(string configname)
       grid->setDeltaX(dx);
       grid->setBlockNX(blocknx1, blocknx2, blocknx3);
 
-      BoundaryConditionProcessorPtr bcProcessor(new BoundaryConditionProcessor());
-
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr restartSch(new UbScheduler(100000, 100000, 100000));

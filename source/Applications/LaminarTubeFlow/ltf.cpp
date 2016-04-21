@@ -24,73 +24,103 @@ void run(string configname)
       double          Re = config.getDouble("Re");
       double          dx = config.getDouble("dx");
       vector<double>  length = config.getVector<double>("length");
+      bool            logToFile = config.getBool("logToFile");
+      double          restartStep = config.getDouble("restartStep");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
+      if (logToFile)
+      {
+#if defined(__unix__)
+         if (myid == 0)
+         {
+            const char* str = pathname.c_str();
+            mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+         }
+#endif 
+
+         if (myid == 0)
+         {
+            stringstream logFilename;
+            logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
+            UbLog::output_policy::setStream(logFilename.str());
+         }
+      }
 
       LBMReal dLB = length[1] / dx;
       LBMReal rhoLB = 0.0;
-      LBMReal nuLB = (uLB*dLB)/Re;
+      LBMReal nuLB = (uLB*dLB) / Re;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
       const int baseLevel = 0;
 
-      //bounding box
-      double g_minX1 = 0.0;
-      double g_minX2 = -length[1] / 2.0;
-      double g_minX3 = -length[2] / 2.0;
-
-      double g_maxX1 = length[0];
-      double g_maxX2 = length[1] / 2.0;
-      double g_maxX3 = length[2] / 2.0;
-
-      //geometry
-      GbObject3DPtr cylinder(new GbCylinder3D(g_minX1-2.0*dx, 0.0, 0.0, g_maxX1+2.0*dx, 0.0, 0.0, dLB/2.0));
-      GbSystem3D::writeGeoObject(cylinder.get(),pathname + "/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
-
-      GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-      if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
-
-     
-      double blockLength = blocknx[0]*dx;
-
       Grid3DPtr grid(new Grid3D(comm));
+      
+      //////////////////////////////////////////////////////////////////////////
+      //restart
+      UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStep));
+      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      //////////////////////////////////////////////////////////////////////////
 
-         if(myid ==0)
+      if (grid->getTimeStep() == 0)
+      {
+
+         //bounding box
+         double g_minX1 = 0.0;
+         double g_minX2 = -length[1] / 2.0;
+         double g_minX3 = -length[2] / 2.0;
+
+         double g_maxX1 = length[0];
+         double g_maxX2 = length[1] / 2.0;
+         double g_maxX3 = length[2] / 2.0;
+
+         //geometry
+         GbObject3DPtr cylinder(new GbCylinder3D(g_minX1 - 2.0*dx, 0.0, 0.0, g_maxX1 + 2.0*dx, 0.0, 0.0, dLB / 2.0));
+         GbSystem3D::writeGeoObject(cylinder.get(), pathname + "/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
+
+         GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+
+
+         double blockLength = blocknx[0] * dx;
+
+
+
+         if (myid == 0)
          {
-            UBLOG(logINFO,"uLb = " << uLB );
-            UBLOG(logINFO,"rho = " << rhoLB );
-            UBLOG(logINFO,"nuLb = " << nuLB );
-            UBLOG(logINFO,"Re = " << Re );
-            UBLOG(logINFO,"dx = " << dx );
-            UBLOG(logINFO,"Preprocess - start");
+            UBLOG(logINFO, "uLb = " << uLB);
+            UBLOG(logINFO, "rho = " << rhoLB);
+            UBLOG(logINFO, "nuLb = " << nuLB);
+            UBLOG(logINFO, "Re = " << Re);
+            UBLOG(logINFO, "dx = " << dx);
+            UBLOG(logINFO, "Preprocess - start");
          }
 
          grid->setDeltaX(dx);
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
-         if(myid ==0) GbSystem3D::writeGeoObject(gridCube.get(),pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
-      
+         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
          //inflow
          GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - 2.0*dx, g_minX2 - dx, g_minX3 - dx, g_minX1, g_maxX2, g_maxX3 + dx));
-          if(myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname+"/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
          //outflow
-         GbCuboid3DPtr geoOutflow (new GbCuboid3D(g_maxX1, g_minX2, g_minX3-dx, g_maxX1+2.0*dx, g_maxX2+dx, g_maxX3+dx));
-          if(myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2, g_minX3 - dx, g_maxX1 + 2.0*dx, g_maxX2 + dx, g_maxX3 + dx));
+         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-          WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          ppblocks->process(0);
-      
+
          int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
          D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption));
-         D3Q27InteractorPtr cylinderInt( new D3Q27Interactor(cylinder, grid, bcObst,Interactor3D::INVERSESOLID));
+         D3Q27InteractorPtr cylinderInt(new D3Q27Interactor(cylinder, grid, bcObst, Interactor3D::INVERSESOLID));
 
          double r = boost::dynamic_pointer_cast<GbCylinder3D>(cylinder)->getRadius();
          double cx1 = g_minX1;
@@ -126,7 +156,7 @@ void run(string configname)
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
          //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          ConnectorFactoryPtr factory(new Block3DConnectorFactory());
-         ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor,factory);
+         ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
          grid->accept(setConnsVisitor);
 
          //domain decomposition for threads
@@ -191,41 +221,69 @@ void run(string configname)
          }
 
          intHelper.setBC();
-         
+
          BoundaryConditionBlockVisitor bcVisitor;
          grid->accept(bcVisitor);
-         
+
          //initialization of distributions
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
          grid->accept(initVisitor);
 
          //boundary conditions grid
+         //{
+         //   UbSchedulerPtr geoSch(new UbScheduler(1));
+         //   MacroscopicQuantitiesCoProcessorPtr ppgeo(
+         //      new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         //   grid->coProcess(0);
+         //}
+
+         if (myid == 0) UBLOG(logINFO, "Preprocess - end");
+      }
+      else
+      {
+         if (myid == 0)
          {
-            UbSchedulerPtr geoSch(new UbScheduler(1));
-            MacroscopicQuantitiesCoProcessorPtr ppgeo(
-               new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-            grid->coProcess(0);
+            UBLOG(logINFO, "Parameters:");
+            UBLOG(logINFO, "uLb = " << uLB);
+            UBLOG(logINFO, "rho = " << rhoLB);
+            UBLOG(logINFO, "nuLb = " << nuLB);
+            UBLOG(logINFO, "Re = " << Re);
+            UBLOG(logINFO, "dx = " << dx);
+            UBLOG(logINFO, "number of levels = " << refineLevel + 1);
+            UBLOG(logINFO, "numOfThreads = " << numOfThreads);
+            UBLOG(logINFO, "path = " << pathname);
          }
 
-      if (myid == 0) UBLOG(logINFO, "Preprocess - end");
+         //BoundaryConditionBlockVisitor bcVisitor;
+         //grid->accept(bcVisitor);
 
+         //set connectors
+         D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
+         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         grid->accept(setConnsVisitor);
+
+         if (myid == 0) UBLOG(logINFO, "Restart - end");
+      }
       UbSchedulerPtr visSch(new UbScheduler(outTime));
       MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv);
 
+      UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
-      if(myid == 0) UBLOG(logINFO,"Simulation-start");
+      if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
-      if(myid == 0) UBLOG(logINFO,"Simulation-end");
+      if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
-   catch(std::exception& e)
+   catch (std::exception& e)
    {
       cerr << e.what() << endl << flush;
    }
-   catch(std::string& s)
+   catch (std::string& s)
    {
       cerr << s << endl;
    }
-   catch(...)
+   catch (...)
    {
       cerr << "unknown exception" << endl;
    }

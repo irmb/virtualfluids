@@ -189,6 +189,7 @@ void RestartCoProcessor::saveTxtArchive(std::string filename)
    {
       oa << pp;
    }
+   file.close();
 }
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::loadTxtArchive( std::string filename )
@@ -210,6 +211,7 @@ void RestartCoProcessor::loadTxtArchive( std::string filename )
       pp->reconnect(grid);
       CoProcessors.push_back(pp);
    }
+   file.close();
 }
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::saveBinArchive( std::string filename )
@@ -235,6 +237,7 @@ void RestartCoProcessor::saveBinArchive( std::string filename )
    {
       oa << pp;
    }
+   file.close();
 }
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::loadBinArchive( std::string filename )
@@ -257,6 +260,7 @@ void RestartCoProcessor::loadBinArchive( std::string filename )
       pp->reconnect(grid);
       CoProcessors.push_back(pp);
    }
+   file.close();
 }
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::writeMetafile(int step )

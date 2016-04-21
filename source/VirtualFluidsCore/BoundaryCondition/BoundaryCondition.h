@@ -50,7 +50,7 @@ protected:
 
    D3Q27BoundaryConditionPtr bcPtr;
    DistributionArray3DPtr distributions;
-   DistributionArray3DPtr distributionsTemp;
+
    LBMReal collFactor;
    int x1, x2, x3;
 
@@ -67,6 +67,12 @@ private:
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)
    {
+      ar & nodeVector;
+      ar & bcVector;
+      ar & compressible;
+      ar & type;
+      ar & distributions;
+      ar & collFactor;
    }
 };
 

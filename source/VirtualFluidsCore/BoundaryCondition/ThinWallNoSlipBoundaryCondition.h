@@ -16,6 +16,7 @@ public:
    void setPass(int pass);
 protected:
    void applyBC();
+   DistributionArray3DPtr distributionsTemp;
 private:
    int pass;
    friend class boost::serialization::access;
@@ -23,6 +24,7 @@ private:
    void serialize(Archive & ar, const unsigned int version)
    {
       ar & boost::serialization::base_object<BoundaryCondition>(*this);
+      ar & distributionsTemp;
    }
 };
 #endif // ThinWallNoSlipBoundaryCondition_h__

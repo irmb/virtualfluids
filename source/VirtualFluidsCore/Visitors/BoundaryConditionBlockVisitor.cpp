@@ -29,11 +29,6 @@ void BoundaryConditionBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       double collFactor = kernel->getCollisionFactor();
       int level = block->getLevel();
 
-      if (velocity) velocity->setCompressible(compressible);
-      if (density) density->setCompressible(compressible);
-      if (noSlip) noSlip->setCompressible(compressible);
-      if (slip) slip->setCompressible(compressible);
-
       int minX1 = 0;
       int minX2 = 0;
       int minX3 = 0;
@@ -96,21 +91,25 @@ void BoundaryConditionBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       {
          velocity->addDistributions(distributions);
          velocity->setCollFactor(collFactor);
+         velocity->setCompressible(compressible);
       }
       if (dCount > 0)
       {
          density->addDistributions(distributions);
          density->setCollFactor(collFactor);
+         density->setCompressible(compressible);
       }
       if (nsCount > 0)
       {
          noSlip->addDistributions(distributions);
          noSlip->setCollFactor(collFactor);
+         noSlip->setCompressible(compressible);
       }
       if (sCount > 0)
       {
          slip->addDistributions(distributions);
          slip->setCollFactor(collFactor);
+         slip->setCompressible(compressible);
       }
    }
 }
