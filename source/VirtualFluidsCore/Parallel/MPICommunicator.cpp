@@ -18,6 +18,7 @@ MPICommunicator::MPICommunicator()
    }
    MPI_Comm_rank(MPI_COMM_WORLD, &PID);
    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+   //numprocs = 1000;
    comm = MPI_COMM_WORLD;
    root = 0;
 }

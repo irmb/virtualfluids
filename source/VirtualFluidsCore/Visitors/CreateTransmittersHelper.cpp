@@ -4,6 +4,9 @@
 #include <StringUtil.hpp>
 #include <basics/transmitter/TbTransmitterMpi.h>
 #include <basics/transmitter/TbTransmitterMpiPoolEx.h>
+#include <FNV/fnv.h>
+#include <string>
+
 #ifdef VF_FETOL
    #include <FETOLTransmitterBondPool.h>
 #endif
@@ -68,6 +71,17 @@ void CreateTransmittersHelper::createTransmitters(Block3DPtr sblock, Block3DPtr 
       TbCbVectorMpiPool <LBMReal>::CbVectorKey keyOfSendCbVectorKey = generateVectorKey(sblock->getX1(), sblock->getX2(), sblock->getX3()/*tgtID*/, dir, ib);
       TbCbVectorMpiPool <LBMReal>::CbVectorKey keyOfRecvCbVectorKey = generateVectorKey(tblock->getX1(), tblock->getX2(), tblock->getX3()/*srcID*/, invDir, ib);
 
+      ////////////////////////////////////////////////////////
+      //DEBUG
+      int myid = comm->getProcessID();
+      FILE * file;
+      //char * name = "d:/temp/sendPoolKey.csv";
+      std::string name = "d:/temp/VectorKey" + UbSystem::toString(myid) + ".csv";
+      file = fopen(name.c_str(), "a");
+      fprintf(file, "%d;%d%;%d;%d;%d;%u;%d;%d%;%d;%d;%d;%u\n", sblock->getX1(), sblock->getX2(), sblock->getX3()/*tgtID*/, dir, ib, keyOfSendCbVectorKey, tblock->getX1(), tblock->getX2(), tblock->getX3()/*srcID*/, invDir, ib, keyOfRecvCbVectorKey);
+      fclose(file);
+      ////////////////////////////////////////////////////////
+
       //create sender-/receiver
       sender   = TransmitterPtr( new TbCbVectorSenderMpiPool< LBMReal >(keyOfSendCbVectorKey,sendPool.get()) );
       receiver = TransmitterPtr( new TbCbVectorReceiverMpiPool< LBMReal >(keyOfRecvCbVectorKey,recvPool.get()) );
@@ -125,7 +139,8 @@ unsigned int CreateTransmittersHelper::generatePoolKey(int srcRank, int srcLevel
    str += "#";
    str += StringUtil::toString<int>(tgtRank);
 
-   unsigned int key = Utilities::RSHash(str); //by more as 900 000 elements is collision
+   //unsigned int key = Utilities::RSHash(str); //by more as 900 000 elements is collision
+   unsigned int key = FNV::fnv1a(str);
 
    return key;
 }
@@ -144,7 +159,8 @@ unsigned int CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3,
    str += "#";
    str += StringUtil::toString<int>(ib);
 
-   unsigned int key = Utilities::RSHash(str);
+   //unsigned int key = Utilities::RSHash(str);
+   unsigned int key = FNV::fnv1a(str);
 
    return key;
 

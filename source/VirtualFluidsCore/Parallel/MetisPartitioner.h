@@ -37,14 +37,14 @@ public:
    std::vector<idx_t> vwgt;    // vertex weights (size=n*ncon, ncon=nofNodeWeightsPerNode)
    std::vector<idx_t> adjwgt;  // array that stores the weights of the adjacency lists 
    // (size=2*m)
-   std::vector<idx_t> vsize;   // array that stores the computation weights per node
+   idx_t * vsize;   // array that stores the computation weights per node
    // (size=n)
 
-   std::vector<real_t> tpwgts; // holds the wished fratcion of segment i, e.g. tpwgts={0.2, 0.2, 0.6} 
+   real_t * tpwgts; // holds the wished fratcion of segment i, e.g. tpwgts={0.2, 0.2, 0.6} 
    // -> patisions 0 and one will get 20% of the weight each and part 3 60%!
    // (size=nofPartitions)  sum of tpwgts must be 1.0
 
-   std::vector<real_t> ubvec;  //This is an array of size ncon that specifies the allowed load imbalance tolerance for each constraint.
+   real_t * ubvec;  //This is an array of size ncon that specifies the allowed load imbalance tolerance for each constraint.
    //For the ith partition and jth constraint the allowed weight is the ubvec[j]*tpwgts[i*ncon+j] fraction
    //of the jth’s constraint total weight. The load imbalances must be greater than 1.0.
    //A NULL value can be passed indicating that the load imbalance tolerance for each constraint should

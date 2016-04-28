@@ -13,7 +13,7 @@
 #include <fstream>
 
 #include <basics/utilities/UbException.h>
-#include <3rdParty/MarchingCubes/McTypes.h>
+#include <MarchingCubes/McTypes.h>
 
 //neu: matrix muss lediglich double operator()(int x1, int x2, int x3) überladen, dann kann man sie verwenden!!
 

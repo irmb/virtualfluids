@@ -14,7 +14,7 @@
 
 #include <basics/utilities/UbException.h>
 
-#include <3rdParty/MarchingCubes/McTypes.h>
+#include <MarchingCubes/McTypes.h>
 
 //////////////////////////////////////////////////////////////////////////
 //Standard-Wrapper

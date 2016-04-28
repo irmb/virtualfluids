@@ -95,7 +95,7 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
-      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::BINARY);
+      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
       if (grid->getTimeStep() == 0)

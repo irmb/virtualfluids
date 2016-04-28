@@ -10,7 +10,7 @@
 #include <basics/utilities/UbSystem.h>
 
 #ifdef MC_CUBES
-   #include <3rdParty/MarchingCubes/MarchingCubes.h>
+   #include <MarchingCubes/MarchingCubes.h>
 #endif // MC_CUBES
 
 using namespace std;

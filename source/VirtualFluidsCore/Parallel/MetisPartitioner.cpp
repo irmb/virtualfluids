@@ -7,6 +7,9 @@ MetisPartitioner::MetisPartitioner()
 {
    METIS_SetDefaultOptions(options);
    options[METIS_OPTION_NUMBERING] = 0;
+   vsize = NULL;
+   tpwgts = NULL;
+   ubvec = NULL;
 }
 //////////////////////////////////////////////////////////////////////////
 MetisPartitioner::~MetisPartitioner()
@@ -36,8 +39,8 @@ int MetisPartitioner::partition(int nofParts, MetisPartitioner::PartType ptype)
       //else if( nofParts >  8 ) UBLOG(logWARNING, "MetisPartitioner::Recursive: !!!Warning!!!  best for nofParts<=8 --> Kway is maybe a better option");
       
       rc = METIS_PartGraphRecursive(&nvtxs, &ncon, &xadj[0], &adjncy[0],
-                                    &vwgt[0], &vsize[0], &adjwgt[0], &nofParts, 
-                                    &tpwgts[0], &ubvec[0], options, &edgecutCount, &part[0]);
+                                    &vwgt[0], vsize, &adjwgt[0], &nofParts, 
+                                    tpwgts, ubvec, options, &edgecutCount, &part[0]);
    	break;
    case MetisPartitioner::KWAY: 
       if     ( nofParts <  1 ) UB_THROW( UbException(UB_EXARGS,"invalid nofParts<1") );
@@ -45,8 +48,8 @@ int MetisPartitioner::partition(int nofParts, MetisPartitioner::PartType ptype)
       //else if( nofParts <  9 ) UBLOG(logWARNING, "MetisPartitioner::Kway: !!!Warning!!!  best for nofParts>8 --> Recursive is maybe a better option");
 
       rc = METIS_PartGraphKway(&nvtxs, &ncon, &xadj[0], &adjncy[0],
-                                &vwgt[0], &vsize[0], &adjwgt[0], &nofParts,
-                                &tpwgts[0], &ubvec[0], options, &edgecutCount, &part[0]);
+                                &vwgt[0], vsize, &adjwgt[0], &nofParts,
+                                tpwgts, ubvec, options, &edgecutCount, &part[0]);
       break;
    }
 

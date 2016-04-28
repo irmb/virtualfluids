@@ -11,12 +11,12 @@
 */
 //________________________________________________
 
-#include <3rdParty/MarchingCubes/McTypes.h>
-#include <3rdParty/MarchingCubes/MatrixWrapper.h>
-#include <3rdParty/MarchingCubes/Matrix3DWrapper.h>
-#include <3rdParty/MarchingCubes/Matrix4DWrapper.h>
-#include <3rdParty/MarchingCubes/McLookUpTable.h>
-#include <3rdParty/MarchingCubes/McPly.h>
+#include <MarchingCubes/McTypes.h>
+#include <MarchingCubes/MatrixWrapper.h>
+#include <MarchingCubes/Matrix3DWrapper.h>
+#include <MarchingCubes/Matrix4DWrapper.h>
+#include <MarchingCubes/McLookUpTable.h>
+#include <MarchingCubes/McPly.h>
 
 #include <cmath>
 #include <ctime>

@@ -19,8 +19,8 @@ ENDIF()
 #################################################################################
 #  BOOST  
 #################################################################################
-SET(BOOST_VERSION "1.58.0")
-SET(BOOST_ROOT "C:/Tools/boost/boost_1_58_0")
+SET(BOOST_VERSION "1.60.0")
+SET(BOOST_ROOT "d:/Tools/boost/boost_1_60_0")
 SET(BOOST_DIR ${BOOST_ROOT})
 SET(BOOST_LIBRARYDIR ${BOOST_ROOT}"/stageMSVC64/lib")  
 #################################################################################
@@ -31,18 +31,18 @@ SET(BOOST_LIBRARYDIR ${BOOST_ROOT}"/stageMSVC64/lib")
 #  ZOLTAN  
 #################################################################################
 IF(${USE_ZOLTAN})
-  SET(ZOLTAN_INCLUDEDIR "c:/Tools/zoltan/include")
-  SET(ZOLTAN_DEBUG_LIBRARY "c:/Tools/zoltan/lib/Debug/zoltan.lib") 
-  SET(ZOLTAN_RELEASE_LIBRARY "c:/Tools/zoltan/lib/Release/zoltan.lib") 
+  SET(ZOLTAN_INCLUDEDIR "d:/Tools/zoltan/include")
+  SET(ZOLTAN_DEBUG_LIBRARY "d:/Tools/zoltan/lib/Debug/zoltan.lib") 
+  SET(ZOLTAN_RELEASE_LIBRARY "d:/Tools/zoltan/lib/Release/zoltan.lib") 
 ENDIF()
 
 #################################################################################
 #  METIS  
 #################################################################################
 IF(${USE_METIS})
-  SET(METIS_INCLUDEDIR "c:/Tools/metis-5.1.0/include")
-  SET(METIS_DEBUG_LIBRARY "c:/Tools/metis-5.1.0/build/libmetis/Debug/metis.lib") 
-  SET(METIS_RELEASE_LIBRARY "c:/Tools/metis-5.1.0/build/libmetis/Release/metis.lib") 
+  SET(METIS_INCLUDEDIR "d:/Tools/metis-5.1.0/include")
+  SET(METIS_DEBUG_LIBRARY "d:/Tools/metis-5.1.0/build/libmetis/Debug/metis.lib") 
+  SET(METIS_RELEASE_LIBRARY "d:/Tools/metis-5.1.0/build/libmetis/Release/metis.lib") 
 ENDIF()
 
 ##################################################################################
@@ -53,9 +53,9 @@ IF(${USE_FETOL})
   SET(FETOL_DEBUG_LIBRARY "d:/Projects/FETOL/dev/CppFETOLlib/build/Debug/fetol.lib") 
   SET(FETOL_RELEASE_LIBRARY "d:/Projects/FETOL/dev/CppFETOLlib/build/Release/fetol.lib") 
   
-  SET(YAML_INCLUDEDIR "c:/Tools/yaml-cpp/include")
-  SET(YAML_DEBUG_LIBRARY "c:/Tools/yaml-cpp/buildVS11/Debug/libyaml-cppmdd.lib") 
-  SET(YAML_RELEASE_LIBRARY "c:/Tools/yaml-cpp/buildVS11/Release/libyaml-cppmd.lib") 
+  SET(YAML_INCLUDEDIR "d:/Tools/yaml-cpp/include")
+  SET(YAML_DEBUG_LIBRARY "d:/Tools/yaml-cpp/buildVS11/Debug/libyaml-cppmdd.lib") 
+  SET(YAML_RELEASE_LIBRARY "d:/Tools/yaml-cpp/buildVS11/Release/libyaml-cppmd.lib") 
   
   SET(BOND_INCLUDEDIR "d:/Projects/FETOL/dev/bond_src/cpp/bond/fetol")
   SET(BOND_DEBUG_LIBRARY "d:/Projects/FETOL/dev/bond_lib/Debug/bond.lib") 

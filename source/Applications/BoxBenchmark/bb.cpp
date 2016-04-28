@@ -26,6 +26,8 @@ void run(string configname)
       vector<double>  length = config.getVector<double>("length");
       bool            logToFile = config.getBool("logToFile");
 
+      UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG3");
+
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
@@ -99,7 +101,7 @@ void run(string configname)
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      //WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
       //int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
       //D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption));
@@ -110,19 +112,22 @@ void run(string configname)
       //intHelper.addInteractor(boxInt);
       intHelper.selectBlocks();
 
+      ppblocks->process(0);
+      ppblocks.reset();
+
       //set connectors
       D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
       D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
       //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
       //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
+      UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:start");
       grid->accept(setConnsVisitor);
+      UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:end");
 
       //domain decomposition for threads
       PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
       grid->accept(pqPartVisitor);
 
-      //ppblocks->process(0);
-      //ppblocks.reset();
 
       unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
       int ghostLayer = 3;
@@ -190,6 +195,13 @@ void run(string configname)
       //}
 
       if (myid == 0) UBLOG(logINFO, "Preprocess - end");
+
+      if (myid == 0)
+      {
+         UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
+         UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
+         UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+      }
 
       UbSchedulerPtr visSch(new UbScheduler(outTime));
       //MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv);

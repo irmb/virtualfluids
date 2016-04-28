@@ -2,6 +2,7 @@
 #include "D3Q27ETFullVectorConnector.h"
 #include "D3Q27ETFullDirectConnector.h"
 #include "D3Q27ETFullDirectConnector2.h"
+#include "D3Q27ETFullDirectConnector3.h"
 #include "D3Q27ETFullVectorConnector.h"
 #include "D3Q27ETCFVectorConnector.h"
 #include "D3Q27ETFCVectorConnector.h"
@@ -76,7 +77,7 @@ void D3Q27SetConnectorsBlockVisitor::setSameLevelConnectors(Grid3DPtr grid, Bloc
 
 					//if(block->hasInterpolationFlag())
 					////connector = Block3DConnectorPtr(new ETOrthoFullDirectConnector( block, neighBlock, dir, dirs));
-					connector = Block3DConnectorPtr(new D3Q27ETFullDirectConnector2( block, neighBlock, dir));
+					connector = Block3DConnectorPtr(new D3Q27ETFullDirectConnector3( block, neighBlock, dir));
 					//else
 					//connector = Block3DConnectorPtr(new D3Q27ETDirectConnector( block, neighBlock, dir));
 					//D3Q27CreateTransmittersHelper helper;

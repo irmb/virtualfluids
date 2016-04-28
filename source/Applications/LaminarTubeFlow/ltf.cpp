@@ -154,9 +154,9 @@ void run(string configname)
 
          //set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         ConnectorFactoryPtr factory(new Block3DConnectorFactory());
-         ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
+         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
+         //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
          grid->accept(setConnsVisitor);
 
          //domain decomposition for threads
