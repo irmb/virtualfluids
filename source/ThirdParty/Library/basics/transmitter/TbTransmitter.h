@@ -48,7 +48,6 @@ public:
    virtual void        sendData()=0;
    virtual void        prepareForReceive() {}
    virtual value_type& receiveData()=0;
-   virtual void        saveData() {}
 
    //data-access
    inline value_type&       getData()       { return this->data; }
