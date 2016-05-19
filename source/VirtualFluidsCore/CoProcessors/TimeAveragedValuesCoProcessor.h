@@ -38,10 +38,11 @@ public:
    TimeAveragedValuesCoProcessor();
    TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
       UbSchedulerPtr s, int options);
+   TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
+      UbSchedulerPtr s, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds);
    //! Make update
    void process(double step);
-   //! Resets averaged velocity and RMS-values according to ResetSceduler
-   void reset(double step);
+   void addLevelCoordinate(double c);
 protected:
    //! Prepare data and write in .vtk file
    void collectData(double step);
@@ -52,6 +53,8 @@ protected:
    void calculateAverageValues(double timeStep);
    //! Computes subtotal of velocity , fluctuations and triple correlations
    void calculateSubtotal();
+   void init(UbSchedulerPtr s);
+   void volumeAverage(double step);
 
 private:
    std::vector<UbTupleFloat3> nodes;
@@ -79,8 +82,12 @@ private:
    //enum Pressure { P, Prms };
 
    int options;
-   int counter;
-   double breakStep;
+   int lcounter;
+   int numberOfFineSteps;
+   int fineStep;
+   int minFineStep;
+   int maxFineStep;
+   int levelFactor;
 
    int iMinX1, iMinX2, iMinX3;
    int iMaxX1, iMaxX2, iMaxX3;
@@ -88,7 +95,10 @@ private:
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
 
-   
+   bool volumeAveraging;
+   std::vector<double> levelCoords;
+   std::vector<int> levels;
+   std::vector<double> bounds;
 
    //friend class boost::serialization::access;
    //template<class Archive>

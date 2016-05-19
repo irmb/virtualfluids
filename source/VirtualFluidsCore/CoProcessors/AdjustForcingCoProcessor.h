@@ -19,7 +19,7 @@ public:
 	AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                    const std::string& path,
                                    D3Q27IntegrateValuesHelperPtr integrateValues,
-                                   LBMReal vTarged, LBMReal forcing, CommunicatorPtr comm);
+                                   double vTarged, double forcing, CommunicatorPtr comm);
 	virtual ~AdjustForcingCoProcessor();
 	 //!< calls collect PostprocessData
    void process(double step);
@@ -30,7 +30,6 @@ protected:
 	void collectData(double step);  
    CommunicatorPtr comm;
 private:
-   double vPreviousStep; //!< velocity at previous update step.
    double vTarged; //!< target velocity.
    double forcing; //!< forcing at previous update step. 
    std::vector<CalcNodes> cnodes;

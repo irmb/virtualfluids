@@ -56,9 +56,9 @@ void run(string configname)
       const int blocknx2 = 8;
       const int blocknx3 = 8;
 
-      const int gridNx1 = 8;//18;
-      const int gridNx2 = 8;// 11;
-      const int gridNx3 = 8;// 11;
+      const int gridNx1 = 4;//18;
+      const int gridNx2 = 4;// 11;
+      const int gridNx3 = 4;// 11;
 
       //const int blocknx1 = 40;
       //const int blocknx2 = 40;
@@ -224,12 +224,12 @@ void run(string configname)
 
          //set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         //grid->accept(setConnsVisitor);
-
-         Block3DConnectorFactoryPtr factory(new Block3DConnectorFactory());
-         ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
+         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
+
+         //Block3DConnectorFactoryPtr factory(new Block3DConnectorFactory());
+         //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
+         //grid->accept(setConnsVisitor);
 
          ppblocks->process(0);
          ppblocks.reset();

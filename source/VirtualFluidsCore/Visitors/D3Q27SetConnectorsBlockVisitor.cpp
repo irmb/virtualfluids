@@ -1,15 +1,9 @@
 #include "D3Q27SetConnectorsBlockVisitor.h"
-#include "D3Q27ETFullVectorConnector.h"
 #include "D3Q27ETFullDirectConnector.h"
-#include "D3Q27ETFullDirectConnector2.h"
-#include "D3Q27ETFullDirectConnector3.h"
 #include "D3Q27ETFullVectorConnector.h"
-#include "D3Q27ETCFVectorConnector.h"
-#include "D3Q27ETFCVectorConnector.h"
 #include "D3Q27ETCFOffVectorConnector.h"
 #include "D3Q27ETFCOffVectorConnector.h"
 #include "Grid3DSystem.h"
-#include "D3Q27ETDirectConnector.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
 D3Q27SetConnectorsBlockVisitor::D3Q27SetConnectorsBlockVisitor(CommunicatorPtr comm, bool fullConnector, int dirs, 
@@ -74,17 +68,7 @@ void D3Q27SetConnectorsBlockVisitor::setSameLevelConnectors(Grid3DPtr grid, Bloc
 				if(blockRank == neighBlockRank && neighBlock->isActive())
 				{
 					Block3DConnectorPtr connector;
-
-					//if(block->hasInterpolationFlag())
-					////connector = Block3DConnectorPtr(new ETOrthoFullDirectConnector( block, neighBlock, dir, dirs));
-					connector = Block3DConnectorPtr(new D3Q27ETFullDirectConnector3( block, neighBlock, dir));
-					//else
-					//connector = Block3DConnectorPtr(new D3Q27ETDirectConnector( block, neighBlock, dir));
-					//D3Q27CreateTransmittersHelper helper;
-					//D3Q27CreateTransmittersHelper::TransmitterPtr sender, receiver;
-					//sender = receiver = D3Q27CreateTransmittersHelper::TransmitterPtr( new TbLocalTransmitter< CbVector< LBMReal > >());
-					//connector = Block3DConnectorPtr(new D3Q27ETFullVectorConnector< TbTransmitter< CbVector< LBMReal > > >(block, sender, receiver, dir));
-
+               connector = Block3DConnectorPtr(new D3Q27ETFullDirectConnector( block, neighBlock, dir));
 					block->setConnector(connector);
 				}
 				else if(blockRank != neighBlockRank && neighBlock->isActive())
@@ -122,12 +106,7 @@ void D3Q27SetConnectorsBlockVisitor::setRemoteConnectors(Block3DPtr sblock, Bloc
 
 
 	Block3DConnectorPtr connector;
-	//if(fullConnector)
-	//connector = Block3DConnectorPtr(new ETOrthoFullVectorConnector< TbTransmitter< CbVector< LBMReal > > >(sblock, sender, receiver, dir, dirs));
 	connector = Block3DConnectorPtr(new D3Q27ETFullVectorConnector(sblock, sender, receiver, dir));
-	//connector = Block3DConnectorPtr(new D3Q27ETFullVectorConnector< TbTransmitter< std::vector< LBMReal > > >(sblock, sender, receiver, dir));
-	//else
-	//   connector = Block3DConnectorPtr(new D3Q27ETVectorConnector< TbTransmitter< CbVector< LBMReal > > >(sblock, sender, receiver, dir));
 	sblock->setConnector(connector);
    UBLOG(logDEBUG5, "D3Q27SetConnectorsBlockVisitor::setRemoteConnectors() - end");
 }

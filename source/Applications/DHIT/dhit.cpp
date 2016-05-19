@@ -16,17 +16,12 @@ void run(string configname)
       string          pathname = config.getString("pathname");
       int             numOfThreads = config.getInt("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      double          uLB = config.getDouble("uLB");
       double          endTime = config.getDouble("endTime");
       double          outTime = config.getDouble("outTime");
       double          availMem = config.getDouble("availMem");
-      int             refineLevel = config.getInt("refineLevel");
-      double          Re = config.getDouble("Re");
-      double          dx = config.getDouble("dx");
       vector<double>  length = config.getVector<double>("length");
       bool            logToFile = config.getBool("logToFile");
 
-      //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG3");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -49,13 +44,13 @@ void run(string configname)
          }
       }
 
-      LBMReal dLB = length[1] / dx;
+      LBMReal uLB = 0.032;
+      LBMReal dx = 1.0;
       LBMReal rhoLB = 0.0;
-      LBMReal nuLB = (uLB*dLB) / Re;
+      LBMReal nuLB = 1.2395e-2;
+
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
-
-      const int baseLevel = 0;
 
       //bounding box
       double g_minX1 = 0.0;
@@ -68,10 +63,10 @@ void run(string configname)
 
       //geometry
       GbObject3DPtr box(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-      //if (myid == 0) GbSystem3D::writeGeoObject(box.get(), pathname + "/geo/box", WbWriterVtkXmlBinary::getInstance());
+      if (myid == 0) GbSystem3D::writeGeoObject(box.get(), pathname + "/geo/box", WbWriterVtkXmlBinary::getInstance());
 
       GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-      //if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+      if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
 
       double blockLength = blocknx[0] * dx;
@@ -83,11 +78,9 @@ void run(string configname)
          UBLOG(logINFO, "uLb = " << uLB);
          UBLOG(logINFO, "rho = " << rhoLB);
          UBLOG(logINFO, "nuLb = " << nuLB);
-         UBLOG(logINFO, "Re = " << Re);
          UBLOG(logINFO, "dx = " << dx);
          UBLOG(logINFO, "length = " << length[0] << " " << length[1] << " " << length[2]);
          UBLOG(logINFO, "blocknx = " << blocknx[0] << " " << blocknx[1] << " " << blocknx[2]);
-         UBLOG(logINFO, "number of levels = " << refineLevel + 1);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
          UBLOG(logINFO, "number of threads = " << numOfThreads);
          UBLOG(logINFO, "Preprocess - start");
@@ -95,17 +88,16 @@ void run(string configname)
 
       grid->setDeltaX(dx);
       grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
+      grid->setPeriodicX1(true);
+      grid->setPeriodicX2(true);
+      grid->setPeriodicX3(true);
 
-      //if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+      if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
       WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-
-      //int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
-      //D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption));
-      //D3Q27InteractorPtr boxInt(new D3Q27Interactor(box, grid, bcObst, Interactor3D::INVERSESOLID));
 
       Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
       InteractorsHelper intHelper(grid, metisVisitor);
@@ -118,16 +110,11 @@ void run(string configname)
       //set connectors
       D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
       D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-      //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
-      //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-      UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:start");
       grid->accept(setConnsVisitor);
-      UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:end");
 
       //domain decomposition for threads
       PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
       grid->accept(pqPartVisitor);
-
 
       unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
       int ghostLayer = 3;
@@ -158,41 +145,25 @@ void run(string configname)
 
       kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
 
-      //
       BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
-      //BCProcessorPtr bcProc(new D3Q27ETForThinWallBCProcessor());
-      BoundaryConditionPtr noSlipBC;
-      //noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
-      //noSlipBC = BoundaryConditionPtr(new ThinWallNoSlipBoundaryCondition());
-      //bcProc->addBC(noSlipBC);
-
       kernel->setBCProcessor(bcProc);
 
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
       grid->accept(kernelVisitor);
 
-      if (refineLevel > 0)
-      {
-         D3Q27SetUndefinedNodesBlockVisitor undefNodesVisitor;
-         grid->accept(undefNodesVisitor);
-      }
-
       intHelper.setBC();
 
-      //BoundaryConditionBlockVisitor bcVisitor;
-      //grid->accept(bcVisitor);
-
       //initialization of distributions
-      D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB, uLB);
+      D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB, uLB, uLB, uLB);
       grid->accept(initVisitor);
 
       //boundary conditions grid
-      //{
-      //   UbSchedulerPtr geoSch(new UbScheduler(1));
-      //   MacroscopicQuantitiesCoProcessorPtr ppgeo(
-      //      new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-      //   grid->coProcess(0);
-      //}
+      {
+         UbSchedulerPtr geoSch(new UbScheduler(1));
+         MacroscopicQuantitiesCoProcessorPtr ppgeo(
+            new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         grid->coProcess(0);
+      }
 
       if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
@@ -204,7 +175,7 @@ void run(string configname)
       }
 
       UbSchedulerPtr visSch(new UbScheduler(outTime));
-      //MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv);
+      MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv);
 
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);

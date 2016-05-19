@@ -39,12 +39,11 @@ protected:
    void initConnectors(std::vector<Block3DConnectorPtr>& connectors);
    virtual void initRemoteConnectors();
    void swapDistributions(int startLevel, int maxInitLevel);
-   virtual void exchangeBlockData(int startLevel, int maxInitLevel, bool invStep);
-   void exchangeInterfaceBlockData(int startLevel, int maxInitLevel, bool invStep);
+   virtual void exchangeBlockData(int startLevel, int maxInitLevel);
+   void exchangeInterfaceBlockData(int startLevel, int maxInitLevel);
    virtual void connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors);
-   virtual void connectorsSend(std::vector< Block3DConnectorPtr >& connectors, bool invStep);
-   virtual void connectorsReceive(std::vector< Block3DConnectorPtr >& connectors, bool invStep);
-   void connectorsSetInvStep(std::vector< Block3DConnectorPtr >& connectors, bool invStep);
+   virtual void connectorsSend(std::vector< Block3DConnectorPtr >& connectors);
+   virtual void connectorsReceive(std::vector< Block3DConnectorPtr >& connectors);
    void interpolation(int startLevel, int maxInitLevel);
    void deleteConnectors(std::vector< std::vector< Block3DConnectorPtr > >& conns);
    //void applyBCs(int startLevel, int maxInitLevel);

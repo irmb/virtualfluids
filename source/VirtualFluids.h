@@ -118,16 +118,9 @@
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/D3Q27ETCFOffVectorConnector.h>
-#include <Connectors/D3Q27ETCFVectorConnector.h>
-#include <Connectors/D3Q27ETDirectConnector.h>
-#include <Connectors/D3Q27ETDirectConnector2.h>
 #include <Connectors/D3Q27ETFCOffVectorConnector.h>
-#include <Connectors/D3Q27ETFCVectorConnector.h>
 #include <Connectors/D3Q27ETFullDirectConnector.h>
-#include <Connectors/D3Q27ETFullDirectConnector2.h>
 #include <Connectors/D3Q27ETFullVectorConnector.h>
-#include <Connectors/D3Q27ETVectorConnector.h>
-#include <Connectors/D3Q27ETWithInvDirectConnector.h>
 #include <Connectors/LocalBlock3DConnector.h>
 #include <Connectors/RemoteBlock3DConnector.h>
 #include <Connectors/CoarseToFineBlock3DConnector.h>

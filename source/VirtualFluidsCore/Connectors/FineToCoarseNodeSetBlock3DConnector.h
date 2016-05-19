@@ -18,8 +18,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include "D3Q27ETFCVectorConnector.h"
-
 class Block3D;
 
 //daten werden in einen vector (dieser befindet sich im transmitter) kopiert

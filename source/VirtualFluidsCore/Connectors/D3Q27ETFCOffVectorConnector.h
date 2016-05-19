@@ -21,12 +21,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include "D3Q27ETFCVectorConnector.h"
-//#include "FineToCoarseBlock3DConnector.h"
 
 class Block3D;
 
-//enum CFconnectorType {EvenOddNW, EvenEvenSW, OddEvenSE, OddOddNE};
+enum CFconnectorType {EvenOddNW, EvenEvenSW, OddEvenSE, OddOddNE};
 
 //daten werden in einen vector (dieser befindet sich im transmitter) kopiert
 //der vector wird via transmitter uebertragen
@@ -1289,7 +1287,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::getLocalMinMax(int& minX1,
 
 
    ////T-B-N-S
-   if (block.lock()->hasInterpolationFlagFC(TN)&& !block.lock()->hasInterpolationFlagFC(N) && !block.lock()->hasInterpolationFlagFC(T)&& connType != none)
+   if (block.lock()->hasInterpolationFlagFC(TN)&& !block.lock()->hasInterpolationFlagFC(N) && !block.lock()->hasInterpolationFlagFC(T))
    {
       if (maxX2==TmaxX2) maxX2 -= 3;
       if (maxX3==TmaxX3) maxX3 -= 3;

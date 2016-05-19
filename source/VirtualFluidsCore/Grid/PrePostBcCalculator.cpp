@@ -98,7 +98,7 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
 
             //exchange data between blocks
             //Sleep(10000);
-            exchangeBlockData(straightStartLevel, maxInitLevel, false);
+            exchangeBlockData(straightStartLevel, maxInitLevel);
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[1] = timer.stop();
@@ -119,7 +119,7 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
             swapDistributions(straightStartLevel, maxInitLevel);
 
             //pre-collision boundary conditions
-            exchangeBlockData(straightStartLevel, maxInitLevel, true);
+            exchangeBlockData(straightStartLevel, maxInitLevel);
             applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
 //////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
         if(mainThread) visScheduler->isDue((double)(calcStep-1));
         if((int)visScheduler->getNextDueTime() == calcStep)
         {
-            exchangeBlockData(straightStartLevel, maxInitLevel, true);
+            exchangeBlockData(straightStartLevel, maxInitLevel);
         }
          //now ghost nodes have actual values
 

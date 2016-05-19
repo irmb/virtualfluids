@@ -115,7 +115,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 
             //exchange data between blocks
             //Sleep(10000);
-            exchangeBlockData(straightStartLevel, maxInitLevel, false);
+            exchangeBlockData(straightStartLevel, maxInitLevel);
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[1] = timer.stop();
@@ -152,7 +152,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 			      ////exchangeInterfaceBlockData(straightStartLevel, maxInitLevel, true);
          //DOES NOT NEED 
                      if(straightStartLevel<maxInitLevel)
-                        exchangeBlockData(straightStartLevel, maxInitLevel, true);
+                        exchangeBlockData(straightStartLevel, maxInitLevel);
          //         //exchangeInterfaceBlockData(straightStartLevel, maxInitLevel, true);
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -171,7 +171,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
             }
 
-            if (taValuesCoProcessor && mainThread)
+            if (taValuesCoProcessor && mainThread && straightStartLevel<maxInitLevel)
             {
                taValuesCoProcessor->process(calcStep-1);
             }
@@ -182,7 +182,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
         if(mainThread) visScheduler->isDue((double)(calcStep-1));
         if((int)visScheduler->getNextDueTime() == calcStep)
         {
-            exchangeBlockData(straightStartLevel, maxInitLevel, true);
+            exchangeBlockData(straightStartLevel, maxInitLevel);
         }
          //now ghost nodes have actual values
 
@@ -410,7 +410,7 @@ void Calculator::initConnectors(std::vector<Block3DConnectorPtr>& connectors)
    UBLOG(logDEBUG1, "Calculator::initConnectors() - end");
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::exchangeBlockData(int startLevel, int maxInitLevel, bool invStep)
+void Calculator::exchangeBlockData(int startLevel, int maxInitLevel)
 {
    sync->wait();
    //startLevel bis maxInitLevel
@@ -419,16 +419,16 @@ void Calculator::exchangeBlockData(int startLevel, int maxInitLevel, bool invSte
       connectorsPrepare(localConns[level]);
       connectorsPrepare(remoteConns[level]);
 
-      connectorsSend(localConns[level], invStep);
-      connectorsSend(remoteConns[level], invStep);
+      connectorsSend(localConns[level]);
+      connectorsSend(remoteConns[level]);
 
-      connectorsReceive(localConns[level], invStep);
-      connectorsReceive(remoteConns[level], invStep);
+      connectorsReceive(localConns[level]);
+      connectorsReceive(remoteConns[level]);
    }
    sync->wait();
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::exchangeInterfaceBlockData(int startLevel, int maxInitLevel, bool invStep)
+void Calculator::exchangeInterfaceBlockData(int startLevel, int maxInitLevel)
 {
    sync->wait();
    //startLevel bis maxInitLevel
@@ -437,11 +437,11 @@ void Calculator::exchangeInterfaceBlockData(int startLevel, int maxInitLevel, bo
       connectorsPrepare(localInterfaceBlockConns[level]);
       connectorsPrepare(remoteInterfaceBlockConns[level]);
 
-      connectorsSend(localInterfaceBlockConns[level], invStep);
-      connectorsSend(remoteInterfaceBlockConns[level], invStep);
+      connectorsSend(localInterfaceBlockConns[level]);
+      connectorsSend(remoteInterfaceBlockConns[level]);
 
-      connectorsReceive(localInterfaceBlockConns[level], invStep);
-      connectorsReceive(remoteInterfaceBlockConns[level], invStep);
+      connectorsReceive(localInterfaceBlockConns[level]);
+      connectorsReceive(remoteInterfaceBlockConns[level]);
    }
    sync->wait();
 }
@@ -467,31 +467,21 @@ void Calculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connector
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
+void Calculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors)
 {
    BOOST_FOREACH(Block3DConnectorPtr c, connectors)
    {
-	   c->setInvStep(invStep);
       c->fillSendVectors();
       c->sendVectors();
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
+void Calculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors)
 {
    BOOST_FOREACH(Block3DConnectorPtr c, connectors)
    {
-	   c->setInvStep(invStep);
       c->receiveVectors();
       c->distributeReceiveVectors();
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-void Calculator::connectorsSetInvStep(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
-{
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
-   {
-      c->setInvStep(invStep);
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -509,16 +499,16 @@ void Calculator::interpolation(int startLevel, int maxInitLevel)
 
    for(int level=startLevel; level<maxInitLevel; level++)
    {
-      connectorsSend(localInterConns[level], true);
-      connectorsSend(remoteInterConns[level], true);
+      connectorsSend(localInterConns[level]);
+      connectorsSend(remoteInterConns[level]);
    }
 
    sync->wait();
 
    for(int level=startLevel; level<maxInitLevel; level++)
    {
-      connectorsReceive(localInterConns[level], true);
-      connectorsReceive(remoteInterConns[level], true);
+      connectorsReceive(localInterConns[level]);
+      connectorsReceive(remoteInterConns[level]);
    }
 
    sync->wait();

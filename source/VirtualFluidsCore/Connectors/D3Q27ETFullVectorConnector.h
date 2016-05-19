@@ -48,8 +48,6 @@ private:
 //////////////////////////////////////////////////////////////////////////
 inline void D3Q27ETFullVectorConnector::fillData(vector_type& sdata, int& index, int x1, int x2, int x3)
 {
-   //vector_type& sdata = sender->getData();
-
    sdata[index++] = (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3);
    sdata[index++] = (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3);
    sdata[index++] = (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3);
@@ -83,8 +81,6 @@ inline void D3Q27ETFullVectorConnector::fillData(vector_type& sdata, int& index,
 //////////////////////////////////////////////////////////////////////////
 inline void D3Q27ETFullVectorConnector::distributeData(vector_type& rdata, int& index, int x1, int x2, int x3)
 {
-   //vector_type& rdata = receiver->getData();
-
    (*this->localDistributions)(D3Q27System::ET_E, x1, x2, x3) = rdata[index++];
    (*this->localDistributions)(D3Q27System::ET_N, x1, x2, x3) = rdata[index++];
    (*this->localDistributions)(D3Q27System::ET_T, x1, x2, x3) = rdata[index++];

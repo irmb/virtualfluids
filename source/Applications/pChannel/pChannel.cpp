@@ -372,9 +372,9 @@ void run(string configname)
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfile;
-         inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
+     //inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
 		   //inflowProfile.SetExpr("uLB+1*x1-1*x2");
-         //inflowProfile.SetExpr("uLB");
+         inflowProfile.SetExpr("uLB");
          inflowProfile.DefineConst("uLB", u_LB);
          inflowProfile.DefineConst("h", pmL[2]);
 
@@ -403,7 +403,7 @@ void run(string configname)
 
          coord[0] = g_minX1;
          coord[1] = g_minX2;
-         coord[2] = g_minX3;
+         coord[2] = g_minX3 + pmL[2];
          coord[3] = g_maxX1;
          coord[4] = g_maxX2;
          coord[5] = g_maxX3;
@@ -490,7 +490,7 @@ void run(string configname)
 
 
       UbSchedulerPtr AdjForcSch(new UbScheduler());
-      AdjForcSch->addSchedule(100, 0, 10000000);
+      AdjForcSch->addSchedule(1, 0, 10000000);
       D3Q27IntegrateValuesHelperPtr intValHelp(new D3Q27IntegrateValuesHelper(grid, comm,
          coord[0], coord[1], coord[2],
          coord[3], coord[4], coord[5]));
@@ -517,10 +517,26 @@ void run(string configname)
 		 // Utilities::ChangeRandomQs(intValHelp2);
 	  //}
 
-
+      std::vector<double> levelCoords;
+      std::vector<int> levels;
+      std::vector<double> bounds;
+      bounds.push_back(0);
+      bounds.push_back(0);
+      bounds.push_back(0);
+      bounds.push_back(0.004);
+      bounds.push_back(0.002);
+      bounds.push_back(0.003);
+      levels.push_back(1);
+      levels.push_back(0);
+      levels.push_back(1);
+      levelCoords.push_back(0);
+      levelCoords.push_back(0.0016);
+      levelCoords.push_back(0.0024);
+      levelCoords.push_back(0.003);
       UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
       TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch,
-         TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations));
+         TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
+         levels, levelCoords, bounds));
       
       //UbSchedulerPtr catalystSch(new UbScheduler(1));
       //InSituCatalystCoProcessor catalyst(grid, catalystSch, "pchannel.py");

@@ -19,8 +19,8 @@ using namespace std;
 AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                                                  const std::string& path,
                                                                  D3Q27IntegrateValuesHelperPtr integrateValues, 
-                                                                 LBMReal vTarged,
-                                                                 LBMReal forcing,
+                                                                 double vTarged,
+                                                                 double forcing,
                                                                  CommunicatorPtr comm)
 
                                                                  : CoProcessor(grid, s),
@@ -28,7 +28,6 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPt
                                                                  integrateValues(integrateValues),
                                                                  comm(comm),
                                                                  vTarged(vTarged),
-                                                                 vPreviousStep(0.0),
                                                                  forcing(forcing)
 {
    cnodes = integrateValues->getCNodes();
@@ -71,41 +70,44 @@ void AdjustForcingCoProcessor::collectData(double step)
    double cellsVolume = integrateValues->getCellsVolume();
 
    double vx1 = integrateValues->getVx1();
-   double vx1average = (vx1/cellsVolume);
+   double vx1Average = (vx1/cellsVolume);
 
+   //double C = 5.0; //0.7 //P; //free parameter [0.1, 1]
+   //double factor = 1.0 - ((vx1average - vTarged) / vTarged)*C;
+   
+   double factor = vTarged / vx1Average;
+   //forcing *= factor;
+   
+   //forcing = UbMath::max(forcing, 0.0);
+   //forcing = UbMath::min(forcing, 5e-3);
 
-   double newForcing = forcing;
-
-   if (!((vPreviousStep>(vx1average) && (vx1average)>vTarged)  || (vPreviousStep<(vx1average) && ((vx1average)<vTarged))))
+   if (vTarged > vx1Average)
    {
-      double C = 1.0; //0.7 //P; //free parameter [0.1, 1]
-      newForcing = forcing*((1-((vx1average-vTarged)/vTarged)*C));
-      newForcing=UbMath::max(newForcing,0.0);
-      newForcing=UbMath::min(newForcing,5e-3);
+      forcing = fabs(factor*forcing);
+   } 
+   else
+   {
+      forcing = -fabs(factor*forcing);
    }
-
-   vPreviousStep=vx1average;
-
-   forcing = newForcing;
 
    mu::Parser fctForcingX1, fctForcingX2, fctForcingX3;
    fctForcingX1.SetExpr("Fx1");
-   fctForcingX1.DefineConst("Fx1", newForcing);
+   fctForcingX1.DefineConst("Fx1", forcing);
    fctForcingX2.SetExpr("0.0");
    fctForcingX3.SetExpr("0.0");
-   //SetForcingBlockVisitor forcingVisitor(fctForcingX1, fctForcingX2, fctForcingX3);
-   //grid->accept(forcingVisitor);
+   SetForcingBlockVisitor forcingVisitor(fctForcingX1, fctForcingX2, fctForcingX3);
+   grid->accept(forcingVisitor);
 
-   BOOST_FOREACH(CalcNodes cn, cnodes)
-   {
-      LBMKernel3DPtr kernel = cn.block->getKernel();
-      if (kernel)
-      {
-         kernel->setForcingX1(fctForcingX1);
-         kernel->setWithForcing(true);
-      }
-         
-   }
+   //BOOST_FOREACH(CalcNodes cn, cnodes)
+   //{
+   //   LBMKernel3DPtr kernel = cn.block->getKernel();
+   //   if (kernel)
+   //   {
+   //      kernel->setForcingX1(fctForcingX1);
+   //      kernel->setWithForcing(true);
+   //   }
+   //      
+   //}
 
    if (comm->getProcessID() == comm->getRoot())
    {
@@ -122,7 +124,7 @@ void AdjustForcingCoProcessor::collectData(double step)
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
       }
       int istep = static_cast<int>(step);
-      ostr << istep << ";" << cellsVolume << ";" << vx1average << "; " << 1-((vx1average-vTarged)/vTarged) << "; " << forcing << "\n";
+      ostr << istep << ";" << cellsVolume << ";" << vx1Average << "; " << factor << "; " << forcing << "\n";
       ostr.close();
    }
 }

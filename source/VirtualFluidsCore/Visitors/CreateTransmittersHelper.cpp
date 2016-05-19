@@ -73,13 +73,13 @@ void CreateTransmittersHelper::createTransmitters(Block3DPtr sblock, Block3DPtr 
 
       ////////////////////////////////////////////////////////
       //DEBUG
-      int myid = comm->getProcessID();
-      FILE * file;
-      //char * name = "d:/temp/sendPoolKey.csv";
-      std::string name = "d:/temp/VectorKey" + UbSystem::toString(myid) + ".csv";
-      file = fopen(name.c_str(), "a");
-      fprintf(file, "%d;%d%;%d;%d;%d;%u;%d;%d%;%d;%d;%d;%u\n", sblock->getX1(), sblock->getX2(), sblock->getX3()/*tgtID*/, dir, ib, keyOfSendCbVectorKey, tblock->getX1(), tblock->getX2(), tblock->getX3()/*srcID*/, invDir, ib, keyOfRecvCbVectorKey);
-      fclose(file);
+      //int myid = comm->getProcessID();
+      //FILE * file;
+      ////char * name = "d:/temp/sendPoolKey.csv";
+      //std::string name = "d:/temp/VectorKey" + UbSystem::toString(myid) + ".csv";
+      //file = fopen(name.c_str(), "a");
+      //fprintf(file, "%d;%d%;%d;%d;%d;%u;%d;%d%;%d;%d;%d;%u\n", sblock->getX1(), sblock->getX2(), sblock->getX3()/*tgtID*/, dir, ib, keyOfSendCbVectorKey, tblock->getX1(), tblock->getX2(), tblock->getX3()/*srcID*/, invDir, ib, keyOfRecvCbVectorKey);
+      //fclose(file);
       ////////////////////////////////////////////////////////
 
       //create sender-/receiver
@@ -159,8 +159,8 @@ unsigned int CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3,
    str += "#";
    str += StringUtil::toString<int>(ib);
 
-   //unsigned int key = Utilities::RSHash(str);
-   unsigned int key = FNV::fnv1a(str);
+   unsigned int key = Utilities::RSHash(str);
+   //unsigned int key = FNV::fnv1a(str);
 
    return key;
 

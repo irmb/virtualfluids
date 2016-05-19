@@ -1,13 +1,5 @@
 #include "ConnectorBlockVisitor.h"
 #include "Grid3DSystem.h"
-#include "D3Q27ETDirectConnector.h"
-#include <basics/transmitter/TbTransmitterLocal.h>
-
-#include "D3Q27ETFullVectorConnector.h"
-#include "D3Q27ETFullDirectConnector2.h"
-#include "CoarseToFineNodeSetBlock3DConnector.h"
-#include "FineToCoarseNodeSetBlock3DConnector.h"
-
 
 ConnectorBlockVisitor::ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, D3Q27InterpolationProcessorPtr iProcessor, ConnectorFactoryPtr cFactory) :
    Block3DVisitor(0, Grid3DSystem::MAXLEVEL),

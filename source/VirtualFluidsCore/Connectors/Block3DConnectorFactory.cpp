@@ -1,5 +1,5 @@
 #include "Block3DConnectorFactory.h"
-#include "D3Q27ETFullDirectConnector3.h"
+#include "D3Q27ETFullDirectConnector.h"
 #include "D3Q27ETFullVectorConnector.h"
 #include "CoarseToFineNodeSetBlock3DConnector.h"
 #include "FineToCoarseNodeSetBlock3DConnector.h"
@@ -14,7 +14,7 @@ Block3DConnectorFactory::~Block3DConnectorFactory()
 //////////////////////////////////////////////////////////////////////////
 Block3DConnectorPtr Block3DConnectorFactory::createSameLevelDirectConnector(Block3DPtr from, Block3DPtr to, int sendDir)
 {
-   return Block3DConnectorPtr(new D3Q27ETFullDirectConnector3(from, to, sendDir)); 
+   return Block3DConnectorPtr(new D3Q27ETFullDirectConnector(from, to, sendDir)); 
 }
 //////////////////////////////////////////////////////////////////////////
 Block3DConnectorPtr Block3DConnectorFactory::createSameLevelVectorConnector(Block3DPtr block,

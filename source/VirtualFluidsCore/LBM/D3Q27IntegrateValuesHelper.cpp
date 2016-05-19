@@ -21,19 +21,44 @@ D3Q27IntegrateValuesHelper::D3Q27IntegrateValuesHelper(Grid3DPtr grid, Communica
    numberOfSolidNodes(0)
 {
    boundingBox =  GbCuboid3DPtr(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
-   init();
+   init(-1);
+}
+//////////////////////////////////////////////////////////////////////////
+D3Q27IntegrateValuesHelper::D3Q27IntegrateValuesHelper(Grid3DPtr grid, CommunicatorPtr comm,
+   double minX1, double minX2,
+   double minX3, double maxX1,
+   double maxX2, double maxX3,
+   int level) :
+
+   grid(grid),
+   comm(comm),
+   sVx1(0.0), sVx2(0.0), sVx3(0.0), sRho(0.0), sCellVolume(0.0),
+   numberOfFluidsNodes(0),
+   numberOfSolidNodes(0)
+{
+   boundingBox = GbCuboid3DPtr(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
+   init(level);
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27IntegrateValuesHelper::~D3Q27IntegrateValuesHelper()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27IntegrateValuesHelper::init()
+void D3Q27IntegrateValuesHelper::init(int level)
 {
    double orgX1, orgX2, orgX3;
    int gridRank = grid->getRank();
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
+   int minInitLevel, maxInitLevel;
+   if (level < 0)
+   {
+      minInitLevel = this->grid->getCoarsestInitializedLevel();
+      maxInitLevel = this->grid->getFinestInitializedLevel();
+   } 
+   else
+   {
+      minInitLevel = level;
+      maxInitLevel = level;
+   }
 
    double numSolids = 0.0;
    double numFluids = 0.0;
@@ -113,23 +138,10 @@ void D3Q27IntegrateValuesHelper::init()
 void D3Q27IntegrateValuesHelper::calculateAV()
 {
    clearData();
-   //Funktionszeiger
-   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
-   CalcMacrosFct calcMacros = NULL;
 
    BOOST_FOREACH(CalcNodes cn, cnodes)
    {
       LBMKernel3DPtr kernel = cn.block->getKernel();
-      if (kernel->getCompressible())
-      {
-         calcMacros = &D3Q27System::calcCompMacroscopicValues;
-      }
-      else
-      {
-         calcMacros = &D3Q27System::calcIncompMacroscopicValues;
-      }
-      BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
-      int ghostLayerWitdh = kernel->getGhostLayerWidth();
       AverageValuesArray3DPtr averagedValues = kernel->getDataSet()->getAverageValues();
 
       BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
@@ -183,6 +195,165 @@ void D3Q27IntegrateValuesHelper::calculateAV()
       }
    }
 }
+// calculation conventional rho, velocity and averaged data
+void D3Q27IntegrateValuesHelper::calculateAV2()
+{
+   saVx = 0;
+   saVy = 0;
+   saVz = 0;
+
+   saVxx = 0;
+   saVyy = 0;
+   saVzz = 0;
+   saVxy = 0;
+   saVxz = 0;
+   saVyz = 0;
+
+   saVxxx = 0;
+   saVxxy = 0;
+   saVxxz = 0;
+   saVyyy = 0;
+   saVyyx = 0;
+   saVyyz = 0;
+   saVzzz = 0;
+   saVzzx = 0;
+   saVzzy = 0;
+   saVxyz = 0;
+
+   double lsaVx = 0;
+   double lsaVy = 0;
+   double lsaVz = 0;
+
+   double lsaVxx = 0;
+   double lsaVyy = 0;
+   double lsaVzz = 0;
+   double lsaVxy = 0;
+   double lsaVxz = 0;
+   double lsaVyz = 0;
+
+   double lsaVxxx = 0;
+   double lsaVxxy = 0;
+   double lsaVxxz = 0;
+   double lsaVyyy = 0;
+   double lsaVyyx = 0;
+   double lsaVyyz = 0;
+   double lsaVzzz = 0;
+   double lsaVzzx = 0;
+   double lsaVzzy = 0;
+   double lsaVxyz = 0;
+
+   BOOST_FOREACH(CalcNodes cn, cnodes)
+   {
+      LBMKernel3DPtr kernel = cn.block->getKernel();
+      AverageVelocityArray3DPtr averagedVelocity = kernel->getDataSet()->getAverageVelocity();
+      AverageFluctuationsArray3DPtr averagedFluctuations = kernel->getDataSet()->getAverageFluctuations();
+      AverageTriplecorrelationsArray3DPtr averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
+
+      BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
+      {
+         double aVx = (*averagedVelocity)(Vx, val<1>(node), val<2>(node), val<3>(node));
+         double aVy = (*averagedVelocity)(Vy, val<1>(node), val<2>(node), val<3>(node));
+         double aVz = (*averagedVelocity)(Vz, val<1>(node), val<2>(node), val<3>(node));
+
+         double aVxx = (*averagedFluctuations)(Vxx, val<1>(node), val<2>(node), val<3>(node));
+         double aVyy = (*averagedFluctuations)(Vyy, val<1>(node), val<2>(node), val<3>(node));
+         double aVzz = (*averagedFluctuations)(Vzz, val<1>(node), val<2>(node), val<3>(node));
+         double aVxy = (*averagedFluctuations)(Vxy, val<1>(node), val<2>(node), val<3>(node));
+         double aVxz = (*averagedFluctuations)(Vxz, val<1>(node), val<2>(node), val<3>(node));
+         double aVyz = (*averagedFluctuations)(Vyz, val<1>(node), val<2>(node), val<3>(node));
+
+         double aVxxx = (*averagedFluctuations)(Vxxx, val<1>(node), val<2>(node), val<3>(node));
+         double aVxxy = (*averagedFluctuations)(Vxxy, val<1>(node), val<2>(node), val<3>(node));
+         double aVxxz = (*averagedFluctuations)(Vxxz, val<1>(node), val<2>(node), val<3>(node));
+         double aVyyy = (*averagedFluctuations)(Vyyy, val<1>(node), val<2>(node), val<3>(node));
+         double aVyyx = (*averagedFluctuations)(Vyyx, val<1>(node), val<2>(node), val<3>(node));
+         double aVyyz = (*averagedFluctuations)(Vyyz, val<1>(node), val<2>(node), val<3>(node));
+         double aVzzz = (*averagedFluctuations)(Vzzz, val<1>(node), val<2>(node), val<3>(node));
+         double aVzzx = (*averagedFluctuations)(Vzzx, val<1>(node), val<2>(node), val<3>(node));
+         double aVzzy = (*averagedFluctuations)(Vzzy, val<1>(node), val<2>(node), val<3>(node));
+         double aVxyz = (*averagedFluctuations)(Vxyz, val<1>(node), val<2>(node), val<3>(node));
+
+         lsaVx   += aVx  ;
+         lsaVy   += aVy  ;
+         lsaVz   += aVz  ;
+         
+         lsaVxx  += aVxx ;
+         lsaVyy  += aVyy ;
+         lsaVzz  += aVzz ;
+         lsaVxy  += aVxy ;
+         lsaVxz  += aVxz ;
+         lsaVyz  += aVyz ;
+         
+         lsaVxxx += aVxxx;
+         lsaVxxy += aVxxy;
+         lsaVxxz += aVxxz;
+         lsaVyyy += aVyyy;
+         lsaVyyx += aVyyx;
+         lsaVyyz += aVyyz;
+         lsaVzzz += aVzzz;
+         lsaVzzx += aVzzx;
+         lsaVzzy += aVzzy;
+         lsaVxyz += aVxyz;
+
+         //numberOfFluidsNodes++;
+      }
+   }
+   vector<double> values;
+   vector<double> rvalues;
+   values.push_back(lsaVx  );
+   values.push_back(lsaVy  );
+   values.push_back(lsaVz  );
+                     
+   values.push_back(lsaVxx );
+   values.push_back(lsaVyy );
+   values.push_back(lsaVzz );
+   values.push_back(lsaVxy );
+   values.push_back(lsaVxz );
+   values.push_back(lsaVyz );
+                    
+   values.push_back(lsaVxxx);
+   values.push_back(lsaVxxy);
+   values.push_back(lsaVxxz);
+   values.push_back(lsaVyyy);
+   values.push_back(lsaVyyx);
+   values.push_back(lsaVyyz);
+   values.push_back(lsaVzzz);
+   values.push_back(lsaVzzx);
+   values.push_back(lsaVzzy);
+   values.push_back(lsaVxyz);
+
+   rvalues = comm->gather(values);
+   if (comm->getProcessID() == comm->getRoot())
+   {
+      clearData();
+      for (int i = 0; i < (int)rvalues.size(); i += 19)
+      {
+         saVx   += rvalues[i];
+         saVy   += rvalues[i + 1];
+         saVz   += rvalues[i + 2];
+              
+         saVxx  += rvalues[i + 3];
+         saVyy  += rvalues[i + 4];
+         saVzz  += rvalues[i + 5];
+         saVxy  += rvalues[i + 6];
+         saVxz  += rvalues[i + 7];
+         saVyz  += rvalues[i + 8];
+              
+         saVxxx += rvalues[i + 9];
+         saVxxy += rvalues[i + 10];
+         saVxxz += rvalues[i + 11];
+         saVyyy += rvalues[i + 12];
+         saVyyx += rvalues[i + 13];
+         saVyyz += rvalues[i + 14];
+         saVzzz += rvalues[i + 15];
+         saVzzx += rvalues[i + 16];
+         saVzzy += rvalues[i + 17];
+         saVxyz += rvalues[i + 18];
+         
+      }
+   }
+}
+
 //////////////////////////////////////////////////////////////////////////
 void D3Q27IntegrateValuesHelper::calculateMQ()
 {

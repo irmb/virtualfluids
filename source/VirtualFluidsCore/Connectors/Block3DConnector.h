@@ -27,7 +27,6 @@ public:
 public:
    Block3DConnector() 
       : sendDir(-1)
-      , invStep(false)
 #ifdef VF_FETOL
       , ttype(NONE)
 #endif
@@ -35,7 +34,6 @@ public:
 
    Block3DConnector(const int& sendDir) 
       : sendDir(sendDir)
-      , invStep(false)
 #ifdef VF_FETOL
       , ttype(NONE)
 #endif
@@ -66,7 +64,6 @@ public:
    virtual bool isInterpolationConnectorFC() = 0;
 
    //grid refinement
-   virtual void setInvStep(bool step) {invStep = step;}
    virtual int getSendDir() const { return sendDir; } 
 
    //virtual double getSendRecieveTime() = 0;
@@ -95,7 +92,6 @@ public:
 
 protected:
    int  sendDir;
-   bool invStep;
    //FETOL 
 #ifdef VF_FETOL
    TransmitterType ttype;
