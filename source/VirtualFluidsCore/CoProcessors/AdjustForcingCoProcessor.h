@@ -10,8 +10,9 @@
 class AdjustForcingCoProcessor;
 typedef boost::shared_ptr<AdjustForcingCoProcessor> AdjustForcingCoProcessorPtr;
 
-//! \brief   Computes Forcing such that a given velocity (vxZiel) is reached inside an averaging domain (h1). 
-//! \details Integrate values helper, scheduler must be set in test case. Example usage: bKanal.cpp
+//! \brief   Computes forcing such that a given velocity (vx1Targed) is reached inside an averaging domain (h1). 
+//! \details Algorithm based on PID controller (proportional–integral–derivative controller). The parameters of PID controller estimation based on Ziegler–Nichols method. 
+//!          Integrate values helper, scheduler must be set in test case.
 //! \author: Konstantin Kutscher
 
 class AdjustForcingCoProcessor: public CoProcessor {
@@ -30,9 +31,22 @@ protected:
 	void collectData(double step);  
    CommunicatorPtr comm;
 private:
-   double vTarged; //!< target velocity.
+   double vx1Targed; //!< target velocity.
    double forcing; //!< forcing at previous update step. 
-   std::vector<CalcNodes> cnodes;
+
+   double Kpcrit; //Kp critical
+   double Tcrit;  //the oscillation period 
+   double Tn;
+   double Tv;
+   double e;
+   double Ta;
+   double Kp;
+   double Ki;
+   double Kd;
+   double y;
+   double esum;
+   double eold;
+   //std::vector<CalcNodes> cnodes;
    std::string path;
 };
 

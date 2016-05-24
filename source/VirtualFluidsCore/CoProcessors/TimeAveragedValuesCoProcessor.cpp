@@ -112,7 +112,7 @@ void TimeAveragedValuesCoProcessor::process(double step)
    if (scheduler->isDue(step))
    {
       //DEBUG/////////////////////
-      UBLOG(logINFO, "step = " << step << ", lcounter = " << lcounter << ", fineStep = " << fineStep << ", maxFineStep = " << maxFineStep << ", numberOfFineSteps = " << numberOfFineSteps);
+      //UBLOG(logINFO, "step = " << step << ", lcounter = " << lcounter << ", fineStep = " << fineStep << ", maxFineStep = " << maxFineStep << ", numberOfFineSteps = " << numberOfFineSteps);
       ////////////////////////////
 
       calculateSubtotal();

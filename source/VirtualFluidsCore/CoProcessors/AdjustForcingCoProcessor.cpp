@@ -2,7 +2,7 @@
 * D3Q27AdjustForcingCoProcessor.cpp
 *
 *  
-*  Author: Sonja Uphoff
+*  Author: Konstantin Kutscher
 */
 
 #include "AdjustForcingCoProcessor.h"
@@ -19,18 +19,17 @@ using namespace std;
 AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                                                  const std::string& path,
                                                                  D3Q27IntegrateValuesHelperPtr integrateValues, 
-                                                                 double vTarged,
-                                                                 double forcing,
+                                                                 double vTarged, double forcing,
                                                                  CommunicatorPtr comm)
 
                                                                  : CoProcessor(grid, s),
                                                                  path(path),
                                                                  integrateValues(integrateValues),
                                                                  comm(comm),
-                                                                 vTarged(vTarged),
+                                                                 vx1Targed(vTarged),
                                                                  forcing(forcing)
 {
-   cnodes = integrateValues->getCNodes();
+   //cnodes = integrateValues->getCNodes();
    if (comm->getProcessID() == comm->getRoot())
    {
       std::string fname = path+"/forcing/forcing.csv";
@@ -43,9 +42,37 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPt
          if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
       }
-      ostr << "step;volume;vx1average;factor;forcing\n";
+      ostr << "step;volume;vx1average;forcing\n";
       ostr.close();
    }
+   
+   Ta = scheduler->getMaxStep();
+
+   Kpcrit = 3.0 / Ta;// 0.3;
+   Tcrit = 3.0 * Ta; // 30.0;
+   Tn = 0.5 * Tcrit;
+   Tv = 0.12 * Tcrit;
+    
+   Kp = 0.6 * Kpcrit;
+   Ki = Kp / Tn;
+   Kd = Kp * Tv;
+   
+   y = 0;
+   e = 0;
+   esum = 0;
+   //////////////////////////////////////////////////////////////////////////////////////////////////
+   //temporere Lösung
+   std::string fNameCfg = path + "/forcing/forcing.cfg";
+   std::ifstream istr2;
+   istr2.open(fNameCfg.c_str(), std::ios_base::in);
+   if (istr2)
+   {
+      istr2 >> forcing;
+      istr2 >> esum;
+      istr2 >> eold;
+   }
+   istr2.close();
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 //////////////////////////////////////////////////////////////////////////
 AdjustForcingCoProcessor::~AdjustForcingCoProcessor() 
@@ -60,6 +87,22 @@ void AdjustForcingCoProcessor::process(double step)
 //////////////////////////////////////////////////////////////////////////
 void AdjustForcingCoProcessor::collectData(double step)
 {
+   //////////////////////////////////////////////////////////////////////////////////////////////////
+   //temporere Lösung
+   std::string fNameCfg = path + "/forcing/forcing.cfg";
+   std::ofstream ostr2;
+   ostr2.open(fNameCfg.c_str(), std::ios_base::out);
+   if (!ostr2)
+   {
+      ostr2.clear();
+      string path = UbSystem::getPathFromString(fNameCfg);
+      if (path.size() > 0) { UbSystem::makeDirectory(path); ostr2.open(fNameCfg.c_str(), std::ios_base::out); }
+      if (!ostr2) throw UbException(UB_EXARGS, "couldn't open file " + fNameCfg);
+   }
+   ostr2 << forcing << " " << esum << " " << eold;
+   ostr2.close();
+   ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
    integrateValues->calculateMQ();
 
    UBLOG(logDEBUG3, "D3Q27AdjustForcingCoProcessor::update:" << step);
@@ -72,24 +115,17 @@ void AdjustForcingCoProcessor::collectData(double step)
    double vx1 = integrateValues->getVx1();
    double vx1Average = (vx1/cellsVolume);
 
-   //double C = 5.0; //0.7 //P; //free parameter [0.1, 1]
-   //double factor = 1.0 - ((vx1average - vTarged) / vTarged)*C;
-   
-   double factor = vTarged / vx1Average;
-   //forcing *= factor;
-   
-   //forcing = UbMath::max(forcing, 0.0);
-   //forcing = UbMath::min(forcing, 5e-3);
+//////////////////////////////////////////////////////////////////////////
+//PID-Controller (PID-Regler)
+   e = vx1Targed - vx1Average;
+   esum = esum + e;
+   y = Kp * e + Ki * Ta * esum + Kd * (e - eold) / Ta;
+   eold = e;
 
-   if (vTarged > vx1Average)
-   {
-      forcing = fabs(factor*forcing);
-   } 
-   else
-   {
-      forcing = -fabs(factor*forcing);
-   }
+   forcing = forcing + y;
+//////////////////////////////////////////////////////////////////////////
 
+   //////////////////////////////////////////////////////////////////////////
    mu::Parser fctForcingX1, fctForcingX2, fctForcingX3;
    fctForcingX1.SetExpr("Fx1");
    fctForcingX1.DefineConst("Fx1", forcing);
@@ -124,7 +160,9 @@ void AdjustForcingCoProcessor::collectData(double step)
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
       }
       int istep = static_cast<int>(step);
-      ostr << istep << ";" << cellsVolume << ";" << vx1Average << "; " << factor << "; " << forcing << "\n";
+      
+      ostr << istep << ";" << cellsVolume << ";" << vx1Average << "; " << forcing << "\n";
       ostr.close();
+
    }
 }

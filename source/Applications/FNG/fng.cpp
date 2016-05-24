@@ -8,50 +8,56 @@
 using namespace std;
 
 
-void setup(const char *cstr1, const char *cstr2)
+void run(string configname)
 {
    try
    {
-      //Sleep(30000);
+      ConfigurationFile   config;
+      config.load(configname);
 
-      ConfigFileReader cf(cstr1);
-      if ( !cf.read() )
-      {
-         std::string exceptionText = "Unable to read configuration file\n";
-         throw exceptionText;
-      }
-
-      //parameters from config file
-      string machine = cf.getValue("machine");
-      string pathname = cf.getValue("path");
-      string geoFile = cf.getValue("geoFile");
-      int numOfThreads = UbSystem::stringTo<int>(cf.getValue("numOfThreads"));
-      double availMem = UbSystem::stringTo<double>(cf.getValue("availMem"));
-      int refineLevel = UbSystem::stringTo<int>(cf.getValue("refineLevel"));
-      int blocknx = UbSystem::stringTo<int>(cf.getValue("blocknx"));
+      string          pathname = config.getString("pathname");
+      string          pathGeo = config.getString("pathGeo");
+      string          geoFile1 = config.getString("geoFile1");
+      string          geoFile2 = config.getString("geoFile2");
+      int             numOfThreads = config.getInt("numOfThreads");
+      vector<int>     blocknx = config.getVector<int>("blocknx");
+      double          u_LB = config.getDouble("u_LB");
+      double          restartStep = config.getDouble("restartStep");
+      double          restartStepStart = config.getDouble("restartStepStart");
+      double          endTime = config.getDouble("endTime");
+      double          outTime = config.getDouble("outTime");
+      double          availMem = config.getDouble("availMem");
+      int             refineLevel = config.getInt("refineLevel");
+      bool            logToFile = config.getBool("logToFile");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
-      if(machine == "Bombadil") int dumy=0; 
-      else if(machine == "Ludwig" || machine == "HLRN")      
+      if (logToFile)
       {
-         if(myid ==0)
+#if defined(__unix__)
+         if (myid == 0)
+         {
+            const char* str = pathname.c_str();
+            mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+         }
+#endif 
+
+         if (myid == 0)
          {
             stringstream logFilename;
-            logFilename <<  pathname + "/logfile"+UbSystem::toString(UbSystem::getTimeStamp())+".txt";
+            logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
             UbLog::output_policy::setStream(logFilename.str());
          }
       }
-      else throw UbException(UB_EXARGS, "unknown machine");
 
-      GbTriFaceMesh3DPtr geo (GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(geoFile,"geo"));
+      GbTriFaceMesh3DPtr geo (GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(geoFile1,"geo"));
       if(myid == 0) GbSystem3D::writeGeoObject(geo.get(), pathname+"/geo/geo", WbWriterVtkXmlASCII::getInstance());
 
       double dx = (fabs(geo->getX3Maximum()-geo->getX3Minimum())*10e-3)*(double)(1<<refineLevel);
       dx /= 4.0;
 
-      double blockLength = blocknx*dx;
+      double blockLength = blocknx[0]*dx;
 
       double offsetX1 = fabs(geo->getX1Maximum()-geo->getX1Minimum());
       double h = fabs(geo->getX3Maximum()-geo->getX3Minimum());
@@ -69,18 +75,18 @@ void setup(const char *cstr1, const char *cstr2)
       //##########################################################################
       //## physical parameters
       //##########################################################################
-      double Re            = 1e6;
+      double Re       = 1e6;
 
       double rhoLB    = 0.0;
-      double rhoReal  = 1.0;
-      double nueReal  = 0.000015;//0.015;
+      double rhoReal  = 1.2041; //(kg/m3)
+      double nueReal  = 153.5e-7; //m^2/s
 
-      double lReal    =  3.0;//<-m     ;//Profile laenge in cm(! cm nicht m !)
+      double lReal    = 3.0;//m
       double uReal    = Re*nueReal/lReal;
 
       //##Machzahl:
       //#Ma     = uReal/csReal
-      double Ma      = 0.1;//Ma-Real!
+      double Ma      = 0.15;//Ma-Real!
       double csReal  = uReal/Ma;
       double hLB     = lReal/dx;
 
@@ -98,7 +104,7 @@ void setup(const char *cstr1, const char *cstr2)
       //////////////////////////////////////////////////////////////////////////
       Grid3DPtr grid(new Grid3D(comm));
       grid->setDeltaX(dx);
-      grid->setBlockNX(blocknx, blocknx, blocknx);
+      grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
       
       GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       //gridCube->setCenterCoordinates(geo->getX1Centroid(), geo->getX2Centroid(), geo->getX3Centroid());
@@ -115,7 +121,7 @@ void setup(const char *cstr1, const char *cstr2)
 
       UbSchedulerPtr rSch(new UbScheduler());
       rSch->addSchedule(50,50,50);
-      RestartPostprocessorPtr rp(new RestartPostprocessor(grid, rSch, comm, pathname+"/checkpoints", RestartPostprocessor::TXT));
+      RestartCoProcessorPtr rp(new RestartCoProcessor(grid, rSch, comm, pathname+"/checkpoints", RestartCoProcessor::TXT));
       
 
       std::string opt;
@@ -399,9 +405,9 @@ int main(int argc, char* argv[])
 
    if ( argv != NULL )
    {
-      if (argc > 1)
+      if (argv[1] != NULL)
       {
-         setup(argv[1], argv[2]);
+         run(string(argv[1]));
       }
       else
       {

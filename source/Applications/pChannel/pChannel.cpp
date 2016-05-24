@@ -372,11 +372,14 @@ void run(string configname)
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfile;
-     //inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
+       //inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
 		   //inflowProfile.SetExpr("uLB+1*x1-1*x2");
          inflowProfile.SetExpr("uLB");
-         inflowProfile.DefineConst("uLB", u_LB);
-         inflowProfile.DefineConst("h", pmL[2]);
+         //inflowProfile.DefineConst("uLB", u_LB);
+         inflowProfile.DefineConst("uLB", 0.0116);
+         //inflowProfile.DefineConst("h", pmL[2]);
+
+         //inflowProfile = Utilities::getDuctParaboloidX(g_maxX2/2.0, g_maxX2, pmL[2]+channelHigh/2.0, channelHigh, 0.116);
 
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
          initVisitor.setVx1(inflowProfile);
@@ -490,7 +493,7 @@ void run(string configname)
 
 
       UbSchedulerPtr AdjForcSch(new UbScheduler());
-      AdjForcSch->addSchedule(1, 0, 10000000);
+      AdjForcSch->addSchedule(10, 0, 10000000);
       D3Q27IntegrateValuesHelperPtr intValHelp(new D3Q27IntegrateValuesHelper(grid, comm,
          coord[0], coord[1], coord[2],
          coord[3], coord[4], coord[5]));
