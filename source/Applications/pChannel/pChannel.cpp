@@ -41,7 +41,6 @@ void run(string configname)
       double          Re                = config.getDouble("Re");
       double          channelHigh       = config.getDouble("channelHigh");
       double          lengthFactor      = config.getDouble("lengthFactor");
-      double          forcing           = config.getDouble("forcing");
       bool            changeQs          = config.getBool("changeQs"); 
       double          timeAvStart       = config.getDouble("timeAvStart");
       double          timeAvStop        = config.getDouble("timeAvStop");
@@ -107,7 +106,7 @@ void run(string configname)
          
          double offsetMaxX1 = pmL[0]*lengthFactor;
          double offsetMaxX2 = pmL[1]*2.0;
-         double offsetMaxX3 = pmL[2] + channelHigh; //DLR-F15  //pmL[2]*2.0;
+         double offsetMaxX3 = channelHigh; // pmL[2] + channelHigh; //DLR-F15  //pmL[2]*2.0;
 
          //bounding box
          double g_minX1 = origin[0];
@@ -295,6 +294,7 @@ void run(string configname)
          intHelper.setBC();
 
          ////porous media
+         if(false)
          {
             string samplePathname = pathGeo + "/" + sampleFilename;
 
@@ -372,19 +372,58 @@ void run(string configname)
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfile;
-       //inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
-		   //inflowProfile.SetExpr("uLB+1*x1-1*x2");
-         inflowProfile.SetExpr("uLB");
-         //inflowProfile.DefineConst("uLB", u_LB);
-         inflowProfile.DefineConst("uLB", 0.0116);
+     //  inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
+		   ////inflowProfile.SetExpr("uLB+1*x1-1*x2");
+     //    //inflowProfile.SetExpr("uLB");
+     //    inflowProfile.DefineConst("uLB", u_LB);
+     //    //inflowProfile.DefineConst("uLB", 0.0116);
+     //    inflowProfile.DefineConst("h", pmL[2]);
+
+         //inflowProfile = Utilities::getDuctParaboloidX(g_maxX2/2.0, g_maxX2, pmL[2]+channelHigh/2.0, channelHigh, 0.1);
+
+         //poiseuille flow
+         //double Cy = g_maxX2 / 2.0;
+         //double Hy = g_maxX2;
+         //double Cz = pmL[2] + channelHigh / 2.0;
+         //double Hz = channelHigh;
+         //double V = (9.0/4.0)*u_LB;
+         //inflowProfile.SetExpr("x3 < h ? 0.0 : V*(((-(x2-Cy)^2.0+(Hy/2.0)^2.0)/(Hy/2.0)^2.0)*((-(x3-Cz)^2.0+(Hz/2.0)^2.0)/(Hz/2.0)^2.0))");
+         //inflowProfile.DefineConst("Cy", Cy);
+         //inflowProfile.DefineConst("Hy", Hy);
+         //inflowProfile.DefineConst("Cz", Cz);
+         //inflowProfile.DefineConst("Hz", Hz);
+         //inflowProfile.DefineConst("V", V);
          //inflowProfile.DefineConst("h", pmL[2]);
 
-         //inflowProfile = Utilities::getDuctParaboloidX(g_maxX2/2.0, g_maxX2, pmL[2]+channelHigh/2.0, channelHigh, 0.116);
+         //log-law
+         double u_tau = 0.05;//sqrt(nu_LB * (u_LB/channel_high)); //0.0013252866627413104;
+         double z0 = 0.0001;//nu_LB / (9.0*u_tau);
+         double k = 0.4;
+         //inflowProfile.SetExpr("2.3*u_tau/k*log(x3/z0)");
+         //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? 2.3*u_tau/k*log(x3/z0) : 2.3*u_tau/k*log((zMax-x3)/z0)) : 0");
+         //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? (1.0/k)*log(9.8*x3/u_tau)*u_tau : (1.0/k)*log(9.8*(zMax-x3)/u_tau)*u_tau  ) : 0");
+         //inflowProfile.SetExpr("x3 < h && x3 > 0 ? 2.3*u_tau/k*log(x3/z0) : 0.0");
+
+         //inflowProfile.SetExpr("Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)");
+         //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)) : 0");
+         inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)");
+
+         inflowProfile.DefineConst("Uref", u_LB);
+         inflowProfile.DefineConst("Href", channelHigh);
+         inflowProfile.DefineConst("zg", 0.0);
+
+         inflowProfile.DefineConst("u_tau", u_tau);
+         inflowProfile.DefineConst("k", k);
+         inflowProfile.DefineConst("z0", z0);
+         inflowProfile.DefineConst("h", channelHigh / 2.0);
+         inflowProfile.DefineConst("zMax", channelHigh);
+
 
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
          initVisitor.setVx1(inflowProfile);
          //initVisitor.setVx1(u_LB);
          grid->accept(initVisitor);
+
 
          ////set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
@@ -493,14 +532,14 @@ void run(string configname)
 
 
       UbSchedulerPtr AdjForcSch(new UbScheduler());
-      AdjForcSch->addSchedule(10, 0, 10000000);
+      AdjForcSch->addSchedule(1, 0, 10000000);
       D3Q27IntegrateValuesHelperPtr intValHelp(new D3Q27IntegrateValuesHelper(grid, comm,
          coord[0], coord[1], coord[2],
          coord[3], coord[4], coord[5]));
       if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathname + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
       double vxTarget=u_LB;
-      AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathname, intValHelp, vxTarget, forcing, comm);
+      AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathname, intValHelp, vxTarget, comm);
 
       //mu::Parser decrViscFunc;
       //decrViscFunc.SetExpr("nue0+c0/(t+1)/(t+1)");
@@ -510,15 +549,15 @@ void run(string configname)
       //DecrViscSch->addSchedule(10, 0, 1000);
       //DecreaseViscosityCoProcessor decrViscPPPtr(grid, DecrViscSch, &decrViscFunc, comm);
 
-	  //if (changeQs)
-	  //{
-		 // double z1 = pmL[2];
-		 // D3Q27IntegrateValuesHelperPtr intValHelp2(new D3Q27IntegrateValuesHelper(grid, comm,
-			//  coord[0], coord[1], z1 - deltaXfine,
-			//  coord[3], coord[4], z1 + deltaXfine));
-		 // if (myid == 0) GbSystem3D::writeGeoObject(intValHelp2->getBoundingBox().get(), pathname + "/geo/intValHelp2", WbWriterVtkXmlBinary::getInstance());
-		 // Utilities::ChangeRandomQs(intValHelp2);
-	  //}
+	  if (changeQs)
+	  {
+		  double z1 = pmL[2];
+		  D3Q27IntegrateValuesHelperPtr intValHelp2(new D3Q27IntegrateValuesHelper(grid, comm,
+			  coord[0], coord[1], z1 - deltaXfine,
+			  coord[3], coord[4], z1 + deltaXfine));
+		  if (myid == 0) GbSystem3D::writeGeoObject(intValHelp2->getBoundingBox().get(), pathname + "/geo/intValHelp2", WbWriterVtkXmlBinary::getInstance());
+		  Utilities::ChangeRandomQs(intValHelp2);
+	  }
 
       std::vector<double> levelCoords;
       std::vector<int> levels;
@@ -537,7 +576,7 @@ void run(string configname)
       levelCoords.push_back(0.0024);
       levelCoords.push_back(0.003);
       UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch,
+      TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
          TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
          levels, levelCoords, bounds));
       
