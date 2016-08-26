@@ -18,6 +18,7 @@ public:
    virtual int getProcessID() = 0;
    virtual int getProcessID(int bundle, int rank) = 0;
    virtual int getNumberOfProcesses() = 0;
+   virtual bool isRoot() = 0;
    virtual void* getNativeCommunicator() = 0;
 
    virtual void sendSerializedObject(std::stringstream& ss, int target) = 0;
@@ -28,6 +29,7 @@ public:
    virtual int getProcessRoot() = 0;
    virtual int getNumberOfProcessesInBundle(int bundle) = 0;
    virtual void barrier() = 0;
+   virtual void abort(int errorcode) = 0;
 
    virtual std::vector<std::string> gather(const std::string& str) = 0;
    virtual std::vector<int> gather(std::vector<int>& values) = 0;
@@ -38,6 +40,9 @@ public:
    virtual void allGather(std::vector<float>& svalues, std::vector<float>& rvalues) = 0;
    virtual void allGather(std::vector<double>& svalues, std::vector<double>& rvalues) = 0;
    
+   virtual void broadcast(int& value) = 0;
+   virtual void broadcast(float& value) = 0;
+   virtual void broadcast(double& value) = 0;
    virtual void broadcast(std::vector<int>& values) = 0;
    virtual void broadcast(std::vector<float>& values) = 0;
    virtual void broadcast(std::vector<double>& values) = 0;

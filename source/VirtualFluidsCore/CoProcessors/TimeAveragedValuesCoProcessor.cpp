@@ -1,6 +1,5 @@
 #include "TimeAveragedValuesCoProcessor.h"
 #include "LBMKernel3D.h"
-#include "SimulationParameters.h"
 #include "D3Q27ETBCProcessor.h"
 #include <vector>
 #include <sstream>
@@ -18,21 +17,24 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor()
 }
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-   UbSchedulerPtr s, int options)
+   UbSchedulerPtr s, CommunicatorPtr comm, int options)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
+   comm(comm),
    options(options)
 {
    init(s);
    volumeAveraging = false;
 }
 //////////////////////////////////////////////////////////////////////////
-TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer, UbSchedulerPtr s, int options,
+TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
+   UbSchedulerPtr s, CommunicatorPtr comm, int options,
    std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
+   comm(comm),
    options(options),
    levels(levels),
    levelCoords(levelCoords),
@@ -44,6 +46,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
 {
+   root = comm->isRoot();
    gridRank = grid->getRank();
    minInitLevel = this->grid->getCoarsestInitializedLevel();
    maxInitLevel = this->grid->getFinestInitializedLevel();
@@ -67,19 +70,19 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
             UbTupleInt3 nx = grid->getBlockNX();
             if ((options&Velocity) == Velocity)
             {
-               AverageVelocityArray3DPtr av = AverageVelocityArray3DPtr(new AverageVelocityArray3D(3, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               AverageValuesArray3DPtr av = AverageValuesArray3DPtr(new AverageValuesArray3D(3, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageVelocity(av);
             }
 
             if ((options&Fluctuations) == Fluctuations)
             {
-               AverageFluctuationsArray3DPtr af = AverageFluctuationsArray3DPtr(new AverageFluctuationsArray3D(6, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               AverageValuesArray3DPtr af = AverageValuesArray3DPtr(new AverageValuesArray3D(6, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageFluctuations(af);
             }
 
             if ((options&Triplecorrelations) == Triplecorrelations)
             {
-               AverageTriplecorrelationsArray3DPtr at = AverageTriplecorrelationsArray3DPtr(new AverageTriplecorrelationsArray3D(10, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               AverageValuesArray3DPtr at = AverageValuesArray3DPtr(new AverageValuesArray3D(10, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageTriplecorrelations(at);
             }
 
@@ -96,45 +99,39 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
    iMinX1 = 1;
    iMinX2 = 1;
    iMinX3 = 1;
-   
+
    lcounter = 0;
-   
+
    levelFactor = 1 << maxInitLevel;
-   minFineStep = (int)scheduler->getMinBegin() * levelFactor;
-   maxFineStep = (int)scheduler->getMaxEnd() * levelFactor + levelFactor - 1;
-   numberOfFineSteps = (maxFineStep - minFineStep) + 1;
+   maxStep = scheduler->getMaxEnd();
+   numberOfFineSteps = (maxStep - scheduler->getMinBegin()) * levelFactor;
+
+   //function pointer
+   using namespace D3Q27System;
+   calcMacros = NULL;
+   if (compressible)
+   {
+      calcMacros = &calcCompMacroscopicValues;
+   }
+   else
+   {
+      calcMacros = &calcIncompMacroscopicValues;
+   }
 }
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::process(double step)
 {
-   fineStep = (int)step * levelFactor + lcounter;
-
-   if (scheduler->isDue(step))
+   if (step == maxStep)
    {
       //DEBUG/////////////////////
-      //UBLOG(logINFO, "step = " << step << ", lcounter = " << lcounter << ", fineStep = " << fineStep << ", maxFineStep = " << maxFineStep << ", numberOfFineSteps = " << numberOfFineSteps);
+      //UBLOG(logINFO, "process::step = " << step << ", maxStep = " << maxStep << ", levelFactor = " << levelFactor << ", numberOfFineSteps = " << numberOfFineSteps);
       ////////////////////////////
 
-      calculateSubtotal();
-
-      if (fineStep == maxFineStep)
+      calculateAverageValues((double)numberOfFineSteps);
+      collectData(step);
+      if (volumeAveraging)
       {
-         calculateAverageValues((double)numberOfFineSteps);
-         collectData(step);
-         if (volumeAveraging)
-         {
-            volumeAverage(step);
-         }
-         clearData();
-      }
-
-      if (lcounter == levelFactor-1)
-      {
-         lcounter = 0;
-      }
-      else
-      {
-         lcounter++;
+         volumeAverage(step);
       }
    }
 
@@ -167,9 +164,8 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
    piece = subfolder + "/" + piece;
 
    vector<string> cellDataNames;
-   CommunicatorPtr comm = Communicator::getInstance();
    vector<string> pieces = comm->gather(piece);
-   if (comm->getProcessID() == comm->getRoot())
+   if (root)
    {
       string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
       UBLOG(logINFO, "TimeAveragedValuesCoProcessor step: " << istep);
@@ -445,115 +441,110 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::calculateSubtotal()
+void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
 {
-
-   using namespace D3Q27System;
-
-   //Funktionszeiger
-   calcMacros = NULL;
-   if (compressible)
+   if (scheduler->isDue(step))
    {
-      calcMacros = &calcCompMacroscopicValues;
-   }
-   else
-   {
-      calcMacros = &calcIncompMacroscopicValues;
-   }
 
-   LBMReal f[27];
+      //DEBUG/////////////////////
+      //UBLOG(logINFO, "calculateSubtotal::step = " << step);
+      ////////////////////////////
+
+      LBMReal f[27];
+
 #ifdef _OPENMP
 #pragma omp parallel private (f)
 #endif
-   {
-      for (int level = minInitLevel; level <= maxInitLevel; level++)
       {
-         int i;
+         for (int level = minInitLevel; level <= maxInitLevel; level++)
+         {
+            int i;
 #ifdef _OPENMP
 #pragma omp for schedule(dynamic)
 #endif
-         //BOOST_FOREACH(Block3DPtr block, blockVector[level])
-         for (i = 0; i < blockVector[level].size(); i++)
-         {
-            Block3DPtr block = blockVector[level][i];
-            if (block)
+            //BOOST_FOREACH(Block3DPtr block, blockVector[level])
+            for (i = 0; i < blockVector[level].size(); i++)
             {
-               LBMKernel3DPtr kernel = block->getKernel();
-               BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
-               DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-               AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
-               AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
-               AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
-
-               int minX1 = iMinX1;
-               int minX2 = iMinX2;
-               int minX3 = iMinX3;
-
-               int maxX1 = int(distributions->getNX1());
-               int maxX2 = int(distributions->getNX2());
-               int maxX3 = int(distributions->getNX3());
-
-               maxX1 -= 2;
-               maxX2 -= 2;
-               maxX3 -= 2;
-
-               for (int ix3 = minX3; ix3 <= maxX3; ix3++)
+               Block3DPtr block = blockVector[level][i];
+               if (block)
                {
-                  for (int ix2 = minX2; ix2 <= maxX2; ix2++)
+                  LBMKernel3DPtr kernel = block->getKernel();
+                  BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+                  DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+                  AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
+                  AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
+                  AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
+
+                  int minX1 = iMinX1;
+                  int minX2 = iMinX2;
+                  int minX3 = iMinX3;
+
+                  int maxX1 = int(distributions->getNX1());
+                  int maxX2 = int(distributions->getNX2());
+                  int maxX3 = int(distributions->getNX3());
+
+                  maxX1 -= 2;
+                  maxX2 -= 2;
+                  maxX3 -= 2;
+
+                  for (int ix3 = minX3; ix3 <= maxX3; ix3++)
                   {
-                     for (int ix1 = minX1; ix1 <= maxX1; ix1++)
+                     for (int ix2 = minX2; ix2 <= maxX2; ix2++)
                      {
-                        if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
+                        for (int ix1 = minX1; ix1 <= maxX1; ix1++)
                         {
-                           //////////////////////////////////////////////////////////////////////////
-                           //read distribution
-                           ////////////////////////////////////////////////////////////////////////////
-                           distributions->getDistribution(f, ix1, ix2, ix3);
-                           //////////////////////////////////////////////////////////////////////////
-                           //compute velocity
-                           //////////////////////////////////////////////////////////////////////////
-                           LBMReal vx, vy, vz, rho;
-                           calcMacros(f, rho, vx, vy, vz);
-                           //double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
-
-                           //////////////////////////////////////////////////////////////////////////
-                           //compute subtotals
-                           //////////////////////////////////////////////////////////////////////////
-
-                           //mean velocity
-                           if ((options&Velocity) == Velocity)
+                           if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
                            {
-                              (*av)(Vx, ix1, ix2, ix3) = (*av)(Vx, ix1, ix2, ix3) + vx;
-                              (*av)(Vy, ix1, ix2, ix3) = (*av)(Vy, ix1, ix2, ix3) + vy;
-                              (*av)(Vz, ix1, ix2, ix3) = (*av)(Vz, ix1, ix2, ix3) + vz;
-                           }
+                              //////////////////////////////////////////////////////////////////////////
+                              //read distribution
+                              ////////////////////////////////////////////////////////////////////////////
+                              distributions->getDistribution(f, ix1, ix2, ix3);
+                              //////////////////////////////////////////////////////////////////////////
+                              //compute velocity
+                              //////////////////////////////////////////////////////////////////////////
+                              LBMReal vx, vy, vz, rho;
+                              calcMacros(f, rho, vx, vy, vz);
+                              //double press = D3Q27System::calcPress(f, rho, vx, vy, vz);
 
-                           //fluctuations
-                           if ((options&Fluctuations) == Fluctuations)
-                           {
-                              (*af)(Vxx, ix1, ix2, ix3) = (*af)(Vxx, ix1, ix2, ix3) + vx*vx;
-                              (*af)(Vyy, ix1, ix2, ix3) = (*af)(Vyy, ix1, ix2, ix3) + vy*vy;
-                              (*af)(Vzz, ix1, ix2, ix3) = (*af)(Vzz, ix1, ix2, ix3) + vz*vz;
-                              (*af)(Vxy, ix1, ix2, ix3) = (*af)(Vxy, ix1, ix2, ix3) + vx*vy;
-                              (*af)(Vxz, ix1, ix2, ix3) = (*af)(Vxz, ix1, ix2, ix3) + vx*vz;
-                              (*af)(Vyz, ix1, ix2, ix3) = (*af)(Vyz, ix1, ix2, ix3) + vy*vz;
-                           }
+                              //////////////////////////////////////////////////////////////////////////
+                              //compute subtotals
+                              //////////////////////////////////////////////////////////////////////////
 
-                           //triple-correlations
-                           if ((options&Triplecorrelations) == Triplecorrelations)
-                           {
-                              (*at)(Vxxx, ix1, ix2, ix3) = (*at)(Vxxx, ix1, ix2, ix3) + vx*vx*vx;
-                              (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) + vx*vx*vy;
-                              (*at)(Vxxz, ix1, ix2, ix3) = (*at)(Vxxz, ix1, ix2, ix3) + vx*vx*vz;
-                              (*at)(Vyyy, ix1, ix2, ix3) = (*at)(Vyyy, ix1, ix2, ix3) + vy*vy*vy;
-                              (*at)(Vyyx, ix1, ix2, ix3) = (*at)(Vyyx, ix1, ix2, ix3) + vy*vy*vx;
-                              (*at)(Vyyz, ix1, ix2, ix3) = (*at)(Vyyz, ix1, ix2, ix3) + vy*vy*vz;
-                              (*at)(Vzzz, ix1, ix2, ix3) = (*at)(Vzzz, ix1, ix2, ix3) + vz*vz*vz;
-                              (*at)(Vzzx, ix1, ix2, ix3) = (*at)(Vzzx, ix1, ix2, ix3) + vz*vz*vx;
-                              (*at)(Vzzy, ix1, ix2, ix3) = (*at)(Vzzy, ix1, ix2, ix3) + vz*vz*vy;
-                              (*at)(Vxyz, ix1, ix2, ix3) = (*at)(Vxyz, ix1, ix2, ix3) + vx*vy*vz;
+                              //mean velocity
+                              if ((options&Velocity) == Velocity)
+                              {
+                                 (*av)(Vx, ix1, ix2, ix3) = (*av)(Vx, ix1, ix2, ix3) + vx;
+                                 (*av)(Vy, ix1, ix2, ix3) = (*av)(Vy, ix1, ix2, ix3) + vy;
+                                 (*av)(Vz, ix1, ix2, ix3) = (*av)(Vz, ix1, ix2, ix3) + vz;
+                              }
+
+                              //fluctuations
+                              if ((options&Fluctuations) == Fluctuations)
+                              {
+                                 (*af)(Vxx, ix1, ix2, ix3) = (*af)(Vxx, ix1, ix2, ix3) + vx*vx;
+                                 (*af)(Vyy, ix1, ix2, ix3) = (*af)(Vyy, ix1, ix2, ix3) + vy*vy;
+                                 (*af)(Vzz, ix1, ix2, ix3) = (*af)(Vzz, ix1, ix2, ix3) + vz*vz;
+                                 (*af)(Vxy, ix1, ix2, ix3) = (*af)(Vxy, ix1, ix2, ix3) + vx*vy;
+                                 (*af)(Vxz, ix1, ix2, ix3) = (*af)(Vxz, ix1, ix2, ix3) + vx*vz;
+                                 (*af)(Vyz, ix1, ix2, ix3) = (*af)(Vyz, ix1, ix2, ix3) + vy*vz;
+                              }
+
+                              //triple-correlations
+                              if ((options&Triplecorrelations) == Triplecorrelations)
+                              {
+                                 (*at)(Vxxx, ix1, ix2, ix3) = (*at)(Vxxx, ix1, ix2, ix3) + vx*vx*vx;
+                                 (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) + vx*vx*vy;
+                                 (*at)(Vxxz, ix1, ix2, ix3) = (*at)(Vxxz, ix1, ix2, ix3) + vx*vx*vz;
+                                 (*at)(Vyyy, ix1, ix2, ix3) = (*at)(Vyyy, ix1, ix2, ix3) + vy*vy*vy;
+                                 (*at)(Vyyx, ix1, ix2, ix3) = (*at)(Vyyx, ix1, ix2, ix3) + vy*vy*vx;
+                                 (*at)(Vyyz, ix1, ix2, ix3) = (*at)(Vyyz, ix1, ix2, ix3) + vy*vy*vz;
+                                 (*at)(Vzzz, ix1, ix2, ix3) = (*at)(Vzzz, ix1, ix2, ix3) + vz*vz*vz;
+                                 (*at)(Vzzx, ix1, ix2, ix3) = (*at)(Vzzx, ix1, ix2, ix3) + vz*vz*vx;
+                                 (*at)(Vzzy, ix1, ix2, ix3) = (*at)(Vzzy, ix1, ix2, ix3) + vz*vz*vy;
+                                 (*at)(Vxyz, ix1, ix2, ix3) = (*at)(Vxyz, ix1, ix2, ix3) + vx*vy*vz;
+                              }
+                              //////////////////////////////////////////////////////////////////////////
                            }
-                           //////////////////////////////////////////////////////////////////////////
                         }
                      }
                   }
@@ -566,31 +557,43 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal()
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::volumeAverage(double step)
 {
-   int istep = int(step);
-   string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
-
    std::ofstream ostr;
-   ostr.open(fname.c_str(), std::ios_base::out);
-   if (!ostr)
-   {
-      ostr.clear();
-      string path = UbSystem::getPathFromString(fname);
-      if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out); }
-      if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
-   }
-   ostr << "z;Vx;Vy;Vz;Vxx;Vyy;Vzz;Vxy;Vxz;Vyz;Vxxx;Vxxy;Vxxz;Vyyy;Vyyx;Vyyz;Vzzz;Vzzx;Vzzy;Vxyz\n";
 
-   CommunicatorPtr comm = Communicator::getInstance();
+   if (root)
+   {
+      int istep = int(step);
+      string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
+
+
+      ostr.open(fname.c_str(), std::ios_base::out);
+      if (!ostr)
+      {
+         ostr.clear();
+         string path = UbSystem::getPathFromString(fname);
+         if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out); }
+         if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
+      }
+      ostr << "z;Vx;Vy;Vz;Vxx;Vyy;Vzz;Vxy;Vxz;Vyz;Vxxx;Vxxy;Vxxz;Vyyy;Vyyx;Vyyz;Vzzz;Vzzx;Vzzy;Vxyz\n";
+   }
+
    int size = (int)levels.size();
+   int sizeOfLevelCoords = (int)levelCoords.size();
+   
+   if (size != 2*sizeOfLevelCoords)
+   {
+      UB_THROW(UbException(UB_EXARGS, "Number of levels coordinates don't match number of levels!"));
+   }
+   
+   int k = 0;
 
    for (int i = 0; i < size; i++)
    {
       int level = levels[i];
       double dx = grid->getDeltaX(level);
-      double start = levelCoords[i];
-      double stop = levelCoords[i + 1] - dx*0.5;
+      double start = levelCoords[k];
+      double stop  = levelCoords[k + 1];
 
-      for (double j = start; j <= stop; j += dx)
+      for (double j = start; j <stop; j += dx)
       {
          D3Q27IntegrateValuesHelper intValHelp(grid, comm,
             bounds[0], bounds[1], j,
@@ -598,39 +601,56 @@ void TimeAveragedValuesCoProcessor::volumeAverage(double step)
 
          intValHelp.calculateAV2();
 
-         double numberOfFluidsNodes = intValHelp.getNumberOfFluidsNodes();
-         if (numberOfFluidsNodes > 0)
+         if (root)
          {
-            double Vx = intValHelp.getAVx() / numberOfFluidsNodes;
-            double Vy = intValHelp.getAVy() / numberOfFluidsNodes;
-            double Vz = intValHelp.getAVz() / numberOfFluidsNodes;
-
-            double Vxx = intValHelp.getAVxx() / numberOfFluidsNodes;
-            double Vyy = intValHelp.getAVyy() / numberOfFluidsNodes;
-            double Vzz = intValHelp.getAVzz() / numberOfFluidsNodes;
-            double Vxy = intValHelp.getAVxy() / numberOfFluidsNodes;
-            double Vxz = intValHelp.getAVxz() / numberOfFluidsNodes;
-            double Vyz = intValHelp.getAVyz() / numberOfFluidsNodes;
-
-            double Vxxx = intValHelp.getAVxxx() / numberOfFluidsNodes;
-            double Vxxy = intValHelp.getAVxxy() / numberOfFluidsNodes;
-            double Vxxz = intValHelp.getAVxxz() / numberOfFluidsNodes;
-            double Vyyy = intValHelp.getAVyyy() / numberOfFluidsNodes;
-            double Vyyx = intValHelp.getAVyyx() / numberOfFluidsNodes;
-            double Vyyz = intValHelp.getAVyyz() / numberOfFluidsNodes;
-            double Vzzz = intValHelp.getAVzzz() / numberOfFluidsNodes;
-            double Vzzx = intValHelp.getAVzzx() / numberOfFluidsNodes;
-            double Vzzy = intValHelp.getAVzzy() / numberOfFluidsNodes;
-            double Vxyz = intValHelp.getAVxyz() / numberOfFluidsNodes;
-
-
-            ostr << j + 0.5*dx << ";" << Vx << ";" << Vy << ";" << Vz << ";";
-            ostr << Vxx << ";" << Vyy << ";" << Vzz << ";" << Vxy << ";" << Vxz << ";" << Vyz << ";";
-            ostr << Vxxx << ";" << Vxxy << ";" << Vxxz << ";" << Vyyy << ";" << Vyyx << ";" << Vyyz << ";" << Vzzz << ";" << Vzzx << ";" << Vzzy << ";" << Vxyz << "\n";
+            double numberOfFluidsNodes = intValHelp.getNumberOfFluidsNodes();
+            if (numberOfFluidsNodes > 0)
+            {
+               //mean velocity
+               if ((options&Velocity) == Velocity)
+               {
+                  double Vx = intValHelp.getAVx() / numberOfFluidsNodes;
+                  double Vy = intValHelp.getAVy() / numberOfFluidsNodes;
+                  double Vz = intValHelp.getAVz() / numberOfFluidsNodes;
+                  ostr << j + 0.5*dx << ";" << Vx << ";" << Vy << ";" << Vz;
+               }
+               //fluctuations
+               if ((options&Fluctuations) == Fluctuations)
+               {
+                  double Vxx = intValHelp.getAVxx() / numberOfFluidsNodes;
+                  double Vyy = intValHelp.getAVyy() / numberOfFluidsNodes;
+                  double Vzz = intValHelp.getAVzz() / numberOfFluidsNodes;
+                  double Vxy = intValHelp.getAVxy() / numberOfFluidsNodes;
+                  double Vxz = intValHelp.getAVxz() / numberOfFluidsNodes;
+                  double Vyz = intValHelp.getAVyz() / numberOfFluidsNodes;
+                  ostr << ";" << Vxx << ";" << Vyy << ";" << Vzz << ";" << Vxy << ";" << Vxz << ";" << Vyz;
+               }
+               //triple-correlations
+               if ((options&Triplecorrelations) == Triplecorrelations)
+               {
+                  double Vxxx = intValHelp.getAVxxx() / numberOfFluidsNodes;
+                  double Vxxy = intValHelp.getAVxxy() / numberOfFluidsNodes;
+                  double Vxxz = intValHelp.getAVxxz() / numberOfFluidsNodes;
+                  double Vyyy = intValHelp.getAVyyy() / numberOfFluidsNodes;
+                  double Vyyx = intValHelp.getAVyyx() / numberOfFluidsNodes;
+                  double Vyyz = intValHelp.getAVyyz() / numberOfFluidsNodes;
+                  double Vzzz = intValHelp.getAVzzz() / numberOfFluidsNodes;
+                  double Vzzx = intValHelp.getAVzzx() / numberOfFluidsNodes;
+                  double Vzzy = intValHelp.getAVzzy() / numberOfFluidsNodes;
+                  double Vxyz = intValHelp.getAVxyz() / numberOfFluidsNodes;
+                  ostr << ";" << Vxxx << ";" << Vxxy << ";" << Vxxz << ";" << Vyyy << ";" << Vyyx << ";" << Vyyz << ";" << Vzzz << ";" << Vzzx << ";" << Vzzy << ";" << Vxyz;
+               }
+               ostr << "\n";
+            }
          }
       }
+      k += 2;
    }
-   ostr.close();
+
+   if (root)
+   {
+      ostr.close();
+   }
 }
 
 

@@ -40,6 +40,11 @@ CommunicatorPtr MPICommunicator::getInstance()
       Communicator::instance = CommunicatorPtr(new MPICommunicator());
    return Communicator::instance;
 }
+//////////////////////////////////////////////////////////////////////////
+void MPICommunicator::abort(int errorcode)
+{
+   MPI_Abort(comm, errorcode);
+}
 ////////////////////////////////////////////////////////////////////////////
 vector<string> MPICommunicator::gather(const string& str)
 {
@@ -141,6 +146,11 @@ int MPICommunicator::getNumberOfProcessesInBundle(int bundle)
    return numprocs;
 }
 //////////////////////////////////////////////////////////////////////////
+bool MPICommunicator::isRoot()
+{
+   return PID == root;
+}
+//////////////////////////////////////////////////////////////////////////
 void MPICommunicator::sendSerializedObject( std::stringstream& ss, int target)
 {
    string str = ss.str();
@@ -195,6 +205,21 @@ void MPICommunicator::broadcast(std::vector<float>& values)
 void MPICommunicator::broadcast(std::vector<double>& values)
 {
    broadcast<double>(values);
+}
+//////////////////////////////////////////////////////////////////////////
+void MPICommunicator::broadcast(int& value)
+{
+   broadcast<int>(value);
+}
+//////////////////////////////////////////////////////////////////////////
+void MPICommunicator::broadcast(float& value)
+{
+   broadcast<float>(value);
+}
+//////////////////////////////////////////////////////////////////////////
+void MPICommunicator::broadcast(double& value)
+{
+   broadcast<double>(value);
 }
 //////////////////////////////////////////////////////////////////////////
 

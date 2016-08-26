@@ -1,7 +1,6 @@
 #include "Calculator.h"
 #include <basics/utilities/UbException.h>
 #include <boost/foreach.hpp>
-#include "SimulationParameters.h"
 #include "MathUtil.hpp"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
@@ -171,9 +170,10 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
             }
 
-            if (taValuesCoProcessor && mainThread && straightStartLevel<maxInitLevel)
+            sync->wait();
+            if (taValuesCoProcessor && mainThread)
             {
-               taValuesCoProcessor->process(calcStep-1);
+               taValuesCoProcessor->calculateSubtotal(calcStep-1);
             }
             sync->wait();
             
@@ -202,7 +202,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
       //error = boost::current_exception();
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
-      boost::dynamic_pointer_cast<MPICommunicator>(Communicator::getInstance())->~MPICommunicator();
+      Communicator::getInstance()->abort(1);
       exit(EXIT_FAILURE);
    }
 }

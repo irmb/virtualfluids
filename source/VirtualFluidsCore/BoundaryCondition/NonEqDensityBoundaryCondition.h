@@ -4,7 +4,7 @@
 #include "BoundaryCondition.h"
 
 class NonEqDensityBoundaryCondition;
-typedef boost::shared_ptr<NonEqDensityBoundaryCondition> DensityBoundaryConditionStrategyPtr;
+typedef boost::shared_ptr<NonEqDensityBoundaryCondition> NonEqDensityBoundaryConditionPtr;
 
 class NonEqDensityBoundaryCondition : public BoundaryCondition
 {

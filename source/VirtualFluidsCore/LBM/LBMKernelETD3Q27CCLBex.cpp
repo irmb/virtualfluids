@@ -3,7 +3,6 @@
 #include "D3Q27NoSlipBCAdapter.h"
 #include "D3Q27DensityBCAdapter.h"
 #include "D3Q27VelocityBCAdapter.h"
-#include "SimulationParameters.h"
 #include "D3Q27InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVectorEx.h"
 #include <math.h>

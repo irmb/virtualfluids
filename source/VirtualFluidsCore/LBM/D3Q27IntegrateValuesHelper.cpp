@@ -20,7 +20,7 @@ D3Q27IntegrateValuesHelper::D3Q27IntegrateValuesHelper(Grid3DPtr grid, Communica
    numberOfFluidsNodes(0),
    numberOfSolidNodes(0)
 {
-   boundingBox =  GbCuboid3DPtr(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
+   boundingBox = GbCuboid3DPtr(new GbCuboid3D(minX1, minX2, minX3, maxX1, maxX2, maxX3));
    init(-1);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -46,6 +46,8 @@ D3Q27IntegrateValuesHelper::~D3Q27IntegrateValuesHelper()
 //////////////////////////////////////////////////////////////////////////
 void D3Q27IntegrateValuesHelper::init(int level)
 {
+   root = comm->isRoot();
+
    double orgX1, orgX2, orgX3;
    int gridRank = grid->getRank();
    int minInitLevel, maxInitLevel;
@@ -53,7 +55,7 @@ void D3Q27IntegrateValuesHelper::init(int level)
    {
       minInitLevel = this->grid->getCoarsestInitializedLevel();
       maxInitLevel = this->grid->getFinestInitializedLevel();
-   } 
+   }
    else
    {
       minInitLevel = level;
@@ -62,7 +64,7 @@ void D3Q27IntegrateValuesHelper::init(int level)
 
    double numSolids = 0.0;
    double numFluids = 0.0;
-   for (int level = minInitLevel; level<=maxInitLevel; level++)
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
       vector<Block3DPtr> blockVector;
       grid->getBlocks(level, gridRank, blockVector);
@@ -83,18 +85,18 @@ void D3Q27IntegrateValuesHelper::init(int level)
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
          double internX1, internX2, internX3;
 
-         double         dx       = grid->getDeltaX(block);
+         double         dx = grid->getDeltaX(block);
          UbTupleDouble3 orgDelta = grid->getNodeOffset(block);
 
-         for (int ix3=ghostLayerWitdh; ix3<(int)distributions->getNX3()-ghostLayerWitdh; ix3++)
+         for (int ix3 = ghostLayerWitdh; ix3 < (int)distributions->getNX3() - ghostLayerWitdh; ix3++)
          {
-            for (int ix2=ghostLayerWitdh; ix2<(int)distributions->getNX2()-ghostLayerWitdh; ix2++)
+            for (int ix2 = ghostLayerWitdh; ix2 < (int)distributions->getNX2() - ghostLayerWitdh; ix2++)
             {
-               for (int ix1=ghostLayerWitdh; ix1<(int)distributions->getNX1()-ghostLayerWitdh; ix1++)
+               for (int ix1 = ghostLayerWitdh; ix1 < (int)distributions->getNX1() - ghostLayerWitdh; ix1++)
                {
-                  internX1 = orgX1 - val<1>(orgDelta) +ix1 * dx;
-                  internX2 = orgX2 - val<2>(orgDelta) +ix2 * dx;
-                  internX3 = orgX3 - val<3>(orgDelta) +ix3 * dx;
+                  internX1 = orgX1 - val<1>(orgDelta) + ix1 * dx;
+                  internX2 = orgX2 - val<2>(orgDelta) + ix2 * dx;
+                  internX3 = orgX3 - val<3>(orgDelta) + ix3 * dx;
                   if (boundingBox->isPointInGbObject3D(internX1, internX2, internX3))
                   {
                      if (!bcArray.isSolid(ix1, ix2, ix3) && !bcArray.isUndefined(ix1, ix2, ix3))
@@ -120,7 +122,7 @@ void D3Q27IntegrateValuesHelper::init(int level)
    values.push_back(numFluids);
    rvalues = comm->gather(values);
 
-   if (comm->getProcessID() == comm->getRoot())
+   if (root)
    {
       numberOfSolidNodes = 0.0;
       numberOfFluidsNodes = 0.0;
@@ -129,7 +131,7 @@ void D3Q27IntegrateValuesHelper::init(int level)
       for (int i = 0; i < rsize; i += vsize)
       {
          numberOfSolidNodes += rvalues[i];
-         numberOfFluidsNodes += rvalues[i+1];
+         numberOfFluidsNodes += rvalues[i + 1];
       }
    }
 
@@ -155,9 +157,9 @@ void D3Q27IntegrateValuesHelper::calculateAV()
          double Avzz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVzz);
 
          double Avxz = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVxz);
-         sAvVx1 +=abs(Avx);
-         sAvVx2 +=abs(Avy);
-         sAvVx3 +=abs(Avz);
+         sAvVx1 += abs(Avx);
+         sAvVx2 += abs(Avy);
+         sAvVx3 += abs(Avz);
 
          sTSx1 += sqrt(Avxx);
          sTSx2 += sqrt(Avyy);
@@ -179,19 +181,19 @@ void D3Q27IntegrateValuesHelper::calculateAV()
    values.push_back(numberOfFluidsNodes);
 
    rvalues = comm->gather(values);
-   if (comm->getProcessID() == comm->getRoot())
+   if (root)
    {
       clearData();
-      for (int i = 0; i < (int)rvalues.size(); i+=8)
+      for (int i = 0; i < (int)rvalues.size(); i += 8)
       {
          sAvVx1 += rvalues[i];
-         sAvVx2 += rvalues[i+1];
-         sAvVx3 += rvalues[i+2];
-         sTSx1 += rvalues[i+3];
-         sTSx2 += rvalues[i+4];
-         sTSx3 += rvalues[i+5];
-         sTSx1x3 += rvalues[i+6];
-         numberOfFluidsNodes += rvalues[i+7];
+         sAvVx2 += rvalues[i + 1];
+         sAvVx3 += rvalues[i + 2];
+         sTSx1 += rvalues[i + 3];
+         sTSx2 += rvalues[i + 4];
+         sTSx3 += rvalues[i + 5];
+         sTSx1x3 += rvalues[i + 6];
+         numberOfFluidsNodes += rvalues[i + 7];
       }
    }
 }
@@ -245,9 +247,9 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
    BOOST_FOREACH(CalcNodes cn, cnodes)
    {
       LBMKernel3DPtr kernel = cn.block->getKernel();
-      AverageVelocityArray3DPtr averagedVelocity = kernel->getDataSet()->getAverageVelocity();
-      AverageFluctuationsArray3DPtr averagedFluctuations = kernel->getDataSet()->getAverageFluctuations();
-      AverageTriplecorrelationsArray3DPtr averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
+      AverageValuesArray3DPtr averagedVelocity = kernel->getDataSet()->getAverageVelocity();
+      AverageValuesArray3DPtr averagedFluctuations = kernel->getDataSet()->getAverageFluctuations();
+      AverageValuesArray3DPtr averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
 
       BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
       {
@@ -262,28 +264,28 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
          double aVxz = (*averagedFluctuations)(Vxz, val<1>(node), val<2>(node), val<3>(node));
          double aVyz = (*averagedFluctuations)(Vyz, val<1>(node), val<2>(node), val<3>(node));
 
-         double aVxxx = (*averagedFluctuations)(Vxxx, val<1>(node), val<2>(node), val<3>(node));
-         double aVxxy = (*averagedFluctuations)(Vxxy, val<1>(node), val<2>(node), val<3>(node));
-         double aVxxz = (*averagedFluctuations)(Vxxz, val<1>(node), val<2>(node), val<3>(node));
-         double aVyyy = (*averagedFluctuations)(Vyyy, val<1>(node), val<2>(node), val<3>(node));
-         double aVyyx = (*averagedFluctuations)(Vyyx, val<1>(node), val<2>(node), val<3>(node));
-         double aVyyz = (*averagedFluctuations)(Vyyz, val<1>(node), val<2>(node), val<3>(node));
-         double aVzzz = (*averagedFluctuations)(Vzzz, val<1>(node), val<2>(node), val<3>(node));
-         double aVzzx = (*averagedFluctuations)(Vzzx, val<1>(node), val<2>(node), val<3>(node));
-         double aVzzy = (*averagedFluctuations)(Vzzy, val<1>(node), val<2>(node), val<3>(node));
-         double aVxyz = (*averagedFluctuations)(Vxyz, val<1>(node), val<2>(node), val<3>(node));
+         double aVxxx = (*averagedTriplecorrelations)(Vxxx, val<1>(node), val<2>(node), val<3>(node));
+         double aVxxy = (*averagedTriplecorrelations)(Vxxy, val<1>(node), val<2>(node), val<3>(node));
+         double aVxxz = (*averagedTriplecorrelations)(Vxxz, val<1>(node), val<2>(node), val<3>(node));
+         double aVyyy = (*averagedTriplecorrelations)(Vyyy, val<1>(node), val<2>(node), val<3>(node));
+         double aVyyx = (*averagedTriplecorrelations)(Vyyx, val<1>(node), val<2>(node), val<3>(node));
+         double aVyyz = (*averagedTriplecorrelations)(Vyyz, val<1>(node), val<2>(node), val<3>(node));
+         double aVzzz = (*averagedTriplecorrelations)(Vzzz, val<1>(node), val<2>(node), val<3>(node));
+         double aVzzx = (*averagedTriplecorrelations)(Vzzx, val<1>(node), val<2>(node), val<3>(node));
+         double aVzzy = (*averagedTriplecorrelations)(Vzzy, val<1>(node), val<2>(node), val<3>(node));
+         double aVxyz = (*averagedTriplecorrelations)(Vxyz, val<1>(node), val<2>(node), val<3>(node));
 
-         lsaVx   += aVx  ;
-         lsaVy   += aVy  ;
-         lsaVz   += aVz  ;
-         
-         lsaVxx  += aVxx ;
-         lsaVyy  += aVyy ;
-         lsaVzz  += aVzz ;
-         lsaVxy  += aVxy ;
-         lsaVxz  += aVxz ;
-         lsaVyz  += aVyz ;
-         
+         lsaVx += aVx;
+         lsaVy += aVy;
+         lsaVz += aVz;
+
+         lsaVxx += aVxx;
+         lsaVyy += aVyy;
+         lsaVzz += aVzz;
+         lsaVxy += aVxy;
+         lsaVxz += aVxz;
+         lsaVyz += aVyz;
+
          lsaVxxx += aVxxx;
          lsaVxxy += aVxxy;
          lsaVxxz += aVxxz;
@@ -300,17 +302,17 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
    }
    vector<double> values;
    vector<double> rvalues;
-   values.push_back(lsaVx  );
-   values.push_back(lsaVy  );
-   values.push_back(lsaVz  );
-                     
-   values.push_back(lsaVxx );
-   values.push_back(lsaVyy );
-   values.push_back(lsaVzz );
-   values.push_back(lsaVxy );
-   values.push_back(lsaVxz );
-   values.push_back(lsaVyz );
-                    
+   values.push_back(lsaVx);
+   values.push_back(lsaVy);
+   values.push_back(lsaVz);
+
+   values.push_back(lsaVxx);
+   values.push_back(lsaVyy);
+   values.push_back(lsaVzz);
+   values.push_back(lsaVxy);
+   values.push_back(lsaVxz);
+   values.push_back(lsaVyz);
+
    values.push_back(lsaVxxx);
    values.push_back(lsaVxxy);
    values.push_back(lsaVxxz);
@@ -323,22 +325,21 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
    values.push_back(lsaVxyz);
 
    rvalues = comm->gather(values);
-   if (comm->getProcessID() == comm->getRoot())
+   if (root)
    {
-      clearData();
       for (int i = 0; i < (int)rvalues.size(); i += 19)
       {
-         saVx   += rvalues[i];
-         saVy   += rvalues[i + 1];
-         saVz   += rvalues[i + 2];
-              
-         saVxx  += rvalues[i + 3];
-         saVyy  += rvalues[i + 4];
-         saVzz  += rvalues[i + 5];
-         saVxy  += rvalues[i + 6];
-         saVxz  += rvalues[i + 7];
-         saVyz  += rvalues[i + 8];
-              
+         saVx += rvalues[i];
+         saVy += rvalues[i + 1];
+         saVz += rvalues[i + 2];
+
+         saVxx += rvalues[i + 3];
+         saVyy += rvalues[i + 4];
+         saVzz += rvalues[i + 5];
+         saVxy += rvalues[i + 6];
+         saVxz += rvalues[i + 7];
+         saVyz += rvalues[i + 8];
+
          saVxxx += rvalues[i + 9];
          saVxxy += rvalues[i + 10];
          saVxxz += rvalues[i + 11];
@@ -349,7 +350,7 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
          saVzzx += rvalues[i + 16];
          saVzzy += rvalues[i + 17];
          saVxyz += rvalues[i + 18];
-         
+
       }
    }
 }
@@ -357,7 +358,7 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
 //////////////////////////////////////////////////////////////////////////
 void D3Q27IntegrateValuesHelper::calculateMQ()
 {
-   LBMReal f[D3Q27System::ENDF+1];
+   LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
    clearData();
 
@@ -388,39 +389,35 @@ void D3Q27IntegrateValuesHelper::calculateMQ()
       {
          distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));
          calcMacros(f, rho, vx1, vx2, vx3);
-         //press = D3Q27System::calcPress(f,rho,vx1,vx2,vx3);
          sRho += rho*cellVolume;
          sVx1 += vx1*cellVolume;
          sVx2 += vx2*cellVolume;
          sVx3 += vx3*cellVolume;
-         sCellVolume+=cellVolume;
-         //sPress += press*area;
-         //sVm += (sqrt(vx1*vx1 + vx2*vx2 + vx3*vx3)*area);
+         sCellVolume += cellVolume;
       }
    }
-   vector<double> values;
+   vector<double> values(5);
    vector<double> rvalues;
-   values.push_back(sRho);
-   values.push_back(sVx1);
-   values.push_back(sVx2);
-   values.push_back(sVx3);
-   values.push_back(sCellVolume);
-   //values.push_back(sPress);
-   //values.push_back(sVm);
+   values[0] = sRho;
+   values[1] = sVx1;
+   values[2] = sVx2;
+   values[3] = sVx3;
+   values[4] = sCellVolume;
 
-   comm->allGather(values, rvalues);
-   clearData();
-   int rsize = (int)rvalues.size();
-   int vsize = (int)values.size();
-   for (int i = 0; i < rsize; i+=vsize)
+   rvalues = comm->gather(values);
+   if (root)
    {
-      sRho += rvalues[i];
-      sVx1 += rvalues[i+1];
-      sVx2 += rvalues[i+2];
-      sVx3 += rvalues[i+3];
-      sCellVolume += rvalues[i+4];
-      //sPress += rvalues[i+5];
-      //sVm += rvalues[i+6];
+      clearData();
+      int rsize = (int)rvalues.size();
+      int vsize = (int)values.size();
+      for (int i = 0; i < rsize; i += vsize)
+      {
+         sRho += rvalues[i];
+         sVx1 += rvalues[i + 1];
+         sVx2 += rvalues[i + 2];
+         sVx3 += rvalues[i + 3];
+         sCellVolume += rvalues[i + 4];
+      }
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -430,7 +427,7 @@ void D3Q27IntegrateValuesHelper::clearData()
    sVx1 = 0.0;
    sVx2 = 0.0;
    sVx3 = 0.0;
-   sCellVolume= 0.0;
+   sCellVolume = 0.0;
    //sVm = 0.0;
    //sPress = 0.0;
    //numberOfFluidsNodes = 0.0;

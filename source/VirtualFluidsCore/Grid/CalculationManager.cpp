@@ -9,7 +9,6 @@
 
 #include <Calculator.h>
 #include <PrePostBcCalculator.h>
-#include <SimulationParameters.h>
 #include <Communicator.h>
 
 #if defined VF_FETOL

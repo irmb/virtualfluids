@@ -17,7 +17,7 @@ class D3Q27CompactInterpolationProcessor : public D3Q27InterpolationProcessor
 {
 public:
    D3Q27CompactInterpolationProcessor();
-   D3Q27CompactInterpolationProcessor(LBMReal omegaC, LBMReal omegaF);
+   D3Q27CompactInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, bool compressible);
    virtual ~D3Q27CompactInterpolationProcessor();
    D3Q27InterpolationProcessorPtr clone();
    void setOmegas(LBMReal omegaC, LBMReal omegaF);
@@ -38,6 +38,7 @@ private:
    LBMReal omegaC, omegaF;
    LBMReal a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz;
    LBMReal drho_SWT, drho_NWT, drho_NET, drho_SET, drho_SWB, drho_NWB, drho_NEB, drho_SEB;
+   bool compressible;
 
    void init();
    void calcMoments(const LBMReal* const f, LBMReal omega, LBMReal& rho, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3, 

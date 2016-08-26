@@ -1,5 +1,4 @@
 #include "D3Q27OffsetInterpolationProcessor.h"
-#include "SimulationParameters.h"
 
 #include <boost/foreach.hpp>
 

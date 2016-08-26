@@ -1,5 +1,4 @@
 #include "D3Q27CompactInterpolationProcessor.h"
-#include "SimulationParameters.h"
 
 #include <boost/foreach.hpp>
 
@@ -9,8 +8,8 @@ D3Q27CompactInterpolationProcessor::D3Q27CompactInterpolationProcessor()
    init();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27CompactInterpolationProcessor::D3Q27CompactInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
-                                                          : omegaC(omegaC), omegaF(omegaF)
+D3Q27CompactInterpolationProcessor::D3Q27CompactInterpolationProcessor(LBMReal omegaC, LBMReal omegaF, bool compressible=false)
+                                                          : omegaC(omegaC), omegaF(omegaF), compressible(compressible)
 {
    init();
 }
@@ -30,9 +29,8 @@ void D3Q27CompactInterpolationProcessor::init()
    calcFeqsForDirFct = NULL;
    calcMacrosFct     = NULL;
    calcFeqFct        = NULL;
-   SimulationParametersPtr param = SimulationParameters::getInstanz();
 
-   if(param->isCompressibleModel())
+   if(compressible)
    {
       calcMacrosFct     = &D3Q27System::calcCompMacroscopicValues;
       calcFeqFct        = &D3Q27System::calcCompFeq; 

@@ -37,11 +37,13 @@ public:
 public:
    TimeAveragedValuesCoProcessor();
    TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-      UbSchedulerPtr s, int options);
+      UbSchedulerPtr s, CommunicatorPtr comm, int options);
    TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-      UbSchedulerPtr s, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds);
+      UbSchedulerPtr s, CommunicatorPtr comm, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds);
    //! Make update
    void process(double step);
+   //! Computes subtotal of velocity , fluctuations and triple correlations
+   void calculateSubtotal(double step);
    void addLevelCoordinate(double c);
 protected:
    //! Prepare data and write in .vtk file
@@ -51,17 +53,18 @@ protected:
    void clearData();
    //! Computes average values of velocity , fluctuations and triple correlations 
    void calculateAverageValues(double timeStep);
-   //! Computes subtotal of velocity , fluctuations and triple correlations
-   void calculateSubtotal();
+
    void init(UbSchedulerPtr s);
    void volumeAverage(double step);
 
 private:
+   CommunicatorPtr comm;
    std::vector<UbTupleFloat3> nodes;
    std::vector<UbTupleInt8> cells;
    std::vector<std::string> datanames;
    std::vector<std::vector<double> > data;
    std::vector<std::vector<Block3DPtr> > blockVector;
+   bool root;
    int minInitLevel; //min init level
    int maxInitLevel;
    int gridRank;
@@ -88,6 +91,7 @@ private:
    int minFineStep;
    int maxFineStep;
    int levelFactor;
+   double maxStep;
 
    int iMinX1, iMinX2, iMinX3;
    int iMaxX1, iMaxX2, iMaxX3;

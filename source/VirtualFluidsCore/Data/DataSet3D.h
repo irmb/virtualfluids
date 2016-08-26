@@ -13,14 +13,14 @@ typedef boost::shared_ptr<DataSet3D> DataSet3DPtr;
 typedef CbArray4D<LBMReal,IndexerX4X3X2X1> AverageValuesArray3D;
 typedef boost::shared_ptr< AverageValuesArray3D > AverageValuesArray3DPtr;
 
-typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageVelocityArray3D;
-typedef boost::shared_ptr< AverageValuesArray3D > AverageVelocityArray3DPtr;
-
-typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageFluctuationsArray3D;
-typedef boost::shared_ptr< AverageFluctuationsArray3D > AverageFluctuationsArray3DPtr;
-
-typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageTriplecorrelationsArray3D;
-typedef boost::shared_ptr< AverageValuesArray3D > AverageTriplecorrelationsArray3DPtr;
+//typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageVelocityArray3D;
+//typedef boost::shared_ptr< AverageValuesArray3D > AverageVelocityArray3DPtr;
+//
+//typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageFluctuationsArray3D;
+//typedef boost::shared_ptr< AverageFluctuationsArray3D > AverageFluctuationsArray3DPtr;
+//
+//typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageTriplecorrelationsArray3D;
+//typedef boost::shared_ptr< AverageValuesArray3D > AverageTriplecorrelationsArray3DPtr;
 
 typedef CbArray4D<LBMReal,IndexerX4X3X2X1> ShearStressValuesArray3D;
 typedef boost::shared_ptr< ShearStressValuesArray3D > ShearStressValuesArray3DPtr;
@@ -34,14 +34,14 @@ public:
    DistributionArray3DPtr getFdistributions() const;
    void setFdistributions(DistributionArray3DPtr distributions);
 
-   AverageVelocityArray3DPtr getAverageVelocity() const;
-   void setAverageVelocity(AverageVelocityArray3DPtr values);
+   AverageValuesArray3DPtr getAverageVelocity() const;
+   void setAverageVelocity(AverageValuesArray3DPtr values);
 
-   AverageFluctuationsArray3DPtr getAverageFluctuations() const;
-   void setAverageFluctuations(AverageFluctuationsArray3DPtr values);
+   AverageValuesArray3DPtr getAverageFluctuations() const;
+   void setAverageFluctuations(AverageValuesArray3DPtr values);
 
-   AverageTriplecorrelationsArray3DPtr getAverageTriplecorrelations() const;
-   void setAverageTriplecorrelations(AverageTriplecorrelationsArray3DPtr values);
+   AverageValuesArray3DPtr getAverageTriplecorrelations() const;
+   void setAverageTriplecorrelations(AverageValuesArray3DPtr values);
 
 
 
@@ -56,9 +56,9 @@ private:
    DistributionArray3DPtr mFdistributions;
    AverageValuesArray3DPtr mAverageValues;
 
-   AverageVelocityArray3DPtr mAverageVelocity;
-   AverageFluctuationsArray3DPtr mAverageFluktuations;
-   AverageTriplecorrelationsArray3DPtr mAverageTriplecorrelations;
+   AverageValuesArray3DPtr mAverageVelocity;
+   AverageValuesArray3DPtr mAverageFluktuations;
+   AverageValuesArray3DPtr mAverageTriplecorrelations;
 
    ShearStressValuesArray3DPtr mShearStressValues;
 
@@ -95,32 +95,32 @@ inline void DataSet3D::setAverageValues(AverageValuesArray3DPtr values)
    mAverageValues = values; 
 }
 
-inline AverageVelocityArray3DPtr DataSet3D::getAverageVelocity() const
+inline AverageValuesArray3DPtr DataSet3D::getAverageVelocity() const
 {
    return mAverageVelocity;
 }
 
-inline void DataSet3D::setAverageVelocity(AverageVelocityArray3DPtr values)
+inline void DataSet3D::setAverageVelocity(AverageValuesArray3DPtr values)
 {
    mAverageVelocity = values;
 }
 
-inline AverageFluctuationsArray3DPtr DataSet3D::getAverageFluctuations() const
+inline AverageValuesArray3DPtr DataSet3D::getAverageFluctuations() const
 {
    return mAverageFluktuations;
 }
 
-inline void DataSet3D::setAverageFluctuations(AverageFluctuationsArray3DPtr values)
+inline void DataSet3D::setAverageFluctuations(AverageValuesArray3DPtr values)
 {
    mAverageFluktuations = values;
 }
 
-inline AverageTriplecorrelationsArray3DPtr DataSet3D::getAverageTriplecorrelations() const
+inline AverageValuesArray3DPtr DataSet3D::getAverageTriplecorrelations() const
 {
    return mAverageTriplecorrelations;
 }
 
-inline void DataSet3D::setAverageTriplecorrelations(AverageTriplecorrelationsArray3DPtr values)
+inline void DataSet3D::setAverageTriplecorrelations(AverageValuesArray3DPtr values)
 {
    mAverageTriplecorrelations = values;
 }

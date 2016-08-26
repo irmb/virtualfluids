@@ -84,6 +84,14 @@ namespace Utilities
 
       return hash;
    }
+   //linear interpolation
+   static double linear_interpolation1D(double x0, double y0, double x1, double y1, double x)
+   {
+      double a = (y1 - y0) / (x1 - x0);
+      double b = -a*x0 + y0;
+      double y = a * x + b;
+      return y;
+   }
 };
 
 #endif

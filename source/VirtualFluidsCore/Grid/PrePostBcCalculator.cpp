@@ -1,7 +1,6 @@
 #include "PrePostBcCalculator.h"
 #include <basics/utilities/UbException.h>
 #include <boost/foreach.hpp>
-#include "SimulationParameters.h"
 #include "MathUtil.hpp"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 

@@ -35,6 +35,8 @@ public:
    int getBundleRoot();
    int getProcessRoot();
    int getNumberOfProcessesInBundle(int bundle);
+   bool isRoot();
+   void abort(int errorcode);
 
    void sendSerializedObject(std::stringstream& ss, int target);
    void receiveSerializedObject(std::stringstream& ss, int source);
@@ -50,6 +52,9 @@ public:
    void allGather(std::vector<float>& svalues, std::vector<float>& rvalues);
    void allGather(std::vector<double>& svalues, std::vector<double>& rvalues);
 
+   void broadcast(int& value);
+   void broadcast(float& value);
+   void broadcast(double& value);
    void broadcast(std::vector<int>& values);
    void broadcast(std::vector<float>& values);
    void broadcast(std::vector<double>& values);
@@ -62,6 +67,10 @@ public:
 
    template <class T>
    void broadcast(std::vector<T>& values);
+
+   template <class T>
+   void broadcast(T& value);
+
 private:
    int numprocs, PID;
    MPI_Comm comm;
@@ -154,6 +163,18 @@ void MPICommunicator::broadcast(std::vector<T>& values)
    }
 
    MPI_Bcast(&values[0], (int)values.size(), mpiDataType, this->root, comm);
+}
+//////////////////////////////////////////////////////////////////////////
+template <class T>
+void MPICommunicator::broadcast(T& value)
+{
+   MPI_Datatype mpiDataType;
+   if ((std::string)typeid(T).name() == (std::string)typeid(double).name()) mpiDataType = MPI_DOUBLE;
+   else if ((std::string)typeid(T).name() == (std::string)typeid(float).name()) mpiDataType = MPI_FLOAT;
+   else if ((std::string)typeid(T).name() == (std::string)typeid(int).name()) mpiDataType = MPI_INT;
+   else throw UbException(UB_EXARGS, "no MpiDataType for T" + (std::string)typeid(T).name());
+
+   MPI_Bcast(&value, 1, mpiDataType, this->root, comm);
 }
 //////////////////////////////////////////////////////////////////////////
 

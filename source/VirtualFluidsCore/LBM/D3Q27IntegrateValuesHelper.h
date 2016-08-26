@@ -77,6 +77,8 @@ public:
 protected:
 private:
 	void init(int level);
+
+   bool root;
 	Grid3DPtr grid;
    double sVx1, sVx2, sVx3, sRho, sCellVolume;// sPress, sVm;
    double numberOfFluidsNodes, numberOfSolidNodes;

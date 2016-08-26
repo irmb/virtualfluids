@@ -35,7 +35,7 @@ void RefineAroundGbObjectHelper::refine()
    RatioSmoothBlockVisitor ratioSmoothVisitor(refineLevel);
    grid->accept(ratioSmoothVisitor);
 
-   OverlapBlockVisitor overlapVisitor(refineLevel);
+   OverlapBlockVisitor overlapVisitor(refineLevel, false);
    grid->accept(overlapVisitor);
 
    std::vector<int> dirs;

@@ -1,6 +1,5 @@
 #include "AverageValuesCoProcessor.h"
 #include "LBMKernel3D.h"
-#include "SimulationParameters.h"
 #include "D3Q27ETBCProcessor.h"
 #include <vector>
 #include <sstream>

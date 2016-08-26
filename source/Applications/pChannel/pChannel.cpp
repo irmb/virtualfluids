@@ -2,7 +2,10 @@
 #include <string>
 #include "VirtualFluids.h"
 
-
+double rangeRandom(double M, double N)
+{
+   return M + (rand() / (RAND_MAX / (N - M)));
+}
 
 //#include <thread>
 
@@ -166,8 +169,8 @@ void run(string configname)
          GbCuboid3DPtr refineBoxTop(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3-blockLengthX3Fine, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxTop.get(), pathname + "/geo/refineBoxTop", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+offsetMinX3+blockLengthX3Fine));
-         //GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLengthX3Fine, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+blockLengthX3Fine));
+         //GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+offsetMinX3+blockLengthX3Fine));
+         GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLengthX3Fine, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+blockLengthX3Fine));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxBottom.get(), pathname + "/geo/refineBoxBottom", WbWriterVtkXmlASCII::getInstance());
 
          if (refineLevel > 0)
@@ -399,6 +402,7 @@ void run(string configname)
          double u_tau = 0.05;//sqrt(nu_LB * (u_LB/channel_high)); //0.0013252866627413104;
          double z0 = 0.0001;//nu_LB / (9.0*u_tau);
          double k = 0.4;
+         double nois = u_LB * 0.1;
          //inflowProfile.SetExpr("2.3*u_tau/k*log(x3/z0)");
          //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? 2.3*u_tau/k*log(x3/z0) : 2.3*u_tau/k*log((zMax-x3)/z0)) : 0");
          //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? (1.0/k)*log(9.8*x3/u_tau)*u_tau : (1.0/k)*log(9.8*(zMax-x3)/u_tau)*u_tau  ) : 0");
@@ -406,11 +410,13 @@ void run(string configname)
 
          //inflowProfile.SetExpr("Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)");
          //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)) : 0");
-         inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)");
+         inflowProfile.DefineFun("rangeRandom", rangeRandom);
+         inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+rangeRandom(-nois, nois) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+rangeRandom(-nois, nois)");
 
          inflowProfile.DefineConst("Uref", u_LB);
          inflowProfile.DefineConst("Href", channelHigh);
          inflowProfile.DefineConst("zg", 0.0);
+         inflowProfile.DefineConst("nois", nois);
 
          inflowProfile.DefineConst("u_tau", u_tau);
          inflowProfile.DefineConst("k", k);
@@ -506,6 +512,10 @@ void run(string configname)
          D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 
+         //domain decomposition for threads
+         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         grid->accept(pqPartVisitor);
+
          restart = true;
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
@@ -532,7 +542,7 @@ void run(string configname)
 
 
       UbSchedulerPtr AdjForcSch(new UbScheduler());
-      AdjForcSch->addSchedule(1, 0, 10000000);
+      AdjForcSch->addSchedule(10, 0, 10000000);
       D3Q27IntegrateValuesHelperPtr intValHelp(new D3Q27IntegrateValuesHelper(grid, comm,
          coord[0], coord[1], coord[2],
          coord[3], coord[4], coord[5]));
@@ -562,19 +572,28 @@ void run(string configname)
       std::vector<double> levelCoords;
       std::vector<int> levels;
       std::vector<double> bounds;
+      //bounds.push_back(0);
+      //bounds.push_back(0);
+      //bounds.push_back(0);
+      //bounds.push_back(0.004);
+      //bounds.push_back(0.002);
+      //bounds.push_back(0.003);
+      //levels.push_back(1);
+      //levels.push_back(0);
+      //levels.push_back(1);
+      //levelCoords.push_back(0);
+      //levelCoords.push_back(0.0016);
+      //levelCoords.push_back(0.0024);
+      //levelCoords.push_back(0.003);
       bounds.push_back(0);
       bounds.push_back(0);
       bounds.push_back(0);
       bounds.push_back(0.004);
       bounds.push_back(0.002);
-      bounds.push_back(0.003);
-      levels.push_back(1);
+      bounds.push_back(0.002);
       levels.push_back(0);
-      levels.push_back(1);
       levelCoords.push_back(0);
-      levelCoords.push_back(0.0016);
-      levelCoords.push_back(0.0024);
-      levelCoords.push_back(0.003);
+      levelCoords.push_back(0.002);
       UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
       TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
          TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
@@ -603,6 +622,10 @@ void run(string configname)
    catch (string& s)
    {
       cerr << s << endl;
+   }
+   catch (mu::Parser::exception_type &e)
+   {
+      std::cout << e.GetMsg() << std::endl;
    }
    catch (...)
    {

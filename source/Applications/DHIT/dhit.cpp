@@ -21,7 +21,10 @@ void run(string configname)
       double          availMem = config.getDouble("availMem");
       vector<double>  length = config.getVector<double>("length");
       bool            logToFile = config.getBool("logToFile");
-
+      string          initFile = config.getString("initFile");
+      double          nuLB = config.getDouble("nuLB");
+      double          uRMS = config.getDouble("uRMS");
+      double          lambda = config.getDouble("lambda");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -44,10 +47,10 @@ void run(string configname)
          }
       }
 
-      LBMReal uLB = 0.032;
+      //LBMReal uLB = 0.032;
       LBMReal dx = 1.0;
       LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 1.2395e-2;
+
 
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
@@ -75,9 +78,12 @@ void run(string configname)
 
       if (myid == 0)
       {
-         UBLOG(logINFO, "uLb = " << uLB);
+         //UBLOG(logINFO, "uLb = " << uLB);
          UBLOG(logINFO, "rho = " << rhoLB);
          UBLOG(logINFO, "nuLb = " << nuLB);
+         UBLOG(logINFO, "uRMS = " << uRMS);
+         UBLOG(logINFO, "lambda = " << lambda);
+         UBLOG(logINFO, "Re = " << (uRMS*lambda)/nuLB);
          UBLOG(logINFO, "dx = " << dx);
          UBLOG(logINFO, "length = " << length[0] << " " << length[1] << " " << length[2]);
          UBLOG(logINFO, "blocknx = " << blocknx[0] << " " << blocknx[1] << " " << blocknx[2]);
@@ -99,7 +105,7 @@ void run(string configname)
 
       WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
-      Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+      Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW));
       InteractorsHelper intHelper(grid, metisVisitor);
       //intHelper.addInteractor(boxInt);
       intHelper.selectBlocks();
@@ -154,7 +160,8 @@ void run(string configname)
       intHelper.setBC();
 
       //initialization of distributions
-      D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB, uLB, uLB, uLB);
+      //D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB, uLB, uLB, uLB);
+      InitDistributionsFromFileBlockVisitor initVisitor(nuLB, rhoLB, initFile);
       grid->accept(initVisitor);
 
       //boundary conditions grid
@@ -175,7 +182,7 @@ void run(string configname)
       }
 
       UbSchedulerPtr visSch(new UbScheduler(outTime));
-      MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv);
+      MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
 
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);

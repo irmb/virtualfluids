@@ -192,7 +192,6 @@
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMSystems.h>
 #include <LBM/LBMUnitConverter.h>
-#include <LBM/SimulationParameters.h>
 #include <numerics/geometry3d/CoordinateTransformation3D.h>
 #include <numerics/geometry3d/GbCuboid3D.h>
 #include <numerics/geometry3d/GbCylinder3D.h>
@@ -300,6 +299,7 @@
 #include <Visitors/ViscosityBlockVisitor.h>
 #include <Visitors/BoundaryConditionBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
+#include <InitDistributionsFromFileBlockVisitor.h>
 
 #include <Visitors/RefineCrossAndInsideGbObjectHelper.h>
 #include <RefineAroundGbObjectHelper.h>

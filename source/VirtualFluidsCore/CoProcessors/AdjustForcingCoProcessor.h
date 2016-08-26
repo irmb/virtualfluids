@@ -20,7 +20,7 @@ public:
 	AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                    const std::string& path,
                                    D3Q27IntegrateValuesHelperPtr integrateValues,
-                                   double vTarged, double forcing, CommunicatorPtr comm);
+                                   double vTarged, CommunicatorPtr comm);
 	virtual ~AdjustForcingCoProcessor();
 	 //!< calls collect PostprocessData
    void process(double step);
@@ -33,7 +33,9 @@ protected:
 private:
    double vx1Targed; //!< target velocity.
    double forcing; //!< forcing at previous update step. 
-
+   double cellsVolume;
+   double vx1Average;
+   bool root;
    double Kpcrit; //Kp critical
    double Tcrit;  //the oscillation period 
    double Tn;
