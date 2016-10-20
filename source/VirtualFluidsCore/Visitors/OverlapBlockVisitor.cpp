@@ -39,6 +39,7 @@ void OverlapBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
          {
             throw UbException(UB_EXARGS, "OverlapBlockVisitor::adaptBlock - leveldifferenz passt nicht, block: " + block->toString());
          }
+
          Block3DPtr newBlock = grid->getBlock(nix1,nix2,nix3,nlev);
          if(!newBlock)
          {
@@ -49,7 +50,6 @@ void OverlapBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       }
    }
 }
-
 //////////////////////////////////////////////////////////////////////////
 std::string OverlapBlockVisitor::getSpecificDescription()
 {

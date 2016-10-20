@@ -77,7 +77,12 @@ bool BoundaryCondition::isPreCollision()
 {
    return preCollision;
 }
-
+//////////////////////////////////////////////////////////////////////////
+void BoundaryCondition::clearData()
+{
+   nodeVector.clear();
+   bcVector.clear();
+}
 
 
 

@@ -2,9 +2,6 @@
 #include <D3Q27System.h>
 #include <Communicator.h>
 #include <StringUtil.hpp>
-#include <basics/transmitter/TbTransmitterMpi.h>
-#include <basics/transmitter/TbTransmitterMpiPoolEx.h>
-#include <FNV/fnv.h>
 #include <string>
 
 #ifdef VF_FETOL
@@ -13,6 +10,8 @@
 #include <MathUtil.hpp>
 
 unsigned CreateTransmittersHelper::vKey = 0;
+
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
 CreateTransmittersHelper::CreateTransmittersHelper()
@@ -57,8 +56,8 @@ void CreateTransmittersHelper::createTransmitters(Block3DPtr sblock, Block3DPtr 
 #endif
       )
    {
-      unsigned int sendPoolKey = generatePoolKey(srcRank, srcLevel, tgtRank, tgtLevel);
-      unsigned int receivePoolKey = generatePoolKey(tgtRank, tgtLevel, srcRank, srcLevel);
+      string sendPoolKey = generatePoolKey(srcRank, srcLevel, tgtRank, tgtLevel);
+      string receivePoolKey = generatePoolKey(tgtRank, tgtLevel, srcRank, srcLevel);
 
       TbCbVectorMpiPool <LBMReal>::MpiPoolPtr sendPool = TbCbVectorMpiPool <LBMReal>::getTbCbVectorMpiPool(sendPoolKey   );
       TbCbVectorMpiPool <LBMReal>::MpiPoolPtr recvPool = TbCbVectorMpiPool <LBMReal>::getTbCbVectorMpiPool(receivePoolKey);
@@ -128,7 +127,7 @@ int CreateTransmittersHelper::generateMPITag(int srcLevel, int tgtLevel)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-unsigned int CreateTransmittersHelper::generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel)
+string CreateTransmittersHelper::generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel)
 {
    std::string str;
    str = StringUtil::toString<int>(srcLevel);
@@ -139,16 +138,13 @@ unsigned int CreateTransmittersHelper::generatePoolKey(int srcRank, int srcLevel
    str += "#";
    str += StringUtil::toString<int>(tgtRank);
 
-   //unsigned int key = Utilities::RSHash(str); //by more as 900 000 elements is collision
-   unsigned int key = FNV::fnv1a(str);
-
-   return key;
+   return str;
 }
 //////////////////////////////////////////////////////////////////////////
-unsigned int CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3,/*int id,*/ int dir, IBlock ib)
+string CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3, int dir, IBlock ib)
 {
    std::string str;
-   //str += StringUtil::toString<int>(id);
+
    str += StringUtil::toString<int>(x1);
    str += "#";
    str += StringUtil::toString<int>(x2);
@@ -159,14 +155,7 @@ unsigned int CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3,
    str += "#";
    str += StringUtil::toString<int>(ib);
 
-   unsigned int key = Utilities::RSHash(str);
-   //unsigned int key = FNV::fnv1a(str);
-
-   return key;
-
-   //return str;
-   //vKey++;
-   //return vKey;
+   return str;
 }
 
 

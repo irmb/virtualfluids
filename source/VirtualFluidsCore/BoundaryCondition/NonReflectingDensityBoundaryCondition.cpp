@@ -70,15 +70,15 @@ void NonReflectingDensityBoundaryCondition::applyBC()
       f[D3Q27System::BNE] = ftemp[D3Q27System::BNE] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[D3Q27System::BNE] - rho*dim*D3Q27System::WEIGTH[D3Q27System::BNE];
       f[D3Q27System::BSE] = ftemp[D3Q27System::BSE] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[D3Q27System::BSE] - rho*dim*D3Q27System::WEIGTH[D3Q27System::BSE];
 
-      distributions->setDistributionInvForDirection(f[D3Q27System::E], x1, x2, x3, D3Q27System::E);
-      distributions->setDistributionInvForDirection(f[D3Q27System::NE], x1, x2, x3, D3Q27System::NE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::SE], x1, x2, x3, D3Q27System::SE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::TE], x1, x2, x3, D3Q27System::TE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::BE], x1, x2, x3, D3Q27System::BE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::TNE], x1, x2, x3, D3Q27System::TNE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::TSE], x1, x2, x3, D3Q27System::TSE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::BNE], x1, x2, x3, D3Q27System::BNE);
-      distributions->setDistributionInvForDirection(f[D3Q27System::BSE], x1, x2, x3, D3Q27System::BSE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::E], x1+1, x2, x3, D3Q27System::E);
+      distributions->setDistributionInvForDirection(f[D3Q27System::NE], x1+1, x2+1, x3, D3Q27System::NE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::SE], x1+1, x2-1, x3, D3Q27System::SE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::TE], x1+1, x2, x3+1, D3Q27System::TE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::BE], x1+1, x2, x3-1, D3Q27System::BE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::TNE], x1+1, x2+1, x3+1, D3Q27System::TNE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::TSE], x1+1, x2-1, x3+1, D3Q27System::TSE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::BNE], x1+1, x2+1, x3-1, D3Q27System::BNE);
+      distributions->setDistributionInvForDirection(f[D3Q27System::BSE], x1+1, x2-1, x3+1, D3Q27System::BSE);
       break;
    case D3Q27System::W:
       f[D3Q27System::W] = ftemp[D3Q27System::W] * (one_over_sqrt3 - vx1) + (1.0 - one_over_sqrt3 + vx1)*f[D3Q27System::W] - rho*dim*D3Q27System::WEIGTH[D3Q27System::W];

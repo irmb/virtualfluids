@@ -632,7 +632,17 @@ void D3Q27SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    if(block->hasInterpolationFlagCF())
    {
       if(block->hasInterpolationFlagFC()) 
+      {
+         for (int i = D3Q27System::E; i <= D3Q27System::TS; i++)
+         {
+             UBLOG(logINFO, "FC in dir="<<i<<" "<<block->hasInterpolationFlagFC(i));
+         }
+         for (int i = D3Q27System::E; i<=D3Q27System::TS; i++)
+         {
+            UBLOG(logINFO, "CF in dir="<<i<<" "<<block->hasInterpolationFlagCF(i));
+         }
          throw UbException(UB_EXARGS, "block "+block->toString()+" has CF and FC");
+      }
 
       minX1 = gl;
       minX2 = gl;

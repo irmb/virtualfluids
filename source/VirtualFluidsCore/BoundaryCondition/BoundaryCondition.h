@@ -38,6 +38,7 @@ public:
    BoundaryCondition::Type getType();
    bool isPreCollision();
    virtual BoundaryConditionPtr clone()=0;
+   void clearData();
 protected:
    virtual void applyBC() = 0;
    

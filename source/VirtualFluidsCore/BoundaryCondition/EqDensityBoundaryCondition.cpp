@@ -33,7 +33,7 @@ void EqDensityBoundaryCondition::applyBC()
    int direction = -1;
 
    //flag points in direction of fluid
-   if (bcPtr->hasDensityBoundaryFlag(D3Q27System::E)) { nx1 -= 1; direction = D3Q27System::E; }
+   if      (bcPtr->hasDensityBoundaryFlag(D3Q27System::E)) { nx1 -= 1; direction = D3Q27System::E; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::W)) { nx1 += 1; direction = D3Q27System::W; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::N)) { nx2 -= 1; direction = D3Q27System::N; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::S)) { nx2 += 1; direction = D3Q27System::S; }

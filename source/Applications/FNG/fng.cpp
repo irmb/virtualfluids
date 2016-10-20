@@ -20,9 +20,10 @@ void run(string configname)
       string          fngFileWhole = config.getString("fngFileWhole");
       string          fngFileTrailingEdge = config.getString("fngFileTrailingEdge");
       string          fngFileBodyPart = config.getString("fngFileBodyPart");
+      string          zigZagTape = config.getString("zigZagTape");
       int             numOfThreads = config.getInt("numOfThreads");
       vector<int>     blockNx = config.getVector<int>("blockNx");
-      vector<int>     boundingBox = config.getVector<int>("boundingBox");
+      vector<double>  boundingBox = config.getVector<double>("boundingBox");
       double          uLB = config.getDouble("uLB");
       double          restartStep = config.getDouble("restartStep");
       double          restartStepStart = config.getDouble("restartStepStart");
@@ -32,7 +33,9 @@ void run(string configname)
       int             refineLevel = config.getInt("refineLevel");
       bool            logToFile = config.getBool("logToFile");
       bool            porousTralingEdge = config.getBool("porousTralingEdge");
-      double          deltaXfine = config.getDouble("deltaXfine");
+      double          deltaXfine = config.getDouble("deltaXfine")*1000.0;
+      bool            thinWall = config.getBool("thinWall");
+      double          refineDistance = config.getDouble("refineDistance");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -55,44 +58,22 @@ void run(string configname)
          }
       }
 
-      GbTriFaceMesh3DPtr fngMeshWhole;
-      GbTriFaceMesh3DPtr fngMeshBodyPart;
-      GbTriFaceMesh3DPtr fngMeshTrailingEdge;
-      if (porousTralingEdge)
-      {
-         if (myid == 0) UBLOG(logINFO, "Read fngFileBodyPart:start");
-         fngMeshBodyPart = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo + "/" + fngFileBodyPart, "fngMeshBody", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid == 0) UBLOG(logINFO, "Read fngFileBodyPart:end");
-         if (myid == 0) GbSystem3D::writeGeoObject(fngMeshBodyPart.get(), pathOut + "/geo/fngMeshBody", WbWriterVtkXmlBinary::getInstance());
-
-         if (myid == 0) UBLOG(logINFO, "Read fngFileTrailingEdge:start");
-         fngMeshTrailingEdge = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo + "/" + fngFileTrailingEdge, "fngMeshTrailingEdge", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid == 0) UBLOG(logINFO, "Read fngFileTrailingEdge:end");
-         if (myid == 0) GbSystem3D::writeGeoObject(fngMeshTrailingEdge.get(), pathOut + "/geo/fngMeshTrailingEdge", WbWriterVtkXmlBinary::getInstance());
-      }
-      else
-      {
-         if (myid == 0) UBLOG(logINFO, "Read fngFileWhole:start");
-         fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo + "/" + fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid == 0) UBLOG(logINFO, "Read fngFileWhole:end");
-         if (myid == 0) GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut + "/geo/fngMeshWhole", WbWriterVtkXmlBinary::getInstance());
-      }
       
-      double g_minX1 = boundingBox[0];
-      double g_minX2 = boundingBox[2];
-      double g_minX3 = boundingBox[4];
+      double g_minX1 = boundingBox[0]*1000.0;
+      double g_minX2 = boundingBox[2]*1000.0;
+      double g_minX3 = boundingBox[4]*1000.0;
 
-      double g_maxX1 = boundingBox[1];
-      double g_maxX2 = boundingBox[3];
-      double g_maxX3 = boundingBox[5];
-
+      double g_maxX1 = boundingBox[1]*1000.0;
+      double g_maxX2 = boundingBox[3]*1000.0;
+      double g_maxX3 = boundingBox[5]*1000.0;
+       
       //////////////////////////////////////////////////////////////////////////
       double deltaXcoarse = deltaXfine*(double)(1 << refineLevel);
-      double nx1_temp = floor((g_maxX1 - g_minX1) / (deltaXcoarse*(double)blockNx[0]));
+      //double nx2_temp = floor((g_maxX2 - g_minX2) / (deltaXcoarse*(double)blockNx[0]));
 
-      deltaXcoarse = (g_maxX1 - g_minX1) / (nx1_temp*(double)blockNx[0]);
-
-      g_maxX1 -= 0.5* deltaXcoarse;
+      //deltaXcoarse = (g_maxX2 - g_minX2) / (nx2_temp*(double)blockNx[0]);
+      //UBLOG(logINFO, "nx2_temp:"<<nx2_temp);
+      //g_maxX2 -= 0.5* deltaXcoarse;
       //////////////////////////////////////////////////////////////////////////
       double blockLength = (double)blockNx[0] * deltaXcoarse;
 
@@ -118,8 +99,9 @@ void run(string configname)
 
       //double u_LB = uReal   * unitConverter.getFactorVelocityWToLb();
       //double nu_LB = nueReal * unitConverter.getFactorViscosityWToLb();
-      double l_LB = 0.3 / deltaXcoarse;
+      double l_LB = 300 / deltaXcoarse;
       double nuLB = (uLB*l_LB) / Re; //0.005;
+      //double nuLB = 0.005;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
@@ -138,8 +120,9 @@ void run(string configname)
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
+      grid->setPeriodicX1(false);
       grid->setPeriodicX2(true);
-      grid->setPeriodicX3(true);
+      grid->setPeriodicX3(false);
 
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -159,22 +142,68 @@ void run(string configname)
             UBLOG(logINFO, "* nuReal        =" << nueReal);
             UBLOG(logINFO, "* nuLB          =" << nuLB);
             UBLOG(logINFO, "* velocity      =" << uLB);
-            UBLOG(logINFO, "* dx_base       =" << deltaXcoarse);
-            UBLOG(logINFO, "* dx_refine     =" << deltaXfine);
+            UBLOG(logINFO, "* dx_base       =" << deltaXcoarse/1000.0 << "m");
+            UBLOG(logINFO, "* dx_refine     =" << deltaXfine/1000.0 << "m");
 
             UBLOG(logINFO, "number of levels = " << refineLevel + 1);
             UBLOG(logINFO, "numOfThreads     = " << numOfThreads);
             UBLOG(logINFO, "Preprozess - start");
          }
 
+         GbTriFaceMesh3DPtr fngMeshWhole;
+         GbTriFaceMesh3DPtr fngMeshBodyPart;
+         GbTriFaceMesh3DPtr fngMeshTrailingEdge;
+         if (porousTralingEdge)
+         {
+            if (myid==0) UBLOG(logINFO, "Read fngFileBodyPart:start");
+            fngMeshBodyPart = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileBodyPart, "fngMeshBody", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+            if (myid==0) UBLOG(logINFO, "Read fngFileBodyPart:end");
+            fngMeshBodyPart->rotate(0.0, 0.5, 0.0);
+            if (myid==0) GbSystem3D::writeGeoObject(fngMeshBodyPart.get(), pathOut+"/geo/fngMeshBody", WbWriterVtkXmlBinary::getInstance());
 
-         //inflow
-         GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+            if (myid==0) UBLOG(logINFO, "Read fngFileTrailingEdge:start");
+            fngMeshTrailingEdge = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileTrailingEdge, "fngMeshTrailingEdge", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+            if (myid==0) UBLOG(logINFO, "Read fngFileTrailingEdge:end");
+            fngMeshTrailingEdge->rotate(0.0, 0.5, 0.0);
+            fngMeshTrailingEdge->translate(0,0,1.3);
+            if (myid==0) GbSystem3D::writeGeoObject(fngMeshTrailingEdge.get(), pathOut+"/geo/fngMeshTrailingEdge", WbWriterVtkXmlBinary::getInstance());
+         }
+         else
+         {
+            if (myid==0) UBLOG(logINFO, "Read fngFileWhole:start");
+            fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+            if (myid==0) UBLOG(logINFO, "Read fngFileWhole:end");
+            fngMeshWhole->rotate(0.0, 0.5, 0.0);
+            if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut+"/geo/fngMeshWhole", WbWriterVtkXmlBinary::getInstance());
+         }
 
-         //outflow
-         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathOut + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+         //////////////////////////////////////////////////////////////////////////
+         // Zackenband
+         //////////////////////////////////////////////////////////////////////////
+         //////////////////////////////////////////////////////////////////////////
+         if (myid==0) UBLOG(logINFO, "Read zigZagTape:start");
+         string ZckbndFilename = pathGeo+"/"+zigZagTape;
+         GbTriFaceMesh3DPtr meshBand1(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape1"));
+         meshBand1->rotate(0.0, 5, 0.0);
+         meshBand1->translate(15, 0, -12.65);
+         if (myid==0) GbSystem3D::writeGeoObject(meshBand1.get(), pathOut+"/geo/zigZagTape1", WbWriterVtkXmlASCII::getInstance());
+         // Zackenband2
+         GbTriFaceMesh3DPtr meshBand2(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape2"));
+         meshBand2->rotate(0.0, 5, 0.0);
+         meshBand2->translate(15, 5, -12.65);
+         if (myid==0) GbSystem3D::writeGeoObject(meshBand2.get(), pathOut+"/geo/zigZagTape2", WbWriterVtkXmlASCII::getInstance());
+         // Zackenband3
+         GbTriFaceMesh3DPtr meshBand3(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape13"));
+         meshBand3->rotate(0.0, 5, 0.0);
+         meshBand3->translate(15, 0, -12.35);
+         if (myid==0) GbSystem3D::writeGeoObject(meshBand3.get(), pathOut+"/geo/zigZagTape3", WbWriterVtkXmlASCII::getInstance());
+         // Zackenband4
+         GbTriFaceMesh3DPtr meshBand4(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape4"));
+         meshBand4->rotate(0.0, 5, 0.0);
+         meshBand4->translate(15, 5, -12.35);
+         if (myid==0) GbSystem3D::writeGeoObject(meshBand4.get(), pathOut+"/geo/zigZagTape4", WbWriterVtkXmlASCII::getInstance());
+         if (myid==0) UBLOG(logINFO, "Read zigZagTape:end");
+         //////////////////////////////////////////////////////////////////////////
 
          int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
          D3Q27BoundaryConditionAdapterPtr noSlipBCAdapter(new D3Q27NoSlipBCAdapter(bbOption));
@@ -192,6 +221,11 @@ void run(string configname)
             fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));
          }
 
+         D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand3Interactor(new D3Q27TriFaceMeshInteractor(meshBand3, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand4Interactor(new D3Q27TriFaceMeshInteractor(meshBand4, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
+
          if (refineLevel > 0)
          {
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
@@ -203,21 +237,31 @@ void run(string configname)
             //refineHelper1.refine();
             //RefineAroundGbObjectHelper refineHelper2(grid, refineLevel, boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(geoIntr2), -1.0, 5.0, comm);
             //refineHelper2.refine();
+            
+
+            int rank = grid->getRank();
+            grid->setRank(0);
+            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand1Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand2Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand3Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand4Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            grid->setRank(rank);
 
             if (porousTralingEdge)
             {
                int rank = grid->getRank();
                grid->setRank(0);
-               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrBodyPart)->refineBlockGridToLevel(refineLevel - 1, 0.0, 10.0);
+               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrBodyPart)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
                grid->setRank(rank);
             }
             else
             {
                int rank = grid->getRank();
                grid->setRank(0);
-               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel - 1, 0.0, 10.0);
+               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
                grid->setRank(rank);
             }
+
 
 
             ////////////////////////////////////////////
@@ -257,8 +301,8 @@ void run(string configname)
                //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrTrailingEdge)->refineBlockGridToLevel(refineLevel, -1.0, 10.0);
                //grid->setRank(rank);
 
-               GbObject3DPtr trailingEdgeCube(new GbCuboid3D(fngMeshTrailingEdge->getX1Minimum()-blockLength, fngMeshTrailingEdge->getX2Minimum(), fngMeshTrailingEdge->getX3Minimum()-blockLength,
-                  fngMeshTrailingEdge->getX1Maximum()+blockLength, fngMeshTrailingEdge->getX2Maximum(), fngMeshTrailingEdge->getX3Maximum()+blockLength));
+               GbObject3DPtr trailingEdgeCube(new GbCuboid3D(fngMeshTrailingEdge->getX1Minimum()-blockLength, fngMeshTrailingEdge->getX2Minimum(), fngMeshTrailingEdge->getX3Minimum()-blockLength/2.0,
+                  fngMeshTrailingEdge->getX1Maximum()+blockLength, fngMeshTrailingEdge->getX2Maximum(), fngMeshTrailingEdge->getX3Maximum()+blockLength/2.0));
                if (myid == 0) GbSystem3D::writeGeoObject(trailingEdgeCube.get(), pathOut + "/geo/trailingEdgeCube", WbWriterVtkXmlASCII::getInstance());
 
                RefineCrossAndInsideGbObjectBlockVisitor refVisitor(trailingEdgeCube, refineLevel);
@@ -266,10 +310,24 @@ void run(string configname)
             }
 
             RatioBlockVisitor ratioVisitor(refineLevel);
-            grid->accept(ratioVisitor);
+            CheckRatioBlockVisitor checkRatio(refineLevel);
+            int count = 0;
+            
+            do {
+               grid->accept(ratioVisitor);
+               checkRatio.resetState();
+               grid->accept(checkRatio);
+               if (myid == 0) UBLOG(logINFO, "count ="<<count++<<" state="<<checkRatio.getState());
+            } while (!checkRatio.getState());
 
-            RatioSmoothBlockVisitor ratioSmoothVisitor(refineLevel);
-            grid->accept(ratioSmoothVisitor);
+            //RatioSmoothBlockVisitor ratioSmoothVisitor(refineLevel);
+            //grid->accept(ratioSmoothVisitor);
+
+            {
+               WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
+               ppblocks->process(0);
+               ppblocks.reset();
+            }
 
             OverlapBlockVisitor overlapVisitor(refineLevel, false);
             grid->accept(overlapVisitor);
@@ -286,9 +344,26 @@ void run(string configname)
          }
 
 
-         //geo->scale(1.0/scaleFactorX, 1.0, 1.0/scaleFactorX);
-         //geo = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(geoFile,"geo"));
-         //if (myid == 0) GbSystem3D::writeGeoObject(geo.get(), pathOut + "/geo/geo3", WbWriterVtkXmlASCII::getInstance());
+         //walls
+         GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
+         if (myid==0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathOut+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+
+         GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathOut+"/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
+
+         D3Q27BoundaryConditionAdapterPtr slipBCAdapter(new D3Q27SlipBCAdapter(bbOption));
+
+         //wall interactors
+         D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
+         D3Q27InteractorPtr addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
+
+         //inflow
+         GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut+"/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+
+         //outflow
+         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathOut+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
          mu::Parser fct;
          fct.SetExpr("U");
@@ -313,9 +388,16 @@ void run(string configname)
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(inflowIntr);
          intHelper.addInteractor(outflowIntr);
+         intHelper.addInteractor(addWallZminInt);
+         intHelper.addInteractor(addWallZmaxInt);
+         intHelper.addInteractor(triBand1Interactor);
+         intHelper.addInteractor(triBand2Interactor);
+         intHelper.addInteractor(triBand3Interactor);
+         intHelper.addInteractor(triBand4Interactor);
          if (porousTralingEdge)
          {
             intHelper.addInteractor(fngIntrBodyPart);
+            intHelper.addInteractor(fngIntrTrailingEdge);
          } 
          else
          {
@@ -328,8 +410,8 @@ void run(string configname)
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
 
-         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppblocks->process(0);
+         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlASCII::getInstance(), comm));
+         ppblocks->process(1);
          ppblocks.reset();
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
@@ -358,24 +440,29 @@ void run(string configname)
          }
 
          LBMKernel3DPtr kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blockNx[0], blockNx[1], blockNx[2], LBMKernelETD3Q27CCLB::NORMAL));
+         //LBMKernel3DPtr kernel = LBMKernel3DPtr(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
 
          BCProcessorPtr bcProc;
          BoundaryConditionPtr noSlipBC;
-         BoundaryConditionPtr velBC = VelocityBoundaryConditionPtr(new VelocityBoundaryCondition());
-         BoundaryConditionPtr denBC = NonEqDensityBoundaryConditionPtr(new NonEqDensityBoundaryCondition());
+         //BoundaryConditionPtr velBC = VelocityBoundaryConditionPtr(new VelocityBoundaryCondition());
+         //BoundaryConditionPtr denBC = NonEqDensityBoundaryConditionPtr(new NonEqDensityBoundaryCondition());
+         BoundaryConditionPtr velBC = NonReflectingVelocityBoundaryConditionPtr(new NonReflectingVelocityBoundaryCondition());
+         BoundaryConditionPtr denBC = NonReflectingDensityBoundaryConditionPtr(new NonReflectingDensityBoundaryCondition());
+         BoundaryConditionPtr slipBC = SlipBoundaryConditionPtr(new SlipBoundaryCondition());
 
-         //if (thinWall)
-         //{
+         if (thinWall)
+         {
             bcProc = BCProcessorPtr(new D3Q27ETForThinWallBCProcessor());
             noSlipBC = BoundaryConditionPtr(new ThinWallNoSlipBoundaryCondition());
-         //}
-         //else
-         //{
-         //   bcProc = BCProcessorPtr(new D3Q27ETBCProcessor());
-         //   noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
-         //}
+         }
+         else
+         {
+            bcProc = BCProcessorPtr(new D3Q27ETBCProcessor());
+            noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
+         }
 
          bcProc->addBC(noSlipBC);
+         bcProc->addBC(slipBC);
          bcProc->addBC(velBC);
          bcProc->addBC(denBC);
 
@@ -400,6 +487,12 @@ void run(string configname)
 
          BoundaryConditionBlockVisitor bcVisitor;
          grid->accept(bcVisitor);
+
+         //sponge layer
+         GbCuboid3DPtr spCube(new GbCuboid3D(960, g_minX2, g_minX3, 1210, g_maxX2, g_maxX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(spCube.get(), pathOut + "/geo/spCube", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor spongeLayer(spCube);
+         grid->accept(spongeLayer);
 
          //initialization of distributions
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);

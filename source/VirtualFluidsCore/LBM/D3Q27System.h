@@ -396,85 +396,155 @@ namespace D3Q27System
    }
 
    /*=====================================================================*/
-   static void calcCompMacroscopicValues(const LBMReal* const& f/*[27]*/, LBMReal& rho, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)
+   static void calcCompMacroscopicValues(const LBMReal* const& f/*[27]*/, LBMReal& drho, LBMReal& vx1, LBMReal& vx2, LBMReal& vx3)
    {
-      D3Q27System::calcDensity(f, rho);
+      D3Q27System::calcDensity(f, drho);
       D3Q27System::calcIncompVelocityX1(f, vx1);
       D3Q27System::calcIncompVelocityX2(f, vx2);
       D3Q27System::calcIncompVelocityX3(f, vx3);
+      LBMReal rho = drho+one;
       vx1/=rho;
       vx2/=rho;
       vx3/=rho;
    }
    //////////////////////////////////////////////////////////////////////////
-   static LBMReal getCompFeqForDirection(const int& direction, const LBMReal& rho,const LBMReal& vx1,const LBMReal& vx2,const LBMReal& vx3)
+   static LBMReal getCompFeqForDirection(const int& direction, const LBMReal& drho,const LBMReal& vx1,const LBMReal& vx2,const LBMReal& vx3)
    {
       LBMReal cu_sq=1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      switch(direction)    
+      //switch(direction)    
+      //{
+      //   case ZERO : return REAL_CAST( c8o27*rho*(1.0-cu_sq));
+      //   case E : return REAL_CAST(  c2o27*rho*(1.0+3.0*( vx1   )+c9o2*( vx1   )*( vx1   )-cu_sq));
+      //   case W : return REAL_CAST(  c2o27*rho*(1.0+3.0*(-vx1   )+c9o2*(-vx1   )*(-vx1   )-cu_sq));
+      //   case N : return REAL_CAST(  c2o27*rho*(1.0+3.0*(    vx2)+c9o2*(    vx2)*(    vx2)-cu_sq));
+      //   case S : return REAL_CAST(  c2o27*rho*(1.0+3.0*(   -vx2)+c9o2*(   -vx2)*(   -vx2)-cu_sq));
+      //   case T : return REAL_CAST(  c2o27*rho*(1.0+3.0*( vx3   )+c9o2*(    vx3)*(    vx3)-cu_sq));
+      //   case B : return REAL_CAST(  c2o27*rho*(1.0+3.0*(   -vx3)+c9o2*(   -vx3)*(   -vx3)-cu_sq));
+      //   case NE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1+vx2)+c9o2*( vx1+vx2)*( vx1+vx2)-cu_sq));
+      //   case SW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq));
+      //   case SE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1-vx2)+c9o2*( vx1-vx2)*( vx1-vx2)-cu_sq));
+      //   case NW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq));
+      //   case TE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1+vx3)+c9o2*( vx1+vx3)*( vx1+vx3)-cu_sq));
+      //   case BW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq));
+      //   case BE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1-vx3)+c9o2*( vx1-vx3)*( vx1-vx3)-cu_sq));
+      //   case TW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq));
+      //   case TN : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx2+vx3)+c9o2*( vx2+vx3)*( vx2+vx3)-cu_sq));
+      //   case BS : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq));
+      //   case BN : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx2-vx3)+c9o2*( vx2-vx3)*( vx2-vx3)-cu_sq));
+      //   case TS : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq));
+      //   case TNE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      //   case BSW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      //   case BNE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      //   case TSW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      //   case TSE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      //   case BNW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      //   case BSE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      //   case TNW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      //   default: throw UbException(UB_EXARGS,"unknown dir");
+      //}
+
+
+      ////-----
+      LBMReal rho = drho+one;
+      switch (direction)
       {
-         case ZERO : return REAL_CAST( c8o27*rho*(1.0-cu_sq));
-         case E : return REAL_CAST(  c2o27*rho*(1.0+3.0*( vx1   )+c9o2*( vx1   )*( vx1   )-cu_sq));
-         case W : return REAL_CAST(  c2o27*rho*(1.0+3.0*(-vx1   )+c9o2*(-vx1   )*(-vx1   )-cu_sq));
-         case N : return REAL_CAST(  c2o27*rho*(1.0+3.0*(    vx2)+c9o2*(    vx2)*(    vx2)-cu_sq));
-         case S : return REAL_CAST(  c2o27*rho*(1.0+3.0*(   -vx2)+c9o2*(   -vx2)*(   -vx2)-cu_sq));
-         case T : return REAL_CAST(  c2o27*rho*(1.0+3.0*( vx3   )+c9o2*(    vx3)*(    vx3)-cu_sq));
-         case B : return REAL_CAST(  c2o27*rho*(1.0+3.0*(   -vx3)+c9o2*(   -vx3)*(   -vx3)-cu_sq));
-         case NE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1+vx2)+c9o2*( vx1+vx2)*( vx1+vx2)-cu_sq));
-         case SW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq));
-         case SE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1-vx2)+c9o2*( vx1-vx2)*( vx1-vx2)-cu_sq));
-         case NW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq));
-         case TE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1+vx3)+c9o2*( vx1+vx3)*( vx1+vx3)-cu_sq));
-         case BW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq));
-         case BE : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx1-vx3)+c9o2*( vx1-vx3)*( vx1-vx3)-cu_sq));
-         case TW : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq));
-         case TN : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx2+vx3)+c9o2*( vx2+vx3)*( vx2+vx3)-cu_sq));
-         case BS : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq));
-         case BN : return REAL_CAST( c1o54*rho*(1.0+3.0*( vx2-vx3)+c9o2*( vx2-vx3)*( vx2-vx3)-cu_sq));
-         case TS : return REAL_CAST( c1o54*rho*(1.0+3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq));
-         case TNE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-         case BSW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-         case BNE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-         case TSW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-         case TSE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-         case BNW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-         case BSE : return REAL_CAST(c1o216*rho*(1.0+3.0*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-         case TNW : return REAL_CAST(c1o216*rho*(1.0+3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
-         default: throw UbException(UB_EXARGS,"unknown dir");
+      case ZERO: return REAL_CAST(c8o27*(drho+rho*(-cu_sq)));
+      case E: return REAL_CAST(c2o27*(drho+rho*(3.0*(vx1)+c9o2*(vx1)*(vx1)-cu_sq)));
+      case W: return REAL_CAST(c2o27*(drho+rho*(3.0*(-vx1)+c9o2*(-vx1)*(-vx1)-cu_sq)));
+      case N: return REAL_CAST(c2o27*(drho+rho*(3.0*(vx2)+c9o2*(vx2)*(vx2)-cu_sq)));
+      case S: return REAL_CAST(c2o27*(drho+rho*(3.0*(-vx2)+c9o2*(-vx2)*(-vx2)-cu_sq)));
+      case T: return REAL_CAST(c2o27*(drho+rho*(3.0*(vx3)+c9o2*(vx3)*(vx3)-cu_sq)));
+      case B: return REAL_CAST(c2o27*(drho+rho*(3.0*(-vx3)+c9o2*(-vx3)*(-vx3)-cu_sq)));
+      case NE: return REAL_CAST(c1o54*(drho+rho*(3.0*(vx1+vx2)+c9o2*(vx1+vx2)*(vx1+vx2)-cu_sq)));
+      case SW: return REAL_CAST(c1o54*(drho+rho*(3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq)));
+      case SE: return REAL_CAST(c1o54*(drho+rho*(3.0*(vx1-vx2)+c9o2*(vx1-vx2)*(vx1-vx2)-cu_sq)));
+      case NW: return REAL_CAST(c1o54*(drho+rho*(3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq)));
+      case TE: return REAL_CAST(c1o54*(drho+rho*(3.0*(vx1+vx3)+c9o2*(vx1+vx3)*(vx1+vx3)-cu_sq)));
+      case BW: return REAL_CAST(c1o54*(drho+rho*(3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq)));
+      case BE: return REAL_CAST(c1o54*(drho+rho*(3.0*(vx1-vx3)+c9o2*(vx1-vx3)*(vx1-vx3)-cu_sq)));
+      case TW: return REAL_CAST(c1o54*(drho+rho*(3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq)));
+      case TN: return REAL_CAST(c1o54*(drho+rho*(3.0*(vx2+vx3)+c9o2*(vx2+vx3)*(vx2+vx3)-cu_sq)));
+      case BS: return REAL_CAST(c1o54*(drho+rho*(3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq)));
+      case BN: return REAL_CAST(c1o54*(drho+rho*(3.0*(vx2-vx3)+c9o2*(vx2-vx3)*(vx2-vx3)-cu_sq)));
+      case TS: return REAL_CAST(c1o54*(drho+rho*(3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq)));
+      case TNE: return REAL_CAST(c1o216*(drho+rho*(3.0*(vx1+vx2+vx3)+c9o2*(vx1+vx2+vx3)*(vx1+vx2+vx3)-cu_sq)));
+      case BSW: return REAL_CAST(c1o216*(drho+rho*(3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq)));
+      case BNE: return REAL_CAST(c1o216*(drho+rho*(3.0*(vx1+vx2-vx3)+c9o2*(vx1+vx2-vx3)*(vx1+vx2-vx3)-cu_sq)));
+      case TSW: return REAL_CAST(c1o216*(drho+rho*(3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq)));
+      case TSE: return REAL_CAST(c1o216*(drho+rho*(3.0*(vx1-vx2+vx3)+c9o2*(vx1-vx2+vx3)*(vx1-vx2+vx3)-cu_sq)));
+      case BNW: return REAL_CAST(c1o216*(drho+rho*(3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq)));
+      case BSE: return REAL_CAST(c1o216*(drho+rho*(3.0*(vx1-vx2-vx3)+c9o2*(vx1-vx2-vx3)*(vx1-vx2-vx3)-cu_sq)));
+      case TNW: return REAL_CAST(c1o216*(drho+rho*(3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq)));
+      default: throw UbException(UB_EXARGS, "unknown dir");
       }
+
    }
    //////////////////////////////////////////////////////////////////////////
-   static void calcCompFeq(LBMReal* const& feq/*[27]*/,const LBMReal& rho,const LBMReal& vx1,const LBMReal& vx2,const LBMReal& vx3)	
+   static void calcCompFeq(LBMReal* const& feq/*[27]*/,const LBMReal& drho,const LBMReal& vx1,const LBMReal& vx2,const LBMReal& vx3)	
    {
-      LBMReal cu_sq=1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //LBMReal cu_sq=1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
 
-      feq[ZERO] =  c8o27*rho*(1.0-cu_sq);
-      feq[E] =   c2o27*rho*(1.0+3.0*( vx1   )+c9o2*( vx1   )*( vx1   )-cu_sq);
-      feq[W] =   c2o27*rho*(1.0+3.0*(-vx1   )+c9o2*(-vx1   )*(-vx1   )-cu_sq);
-      feq[N] =   c2o27*rho*(1.0+3.0*(    vx2)+c9o2*(    vx2)*(    vx2)-cu_sq);
-      feq[S] =   c2o27*rho*(1.0+3.0*(   -vx2)+c9o2*(   -vx2)*(   -vx2)-cu_sq);
-      feq[T] =   c2o27*rho*(1.0+3.0*( vx3   )+c9o2*(    vx3)*(    vx3)-cu_sq);
-      feq[B] =   c2o27*rho*(1.0+3.0*(   -vx3)+c9o2*(   -vx3)*(   -vx3)-cu_sq);
-      feq[NE] =  c1o54*rho*(1.0+3.0*( vx1+vx2)+c9o2*( vx1+vx2)*( vx1+vx2)-cu_sq);
-      feq[SW] =  c1o54*rho*(1.0+3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq);
-      feq[SE] =  c1o54*rho*(1.0+3.0*( vx1-vx2)+c9o2*( vx1-vx2)*( vx1-vx2)-cu_sq);
-      feq[NW] =  c1o54*rho*(1.0+3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq);
-      feq[TE] =  c1o54*rho*(1.0+3.0*( vx1+vx3)+c9o2*( vx1+vx3)*( vx1+vx3)-cu_sq);
-      feq[BW] =  c1o54*rho*(1.0+3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq);
-      feq[BE] =  c1o54*rho*(1.0+3.0*( vx1-vx3)+c9o2*( vx1-vx3)*( vx1-vx3)-cu_sq);
-      feq[TW] =  c1o54*rho*(1.0+3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq);
-      feq[TN] =  c1o54*rho*(1.0+3.0*( vx2+vx3)+c9o2*( vx2+vx3)*( vx2+vx3)-cu_sq);
-      feq[BS] =  c1o54*rho*(1.0+3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq);
-      feq[BN] =  c1o54*rho*(1.0+3.0*( vx2-vx3)+c9o2*( vx2-vx3)*( vx2-vx3)-cu_sq);
-      feq[TS] =  c1o54*rho*(1.0+3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq);
-      feq[TNE] = c1o216*rho*(1.0+3.0*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      feq[BSW] = c1o216*rho*(1.0+3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      feq[BNE] = c1o216*rho*(1.0+3.0*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      feq[TSW] = c1o216*rho*(1.0+3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      feq[TSE] = c1o216*rho*(1.0+3.0*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      feq[BNW] = c1o216*rho*(1.0+3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      feq[BSE] = c1o216*rho*(1.0+3.0*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      feq[TNW] = c1o216*rho*(1.0+3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //feq[ZERO] =  c8o27*rho*(1.0-cu_sq);
+      //feq[E] =   c2o27*rho*(1.0+3.0*( vx1   )+c9o2*( vx1   )*( vx1   )-cu_sq);
+      //feq[W] =   c2o27*rho*(1.0+3.0*(-vx1   )+c9o2*(-vx1   )*(-vx1   )-cu_sq);
+      //feq[N] =   c2o27*rho*(1.0+3.0*(    vx2)+c9o2*(    vx2)*(    vx2)-cu_sq);
+      //feq[S] =   c2o27*rho*(1.0+3.0*(   -vx2)+c9o2*(   -vx2)*(   -vx2)-cu_sq);
+      //feq[T] =   c2o27*rho*(1.0+3.0*( vx3   )+c9o2*(    vx3)*(    vx3)-cu_sq);
+      //feq[B] =   c2o27*rho*(1.0+3.0*(   -vx3)+c9o2*(   -vx3)*(   -vx3)-cu_sq);
+      //feq[NE] =  c1o54*rho*(1.0+3.0*( vx1+vx2)+c9o2*( vx1+vx2)*( vx1+vx2)-cu_sq);
+      //feq[SW] =  c1o54*rho*(1.0+3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq);
+      //feq[SE] =  c1o54*rho*(1.0+3.0*( vx1-vx2)+c9o2*( vx1-vx2)*( vx1-vx2)-cu_sq);
+      //feq[NW] =  c1o54*rho*(1.0+3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq);
+      //feq[TE] =  c1o54*rho*(1.0+3.0*( vx1+vx3)+c9o2*( vx1+vx3)*( vx1+vx3)-cu_sq);
+      //feq[BW] =  c1o54*rho*(1.0+3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq);
+      //feq[BE] =  c1o54*rho*(1.0+3.0*( vx1-vx3)+c9o2*( vx1-vx3)*( vx1-vx3)-cu_sq);
+      //feq[TW] =  c1o54*rho*(1.0+3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq);
+      //feq[TN] =  c1o54*rho*(1.0+3.0*( vx2+vx3)+c9o2*( vx2+vx3)*( vx2+vx3)-cu_sq);
+      //feq[BS] =  c1o54*rho*(1.0+3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq);
+      //feq[BN] =  c1o54*rho*(1.0+3.0*( vx2-vx3)+c9o2*( vx2-vx3)*( vx2-vx3)-cu_sq);
+      //feq[TS] =  c1o54*rho*(1.0+3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq);
+      //feq[TNE] = c1o216*rho*(1.0+3.0*( vx1+vx2+vx3)+c9o2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      //feq[BSW] = c1o216*rho*(1.0+3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      //feq[BNE] = c1o216*rho*(1.0+3.0*( vx1+vx2-vx3)+c9o2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      //feq[TSW] = c1o216*rho*(1.0+3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      //feq[TSE] = c1o216*rho*(1.0+3.0*( vx1-vx2+vx3)+c9o2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      //feq[BNW] = c1o216*rho*(1.0+3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      //feq[BSE] = c1o216*rho*(1.0+3.0*( vx1-vx2-vx3)+c9o2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      //feq[TNW] = c1o216*rho*(1.0+3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+
+      //////////////////////////////////////////////////////////////////////////
+
+      LBMReal cu_sq = 1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+      LBMReal rho = drho+one;
+
+      feq[ZERO] = c8o27*(drho+rho*(-cu_sq));
+      feq[E] = c2o27*(drho+rho*(3.0*(vx1)+c9o2*(vx1)*(vx1)-cu_sq));
+      feq[W] = c2o27*(drho+rho*(3.0*(-vx1)+c9o2*(-vx1)*(-vx1)-cu_sq));
+      feq[N] = c2o27*(drho+rho*(3.0*(vx2)+c9o2*(vx2)*(vx2)-cu_sq));
+      feq[S] = c2o27*(drho+rho*(3.0*(-vx2)+c9o2*(-vx2)*(-vx2)-cu_sq));
+      feq[T] = c2o27*(drho+rho*(3.0*(vx3)+c9o2*(vx3)*(vx3)-cu_sq));
+      feq[B] = c2o27*(drho+rho*(3.0*(-vx3)+c9o2*(-vx3)*(-vx3)-cu_sq));
+      feq[NE] = c1o54*(drho+rho*(3.0*(vx1+vx2)+c9o2*(vx1+vx2)*(vx1+vx2)-cu_sq));
+      feq[SW] = c1o54*(drho+rho*(3.0*(-vx1-vx2)+c9o2*(-vx1-vx2)*(-vx1-vx2)-cu_sq));
+      feq[SE] = c1o54*(drho+rho*(3.0*(vx1-vx2)+c9o2*(vx1-vx2)*(vx1-vx2)-cu_sq));
+      feq[NW] = c1o54*(drho+rho*(3.0*(-vx1+vx2)+c9o2*(-vx1+vx2)*(-vx1+vx2)-cu_sq));
+      feq[TE] = c1o54*(drho+rho*(3.0*(vx1+vx3)+c9o2*(vx1+vx3)*(vx1+vx3)-cu_sq));
+      feq[BW] = c1o54*(drho+rho*(3.0*(-vx1-vx3)+c9o2*(-vx1-vx3)*(-vx1-vx3)-cu_sq));
+      feq[BE] = c1o54*(drho+rho*(3.0*(vx1-vx3)+c9o2*(vx1-vx3)*(vx1-vx3)-cu_sq));
+      feq[TW] = c1o54*(drho+rho*(3.0*(-vx1+vx3)+c9o2*(-vx1+vx3)*(-vx1+vx3)-cu_sq));
+      feq[TN] = c1o54*(drho+rho*(3.0*(vx2+vx3)+c9o2*(vx2+vx3)*(vx2+vx3)-cu_sq));
+      feq[BS] = c1o54*(drho+rho*(3.0*(-vx2-vx3)+c9o2*(-vx2-vx3)*(-vx2-vx3)-cu_sq));
+      feq[BN] = c1o54*(drho+rho*(3.0*(vx2-vx3)+c9o2*(vx2-vx3)*(vx2-vx3)-cu_sq));
+      feq[TS] = c1o54*(drho+rho*(3.0*(-vx2+vx3)+c9o2*(-vx2+vx3)*(-vx2+vx3)-cu_sq));
+      feq[TNE] = c1o216*(drho+rho*(3.0*(vx1+vx2+vx3)+c9o2*(vx1+vx2+vx3)*(vx1+vx2+vx3)-cu_sq));
+      feq[BSW] = c1o216*(drho+rho*(3.0*(-vx1-vx2-vx3)+c9o2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      feq[BNE] = c1o216*(drho+rho*(3.0*(vx1+vx2-vx3)+c9o2*(vx1+vx2-vx3)*(vx1+vx2-vx3)-cu_sq));
+      feq[TSW] = c1o216*(drho+rho*(3.0*(-vx1-vx2+vx3)+c9o2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      feq[TSE] = c1o216*(drho+rho*(3.0*(vx1-vx2+vx3)+c9o2*(vx1-vx2+vx3)*(vx1-vx2+vx3)-cu_sq));
+      feq[BNW] = c1o216*(drho+rho*(3.0*(-vx1+vx2-vx3)+c9o2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      feq[BSE] = c1o216*(drho+rho*(3.0*(vx1-vx2-vx3)+c9o2*(vx1-vx2-vx3)*(vx1-vx2-vx3)-cu_sq));
+      feq[TNW] = c1o216*(drho+rho*(3.0*(-vx1+vx2+vx3)+c9o2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
    }
    //////////////////////////////////////////////////////////////////////////
    static LBMReal getIncompFeqForDirection(const int& direction,const LBMReal& drho, const LBMReal& vx1,const LBMReal& vx2,const LBMReal& vx3)	

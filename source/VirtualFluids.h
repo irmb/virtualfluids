@@ -25,9 +25,6 @@
 #include <basics/container/CbArray4D.h>
 #include <basics/container/CbVector.h>
 #include <basics/container/CbVectorPool.h>
-//#include <basics/container/examples/CbVectorPool/functions.h>
-//#include <basics/memory/MbChessMemPool2D.h>
-//#include <basics/memory/MbChessMemPool3D.h>
 #include <basics/memory/MbMemPool.h>
 #include <basics/memory/MbSharedPointerDefines.h>
 #include <basics/memory/MbSmartPtr.h>
@@ -38,18 +35,9 @@
 #include <basics/objects/ObObjectCreator.h>
 #include <basics/objects/ObObjectFactory.h>
 #include <basics/objects/ObObjectManager.h>
-// #include <basics/parallel/PbMpi.h>
-// #include <basics/parallel/PbMpiTools.h>
-// #include <basics/parallel/examples/simpleMPI/functions.h>
-// #include <basics/relation/RbAggregation.h>
 #include <basics/transmitter/TbTransmitter.h>
 #include <basics/transmitter/TbTransmitterLocal.h>
-#include <basics/transmitter/TbTransmitterMpi.h>
-// #include <basics/transmitter/TbTransmitterMpiCPPB.h>
 #include <basics/transmitter/TbTransmitterMpiPool.h>
-//#include <basics/transmitter/TbTransmitterMpiPool2.h>
-// #include <basics/transmitter/TbTransmitterRcf.h>
-// #include <basics/transmitter/TbTransmitterRcfPool.h>
 #include <basics/utilities/UbAutoRun.hpp>
 #include <basics/utilities/UbComparators.h>
 #include <basics/utilities/UbConverter.h>
@@ -179,16 +167,10 @@
 #include <LBM/ICell.h>
 #include <LBM/InterpolationProcessor.h>
 #include <LBM/LBMKernel3D.h>
-#include <LBM/LBMKernelESD3Q27CCLB.h>
 #include <LBMKernelETD3Q27CCLBWithSpongeLayer.h>
 #include <LBM/LBMKernelETD3Q27.h>
-#include <LBM/LBMKernelETD3Q27BGK.h>
-#include <LBM/LBMKernelETD3Q27Cascaded.h>
-#include <LBM/LBMKernelETD3Q27CascadedTI.h>
 #include <LBM/LBMKernelETD3Q27CCLB.h>
-#include <LBM/LBMKernelETD3Q27CCLBSparse.h>
-#include <LBM/LBMKernelETD3Q27CCLBex.h>
-#include <LBM/LBMKernelETD3Q27CCLBex2.h>
+#include <LBM/CompressibleCumulantLBMKernel.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMSystems.h>
 #include <LBM/LBMUnitConverter.h>
@@ -300,6 +282,8 @@
 #include <Visitors/BoundaryConditionBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
 #include <InitDistributionsFromFileBlockVisitor.h>
+#include <CheckRatioBlockVisitor.h>
+#include <SpongeLayerBlockVisitor.h>
 
 #include <Visitors/RefineCrossAndInsideGbObjectHelper.h>
 #include <RefineAroundGbObjectHelper.h>

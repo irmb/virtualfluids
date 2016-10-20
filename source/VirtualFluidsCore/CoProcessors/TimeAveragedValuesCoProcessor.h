@@ -39,12 +39,14 @@ public:
    TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
       UbSchedulerPtr s, CommunicatorPtr comm, int options);
    TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-      UbSchedulerPtr s, CommunicatorPtr comm, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds);
+      UbSchedulerPtr s, CommunicatorPtr comm, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds, bool timeAveraging = true);
    //! Make update
    void process(double step);
    //! Computes subtotal of velocity , fluctuations and triple correlations
    void calculateSubtotal(double step);
    void addLevelCoordinate(double c);
+   void reset();
+
 protected:
    //! Prepare data and write in .vtk file
    void collectData(double step);
@@ -55,7 +57,7 @@ protected:
    void calculateAverageValues(double timeStep);
 
    void init(UbSchedulerPtr s);
-   void volumeAverage(double step);
+   void planarAverage(double step);
 
 private:
    CommunicatorPtr comm;
@@ -99,7 +101,8 @@ private:
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
 
-   bool volumeAveraging;
+   bool planarAveraging;
+   bool timeAveraging;
    std::vector<double> levelCoords;
    std::vector<int> levels;
    std::vector<double> bounds;

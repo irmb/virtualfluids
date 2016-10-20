@@ -7,6 +7,18 @@ double rangeRandom(double M, double N)
    return M + (rand() / (RAND_MAX / (N - M)));
 }
 
+double rangeRandom1()
+{
+   return (2.0*rand())/RAND_MAX - 1.0;
+}
+
+//double rangeRandom(double M, double N)
+//{
+//   return rand() % (int)N+(int)M;
+//}
+
+
+
 //#include <thread>
 
 using namespace std;
@@ -47,7 +59,9 @@ void run(string configname)
       bool            changeQs          = config.getBool("changeQs"); 
       double          timeAvStart       = config.getDouble("timeAvStart");
       double          timeAvStop        = config.getDouble("timeAvStop");
-
+      bool            averaging         = config.getBool("averaging");
+      bool            averagingReset    = config.getBool("averagingReset");
+      double          nupsSteps         = config.getDouble("nupsSteps");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -374,7 +388,7 @@ void run(string configname)
          BoundaryConditionBlockVisitor bcVisitor;
          grid->accept(bcVisitor);
 
-         mu::Parser inflowProfile;
+         mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3, inflowProfileRho;
      //  inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
 		   ////inflowProfile.SetExpr("uLB+1*x1-1*x2");
      //    //inflowProfile.SetExpr("uLB");
@@ -409,27 +423,83 @@ void run(string configname)
          //inflowProfile.SetExpr("x3 < h && x3 > 0 ? 2.3*u_tau/k*log(x3/z0) : 0.0");
 
          //inflowProfile.SetExpr("Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)");
-         //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)) : 0");
-         inflowProfile.DefineFun("rangeRandom", rangeRandom);
-         inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+rangeRandom(-nois, nois) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+rangeRandom(-nois, nois)");
+         //inflowProfileVx1.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)) : 0");
+         
+         inflowProfileVx1.DefineFun("rangeRandom1", rangeRandom1);
+         //inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+rangeRandom(-nois, nois) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+rangeRandom(-nois, nois)");
 
-         inflowProfile.DefineConst("Uref", u_LB);
-         inflowProfile.DefineConst("Href", channelHigh);
-         inflowProfile.DefineConst("zg", 0.0);
-         inflowProfile.DefineConst("nois", nois);
+         inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+0.1*Uref*rangeRandom1() : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+0.1*Uref*rangeRandom1()");
 
-         inflowProfile.DefineConst("u_tau", u_tau);
-         inflowProfile.DefineConst("k", k);
-         inflowProfile.DefineConst("z0", z0);
-         inflowProfile.DefineConst("h", channelHigh / 2.0);
-         inflowProfile.DefineConst("zMax", channelHigh);
+         //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+ U*cos(8.0*PI*(x1)/(L1))*sin(8.0*PI*(x3)/L3) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+U*cos(8.0*PI*(x1)/(L1))*sin(8.0*PI*(x3)/L3)");
+         //inflowProfileVx1.SetExpr("U*cos(4.0*PI*(x1)/(L1))*sin(4.0*PI*(x3)/L3)");
+         
+         //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+U*cos(rangeRandom(2,8)*PI*x1/L2)*sin(rangeRandom(2,8)*PI*x2/L2)*sin(rangeRandom(2,8)*PI*x3/L3) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+U*cos(rangeRandom(2,8)*PI*x1/L2)*sin(rangeRandom(2,8)*PI*x2/L2)*sin(rangeRandom(2,8)*PI*x3/L3)");
+         //inflowProfileVx1.SetExpr("U*cos(2.0*PI*x1/L1)*sin(2.0*PI*x2/L2)*sin(2.0*PI*x3/L3)");
+         //inflowProfileVx1.SetExpr("U*sin(2.0*PI*x1/L2)*cos(1.0*PI*x2/L2)*cos(1.0*PI*x3/L3)");
+         //inflowProfileVx1.SetExpr("U*cos(2.0*PI*(x1-L1/16.0)/(L1*2.0))*sin(2.0*PI*(x3-L3/4.0)/L3)");
+         //inflowProfileVx1.SetExpr("U*sin(2.0*PI*x1/L2)");
 
+         inflowProfileVx1.DefineConst("U", u_LB);
+         inflowProfileVx1.DefineConst("PI", PI);
+         inflowProfileVx1.DefineConst("L1", g_maxX1-g_minX1);
+         inflowProfileVx1.DefineConst("L2", g_maxX2-g_minX2);
+         inflowProfileVx1.DefineConst("L3", g_maxX3-g_minX3);
+
+         inflowProfileVx1.DefineConst("Uref", u_LB);
+         inflowProfileVx1.DefineConst("Href", channelHigh);
+         inflowProfileVx1.DefineConst("zg", 0.0);
+         inflowProfileVx1.DefineConst("nois", nois);
+
+         inflowProfileVx1.DefineConst("u_tau", u_tau);
+         inflowProfileVx1.DefineConst("k", k);
+         inflowProfileVx1.DefineConst("z0", z0);
+         inflowProfileVx1.DefineConst("h", channelHigh / 2.0);
+         inflowProfileVx1.DefineConst("zMax", channelHigh);
+
+         inflowProfileVx2.SetExpr("0.1*U*rangeRandom1()");
+         //inflowProfileVx2.SetExpr("0.0");
+         //inflowProfileVx2.SetExpr("-U*cos(2.0*PI*x1/L1)*sin(2.0*PI*x2/L2)*cos(2.0*PI*x3/L3)");
+         //inflowProfileVx2.SetExpr("-U/2.0*sin(2.0*PI*x1/L1)*cos(2.0*PI*x2/L2)*sin(2.0*PI*x3/L3)");
+         //inflowProfileVx2.SetExpr("-U/8.0*sin(rangeRandom(2,8)*PI*x1/L2)*cos(rangeRandom(2,8)*PI*x2/L2)*sin(rangeRandom(2,8)*PI*x3/L3)");
+         inflowProfileVx2.DefineConst("U", u_LB);
+         inflowProfileVx2.DefineConst("PI", PI);
+         inflowProfileVx2.DefineConst("L1", g_maxX1-g_minX1);
+         inflowProfileVx2.DefineConst("L2", g_maxX2-g_minX2);
+         inflowProfileVx2.DefineConst("L3", g_maxX3-g_minX3);
+         inflowProfileVx2.DefineFun("rangeRandom1", rangeRandom1);
+
+         inflowProfileVx3.SetExpr("0.1*U*rangeRandom1()");
+         //inflowProfileVx3.SetExpr("-U/2.0*sin(8.0*PI*(x1)/(L1))*cos(8.0*PI*(x3)/L3)");
+         //inflowProfileVx3.SetExpr("-U/2.0*sin(2.0*PI*(x1-L1/16.0)/(L1*2.0))*cos(2.0*PI*(x3-L3/4.0)/L3)");
+         //inflowProfileVx3.SetExpr("-U/2.0*sin(2.0*PI*x1/L2)*sin(2.0*PI*x3/L3)");
+         //inflowProfileVx3.SetExpr("-U*cos(1.0*PI*x1/L2)*sin(1.0*PI*x2/L2)*cos(1.0*PI*x3/L3)");
+         //inflowProfileVx3.SetExpr("-U/2.0*sin(2.0*PI*x1/L2)*sin(2.0*PI*x2/L2)*cos(2.0*PI*x3/L3)");
+         //inflowProfileVx3.SetExpr("-U/8.0*sin(rangeRandom(2,8)*PI*x1/L2)*sin(rangeRandom(2,8)*PI*x2/L2)*cos(rangeRandom(2,8)*PI*x3/L3)");
+         inflowProfileVx3.DefineConst("U", u_LB);
+         inflowProfileVx3.DefineConst("PI", PI);
+         inflowProfileVx3.DefineConst("L1", g_maxX1-g_minX1);
+         inflowProfileVx3.DefineConst("L2", g_maxX2-g_minX2);
+         inflowProfileVx3.DefineConst("L3", g_maxX3-g_minX3);
+         inflowProfileVx3.DefineFun("rangeRandom1", rangeRandom1);
+
+         inflowProfileRho.SetExpr("3.0*(rho/4.0*U^2*(sin(4.0*PI*(x1-L1/4.0)/L1)+sin(4.0*PI*(x3-L3/4.0)/L3)))");
+         //inflowProfileRho.SetExpr("3.0*(rho/3.0+((rho*U^2)/16.0)*(cos(2.0*PI*x1/L2)+cos(2.0*PI*x2/L2))*(cos(2.0*PI*x3/L3)+2.0))");
+         //inflowProfileRho.SetExpr("3.0*(rho/3.0+((rho*U^2)/32.0)*(cos(8.0*PI*x1/L2)+cos(8.0*PI*x2/L2))*(cos(8.0*PI*x3/L3)+2.0))");
+         inflowProfileRho.DefineConst("U", u_LB);
+         inflowProfileRho.DefineConst("PI", PI);
+         inflowProfileRho.DefineConst("L1", g_maxX1-g_minX1);
+         inflowProfileRho.DefineConst("L2", g_maxX2-g_minX2);
+         inflowProfileRho.DefineConst("L3", g_maxX3-g_minX3);
+         inflowProfileRho.DefineConst("rho", rho_LB);
 
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
-         initVisitor.setVx1(inflowProfile);
-         //initVisitor.setVx1(u_LB);
+         initVisitor.setVx1(inflowProfileVx1);
+         initVisitor.setVx2(inflowProfileVx2);
+         initVisitor.setVx3(inflowProfileVx3);
+         //initVisitor.setRho(inflowProfileRho);
          grid->accept(initVisitor);
 
+         
 
          ////set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
@@ -504,8 +574,78 @@ void run(string configname)
             UBLOG(logINFO, "path = " << pathname);
          }
 
-         BoundaryConditionBlockVisitor bcVisitor;
-         grid->accept(bcVisitor);
+         /////////////////////////////////////////////////////////////
+         ////bounding box
+         //double offsetMinX3 = pmL[2];
+
+         //double offsetMaxX1 = pmL[0]*lengthFactor;
+         //double offsetMaxX2 = pmL[1]*2.0;
+         //double offsetMaxX3 = channelHigh;
+
+         //double g_minX1 = origin[0];
+         //double g_minX2 = origin[1];
+         //double g_minX3 = origin[2];
+
+         //double g_maxX1 = origin[0]+offsetMaxX1;
+         //double g_maxX2 = origin[1]+offsetMaxX2;
+         //double g_maxX3 = origin[2]+offsetMaxX3;
+
+         //double blockLength = (double)blocknx[0]*deltaXcoarse;
+
+         //GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+offsetMinX3));
+         //if (myid==0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathname+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+         //int bbOption = 1;
+         //D3Q27BoundaryConditionAdapterPtr bcNoSlip(new D3Q27NoSlipBCAdapter(bbOption));
+         //D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, bcNoSlip, Interactor3D::SOLID));
+
+         //SetSolidOrTransBlockVisitor v1(addWallZminInt, SetSolidOrTransBlockVisitor::SOLID);
+         //grid->accept(v1);
+         //SetSolidOrTransBlockVisitor v2(addWallZminInt, SetSolidOrTransBlockVisitor::TRANS);
+         //grid->accept(v2);
+
+         //std::vector<Block3DPtr> blocks;
+         //std::vector<Block3DPtr>& sb = addWallZminInt->getSolidBlockSet();
+         //if (myid==0) UBLOG(logINFO, "number of solid blocks = "<<sb.size());
+         ////blocks.insert(blocks.end(), sb.begin(), sb.end());
+         //std::vector<Block3DPtr>& tb = addWallZminInt->getTransBlockSet();
+         //if (myid==0) UBLOG(logINFO, "number of trans blocks = "<<tb.size());
+         //blocks.insert(blocks.end(), tb.begin(), tb.end());
+
+         //if (myid==0) UBLOG(logINFO, "number of blocks = "<<blocks.size());
+
+         //BOOST_FOREACH(Block3DPtr block, blocks)
+         //{
+         //   block->setActive(true);
+         //   addWallZminInt->setDifferencesToGbObject3D(block);
+         //}
+
+         ////////////////////////////////////////////////
+         //////METIS
+         ////Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+         ////////////////////////////////////////////////
+         /////////delete solid blocks
+         ////if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - start");
+         ////InteractorsHelper intHelper(grid, metisVisitor);
+         ////intHelper.addInteractor(addWallZminInt);
+         ////intHelper.selectBlocks();
+         ////if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - end");
+         //////////////////////////////////////////
+         ////intHelper.setBC();
+         ////////////////////////////////////////////////////////////////
+
+         //BoundaryConditionBlockVisitor bcVisitor;
+         //grid->accept(bcVisitor);
+
+         //WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         //ppblocks->process(0);
+         //ppblocks.reset();
+
+         //UbSchedulerPtr geoSch(new UbScheduler(1));
+         //MacroscopicQuantitiesCoProcessorPtr ppgeo(
+         //   new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         //ppgeo->process(0);
+         //ppgeo.reset();
+         //////////////////////////////////////////////////////////////////
 
          //set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
@@ -520,7 +660,7 @@ void run(string configname)
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
-      UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+      UbSchedulerPtr nupsSch(new UbScheduler(nupsSteps));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
       UbSchedulerPtr stepSch(new UbScheduler(outTime));
@@ -599,8 +739,16 @@ void run(string configname)
          TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
          levels, levelCoords, bounds));
       
+      if (averagingReset)
+      {
+         tav->reset();
+      }
+      
       //UbSchedulerPtr catalystSch(new UbScheduler(1));
       //InSituCatalystCoProcessor catalyst(grid, catalystSch, "pchannel.py");
+
+      UbSchedulerPtr exitSch(new UbScheduler(10));
+      EmergencyExitCoProcessor exitCoProc(grid, exitSch, pathname, RestartCoProcessorPtr(&rp), comm);
 
       if (myid == 0)
       {
@@ -610,7 +758,10 @@ void run(string configname)
       }
 
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
-      calculation->setTimeAveragedValuesCoProcessor(tav);
+      if (averaging)
+      {
+         calculation->setTimeAveragedValuesCoProcessor(tav);
+      }
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");

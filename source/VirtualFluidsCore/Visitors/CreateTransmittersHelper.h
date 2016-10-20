@@ -27,8 +27,8 @@ public:
                                  TransmitterPtr& sender, TransmitterPtr& receiver, CommunicatorPtr comm, TransmitterType tType);
 protected:
 private:
-   unsigned int generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel);
-   unsigned int  generateVectorKey(int x1, int x2, int x3,/*int id,*/ int dir, IBlock ib);
+   std::string generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel);
+   std::string  generateVectorKey(int x1, int x2, int x3,/*int id,*/ int dir, IBlock ib);
    int generateMPITag(int srcLevel, int tgtLevel);
    static unsigned int vKey;
 };

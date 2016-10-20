@@ -2,13 +2,10 @@
 #define BOOSTSERIALIZATIONCLASSEXPORTHELPER_H
 
 #include <LBMKernelETD3Q27.h>
-#include <LBMKernelETD3Q27Cascaded.h>
 #include <D3Q27EsoTwist3DSplittedVector.h>
 #include <BCProcessor.h>
 #include <D3Q27ETBCProcessor.h>
-#include <LBMKernelETD3Q27CascadedTI.h>
 #include <DataSet3D.h>
-#include <LBMKernelETD3Q27BGK.h>
 #include <LBMKernelETD3Q27CCLB.h>
 #include <LBMKernelETD3Q27CCLBWithSpongeLayer.h>
 #include <Interactor3D.h>
@@ -45,9 +42,6 @@
 #include <boost/serialization/export.hpp>
 
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27)
-BOOST_CLASS_EXPORT(LBMKernelETD3Q27Cascaded)
-BOOST_CLASS_EXPORT(LBMKernelETD3Q27CascadedTI)
-BOOST_CLASS_EXPORT(LBMKernelETD3Q27BGK)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLB)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLBWithSpongeLayer)
 BOOST_CLASS_EXPORT(D3Q27EsoTwist3DSplittedVector)

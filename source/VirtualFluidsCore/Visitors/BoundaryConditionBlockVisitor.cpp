@@ -42,6 +42,11 @@ void BoundaryConditionBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       int nsCount = 0;
       int sCount = 0;
 
+      if (velocity) velocity->clearData();
+      if (density) density->clearData();
+      if (noSlip)  noSlip->clearData();
+      if (slip)    slip->clearData();
+
       EsoTwist3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
       for (int x3 = minX3; x3 < maxX3; x3++)

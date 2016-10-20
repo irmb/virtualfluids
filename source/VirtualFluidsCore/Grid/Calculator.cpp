@@ -5,6 +5,7 @@
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
 //#define TIMING
+//#define PRECOLLISIONBC
 
 Calculator::Calculator()
 {
@@ -134,8 +135,10 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
             //swap distributions in kernel
             swapDistributions(straightStartLevel, maxInitLevel);
 
-            //exchangeBlockData(straightStartLevel, maxInitLevel, true);
-            //applyPreCollisionBC(straightStartLevel, maxInitLevel);
+#ifdef PRECOLLISIONBC
+            exchangeBlockData(straightStartLevel, maxInitLevel);
+            applyPreCollisionBC(straightStartLevel, maxInitLevel);
+#endif
             
 
 //////////////////////////////////////////////////////////////////////////

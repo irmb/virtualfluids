@@ -543,6 +543,11 @@ namespace UbMath
    static const double one_over_sqrt3 =  1.0/sqrt(3.0); //0.577350269
    static const double sqrt2  = sqrt(2.0); //1.4142135
    static const double sqrt3  = sqrt(3.0); //1.7320508
+   static const double one = 1.0;
+   static const double two = 2.0;
+   static const double three = 3.0;
+   static const double four = 4.0;
+   static const double sixteen = 16.0;
 }
 
 #endif

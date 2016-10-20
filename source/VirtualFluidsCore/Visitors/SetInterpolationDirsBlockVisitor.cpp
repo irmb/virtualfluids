@@ -123,11 +123,26 @@ void SetInterpolationDirsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
+//void SetInterpolationDirsBlockVisitor::checkFlagDir(Grid3DPtr grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level)
+//{
+//   Block3DPtr block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
+//   Block3DPtr block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
+//   if (!((block1 && block2)  ||  (!block1 && !block2)))
+//      flagDirection = false;
+//   else
+//      flagDirection = true;
+//}
+
 void SetInterpolationDirsBlockVisitor::checkFlagDir(Grid3DPtr grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level)
 {
    Block3DPtr block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
    Block3DPtr block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
-   if (!((block1 && block2)  ||  (!block1 && !block2)))
+
+   Block3DPtr pblock = grid->getSuperBlock(ix1,ix2,ix3,level);
+   Block3DPtr pblock1 = grid->getNeighborBlock(dir1, pblock);
+   Block3DPtr pblock2 = grid->getNeighborBlock(dir2, pblock);
+
+   if (!((block1 && block2)||(!block1 && !block2)) || !((pblock1 && pblock2)||(!pblock1 && !pblock2)))
       flagDirection = false;
    else
       flagDirection = true;

@@ -70,7 +70,7 @@ public:
    typedef typename CbVector<T>::size_type  size_type;
    typedef std::vector< value_type >        Pool;
 
-   typedef unsigned int CbVectorKey;
+   typedef std::string CbVectorKey;
    typedef std::map< CbVectorKey, CbVector< value_type >* /*ptrVector*/  > CbVectorMap;
    typedef typename CbVectorMap::iterator CbVectorMapIter;
 
@@ -79,7 +79,7 @@ public:
    CbVectorPool( const size_type& startPoolSize = 20000) //startPoolSize*sizeof(T)/1024/1024 [MB]
       :  poolStartAdress(NULL)
        , nextCbVectorStartIndexInPool(0)
-       , nextCbVectorKey(0)
+       , nextCbVectorKey()
    {
       pool.reserve(startPoolSize);
    }
@@ -95,7 +95,7 @@ public:
 
          //allocator daten reseten
          allocator.ptrVectorPool    = NULL;
-         allocator.key              = 0;
+         allocator.key              = CbVectorKey();
          allocator.startIndexInPool = 0;
 
          //Datenzeiger/-groessen reseten
@@ -155,7 +155,7 @@ public:
          if( this->resizeData(allocator,vec,0,0) )
          {
             allocator.ptrVectorPool    = NULL;
-            allocator.key              = 0;
+            allocator.key              = CbVectorKey();
             allocator.startIndexInPool = 0;
 
             //das Datenzeiger/-groessen reseten wird bereits in resize durchgefuehrt
@@ -294,7 +294,7 @@ protected:
       allocator.dataSizeOf(vec) = dataSize;
 
       //dummDoof nextKey-Generung...
-      if( allocator.key >= this->nextCbVectorKey ) this->nextCbVectorKey = allocator.key + 1;
+      if( allocator.key >= this->nextCbVectorKey ) this->nextCbVectorKey = allocator.key + "1";
 
       return true;
    }

@@ -40,7 +40,6 @@ INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/utilities/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/container/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/writer/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/transmitter/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/FNV/CMakePackage.txt)
 
 #FETOL
 IF(${USE_FETOL})

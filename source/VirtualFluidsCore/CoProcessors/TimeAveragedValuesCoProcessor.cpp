@@ -25,12 +25,12 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
    options(options)
 {
    init(s);
-   volumeAveraging = false;
+   planarAveraging = false;
 }
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
    UbSchedulerPtr s, CommunicatorPtr comm, int options,
-   std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds)
+   std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds, bool timeAveraging)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
@@ -38,10 +38,11 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
    options(options),
    levels(levels),
    levelCoords(levelCoords),
-   bounds(bounds)
+   bounds(bounds),
+   timeAveraging(timeAveraging)
 {
    init(s);
-   volumeAveraging = true;
+   planarAveraging = true;
 }
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
@@ -128,10 +129,15 @@ void TimeAveragedValuesCoProcessor::process(double step)
       ////////////////////////////
 
       calculateAverageValues((double)numberOfFineSteps);
-      collectData(step);
-      if (volumeAveraging)
+      
+      if (timeAveraging)
       {
-         volumeAverage(step);
+         collectData(step);
+      }
+      
+      if (planarAveraging)
+      {
+         planarAverage(step);
       }
    }
 
@@ -168,7 +174,7 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
    if (root)
    {
       string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
-      UBLOG(logINFO, "TimeAveragedValuesCoProcessor step: " << istep);
+      UBLOG(logINFO, "TimeAveragedValuesCoProcessor::collectData() step: " << istep);
    }
 
    clearData();
@@ -555,7 +561,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::volumeAverage(double step)
+void TimeAveragedValuesCoProcessor::planarAverage(double step)
 {
    std::ofstream ostr;
 
@@ -579,7 +585,7 @@ void TimeAveragedValuesCoProcessor::volumeAverage(double step)
    int size = (int)levels.size();
    int sizeOfLevelCoords = (int)levelCoords.size();
    
-   if (size != 2*sizeOfLevelCoords)
+   if (2 * size != sizeOfLevelCoords)
    {
       UB_THROW(UbException(UB_EXARGS, "Number of levels coordinates don't match number of levels!"));
    }
@@ -650,8 +656,24 @@ void TimeAveragedValuesCoProcessor::volumeAverage(double step)
    if (root)
    {
       ostr.close();
+      UBLOG(logINFO, "TimeAveragedValuesCoProcessor::planarAverage() step: " << (int)step);
    }
 }
-
+//////////////////////////////////////////////////////////////////////////
+void TimeAveragedValuesCoProcessor::reset()
+{
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   {
+      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      {
+         if (block)
+         {
+            block->getKernel()->getDataSet()->getAverageVelocity()->reset(0.0);
+            block->getKernel()->getDataSet()->getAverageFluctuations()->reset(0.0);
+            block->getKernel()->getDataSet()->getAverageTriplecorrelations()->reset(0.0);
+         }
+      }
+   }
+}
 
 

@@ -45,7 +45,7 @@ public:
    typedef boost::shared_ptr< TbCbVectorMpiPool< T > > MpiPoolPtr;
 
    //////////////////////////////////////////////////////////////////////////
-   typedef std::map<unsigned int, MpiPoolPtr >      MpiPoolPtrMap;
+   typedef std::map<std::string, MpiPoolPtr >      MpiPoolPtrMap;
    typedef typename MpiPoolPtrMap::iterator MpiPoolPtrMapIter;
 
    //da BasisKlasse templateKlasse ist MUSS man hier die typedefs nochmal wiederholen!
@@ -53,7 +53,7 @@ public:
    typedef typename CbVector<T>::size_type  size_type;
    typedef std::vector< value_type >        Pool;
 
-   typedef unsigned int CbVectorKey;
+   typedef std::string CbVectorKey;
    typedef std::map< CbVectorKey, CbVector< value_type >* /*ptrVector*/  > CbVectorMap;
    typedef typename CbVectorMap::iterator CbVectorMapIter;
 
@@ -153,7 +153,7 @@ protected:
       , counterSend(0)                             
       , comm(comm)                                 
       , receiveRequest(MPI_REQUEST_NULL)
-      , sendRequest(MPI_REQUEST_NULL)
+      //, sendRequest(MPI_REQUEST_NULL)
       , mpiRemoteRank(mpiRemoteRank)               
       , mpiTag(mpiTag)                              
    {
@@ -161,6 +161,11 @@ protected:
       else if( (std::string)typeid(value_type).name()==(std::string)typeid(float).name()  ) mpiDataType = MPI_FLOAT;
       else if( (std::string)typeid(value_type).name()==(std::string)typeid(int).name()    ) mpiDataType = MPI_INT;
       else throw UbException(UB_EXARGS,"no MpiDataType for T"+(std::string)typeid(T).name());
+
+      for (int i = 0; i < 3; i++)
+      {
+         sendRequest[i] = MPI_REQUEST_NULL;
+      }
    }
 
 public:
@@ -192,16 +197,23 @@ protected:
          if(this->nextCbVectorStartIndexInPool != this->pool.size())  throw UbException(UB_EXARGS,"an dieser Stelle sollten nextStartIndex und pool.size() identisch sein!!!");
          for(CbVectorMapIter it = this->cbVectorMap.begin(); it!=this->cbVectorMap.end(); ++it)
          {
-            CbVectorKey vectorKey=0;
+            CbVectorKey vectorKey;
             size_type   dataSize=0, startIndexInPool=0;
             this->getCbVectorData(*it->second/*vec*/, vectorKey, startIndexInPool, dataSize );
             if(it->first != vectorKey) throw UbException(UB_EXARGS,"key mismatch!");
 
-            tmpSendOrderVec[index++] = (unsigned)vectorKey;         //vectorKey == allocator.getAllocatorKey()
+            tmpSendOrderKeyVec += vectorKey;         //vectorKey == allocator.getAllocatorKey()
+            tmpSendOrderVec[index++] = (unsigned)vectorKey.length();
             tmpSendOrderVec[index++] = (unsigned)startIndexInPool;  //startIndex in poolVector
             tmpSendOrderVec[index++] = (unsigned)dataSize;          //dataSize
          }
-         MPI_Isend(&tmpSendOrderVec[0],(int)tmpSendOrderVec.size(), MPI_UNSIGNED, mpiRemoteRank, mpiTag, comm, &sendRequest);
+         
+         MPI_Isend(&tmpSendOrderVec[0],(int)tmpSendOrderVec.size(), MPI_UNSIGNED, mpiRemoteRank, mpiTag, comm, &sendRequest[0]);
+         
+         tmpSendOrderKeyVecLength = (unsigned)tmpSendOrderKeyVec.length();
+         MPI_Isend(&tmpSendOrderKeyVecLength,1, MPI_UNSIGNED, mpiRemoteRank, mpiTag, comm, &sendRequest[1]);
+         MPI_Isend((char *)tmpSendOrderKeyVec.c_str(),tmpSendOrderKeyVecLength, MPI_CHAR, mpiRemoteRank, mpiTag, comm, &sendRequest[2]);
+
 
          counterSendDataOrder=0;
 
@@ -228,21 +240,31 @@ protected:
          std::vector< unsigned > tmpRecvOrderVec;
          tmpRecvOrderVec.resize(nofElements);
 
+         std::vector<char> tmpRecvOrderKeyVec;
+        
          //MPI_Status status;
          MPI_Recv(&tmpRecvOrderVec[0], nofElements, MPI_UNSIGNED, mpiRemoteRank, mpiTag, comm, MPI_STATUS_IGNORE);
+
+         unsigned rcount;
+         MPI_Recv(&rcount, 1, MPI_UNSIGNED, mpiRemoteRank, mpiTag, comm, MPI_STATUS_IGNORE);
+         tmpRecvOrderKeyVec.resize(rcount);
+         MPI_Recv(&tmpRecvOrderKeyVec[0], rcount, MPI_CHAR, mpiRemoteRank, mpiTag, comm, MPI_STATUS_IGNORE);
 
          if(nofElements!=(unsigned)tmpRecvOrderVec.size())
             throw UbException(UB_EXARGS,"error... vec size stimmt nicht");
 
          unsigned index = 0;
+         size_type index2 = 0;
          this->nextCbVectorStartIndexInPool = tmpRecvOrderVec[index++]; //= laenge des vectors
          this->pool.resize(this->nextCbVectorStartIndexInPool);
          CbVectorMapIter it = this->cbVectorMap.begin();
          for(/*index*/; index<nofElements; index+=3, ++it)
          {
-            CbVectorKey vectorKey        = (CbVectorKey)tmpRecvOrderVec.at(index  );
+            size_type   vectorKeyLength  = (size_type)tmpRecvOrderVec.at(index  );
             size_type   startIndexInPool = (size_type)tmpRecvOrderVec.at(index+1);
             size_type   dataSize         = (size_type)tmpRecvOrderVec.at(index+2);
+            CbVectorKey vectorKey = CbVectorKey(&tmpRecvOrderKeyVec[index2], vectorKeyLength);
+            index2 += vectorKeyLength;
 
             //if(it==this->cbVectorMap.end() || it->first != vectorKey ) 
                //throw UbException(UB_EXARGS, "entweder hat map nicht die gleiche reihenfolge oder vectorKey = "+UbSystem::toString(vectorKey)+" nicht vorhanden");
@@ -252,6 +274,7 @@ protected:
                throw UbException(UB_EXARGS, "vectorKey = "+UbSystem::toString(vectorKey)+" nicht vorhanden it->first =" + UbSystem::toString(it->first));
 
             this->setCbVectorData(*it->second/*vec*/, vectorKey, startIndexInPool, dataSize );
+            
          }
          if(it!=this->cbVectorMap.end())
             throw UbException(UB_EXARGS,"error... in der map sind scheinbar noch weiter elemente vorhanden, die es auf der send seite nicht gibt...");
@@ -271,7 +294,8 @@ protected:
       if(counterPrepareForSend==0)
       {
          UBLOG(logDEBUG5, "TbCbVectorMpiPool::prepareForSendData():start"<<" mpiRemoteRank="<<mpiRemoteRank<<" mpiTag="<<mpiTag);
-         if(sendRequest != MPI_REQUEST_NULL) MPI_Wait(&sendRequest, MPI_STATUS_IGNORE);
+         //if(sendRequest != MPI_REQUEST_NULL) MPI_Wait(&sendRequest, MPI_STATUS_IGNORE);
+         if(sendRequest[2] != MPI_REQUEST_NULL) MPI_Waitall(3, sendRequest, MPI_STATUS_IGNORE);
          UBLOG(logDEBUG5, "TbCbVectorMpiPool::prepareForSendData():end"<<" mpiRemoteRank="<<mpiRemoteRank<<" mpiTag="<<mpiTag);
       }
 
@@ -396,10 +420,13 @@ protected:
    size_type counterSend;
 
    std::vector< unsigned > tmpSendOrderVec; //wird zur temp speicherung der anordnung benoetigt
+   std::string tmpSendOrderKeyVec;
+   unsigned tmpSendOrderKeyVecLength;
 
    MPI_Comm     comm;
    MPI_Request  receiveRequest;
-   MPI_Request  sendRequest;
+   //MPI_Request  sendRequest;
+   MPI_Request  sendRequest[3];
    //MPI_Status   sendStatus;
    //MPI_Status   receiveStatus;
    MPI_Datatype mpiDataType;
@@ -424,7 +451,7 @@ public:
    typedef CbVector< T > value_type;
 
 public:
-   TbCbVectorSenderMpiPool(unsigned int cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
+   TbCbVectorSenderMpiPool(std::string cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
       : mpiVectorPool(mpiVectorPool)
    { 
       this->getData().setAllocator( new CbVectorAllocatorPool<T>(cbVectorKey,this->mpiVectorPool) );
@@ -467,7 +494,7 @@ public:
    typedef CbVector< T > value_type;   
 
 public:
-   TbCbVectorReceiverMpiPool(unsigned int cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
+   TbCbVectorReceiverMpiPool(std::string cbVectorKey, TbCbVectorMpiPool< T >* mpiVectorPool)
       : mpiVectorPool(mpiVectorPool)
    { 
       this->getData().setAllocator( new CbVectorAllocatorPool<T>(cbVectorKey, this->mpiVectorPool) );

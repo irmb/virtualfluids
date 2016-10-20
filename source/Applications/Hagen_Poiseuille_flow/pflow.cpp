@@ -106,19 +106,27 @@ void pflowForcing(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
+         //////////////////////////////////////////////////////////////////////////
+         //refinement
+         double blockLengthX3Fine = grid->getDeltaX(refineLevel) * blocknx[2];
+
+         GbCuboid3DPtr refineBoxTop(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3 - blockLengthX3Fine, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxTop.get(), pathname + "/geo/refineBoxTop", WbWriterVtkXmlASCII::getInstance());
+
+         //GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+offsetMinX3+blockLengthX3Fine));
+         GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLengthX3Fine, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3 + blockLengthX3Fine));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxBottom.get(), pathname + "/geo/refineBoxBottom", WbWriterVtkXmlASCII::getInstance());
+
          if (refineLevel > 0)
          {
-            //GbObject3DPtr refineCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2/3.0, g_maxX3));
-            //if(myid ==0) GbSystem3D::writeGeoObject(refineCube.get(),pathname + "/geo/refineCube", WbWriterVtkXmlBinary::getInstance());
-            GbObject3DPtr refineCube(new GbCuboid3D(g_minX1 + blockLength + 2 * dx, g_minX2 + blockLength + 2 * dx, g_minX3 + blockLength + 2 * dx, g_maxX1 - blockLength - 2 * dx, g_maxX2 - blockLength - 2 * dx, g_maxX3 - blockLength - 2 * dx));
-            if (myid == 0) GbSystem3D::writeGeoObject(refineCube.get(), pathname + "/geo/refineCube", WbWriterVtkXmlBinary::getInstance());
-
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
-            refineHelper.addGbObject(refineCube, 1);
+            refineHelper.addGbObject(refineBoxTop, refineLevel);
+            refineHelper.addGbObject(refineBoxBottom, refineLevel);
             refineHelper.refine();
             if (myid == 0) UBLOG(logINFO, "Refinement - end");
          }
+         //////////////////////////////////////////////////////////////////////////
 
          //walls
          GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_minX3));
