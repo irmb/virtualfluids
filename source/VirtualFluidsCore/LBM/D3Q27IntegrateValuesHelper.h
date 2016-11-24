@@ -5,18 +5,37 @@
 #include "D3Q27System.h"
 #include "Communicator.h"
 #include "GbCuboid3D.h"
+#include "CbArray2D.h"
 
-struct CalcNodes 
-{
-	Block3DPtr block;
-	std::vector<UbTupleInt3> nodes;
-};
+//struct CalcNodes 
+//{
+//	Block3DPtr block;
+//	std::vector<UbTupleInt3> nodes;
+//};
+//
+//struct Nodes
+//{
+//   Block3DPtr block;
+//   UbTupleInt3 nodes;
+//};
 
 class D3Q27IntegrateValuesHelper;
 typedef boost::shared_ptr<D3Q27IntegrateValuesHelper> D3Q27IntegrateValuesHelperPtr;
 
 class D3Q27IntegrateValuesHelper
 {
+public:
+   struct CalcNodes
+   {
+      Block3DPtr block;
+      std::vector<UbTupleInt3> nodes;
+   };
+
+   struct Node
+   {
+      Block3DPtr block;
+      UbTupleInt3 node;
+   };
 public:
 	D3Q27IntegrateValuesHelper(Grid3DPtr grid, CommunicatorPtr comm, 
 		double minX1, double minX2, double minX3, 
@@ -29,6 +48,8 @@ public:
 	void calculateMQ();
 	void calculateAV();
    void calculateAV2();
+   void prepare2DMatrix(int level);
+   void calculateTwoPointCorrelations();
 	void clearData();
 
 	double getRho() {return sRho;}
@@ -86,6 +107,7 @@ private:
 	std::vector<CalcNodes> cnodes;
 	GbCuboid3DPtr boundingBox;
 	CommunicatorPtr comm;
+   CbArray2D<Node> cnodes2DMatrix;
 	enum Values{AvVx = 0, AvVy = 1, AvVz = 2, AvVxx = 3, AvVyy = 4, AvVzz = 5, AvVxy = 6, AvVyz = 7, AvVxz = 8};
 
    double saVx, saVy, saVz;

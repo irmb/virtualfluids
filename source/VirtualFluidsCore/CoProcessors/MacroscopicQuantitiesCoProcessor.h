@@ -20,6 +20,7 @@ public:
                                            const std::string& path, WbWriter* const writer, 
                                            LBMUnitConverterPtr conv,  
                                            bool nodesInformation = false);
+   ~MacroscopicQuantitiesCoProcessor(){}
    void process(double step);
 protected:
    void collectData(double step);

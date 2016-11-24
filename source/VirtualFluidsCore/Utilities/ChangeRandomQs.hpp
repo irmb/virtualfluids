@@ -11,9 +11,9 @@ namespace Utilities
 {
    void ChangeRandomQs(D3Q27IntegrateValuesHelperPtr integrateValues)
    {
-      std::vector<CalcNodes> cnodes = integrateValues->getCNodes();
+      std::vector<D3Q27IntegrateValuesHelper::CalcNodes> cnodes = integrateValues->getCNodes();
       
-      BOOST_FOREACH(CalcNodes cn, cnodes)
+      BOOST_FOREACH(D3Q27IntegrateValuesHelper::CalcNodes cn, cnodes)
       {
          LBMKernel3DPtr kernel = cn.block->getKernel();
          BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();

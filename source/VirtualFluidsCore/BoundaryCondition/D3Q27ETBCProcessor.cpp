@@ -9,17 +9,7 @@ D3Q27ETBCProcessor::D3Q27ETBCProcessor()
 D3Q27ETBCProcessor::D3Q27ETBCProcessor(LBMKernel3DPtr kernel)
 {
    DistributionArray3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
-   //ghostLayerWitdh = kernel->getGhostLayerWidth();
-   //collFactor = kernel->getCollisionFactor();
    bcArray.resize( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D<D3Q27BoundaryCondition>::FLUID);
-   //this->compressible = kernel->getCompressible();
-
-   //minX1 = 0;
-   //minX2 = 0;
-   //minX3 = 0;
-   //maxX1 = (int)bcArray.getNX1();
-   //maxX2 = (int)bcArray.getNX2();
-   //maxX3 = (int)bcArray.getNX3();
 }
 //////////////////////////////////////////////////////////////////////////
 D3Q27ETBCProcessor::~D3Q27ETBCProcessor()

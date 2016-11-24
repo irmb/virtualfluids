@@ -62,15 +62,15 @@ void D3Q27EsoTwist3DSplittedVector::getDistribution(LBMReal* const f, size_t x1,
 //////////////////////////////////////////////////////////////////////////
 void D3Q27EsoTwist3DSplittedVector::setDistribution(const LBMReal* const f, size_t x1, size_t x2, size_t x3)
 {
-   (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3) = f[D3Q27System::INV_E];
-   (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3) = f[D3Q27System::INV_N];
-   (*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3) = f[D3Q27System::INV_T];
-   (*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3) = f[D3Q27System::INV_NE];
-   (*this->localDistributions)(D3Q27System::ET_NW,x1+1,x2,  x3) = f[D3Q27System::INV_NW];
-   (*this->localDistributions)(D3Q27System::ET_TE,x1,  x2,  x3) = f[D3Q27System::INV_TE];
-   (*this->localDistributions)(D3Q27System::ET_TW,x1+1,x2,  x3) = f[D3Q27System::INV_TW];
-   (*this->localDistributions)(D3Q27System::ET_TN,x1,  x2,  x3) = f[D3Q27System::INV_TN];
-   (*this->localDistributions)(D3Q27System::ET_TS,x1,  x2+1,x3) = f[D3Q27System::INV_TS];
+   (*this->localDistributions)(D3Q27System::ET_E,x1,  x2,  x3)   = f[D3Q27System::INV_E];
+   (*this->localDistributions)(D3Q27System::ET_N,x1,  x2,  x3)   = f[D3Q27System::INV_N];
+   (*this->localDistributions)(D3Q27System::ET_T,x1,  x2,  x3)   = f[D3Q27System::INV_T];
+   (*this->localDistributions)(D3Q27System::ET_NE,x1,  x2,  x3)  = f[D3Q27System::INV_NE];
+   (*this->localDistributions)(D3Q27System::ET_NW,x1+1,x2,  x3)  = f[D3Q27System::INV_NW];
+   (*this->localDistributions)(D3Q27System::ET_TE,x1,  x2,  x3)  = f[D3Q27System::INV_TE];
+   (*this->localDistributions)(D3Q27System::ET_TW,x1+1,x2,  x3)  = f[D3Q27System::INV_TW];
+   (*this->localDistributions)(D3Q27System::ET_TN,x1,  x2,  x3)  = f[D3Q27System::INV_TN];
+   (*this->localDistributions)(D3Q27System::ET_TS,x1,  x2+1,x3)  = f[D3Q27System::INV_TS];
    (*this->localDistributions)(D3Q27System::ET_TNE,x1,  x2,  x3) = f[D3Q27System::INV_TNE];
    (*this->localDistributions)(D3Q27System::ET_TNW,x1+1,x2,  x3) = f[D3Q27System::INV_TNW];
    (*this->localDistributions)(D3Q27System::ET_TSE,x1,  x2+1,x3) = f[D3Q27System::INV_TSE];

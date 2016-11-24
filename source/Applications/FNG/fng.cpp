@@ -136,17 +136,17 @@ void run(string configname)
          if (myid == 0)
          {
             UBLOG(logINFO, "Parameters:");
-            UBLOG(logINFO, "* Re            =" << Re);
-            UBLOG(logINFO, "* Ma            =" << Ma);
-            UBLOG(logINFO, "* uReal         =" << uReal);
-            UBLOG(logINFO, "* nuReal        =" << nueReal);
-            UBLOG(logINFO, "* nuLB          =" << nuLB);
-            UBLOG(logINFO, "* velocity      =" << uLB);
-            UBLOG(logINFO, "* dx_base       =" << deltaXcoarse/1000.0 << "m");
-            UBLOG(logINFO, "* dx_refine     =" << deltaXfine/1000.0 << "m");
-
-            UBLOG(logINFO, "number of levels = " << refineLevel + 1);
-            UBLOG(logINFO, "numOfThreads     = " << numOfThreads);
+            UBLOG(logINFO, "* Re                  = "<<Re);
+            UBLOG(logINFO, "* Ma                  = "<<Ma);
+            UBLOG(logINFO, "* velocity (uReal)    = "<<uReal<<" m/s");
+            UBLOG(logINFO, "* viscosity (nuReal)  = "<<nueReal<<" m^2/s");
+            UBLOG(logINFO, "* velocity LB (uLB)   = "<<uLB);
+            UBLOG(logINFO, "* viscosity LB (nuLB) = "<<nuLB);
+            UBLOG(logINFO, "* dx_base             = "<<deltaXcoarse/1000.0<<" m");
+            UBLOG(logINFO, "* dx_refine           = "<<deltaXfine/1000.0<<" m");
+            UBLOG(logINFO, "* number of levels    = " << refineLevel + 1);
+            UBLOG(logINFO, "* number of threads   = " << numOfThreads);
+            UBLOG(logINFO, "* number of processes = " << comm->getNumberOfProcesses());
             UBLOG(logINFO, "Preprozess - start");
          }
 
@@ -297,16 +297,16 @@ void run(string configname)
 
             if (porousTralingEdge)
             {
-               //grid->setRank(0);
-               //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrTrailingEdge)->refineBlockGridToLevel(refineLevel, -1.0, 10.0);
-               //grid->setRank(rank);
+               grid->setRank(0);
+               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrTrailingEdge)->refineBlockGridToLevel(refineLevel, -2.0, refineDistance);
+               grid->setRank(rank);
 
-               GbObject3DPtr trailingEdgeCube(new GbCuboid3D(fngMeshTrailingEdge->getX1Minimum()-blockLength, fngMeshTrailingEdge->getX2Minimum(), fngMeshTrailingEdge->getX3Minimum()-blockLength/2.0,
-                  fngMeshTrailingEdge->getX1Maximum()+blockLength, fngMeshTrailingEdge->getX2Maximum(), fngMeshTrailingEdge->getX3Maximum()+blockLength/2.0));
-               if (myid == 0) GbSystem3D::writeGeoObject(trailingEdgeCube.get(), pathOut + "/geo/trailingEdgeCube", WbWriterVtkXmlASCII::getInstance());
+               //GbObject3DPtr trailingEdgeCube(new GbCuboid3D(fngMeshTrailingEdge->getX1Minimum()-blockLength, fngMeshTrailingEdge->getX2Minimum(), fngMeshTrailingEdge->getX3Minimum()-blockLength/2.0,
+               //   fngMeshTrailingEdge->getX1Maximum()+blockLength, fngMeshTrailingEdge->getX2Maximum(), fngMeshTrailingEdge->getX3Maximum()+blockLength/2.0));
+               //if (myid == 0) GbSystem3D::writeGeoObject(trailingEdgeCube.get(), pathOut + "/geo/trailingEdgeCube", WbWriterVtkXmlASCII::getInstance());
 
-               RefineCrossAndInsideGbObjectBlockVisitor refVisitor(trailingEdgeCube, refineLevel);
-               grid->accept(refVisitor);
+               //RefineCrossAndInsideGbObjectBlockVisitor refVisitor(trailingEdgeCube, refineLevel);
+               //grid->accept(refVisitor);
             }
 
             RatioBlockVisitor ratioVisitor(refineLevel);
@@ -397,7 +397,7 @@ void run(string configname)
          if (porousTralingEdge)
          {
             intHelper.addInteractor(fngIntrBodyPart);
-            intHelper.addInteractor(fngIntrTrailingEdge);
+            //intHelper.addInteractor(fngIntrTrailingEdge);
          } 
          else
          {

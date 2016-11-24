@@ -102,12 +102,13 @@ void CalculateForcesCoProcessor::calculateForces()
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          distributions->swap();
 
-         int minX1 = kernel->getGhostLayerWidth();
-         int maxX1 = (int)bcArray.getNX1() - 1 - kernel->getGhostLayerWidth();
-         int minX2 = kernel->getGhostLayerWidth();
-         int maxX2 = (int)bcArray.getNX2() - 1 - kernel->getGhostLayerWidth();
-         int minX3 = kernel->getGhostLayerWidth();
-         int maxX3 = (int)bcArray.getNX3() - 1 - kernel->getGhostLayerWidth();
+         int ghostLayerWidth = kernel->getGhostLayerWidth();
+         int minX1 = ghostLayerWidth;
+         int maxX1 = (int)bcArray.getNX1() - 1 - ghostLayerWidth;
+         int minX2 = ghostLayerWidth;
+         int maxX2 = (int)bcArray.getNX2() - 1 - ghostLayerWidth;
+         int minX3 = ghostLayerWidth;
+         int maxX3 = (int)bcArray.getNX3() - 1 - ghostLayerWidth;
 
          BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
          {

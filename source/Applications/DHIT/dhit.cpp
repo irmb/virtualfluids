@@ -25,6 +25,7 @@ void run(string configname)
       double          nuLB = config.getDouble("nuLB");
       double          uRMS = config.getDouble("uRMS");
       double          lambda = config.getDouble("lambda");
+      double          initTime = config.getDouble("initTime");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -60,9 +61,9 @@ void run(string configname)
       double g_minX2 = 0.0;
       double g_minX3 = 0.0;
 
-      double g_maxX1 = length[0];
-      double g_maxX2 = length[1];
-      double g_maxX3 = length[2];
+      double g_maxX1 = length[0];//-1.0;
+      double g_maxX2 = length[1];//-1.0;
+      double g_maxX3 = length[2];//-1.0;
 
       //geometry
       GbObject3DPtr box(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
@@ -149,7 +150,8 @@ void run(string configname)
 
       LBMKernel3DPtr kernel;
 
-      kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
+      //kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
+      kernel = LBMKernel3DPtr(new InitDensityLBMKernel(blocknx[0], blocknx[1], blocknx[2]));
 
       BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
       kernel->setBCProcessor(bcProc);
@@ -181,16 +183,31 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      UbSchedulerPtr visSch(new UbScheduler(outTime));
-      MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
+      UbSchedulerPtr outputSch(new UbScheduler(outTime));
+      MacroscopicQuantitiesCoProcessor pp(grid, outputSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
 
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
+      CalculationManagerPtr initialisation(new CalculationManager(grid, numOfThreads, initTime, outputSch));
+      if (myid == 0) UBLOG(logINFO, "Initialisation-start");
+      initialisation->calculate();
+      if (myid == 0) UBLOG(logINFO, "Initialisation-end");
+
+
+      kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
+      kernel->setBCProcessor(bcProc);
+      SetKernelBlockVisitor kernelVisitor2(kernel, nuLB, availMem, needMem, SetKernelBlockVisitor::Change);
+      grid->accept(kernelVisitor2);
+
+      UbSchedulerPtr visSch(new UbScheduler(outTime));
+
+      if (myid==0) UBLOG(logINFO, "Simulation-start");
+      grid->setTimeStep(initTime+1.0);
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
-      if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
-      if (myid == 0) UBLOG(logINFO, "Simulation-end");
+      if (myid==0) UBLOG(logINFO, "Simulation-end");
+
    }
    catch (std::exception& e)
    {

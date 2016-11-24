@@ -13,20 +13,11 @@ typedef boost::shared_ptr<DataSet3D> DataSet3DPtr;
 typedef CbArray4D<LBMReal,IndexerX4X3X2X1> AverageValuesArray3D;
 typedef boost::shared_ptr< AverageValuesArray3D > AverageValuesArray3DPtr;
 
-//typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageVelocityArray3D;
-//typedef boost::shared_ptr< AverageValuesArray3D > AverageVelocityArray3DPtr;
-//
-//typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageFluctuationsArray3D;
-//typedef boost::shared_ptr< AverageFluctuationsArray3D > AverageFluctuationsArray3DPtr;
-//
-//typedef CbArray4D<LBMReal, IndexerX4X3X2X1> AverageTriplecorrelationsArray3D;
-//typedef boost::shared_ptr< AverageValuesArray3D > AverageTriplecorrelationsArray3DPtr;
-
 typedef CbArray4D<LBMReal,IndexerX4X3X2X1> ShearStressValuesArray3D;
 typedef boost::shared_ptr< ShearStressValuesArray3D > ShearStressValuesArray3DPtr;
 
-typedef CbArray3D<LBMReal, IndexerX3X2X1> ViscosityArray3D;
-typedef boost::shared_ptr< ViscosityArray3D > ViscosityArray3DPtr;
+typedef CbArray3D<LBMReal, IndexerX3X2X1> RelaxationFactorArray3D;
+typedef boost::shared_ptr< RelaxationFactorArray3D > RelaxationFactorArray3DPtr;
 
 class DataSet3D
 {
@@ -42,96 +33,109 @@ public:
 
    AverageValuesArray3DPtr getAverageTriplecorrelations() const;
    void setAverageTriplecorrelations(AverageValuesArray3DPtr values);
-
-
-
    
    AverageValuesArray3DPtr getAverageValues() const;
    void setAverageValues(AverageValuesArray3DPtr values);
    
    ShearStressValuesArray3DPtr getShearStressValues() const;
    void setShearStressValues(ShearStressValuesArray3DPtr values);
+
+   RelaxationFactorArray3DPtr getRelaxationFactor() const;
+   void setRelaxationFactor(RelaxationFactorArray3DPtr values);
 protected:
 private:
-   DistributionArray3DPtr mFdistributions;
-   AverageValuesArray3DPtr mAverageValues;
+   DistributionArray3DPtr fdistributions;
+   AverageValuesArray3DPtr averageValues;
 
-   AverageValuesArray3DPtr mAverageVelocity;
-   AverageValuesArray3DPtr mAverageFluktuations;
-   AverageValuesArray3DPtr mAverageTriplecorrelations;
+   AverageValuesArray3DPtr averageVelocity;
+   AverageValuesArray3DPtr averageFluktuations;
+   AverageValuesArray3DPtr averageTriplecorrelations;
 
-   ShearStressValuesArray3DPtr mShearStressValues;
+   ShearStressValuesArray3DPtr shearStressValues;
+
+   RelaxationFactorArray3DPtr relaxationFactor;
 
    friend class boost::serialization::access;
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)
    {
-      ar & mFdistributions;
-      ar & mAverageValues;
-      ar & mShearStressValues;
-      ar & mAverageVelocity;
-      ar & mAverageFluktuations;
-      ar & mAverageTriplecorrelations;
+      ar & fdistributions;
+      ar & averageValues;
+      ar & shearStressValues;
+      ar & averageVelocity;
+      ar & averageFluktuations;
+      ar & averageTriplecorrelations;
+      ar & relaxationFactor;
    }
 };
 
 inline DistributionArray3DPtr DataSet3D::getFdistributions() const
 { 
-   return mFdistributions; 
+   return fdistributions; 
 }
 
 inline void DataSet3D::setFdistributions(DistributionArray3DPtr distributions)
 { 
-   mFdistributions = distributions; 
+   fdistributions = distributions; 
 }
 
 inline AverageValuesArray3DPtr DataSet3D::getAverageValues() const
 { 
-   return mAverageValues; 
+   return averageValues; 
 }
 
 inline void DataSet3D::setAverageValues(AverageValuesArray3DPtr values)
 { 
-   mAverageValues = values; 
+   averageValues = values; 
 }
 
 inline AverageValuesArray3DPtr DataSet3D::getAverageVelocity() const
 {
-   return mAverageVelocity;
+   return averageVelocity;
 }
 
 inline void DataSet3D::setAverageVelocity(AverageValuesArray3DPtr values)
 {
-   mAverageVelocity = values;
+   averageVelocity = values;
 }
 
 inline AverageValuesArray3DPtr DataSet3D::getAverageFluctuations() const
 {
-   return mAverageFluktuations;
+   return averageFluktuations;
 }
 
 inline void DataSet3D::setAverageFluctuations(AverageValuesArray3DPtr values)
 {
-   mAverageFluktuations = values;
+   averageFluktuations = values;
 }
 
 inline AverageValuesArray3DPtr DataSet3D::getAverageTriplecorrelations() const
 {
-   return mAverageTriplecorrelations;
+   return averageTriplecorrelations;
 }
 
 inline void DataSet3D::setAverageTriplecorrelations(AverageValuesArray3DPtr values)
 {
-   mAverageTriplecorrelations = values;
+   averageTriplecorrelations = values;
 }
 
 inline ShearStressValuesArray3DPtr DataSet3D::getShearStressValues() const
 { 
-   return mShearStressValues; 
+   return shearStressValues; 
 }
 
 inline void DataSet3D::setShearStressValues(ShearStressValuesArray3DPtr values)
 { 
-   mShearStressValues = values; 
+   shearStressValues = values; 
+}
+
+inline RelaxationFactorArray3DPtr DataSet3D::getRelaxationFactor() const
+{
+   return relaxationFactor;
+}
+
+inline void DataSet3D::setRelaxationFactor(RelaxationFactorArray3DPtr values)
+{
+   relaxationFactor = values;
 }
 #endif

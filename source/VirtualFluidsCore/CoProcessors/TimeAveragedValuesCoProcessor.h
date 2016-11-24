@@ -20,10 +20,6 @@ typedef boost::shared_ptr<TimeAveragedValuesCoProcessor> TimeAveragedValuesCoPro
 //! \author  Konstantin Kutscher 
 // \f$ u_{mean}=\frac{1}{N}\sum\limits_{i=1}^n u_{i} \f$
 
-//struct plotZ
-//{
-//
-//};
 
 class TimeAveragedValuesCoProcessor : public CoProcessor
 {
@@ -89,6 +85,7 @@ private:
    int options;
    int lcounter;
    int numberOfFineSteps;
+   int numberOfSteps;
    int fineStep;
    int minFineStep;
    int maxFineStep;

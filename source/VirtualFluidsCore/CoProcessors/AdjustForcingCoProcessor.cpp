@@ -72,8 +72,8 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPt
       if (istr2)
       {
          istr2 >> forcing;
-         istr2 >> esum;
-         istr2 >> eold;
+         //istr2 >> esum;
+         //istr2 >> eold;
       }
       istr2.close();
    }
@@ -156,6 +156,7 @@ void AdjustForcingCoProcessor::collectData(double step)
       //UBLOG(logINFO, "D3Q27AdjustForcingCoProcessor step: " << static_cast<int>(step));
       //UBLOG(logINFO, "new forcing is: " << forcing);
       std::string fname = path + "/forcing/forcing.csv";
+      //std::string fname = path + "/forcing/forcing_"+UbSystem::toString(comm->getProcessID())+".csv";
       std::ofstream ostr;
       ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
       if (!ostr)

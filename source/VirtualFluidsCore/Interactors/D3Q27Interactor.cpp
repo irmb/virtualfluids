@@ -652,6 +652,7 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
    {
       LBMKernel3DPtr kernel = block->getKernel();
       BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+      UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
 
       //double collFactor = ((LbD3Q27Calculator*)grid->getCalculator())->getCollisionsFactors()[block->getLevel()];
       //checken ob obere reihe doppelt im system vorhanden oder nicht
@@ -701,9 +702,9 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
             {
                if( !bcMatrix.hasBC(ix1,ix2,ix3) ) continue;
                D3Q27BoundaryConditionPtr bc = bcMatrix.getBC(ix1,ix2,ix3);
-               double x1a = x1+dx * ix1;
-               double x2a = x2+dx * ix2;
-               double x3a = x3+dx * ix3;
+               double x1a = x1-val<1>(nodeOffset)+dx * ix1;
+               double x2a = x2-val<2>(nodeOffset)+dx * ix2;
+               double x3a = x3-val<3>(nodeOffset)+dx * ix3;
                pointpair.first.setX1(x1a);
                pointpair.first.setX2(x2a);
                pointpair.first.setX3(x3a);

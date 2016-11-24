@@ -2,6 +2,7 @@
 
 #include <boost/foreach.hpp>
 #include <numerics/geometry3d/GbCuboid3D.h>
+#include <numerics/geometry3d/CoordinateTransformation3D.h>
 #include <vector>
 
 #include "LBMKernelETD3Q27.h"
@@ -132,6 +133,104 @@ void D3Q27IntegrateValuesHelper::init(int level)
       {
          numberOfSolidNodes += rvalues[i];
          numberOfFluidsNodes += rvalues[i + 1];
+      }
+   }
+
+}
+//////////////////////////////////////////////////////////////////////////
+void D3Q27IntegrateValuesHelper::prepare2DMatrix(int level)
+{
+   root = comm->isRoot();
+
+   double orgX1, orgX2, orgX3;
+   int gridRank = grid->getRank();
+   int minInitLevel, maxInitLevel;
+   if (level<0)
+   {
+      minInitLevel = this->grid->getCoarsestInitializedLevel();
+      maxInitLevel = this->grid->getFinestInitializedLevel();
+   }
+   else
+   {
+      minInitLevel = level;
+      maxInitLevel = level;
+   }
+   double dx = grid->getDeltaX(level);
+   CoordinateTransformation3D trafo(boundingBox->getX1Minimum(),boundingBox->getX2Minimum(),boundingBox->getX3Minimum(),dx,dx,dx);
+   cnodes2DMatrix.resize(UbMath::integerRounding<double>(boundingBox->getX1Maximum()/dx),UbMath::integerRounding<double>(boundingBox->getX2Maximum()/dx));
+
+   double numSolids = 0.0;
+   double numFluids = 0.0;
+   for (int level = minInitLevel; level<=maxInitLevel; level++)
+   {
+      vector<Block3DPtr> blockVector;
+      grid->getBlocks(level, gridRank, blockVector);
+      BOOST_FOREACH(Block3DPtr block, blockVector)
+      {
+         Node cn;
+         cn.block = block;
+         //Koords bestimmen
+         UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
+
+         orgX1 = val<1>(org);
+         orgX2 = val<2>(org);
+         orgX3 = val<3>(org);
+
+         LBMKernelETD3Q27Ptr kernel = boost::dynamic_pointer_cast<LBMKernelETD3Q27>(block->getKernel());
+         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+         int ghostLayerWitdh = kernel->getGhostLayerWidth();
+         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+         double internX1, internX2, internX3;
+
+         double         dx = grid->getDeltaX(block);
+         UbTupleDouble3 orgDelta = grid->getNodeOffset(block);
+
+         for (int ix3 = ghostLayerWitdh; ix3<(int)distributions->getNX3()-ghostLayerWitdh; ix3++)
+         {
+            for (int ix2 = ghostLayerWitdh; ix2<(int)distributions->getNX2()-ghostLayerWitdh; ix2++)
+            {
+               for (int ix1 = ghostLayerWitdh; ix1<(int)distributions->getNX1()-ghostLayerWitdh; ix1++)
+               {
+                  internX1 = orgX1-val<1>(orgDelta)+ix1 * dx;
+                  internX2 = orgX2-val<2>(orgDelta)+ix2 * dx;
+                  internX3 = orgX3-val<3>(orgDelta)+ix3 * dx;
+                  if (boundingBox->isPointInGbObject3D(internX1, internX2, internX3))
+                  {
+                     if (!bcArray.isSolid(ix1, ix2, ix3)&&!bcArray.isUndefined(ix1, ix2, ix3))
+                     {
+                        cn.node = UbTupleInt3(ix1, ix2, ix3);
+                        int x1 = (int)trafo.transformForwardToX1Coordinate(internX1, internX2, internX3);
+                        int x2 = (int)trafo.transformForwardToX2Coordinate(internX1, internX2, internX3);
+                        cnodes2DMatrix(x1,x2)=cn;
+                        numFluids++;
+                     }
+                     else if (bcArray.isSolid(ix1, ix2, ix3))
+                     {
+                        numSolids++;
+                     }
+                  }
+               }
+            }
+         }
+
+      }
+   }
+   vector<double> rvalues;
+   vector<double> values;
+   values.push_back(numSolids);
+   values.push_back(numFluids);
+   rvalues = comm->gather(values);
+
+   if (root)
+   {
+      numberOfSolidNodes = 0.0;
+      numberOfFluidsNodes = 0.0;
+      int rsize = (int)rvalues.size();
+      int vsize = (int)values.size();
+      for (int i = 0; i<rsize; i += vsize)
+      {
+         numberOfSolidNodes += rvalues[i];
+         numberOfFluidsNodes += rvalues[i+1];
       }
    }
 
@@ -354,6 +453,45 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
       }
    }
 }
+//////////////////////////////////////////////////////////////////////////
+void D3Q27IntegrateValuesHelper::calculateTwoPointCorrelations()
+{
+   int x1max = cnodes2DMatrix.getNX1();
+   int x2max = cnodes2DMatrix.getNX2();
+   LBMReal f[27];
+
+   for (int x2; x2 < x2max; x2++)
+   {
+      for (int x1; x1 < x1max; x1++)
+      {
+         Block3DPtr block = cnodes2DMatrix(x1,x2).block;
+         UbTupleInt3 node = cnodes2DMatrix(x1,x2).node;
+         LBMKernel3DPtr kernel = block->getKernel();
+         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+         distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));
+         
+         //Funktionszeiger
+         typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+
+         CalcMacrosFct calcMacros = NULL;
+         if (kernel->getCompressible())
+         {
+            calcMacros = &D3Q27System::calcCompMacroscopicValues;
+         }
+         else
+         {
+            calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+         }
+
+         //////////////////////////////////////////////////////////////////////////
+         //compute velocity
+         //////////////////////////////////////////////////////////////////////////
+         LBMReal vx, vy, vz, rho;
+         calcMacros(f, rho, vx, vy, vz);
+
+      }
+   }
+}
 
 //////////////////////////////////////////////////////////////////////////
 void D3Q27IntegrateValuesHelper::calculateMQ()
@@ -455,7 +593,7 @@ GbCuboid3DPtr D3Q27IntegrateValuesHelper::getBoundingBox()
    return this->boundingBox;
 }
 //////////////////////////////////////////////////////////////////////////
-std::vector<CalcNodes> D3Q27IntegrateValuesHelper::getCNodes()
+std::vector<D3Q27IntegrateValuesHelper::CalcNodes> D3Q27IntegrateValuesHelper::getCNodes()
 {
    return cnodes;
 }

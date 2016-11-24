@@ -157,6 +157,7 @@
 //#include <CoProcessors/MeanValuesCoProcessor.h>
 #include <CoProcessors/TimeAveragedValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
+#include <LineTimeSeriesCoProcessor.h>
 #include <LBM/D3Q27CompactInterpolationProcessor.h>
 #include <LBM/D3Q27IncompressibleOffsetInterpolationProcessor.h>
 #include <LBM/D3Q27IntegrateValuesHelper.h>
@@ -171,6 +172,7 @@
 #include <LBM/LBMKernelETD3Q27.h>
 #include <LBM/LBMKernelETD3Q27CCLB.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
+#include <LBM/InitDensityLBMKernel.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMSystems.h>
 #include <LBM/LBMUnitConverter.h>

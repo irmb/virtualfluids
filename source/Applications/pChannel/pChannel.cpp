@@ -84,7 +84,7 @@ void run(string configname)
          }
       }
 
-      //Sleep(30000);
+      Sleep(30000);
 
       if (myid == 0) UBLOG(logINFO, "Testcase porous channel");
 
@@ -389,10 +389,11 @@ void run(string configname)
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3, inflowProfileRho;
-     //  inflowProfile.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
+         inflowProfileVx1.SetExpr("x3 < h ? 0.0 : uLB+1*x1");
+         //inflowProfileVx1.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
 		   ////inflowProfile.SetExpr("uLB+1*x1-1*x2");
      //    //inflowProfile.SetExpr("uLB");
-     //    inflowProfile.DefineConst("uLB", u_LB);
+         inflowProfileVx1.DefineConst("uLB", u_LB);
      //    //inflowProfile.DefineConst("uLB", 0.0116);
      //    inflowProfile.DefineConst("h", pmL[2]);
 
@@ -425,10 +426,10 @@ void run(string configname)
          //inflowProfile.SetExpr("Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)");
          //inflowProfileVx1.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)) : 0");
          
-         inflowProfileVx1.DefineFun("rangeRandom1", rangeRandom1);
+      //inflowProfileVx1.DefineFun("rangeRandom1", rangeRandom1);
          //inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+rangeRandom(-nois, nois) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+rangeRandom(-nois, nois)");
 
-         inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+0.1*Uref*rangeRandom1() : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+0.1*Uref*rangeRandom1()");
+      //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+0.1*Uref*rangeRandom1() : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+0.1*Uref*rangeRandom1()");
 
          //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+ U*cos(8.0*PI*(x1)/(L1))*sin(8.0*PI*(x3)/L3) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+U*cos(8.0*PI*(x1)/(L1))*sin(8.0*PI*(x3)/L3)");
          //inflowProfileVx1.SetExpr("U*cos(4.0*PI*(x1)/(L1))*sin(4.0*PI*(x3)/L3)");
@@ -494,8 +495,8 @@ void run(string configname)
 
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
          initVisitor.setVx1(inflowProfileVx1);
-         initVisitor.setVx2(inflowProfileVx2);
-         initVisitor.setVx3(inflowProfileVx3);
+         //initVisitor.setVx2(inflowProfileVx2);
+         //initVisitor.setVx3(inflowProfileVx3);
          //initVisitor.setRho(inflowProfileRho);
          grid->accept(initVisitor);
 
@@ -747,8 +748,17 @@ void run(string configname)
       //UbSchedulerPtr catalystSch(new UbScheduler(1));
       //InSituCatalystCoProcessor catalyst(grid, catalystSch, "pchannel.py");
 
-      UbSchedulerPtr exitSch(new UbScheduler(10));
-      EmergencyExitCoProcessor exitCoProc(grid, exitSch, pathname, RestartCoProcessorPtr(&rp), comm);
+      //UbSchedulerPtr exitSch(new UbScheduler(10));
+      //EmergencyExitCoProcessor exitCoProc(grid, exitSch, pathname, RestartCoProcessorPtr(&rp), comm);
+      
+      //create line time series
+      UbSchedulerPtr tpcSch(new UbScheduler(1,1,3));
+      //GbPoint3DPtr p1(new GbPoint3D(0.0,0.005,0.01));
+      //GbPoint3DPtr p2(new GbPoint3D(0.064,0.005,0.01));
+      //GbLine3DPtr line(new GbLine3D(p1.get(),p2.get()));
+      GbLine3DPtr line(new GbLine3D(new GbPoint3D(0.0,0.005,0.01),new GbPoint3D(0.064,0.005,0.01)));
+      LineTimeSeriesCoProcessor lineTs(grid, tpcSch,pathname+"/TimeSeries/line1.csv",line, 0,comm);
+      if (myid==0) lineTs.writeLine(pathname+"/geo/line1");
 
       if (myid == 0)
       {

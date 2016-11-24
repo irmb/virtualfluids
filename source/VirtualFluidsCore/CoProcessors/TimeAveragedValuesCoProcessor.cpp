@@ -105,7 +105,8 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
 
    levelFactor = 1 << maxInitLevel;
    maxStep = scheduler->getMaxEnd();
-   numberOfFineSteps = (maxStep - scheduler->getMinBegin()) * levelFactor;
+   numberOfFineSteps = int(maxStep - scheduler->getMinBegin()) * levelFactor;
+   numberOfSteps = int(maxStep - scheduler->getMinBegin());
 
    //function pointer
    using namespace D3Q27System;
@@ -122,13 +123,16 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::process(double step)
 {
+   calculateSubtotal(step);
+
    if (step == maxStep)
    {
       //DEBUG/////////////////////
       //UBLOG(logINFO, "process::step = " << step << ", maxStep = " << maxStep << ", levelFactor = " << levelFactor << ", numberOfFineSteps = " << numberOfFineSteps);
       ////////////////////////////
 
-      calculateAverageValues((double)numberOfFineSteps);
+      //calculateAverageValues((double)numberOfFineSteps);
+      calculateAverageValues((double)numberOfSteps);
       
       if (timeAveraging)
       {

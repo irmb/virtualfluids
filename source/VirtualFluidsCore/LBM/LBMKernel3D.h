@@ -33,14 +33,14 @@ public:
    virtual void swapDistributions() = 0;
    virtual double getCallculationTime() = 0;
 
-   virtual void setBCProcessor(BCProcessorPtr bcp);
-   virtual BCProcessorPtr getBCProcessor();
+   void setBCProcessor(BCProcessorPtr bcp);
+   BCProcessorPtr getBCProcessor();
    
-   virtual void setCollisionFactor(double collFactor);
-   virtual double getCollisionFactor() const;
+   void setCollisionFactor(double collFactor);
+   double getCollisionFactor() const;
    
-   virtual void setGhostLayerWidth(int witdh);
-   virtual int  getGhostLayerWidth() const;
+   void setGhostLayerWidth(int witdh);
+   int  getGhostLayerWidth() const;
 
    void setDataSet(DataSet3DPtr dataSet);
    DataSet3DPtr getDataSet() const;
