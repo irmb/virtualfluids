@@ -49,7 +49,6 @@ public:
 	void calculateAV();
    void calculateAV2();
    void prepare2DMatrix(int level);
-   void calculateTwoPointCorrelations();
 	void clearData();
 
 	double getRho() {return sRho;}

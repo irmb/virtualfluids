@@ -124,6 +124,7 @@
 #include <Data/EsoTwist3D.h>
 #include <Data/EsoTwistD3Q27System.h>
 #include <Data/EsoTwistD3Q27SparseData.h>
+#include <Data/VoidData3D.h>
 #include <Grid/Block3D.h>
 //#include <Grid/BoostSerializationClassExportHelper.h>
 #include <Grid/CalculationManager.h>
@@ -173,6 +174,7 @@
 #include <LBM/LBMKernelETD3Q27CCLB.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
 #include <LBM/InitDensityLBMKernel.h>
+#include <LBM/VoidLBMKernel.h>
 #include <LBM/LBMSystem.h>
 #include <LBM/LBMSystems.h>
 #include <LBM/LBMUnitConverter.h>

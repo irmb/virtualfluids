@@ -27,12 +27,12 @@ LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(Grid3DPtr grid, UbScheduler
    double orgX3 = trafo->getX3CoordinateOffset();
 
 
-   int x1min = (line->getX1Minimum()-orgX1)/dx;
-   int x1max = (line->getX1Maximum()-orgX1)/dx;
-   int x2min = (line->getX2Minimum()-orgX2)/dx;
-   int x2max = (line->getX2Maximum()-orgX2)/dx;
-   int x3min = (line->getX3Minimum()-orgX3)/dx;
-   int x3max = (line->getX3Maximum()-orgX3)/dx;
+   int x1min = (int)(line->getX1Minimum()-orgX1)/dx;
+   int x1max = (int)(line->getX1Maximum()-orgX1)/dx;
+   int x2min = (int)(line->getX2Minimum()-orgX2)/dx;
+   int x2max = (int)(line->getX2Maximum()-orgX2)/dx;
+   int x3min = (int)(line->getX3Minimum()-orgX3)/dx;
+   int x3max = (int)(line->getX3Maximum()-orgX3)/dx;
 
    UbTupleInt3 blockNx = grid->getBlockNX();
 
@@ -77,12 +77,12 @@ void LineTimeSeriesCoProcessor::writeLine(const std::string& path)
 {
    std::vector<UbTupleFloat3 > nodes(2); 
    std::vector<UbTupleInt2 > lines(1);
-   val<1>(nodes[0]) = line->getX1Minimum();
-   val<2>(nodes[0]) = line->getX2Minimum();
-   val<3>(nodes[0]) = line->getX3Minimum();
-   val<1>(nodes[1]) = line->getX1Maximum();
-   val<2>(nodes[1]) = line->getX2Maximum();
-   val<3>(nodes[1]) = line->getX3Maximum();
+   val<1>(nodes[0]) = (float)line->getX1Minimum();
+   val<2>(nodes[0]) = (float)line->getX2Minimum();
+   val<3>(nodes[0]) = (float)line->getX3Minimum();
+   val<1>(nodes[1]) = (float)line->getX1Maximum();
+   val<2>(nodes[1]) = (float)line->getX2Maximum();
+   val<3>(nodes[1]) = (float)line->getX3Maximum();
    val<1>(lines[0]) = 0;
    val<1>(lines[0]) = 1;
    WbWriterVtkXmlASCII *writer = WbWriterVtkXmlASCII::getInstance();

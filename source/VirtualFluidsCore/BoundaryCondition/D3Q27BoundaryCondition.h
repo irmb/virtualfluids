@@ -125,7 +125,7 @@ public:
    {                   
       switch(direction)
       {
-      case D3Q27System::E : return (float)( UbMath::c4o9*(+bcVelocityX1) );      //(2/cs^2)(=6)*rho_0(=1 bei imkompr)*wi*u*ei mit cs=1/sqrt(3)
+      case D3Q27System::E : return (float)( UbMath::c4o9*(+bcVelocityX1) );      //(2/cs^2)(=6)*rho_0(=1 bei inkompr)*wi*u*ei mit cs=1/sqrt(3)
       case D3Q27System::W : return (float)( UbMath::c4o9*(-bcVelocityX1) );      //z.B. aus paper manfred MRT LB models in three dimensions (2002)   
       case D3Q27System::N : return (float)( UbMath::c4o9*(+bcVelocityX2) );   
       case D3Q27System::S : return (float)( UbMath::c4o9*(-bcVelocityX2) );

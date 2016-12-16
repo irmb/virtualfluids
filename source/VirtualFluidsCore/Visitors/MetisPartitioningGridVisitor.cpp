@@ -15,7 +15,7 @@ MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(CommunicatorPtr comm,
        graphType(graphType),
        partType(partType)
 {  
-
+   numberOfProcesses = comm->getNumberOfProcesses();
 }
 //////////////////////////////////////////////////////////////////////////
 MetisPartitioningGridVisitor::~MetisPartitioningGridVisitor()
@@ -44,7 +44,7 @@ void MetisPartitioningGridVisitor::visit(Grid3DPtr grid)
 
     processRoot = comm->getProcessRoot();
     processID = comm->getProcessID();
-    int numberOfProcesses = comm->getNumberOfProcesses();
+    /*int numberOfProcesses = comm->getNumberOfProcesses();*/
     if (numberOfProcesses > 1)
     {
        int temp = bundleID;
@@ -53,7 +53,7 @@ void MetisPartitioningGridVisitor::visit(Grid3DPtr grid)
           if (bundleRoot == bundleID && processRoot == processID)
           {
              bundleID = i;
-             numberOfProcesses = comm->getNumberOfProcessesInBundle(i);
+             //numberOfProcesses = comm->getNumberOfProcessesInBundle(i);
              collectData(grid, numberOfProcesses, PROCESS);
              bundleID = temp;
           }
@@ -294,4 +294,10 @@ void MetisPartitioningGridVisitor::clear()
     parts.clear();
 }
 //////////////////////////////////////////////////////////////////////////
+void MetisPartitioningGridVisitor::setNumberOfProcesses(int np)
+{
+   numberOfProcesses = np;
+}
+
+
 #endif  //VF_METIS

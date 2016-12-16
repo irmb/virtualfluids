@@ -4,7 +4,8 @@
 LBMKernel3D::LBMKernel3D() : ghostLayerWidth(1),
                              deltaT(1.0),
                              withForcing(false),
-                             withSpongeLayer(false)
+                             withSpongeLayer(false),
+                             compressible(false)
 {
    this->setForcingX1(0.0);
    this->setForcingX2(0.0);

@@ -38,12 +38,15 @@
 #include <D3Q27VelocityBCAdapter.h>
 #include "ThinWallNoSlipBoundaryCondition.h"
 #include "D3Q27ETForThinWallBCProcessor.h"
-
+#include "VoidLBMKernel.h"
+#include "VoidData3D.h"
 #include <boost/serialization/export.hpp>
 
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLB)
 BOOST_CLASS_EXPORT(LBMKernelETD3Q27CCLBWithSpongeLayer)
+BOOST_CLASS_EXPORT(VoidLBMKernel)
+BOOST_CLASS_EXPORT(VoidData3D)
 BOOST_CLASS_EXPORT(D3Q27EsoTwist3DSplittedVector)
 BOOST_CLASS_EXPORT(BCProcessor)
 BOOST_CLASS_EXPORT(D3Q27ETBCProcessor)

@@ -29,6 +29,7 @@ public:
    BoundaryConditionPtr getBC(BoundaryCondition::Type type);
    void applyPreCollisionBC();
    void applyPostCollisionBC();
+   //void resizeBcArray(int nx1, int nx2, int nx3);
    //void init();
 protected:
    std::vector<BoundaryConditionPtr> preBC;

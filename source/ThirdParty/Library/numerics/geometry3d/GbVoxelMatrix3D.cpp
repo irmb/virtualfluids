@@ -138,7 +138,7 @@ void GbVoxelMatrix3D::setClosedVoidSpaceToSolid()
                   x1NbrTemp.clear();
                   x2NbrTemp.clear();
                   x3NbrTemp.clear();
-                  size = x1Nbr.size();
+                  size = (int)x1Nbr.size();
                }
                UBLOG(logINFO, "setClosedVoidSpaceToSolid:end");
                voxelMatrix = voxelMatrixTemp;

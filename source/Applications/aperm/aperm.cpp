@@ -41,7 +41,10 @@ void run(string configname)
       double          timeSeriesOutTime = config.getDouble("timeSeriesOutTime");
       bool            logToFile = config.getBool("logToFile");
       bool            spongeLayer = config.getBool("spongeLayer");
-
+      vector<double>  nupsStep = config.getVector<double>("nupsStep");
+      int             numOfParts = config.getInt("numOfParts");
+      bool            gridPrepare = config.getBool("gridPrepare");
+      double          deltax = config.getDouble("deltax");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -64,7 +67,7 @@ void run(string configname)
          }
       }
 
-      //Sleep(30000);
+      Sleep(30000);
 
       if (myid == 0) UBLOG(logINFO, "Testcase permeability");
 
@@ -86,17 +89,17 @@ void run(string configname)
       const int baseLevel = 0;
 
       double coord[6];
-      double deltax;
+      //double deltax;
 
       Grid3DPtr grid(new Grid3D(comm));
 
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
-      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::BINARY);
+      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
-      if (grid->getTimeStep() == 0)
+      if (gridPrepare)
       {
          if (myid == 0) UBLOG(logINFO, "new start..");
 
@@ -141,7 +144,15 @@ void run(string configname)
          double g_maxX2 = sample->getX2Maximum();
          double g_maxX3 = sample->getX3Maximum();
 
-         deltax = (g_maxX3-g_minX3) /(nx3*blocknx3);
+         //////////////////////////////////////////////////////////////////////////
+         double nx3_temp = floor((g_maxX3-g_minX3)/(deltax*(double)blocknx3));
+
+         deltax = (g_maxX3-g_minX3)/(nx3_temp*(double)blocknx3);
+
+         //g_maxX3 -= 0.5* deltax;
+         //////////////////////////////////////////////////////////////////////////
+
+         //deltax = (g_maxX3-g_minX3) /(nx3*blocknx3);
 
          double blockLength = (double)blocknx1*deltax;
 
@@ -219,6 +230,7 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
 
+
          ////////////////////////////////////////////
          //METIS
          Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
@@ -226,6 +238,7 @@ void run(string configname)
          //Zoltan
          //Grid3DVisitorPtr zoltanVisitor(new ZoltanPartitioningGridVisitor(comm, D3Q27System::BSW, 1));
          //grid->accept(zoltanVisitor);
+
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
@@ -251,6 +264,7 @@ void run(string configname)
 
          ppblocks->process(0);
          ppblocks.reset();
+  
 
          unsigned long nob = grid->getNumberOfBlocks();
          int gl = 3;
@@ -278,8 +292,8 @@ void run(string configname)
          }
 
          LBMKernel3DPtr kernel;
-         kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx1, blocknx2, blocknx3, LBMKernelETD3Q27CCLB::NORMAL));
-
+         //kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx1, blocknx2, blocknx3, LBMKernelETD3Q27CCLB::NORMAL));
+         kernel = LBMKernel3DPtr(new VoidLBMKernel(blocknx1, blocknx2, blocknx3));
          BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
          
          BoundaryConditionPtr densityBC(new NonEqDensityBoundaryCondition());
@@ -296,6 +310,86 @@ void run(string configname)
          //BC
          intHelper.setBC();
 
+         //BoundaryConditionBlockVisitor bcVisitor;
+         //grid->accept(bcVisitor);
+
+         //Press*1.6e8+(14.76-coordsX)/3.5*5000
+         //initialization of distributions
+         //mu::Parser fct;
+         //fct.SetExpr("(x1max-x1)/l*dp*3.0");
+         //fct.DefineConst("dp", dp_LB);
+         //fct.DefineConst("x1max", g_maxX1);
+         //fct.DefineConst("l", g_maxX1-g_minX1);
+
+         //D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
+         //initVisitor.setRho(fct);
+         //grid->accept(initVisitor);
+
+         //Postrozess
+         //UbSchedulerPtr geoSch(new UbScheduler(1));
+         //MacroscopicQuantitiesCoProcessorPtr ppgeo(
+         //   new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         //ppgeo->process(0);
+         //ppgeo.reset();
+
+         coord[0] = sample->getX1Minimum();
+         coord[1] = sample->getX2Minimum();
+         coord[2] = sample->getX3Minimum();
+         coord[3] = sample->getX1Maximum();
+         coord[4] = sample->getX2Maximum();
+         coord[5] = sample->getX3Maximum();
+
+         ////////////////////////////////////////////////////////
+         UbFileOutputASCII outf(pathname + "/checkpoints/coord.txt");
+         outf.writeDouble(deltax);
+         outf.writeDouble(coord[0]);
+         outf.writeDouble(coord[1]);
+         outf.writeDouble(coord[2]);
+         outf.writeDouble(coord[3]);
+         outf.writeDouble(coord[4]);
+         outf.writeDouble(coord[5]);
+         outf.writeDouble(g_minX1);
+         outf.writeDouble(g_maxX1);
+         outf.writeDouble(availMem);
+         outf.writeDouble(needMem);
+         ////////////////////////////////////////////////////////
+
+         grid->addInteractor(inflowInt);
+
+
+         if (myid == 0) UBLOG(logINFO, "Preprozess - end");
+
+         if (comm->getNumberOfProcesses() == 1)
+         {
+            UBLOG(logINFO, "Prepare grid - start");
+            rp.writeDistributedGrid(grid, numOfParts);
+            UBLOG(logINFO, "Prepare grid - end");
+            return;
+         }
+      }
+      else
+      {
+         ////////////////////////////////////////////////////////
+         UbFileInputASCII inf(pathname+"/checkpoints/coord.txt");
+         deltax   = inf.readDouble();
+         coord[0] = inf.readDouble();
+         coord[1] = inf.readDouble();
+         coord[2] = inf.readDouble();
+         coord[3] = inf.readDouble();
+         coord[4] = inf.readDouble();
+         coord[5] = inf.readDouble();
+         double g_minX1 = inf.readDouble();
+         double g_maxX1 = inf.readDouble();
+         double availMem = inf.readDouble();
+         double needMem = inf.readDouble();
+         ////////////////////////////////////////////////////////
+
+         LBMKernel3DPtr kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx1, blocknx2, blocknx3, LBMKernelETD3Q27CCLB::NORMAL));
+         BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
+         kernel->setBCProcessor(bcProc);
+         SetKernelBlockVisitor kernelVisitor(kernel, nu_LB, availMem, needMem, SetKernelBlockVisitor::ChangeBC);
+         grid->accept(kernelVisitor);
+
          BoundaryConditionBlockVisitor bcVisitor;
          grid->accept(bcVisitor);
 
@@ -310,54 +404,6 @@ void run(string configname)
          D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
          initVisitor.setRho(fct);
          grid->accept(initVisitor);
-
-         //Postrozess
-         UbSchedulerPtr geoSch(new UbScheduler(1));
-         MacroscopicQuantitiesCoProcessorPtr ppgeo(
-            new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-         ppgeo->process(0);
-         ppgeo.reset();
-
-         coord[0] = sample->getX1Minimum();
-         coord[1] = sample->getX2Minimum();
-         coord[2] = sample->getX3Minimum();
-         coord[3] = sample->getX1Maximum();
-         coord[4] = sample->getX2Maximum();
-         coord[5] = sample->getX3Maximum();
-
-         ////////////////////////////////////////////////////////
-         FILE * pFile;
-         string str = pathname + "/checkpoints/coord.txt";
-         pFile = fopen(str.c_str(), "w");
-         fprintf(pFile, "%g\n", deltax);
-         fprintf(pFile, "%g\n", coord[0]);
-         fprintf(pFile, "%g\n", coord[1]);
-         fprintf(pFile, "%g\n", coord[2]);
-         fprintf(pFile, "%g\n", coord[3]);
-         fprintf(pFile, "%g\n", coord[4]);
-         fprintf(pFile, "%g\n", coord[5]);
-         fclose(pFile);
-         ////////////////////////////////////////////////////////
-
-         grid->addInteractor(inflowInt);
-
-         if (myid == 0) UBLOG(logINFO, "Preprozess - end");
-      }
-      else
-      {
-         ////////////////////////////////////////////////////////
-         FILE * pFile;
-         string str = pathname + "/checkpoints/coord.txt";
-         pFile = fopen(str.c_str(), "r");
-         fscanf(pFile, "%lg\n", &deltax);
-         fscanf(pFile, "%lg\n", &coord[0]);
-         fscanf(pFile, "%lg\n", &coord[1]);
-         fscanf(pFile, "%lg\n", &coord[2]);
-         fscanf(pFile, "%lg\n", &coord[3]);
-         fscanf(pFile, "%lg\n", &coord[4]);
-         fscanf(pFile, "%lg\n", &coord[5]);
-         fclose(pFile);
-         ////////////////////////////////////////////////////////
 
          //new nu
          //ViscosityBlockVisitor nuVisitor(nu_LB);
@@ -380,17 +426,21 @@ void run(string configname)
 	         UBLOG(logINFO, "dx = " << deltax << " m");
          }
 
-         BoundaryConditionBlockVisitor bcVisitor;
-         grid->accept(bcVisitor);
-
          //set connectors
          D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
          D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 
+         //Postrozess
+         UbSchedulerPtr geoSch(new UbScheduler(1));
+         MacroscopicQuantitiesCoProcessorPtr ppgeo(
+            new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         ppgeo->process(0);
+         ppgeo.reset();
+
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
-      UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+      UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       //nupsSch->addSchedule(nupsStep[0], nupsStep[1], nupsStep[2]);
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 

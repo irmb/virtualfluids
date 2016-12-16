@@ -26,12 +26,13 @@ public:
    void addBlockVisitor(Block3DVisitorPtr v);
    void doCheckPoint(int step);
    Grid3DPtr restart();
+   void writeDistributedGrid(Grid3DPtr grid, int numberOfProcesses);
 protected:
    void acceptGridVisitors();
    void acceptBlockVisitors();
-   void saveTxtArchive(std::string filename);
+   void saveTxtArchive(std::string filename, Grid3DPtr grid);
    void loadTxtArchive(std::string filename);
-   void saveBinArchive(std::string filename);
+   void saveBinArchive(std::string filename, Grid3DPtr grid);
    void loadBinArchive(std::string filename);
    void writeMetafile(int step);
    int readMetafile();

@@ -85,9 +85,9 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
       int maxX2 = (int)bcArray.getNX2();
       int maxX3 = (int)bcArray.getNX3();
 
-      int maxMX1 = matrix.getNX2();
-      int maxMX2 = matrix.getNX3();
-      int maxMX3 = matrix.getNX4();
+      int maxMX1 = (int)matrix.getNX2();
+      int maxMX2 = (int)matrix.getNX3();
+      int maxMX3 = (int)matrix.getNX4();
 
       int blockix1 = block->getX1();
       int blockix2 = block->getX2();

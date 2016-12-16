@@ -34,6 +34,7 @@ public:
    MetisPartitioningGridVisitor(CommunicatorPtr comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType = MetisPartitioner::KWAY, bool threads = false, int numberOfThreads = 0);
    virtual ~MetisPartitioningGridVisitor();
    void visit(Grid3DPtr grid);
+   void setNumberOfProcesses(int np);
 protected:
    enum PartLevel {BUNDLE, PROCESS, THREAD};
    void collectData(Grid3DPtr grid, int nofSegments, PartLevel level);
@@ -56,6 +57,7 @@ protected:
    bool threads;
    GraphType graphType;
    MetisPartitioner::PartType partType;
+   int numberOfProcesses;
 };
 
 #endif  //VF_MPI

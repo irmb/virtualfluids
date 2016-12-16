@@ -8,7 +8,7 @@
 class SetKernelBlockVisitor : public Block3DVisitor
 {
 public:
-   enum Action { New, Change };
+   enum Action { New, Change, ChangeBC};
 public:
    //SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue);
    
@@ -20,10 +20,13 @@ public:
 
    virtual void visit(Grid3DPtr grid, Block3DPtr block);
 
+   void setNoDataSetFlag(bool flag);
+
 private:
    LBMKernel3DPtr kernel;
    LBMReal nue;
    Action action;
+   bool dataSetFlag;
 };
 
 #endif

@@ -85,3 +85,8 @@ void D3Q27ETBCProcessor::applyPostCollisionBC()
       bc->apply();
    }
 }
+//////////////////////////////////////////////////////////////////////////
+//void D3Q27ETBCProcessor::resizeBcArray(int nx1, int nx2, int nx3)
+//{
+//   bcArray.resize( nx1, nx2, nx3, BCArray3D<D3Q27BoundaryCondition>::FLUID);
+//}

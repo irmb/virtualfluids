@@ -8,9 +8,12 @@
 #include <basics/utilities/UbFileOutputASCII.h>
 #include <basics/utilities/UbFileInputASCII.h>
 
+#include "MetisPartitioningGridVisitor.h"
+
 #include "BoostSerializationClassExportHelper.h"
 
 #include <MemoryUtil.h>
+#include <vector>
 
 RestartCoProcessor::RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, ArchiveType type) :
    CoProcessor(grid, s),
@@ -89,11 +92,11 @@ void RestartCoProcessor::doCheckPoint(int step)
 
    if (archiveType == TXT)
    {
-      saveTxtArchive(filename + ".txt");
+      saveTxtArchive(filename + ".txt", grid);
    } 
    else if(archiveType == BINARY)
    {
-      saveBinArchive(filename + ".bin");
+      saveBinArchive(filename + ".bin", grid);
    }
 
    comm->barrier();
@@ -167,7 +170,7 @@ void RestartCoProcessor::addBlockVisitor( Block3DVisitorPtr v )
    blockVisitors.push_back(v);
 }
 //////////////////////////////////////////////////////////////////////////
-void RestartCoProcessor::saveTxtArchive(std::string filename)
+void RestartCoProcessor::saveTxtArchive( std::string filename, Grid3DPtr grid )
 {
    std::ofstream file(filename.c_str()); 
    if(!file)
@@ -214,7 +217,7 @@ void RestartCoProcessor::loadTxtArchive( std::string filename )
    file.close();
 }
 //////////////////////////////////////////////////////////////////////////
-void RestartCoProcessor::saveBinArchive( std::string filename )
+void RestartCoProcessor::saveBinArchive( std::string filename, Grid3DPtr grid )
 {
    //impotent for binary archive add std::ios::binary
    std::ofstream file(filename.c_str(), std::ios::binary); 
@@ -285,6 +288,74 @@ void RestartCoProcessor::checkMetafile()
    }
    file.close();
 }
+//////////////////////////////////////////////////////////////////////////
+void RestartCoProcessor::writeDistributedGrid(Grid3DPtr sgrid, int numberOfProcesses)
+{
+   using namespace std;
+
+   Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+   boost::dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(numberOfProcesses);
+   sgrid->accept(metisVisitor);
+
+   int minInitLevel = sgrid->getCoarsestInitializedLevel();
+   int maxInitLevel = sgrid->getFinestInitializedLevel();
+
+   for (int i = 0; i<numberOfProcesses; i++)
+   {
+      UBLOG(logINFO, "Create dump file for rank " << i <<" - start");
+      Grid3DPtr newGrid(new Grid3D());
+      newGrid->setRank(i);
+      newGrid->setDeltaX(sgrid->getDeltaX(0));
+      newGrid->setNX1(sgrid->getNX1());
+      newGrid->setNX2(sgrid->getNX2());
+      newGrid->setNX3(sgrid->getNX3());
+      newGrid->setCoordinateTransformator(sgrid->getCoordinateTransformator());
+      UbTupleInt3 blockNX = sgrid->getBlockNX();
+      newGrid->setBlockNX(val<1>(blockNX), val<2>(blockNX), val<3>(blockNX));
+      Grid3D::Interactor3DSet interactors = sgrid->getInteractors();
+      for(int inter=0; inter < interactors.size(); inter++)
+      {
+         newGrid->addInteractor(interactors[inter]);
+      }
+
+      for (int level = minInitLevel; level<=maxInitLevel; level++)
+      {
+         vector<Block3DPtr> blockVector;
+         grid->getBlocks(level, blockVector);
+         BOOST_FOREACH(Block3DPtr block, blockVector)
+         {
+            if (block)
+            {
+               if (block->getRank() == i)
+               {
+                  newGrid->addBlock(block);
+               } 
+               else
+               {
+                  Block3DPtr newBlock(new Block3D(block->getX1(), block->getX2(), block->getX3(), block->getLevel()));
+                  newBlock->setRank(block->getRank());
+                  newGrid->addBlock(newBlock);
+               }
+            }
+         }
+      }
+
+      std::string filename = path+"/checkpoint"+UbSystem::toString(1)+"/checkpoint"+UbSystem::toString(i)+"_"+UbSystem::toString(1);
+
+      if (archiveType==TXT)
+      {
+         saveTxtArchive(filename+".txt", newGrid);
+      }
+      else if (archiveType==BINARY)
+      {
+         saveBinArchive(filename+".bin", newGrid);
+      }
+
+      UBLOG(logINFO, "Create dump file for rank " << i <<" - end");
+   }
+   writeMetafile(1);
+}
+
 
 
 

@@ -236,7 +236,7 @@ void GbVoxelMatrix3D::readMatrixFromRawFile(std::string filename, GbVoxelMatrix3
 
    //UBLOG(logINFO,"number of nodes = "<<nodesX1*nodesX2*nodesX3*sizeof(T)<<" file size = "<<(long)length);
    //if( (nodesX1*nodesX2*nodesX3)*sizeof(float) != (long)length )
-   unsigned long long nofn = nodesX1*nodesX2*nodesX3*sizeof(T);
+   unsigned long long nofn = (unsigned long long)nodesX1*(unsigned long long)nodesX2*(unsigned long long)nodesX3*(unsigned long long)sizeof(T);
    if (nofn != (unsigned long long)length)
    {
       throw UbException(UB_EXARGS,"number of nodes("+UbSystem::toString(nofn)+") doesn't match file size("+UbSystem::toString((long)length)+")");

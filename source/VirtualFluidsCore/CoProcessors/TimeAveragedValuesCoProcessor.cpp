@@ -430,16 +430,16 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                         if ((options&Triplecorrelations) == Triplecorrelations)
                         {
                            //triple-correlations
-                           (*at)(Vxxx, ix1, ix2, ix3) = (*at)(Vxxx, ix1, ix2, ix3) / timeSteps - 3 * uxx*ux + 2 * ux*ux*ux;
-                           (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) / timeSteps - 2 * uxy*ux - uxx*uy + 2 * ux*ux*uy;
-                           (*at)(Vxxz, ix1, ix2, ix3) = (*at)(Vxxz, ix1, ix2, ix3) / timeSteps - 2 * uxz*ux - uxx*uz + 2 * ux*ux*uz;
-                           (*at)(Vyyy, ix1, ix2, ix3) = (*at)(Vyyy, ix1, ix2, ix3) / timeSteps - 3 * uyy*uy + 2 * uy*uy*uy;
-                           (*at)(Vyyx, ix1, ix2, ix3) = (*at)(Vyyx, ix1, ix2, ix3) / timeSteps - 2 * uxy*uy - uyy*ux + 2 * uy*uy*ux;
-                           (*at)(Vyyz, ix1, ix2, ix3) = (*at)(Vyyz, ix1, ix2, ix3) / timeSteps - 2 * uyz*uy - uyy*uz + 2 * uy*uy*uz;
-                           (*at)(Vzzz, ix1, ix2, ix3) = (*at)(Vzzz, ix1, ix2, ix3) / timeSteps - 3 * uzz*uz + 2 * uz*uz*uz;
-                           (*at)(Vzzx, ix1, ix2, ix3) = (*at)(Vzzx, ix1, ix2, ix3) / timeSteps - 2 * uxz*uz - uzz*ux + 2 * uz*uz*ux;
-                           (*at)(Vzzy, ix1, ix2, ix3) = (*at)(Vzzy, ix1, ix2, ix3) / timeSteps - 2 * uyz*uz - uzz*uy + 2 * uz*uz*uy;
-                           (*at)(Vxyz, ix1, ix2, ix3) = (*at)(Vxyz, ix1, ix2, ix3) / timeSteps - uxy*uz - uxz*uy - uyz*ux + 2 * ux*uy*uz;
+                           (*at)(Vxxx, ix1, ix2, ix3) = (*at)(Vxxx, ix1, ix2, ix3) / timeSteps - 3.0 * uxx*ux + 2.0 * ux*ux*ux;
+                           (*at)(Vxxy, ix1, ix2, ix3) = (*at)(Vxxy, ix1, ix2, ix3) / timeSteps - 2.0 * uxy*ux - uxx*uy + 2.0 * ux*ux*uy;
+                           (*at)(Vxxz, ix1, ix2, ix3) = (*at)(Vxxz, ix1, ix2, ix3) / timeSteps - 2.0 * uxz*ux - uxx*uz + 2.0 * ux*ux*uz;
+                           (*at)(Vyyy, ix1, ix2, ix3) = (*at)(Vyyy, ix1, ix2, ix3) / timeSteps - 3.0 * uyy*uy + 2.0 * uy*uy*uy;
+                           (*at)(Vyyx, ix1, ix2, ix3) = (*at)(Vyyx, ix1, ix2, ix3) / timeSteps - 2.0 * uxy*uy - uyy*ux + 2.0 * uy*uy*ux;
+                           (*at)(Vyyz, ix1, ix2, ix3) = (*at)(Vyyz, ix1, ix2, ix3) / timeSteps - 2.0 * uyz*uy - uyy*uz + 2.0 * uy*uy*uz;
+                           (*at)(Vzzz, ix1, ix2, ix3) = (*at)(Vzzz, ix1, ix2, ix3) / timeSteps - 3.0 * uzz*uz + 2.0 * uz*uz*uz;
+                           (*at)(Vzzx, ix1, ix2, ix3) = (*at)(Vzzx, ix1, ix2, ix3) / timeSteps - 2.0 * uxz*uz - uzz*ux + 2.0 * uz*uz*ux;
+                           (*at)(Vzzy, ix1, ix2, ix3) = (*at)(Vzzy, ix1, ix2, ix3) / timeSteps - 2.0 * uyz*uz - uzz*uy + 2.0 * uz*uz*uy;
+                           (*at)(Vxyz, ix1, ix2, ix3) = (*at)(Vxyz, ix1, ix2, ix3) / timeSteps - uxy*uz - uxz*uy - uyz*ux + 2.0 * ux*uy*uz;
                         }
                         //////////////////////////////////////////////////////////////////////////
                      }

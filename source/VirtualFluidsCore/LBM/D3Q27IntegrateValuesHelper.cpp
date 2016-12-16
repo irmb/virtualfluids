@@ -454,46 +454,6 @@ void D3Q27IntegrateValuesHelper::calculateAV2()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27IntegrateValuesHelper::calculateTwoPointCorrelations()
-{
-   int x1max = cnodes2DMatrix.getNX1();
-   int x2max = cnodes2DMatrix.getNX2();
-   LBMReal f[27];
-
-   for (int x2; x2 < x2max; x2++)
-   {
-      for (int x1; x1 < x1max; x1++)
-      {
-         Block3DPtr block = cnodes2DMatrix(x1,x2).block;
-         UbTupleInt3 node = cnodes2DMatrix(x1,x2).node;
-         LBMKernel3DPtr kernel = block->getKernel();
-         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-         distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));
-         
-         //Funktionszeiger
-         typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
-
-         CalcMacrosFct calcMacros = NULL;
-         if (kernel->getCompressible())
-         {
-            calcMacros = &D3Q27System::calcCompMacroscopicValues;
-         }
-         else
-         {
-            calcMacros = &D3Q27System::calcIncompMacroscopicValues;
-         }
-
-         //////////////////////////////////////////////////////////////////////////
-         //compute velocity
-         //////////////////////////////////////////////////////////////////////////
-         LBMReal vx, vy, vz, rho;
-         calcMacros(f, rho, vx, vy, vz);
-
-      }
-   }
-}
-
-//////////////////////////////////////////////////////////////////////////
 void D3Q27IntegrateValuesHelper::calculateMQ()
 {
    LBMReal f[D3Q27System::ENDF + 1];
