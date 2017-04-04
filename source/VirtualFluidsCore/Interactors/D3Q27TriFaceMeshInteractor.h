@@ -37,8 +37,8 @@ public:
    D3Q27TriFaceMeshInteractor();
    D3Q27TriFaceMeshInteractor(Grid3DPtr grid, std::string name="D3Q27TriFaceMeshInteractor");
    D3Q27TriFaceMeshInteractor(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type);
-   D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type);
-   D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, Interactor3D::Accuracy a);
+   D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type);
+   D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type, Interactor3D::Accuracy a);
    //D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, std::string name="D3Q27TriFaceMeshInteractor");
 
    ~D3Q27TriFaceMeshInteractor();

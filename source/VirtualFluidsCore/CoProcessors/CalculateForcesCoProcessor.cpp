@@ -1,5 +1,5 @@
 #include "CalculateForcesCoProcessor.h"
-#include "D3Q27ETBCProcessor.h"
+#include "BCProcessor.h"
 #include <boost/foreach.hpp>
 
 CalculateForcesCoProcessor::CalculateForcesCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
@@ -97,8 +97,8 @@ void CalculateForcesCoProcessor::calculateForces()
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
-         LBMKernel3DPtr kernel = block->getKernel();
-         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+         LBMKernelPtr kernel = block->getKernel();
+         BCArray3D &bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          distributions->swap();
 
@@ -121,7 +121,7 @@ void CalculateForcesCoProcessor::calculateForces()
 
             if(bcArray.isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
-               D3Q27BoundaryConditionPtr bc = bcArray.getBC(x1,x2,x3);
+               BoundaryConditionsPtr bc = bcArray.getBC(x1,x2,x3);
                UbTupleDouble3 forceVec = getForces(x1,x2,x3,distributions,bc);
                forceX1 += val<1>(forceVec);
                forceX2 += val<2>(forceVec);
@@ -165,7 +165,7 @@ void CalculateForcesCoProcessor::calculateForces()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, D3Q27BoundaryConditionPtr bc)
+UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, BoundaryConditionsPtr bc)
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
    

@@ -1,15 +1,15 @@
 #ifndef VoidLBMKernel_h__
 #define VoidLBMKernel_h__
 
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
-class VoidLBMKernel : public LBMKernel3D
+class VoidLBMKernel : public LBMKernel
 {
 public:
    VoidLBMKernel();
    VoidLBMKernel(int nx1, int nx2, int nx3);
    ~VoidLBMKernel();
-   LBMKernel3DPtr clone();
+   LBMKernelPtr clone();
    void calculate();
    void swapDistributions();
    double getCallculationTime();
@@ -20,7 +20,7 @@ private:
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)
    {
-      ar & boost::serialization::base_object<LBMKernel3D>(*this);
+      ar & boost::serialization::base_object<LBMKernel>(*this);
       ar & nx1 & nx2 & nx3;
    }
 

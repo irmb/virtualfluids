@@ -42,7 +42,7 @@ void SpongeLayerBlockVisitor::visit( Grid3DPtr grid, Block3DPtr block )
 
          if (boundingBox->isCellInsideGbObject3D(minX1,minX2,minX3,maxX1,maxX2,maxX3))
          {
-            LBMKernel3DPtr kernel = block->getKernel();
+            LBMKernelPtr kernel = block->getKernel();
             kernel->setCollisionFactor(kernel->getCollisionFactor()*0.5);
          }
       }

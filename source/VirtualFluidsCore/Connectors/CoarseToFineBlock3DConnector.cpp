@@ -9,7 +9,7 @@ CoarseToFineBlock3DConnector::CoarseToFineBlock3DConnector(Block3DPtr block,
    VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
    VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
    VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
-   int sendDir, D3Q27InterpolationProcessorPtr iprocessor) : Block3DConnector(sendDir)
+   int sendDir, InterpolationProcessorPtr iprocessor) : Block3DConnector(sendDir)
    , block(block)
    , sender00(sender00)
    , sender01(sender01)

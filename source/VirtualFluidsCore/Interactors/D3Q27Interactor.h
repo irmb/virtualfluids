@@ -31,8 +31,8 @@ typedef boost::shared_ptr<D3Q27Interactor> D3Q27InteractorPtr;
 #include "GbPoint3D.h"
 #include "Interactor3D.h"
 #include "BCArray3D.h"
-#include "D3Q27BoundaryConditionAdapter.h"
-#include "D3Q27BoundaryCondition.h"
+#include "BCAdapter.h"
+#include "BoundaryConditions.h"
 #include "D3Q27System.h"
 
 class UbFileInput;
@@ -45,17 +45,17 @@ class D3Q27Interactor : public Interactor3D
 public:
    D3Q27Interactor();
    D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type);
-   D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter,  int type);
-   D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter,  int type, Interactor3D::Accuracy a);
+   D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAdapterPtr bcAdapter,  int type);
+   D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAdapterPtr bcAdapter,  int type, Interactor3D::Accuracy a);
 
-   ~D3Q27Interactor();
+   virtual ~D3Q27Interactor();
 
    void setRelevantForForces(const bool& value) {  this->relevantForForces = value; }
    bool isRelevantForForces() { return this->relevantForForces; }
    //UbTupleDouble3 getForces();
    //UbTupleDouble3 getForces(Patch3DPtr patch);
 
-   virtual void addBCAdapter(const D3Q27BoundaryConditionAdapterPtr bcAdapter) { bcAdapterVector.push_back(bcAdapter); }
+   virtual void addBCAdapter(const BCAdapterPtr bcAdapter) { bcAdapterVector.push_back(bcAdapter); }
    void deleteBCAdapter() { bcAdapterVector.clear(); }
    //virtual std::vector< MbSmartPtr<D3Q27BoundaryConditionAdapter> > getBcAdapters() { return bcAdapterVector; }
 
@@ -94,7 +94,7 @@ protected:
    bool reinitWithStoredQsFlag;
 
    //std::vector< MbSmartPtr<D3Q27BoundaryConditionAdapter> > bcAdapterVector;
-   std::vector<D3Q27BoundaryConditionAdapterPtr> bcAdapterVector;
+   std::vector<BCAdapterPtr> bcAdapterVector;
    
    typedef UbTuple<int,int,int,long long>  UbTupleInt3LongLong;
 

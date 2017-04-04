@@ -1,6 +1,6 @@
 #include "TurbulenceIntensityCoProcessor.h"
-#include "LBMKernel3D.h"
-#include "D3Q27ETBCProcessor.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include <vector>
 #include <string>
 #include <boost/foreach.hpp>
@@ -114,8 +114,8 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   LBMKernel3DPtr kernel = block->getKernel();
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+   LBMKernelPtr kernel = block->getKernel();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
    AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
    //int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -203,8 +203,8 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
       {
          if (block)
          {
-            LBMKernel3DPtr kernel = block->getKernel();
-            BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+            LBMKernelPtr kernel = block->getKernel();
+            BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
             AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 

@@ -9,20 +9,20 @@
 #define D3Q27PRESSUREDIFFERENCECoProcessor_H
 
 #include "CoProcessor.h"
-#include "D3Q27IntegrateValuesHelper.h"
+#include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
 #include "Communicator.h"
 
 class PressureDifferenceCoProcessor: public CoProcessor {
 public:
 	PressureDifferenceCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, 
-                                   D3Q27IntegrateValuesHelperPtr h1, D3Q27IntegrateValuesHelperPtr h2, 
+                                   IntegrateValuesHelperPtr h1, IntegrateValuesHelperPtr h2, 
                                    LBMReal rhoReal, LBMReal uReal, LBMReal uLB,
                                    /*const LBMUnitConverterPtr conv,*/ CommunicatorPtr comm);
 	virtual ~PressureDifferenceCoProcessor();
 	void process(double step);
 protected:
-	D3Q27IntegrateValuesHelperPtr h1, h2;
+	IntegrateValuesHelperPtr h1, h2;
    std::string path;
    LBMUnitConverterPtr conv;
 	void collectData(double step);

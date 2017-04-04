@@ -6,7 +6,7 @@
 #include "RemoteBlock3DConnector.h"
 #include "D3Q27System.h"
 #include "Block3D.h"
-#include "LBMKernelETD3Q27.h"
+#include "LBMKernel.h"
 #include "EsoTwistD3Q27System.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"

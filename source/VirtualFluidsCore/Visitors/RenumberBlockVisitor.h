@@ -9,7 +9,7 @@
 #define RenumberBlockVisitor_h
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 //! \brief  Visitor class which renumber blocks.
 //! \details Visitor class which renumber blocks.            

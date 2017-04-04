@@ -1,7 +1,7 @@
 #ifdef VF_CATALYST
 
 #include "InSituCatalystCoProcessor.h"
-#include <LBMKernelETD3Q27.h>
+#include <LBMKernel.h>
 #include <D3Q27ETBCProcessor.h>
 #include <vector>
 #include <string>
@@ -106,8 +106,8 @@ void InSituCatalystCoProcessor::addData(Block3DPtr block)
    UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
    double         dx = grid->getDeltaX(block);
 
-   LBMKernelETD3Q27Ptr kernel = boost::dynamic_pointer_cast<LBMKernelETD3Q27>(block->getKernel());
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+   LBMKernelPtr kernel = block->getKernel();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
@@ -222,8 +222,8 @@ void InSituCatalystCoProcessor::addVTKGridData(Block3DPtr block)
    UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
    double         dx = grid->getDeltaX(block);
 
-   LBMKernelETD3Q27Ptr kernel = boost::dynamic_pointer_cast<LBMKernelETD3Q27>(block->getKernel());
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+   LBMKernelPtr kernel = block->getKernel();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
@@ -259,7 +259,7 @@ void InSituCatalystCoProcessor::addVTKGridData(Block3DPtr block)
    maxX2 -= 2;
    maxX3 -= 2;
 
-   D3Q27BoundaryConditionPtr bcPtr;
+   BoundaryConditionsPtr bcPtr;
    int nr = points->GetNumberOfPoints();
 
    double x[3];

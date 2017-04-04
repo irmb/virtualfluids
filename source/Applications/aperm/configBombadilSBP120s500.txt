@@ -34,7 +34,7 @@ pmL3 = 1.87e-3
 #nx3 = 5
 blocknx = 50
 nx3 = 10
-spongeLayer=true
+spongeLayer=false
 
 #physic
 dp_LB = 1e-7
@@ -43,8 +43,8 @@ nu_LB = 0.01
 timeSeriesFile = /timeseries/simSBP120_1
 timeSeriesOutTime = 10
 
-restartStep = 20000
-restartStepStart=20000
+restartStep = 200
+restartStepStart=200
 
 endTime = 60000
 outTime = 100

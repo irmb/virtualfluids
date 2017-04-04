@@ -15,11 +15,13 @@
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "BCArray3D.h"
-#include "D3Q27BoundaryCondition.h"
-#include "D3Q27VelocityBCAdapter.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27ETBCProcessor.h"
+#include "BoundaryConditions.h"
+#include "VelocityBCAdapter.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include "basics/utilities/UbTiming.h"
+
+#include <omp.h>
 
 #include <stack>
 
@@ -36,13 +38,13 @@ D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(Grid3DPtr grid, std::stri
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type)
+D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type)
 : D3Q27Interactor(triFaceMesh, grid, bcAdapter, type), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
 {
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, Interactor3D::Accuracy a)
+D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type, Interactor3D::Accuracy a)
    : D3Q27Interactor(triFaceMesh, grid, bcAdapter, type, a), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
 {
    this->stressMode = STRESSNORMAL;
@@ -71,10 +73,10 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
 
    bool oneEntryGotBC = false; //ob ueberhaupt ein eintrag ein BC zugewiesen wurde
    bool gotQs         = false; //true, wenn "difference" gesetzt wurde
-   D3Q27BoundaryConditionPtr bc;
+   BoundaryConditionsPtr bc;
 
-   LBMKernel3DPtr kernel = block->getKernel();
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+   LBMKernelPtr kernel = block->getKernel();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
   
@@ -284,7 +286,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
       //////////////////////////////////////////////////////////////////////////
       double e1x1,e1x2,e1x3,e2x1,e2x2,e2x3,px1,px2,px3,a,f,sx1,sx2,sx3,u,qx1,qx2,qx3,v;
       bool gotQs = false;
-      D3Q27BoundaryConditionPtr bc;
+      BoundaryConditionsPtr bc;
 
       for(int level=coarsestInitLevel; level<=finestInitLevel; level++)
       {
@@ -343,8 +345,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            LBMKernel3DPtr kernel = block->getKernel();
-            BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+            LBMKernelPtr kernel = block->getKernel();
+            BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
             int indexMinX2 = 0;
@@ -418,7 +420,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                      //Raytracingfür diskrete Boltzmannrichtungen
                      /////////////////////////////////////////////////////////////////////////////
                      gotQs = false;
-                     bc    = D3Q27BoundaryConditionPtr();
+                     bc    = BoundaryConditionsPtr();
 
                      //RAYTRACING - diskrete LB-dir zu Dreick
                      //e1 = v1 - v0
@@ -499,7 +501,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                            //SG 26.08.2010 if(!bc && !bcMatrix.isSolid())
                            if(!bc)
                            {
-                              bc = D3Q27BoundaryConditionPtr(new D3Q27BoundaryCondition);;
+                              bc = BoundaryConditionsPtr(new BoundaryConditions);;
                               bcMatrix.setBC(ix1,ix2,ix3,bc);
                            }
                            else if( UbMath::less( bc->getQ(fdir), q ) )  //schon ein kuerzeres q voehanden?
@@ -760,7 +762,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
       //////////////////////////////////////////////////////////////////////////
       double e1x1,e1x2,e1x3,e2x1,e2x2,e2x3,px1,px2,px3,a,f,sx1,sx2,sx3,u,qx1,qx2,qx3,v;
       bool gotQs = false;
-      D3Q27BoundaryConditionPtr bc;
+      BoundaryConditionsPtr bc;
 
       for(int level=coarsestInitLevel; level<=finestInitLevel; level++)
       {
@@ -819,8 +821,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            LBMKernel3DPtr kernel = block->getKernel();
-            BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+            LBMKernelPtr kernel = block->getKernel();
+            BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
             int indexMinX2 = 0;
@@ -926,7 +928,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                      //Raytracingfür diskrete Boltzmannrichtungen
                      /////////////////////////////////////////////////////////////////////////////
                      gotQs = false;
-                     bc    = D3Q27BoundaryConditionPtr();
+                     bc    = BoundaryConditionsPtr();
 
                      //RAYTRACING - diskrete LB-dir zu Dreick
                      //e1 = v1 - v0
@@ -1001,7 +1003,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                               //SG 26.08.2010 if(!bc && !bcMatrix.isSolid())
                               if(!bc)
                               {
-                                 bc = D3Q27BoundaryConditionPtr(new D3Q27BoundaryCondition);;
+                                 bc = BoundaryConditionsPtr(new BoundaryConditions);;
                                  bcMatrix.setBC(ix1,ix2,ix3,bc);
                               }
                               else if( UbMath::less( bc->getQ(fdir), q ) )  //schon ein kuerzeres q voehanden?
@@ -1115,9 +1117,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             scanlineCounter++;
             scanLineTimer.start();
 
-            LBMKernel3DPtr kernel = block->getKernel();
+            LBMKernelPtr kernel = block->getKernel();
             if(!kernel) throw UbException(UB_EXARGS,"na sowas kein kernel bzw. kernel=NULL (2)");
-            BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+            BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             //            bvd->getTimer().start();
             int indexMinX1 = 0;
@@ -1284,8 +1286,18 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startD
    float triPoints[3][3];
 
    size_t nofTriangles = (int)triangles.size();
+
+//#pragma omp parallel
+//#pragma omp for
    for(size_t i=0; i<nofTriangles; i++)
+   //for(int i=0; i<nofTriangles; i++)
    {
+//#pragma omp master  
+      //{
+      //    printf_s("num_threads=%d\n", omp_get_num_threads( ));
+      //}
+     
+
       GbTriFaceMesh3D::TriFace& triangle = triangles[i];
 
       GbTriFaceMesh3D::Vertex& v1 = nodes[triangle.v1];
@@ -1744,8 +1756,8 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    {
       Block3DPtr block = it1->first;
 
-      LBMKernel3DPtr kernel = block->getKernel();
-      BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+      LBMKernelPtr kernel = block->getKernel();
+      BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
       std::set< UbTupleInt3 >&  indicesSet = it1->second;
 
       for( std::set< UbTupleInt3 >::iterator setIt=indicesSet.begin(); setIt!=indicesSet.end(); ++setIt )
@@ -1759,8 +1771,8 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    for( it=transNodeIndicesAndQsMap.begin(); it!=transNodeIndicesAndQsMap.end(); ++it )
    {   
       Block3DPtr  block    = it->first;
-      LBMKernel3DPtr kernel = block->getKernel();
-      BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+      LBMKernelPtr kernel = block->getKernel();
+      BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
 
       std::map< UbTupleInt3, std::vector<float> >::iterator it2;
       for( it2=it->second.begin(); it2!=it->second.end(); ++it2 )
@@ -1771,10 +1783,10 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
          //SG_27.08.2010 
          if(bcMatrix.isSolid(val<1>(pos), val<2>(pos), val<3>(pos))) continue;
 
-         D3Q27BoundaryConditionPtr   bc = bcMatrix.getBC( val<1>(pos), val<2>(pos), val<3>(pos) );
+         BoundaryConditionsPtr   bc = bcMatrix.getBC( val<1>(pos), val<2>(pos), val<3>(pos) );
          if(!bc)
          {
-            bc = D3Q27BoundaryConditionPtr(new D3Q27BoundaryCondition);
+            bc = BoundaryConditionsPtr(new BoundaryConditions);
             bcMatrix.setBC( val<1>(pos), val<2>(pos), val<3>(pos), bc );
          }
 

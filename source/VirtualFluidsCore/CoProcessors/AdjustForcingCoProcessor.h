@@ -2,7 +2,7 @@
 #define D3Q27ADJUSTFORCINGCoProcessor_H
 
 #include "CoProcessor.h"
-#include "D3Q27IntegrateValuesHelper.h"
+#include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
 #include "Communicator.h"
 
@@ -19,14 +19,14 @@ class AdjustForcingCoProcessor: public CoProcessor {
 public:
 	AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                    const std::string& path,
-                                   D3Q27IntegrateValuesHelperPtr integrateValues,
+                                   IntegrateValuesHelperPtr integrateValues,
                                    double vTarged, CommunicatorPtr comm);
 	virtual ~AdjustForcingCoProcessor();
 	 //!< calls collect PostprocessData
    void process(double step);
 protected:
    //!< object that can compute spacial average values in 3D-subdomain.
-   D3Q27IntegrateValuesHelperPtr integrateValues;
+   IntegrateValuesHelperPtr integrateValues;
    //!< compares velocity in integrateValues with target velocity and adjusts forcing accordingly.
 	void collectData(double step);  
    CommunicatorPtr comm;

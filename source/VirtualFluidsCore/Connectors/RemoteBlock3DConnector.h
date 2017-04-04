@@ -7,7 +7,7 @@
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
 #include "Block3D.h"
-#include "LBMKernelETD3Q27.h"
+#include "LBMKernel.h"
 #include "EsoTwistD3Q27System.h"
 
 

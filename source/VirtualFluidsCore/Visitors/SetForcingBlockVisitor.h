@@ -2,7 +2,7 @@
 #define SetForcingBlockVisitor_h
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 //! \brief Set forcing for all kernels of grid
 //! \details This visitor is useful if you need to set or reset forcing in kernels (e.g. after restart because forcing is not serializable). 

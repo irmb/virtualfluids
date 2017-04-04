@@ -1,7 +1,8 @@
 #include "ChangeBoundaryDensityBlockVisitor.h"
-#include "LBMKernelETD3Q27.h"
+#include "LBMKernel.h"
 #include "Grid3DSystem.h"
-#include "D3Q27BoundaryCondition.h"
+#include "BoundaryConditions.h"
+#include "BCProcessor.h"
 
 ChangeBoundaryDensityBlockVisitor::ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity) :
 Block3DVisitor(0, Grid3DSystem::MAXLEVEL), 
@@ -20,8 +21,8 @@ void ChangeBoundaryDensityBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 {
    if (block->getRank() == grid->getRank())
    {
-      LBMKernel3DPtr kernel = block->getKernel();
-      BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+      LBMKernelPtr kernel = block->getKernel();
+      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
 
       int minX1 = 0;
       int minX2 = 0;

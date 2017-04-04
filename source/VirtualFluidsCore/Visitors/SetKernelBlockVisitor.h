@@ -2,19 +2,19 @@
 #define SetKernelBlockVisitor_h
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 
 class SetKernelBlockVisitor : public Block3DVisitor
 {
 public:
-   enum Action { New, Change, ChangeBC};
+   enum Action { NewKernel, ChangeKernel, ChangeKernelWithData};
 public:
    //SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue);
    
    //SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem);
 
-   SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::New);
+   SetKernelBlockVisitor(LBMKernelPtr kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action = SetKernelBlockVisitor::NewKernel);
 
    virtual ~SetKernelBlockVisitor() {}
 
@@ -23,7 +23,7 @@ public:
    void setNoDataSetFlag(bool flag);
 
 private:
-   LBMKernel3DPtr kernel;
+   LBMKernelPtr kernel;
    LBMReal nue;
    Action action;
    bool dataSetFlag;

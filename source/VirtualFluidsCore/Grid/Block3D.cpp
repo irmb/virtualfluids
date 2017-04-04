@@ -72,19 +72,19 @@ bool Block3D::isNotActive() const
    return(!this->active); 
 }
 //////////////////////////////////////////////////////////////////////////
-void  Block3D::setKernel(LBMKernel3DPtr kernel) 
+void  Block3D::setKernel(LBMKernelPtr kernel) 
 {  
    this->kernel = kernel; 
 }
 //////////////////////////////////////////////////////////////////////////
-LBMKernel3DPtr Block3D::getKernel() const              
+LBMKernelPtr Block3D::getKernel() const              
 {  
    return this->kernel; 
 }
 //////////////////////////////////////////////////////////////////////////
 void Block3D::deleteKernel()             
 {  
-   this->kernel = LBMKernel3DPtr(); 
+   this->kernel = LBMKernelPtr(); 
 }
 //////////////////////////////////////////////////////////////////////////
 int  Block3D::getBundle() const          

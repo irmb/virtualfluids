@@ -18,7 +18,7 @@ using namespace std;
 
 AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
    const std::string& path,
-   D3Q27IntegrateValuesHelperPtr integrateValues,
+   IntegrateValuesHelperPtr integrateValues,
    double vTarged,
    CommunicatorPtr comm)
 

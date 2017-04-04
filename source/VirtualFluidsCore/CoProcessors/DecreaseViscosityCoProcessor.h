@@ -2,7 +2,7 @@
 #define DecreaseViscosityCoProcessor_H
 
 #include "CoProcessor.h"
-#include "D3Q27IntegrateValuesHelper.h"
+#include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
 #include "Communicator.h"
 

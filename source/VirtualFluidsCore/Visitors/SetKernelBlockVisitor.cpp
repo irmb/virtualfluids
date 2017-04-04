@@ -17,7 +17,7 @@
 //   }
 //}
 //////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
+SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernelPtr kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
                                              Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue), action(action), dataSetFlag(true)
 {
    if (needMem > availMem)
@@ -35,14 +35,14 @@ void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
       kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
       kernel->setBlock(block);
-      LBMKernel3DPtr newKernel = kernel->clone();
+      LBMKernelPtr newKernel = kernel->clone();
 
       switch (action)
       {
-      case SetKernelBlockVisitor::New:
+      case SetKernelBlockVisitor::NewKernel:
          block->setKernel(newKernel);
          break;
-      case SetKernelBlockVisitor::Change:
+      case SetKernelBlockVisitor::ChangeKernel:
       {
          DataSet3DPtr dataSet = block->getKernel()->getDataSet();
          if (!dataSet)
@@ -62,7 +62,7 @@ void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       }
          break;
 
-      case SetKernelBlockVisitor::ChangeBC:
+      case SetKernelBlockVisitor::ChangeKernelWithData:
       {
          BCProcessorPtr bcProc = block->getKernel()->getBCProcessor();
          if (!bcProc)

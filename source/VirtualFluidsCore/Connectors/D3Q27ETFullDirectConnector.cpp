@@ -1,5 +1,5 @@
 #include "D3Q27ETFullDirectConnector.h"
-#include "LBMKernelETD3Q27.h"
+#include "LBMKernel.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 
 

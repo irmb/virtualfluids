@@ -14,7 +14,7 @@
 using namespace std;
 
 PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path,
-                                                                 D3Q27IntegrateValuesHelperPtr h1, D3Q27IntegrateValuesHelperPtr h2, 
+                                                                 IntegrateValuesHelperPtr h1, IntegrateValuesHelperPtr h2, 
                                                                  LBMReal rhoReal, LBMReal uReal, LBMReal uLB,
                                                                  CommunicatorPtr comm)
 

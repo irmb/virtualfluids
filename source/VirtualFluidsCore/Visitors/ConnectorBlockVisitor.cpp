@@ -1,7 +1,7 @@
 #include "ConnectorBlockVisitor.h"
 #include "Grid3DSystem.h"
 
-ConnectorBlockVisitor::ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, D3Q27InterpolationProcessorPtr iProcessor, ConnectorFactoryPtr cFactory) :
+ConnectorBlockVisitor::ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, InterpolationProcessorPtr iProcessor, ConnectorFactoryPtr cFactory) :
    Block3DVisitor(0, Grid3DSystem::MAXLEVEL),
    comm(comm),
    nu(nu),
@@ -382,11 +382,11 @@ void ConnectorBlockVisitor::setInterpolationConnectors(Block3DPtr fblock00, Bloc
    LBMReal omegaC = LBMSystem::calcCollisionFactor(nu, cBlock->getLevel());
    iProcessor->setOmegas(omegaC, omegaF);
 
-   D3Q27InterpolationProcessorPtr cIProcessor(iProcessor->clone());
-   D3Q27InterpolationProcessorPtr fIProcessor00(iProcessor->clone());
-   D3Q27InterpolationProcessorPtr fIProcessor10(iProcessor->clone());
-   D3Q27InterpolationProcessorPtr fIProcessor01(iProcessor->clone());
-   D3Q27InterpolationProcessorPtr fIProcessor11(iProcessor->clone());
+   InterpolationProcessorPtr cIProcessor(iProcessor->clone());
+   InterpolationProcessorPtr fIProcessor00(iProcessor->clone());
+   InterpolationProcessorPtr fIProcessor10(iProcessor->clone());
+   InterpolationProcessorPtr fIProcessor01(iProcessor->clone());
+   InterpolationProcessorPtr fIProcessor11(iProcessor->clone());
 
    CreateTransmittersHelper::TransmitterPtr senderCF00, receiverCF00,
                                              senderCF01, receiverCF01,

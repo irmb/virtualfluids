@@ -1,7 +1,7 @@
 #include "InitDistributionsFromFileBlockVisitor.h"
 #include <basics/utilities/UbFileInputASCII.h>
-#include "LBMKernel3D.h"
-#include "D3Q27ETBCProcessor.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include "Grid3DSystem.h"
 #include "InitDensityLBMKernel.h"
 
@@ -24,6 +24,10 @@ InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(LBM
       for (int x2 = 0; x2<nodesX2; x2++)
          for (int x1 = 0; x1<nodesX1; x1++)
          {
+   //for (int x1 = 0; x1<nodesX1; x1++)
+   //   for (int x2 = 0; x2<nodesX2; x2++)
+   //      for (int x3 = 0; x3<nodesX3; x3++)
+   //      {
             matrix(Vx1, x1, x2, x3) = in.readDouble();
             matrix(Vx2, x1, x2, x3) = in.readDouble();
             matrix(Vx3, x1, x2, x3) = in.readDouble();
@@ -57,7 +61,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
    if (blockRank==gridRank && block->isActive())
    {
-      LBMKernel3DPtr kernel = block->getKernel();
+      LBMKernelPtr kernel = block->getKernel();
       if (!kernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
@@ -68,8 +72,8 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
       UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-      BCArray3D<D3Q27BoundaryCondition> bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
-      EsoTwist3DPtr           distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
+      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+      EsoTwist3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
       LBMReal f[D3Q27System::ENDF+1];
 

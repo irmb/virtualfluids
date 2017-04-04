@@ -2,7 +2,7 @@
 #define SetSpongeLayerBlockVisitor_h__
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 //! \brief Set sponge layer for all kernels of grid
 //! \details This visitor is useful if you need to set or reset sponge layer in kernels (e.g. after restart because sponge layer is not serializable). 

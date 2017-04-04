@@ -21,7 +21,7 @@ INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
 # INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/transmitter/CMakePackage.txt)
 
 #new VirtualFluids
-INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryCondition/CMakePackage.txt)
+INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Connectors/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Data/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Interactors/CMakePackage.txt)

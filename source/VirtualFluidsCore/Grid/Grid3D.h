@@ -75,6 +75,7 @@ public:
    //const Block3DMap& getBlocks(int level);
    const BlockIDMap& getBlockIDs();
    void deleteBlockIDs();
+   void updateDistributedBlocks(CommunicatorPtr comm);
    Block3DPtr getSuperBlock(Block3DPtr block);
    Block3DPtr getSuperBlock(int ix1, int ix2, int ix3, int level);
    void getSubBlocks(Block3DPtr block, int levelDepth, std::vector<Block3DPtr>& blocks);

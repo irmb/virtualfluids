@@ -1,25 +1,25 @@
 #ifndef ChangeRandomQs_h__
 #define ChangeRandomQs_h__
 
-#include "LBMKernel3D.h"
-#include "D3Q27IntegrateValuesHelper.h"
-#include "D3Q27BoundaryCondition.h"
+#include "LBMKernel.h"
+#include "IntegrateValuesHelper.h"
+#include "BoundaryConditions.h"
 #include "BCArray3D.h"
-#include "D3Q27ETBCProcessor.h"
+#include "BCProcessor.h"
 
 namespace Utilities
 {
-   void ChangeRandomQs(D3Q27IntegrateValuesHelperPtr integrateValues)
+   void ChangeRandomQs(IntegrateValuesHelperPtr integrateValues)
    {
-      std::vector<D3Q27IntegrateValuesHelper::CalcNodes> cnodes = integrateValues->getCNodes();
+      std::vector<IntegrateValuesHelper::CalcNodes> cnodes = integrateValues->getCNodes();
       
-      BOOST_FOREACH(D3Q27IntegrateValuesHelper::CalcNodes cn, cnodes)
+      BOOST_FOREACH(IntegrateValuesHelper::CalcNodes cn, cnodes)
       {
-         LBMKernel3DPtr kernel = cn.block->getKernel();
-         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+         LBMKernelPtr kernel = cn.block->getKernel();
+         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
          BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
          {
-            D3Q27BoundaryConditionPtr bc = bcArray.getBC(val<1>(node), val<2>(node), val<3>(node));
+            BoundaryConditionsPtr bc = bcArray.getBC(val<1>(node), val<2>(node), val<3>(node));
             if (bc)
             {
 	            for (int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)

@@ -1,7 +1,7 @@
 #include "QCriterionCoProcessor.h"
-#include "LBMKernel3D.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27ETBCProcessor.h"
+#include "LBMKernel.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include <vector>
 #include <string>
 #include <boost/foreach.hpp>
@@ -112,8 +112,8 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 	data.resize(datanames.size());
 
 
-	LBMKernelETD3Q27Ptr kernel = boost::dynamic_pointer_cast<LBMKernelETD3Q27>(block->getKernel());
-	BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+	LBMKernelPtr kernel = block->getKernel();
+	BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
 
 	int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
@@ -218,8 +218,8 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 
 void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3, const Block3DPtr block, LBMReal* vE, LBMReal* vW)
 {
-	LBMKernelETD3Q27Ptr kernel = boost::dynamic_pointer_cast<LBMKernelETD3Q27>(block->getKernel());
-	BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+	LBMKernelPtr kernel = block->getKernel();
+	BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();   
 
 	int minX1 = 0;
@@ -235,7 +235,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 	maxX3 -= 2;
 	bool checkInterpolation=true;
 	bool neighNodeIsBC=false;
-	D3Q27BoundaryConditionPtr bcPtr;
+	BoundaryConditionsPtr bcPtr;
 
 	int rankSelf= block->getRank(); 
 	if (!(offx+offy+offz)==1) throw UbException(UB_EXARGS,"getNeighborVelocities called for diagonal directions!");
@@ -297,8 +297,8 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		if (checkInterpolation==false || neighNodeIsBC)
 		{
 
-			LBMKernel3DPtr kernelW = blockNeighW->getKernel();
-			BCArray3D<D3Q27BoundaryCondition>& bcArrayW = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernelW->getBCProcessor())->getBCArray();          
+			LBMKernelPtr kernelW = blockNeighW->getKernel();
+			BCArray3D& bcArrayW = kernelW->getBCProcessor()->getBCArray();          
 			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW2[27];
 			LBMReal fW[27];
@@ -327,8 +327,8 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		}
 		else
 		{
-			LBMKernel3DPtr kernelW = blockNeighW->getKernel();
-			BCArray3D<D3Q27BoundaryCondition>& bcArrayW = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernelW->getBCProcessor())->getBCArray();          
+			LBMKernelPtr kernelW = blockNeighW->getKernel();
+			BCArray3D& bcArrayW = kernelW->getBCProcessor()->getBCArray();          
 			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW[27];
 

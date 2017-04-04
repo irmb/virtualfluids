@@ -27,7 +27,7 @@ public:
 protected:
 	void collectData(double step);
    void calculateForces();
-   UbTupleDouble3 getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, D3Q27BoundaryConditionPtr bc);
+   UbTupleDouble3 getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, BoundaryConditionsPtr bc);
    void calculateCoefficients();
    void write(std::ofstream *fileObject, double value, char *separator);
 private:

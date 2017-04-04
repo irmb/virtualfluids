@@ -6,7 +6,7 @@
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
 #include "FETOLCommunicator.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include "CreateTransmittersHelper.h"
 
 class FETOLSetConnectorsBlockVisitor : public Block3DVisitor

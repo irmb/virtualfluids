@@ -16,13 +16,14 @@
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
 #include "Block3D.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "LBMKernel.h"
+#include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include "Grid3D.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include "D3Q27ETFCOffVectorConnector.h"
+#include "BCProcessor.h"
 
 class Block3D;
 
@@ -51,7 +52,7 @@ public:
       VectorTransmitterPtr senderEvenOddNW, VectorTransmitterPtr receiverEvenOddNW,
       VectorTransmitterPtr senderOddEvenSE, VectorTransmitterPtr receiverOddEvenSE,
       VectorTransmitterPtr senderOddOddNE, VectorTransmitterPtr receiverOddOddNE,
-      int sendDir, D3Q27InterpolationProcessorPtr iprocessor);
+      int sendDir, InterpolationProcessorPtr iprocessor);
 
    bool isLocalConnector();
    bool isRemoteConnector();
@@ -97,7 +98,7 @@ protected:
       senderOddEvenSE, receiverOddEvenSE,
       senderOddOddNE, receiverOddOddNE;
 
-   D3Q27InterpolationProcessorPtr iprocessor;
+   InterpolationProcessorPtr iprocessor;
 
    void writeICellFtoData(vector_type& data, int& index, D3Q27ICell& icellF);
    void writeNodeToVector(vector_type& data, int& index, LBMReal* inode);
@@ -122,7 +123,7 @@ D3Q27ETCFOffVectorConnector<VectorTransmitter>::D3Q27ETCFOffVectorConnector(Bloc
    VectorTransmitterPtr senderEvenOddNW, VectorTransmitterPtr receiverEvenOddNW,
    VectorTransmitterPtr senderOddEvenSE, VectorTransmitterPtr receiverOddEvenSE,
    VectorTransmitterPtr senderOddOddNE, VectorTransmitterPtr receiverOddOddNE,
-   int sendDir, D3Q27InterpolationProcessorPtr iprocessor) : Block3DConnector(sendDir)
+   int sendDir, InterpolationProcessorPtr iprocessor) : Block3DConnector(sendDir)
    , block(block)
    , senderEvenEvenSW(senderEvenEvenSW)
    , senderEvenOddNW(senderEvenOddNW)
@@ -767,7 +768,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::fillSendVectorExt(Distribu
    if (data.size() == 0) return;
    int ix1, ix2, ix3;
    LBMReal xoff, yoff, zoff;
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(block.lock()->getKernel()->getBCProcessor())->getBCArray();
+   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3 < lMaxX3; ix3++)
    {
@@ -1879,7 +1880,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::findCFnodes(DistributionAr
    if (data.size() == 0) return;
    int ix1, ix2, ix3;
    LBMReal xoff, yoff, zoff;
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(block.lock()->getKernel()->getBCProcessor())->getBCArray();
+   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3 < lMaxX3; ix3++)
    {
@@ -1907,7 +1908,8 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::findCFnodes(DistributionAr
                      " interpolation is not implemented for other direction" +
                      " by using in: " + (std::string)typeid(*this).name() +
                      " or maybe you have a solid on the block boundary";
-                  UB_THROW(UbException(UB_EXARGS, err));
+                  UBLOG(logINFO, err);
+                  //UB_THROW(UbException(UB_EXARGS, err));
                }
             }
 

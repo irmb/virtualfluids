@@ -1,5 +1,5 @@
 #include "ShearStressCoProcessor.h"
-#include "D3Q27ETBCProcessor.h"
+#include "BCProcessor.h"
 #include "WbWriterVtkXmlASCII.h"
 
 
@@ -139,8 +139,8 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
-         LBMKernel3DPtr kernel = block->getKernel();
-         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+         LBMKernelPtr kernel = block->getKernel();
+         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -256,8 +256,8 @@ void ShearStressCoProcessor::addData()
          UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
          double         dx           = grid->getDeltaX(block);
 
-         LBMKernel3DPtr kernel = block->getKernel();
-         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+         LBMKernelPtr kernel = block->getKernel();
+         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -362,8 +362,8 @@ void ShearStressCoProcessor::resetData(double step)
             UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
             double         dx           = grid->getDeltaX(block);
 
-            LBMKernel3DPtr kernel = block->getKernel();
-            BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+            LBMKernelPtr kernel = block->getKernel();
+            BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
             ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -416,45 +416,45 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
    double x1plane=0.0,y1plane=0.0,z1plane=0.0;
    double x2plane=0.0,y2plane=0.0,z2plane=0.0;
    double x3plane=0.0,y3plane=0.0,z3plane=0.0;
-   D3Q27BoundaryConditionPtr bcPtr;
+   BoundaryConditionsPtr bcPtr;
    double dx = grid->getDeltaX(block);
-   LBMKernel3DPtr kernel = block->getKernel();
+   LBMKernelPtr kernel = block->getKernel();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-   BCArray3D<D3Q27BoundaryCondition> bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
    bcPtr=bcArray.getBC(ix1,ix2,ix3);
    int x,y,z;
 
 
-   if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2, ix3)) { x = ix1;y = ix2;z = ix3;}   
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2-1, ix3  )) { x = ix1+0; y = ix2-1; z = ix3+0;}//S
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2  , ix3-1)) { x = ix1+0; y = ix2+0; z = ix3-1;}//B		   
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2  , ix3  )) { x = ix1-1; y = ix2+0; z = ix3+0;}//w
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2-1, ix3-1)) { x = ix1+0; y = ix2-1; z = ix3-1;}//BS
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2  , ix3-1)) { x = ix1-1; y = ix2+0; z = ix3-1;}//BW
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2-1, ix3  )) { x = ix1-1; y = ix2-1; z = ix3+0;}//SW
+   if(InterpolationProcessor::iCellHasSolid(bcArray, ix1, ix2, ix3)) { x = ix1;y = ix2;z = ix3;}   
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2-1, ix3  )) { x = ix1+0; y = ix2-1; z = ix3+0;}//S
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2  , ix3-1)) { x = ix1+0; y = ix2+0; z = ix3-1;}//B		   
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2  , ix3  )) { x = ix1-1; y = ix2+0; z = ix3+0;}//w
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2-1, ix3-1)) { x = ix1+0; y = ix2-1; z = ix3-1;}//BS
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2  , ix3-1)) { x = ix1-1; y = ix2+0; z = ix3-1;}//BW
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2-1, ix3  )) { x = ix1-1; y = ix2-1; z = ix3+0;}//SW
 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2-1, ix3-1)) { x = ix1-1; y = ix2-1; z = ix3-1;}//BSW	  
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2  , ix3  )) { x = ix1+1; y = ix2+0; z = ix3+0;}//E
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2+1, ix3  )) { x = ix1+0; y = ix2+1; z = ix3+0;}//N
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2  , ix3+1)) { x = ix1+0; y = ix2+0; z = ix3+1;}//T	
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2+1, ix3  )) { x = ix1+1; y = ix2+1; z = ix3+0;}//NE
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2  , ix3+1)) { x = ix1+1; y = ix2+0; z = ix3+1;}//TE
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2+1, ix3+1)) { x = ix1+0; y = ix2+1; z = ix3+1;}//TN
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2+1, ix3+1)) { x = ix1+1; y = ix2+1; z = ix3+1;}//TNE
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2-1, ix3-1)) { x = ix1-1; y = ix2-1; z = ix3-1;}//BSW	  
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2  , ix3  )) { x = ix1+1; y = ix2+0; z = ix3+0;}//E
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2+1, ix3  )) { x = ix1+0; y = ix2+1; z = ix3+0;}//N
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2  , ix3+1)) { x = ix1+0; y = ix2+0; z = ix3+1;}//T	
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2+1, ix3  )) { x = ix1+1; y = ix2+1; z = ix3+0;}//NE
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2  , ix3+1)) { x = ix1+1; y = ix2+0; z = ix3+1;}//TE
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1  , ix2+1, ix3+1)) { x = ix1+0; y = ix2+1; z = ix3+1;}//TN
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2+1, ix3+1)) { x = ix1+1; y = ix2+1; z = ix3+1;}//TNE
 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2-1, ix3  )) { x = ix1+1; y = ix2-1; z = ix3+0;}//SE
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2+1, ix3  )) { x = ix1-1; y = ix2+1; z = ix3+0;}//NW
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2  , ix3-1)) { x = ix1+1; y = ix2+0; z = ix3-1;}//BE
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2  , ix3+1)) { x = ix1-1; y = ix2+0; z = ix3+1;}//TW
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+0, ix2+1, ix3-1)) { x = ix1+0; y = ix2+1; z = ix3-1;}//BN
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+0, ix2-1, ix3+1)) { x = ix1+0; y = ix2-1; z = ix3+1;}//TS
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2-1, ix3  )) { x = ix1+1; y = ix2-1; z = ix3+0;}//SE
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2+1, ix3  )) { x = ix1-1; y = ix2+1; z = ix3+0;}//NW
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2  , ix3-1)) { x = ix1+1; y = ix2+0; z = ix3-1;}//BE
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2  , ix3+1)) { x = ix1-1; y = ix2+0; z = ix3+1;}//TW
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+0, ix2+1, ix3-1)) { x = ix1+0; y = ix2+1; z = ix3-1;}//BN
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+0, ix2-1, ix3+1)) { x = ix1+0; y = ix2-1; z = ix3+1;}//TS
 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2+1, ix3+1)) { x = ix1-1; y = ix2+1; z = ix3+1;}//TNW 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2-1, ix3+1)) { x = ix1+1; y = ix2-1; z = ix3+1;}//TSE 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2-1, ix3+1)) { x = ix1-1; y = ix2-1; z = ix3+1;}//TSW 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2+1, ix3-1)) { x = ix1+1; y = ix2+1; z = ix3-1;}//BNE 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2+1, ix3-1)) { x = ix1-1; y = ix2+1; z = ix3-1;}//BNW 
-   else if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2-1, ix3-1)) { x = ix1+1; y = ix2-1; z = ix3-1;}//BSE 
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2+1, ix3+1)) { x = ix1-1; y = ix2+1; z = ix3+1;}//TNW 
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2-1, ix3+1)) { x = ix1+1; y = ix2-1; z = ix3+1;}//TSE 
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2-1, ix3+1)) { x = ix1-1; y = ix2-1; z = ix3+1;}//TSW 
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2+1, ix3-1)) { x = ix1+1; y = ix2+1; z = ix3-1;}//BNE 
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1-1, ix2+1, ix3-1)) { x = ix1-1; y = ix2+1; z = ix3-1;}//BNW 
+   else if(InterpolationProcessor::iCellHasSolid(bcArray, ix1+1, ix2-1, ix3-1)) { x = ix1+1; y = ix2-1; z = ix3-1;}//BSE 
 
 
    else   {{UB_THROW( UbException(UB_EXARGS,"there is no cell  ix1="+UbSystem::toString(ix1)+"ix2="+UbSystem::toString(ix2)+"ix3="+UbSystem::toString(ix3)+"GlobalID="+UbSystem::toString(block->getGlobalID())+"dx="+UbSystem::toString(dx)
@@ -471,7 +471,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
       ) ) ;}} 
 
 
-   if(D3Q27InterpolationProcessor::iCellHasSolid(bcArray, x, y, z))
+   if(InterpolationProcessor::iCellHasSolid(bcArray, x, y, z))
    {  
       for(int i = x; i <= x + 1; i++){
          for(int j = y; j <= y + 1; j++){
@@ -485,7 +485,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
 
                if(!bcArray.isSolid(i, j, k))
                {
-                  D3Q27BoundaryConditionPtr bcPtrIn=bcArray.getBC(i,j,k);
+                  BoundaryConditionsPtr bcPtrIn=bcArray.getBC(i,j,k);
                   if(bcPtrIn)
                   {	 
                      for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
@@ -590,7 +590,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool ShearStressCoProcessor::checkUndefindedNodes( BCArray3D<D3Q27BoundaryCondition>& bcArray,int ix1,int ix2,int ix3)
+bool ShearStressCoProcessor::checkUndefindedNodes( BCArray3D& bcArray,int ix1,int ix2,int ix3)
 {
    for(int i = ix1; i <= ix1 + 1; i++){
       for(int j = ix2; j <= ix2 + 1; j++){
@@ -618,8 +618,8 @@ void ShearStressCoProcessor::initDistance()
          UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
          double         dx           = grid->getDeltaX(block);
 
-         LBMKernel3DPtr kernel = block->getKernel();
-         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+         LBMKernelPtr kernel = block->getKernel();
+         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -644,7 +644,7 @@ void ShearStressCoProcessor::initDistance()
 
             if(bcArray.isFluid(ix1,ix2,ix3) )
             {
-               D3Q27BoundaryConditionPtr bc = bcArray.getBC(ix1,ix2,ix3);
+               BoundaryConditionsPtr bc = bcArray.getBC(ix1,ix2,ix3);
                if((bc->hasDensityBoundary()||bc->hasVelocityBoundary()))continue;
                int numberOfCorner=0;
 

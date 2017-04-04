@@ -1,5 +1,5 @@
 #include "LineTimeSeriesCoProcessor.h"
-#include "D3Q27ETBCProcessor.h"
+#include "BCProcessor.h"
 #include "WbWriterVtkXmlASCII.h"
 
 LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, GbLine3DPtr line, int level, CommunicatorPtr comm) :
@@ -27,12 +27,12 @@ LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(Grid3DPtr grid, UbScheduler
    double orgX3 = trafo->getX3CoordinateOffset();
 
 
-   int x1min = (int)(line->getX1Minimum()-orgX1)/dx;
-   int x1max = (int)(line->getX1Maximum()-orgX1)/dx;
-   int x2min = (int)(line->getX2Minimum()-orgX2)/dx;
-   int x2max = (int)(line->getX2Maximum()-orgX2)/dx;
-   int x3min = (int)(line->getX3Minimum()-orgX3)/dx;
-   int x3max = (int)(line->getX3Maximum()-orgX3)/dx;
+   int x1min = (int)((line->getX1Minimum()-orgX1)/dx);
+   int x1max = (int)((line->getX1Maximum()-orgX1)/dx);
+   int x2min = (int)((line->getX2Minimum()-orgX2)/dx);
+   int x2max = (int)((line->getX2Maximum()-orgX2)/dx);
+   int x3min = (int)((line->getX3Minimum()-orgX3)/dx);
+   int x3max = (int)((line->getX3Maximum()-orgX3)/dx);
 
    UbTupleInt3 blockNx = grid->getBlockNX();
 
@@ -118,7 +118,7 @@ void LineTimeSeriesCoProcessor::collectData()
       {
          if (block->getRank()==gridRank)
          {
-            LBMKernel3DPtr kernel = block->getKernel();
+            LBMKernelPtr kernel = block->getKernel();
             calcMacros = NULL;
             if (kernel->getCompressible())
             {

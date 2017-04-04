@@ -2,7 +2,7 @@
 #define ViscosityBlockVisitor_h
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 
 class ViscosityBlockVisitor : public Block3DVisitor

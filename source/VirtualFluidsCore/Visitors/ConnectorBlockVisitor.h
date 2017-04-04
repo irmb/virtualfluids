@@ -4,14 +4,14 @@
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
 #include "Communicator.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include "CreateTransmittersHelper.h"
 #include "ConnectorFactory.h"
 
 class ConnectorBlockVisitor : public Block3DVisitor
 {
 public:
-   ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, D3Q27InterpolationProcessorPtr iProcessor, ConnectorFactoryPtr cFactory);
+   ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, InterpolationProcessorPtr iProcessor, ConnectorFactoryPtr cFactory);
    virtual ~ConnectorBlockVisitor();
    void visit(Grid3DPtr grid, Block3DPtr block);
    //////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ protected:
    CommunicatorPtr comm;
    int gridRank;
    LBMReal nu;
-   D3Q27InterpolationProcessorPtr iProcessor;
+   InterpolationProcessorPtr iProcessor;
    ConnectorFactoryPtr cFactory;
 };
 

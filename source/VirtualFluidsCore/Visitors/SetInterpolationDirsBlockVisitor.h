@@ -2,7 +2,7 @@
 #define SetInterpolationDirsBlockVisitor_h
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 
 class SetInterpolationDirsBlockVisitor : public Block3DVisitor

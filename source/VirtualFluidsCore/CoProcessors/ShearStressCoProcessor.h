@@ -4,7 +4,7 @@
 #include "CoProcessor.h"
 #include "Communicator.h"
 #include "D3Q27Interactor.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include "WbWriter.h"
 
 #include <boost/shared_ptr.hpp>
@@ -39,7 +39,7 @@ protected:
    void clearData();
    void reset(double step);
    void findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Block3DPtr block,double &A,double &B,double &C,double &D,double &ii);
-   bool checkUndefindedNodes( BCArray3D<D3Q27BoundaryCondition>& bcArray,int ix1,int ix2,int ix3);
+   bool checkUndefindedNodes( BCArray3D& bcArray,int ix1,int ix2,int ix3);
    void initDistance();
 private:
    std::vector<UbTupleFloat3> nodes;

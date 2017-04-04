@@ -2,7 +2,7 @@
 
 INCLUDE_DIRECTORIES(${SOURCE_ROOT})
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore)
-INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryCondition )
+INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/Connectors)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/Data)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/Interactors)

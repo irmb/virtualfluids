@@ -56,6 +56,25 @@ void run(string configname)
 
       const int baseLevel = 0;
 
+      //BC Adapter
+      //////////////////////////////////////////////////////////////////////////////
+      BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
+      //noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new ThinWallNoSlipBCAlgorithm()));
+      //BCAdapterPtr denBCAdapter(new DensityBCAdapter(rhoLB));
+      //denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
+
+      noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NoSlipBCAlgorithm()));
+
+      BCAdapterPtr denBCAdapter(new DensityBCAdapter(rhoLB));
+      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingDensityBCAlgorithm()));
+
+
+      //////////////////////////////////////////////////////////////////////////////////
+      //BS visitor
+      BoundaryConditionsBlockVisitor bcVisitor;
+      bcVisitor.addBC(noSlipBCAdapter);
+      bcVisitor.addBC(denBCAdapter);
+ 
       Grid3DPtr grid(new Grid3D(comm));
       
       //////////////////////////////////////////////////////////////////////////
@@ -77,6 +96,9 @@ void run(string configname)
          double g_maxX3 = length[2] / 2.0;
 
          //geometry
+         //x
+         //GbObject3DPtr cylinder(new GbCylinder3D(g_minX1 - 2.0*dx, 0.0, 0.0, g_maxX1 + 2.0*dx, 0.0, 0.0, dLB / 2.0));
+         //y
          GbObject3DPtr cylinder(new GbCylinder3D(g_minX1 - 2.0*dx, 0.0, 0.0, g_maxX1 + 2.0*dx, 0.0, 0.0, dLB / 2.0));
          GbSystem3D::writeGeoObject(cylinder.get(), pathname + "/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
 
@@ -118,14 +140,13 @@ void run(string configname)
 
          ppblocks->process(0);
 
-         int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
-         D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption));
-         D3Q27InteractorPtr cylinderInt(new D3Q27Interactor(cylinder, grid, bcObst, Interactor3D::INVERSESOLID));
+         D3Q27InteractorPtr cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
 
          double r = boost::dynamic_pointer_cast<GbCylinder3D>(cylinder)->getRadius();
          double cx1 = g_minX1;
          double cx2 = cylinder->getX2Centroid();
          double cx3 = cylinder->getX3Centroid();
+
          mu::Parser fct;
          fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
          fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
@@ -136,12 +157,13 @@ void run(string configname)
          fct.DefineConst("y0", cx2);
          fct.DefineConst("z0", cx3);
          fct.DefineConst("nue", nuLB);
+         BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+         //velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+         velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingVelocityBCAlgorithm()));
 
-         D3Q27BoundaryConditionAdapterPtr velBCAdapter(new D3Q27VelocityBCAdapter(true, false, false, fct, 0, D3Q27BCFunction::INFCONST));
          D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 
          //outflow
-         D3Q27BoundaryConditionAdapterPtr denBCAdapter(new D3Q27DensityBCAdapter(rhoLB));
          D3Q27InteractorPtr outflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
 
 
@@ -153,8 +175,9 @@ void run(string configname)
          intHelper.selectBlocks();
 
          //set connectors
-         D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
          //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
          grid->accept(setConnsVisitor);
@@ -191,23 +214,14 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         LBMKernel3DPtr kernel;
+         LBMKernelPtr kernel;
 
-         kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
+         //kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
 
          //
-         //BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
-         BCProcessorPtr bcProc(new D3Q27ETForThinWallBCProcessor());
-         BoundaryConditionPtr noSlipBC;
-         BoundaryConditionPtr velBC;
-         BoundaryConditionPtr denBC;
-         //noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
-         noSlipBC = BoundaryConditionPtr(new ThinWallNoSlipBoundaryCondition());
-         velBC = BoundaryConditionPtr(new VelocityBoundaryCondition());
-         denBC = BoundaryConditionPtr(new NonEqDensityBoundaryCondition());
-         bcProc->addBC(noSlipBC);
-         bcProc->addBC(velBC);
-         bcProc->addBC(denBC);
+         BCProcessorPtr bcProc(new BCProcessor());
+         //BCProcessorPtr bcProc(new ThinWallBCProcessor());
 
          kernel->setBCProcessor(bcProc);
 
@@ -216,26 +230,25 @@ void run(string configname)
 
          if (refineLevel > 0)
          {
-            D3Q27SetUndefinedNodesBlockVisitor undefNodesVisitor;
+            SetUndefinedNodesBlockVisitor undefNodesVisitor;
             grid->accept(undefNodesVisitor);
          }
 
          intHelper.setBC();
 
-         BoundaryConditionBlockVisitor bcVisitor;
+         bcVisitor.addBC(velBCAdapter);
          grid->accept(bcVisitor);
 
          //initialization of distributions
-         D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
          grid->accept(initVisitor);
 
          //boundary conditions grid
-         //{
-         //   UbSchedulerPtr geoSch(new UbScheduler(1));
-         //   MacroscopicQuantitiesCoProcessorPtr ppgeo(
-         //      new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-         //   grid->coProcess(0);
-         //}
+         {
+            UbSchedulerPtr geoSch(new UbScheduler(1));
+            WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            grid->coProcess(0);
+         }
 
          if (myid == 0) UBLOG(logINFO, "Preprocess - end");
       }
@@ -254,22 +267,25 @@ void run(string configname)
             UBLOG(logINFO, "path = " << pathname);
          }
 
-         //BoundaryConditionBlockVisitor bcVisitor;
-         //grid->accept(bcVisitor);
+         BCAdapterPtr velBCAdapter(new VelocityBCAdapter());
+         velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+         bcVisitor.addBC(velBCAdapter);
+         grid->accept(bcVisitor);
 
          //set connectors
-         D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
       UbSchedulerPtr visSch(new UbScheduler(outTime));
-      MacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv);
+      WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm);
 
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch,CalculationManager::PrePostBc));
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();

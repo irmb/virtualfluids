@@ -9,7 +9,7 @@
 #define TimeseriesCoProcessor_H
 
 #include "CoProcessor.h"
-#include "D3Q27IntegrateValuesHelper.h"
+#include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
 #include "Communicator.h"
 
@@ -26,14 +26,14 @@ typedef boost::shared_ptr<TimeseriesCoProcessor> TimeseriesCoProcessorPtr;
 class TimeseriesCoProcessor: public CoProcessor {
 public:
 	TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-                                   D3Q27IntegrateValuesHelperPtr h1,
+                                   IntegrateValuesHelperPtr h1,
                                    const std::string& path, CommunicatorPtr comm);
 	virtual ~TimeseriesCoProcessor();
 	//! calls collectData.
    void process(double step); 
 protected:
    //! object that can compute spacial average values in 3D-subdomain.
-	D3Q27IntegrateValuesHelperPtr h1;  
+	IntegrateValuesHelperPtr h1;  
 	void collectData(double step);  
    CommunicatorPtr comm;
 private:

@@ -17,7 +17,7 @@
 class Block3D;
 typedef boost::shared_ptr<Block3D> Block3DPtr;
 
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 
 class Block3D
 {
@@ -36,8 +36,8 @@ public:
    bool isActive()    const;
    bool isNotActive() const;
 
-   void setKernel(LBMKernel3DPtr kernel);
-   LBMKernel3DPtr getKernel() const;
+   void setKernel(LBMKernelPtr kernel);
+   LBMKernelPtr getKernel() const;
    void deleteKernel();
 
    void setBundle(int bundle);
@@ -118,7 +118,7 @@ private:
   int interpolationFlagCF;
   int interpolationFlagFC;
 
-  LBMKernel3DPtr kernel;
+  LBMKernelPtr kernel;
   std::vector<Block3DConnectorPtr> connectors;
   std::map<int, int> weight;
 

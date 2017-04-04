@@ -10,7 +10,7 @@
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
 #include "Block3D.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
@@ -47,7 +47,7 @@ public:
       VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
       VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
       VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
-      int sendDir, D3Q27InterpolationProcessorPtr iprocessor);
+      int sendDir, InterpolationProcessorPtr iprocessor);
 
    virtual ~CoarseToFineBlock3DConnector() {}
 
@@ -94,7 +94,7 @@ protected:
                         sender10, receiver10,
                         sender11, receiver11;
 
-   D3Q27InterpolationProcessorPtr iprocessor;
+   InterpolationProcessorPtr iprocessor;
 
 };
 

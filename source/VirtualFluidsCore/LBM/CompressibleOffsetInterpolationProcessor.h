@@ -1,7 +1,7 @@
 #ifndef CompressibleOffsetInterpolationProcessor_H_
 #define CompressibleOffsetInterpolationProcessor_H_
 
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include "D3Q27System.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -12,13 +12,13 @@
 class CompressibleOffsetInterpolationProcessor;
 typedef boost::shared_ptr<CompressibleOffsetInterpolationProcessor> CompressibleOffsetInterpolationProcessorPtr;
 
-class CompressibleOffsetInterpolationProcessor : public D3Q27InterpolationProcessor
+class CompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {
 public:
    CompressibleOffsetInterpolationProcessor();
    CompressibleOffsetInterpolationProcessor(LBMReal omegaC, LBMReal omegaF);
    virtual ~CompressibleOffsetInterpolationProcessor();
-   D3Q27InterpolationProcessorPtr clone();
+   InterpolationProcessorPtr clone();
    void setOmegas(LBMReal omegaC, LBMReal omegaF);
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF);
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff);

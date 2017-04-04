@@ -17,9 +17,9 @@ VoidLBMKernel::~VoidLBMKernel()
 
 }
 
-LBMKernel3DPtr VoidLBMKernel::clone()
+LBMKernelPtr VoidLBMKernel::clone()
 {
-   LBMKernel3DPtr kernel(new VoidLBMKernel(nx1, nx2, nx3));
+   LBMKernelPtr kernel(new VoidLBMKernel(nx1, nx2, nx3));
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);

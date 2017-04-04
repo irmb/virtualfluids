@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////
 FineToCoarseBlock3DConnector::FineToCoarseBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender,
    VectorTransmitterPtr receiver, int sendDir,
-   D3Q27InterpolationProcessorPtr iprocessor,
+   InterpolationProcessorPtr iprocessor,
    CFconnectorType connType)
    : Block3DConnector(sendDir)
    , block(block)

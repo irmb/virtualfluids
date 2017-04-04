@@ -1,8 +1,8 @@
 #ifndef CompressibleCumulantLBMKernel_h__
 #define CompressibleCumulantLBMKernel_h__
 
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27ETBCProcessor.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include "D3Q27System.h"
 #include <boost/serialization/export.hpp>
 #include "basics/utilities/UbTiming.h"
@@ -15,7 +15,7 @@ typedef boost::shared_ptr<CompressibleCumulantLBMKernel> CompressibleCumulantLBM
 //! \brief   compressible cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  K. Kutscher, M. Geier
-class CompressibleCumulantLBMKernel :  public LBMKernelETD3Q27
+class CompressibleCumulantLBMKernel :  public LBMKernel
 {
 public:
    //! This option set relaxation parameter: NORMAL  
@@ -30,7 +30,7 @@ public:
    CompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~CompressibleCumulantLBMKernel(void);
    virtual void calculate();
-   virtual LBMKernel3DPtr clone();
+   virtual LBMKernelPtr clone();
    double getCallculationTime();
 
 protected:
@@ -38,7 +38,7 @@ protected:
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)
    {
-      ar & boost::serialization::base_object<LBMKernelETD3Q27>(*this);
+      ar & boost::serialization::base_object<LBMKernel>(*this);
       ar & OxyyMxzz; 
       ar & parameter;
    }

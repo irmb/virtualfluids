@@ -6,7 +6,7 @@
 #include "Block3D.h"
 #include "LBMUnitConverter.h"
 #include "Communicator.h"
-#include "D3Q27IntegrateValuesHelper.h"
+#include "IntegrateValuesHelper.h"
 #include "WbWriter.h"
 
 #include <boost/shared_ptr.hpp>

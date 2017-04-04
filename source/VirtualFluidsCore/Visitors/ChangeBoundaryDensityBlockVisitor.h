@@ -2,7 +2,7 @@
 #define ChangeBoundaryDensityBlockVisitor_h__
 
 #include "Block3DVisitor.h"
-#include "D3Q27BoundaryCondition.h"
+#include "BoundaryConditions.h"
 
 class ChangeBoundaryDensityBlockVisitor : public Block3DVisitor
 {
@@ -14,6 +14,6 @@ protected:
 private:
    float oldBoundaryDensity; 
    float newBoundaryDensity;
-   D3Q27BoundaryConditionPtr bcPtr;
+   BoundaryConditionsPtr bcPtr;
 };
 #endif // ChangeBoundaryDensityBlockVisitor_h__

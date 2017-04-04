@@ -12,8 +12,8 @@
 #include "D3Q27System.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "LBMKernel.h"
+#include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -28,7 +28,7 @@ class Block3D;
 class FineToCoarseNodeSetBlock3DConnector : public FineToCoarseBlock3DConnector
 {
 public:
-   FineToCoarseNodeSetBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, D3Q27InterpolationProcessorPtr iprocessor, CFconnectorType connType);
+   FineToCoarseNodeSetBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
    void init();
    void fillSendVectors();
    void distributeReceiveVectors();

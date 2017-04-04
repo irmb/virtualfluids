@@ -1,5 +1,6 @@
 #include "InitDensityLBMKernel.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
+#include "BCProcessor.h"
 
 InitDensityLBMKernel::InitDensityLBMKernel()
 {
@@ -9,8 +10,11 @@ InitDensityLBMKernel::~InitDensityLBMKernel()
 {
 }
 
-InitDensityLBMKernel::InitDensityLBMKernel(int nx1, int nx2, int nx3) : LBMKernelETD3Q27(nx1, nx2, nx3)
+InitDensityLBMKernel::InitDensityLBMKernel(int nx1, int nx2, int nx3)
 {
+   this->nx1 = nx1;
+   this->nx2 = nx2;
+   this->nx3 = nx3;
    this->compressible = false;
 }
 
@@ -19,9 +23,9 @@ void InitDensityLBMKernel::calculate()
    collideAll();
 }
 
-LBMKernel3DPtr InitDensityLBMKernel::clone()
+LBMKernelPtr InitDensityLBMKernel::clone()
 {
-   LBMKernel3DPtr kernel(new InitDensityLBMKernel(nx1, nx2, nx3));
+   LBMKernelPtr kernel(new InitDensityLBMKernel(nx1, nx2, nx3));
    boost::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
@@ -801,7 +805,7 @@ double InitDensityLBMKernel::getCallculationTime()
 //                  UB_THROW(UbException(UB_EXARGS, "rho="+UbSystem::toString(rho)+", rho_post="+UbSystem::toString(rho_post)
 //                     +" dif="+UbSystem::toString(dif)
 //                     +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)));
-//                  //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
+//                  //UBLOG(logERROR,"LBMKernel3DCCLB::collideAll(): rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
 //                  //exit(EXIT_FAILURE);
 //               }
 //#endif
@@ -863,8 +867,8 @@ void InitDensityLBMKernel::collideAll()
    nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(this->getBCProcessor())->getBCArray();
-   D3Q27BoundaryConditionPtr bcPtr;
+   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+   BoundaryConditionsPtr bcPtr;
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
    LBMReal drho, vx1, vx2, vx3;

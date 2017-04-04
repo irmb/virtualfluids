@@ -1,8 +1,9 @@
 #include "FineToCoarseNodeSetBlock3DConnector.h"
+#include "BCProcessor.h"
 
 //////////////////////////////////////////////////////////////////////////
 FineToCoarseNodeSetBlock3DConnector::FineToCoarseNodeSetBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
-   int sendDir, D3Q27InterpolationProcessorPtr iprocessor, CFconnectorType connType) : FineToCoarseBlock3DConnector(block, sender, receiver, sendDir, iprocessor, connType)
+   int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType) : FineToCoarseBlock3DConnector(block, sender, receiver, sendDir, iprocessor, connType)
 {
 
 }
@@ -100,7 +101,7 @@ void FineToCoarseNodeSetBlock3DConnector::findFCCells(int lMinX1, int lMinX2, in
    LBMReal x1off, x2off, x3off;
 
    DistributionArray3DPtr  fFrom = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getDataSet()->getFdistributions();
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(FineToCoarseBlock3DConnector::block.lock()->getKernel()->getBCProcessor())->getBCArray();
+   BCArray3D& bcArray = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3<=lMaxX3; ix3 += 2)
    {

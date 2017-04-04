@@ -103,6 +103,21 @@ void Grid3D::accept(Block3DVisitor& blockVisitor)
    if(dir) stopLevel += 1;
    else stopLevel    -= 1;
 
+
+//   for (int l = startLevel; l!=stopLevel;)
+//   {
+//      std::vector<Block3DPtr> blockVector;
+//      getBlocks(l, blockVector);
+//      int sizeb = (int)blockVector.size();
+//#pragma omp parallel
+//#pragma omp for
+//      for(int i = 0; i < sizeb; i++)
+//      {
+//         blockVisitor.visit(shared_from_this(), blockVector[i]);
+//      }
+//      if (dir)  l++;
+//      else     l--;
+//   }
    for(int l=startLevel; l!=stopLevel;)
    {
       std::vector<Block3DPtr> blockVector;
@@ -320,7 +335,10 @@ Block3DPtr Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, int l
 
    Block3DPtr fblock = this->getBlock(fix1, fix2, fix3, flevel);
    if( flevel <  1         ) throw UbException(UB_EXARGS,"level of block ("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") is < 1");
-   if( !fblock             ) throw UbException(UB_EXARGS,"specific block("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") doesn't exists");
+   if( !fblock             ) 
+   {
+      throw UbException(UB_EXARGS,"specific block("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") doesn't exists");
+   }
    if( !fblock->isActive() ) throw UbException(UB_EXARGS,"block("+toString(fix1)+","+toString(fix2)+","+toString(fix3)+","+toString(flevel)+") is not active");
 
    //da bei periodic der eigentliche block andere indizes hat:
@@ -1924,6 +1942,59 @@ void Grid3D::fillExtentWithBlocks( UbTupleInt3 minInd, UbTupleInt3 maxInd )
 void Grid3D::deleteBlockIDs()
 {
    this->blockIdMap.clear();
+}
+//////////////////////////////////////////////////////////////////////////
+void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
+{
+   
+   std::vector<int> blocks;
+   
+   if (comm->isRoot())
+   {
+      int startLevel = getCoarsestInitializedLevel();
+      int stopLevel = getFinestInitializedLevel();
+
+      for (int l = startLevel; l <= stopLevel; l++)
+      {
+         std::vector<Block3DPtr> blockVector;
+         getBlocks(l, blockVector);
+         BOOST_FOREACH(Block3DPtr block, blockVector)
+         {
+            blocks.push_back(block->getX1());
+            blocks.push_back(block->getX2());
+            blocks.push_back(block->getX3());
+            blocks.push_back(l);
+            blocks.push_back(block->getGlobalID());
+         }
+      }
+   }
+   
+   comm->broadcast(blocks);
+
+   if (!comm->isRoot())
+   {
+      int startLevel = getCoarsestInitializedLevel();
+      int stopLevel = getFinestInitializedLevel();
+
+      blockIdMap.clear();
+
+      for (int l = startLevel; l<=stopLevel; l++)
+      {
+         levelSet[l].clear();
+      }
+      this->levelSet.clear();
+      levelSet.resize(Grid3DSystem::MAXLEVEL+1);
+
+      int rsize = blocks.size();
+      for (int i = 0; i < rsize; i+=5)
+      {
+         Block3DPtr block(new Block3D(blocks[i], blocks[i+1], blocks[i+2], blocks[i+3]));
+         block->setGlobalID(blocks[i+4]);
+         this->addBlock(block);
+      }
+
+   }
+
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 #include "TimeAveragedValuesCoProcessor.h"
-#include "LBMKernel3D.h"
-#include "D3Q27ETBCProcessor.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include <vector>
 #include <sstream>
 #include <string>
@@ -240,8 +240,8 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   LBMKernel3DPtr kernel = block->getKernel();
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+   LBMKernelPtr kernel = block->getKernel();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
    AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
@@ -364,8 +364,8 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
          Block3DPtr block = blockVector[level][i];
          if (block)
          {
-            LBMKernel3DPtr kernel = block->getKernel();
-            BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+            LBMKernelPtr kernel = block->getKernel();
+            BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
             AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
             AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
@@ -478,8 +478,8 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                Block3DPtr block = blockVector[level][i];
                if (block)
                {
-                  LBMKernel3DPtr kernel = block->getKernel();
-                  BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+                  LBMKernelPtr kernel = block->getKernel();
+                  BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
                   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
                   AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
                   AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
@@ -605,7 +605,7 @@ void TimeAveragedValuesCoProcessor::planarAverage(double step)
 
       for (double j = start; j <stop; j += dx)
       {
-         D3Q27IntegrateValuesHelper intValHelp(grid, comm,
+         IntegrateValuesHelper intValHelp(grid, comm,
             bounds[0], bounds[1], j,
             bounds[3], bounds[4], j + dx, level);
 

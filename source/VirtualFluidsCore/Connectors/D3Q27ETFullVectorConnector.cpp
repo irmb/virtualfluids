@@ -1,6 +1,6 @@
 #include "D3Q27ETFullVectorConnector.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
-#include "LBMKernelETD3Q27.h"
+#include "LBMKernel.h"
 
 //////////////////////////////////////////////////////////////////////////
 D3Q27ETFullVectorConnector::D3Q27ETFullVectorConnector(Block3DPtr block

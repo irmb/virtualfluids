@@ -10,6 +10,8 @@ void run(string configname)
 {
    try
    {
+      //Sleep(30000);
+
       ConfigurationFile   config;
       config.load(configname);
 
@@ -115,8 +117,8 @@ void run(string configname)
       ppblocks.reset();
 
       //set connectors
-      D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-      D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+      InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
       grid->accept(setConnsVisitor);
 
       //domain decomposition for threads
@@ -148,12 +150,12 @@ void run(string configname)
          UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
       }
 
-      LBMKernel3DPtr kernel;
+      LBMKernelPtr kernel;
 
       //kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
-      kernel = LBMKernel3DPtr(new InitDensityLBMKernel(blocknx[0], blocknx[1], blocknx[2]));
+      kernel = LBMKernelPtr(new InitDensityLBMKernel(blocknx[0], blocknx[1], blocknx[2]));
 
-      BCProcessorPtr bcProc(new D3Q27ETBCProcessor());
+      BCProcessorPtr bcProc(new BCProcessor());
       kernel->setBCProcessor(bcProc);
 
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
@@ -162,15 +164,38 @@ void run(string configname)
       intHelper.setBC();
 
       //initialization of distributions
-      //D3Q27ETInitDistributionsBlockVisitor initVisitor(nuLB, rhoLB, uLB, uLB, uLB);
-      InitDistributionsFromFileBlockVisitor initVisitor(nuLB, rhoLB, initFile);
+      InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+      double u_LB = 0.01;
+      mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3;
+      inflowProfileVx1.DefineConst("U", u_LB);
+      inflowProfileVx1.DefineConst("PI", PI);
+      inflowProfileVx1.DefineConst("L1", g_maxX1-g_minX1);
+      inflowProfileVx1.DefineConst("L2", g_maxX2-g_minX2);
+      inflowProfileVx1.DefineConst("L3", g_maxX3-g_minX3);
+      inflowProfileVx1.SetExpr("U*cos(2.0*PI*x1/L1)*sin(2.0*PI*x2/L2)*sin(2.0*PI*x3/L3)");
+      inflowProfileVx2.DefineConst("U", u_LB);
+      inflowProfileVx2.DefineConst("PI", PI);
+      inflowProfileVx2.DefineConst("L1", g_maxX1-g_minX1);
+      inflowProfileVx2.DefineConst("L2", g_maxX2-g_minX2);
+      inflowProfileVx2.DefineConst("L3", g_maxX3-g_minX3);
+      inflowProfileVx2.SetExpr("-U*cos(2.0*PI*x1/L1)*sin(2.0*PI*x2/L2)*cos(2.0*PI*x3/L3)");
+      inflowProfileVx3.DefineConst("U", u_LB);
+      inflowProfileVx3.DefineConst("PI", PI);
+      inflowProfileVx3.DefineConst("L1", g_maxX1-g_minX1);
+      inflowProfileVx3.DefineConst("L2", g_maxX2-g_minX2);
+      inflowProfileVx3.DefineConst("L3", g_maxX3-g_minX3);
+      inflowProfileVx3.SetExpr("-U/2.0*sin(8.0*PI*(x1)/(L1))*cos(8.0*PI*(x3)/L3)");
+      initVisitor.setVx1(inflowProfileVx1);
+      initVisitor.setVx2(inflowProfileVx2);
+      initVisitor.setVx3(inflowProfileVx3);
+      //InitDistributionsFromFileBlockVisitor initVisitor(nuLB, rhoLB, initFile);
       grid->accept(initVisitor);
 
       //boundary conditions grid
       {
          UbSchedulerPtr geoSch(new UbScheduler(1));
-         MacroscopicQuantitiesCoProcessorPtr ppgeo(
-            new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
+         WriteBoundaryConditionsCoProcessorPtr ppgeo(
+            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
          grid->coProcess(0);
       }
 
@@ -184,7 +209,7 @@ void run(string configname)
       }
 
       UbSchedulerPtr outputSch(new UbScheduler(outTime));
-      MacroscopicQuantitiesCoProcessor pp(grid, outputSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
+      WriteMacroscopicQuantitiesCoProcessor pp(grid, outputSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
@@ -195,9 +220,9 @@ void run(string configname)
       if (myid == 0) UBLOG(logINFO, "Initialisation-end");
 
 
-      kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
+      kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
       kernel->setBCProcessor(bcProc);
-      SetKernelBlockVisitor kernelVisitor2(kernel, nuLB, availMem, needMem, SetKernelBlockVisitor::Change);
+      SetKernelBlockVisitor kernelVisitor2(kernel, nuLB, availMem, needMem, SetKernelBlockVisitor::ChangeKernel);
       grid->accept(kernelVisitor2);
 
       UbSchedulerPtr visSch(new UbScheduler(outTime));

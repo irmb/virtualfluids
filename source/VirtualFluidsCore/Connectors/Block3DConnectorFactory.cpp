@@ -30,7 +30,7 @@ Block3DConnectorPtr Block3DConnectorFactory::createCoarseToFineConnector(Block3D
    VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
    VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
    VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
-   int sendDir, D3Q27InterpolationProcessorPtr iprocessor)
+   int sendDir, InterpolationProcessorPtr iprocessor)
 {
    return Block3DConnectorPtr (new CoarseToFineNodeSetBlock3DConnector(block,
       sender00, receiver00, sender01, receiver01,
@@ -42,7 +42,7 @@ Block3DConnectorPtr Block3DConnectorFactory::createFineToCoarseConnector(Block3D
    VectorTransmitterPtr sender,
    VectorTransmitterPtr receiver,
    int sendDir,
-   D3Q27InterpolationProcessorPtr iprocessor,
+   InterpolationProcessorPtr iprocessor,
    FineToCoarseBlock3DConnector::CFconnectorType connType)
 {
    return  Block3DConnectorPtr(new FineToCoarseNodeSetBlock3DConnector(block,

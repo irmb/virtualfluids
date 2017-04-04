@@ -1,6 +1,6 @@
 #include "CompressibleCumulantLBMKernel.h"
 #include "D3Q27System.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
 #include <omp.h>
@@ -14,9 +14,11 @@ CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel()
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p) 
-   : LBMKernelETD3Q27(nx1, nx2, nx3),
-     parameter(p)
 {
+   this->nx1 = nx1;
+   this->nx2 = nx2;
+   this->nx3 = nx3;
+   parameter = p;
    this->compressible = true;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -31,9 +33,9 @@ void CompressibleCumulantLBMKernel::init()
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-LBMKernel3DPtr CompressibleCumulantLBMKernel::clone()
+LBMKernelPtr CompressibleCumulantLBMKernel::clone()
 {
-   LBMKernel3DPtr kernel(new CompressibleCumulantLBMKernel(nx1, nx2, nx3, parameter));
+   LBMKernelPtr kernel(new CompressibleCumulantLBMKernel(nx1, nx2, nx3, parameter));
    boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
@@ -95,7 +97,7 @@ void CompressibleCumulantLBMKernel::collideAll()
    nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(this->getBCProcessor())->getBCArray();
+   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
 
    const int bcArrayMaxX1 = (int)bcArray.getNX1();
    const int bcArrayMaxX2 = (int)bcArray.getNX2();

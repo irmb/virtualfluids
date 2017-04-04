@@ -3,7 +3,7 @@
 
 #include "Block3DConnector.h"
 #include "TransmitterType.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "InterpolationProcessor.h"
 #include "FineToCoarseBlock3DConnector.h"
 
 #include <boost/shared_ptr.hpp>
@@ -26,12 +26,12 @@ public:
                                                             VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
                                                             VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
                                                             VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
-                                                            int sendDir, D3Q27InterpolationProcessorPtr iprocessor) = 0;
+                                                            int sendDir, InterpolationProcessorPtr iprocessor) = 0;
    virtual Block3DConnectorPtr createFineToCoarseConnector(Block3DPtr block, 
                                                            VectorTransmitterPtr sender, 
                                                            VectorTransmitterPtr receiver, 
                                                            int sendDir, 
-                                                           D3Q27InterpolationProcessorPtr iprocessor, 
+                                                           InterpolationProcessorPtr iprocessor, 
                                                            FineToCoarseBlock3DConnector::CFconnectorType connType) = 0;
 
 protected:

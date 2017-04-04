@@ -15,12 +15,12 @@
 #include "D3Q27System.h"
 #include "Block3D.h"
 #include "Grid3D.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "LBMKernel.h"
+#include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-
+#include "BCProcessor.h"
 
 class Block3D;
 
@@ -41,7 +41,7 @@ protected:
 	typedef boost::shared_ptr< VectorTransmitter > VectorTransmitterPtr;
 public:
    D3Q27ETFCOffVectorConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, 
-      D3Q27InterpolationProcessorPtr iprocessor, CFconnectorType connType);
+      InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
 	bool isLocalConnector();
 	bool isRemoteConnector();
@@ -85,7 +85,7 @@ protected:
 	//gegenstelle muss "inversen" connector besitzen
 	VectorTransmitterPtr sender, receiver;
 
-	D3Q27InterpolationProcessorPtr iprocessor;
+	InterpolationProcessorPtr iprocessor;
 
    CFconnectorType connType;
 
@@ -108,7 +108,7 @@ protected:
 template< typename VectorTransmitter >
 D3Q27ETFCOffVectorConnector<VectorTransmitter>::D3Q27ETFCOffVectorConnector(Block3DPtr block, VectorTransmitterPtr sender, 
 																			VectorTransmitterPtr receiver, int sendDir, 
-																			D3Q27InterpolationProcessorPtr iprocessor,
+																			InterpolationProcessorPtr iprocessor,
                                                          CFconnectorType connType)
 																			: Block3DConnector(sendDir)
 																			, block(block)
@@ -731,7 +731,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVector(Distributio
 {
 	int ix1, ix2, ix3;
 	LBMReal xoff, yoff, zoff;
-	BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(block.lock()->getKernel()->getBCProcessor())->getBCArray();
+	BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
 	for (ix3=lMinX3; ix3<lMaxX3; ix3+=2)
 	{
@@ -759,7 +759,8 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVector(Distributio
 							" interpolation is not implemented for other direction"+
 							" by using in: "+(std::string)typeid(*this).name()+ 
 							" or maybe you have a solid on the block boundary";
-						UB_THROW(UbException(UB_EXARGS, err));
+                  UBLOG(logINFO, err);
+						//UB_THROW(UbException(UB_EXARGS, err));
 					}
 				}
 

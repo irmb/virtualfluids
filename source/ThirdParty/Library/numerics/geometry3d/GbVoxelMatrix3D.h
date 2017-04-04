@@ -8,7 +8,7 @@
 #define GBVOXELMATRIX3D_H
 
 #ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
+#include <3rdParty/rcf/RcfSerializationIncludes.h>
 #endif //CAB_RCF
 
 #include <vector>
@@ -23,35 +23,35 @@ class GbVoxelMatrix3D;
 typedef VFSharedPtr<GbVoxelMatrix3D> GbVoxelMatrix3DPtr;
 
 
-class GbLine3D;                    
-class GbTriangle3D;                    
+class GbLine3D;
+class GbTriangle3D;
 class GbObject3DCreator;
 
 class GbVoxelMatrix3D : public GbObject3D, public UbObserver
 {
-public:              
+public:
    typedef CbArray3D<float> Matrix3D;
-   static const float SOLID; 
-   static const float FLUID; 
-   enum  Endian {BigEndian, LittleEndian};
+   static const float SOLID;
+   static const float FLUID;
+   enum  Endian { BigEndian, LittleEndian };
 
    GbVoxelMatrix3D();
-   GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, double lowerThreshold=0, double upperThreshold=0);
-   GbVoxelMatrix3D(const Matrix3D& voxelMatrix, double lowerThreshold=0, double upperThreshold=0);
-   ~GbVoxelMatrix3D() {}   
+   GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, double lowerThreshold = 0, double upperThreshold = 0);
+   GbVoxelMatrix3D(const Matrix3D& voxelMatrix, double lowerThreshold = 0, double upperThreshold = 0);
+   ~GbVoxelMatrix3D() {}
 
    void finalize() {};
-   GbVoxelMatrix3D* clone(); 
+   GbVoxelMatrix3D* clone();
 
    /*=======================================================================*/
    Matrix3D::reference operator() (const Matrix3D::size_type& x1, const Matrix3D::size_type& x2, const Matrix3D::size_type& x3)
    {
-      return voxelMatrix(x1,x2,x3);
+      return voxelMatrix(x1, x2, x3);
    }
    /*=======================================================================*/
    Matrix3D::const_reference operator() (const Matrix3D::size_type& x1, const Matrix3D::size_type& x2, const Matrix3D::size_type& x3)	const
    {
-      return voxelMatrix(x1,x2,x3);
+      return voxelMatrix(x1, x2, x3);
    }
    /*=======================================================================*/
    void setTransferViaFilename(bool transferViaFilename, std::string filename)
@@ -67,7 +67,7 @@ public:
    void setVoxelMatrixMinX1(double minX1) { this->minX1 = minX1; }
    void setVoxelMatrixMinX2(double minX2) { this->minX2 = minX2; }
    void setVoxelMatrixMinX3(double minX3) { this->minX3 = minX3; }
-   
+
    /*=======================================================================*/
    void setVoxelMatrixDelta(double deltaX1, double deltaX2, double deltaX3) { this->deltaX1 = deltaX1; this->deltaX2 = deltaX2; this->deltaX3 = deltaX3; }
    void setVoxelMatrixDeltaX1(double deltaX1) { this->deltaX1 = deltaX1; }
@@ -75,34 +75,34 @@ public:
    void setVoxelMatrixDeltaX3(double deltaX3) { this->deltaX3 = deltaX3; }
 
    /*=======================================================================*/
-   double getX1Centroid() { return 0.5 * ( minX1 + this->getX1Maximum() ); } 
-   double getX1Minimum()  { return minX1; }
-   double getX1Maximum()  { return minX1 + deltaX1*voxelMatrix.getNX1(); }  
+   double getX1Centroid() { return 0.5 * (minX1+this->getX1Maximum()); }
+   double getX1Minimum() { return minX1; }
+   double getX1Maximum() { return minX1+deltaX1*voxelMatrix.getNX1(); }
 
-   double getX2Centroid() { return 0.5 * ( minX2 + this->getX2Maximum() ); } 
-   double getX2Minimum()  { return minX2; }
-   double getX2Maximum()  { return minX2 + deltaX2*voxelMatrix.getNX2(); }  
+   double getX2Centroid() { return 0.5 * (minX2+this->getX2Maximum()); }
+   double getX2Minimum() { return minX2; }
+   double getX2Maximum() { return minX2+deltaX2*voxelMatrix.getNX2(); }
 
-   double getX3Centroid() { return 0.5 * ( this->getX3Minimum() + this->getX3Maximum() ); } 
-   double getX3Minimum()  { return minX3; }
-   double getX3Maximum()  { return minX3 + deltaX3*voxelMatrix.getNX3(); }  
+   double getX3Centroid() { return 0.5 * (this->getX3Minimum()+this->getX3Maximum()); }
+   double getX3Minimum() { return minX3; }
+   double getX3Maximum() { return minX3+deltaX3*voxelMatrix.getNX3(); }
 
-   double getLengthX1() { return this->getX1Maximum() - minX1; }
-   double getLengthX2() { return this->getX2Maximum() - minX2; }
-   double getLengthX3() { return this->getX3Maximum() - minX3; }
+   double getLengthX1() { return this->getX1Maximum()-minX1; }
+   double getLengthX2() { return this->getX2Maximum()-minX2; }
+   double getLengthX3() { return this->getX3Maximum()-minX3; }
 
    void setCenterCoordinates(const double& x1, const double& x2, const double& x3);
    void translate(const double& tx1, const double& tx2, const double& tx3);
 
    bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary);
-   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p); 
-   bool isCellInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   bool isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
-   bool isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
+   bool isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p);
+   bool isCellInsideGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b);
+   bool isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b);
+   bool isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b);
    //double getCellVolumeInsideGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b);
 
-   GbPoint3D*  calculateInterSectionPoint3D(GbPoint3D& point1, GbPoint3D &point2) { throw UbException(__FILE__,__LINE__, UB_FUNCTION,"not implemented");}
-   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2){ throw UbException(__FILE__,__LINE__, UB_FUNCTION,"not implemented");}
+   GbPoint3D*  calculateInterSectionPoint3D(GbPoint3D& point1, GbPoint3D &point2) { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
+   GbLine3D*   createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2) { throw UbException(__FILE__, __LINE__, UB_FUNCTION, "not implemented"); }
 
    std::vector<GbTriangle3D*> getSurfaceTriangleSet();
    void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
@@ -138,7 +138,7 @@ public:
    void mirrorZ();
 
    void writeToLegacyVTKASCII(const std::string& fileName);
-   void writeToLegacyVTKBinary( const std::string& fileName );
+   void writeToLegacyVTKBinary(const std::string& fileName);
    void writeToVTKImageDataASCII(const std::string& fileName);
    void writeToVTKImageDataAppended(const std::string& fileName);
 
@@ -180,14 +180,14 @@ protected:
       ar & threshold;
       ar & transferViaFilename;
       ar & addSurfaceTriangleSetFlag;
-      if(!transferViaFilename)
+      if (!transferViaFilename)
       {
          ar & voxelMatrix;
       }
       else
       {
          ar & filename;
-         if(ArchiveTools::isReading(ar) ) 
+         if (ArchiveTools::isReading(ar))
          {
             this->readMatrixFromVtiASCIIFile(filename);
          }
@@ -226,47 +226,47 @@ template <class T>
 void GbVoxelMatrix3D::readMatrixFromRawFile(std::string filename, GbVoxelMatrix3D::Endian endian)
 {
    using namespace std;
-   UBLOG(logINFO,"GbVoxelMatrix3D::readMatrixFromFile \""<<filename<<"\" nodes("<<nodesX1<<"/"<<nodesX2<<"/"<<nodesX3<<") - start");
+   //UBLOG(logINFO,"GbVoxelMatrix3D::readMatrixFromFile \""<<filename<<"\" nodes("<<nodesX1<<"/"<<nodesX2<<"/"<<nodesX3<<") - start");
    ifstream in(filename.c_str(), ios::binary);
-   if(!in) throw UbException(UB_EXARGS,"could not open file "+filename);
+   if (!in) throw UbException(UB_EXARGS, "could not open file "+filename);
 
-   in.seekg( 0, ios::end );     //Ende springen
+   in.seekg(0, ios::end);     //Ende springen
    fstream::off_type length = in.tellg(); //Position abfragen
-   in.seekg( 0, ios::beg );    //An den Anfang springen 
+   in.seekg(0, ios::beg);    //An den Anfang springen 
 
    //UBLOG(logINFO,"number of nodes = "<<nodesX1*nodesX2*nodesX3*sizeof(T)<<" file size = "<<(long)length);
    //if( (nodesX1*nodesX2*nodesX3)*sizeof(float) != (long)length )
    unsigned long long nofn = (unsigned long long)nodesX1*(unsigned long long)nodesX2*(unsigned long long)nodesX3*(unsigned long long)sizeof(T);
-   if (nofn != (unsigned long long)length)
+   if (nofn!=(unsigned long long)length)
    {
-      throw UbException(UB_EXARGS,"number of nodes("+UbSystem::toString(nofn)+") doesn't match file size("+UbSystem::toString((long)length)+")");
+      throw UbException(UB_EXARGS, "number of nodes("+UbSystem::toString(nofn)+") doesn't match file size("+UbSystem::toString((long)length)+")");
    }
 
-   UBLOG(logINFO,"  - create GbVoxelMatrix3D");
+   //UBLOG(logINFO,"  - create GbVoxelMatrix3D");
    //GbVoxelMatrix3D* voxelGeo = new GbVoxelMatrix3D(nodesX1,nodesX2,nodesX3,GbVoxelMatrix3D::FLUID);
-   voxelMatrix = Matrix3D(nodesX1,nodesX2,nodesX3,GbVoxelMatrix3D::FLUID);
+   voxelMatrix = Matrix3D(nodesX1, nodesX2, nodesX3, GbVoxelMatrix3D::FLUID);
 
-   UBLOG(logINFO,"  - init values");
+   //UBLOG(logINFO,"  - init values");
    //float val;
    T val;
-   for(int x3=0; x3<nodesX3; x3++)
-      for(int x2=0; x2<nodesX2; x2++)
-         for(int x1=0; x1<nodesX1; x1++)
+   for (int x3 = 0; x3<nodesX3; x3++)
+      for (int x2 = 0; x2<nodesX2; x2++)
+         for (int x1 = 0; x1<nodesX1; x1++)
          {
             //in.read((char*)&val,sizeof(float));
-            in.read((char*)&val,sizeof(T));
-            if (endian == BigEndian)
+            in.read((char*)&val, sizeof(T));
+            if (endian==BigEndian)
                UbSystem::swapByteOrder((unsigned char*)(&(val)), sizeof(T));
             //if( UbMath::equal((double)val, threshold) ) 
             //if( UbMath::greater((double)val, threshold) )
-            if( (double)val >= lowerThreshold && (double)val <= upperThreshold ) 
+            if ((double)val>=lowerThreshold&&(double)val<=upperThreshold)
             {
-               (voxelMatrix)(x1,x2,x3) = GbVoxelMatrix3D::SOLID;
+               (voxelMatrix)(x1, x2, x3) = GbVoxelMatrix3D::SOLID;
             }
             //(voxelMatrix)(x1, x2, x3) = (float)val;
          }
 
-         UBLOG(logINFO,"GbVoxelMatrix3D::readMatrixFromFile \""<<filename<<"\" nodes("<<nodesX1<<"/"<<nodesX2<<"/"<<nodesX3<<") - end");
+   //UBLOG(logINFO,"GbVoxelMatrix3D::readMatrixFromFile \""<<filename<<"\" nodes("<<nodesX1<<"/"<<nodesX2<<"/"<<nodesX3<<") - end");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -289,9 +289,9 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
    rewind(file);
 
    UBLOG(logINFO, "number of nodes = "<<(long)nodesX1*(long)nodesX2*(long)nodesX3<<" file size = "<<length);
-   
+
    unsigned long int nofn = (long)nodesX1*(long)nodesX2*(long)nodesX3*(long)sizeof(T);
-   if (nofn != length)
+   if (nofn!=length)
    {
       //throw UbException(UB_EXARGS, "number of nodes("+UbSystem::toString(nofn)+") doesn't match file size("+UbSystem::toString(length)+")");
    }
@@ -315,12 +315,12 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
          {
             val = readMatrix(x1, x2, x3);
 
-            if (endian == BigEndian)
+            if (endian==BigEndian)
             {
                UbSystem::swapByteOrder((unsigned char*)(&(val)), sizeof(T));
             }
 
-            if ((double)val >= lowerThreshold && (double)val <= upperThreshold)
+            if ((double)val>=lowerThreshold&&(double)val<=upperThreshold)
             {
                voxelMatrix(x1, x2, x3) = GbVoxelMatrix3D::SOLID;
             }
@@ -331,9 +331,9 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
 
 
 #if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-   UB_AUTO_RUN_NAMED(   SF::registerType<GbVoxelMatrix3D>("GbVoxelMatrix3D")        , SF_GbVoxelMatrix3D     );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< GbObject3D, GbVoxelMatrix3D >()), SF_GbVoxelMatrix3D_BD1 );
-   UB_AUTO_RUN_NAMED( ( SF::registerBaseAndDerived< UbObserver, GbVoxelMatrix3D>() ), SF_GbVoxelMatrix3D_BD2 );
+UB_AUTO_RUN_NAMED(SF::registerType<GbVoxelMatrix3D>("GbVoxelMatrix3D"), SF_GbVoxelMatrix3D);
+UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< GbObject3D, GbVoxelMatrix3D >()), SF_GbVoxelMatrix3D_BD1);
+UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< UbObserver, GbVoxelMatrix3D>()), SF_GbVoxelMatrix3D_BD2);
 #endif //RCF_USE_SF_SERIALIZATION
 
 

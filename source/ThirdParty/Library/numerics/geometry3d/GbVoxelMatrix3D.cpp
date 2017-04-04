@@ -10,7 +10,7 @@
 #include <basics/utilities/UbSystem.h>
 
 #ifdef MC_CUBES
-   #include <MarchingCubes/MarchingCubes.h>
+#include <MarchingCubes/MarchingCubes.h>
 #endif // MC_CUBES
 
 using namespace std;
@@ -46,41 +46,41 @@ GbVoxelMatrix3D::GbVoxelMatrix3D(int nx1, int nx2, int nx3, float initVal, doubl
    this->setName("VoxelMatrix3D");
 }
 /*=======================================================*/
-GbVoxelMatrix3D::GbVoxelMatrix3D() 
-  :   GbObject3D()
-    , minX1(0.0)
-    , minX2(0.0)
-    , minX3(0.0)
-    , nodesX1(0)
-    , nodesX2(0)
-    , nodesX3(0)
-    , lowerThreshold(0.0)
-    , upperThreshold(0.0)
-    , deltaX1(1.0)
-    , deltaX2(1.0)
-    , deltaX3(1.0)
-    , transferViaFilename(false)
-    , addSurfaceTriangleSetFlag(true)
+GbVoxelMatrix3D::GbVoxelMatrix3D()
+   : GbObject3D()
+   , minX1(0.0)
+   , minX2(0.0)
+   , minX3(0.0)
+   , nodesX1(0)
+   , nodesX2(0)
+   , nodesX3(0)
+   , lowerThreshold(0.0)
+   , upperThreshold(0.0)
+   , deltaX1(1.0)
+   , deltaX2(1.0)
+   , deltaX3(1.0)
+   , transferViaFilename(false)
+   , addSurfaceTriangleSetFlag(true)
 {
    this->setName("VoxelMatrix3D");
 }
 /*=======================================================*/
 GbVoxelMatrix3D::GbVoxelMatrix3D(const Matrix3D& voxelMatrix, double lowerThreshold, double upperThreshold)
-  :   GbObject3D()
-    , minX1(0.0)
-    , minX2(0.0)
-    , minX3(0.0)
-    , nodesX1((int)voxelMatrix.getNX1())
-    , nodesX2((int)voxelMatrix.getNX2())
-    , nodesX3((int)voxelMatrix.getNX3())
-    , lowerThreshold(lowerThreshold)
-    , upperThreshold(upperThreshold)
-    , deltaX1(1.0)
-    , deltaX2(1.0)
-    , deltaX3(1.0)
-    , transferViaFilename(false)
-    , addSurfaceTriangleSetFlag(true)
-    , voxelMatrix(voxelMatrix)
+   : GbObject3D()
+   , minX1(0.0)
+   , minX2(0.0)
+   , minX3(0.0)
+   , nodesX1((int)voxelMatrix.getNX1())
+   , nodesX2((int)voxelMatrix.getNX2())
+   , nodesX3((int)voxelMatrix.getNX3())
+   , lowerThreshold(lowerThreshold)
+   , upperThreshold(upperThreshold)
+   , deltaX1(1.0)
+   , deltaX2(1.0)
+   , deltaX3(1.0)
+   , transferViaFilename(false)
+   , addSurfaceTriangleSetFlag(true)
+   , voxelMatrix(voxelMatrix)
 {
    this->setName("VoxelMatrix3D");
 }
@@ -93,13 +93,13 @@ GbVoxelMatrix3D*  GbVoxelMatrix3D::clone()
    return  vm;
 }
 /*=======================================================*/
-void GbVoxelMatrix3D::setCenterCoordinates(const double& x1, const double& x2, const double& x3) 
+void GbVoxelMatrix3D::setCenterCoordinates(const double& x1, const double& x2, const double& x3)
 {
-   this->translate(x1-getX1Centroid(), x2-getX2Centroid(), x3-getX3Centroid() );
+   this->translate(x1-getX1Centroid(), x2-getX2Centroid(), x3-getX3Centroid());
 }
 /*=======================================================*/
 void GbVoxelMatrix3D::translate(const double& tx1, const double& tx2, const double& tx3)
-{  
+{
    this->minX1 += tx1;
    this->minX2 += tx2;
    this->minX3 += tx3;
@@ -124,9 +124,9 @@ void GbVoxelMatrix3D::setClosedVoidSpaceToSolid()
                x2Nbr.push_back(x2);
                x3Nbr.push_back(x3);
                int size = (int)x1Nbr.size();
-               while (size > 0)
+               while (size>0)
                {
-                  for (int i = 0; i < size; i++)
+                  for (int i = 0; i<size; i++)
                   {
                      findFluidNeighbor(x1Nbr[i], x2Nbr[i], x3Nbr[i]);
                   }
@@ -161,11 +161,11 @@ void GbVoxelMatrix3D::findFluidNeighbor(int x1, int x2, int x3)
             int j1 = x1+k1;
             int j2 = x2+k2;
             int j3 = x3+k3;
-            if (j1>=0 && j1<nodesX1 && j2>=0 && j2<nodesX2 && j3>=0 && j3<nodesX3)
+            if (j1>=0&&j1<nodesX1 && j2>=0&&j2<nodesX2 && j3>=0&&j3<nodesX3)
             {
                if (voxelMatrix(j1, j2, j3)==FLUID)
                {
-                  if (flagMatrix(j1, j2, j3) == 0)
+                  if (flagMatrix(j1, j2, j3)==0)
                   {
                      voxelMatrixTemp(j1, j2, j3) = FLUID;
                      flagMatrix(j1, j2, j3) = 1;
@@ -188,13 +188,13 @@ void GbVoxelMatrix3D::calculateNumberOfSolidAndFluid()
       for (int x2 = 0; x2<nodesX2; x2++)
          for (int x1 = 0; x1<nodesX1; x1++)
          {
-            if (voxelMatrix(x1, x2, x3) == GbVoxelMatrix3D::SOLID)
+            if (voxelMatrix(x1, x2, x3)==GbVoxelMatrix3D::SOLID)
             {
                numberOfSolid++;
             }
          }
 
-   numberOfFluid = (long)nodesX1*(long)nodesX2*(long)nodesX3 - numberOfSolid;
+   numberOfFluid = (long)nodesX1*(long)nodesX2*(long)nodesX3-numberOfSolid;
 }
 /*=======================================================*/
 long GbVoxelMatrix3D::getNumberOfSolid()
@@ -209,11 +209,11 @@ long GbVoxelMatrix3D::getNumberOfFluid()
 /*=======================================================*/
 double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
 {
-   if( !(    (UbMath::equal(rx1,0.0) || UbMath::equal(fabs(rx1),1.0) || UbMath::equal(fabs(rx1),UbMath::one_over_sqrt2) )
-          && (UbMath::equal(rx2,0.0) || UbMath::equal(fabs(rx2),1.0) || UbMath::equal(fabs(rx2),UbMath::one_over_sqrt2) )
-          && (UbMath::equal(rx3,0.0) || UbMath::equal(fabs(rx3),1.0) || UbMath::equal(fabs(rx3),UbMath::one_over_sqrt2) ) ) )
+   if (!((UbMath::equal(rx1, 0.0)||UbMath::equal(fabs(rx1), 1.0)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt2))
+      &&(UbMath::equal(rx2, 0.0)||UbMath::equal(fabs(rx2), 1.0)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt2))
+      &&(UbMath::equal(rx3, 0.0)||UbMath::equal(fabs(rx3), 1.0)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt2))))
    {
-      throw UbException(UB_EXARGS,"nur fuer diskrete Boltzmannrichungen implementiert!!!");
+      throw UbException(UB_EXARGS, "nur fuer diskrete Boltzmannrichungen implementiert!!!");
    }
 
    //nachbarindex ermitteln
@@ -225,43 +225,43 @@ double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double& x1, const do
    if (UbMath::greater(rx3, 0.0)) ndx3 = 1;
    else if (UbMath::less(rx3, 0.0)) ndx3 = -1;
 
-   int nix1 = UbMath::integerRounding( (x1-minX1)/deltaX1 )+ndx1;
-   int nix2 = UbMath::integerRounding( (x2-minX2)/deltaX2 )+ndx2;
-   int nix3 = UbMath::integerRounding( (x3-minX3)/deltaX3 )+ndx3;
+   int nix1 = UbMath::integerRounding((x1-minX1)/deltaX1)+ndx1;
+   int nix2 = UbMath::integerRounding((x2-minX2)/deltaX2)+ndx2;
+   int nix3 = UbMath::integerRounding((x3-minX3)/deltaX3)+ndx3;
 
    //test ob nachbar solid
-   if(    nix1>=0 
-       && nix2>=0 
-       && nix3>=0 
-       && nix1<voxelMatrix.getNX1()
-       && nix2<voxelMatrix.getNX2()
-       && nix3<voxelMatrix.getNX3() )
+   if (nix1>=0
+      &&nix2>=0
+      &&nix3>=0
+      &&nix1<voxelMatrix.getNX1()
+      &&nix2<voxelMatrix.getNX2()
+      &&nix3<voxelMatrix.getNX3())
    {
-      if( UbMath::equal(voxelMatrix(nix1,nix2,nix3), SOLID) )
+      if (UbMath::equal(voxelMatrix(nix1, nix2, nix3), SOLID))
       {
          //return halber abstand der beiden knoten
-         return 0.5*sqrt(  (ndx1*deltaX1)*(ndx1*deltaX1) 
-                         + (ndx2*deltaX2)*(ndx2*deltaX2)
-                         + (ndx3*deltaX3)*(ndx3*deltaX3) );
+         return 0.5*sqrt((ndx1*deltaX1)*(ndx1*deltaX1)
+            +(ndx2*deltaX2)*(ndx2*deltaX2)
+            +(ndx3*deltaX3)*(ndx3*deltaX3));
       }
    }
 
    return 0.0;
-}	
+}
 /*=======================================================*/
 bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p)
 {
    //index ermitteln
-   int ix1 = UbMath::integerRounding( (x1p-minX1)/deltaX1 );
-   int ix2 = UbMath::integerRounding( (x2p-minX2)/deltaX2 );
-   int ix3 = UbMath::integerRounding( (x3p-minX3)/deltaX3 );
+   int ix1 = UbMath::integerRounding((x1p-minX1)/deltaX1);
+   int ix2 = UbMath::integerRounding((x2p-minX2)/deltaX2);
+   int ix3 = UbMath::integerRounding((x3p-minX3)/deltaX3);
 
-   if(    ix1>=0 
-       && ix2>=0 
-       && ix3>=0 
-       && ix1<voxelMatrix.getNX1() 
-       && ix2<voxelMatrix.getNX2()
-       && ix3<voxelMatrix.getNX3() )
+   if (ix1>=0
+      &&ix2>=0
+      &&ix3>=0
+      &&ix1<voxelMatrix.getNX1()
+      &&ix2<voxelMatrix.getNX2()
+      &&ix3<voxelMatrix.getNX3())
    {
       if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), SOLID)) return true;
    }
@@ -272,45 +272,45 @@ bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, 
 bool GbVoxelMatrix3D::isPointInGbObject3D(const double& x1p, const double& x2p, const double& x3p, bool& pointIsOnBoundary)
 {
    pointIsOnBoundary = false;
-   
-   return isPointInGbObject3D(x1p,x2p,x3p);
+
+   return isPointInGbObject3D(x1p, x2p, x3p);
 }
 /*=======================================================*/
-bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double& x1p1,const double& x2p1,const double& x3p1,const double& x1p2,const double& x2p2,const double& x3p2)
+bool GbVoxelMatrix3D::isCellInsideGbObject3D(const double& x1p1, const double& x2p1, const double& x3p1, const double& x1p2, const double& x2p2, const double& x3p2)
 {
    return false;
-//dass hängt von der Konfigration ab, aber meist ist der Block grösser wie etliche Poren ...
+   //dass hängt von der Konfigration ab, aber meist ist der Block grösser wie etliche Poren ...
 
-   //indizes ermitteln
-   int startix1 = (int)std::floor( (x1p1-minX1)/deltaX1+1E-13 );
-   int startix2 = (int)std::floor( (x2p1-minX2)/deltaX2+1E-13 );
-   int startix3 = (int)std::floor( (x3p1-minX3)/deltaX3+1E-13 );
+      //indizes ermitteln
+   int startix1 = (int)std::floor((x1p1-minX1)/deltaX1+1E-13);
+   int startix2 = (int)std::floor((x2p1-minX2)/deltaX2+1E-13);
+   int startix3 = (int)std::floor((x3p1-minX3)/deltaX3+1E-13);
 
-   if(startix1<0 ) return false;
-   if(startix2<0 ) return false;
-   if(startix3<0 ) return false;
+   if (startix1<0) return false;
+   if (startix2<0) return false;
+   if (startix3<0) return false;
 
    int maxiX1 = (int)voxelMatrix.getNX1()-1;
    int maxiX2 = (int)voxelMatrix.getNX2()-1;
    int maxiX3 = (int)voxelMatrix.getNX3()-1;
 
-   int endix1 = (int)std::ceil( (x1p2-minX1)/deltaX1-1E-13 );
-   int endix2 = (int)std::ceil( (x2p2-minX2)/deltaX2-1E-13 );
-   int endix3 = (int)std::ceil( (x3p2-minX3)/deltaX3-1E-13 );
+   int endix1 = (int)std::ceil((x1p2-minX1)/deltaX1-1E-13);
+   int endix2 = (int)std::ceil((x2p2-minX2)/deltaX2-1E-13);
+   int endix3 = (int)std::ceil((x3p2-minX3)/deltaX3-1E-13);
 
-   if(endix1>maxiX1 ) return false;
-   if(endix2>maxiX2 ) return false;
-   if(endix3>maxiX3 ) return false;
+   if (endix1>maxiX1) return false;
+   if (endix2>maxiX2) return false;
+   if (endix3>maxiX3) return false;
 
-   for(int ix3=startix3; ix3<=endix3; ix3++)
-      for(int ix2=startix2; ix2<=endix2; ix2++)
-         for(int ix1=startix1; ix1<=endix1; ix1++)
-            if( UbMath::equal(voxelMatrix(ix1,ix2,ix3), FLUID ) ) 
+   for (int ix3 = startix3; ix3<=endix3; ix3++)
+      for (int ix2 = startix2; ix2<=endix2; ix2++)
+         for (int ix1 = startix1; ix1<=endix1; ix1++)
+            if (UbMath::equal(voxelMatrix(ix1, ix2, ix3), FLUID))
                return false;
    return true;
 }
 /*=======================================================*/
-bool GbVoxelMatrix3D::isCellCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b)
+bool GbVoxelMatrix3D::isCellCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
 //Merksatz: cell oder deren Volumen schneidet oder beinhaltet komplette oder Teile der CuboidUmrandung
 //returns true:
 //  - cell cuts  GbVoxelMatrix3D
@@ -320,8 +320,8 @@ bool GbVoxelMatrix3D::isCellCuttingGbObject3D(const double& x1a,const double& x2
 //  - cell und cuboid3D haben kein gemeinsames Volumen
 {
    //erstmal die dumm Loesung
-   if(  !( this->isCellInsideGbObject3D(x1a,x2a,x3a,x1b,x2b,x3b) )   
-      &&   this->isCellInsideOrCuttingGbObject3D(x1a,x2a,x3a,x1b,x2b,x3b) )
+   if (!(this->isCellInsideGbObject3D(x1a, x2a, x3a, x1b, x2b, x3b))
+      &&this->isCellInsideOrCuttingGbObject3D(x1a, x2a, x3a, x1b, x2b, x3b))
    {
       return true;
    }
@@ -329,7 +329,7 @@ bool GbVoxelMatrix3D::isCellCuttingGbObject3D(const double& x1a,const double& x2
    return false;
 }
 /*=======================================================*/
-bool GbVoxelMatrix3D::isCellInsideOrCuttingGbObject3D(const double& x1a,const double& x2a,const double& x3a,const double& x1b,const double& x2b,const double& x3b)
+bool GbVoxelMatrix3D::isCellInsideOrCuttingGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b)
 //returns true:
 //  - cell completely inside cuboid3D ( = cuboid3D boxes cell)
 //  - cell cuts  cuboid3D
@@ -337,157 +337,157 @@ bool GbVoxelMatrix3D::isCellInsideOrCuttingGbObject3D(const double& x1a,const do
 //returns false:
 //  - cell und cuboid3D haben kein gemeinsames Volumen
 {
-    //simpler check, da unser GbCuboid3D ein AABB is:
-   //  anfA        midA         endA             anfB    midB    endB
-   //   |            x<-- dxA -->|                 |<-dxB->x       |
-   //                |<----------------- T --------------->|
-   //ist |T| <= dxA + dxB -> overlap!
+   //simpler check, da unser GbCuboid3D ein AABB is:
+  //  anfA        midA         endA             anfB    midB    endB
+  //   |            x<-- dxA -->|                 |<-dxB->x       |
+  //                |<----------------- T --------------->|
+  //ist |T| <= dxA + dxB -> overlap!
 
-   if(     UbMath::lessEqual(  std::fabs( this->getX1Centroid() - 0.5*(x1b+x1a)      /*Tx1*/      )
-                             , 0.5*( this->getLengthX1()        + std::fabs(x1b-x1a) /*dx1A+dx1B*/) )
+   if (UbMath::lessEqual(std::fabs(this->getX1Centroid()-0.5*(x1b+x1a)      /*Tx1*/)
+      , 0.5*(this->getLengthX1()+std::fabs(x1b-x1a) /*dx1A+dx1B*/))
 
-        && UbMath::lessEqual(  std::fabs( this->getX2Centroid() - 0.5*(x2b+x2a)      /*Tx2*/      )
-                             , 0.5*( this->getLengthX2()        + std::fabs(x2b-x2a) /*dx2A+dx2B*/) )
+      &&UbMath::lessEqual(std::fabs(this->getX2Centroid()-0.5*(x2b+x2a)      /*Tx2*/)
+         , 0.5*(this->getLengthX2()+std::fabs(x2b-x2a) /*dx2A+dx2B*/))
 
-        && UbMath::lessEqual(  std::fabs( this->getX3Centroid() - 0.5*(x3b+x3a)      /*Tx3*/      )
-                             , 0.5*( this->getLengthX3()        + std::fabs(x3b-x3a) /*dx3A+dx3B*/) ) )
-    {
-       return true;
-    }
+      &&UbMath::lessEqual(std::fabs(this->getX3Centroid()-0.5*(x3b+x3a)      /*Tx3*/)
+         , 0.5*(this->getLengthX3()+std::fabs(x3b-x3a) /*dx3A+dx3B*/)))
+   {
+      return true;
+   }
 
-    return false;
+   return false;
 }
 /*=======================================================*/
 vector<GbTriangle3D*> GbVoxelMatrix3D::getSurfaceTriangleSet()
 {
    vector<GbTriangle3D*> triangles;
-   
-   #ifdef MC_CUBES
-      //MC
-      typedef McCubes::Matrix3DWrapper< Matrix3D >                McMatrixWrapper;
-      typedef McCubes::MarchingCubes< McMatrixWrapper >           McMarchingCubesGenerator;
-      typedef McMarchingCubesGenerator::Vertex                    McVertex;
-      typedef McMarchingCubesGenerator::Triangle                  McTriangle;
 
-      McMatrixWrapper wrapper(&voxelMatrix);//,0,0,0,voxelMatrix.getNX1()-1,voxelMatrix.getNX2()-1,voxelMatrix.getNX3()-1);
-      McMarchingCubesGenerator mc(wrapper);
+#ifdef MC_CUBES
+   //MC
+   typedef McCubes::Matrix3DWrapper< Matrix3D >                McMatrixWrapper;
+   typedef McCubes::MarchingCubes< McMatrixWrapper >           McMarchingCubesGenerator;
+   typedef McMarchingCubesGenerator::Vertex                    McVertex;
+   typedef McMarchingCubesGenerator::Triangle                  McTriangle;
 
-      mc.init_all();
-      mc.run(0.5);
+   McMatrixWrapper wrapper(&voxelMatrix);//,0,0,0,voxelMatrix.getNX1()-1,voxelMatrix.getNX2()-1,voxelMatrix.getNX3()-1);
+   McMarchingCubesGenerator mc(wrapper);
 
-      //const int   nofVertices  = mc.nverts();
-      const int   nofTriangles = mc.ntrigs();
+   mc.init_all();
+   mc.run(0.5);
 
-      McVertex*   mcvertices   = mc.vertices();
-      McTriangle* mctriangles  = mc.triangles();
+   //const int   nofVertices  = mc.nverts();
+   const int   nofTriangles = mc.ntrigs();
 
-      for(int t=0; t<nofTriangles; t++)
-      {
-         triangles.push_back(new GbTriangle3D( new GbPoint3D(  minX1 + deltaX1 * (mcvertices[mctriangles[t].v1].x /*-1*/)
-                                                             , minX2 + deltaX2 * (mcvertices[mctriangles[t].v1].y /*-1*/)
-                                                             , minX3 + deltaX3 * (mcvertices[mctriangles[t].v1].z /*-1*/) )
-                                              ,new GbPoint3D(  minX1 + deltaX1 * (mcvertices[mctriangles[t].v2].x /*-1*/)
-                                                             , minX2 + deltaX2 * (mcvertices[mctriangles[t].v2].y /*-1*/)
-                                                             , minX3 + deltaX3 * (mcvertices[mctriangles[t].v2].z /*-1*/) )
-                                              ,new GbPoint3D(  minX1 + deltaX1 * (mcvertices[mctriangles[t].v3].x /*-1*/)
-                                                             , minX2 + deltaX2 * (mcvertices[mctriangles[t].v3].y /*-1*/)
-                                                             , minX3 + deltaX3 * (mcvertices[mctriangles[t].v3].z /*-1*/) ) ) );
-      }
-   #else
-     cerr<<"vector<GbTriangle3D*> GbVoxelMatrix3D::getSurfaceTriangleSet() - benoetigt MARCHING_CUBE paket aus 3rdParty"<<endl;
-   #endif // MC_CUBES
+   McVertex*   mcvertices = mc.vertices();
+   McTriangle* mctriangles = mc.triangles();
+
+   for (int t = 0; t<nofTriangles; t++)
+   {
+      triangles.push_back(new GbTriangle3D(new GbPoint3D(minX1+deltaX1 * (mcvertices[mctriangles[t].v1].x /*-1*/)
+         , minX2+deltaX2 * (mcvertices[mctriangles[t].v1].y /*-1*/)
+         , minX3+deltaX3 * (mcvertices[mctriangles[t].v1].z /*-1*/))
+         , new GbPoint3D(minX1+deltaX1 * (mcvertices[mctriangles[t].v2].x /*-1*/)
+            , minX2+deltaX2 * (mcvertices[mctriangles[t].v2].y /*-1*/)
+            , minX3+deltaX3 * (mcvertices[mctriangles[t].v2].z /*-1*/))
+         , new GbPoint3D(minX1+deltaX1 * (mcvertices[mctriangles[t].v3].x /*-1*/)
+            , minX2+deltaX2 * (mcvertices[mctriangles[t].v3].y /*-1*/)
+            , minX3+deltaX3 * (mcvertices[mctriangles[t].v3].z /*-1*/))));
+   }
+#else
+   cerr<<"vector<GbTriangle3D*> GbVoxelMatrix3D::getSurfaceTriangleSet() - benoetigt MARCHING_CUBE paket aus 3rdParty"<<endl;
+#endif // MC_CUBES
 
    return triangles;
 }
 /*=======================================================*/
 void GbVoxelMatrix3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector<UbTupleInt3>& triangles)
 {
-   UBLOG(logINFO," GbVoxelMatrix3D addSurfaceTriangleSet start")
-   if(!this->addSurfaceTriangleSetFlag)
-   {
-      UBLOG(logINFO," GbVoxelMatrix3D addSurfaceTriangleSet end without TriangleSetCreation")
-      return;
-   }
-   #ifdef MC_CUBES
-      UBLOG(logDEBUG1," GbVoxelMatrix3D addSurfaceTriangleSet MC defined")
+   UBLOG(logINFO, " GbVoxelMatrix3D addSurfaceTriangleSet start")
+      if (!this->addSurfaceTriangleSetFlag)
+      {
+         UBLOG(logINFO, " GbVoxelMatrix3D addSurfaceTriangleSet end without TriangleSetCreation")
+            return;
+      }
+#ifdef MC_CUBES
+   UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet MC defined")
 
       typedef McCubes::Matrix3DWrapper< Matrix3D >                McMatrixWrapper;
-      typedef McCubes::MarchingCubes< McMatrixWrapper >           McMarchingCubesGenerator;
-      typedef McMarchingCubesGenerator::Vertex                    McVertex;
-      typedef McMarchingCubesGenerator::Triangle                  McTriangle;
-    
-      //MC
-      {  //standard( fuer voxelmatrix)
-         McMatrixWrapper wrapper(&voxelMatrix);
-         McMarchingCubesGenerator mc(wrapper);
+   typedef McCubes::MarchingCubes< McMatrixWrapper >           McMarchingCubesGenerator;
+   typedef McMarchingCubesGenerator::Vertex                    McVertex;
+   typedef McMarchingCubesGenerator::Triangle                  McTriangle;
 
-         UBLOG(logDEBUG1," GbVoxelMatrix3D addSurfaceTriangleSet McMarchingCubesGenerator")
+   //MC
+   {  //standard( fuer voxelmatrix)
+      McMatrixWrapper wrapper(&voxelMatrix);
+      McMarchingCubesGenerator mc(wrapper);
 
-         UBLOG(logDEBUG1," GbVoxelMatrix3D addSurfaceTriangleSet mc.init")
+      UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet McMarchingCubesGenerator")
+
+         UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet mc.init")
          mc.init_all();
-         UBLOG(logDEBUG1," GbVoxelMatrix3D addSurfaceTriangleSet mc.run")
+      UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet mc.run")
          mc.run(0.5);
-         UBLOG(logDEBUG1," GbVoxelMatrix3D addSurfaceTriangleSet mc.run done")
+      UBLOG(logDEBUG1, " GbVoxelMatrix3D addSurfaceTriangleSet mc.run done")
 
-         const int   nofVertices  = mc.nverts();
-         const int   nofTriangles = mc.ntrigs();
+         const int   nofVertices = mc.nverts();
+      const int   nofTriangles = mc.ntrigs();
 
-         McVertex*   mcvertices   = mc.vertices();
-         McTriangle* mctriangles  = mc.triangles();
+      McVertex*   mcvertices = mc.vertices();
+      McTriangle* mctriangles = mc.triangles();
 
-UBLOG(logDEBUG1," GbVoxelMatrix3D node tuple")
-         for(int n=0; n<nofVertices; n++)
-            nodes.push_back( makeUbTuple( (float)(minX1 + deltaX1 * (mcvertices[n].x /*-1*/)),   //Anm: kein -1, da man durch manipulation der indices die dreiecke um eins versetzt bekommt
-                                          (float)(minX2 + deltaX2 * (mcvertices[n].y /*-1*/)),
-                                          (float)(minX3 + deltaX3 * (mcvertices[n].z /*-1*/)) ) );
-UBLOG(logDEBUG1," GbVoxelMatrix3D triangles tuple")
-         for(int t=0; t<nofTriangles; t++)
-            triangles.push_back( makeUbTuple( mctriangles[t].v1, mctriangles[t].v2, mctriangles[t].v3 ) );
-UBLOG(logDEBUG1," GbVoxelMatrix3D triangles tuple done")
-      }
-      
-      //false - das scheint probleme bei der asphaltprobe zu machen 1500x600x100
-      // da lief es bis C - evtl. memory voll
-      if(false)  //extension... um die raender koerrekt abzubilden muesste man eine dummy FLUID reihe um 
-      {         //die matrix legen( lsg1: temp matrix mit 2 reihen pro richtung mehr -> zuviel speicher, 500^3 = 500MB
-                // lsg2: fuer jede flaeche eine dummy matrix -> wie folgt:
-         int nx1 = (int)voxelMatrix.getNX1();
-         int nx2 = (int)voxelMatrix.getNX2();
-         int nx3 = (int)voxelMatrix.getNX3();
-UBLOG(logINFO," A ")
-         Matrix3D tmpX1Min( 2, nx2+2, nx3+2, FLUID );
-         Matrix3D tmpX1Max( 2, nx2+2, nx3+2, FLUID );
-         for(int x3=0; x3<nx3; x3++ )
-            for(int x2=0; x2<nx2; x2++ )
-            {
-               tmpX1Min(1, x2+1, x3+1) = voxelMatrix(0    , x2, x3);
-               tmpX1Max(0, x2+1, x3+1) = voxelMatrix(nx1-1, x2, x3);
-            }
-UBLOG(logINFO," B")
-         Matrix3D tmpX2Min(nx1+2, 2, nx3+2, FLUID );
-         Matrix3D tmpX2Max(nx1+2, 2, nx3+2, FLUID );
-         for(int x3=0; x3<nx3; x3++ )
-            for(int x1=0; x1<nx1; x1++ )
-            {
-               tmpX2Min(x1+1, 1, x3+1) = voxelMatrix(x1, 0    , x3);
-               tmpX2Max(x1+1, 0, x3+1) = voxelMatrix(x1, nx2-1, x3);
-            }
-UBLOG(logINFO," C ")
-         Matrix3D tmpX3Min(nx1+2, nx3+2, 2, FLUID );
-         Matrix3D tmpX3Max(nx1+2, nx3+2, 2, FLUID );
-         for(int x2=0; x2<nx2; x2++ )
-            for(int x1=0; x1<nx1; x1++ )
-            {
-               tmpX3Min(x1+1, x2+1, 1) = voxelMatrix(x1, x2, 0    );
-               tmpX3Max(x1+1, x2+1, 0) = voxelMatrix(x1, x2, nx3-1);
-            }
-UBLOG(logINFO," D")
+      UBLOG(logDEBUG1, " GbVoxelMatrix3D node tuple")
+         for (int n = 0; n<nofVertices; n++)
+            nodes.push_back(makeUbTuple((float)(minX1+deltaX1 * (mcvertices[n].x /*-1*/)),   //Anm: kein -1, da man durch manipulation der indices die dreiecke um eins versetzt bekommt
+            (float)(minX2+deltaX2 * (mcvertices[n].y /*-1*/)),
+               (float)(minX3+deltaX3 * (mcvertices[n].z /*-1*/))));
+      UBLOG(logDEBUG1, " GbVoxelMatrix3D triangles tuple")
+         for (int t = 0; t<nofTriangles; t++)
+            triangles.push_back(makeUbTuple(mctriangles[t].v1, mctriangles[t].v2, mctriangles[t].v3));
+      UBLOG(logDEBUG1, " GbVoxelMatrix3D triangles tuple done")
+   }
+
+   //false - das scheint probleme bei der asphaltprobe zu machen 1500x600x100
+   // da lief es bis C - evtl. memory voll
+   if (false)  //extension... um die raender koerrekt abzubilden muesste man eine dummy FLUID reihe um 
+   {         //die matrix legen( lsg1: temp matrix mit 2 reihen pro richtung mehr -> zuviel speicher, 500^3 = 500MB
+             // lsg2: fuer jede flaeche eine dummy matrix -> wie folgt:
+      int nx1 = (int)voxelMatrix.getNX1();
+      int nx2 = (int)voxelMatrix.getNX2();
+      int nx3 = (int)voxelMatrix.getNX3();
+      UBLOG(logINFO, " A ")
+         Matrix3D tmpX1Min(2, nx2+2, nx3+2, FLUID);
+      Matrix3D tmpX1Max(2, nx2+2, nx3+2, FLUID);
+      for (int x3 = 0; x3<nx3; x3++)
+         for (int x2 = 0; x2<nx2; x2++)
+         {
+            tmpX1Min(1, x2+1, x3+1) = voxelMatrix(0, x2, x3);
+            tmpX1Max(0, x2+1, x3+1) = voxelMatrix(nx1-1, x2, x3);
+         }
+      UBLOG(logINFO, " B")
+         Matrix3D tmpX2Min(nx1+2, 2, nx3+2, FLUID);
+      Matrix3D tmpX2Max(nx1+2, 2, nx3+2, FLUID);
+      for (int x3 = 0; x3<nx3; x3++)
+         for (int x1 = 0; x1<nx1; x1++)
+         {
+            tmpX2Min(x1+1, 1, x3+1) = voxelMatrix(x1, 0, x3);
+            tmpX2Max(x1+1, 0, x3+1) = voxelMatrix(x1, nx2-1, x3);
+         }
+      UBLOG(logINFO, " C ")
+         Matrix3D tmpX3Min(nx1+2, nx3+2, 2, FLUID);
+      Matrix3D tmpX3Max(nx1+2, nx3+2, 2, FLUID);
+      for (int x2 = 0; x2<nx2; x2++)
+         for (int x1 = 0; x1<nx1; x1++)
+         {
+            tmpX3Min(x1+1, x2+1, 1) = voxelMatrix(x1, x2, 0);
+            tmpX3Max(x1+1, x2+1, 0) = voxelMatrix(x1, x2, nx3-1);
+         }
+      UBLOG(logINFO, " D")
          Matrix3D* matrices[] = { &tmpX1Min, &tmpX1Max, &tmpX2Min, &tmpX2Max, &tmpX3Min, &tmpX3Max };
-         int            dx1[] = {        -1,     nx1-1,        -1,        -1,        -1,        -1 };
-         int            dx2[] = {        -1,        -1,        -1,     nx2-1,        -1,        -1 };
-         int            dx3[] = {        -1,        -1,        -1,        -1,        -1,     nx3-1 };
-UBLOG(logINFO," E")
-         for(int i=0; i<6; i++)
+      int            dx1[] = { -1,     nx1-1,        -1,        -1,        -1,        -1 };
+      int            dx2[] = { -1,        -1,        -1,     nx2-1,        -1,        -1 };
+      int            dx3[] = { -1,        -1,        -1,        -1,        -1,     nx3-1 };
+      UBLOG(logINFO, " E")
+         for (int i = 0; i<6; i++)
          {
             McMatrixWrapper wrapper(matrices[i]);
             McMarchingCubesGenerator mc(wrapper);
@@ -495,33 +495,33 @@ UBLOG(logINFO," E")
             mc.init_all();
             mc.run(0.5);
 
-            McVertex*   mcvertices   = mc.vertices();
-            McTriangle* mctriangles  = mc.triangles();
+            McVertex*   mcvertices = mc.vertices();
+            McTriangle* mctriangles = mc.triangles();
 
             int deltaNodeNr = (int)nodes.size();
-UBLOG(logINFO," GbVoxelMatrix3D node tuple")
-            for(int n=0; n<mc.nverts(); n++)
-               nodes.push_back( makeUbTuple( (float)(minX1 + deltaX1 * (mcvertices[n].x + dx1[i])),   //Anm: kein -1, da man durch manipulation der indices die dreiecke um eins versetzt bekommt
-                                             (float)(minX2 + deltaX2 * (mcvertices[n].y + dx2[i])),
-                                             (float)(minX3 + deltaX3 * (mcvertices[n].z + dx3[i])) ) );
-            for(int t=0; t<mc.ntrigs(); t++)
-               triangles.push_back( makeUbTuple( deltaNodeNr+mctriangles[t].v1, deltaNodeNr+mctriangles[t].v2, deltaNodeNr+mctriangles[t].v3 ) );
+            UBLOG(logINFO, " GbVoxelMatrix3D node tuple")
+               for (int n = 0; n<mc.nverts(); n++)
+                  nodes.push_back(makeUbTuple((float)(minX1+deltaX1 * (mcvertices[n].x+dx1[i])),   //Anm: kein -1, da man durch manipulation der indices die dreiecke um eins versetzt bekommt
+                  (float)(minX2+deltaX2 * (mcvertices[n].y+dx2[i])),
+                     (float)(minX3+deltaX3 * (mcvertices[n].z+dx3[i]))));
+            for (int t = 0; t<mc.ntrigs(); t++)
+               triangles.push_back(makeUbTuple(deltaNodeNr+mctriangles[t].v1, deltaNodeNr+mctriangles[t].v2, deltaNodeNr+mctriangles[t].v3));
          }
-      }
-   #else
-      cerr<<"void GbVoxelMatrix3D.addSurfaceTriangleSet  - benoetigt MARCHING_CUBE paket aus 3rdParty"<<endl;
-   #endif // MC_CUBES
+   }
+#else
+   cerr<<"void GbVoxelMatrix3D.addSurfaceTriangleSet  - benoetigt MARCHING_CUBE paket aus 3rdParty"<<endl;
+#endif // MC_CUBES
 
-   UBLOG(logINFO," GbVoxelMatrix3D addSurfaceTriangleSet end")
+   UBLOG(logINFO, " GbVoxelMatrix3D addSurfaceTriangleSet end")
 }
 /*=======================================================*/
-string GbVoxelMatrix3D::toString() 
+string GbVoxelMatrix3D::toString()
 {
    return "GbVoxelMatrix3D";
 }
 /*=======================================================*/
-void GbVoxelMatrix3D::write(UbFileOutput* out) 
-{                                      
+void GbVoxelMatrix3D::write(UbFileOutput* out)
+{
    out->writeString(this->getCreator()->getTypeID());
    out->writeDouble(minX1);
    out->writeDouble(minX2);
@@ -536,30 +536,30 @@ void GbVoxelMatrix3D::write(UbFileOutput* out)
    out->writeDouble(upperThreshold);
    out->writeBool(addSurfaceTriangleSetFlag);
    out->writeBool(transferViaFilename);
-   if(!transferViaFilename)
+   if (!transferViaFilename)
    {
-      throw UbException(UB_EXARGS,"void GbVoxelMatrix3D::write(UbFileOutput* out)  - geht ned");
+      throw UbException(UB_EXARGS, "void GbVoxelMatrix3D::write(UbFileOutput* out)  - geht ned");
    }
    else
    {
       out->writeString(filename);
    }
 
-   
+
    //CbUniformMatrix3D<float> voxelMatrix;
 }
 /*=======================================================*/
-void GbVoxelMatrix3D::read(UbFileInput* in) 
-{  
+void GbVoxelMatrix3D::read(UbFileInput* in)
+{
 #ifdef CAB_RCF
    try
    {
 #endif
       //!!! den string nimmt er vorher um das Object zu erstellen
       //in->readString();      
-      minX1   = in->readDouble();
-      minX2   = in->readDouble();
-      minX3   = in->readDouble();
+      minX1 = in->readDouble();
+      minX2 = in->readDouble();
+      minX3 = in->readDouble();
       deltaX1 = in->readDouble();
       deltaX2 = in->readDouble();
       deltaX3 = in->readDouble();
@@ -570,9 +570,9 @@ void GbVoxelMatrix3D::read(UbFileInput* in)
       upperThreshold = in->readDouble();
       addSurfaceTriangleSetFlag = in->readBool();
       transferViaFilename = in->readBool();
-      if(!transferViaFilename)
+      if (!transferViaFilename)
       {
-         throw UbException(UB_EXARGS,"void GbVoxelMatrix3D::read(UbFileOutput* out)  - geht ned");
+         throw UbException(UB_EXARGS, "void GbVoxelMatrix3D::read(UbFileOutput* out)  - geht ned");
       }
       else
       {
@@ -581,58 +581,58 @@ void GbVoxelMatrix3D::read(UbFileInput* in)
       }
 #ifdef CAB_RCF
    }
-   catch(std::exception& e) { UBLOGML(logERROR, UB_FUNCTION + (std::string)e.what());        throw RCF::Exception(1002, UB_FUNCTION + (std::string)e.what() );        }                                                                                       
-   catch(...)               { UBLOGML(logERROR, UB_FUNCTION + (std::string)"unknown error"); throw RCF::Exception(1002, UB_FUNCTION + (std::string)"unknown error" ); }
+   catch (std::exception& e) { UBLOGML(logERROR, UB_FUNCTION+(std::string)e.what());        throw RCF::Exception(1002, UB_FUNCTION+(std::string)e.what()); }
+   catch (...) { UBLOGML(logERROR, UB_FUNCTION+(std::string)"unknown error"); throw RCF::Exception(1002, UB_FUNCTION+(std::string)"unknown error"); }
 #endif
 }
 /*=======================================================*/
 void GbVoxelMatrix3D::readMatrixFromVtiASCIIFile(std::string filename)
 
 {
-   UBLOG(logINFO,"  - create GbVoxelMatrix3D");
+   //UBLOG(logINFO,"  - create GbVoxelMatrix3D");
    UbFileInputASCII in(filename);
    //ifstream in(filename.c_str(), ios::binary);
-   if(!in) throw UbException(UB_EXARGS,"could not open file "+filename);
+   if (!in) throw UbException(UB_EXARGS, "could not open file "+filename);
    in.readLine();
    in.readLine();
    in.readLine();
    in.readLine();
    in.readLine();
 
-   voxelMatrix = Matrix3D(nodesX1,nodesX2,nodesX3,GbVoxelMatrix3D::FLUID);
+   voxelMatrix = Matrix3D(nodesX1, nodesX2, nodesX3, GbVoxelMatrix3D::FLUID);
 
-   UBLOG(logINFO,"  - init values");
+   //UBLOG(logINFO,"  - init values");
    int val;
-   int u=0;
-   for(int x3=0; x3<nodesX3; x3++)
-      for(int x2=0; x2<nodesX2; x2++)
-         for(int x1=0; x1<nodesX1; x1++)
+   int u = 0;
+   for (int x3 = 0; x3<nodesX3; x3++)
+      for (int x2 = 0; x2<nodesX2; x2++)
+         for (int x1 = 0; x1<nodesX1; x1++)
          {
             val = in.readInteger();
             //if( !UbMath::equal(val, 0.0f) ) 
             //if( UbMath::greater(val, threshold) ) 
-            if( (double)val >= lowerThreshold && (double)val <= upperThreshold ) 
+            if ((double)val>=lowerThreshold&&(double)val<=upperThreshold)
             {
-               (voxelMatrix)(x1,x2,x3) = GbVoxelMatrix3D::SOLID;
+               (voxelMatrix)(x1, x2, x3) = GbVoxelMatrix3D::SOLID;
             }
          }
-   UBLOG(logINFO,"  - create GbVoxelMatrix3D done");
+   //UBLOG(logINFO,"  - create GbVoxelMatrix3D done");
 }
 
 //////////////////////////////////////////////////////////////////////////
 void GbVoxelMatrix3D::rotate90aroundX(double cX1, double cX2, double cX3)
 {
-   double tempMinPunktX1 = minX1  - cX1;
-   double tempMinPunktX2 = minX2  - cX2;
-   double tempMinPunktX3 = getX3Maximum()  - cX3;
+   double tempMinPunktX1 = minX1-cX1;
+   double tempMinPunktX2 = minX2-cX2;
+   double tempMinPunktX3 = getX3Maximum()-cX3;
 
    double tempMinPunktX1tf = tempMinPunktX1;
    double tempMinPunktX2tf = -tempMinPunktX3;
    double tempMinPunktX3tf = tempMinPunktX2;
 
-   double minX1_temp = tempMinPunktX1tf + cX1;
-   double minX2_temp = tempMinPunktX2tf + cX2;
-   double minX3_temp = tempMinPunktX3tf + cX3;
+   double minX1_temp = tempMinPunktX1tf+cX1;
+   double minX2_temp = tempMinPunktX2tf+cX2;
+   double minX3_temp = tempMinPunktX3tf+cX3;
 
    minX2 = minX2_temp;
    minX3 = minX3_temp;
@@ -641,7 +641,7 @@ void GbVoxelMatrix3D::rotate90aroundX(double cX1, double cX2, double cX3)
    int nx2 = (int)voxelMatrix.getNX2();
    int nx3 = (int)voxelMatrix.getNX3();
 
-   int nx1_new = nx1; 
+   int nx1_new = nx1;
    int nx2_new = nx3;
    int nx3_new = nx2;
 
@@ -651,11 +651,11 @@ void GbVoxelMatrix3D::rotate90aroundX(double cX1, double cX2, double cX3)
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1_new, nx2_new, nx3_new);
 
-   for (int x3=0; x3<nx3;x3++){
-      for (int x2=0; x2<nx2;x2++){
-         for(int x1=0; x1<nx1;x1++)
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
          {
-            voxelMatrix_temp(x1,nx3-x3-1,x2) = this->voxelMatrix(x1,x2,x3);
+            voxelMatrix_temp(x1, nx3-x3-1, x2) = this->voxelMatrix(x1, x2, x3);
          }
       }
    }
@@ -673,17 +673,17 @@ void GbVoxelMatrix3D::rotate90aroundX()
 //////////////////////////////////////////////////////////////////////////
 void GbVoxelMatrix3D::rotate90aroundY(double cX1, double cX2, double cX3)
 {
-   double tempMinPunktX1 = getX1Maximum()  - cX1;
-   double tempMinPunktX2 = minX2  - cX2;
-   double tempMinPunktX3 = minX3  - cX3;
+   double tempMinPunktX1 = getX1Maximum()-cX1;
+   double tempMinPunktX2 = minX2-cX2;
+   double tempMinPunktX3 = minX3-cX3;
 
    double tempMinPunktX1tf = tempMinPunktX3;
    double tempMinPunktX2tf = tempMinPunktX2;
    double tempMinPunktX3tf = -tempMinPunktX1;
 
-   double minX1_temp = tempMinPunktX1tf + cX1;
-   double minX2_temp = tempMinPunktX2tf + cX2;
-   double minX3_temp = tempMinPunktX3tf + cX3;
+   double minX1_temp = tempMinPunktX1tf+cX1;
+   double minX2_temp = tempMinPunktX2tf+cX2;
+   double minX3_temp = tempMinPunktX3tf+cX3;
 
    minX1 = minX1_temp;
    minX3 = minX3_temp;
@@ -692,7 +692,7 @@ void GbVoxelMatrix3D::rotate90aroundY(double cX1, double cX2, double cX3)
    int nx2 = (int)voxelMatrix.getNX2();
    int nx3 = (int)voxelMatrix.getNX3();
 
-   int nx1_new = nx3; 
+   int nx1_new = nx3;
    int nx2_new = nx2;
    int nx3_new = nx1;
 
@@ -702,11 +702,11 @@ void GbVoxelMatrix3D::rotate90aroundY(double cX1, double cX2, double cX3)
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1_new, nx2_new, nx3_new);
 
-   for (int x3=0; x3<nx3;x3++){
-      for (int x2=0; x2<nx2;x2++){
-         for(int x1=0; x1<nx1;x1++)
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
          {
-            voxelMatrix_temp(x3,x2,nx1-x1-1) = this->voxelMatrix(x1,x2,x3);
+            voxelMatrix_temp(x3, x2, nx1-x1-1) = this->voxelMatrix(x1, x2, x3);
          }
       }
    }
@@ -718,23 +718,23 @@ void GbVoxelMatrix3D::rotate90aroundY()
    double cX1 = this->getX1Centroid();
    double cX2 = this->getX2Centroid();
    double cX3 = this->getX3Centroid();
-   
+
    rotate90aroundY(cX1, cX2, cX3);
 }
 //////////////////////////////////////////////////////////////////////////
 void GbVoxelMatrix3D::rotate90aroundZ(double cX1, double cX2, double cX3)
 {
-   double tempMinPunktX1 = minX1  - cX1;
-   double tempMinPunktX2 = getX2Maximum()  - cX2;
-   double tempMinPunktX3 = minX3  - cX3;
+   double tempMinPunktX1 = minX1-cX1;
+   double tempMinPunktX2 = getX2Maximum()-cX2;
+   double tempMinPunktX3 = minX3-cX3;
 
    double tempMinPunktX1tf = -tempMinPunktX2;
    double tempMinPunktX2tf = tempMinPunktX1;
    double tempMinPunktX3tf = tempMinPunktX3;
 
-   double minX1_temp = tempMinPunktX1tf + cX1;
-   double minX2_temp = tempMinPunktX2tf + cX2;
-   double minX3_temp = tempMinPunktX3tf + cX3;
+   double minX1_temp = tempMinPunktX1tf+cX1;
+   double minX2_temp = tempMinPunktX2tf+cX2;
+   double minX3_temp = tempMinPunktX3tf+cX3;
 
    minX1 = minX1_temp;
    minX2 = minX2_temp;
@@ -743,7 +743,7 @@ void GbVoxelMatrix3D::rotate90aroundZ(double cX1, double cX2, double cX3)
    int nx2 = (int)voxelMatrix.getNX2();
    int nx3 = (int)voxelMatrix.getNX3();
 
-   int nx1_new = nx2; 
+   int nx1_new = nx2;
    int nx2_new = nx1;
    int nx3_new = nx3;
 
@@ -753,11 +753,11 @@ void GbVoxelMatrix3D::rotate90aroundZ(double cX1, double cX2, double cX3)
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1_new, nx2_new, nx3_new);
 
-   for (int x3=0; x3<nx3;x3++){
-      for (int x2=0; x2<nx2;x2++){
-         for(int x1=0; x1<nx1;x1++)
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
          {
-            voxelMatrix_temp(nx2-x2-1,x1,x3) = this->voxelMatrix(x1,x2,x3);
+            voxelMatrix_temp(nx2-x2-1, x1, x3) = this->voxelMatrix(x1, x2, x3);
          }
       }
    }
@@ -781,11 +781,11 @@ void GbVoxelMatrix3D::mirrorX()
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3);
 
-   for (int x3=0; x3<nx3;x3++){
-      for (int x2=0; x2<nx2;x2++){
-         for(int x1=0; x1<nx1;x1++)
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
          {
-            voxelMatrix_temp(nx1-x1-1,x2,x3) = this->voxelMatrix(x1,x2,x3);
+            voxelMatrix_temp(nx1-x1-1, x2, x3) = this->voxelMatrix(x1, x2, x3);
          }
       }
    }
@@ -800,11 +800,11 @@ void GbVoxelMatrix3D::mirrorY()
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3);
 
-   for (int x3=0; x3<nx3;x3++){
-      for (int x2=0; x2<nx2;x2++){
-         for(int x1=0; x1<nx1;x1++)
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
          {
-            voxelMatrix_temp(x1,nx2-x2-1,x3) = this->voxelMatrix(x1,x2,x3);
+            voxelMatrix_temp(x1, nx2-x2-1, x3) = this->voxelMatrix(x1, x2, x3);
          }
       }
    }
@@ -819,33 +819,33 @@ void GbVoxelMatrix3D::mirrorZ()
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3);
 
-   for (int x3=0; x3<nx3;x3++){
-      for (int x2=0; x2<nx2;x2++){
-         for(int x1=0; x1<nx1;x1++)
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
          {
-            voxelMatrix_temp(x1,x2,nx3-x3-1) = this->voxelMatrix(x1,x2,x3);
+            voxelMatrix_temp(x1, x2, nx3-x3-1) = this->voxelMatrix(x1, x2, x3);
          }
       }
    }
    std::swap(this->voxelMatrix, voxelMatrix_temp);
 }
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::writeToLegacyVTKASCII( const std::string& fileName )
+void GbVoxelMatrix3D::writeToLegacyVTKASCII(const std::string& fileName)
 {
-   string fn = fileName +".ascii.vtk";
+   string fn = fileName+".ascii.vtk";
 
-   FILE *file; 
-   file = fopen(fn.c_str(),"w"); 
+   FILE *file;
+   file = fopen(fn.c_str(), "w");
 
-   if (file == NULL)
+   if (file==NULL)
    {
       std::string pathf = UbSystem::getPathFromString(fn);
       if (fn.size()>0) { UbSystem::makeDirectory(pathf); file = fopen(fn.c_str(), "w"); }
-      if (file == NULL) throw UbException(UB_EXARGS, "can not open " + fn);
+      if (file==NULL) throw UbException(UB_EXARGS, "can not open "+fn);
    }
 
-   if(file == NULL)
-      throw UbException(UB_EXARGS,"can not open "+fn);
+   if (file==NULL)
+      throw UbException(UB_EXARGS, "can not open "+fn);
 
    int nx1 = (int)voxelMatrix.getNX1();
    int nx2 = (int)voxelMatrix.getNX2();
@@ -853,42 +853,42 @@ void GbVoxelMatrix3D::writeToLegacyVTKASCII( const std::string& fileName )
 
    int nn = nx1*nx2*nx3;
 
-   fprintf(file,"# vtk DataFile Version 2.0\n");
-   fprintf(file,"vtk output\n");
-   fprintf(file,"ASCII\n");
-   fprintf(file,"DATASET STRUCTURED_POINTS\n");
-   fprintf(file,"DIMENSIONS %d %d %d\n", nx1, nx2, nx3);
-   fprintf(file,"ORIGIN %g %g %g\n", minX1, minX2, minX3);
-   fprintf(file,"SPACING %g %g %g\n", deltaX1, deltaX2, deltaX3);
-   fprintf(file,"POINT_DATA %d\n", nn);
-   fprintf(file,"SCALARS Geo float\n");
-   fprintf(file,"LOOKUP_TABLE default\n");
+   fprintf(file, "# vtk DataFile Version 2.0\n");
+   fprintf(file, "vtk output\n");
+   fprintf(file, "ASCII\n");
+   fprintf(file, "DATASET STRUCTURED_POINTS\n");
+   fprintf(file, "DIMENSIONS %d %d %d\n", nx1, nx2, nx3);
+   fprintf(file, "ORIGIN %g %g %g\n", minX1, minX2, minX3);
+   fprintf(file, "SPACING %g %g %g\n", deltaX1, deltaX2, deltaX3);
+   fprintf(file, "POINT_DATA %d\n", nn);
+   fprintf(file, "SCALARS Geo float\n");
+   fprintf(file, "LOOKUP_TABLE default\n");
 
-   for(int k=0 ; k<nx3 ; k++){
-      for(int j=0 ; j<nx2 ; j++){
-         for(int i=0 ; i<nx1 ; i++){
-            fprintf(file,"%g ", voxelMatrix(i,j,k));
+   for (int k = 0; k<nx3; k++) {
+      for (int j = 0; j<nx2; j++) {
+         for (int i = 0; i<nx1; i++) {
+            fprintf(file, "%g ", voxelMatrix(i, j, k));
          }
       }
    }
 
-   fprintf(file,"\n");
+   fprintf(file, "\n");
 
    fclose(file);
 }
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::writeToLegacyVTKBinary( const std::string& fileName )
+void GbVoxelMatrix3D::writeToLegacyVTKBinary(const std::string& fileName)
 {
-   string fn = fileName +".binary.vtk";
-  
-   FILE *file; 
-   file = fopen(fn.c_str(),"w"); 
+   string fn = fileName+".binary.vtk";
 
-   if (file == NULL)
+   FILE *file;
+   file = fopen(fn.c_str(), "w");
+
+   if (file==NULL)
    {
       std::string pathf = UbSystem::getPathFromString(fn);
       if (fn.size()>0) { UbSystem::makeDirectory(pathf); file = fopen(fn.c_str(), "w"); }
-      if (file == NULL) throw UbException(UB_EXARGS, "can not open " + fn);
+      if (file==NULL) throw UbException(UB_EXARGS, "can not open "+fn);
    }
 
    int nx1 = (int)voxelMatrix.getNX1();
@@ -899,129 +899,129 @@ void GbVoxelMatrix3D::writeToLegacyVTKBinary( const std::string& fileName )
 
    char LF = 0x0A;
 
-   fprintf(file,"# vtk DataFile Version 3.0\n");
-   fprintf(file,"vtk output\n");
-   fprintf(file,"BINARY\n");
-   fprintf(file,"DATASET STRUCTURED_POINTS\n");
-   fprintf(file,"DIMENSIONS %d %d %d\n", nx1, nx2, nx3);
-   fprintf(file,"ORIGIN %g %g %g\n", minX1, minX2, minX3);
-   fprintf(file,"SPACING %g %g %g\n", deltaX1, deltaX2, deltaX3);
-   fprintf(file,"POINT_DATA %d\n", nn);
-   fprintf(file,"SCALARS Geo float\n");
-   fprintf(file,"LOOKUP_TABLE default");
+   fprintf(file, "# vtk DataFile Version 3.0\n");
+   fprintf(file, "vtk output\n");
+   fprintf(file, "BINARY\n");
+   fprintf(file, "DATASET STRUCTURED_POINTS\n");
+   fprintf(file, "DIMENSIONS %d %d %d\n", nx1, nx2, nx3);
+   fprintf(file, "ORIGIN %g %g %g\n", minX1, minX2, minX3);
+   fprintf(file, "SPACING %g %g %g\n", deltaX1, deltaX2, deltaX3);
+   fprintf(file, "POINT_DATA %d\n", nn);
+   fprintf(file, "SCALARS Geo float\n");
+   fprintf(file, "LOOKUP_TABLE default");
    fclose(file);
 
    GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3);
 
    if (UbSystem::isLittleEndian())
    {
-      for (int x3=0; x3<nx3;x3++){
-         for (int x2=0; x2<nx2;x2++){
-            for(int x1=0; x1<nx1;x1++)
+      for (int x3 = 0; x3<nx3; x3++) {
+         for (int x2 = 0; x2<nx2; x2++) {
+            for (int x1 = 0; x1<nx1; x1++)
             {
-               float tmp = this->voxelMatrix(x1,x2,x3);
+               float tmp = this->voxelMatrix(x1, x2, x3);
                UbSystem::swapByteOrder((unsigned char*)(&(tmp)), sizeof(float));
-               voxelMatrix_temp(x1,x2,x3) = tmp;
+               voxelMatrix_temp(x1, x2, x3) = tmp;
             }
          }
       }
    }
 
    file = fopen(fn.c_str(), "ab");
-   
-   fwrite (&LF, sizeof(char), 1, file);
-   fwrite(voxelMatrix_temp.getStartAdressOfSortedArray(0,0,0), sizeof(float), voxelMatrix_temp.getDataVector().size(), file);
-   fwrite (&LF, sizeof(char), 1, file);
+
+   fwrite(&LF, sizeof(char), 1, file);
+   fwrite(voxelMatrix_temp.getStartAdressOfSortedArray(0, 0, 0), sizeof(float), voxelMatrix_temp.getDataVector().size(), file);
+   fwrite(&LF, sizeof(char), 1, file);
    fclose(file);
 }
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::writeToVTKImageDataASCII( const std::string& fileName )
+void GbVoxelMatrix3D::writeToVTKImageDataASCII(const std::string& fileName)
 {
    int nx1 = (int)voxelMatrix.getNX1();
    int nx2 = (int)voxelMatrix.getNX2();
    int nx3 = (int)voxelMatrix.getNX3();
 
-   string fn = fileName +".ascii.vti";
+   string fn = fileName+".ascii.vti";
 
-   FILE *file; 
-   file = fopen(fn.c_str(),"w"); 
+   FILE *file;
+   file = fopen(fn.c_str(), "w");
 
-   if (file == NULL)
+   if (file==NULL)
    {
       std::string pathf = UbSystem::getPathFromString(fn);
       if (fn.size()>0) { UbSystem::makeDirectory(pathf); file = fopen(fn.c_str(), "w"); }
-      if (file == NULL) throw UbException(UB_EXARGS, "can not open " + fn);
+      if (file==NULL) throw UbException(UB_EXARGS, "can not open "+fn);
    }
 
-   fprintf(file,"<VTKFile type=\"ImageData\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n"); //paraview 4.1
+   fprintf(file, "<VTKFile type=\"ImageData\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n"); //paraview 4.1
    //fprintf(file,"<VTKFile type=\"ImageData\" version=\"0.1\" byte_order=\"LittleEndian\">\n"); //paraview 3.1
-   fprintf(file,"  <ImageData WholeExtent=\"%d %d %d %d %d %d\" Origin=\"%g %g %g\" Spacing=\"%g %g %g\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1, minX1, minX2, minX3, deltaX1, deltaX2, deltaX3);
-   fprintf(file,"  <Piece Extent=\"%d %d %d %d %d %d\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1);
-   fprintf(file,"    <PointData Scalars=\"VoxelMatrix\">\n");
-   fprintf(file,"      <DataArray type=\"Float32\" Name=\"VoxelMatrix\" format=\"ascii\" RangeMin=\"0\" RangeMax=\"1\">\n        "); 
+   fprintf(file, "  <ImageData WholeExtent=\"%d %d %d %d %d %d\" Origin=\"%g %g %g\" Spacing=\"%g %g %g\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1, minX1, minX2, minX3, deltaX1, deltaX2, deltaX3);
+   fprintf(file, "  <Piece Extent=\"%d %d %d %d %d %d\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1);
+   fprintf(file, "    <PointData Scalars=\"VoxelMatrix\">\n");
+   fprintf(file, "      <DataArray type=\"Float32\" Name=\"VoxelMatrix\" format=\"ascii\" RangeMin=\"0\" RangeMax=\"1\">\n        ");
 
-   for(int k=0 ; k<nx3 ; k++){
-      for(int j=0 ; j<nx2 ; j++){
-         for(int i=0 ; i<nx1 ; i++){
-            fprintf(file,"%g ",voxelMatrix(i,j,k));
+   for (int k = 0; k<nx3; k++) {
+      for (int j = 0; j<nx2; j++) {
+         for (int i = 0; i<nx1; i++) {
+            fprintf(file, "%g ", voxelMatrix(i, j, k));
          }
       }
    }
 
-   fprintf(file,"\n      </DataArray>\n");
-   fprintf(file,"    </PointData>\n");
-   fprintf(file,"    <CellData>\n");
-   fprintf(file,"    </CellData>\n");
-   fprintf(file,"  </Piece>\n");
-   fprintf(file,"  </ImageData>\n");
-   fprintf(file,"</VTKFile>\n");
+   fprintf(file, "\n      </DataArray>\n");
+   fprintf(file, "    </PointData>\n");
+   fprintf(file, "    <CellData>\n");
+   fprintf(file, "    </CellData>\n");
+   fprintf(file, "  </Piece>\n");
+   fprintf(file, "  </ImageData>\n");
+   fprintf(file, "</VTKFile>\n");
 
-   fclose(file); 
+   fclose(file);
 }
 //////////////////////////////////////////////////////////////////////////
-void GbVoxelMatrix3D::writeToVTKImageDataAppended( const std::string& fileName )
+void GbVoxelMatrix3D::writeToVTKImageDataAppended(const std::string& fileName)
 {
    int nx1 = (int)voxelMatrix.getNX1();
    int nx2 = (int)voxelMatrix.getNX2();
    int nx3 = (int)voxelMatrix.getNX3();
 
-   string fn = fileName +".appended.vti";
+   string fn = fileName+".appended.vti";
 
-   FILE *file; 
-   file = fopen(fn.c_str(),"w"); 
+   FILE *file;
+   file = fopen(fn.c_str(), "w");
 
-   if (file == NULL)
+   if (file==NULL)
    {
       std::string pathf = UbSystem::getPathFromString(fn);
       if (fn.size()>0) { UbSystem::makeDirectory(pathf); file = fopen(fn.c_str(), "w"); }
-      if (file == NULL) throw UbException(UB_EXARGS, "can not open " + fn);
+      if (file==NULL) throw UbException(UB_EXARGS, "can not open "+fn);
    }
 
-   fprintf(file,"<VTKFile type=\"ImageData\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n"); //paraview 4.1
-   fprintf(file,"  <ImageData WholeExtent=\"%d %d %d %d %d %d\" Origin=\"%g %g %g\" Spacing=\"%g %g %g\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1,  minX1, minX2, minX3, deltaX1, deltaX2, deltaX3);
-   fprintf(file,"  <Piece Extent=\"%d %d %d %d %d %d\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1);
-   fprintf(file,"    <PointData Scalars=\"VoxelMatrix\">\n");
-   fprintf(file,"      <DataArray type=\"Float32\" Name=\"VoxelMatrix\" format=\"appended\" RangeMin=\"0\" RangeMax=\"1\" offset=\"0\" />\n"); 
-   fprintf(file,"    </PointData>\n");
-   fprintf(file,"    <CellData>\n");
-   fprintf(file,"    </CellData>\n");
-   fprintf(file,"  </Piece>\n");
-   fprintf(file,"  </ImageData>\n");
-   fprintf(file,"  <AppendedData encoding=\"raw\">\n");
-   fprintf(file,"   _");
+   fprintf(file, "<VTKFile type=\"ImageData\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">\n"); //paraview 4.1
+   fprintf(file, "  <ImageData WholeExtent=\"%d %d %d %d %d %d\" Origin=\"%g %g %g\" Spacing=\"%g %g %g\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1, minX1, minX2, minX3, deltaX1, deltaX2, deltaX3);
+   fprintf(file, "  <Piece Extent=\"%d %d %d %d %d %d\">\n", 0, nx1-1, 0, nx2-1, 0, nx3-1);
+   fprintf(file, "    <PointData Scalars=\"VoxelMatrix\">\n");
+   fprintf(file, "      <DataArray type=\"Float32\" Name=\"VoxelMatrix\" format=\"appended\" RangeMin=\"0\" RangeMax=\"1\" offset=\"0\" />\n");
+   fprintf(file, "    </PointData>\n");
+   fprintf(file, "    <CellData>\n");
+   fprintf(file, "    </CellData>\n");
+   fprintf(file, "  </Piece>\n");
+   fprintf(file, "  </ImageData>\n");
+   fprintf(file, "  <AppendedData encoding=\"raw\">\n");
+   fprintf(file, "   _");
    fclose(file);
 
    file = fopen(fn.c_str(), "ab");
-   int size = (int)voxelMatrix.getDataVector().size() * sizeof(float);
-   fwrite (&size, sizeof(int), 1, file);
-   fwrite(voxelMatrix.getStartAdressOfSortedArray(0,0,0), sizeof(float), voxelMatrix.getDataVector().size(), file);
+   int size = (int)voxelMatrix.getDataVector().size()*sizeof(float);
+   fwrite(&size, sizeof(int), 1, file);
+   fwrite(voxelMatrix.getStartAdressOfSortedArray(0, 0, 0), sizeof(float), voxelMatrix.getDataVector().size(), file);
    fclose(file);
 
-   file = fopen(fn.c_str(),"a");
-   fprintf(file,"\n");
-   fprintf(file,"  </AppendedData>\n");
-   fprintf(file,"</VTKFile>\n");
-   fclose(file); 
+   file = fopen(fn.c_str(), "a");
+   fprintf(file, "\n");
+   fprintf(file, "  </AppendedData>\n");
+   fprintf(file, "</VTKFile>\n");
+   fclose(file);
 }
 
 

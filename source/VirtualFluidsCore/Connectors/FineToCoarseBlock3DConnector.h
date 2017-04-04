@@ -10,8 +10,8 @@
 #include "Block3DConnector.h"
 #include "D3Q27System.h"
 #include "Block3D.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "LBMKernel.h"
+#include "InterpolationProcessor.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -45,7 +45,7 @@ class FineToCoarseBlock3DConnector : public Block3DConnector
 public:
    enum CFconnectorType { Type00, Type10, Type01, Type11 };
 public:
-   FineToCoarseBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, D3Q27InterpolationProcessorPtr iprocessor, CFconnectorType connType);
+   FineToCoarseBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
    bool isLocalConnector();
    bool isRemoteConnector();
@@ -85,7 +85,7 @@ public:
 protected:
    boost::weak_ptr<Block3D> block; 
    VectorTransmitterPtr sender, receiver;
-   D3Q27InterpolationProcessorPtr iprocessor;
+   InterpolationProcessorPtr iprocessor;
    CFconnectorType connType;
 };
 

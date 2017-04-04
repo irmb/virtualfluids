@@ -11,10 +11,10 @@
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "BCArray3D.h"
-#include "D3Q27BoundaryCondition.h"
-#include "D3Q27VelocityBCAdapter.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27ETBCProcessor.h"
+#include "BoundaryConditions.h"
+#include "VelocityBCAdapter.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 
 //#include <3rdParty/MarchingCubes/MarchingCubes.h>
 
@@ -39,7 +39,7 @@ D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, int 
    this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter,  int type)
+D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAdapterPtr bcAdapter,  int type)
    :   Interactor3D(geoObject3D, grid, type), relevantForForces(false)
 {
    this->reinitWithStoredQsFlag = false;
@@ -47,7 +47,7 @@ D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, D3Q2
    this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, D3Q27BoundaryConditionAdapterPtr bcAdapter,  int type, Interactor3D::Accuracy a)
+D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAdapterPtr bcAdapter,  int type, Interactor3D::Accuracy a)
    :   Interactor3D(geoObject3D, grid, type, a), relevantForForces(false)
 {
    this->reinitWithStoredQsFlag = false;
@@ -176,8 +176,8 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
 
       if(block->isNotActive() || !block) continue;
 
-      LBMKernel3DPtr kernel = block->getKernel();
-      BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+      LBMKernelPtr kernel = block->getKernel();
+      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
 
       set< std::vector<int> >::iterator setPos;
 
@@ -191,7 +191,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
          double worldX2 = val<2>(coords);
          double worldX3 = val<3>(coords);
 
-         D3Q27BoundaryConditionPtr bc = bcArray.getBC(x1,x2,x3);
+         BoundaryConditionsPtr bc = bcArray.getBC(x1,x2,x3);
          if(bc) //kann sein, dass die BC durch das solid setzen eines andern interactors geloescht wurde
          {
             for(size_t i=0; i<bcAdapterVector.size(); i++)
@@ -224,10 +224,10 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
    double timestep = 0;
    bool oneEntryGotBC = false; //ob ueberhaupt ein eintrag ein BC zugewiesen wurde
    bool gotQs         = false; //true, wenn "difference" gesetzt wurde
-   D3Q27BoundaryConditionPtr bc;
+   BoundaryConditionsPtr bc;
 
-   LBMKernel3DPtr kernel = block->getKernel();
-   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+   LBMKernelPtr kernel = block->getKernel();
+   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
 
@@ -349,7 +349,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                            if(!bc)
                            {
                               //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
-                              bc = D3Q27BoundaryConditionPtr(new D3Q27BoundaryCondition);
+                              bc = BoundaryConditionsPtr(new BoundaryConditions);
                               bcArray.setBC(ix1,ix2,ix3,bc);
                            }
                      //TODO: man muss ueberlegen, wie kann man, dass die Geschwindigkeit auf 0.0 gesetzt werden, vermeiden
@@ -509,7 +509,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                               if(!bc)
                               {
                                  //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
-                                 bc = D3Q27BoundaryConditionPtr(new D3Q27BoundaryCondition);
+                                 bc = BoundaryConditionsPtr(new BoundaryConditions);
                                  bcArray.setBC(ix1,ix2,ix3,bc);
                               }
                               for(int index=(int)bcAdapterVector.size()-1; index>=0; --index)
@@ -557,8 +557,8 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vect
          double         dx       = grid.lock()->getDeltaX(block);
          UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
-         LBMKernel3DPtr kernel = block->getKernel();
-         BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+         LBMKernelPtr kernel = block->getKernel();
+         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
 
          map<Block3DPtr, set< std::vector<int> > >::iterator pos = transNodeIndicesMap.find(block);
          if(pos==transNodeIndicesMap.end()) 
@@ -581,7 +581,7 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vect
             if(bcArray.isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                if( !bcArray.hasBC(ix1,ix2,ix3) ) continue;
-               D3Q27BoundaryConditionPtr bc = bcArray.getBC(ix1,ix2,ix3);
+               BoundaryConditionsPtr bc = bcArray.getBC(ix1,ix2,ix3);
 
                double x1a = val<1>(blockOrg) - val<1>(orgDelta) + ix1 * dx;
                double x2a = val<2>(blockOrg) - val<2>(orgDelta) + ix2 * dx;
@@ -650,8 +650,8 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
 
    BOOST_FOREACH(Block3DPtr block, transBlocks)
    {
-      LBMKernel3DPtr kernel = block->getKernel();
-      BCArray3D<D3Q27BoundaryCondition>& bcMatrix = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();
+      LBMKernelPtr kernel = block->getKernel();
+      BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
       UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
 
       //double collFactor = ((LbD3Q27Calculator*)grid->getCalculator())->getCollisionsFactors()[block->getLevel()];
@@ -701,7 +701,7 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
             if(bcMatrix.isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                if( !bcMatrix.hasBC(ix1,ix2,ix3) ) continue;
-               D3Q27BoundaryConditionPtr bc = bcMatrix.getBC(ix1,ix2,ix3);
+               BoundaryConditionsPtr bc = bcMatrix.getBC(ix1,ix2,ix3);
                double x1a = x1-val<1>(nodeOffset)+dx * ix1;
                double x2a = x2-val<2>(nodeOffset)+dx * ix2;
                double x3a = x3-val<3>(nodeOffset)+dx * ix3;

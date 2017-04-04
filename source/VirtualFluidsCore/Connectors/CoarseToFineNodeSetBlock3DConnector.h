@@ -16,8 +16,9 @@
 #include "CoarseToFineBlock3DConnector.h"
 #include "D3Q27System.h"
 #include "Block3D.h"
-#include "LBMKernelETD3Q27.h"
-#include "D3Q27InterpolationProcessor.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
+#include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include "Grid3D.h"
 #include <boost/shared_ptr.hpp>
@@ -47,7 +48,7 @@ public:
       VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
       VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
       VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
-      int sendDir, D3Q27InterpolationProcessorPtr iprocessor);
+      int sendDir, InterpolationProcessorPtr iprocessor);
 
    void init();
 

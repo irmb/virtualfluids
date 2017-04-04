@@ -30,9 +30,9 @@ SET(BOOST_VERSION "1.54.0" CACHE STRING "std: 1.54.0")
 #  METIS  
 #################################################################################
 IF(${USE_METIS})
-  SET(METIS_INCLUDEDIR "/gfs1/work/niivfcpu/libs/metis/include")
-  SET(METIS_DEBUG_LIBRARY "/gfs1/work/niivfcpu/libs/metis/lib/libmetis.a") 
-  SET(METIS_RELEASE_LIBRARY "/gfs1/work/niivfcpu/libs/metis/lib/libmetis.a") 
+  SET(METIS_INCLUDEDIR "/gfs1/work/niikonst/libs/metis/include")
+  SET(METIS_DEBUG_LIBRARY "/gfs1/work/niikonst/libs/metis/lib/libmetis.a") 
+  SET(METIS_RELEASE_LIBRARY "/gfs1/work/niikonst/libs/metis/lib/libmetis.a") 
 ENDIF()
 
 # #################################################################################

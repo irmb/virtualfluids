@@ -2,7 +2,7 @@
 #define SpongeLayerBlockVisitor_h__
 
 #include "Block3DVisitor.h"
-#include "LBMKernel3D.h"
+#include "LBMKernel.h"
 #include <numerics/geometry3d/GbCuboid3D.h>
 
 //! \brief Set sponge layer for all kernels of grid

@@ -1,6 +1,6 @@
 #include "AverageValuesCoProcessor.h"
-#include "LBMKernel3D.h"
-#include "D3Q27ETBCProcessor.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 #include <vector>
 #include <sstream>
 #include <string>
@@ -91,8 +91,8 @@ void AverageValuesCoProcessor::resetDataRMS(double step)
 		{
 			if (block)
 			{
-				LBMKernel3DPtr kernel = block->getKernel();
-				BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+				LBMKernelPtr kernel = block->getKernel();
+				BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
 				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 
@@ -142,8 +142,8 @@ void AverageValuesCoProcessor::resetDataMeans(double step)
 		{
 			if (block)
 			{
-				LBMKernel3DPtr kernel = block->getKernel();
-				BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+				LBMKernelPtr kernel = block->getKernel();
+				BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
 				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 
@@ -263,8 +263,8 @@ void AverageValuesCoProcessor::addData(const Block3DPtr block)
 
 	data.resize(datanames.size());
 
-	LBMKernel3DPtr kernel = block->getKernel();
-	BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+	LBMKernelPtr kernel = block->getKernel();
+	BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 	AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 	//int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -390,8 +390,8 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 		{
 			if (block)
 			{
-				LBMKernel3DPtr kernel = block->getKernel();
-				BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(kernel->getBCProcessor())->getBCArray();          
+				LBMKernelPtr kernel = block->getKernel();
+				BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
 				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 

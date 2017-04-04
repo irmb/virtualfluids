@@ -14,7 +14,7 @@
 using namespace std;
 
 TimeseriesCoProcessor::TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-                                                             D3Q27IntegrateValuesHelperPtr h1,
+                                                             IntegrateValuesHelperPtr h1,
                                                              const std::string& path, CommunicatorPtr comm)
                                                              : CoProcessor(grid, s),                                                
                                                                h1(h1),
