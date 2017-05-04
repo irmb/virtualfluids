@@ -95,7 +95,7 @@ void run(string configname)
       double nueReal = 153.5e-7; //m^2/s
 
       double lReal = 2.048;//m
-      double uReal = 140.0*3.6;
+      double uReal = 140.0/3.6;
 
       double Re = uReal*lReal/nueReal;
 

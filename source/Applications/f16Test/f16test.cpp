@@ -39,7 +39,6 @@ void run(string configname)
       bool            porousTralingEdge = config.getBool("porousTralingEdge");
       double          deltaXfine = config.getDouble("deltaXfine")*1000.0;
       bool            thinWall = config.getBool("thinWall");
-      bool            testBox = config.getBool("testBox");
       double          refineDistance = config.getDouble("refineDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
 
@@ -86,7 +85,7 @@ void run(string configname)
       //##########################################################################
       //## physical parameters
       //##########################################################################
-      double Re = 1e6;
+      double Re = 1;//e6;
 
       double rhoLB = 0.0;
       double rhoReal = 1.2041; //(kg/m3)
@@ -162,7 +161,7 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStep));
-      RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
+      RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -263,12 +262,6 @@ void run(string configname)
          ////if (myid==0) GbSystem3D::writeGeoObject(meshBan8.get(), pathOut+"/geo/zigZagTape8", WbWriterVtkXmlASCII::getInstance());
          //if (myid==0) UBLOG(logINFO, "Read zigZagTape:end");
 
-         GbObject3DPtr testBoxOb;
-         if (testBox)
-         {
-            testBoxOb=GbObject3DPtr(new GbCuboid3D(15.0, 0, 5.0, 30.0, 100, 35.0));
-            if (myid==0) GbSystem3D::writeGeoObject(testBoxOb.get(), pathOut+"/geo/gridCube", WbWriterVtkXmlASCII::getInstance());
-         }
          //////////////////////////////////////////////////////////////////////////
 
          Interactor3DPtr fngIntrWhole;
@@ -289,11 +282,7 @@ void run(string configname)
          //D3Q27TriFaceMeshInteractorPtr triBand3Interactor(new D3Q27TriFaceMeshInteractor(meshBand3, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
          //D3Q27TriFaceMeshInteractorPtr triBand4Interactor(new D3Q27TriFaceMeshInteractor(meshBand4, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
 
-         D3Q27InteractorPtr testBoxInt;
-         if (testBox)
-         {
-            testBoxInt=D3Q27InteractorPtr(new D3Q27Interactor(testBoxOb, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         }
+
 
          if (refineLevel > 0 && myid == 0)
          {
@@ -453,6 +442,8 @@ void run(string configname)
          //wall interactors
          D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, slipBCAdapter, Interactor3D::SOLID));
          D3Q27InteractorPtr addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
+         //D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         //D3Q27InteractorPtr addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          //inflow
          GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
@@ -483,10 +474,6 @@ void run(string configname)
          //intHelper.addInteractor(triBand2Interactor);
          //intHelper.addInteractor(triBand3Interactor);
          //intHelper.addInteractor(triBand4Interactor);
-         if (testBox)
-         {
-            intHelper.addInteractor(testBoxInt);
-         }
          
          if (porousTralingEdge)
          {
@@ -534,6 +521,7 @@ void run(string configname)
          }
 
          LBMKernelPtr kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
+         //LBMKernelPtr kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], IncompressibleCumulantLBMKernel::NORMAL));
 
          BCProcessorPtr bcProc;
 
@@ -575,15 +563,16 @@ void run(string configname)
          inflowProfileVx3.DefineFun("rangeRandom1", rangeRandom1);
          
          InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
-         initVisitor.setVx1(fct);
+         //initVisitor.setVx1(fct);
          //initVisitor.setVx1(inflowProfileVx1);
          //initVisitor.setVx2(inflowProfileVx2);
          //initVisitor.setVx3(inflowProfileVx3);
-         initVisitor.setNu(nuLB);
+         //initVisitor.setNu(nuLB);
          grid->accept(initVisitor);
 
          ////set connectors
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -627,8 +616,8 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
       //calculation->setTimeAveragedValuesCoProcessor(tav);
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();

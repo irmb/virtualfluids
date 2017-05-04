@@ -30,6 +30,7 @@ public:
    static const char ThinWallNoSlipBCAlgorithm = 6;
    static const char NonReflectingVelocityBCAlgorithm = 7;
    static const char NonReflectingDensityBCAlgorithm = 8;
+   static const char NonReflectingSlipBCAlgorithm = 9;
 public:
    BCAlgorithm();
    virtual ~BCAlgorithm() {}

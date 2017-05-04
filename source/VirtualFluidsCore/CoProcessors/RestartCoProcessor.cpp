@@ -355,7 +355,15 @@ void RestartCoProcessor::writeDistributedGrid(Grid3DPtr sgrid, int numberOfProce
    }
    writeMetafile(1);
 }
-
-
+//////////////////////////////////////////////////////////////////////////
+void RestartCoProcessor::setArchiveType(ArchiveType type)
+{
+   archiveType = type;
+}
+//////////////////////////////////////////////////////////////////////////
+RestartCoProcessor::ArchiveType RestartCoProcessor::getArchiveType()
+{
+   return archiveType;
+}
 
 

@@ -1,28 +1,28 @@
-#include "SlipBCAlgorithm.h"
+#include "NonReflectingSlipBCAlgorithm.h"
 
-SlipBCAlgorithm::SlipBCAlgorithm()
+NonReflectingSlipBCAlgorithm::NonReflectingSlipBCAlgorithm()
 {
-   BCAlgorithm::type = BCAlgorithm::SlipBCAlgorithm;
+   BCAlgorithm::type = BCAlgorithm::NonReflectingSlipBCAlgorithm;
    BCAlgorithm::preCollision = false;
 }
 //////////////////////////////////////////////////////////////////////////
-SlipBCAlgorithm::~SlipBCAlgorithm()
+NonReflectingSlipBCAlgorithm::~NonReflectingSlipBCAlgorithm()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr SlipBCAlgorithm::clone()
+BCAlgorithmPtr NonReflectingSlipBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new SlipBCAlgorithm());
+   BCAlgorithmPtr bc(new NonReflectingSlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void NonReflectingSlipBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
 {
    this->distributions = distributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithm::applyBC()
+void NonReflectingSlipBCAlgorithm::applyBC()
 {
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal feq[D3Q27System::ENDF+1];
@@ -34,9 +34,9 @@ void SlipBCAlgorithm::applyBC()
    UbTupleFloat3 normale = bcPtr->getNormalVector();
    LBMReal amp = vx1*val<1>(normale)+vx2*val<2>(normale)+vx3*val<3>(normale);
 
-   vx1 = vx1 - amp * val<1>(normale); //normale zeigt von struktur weg!
-   vx2 = vx2 - amp * val<2>(normale); //normale zeigt von struktur weg!
-   vx3 = vx3 - amp * val<3>(normale); //normale zeigt von struktur weg!
+   vx1 = vx1-amp * val<1>(normale); //normale zeigt von struktur weg!
+   vx2 = vx2-amp * val<2>(normale); //normale zeigt von struktur weg!
+   vx3 = vx3-amp * val<3>(normale); //normale zeigt von struktur weg!
 
    rho = 1.0+drho*compressibleFactor;
 
@@ -61,10 +61,10 @@ void SlipBCAlgorithm::applyBC()
          case D3Q27System::SW: velocity = (UbMath::c1o9*(-vx1-vx2)); break;
          case D3Q27System::SE: velocity = (UbMath::c1o9*(+vx1-vx2)); break;
          case D3Q27System::NW: velocity = (UbMath::c1o9*(-vx1+vx2)); break;
-         case D3Q27System::TE: velocity = (UbMath::c1o9*(+vx1             +vx3)); break;
-         case D3Q27System::BW: velocity = (UbMath::c1o9*(-vx1             -vx3)); break;
-         case D3Q27System::BE: velocity = (UbMath::c1o9*(+vx1             -vx3)); break;
-         case D3Q27System::TW: velocity = (UbMath::c1o9*(-vx1             +vx3)); break;
+         case D3Q27System::TE: velocity = (UbMath::c1o9*(+vx1+vx3)); break;
+         case D3Q27System::BW: velocity = (UbMath::c1o9*(-vx1-vx3)); break;
+         case D3Q27System::BE: velocity = (UbMath::c1o9*(+vx1-vx3)); break;
+         case D3Q27System::TW: velocity = (UbMath::c1o9*(-vx1+vx3)); break;
          case D3Q27System::TN: velocity = (UbMath::c1o9*(+vx2+vx3)); break;
          case D3Q27System::BS: velocity = (UbMath::c1o9*(-vx2-vx3)); break;
          case D3Q27System::BN: velocity = (UbMath::c1o9*(+vx2-vx3)); break;
@@ -79,7 +79,7 @@ void SlipBCAlgorithm::applyBC()
          case D3Q27System::TNW: velocity = (UbMath::c1o36*(-vx1+vx2+vx3)); break;
          default: throw UbException(UB_EXARGS, "unknown error");
          }
-         LBMReal fReturn = ((1.0-q)/(1.0+q))*((f[invDir]-feq[invDir])/(1.0-collFactor)+feq[invDir])+((q*(f[invDir]+f[fdir])-velocity*rho)/(1.0+q));
+         LBMReal fReturn = ((1.0 - q) / (1.0 + q))*((f[invDir] - feq[invDir]) / (1.0 - collFactor) + feq[invDir]) + ((q*(f[invDir] + f[fdir]) - velocity*rho) / (1.0 + q))-drho*D3Q27System::WEIGTH[invDir];
          distributions->setDistributionForDirection(fReturn, x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
       }
    }

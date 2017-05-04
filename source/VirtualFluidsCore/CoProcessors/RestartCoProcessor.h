@@ -15,8 +15,8 @@ class RestartCoProcessor : public CoProcessor
 public:
    enum ArchiveType {TXT, BINARY};
 public:
-   RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, ArchiveType typetype = BINARY);
-   RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, int restartStep, ArchiveType typetype = BINARY);
+   RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, ArchiveType type = BINARY);
+   RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, int restartStep, ArchiveType type = BINARY);
    ~RestartCoProcessor();
    void process(double step);
    void addCoProcessor(CoProcessorPtr p);
@@ -27,6 +27,8 @@ public:
    void doCheckPoint(int step);
    Grid3DPtr restart();
    void writeDistributedGrid(Grid3DPtr grid, int numberOfProcesses);
+   void setArchiveType(ArchiveType type);
+   ArchiveType getArchiveType();
 protected:
    void acceptGridVisitors();
    void acceptBlockVisitors();

@@ -3,9 +3,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 ########################################################
 ## C++ PROJECT                                       ###
 ########################################################
-PROJECT(sscaling)
+PROJECT(mpib)
 
-INCLUDE(${SOURCE_ROOT}/lib/IncludsList.txt) 
+INCLUDE(${SOURCE_ROOT}/IncludsList.cmake) 
 
 #################################################################
 ###   LOCAL FILES                                             ###
@@ -17,9 +17,9 @@ FILE(GLOB SPECIFIC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.h
 SET(ALL_SOURCES ${ALL_SOURCES} ${SPECIFIC_FILES})
 SOURCE_GROUP(src FILES ${SPECIFIC_FILES})
   
-SET(CAB_ADDITIONAL_LINK_LIBRARIES vfluids)
+SET(CAB_ADDITIONAL_LINK_LIBRARIES VirtualFluids)
 
 #################################################################
 ###   CREATE PROJECT                                          ###
 #################################################################
-CREATE_CAB_PROJECT(sscaling BINARY)
+CREATE_CAB_PROJECT(mpib BINARY)

@@ -16,13 +16,6 @@ void run(string configname)
 {
    try
    {
-#pragma omp parallel //num_threads(3)  
-#pragma omp master  
-      {
-         printf_s("%d\n", omp_get_num_threads());
-      }
-printf_s("num_threads=%d\n", omp_get_num_threads( ));
-
       ConfigurationFile   config;
       config.load(configname);
 
@@ -47,6 +40,7 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
       double          deltaXfine = config.getDouble("deltaXfine")*1000.0;
       bool            thinWall = config.getBool("thinWall");
       double          refineDistance = config.getDouble("refineDistance");
+      double          startDistance = config.getDouble("startDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
@@ -97,10 +91,11 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
 
       double rhoLB = 0.0;
       double rhoReal = 1.2041; //(kg/m3)
-      double nueReal = 153.5e-7; //m^2/s
-
+      //double nueReal = 153.5e-7; //m^2/s
+      double uReal = 55; //m/s
       double lReal = 0.3;//m
-      double uReal = Re*nueReal / lReal;
+      //double uReal = Re*nueReal / lReal;
+      double nuReal = (uReal*lReal)/Re; //m^2/s
 
       //##Machzahl:
       //#Ma     = uReal/csReal
@@ -112,8 +107,8 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
 
       //double u_LB = uReal   * unitConverter.getFactorVelocityWToLb();
       //double nu_LB = nueReal * unitConverter.getFactorViscosityWToLb();
-      double l_LB = lReal*1000.0 / deltaXcoarse;
-      double nuLB = (uLB*l_LB) / Re; //0.005;
+      double lLB = lReal*1000.0 / deltaXcoarse;
+      double nuLB = (uLB*lLB)/Re; //0.005;
       //double nuLB = 0.005;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
@@ -169,7 +164,7 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStep));
-      RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
+      RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -181,14 +176,18 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
             UBLOG(logINFO, "* Re                  = "<<Re);
             UBLOG(logINFO, "* Ma                  = "<<Ma);
             UBLOG(logINFO, "* velocity (uReal)    = "<<uReal<<" m/s");
-            UBLOG(logINFO, "* viscosity (nuReal)  = "<<nueReal<<" m^2/s");
+            UBLOG(logINFO, "* viscosity (nuReal)  = "<<nuReal<<" m^2/s");
+            UBLOG(logINFO, "* chord length (lReal)= "<<lReal<<" m");
             UBLOG(logINFO, "* velocity LB (uLB)   = "<<uLB);
             UBLOG(logINFO, "* viscosity LB (nuLB) = "<<nuLB);
+            UBLOG(logINFO, "* chord length (l_LB) = "<<lLB<<" dx_base");
             UBLOG(logINFO, "* dx_base             = "<<deltaXcoarse/1000<<" m");
             UBLOG(logINFO, "* dx_refine           = "<<deltaXfine/1000<<" m");
-            UBLOG(logINFO, "* number of levels    = " << refineLevel + 1);
-            UBLOG(logINFO, "* number of threads   = " << numOfThreads);
-            UBLOG(logINFO, "* number of processes = " << comm->getNumberOfProcesses());
+            UBLOG(logINFO, "* blocknx             = "<<blockNx[0]<<"x"<<blockNx[1]<<"x"<<blockNx[2] );
+            UBLOG(logINFO, "* refineDistance      = "<<refineDistance);
+            UBLOG(logINFO, "* number of levels    = "<<refineLevel + 1);
+            UBLOG(logINFO, "* number of threads   = "<<numOfThreads);
+            UBLOG(logINFO, "* number of processes = "<<comm->getNumberOfProcesses());
             UBLOG(logINFO, "Preprozess - start");
          }
 
@@ -258,7 +257,7 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
          meshBand6->rotate(0.0, -1, 0.0);
          meshBand6->rotate(0.0, 0.0, 180.0);
          //meshBand6->translate(30, 5, -37.3);
-         meshBand6->translate(30, 5, -37.0);
+         meshBand6->translate(30, 5, -37.2);
          if (myid==0) GbSystem3D::writeGeoObject(meshBand6.get(), pathOut+"/geo/zigZagTape6", WbWriterVtkXmlASCII::getInstance());
          //// Zackenband7
          //GbTriFaceMesh3DPtr meshBand7(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape7"));
@@ -272,7 +271,7 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
          //if (myid==0) GbSystem3D::writeGeoObject(meshBan8.get(), pathOut+"/geo/zigZagTape8", WbWriterVtkXmlASCII::getInstance());
          if (myid==0) UBLOG(logINFO, "Read zigZagTape:end");
 
-         return;
+         
 
          //////////////////////////////////////////////////////////////////////////
 
@@ -309,33 +308,50 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
 
             int rank = grid->getRank();
             grid->setRank(0);
-            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand1Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
-            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand2Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
-            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand3Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
-            boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand4Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
-            grid->setRank(rank);
 
             if (porousTralingEdge)
             {
-               int rank = grid->getRank();
-               grid->setRank(0);
-               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrBodyPart)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
-               grid->setRank(rank);
+               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrBodyPart)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
             }
-            else
-            {
-               int rank = grid->getRank();
-               grid->setRank(0);
-               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
-               grid->setRank(rank);
-            }
+            //else
+            //{
+            //   boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
+            //}
 
+            //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand1Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand2Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand3Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+            //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand4Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
+
+
+            GbObject3DPtr fngBox(new GbCuboid3D(fngMeshWhole->getX1Minimum(), fngMeshWhole->getX2Minimum(), fngMeshWhole->getX3Minimum(),
+                                                fngMeshWhole->getX1Maximum(), fngMeshWhole->getX2Maximum(), fngMeshWhole->getX3Maximum()));
+            if (myid==0) GbSystem3D::writeGeoObject(fngBox.get(), pathOut+"/geo/fngBox", WbWriterVtkXmlASCII::getInstance());
+
+            RefineCrossAndInsideGbObjectBlockVisitor refVisitor0(fngBox, refineLevel);
+            grid->accept(refVisitor0);
+
+            
+            GbObject3DPtr bandTopBox(new GbCuboid3D(meshBand1->getX1Minimum(), meshBand1->getX2Minimum(), meshBand1->getX3Minimum(), 
+                                                 meshBand1->getX1Maximum(), meshBand1->getX2Maximum(), meshBand1->getX3Maximum()));
+            if (myid==0) GbSystem3D::writeGeoObject(bandTopBox.get(), pathOut+"/geo/bandTopBox", WbWriterVtkXmlASCII::getInstance());
+
+            RefineCrossAndInsideGbObjectBlockVisitor refVisitor1(bandTopBox, refineLevel);
+            grid->accept(refVisitor1);
+
+            GbObject3DPtr bandBottomBox(new GbCuboid3D(meshBand5->getX1Minimum(), meshBand5->getX2Minimum(), meshBand5->getX3Minimum(), 
+                                                    meshBand5->getX1Maximum(), meshBand5->getX2Maximum(), meshBand5->getX3Maximum()));
+            if (myid==0) GbSystem3D::writeGeoObject(bandBottomBox.get(), pathOut+"/geo/bandBottomBox", WbWriterVtkXmlASCII::getInstance());
+
+            RefineCrossAndInsideGbObjectBlockVisitor refVisitor2(bandBottomBox, refineLevel);
+            grid->accept(refVisitor2);
+
+            grid->setRank(rank);
 
             {
                WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
                ppblocks.process(0);
             }
-
 
             ////////////////////////////////////////////
             //METIS
@@ -482,20 +498,20 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
          intHelper.addInteractor(outflowIntr);
          intHelper.addInteractor(addWallZminInt);
          intHelper.addInteractor(addWallZmaxInt);
-         intHelper.addInteractor(triBand1Interactor);
-         intHelper.addInteractor(triBand2Interactor);
-         intHelper.addInteractor(triBand3Interactor);
-         intHelper.addInteractor(triBand4Interactor);
-         
-         if (porousTralingEdge)
-         {
-            intHelper.addInteractor(fngIntrBodyPart);
-            //intHelper.addInteractor(fngIntrTrailingEdge);
-         } 
-         else
-         {
-            intHelper.addInteractor(fngIntrWhole);
-         }
+         //intHelper.addInteractor(triBand1Interactor);
+         //intHelper.addInteractor(triBand2Interactor);
+         //intHelper.addInteractor(triBand3Interactor);
+         //intHelper.addInteractor(triBand4Interactor);
+         //
+         //if (porousTralingEdge)
+         //{
+         //   intHelper.addInteractor(fngIntrBodyPart);
+         //   //intHelper.addInteractor(fngIntrTrailingEdge);
+         //} 
+         //else
+         //{
+         //   intHelper.addInteractor(fngIntrWhole);
+         //}
          
          //////////////////////////////////////////////////////////////////////////
          intHelper.selectBlocks();
@@ -534,6 +550,7 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
          }
 
          LBMKernelPtr kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
+         //LBMKernelPtr kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], IncompressibleCumulantLBMKernel::NORMAL));
 
          BCProcessorPtr bcProc;
 
@@ -579,11 +596,12 @@ printf_s("num_threads=%d\n", omp_get_num_threads( ));
          //initVisitor.setVx1(inflowProfileVx1);
          //initVisitor.setVx2(inflowProfileVx2);
          //initVisitor.setVx3(inflowProfileVx3);
-         initVisitor.setNu(nuLB);
+         //initVisitor.setNu(nuLB);
          grid->accept(initVisitor);
 
          ////set connectors
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 

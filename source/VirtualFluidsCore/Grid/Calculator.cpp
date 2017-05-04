@@ -81,7 +81,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
-         //UBLOG(logINFO, "calcStep = " <<calcStep);
+         UBLOG(logINFO, "calcStep = " <<calcStep);
 #endif
 //////////////////////////////////////////////////////////////////////////
          
@@ -109,7 +109,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[0] = timer.stop();
-            //UBLOG(logINFO, "calculateBlocks time = " <<time);
+            UBLOG(logINFO, "calculateBlocks time = " <<time[0]);
 #endif
 //////////////////////////////////////////////////////////////////////////
 
@@ -119,7 +119,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[1] = timer.stop();
-            //UBLOG(logINFO, "exchangeBlockData time = " <<time);
+            UBLOG(logINFO, "exchangeBlockData time = " <<time[1]);
 #endif
 //////////////////////////////////////////////////////////////////////////
             //applyBCs(straightStartLevel, maxInitLevel);
@@ -128,7 +128,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[2] = timer.stop();
-            //UBLOG(logINFO, "applyBCs time = " <<time);
+            UBLOG(logINFO, "applyBCs time = " <<time[2]);
 #endif
 //////////////////////////////////////////////////////////////////////////
 
@@ -144,7 +144,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[3] = timer.stop();
-            //UBLOG(logINFO, "swapDistributions time = " <<time);
+            UBLOG(logINFO, "swapDistributions time = " <<time[3]);
 #endif
 //////////////////////////////////////////////////////////////////////////
 
@@ -159,7 +159,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
                time[4] = timer.stop();
-               UBLOG(logINFO, "refinement exchangeBlockData time = " <<time);
+               UBLOG(logINFO, "refinement exchangeBlockData time = " <<time[4]);
 #endif
 //////////////////////////////////////////////////////////////////////////
                //now ghost nodes have actual values
@@ -168,7 +168,7 @@ void Calculator::calculate(const double& endTime, CalculationManagerPtr cm, boos
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
                time[5] = timer.stop();
-               UBLOG(logINFO, "refinement interpolation time = " <<time);
+               UBLOG(logINFO, "refinement interpolation time = " <<time[5]);
 #endif
 //////////////////////////////////////////////////////////////////////////
             }

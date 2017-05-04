@@ -759,8 +759,8 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVector(Distributio
 							" interpolation is not implemented for other direction"+
 							" by using in: "+(std::string)typeid(*this).name()+ 
 							" or maybe you have a solid on the block boundary";
-                  UBLOG(logINFO, err);
-						//UB_THROW(UbException(UB_EXARGS, err));
+                  //UBLOG(logINFO, err);
+						UB_THROW(UbException(UB_EXARGS, err));
 					}
 				}
 

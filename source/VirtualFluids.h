@@ -103,6 +103,7 @@
 #include <BoundaryConditions/SlipBCAlgorithm.h>
 #include <BoundaryConditions/NonReflectingDensityBCAlgorithm.h>
 #include <BoundaryConditions/NonReflectingVelocityBCAlgorithm.h>
+#include <BoundaryConditions/NonReflectingSlipBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/D3Q27ETCFOffVectorConnector.h>
