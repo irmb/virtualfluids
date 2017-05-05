@@ -99,6 +99,8 @@ private:
    //////////////////////////////////////////////////////////////////////////
    void deleteBC(std::size_t x1, std::size_t x2, std::size_t x3);
 
+   friend class MPIIORestartCoProcessor;
+
    friend class boost::serialization::access;
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)

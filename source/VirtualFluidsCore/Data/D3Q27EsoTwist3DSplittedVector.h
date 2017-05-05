@@ -50,13 +50,20 @@ public:
    //////////////////////////////////////////////////////////////////////////
    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr getZeroDistributions();
    //////////////////////////////////////////////////////////////////////////
-   void getDistributionAfterLastStep(LBMReal* const f, size_t x1, size_t x2, size_t x3);
+   void setNX1(size_t newNX1);
+   void setNX2(size_t newNX2);
+   void setNX3(size_t newNX3);
+   void setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array);
+   void setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array);
+   void setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr array);
    
 protected:
    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr localDistributions;
    CbArray4D<LBMReal,IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
    size_t NX1, NX2, NX3;
+
+   friend class MPIIORestartCoProcessor;
 
    friend class boost::serialization::access;
    template<class Archive>

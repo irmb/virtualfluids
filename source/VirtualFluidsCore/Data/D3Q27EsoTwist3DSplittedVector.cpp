@@ -619,9 +619,34 @@ CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr D3Q27EsoTwist3DSplittedVector::ge
    return this->zeroDistributions;
 }
 //////////////////////////////////////////////////////////////////////////
-void D3Q27EsoTwist3DSplittedVector::getDistributionAfterLastStep( LBMReal* const f, size_t x1, size_t x2, size_t x3 )
+void D3Q27EsoTwist3DSplittedVector::setNX1(size_t newNX1)
 {
-
+   NX1 = newNX1;
+}
+//////////////////////////////////////////////////////////////////////////
+void D3Q27EsoTwist3DSplittedVector::setNX2(size_t newNX2)
+{
+   NX2 = newNX2;
+}
+//////////////////////////////////////////////////////////////////////////
+void D3Q27EsoTwist3DSplittedVector::setNX3(size_t newNX3)
+{
+   NX3 = newNX3;
+}
+//////////////////////////////////////////////////////////////////////////
+void D3Q27EsoTwist3DSplittedVector::setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array)
+{
+   localDistributions = array;
+}
+//////////////////////////////////////////////////////////////////////////
+void D3Q27EsoTwist3DSplittedVector::setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr array)
+{
+   nonLocalDistributions = array;
+}
+//////////////////////////////////////////////////////////////////////////
+void D3Q27EsoTwist3DSplittedVector::setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr array)
+{
+   zeroDistributions = array;
 }
 
 //////////////////////////////////////////////////////////////////////////

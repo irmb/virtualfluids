@@ -42,6 +42,7 @@ void run(string configname)
       double          refineDistance = config.getDouble("refineDistance");
       double          startDistance = config.getDouble("startDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
+      bool            newStart = config.getBool("newStart");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -119,18 +120,6 @@ void run(string configname)
       //Grid
       //////////////////////////////////////////////////////////////////////////
       Grid3DPtr grid(new Grid3D(comm));
-      grid->setDeltaX(deltaXcoarse);
-      grid->setBlockNX(blockNx[0], blockNx[1], blockNx[2]);
-
-      GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-      //gridCube->setCenterCoordinates(geo->getX1Centroid(), geo->getX2Centroid(), geo->getX3Centroid());
-      if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut + "/geo/gridCube", WbWriterVtkXmlASCII::getInstance());
-      GenBlocksGridVisitor genBlocks(gridCube);
-      grid->accept(genBlocks);
-
-      grid->setPeriodicX1(false);
-      grid->setPeriodicX2(true);
-      grid->setPeriodicX3(false);
 
       //BC adapters
       BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
@@ -163,13 +152,30 @@ void run(string configname)
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStep));
-      RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::TXT);
+      UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
+      //RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::TXT);
+      MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
       //////////////////////////////////////////////////////////////////////////
 
 
-      if (grid->getTimeStep() == 0)
+      //if (grid->getTimeStep() == 0)
+      if(newStart)
       {
+         ////////////////////////////////////////////////////////////////////////
+         //define grid
+         //////////////////////////////////////////////////////////////////////////
+         grid->setDeltaX(deltaXcoarse);
+         grid->setBlockNX(blockNx[0], blockNx[1], blockNx[2]);
+
+         GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+         if (myid==0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut+"/geo/gridCube", WbWriterVtkXmlASCII::getInstance());
+         GenBlocksGridVisitor genBlocks(gridCube);
+         grid->accept(genBlocks);
+
+         grid->setPeriodicX1(false);
+         grid->setPeriodicX2(true);
+         grid->setPeriodicX3(false);
+
          if (myid == 0)
          {
             UBLOG(logINFO, "Parameters:");
@@ -520,7 +526,7 @@ void run(string configname)
          //////////////////////////////////////
 
          {
-            WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+            WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlASCII::getInstance(), comm);
             ppblocks.process(2);
          }
 
@@ -620,6 +626,14 @@ void run(string configname)
       }
       else
       {
+         rcp.restart();
+         grid->setTimeStep(restartStepStart);
+
+         {
+            WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlASCII::getInstance(), comm);
+            ppblocks.process(3);
+         }
+
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);

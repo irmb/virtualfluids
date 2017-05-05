@@ -58,6 +58,7 @@ public:
 
    void setIndex(int x1, int x2, int x3);
 
+   LBMReal getDeltaT();
    void setDeltaT(LBMReal dt);
 
    bool getCompressible() const;

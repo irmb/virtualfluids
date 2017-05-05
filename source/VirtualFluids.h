@@ -160,6 +160,7 @@
 //#include <CoProcessors/MeanValuesCoProcessor.h>
 #include <CoProcessors/TimeAveragedValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
+#include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <LineTimeSeriesCoProcessor.h>
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
