@@ -4,9 +4,10 @@
 //#include "LBMKernel.h"
 #include "CompressibleCumulantLBMKernel.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
+#include <UbSystem.h>
 
-//! \brief BLOCK_SIZE defines the quantity of the BoundaryCondition-structures written as one block to the file
-//! \details To avoid overflow in the parameter \a count of the function MPI_File_write_at 
+//! BLOCK_SIZE defines the quantity of the BoundaryCondition-structures written as one block to the file
+//! To avoid overflow in the parameter \a count of the function MPI_File_write_at 
 //! structures BoundaryCondition are being written in blocks containing each of them BLOCK_SIZE structures
 #define BLOCK_SIZE 1024
 
@@ -17,6 +18,8 @@ MPIIORestartCoProcessor::MPIIORestartCoProcessor(Grid3DPtr grid, UbSchedulerPtr 
                                          path(path),
                                          comm(comm)
 {
+   UbSystem::makeDirectory(path + "/mpi_io_cp");
+
    memset(&blockParamStr, 0, sizeof(blockParamStr));
 
    //-------------------------   define MPI types  ---------------------------------
@@ -107,19 +110,26 @@ void MPIIORestartCoProcessor::process(double step)
 {
 	if(scheduler->isDue(step))
 	{
-		writeBlocks();
-		writeDataSet();
-		writeBoundaryConds();
+      if(comm->isRoot()) UBLOG(logINFO,"MPIIORestartCoProcessor save step: " << step);
+      if(comm->isRoot()) UBLOG(logINFO,"Save check point - start");
+		writeBlocks((int)step);
+		writeDataSet((int)step);
+		writeBoundaryConds((int)step);
+      if(comm->isRoot()) UBLOG(logINFO,"Save check point - end");
 	}
 }
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartCoProcessor::writeBlocks()
+void MPIIORestartCoProcessor::writeBlocks(int step)
 {
 	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_File file_handler;
-	int error = MPI_File_open(MPI_COMM_WORLD, "outputBlocks.bin", MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+
+   UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -382,7 +392,7 @@ void MPIIORestartCoProcessor::writeBlocks()
    delete gridParameters;
 }
 
-void MPIIORestartCoProcessor::writeDataSet()
+void MPIIORestartCoProcessor::writeDataSet(int step)
 {
 	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -476,7 +486,9 @@ void MPIIORestartCoProcessor::writeDataSet()
 	}
 
 	MPI_File file_handler;
-	int error = MPI_File_open(MPI_COMM_WORLD, "outputDataSet.bin", MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
+	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // each process writes the quantity of it's blocks
    MPI_File_write_at(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
@@ -490,7 +502,7 @@ void MPIIORestartCoProcessor::writeDataSet()
 	delete[] dataSetArray;
 }
 
-void MPIIORestartCoProcessor::writeBoundaryConds()
+void MPIIORestartCoProcessor::writeBoundaryConds(int step)
 {
 	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -611,7 +623,9 @@ void MPIIORestartCoProcessor::writeBoundaryConds()
 	}
 
 	MPI_File file_handler;
-	int error = MPI_File_open(MPI_COMM_WORLD, "outputBoundCond.bin", MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // each process writes the quantity of it's blocks
    MPI_File_write_at(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);	//	blocks quantity
@@ -635,23 +649,27 @@ void MPIIORestartCoProcessor::writeBoundaryConds()
 }
 
 //------------------------------------------- READ -----------------------------------------------
-void MPIIORestartCoProcessor::restart()
+void MPIIORestartCoProcessor::restart(int step)
 {
-	readBlocks();
-	readDataSet();
-	readBoundaryConds();
-
+   if(comm->isRoot()) UBLOG(logINFO,"MPIIORestartCoProcessor restart step: " << step);
+   if(comm->isRoot()) UBLOG(logINFO,"Load check point - start");
+	readBlocks(step);
+	readDataSet(step);
+	readBoundaryConds(step);
+   if(comm->isRoot()) UBLOG(logINFO,"Load check point - end");
 	this->reconnect(grid);
 }
 
-void MPIIORestartCoProcessor::readBlocks()
+void MPIIORestartCoProcessor::readBlocks(int step)
 {
 	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
 	MPI_File file_handler;
-	int error = MPI_File_open(MPI_COMM_WORLD, "outputBlocks.bin", MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
+	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // read count of blocks
    int blocksCount = 0;
@@ -793,14 +811,16 @@ void MPIIORestartCoProcessor::readBlocks()
 	delete [] block3dArray;
 }
 
-void MPIIORestartCoProcessor::readDataSet()
+void MPIIORestartCoProcessor::readDataSet(int step)
 {
 	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
 	MPI_File file_handler;
-	int error = MPI_File_open(MPI_COMM_WORLD, "outputDataSet.bin", MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
+	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // read count of blocks
    int blocksCount = 0;
@@ -909,14 +929,16 @@ void MPIIORestartCoProcessor::readDataSet()
 	delete [] dataSetArray;
 }
 
-void MPIIORestartCoProcessor::readBoundaryConds()
+void MPIIORestartCoProcessor::readBoundaryConds(int step)
 {
 	int rank, size;
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 
 	MPI_File file_handler;
-	int error = MPI_File_open(MPI_COMM_WORLD, "outputBoundCond.bin", MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
+   int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
+   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
 	int blocksCount = 0;
    int dataCount1000 = 0;

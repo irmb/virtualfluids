@@ -153,7 +153,7 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
-      //RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::TXT);
+      //RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
       MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
       //////////////////////////////////////////////////////////////////////////
 
@@ -319,10 +319,10 @@ void run(string configname)
             {
                boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrBodyPart)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
             }
-            //else
-            //{
-            //   boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
-            //}
+            else
+            {
+               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
+            }
 
             //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand1Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
             //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand2Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
@@ -330,12 +330,12 @@ void run(string configname)
             //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand4Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
 
 
-            GbObject3DPtr fngBox(new GbCuboid3D(fngMeshWhole->getX1Minimum(), fngMeshWhole->getX2Minimum(), fngMeshWhole->getX3Minimum(),
-                                                fngMeshWhole->getX1Maximum(), fngMeshWhole->getX2Maximum(), fngMeshWhole->getX3Maximum()));
-            if (myid==0) GbSystem3D::writeGeoObject(fngBox.get(), pathOut+"/geo/fngBox", WbWriterVtkXmlASCII::getInstance());
+            //GbObject3DPtr fngBox(new GbCuboid3D(fngMeshWhole->getX1Minimum(), fngMeshWhole->getX2Minimum(), fngMeshWhole->getX3Minimum(),
+            //                                    fngMeshWhole->getX1Maximum(), fngMeshWhole->getX2Maximum(), fngMeshWhole->getX3Maximum()));
+            //if (myid==0) GbSystem3D::writeGeoObject(fngBox.get(), pathOut+"/geo/fngBox", WbWriterVtkXmlASCII::getInstance());
 
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitor0(fngBox, refineLevel);
-            grid->accept(refVisitor0);
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitor0(fngBox, refineLevel);
+            //grid->accept(refVisitor0);
 
             
             GbObject3DPtr bandTopBox(new GbCuboid3D(meshBand1->getX1Minimum(), meshBand1->getX2Minimum(), meshBand1->getX3Minimum(), 
@@ -626,7 +626,7 @@ void run(string configname)
       }
       else
       {
-         rcp.restart();
+         rcp.restart(restartStepStart);
          grid->setTimeStep(restartStepStart);
 
          {

@@ -137,19 +137,19 @@ public:
    //! Each timestep writes the grid into the files
    void process(double step);
    //! Reads the grid from the files before grid reconstruction
-   void restart();
+   void restart(int step);
    //! Writes the blocks of the grid into the file outputBlocks.bin
-   void writeBlocks();
+   void writeBlocks(int step);
    //! Writes the datasets of the blocks into the file outputDataSet.bin
-   void writeDataSet();
+   void writeDataSet(int step);
    //! Writes the boundary conditions of the blocks into the file outputBoundCond.bin
-   void writeBoundaryConds();
+   void writeBoundaryConds(int step);
    //! Reads the blocks of the grid from the file outputBlocks.bin
-   void readBlocks();
+   void readBlocks(int step);
    //! Reads the datasets of the blocks from the file outputDataSet.bin
-   void readDataSet();
+   void readDataSet(int step);
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
-   void readBoundaryConds();
+   void readBoundaryConds(int step);
 
 protected:
    std::string path;
