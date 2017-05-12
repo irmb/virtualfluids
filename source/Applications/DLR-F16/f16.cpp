@@ -30,7 +30,8 @@ void run(string configname)
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
       double          uLB = config.getDouble("uLB");
       double          restartStep = config.getDouble("restartStep");
-      double          restartStepStart = config.getDouble("restartStepStart");
+      double          cpStart = config.getDouble("cpStart");
+      double          cpStep = config.getDouble("cpStep");
       double          endTime = config.getDouble("endTime");
       double          outTime = config.getDouble("outTime");
       double          availMem = config.getDouble("availMem");
@@ -152,7 +153,7 @@ void run(string configname)
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
+      UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStart));
       //RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
       MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
       //////////////////////////////////////////////////////////////////////////
@@ -504,20 +505,20 @@ void run(string configname)
          intHelper.addInteractor(outflowIntr);
          intHelper.addInteractor(addWallZminInt);
          intHelper.addInteractor(addWallZmaxInt);
-         //intHelper.addInteractor(triBand1Interactor);
-         //intHelper.addInteractor(triBand2Interactor);
-         //intHelper.addInteractor(triBand3Interactor);
-         //intHelper.addInteractor(triBand4Interactor);
-         //
-         //if (porousTralingEdge)
-         //{
-         //   intHelper.addInteractor(fngIntrBodyPart);
-         //   //intHelper.addInteractor(fngIntrTrailingEdge);
-         //} 
-         //else
-         //{
-         //   intHelper.addInteractor(fngIntrWhole);
-         //}
+         intHelper.addInteractor(triBand1Interactor);
+         intHelper.addInteractor(triBand2Interactor);
+         intHelper.addInteractor(triBand3Interactor);
+         intHelper.addInteractor(triBand4Interactor);
+         
+         if (porousTralingEdge)
+         {
+            intHelper.addInteractor(fngIntrBodyPart);
+            //intHelper.addInteractor(fngIntrTrailingEdge);
+         } 
+         else
+         {
+            intHelper.addInteractor(fngIntrWhole);
+         }
          
          //////////////////////////////////////////////////////////////////////////
          intHelper.selectBlocks();
@@ -626,8 +627,8 @@ void run(string configname)
       }
       else
       {
-         rcp.restart(restartStepStart);
-         grid->setTimeStep(restartStepStart);
+         rcp.restart((int)restartStep);
+         grid->setTimeStep(restartStep);
 
          {
             WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlASCII::getInstance(), comm);

@@ -207,6 +207,13 @@ void run(string configname)
       initVisitor.setVx1(uLB);
       grid->accept(initVisitor);
 
+      //////////////////////////////////////////////////////////////////////////
+      //restart
+      UbSchedulerPtr rSch(new UbScheduler(20, 20));
+      //RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
+      MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
+      rcp.restart(10);
+      //////////////////////////////////////////////////////////////////////////
 
       UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);

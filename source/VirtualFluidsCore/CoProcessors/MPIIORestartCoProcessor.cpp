@@ -128,8 +128,8 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
 
    UbSystem::makeDirectory(path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step));
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
-   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
+	int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handler);
+   if(rc != MPI_SUCCESS) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -371,14 +371,14 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
 	}
 
    // each process writes the quantity of it's blocks
-	MPI_File_write_at(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+	MPI_File_write_at_all(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    // each process writes parameters of the grid
-   MPI_File_write_at(file_handler, view_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
+   MPI_File_write_at_all(file_handler, view_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
    // each process writes common parameters of a block
-   MPI_File_write_at(file_handler, view_offset + sizeof(GridParam), &blockParamStr, 1, blockParamType, MPI_STATUS_IGNORE);
+   MPI_File_write_at_all(file_handler, view_offset + sizeof(GridParam), &blockParamStr, 1, blockParamType, MPI_STATUS_IGNORE);
    // each process writes it's blocks
-   MPI_File_write_at(file_handler, view_offset + sizeof(GridParam) + sizeof(blockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
-	MPI_File_sync(file_handler);
+   MPI_File_write_at_all(file_handler, view_offset + sizeof(GridParam) + sizeof(blockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 
    // register new MPI-types depending on the block-specific information
@@ -487,16 +487,16 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
 
 	MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
-	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
-   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
+	int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY , MPI_INFO_NULL, &file_handler);
+   if(rc != MPI_SUCCESS) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // each process writes the quantity of it's blocks
-   MPI_File_write_at(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+   MPI_File_write_at_all(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    // each process writes data identifying blocks
-   MPI_File_write_at(file_handler, view_offset, &dataSetArray[0], blocksCount, dataSetType, MPI_STATUS_IGNORE);
+   MPI_File_write_at_all(file_handler, view_offset, &dataSetArray[0], blocksCount, dataSetType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
-	MPI_File_write_at(file_handler, view_offset + blocksCount * sizeof(dataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
-	MPI_File_sync(file_handler);
+	MPI_File_write_at_all(file_handler, view_offset + blocksCount * sizeof(dataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 
 	delete[] dataSetArray;
@@ -624,25 +624,28 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
 
 	MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
-	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
-   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
+	int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY , MPI_INFO_NULL, &file_handler);
+   if(rc != MPI_SUCCESS) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // each process writes the quantity of it's blocks
-   MPI_File_write_at(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);	//	blocks quantity
+   MPI_File_write_at_all(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);	//	blocks quantity
    // each process writes the quantity of "big blocks" of BLOCK_SIZE of boundary conditions
-   MPI_File_write_at(file_handler, (rank + size) * sizeof(int), &bcBlockCount, 1, MPI_INT, MPI_STATUS_IGNORE); // quantity of BoundConds / BLOCK_SIZE
+   MPI_File_write_at_all(file_handler, (rank + size) * sizeof(int), &bcBlockCount, 1, MPI_INT, MPI_STATUS_IGNORE); // quantity of BoundConds / BLOCK_SIZE
    // each process writes the quantity of indexContainer elements in all blocks
-	MPI_File_write_at(file_handler, (rank + 2 * size) * sizeof(int), &count_indexContainer, 1, MPI_INT, MPI_STATUS_IGNORE); // quantity of indexContainer	
+	MPI_File_write_at_all(file_handler, (rank + 2 * size) * sizeof(int), &count_indexContainer, 1, MPI_INT, MPI_STATUS_IGNORE); // quantity of indexContainer	
 
    // each process writes data identifying the blocks
-   MPI_File_write_at(file_handler, view_offset, &bcAddArray[0], blocksCount, boundCondTypeAdd, MPI_STATUS_IGNORE);
+   MPI_File_write_at_all(file_handler, view_offset, bcAddArray, blocksCount, boundCondTypeAdd, MPI_STATUS_IGNORE);
    // each process writes boundary conditions
-	MPI_File_write_at(file_handler, view_offset + blocksCount * sizeof(BCAdd), &bcVector[0], bcBlockCount, boundCondType1000, MPI_STATUS_IGNORE);
+   if (bcVector.size() > 0)
+   {
+      	MPI_File_write_at_all(file_handler, view_offset + blocksCount * sizeof(BCAdd), &bcVector[0], bcBlockCount, boundCondType1000, MPI_STATUS_IGNORE);
+   }
    // each process writes bcindexmatrix values
-	MPI_File_write_at(file_handler, view_offset + blocksCount * sizeof(BCAdd) + bcBlockCount * BLOCK_SIZE * sizeof(BoundaryCondition), &bcindexmatrixV[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
+	MPI_File_write_at_all(file_handler, view_offset + blocksCount * sizeof(BCAdd) + bcBlockCount * BLOCK_SIZE * sizeof(BoundaryCondition), &bcindexmatrixV[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
    // each process writes indexContainer values
-	MPI_File_write_at(file_handler, view_offset + blocksCount * sizeof(BCAdd) + bcBlockCount * BLOCK_SIZE * sizeof(BoundaryCondition) + blocksCount * blockParamStr.bcindexmatrix_count * sizeof(int), &indexContainerV[0], count_indexContainer, MPI_INT, MPI_STATUS_IGNORE);
-	MPI_File_sync(file_handler);
+	MPI_File_write_at_all(file_handler, view_offset + blocksCount * sizeof(BCAdd) + bcBlockCount * BLOCK_SIZE * sizeof(BoundaryCondition) + blocksCount * blockParamStr.bcindexmatrix_count * sizeof(int), &indexContainerV[0], count_indexContainer, MPI_INT, MPI_STATUS_IGNORE);
+	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 
 	delete [] bcAddArray;
@@ -668,8 +671,8 @@ void MPIIORestartCoProcessor::readBlocks(int step)
 
 	MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
-   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
+	int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY , MPI_INFO_NULL, &file_handler);
+   if(rc != MPI_SUCCESS) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // read count of blocks
    int blocksCount = 0;
@@ -699,12 +702,12 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    GridParam* gridParameters = new GridParam;
 
    // read parameters of the grid
-   MPI_File_read_at(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
+   MPI_File_read_at_all(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
    // read parameters of a block
-   MPI_File_read_at(file_handler, read_offset + sizeof(GridParam), &blockParamStr, 1, blockParamType, MPI_STATUS_IGNORE);
+   MPI_File_read_at_all(file_handler, read_offset + sizeof(GridParam), &blockParamStr, 1, blockParamType, MPI_STATUS_IGNORE);
    // read all the blocks
-	MPI_File_read_at(file_handler, read_offset + sizeof(GridParam) + sizeof(blockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
-	MPI_File_sync(file_handler);
+	MPI_File_read_at_all(file_handler, read_offset + sizeof(GridParam) + sizeof(blockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+	//MPI_File_sync(file_handler);
 
 	MPI_File_close(&file_handler);
 
@@ -819,8 +822,8 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 
 	MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
-	int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
-   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
+	int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
+   if(rc != MPI_SUCCESS) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
    // read count of blocks
    int blocksCount = 0;
@@ -849,9 +852,9 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 		}
 	}
 
-   MPI_File_read_at(file_handler, read_offset, &dataSetArray[0], blocksCount, dataSetType, MPI_STATUS_IGNORE);
-	MPI_File_read_at(file_handler, read_offset + blocksCount * sizeof(dataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
-	MPI_File_sync(file_handler);
+   MPI_File_read_at_all(file_handler, read_offset, &dataSetArray[0], blocksCount, dataSetType, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file_handler, read_offset + blocksCount * sizeof(dataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 
 	size_t index = 0, nextVectorSize = 0;
@@ -937,8 +940,8 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
 
 	MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBC.bin";
-   int error = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR , MPI_INFO_NULL, &file_handler);
-   if(error) throw UbException(UB_EXARGS,"couldn't open file "+filename);
+   int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
+   if(rc != MPI_SUCCESS) throw UbException(UB_EXARGS,"couldn't open file "+filename);
 
 	int blocksCount = 0;
    int dataCount1000 = 0;
@@ -977,11 +980,11 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
 		}
 	}
 
-   MPI_File_read_at(file_handler, read_offset, &bcAddArray[0], blocksCount, boundCondTypeAdd, MPI_STATUS_IGNORE);
-	MPI_File_read_at(file_handler, read_offset + blocksCount * sizeof(BCAdd), &bcArray[0], dataCount1000, boundCondType1000, MPI_STATUS_IGNORE);
-	MPI_File_read_at(file_handler, read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition), &intArray1[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
-	MPI_File_read_at(file_handler, read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition) + blocksCount * blockParamStr.bcindexmatrix_count * sizeof(int), &intArray2[0], dataCount2, MPI_INT, MPI_STATUS_IGNORE);
-	MPI_File_sync(file_handler);
+   MPI_File_read_at_all(file_handler, read_offset, &bcAddArray[0], blocksCount, boundCondTypeAdd, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file_handler, read_offset + blocksCount * sizeof(BCAdd), &bcArray[0], dataCount1000, boundCondType1000, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file_handler, read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition), &intArray1[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file_handler, read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition) + blocksCount * blockParamStr.bcindexmatrix_count * sizeof(int), &intArray2[0], dataCount2, MPI_INT, MPI_STATUS_IGNORE);
+	//MPI_File_sync(file_handler);
 
 	MPI_File_close(&file_handler);
 
