@@ -43,19 +43,18 @@ private:
    int gridRank;
    CommunicatorPtr comm;
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<CoProcessor>(*this);
-      ar & path;
-      ar & conv;
-      ar & bcInformation;
-      ar & blockVector;
-      ar & minInitLevel;
-      ar & maxInitLevel;
-      ar & gridRank;
-      ar & writer;
-   }
+   //friend class boost::serialization::access;
+   //template<class Archive>
+   //void serialize(Archive & ar, const unsigned int version)
+   //{
+   //   ar & boost::serialization::base_object<CoProcessor>(*this);
+   //   ar & path;
+   //   ar & conv;
+   //   ar & blockVector;
+   //   ar & minInitLevel;
+   //   ar & maxInitLevel;
+   //   ar & gridRank;
+   //   ar & writer;
+   //}
 };
 #endif

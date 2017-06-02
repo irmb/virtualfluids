@@ -64,7 +64,7 @@ protected:
    int calcStep;
    std::vector< std::vector<Block3DPtr> > blocks;
 
-private:
+
    std::vector< std::vector< Block3DConnectorPtr > > localInterfaceBlockConns;
    std::vector< std::vector< Block3DConnectorPtr > > remoteInterfaceBlockConns;
 

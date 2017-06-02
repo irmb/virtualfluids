@@ -19,31 +19,57 @@ void run(string configname)
       ConfigurationFile   config;
       config.load(configname);
 
-      string          pathOut = config.getString("pathOut");
-      string          pathGeo = config.getString("pathGeo");
-      string          fngFileWhole = config.getString("fngFileWhole");
-      string          fngFileTrailingEdge = config.getString("fngFileTrailingEdge");
-      string          fngFileBodyPart = config.getString("fngFileBodyPart");
-      string          zigZagTape = config.getString("zigZagTape");
-      int             numOfThreads = config.getInt("numOfThreads");
+      //string          pathOut = config.getString("pathOut");
+      //string          pathGeo = config.getString("pathGeo");
+      //string          fngFileWhole = config.getString("fngFileWhole");
+      //string          fngFileTrailingEdge = config.getString("fngFileTrailingEdge");
+      //string          fngFileBodyPart = config.getString("fngFileBodyPart");
+      //string          zigZagTape = config.getString("zigZagTape");
+      //int             numOfThreads = config.getInt("numOfThreads");
+      //vector<int>     blockNx = config.getVector<int>("blockNx");
+      //vector<double>  boundingBox = config.getVector<double>("boundingBox");
+      //double          uLB = config.getDouble("uLB");
+      //double          restartStep = config.getDouble("restartStep");
+      //double          cpStart = config.getDouble("cpStart");
+      //double          cpStep = config.getDouble("cpStep");
+      //double          endTime = config.getDouble("endTime");
+      //double          outTime = config.getDouble("outTime");
+      //double          availMem = config.getDouble("availMem");
+      //int             refineLevel = config.getInt("refineLevel");
+      //bool            logToFile = config.getBool("logToFile");
+      //bool            porousTralingEdge = config.getBool("porousTralingEdge");
+      //double          deltaXfine = config.getDouble("deltaXfine")*1000.0;
+      //bool            thinWall = config.getBool("thinWall");
+      //double          refineDistance = config.getDouble("refineDistance"); 
+      //double          startDistance = config.getDouble("startDistance");
+      //vector<double>  nupsStep = config.getVector<double>("nupsStep");
+      //bool            newStart = config.getBool("newStart");
+
+      string          pathOut = config.getValue<string>("pathOut");
+      string          pathGeo = config.getValue<string>("pathGeo");
+      string          fngFileWhole = config.getValue<string>("fngFileWhole");
+      string          fngFileTrailingEdge = config.getValue<string>("fngFileTrailingEdge");
+      string          fngFileBodyPart = config.getValue<string>("fngFileBodyPart");
+      string          zigZagTape = config.getValue<string>("zigZagTape");
+      int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blockNx = config.getVector<int>("blockNx");
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
-      double          uLB = config.getDouble("uLB");
-      double          restartStep = config.getDouble("restartStep");
-      double          cpStart = config.getDouble("cpStart");
-      double          cpStep = config.getDouble("cpStep");
-      double          endTime = config.getDouble("endTime");
-      double          outTime = config.getDouble("outTime");
-      double          availMem = config.getDouble("availMem");
-      int             refineLevel = config.getInt("refineLevel");
-      bool            logToFile = config.getBool("logToFile");
-      bool            porousTralingEdge = config.getBool("porousTralingEdge");
-      double          deltaXfine = config.getDouble("deltaXfine")*1000.0;
-      bool            thinWall = config.getBool("thinWall");
-      double          refineDistance = config.getDouble("refineDistance");
-      double          startDistance = config.getDouble("startDistance");
+      double          uLB = config.getValue<double>("uLB");
+      double          restartStep = config.getValue<double>("restartStep");
+      double          cpStart = config.getValue<double>("cpStart");
+      double          cpStep = config.getValue<double>("cpStep");
+      double          endTime = config.getValue<double>("endTime");
+      double          outTime = config.getValue<double>("outTime");
+      double          availMem = config.getValue<double>("availMem");
+      int             refineLevel = config.getValue<int>("refineLevel");
+      bool            logToFile = config.getValue<bool>("logToFile");
+      bool            porousTralingEdge = config.getValue<bool>("porousTralingEdge");
+      double          deltaXfine = config.getValue<double>("deltaXfine")*1000.0;
+      bool            thinWall = config.getValue<bool>("thinWall");
+      double          refineDistance = config.getValue<double>("refineDistance");
+      double          startDistance = config.getValue<double>("startDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
-      bool            newStart = config.getBool("newStart");
+      bool            newStart = config.getValue<bool>("newStart");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -295,10 +321,10 @@ void run(string configname)
             fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
          }
 
-         D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
-         D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
-         D3Q27TriFaceMeshInteractorPtr triBand3Interactor(new D3Q27TriFaceMeshInteractor(meshBand5, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
-         D3Q27TriFaceMeshInteractorPtr triBand4Interactor(new D3Q27TriFaceMeshInteractor(meshBand6, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand3Interactor(new D3Q27TriFaceMeshInteractor(meshBand5, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+         D3Q27TriFaceMeshInteractorPtr triBand4Interactor(new D3Q27TriFaceMeshInteractor(meshBand6, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
 
          if (refineLevel > 0 && myid == 0)
          {
@@ -575,16 +601,24 @@ void run(string configname)
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
 
+         UBLOG(logINFO, "SetKernelBlockVisitor:end");
+
          if (refineLevel > 0)
          {
             SetUndefinedNodesBlockVisitor undefNodesVisitor;
             grid->accept(undefNodesVisitor);
          }
 
+         UBLOG(logINFO, "SetUndefinedNodesBlockVisitor:end");
+
          //BC
          intHelper.setBC();
          
+         UBLOG(logINFO, "intHelper.setBC():end");
+
          grid->accept(bcVisitor);
+
+         UBLOG(logINFO, "grid->accept(bcVisitor);:end");
 
          //initialization of distributions
          mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3;

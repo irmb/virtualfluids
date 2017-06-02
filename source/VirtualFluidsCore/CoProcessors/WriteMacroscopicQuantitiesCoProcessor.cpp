@@ -23,7 +23,7 @@ WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(Gri
                                                                                  conv(conv),
                                                                                  comm(comm)
 {
-   gridRank = Communicator::getInstance()->getProcessID();
+   gridRank = comm->getProcessID();
    minInitLevel = this->grid->getCoarsestInitializedLevel();
    maxInitLevel = this->grid->getFinestInitializedLevel();
 

@@ -16,7 +16,8 @@ MPIIORestartCoProcessor::MPIIORestartCoProcessor(Grid3DPtr grid, UbSchedulerPtr 
                                          CommunicatorPtr comm) :
                                          CoProcessor(grid, s),
                                          path(path),
-                                         comm(comm)
+                                         comm(comm),
+                                         mpiTypeFreeFlag(false)
 {
    UbSystem::makeDirectory(path + "/mpi_io_cp");
 
@@ -98,11 +99,15 @@ MPIIORestartCoProcessor::~MPIIORestartCoProcessor()
 	MPI_Type_free(&blockParamType);
    MPI_Type_free(&block3dType);
 	MPI_Type_free(&dataSetType);
-	MPI_Type_free(&dataSetDoubleType);
 	MPI_Type_free(&boundCondType);
    MPI_Type_free(&boundCondType1000);
    MPI_Type_free(&boundCondTypeAdd);
-   MPI_Type_free(&bcindexmatrixType);
+
+   if (mpiTypeFreeFlag)
+   {
+      MPI_Type_free(&dataSetDoubleType);
+      MPI_Type_free(&bcindexmatrixType);
+   }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -358,13 +363,13 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
 	{
 		if(rank == 0)
 		{
-			next_view_offset = view_offset + sizeof(GridParam) + sizeof(blockParam) + blocksCount * sizeof(Block3d);
+			next_view_offset = view_offset + sizeof(GridParam) + sizeof(BlockParam) + blocksCount * sizeof(Block3d);
 			MPI_Send(&next_view_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
 		}
 		else
 		{
 			MPI_Recv(&view_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			next_view_offset = view_offset + sizeof(GridParam) + sizeof(blockParam) + blocksCount * sizeof(Block3d);
+			next_view_offset = view_offset + sizeof(GridParam) + sizeof(BlockParam) + blocksCount * sizeof(Block3d);
 			if(rank < size - 1)
 				MPI_Send(&next_view_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
 		}
@@ -377,7 +382,7 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
    // each process writes common parameters of a block
    MPI_File_write_at_all(file_handler, view_offset + sizeof(GridParam), &blockParamStr, 1, blockParamType, MPI_STATUS_IGNORE);
    // each process writes it's blocks
-   MPI_File_write_at_all(file_handler, view_offset + sizeof(GridParam) + sizeof(blockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+   MPI_File_write_at_all(file_handler, view_offset + sizeof(GridParam) + sizeof(BlockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
 	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 
@@ -388,6 +393,8 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
    MPI_Type_contiguous(blockParamStr.bcindexmatrix_count, MPI_INT, &bcindexmatrixType);
    MPI_Type_commit(&bcindexmatrixType);
    
+   mpiTypeFreeFlag = true;
+
 	delete[] block3dArray;
    delete gridParameters;
 }
@@ -409,7 +416,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
 	}
 
-	dataSet* dataSetArray = new dataSet[blocksCount];
+	DataSet* dataSetArray = new DataSet[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
 
 	int ic = 0;		
@@ -473,13 +480,13 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
 	{
 		if(rank == 0)
 		{
-			next_view_offset = view_offset + blocksCount * (sizeof(dataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
+			next_view_offset = view_offset + blocksCount * (sizeof(DataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
 			MPI_Send(&next_view_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
 		}
 		else
 		{
 			MPI_Recv(&view_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			next_view_offset = view_offset + blocksCount * (sizeof(dataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
+			next_view_offset = view_offset + blocksCount * (sizeof(DataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
 			if(rank < size - 1)
 				MPI_Send(&next_view_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
 		}
@@ -495,7 +502,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
    // each process writes data identifying blocks
    MPI_File_write_at_all(file_handler, view_offset, &dataSetArray[0], blocksCount, dataSetType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
-	MPI_File_write_at_all(file_handler, view_offset + blocksCount * sizeof(dataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+	MPI_File_write_at_all(file_handler, view_offset + blocksCount * sizeof(DataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 
@@ -687,13 +694,13 @@ void MPIIORestartCoProcessor::readBlocks(int step)
 	{
 		if(rank == 0)
 		{
-         next_read_offset = read_offset + sizeof(GridParam) + sizeof(blockParam) + blocksCount * sizeof(Block3d);
+         next_read_offset = read_offset + sizeof(GridParam) + sizeof(BlockParam) + blocksCount * sizeof(Block3d);
 			MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
 		}
 		else
 		{
 			MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-			next_read_offset = read_offset + sizeof(GridParam) + sizeof(blockParam) + blocksCount * sizeof(Block3d);
+			next_read_offset = read_offset + sizeof(GridParam) + sizeof(BlockParam) + blocksCount * sizeof(Block3d);
 			if(rank < size - 1)
 				MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
 		}
@@ -706,7 +713,7 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    // read parameters of a block
    MPI_File_read_at_all(file_handler, read_offset + sizeof(GridParam), &blockParamStr, 1, blockParamType, MPI_STATUS_IGNORE);
    // read all the blocks
-	MPI_File_read_at_all(file_handler, read_offset + sizeof(GridParam) + sizeof(blockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file_handler, read_offset + sizeof(GridParam) + sizeof(BlockParam), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
 	//MPI_File_sync(file_handler);
 
 	MPI_File_close(&file_handler);
@@ -810,6 +817,8 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    MPI_Type_contiguous(blockParamStr.bcindexmatrix_count, MPI_INT, &bcindexmatrixType);
    MPI_Type_commit(&bcindexmatrixType);
 
+   mpiTypeFreeFlag = true;
+
    delete gridParameters;
 	delete [] block3dArray;
 }
@@ -829,7 +838,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
    int blocksCount = 0;
 	MPI_File_read_at(file_handler, rank * sizeof(int), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
 
-   dataSet* dataSetArray = new dataSet[blocksCount];
+   DataSet* dataSetArray = new DataSet[blocksCount];
    std::vector<double> doubleValuesArray(blocksCount * blockParamStr.doubleCountInBlock); // double-values in all blocks 
 
    // calculate the read offset
@@ -840,20 +849,20 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 	{
 		if(rank == 0)
 		{
-			next_read_offset = read_offset + blocksCount * (sizeof(dataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
+			next_read_offset = read_offset + blocksCount * (sizeof(DataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
 			MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
 		}
 		else
 		{
 			MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + blocksCount * (sizeof(dataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + blocksCount * (sizeof(DataSet) + blockParamStr.doubleCountInBlock * sizeof(double));
 			if(rank < size - 1)
 				MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
 		}
 	}
 
    MPI_File_read_at_all(file_handler, read_offset, &dataSetArray[0], blocksCount, dataSetType, MPI_STATUS_IGNORE);
-	MPI_File_read_at_all(file_handler, read_offset + blocksCount * sizeof(dataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+	MPI_File_read_at_all(file_handler, read_offset + blocksCount * sizeof(DataSet), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 	//MPI_File_sync(file_handler);
 	MPI_File_close(&file_handler);
 

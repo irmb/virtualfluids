@@ -8,6 +8,7 @@
 #include <boost/foreach.hpp>
 
 #include <Calculator.h>
+#include <MPICalculator.h>
 #include <PrePostBcCalculator.h>
 #include <Communicator.h>
 
@@ -56,18 +57,26 @@ void CalculationManager::calculate()
 {
    try
    {
-      boost::thread_group threads;
       boost::shared_ptr<CalculationManager> this_ = shared_from_this();
-      boost::exception_ptr error;
-
-      for (int i=1; i<calcThreads.size(); i++)
+      if (calcType == CalculationManager::Hybrid || calcType == CalculationManager::PrePostBc)
       {
-         threads.create_thread( boost::bind( &Calculator::calculate, calcThreads[i], endTime, this_,boost::ref(error)) );
+         boost::thread_group threads;
+         boost::exception_ptr error;
+
+         for (int i = 1; i<calcThreads.size(); i++)
+         {
+            threads.create_thread(boost::bind(&Calculator::calculate, calcThreads[i], endTime, this_, boost::ref(error)));
+         }
+
+         calcThreads[0]->calculate(endTime, this_, boost::ref(error));
+
+         threads.join_all();
+      } 
+      else
+      {
+         boost::dynamic_pointer_cast<MPICalculator>(calcThreads[0])->calculate(endTime, this_);
       }
 
-      calcThreads[0]->calculate(endTime, this_, boost::ref(error));
-
-      threads.join_all();
 
       //if( error )
       //{
@@ -182,8 +191,10 @@ CalculatorPtr CalculationManager::createCalculator(Grid3DPtr grid, SynchronizerP
 {
    switch (calcType)
    {
+   case CalculationManager::Hybrid:
+      return CalculatorPtr(new Calculator(grid, sync, mainThread));
    case CalculationManager::MPI:
-      return CalculatorPtr (new Calculator(grid, sync, mainThread));
+      return CalculatorPtr (new MPICalculator(grid));
 #if defined VF_FETOL
    case CalculationManager::FETOL:
       return CalculatorPtr (new FETOLCalculator(grid, sync, mainThread));

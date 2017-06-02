@@ -29,6 +29,96 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::init()
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
+void IncompressibleCumulantWithSpongeLayerLBMKernel::setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP)
+{
+   direction = vdir;
+   L1 = vL1;
+   dx = vdx;
+   SP = vSP;
+}
+//////////////////////////////////////////////////////////////////////////
+void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, double vL1, double vdx, double vSP)
+{
+   direction = vdir;
+   L1 = vL1;
+   dx = vdx;
+   SP = vSP;
+
+   double sizeX = L1 / dx;
+   double sizeSP = SP / dx;
+   double muX1, muX2, muX3;
+
+   LBMReal spongeFactor;
+
+   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+
+   const int bcArrayMaxX1 = (int)bcArray.getNX1();
+   const int bcArrayMaxX2 = (int)bcArray.getNX2();
+   const int bcArrayMaxX3 = (int)bcArray.getNX3();
+
+   int minX1 = 0;
+   int minX2 = 0;
+   int minX3 = 0;
+   int maxX1 = bcArrayMaxX1 - ghostLayerWidth - 1;
+   int maxX2 = bcArrayMaxX2 - ghostLayerWidth - 1;
+   int maxX3 = bcArrayMaxX3 - ghostLayerWidth - 1;
+
+   RelaxationFactorArray3DPtr relaxationFactorPtr = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3));
+   dataSet->setRelaxationFactor(relaxationFactorPtr);
+
+   for (int x3 = minX3; x3 < maxX3; x3++)
+   {
+      for (int x2 = minX2; x2 < maxX2; x2++)
+      {
+         for (int x1 = minX1; x1 < maxX1; x1++)
+         {
+            switch (direction)
+            {
+            case D3Q27System::E:
+               muX1 = (double)(x1 + ix1 * maxX1);
+               if (muX1 >= (sizeX - sizeSP) / deltaT)
+                  spongeFactor = (sizeX - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
+               else spongeFactor = 1.0;
+               break;
+            case D3Q27System::W:
+               muX1 = (double)(x1 + ix1 * maxX1);
+               if (muX1 <= sizeSP / deltaT)
+                  spongeFactor = (sizeSP - (muX1 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
+               else spongeFactor = 1.0;
+               break;
+            case D3Q27System::N:
+               muX2 = (double)(x2 + ix2 * maxX2);
+               if (muX2 >= (sizeX - sizeSP) / deltaT)
+                  spongeFactor = (sizeX - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
+               else spongeFactor = 1.0;
+               break;
+            case D3Q27System::S:
+               muX2 = (double)(x2 + ix2 * maxX2);
+               if (muX2 <= sizeSP / deltaT)
+                  spongeFactor = (sizeSP - (muX2 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
+               else spongeFactor = 1.0;
+               break;
+            case D3Q27System::T:
+               muX3 = (double)(x3 + ix3 * maxX3);
+               if (muX3 >= (sizeX - sizeSP) / deltaT)
+                  spongeFactor = (sizeX - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
+               else spongeFactor = 1.0;
+               break;
+            case D3Q27System::B:
+               muX3 = (double)(x3 + ix3 * maxX3);
+               if (muX3 <= sizeSP / deltaT)
+                  spongeFactor = (sizeSP - (muX3 * deltaT + 1)) / sizeSP / 2.0 + 0.5;
+               else spongeFactor = 1.0;
+               break;
+            default: throw UbException(UB_EXARGS, "unknown dir");
+            }
+            (*relaxationFactorPtr)(x1, x2, x3) = spongeFactor;
+         }
+      }
+   }
+}
+
+//////////////////////////////////////////////////////////////////////////
 LBMKernelPtr IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
 {
    LBMKernelPtr kernel(new IncompressibleCumulantWithSpongeLayerLBMKernel(nx1, nx2, nx3, parameter));
@@ -53,8 +143,9 @@ LBMKernelPtr IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
 
    kernel->setWithSpongeLayer(withSpongeLayer);
    if(withSpongeLayer) kernel->setSpongeLayer(muSpongeLayer);
+   boost::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->initRelaxFactor(direction, L1, dx, SP);
    return kernel;
-}
+}  
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate()
 {
@@ -98,9 +189,9 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
    //initialization of sponge layer variables
    //if (withSpongeLayer)
    //{
-      muDeltaT = deltaT;
-      muSpongeLayer.DefineVar("dx",&muDeltaT);
-      muSpongeLayer.DefineVar("x1",&muX1); muSpongeLayer.DefineVar("x2",&muX2); muSpongeLayer.DefineVar("x3",&muX3);
+      //muDeltaT = deltaT;
+      //muSpongeLayer.DefineVar("dt",&muDeltaT);
+      //muSpongeLayer.DefineVar("x1",&muX1); muSpongeLayer.DefineVar("x2",&muX2); muSpongeLayer.DefineVar("x3",&muX3);
    //}
    /////////////////////////////////////
 
@@ -109,6 +200,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
    zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
    BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+   RelaxationFactorArray3DPtr relaxationFactorPtr = dataSet->getRelaxationFactor();
 
    const int bcArrayMaxX1 = (int)bcArray.getNX1();
    const int bcArrayMaxX2 = (int)bcArray.getNX2();
@@ -122,6 +214,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
    int maxX3 = bcArrayMaxX3-ghostLayerWidth-1;
 
    LBMReal collFactor0 = collFactor;
+   LBMReal spongeFactor;
 
    for(int x3 = minX3; x3 <= maxX3; x3++)
    {
@@ -216,12 +309,12 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
                //{
                   //if (!withForcing)
                   //{
-                     muX1 = (double)(x1-1+ix1*maxX1);
+                    //lk// muX1 = (double)(x1-1+ix1*maxX1);
                      //muX2 = (double)(x2-1+ix2*maxX2);
                      //muX3 = (double)(x3-1+ix3*maxX3);
                   //}
                   //spongeFactor ist von Funktion in muSpongeLayer abhängich und variiert zwischen 1 (nix tun) und 0.5 (collFactor etwa auf 1);
-                  LBMReal spongeFactor = muSpongeLayer.Eval();
+                  //lk //LBMReal spongeFactor = muSpongeLayer.Eval();
 
                   //if (spongeFactor == 0.5)
                   //{
@@ -231,8 +324,8 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
                   //if(muX3 == ix3*maxX3/2 && muX2==ix2*maxX2/2)
                   //   UBLOG(logINFO," x1="<<muX1<<" spongeFactor = " << spongeFactor <<" collFactor="<<collFactor);
 
+                  spongeFactor = (*relaxationFactorPtr)(x1-1, x2-1, x3-1);
                   collFactor *= spongeFactor;
-
                   //if(muX3 == ix3*maxX3/2 && muX2==ix2*maxX2/2)
                   //   UBLOG(logINFO," x1="<<muX1<<" spongeFactor = " << spongeFactor <<" collFactor="<<collFactor);
 
@@ -246,7 +339,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
                m1=mfacc+mfcaa;
                m2=mfaac+mfcca;
                oMdrho+=m0;
-               m1+=m2;
+               m1+=m2; 
                oMdrho+=m1;
                m0=mfbac+mfbca;
                m1=mfbaa+mfbcc;

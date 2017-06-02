@@ -12,9 +12,9 @@ typedef boost::shared_ptr<CalculationManager> CalculationManagerPtr;
 class CalculationManager : public boost::enable_shared_from_this<CalculationManager>
 {
 public:
-   enum CalculatorType{MPI, FETOL, PrePostBc};
+   enum CalculatorType{Hybrid, MPI, FETOL, PrePostBc};
 public:
-   CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, CalculatorType calcType = CalculationManager::MPI);
+   CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, CalculatorType calcType = CalculationManager::Hybrid);
    CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, 
                       CommunicatorPtr comm, int endDir, LBMReal nu, CalculatorType calcType = CalculationManager::MPI);
    virtual ~CalculationManager();

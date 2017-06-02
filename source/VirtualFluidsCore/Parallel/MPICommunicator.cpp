@@ -31,6 +31,7 @@ MPICommunicator::~MPICommunicator()
    if (!_mpiFinalized)
    {
       MPI_Finalize();
+      //UBLOG(logINFO, "MPI_Finalize()");
    }
  }
 //////////////////////////////////////////////////////////////////////////

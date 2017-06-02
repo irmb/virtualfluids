@@ -25,7 +25,7 @@ typedef boost::shared_ptr<IncompressibleCumulantWithSpongeLayerLBMKernel> LBMKer
 //! kernel->setWithSpongeLayer(true);
 //! kernel->setSpongeLayer(spongeLayer);
 //! \endcode
-//! \author  K. Kucher, M. Geier
+//! \author  K. Kucher, M. Geier, A. Karanchuk
 class IncompressibleCumulantWithSpongeLayerLBMKernel :  public IncompressibleCumulantLBMKernel
 {
 public:
@@ -39,9 +39,19 @@ public:
    virtual ~IncompressibleCumulantWithSpongeLayerLBMKernel(void);
    LBMKernelPtr clone();
    void calculate();
+   void initRelaxFactor(int vdir, double vL1, double vdx, double vSP);
+   //! \param vdir where the sponge layer is placed
+   //! \param vL1 length of simulation domain
+   //! \param vdx subgrid space 
+   //! \param vSP length of sponge layer
+   void setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP);
 protected:
    void init();
-   LBMReal OxyyMxzz;
+  LBMReal OxyyMxzz;
+  int direction;
+  double L1;
+  double dx;
+  double SP;
 
    friend class boost::serialization::access;
    template<class Archive>
