@@ -1126,7 +1126,7 @@ void FineToCoarseNodeSetBlock3DConnector::distributeReceiveVectors()
    {
       D3Q27ICell icellF;
       this->readICellFfromData(data, index, icellF);
-      iprocessor->writeICell(fTo, icellF, inode[0], inode[1], inode[2]);
+      iprocessor->writeICellInv(fTo, icellF, inode[0], inode[1], inode[2]);
    }
 }
 //////////////////////////////////////////////////////////////////////////

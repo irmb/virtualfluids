@@ -25,7 +25,19 @@ void InterpolationProcessor::readICell(DistributionArray3DPtr f, D3Q27ICell& ice
    f->getDistribution(icell.TNE, x1+1, x2+1, x3+1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeICell(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3) 
+void InterpolationProcessor::writeICell(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3)
+{
+   f->setDistribution(icell.BSW, x1, x2, x3);
+   f->setDistribution(icell.BSE, x1+1, x2, x3);
+   f->setDistribution(icell.BNW, x1, x2+1, x3);
+   f->setDistribution(icell.BNE, x1+1, x2+1, x3);
+   f->setDistribution(icell.TSW, x1, x2, x3+1);
+   f->setDistribution(icell.TSE, x1+1, x2, x3+1);
+   f->setDistribution(icell.TNW, x1, x2+1, x3+1);
+   f->setDistribution(icell.TNE, x1+1, x2+1, x3+1);
+}
+//////////////////////////////////////////////////////////////////////////
+void InterpolationProcessor::writeICellInv(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3) 
 {
    f->setDistributionInv(icell.BSW, x1, x2, x3);
    f->setDistributionInv(icell.BSE, x1+1, x2, x3);

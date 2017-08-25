@@ -8,6 +8,7 @@
 #include "BoundaryConditions.h"
 #include "D3Q27System.h"
 #include "EsoTwist3D.h"
+#include "BCArray3D.h"
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/base_object.hpp>
@@ -28,9 +29,9 @@ public:
    static const char SlipBCAlgorithm = 4;
    static const char HighViscosityNoSlipBCAlgorithm = 5;
    static const char ThinWallNoSlipBCAlgorithm = 6;
-   static const char NonReflectingVelocityBCAlgorithm = 7;
-   static const char NonReflectingDensityBCAlgorithm = 8;
-   static const char NonReflectingSlipBCAlgorithm = 9;
+   static const char VelocityWithDensityBCAlgorithm = 7;
+   static const char NonReflectingOutflowBCAlgorithm = 8;
+
 public:
    BCAlgorithm();
    virtual ~BCAlgorithm() {}
@@ -45,6 +46,9 @@ public:
    bool isPreCollision();
    virtual BCAlgorithmPtr clone()=0;
    void clearData();
+   BCArray3DPtr getBcArray();
+   void setBcArray(BCArray3DPtr bcarray);
+
 protected:
    virtual void applyBC() = 0;
    
@@ -57,6 +61,7 @@ protected:
 
    BoundaryConditionsPtr bcPtr;
    DistributionArray3DPtr distributions;
+   BCArray3DPtr bcArray;
 
    LBMReal collFactor;
    int x1, x2, x3;
@@ -70,6 +75,8 @@ protected:
    CalcFeqForDirFct calcFeqsForDirFct ;
    CalcMacrosFct    calcMacrosFct;
    CalcFeqFct       calcFeqFct;
+
+   
 
 private:
    //friend class boost::serialization::access;

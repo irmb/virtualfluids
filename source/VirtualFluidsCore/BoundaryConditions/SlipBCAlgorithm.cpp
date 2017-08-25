@@ -46,7 +46,7 @@ void SlipBCAlgorithm::applyBC()
       {
          //quadratic bounce back
          const int invDir = D3Q27System::INVDIR[fdir];
-         LBMReal q = 1.0;//bcPtr->getQ(invDir);// m+m q=0 stabiler
+         LBMReal q = bcPtr->getQ(invDir);// m+m q=0 stabiler
          //vx3=0;
          LBMReal velocity = 0.0;
          switch (invDir)

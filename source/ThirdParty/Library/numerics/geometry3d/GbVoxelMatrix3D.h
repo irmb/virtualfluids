@@ -137,6 +137,8 @@ public:
    void mirrorY();
    void mirrorZ();
 
+   void rotateAroundY(double theta);
+
    void writeToLegacyVTKASCII(const std::string& fileName);
    void writeToLegacyVTKBinary(const std::string& fileName);
    void writeToVTKImageDataASCII(const std::string& fileName);
@@ -163,38 +165,38 @@ protected:
 
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 
-#ifdef CAB_RCF
-   template<class Archive>
-   void SF_SERIALIZE(Archive & ar)
-   {
-      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
-      ar & minX1;
-      ar & minX2;
-      ar & minX3;
-      ar & deltaX1;
-      ar & deltaX2;
-      ar & deltaX3;
-      ar & nodesX1;
-      ar & nodesX2;
-      ar & nodesX3;
-      ar & threshold;
-      ar & transferViaFilename;
-      ar & addSurfaceTriangleSetFlag;
-      if (!transferViaFilename)
-      {
-         ar & voxelMatrix;
-      }
-      else
-      {
-         ar & filename;
-         if (ArchiveTools::isReading(ar))
-         {
-            this->readMatrixFromVtiASCIIFile(filename);
-         }
-      }
-
-   }
-#endif //CAB_RCF
+//#ifdef CAB_RCF
+//   template<class Archive>
+//   void SF_SERIALIZE(Archive & ar)
+//   {
+//      SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
+//      ar & minX1;
+//      ar & minX2;
+//      ar & minX3;
+//      ar & deltaX1;
+//      ar & deltaX2;
+//      ar & deltaX3;
+//      ar & nodesX1;
+//      ar & nodesX2;
+//      ar & nodesX3;
+//      ar & threshold;
+//      ar & transferViaFilename;
+//      ar & addSurfaceTriangleSetFlag;
+//      if (!transferViaFilename)
+//      {
+//         ar & voxelMatrix;
+//      }
+//      else
+//      {
+//         ar & filename;
+//         if (ArchiveTools::isReading(ar))
+//         {
+//            this->readMatrixFromVtiASCIIFile(filename);
+//         }
+//      }
+//
+//   }
+//#endif //CAB_RCF
 
 protected:
    //for transfer
@@ -219,6 +221,7 @@ protected:
 
    long numberOfSolid;
    long numberOfFluid;
+
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -330,11 +333,12 @@ void GbVoxelMatrix3D::readBufferedMatrixFromRawFile(std::string filename, GbVoxe
 }
 
 
-#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
-UB_AUTO_RUN_NAMED(SF::registerType<GbVoxelMatrix3D>("GbVoxelMatrix3D"), SF_GbVoxelMatrix3D);
-UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< GbObject3D, GbVoxelMatrix3D >()), SF_GbVoxelMatrix3D_BD1);
-UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< UbObserver, GbVoxelMatrix3D>()), SF_GbVoxelMatrix3D_BD2);
-#endif //RCF_USE_SF_SERIALIZATION
+
+//#if defined(RCF_USE_SF_SERIALIZATION) && !defined(SWIG)
+//UB_AUTO_RUN_NAMED(SF::registerType<GbVoxelMatrix3D>("GbVoxelMatrix3D"), SF_GbVoxelMatrix3D);
+//UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< GbObject3D, GbVoxelMatrix3D >()), SF_GbVoxelMatrix3D_BD1);
+//UB_AUTO_RUN_NAMED((SF::registerBaseAndDerived< UbObserver, GbVoxelMatrix3D>()), SF_GbVoxelMatrix3D_BD2);
+//#endif //RCF_USE_SF_SERIALIZATION
 
 
 #endif   

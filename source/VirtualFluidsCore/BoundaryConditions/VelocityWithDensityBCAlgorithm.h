@@ -2,21 +2,21 @@
 //!  \brief Class implements velocity bc for non reflecting pressure bc.
 //!  \author Konstantin Kutscher
 
-#ifndef NonReflectingVelocityBCAlgorithm_h__
-#define NonReflectingVelocityBCAlgorithm_h__
+#ifndef VelocityWithDensityBCAlgorithm_h__
+#define VelocityWithDensityBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
 
-class NonReflectingVelocityBCAlgorithm;
-typedef boost::shared_ptr<NonReflectingVelocityBCAlgorithm> NonReflectingVelocityBCAlgorithmPtr;
+class VelocityWithDensityBCAlgorithm;
+typedef boost::shared_ptr<VelocityWithDensityBCAlgorithm> VelocityWithDensityBCAlgorithmPtr;
 
-//!  \brief Class implements velocity boundary condition for non reflecting pressure boundary condition
+//!  \brief Class implements Dirichlet boundary condition for velocity. Set density in system. It is used together with non reflecting outflow.  
 
-class NonReflectingVelocityBCAlgorithm : public BCAlgorithm
+class VelocityWithDensityBCAlgorithm : public BCAlgorithm
 {
 public:
-   NonReflectingVelocityBCAlgorithm();
-   ~NonReflectingVelocityBCAlgorithm();
+   VelocityWithDensityBCAlgorithm();
+   ~VelocityWithDensityBCAlgorithm();
    BCAlgorithmPtr clone();
    void addDistributions(DistributionArray3DPtr distributions);
 protected:

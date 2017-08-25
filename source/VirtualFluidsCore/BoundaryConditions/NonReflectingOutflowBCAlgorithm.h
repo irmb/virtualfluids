@@ -1,21 +1,22 @@
-#ifndef NonReflectingDensityBCAlgorithm_h__
-#define NonReflectingDensityBCAlgorithm_h__
+#ifndef NonReflectingOutflowBCAlgorithm_h__
+#define NonReflectingOutflowBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
 
-class NonReflectingDensityBCAlgorithm;
-typedef boost::shared_ptr<NonReflectingDensityBCAlgorithm> NonReflectingDensityBCAlgorithmPtr;
+class NonReflectingOutflowBCAlgorithm;
+typedef boost::shared_ptr<NonReflectingOutflowBCAlgorithm> NonReflectingOutflowBCAlgorithmPtr;
 
-class NonReflectingDensityBCAlgorithm : public BCAlgorithm
+class NonReflectingOutflowBCAlgorithm : public BCAlgorithm
 {
 public:
-   NonReflectingDensityBCAlgorithm();
-   ~NonReflectingDensityBCAlgorithm();
+   NonReflectingOutflowBCAlgorithm();
+   ~NonReflectingOutflowBCAlgorithm();
    BCAlgorithmPtr clone();
    void addDistributions(DistributionArray3DPtr distributions);
 protected:
    void applyBC();
 private:
+   int step;
    //friend class boost::serialization::access;
    //template<class Archive>
    //void serialize(Archive & ar, const unsigned int version)

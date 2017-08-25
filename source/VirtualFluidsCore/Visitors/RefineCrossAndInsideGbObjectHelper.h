@@ -15,7 +15,7 @@ public:
    //! Constructor
    //! \param grid a smart pointer to the grid object
    //! \param maxRefineLevel an integer for maximal refinement level
-   RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel);
+   RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel, CommunicatorPtr comm);
    virtual ~RefineCrossAndInsideGbObjectHelper(void);
    //! add geometric object
    //! \param object a smart pointer to bounding box
@@ -28,6 +28,7 @@ private:
    std::vector<GbObject3DPtr> objects;
    std::vector<int> levels;
    int maxRefineLevel;
+   CommunicatorPtr comm;
 };
 
 #endif 

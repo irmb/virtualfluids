@@ -109,8 +109,8 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
    if(!block) UB_THROW( UbException(UB_EXARGS,"block is not exist") );
 
-   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
-   UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
+   //UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
+   //UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
    double dx = grid->getDeltaX(block);
    LBMReal o  = LBMSystem::calcCollisionFactor(nu, block->getLevel());
    
@@ -142,7 +142,7 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
       else                                                        
          calcFeqsFct   = &D3Q27System::calcIncompFeq; 
 
-      UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
+      //UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
       BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
       EsoTwist3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
@@ -268,6 +268,12 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
                //calcFeqsFct(f,rho,vx1,vx2,vx3);
                distributions->setDistribution(f, ix1, ix2, ix3);
                distributions->setDistributionInv(f, ix1, ix2, ix3);
+
+               //distributions->swap();
+               //distributions->setDistribution(f, ix1, ix2, ix3);
+               //distributions->setDistributionInv(f, ix1, ix2, ix3);
+               //distributions->swap();
+
             }
    }
 

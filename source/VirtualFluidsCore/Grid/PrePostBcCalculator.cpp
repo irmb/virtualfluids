@@ -47,14 +47,6 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
 
       for(calcStep=startStep; calcStep<=anzCalcSteps+1; calcStep++)
       {
-
-         //exchange data between blocks for visualization
-         //sync->wait();
-         ////if(visScheduler->isDue((double)(calcStep-1)))
-         ////{
-         //   //exchangeBlockData(minInitLevel, maxInitLevel, true);
-         ////}
-
          ////wait for write dump files
          //sync->wait();
          //write dump 
@@ -83,8 +75,7 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
 #endif
 //////////////////////////////////////////////////////////////////////////
 
-            //applyPreCollisionBC(straightStartLevel, maxInitLevel);
-
+            applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
             calculateBlocks(straightStartLevel, maxInitLevel);
             ////calculateBlocks(minInitLevel, maxInitLevel, staggeredStep);
@@ -104,7 +95,7 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
             //UBLOG(logINFO, "exchangeBlockData time = " <<time);
 #endif
 //////////////////////////////////////////////////////////////////////////
-            //applyBCs(straightStartLevel, maxInitLevel);
+
             applyPostCollisionBC(straightStartLevel, maxInitLevel);
             
 //////////////////////////////////////////////////////////////////////////
@@ -116,10 +107,6 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
 
             //swap distributions in kernel
             swapDistributions(straightStartLevel, maxInitLevel);
-
-            //pre-collision boundary conditions
-            exchangeBlockData(straightStartLevel, maxInitLevel);
-            applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING

@@ -64,6 +64,7 @@ protected:
    size_t NX1, NX2, NX3;
 
    friend class MPIIORestartCoProcessor;
+   friend class MPIIORestart2CoProcessor;
 
    friend class boost::serialization::access;
    template<class Archive>

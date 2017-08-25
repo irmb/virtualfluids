@@ -347,20 +347,52 @@ void pflowdp(string configname)
       double Re = (4 * h*Umax) / (3 * nuLB);
 
       //bc
+
+      mu::Parser fct;
+      fct.SetExpr("U");
+      fct.DefineConst("U", 0.1);
+      BCAdapterPtr denBCAdapterInflow(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+      denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
+      //denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+
+      BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
+      denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
+      //denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
+
+      BCAdapterPtr slipBCAdapter(new SlipBCAdapter());
+      //slipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingSlipBCAlgorithm()));
+      slipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new SlipBCAlgorithm()));
+      
+
       BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
       noSlipBCAdapter->setBcAlgorithm(NoSlipBCAlgorithmPtr(new NoSlipBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
-      denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
-
-      BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
-      denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
-
-      //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
+      bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(denBCAdapterInflow);
       bcVisitor.addBC(denBCAdapterOutflow);
+
+
+
+
+
+
+
+      //BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
+      //noSlipBCAdapter->setBcAlgorithm(NoSlipBCAlgorithmPtr(new NoSlipBCAlgorithm()));
+
+      //BCAdapterPtr denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
+      //denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
+
+      //BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
+      //denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
+
+      ////BS visitor
+      //BoundaryConditionsBlockVisitor bcVisitor;
+      //bcVisitor.addBC(noSlipBCAdapter);
+      //bcVisitor.addBC(denBCAdapterInflow);
+      //bcVisitor.addBC(denBCAdapterOutflow);
 
       Grid3DPtr grid(new Grid3D(comm));
       grid->setPeriodicX1(false);
@@ -421,16 +453,22 @@ void pflowdp(string configname)
          GbCuboid3DPtr addWallYmin (new GbCuboid3D(g_minX1-4.0*blockLength, g_minX2-4.0*blockLength, g_minX3-4.0*blockLength, g_maxX1+4.0*blockLength, g_minX2, g_maxX3+4.0*blockLength));
          if(myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathname+"/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
 
-         GbCuboid3DPtr addWallYmax (new GbCuboid3D(g_minX1-4.0*blockLength, g_maxX2, g_minX3-4.0*blockLength, g_maxX1+4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3+4.0*blockLength));
+         GbCuboid3DPtr addWallYmax (new GbCuboid3D(g_minX1-4.0*blockLength, g_maxX2, g_minX3-4.0*blockLength, g_maxX1, g_maxX2+4.0*blockLength, g_maxX3+4.0*blockLength));
          if(myid == 0) GbSystem3D::writeGeoObject(addWallYmax.get(), pathname+"/geo/addWallYmax", WbWriterVtkXmlASCII::getInstance());
+
+         GbCuboid3DPtr addWallXmax(new GbCuboid3D(g_maxX1-4.0*deltax, g_maxX2, g_minX3 - 4.0*blockLength, g_maxX1 + 4.0*blockLength, g_maxX2 + 4.0*blockLength, g_maxX3 + 4.0*blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallXmax.get(), pathname+"/geo/addWallXmax", WbWriterVtkXmlASCII::getInstance());
 
          //inflow
          GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1 - 4.0*blockLength, g_minX2 - 4.0*blockLength, g_minX3 - 4.0*blockLength, g_minX1, g_maxX2 + 4.0*blockLength, g_maxX3 + 4.0*blockLength));
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathname + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
 
          //outflow
-         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - 4.0*blockLength, g_minX3 - 4.0*blockLength, g_maxX1 + 4.0*blockLength, g_maxX2 + 4.0*blockLength, g_maxX3 + 4.0*blockLength));
+         GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - 4.0*blockLength, g_minX3 - 4.0*blockLength, g_maxX1 + 4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3 + 4.0*blockLength));
          if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+
+         GbCuboid3DPtr geoOutflowSolid(new GbCuboid3D(g_maxX1-1.0*deltax, g_minX2 - 4.0*blockLength, g_minX3 - 4.0*blockLength, g_maxX1 + 4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3 + 4.0*blockLength));
+         if (myid == 0) GbSystem3D::writeGeoObject(geoOutflowSolid.get(), pathname + "/geo/geoOutflowSolid", WbWriterVtkXmlASCII::getInstance());
 
          ////inflow
          //GbCuboid3DPtr geoInflow (new GbCuboid3D(g_minX1-4.0*blockLength, g_minX2-4.0*blockLength, g_minX3-4.0*blockLength, g_maxX1+4.0*blockLength, g_maxX2+4.0*blockLength, g_minX3));
@@ -445,7 +483,7 @@ void pflowdp(string configname)
          if (refineLevel > 0)
          {
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
-            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel,comm);
             //refineHelper.addGbObject(refineCube1_1, 1);
             //refineHelper.addGbObject(refineCube1_2, 1);
             //refineHelper.addGbObject(refineCube2_1, 2);
@@ -456,13 +494,16 @@ void pflowdp(string configname)
          }
 
          //walls
-         D3Q27InteractorPtr addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter,Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter,Interactor3D::SOLID));
+         D3Q27InteractorPtr addWallYminInt(new D3Q27Interactor(addWallYmin, grid, denBCAdapterInflow,Interactor3D::SOLID));
+         D3Q27InteractorPtr addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, denBCAdapterInflow,Interactor3D::SOLID));
+
+         D3Q27InteractorPtr addWallXmaxInt(new D3Q27Interactor(addWallXmax, grid, denBCAdapterOutflow,Interactor3D::SOLID));
 
          D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
 
          //outflow
          D3Q27InteractorPtr outflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, denBCAdapterOutflow, Interactor3D::SOLID));
+         D3Q27InteractorPtr outflowSolidInt = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
@@ -471,16 +512,23 @@ void pflowdp(string configname)
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
+
+         intHelper.addInteractor(inflowInt);
+         
+         intHelper.addInteractor(outflowInt);
+
+         //die Geschwindigkeit Randbedingung soll Ausflüß überdecken !!!!!
          intHelper.addInteractor(addWallYminInt);
          intHelper.addInteractor(addWallYmaxInt);
-         intHelper.addInteractor(inflowInt);
-         intHelper.addInteractor(outflowInt);
+
+
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -518,7 +566,8 @@ void pflowdp(string configname)
 
          int kernelType = 2;
          LBMKernelPtr kernel;
-         kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         //kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
          //}
 
          BCProcessorPtr bcProc(new BCProcessor());
@@ -548,7 +597,7 @@ void pflowdp(string configname)
 
          InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
          //initVisitor.setVx1(fct);
-         initVisitor.setVx1(0.0);
+         initVisitor.setVx1(0.1);
          //initVisitor.setVx3(fct);
          grid->accept(initVisitor);
 
@@ -579,7 +628,9 @@ void pflowdp(string configname)
 
       WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::MPI));
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");

@@ -1,5 +1,5 @@
-#ifndef _MPIWRITEBLOCKSCOPROCESSOR_H_
-#define _MPIWRITEBLOCKSCOPROCESSOR_H_
+#ifndef _MPIIORestartCoProcessor_H_
+#define _MPIIORestartCoProcessor_H_
 
 #include "mpi.h"
 
@@ -55,8 +55,8 @@ class MPIIORestartCoProcessor: public CoProcessor
    //! and to read it when restoring the grid
    struct Block3d
 	{
-		double collFactor;
-		double deltaT;
+		//double collFactor;
+		//double deltaT;
 		int x1;
 		int x2;
 		int x3;
@@ -70,10 +70,10 @@ class MPIIORestartCoProcessor: public CoProcessor
 		int interpolationFlagCF;
 		int interpolationFlagFC;
 		int counter;
-		int ghostLayerWidth;
+		//int ghostLayerWidth;
 		bool active;
-		bool compressible;
-		bool withForcing;
+		//bool compressible;
+		//bool withForcing;
 	};
 
    //! \struct dataSet
@@ -81,10 +81,15 @@ class MPIIORestartCoProcessor: public CoProcessor
    //! \details The structure is used to find the needed block in the grid when restoring a dataSet
    struct DataSet
 	{
-		int x1;  
+      double collFactor;
+      double deltaT;
+      int x1;  
 		int x2;  
 		int x3;  
 		int level;
+      int ghostLayerWidth;
+      bool compressible;
+      bool withForcing;
    };
    
    //! \struct BoundaryCondition

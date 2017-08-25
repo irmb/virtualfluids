@@ -15,12 +15,12 @@ CalculateForcesCoProcessor::CalculateForcesCoProcessor( Grid3DPtr grid, UbSchedu
    {
       std::ofstream ostr;
       std::string fname = path;
-      ostr.open(fname.c_str(), std::ios_base::out);
+      ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
       if(!ostr)
       { 
          ostr.clear();
          std::string path = UbSystem::getPathFromString(fname);
-         if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out);}
+         if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }
       ostr.width(12);

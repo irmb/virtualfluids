@@ -26,6 +26,9 @@ void run(string configname)
       vector<double>  length = config.getVector<double>("length");
       bool            logToFile = config.getBool("logToFile");
       double          restartStep = config.getDouble("restartStep");
+      double          cpStart = config.getValue<double>("cpStart");
+      double          cpStep = config.getValue<double>("cpStep");
+      bool            newStart = config.getValue<bool>("newStart");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -48,6 +51,8 @@ void run(string configname)
          }
       }
 
+      //Sleep(30000);
+
       LBMReal dLB = length[1] / dx;
       LBMReal rhoLB = 0.0;
       LBMReal nuLB = (uLB*dLB) / Re;
@@ -66,13 +71,13 @@ void run(string configname)
       noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NoSlipBCAlgorithm()));
 
       BCAdapterPtr denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingDensityBCAlgorithm()));
+      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
 
-      mu::Parser fct;
-      fct.SetExpr("U");
-      fct.DefineConst("U", uLB);
-      BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingVelocityBCAlgorithm()));
+      //mu::Parser fct;
+      //fct.SetExpr("U");
+      //fct.DefineConst("U", uLB);
+      //BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+      //velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingVelocityBCAlgorithm()));
 
 
       //////////////////////////////////////////////////////////////////////////////////
@@ -80,17 +85,18 @@ void run(string configname)
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(denBCAdapter);
-      bcVisitor.addBC(velBCAdapter);
+      //bcVisitor.addBC(velBCAdapter);
       
       Grid3DPtr grid(new Grid3D(comm));
       
       //////////////////////////////////////////////////////////////////////////
       //restart
-      UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStep));
-      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStart));
+      //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      MPIIORestartCoProcessor rcp(grid, rSch, pathname, comm);
       //////////////////////////////////////////////////////////////////////////
 
-      if (grid->getTimeStep() == 0)
+      if (newStart)
       {
 
          //bounding box
@@ -132,7 +138,7 @@ void run(string configname)
 
          grid->setPeriodicX1(false);
          grid->setPeriodicX2(true);
-         grid->setPeriodicX3(true);
+         grid->setPeriodicX3(false);
 
          if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
@@ -166,19 +172,19 @@ void run(string configname)
          double cx2 = cylinder->getX2Centroid();
          double cx3 = cylinder->getX3Centroid();
 
-         //mu::Parser fct;
-         //fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
-         //fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
-         //fct.DefineConst("x3Vmax", 0.0); //x3-Pos fuer vmax
-         //fct.DefineConst("R", r);
-         //fct.DefineConst("vx1", uLB);
-         //fct.DefineConst("x0", cx1);
-         //fct.DefineConst("y0", cx2);
-         //fct.DefineConst("z0", cx3);
-         //fct.DefineConst("nue", nuLB);
-         //BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-         ////velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
-         //velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingVelocityBCAlgorithm()));
+         mu::Parser fct;
+         fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
+         fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
+         fct.DefineConst("x3Vmax", 0.0); //x3-Pos fuer vmax
+         fct.DefineConst("R", r);
+         fct.DefineConst("vx1", uLB);
+         fct.DefineConst("x0", cx1);
+         fct.DefineConst("y0", cx2);
+         fct.DefineConst("z0", cx3);
+         fct.DefineConst("nue", nuLB);
+         BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+         //velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+         velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
 
 
          D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
@@ -189,7 +195,7 @@ void run(string configname)
 
          Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          InteractorsHelper intHelper(grid, metisVisitor);
-         //intHelper.addInteractor(cylinderInt);
+         intHelper.addInteractor(cylinderInt);
          intHelper.addInteractor(inflowInt);
          intHelper.addInteractor(outflowInt);
          intHelper.selectBlocks();
@@ -225,8 +231,8 @@ void run(string configname)
 
          LBMKernelPtr kernel;
 
-         //kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
-         kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
+         kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         //kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
 
          //
          BCProcessorPtr bcProc(new BCProcessor());
@@ -245,18 +251,18 @@ void run(string configname)
 
          intHelper.setBC();
 
-         //bcVisitor.addBC(velBCAdapter);
+         bcVisitor.addBC(velBCAdapter);
          grid->accept(bcVisitor);
 
          //initialization of distributions
          InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
-         initVisitor.setVx1(fct);
+         //initVisitor.setVx1(fct);
          //initVisitor.setVx1(uLB);
          grid->accept(initVisitor);
 
          //set connectors
-         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
          //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
@@ -292,8 +298,12 @@ void run(string configname)
             UBLOG(logINFO, "path = " << pathname);
          }
 
+         rcp.restart((int)restartStep);
+         grid->setTimeStep(restartStep);
+
          BCAdapterPtr velBCAdapter(new VelocityBCAdapter());
-         velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+         //velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+         velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
          bcVisitor.addBC(velBCAdapter);
          grid->accept(bcVisitor);
 
@@ -311,7 +321,7 @@ void run(string configname)
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch,CalculationManager::PrePostBc));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch,CalculationManager::MPI));
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();

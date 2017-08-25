@@ -29,6 +29,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       }
 
       BCArray3D& bcArray = bcProcessor->getBCArray();
+
       bool compressible = kernel->getCompressible();
       double collFactor = kernel->getCollisionFactor();
       int level = block->getLevel();
@@ -43,7 +44,6 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
       bcProcessor->clearBC();
 
-      //DistributionArray3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
       DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
 
       for (int x3 = minX3; x3 < maxX3; x3++)
@@ -58,6 +58,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
                   {
                      char alg = bcPtr->getBcAlgorithmType();
                      BCAlgorithmPtr bca = bcMap[alg];
+                     
                      if (bca)
                      {
                         bca = bca->clone();
@@ -67,6 +68,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
                         bca->setCollFactor(collFactor);
                         bca->setCompressible(compressible);
                         bcProcessor->addBC(bca);
+                        bca->setBcArray(BCArray3DPtr(&bcArray));
                      }
                   }
                }

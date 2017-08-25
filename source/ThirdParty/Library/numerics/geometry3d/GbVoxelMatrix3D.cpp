@@ -830,6 +830,88 @@ void GbVoxelMatrix3D::mirrorZ()
    std::swap(this->voxelMatrix, voxelMatrix_temp);
 }
 //////////////////////////////////////////////////////////////////////////
+void GbVoxelMatrix3D::rotateAroundY(double theta)
+{
+   int nx1 = (int)voxelMatrix.getNX1();
+   int nx2 = (int)voxelMatrix.getNX2();
+   int nx3 = (int)voxelMatrix.getNX3();
+
+   GbVoxelMatrix3D::Matrix3D voxelMatrix_temp(nx1, nx2, nx3, FLUID);
+
+   double newMinX1 = cos(theta)*minX1+sin(theta)*minX3;
+   double newMinX3 = -sin(theta)*minX1+cos(theta)*minX3;
+
+   for (int x3 = 0; x3<nx3; x3++) {
+      for (int x2 = 0; x2<nx2; x2++) {
+         for (int x1 = 0; x1<nx1; x1++)
+         {
+            if (voxelMatrix(x1, x2, x3)==SOLID)
+            {
+               double rcX1 = minX1+deltaX1*x1;
+               double rcX3 = minX3+deltaX3*x3;
+
+               double nrcX1 = cos(theta)*rcX1+sin(theta)*rcX3;
+               double nrcX3 = -sin(theta)*rcX1+cos(theta)*rcX3;
+
+               int newX1 = UbMath::integerRounding((nrcX1-minX1)/deltaX1);
+               int newX2 = x2;
+               int newX3 = UbMath::integerRounding((nrcX3-minX3)/deltaX3);
+
+               if (newX1 < 0)
+               {
+                  int test=1;
+               }
+
+               if (newX1>0 && newX3>0 && newX1<nx1 && newX3<nx3)
+               {
+                  voxelMatrix_temp(newX1, newX2, newX3) = voxelMatrix(x1, x2, x3);
+               }
+
+               //int ix1, ix2, ix3;
+               //double ixx1 = (abs(nrcX1-minX1)/deltaX1);
+               //ix2 = x2;
+               //double ixx3 = (abs(nrcX3-minX3)/deltaX3);
+               //if (ixx1-(int)ixx1>.9999999999) ix1 = (int)ixx1+1; else ix1 = (int)ixx1;
+               ////if (ixx2-(int)ixx2>.9999999999) ix2 = (int)ixx2+1; else ix2 = (int)ixx2;
+               //if (ixx3-(int)ixx3>.9999999999) ix3 = (int)ixx3+1; else ix3 = (int)ixx3;
+
+               //if (ix1>=0 && ix3>=0 && ix1<nx1 && ix3<nx3)
+               //{
+               //   voxelMatrix_temp(ix1, ix2, ix3) = voxelMatrix(x1, x2, x3);
+               //}
+            }
+
+         }
+      }
+   }
+   std::swap(voxelMatrix, voxelMatrix_temp);
+
+   for (int x3 = 0; x3<nx3; x3++)
+      for (int x2 = 0; x2<nx2; x2++)
+         for (int x1 = 0; x1<nx1; x1++)
+         {
+            int count = 0;
+            for (int k3 = -1; k3<=1; k3++)
+               for (int k1 = -1; k1<=1; k1++)
+               {
+                  int j1 = x1+k1;
+                  int j3 = x3+k3;
+                  if (j1>=0 && j3>=0 && j1<nx1 && j3<nx3)
+                  {
+                     if (voxelMatrix(j1, x2, j3)==SOLID)
+                     {
+                        count++;
+                     }
+                  }
+
+               }
+            if (count == 8)
+            {
+               voxelMatrix(x1, x2, x3) = SOLID;
+            }
+         }
+}
+//////////////////////////////////////////////////////////////////////////
 void GbVoxelMatrix3D::writeToLegacyVTKASCII(const std::string& fileName)
 {
    string fn = fileName+".ascii.vtk";

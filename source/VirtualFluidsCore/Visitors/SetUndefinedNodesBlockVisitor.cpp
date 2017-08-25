@@ -633,11 +633,11 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    {
       if(block->hasInterpolationFlagFC()) 
       {
-         for (int i = D3Q27System::E; i <= D3Q27System::TS; i++)
+         for (int i = D3Q27System::E; i <= D3Q27System::BSW; i++)
          {
              UBLOG(logINFO, "FC in dir="<<i<<" "<<block->hasInterpolationFlagFC(i));
          }
-         for (int i = D3Q27System::E; i<=D3Q27System::TS; i++)
+         for (int i = D3Q27System::E; i<=D3Q27System::BSW; i++)
          {
             UBLOG(logINFO, "CF in dir="<<i<<" "<<block->hasInterpolationFlagCF(i));
          }

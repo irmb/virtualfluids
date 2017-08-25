@@ -101,9 +101,9 @@
 #include <BoundaryConditions/ThinWallNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/HighViscosityNoSlipBCAlgorithm.h>
 #include <BoundaryConditions/SlipBCAlgorithm.h>
-#include <BoundaryConditions/NonReflectingDensityBCAlgorithm.h>
-#include <BoundaryConditions/NonReflectingVelocityBCAlgorithm.h>
-#include <BoundaryConditions/NonReflectingSlipBCAlgorithm.h>
+#include <BoundaryConditions/NonReflectingOutflowBCAlgorithm.h>
+#include <BoundaryConditions/VelocityWithDensityBCAlgorithm.h>
+//#include <BoundaryConditions/NonReflectingSlipBCAlgorithm.h>
 
 #include <Connectors/Block3DConnector.h>
 #include <Connectors/D3Q27ETCFOffVectorConnector.h>
@@ -161,11 +161,13 @@
 #include <CoProcessors/TimeAveragedValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
 #include <CoProcessors/MPIIORestartCoProcessor.h>
+#include <CoProcessors/MPIIORestart2CoProcessor.h>
 #include <LineTimeSeriesCoProcessor.h>
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
 #include <LBM/IncompressibleOffsetInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetInterpolationProcessor.h>
+#include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
 #include <LBM/InterpolationHelper.h>
 #include <LBM/InterpolationProcessor.h>
 //#include <LBM/D3Q27OffsetInterpolationProcessor.h>
@@ -292,6 +294,7 @@
 #include <Visitors/BoundaryConditionsBlockVisitor.h>
 #include <Visitors/ChangeBoundaryDensityBlockVisitor.h>
 #include <InitDistributionsFromFileBlockVisitor.h>
+#include <InitDistributionsWithInterpolationGridVisitor.h>
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
 

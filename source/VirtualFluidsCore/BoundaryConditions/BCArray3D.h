@@ -86,6 +86,9 @@ public:
    //////////////////////////////////////////////////////////////////////////
    std::string toString() const;
    //////////////////////////////////////////////////////////////////////////
+   std::vector< int >& getBcindexmatrixDataVector();
+   //////////////////////////////////////////////////////////////////////////
+
 
    static const int SOLID;     
    static const int FLUID;     
@@ -100,6 +103,7 @@ private:
    void deleteBC(std::size_t x1, std::size_t x2, std::size_t x3);
 
    friend class MPIIORestartCoProcessor;
+   friend class MPIIORestart2CoProcessor;
 
    friend class boost::serialization::access;
    template<class Archive>

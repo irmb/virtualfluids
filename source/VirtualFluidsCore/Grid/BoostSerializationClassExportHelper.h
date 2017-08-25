@@ -28,8 +28,8 @@
 #include <NoSlipBCAlgorithm.h>
 #include <HighViscosityNoSlipBCAlgorithm.h>
 #include <SlipBCAlgorithm.h>
-#include <NonReflectingDensityBCAlgorithm.h>
-#include <NonReflectingVelocityBCAlgorithm.h>
+#include <NonReflectingOutflowBCAlgorithm.h>
+#include <VelocityWithDensityBCAlgorithm.h>
 
 #include <BCAdapter.h>
 #include <DensityBCAdapter.h>

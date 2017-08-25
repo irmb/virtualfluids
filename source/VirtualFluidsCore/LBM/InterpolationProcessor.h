@@ -39,6 +39,7 @@ public:
 
    static void readICell(DistributionArray3DPtr f, D3Q27ICell& icell, int x1, int x2, int x3);
    static void writeICell(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3);
+   static void writeICellInv(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3);
    static void writeINode(DistributionArray3DPtr f, const LBMReal* const inode, int x1, int x2, int x3);
    static bool iCellHasSolid(const BCArray3D& bcArray, int x1, int x2, int x3);
    static int  iCellHowManySolids(const BCArray3D& bcArray, int x1, int x2, int x3);

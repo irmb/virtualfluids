@@ -31,6 +31,7 @@ public:
 
    static GbTriFaceMesh3D* readMeshFromSTLFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true); 
    static GbTriFaceMesh3D* readMeshFromSTLFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromSTLFile2(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true,  bool isBinaryFormat=true);
 
    static GbTriFaceMesh3D* readMeshFromAVSFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true); 
    static GbTriFaceMesh3D* readMeshFromAVSFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);

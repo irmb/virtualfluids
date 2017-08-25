@@ -7,19 +7,6 @@ BCAlgorithm::BCAlgorithm() : compressible(false)
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::apply()
 {
-   //if (this->compressible)
-   //{
-   //   calcFeqsForDirFct = &D3Q27System::getCompFeqForDirection;
-   //   calcMacrosFct = &D3Q27System::calcCompMacroscopicValues;
-   //   calcFeqFct = &D3Q27System::calcCompFeq;
-   //}
-   //else
-   //{
-   //   calcFeqsForDirFct = &D3Q27System::getIncompFeqForDirection;
-   //   calcMacrosFct = &D3Q27System::calcIncompMacroscopicValues;
-   //   calcFeqFct = &D3Q27System::calcIncompFeq;
-   //}
-
    int cbc = 0;
    int cn = 0;
    int j;
@@ -39,11 +26,6 @@ void BCAlgorithm::apply()
       }
       cn = j;
 }
-////////////////////////////////////////////////////////////////////////////
-//void BoundaryCondition::addDistributions(EsoTwist3DPtr distributions)
-//{
-//   this->distributions = distributions;
-//}
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::addNode(int x1, int x2, int x3)
 {
@@ -98,6 +80,14 @@ void BCAlgorithm::clearData()
    nodeVector.clear();
    bcVector.clear();
 }
-
-
+//////////////////////////////////////////////////////////////////////////
+BCArray3DPtr BCAlgorithm::getBcArray()
+{
+   return bcArray;
+}
+//////////////////////////////////////////////////////////////////////////
+void BCAlgorithm::setBcArray(BCArray3DPtr bcarray)
+{
+   bcArray = bcarray;
+}
 

@@ -313,48 +313,93 @@ void IncompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(con
    bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
    cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
 
+   /////////////////////BÖSE!!!
+   //axx=0;   ayy=0;   azz=0;
+   //bxx=0;   byy=0;   bzz=0;
+   //cxx=0;   cyy=0;   czz=0;
+   ////////////////////!!!BÖSE
 
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   kxyAverage       =(kxyFromfcNEQ_SWB+
-                      kxyFromfcNEQ_SWT+
-                      kxyFromfcNEQ_SET+
-                      kxyFromfcNEQ_SEB+
-                      kxyFromfcNEQ_NWB+
-                      kxyFromfcNEQ_NWT+
-                      kxyFromfcNEQ_NET+
-                      kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-   kyzAverage       =(kyzFromfcNEQ_SWB+
-                      kyzFromfcNEQ_SWT+
-                      kyzFromfcNEQ_SET+
-                      kyzFromfcNEQ_SEB+
-                      kyzFromfcNEQ_NWB+
-                      kyzFromfcNEQ_NWT+
-                      kyzFromfcNEQ_NET+
-                      kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-   kxzAverage       =(kxzFromfcNEQ_SWB+
-                      kxzFromfcNEQ_SWT+
-                      kxzFromfcNEQ_SET+
-                      kxzFromfcNEQ_SEB+
-                      kxzFromfcNEQ_NWB+
-                      kxzFromfcNEQ_NWT+
-                      kxzFromfcNEQ_NET+
-                      kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-   kxxMyyAverage    =(kxxMyyFromfcNEQ_SWB+
-                      kxxMyyFromfcNEQ_SWT+
-                      kxxMyyFromfcNEQ_SET+
-                      kxxMyyFromfcNEQ_SEB+
-                      kxxMyyFromfcNEQ_NWB+
-                      kxxMyyFromfcNEQ_NWT+
-                      kxxMyyFromfcNEQ_NET+
-                      kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-   kxxMzzAverage    =(kxxMzzFromfcNEQ_SWB+
-                     kxxMzzFromfcNEQ_SWT+
-                     kxxMzzFromfcNEQ_SET+
-                     kxxMzzFromfcNEQ_SEB+
-                     kxxMzzFromfcNEQ_NWB+
-                     kxxMzzFromfcNEQ_NWT+
-                     kxxMzzFromfcNEQ_NET+
-                     kxxMzzFromfcNEQ_NEB)*c1o8-(ax-cz);
+   //kxyAverage       =(kxyFromfcNEQ_SWB+
+   //                   kxyFromfcNEQ_SWT+
+   //                   kxyFromfcNEQ_SET+
+   //                   kxyFromfcNEQ_SEB+
+   //                   kxyFromfcNEQ_NWB+
+   //                   kxyFromfcNEQ_NWT+
+   //                   kxyFromfcNEQ_NET+
+   //                   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
+   //kyzAverage       =(kyzFromfcNEQ_SWB+
+   //                   kyzFromfcNEQ_SWT+
+   //                   kyzFromfcNEQ_SET+
+   //                   kyzFromfcNEQ_SEB+
+   //                   kyzFromfcNEQ_NWB+
+   //                   kyzFromfcNEQ_NWT+
+   //                   kyzFromfcNEQ_NET+
+   //                   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
+   //kxzAverage       =(kxzFromfcNEQ_SWB+
+   //                   kxzFromfcNEQ_SWT+
+   //                   kxzFromfcNEQ_SET+
+   //                   kxzFromfcNEQ_SEB+
+   //                   kxzFromfcNEQ_NWB+
+   //                   kxzFromfcNEQ_NWT+
+   //                   kxzFromfcNEQ_NET+
+   //                   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
+   //kxxMyyAverage    =(kxxMyyFromfcNEQ_SWB+
+   //                   kxxMyyFromfcNEQ_SWT+
+   //                   kxxMyyFromfcNEQ_SET+
+   //                   kxxMyyFromfcNEQ_SEB+
+   //                   kxxMyyFromfcNEQ_NWB+
+   //                   kxxMyyFromfcNEQ_NWT+
+   //                   kxxMyyFromfcNEQ_NET+
+   //                   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
+   //kxxMzzAverage    =(kxxMzzFromfcNEQ_SWB+
+   //                  kxxMzzFromfcNEQ_SWT+
+   //                  kxxMzzFromfcNEQ_SET+
+   //                  kxxMzzFromfcNEQ_SEB+
+   //                  kxxMzzFromfcNEQ_NWB+
+   //                  kxxMzzFromfcNEQ_NWT+
+   //                  kxxMzzFromfcNEQ_NET+
+   //                  kxxMzzFromfcNEQ_NEB)*c1o8-(ax-cz);
+   kxyAverage       =0;//(kxyFromfcNEQ_SWB+
+                    //kxyFromfcNEQ_SWT+
+                    //kxyFromfcNEQ_SET+
+                    //kxyFromfcNEQ_SEB+
+                    //kxyFromfcNEQ_NWB+
+                    //kxyFromfcNEQ_NWT+
+                    //kxyFromfcNEQ_NET+
+                    //kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
+   kyzAverage       =0;//(kyzFromfcNEQ_SWB+
+                       //kyzFromfcNEQ_SWT+
+                       //kyzFromfcNEQ_SET+
+                       //kyzFromfcNEQ_SEB+
+                       //kyzFromfcNEQ_NWB+
+                       //kyzFromfcNEQ_NWT+
+                       //kyzFromfcNEQ_NET+
+                       //kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
+   kxzAverage       =0;//(kxzFromfcNEQ_SWB+
+                       //kxzFromfcNEQ_SWT+
+                       //kxzFromfcNEQ_SET+
+                       //kxzFromfcNEQ_SEB+
+                       //kxzFromfcNEQ_NWB+
+                       //kxzFromfcNEQ_NWT+
+                       //kxzFromfcNEQ_NET+
+                       //kxzFromfcNEQ_NEB)*c1o8-(az+cx);
+   kxxMyyAverage    =0;//(kxxMyyFromfcNEQ_SWB+
+                       //kxxMyyFromfcNEQ_SWT+
+                       //kxxMyyFromfcNEQ_SET+
+                       //kxxMyyFromfcNEQ_SEB+
+                       //kxxMyyFromfcNEQ_NWB+
+                       //kxxMyyFromfcNEQ_NWT+
+                       //kxxMyyFromfcNEQ_NET+
+                       //kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
+   kxxMzzAverage    =0;//(kxxMzzFromfcNEQ_SWB+
+                       //kxxMzzFromfcNEQ_SWT+
+                       //kxxMzzFromfcNEQ_SET+
+                       //kxxMzzFromfcNEQ_SEB+
+                       //kxxMzzFromfcNEQ_NWB+
+                       //kxxMzzFromfcNEQ_NWT+
+                       //kxxMzzFromfcNEQ_NET+
+                       //kxxMzzFromfcNEQ_NEB)*c1o8-(ax-cz);
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
    // Bernd das Brot

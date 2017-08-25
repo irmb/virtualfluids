@@ -32,7 +32,7 @@ public:
    virtual void calculate();
    virtual LBMKernelPtr clone();
    double getCallculationTime();
-
+   void setBulkOmegaToOmega(bool value);
 protected:
    friend class boost::serialization::access;
    template<class Archive>
@@ -62,6 +62,10 @@ protected:
    LBMReal forcingX1;
    LBMReal forcingX2;
    LBMReal forcingX3;
+   
+   // bulk viscosity
+   bool bulkOmegaToOmega;
+   LBMReal OxxPyyPzz; 
 };
 #endif // CompressibleCumulantLBMKernel_h__
 

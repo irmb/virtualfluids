@@ -49,14 +49,14 @@ void CompressibleOffsetInterpolationProcessor::interpolateCoarseToFine(D3Q27ICel
 {
    setOffsets(xoff, yoff, zoff);
    calcInterpolatedCoefficiets(icellC, omegaC, 0.5);
-   calcInterpolatedNode(icellF.BSW, omegaF, -0.25, -0.25, -0.25, calcPressBSW(), -1, -1, -1);
-   calcInterpolatedNode(icellF.BNE, omegaF,  0.25,  0.25, -0.25, calcPressBNE(),  1,  1, -1);
-   calcInterpolatedNode(icellF.TNW, omegaF, -0.25,  0.25,  0.25, calcPressTNW(), -1,  1,  1);
-   calcInterpolatedNode(icellF.TSE, omegaF,  0.25, -0.25,  0.25, calcPressTSE(),  1, -1,  1);
-   calcInterpolatedNode(icellF.BNW, omegaF, -0.25,  0.25, -0.25, calcPressBNW(), -1,  1, -1);
-   calcInterpolatedNode(icellF.BSE, omegaF,  0.25, -0.25, -0.25, calcPressBSE(),  1, -1, -1);
-   calcInterpolatedNode(icellF.TSW, omegaF, -0.25, -0.25,  0.25, calcPressTSW(), -1, -1,  1);
-   calcInterpolatedNode(icellF.TNE, omegaF,  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
+   calcInterpolatedNodeCF(icellF.BSW, omegaF, -0.25, -0.25, -0.25, calcPressBSW(), -1, -1, -1);
+   calcInterpolatedNodeCF(icellF.BNE, omegaF,  0.25,  0.25, -0.25, calcPressBNE(),  1,  1, -1);
+   calcInterpolatedNodeCF(icellF.TNW, omegaF, -0.25,  0.25,  0.25, calcPressTNW(), -1,  1,  1);
+   calcInterpolatedNodeCF(icellF.TSE, omegaF,  0.25, -0.25,  0.25, calcPressTSE(),  1, -1,  1);
+   calcInterpolatedNodeCF(icellF.BNW, omegaF, -0.25,  0.25, -0.25, calcPressBNW(), -1,  1, -1);
+   calcInterpolatedNodeCF(icellF.BSE, omegaF,  0.25, -0.25, -0.25, calcPressBSE(),  1, -1, -1);
+   calcInterpolatedNodeCF(icellF.TSW, omegaF, -0.25, -0.25,  0.25, calcPressTSW(), -1, -1,  1);
+   calcInterpolatedNodeCF(icellF.TNE, omegaF,  0.25,  0.25,  0.25, calcPressTNE(),  1,  1,  1);
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetInterpolationProcessor::interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff)
@@ -288,46 +288,46 @@ void CompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(const
 
 
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   kxyAverage       =(kxyFromfcNEQ_SWB+
-                      kxyFromfcNEQ_SWT+
-                      kxyFromfcNEQ_SET+
-                      kxyFromfcNEQ_SEB+
-                      kxyFromfcNEQ_NWB+
-                      kxyFromfcNEQ_NWT+
-                      kxyFromfcNEQ_NET+
-                      kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-   kyzAverage       =(kyzFromfcNEQ_SWB+
-                      kyzFromfcNEQ_SWT+
-                      kyzFromfcNEQ_SET+
-                      kyzFromfcNEQ_SEB+
-                      kyzFromfcNEQ_NWB+
-                      kyzFromfcNEQ_NWT+
-                      kyzFromfcNEQ_NET+
-                      kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-   kxzAverage       =(kxzFromfcNEQ_SWB+
-                      kxzFromfcNEQ_SWT+
-                      kxzFromfcNEQ_SET+
-                      kxzFromfcNEQ_SEB+
-                      kxzFromfcNEQ_NWB+
-                      kxzFromfcNEQ_NWT+
-                      kxzFromfcNEQ_NET+
-                      kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-   kxxMyyAverage    =(kxxMyyFromfcNEQ_SWB+
-                      kxxMyyFromfcNEQ_SWT+
-                      kxxMyyFromfcNEQ_SET+
-                      kxxMyyFromfcNEQ_SEB+
-                      kxxMyyFromfcNEQ_NWB+
-                      kxxMyyFromfcNEQ_NWT+
-                      kxxMyyFromfcNEQ_NET+
-                      kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-   kxxMzzAverage    =(kxxMzzFromfcNEQ_SWB+
-                     kxxMzzFromfcNEQ_SWT+
-                     kxxMzzFromfcNEQ_SET+
-                     kxxMzzFromfcNEQ_SEB+
-                     kxxMzzFromfcNEQ_NWB+
-                     kxxMzzFromfcNEQ_NWT+
-                     kxxMzzFromfcNEQ_NET+
-                     kxxMzzFromfcNEQ_NEB)*c1o8-(ax-cz);
+   kxyAverage       =0;//(kxyFromfcNEQ_SWB+
+                       //kxyFromfcNEQ_SWT+
+                       //kxyFromfcNEQ_SET+
+                       //kxyFromfcNEQ_SEB+
+                       //kxyFromfcNEQ_NWB+
+                       //kxyFromfcNEQ_NWT+
+                       //kxyFromfcNEQ_NET+
+                       //kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
+   kyzAverage       =0;//(kyzFromfcNEQ_SWB+
+                       //kyzFromfcNEQ_SWT+
+                       //kyzFromfcNEQ_SET+
+                       //kyzFromfcNEQ_SEB+
+                       //kyzFromfcNEQ_NWB+
+                       //kyzFromfcNEQ_NWT+
+                       //kyzFromfcNEQ_NET+
+                       //kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
+   kxzAverage       =0;//(kxzFromfcNEQ_SWB+
+                       //kxzFromfcNEQ_SWT+
+                       //kxzFromfcNEQ_SET+
+                       //kxzFromfcNEQ_SEB+
+                       //kxzFromfcNEQ_NWB+
+                       //kxzFromfcNEQ_NWT+
+                       //kxzFromfcNEQ_NET+
+                       //kxzFromfcNEQ_NEB)*c1o8-(az+cx);
+   kxxMyyAverage    =0;//(kxxMyyFromfcNEQ_SWB+
+                       //kxxMyyFromfcNEQ_SWT+
+                       //kxxMyyFromfcNEQ_SET+
+                       //kxxMyyFromfcNEQ_SEB+
+                       //kxxMyyFromfcNEQ_NWB+
+                       //kxxMyyFromfcNEQ_NWT+
+                       //kxxMyyFromfcNEQ_NET+
+                       //kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
+   kxxMzzAverage    =0;//(kxxMzzFromfcNEQ_SWB+
+                       //kxxMzzFromfcNEQ_SWT+
+                       //kxxMzzFromfcNEQ_SET+
+                       //kxxMzzFromfcNEQ_SEB+
+                       //kxxMzzFromfcNEQ_NWB+
+                       //kxxMzzFromfcNEQ_NWT+
+                       //kxxMzzFromfcNEQ_NET+
+                       //kxxMzzFromfcNEQ_NEB)*c1o8-(ax-cz);
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //
    // Bernd das Brot
@@ -464,7 +464,7 @@ void CompressibleOffsetInterpolationProcessor::calcInterpolatedCoefficiets(const
    yz_TNW =   0.0625*eps_new *((                bxyz +     cxyz)/(72.*o));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetInterpolationProcessor::calcInterpolatedNode(LBMReal* f, LBMReal omega, LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
+void CompressibleOffsetInterpolationProcessor::calcInterpolatedNodeCF(LBMReal* f, LBMReal omega, LBMReal x, LBMReal y, LBMReal z, LBMReal press, LBMReal xs, LBMReal ys, LBMReal zs)
 {
    using namespace D3Q27System;
 

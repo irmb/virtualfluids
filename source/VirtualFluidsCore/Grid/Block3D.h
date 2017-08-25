@@ -132,6 +132,7 @@ private:
   static int counter;
 
   friend class MPIIORestartCoProcessor;
+  friend class MPIIORestart2CoProcessor;
 
   friend class boost::serialization::access;
   template<class Archive>

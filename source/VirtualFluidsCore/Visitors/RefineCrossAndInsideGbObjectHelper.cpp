@@ -2,14 +2,16 @@
 #include "RefineCrossAndInsideGbObjectBlockVisitor.h"
 #include "RatioBlockVisitor.h"
 #include "RatioSmoothBlockVisitor.h"
+#include "CheckRatioBlockVisitor.h"
 #include "OverlapBlockVisitor.h"
 #include "SetInterpolationDirsBlockVisitor.h"
 #include <D3Q27System.h>
 
 
-RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel) :
+RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel, CommunicatorPtr comm) :
                                     grid(grid),
-                                    maxRefineLevel(maxRefineLevel)
+                                    maxRefineLevel(maxRefineLevel),
+                                    comm(comm)
 {
 }
 //////////////////////////////////////////////////////////////////////////
@@ -21,22 +23,39 @@ void RefineCrossAndInsideGbObjectHelper::refine()
 {
    UBLOG(logDEBUG5,"RefineCrossAndInsideGbObjectHelper: refine - start");	
    
-   int size = (int)objects.size();
-
-   for (int i = 0; i < size; i++)
+   if (comm->isRoot())
    {
-      RefineCrossAndInsideGbObjectBlockVisitor refVisitor(objects[i], levels[i]);
-      grid->accept(refVisitor);
+      int size = (int)objects.size();
+
+      for (int i = 0; i<size; i++)
+      {
+         RefineCrossAndInsideGbObjectBlockVisitor refVisitor(objects[i], levels[i]);
+         grid->accept(refVisitor);
+      }
+
+      //RatioBlockVisitor ratioVisitor(maxRefineLevel);
+      //grid->accept(ratioVisitor);
+
+      //RatioSmoothBlockVisitor ratioSmoothVisitor(maxRefineLevel);
+      //grid->accept(ratioSmoothVisitor);
+
+      RatioBlockVisitor ratioVisitor(maxRefineLevel);
+      CheckRatioBlockVisitor checkRatio(maxRefineLevel);
+      int count = 0;
+
+      do {
+         grid->accept(ratioVisitor);
+         checkRatio.resetState();
+         grid->accept(checkRatio);
+         UBLOG(logINFO, "count = "<<count++<<" state = "<<checkRatio.getState());
+      } while (!checkRatio.getState());
+
+
+      OverlapBlockVisitor overlapVisitor(maxRefineLevel, false);
+      grid->accept(overlapVisitor);
    }
 
-   RatioBlockVisitor ratioVisitor(maxRefineLevel);
-   grid->accept(ratioVisitor);
-
-   RatioSmoothBlockVisitor ratioSmoothVisitor(maxRefineLevel);
-   grid->accept(ratioSmoothVisitor);
-
-   OverlapBlockVisitor overlapVisitor(maxRefineLevel);
-   grid->accept(overlapVisitor);
+   grid->updateDistributedBlocks(comm);
 
    std::vector<int> dirs;
 

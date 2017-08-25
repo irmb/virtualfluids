@@ -1144,3 +1144,82 @@ void GbTriFaceMesh3D::readMeshFromSTLFile(string filename, bool removeRedundantN
       this->calculateValues();
    }
 }
+//////////////////////////////////////////////////////////////////////////
+//void GbTriFaceMesh3D::writeMeshToSTLFile(string filename, bool isBinaryFormat)
+//{
+//   vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
+//   vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
+//   int nr=0;
+//
+//   if (!isBinaryFormat) {
+//      ofstream out(filename.c_str());
+//      if (!out.good())
+//      {
+//         delete nodes;
+//         delete triangles;
+//         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: "+filename));
+//      }
+//      char title[80] = "ASCII";
+//      std::string s0, s1;
+//      float n0, n1, n2, f0, f1, f2, f3, f4, f5, f6, f7, f8;
+//      out.write(title, 80);
+//      size_t size = nodes->size();
+//      for (size_t i = 0; i < size)
+//      {
+//         out << nodes[i++]
+//         in >> s0;                                // facet || endsolid
+//         if (s0=="facet") {
+//            in >> s1 >> n0 >> n1 >> n2;            // normal x y z
+//            in >> s0 >> s1;                        // outer loop
+//            in >> s0 >> f0 >> f1 >> f2;         // vertex x y z
+//            in >> s0 >> f3 >> f4 >> f5;         // vertex x y z
+//            in >> s0 >> f6 >> f7 >> f8;         // vertex x y z
+//            in >> s0;                            // endloop
+//            in >> s0;                            // endfacet
+//            // Generate a new Triangle without Normal as 3 Vertices
+//            nodes->push_back(GbTriFaceMesh3D::Vertex(f0, f1, f2));
+//            nodes->push_back(GbTriFaceMesh3D::Vertex(f3, f4, f5));
+//            nodes->push_back(GbTriFaceMesh3D::Vertex(f6, f7, f8));
+//            triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr+1, nr+2));
+//            nr+=3;
+//         }
+//         else if (s0=="endsolid") {
+//            break;
+//         }
+//      }
+//      in.close();
+//   }
+//   else {
+//      FILE *f = fopen(filename.c_str(), "rb");
+//      if (!f)
+//      {
+//         delete nodes;
+//         delete triangles;
+//         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: "+filename));
+//      }
+//      char title[80];
+//      int nFaces;
+//      fread(title, 80, 1, f);
+//      fread((void*)&nFaces, 4, 1, f);
+//      float v[12]; // normal=3, vertices=3*3 = 12
+//      unsigned short uint16;
+//      // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
+//      for (size_t i=0; i<nFaces; ++i) {
+//         for (size_t j=0; j<12; ++j) {
+//            fread((void*)&v[j], sizeof(float), 1, f);
+//         }
+//         fread((void*)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
+//         nodes->push_back(GbTriFaceMesh3D::Vertex(v[3], v[4], v[5]));
+//         nodes->push_back(GbTriFaceMesh3D::Vertex(v[6], v[7], v[8]));
+//         nodes->push_back(GbTriFaceMesh3D::Vertex(v[9], v[10], v[11]));
+//         triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr+1, nr+2));
+//         nr+=3;
+//      }
+//      fclose(f);
+//   }
+//
+//   GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
+//
+//   return mesh;
+//}
+//////////////////////////////////////////////////////////////////////////

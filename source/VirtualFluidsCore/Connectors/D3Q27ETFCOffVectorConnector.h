@@ -1074,7 +1074,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::distributeReceiveVector(Di
 			{
 				D3Q27ICell icellF;
 				this->readICellFfromData(data, index, icellF);
-				iprocessor->writeICell(fTo, icellF, ix1, ix2, ix3);
+				iprocessor->writeICellInv(fTo, icellF, ix1, ix2, ix3);
 			}
 		}
 	}

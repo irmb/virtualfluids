@@ -174,6 +174,13 @@ std::string BCArray3D::toString() const
    return text.str();
 }
 //////////////////////////////////////////////////////////////////////////
+std::vector< int >& BCArray3D::getBcindexmatrixDataVector()
+{
+   return bcindexmatrix.getDataVector();
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 void BCArray3D::deleteBCAndSetType(std::size_t x1, std::size_t x2, std::size_t x3, int type)
    {
       this->deleteBC(x1, x2, x3);
