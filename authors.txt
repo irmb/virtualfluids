@@ -1,0 +1,2 @@
+kutscher = Konstantin Kutscher <kutscher@irmb.tu-bs.de>
+kucher = Konstantin Kutscher <kutscher@irmb.tu-bs.de>
