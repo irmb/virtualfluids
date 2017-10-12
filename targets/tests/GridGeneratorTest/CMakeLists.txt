@@ -2,7 +2,7 @@ setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
 
 set(linkDirectories "")
 set(libsToLink GridGenerator)
-set(includeDirectories ${PROJECT_SOURCE_DIR}/src)
+set(includeDirectories ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/GridGenerator)
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)

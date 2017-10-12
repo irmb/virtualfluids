@@ -5,4 +5,4 @@ addCAndCPPFileTypes()
 #GLOB SOURCE FILES IN MY_SRCS
 unset(MY_SRCS)
 includeRecursiveAllFilesFrom(${targetName} ${CMAKE_CURRENT_LIST_DIR})
-includeRecursiveTestFilesFrom(GridGenerator ${PROJECT_SOURCE_DIR}/src)
+includeRecursiveTestFilesFrom(GridGenerator ${CMAKE_SOURCE_DIR}/src/GridGenerator)
