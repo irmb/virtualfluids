@@ -1,0 +1,136 @@
+#include "gmock/gmock.h"
+
+#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+
+
+using namespace testing;
+
+
+TEST(BoundingBoxTest, initWithTriangle_whenTheValueIsIntegerBoxHasToPLUS_or_MINUS_ONE) 
+{
+    doubflo minX = 1.0f;
+    doubflo minY = 23.0f;
+    doubflo minZ = 1.1222f;
+
+    doubflo maxX = 110.0f;
+    doubflo maxY = 50.0f;
+    doubflo maxZ = 12122.23f;
+	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f)));
+    EXPECT_THAT(box.minX, Eq(minX - 1));
+    EXPECT_THAT(box.minY, Eq(minY - 1));
+    EXPECT_THAT(box.minZ, Eq((int)minZ));
+
+    EXPECT_THAT(box.maxX, Eq(maxX + 1));
+    EXPECT_THAT(box.maxY, Eq(maxY + 1));
+    EXPECT_THAT(box.maxZ, Eq((int)maxZ + 1));
+}
+
+TEST(BoundingBoxTest, initWithTriangle2)
+{
+	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(20.0f, 1.0f, 1.0f), Vertex(1.0f, 1.0f, 1 + 1e-006f), Vertex(20.0f, 20.0f, 1.0f), Vertex(1.0f, 0.0f, 0.0f)));
+
+    EXPECT_THAT(box.minX, Eq(0));
+    EXPECT_THAT(box.minY, Eq(0));
+    EXPECT_THAT(box.minZ, Eq(0));
+
+    EXPECT_THAT(box.maxX, Eq(21));
+    EXPECT_THAT(box.maxY, Eq(21));
+    EXPECT_THAT(box.maxZ, Eq(2));
+}
+
+
+TEST(BoundingBoxTest, initWithTriangle3) 
+{
+	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(20.0f, 20.0f, 20.0f), Vertex(1.0f, 20.0f, 20.0f), Vertex(20.0f, 1.0f, 20.0f), Vertex(1.0f, 0.0f, 0.0f)));
+
+    EXPECT_THAT(box.minX, Eq(0));
+    EXPECT_THAT(box.minY, Eq(0));
+    EXPECT_THAT(box.minZ, Eq(19));
+
+    EXPECT_THAT(box.maxX, Eq(21));
+    EXPECT_THAT(box.maxY, Eq(21));
+    EXPECT_THAT(box.maxZ, Eq(21));
+}
+
+TEST(BoundingBoxTest, whenAllValueAreFloat_BoxHasToCEIL_OR_FLOOR) 
+{
+    doubflo minX = 1.5f;
+    doubflo minY = 23.2f;
+    doubflo minZ = 1.1222f;
+
+    doubflo maxX = 110.4f;
+    doubflo maxY = 50.5f;
+    doubflo maxZ = 12122.23f;
+
+	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f)));
+
+    EXPECT_THAT(box.minX, Eq((int)minX));
+    EXPECT_THAT(box.minY, Eq((int)minY));
+    EXPECT_THAT(box.minZ, Eq((int)minZ));
+
+    EXPECT_THAT(box.maxX, Eq((int)maxX + 1));
+    EXPECT_THAT(box.maxY, Eq((int)maxY + 1));
+    EXPECT_THAT(box.maxZ, Eq((int)maxZ + 1));
+
+}
+
+TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
+{
+    BoundingBox<doubflo> box = BoundingBox<doubflo>::makeInvalidMinMaxBox();
+
+    doubflo minX = 1.0f;
+    doubflo minY = 23.0f;
+    doubflo minZ = 1.1222f;
+
+    doubflo maxX = 110.0f;
+    doubflo maxY = 50.0f;
+    doubflo maxZ = 12122.23f;
+    Triangle t = Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f));
+
+	box.setMinMax(t);
+
+	EXPECT_THAT(box.minX, FloatEq(minX));
+	EXPECT_THAT(box.minY, FloatEq(minY));
+	EXPECT_THAT(box.minZ, FloatEq(minZ));
+	
+	EXPECT_THAT(box.maxX, FloatEq(maxX));
+	EXPECT_THAT(box.maxY, FloatEq(maxY));
+	EXPECT_THAT(box.maxZ, FloatEq(maxZ));
+}
+
+TEST(BoundingBoxTest, isInside_true)
+{
+    BoundingBox<doubflo> box = BoundingBox<doubflo>();
+
+    box.minX = 0.0f;
+    box.minY = 0.0f;
+    box.minZ = 0.0f;
+
+    box.maxX = 10.0f;
+    box.maxY = 10.0f;
+    box.maxZ = 10.0f;
+
+    Triangle t = Triangle(Vertex(1,1,1), Vertex(2,2,2), Vertex(3,3,3), Vertex(0.0f, 0.0f, 0.0f));
+
+    EXPECT_TRUE(box.isInside(t));
+}
+
+TEST(BoundingBoxTest, isInside_false)
+{
+    BoundingBox<doubflo> box = BoundingBox<doubflo>();
+
+    box.minX = 0.0f;
+    box.minY = 0.0f;
+    box.minZ = 0.0f;
+
+    box.maxX = 10.0f;
+    box.maxY = 10.0f;
+    box.maxZ = 10.0f;
+
+    Triangle t = Triangle(Vertex(1, 1, 1), Vertex(2, 2, 2), Vertex(3, 3, 11), Vertex(0.0f, 0.0f, 0.0f));
+
+    EXPECT_FALSE(box.isInside(t));
+}
+
