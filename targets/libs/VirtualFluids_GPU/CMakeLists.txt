@@ -1,7 +1,7 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
 
 set(linkDirectories "")
-set(libsToLink GridGenerator utilities Logger VirtualFluidsBasics ws2_32)
+set(libsToLink GridGenerator VirtualFluidsBasics ws2_32)
 set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/GridGenerator ${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics)
 
 #glob files and save in MY_SRCS

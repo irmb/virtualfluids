@@ -82,16 +82,13 @@ add_subdirectory(targets/apps/HULC)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/VirtualFluids_GPU)
 add_subdirectory(targets/libs/GridGenerator)
-add_subdirectory(targets/libs/Input)
-add_subdirectory(targets/libs/Logger)
-add_subdirectory(targets/libs/utilities)
 
 
 set(BUILD_TESTS ON CACHE BOOL "Build shared libraries")
 if(BUILD_TESTS)
   add_subdirectory(3rdParty/googletest)
   #add_subdirectory(targets/tests/VirtualFluidsTest)
-  #add_subdirectory(targets/tests/VirtualFluidsBasicsTest)
+  add_subdirectory(targets/tests/VirtualFluidsBasicsTest)
 endif()
 
 
