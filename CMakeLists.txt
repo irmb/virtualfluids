@@ -70,6 +70,16 @@ IF(MSVC)
 ENDIF(MSVC)
 
 #############################################################
+###                     JSONCPP                           ###
+#############################################################
+option(HULC.BUILD_JSONCPP "Builds json cpp " OFF)
+IF (NOT HULC.BUILD_JSONCPP)
+   MESSAGE( STATUS "Build Input Project without JsonCpp." )
+ELSE()
+   add_definitions(BUILD_JSONCPP)
+ENDIF()
+
+#############################################################
 ###                   SUBDIRECTORIES                      ###
 #############################################################
 
