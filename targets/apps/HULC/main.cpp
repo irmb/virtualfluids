@@ -1,5 +1,5 @@
 #include <memory>
-#include <string>
+#include <string><utilities/StringUtil/StringUtil.h>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -7,8 +7,8 @@
 #include "mpi.h"
 #include "time.h"
 
-#include <Logger/Logger.h>
-#include <Input/Input.h>
+#include <utilities/logger/Logger.h>
+#include <utilities/input/Input.h>
 
 #include <GridGenerator/grid/GridWrapper/GridWrapperCPU/GridWrapperCPU.h>
 #include <GridGenerator/grid/GridWrapper/GridWrapperGPU/GridWrapperGPU.h>
@@ -25,7 +25,7 @@
 #include <VirtualFluids_GPU/Parameter/Parameter.h>
 #include <VirtualFluids_GPU/DataStructureInitializer/GridProvider.h>
 
-#include <utilities/StringUtil.h>
+#include <utilities/StringUtil/StringUtil.h>
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {

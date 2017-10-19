@@ -10,7 +10,7 @@
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 
 void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, std::shared_ptr<const Transformator> trans, bool writeBinary)

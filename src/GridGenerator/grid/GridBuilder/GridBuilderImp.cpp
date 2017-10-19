@@ -24,12 +24,12 @@
 #include <GridGenerator/geometries/Arrow/ArrowImp.h>
 #include <GridGenerator/utilities/Transformator/ArrowTransformator.h>
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 #include <GridGenerator/grid/GridBuilder/GridCpuBuilder/GridCpuBuilder.h>
 #include <GridGenerator/grid/GridBuilder/GridGpuBuilder/GridGpuBuilder.h>
 
-#include <utilities/StringUtil.h>
+#include <utilities/StringUtil/StringUtil.h>
 
 #include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
 

@@ -12,7 +12,7 @@
 #include <GridGenerator/grid/kernel/runGridKernelGPU.cuh>
 
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 
 GridWrapperGPU::GridWrapperGPU(BoundingBox<int> &channel, std::string d3Qxx)

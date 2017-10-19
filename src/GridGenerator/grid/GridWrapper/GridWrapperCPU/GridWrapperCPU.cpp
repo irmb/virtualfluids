@@ -14,7 +14,7 @@
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 
 GridWrapperCPU::GridWrapperCPU(BoundingBox<int> &box, std::string direction)

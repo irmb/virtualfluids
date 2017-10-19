@@ -17,8 +17,8 @@
 #include "Output/WriteData.h"
 #include "Init/InitLattice.h"
 
-#include "Logger/Logger.h"
-#include <utilities/StringUtil.h>
+#include <utilities/logger/Logger.h>
+#include <utilities/StringUtil/StringUtil.h>
 
 
 

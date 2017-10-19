@@ -1,5 +1,5 @@
 #include "LaunchParameter.cuh"
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 #include "GridGenerator/global.h"
 
 #define MAXBLOCKSIZE 65535

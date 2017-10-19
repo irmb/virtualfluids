@@ -13,7 +13,7 @@
 #include <GridGenerator/io/VTKWriterWrapper/UnstructuredGridWrapper.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 int Partition::calcEdgesFromGraph(const Grid &grid) 
 {

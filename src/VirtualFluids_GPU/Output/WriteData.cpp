@@ -5,7 +5,7 @@
 #include <sstream>
 #include <cmath>
 
-#include <utilities/StringUtil.h>
+#include <utilities/StringUtil/StringUtil.h>
 
 #include "Parameter/Parameter.h"
 

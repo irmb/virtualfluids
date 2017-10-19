@@ -6,7 +6,7 @@
 #include <memory>
 
 #include <GridGenerator/utilities/Transformator/Transformator.h>
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 #include <GridGenerator/grid/Grid.cuh>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 

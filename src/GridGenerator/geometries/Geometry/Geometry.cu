@@ -5,7 +5,7 @@
 #include <GridGenerator/utilities/triangleNeighborFinder/TriangleNeighborFinder.h>
 #include <time.h>
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 #include "Serialization/GeometryMemento.h"
 #include <GridGenerator/geometries/Triangle/Serialization/TriangleMemento.h>

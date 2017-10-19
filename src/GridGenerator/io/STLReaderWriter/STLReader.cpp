@@ -12,7 +12,7 @@
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
-#include <Logger/Logger.h>
+#include <utilities/logger/Logger.h>
 
 std::vector<Triangle> STLReader::readSTL(const std::string& name, const Transformator& trans)
 {
