@@ -76,6 +76,7 @@ option(HULC.BUILD_JSONCPP "Builds json cpp " OFF)
 IF (NOT HULC.BUILD_JSONCPP)
    MESSAGE( STATUS "Build Input Project without JsonCpp." )
 ELSE()
+   add_subdirectory(3rdParty/jsoncpp)
    add_definitions(BUILD_JSONCPP)
 ENDIF()
 
@@ -85,6 +86,7 @@ ENDIF()
 
 add_subdirectory(3rdParty/MuParser)
 add_subdirectory(3rdParty/metis/metis-5.1.0)
+
 
 add_subdirectory(targets/apps/HULC)
 
