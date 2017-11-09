@@ -1,140 +1,351 @@
-#include "WriteData.h"
+#include "Output/WriteData.h"
+#include "Output/ClogWriter.h"
+#include "Output/LogWriter.hpp"
+#include "Output/VtkSGWriter.hpp"
+#include "Output/InterfaceDebugWriter.hpp"
+#include "Output/UnstructuredGridWriter.hpp"
+#include "Output/kFullWriter.hpp"
+#include "Output/PosWriter.hpp"
+#include "Output/PosVecIntWriter.hpp"
+#include "Output/interfaceWriter.hpp"
+#include "Output/OffsetWriter.hpp"
+#include "Output/MeasurePointWriter.hpp"
 
-#include <stdio.h>
-#include <fstream>
-#include <sstream>
-#include <cmath>
-
-#include <utilities/StringUtil/StringUtil.h>
-
-#include "Parameter/Parameter.h"
-
-#include "LBM/LB.h"
-#include "LBM/D3Q27.h"
-
-#include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h>
-
-
-void DataWriter::writeInit(std::shared_ptr<Parameter> para)
+////////////////////////////////////////////////////////////////////////////////
+void writeInit(Parameter* para)
 {
-    unsigned int timestep = para->getTInit();
-    for (int level = para->getCoarse(); level <= para->getFine(); level++)
-        writeTimestep(para, timestep, level);
-}
+	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	{
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//copy Data to host
+		para->cudaCopyPrint(lev);
+		if (para->getCalcMedian())
+		{
+			para->cudaCopyMedianPrint(lev);
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		const unsigned int numberOfParts = para->getParH(lev)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
+		std::vector<std::string> fname;
+		std::vector<std::string> fname_med;
+		////2nd and 3rd Moments
+		//std::vector<std::string> fname2ndMoments;
+		//std::vector<std::string> fname3rdMoments;
+		//std::vector<std::string> fnameHigherMoments;
+		for (unsigned int i = 1; i <= numberOfParts; i++)
+		{
+			fname.push_back(para->getFName()+"_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(para->getTInit())+".vtk");
+			fname_med.push_back(para->getFName()+"_bin_median_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(para->getTInit())+".vtk");
+			//fname2ndMoments.push_back(para->getFName()+"_2ndMoments_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(para->getTInit())+".vtk");
+			//fname3rdMoments.push_back(para->getFName()+"_3rdMoments_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(para->getTInit())+".vtk");
+			//fnameHigherMoments.push_back(para->getFName()+"_HigherMoments_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(para->getTInit())+".vtk");
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//std::string ffname_test = para->getFName()+"_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit())+ ".vtk";
+		//std::string ffname_bin  = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit())+ "PartI.vtk";
+		//std::string ffname_bin2 = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit())+ "PartII.vtk";
+		//std::string ffname_bin_Points = para->getFName()+"_Points_"+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit())+ ".vtk";
+		//std::string ffname_bin_med = para->getFName()+"_bin_med_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit())+ ".vtk";
+		//std::string ffname_bin_test = para->getFName()+"_bin_test_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit())+ ".vtk";
+		//std::string ffname_bin_eff = para->getFName()+"_bin_eff_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(para->getTInit())+".vtk";
+		//std::string ffname_bin_Points_eff = para->getFName()+"_Points_"+"_bin_eff_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(para->getTInit())+".vtk";
 
-void DataWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep)
+		//std::string ffname_bin  = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit()) + ".vtk";
+
+		std::string fname_qs  = para->getFName()+"_Qs_Lev_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + ".vtk";
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////2nd and 3rd Moments
+		////std::string fname2ndMoments = para->getFName()+"_2ndMoments_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(para->getTInit())+".vtk";
+		////std::string fname3rdMoments = para->getFName()+"_3rdMoments_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(para->getTInit())+".vtk";
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		if (para->getDiffOn()==true)
+		{
+			//printf("vor writeUnstrucuredGridLTConc");
+			UnstrucuredGridWriter::writeUnstrucuredGridLTConc(para, lev, fname);
+			//printf("nach writeUnstrucuredGridLTConc");
+			//VtkSGWriter::writeVTKsgThS(para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//                           para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
+			//                           para->getParH(lev)->startz,  para->getParH(lev)->endz,   ffname_test,                para->getParH(lev)->geoSP,    
+			//                           para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,  para->getParH(lev)->vz_SP,  para->getParH(lev)->rho_SP, 
+			//                           para->getVelocityRatio(),    para->getDensityRatio(),   
+			//                           para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//                           para->getParH(lev)->dx,      para->getParH(lev)->k,      para->getParH(lev)->Conc);
+		} 
+		else
+		{
+
+
+			UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+
+			//Debug
+			//InterfaceDebugWriter::writeInterfaceLinesDebugCF(para);
+			//InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para);
+			//InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para);
+			//InterfaceDebugWriter::writeNeighborXLinesDebug(para);
+			//InterfaceDebugWriter::writeNeighborYLinesDebug(para);
+			//InterfaceDebugWriter::writeNeighborZLinesDebug(para);
+
+			//if (para->getParH(lev)->QGeom.kQ > 0)
+			//{
+			//	UnstrucuredGridWriter::writeQs(para, lev, fname_qs);
+			//}
+
+			////2nd and 3rd Moments
+			//if (para->getCalc2ndOrderMoments())  UnstrucuredGridWriter::writeUnstrucuredGridEff2ndMomentsLT(para, lev, fname2ndMoments);
+			//if (para->getCalc3rdOrderMoments())  UnstrucuredGridWriter::writeUnstrucuredGridEff3rdMomentsLT(para, lev, fname3rdMoments);
+			//if (para->getCalcHighOrderMoments()) UnstrucuredGridWriter::writeUnstrucuredGridEffHigherMomentsLT(para, lev, fnameHigherMoments);
+
+
+			//UnstrucuredGridWriter::writeUnstrucuredGrid(para, lev, ffname_bin, ffname_bin_Points);
+			//UnstrucuredGridWriter::writeUnstrucuredGridEff(para, lev, ffname_bin_eff, ffname_bin_Points_eff);
+
+			//UnstrucuredGridWriter::writeUnstrucuredGridAsciiEff(para, lev, ffname_bin, ffname_bin_Points);
+
+			//VtkSGWriter::writeVTKsgSPbinTEST(ffname_bin_test);
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//2ndMoments
+			//UnstrucuredGridWriter::writeUnstrucuredGridEff2ndMoments(para, lev, fname2ndMoments);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//VtkSGWriter::writeVTKsgSPbinAS( para->getParH(lev)->nx,      para->getParH(lev)->ny,        para->getParH(lev)->nz,        STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//							 para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY,    para->getParH(lev)->gridNZ, 
+			//							 para->getParH(lev)->startz,  para->getParH(lev)->endz,      ffname_bin,                    para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//							 para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,     para->getParH(lev)->vz_SP,     para->getParH(lev)->rho_SP,
+			//							 para->getParH(lev)->press_SP,							     
+			//							 para->getVelocityRatio(),    para->getDensityRatio(),       
+			//							 para->getParH(lev)->distX,   para->getParH(lev)->distY,     para->getParH(lev)->distZ,
+			//							 para->getParH(lev)->dx,      para->getParH(lev)->coordX_SP, para->getParH(lev)->coordY_SP, para->getParH(lev)->coordZ_SP);
+			////median
+			//VtkSGWriter::writeVTKmedSPbinAS(    para->getParH(lev)->nx,			para->getParH(lev)->ny,			para->getParH(lev)->nz,         STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//								 para->getParH(lev)->gridNX,		para->getParH(lev)->gridNY,		para->getParH(lev)->gridNZ, 
+			//								 para->getParH(lev)->startz,		para->getParH(lev)->endz,		ffname_bin_med,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//								 para->getParH(lev)->vx_SP_Med,     para->getParH(lev)->vy_SP_Med,  para->getParH(lev)->vz_SP_Med,  para->getParH(lev)->rho_SP_Med,
+			//								 para->getParH(lev)->press_SP_Med,  1,
+			//								 para->getVelocityRatio(),          para->getDensityRatio(),   
+			//								 para->getParH(lev)->distX,         para->getParH(lev)->distY,      para->getParH(lev)->distZ,
+			//								 para->getParH(lev)->dx,            para->getParH(lev)->coordX_SP,  para->getParH(lev)->coordY_SP,  para->getParH(lev)->coordZ_SP);
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//VtkSGWriter::writeVTKsgSPbin(para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//							 para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
+			//							 para->getParH(lev)->startz,  para->getParH(lev)->endz,   ffname_bin,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,
+			//							 para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,  para->getParH(lev)->vz_SP,  para->getParH(lev)->rho_SP,
+			//							 para->getParH(lev)->press_SP,
+			//							 para->getVelocityRatio(),    para->getDensityRatio(),   
+			//							 para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//							 para->getParH(lev)->dx,      para->getParH(lev)->k);
+			////median
+			//VtkSGWriter::writeVTKmedSPbin(  para->getParH(lev)->nx,			para->getParH(lev)->ny,			para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//								para->getParH(lev)->gridNX,		para->getParH(lev)->gridNY,		para->getParH(lev)->gridNZ, 
+			//								para->getParH(lev)->startz,		para->getParH(lev)->endz,		ffname_bin_med,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//								para->getParH(lev)->vx_SP_Med,  para->getParH(lev)->vy_SP_Med,  para->getParH(lev)->vz_SP_Med,  para->getParH(lev)->rho_SP_Med,
+			//								para->getParH(lev)->press_SP_Med, 1,
+			//								para->getVelocityRatio(),    para->getDensityRatio(),   
+			//								para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//								para->getParH(lev)->dx,      para->getParH(lev)->k);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//VtkSGWriter::writeVTKsgSP( para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//                           para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
+			//                           para->getParH(lev)->startz,  para->getParH(lev)->endz,   ffname_test,                para->getParH(lev)->geoSP,    
+			//                           para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,  para->getParH(lev)->vz_SP,  para->getParH(lev)->rho_SP,
+			//                           para->getParH(lev)->press_SP,
+			//                           para->getVelocityRatio(),    para->getDensityRatio(),   
+			//                           para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//                           para->getParH(lev)->dx,      para->getParH(lev)->k);
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+void writeTimestep(Parameter* para, unsigned int t)
 {
-    for (int level = para->getCoarse(); level <= para->getFine(); level++)
-        writeTimestep(para, timestep, level);
-}
+	////////////////////////////////////////////////////////////////////////////////
+	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	{
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		const unsigned int numberOfParts = para->getParH(lev)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
+		std::vector<std::string> fname;
+		std::vector<std::string> fname_med;
+		//2nd and 3rd Moments
+		std::vector<std::string> fname2ndMoments;
+		std::vector<std::string> fname3rdMoments;
+		std::vector<std::string> fnameHigherMoments;
+		for (unsigned int i = 1; i <= numberOfParts; i++)
+		{
+			fname.push_back(para->getFName()+"_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(t)+".vtk");
+			fname_med.push_back(para->getFName()+"_bin_median_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(t)+".vtk");
+			fname2ndMoments.push_back(para->getFName()+"_2ndMoments_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(t)+".vtk");
+			fname3rdMoments.push_back(para->getFName()+"_3rdMoments_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(t)+".vtk");
+			fnameHigherMoments.push_back(para->getFName()+"_HigherMoments_bin_lev_"+StringUtil::toString<int>(lev)+"_ID_"+StringUtil::toString<int>(para->getMyID())+"_Part_"+StringUtil::toString<int>(i)+"_t_"+StringUtil::toString<int>(t)+".vtk");
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//std::string ffname_test = para->getFName()+"_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
+		//std::string ffname_bin  = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(t)+ "PartI.vtk";
+		//std::string ffname_bin2 = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(t)+ "PartII.vtk";
+		//std::string ffname_bin_Points = para->getFName()+"_Points_"+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
+		//std::string ffname_bin_eff = para->getFName()+"_bin_eff_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
+		//std::string ffname_bin_Points_eff = para->getFName()+"_Points_"+"_bin_eff_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
+		//std::string ffname_bin_med = para->getFName()+"_bin_med_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
 
-void DataWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level)
+		//std::string ffname_bin  = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(t) + ".vtk";
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////2nd and 3rd Moments
+		//std::string fname2ndMoments = para->getFName()+"_2ndMoments_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
+		//std::string fname3rdMoments = para->getFName()+"_3rdMoments_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID())+"_"+StringUtil::toString<int>(t)+".vtk";
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		if (para->getDiffOn()==true)
+		{
+			//printf("vor writeUnstrucuredGridLTConc");
+			UnstrucuredGridWriter::writeUnstrucuredGridLTConc(para, lev, fname);
+			//printf("nach writeUnstrucuredGridLTConc");
+			//VtkSGWriter::writeVTKsgThS(para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//                           para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
+			//                           para->getParH(lev)->startz,  para->getParH(lev)->endz,   ffname_test,                para->getParH(lev)->geoSP,    
+			//                           para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,  para->getParH(lev)->vz_SP,  para->getParH(lev)->rho_SP, 
+			//                           para->getVelocityRatio(),    para->getDensityRatio(),   
+			//                           para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//                           para->getParH(lev)->dx,      para->getParH(lev)->k,      para->getParH(lev)->Conc);
+		} 
+		else
+		{
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//UnstrucuredGridWriter::writeUnstrucuredGrid(para, lev, ffname_bin, ffname_bin_Points);
+			//UnstrucuredGridWriter::writeUnstrucuredGridEff(para, lev, ffname_bin_eff, ffname_bin_Points_eff);
+			//UnstrucuredGridWriter::writeUnstrucuredGridBig(para, lev, ffname_bin, ffname_bin2);
+
+
+
+			UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+
+			//2nd and 3rd Moments
+			if (para->getCalc2ndOrderMoments())  UnstrucuredGridWriter::writeUnstrucuredGridEff2ndMomentsLT(para, lev, fname2ndMoments);
+			if (para->getCalc3rdOrderMoments())  UnstrucuredGridWriter::writeUnstrucuredGridEff3rdMomentsLT(para, lev, fname3rdMoments);
+			if (para->getCalcHighOrderMoments()) UnstrucuredGridWriter::writeUnstrucuredGridEffHigherMomentsLT(para, lev, fnameHigherMoments);
+
+
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()) && ((t%(unsigned int)para->getclockCycleForMP())==0))
+			{
+				//UnstrucuredGridWriter::writeUnstrucuredGridEffMedian(para, lev, ffname_bin_med);
+				UnstrucuredGridWriter::writeUnstrucuredGridMedianLT(para, lev, fname_med);
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//2ndMoments
+			//UnstrucuredGridWriter::writeUnstrucuredGridEff2ndMoments(para, lev, fname2ndMoments);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//VtkSGWriter::writeVTKsgSPbinAS( para->getParH(lev)->nx,      para->getParH(lev)->ny,        para->getParH(lev)->nz,        STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//							 para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY,    para->getParH(lev)->gridNZ, 
+			//							 para->getParH(lev)->startz,  para->getParH(lev)->endz,      ffname_bin,                    para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//							 para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,     para->getParH(lev)->vz_SP,     para->getParH(lev)->rho_SP,
+			//							 para->getParH(lev)->press_SP,							     
+			//							 para->getVelocityRatio(),    para->getDensityRatio(),       
+			//							 para->getParH(lev)->distX,   para->getParH(lev)->distY,     para->getParH(lev)->distZ,
+			//							 para->getParH(lev)->dx,      para->getParH(lev)->coordX_SP, para->getParH(lev)->coordY_SP, para->getParH(lev)->coordZ_SP);
+			//median
+			//if (((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
+			//{
+			//VtkSGWriter::writeVTKmedSPbinAS(    para->getParH(lev)->nx,			para->getParH(lev)->ny,			para->getParH(lev)->nz,         STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//								 para->getParH(lev)->gridNX,		para->getParH(lev)->gridNY,		para->getParH(lev)->gridNZ, 
+			//								 para->getParH(lev)->startz,		para->getParH(lev)->endz,		ffname_bin_med,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//								 para->getParH(lev)->vx_SP_Med,     para->getParH(lev)->vy_SP_Med,  para->getParH(lev)->vz_SP_Med,  para->getParH(lev)->rho_SP_Med,
+			//								 para->getParH(lev)->press_SP_Med,  tdiff,
+			//								 para->getVelocityRatio(),          para->getDensityRatio(),   
+			//								 para->getParH(lev)->distX,         para->getParH(lev)->distY,      para->getParH(lev)->distZ,
+			//								 para->getParH(lev)->dx,            para->getParH(lev)->coordX_SP,  para->getParH(lev)->coordY_SP,  para->getParH(lev)->coordZ_SP);
+			//}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//VtkSGWriter::writeVTKsgSPbin(para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//					   para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
+			//					   para->getParH(lev)->startz,  para->getParH(lev)->endz,   ffname_bin,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//					   para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,  para->getParH(lev)->vz_SP,  para->getParH(lev)->rho_SP,
+			//					   para->getParH(lev)->press_SP,
+			//					   para->getVelocityRatio(),    para->getDensityRatio(),   
+			//					   para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//					   para->getParH(lev)->dx,      para->getParH(lev)->k);
+			//if (((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
+			//{
+			// //Median
+			// doubflo tdiff = (doubflo)t - (doubflo)t_prev;
+			// VtkSGWriter::writeVTKmedSPbin(para->getParH(lev)->nx,           para->getParH(lev)->ny,         para->getParH(lev)->nz,         STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//									    para->getParH(lev)->gridNX,       para->getParH(lev)->gridNY,     para->getParH(lev)->gridNZ, 
+			//									    para->getParH(lev)->startz,       para->getParH(lev)->endz,       ffname_bin_med,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    
+			//									    para->getParH(lev)->vx_SP_Med,    para->getParH(lev)->vy_SP_Med,  para->getParH(lev)->vz_SP_Med,  para->getParH(lev)->rho_SP_Med,
+			//									    para->getParH(lev)->press_SP_Med, tdiff,
+			//									    para->getVelocityRatio(),         para->getDensityRatio(),   
+			//									    para->getParH(lev)->distX,        para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//									    para->getParH(lev)->dx,           para->getParH(lev)->k);
+			//}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//            //VtkSGWriter::writeVTKsgSP( para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
+			//            //                           para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
+			//            //                           para->getParH(lev)->startz,  para->getParH(lev)->endz,   ffname_test,                para->getParH(lev)->geoSP,    
+			//            //                           para->getParH(lev)->vx_SP,   para->getParH(lev)->vy_SP,  para->getParH(lev)->vz_SP,  para->getParH(lev)->rho_SP,
+			//            //                           para->getParH(lev)->press_SP,
+			//            //                           para->getVelocityRatio(),    para->getDensityRatio(),
+			//            //                           para->getParH(lev)->distX,   para->getParH(lev)->distY,  para->getParH(lev)->distZ,
+			//            //                           para->getParH(lev)->dx,      para->getParH(lev)->k);
+			//}
+			//////////////////////////////////////////////////////////////////////////
+			//output << "\n Write MeasurePoints at t = " << t << " (level = " << lev <<")\n";
+			////for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+			////{
+			//for(int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
+			//{
+			// MeasurePointWriter::writeMeasurePoints(para, lev, j, (int)t);
+			//}
+		}                                                  
+		//////////////////////////////////////////////////////////////////////////
+	}
+
+}
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+void writeParticle(Parameter* para, unsigned int t)
 {
-    const unsigned int numberOfParts = para->getParH(level)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
-    std::vector<std::string> fname;
-    for (unsigned int i = 1; i <= numberOfParts; i++)
-        fname.push_back(para->getFName() + "_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(i) + "_t_" + StringUtil::toString<int>(timestep) + ".vtk");
-    
-    writeUnstrucuredGridLT(para, level, fname);
+	for (int lev = para->getParticleBasicLevel(); lev <= para->getFine(); lev++)
+	{
+		//////////////////////////////////////////////////////////////////////////
+		//set filename
+		std::string fname = para->getFName()+StringUtil::toString<int>(lev)+StringUtil::toString<int>(para->getMyID())+"_t_"+StringUtil::toString<int>(t)+"_Particles.vtk";
+		//////////////////////////////////////////////////////////////////////////
+		//write particles
+		UnstrucuredGridWriter::writeUnstrucuredParticles(para, lev, fname);
+		//////////////////////////////////////////////////////////////////////////
+	}
 }
-
-void DataWriter::writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname)
-{
-    std::vector< UbTupleFloat3 > nodes;
-    std::vector< UbTupleInt8 > cells;
-    std::vector< std::string > nodedatanames;
-    nodedatanames.push_back("press");
-    nodedatanames.push_back("rho");
-    nodedatanames.push_back("vx1");
-    nodedatanames.push_back("vx2");
-    nodedatanames.push_back("vx3");
-    nodedatanames.push_back("geo");
-    unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
-    int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
-    bool neighborsAreFluid;
-    double vxmax = 0;
-    unsigned int startpos = 0;
-    unsigned int endpos = 0;
-    unsigned int sizeOfNodes = 0;
-    std::vector< std::vector< double > > nodedata(nodedatanames.size());
-
-    for (unsigned int part = 0; part < fname.size(); part++)
-    {
-        if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
-            sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
-        else
-            sizeOfNodes = para->getlimitOfNodesForVTK();
-
-        //////////////////////////////////////////////////////////////////////////
-        startpos = part * para->getlimitOfNodesForVTK();
-        endpos = startpos + sizeOfNodes;
-        //////////////////////////////////////////////////////////////////////////
-        cells.clear();
-        nodes.resize(sizeOfNodes);
-        nodedata[0].resize(sizeOfNodes);
-        nodedata[1].resize(sizeOfNodes);
-        nodedata[2].resize(sizeOfNodes);
-        nodedata[3].resize(sizeOfNodes);
-        nodedata[4].resize(sizeOfNodes);
-        nodedata[5].resize(sizeOfNodes);
-        //////////////////////////////////////////////////////////////////////////
-        for (unsigned int pos = startpos; pos < endpos; pos++)
-        {
-            if (para->getParH(level)->geoSP[pos] == GEO_FLUID)
-            {
-                //////////////////////////////////////////////////////////////////////////
-                double x1 = para->getParH(level)->coordX_SP[pos];
-                double x2 = para->getParH(level)->coordY_SP[pos];
-                double x3 = para->getParH(level)->coordZ_SP[pos];
-                //////////////////////////////////////////////////////////////////////////
-                number1 = pos;
-                dn1 = pos - startpos;
-                neighborsAreFluid = true;
-                //////////////////////////////////////////////////////////////////////////
-                nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
-                nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
-                nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
-                nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
-                //////////////////////////////////////////////////////////////////////////
-                number2 = para->getParH(level)->neighborX_SP[number1];
-                number3 = para->getParH(level)->neighborY_SP[number2];
-                number4 = para->getParH(level)->neighborY_SP[number1];
-                number5 = para->getParH(level)->neighborZ_SP[number1];
-                number6 = para->getParH(level)->neighborZ_SP[number2];
-                number7 = para->getParH(level)->neighborZ_SP[number3];
-                number8 = para->getParH(level)->neighborZ_SP[number4];
-                //////////////////////////////////////////////////////////////////////////
-                if (para->getParH(level)->geoSP[number2] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number3] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number4] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number5] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number6] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number7] != GEO_FLUID ||
-                    para->getParH(level)->geoSP[number8] != GEO_FLUID)  neighborsAreFluid = false;
-                //////////////////////////////////////////////////////////////////////////
-                if (number2 > endpos ||
-                    number3 > endpos ||
-                    number4 > endpos ||
-                    number5 > endpos ||
-                    number6 > endpos ||
-                    number7 > endpos ||
-                    number8 > endpos)  neighborsAreFluid = false;
-                //////////////////////////////////////////////////////////////////////////
-                dn2 = number2 - startpos;
-                dn3 = number3 - startpos;
-                dn4 = number4 - startpos;
-                dn5 = number5 - startpos;
-                dn6 = number6 - startpos;
-                dn7 = number7 - startpos;
-                dn8 = number8 - startpos;
-                //////////////////////////////////////////////////////////////////////////
-                if (neighborsAreFluid)
-                    cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
-            }
-        }
-        WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
-    }
-}
+////////////////////////////////////////////////////////////////////////////////

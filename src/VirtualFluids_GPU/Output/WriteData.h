@@ -1,28 +1,14 @@
 #ifndef WRITE_DATA_H
 #define WRITE_DATA_H
 
-#define NOMINMAX
+#include "Parameter/Parameter.h"
+#include "Utilities/StringUtil.hpp"
+#include "Communication/Communicator.h"
 
-#include <memory>
-#include <vector>
+#include <iostream>
 
-class Parameter;
-
-class DataWriter
-{
-public:
-    virtual ~DataWriter() {};
-
-    static void writeInit(std::shared_ptr<Parameter> para);
-    static void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t);
-
-
-private:
-    static void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level);
-    static void writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
-
-    DataWriter() {};
-    DataWriter(const DataWriter& dataWriter) {};
-};
+extern "C" void writeInit(Parameter* para);
+extern "C" void writeTimestep(Parameter* para, unsigned int t);
+extern "C" void writeParticle(Parameter* para, unsigned int t);
 
 #endif

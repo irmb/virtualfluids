@@ -1,10 +1,11 @@
 macro(linkCuda)
 #input: -
 
+
     find_path(CUDA_CUT_INCLUDE_DIR
       helper_cuda.h
-      PATHS "$ENV{NVCUDASAMPLES8_0_ROOT}"
-      PATH_SUFFIXES "common/inc" "v8.0/common/inc"
+      PATHS "$ENV{NVCUDASAMPLES9_0_ROOT}" "$ENV{NVCUDASAMPLES8_0_ROOT}"
+      PATH_SUFFIXES "common/inc" "v9.0/common/inc"
       DOC "Location of helper_cuda.h"
       NO_DEFAULT_PATH
     )

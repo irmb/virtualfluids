@@ -1,8 +1,8 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
 
 set(linkDirectories "")
-set(libsToLink GridGenerator VirtualFluidsBasics ws2_32)
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName} ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/GridGenerator ${CMAKE_SOURCE_DIR}/src/VirtualFluidsBasics)
+set(libsToLink ws2_32)
+set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName} ${CMAKE_SOURCE_DIR}/src)
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)

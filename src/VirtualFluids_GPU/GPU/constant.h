@@ -46,6 +46,8 @@
 #define c99o100		0.99
 #define c1over126	0.007936507936508
 #define c1over216	0.004629629629630
+#define c5o4		1.25
+#define c5o2		2.5
 #define c9over2		4.5
 
 #define zero		0.
@@ -61,6 +63,7 @@
 #define ten 		10.
 #define eleven  	11.
 #define twelve  	12.
+#define thirteen	13.
 #define fourteen	14.
 #define fiveteen	15.
 #define sixteen 	16.
@@ -68,6 +71,8 @@
 #define eighteen	18.
 #define twentyone	21.
 #define twentyfour	24.
+#define twentyfive 	25.
+#define twentysix	26.
 #define twentyseven	27.
 #define twentyeight	28.
 #define twentynine	29.
@@ -78,20 +83,27 @@
 #define thirtysix	36.
 #define fourty		40.
 #define fortytwo	42.
+#define fourtysix	46.
 #define fourtyeight	48.
 #define fifty		50.
+#define fiftytwo	52.
 #define fiftyfour	54.
 #define fiftysix	56.
 #define sixtyfour	64.
 #define sixtysix	66.
 #define sixtyeight	68.
+#define sixtynine	69.
 #define seventytwo	72.
 #define eightyfour	84.
+#define eightyeight	88.
 #define ninetysix	96.
+#define c100		100.0
 #define c130		130.0
 #define c152		152.0
 #define c166		166.0
 #define c195		195.0
+#define c216		216.0
+#define c264		264.0
 #define c290		290.0
 #define c367		367.0
 
@@ -141,6 +153,8 @@
 #define c99o100		0.99f
 #define c1over126	0.007937f
 #define c1over216	0.004630f
+#define c5o4		1.25f
+#define c5o2		2.5f
 #define c9over2		4.5f
 
 #define zero		0.f
@@ -156,6 +170,7 @@
 #define ten 		10.f
 #define eleven  	11.f
 #define twelve  	12.f
+#define thirteen	13.f
 #define fourteen	14.f
 #define fiveteen	15.f
 #define sixteen 	16.f
@@ -163,6 +178,8 @@
 #define eighteen	18.f
 #define twentyone	21.f
 #define twentyfour	24.f
+#define twentyfive 	25.f
+#define twentysix	26.f
 #define twentyseven	27.f
 #define twentyeight	28.f
 #define twentynine	29.f
@@ -173,20 +190,27 @@
 #define thirtysix	36.f
 #define fourty		40.f
 #define fortytwo	42.f
+#define fourtysix	46.f
 #define fourtyeight	48.f
 #define fifty		50.f
+#define fiftytwo	52.f
 #define fiftyfour	54.f
 #define fiftysix	56.f
 #define sixtyfour	64.f
 #define sixtysix	66.f
 #define sixtyeight	68.f
+#define sixtynine	69.f
 #define seventytwo	72.f
 #define eightyfour	84.f
+#define eightyeight	88.f
 #define ninetysix	96.f
+#define c100		100.0f
 #define c130		130.0f
 #define c152		152.0f
 #define c166		166.0f
 #define c195		195.0f
+#define c216		216.0f
+#define c264		264.0f
 #define c290		290.0f
 #define c367		367.0f
 

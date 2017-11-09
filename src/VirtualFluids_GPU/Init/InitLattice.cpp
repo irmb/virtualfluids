@@ -1,58 +1,160 @@
 #include "Init/InitLattice.h"
-
-#include "LBM/LB.h"
-#include "GPU/GPU_Interface.h"
-
 #include <cuda_runtime.h>
+#include <helper_cuda.h>
 
-#include "Parameter/Parameter.h"
-
-void initLattice(std::shared_ptr<Parameter> para)
+////////////////////////////////////////////////////////////////////////////////
+void initLattice(Parameter* para)
 {
-  para->getParD(0)->evenOrOdd = false;
-
-  InitSP27(para->getParD(0)->numberofthreads, 
-           para->getParD(0)->neighborX_SP, 
-           para->getParD(0)->neighborY_SP, 
-           para->getParD(0)->neighborZ_SP, 
-           para->getParD(0)->geoSP,       
-           para->getParD(0)->rho_SP, 
-           para->getParD(0)->vx_SP, 
-           para->getParD(0)->vy_SP, 
-           para->getParD(0)->vz_SP, 
-           para->getParD(0)->size_Mat_SP, 
-           para->getParD(0)->d0SP.f[0],
-           para->getParD(0)->evenOrOdd); 
-  getLastCudaError("Kernel execution failed"); 
-
-  para->getParD(0)->evenOrOdd = true;
-
-  InitSP27(para->getParD(0)->numberofthreads, 
-           para->getParD(0)->neighborX_SP, 
-           para->getParD(0)->neighborY_SP, 
-           para->getParD(0)->neighborZ_SP, 
-           para->getParD(0)->geoSP,       
-           para->getParD(0)->rho_SP, 
-           para->getParD(0)->vx_SP, 
-           para->getParD(0)->vy_SP, 
-           para->getParD(0)->vz_SP, 
-           para->getParD(0)->size_Mat_SP, 
-           para->getParD(0)->d0SP.f[0],
-           para->getParD(0)->evenOrOdd); 
-  getLastCudaError("Kernel execution failed"); 
-
-  CalcMacCompSP27(para->getParD(0)->vx_SP,       
-                  para->getParD(0)->vy_SP,        
-                  para->getParD(0)->vz_SP,        
-                  para->getParD(0)->rho_SP, 
-                  para->getParD(0)->press_SP, 
-                  para->getParD(0)->geoSP,       
-                  para->getParD(0)->neighborX_SP, 
-                  para->getParD(0)->neighborY_SP, 
-                  para->getParD(0)->neighborZ_SP,
-                  para->getParD(0)->size_Mat_SP, 
-                  para->getParD(0)->numberofthreads,       
-                  para->getParD(0)->d0SP.f[0],    
-                  para->getParD(0)->evenOrOdd);
-  getLastCudaError("Kernel CalcMacCompSP27 execution failed"); 
+    for (int lev=para->getFine(); lev >= para->getCoarse(); lev--)
+    {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParD(lev)->evenOrOdd = false;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        InitSP27(para->getParD(lev)->numberofthreads, 
+                para->getParD(lev)->neighborX_SP, 
+                para->getParD(lev)->neighborY_SP, 
+                para->getParD(lev)->neighborZ_SP, 
+                para->getParD(lev)->geoSP,       
+                para->getParD(lev)->rho_SP, 
+                para->getParD(lev)->vx_SP, 
+                para->getParD(lev)->vy_SP, 
+                para->getParD(lev)->vz_SP, 
+                para->getParD(lev)->size_Mat_SP, 
+                para->getParD(lev)->d0SP.f[0],
+                para->getParD(lev)->evenOrOdd); 
+        getLastCudaError("Kernel execution failed"); 
+      //  InitCompSP27(   para->getParD(lev)->numberofthreads, 
+						//para->getParD(lev)->neighborX_SP, 
+						//para->getParD(lev)->neighborY_SP, 
+						//para->getParD(lev)->neighborZ_SP, 
+						//para->getParD(lev)->geoSP,       
+						//para->getParD(lev)->rho_SP, 
+						//para->getParD(lev)->vx_SP, 
+						//para->getParD(lev)->vy_SP, 
+						//para->getParD(lev)->vz_SP, 
+						//para->getParD(lev)->size_Mat_SP, 
+						//para->getParD(lev)->d0SP.f[0],
+						//para->getParD(lev)->evenOrOdd); 
+      //  getLastCudaError("Kernel execution failed"); 
+        //InitF3( para->getParD(lev)->numberofthreads, 
+        //        para->getParD(lev)->neighborX_SP, 
+        //        para->getParD(lev)->neighborY_SP, 
+        //        para->getParD(lev)->neighborZ_SP, 
+        //        para->getParD(lev)->geoSP,       
+        //        para->getParD(lev)->rho_SP, 
+        //        para->getParD(lev)->vx_SP, 
+        //        para->getParD(lev)->vy_SP, 
+        //        para->getParD(lev)->vz_SP, 
+        //        para->getParD(lev)->size_Mat_SP, 
+        //        para->getParD(lev)->g6.g[0],
+        //        para->getParD(lev)->evenOrOdd); 
+        //getLastCudaError("Kernel execution failed"); 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParD(lev)->evenOrOdd = true;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        InitSP27(para->getParD(lev)->numberofthreads, 
+                para->getParD(lev)->neighborX_SP, 
+                para->getParD(lev)->neighborY_SP, 
+                para->getParD(lev)->neighborZ_SP, 
+                para->getParD(lev)->geoSP,       
+                para->getParD(lev)->rho_SP, 
+                para->getParD(lev)->vx_SP, 
+                para->getParD(lev)->vy_SP, 
+                para->getParD(lev)->vz_SP, 
+                para->getParD(lev)->size_Mat_SP, 
+                para->getParD(lev)->d0SP.f[0],
+                para->getParD(lev)->evenOrOdd); 
+        getLastCudaError("Kernel execution failed"); 
+      //  InitCompSP27(   para->getParD(lev)->numberofthreads, 
+						//para->getParD(lev)->neighborX_SP, 
+						//para->getParD(lev)->neighborY_SP, 
+						//para->getParD(lev)->neighborZ_SP, 
+						//para->getParD(lev)->geoSP,       
+						//para->getParD(lev)->rho_SP, 
+						//para->getParD(lev)->vx_SP, 
+						//para->getParD(lev)->vy_SP, 
+						//para->getParD(lev)->vz_SP, 
+						//para->getParD(lev)->size_Mat_SP, 
+						//para->getParD(lev)->d0SP.f[0],
+						//para->getParD(lev)->evenOrOdd); 
+      //  getLastCudaError("Kernel execution failed"); 
+        //InitF3( para->getParD(lev)->numberofthreads, 
+        //        para->getParD(lev)->neighborX_SP, 
+        //        para->getParD(lev)->neighborY_SP, 
+        //        para->getParD(lev)->neighborZ_SP, 
+        //        para->getParD(lev)->geoSP,       
+        //        para->getParD(lev)->rho_SP, 
+        //        para->getParD(lev)->vx_SP, 
+        //        para->getParD(lev)->vy_SP, 
+        //        para->getParD(lev)->vz_SP, 
+        //        para->getParD(lev)->size_Mat_SP, 
+        //        para->getParD(lev)->g6.g[0],
+        //        para->getParD(lev)->evenOrOdd); 
+        //getLastCudaError("Kernel execution failed"); 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        CalcMacSP27(para->getParD(lev)->vx_SP,       
+                    para->getParD(lev)->vy_SP,        
+                    para->getParD(lev)->vz_SP,        
+                    para->getParD(lev)->rho_SP, 
+                    para->getParD(lev)->press_SP, 
+                    para->getParD(lev)->geoSP,       
+                    para->getParD(lev)->neighborX_SP, 
+                    para->getParD(lev)->neighborY_SP, 
+                    para->getParD(lev)->neighborZ_SP,
+                    para->getParD(lev)->size_Mat_SP, 
+                    para->getParD(lev)->numberofthreads,       
+                    para->getParD(lev)->d0SP.f[0],    
+                    para->getParD(lev)->evenOrOdd);
+        getLastCudaError("Kernel CalcMacSP27 execution failed"); 
+      //  CalcMacCompSP27(para->getParD(lev)->vx_SP,       
+						//para->getParD(lev)->vy_SP,        
+						//para->getParD(lev)->vz_SP,        
+						//para->getParD(lev)->rho_SP, 
+						//para->getParD(lev)->press_SP, 
+						//para->getParD(lev)->geoSP,       
+						//para->getParD(lev)->neighborX_SP, 
+						//para->getParD(lev)->neighborY_SP, 
+						//para->getParD(lev)->neighborZ_SP,
+						//para->getParD(lev)->size_Mat_SP, 
+						//para->getParD(lev)->numberofthreads,       
+						//para->getParD(lev)->d0SP.f[0],    
+						//para->getParD(lev)->evenOrOdd);
+      //  getLastCudaError("Kernel execution failed"); 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (para->getCalcMedian())
+		{
+			unsigned int tdiff = 1;
+			CalcMacMedSP27( para->getParD(lev)->vx_SP_Med,       
+							para->getParD(lev)->vy_SP_Med,        
+							para->getParD(lev)->vz_SP_Med,        
+							para->getParD(lev)->rho_SP_Med, 
+							para->getParD(lev)->press_SP_Med, 
+							para->getParD(lev)->geoSP,       
+							para->getParD(lev)->neighborX_SP, 
+							para->getParD(lev)->neighborY_SP, 
+							para->getParD(lev)->neighborZ_SP,
+							tdiff,
+							para->getParD(lev)->size_Mat_SP, 
+							para->getParD(lev)->numberofthreads,       
+							para->getParD(lev)->evenOrOdd);
+			getLastCudaError("CalcMacMedSP27 execution failed"); 
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// advection - diffusion stuff
+		if (para->getDiffOn()==true){
+			//malloc
+			//printf("vor cudaAllocConc\n");
+			para->cudaAllocConc(lev);
+			//define init conc/temp
+			//printf("vor Schleife\n");
+			for (unsigned int i = 0; i < para->getParH(lev)->size_Mat_SP; i++)
+			{
+				para->getParH(lev)->Conc[i] = para->getTemperatureInit();
+			}
+			//malloc and init fs
+			//printf("vor initTemperatur\n");
+			initTemperatur(para, lev);
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 }

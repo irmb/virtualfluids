@@ -1,5 +1,6 @@
 #ifndef _LB_D3Q27_H_
 #define _LB_D3Q27_H_
+#include <math.h>
 
 #define dirE    /*f1 */  0
 #define dirW    /*f2 */  1
@@ -30,6 +31,9 @@
 #define dirBNW    /*f */  24
 #define dirTSW    /*f */  25
 #define dirBSW    /*f */  26
+
+#define dirSTART  0
+#define dirEND   26
 
 #endif
 

@@ -3,7 +3,7 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void getSendFsPost27(doubflo* DD,
+extern "C" __global__ void getSendFsPost27(doubflo* DD,
 										   doubflo* bufferFs,
 										   int* sendIndex,
                                            int buffmax,
@@ -239,7 +239,7 @@ __global__ void getSendFsPost27(doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void setRecvFsPost27(doubflo* DD,
+extern "C" __global__ void setRecvFsPost27(doubflo* DD,
 										   doubflo* bufferFs,
 										   int* recvIndex,
                                            int buffmax,
@@ -474,7 +474,7 @@ __global__ void setRecvFsPost27(doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void getSendFsPre27(doubflo* DD,
+extern "C" __global__ void getSendFsPre27(doubflo* DD,
 										  doubflo* bufferFs,
 										  int* sendIndex,
                                           int buffmax,
@@ -683,7 +683,7 @@ __global__ void getSendFsPre27(doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-__global__ void setRecvFsPre27(doubflo* DD,
+extern "C" __global__ void setRecvFsPre27(doubflo* DD,
 										  doubflo* bufferFs,
 										  int* recvIndex,
                                           int buffmax,

@@ -1,10 +1,11 @@
 #ifndef INIT_LATTICE_H
 #define INIT_LATTICE_H
 
-#include <memory>
+#include "LBM/LB.h"
+#include "GPU/GPU_Interface.h"
+#include "Parameter/Parameter.h"
+#include "Temperature/FindTemperature.h"
 
-class Parameter;
-
-void initLattice(std::shared_ptr<Parameter> para);
+extern "C" void initLattice(Parameter* para);
 
 #endif

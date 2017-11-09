@@ -1,7 +1,8 @@
 #ifndef DEVCHECK_H
 #define DEVCHECK_H
 
+#include <stdio.h>
   
-int devCheck(int gpudevice); 
+extern "C" int devCheck(int gpudevice); 
 
 #endif

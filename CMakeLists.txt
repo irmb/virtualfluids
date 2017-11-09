@@ -84,19 +84,19 @@ ENDIF()
 ###                   SUBDIRECTORIES                      ###
 #############################################################
 
-add_subdirectory(3rdParty/MuParser)
-add_subdirectory(3rdParty/metis/metis-5.1.0)
+#add_subdirectory(3rdParty/MuParser)
+#add_subdirectory(3rdParty/metis/metis-5.1.0)
 
 
 add_subdirectory(targets/apps/HULC)
 
 #add_subdirectory(targets/libs/VirtualFluids)
-add_subdirectory(targets/libs/VirtualFluidsBasics)
+#add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/VirtualFluids_GPU)
-add_subdirectory(targets/libs/GridGenerator)
+#add_subdirectory(targets/libs/GridGenerator)
 
 
-set(BUILD_TESTS ON CACHE BOOL "Build shared libraries")
+set(BUILD_TESTS OFF CACHE BOOL "Build shared libraries")
 if(BUILD_TESTS)
   add_subdirectory(3rdParty/googletest)
   add_subdirectory(targets/tests/GridGeneratorTest)
