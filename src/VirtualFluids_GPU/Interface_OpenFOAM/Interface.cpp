@@ -40,7 +40,6 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 	//Particles or Wale
 	if (para->getCalcParticle() || para->getUseWale())
 	{
-		//cout << "alloc neighborWSB" << endl;
 		neighWSB = new CoordNeighborGeoV(para->getneighborWSB(), binaer, false);
 	}
 
@@ -87,8 +86,9 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		para->cudaAllocCoord(i);
 		para->cudaAllocSP(i);
-		if (para->getCalcMedian()) 	 para->cudaAllocMedianSP(i);
+		if (para->getCalcMedian()) 	                       para->cudaAllocMedianSP(i);
 		if (para->getCalcParticle() || para->getUseWale()) para->cudaAllocNeighborWSB(i);
+		if (para->getUseWale())                            para->cudaAllocTurbulentViscosity(i);
 		//cout <<"Test 2 " <<endl;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		coordX->initArrayCoord(para->getParH(i)->coordX_SP, i);
@@ -103,12 +103,6 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 		if (para->getCalcParticle() || para->getUseWale())
 		{
 			neighWSB->initArray(para->getParH(i)->neighborWSB_SP, i);
-			////Test
-			//for (int jj = 1; jj < 100 /*temp*/; jj++)
-			//{
-			//	cout << "indexNeighborWSB: " << para->getParH(i)->neighborX_SP[jj] << endl;
-			//	cout << "indexNeighborWSB: " << para->getParH(i)->neighborWSB_SP[jj] << endl;
-			//}
 		}
 		//cout <<"Test 4 " <<endl;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,6 +160,9 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 				para->getParH(i)->vz_SP_Med[j] = 0.0f;
 				para->getParH(i)->rho_SP_Med[j] = 0.0f;
 				para->getParH(i)->press_SP_Med[j] = 0.0f;
+			}
+			if (para->getUseWale()) {
+				para->getParH(i)->turbViscosity[j] = 0.0f;
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,6 +277,10 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 		para->cudaCopyCoord(i);
 		if (para->getCalcMedian()) 	    para->cudaCopyMedianSP(i);
 		if (para->getCalcParticle()) 	para->cudaCopyNeighborWSB(i);
+		if (para->getUseWale()) {
+			para->cudaCopyNeighborWSB(i);
+			para->cudaCopyTurbulentViscosityHD(i);
+		}
 		//cout <<"Test 6 " <<endl;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	}

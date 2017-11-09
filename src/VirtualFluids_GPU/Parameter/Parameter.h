@@ -301,6 +301,11 @@ public:
 	void cudaCopyNeighborWSB(int lev);
 	void cudaFreeNeighborWSB(int lev);
 
+	void cudaAllocTurbulentViscosity(int lev);
+	void cudaCopyTurbulentViscosityHD(int lev);
+	void cudaCopyTurbulentViscosityDH(int lev);
+	void cudaFreeTurbulentViscosity(int lev);
+
 	void cudaAllocMedianSP(int lev);
 	void cudaCopyMedianSP(int lev);
 	void cudaFreeMedianSP(int lev);

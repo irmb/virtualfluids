@@ -563,6 +563,31 @@ void Parameter::cudaFreeNeighborWSB(int lev)
 {
 	checkCudaErrors( cudaFreeHost(parH[lev]->neighborWSB_SP));
 }
+//turbulent viscosity
+void Parameter::cudaAllocTurbulentViscosity(int lev)
+{
+	//Host
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->turbViscosity), parH[lev]->mem_size_doubflo_SP));
+	//Device						 
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->turbViscosity), parD[lev]->mem_size_doubflo_SP));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)parH[lev]->mem_size_int_SP;
+	setMemsizeGPU(tmp, false);
+}
+void Parameter::cudaCopyTurbulentViscosityHD(int lev)
+{
+	//copy host to device
+	checkCudaErrors(cudaMemcpy(parD[lev]->turbViscosity, parH[lev]->turbViscosity, parH[lev]->mem_size_doubflo_SP, cudaMemcpyHostToDevice));
+}
+void Parameter::cudaCopyTurbulentViscosityDH(int lev)
+{
+	//copy device to host
+	checkCudaErrors(cudaMemcpy(parH[lev]->turbViscosity, parD[lev]->turbViscosity, parH[lev]->mem_size_doubflo_SP, cudaMemcpyDeviceToHost));
+}
+void Parameter::cudaFreeTurbulentViscosity(int lev)
+{
+	checkCudaErrors(cudaFreeHost(parH[lev]->turbViscosity));
+}
 //median
 void Parameter::cudaAllocMedianSP(int lev)
 {

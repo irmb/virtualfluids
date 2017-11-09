@@ -14,6 +14,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 															 doubflo* veloY,
 															 doubflo* veloZ,
 															 doubflo* DDStart,
+															 doubflo* turbulentViscosity,
 															 int size_Mat,
 															 int level,
 															 doubflo* forces,
@@ -256,7 +257,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 				//nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 				//nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 			}
-
+			turbulentViscosity[k] = nuTurb;
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
 			{

@@ -19,10 +19,8 @@ void writeInit(Parameter* para)
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//copy Data to host
 		para->cudaCopyPrint(lev);
-		if (para->getCalcMedian())
-		{
-			para->cudaCopyMedianPrint(lev);
-		}
+		if (para->getCalcMedian()) para->cudaCopyMedianPrint(lev);
+		if (para->getUseWale())    para->cudaCopyTurbulentViscosityDH(lev);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		const unsigned int numberOfParts = para->getParH(lev)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
 		std::vector<std::string> fname;
@@ -76,7 +74,16 @@ void writeInit(Parameter* para)
 		{
 
 
-			UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+			
+
+			if (para->getUseWale())
+			{
+				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+			}
+			else
+			{
+				UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+			}
 
 			//Debug
 			//InterfaceDebugWriter::writeInterfaceLinesDebugCF(para);

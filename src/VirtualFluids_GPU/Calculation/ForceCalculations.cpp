@@ -81,9 +81,6 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 			 tempVeloY /= (double)numberOfElements;
 			 tempVeloZ /= (double)numberOfElements;
 			 //////////////////////////////////////////////////////////////////
-			 ////cout debugging
-			 //cout << "tempVeloX = " << tempVeloX << ", tempVeloY = " << tempVeloY << ", tempVeloZ = " << tempVeloZ << endl;
-			 //////////////////////////////////////////////////////////////////
 			 levelVeloAverageX += tempVeloX;
 			 levelVeloAverageY += tempVeloY;
 			 levelVeloAverageZ += tempVeloZ;
@@ -97,10 +94,6 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 	 veloAverageY = levelVeloAverageY / (double)counter;
 	 veloAverageZ = levelVeloAverageZ / (double)counter;
 	 //////////////////////////////////////////////////////////////////////////
-	 ////cout debugging
-	 //cout << "veloAverageX = " << veloAverageX << endl;
-	 //cout << "vx1Targed = " << vx1Targed << endl;
-	 //////////////////////////////////////////////////////////////////////////
 	 if (isPID)
 	 {
 		 //PID-Controller
@@ -111,13 +104,6 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 
 		 y = y / 2.0;
 	 }
-	 //////////////////////////////////////////////////////////////////////////
-	 ////cout debugging
-	 //cout << "forceX = " << para->getForcesHost()[0] + y << endl;
-	 //cout << "e = "      << e << endl;
-	 //cout << "esum = "   << esum << endl;
-	 //cout << "eold = "   << eold << endl;
-	 //cout << "y = "      << y << endl;
 	 //////////////////////////////////////////////////////////////////////////
 	 para->getForcesDouble()[0] = (para->getForcesDouble()[0] + y);
 	 para->getForcesDouble()[1] = (para->getForcesDouble()[1] + y) * 0.0;
@@ -130,47 +116,3 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 	 para->cudaCopyForcingToDevice();
 	 //////////////////////////////////////////////////////////////////////////
  }
-
-
-
-//ForceCalculations::allocVeloForForcing(Parameter* para)
-// {
-//	 //////////////////////////////////////////////////////////////////////////
-//	 for (int i = 0; i <= para->getFine(); i++)
-//	 {
-//		 int numberOfElements = para->getParH(i)->QSlip.kQ;
-//		 if (numberOfElements > 0)
-//		 {
-//			 para->cudaAllocForceVelo(i,numberOfElements);
-//		 }
-//	 }
-//	 //////////////////////////////////////////////////////////////////////////
-//	 para->getForcesDouble()[0] = (double)para->getForcesHost()[0];
-//	 para->getForcesDouble()[1] = (double)para->getForcesHost()[1];
-//	 para->getForcesDouble()[2] = (double)para->getForcesHost()[2];
-//	 //////////////////////////////////////////////////////////////////////////
-// }
-
-//ForceCalculations::printForcing(Parameter* para)
-// {
-//	 //////////////////////////////////////////////////////////////////////////
-//	 //cout << "forcingX = " << para->getForcesHost()[0] << " forcingY = " << para->getForcesHost()[1] << " forcingZ = " << para->getForcesHost()[2] << endl;
-//	 //////////////////////////////////////////////////////////////////////////
-//
-//	 //////////////////////////////////////////////////////////////////////////
-//	 //set filename
-//	 std::string ffname = para->getFName()+StringUtil::toString<int>(para->getMyID())+"_forcing.txt";
-//	 const char* fname = ffname.c_str();
-//	 //////////////////////////////////////////////////////////////////////////
-//	 //set ofstream
-//	 ofstream ostr;
-//	 //////////////////////////////////////////////////////////////////////////
-//	 //open file
-//	 ostr.open(fname, std::fstream::app);
-//	 ostr << para->getForcesHost()[0] << " " << para->getForcesHost()[1] << " "<< para->getForcesHost()[2];
-//	 ostr << endl;
-//	 //////////////////////////////////////////////////////////////////////////
-//	 //close file
-//	 ostr.close();
-//	 //////////////////////////////////////////////////////////////////////////
-// }
