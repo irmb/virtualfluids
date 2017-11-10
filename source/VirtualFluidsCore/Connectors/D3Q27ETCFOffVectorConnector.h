@@ -768,7 +768,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::fillSendVectorExt(Distribu
    if (data.size() == 0) return;
    int ix1, ix2, ix3;
    LBMReal xoff, yoff, zoff;
-   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3 < lMaxX3; ix3++)
    {
@@ -1586,7 +1586,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::distributeReceiveVector(Di
          {
             LBMReal icellC[27];
             this->readICellCfromData(data, index, icellC);
-            iprocessor->writeINode(fTo, icellC, ix1, ix2, ix3);
+            iprocessor->writeINodeInv(fTo, icellC, ix1, ix2, ix3);
          }
       }
    }
@@ -1880,7 +1880,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::findCFnodes(DistributionAr
    if (data.size() == 0) return;
    int ix1, ix2, ix3;
    LBMReal xoff, yoff, zoff;
-   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3 < lMaxX3; ix3++)
    {
@@ -1921,7 +1921,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::findCFnodes(DistributionAr
             //   {
             //      for (int iix1 = ix1; iix1<=ix1+1; iix1++)
             //      {
-            //         bcArray.setInterfaceCF(iix1, iix2, iix3);
+            //         bcArray->setInterfaceCF(iix1, iix2, iix3);
             //      }
             //   }
             //}

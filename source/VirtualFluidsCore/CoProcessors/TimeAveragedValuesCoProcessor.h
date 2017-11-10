@@ -26,9 +26,14 @@ class TimeAveragedValuesCoProcessor : public CoProcessor
 public:
    enum Options
    {
-      Velocity = 1,
-      Fluctuations = 2,
-      Triplecorrelations = 4
+      Density            = 1,
+      Velocity           = 2,
+      Fluctuations       = 4,
+      Triplecorrelations = 8,
+
+      //Velocity           = 1,
+      //Fluctuations       = 2,
+      //Triplecorrelations = 4,
    };
 public:
    TimeAveragedValuesCoProcessor();
@@ -42,6 +47,8 @@ public:
    void calculateSubtotal(double step);
    void addLevelCoordinate(double c);
    void reset();
+   void setWithGhostLayer(bool val);
+   bool getWithGhostLayer();
 
 protected:
    //! Prepare data and write in .vtk file
@@ -93,7 +100,9 @@ private:
    double maxStep;
 
    int iMinX1, iMinX2, iMinX3;
-   int iMaxX1, iMaxX2, iMaxX3;
+   //int iMaxX1, iMaxX2, iMaxX3;
+   int iMinC;
+   int iMaxC;
 
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
@@ -103,6 +112,8 @@ private:
    std::vector<double> levelCoords;
    std::vector<int> levels;
    std::vector<double> bounds;
+
+   bool withGhostLayer;
 
    //friend class boost::serialization::access;
    //template<class Archive>

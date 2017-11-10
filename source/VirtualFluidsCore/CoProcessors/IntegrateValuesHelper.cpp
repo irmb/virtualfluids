@@ -81,7 +81,7 @@ void IntegrateValuesHelper::init(int level)
          orgX3 = val<3>(org);
 
          LBMKernelPtr kernel = boost::dynamic_pointer_cast<LBMKernel>(block->getKernel());
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
          int ghostLayerWitdh = kernel->getGhostLayerWidth();
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
          double internX1, internX2, internX3;
@@ -100,12 +100,12 @@ void IntegrateValuesHelper::init(int level)
                   internX3 = orgX3 - val<3>(orgDelta) + ix3 * dx;
                   if (boundingBox->isPointInGbObject3D(internX1, internX2, internX3))
                   {
-                     if (!bcArray.isSolid(ix1, ix2, ix3) && !bcArray.isUndefined(ix1, ix2, ix3))
+                     if (!bcArray->isSolid(ix1, ix2, ix3) && !bcArray->isUndefined(ix1, ix2, ix3))
                      {
                         cn.nodes.push_back(UbTupleInt3(ix1, ix2, ix3));
                         numFluids++;
                      }
-                     else if (bcArray.isSolid(ix1, ix2, ix3))
+                     else if (bcArray->isSolid(ix1, ix2, ix3))
                      {
                         numSolids++;
                      }
@@ -177,7 +177,7 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
          orgX3 = val<3>(org);
 
          LBMKernelPtr kernel = block->getKernel();
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
          int ghostLayerWitdh = kernel->getGhostLayerWidth();
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
          double internX1, internX2, internX3;
@@ -196,7 +196,7 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
                   internX3 = orgX3-val<3>(orgDelta)+ix3 * dx;
                   if (boundingBox->isPointInGbObject3D(internX1, internX2, internX3))
                   {
-                     if (!bcArray.isSolid(ix1, ix2, ix3)&&!bcArray.isUndefined(ix1, ix2, ix3))
+                     if (!bcArray->isSolid(ix1, ix2, ix3)&&!bcArray->isUndefined(ix1, ix2, ix3))
                      {
                         cn.node = UbTupleInt3(ix1, ix2, ix3);
                         int x1 = (int)trafo.transformForwardToX1Coordinate(internX1, internX2, internX3);
@@ -204,7 +204,7 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
                         cnodes2DMatrix(x1,x2)=cn;
                         numFluids++;
                      }
-                     else if (bcArray.isSolid(ix1, ix2, ix3))
+                     else if (bcArray->isSolid(ix1, ix2, ix3))
                      {
                         numSolids++;
                      }
@@ -480,7 +480,7 @@ void IntegrateValuesHelper::calculateMQ()
          calcMacros = &D3Q27System::calcIncompMacroscopicValues;
       }
 
-      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
       int ghostLayerWitdh = kernel->getGhostLayerWidth();
       DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
       BOOST_FOREACH(UbTupleInt3 node, cn.nodes)

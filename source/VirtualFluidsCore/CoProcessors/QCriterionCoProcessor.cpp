@@ -113,8 +113,8 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 
 
 	LBMKernelPtr kernel = block->getKernel();
-	BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
-	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
+	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
+	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();  
 
 	int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
 
@@ -142,7 +142,7 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 		{
 			for(int ix1=minX1; ix1<=maxX1; ix1++)
 			{
-				if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+				if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
 				{
 					//nodeNumbers-vektor wird mit koordinaten befuellt
 					int index = 0;
@@ -219,8 +219,10 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3, const Block3DPtr block, LBMReal* vE, LBMReal* vW)
 {
 	LBMKernelPtr kernel = block->getKernel();
-	BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();   
+
+   bool compressible = block->getKernel()->getCompressible();
 
 	int minX1 = 0;
 	int minX2 = 0;
@@ -296,9 +298,8 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
 		if (checkInterpolation==false || neighNodeIsBC)
 		{
-
 			LBMKernelPtr kernelW = blockNeighW->getKernel();
-			BCArray3D& bcArrayW = kernelW->getBCProcessor()->getBCArray();          
+			BCArray3DPtr bcArrayW = kernelW->getBCProcessor()->getBCArray();          
 			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW2[27];
 			LBMReal fW[27];
@@ -315,10 +316,10 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 			distributionsW->getDistribution(f0, std::max(ix1    ,0), std::max(ix2    ,0), std::max(ix3    ,0));
 			distributions->getDistribution(fE, std::max(ix1+offx    ,0), std::max(ix2+offy    ,0), std::max(ix3+offz    ,0)); //E:= plus 1
 
-			computeVelocity(fE,vE);
-			computeVelocity(fW,vW);
-			computeVelocity(fW2,vW2);
-			computeVelocity(f0,v0);
+			computeVelocity(fE,vE,compressible);
+			computeVelocity(fW,vW,compressible);
+			computeVelocity(fW2,vW2,compressible);
+			computeVelocity(f0,v0,compressible);
 			//second order non-symetric interpolation
 			vW[0]=v0[0]*1.5-vW[0]+0.5*vW2[0];
 			vW[1]=v0[1]*1.5-vW[1]+0.5*vW2[1];
@@ -328,7 +329,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		else
 		{
 			LBMKernelPtr kernelW = blockNeighW->getKernel();
-			BCArray3D& bcArrayW = kernelW->getBCProcessor()->getBCArray();          
+			BCArray3DPtr bcArrayW = kernelW->getBCProcessor()->getBCArray();          
 			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW[27];
 
@@ -345,7 +346,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 			{
 				distributionsW->getDistribution(fW, ix1,ix2,distributions->getNX3()-1); 
 			}
-			computeVelocity(fW,vW);
+			computeVelocity(fW,vW,compressible);
 		}
 
 
@@ -355,7 +356,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		//data available in current block:
 		LBMReal fW[27];
 		distributions->getDistribution(fW, ix1-offx, ix2-offy, ix3-offz);
-		computeVelocity(fW,vW);
+		computeVelocity(fW,vW,compressible);
 
 	}
 	if (checkInterpolation==true)
@@ -363,31 +364,26 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		//in plus-direction data is available in current block because of ghost layers
 		LBMReal fE[27];
 		distributions->getDistribution(fE, ix1+offx, ix2+offy, ix3+offz); //E:= plus 1
-		computeVelocity(fE,vE);
+		computeVelocity(fE,vE,compressible);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void QCriterionCoProcessor::computeVelocity(LBMReal* f, LBMReal* v)
+void QCriterionCoProcessor::computeVelocity(LBMReal* f, LBMReal* v, bool compressible)
 {
 	//////////////////////////////////////////////////////////////////////////
 	//compute x,y,z-velocity components from distribution
 	//////////////////////////////////////////////////////////////////////////
-	//v[xdir] = f[E] - f[W] + f[NE] - f[SW] + f[SE] - f[NW] + f[TE] - f[BW]
-	//+ f[BE] - f[TW] + f[TNE] - f[TSW] + f[TSE] - f[TNW] + f[BNE] - f[BSW]
-	//+ f[BSE] - f[BNW]; 
-
-	//v[ydir] = f[N] - f[S] + f[NE] - f[SW] - f[SE] + f[NW] + f[TN] - f[BS] + f[BN]
-	//- f[TS] + f[TNE] - f[TSW] - f[TSE] + f[TNW] + f[BNE] - f[BSW] - f[BSE] 
-	//+ f[BNW]; 
-
-	//v[zdir] = f[T] - f[B] + f[TE] - f[BW] - f[BE] + f[TW] + f[TN] - f[BS] - f[BN] 
-	//+ f[TS] + f[TNE] + f[TSW] + f[TSE] + f[TNW] - f[BNE] - f[BSW] - f[BSE] 
-	//- f[BNW];
-
-   v[xdir] = D3Q27System::getIncompVelocityX1(f);
-
-   v[ydir] = D3Q27System::getIncompVelocityX2(f);
-
-   v[zdir] = D3Q27System::getIncompVelocityX3(f);
+   if (compressible)
+   {
+      v[xdir] = D3Q27System::getCompVelocityX1(f);
+      v[ydir] = D3Q27System::getCompVelocityX2(f);
+      v[zdir] = D3Q27System::getCompVelocityX3(f);
+   } 
+   else
+   {
+      v[xdir] = D3Q27System::getIncompVelocityX1(f);
+      v[ydir] = D3Q27System::getIncompVelocityX2(f);
+      v[zdir] = D3Q27System::getIncompVelocityX3(f);
+   }
 }

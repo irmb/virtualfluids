@@ -25,6 +25,9 @@ public:
    DistributionArray3DPtr getFdistributions() const;
    void setFdistributions(DistributionArray3DPtr distributions);
 
+   AverageValuesArray3DPtr getAverageDencity() const;
+   void setAverageDencity(AverageValuesArray3DPtr values);
+
    AverageValuesArray3DPtr getAverageVelocity() const;
    void setAverageVelocity(AverageValuesArray3DPtr values);
 
@@ -47,6 +50,7 @@ private:
    DistributionArray3DPtr fdistributions;
    AverageValuesArray3DPtr averageValues;
 
+   AverageValuesArray3DPtr averageDencity;
    AverageValuesArray3DPtr averageVelocity;
    AverageValuesArray3DPtr averageFluktuations;
    AverageValuesArray3DPtr averageTriplecorrelations;
@@ -62,6 +66,7 @@ private:
       ar & fdistributions;
       ar & averageValues;
       ar & shearStressValues;
+      ar & averageDencity;
       ar & averageVelocity;
       ar & averageFluktuations;
       ar & averageTriplecorrelations;
@@ -87,6 +92,16 @@ inline AverageValuesArray3DPtr DataSet3D::getAverageValues() const
 inline void DataSet3D::setAverageValues(AverageValuesArray3DPtr values)
 { 
    averageValues = values; 
+}
+
+inline AverageValuesArray3DPtr DataSet3D::getAverageDencity() const
+{
+   return averageDencity;
+}
+
+inline void DataSet3D::setAverageDencity(AverageValuesArray3DPtr values)
+{
+   averageDencity = values;
 }
 
 inline AverageValuesArray3DPtr DataSet3D::getAverageVelocity() const

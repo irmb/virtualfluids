@@ -162,6 +162,8 @@
 #include <CoProcessors/InSituCatalystCoProcessor.h>
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MPIIORestart2CoProcessor.h>
+#include <CoProcessors/MPIIORestart3CoProcessor.h>
+#include <CoProcessors/PressureCoefficientCoProcessor.h>
 #include <LineTimeSeriesCoProcessor.h>
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
@@ -286,7 +288,7 @@
 #include <Visitors/SetKernelBlockVisitor.h>
 #include <Visitors/SetForcingBlockVisitor.h>
 #include <Visitors/SetSpongeLayerBlockVisitor.h>
-#include <Visitors/SetSolidOrTransBlockVisitor.h>
+#include <Visitors/SetSolidBlockVisitor.h>
 #include <Visitors/RenumberBlockVisitor.h>
 #include <Visitors/ConnectorBlockVisitor.h>
 #include <Visitors/ViscosityBlockVisitor.h>

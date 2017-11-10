@@ -9,8 +9,6 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/shared_ptr.hpp>
 
-typedef boost::shared_ptr<BoundaryConditions> BCClassPtr;
-
 class BCArray3D;
 typedef boost::shared_ptr<BCArray3D> BCArray3DPtr;
 
@@ -40,13 +38,13 @@ public:
    //////////////////////////////////////////////////////////////////////////
    inline bool hasBC(std::size_t x1, std::size_t x2, std::size_t x3)  const;
    //////////////////////////////////////////////////////////////////////////
-   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, BCClassPtr const& bc);
+   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, BoundaryConditionsPtr const& bc);
    //////////////////////////////////////////////////////////////////////////
    inline int getBCVectorIndex(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline const BCClassPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
+   inline const BoundaryConditionsPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline BCClassPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3);
+   inline BoundaryConditionsPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
    void setSolid(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
@@ -104,6 +102,7 @@ private:
 
    friend class MPIIORestartCoProcessor;
    friend class MPIIORestart2CoProcessor;
+   friend class MPIIORestart3CoProcessor;
 
    friend class boost::serialization::access;
    template<class Archive>
@@ -117,7 +116,7 @@ protected:
    //////////////////////////////////////////////////////////////////////////
    //-1 solid // -2 fluid -...
    CbArray3D<int, IndexerX3X2X1> bcindexmatrix;
-   std::vector<BCClassPtr> bcvector;
+   std::vector<BoundaryConditionsPtr> bcvector;
    std::vector<int> indexContainer;
 };
 
@@ -139,18 +138,18 @@ inline int BCArray3D::getBCVectorIndex(std::size_t x1, std::size_t x2, std::size
    return bcindexmatrix(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-inline const BCClassPtr  BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
+inline const BoundaryConditionsPtr  BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
    int index = bcindexmatrix(x1, x2, x3);
-   if (index < 0) return BCClassPtr(); //=> NULL Pointer
+   if (index < 0) return BoundaryConditionsPtr(); //=> NULL Pointer
 
    return bcvector[index];
 }
 //////////////////////////////////////////////////////////////////////////
-inline BCClassPtr BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
+inline BoundaryConditionsPtr BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
 {
    int index = bcindexmatrix(x1, x2, x3);
-   if (index < 0) return BCClassPtr(); //=> NULL Pointer
+   if (index < 0) return BoundaryConditionsPtr(); //=> NULL Pointer
 
    return bcvector[index];
 }

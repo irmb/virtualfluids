@@ -43,7 +43,7 @@ public:
    //virtual void deleteSolidBlocks(int level);
 
    void setSolidBlock(Block3DPtr block);
-   void setTransBlock(Block3DPtr block);
+   void setBCBlock(Block3DPtr block);
       
    virtual UbTupleDouble3 getForces() { UB_THROW( UbException("UbTupleDouble3 getForces() - gehoert in die abgeleitete klasse") ); }
 
@@ -63,8 +63,8 @@ public:
       return false;  
    }
 
-   virtual std::vector<Block3DPtr>& getTransBlockSet() { return this->transBlocks; }
-   virtual void removeTransBlocks() { this->transBlocks.clear(); }
+   virtual std::vector<Block3DPtr>& getBcBlocks() { return this->bcBlocks; }
+   virtual void removeBcBlocks() { this->bcBlocks.clear(); }
    virtual std::vector<Block3DPtr>& getSolidBlockSet() { return this->solidBlocks; }
    virtual void removeSolidBlocks() { this->solidBlocks.clear(); }
 
@@ -96,7 +96,7 @@ protected:
    Grid3DWeakPtr grid;
    GbObject3DPtr geoObject3D;
 
-   std::vector<Block3DPtr> transBlocks;
+   std::vector<Block3DPtr> bcBlocks;
    std::vector<Block3DPtr> solidBlocks;
    int accuracy;
 
@@ -113,7 +113,7 @@ private:
    template<class Archive>
    void serialize(Archive & ar, const unsigned int version)
    {
-      ar & transBlocks;
+      ar & bcBlocks;
       ar & solidBlocks;
    }
 

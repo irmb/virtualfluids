@@ -148,6 +148,14 @@ public:
    void readDataSet(int step);
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
    void readBoundaryConds(int step);
+   //! The function sets number of ranks that read simultaneously 
+   void setChunk(int val);
+   //! The function sets LBMKernel
+   void setLBMKernel(LBMKernelPtr kernel);
+   //!The function sets BCProcessor
+   void setBCProcessor(BCProcessorPtr bcProcessor);
+   //!The function truncates the data files
+   void clearAllFiles(int step);
 
 protected:
    std::string path;
@@ -157,6 +165,9 @@ protected:
 private:
 	MPI_Datatype gridParamType, blockParamType, block3dType, dataSetType, dataSetDoubleType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
    BlockParam blockParamStr;
+   int chunk;
+   LBMKernelPtr lbmKernel;
+   BCProcessorPtr bcProcessor;
 
 };
 

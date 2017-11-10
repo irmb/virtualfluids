@@ -15,6 +15,8 @@
 #include <numerics/geometry3d/KdTree/intersectionhandler/KdCountLineIntersectionHandler.h>
 #include <numerics/geometry3d/KdTree/intersectionhandler/KdCountRayIntersectionHandler.h>
 
+#define MAX_ITER 10
+
 using namespace std;
 
 GbTriFaceMesh3D::GbTriFaceMesh3D() 
@@ -807,7 +809,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
 
       //eigentlicher PIO-Test
       int iSec;
-      for(int i=0; i<100; i++)
+      for(int i=0; i<MAX_ITER; i++)
       {
          Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
                               , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
@@ -896,7 +898,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
 
       //eigentlicher PIO-Test
       int iSec;
-      for(int i=0; i<100; i++)
+      for(int i=0; i<MAX_ITER; i++)
       {
          Kd::Ray<double> ray(  x1, x2, x3 
                             , float( ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) )

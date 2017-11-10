@@ -65,7 +65,7 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPt
       ostr.close();
 
       //////////////////////////////////////////////////////////////////////////////////////////////////
-      //temporere Lösung
+      //temporary solution
       std::string fNameCfg = path + "/forcing/forcing.cfg";
       std::ifstream istr2;
       istr2.open(fNameCfg.c_str(), std::ios_base::in);
@@ -93,7 +93,7 @@ void AdjustForcingCoProcessor::process(double step)
 void AdjustForcingCoProcessor::collectData(double step)
 {
    //////////////////////////////////////////////////////////////////////////////////////////////////
-   //temporere Lösung
+   //temporary solution
    if (root)
    {
       std::string fNameCfg = path + "/forcing/forcing.cfg";
@@ -168,7 +168,8 @@ void AdjustForcingCoProcessor::collectData(double step)
       }
       int istep = static_cast<int>(step);
 
-      ostr << istep << ";" << cellsVolume << ";" << vx1Average << "; " << forcing << "\n";
+      //ostr << istep << ";" << cellsVolume << ";" << vx1Average << "; " << forcing << "\n";
+      ostr << istep << ";" << cellsVolume << ";" << vx1Average << "; " << forcing << "; " << e << "; " << esum << "; " << y <<"\n";
       ostr.close();
 
    }

@@ -121,7 +121,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
    data.resize(datanames.size());
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
    //knotennummerierung faengt immer bei 0 an!
    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
@@ -130,9 +130,9 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
    int minX2 = 0;
    int minX3 = 0;
 
-   int maxX1 = (int)bcArray.getNX1();
-   int maxX2 = (int)bcArray.getNX2();
-   int maxX3 = (int)bcArray.getNX3();
+   int maxX1 = (int)bcArray->getNX1();
+   int maxX2 = (int)bcArray->getNX2();
+   int maxX3 = (int)bcArray->getNX3();
 
    //nummern vergeben und node vector erstellen + daten sammeln
    CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3, -1);
@@ -143,13 +143,17 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
    maxX2 -= 1;
    maxX3 -= 1;
 
+   int s=0;
+
+   
+
    for (size_t ix3 = minX3; ix3<=maxX3; ix3++)
    {
       for (size_t ix2 = minX2; ix2<=maxX2; ix2++)
       {
          for (size_t ix1 = minX1; ix1<=maxX1; ix1++)
          {
-            if (!bcArray.isUndefined(ix1, ix2, ix3))
+            if (!bcArray->isUndefined(ix1, ix2, ix3))
             {
                //int index = 0;
                nodeNumbers(ix1, ix2, ix3) = nr++;
@@ -157,27 +161,37 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
                   float(val<2>(org)-val<2>(nodeOffset)+ix2*dx),
                   float(val<3>(org)-val<3>(nodeOffset)+ix3*dx)));
 
-               if (!bcArray.hasBC(ix1, ix2, ix3))
+
+
+               if (!bcArray->hasBC(ix1, ix2, ix3))
+               {
                   data[0].push_back(0.0);
-               else if (bcArray.getBC(ix1, ix2, ix3)->hasNoSlipBoundary())
+               }
+               else if (bcArray->getBC(ix1, ix2, ix3)->hasNoSlipBoundary())
                   data[0].push_back(1.0);
-               else if (bcArray.getBC(ix1, ix2, ix3)->hasVelocityBoundary())
+               else if (bcArray->getBC(ix1, ix2, ix3)->hasVelocityBoundary())
                   data[0].push_back(2.0);
-               else if (bcArray.getBC(ix1, ix2, ix3)->hasDensityBoundary())
+               else if (bcArray->getBC(ix1, ix2, ix3)->hasDensityBoundary())
                   data[0].push_back(3.0);
-               else if (bcArray.getBC(ix1, ix2, ix3)->hasSlipBoundary())
+               else if (bcArray->getBC(ix1, ix2, ix3)->hasSlipBoundary())
                   data[0].push_back(4.0);
                else
                   data[0].push_back(5.0);
 
-               if (bcArray.isSolid(ix1, ix2, ix3))
+
+               if (bcArray->isSolid(ix1, ix2, ix3))
+               {
                   data[1].push_back(1.0);
+               }
                else
+               {
                   data[1].push_back(0.0);
+               }
+                  
 
                data[2].push_back(level);
 
-               //if (bcArray.isInterfaceCF(ix1, ix2, ix3))
+               //if (bcArray->isInterfaceCF(ix1, ix2, ix3))
                //{
                //   data[3].push_back(1.0);
                //} 

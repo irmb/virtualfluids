@@ -116,11 +116,11 @@ void CompressibleCumulantLBMKernel::collideAll()
    nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
    zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
 
-   const int bcArrayMaxX1 = (int)bcArray.getNX1();
-   const int bcArrayMaxX2 = (int)bcArray.getNX2();
-   const int bcArrayMaxX3 = (int)bcArray.getNX3();
+   const int bcArrayMaxX1 = (int)bcArray->getNX1();
+   const int bcArrayMaxX2 = (int)bcArray->getNX2();
+   const int bcArrayMaxX3 = (int)bcArray->getNX3();
 
    int minX1 = ghostLayerWidth;
    int minX2 = ghostLayerWidth;
@@ -144,7 +144,7 @@ void CompressibleCumulantLBMKernel::collideAll()
          {
             for (int x1 = minX1; x1 < maxX1; x1++)
             {
-               if (!bcArray.isSolid(x1, x2, x3) && !bcArray.isUndefined(x1, x2, x3))
+               if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3))
                {
                   int x1p = x1 + 1;
                   int x2p = x2 + 1;

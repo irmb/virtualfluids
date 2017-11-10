@@ -35,6 +35,7 @@ protected:
    virtual void connectorsReceive(std::vector< Block3DConnectorPtr >& connectors);
    void interpolation(int startLevel, int maxInitLevel);
    void deleteConnectors(std::vector< std::vector< Block3DConnectorPtr > >& conns);
+   void applyPreCollisionBC(int startLevel, int maxInitLevel);
    void applyPostCollisionBC(int startLevel, int maxInitLevel);
 private:
 

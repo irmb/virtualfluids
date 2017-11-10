@@ -43,6 +43,9 @@ private:
    int gridRank;
    CommunicatorPtr comm;
 
+   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   CalcMacrosFct calcMacros;
+
    //friend class boost::serialization::access;
    //template<class Archive>
    //void serialize(Archive & ar, const unsigned int version)

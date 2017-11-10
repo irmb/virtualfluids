@@ -1,5 +1,5 @@
 #include "InteractorsHelper.h"
-#include <SetSolidOrTransBlockVisitor.h>
+#include <SetSolidBlockVisitor.h>
 #include <Grid3DVisitor.h>
 #include <boost/foreach.hpp>
 
@@ -25,7 +25,7 @@ void InteractorsHelper::deleteSolidBlocks()
    BOOST_FOREACH(Interactor3DPtr i, interactors)
    {
       //UBLOG(logINFO,"rank="<<grid->getRank()<<", SetSolidOrTransBlockVisitor::start");
-      SetSolidOrTransBlockVisitor v(i, SetSolidOrTransBlockVisitor::SOLID);
+      SetSolidBlockVisitor v(i, SetSolidBlockVisitor::SOLID);
       grid->accept(v);
       //UBLOG(logINFO,"rank="<<grid->getRank()<<", SetSolidOrTransBlockVisitor::end");
       std::vector<Block3DPtr>& sb = i->getSolidBlockSet();
@@ -58,7 +58,7 @@ void InteractorsHelper::setTransBlocks()
 {
    BOOST_FOREACH(Interactor3DPtr i, interactors)
    {
-      SetSolidOrTransBlockVisitor v(i, SetSolidOrTransBlockVisitor::TRANS);
+      SetSolidBlockVisitor v(i, SetSolidBlockVisitor::BC);
       grid->accept(v);
    }
 }

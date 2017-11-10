@@ -107,7 +107,7 @@ void CoarseToFineNodeSetBlock3DConnector::findCFCells(int lMinX1, int lMinX2, in
    LBMReal x1off, x2off, x3off;
 
    DistributionArray3DPtr  fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
-   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3<=lMaxX3; ix3++)
    {
@@ -1249,25 +1249,25 @@ void CoarseToFineNodeSetBlock3DConnector::distributeReceiveVectors()
    {
       LBMReal icellC[27];
       this->readICellCfromData(data00, index00, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
    BOOST_FOREACH(INodeVector inode, iNodeSetReceiver01)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data01, index01, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
    BOOST_FOREACH(INodeVector inode, iNodeSetReceiver10)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data10, index10, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
    BOOST_FOREACH(INodeVector inode, iNodeSetReceiver11)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data11, index11, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
 }
 //////////////////////////////////////////////////////////////////////////

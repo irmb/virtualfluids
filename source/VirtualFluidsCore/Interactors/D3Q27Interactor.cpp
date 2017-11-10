@@ -167,7 +167,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
    
    //UBLOG(logINFO, "transNodeIndicesMap = "<<transNodeIndicesMap.size());
    
-   BOOST_FOREACH(TransNodeIndicesMap::value_type t, transNodeIndicesMap)
+   BOOST_FOREACH(TransNodeIndicesMap::value_type t, bcNodeIndicesMap)
    {
       Block3DPtr block = t.first;
       std::set< std::vector<int> >& transNodeIndicesSet = t.second;
@@ -177,7 +177,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
       if(block->isNotActive() || !block) continue;
 
       LBMKernelPtr kernel = block->getKernel();
-      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
       set< std::vector<int> >::iterator setPos;
 
@@ -191,7 +191,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
          double worldX2 = val<2>(coords);
          double worldX3 = val<3>(coords);
 
-         BoundaryConditionsPtr bc = bcArray.getBC(x1,x2,x3);
+         BoundaryConditionsPtr bc = bcArray->getBC(x1,x2,x3);
          if(bc) //kann sein, dass die BC durch das solid setzen eines andern interactors geloescht wurde
          {
             for(size_t i=0; i<bcAdapterVector.size(); i++)
@@ -215,8 +215,8 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 
    if(block->isNotActive()) return false;//continue;
 
-   transNodeIndicesMap[block] = set< std::vector<int> >();
-   set< std::vector<int> >& transNodeIndices = transNodeIndicesMap[block];
+   bcNodeIndicesMap[block] = set< std::vector<int> >();
+   set< std::vector<int> >& transNodeIndices = bcNodeIndicesMap[block];
    solidNodeIndicesMap[block] = set< UbTupleInt3 >();
    set< UbTupleInt3 >& solidNodeIndices = solidNodeIndicesMap[block];
 
@@ -227,7 +227,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
    BoundaryConditionsPtr bc;
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
 
@@ -238,9 +238,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
    int startIX1 = 0;
    int startIX2 = 0;
    int startIX3 = 0; 
-   int stopIX1  = (int)bcArray.getNX1();
-   int stopIX2  = (int)bcArray.getNX2();
-   int stopIX3  = (int)bcArray.getNX3(); 
+   int stopIX1  = (int)bcArray->getNX1();
+   int stopIX2  = (int)bcArray->getNX2();
+   int stopIX3  = (int)bcArray->getNX3(); 
 
    double         dx       = grid.lock()->getDeltaX(block);
    UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
@@ -279,7 +279,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
             for(int ix1=startIX1; ix1<stopIX1; ix1++)
             {
                //TODO weiter untersuchen, ob das nicht ein Fehler ist
-               if(bcArray.isUndefined(ix1, ix2, ix3)) continue;
+               if(bcArray->isUndefined(ix1, ix2, ix3)) continue;
 
                UbTupleDouble3 coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                internX1 = val<1>(coords);
@@ -299,7 +299,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 //#endif
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                           bcArray.setSolid(ix1,ix2,ix3); 
+                           bcArray->setSolid(ix1,ix2,ix3); 
                         }
                         continue;
                      }
@@ -315,7 +315,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 //#endif
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                           bcArray.setSolid(ix1,ix2,ix3); 
+                           bcArray->setSolid(ix1,ix2,ix3); 
                         }
                         continue;
                      }
@@ -323,7 +323,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 
                   //evtl wurde node von anderen interactoren solid gesetzt (muss hie rein->sonst evtl bei
                   //ueberschneidender geo -> solidNodeIndicesMap unvollstaendig)
-                  if(bcArray.isSolid(ix1,ix2,ix3)) 
+                  if(bcArray->isSolid(ix1,ix2,ix3)) 
                      continue;
 
                   gotQs = false;
@@ -345,12 +345,12 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                      {
                         #pragma omp critical (BC_CHANGE)
                         {
-                           bc = bcArray.getBC(ix1,ix2,ix3);
+                           bc = bcArray->getBC(ix1,ix2,ix3);
                            if(!bc)
                            {
                               //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
                               bc = BoundaryConditionsPtr(new BoundaryConditions);
-                              bcArray.setBC(ix1,ix2,ix3,bc);
+                              bcArray->setBC(ix1,ix2,ix3,bc);
                            }
                      //TODO: man muss ueberlegen, wie kann man, dass die Geschwindigkeit auf 0.0 gesetzt werden, vermeiden
                      //das folgt zu unguenstigen "design rules"
@@ -400,7 +400,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 #endif
                      {
                         solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                        bcArray.setSolid(ix1,ix2,ix3); 
+                        bcArray->setSolid(ix1,ix2,ix3); 
                      }
                      continue;
                   }
@@ -419,7 +419,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
          {
             for(int ix3=startIX3; ix3<stopIX3; ix3++)
             {
-               if(bcArray.isSolid(ix1,ix2,ix3) || bcArray.isUndefined(ix1, ix2, ix3)) continue;
+               if(bcArray->isSolid(ix1,ix2,ix3) || bcArray->isUndefined(ix1, ix2, ix3)) continue;
 
                UbTupleDouble3 coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
                internX1 = val<1>(coords);
@@ -433,7 +433,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                      #pragma omp critical (SOLID_SET_CHANGE)
                      {
                         solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                        bcArray.setSolid(ix1,ix2,ix3); 
+                        bcArray->setSolid(ix1,ix2,ix3); 
                      }
                      continue;
                   }
@@ -446,7 +446,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                         #pragma omp critical (SOLID_SET_CHANGE)
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                           bcArray.setSolid(ix1,ix2,ix3); 
+                           bcArray->setSolid(ix1,ix2,ix3); 
                         }
                         continue;
                      }
@@ -505,12 +505,12 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                         {
                            #pragma omp critical (BC_CHANGE)
                            {
-                              bc = bcArray.getBC(ix1,ix2,ix3);
+                              bc = bcArray->getBC(ix1,ix2,ix3);
                               if(!bc)
                               {
                                  //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
                                  bc = BoundaryConditionsPtr(new BoundaryConditions);
-                                 bcArray.setBC(ix1,ix2,ix3,bc);
+                                 bcArray->setBC(ix1,ix2,ix3,bc);
                               }
                               for(int index=(int)bcAdapterVector.size()-1; index>=0; --index)
                                  bcAdapterVector[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir,timestep);
@@ -550,7 +550,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt2 >& lines)
 {
-      BOOST_FOREACH(Block3DPtr block, transBlocks)
+      BOOST_FOREACH(Block3DPtr block, bcBlocks)
       {
          if(!block) continue;
 
@@ -558,10 +558,10 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vect
          UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
          LBMKernelPtr kernel = block->getKernel();
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
-         map<Block3DPtr, set< std::vector<int> > >::iterator pos = transNodeIndicesMap.find(block);
-         if(pos==transNodeIndicesMap.end()) 
+         map<Block3DPtr, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
+         if(pos==bcNodeIndicesMap.end()) 
          {
             UB_THROW( UbException(UB_EXARGS,"block nicht in indizes map!!!") );
          }
@@ -578,10 +578,10 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vect
             int ix2 = (*setPos)[1];
             int ix3 = (*setPos)[2];
 
-            if(bcArray.isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+            if(bcArray->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
-               if( !bcArray.hasBC(ix1,ix2,ix3) ) continue;
-               BoundaryConditionsPtr bc = bcArray.getBC(ix1,ix2,ix3);
+               if( !bcArray->hasBC(ix1,ix2,ix3) ) continue;
+               BoundaryConditionsPtr bc = bcArray->getBC(ix1,ix2,ix3);
 
                double x1a = val<1>(blockOrg) - val<1>(orgDelta) + ix1 * dx;
                double x2a = val<2>(blockOrg) - val<2>(orgDelta) + ix2 * dx;
@@ -648,10 +648,10 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
    int blocknx3 = val<3>(blocknx);
    //   vector<double> deltaT = grid->getD3Q27Calculator()->getDeltaT();
 
-   BOOST_FOREACH(Block3DPtr block, transBlocks)
+   BOOST_FOREACH(Block3DPtr block, bcBlocks)
    {
       LBMKernelPtr kernel = block->getKernel();
-      BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+      BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
       UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
 
       //double collFactor = ((LbD3Q27Calculator*)grid->getCalculator())->getCollisionsFactors()[block->getLevel()];
@@ -674,8 +674,8 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
 
       //      double dT = deltaT[block->getLevel()];
 
-      map<Block3DPtr, set< std::vector<int> > >::iterator pos = transNodeIndicesMap.find(block);
-      if(pos==transNodeIndicesMap.end()) throw UbException(UB_EXARGS,"block nicht in indizes map!!!"+block->toString());
+      map<Block3DPtr, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
+      if(pos==bcNodeIndicesMap.end()) throw UbException(UB_EXARGS,"block nicht in indizes map!!!"+block->toString());
       set< std::vector<int> >& transNodeIndicesSet = pos->second;
       set< std::vector<int> >::iterator setPos;
 
@@ -698,10 +698,10 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
             || ( include_TN_Edge && ix2==blocknx2 && ix3==blocknx3 )
             || ( include_TE_Edge && ix1==blocknx1 && ix3==blocknx3 ) ) //ansonsten doppelt im kraftwert
          {
-            if(bcMatrix.isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+            if(bcMatrix->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
-               if( !bcMatrix.hasBC(ix1,ix2,ix3) ) continue;
-               BoundaryConditionsPtr bc = bcMatrix.getBC(ix1,ix2,ix3);
+               if( !bcMatrix->hasBC(ix1,ix2,ix3) ) continue;
+               BoundaryConditionsPtr bc = bcMatrix->getBC(ix1,ix2,ix3);
                double x1a = x1-val<1>(nodeOffset)+dx * ix1;
                double x2a = x2-val<2>(nodeOffset)+dx * ix2;
                double x3a = x3-val<3>(nodeOffset)+dx * ix3;
@@ -759,7 +759,7 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
+void D3Q27Interactor::removeBoundaryInformationOnBcNodes()
 {
 //   if(this->reinitWithStoredQsFlag) return;
 //
@@ -773,10 +773,10 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //      D3Q27Block* bvd = (D3Q27Block*) solidBlocks[i]->getBlock();
 //      D3Q27BCMatrix<D3Q27BoundaryCondition>& bcMatrix = *bvd->getBcMatrix();
 //
-//      for(int ix1=bcMatrix.getNX1()-1; ix1>=0; ix1--)
-//         for(int ix2=bcMatrix.getNX2()-1; ix2>=0; ix2--)
-//            for(int ix3=bcMatrix.getNX3()-1; ix3>=0; ix3--)
-//               bcMatrix.setFluid(ix1,ix2,ix3);
+//      for(int ix1=bcMatrix->getNX1()-1; ix1>=0; ix1--)
+//         for(int ix2=bcMatrix->getNX2()-1; ix2>=0; ix2--)
+//            for(int ix3=bcMatrix->getNX3()-1; ix3>=0; ix3--)
+//               bcMatrix->setFluid(ix1,ix2,ix3);
 //   }
 //   //BC wird entfernt und node wird Fluid-Node
 //   oldSolidNodeIndicesMap.clear();
@@ -796,11 +796,11 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //      for(setPos=transNodeIndicesSet.begin(); setPos!=transNodeIndicesSet.end();  ++setPos)
 //      {
 ////new active node stuff//
-//         D3Q27BoundaryCondition* bc = bcMatrix.getBC(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos));
+//         D3Q27BoundaryCondition* bc = bcMatrix->getBC(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos));
 //         if(bc) oldTransNodeIndices.insert(UbTupleInt3LongLong(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos), bc->getNoSlipBoundary()));
 //         else UBLOG(logDEBUG5,"Warum fehlt die BC?");
 ////new active node stuff//
-//         bcMatrix.setFluid(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos));
+//         bcMatrix->setFluid(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos));
 //      }
 //      transNodeIndicesSet.clear();
 //
@@ -817,7 +817,7 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //      for(setPos=solidNodeIndicesSet.begin(); setPos!=solidNodeIndicesSet.end();  ++setPos)
 //      {
 //         oldSolidNodeIndices.insert(UbTupleInt3(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos)));
-//         bcMatrix.setFluid(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos));
+//         bcMatrix->setFluid(val<1>(*setPos),val<2>(*setPos),val<3>(*setPos));
 //      }
 //      solidNodeIndicesSet.clear();
 //   }
@@ -845,10 +845,10 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //   //   D3Q27Block* bvd = (D3Q27Block*) solidBlocks[i]->getBlock();
 //   //   D3Q27BCMatrix<D3Q27BoundaryCondition>& bcMatrix = *bvd->getBcMatrix();
 //
-//   //   for(int ix1=bcMatrix.getNX1()-1; ix1>=0; ix1--)
-//   //      for(int ix2=bcMatrix.getNX2()-1; ix2>=0; ix2--)
-//   //         for(int ix3=bcMatrix.getNX3()-1; ix3>=0; ix3--)
-//   //            bcMatrix.setFluid(ix1,ix2,ix3);
+//   //   for(int ix1=bcMatrix->getNX1()-1; ix1>=0; ix1--)
+//   //      for(int ix2=bcMatrix->getNX2()-1; ix2>=0; ix2--)
+//   //         for(int ix3=bcMatrix->getNX3()-1; ix3>=0; ix3--)
+//   //            bcMatrix->setFluid(ix1,ix2,ix3);
 //   //}
 //
 //   //vector<Block3D*>& transBlocks = *this->getTransBlockSet();
@@ -858,10 +858,10 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //   //   D3Q27Block* bvd = (D3Q27Block*) transBlocks[i]->getBlock();
 //   //   D3Q27BCMatrix<D3Q27BoundaryCondition>& bcMatrix = *bvd->getBcMatrix();
 //
-//   //   for(int ix1=bcMatrix.getNX1()-1; ix1>=0; ix1--)
-//   //      for(int ix2=bcMatrix.getNX2()-1; ix2>=0; ix2--)
-//   //         for(int ix3=bcMatrix.getNX3()-1; ix3>=0; ix3--)
-//   //            bcMatrix.setFluid(ix1,ix2,ix3);
+//   //   for(int ix1=bcMatrix->getNX1()-1; ix1>=0; ix1--)
+//   //      for(int ix2=bcMatrix->getNX2()-1; ix2>=0; ix2--)
+//   //         for(int ix3=bcMatrix->getNX3()-1; ix3>=0; ix3--)
+//   //            bcMatrix->setFluid(ix1,ix2,ix3);
 //   //}
 //
 //   //komplett neu initialisieren
@@ -906,10 +906,10 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //            if(!bvd) throw UbException(UB_EXARGS,"kein D3Q27Block");
 //            D3Q27BCMatrix<D3Q27BoundaryCondition>& bcMatrix = *bvd->getBcMatrix();
 //
-//            for(int ix1=bcMatrix.getNX1()-1; ix1>=0; ix1--)
-//               for(int ix2=bcMatrix.getNX2()-1; ix2>=0; ix2--)
-//                  for(int ix3=bcMatrix.getNX3()-1; ix3>=0; ix3--)
-//                     if(bcMatrix.isFluid(ix1,ix2,ix3))
+//            for(int ix1=bcMatrix->getNX1()-1; ix1>=0; ix1--)
+//               for(int ix2=bcMatrix->getNX2()-1; ix2>=0; ix2--)
+//                  for(int ix3=bcMatrix->getNX3()-1; ix3>=0; ix3--)
+//                     if(bcMatrix->isFluid(ix1,ix2,ix3))
 //                        newFluidNodeIndices.insert(UbTupleInt3(ix1,ix2,ix3));
 //            //continue; <-HAEH an Geller: wozu das continue? kam da frueher noch was?
 //         }
@@ -988,7 +988,7 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //            if((osix1==tix1) && (osix2==tix2) && (osix3==tix3))
 //            {
 //               long long oldNoSlipBoundary = val<4>(*setPos1);
-//               D3Q27BoundaryCondition* bc = bcMatrix.getBC(tix1,tix2,tix3);
+//               D3Q27BoundaryCondition* bc = bcMatrix->getBC(tix1,tix2,tix3);
 //               long long newNoSlipBoundary = bc->getNoSlipBoundary();
 //
 //               if(oldNoSlipBoundary==newNoSlipBoundary) continue;
@@ -1109,7 +1109,7 @@ void D3Q27Interactor::removeBoundaryInformationOnTransNodes()
 //            || ( include_TN_Edge && x2==blocknx2 && x3==blocknx3 )
 //            || ( include_TE_Edge && x1==blocknx1 && x3==blocknx3 ) ) //ansonsten doppelt im kraftwert
 //         {
-//            if(bcMatrix.isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+//            if(bcMatrix->isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
 //            {
 //               UbTupleDouble3 forceVec = bvd->getForces(x1,x2,x3,dT);
 //               forceX1 += val<1>(forceVec);
@@ -1258,7 +1258,7 @@ void D3Q27Interactor::writeValidationAVSFile(string filename)
 //            || ( include_TN_Edge && ix2==blocknx2 && ix3==blocknx3 )
 //            || ( include_TE_Edge && ix1==blocknx1 && ix3==blocknx3 ) ) //ansonsten doppelt im kraftwert
 //         {
-//            if(bcMatrix.isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+//            if(bcMatrix->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
 //            {
 //               nodes.push_back(makeUbTuple(  float( orgX1 + ix1 * deltaX )
 //                                           , float( orgX2 + ix2 * deltaX )
@@ -1330,7 +1330,7 @@ void D3Q27Interactor::writeValidationAVSFile(string filename)
 
    //   set< UbTupleInt3 >& transNodeIndicesSet = pos->second;
    //   set< UbTupleInt3 >::iterator setPos;
-   //   CbUniformMatrix3D<float> bcs(bcMatrix.getNX1(),bcMatrix.getNX2(),bcMatrix.getNX3(),0.0f);
+   //   CbUniformMatrix3D<float> bcs(bcMatrix->getNX1(),bcMatrix->getNX2(),bcMatrix->getNX3(),0.0f);
 
    //   for(setPos=transNodeIndicesSet.begin(); setPos!=transNodeIndicesSet.end();  ++setPos)
    //   {
@@ -1338,7 +1338,7 @@ void D3Q27Interactor::writeValidationAVSFile(string filename)
    //      int ix2 = val<2>(*setPos);
    //      int ix3 = val<3>(*setPos);
 
-   //      if(bcMatrix.isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+   //      if(bcMatrix->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
    //      {
    //         bcs(ix1,ix2,ix3) = 1.0f;
    //      }

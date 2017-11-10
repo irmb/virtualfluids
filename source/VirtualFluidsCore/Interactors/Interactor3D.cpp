@@ -362,7 +362,7 @@ void Interactor3D::setSolidBlock(Block3DPtr block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::setTransBlock(Block3DPtr block)
+void Interactor3D::setBCBlock(Block3DPtr block)
 {
    double minX1,minX2,minX3,maxX1,maxX2,maxX3;
 
@@ -380,14 +380,14 @@ void Interactor3D::setTransBlock(Block3DPtr block)
    maxX3 = val<3>(org) + val<3>(blockLengths) + val<3>(nodeOffset);
 
    if(isBlockCuttingGeoObject(minX1, minX2, minX3, maxX1, maxX2, maxX3, deltaX))
-      this->transBlocks.push_back(block);
+      this->bcBlocks.push_back(block);
 }
 //////////////////////////////////////////////////////////////////////////
 void Interactor3D::initInteractor(const double& timeStep)
 {
    //UBLOG(logINFO, "transBlocks.size = "<<transBlocks.size());
 
-   BOOST_FOREACH(Block3DPtr block, transBlocks)
+   BOOST_FOREACH(Block3DPtr block, bcBlocks)
    {
       this->setDifferencesToGbObject3D(block);
    }

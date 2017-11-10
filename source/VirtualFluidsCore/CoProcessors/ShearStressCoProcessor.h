@@ -39,7 +39,7 @@ protected:
    void clearData();
    void reset(double step);
    void findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Block3DPtr block,double &A,double &B,double &C,double &D,double &ii);
-   bool checkUndefindedNodes( BCArray3D& bcArray,int ix1,int ix2,int ix3);
+   bool checkUndefindedNodes( BCArray3DPtr bcArray,int ix1,int ix2,int ix3);
    void initDistance();
 private:
    std::vector<UbTupleFloat3> nodes;

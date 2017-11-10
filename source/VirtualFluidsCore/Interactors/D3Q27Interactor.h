@@ -67,8 +67,8 @@ public:
    void setReinitWithStoredQs(bool reinitWithStoredQsFlag) { this->reinitWithStoredQsFlag = reinitWithStoredQsFlag; }
    
    void removeSolidBlocks() { Interactor3D::removeSolidBlocks(); solidNodeIndicesMap.clear(); }
-   void removeTransBlocks() { Interactor3D::removeTransBlocks(); transNodeIndicesMap.clear(); }
-   virtual void removeBoundaryInformationOnTransNodes();
+   void removeBcBlocks() { Interactor3D::removeBcBlocks(); bcNodeIndicesMap.clear(); }
+   virtual void removeBoundaryInformationOnBcNodes();
 
    bool setDifferencesToGbObject3D(const Block3DPtr block/*, const double& x1, const double& x2, const double& x3, const double& blockLengthX1, const double& blockLengthX2, const double& blockLengthX3, const double& timestep=0*/);
 
@@ -87,7 +87,7 @@ public:
 
    void addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt2 >& lines);
 
-   const std::map<Block3DPtr, std::set< std::vector<int> > > & getTransNodeIndicesMap() { return transNodeIndicesMap; }
+   const std::map<Block3DPtr, std::set< std::vector<int> > > & getBcNodeIndicesMap() { return bcNodeIndicesMap; }
 
 protected:
    bool relevantForForces;
@@ -98,14 +98,9 @@ protected:
    
    typedef UbTuple<int,int,int,long long>  UbTupleInt3LongLong;
 
-   std::vector<Block3D*> oldSolidBlockSet;
-   std::map<Block3DPtr, std::set< UbTupleInt3 > > oldSolidNodeIndicesMap;
-   std::map<Block3DPtr, std::set< UbTupleInt3LongLong > > oldTransNodeIndicesMap;
-
    std::map<Block3DPtr, std::set< UbTupleInt3 > > solidNodeIndicesMap;  
-
-   std::map<Block3DPtr, std::set< std::vector<int> > > transNodeIndicesMap;
-   //std::map<Block3DPtr, std::set< UbTupleInt3 > > transNodeIndicesMap;//!!! es kann sein, dass in diesem interactor
+   std::map<Block3DPtr, std::set< std::vector<int> > > bcNodeIndicesMap;
+                                                                         //!!! es kann sein, dass in diesem interactor
                                                                          //an eine rpos eine BC gesetzt wurde, aber derselbe node in
                                                                          //in einem anderen in einen anderen Typ (z.B. Solid) geaendert
                                                                          //wurde --> es ist keine BC mehr an der stelle!
@@ -120,7 +115,7 @@ protected:
    void serialize(Archive & ar, const unsigned int version)
    {
       ar & boost::serialization::base_object<Interactor3D>(*this);
-      ar & transNodeIndicesMap;
+      ar & bcNodeIndicesMap;
       ar & bcAdapterVector;
    }
 };

@@ -25,15 +25,15 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    //int gl = kernel->getGhostLayerWidth();
    int gl = 0;
    
-   BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
    int minX1 = gl;
    int minX2 = gl;
    int minX3 = gl;
 
-   int maxX1 = static_cast<int>(bcMatrix.getNX1())-1-gl;
-   int maxX2 = static_cast<int>(bcMatrix.getNX2())-1-gl;
-   int maxX3 = static_cast<int>(bcMatrix.getNX3())-1-gl;
+   int maxX1 = static_cast<int>(bcMatrix->getNX1())-1-gl;
+   int maxX2 = static_cast<int>(bcMatrix->getNX2())-1-gl;
+   int maxX3 = static_cast<int>(bcMatrix->getNX3())-1-gl;
 
    //int offset = 2;
    int offset = 3;
@@ -363,9 +363,9 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    minX2 = ll;
    minX3 = ll;
 
-   maxX1 = static_cast<int>(bcMatrix.getNX1())-1-ll;
-   maxX2 = static_cast<int>(bcMatrix.getNX2())-1-ll;
-   maxX3 = static_cast<int>(bcMatrix.getNX3())-1-ll;
+   maxX1 = static_cast<int>(bcMatrix->getNX1())-1-ll;
+   maxX2 = static_cast<int>(bcMatrix->getNX2())-1-ll;
+   maxX3 = static_cast<int>(bcMatrix->getNX3())-1-ll;
 
    if(block->hasInterpolationFlagFC(D3Q27System::E))
    {
@@ -648,28 +648,28 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       minX2 = gl;
       minX3 = gl;
 
-      maxX1 = static_cast<int>(bcMatrix.getNX1())-1-gl;
-      maxX2 = static_cast<int>(bcMatrix.getNX2())-1-gl;
-      maxX3 = static_cast<int>(bcMatrix.getNX3())-1-gl;
+      maxX1 = static_cast<int>(bcMatrix->getNX1())-1-gl;
+      maxX2 = static_cast<int>(bcMatrix->getNX2())-1-gl;
+      maxX3 = static_cast<int>(bcMatrix->getNX3())-1-gl;
 
       for (int ix3=minX3; ix3<=maxX3; ix3++)
          for (int ix2=minX2; ix2<=maxX2; ix2++)
             for (int ix1=minX1; ix1<=maxX1; ix1++)
             {
-               if(bcMatrix.isUndefined(ix1, ix2, ix3)) bcMatrix.setFluid(ix1, ix2, ix3);
-               else                                    bcMatrix.setUndefined(ix1, ix2, ix3);
+               if(bcMatrix->isUndefined(ix1, ix2, ix3)) bcMatrix->setFluid(ix1, ix2, ix3);
+               else                                    bcMatrix->setUndefined(ix1, ix2, ix3);
             }
             return;
    }
 
 }
 //////////////////////////////////////////////////////////////////////////
-void SetUndefinedNodesBlockVisitor::setNodesUndefined( int startix1, int endix1, int startix2, int endix2, int startix3, int endix3, BCArray3D& bcMatrix )
+void SetUndefinedNodesBlockVisitor::setNodesUndefined( int startix1, int endix1, int startix2, int endix2, int startix3, int endix3, BCArray3DPtr bcMatrix )
 {
    for (int ix3=startix3; ix3<=endix3; ix3++)
       for (int ix2=startix2; ix2<=endix2; ix2++)
          for (int ix1=startix1; ix1<=endix1; ix1++)
          {
-            bcMatrix.setUndefined(ix1, ix2, ix3);
+            bcMatrix->setUndefined(ix1, ix2, ix3);
          }
 }

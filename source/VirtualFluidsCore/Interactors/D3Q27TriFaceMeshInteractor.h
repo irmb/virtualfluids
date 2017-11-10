@@ -86,7 +86,7 @@ public:
    bool   getForceShiftPolicy() { return forceshiftpolicy;}
    bool   getVelocityShiftPolicy() { return velocityshiftpolicy;}
 
-   void clearTransNodeIndicesAndQsMap() { this->transNodeIndicesAndQsMap.clear();}
+   void clearBcNodeIndicesAndQsMap() { this->bcNodeIndicesAndQsMap.clear();}
 
    virtual std::string toString();
 
@@ -103,7 +103,7 @@ protected:
 
    void reinitWithStoredQs(const double& timeStep);
    //   bool reinitWithStoredQsFlag;
-   std::map< Block3DPtr, std::map < UbTupleInt3, std::vector< float > > > transNodeIndicesAndQsMap;    //!!! es kann sein, dass in diesem interactor
+   std::map< Block3DPtr, std::map < UbTupleInt3, std::vector< float > > > bcNodeIndicesAndQsMap;    //!!! es kann sein, dass in diesem interactor
    //an eine rpos eine BC gesetzt wurde, aber derselbe node in
    //in einem anderen in einen anderen Typ (z.B. Solid) geaendert
    //wurde --> es ist keine BC mehr an der stelle!

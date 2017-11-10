@@ -22,14 +22,14 @@ void ChangeBoundaryDensityBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    if (block->getRank() == grid->getRank())
    {
       LBMKernelPtr kernel = block->getKernel();
-      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
       int minX1 = 0;
       int minX2 = 0;
       int minX3 = 0;
-      int maxX1 = (int)bcArray.getNX1();
-      int maxX2 = (int)bcArray.getNX2();
-      int maxX3 = (int)bcArray.getNX3();
+      int maxX1 = (int)bcArray->getNX1();
+      int maxX2 = (int)bcArray->getNX2();
+      int maxX3 = (int)bcArray->getNX3();
 
       for (int x3 = minX3; x3 < maxX3; x3++)
       {
@@ -37,9 +37,9 @@ void ChangeBoundaryDensityBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
          {
             for (int x1 = minX1; x1 < maxX1; x1++)
             {
-               if (!bcArray.isSolid(x1, x2, x3) && !bcArray.isUndefined(x1, x2, x3))
+               if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3))
                {
-                  bcPtr = bcArray.getBC(x1, x2, x3);
+                  bcPtr = bcArray->getBC(x1, x2, x3);
                   if (bcPtr)
                   {
                      if (bcPtr->hasDensityBoundary())

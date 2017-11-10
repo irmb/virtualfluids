@@ -133,6 +133,7 @@ private:
 
   friend class MPIIORestartCoProcessor;
   friend class MPIIORestart2CoProcessor;
+  friend class MPIIORestart3CoProcessor;
 
   friend class boost::serialization::access;
   template<class Archive>

@@ -107,7 +107,7 @@ void InSituCatalystCoProcessor::addData(Block3DPtr block)
    double         dx = grid->getDeltaX(block);
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
@@ -134,7 +134,7 @@ void InSituCatalystCoProcessor::addData(Block3DPtr block)
       {
          for (size_t ix1 = minX1; ix1 <= maxX1; ix1++)
          {
-            if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
+            if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3))
             {
                distributions->getDistribution(f, ix1, ix2, ix3);
                calcMacros(f, rho, vx1, vx2, vx3);
@@ -223,7 +223,7 @@ void InSituCatalystCoProcessor::addVTKGridData(Block3DPtr block)
    double         dx = grid->getDeltaX(block);
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
@@ -270,7 +270,7 @@ void InSituCatalystCoProcessor::addVTKGridData(Block3DPtr block)
       {
          for (size_t ix1 = minX1; ix1 <= maxX1; ix1++)
          {
-            if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
+            if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3))
             {
                x[0] = double(val<1>(org) -val<1>(nodeOffset) +ix1*dx);
                x[1] = double(val<2>(org) -val<2>(nodeOffset) +ix2*dx);

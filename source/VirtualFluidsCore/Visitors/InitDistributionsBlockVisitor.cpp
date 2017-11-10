@@ -144,7 +144,7 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
       //UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
       EsoTwist3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
 
       LBMReal f[D3Q27System::ENDF+1];
@@ -153,9 +153,9 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
       size_t nx2 = distributions->getNX2();
       size_t nx3 = distributions->getNX3();
 
-      for(int ix3=0; ix3<bcArray.getNX3(); ix3++)
-         for(int ix2=0; ix2<bcArray.getNX2(); ix2++)
-            for(int ix1=0; ix1<bcArray.getNX1(); ix1++)
+      for(int ix3=0; ix3<bcArray->getNX3(); ix3++)
+         for(int ix2=0; ix2<bcArray->getNX2(); ix2++)
+            for(int ix1=0; ix1<bcArray->getNX1(); ix1++)
             {
                UbTupleDouble3 coords = grid->getNodeCoordinates(block, ix1, ix2, ix3);
                x1 = val<1>(coords);

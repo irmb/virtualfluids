@@ -134,13 +134,13 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
    BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getTransNodeIndicesMap())
+      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
          LBMKernelPtr kernel = block->getKernel();
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -148,11 +148,11 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
          LBMReal collFactor = kernel->getCollisionFactor();
 
          int minX1 = ghostLayer;
-         int maxX1 = (int)bcArray.getNX1() - 1 - ghostLayer;
+         int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
          int minX2 = ghostLayer;
-         int maxX2 = (int)bcArray.getNX2() - 1 - ghostLayer;
+         int maxX2 = (int)bcArray->getNX2() - 1 - ghostLayer;
          int minX3 = ghostLayer;
-         int maxX3 = (int)bcArray.getNX3() - 1 - ghostLayer;
+         int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayer;
 
          BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
          {
@@ -163,7 +163,7 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
             //without ghost nodes
             if (ix1 < minX1 || ix1 > maxX1 || ix2 < minX2 || ix2 > maxX2 ||ix3 < minX3 || ix3 > maxX3 ) continue;
 
-            if(bcArray.isFluid(ix1,ix2,ix3)) 
+            if(bcArray->isFluid(ix1,ix2,ix3)) 
             {
                double q=(*ssv)(normalq,ix1,ix2,ix3) ;
                double numPoint=(*ssv)(numberOfPoint,ix1,ix2,ix3) ;
@@ -246,7 +246,7 @@ void ShearStressCoProcessor::addData()
    BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getTransNodeIndicesMap())
+      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
@@ -257,7 +257,7 @@ void ShearStressCoProcessor::addData()
          double         dx           = grid->getDeltaX(block);
 
          LBMKernelPtr kernel = block->getKernel();
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -265,11 +265,11 @@ void ShearStressCoProcessor::addData()
          LBMReal collFactor = kernel->getCollisionFactor();
 
          int minX1 = ghostLayer;
-         int maxX1 = (int)bcArray.getNX1() - 1 - ghostLayer;
+         int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
          int minX2 = ghostLayer;
-         int maxX2 = (int)bcArray.getNX2() - 1 - ghostLayer;
+         int maxX2 = (int)bcArray->getNX2() - 1 - ghostLayer;
          int minX3 = ghostLayer;
-         int maxX3 = (int)bcArray.getNX3() - 1 - ghostLayer;
+         int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayer;
 
          int level=block->getLevel();
          if(level==1)
@@ -285,7 +285,7 @@ void ShearStressCoProcessor::addData()
             //without ghost nodes
             if (ix1 < minX1 || ix1 > maxX1 || ix2 < minX2 || ix2 > maxX2 ||ix3 < minX3 || ix3 > maxX3 ) continue;
 
-            if(bcArray.isFluid(ix1,ix2,ix3)) 
+            if(bcArray->isFluid(ix1,ix2,ix3)) 
             {
                double q=(*ssv)(normalq,ix1,ix2,ix3) ;
                double numPoint=(*ssv)(numberOfPoint,ix1,ix2,ix3) ;
@@ -363,7 +363,7 @@ void ShearStressCoProcessor::resetData(double step)
             double         dx           = grid->getDeltaX(block);
 
             LBMKernelPtr kernel = block->getKernel();
-            BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+            BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
             ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -381,7 +381,7 @@ void ShearStressCoProcessor::resetData(double step)
                {
                   for(int ix1=minX1; ix1<maxX1-1; ix1++)
                   {
-                     if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+                     if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
                      {
                         //////////////////////////////////////////////////////////////////////////
                         //compute average values
@@ -420,8 +420,8 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
    double dx = grid->getDeltaX(block);
    LBMKernelPtr kernel = block->getKernel();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
-   bcPtr=bcArray.getBC(ix1,ix2,ix3);
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+   bcPtr=bcArray->getBC(ix1,ix2,ix3);
    int x,y,z;
 
 
@@ -483,9 +483,9 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
                double   jph=val<2>(pointplane1);
                double   kph=val<3>(pointplane1);
 
-               if(!bcArray.isSolid(i, j, k))
+               if(!bcArray->isSolid(i, j, k))
                {
-                  BoundaryConditionsPtr bcPtrIn=bcArray.getBC(i,j,k);
+                  BoundaryConditionsPtr bcPtrIn=bcArray->getBC(i,j,k);
                   if(bcPtrIn)
                   {	 
                      for(int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)
@@ -497,7 +497,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
                            {	  
                               if     ( fdir==D3Q27System::E ) 
                               {
-                                 //if(!bcArray.isSolid(i, j, k))continue;
+                                 //if(!bcArray->isSolid(i, j, k))continue;
                                  if (i+q<=x+1)
                                  {
                                     if      (ii==0)	    {	x1plane=iph+q*dx;	  y1plane=jph;	 z1plane=kph;    	ii++;	} 
@@ -507,7 +507,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
                               }
                               if     ( fdir==D3Q27System::W ) 
                               {
-                                 //if(!bcArray.isSolid(i, j, k))continue;
+                                 //if(!bcArray->isSolid(i, j, k))continue;
                                  if (i-q>=x)
                                  {
                                     if      (ii==0)	    {	x1plane=iph-q*dx;	  y1plane=jph;	 z1plane=kph;    	ii++;	} 
@@ -517,7 +517,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
                               }
                               if     ( fdir==D3Q27System::N ) 
                               {
-                                 //if(!bcArray.isSolid(i, j, k))continue;
+                                 //if(!bcArray->isSolid(i, j, k))continue;
                                  if(j+q<=y+1)
                                  {
                                     if      (ii==0)	    {	x1plane=iph;	y1plane=jph+q*dx;	 z1plane=kph; 	    ii++;	} 
@@ -527,7 +527,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
                               }
                               if     ( fdir==D3Q27System::S ) 
                               {
-                                 //if(!bcArray.isSolid(i, j, k))continue;
+                                 //if(!bcArray->isSolid(i, j, k))continue;
                                  if (j-q>=y)
                                  {
                                     if      (ii==0)	    {	x1plane=iph;	y1plane=jph-q*dx;	 z1plane=kph; 	ii++;	} 
@@ -538,7 +538,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
 
                               if     ( fdir==D3Q27System::T ) 
                               {
-                                 //if(!bcArray.isSolid(i, j, k))continue;
+                                 //if(!bcArray->isSolid(i, j, k))continue;
                                  if(k+q<=z+1)
                                  {
                                     if      (ii==0)	    {	x1plane=iph;	y1plane=jph;	 z1plane=kph+q*dx; 	    ii++;	} 
@@ -548,7 +548,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
                               }
                               if     ( fdir==D3Q27System::B ) 
                               {
-                                 //if(!bcArray.isSolid(i, j, k))continue;
+                                 //if(!bcArray->isSolid(i, j, k))continue;
                                  if (k-q>=z)
                                  {
                                     if      (ii==0)	    {	x1plane=iph;	y1plane=jph;	 z1plane=kph-q*dx; 	ii++;	} 
@@ -590,13 +590,13 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool ShearStressCoProcessor::checkUndefindedNodes( BCArray3D& bcArray,int ix1,int ix2,int ix3)
+bool ShearStressCoProcessor::checkUndefindedNodes( BCArray3DPtr bcArray,int ix1,int ix2,int ix3)
 {
    for(int i = ix1; i <= ix1 + 1; i++){
       for(int j = ix2; j <= ix2 + 1; j++){
          for (int k = ix3; k <= ix3 + 1; k++)
          {	
-            if(bcArray.isUndefined(i, j, k)) return true;
+            if(bcArray->isUndefined(i, j, k)) return true;
          }  
       }
    }
@@ -608,7 +608,7 @@ void ShearStressCoProcessor::initDistance()
    BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getTransNodeIndicesMap())
+      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
@@ -619,7 +619,7 @@ void ShearStressCoProcessor::initDistance()
          double         dx           = grid->getDeltaX(block);
 
          LBMKernelPtr kernel = block->getKernel();
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
 
@@ -627,11 +627,11 @@ void ShearStressCoProcessor::initDistance()
          LBMReal collFactor = kernel->getCollisionFactor();
 
          int minX1 = ghostLayer;
-         int maxX1 = (int)bcArray.getNX1() - 1 - ghostLayer;
+         int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayer;
          int minX2 = ghostLayer;
-         int maxX2 = (int)bcArray.getNX2() - 1 - ghostLayer;
+         int maxX2 = (int)bcArray->getNX2() - 1 - ghostLayer;
          int minX3 = ghostLayer;
-         int maxX3 = (int)bcArray.getNX3() - 1 - ghostLayer;
+         int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayer;
 
          BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
          {
@@ -642,9 +642,9 @@ void ShearStressCoProcessor::initDistance()
             //without ghost nodes
             if (ix1 < minX1 || ix1 > maxX1 || ix2 < minX2 || ix2 > maxX2 ||ix3 < minX3 || ix3 > maxX3 ) continue;
 
-            if(bcArray.isFluid(ix1,ix2,ix3) )
+            if(bcArray->isFluid(ix1,ix2,ix3) )
             {
-               BoundaryConditionsPtr bc = bcArray.getBC(ix1,ix2,ix3);
+               BoundaryConditionsPtr bc = bcArray->getBC(ix1,ix2,ix3);
                if((bc->hasDensityBoundary()||bc->hasVelocityBoundary()))continue;
                int numberOfCorner=0;
 

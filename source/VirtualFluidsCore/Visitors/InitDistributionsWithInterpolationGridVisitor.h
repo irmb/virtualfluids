@@ -12,9 +12,11 @@ public:
    void visit(Grid3DPtr grid);
 private:
    void copyLocalBlock(Block3DPtr oldBlock, Block3DPtr newBlock);
-   void interpolateLocalBlock(Block3DPtr oldBlock, Block3DPtr newBlock);
    void copyRemoteBlock(Block3DPtr oldBlock, Block3DPtr newBlock);
-   void interpolateRemoteBlock(Block3DPtr oldBlock, Block3DPtr newBlock);
+   void interpolateLocalBlockCoarseToFine(Block3DPtr oldBlock, Block3DPtr newBlock);
+   void interpolateRemoteBlockCoarseToFine(Block3DPtr oldBlock, Block3DPtr newBlock);
+   void interpolateLocalBlockFineToCoarse(Block3DPtr oldBlock, Block3DPtr newBlock);
+   void interpolateRemoteBlockFineToCoarse(Block3DPtr oldBlock, Block3DPtr newBlock);
 
    Grid3DPtr newGrid;
    Grid3DPtr oldGrid;

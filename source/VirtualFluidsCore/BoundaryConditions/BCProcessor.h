@@ -22,7 +22,8 @@ public:
    BCProcessor();
    BCProcessor(LBMKernelPtr kernel);
    virtual ~BCProcessor();
-   virtual BCArray3D& getBCArray();
+   virtual BCArray3DPtr getBCArray();
+   virtual void setBCArray(BCArray3DPtr bcarray);
    virtual BCProcessorPtr clone(LBMKernelPtr kernel);
 
    void addBC(BCAlgorithmPtr bc);
@@ -32,7 +33,7 @@ public:
 protected:
    std::vector<BCAlgorithmPtr> preBC;
    std::vector<BCAlgorithmPtr> postBC;
-   BCArray3D bcArray;
+   BCArray3DPtr bcArray;
 
 private:
    friend class boost::serialization::access;

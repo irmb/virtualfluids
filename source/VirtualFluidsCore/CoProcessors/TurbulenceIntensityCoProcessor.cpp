@@ -115,7 +115,7 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
    data.resize(datanames.size());
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
    AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
    //int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -142,7 +142,7 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
       {
          for(int ix1=minX1; ix1<maxX1-1; ix1++)
          {
-            if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+            if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
             {
                int index = 0;
                nodeNumbers(ix1,ix2,ix3) = nr++;
@@ -204,7 +204,7 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
          if (block)
          {
             LBMKernelPtr kernel = block->getKernel();
-            BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+            BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
             AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 
@@ -222,7 +222,7 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
                {
                   for(int ix1=minX1; ix1<maxX1-1; ix1++)
                   {
-                     if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+                     if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
                      {
                         //////////////////////////////////////////////////////////////////////////
                         //read distribution

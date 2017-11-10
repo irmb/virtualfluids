@@ -21,6 +21,12 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    if (block->getRank() == grid->getRank())
    {
       LBMKernelPtr kernel = block->getKernel();
+
+      if (!kernel)
+      {
+         throw UbException(UB_EXARGS, "LBMKernel in " + block->toString() + "is not exist!");
+      }
+
       BCProcessorPtr bcProcessor = kernel->getBCProcessor();
 
       if (!bcProcessor)
@@ -28,7 +34,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
          throw UbException(UB_EXARGS,"Boundary Conditions Processor is not exist!" );
       }
 
-      BCArray3D& bcArray = bcProcessor->getBCArray();
+      BCArray3DPtr bcArray = bcProcessor->getBCArray();
 
       bool compressible = kernel->getCompressible();
       double collFactor = kernel->getCollisionFactor();
@@ -37,9 +43,9 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       int minX1 = 0;
       int minX2 = 0;
       int minX3 = 0;
-      int maxX1 = (int)bcArray.getNX1();
-      int maxX2 = (int)bcArray.getNX2();
-      int maxX3 = (int)bcArray.getNX3();
+      int maxX1 = (int)bcArray->getNX1();
+      int maxX2 = (int)bcArray->getNX2();
+      int maxX3 = (int)bcArray->getNX3();
       BoundaryConditionsPtr bcPtr;
 
       bcProcessor->clearBC();
@@ -52,9 +58,9 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
          {
             for (int x1 = minX1; x1 < maxX1; x1++)
             {
-               if (!bcArray.isSolid(x1, x2, x3) && !bcArray.isUndefined(x1, x2, x3))
+               if (!bcArray->isSolid(x1, x2, x3) && !bcArray->isUndefined(x1, x2, x3))
                {
-                  if ((bcPtr = bcArray.getBC(x1, x2, x3)) != NULL)
+                  if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL)
                   {
                      char alg = bcPtr->getBcAlgorithmType();
                      BCAlgorithmPtr bca = bcMap[alg];
@@ -68,7 +74,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
                         bca->setCollFactor(collFactor);
                         bca->setCompressible(compressible);
                         bcProcessor->addBC(bca);
-                        bca->setBcArray(BCArray3DPtr(&bcArray));
+                        bca->setBcArray(bcArray);
                      }
                   }
                }

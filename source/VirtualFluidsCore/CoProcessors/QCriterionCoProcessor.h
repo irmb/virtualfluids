@@ -38,7 +38,7 @@ protected:
 	//! After writing to .vtk-file, all vectors are reset 
 	void clearData();
 	//! Computes macroscopic velocities 
-	void computeVelocity(LBMReal* f, LBMReal* v);
+	void computeVelocity(LBMReal* f, LBMReal* v, bool compressible);
 	//! Computes average and RMS values of macroscopic quantities 
 	void getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3,const Block3DPtr block, LBMReal* vE,LBMReal* vW);
 

@@ -17,6 +17,7 @@ private:
    double orgX1, orgX2, orgX3;
    UbTupleInt3 minInd, maxInd;
    int nx1, nx2, nx3;
+   double blockLentghX1, blockLentghX2, blockLentghX3;
    bool withDeltaX;
    GbObject3DPtr boundingBox;
    void fillExtentWithBlocks(Grid3DPtr grid);

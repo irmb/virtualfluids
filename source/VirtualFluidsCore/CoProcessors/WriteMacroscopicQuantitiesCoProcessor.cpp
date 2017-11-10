@@ -126,7 +126,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
    datanames.push_back("Vy");
    datanames.push_back("Vz");
    //datanames.push_back("Press");
-   //datanames.push_back("Level");
+   datanames.push_back("Level");
    //datanames.push_back("BlockID");
 
      
@@ -134,18 +134,13 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
    data.resize(datanames.size());
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal vx1,vx2,vx3,rho;
 
    //knotennummerierung faengt immer bei 0 an!
    int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
-
-   //Funktionszeiger
-   typedef void (*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/,LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
-
-   CalcMacrosFct calcMacros = NULL;
 
    if(block->getKernel()->getCompressible())
    {
@@ -187,7 +182,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
       {
          for(size_t ix1=minX1; ix1<=maxX1; ix1++)
          {
-            if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+            if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
             {
                int index = 0;
                nodeNumbers(ix1,ix2,ix3) = nr++;
@@ -229,7 +224,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
                //data[index++].push_back(vx2 * conv->getFactorVelocityLbToW2());
                //data[index++].push_back(vx3 * conv->getFactorVelocityLbToW2());
                //data[index++].push_back(press * conv->getFactorPressureLbToW2());
-               //data[index++].push_back(level);
+               data[index++].push_back(level);
                //data[index++].push_back(blockID);
             }
          }

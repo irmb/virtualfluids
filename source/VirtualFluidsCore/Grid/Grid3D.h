@@ -64,11 +64,11 @@ public:
    void getBlocksByCuboid(int level, double minX1, double minX2, double minX3, 
                           double maxX1, double maxX2, double maxX3, 
                           std::vector<Block3DPtr>& blocks);
-   //get blocks for level
+   //!get blocks for level
    void getBlocks(int level, std::vector<Block3DPtr>& blockVector);
-   //get blocks for level with current rank
+   //!get blocks for level with current rank
    void getBlocks(int level, int rank, std::vector<Block3DPtr>& blockVector);
-   //get only active or not active blocks 
+   //!get only active or not active blocks 
    void getBlocks(int level, int rank, bool active, std::vector<Block3DPtr>& blockVector);
    int getNumberOfBlocks();
    int getNumberOfBlocks(int level);

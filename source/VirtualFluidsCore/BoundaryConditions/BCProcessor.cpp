@@ -9,7 +9,8 @@ BCProcessor::BCProcessor()
 BCProcessor::BCProcessor(LBMKernelPtr kernel)
 {
    DistributionArray3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
-   bcArray.resize( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID);
+   //bcArray->resize( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID);
+   bcArray = BCArray3DPtr(new BCArray3D( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID));
 }
 //////////////////////////////////////////////////////////////////////////
 BCProcessor::~BCProcessor()
@@ -23,9 +24,14 @@ BCProcessorPtr BCProcessor::clone(LBMKernelPtr kernel)
    return bcProcessor;
 }
 //////////////////////////////////////////////////////////////////////////
-BCArray3D& BCProcessor::getBCArray()
+BCArray3DPtr BCProcessor::getBCArray()
 { 
-   return this->bcArray; 
+   return bcArray; 
+}
+//////////////////////////////////////////////////////////////////////////
+void BCProcessor::setBCArray(BCArray3DPtr bcarray)
+{
+   bcArray = bcarray;
 }
 //////////////////////////////////////////////////////////////////////////
 void BCProcessor::addBC(BCAlgorithmPtr bc)

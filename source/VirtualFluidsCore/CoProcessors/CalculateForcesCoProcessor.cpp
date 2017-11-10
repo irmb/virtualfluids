@@ -30,7 +30,13 @@ CalculateForcesCoProcessor::CalculateForcesCoProcessor( Grid3DPtr grid, UbSchedu
       ostr.width(12);
       ostr << "Cy"  << "\t"; 
       ostr.width(12);   
-      ostr << "Cz" << std::endl;
+      ostr << "Cz" << "\t";
+      ostr.width(12); 
+      ostr << "Fx" << "\t";
+      ostr.width(12); 
+      ostr << "Fy" << "\t";
+      ostr.width(12);
+      ostr << "Fz" << std::endl;
       ostr.close();
    }
 }
@@ -74,6 +80,9 @@ void CalculateForcesCoProcessor::collectData( double step )
       write(&ostr, C1, (char*)"\t");
       write(&ostr, C2, (char*)"\t");
       write(&ostr, C3, (char*)"\t");
+      write(&ostr, forceX1global, (char*)"\t");
+      write(&ostr, forceX2global, (char*)"\t");
+      write(&ostr, forceX3global, (char*)"\t");
       ostr << std::endl;
       ostr.close();
    }
@@ -88,7 +97,7 @@ void CalculateForcesCoProcessor::calculateForces()
    BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getTransNodeIndicesMap())
+      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
       {
          double forceX1 = 0.0;
          double forceX2 = 0.0;
@@ -98,17 +107,17 @@ void CalculateForcesCoProcessor::calculateForces()
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
          LBMKernelPtr kernel = block->getKernel();
-         BCArray3D &bcArray = kernel->getBCProcessor()->getBCArray();          
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          distributions->swap();
 
          int ghostLayerWidth = kernel->getGhostLayerWidth();
          int minX1 = ghostLayerWidth;
-         int maxX1 = (int)bcArray.getNX1() - 1 - ghostLayerWidth;
+         int maxX1 = (int)bcArray->getNX1() - 1 - ghostLayerWidth;
          int minX2 = ghostLayerWidth;
-         int maxX2 = (int)bcArray.getNX2() - 1 - ghostLayerWidth;
+         int maxX2 = (int)bcArray->getNX2() - 1 - ghostLayerWidth;
          int minX3 = ghostLayerWidth;
-         int maxX3 = (int)bcArray.getNX3() - 1 - ghostLayerWidth;
+         int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayerWidth;
 
          BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
          {
@@ -119,9 +128,9 @@ void CalculateForcesCoProcessor::calculateForces()
             //without ghost nodes
             if (x1 < minX1 || x1 > maxX1 || x2 < minX2 || x2 > maxX2 ||x3 < minX3 || x3 > maxX3 ) continue;
 
-            if(bcArray.isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
+            if(bcArray->isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
-               BoundaryConditionsPtr bc = bcArray.getBC(x1,x2,x3);
+               BoundaryConditionsPtr bc = bcArray->getBC(x1,x2,x3);
                UbTupleDouble3 forceVec = getForces(x1,x2,x3,distributions,bc);
                forceX1 += val<1>(forceVec);
                forceX2 += val<2>(forceVec);

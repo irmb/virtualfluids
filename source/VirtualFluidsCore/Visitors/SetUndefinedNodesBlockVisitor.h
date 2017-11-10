@@ -17,6 +17,6 @@ public:
    void visit(Grid3DPtr grid, Block3DPtr block);
 
 private:
-   void setNodesUndefined( int startix1, int endix1, int startix2, int endix2, int startix3, int endix3, BCArray3D& bcMatix );
+   void setNodesUndefined( int startix1, int endix1, int startix2, int endix2, int startix3, int endix3, BCArray3DPtr bcMatix );
 };
 #endif

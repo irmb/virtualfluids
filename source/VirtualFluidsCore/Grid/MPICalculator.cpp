@@ -80,10 +80,7 @@ void MPICalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             timer.resetAndStart();
 #endif
             //////////////////////////////////////////////////////////////////////////
-
-                        //applyPreCollisionBC(straightStartLevel, maxInitLevel);
-
-
+            applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
             calculateBlocks(straightStartLevel, maxInitLevel);
             ////calculateBlocks(minInitLevel, maxInitLevel, staggeredStep);
@@ -344,6 +341,18 @@ void MPICalculator::interpolation(int startLevel, int maxInitLevel)
 
 }
 //////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+void MPICalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
+{
+   //startLevel bis maxInitLevel
+   for (int level = startLevel; level<=maxInitLevel; level++)
+   {
+      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      {
+         block->getKernel()->getBCProcessor()->applyPreCollisionBC();
+      }
+   }
+}
 //////////////////////////////////////////////////////////////////////////
 void MPICalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 {

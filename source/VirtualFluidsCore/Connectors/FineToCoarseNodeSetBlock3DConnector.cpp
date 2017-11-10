@@ -101,7 +101,7 @@ void FineToCoarseNodeSetBlock3DConnector::findFCCells(int lMinX1, int lMinX2, in
    LBMReal x1off, x2off, x3off;
 
    DistributionArray3DPtr  fFrom = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getDataSet()->getFdistributions();
-   BCArray3D& bcArray = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3<=lMaxX3; ix3 += 2)
    {

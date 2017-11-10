@@ -133,7 +133,7 @@ void InSituVTKCoProcessor::addData( Block3DPtr block )
    double         dx           = grid->getDeltaX(block);
 
    LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal vx1,vx2,vx3,rho;
@@ -188,7 +188,7 @@ void InSituVTKCoProcessor::addData( Block3DPtr block )
       {
          for(size_t ix1=minX1; ix1<=maxX1; ix1++)
          {
-            if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+            if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
             {
                int index = 0;
 

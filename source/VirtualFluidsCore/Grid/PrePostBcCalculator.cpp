@@ -120,8 +120,8 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
          //      //exchange data between blocks for grid refinement
 			      ////exchangeInterfaceBlockData(straightStartLevel, maxInitLevel, true);
          //DOES NOT NEED 
-               //      if(straightStartLevel<maxInitLevel)
-         //         exchangeBlockData(straightStartLevel, maxInitLevel, true);
+                     if(straightStartLevel<maxInitLevel)
+                  exchangeBlockData(straightStartLevel, maxInitLevel);
          //         //exchangeInterfaceBlockData(straightStartLevel, maxInitLevel, true);
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING

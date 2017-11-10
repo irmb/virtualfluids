@@ -731,7 +731,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVector(Distributio
 {
 	int ix1, ix2, ix3;
 	LBMReal xoff, yoff, zoff;
-	BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+	BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
 	for (ix3=lMinX3; ix3<lMaxX3; ix3+=2)
 	{

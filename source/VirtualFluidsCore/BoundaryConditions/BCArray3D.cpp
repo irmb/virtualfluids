@@ -40,7 +40,7 @@ bool BCArray3D::validIndices(std::size_t x1, std::size_t x2, std::size_t x3)  co
    return true;
 }
 //////////////////////////////////////////////////////////////////////////
-void BCArray3D::setBC(std::size_t x1, std::size_t x2, std::size_t x3, BCClassPtr const& bc)
+void BCArray3D::setBC(std::size_t x1, std::size_t x2, std::size_t x3, BoundaryConditionsPtr const& bc)
 {
    if (this->hasBC(x1, x2, x3))
    {
@@ -160,7 +160,7 @@ std::string BCArray3D::toString() const
    for (std::size_t i = 0; i < bcvector.size(); i++) if (!bcvector[i]) unrefEntriesInBcVector++;
 
    std::stringstream text;
-   text << "BCArray<" << typeid(BCClassPtr).name() << "," << typeid(int).name() << ">";
+   text << "BCArray<" << typeid(BoundaryConditionsPtr).name() << "," << typeid(int).name() << ">";
    text << "[ entries: " << bcindexmatrix.getNX1() << "x" << bcindexmatrix.getNX2();
    text << "x" << bcindexmatrix.getNX3() << "=";
    text << bcindexmatrix.getNX1()*bcindexmatrix.getNX2()*bcindexmatrix.getNX3() << " ]:\n";
@@ -199,5 +199,5 @@ void BCArray3D::deleteBC(std::size_t x1, std::size_t x2, std::size_t x3)
       indexContainer.push_back(index);
 
       //element "loeschen"
-      bcvector[index] = BCClassPtr();
+      bcvector[index] = BoundaryConditionsPtr();
    }

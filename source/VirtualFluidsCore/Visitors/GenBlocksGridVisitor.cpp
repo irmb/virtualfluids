@@ -24,7 +24,6 @@ void GenBlocksGridVisitor::visit( const Grid3DPtr grid )
 {
    findOrigin(grid);
    UbTupleInt3 blockNX = grid->getBlockNX();
-   double blockLentghX1, blockLentghX2, blockLentghX3; 
    double dx;
    double geoMaxX1 = boundingBox->getX1Maximum();
    double geoMaxX2 = boundingBox->getX2Maximum();
