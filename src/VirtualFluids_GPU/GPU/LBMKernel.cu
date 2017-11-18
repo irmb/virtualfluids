@@ -957,6 +957,61 @@ extern "C" void KernelWaleCumOneCompSP27(unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Wale_Cum_One_Comp_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void KernelWaleCumAA2016CompSP27( unsigned int numberOfThreads,
+											 doubflo s9,
+											 unsigned int* bcMatD,
+											 unsigned int* neighborX,
+											 unsigned int* neighborY,
+											 unsigned int* neighborZ,
+											 unsigned int* neighborWSB,
+											 doubflo* veloX,
+											 doubflo* veloY,
+											 doubflo* veloZ,
+											 doubflo* DD,
+											 doubflo* turbulentViscosity,
+											 int size_Mat,
+											 int size_Array,
+											 int level,
+											 doubflo* forces,
+											 bool EvenOrOdd)
+{
+	//int Grid = size_Array / numberOfThreads;
+	//dim3 grid(Grid, 1, 1);
+	//dim3 threads(numberOfThreads, 1, 1 );
+
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LB_Kernel_Wale_Cum_AA2016_Comp_SP_27 <<< grid, threads >>>( s9,
+																bcMatD,
+																neighborX,
+																neighborY,
+																neighborZ,
+																neighborWSB,
+																veloX,
+																veloY,
+																veloZ,
+																DD,
+																turbulentViscosity,
+																size_Mat,
+																level,
+																forces,
+																EvenOrOdd); 
+		getLastCudaError("LB_Kernel_Wale_Cum_AA2016_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void KernelThS7(unsigned int numberOfThreads, 
                            doubflo diffusivity,
                            unsigned int* bcMatD,

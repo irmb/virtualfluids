@@ -3401,9 +3401,9 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_SP_27( doubflo omega,
 			doubflo fx = forces[0]/(pow(two,level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
 			doubflo fy = forces[1]/(pow(two,level)); //zero;
 			doubflo fz = forces[2]/(pow(two,level)); //zero;
-			vvx += fx;
-			vvy += fy;
-			vvz += fz;
+			vvx += fx*c1o2;
+			vvy += fy*c1o2;
+			vvz += fz*c1o2;
 			////////////////////////////////////////////////////////////////////////////////////
 			//doubflo omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -9947,9 +9947,9 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(doubflo omega,
 			doubflo fx = forces[0]/(pow(two,level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
 			doubflo fy = forces[1]/(pow(two,level)); //zero;
 			doubflo fz = forces[2]/(pow(two,level)); //zero;
-			vvx += fx;
-			vvy += fy;
-			vvz += fz;
+			vvx += fx*c1o2;
+			vvy += fy*c1o2;
+			vvz += fz*c1o2;
 			////////////////////////////////////////////////////////////////////////////////////
 			//doubflo omega = omega_in;
 			////////////////////////////////////////////////////////////////////////////////////

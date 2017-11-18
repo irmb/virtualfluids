@@ -1695,20 +1695,20 @@ extern "C" __global__ void LBCalcMacMedSP27( doubflo* vxD,
 
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LBCalcMeasurePoints( doubflo* vxMP,
-												            doubflo* vyMP,
-												            doubflo* vzMP,
-												            doubflo* rhoMP,
-												            unsigned int* kMP,
-												            unsigned int numberOfPointskMP,
-												            unsigned int MPClockCycle,
-												            unsigned int t,
-												            unsigned int* geoD,
-												            unsigned int* neighborX,
-												            unsigned int* neighborY,
-												            unsigned int* neighborZ,
-												            unsigned int size_Mat,
-												            doubflo* DD,
-												            bool evenOrOdd)
+												doubflo* vyMP,
+												doubflo* vzMP,
+												doubflo* rhoMP,
+												unsigned int* kMP,
+												unsigned int numberOfPointskMP,
+												unsigned int MPClockCycle,
+												unsigned int t,
+												unsigned int* geoD,
+												unsigned int* neighborX,
+												unsigned int* neighborY,
+												unsigned int* neighborZ,
+												unsigned int size_Mat,
+												doubflo* DD,
+												bool evenOrOdd)
 {
 	Distributions27 D;
 	if (evenOrOdd==true)

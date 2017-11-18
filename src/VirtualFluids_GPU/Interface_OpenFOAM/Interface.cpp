@@ -86,9 +86,12 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		para->cudaAllocCoord(i);
 		para->cudaAllocSP(i);
-		if (para->getCalcMedian()) 	                       para->cudaAllocMedianSP(i);
-		if (para->getCalcParticle() || para->getUseWale()) para->cudaAllocNeighborWSB(i);
-		if (para->getUseWale())                            para->cudaAllocTurbulentViscosity(i);
+		if (para->getCalcMedian()) 	                       
+			para->cudaAllocMedianSP(i);
+		if (para->getCalcParticle() || para->getUseWale()) 
+			para->cudaAllocNeighborWSB(i);
+		if (para->getUseWale())                            
+			para->cudaAllocTurbulentViscosity(i);
 		//cout <<"Test 2 " <<endl;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		coordX->initArrayCoord(para->getParH(i)->coordX_SP, i);

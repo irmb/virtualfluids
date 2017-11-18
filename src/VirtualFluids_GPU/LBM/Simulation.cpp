@@ -565,7 +565,27 @@ void Simulation::run()
 									 0,
 									 para->getForcesDev(),
 									 para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelCasSPKum27 execution failed");
+			getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
+
+			//KernelWaleCumAA2016CompSP27(para->getParD(0)->numberofthreads,
+			//							para->getParD(0)->omega,			
+			//							para->getParD(0)->geoSP, 
+			//							para->getParD(0)->neighborX_SP, 
+			//							para->getParD(0)->neighborY_SP, 
+			//							para->getParD(0)->neighborZ_SP,
+			//							para->getParD(0)->neighborWSB_SP,
+			//							para->getParD(0)->vx_SP,        
+			//							para->getParD(0)->vy_SP,        
+			//							para->getParD(0)->vz_SP,        
+			//							para->getParD(0)->d0SP.f[0],
+			//							para->getParD(0)->turbViscosity,
+			//							para->getParD(0)->size_Mat_SP,
+			//							para->getParD(0)->size_Array_SP,
+			//							0,
+			//							para->getForcesDev(),
+			//							para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
+
 		} 
 		else
 		{
@@ -582,6 +602,20 @@ void Simulation::run()
 								 para->getForcesDev(),
 								 para->getParD(0)->evenOrOdd); 
 			getLastCudaError("KernelCasSPKum27 execution failed");
+
+			//KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
+			//					 para->getParD(0)->omega, 
+			//					 para->getParD(0)->geoSP, 
+			//					 para->getParD(0)->neighborX_SP, 
+			//					 para->getParD(0)->neighborY_SP, 
+			//					 para->getParD(0)->neighborZ_SP,
+			//					 para->getParD(0)->d0SP.f[0],    
+			//					 para->getParD(0)->size_Mat_SP,
+			//					 0,
+			//					 para->getForcesDev(),
+			//					 para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+
 		}
 
 
@@ -1331,7 +1365,7 @@ void Simulation::run()
 		} 
 		  //////////////////////////////////////////////////////////////////////////////////
 		  //calculate the new forcing
-		  if (((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut()))
+		  if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
 		  {
 			  forceCalculator->calcPIDControllerForForce(para);
 		  }
@@ -1939,12 +1973,12 @@ void Simulation::run()
 			  for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
 			  {
 				  //output << "start level = " << lev << "\n";
-				  LBCalcMeasurePoints27(para->getParD(lev)->VxMP, para->getParD(lev)->VyMP, para->getParD(lev)->VzMP,
-					  para->getParD(lev)->RhoMP, para->getParD(lev)->kMP, para->getParD(lev)->numberOfPointskMP,
-					  valuesPerClockCycle, t_MP, para->getParD(lev)->geoSP,
-					  para->getParD(lev)->neighborX_SP, para->getParD(lev)->neighborY_SP, para->getParD(lev)->neighborZ_SP,
-					  para->getParD(lev)->size_Mat_SP, para->getParD(lev)->d0SP.f[0], para->getParD(lev)->numberofthreads,
-					  para->getParD(lev)->evenOrOdd);
+				  LBCalcMeasurePoints27(  para->getParD(lev)->VxMP,			para->getParD(lev)->VyMP,			para->getParD(lev)->VzMP,
+										  para->getParD(lev)->RhoMP,		para->getParD(lev)->kMP,			para->getParD(lev)->numberOfPointskMP,
+										  valuesPerClockCycle,				t_MP,								para->getParD(lev)->geoSP,
+										  para->getParD(lev)->neighborX_SP, para->getParD(lev)->neighborY_SP,	para->getParD(lev)->neighborZ_SP,
+										  para->getParD(lev)->size_Mat_SP,	para->getParD(lev)->d0SP.f[0],		para->getParD(lev)->numberofthreads,
+										  para->getParD(lev)->evenOrOdd);
 			  }
 			  t_MP++;
 		  }
@@ -1961,6 +1995,7 @@ void Simulation::run()
 				  {
 					  MeasurePointWriter::writeMeasurePoints(para, lev, j, t);
 				  }
+				  MeasurePointWriter::calcAndWriteMeanAndFluctuations(para, lev, t, para->getTStartOut());
 			  }
 			  t_MP = 0;
 		  }
@@ -2024,7 +2059,7 @@ void Simulation::run()
       // File IO
       ////////////////////////////////////////////////////////////////////////////////
       //comm->startTimer();
-      if(para->getTOut()>0 && t%para->getTOut()==0 && t>para->getStartTurn())
+      if(para->getTOut()>0 && t%para->getTOut()==0 && t>para->getTStartOut())
       {
 		  //////////////////////////////////////////////////////////////////////////////////
 		  //if (para->getParD(0)->evenOrOdd==true)  para->getParD(0)->evenOrOdd=false;

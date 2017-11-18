@@ -187,6 +187,8 @@ void writeTimestep(Parameter* para, unsigned int t)
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (para->getUseWale())    para->cudaCopyTurbulentViscosityDH(lev);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		const unsigned int numberOfParts = para->getParH(lev)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
 		std::vector<std::string> fname;
 		std::vector<std::string> fname_med;
@@ -240,8 +242,14 @@ void writeTimestep(Parameter* para, unsigned int t)
 			//UnstrucuredGridWriter::writeUnstrucuredGridBig(para, lev, ffname_bin, ffname_bin2);
 
 
-
-			UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+			if (para->getUseWale())
+			{
+				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+			}
+			else
+			{
+				UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+			}
 
 			//2nd and 3rd Moments
 			if (para->getCalc2ndOrderMoments())  UnstrucuredGridWriter::writeUnstrucuredGridEff2ndMomentsLT(para, lev, fname2ndMoments);

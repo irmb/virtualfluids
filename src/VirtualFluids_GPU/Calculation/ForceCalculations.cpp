@@ -17,8 +17,8 @@ ForceCalculations::ForceCalculations(Parameter* para)
 
 	Kpcrit = 3.0 / Ta;// 0.3;
 	Tcrit = 3.0 * Ta; // 30.0;
-	Tn = 0.5 * Tcrit;
-	Tv = 0.12 * Tcrit;
+	Tn = 0.5 * Tcrit; //1.0 * Tcrit; //0.5 * Tcrit;
+	Tv = 0.12 * Tcrit; //0.24 * Tcrit; //0.12 * Tcrit;
 
 	Kp = 0.6 * Kpcrit;
 	Ki = Kp / Tn;

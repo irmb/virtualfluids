@@ -571,7 +571,7 @@ void Parameter::cudaAllocTurbulentViscosity(int lev)
 	//Device						 
 	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->turbViscosity), parD[lev]->mem_size_doubflo_SP));
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (double)parH[lev]->mem_size_int_SP;
+	double tmp = (double)parH[lev]->mem_size_doubflo_SP;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyTurbulentViscosityHD(int lev)
