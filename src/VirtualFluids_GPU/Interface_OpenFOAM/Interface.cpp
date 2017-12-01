@@ -981,7 +981,7 @@ void Interface::allocArrays_BoundaryValues(Parameter* para) {
 				//para->getParH(i)->Qinflow.Vx[m] = para->getParH(i)->Qinflow.Vx[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
-				para->getParH(i)->Qinflow.Vx[m] = 0.0; //para->getVelocity();//0.035;
+				para->getParH(i)->Qinflow.Vx[m] = para->getVelocity();//0.035;
 				para->getParH(i)->Qinflow.Vy[m] = 0.0;//para->getVelocity();//0.0;
 				para->getParH(i)->Qinflow.Vz[m] = 0.0;
 				//if (para->getParH(i)->Qinflow.Vz[m] > 0)

@@ -278,6 +278,21 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega,
 																 doubflo* forces,
 																 bool EvenOrOdd);
 
+extern "C" __global__ void LB_Kernel_PM_Cum_One_Comp_SP_27( doubflo omega,
+															unsigned int* bcMatD,
+															unsigned int* neighborX,
+															unsigned int* neighborY,
+															unsigned int* neighborZ,
+															doubflo* DDStart,
+															int size_Mat,
+															int level,
+															doubflo* forces,
+															doubflo porosity,
+															doubflo darcy,
+															doubflo forchheimer,
+															unsigned int porousMedia,
+															bool EvenOrOdd);
+
 extern "C" __global__ void LB_Kernel_ThS7(doubflo diffusivity,
                                           unsigned int* bcMatD,
                                           unsigned int* neighborX,

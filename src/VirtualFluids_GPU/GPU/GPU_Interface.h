@@ -311,6 +311,22 @@ extern "C" void KernelWaleCumAA2016CompSP27( unsigned int numberOfThreads,
 											 doubflo* forces,
 											 bool EvenOrOdd);
 
+extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads, 
+									   doubflo omega,
+									   unsigned int* bcMatD,
+									   unsigned int* neighborX,
+									   unsigned int* neighborY,
+									   unsigned int* neighborZ,
+									   doubflo* DD,
+									   int size_Mat,
+									   int level,
+									   doubflo* forces,
+									   doubflo porosity,
+									   doubflo darcy,
+									   doubflo forchheimer,
+									   unsigned int porousMedia,
+									   bool EvenOrOdd);
+
 extern "C" void KernelThS7(unsigned int numberOfThreads, 
                            doubflo diffusivity,
                            unsigned int* bcMatD,

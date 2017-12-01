@@ -957,6 +957,54 @@ extern "C" void KernelWaleCumOneCompSP27(unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Wale_Cum_One_Comp_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads, 
+									   doubflo omega,
+									   unsigned int* bcMatD,
+									   unsigned int* neighborX,
+									   unsigned int* neighborY,
+									   unsigned int* neighborZ,
+									   doubflo* DD,
+									   int size_Mat,
+									   int level,
+									   doubflo* forces,
+									   doubflo porosity,
+									   doubflo darcy,
+									   doubflo forchheimer,
+									   unsigned int porousMedia,
+									   bool EvenOrOdd)
+{
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid, threads >>>(omega,
+														  bcMatD,
+														  neighborX,
+														  neighborY,
+														  neighborZ,
+														  DD,
+														  size_Mat,
+														  level,
+														  forces,
+														  porosity,
+														  darcy,
+														  forchheimer,
+														  porousMedia,
+														  EvenOrOdd); 
+	getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void KernelWaleCumAA2016CompSP27( unsigned int numberOfThreads,
 											 doubflo s9,
 											 unsigned int* bcMatD,

@@ -4,6 +4,7 @@
 #include <vector>
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
+#include "Calculation/PorousMedia.h"
 //#include "Output/LogWriter.hpp"
 //#include "boost/serialization/serialization.hpp"
 //#include "boost/serialization/vector.hpp"
@@ -447,6 +448,14 @@ public:
 	void cudaFreeParticles(int lev);
 	//random value
 	void cudaAllocRandomValues();
+	//////////////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//Porous Media
+	void cudaAllocPorousMedia(PorousMedia* pm, int pmID, int lev);
+	void cudaCopyPorousMedia(PorousMedia* pm, int pmID, int lev);
+	void cudaFreePorousMedia(PorousMedia* pm, int pmID, int lev);
 	//////////////////////////////////////////////////////////////////////////
 
 

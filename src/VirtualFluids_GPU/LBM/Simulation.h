@@ -6,6 +6,7 @@
 #include "Utilities/Buffer2D.hpp"
 //#include "Input/ConfigFile.h"
 #include "Calculation/ForceCalculations.h"
+#include "Calculation/PorousMedia.h"
 #include "Parameter/Parameter.h"
 #include "Restart/RestartPostprocessor.h"
 #include "Restart/RestartObject.h"
@@ -22,6 +23,7 @@ public:
 	void run();
 	void init(std::string &cstr);
 	void bulk();
+	void porousMedia();
 protected:
 
 	Buffer2D <doubflo> sbuf_t; 
@@ -47,6 +49,11 @@ protected:
 
 	//Forcing Calculation
 	ForceCalculations* forceCalculator;
+
+	//Porous Media
+	PorousMedia* pm0;
+	PorousMedia* pm1;
+	PorousMedia* pm2;
 
 	//KQ - Schlaff
 	unsigned int            kNQ, kSQ, kEQ, kWQ;

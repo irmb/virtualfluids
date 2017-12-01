@@ -1966,6 +1966,40 @@ void Parameter::cudaAllocRandomValues()
 	checkCudaErrors( cudaMalloc((void**)&(this->devState), (sizeof(curandState)*parD[getFine()]->plp.numberOfParticles) ));
 }
 //////////////////////////////////////////////////////////////////////////
+//porous media
+void Parameter::cudaAllocPorousMedia(PorousMedia* pm, int pmID, int lev)
+{
+	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm[pmID].getSizePM();
+	unsigned int *tmpIDHost, *tmpIDDevice;
+
+	//Host
+	checkCudaErrors(cudaMallocHost((void**) &(tmpIDHost), mem_size_IDsPM));
+
+	//Device
+	checkCudaErrors(cudaMalloc((void**) &(tmpIDDevice), mem_size_IDsPM));
+
+	//////////////////////////////////////////////////////////////////////////
+	pm[pmID].setHostNodeIDsPM(tmpIDHost);
+	pm[pmID].setDeviceNodeIDsPM(tmpIDDevice);
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)mem_size_IDsPM;
+	setMemsizeGPU(tmp, false);
+}
+void Parameter::cudaCopyPorousMedia(PorousMedia* pm, int pmID, int lev)
+{
+	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm[pmID].getSizePM();
+	unsigned int *tmpIDHost   = pm[pmID].getHostNodeIDsPM();
+	unsigned int *tmpIDDevice = pm[pmID].getDeviceNodeIDsPM();
+	//////////////////////////////////////////////////////////////////////////
+	checkCudaErrors(cudaMemcpy(tmpIDDevice, tmpIDHost, mem_size_IDsPM, cudaMemcpyHostToDevice));
+	//////////////////////////////////////////////////////////////////////////
+	pm[pmID].setDeviceNodeIDsPM(tmpIDDevice);
+}
+void Parameter::cudaFreePorousMedia(PorousMedia* pm, int pmID, int lev)
+{
+	checkCudaErrors(cudaFreeHost(pm[pmID].getHostNodeIDsPM()));
+}
+//////////////////////////////////////////////////////////////////////////
 //advection diffusion
 void Parameter::cudaAllocConc(int lev)
 {

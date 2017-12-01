@@ -6,6 +6,13 @@
 #define GEO_VELO         2
 #define GEO_PRESS        4
 
+//////////////////////////
+//porous media
+#define GEO_PM_0		 5
+#define GEO_PM_1		 6
+#define GEO_PM_2		 7
+//////////////////////////
+
 #define GEO_SOLID       15
 #define GEO_VOID        16
 
