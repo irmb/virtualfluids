@@ -19,7 +19,7 @@ PorousMedia::PorousMedia()
 	setCoordinatesToZero();
 }
 
-PorousMedia::PorousMedia(double porosity, unsigned int geoID, double darcySI, double forchheimerSI, double dxLBM, double dtLBM)
+PorousMedia::PorousMedia(double porosity, unsigned int geoID, double darcySI, double forchheimerSI, double dxLBM, double dtLBM, unsigned int level)
 {
 	this->porosity = porosity;
 	this->geoID = geoID;
@@ -27,8 +27,9 @@ PorousMedia::PorousMedia(double porosity, unsigned int geoID, double darcySI, do
 	this->forchheimerSI = forchheimerSI;
 	this->dxLBM = dxLBM;
 	this->dtLBM = dtLBM;
-	this->forchheimerLBM = this->forchheimerSI * this->dtLBM;
-	this->darcyLBM = this->darcySI * this->dxLBM * this->dxLBM;
+	this->forchheimerLBM = this->forchheimerSI * this->dxLBM;
+	this->darcyLBM = this->darcySI * this->dtLBM;
+	this->level = level;
 	setCoordinatesToZero();
 }
 
@@ -66,6 +67,11 @@ void PorousMedia::setDeviceNodeIDsPM(unsigned int* deviceNodeIDsPM)
 	this->deviceNodeIDsPM = deviceNodeIDsPM;
 }
 
+void PorousMedia::setSizePM(unsigned int sizePM)
+{
+	this->sizePM = sizePM;
+}
+
 //void PorousMedia::definePMarea(Parameter* para, unsigned int level)
 //{
 //	unsigned int counter = 0;
@@ -99,5 +105,13 @@ double PorousMedia::getDarcyLBM() {					return this->darcyLBM; }
 double PorousMedia::getForchheimerLBM() {			return this->forchheimerLBM; }
 unsigned int PorousMedia::getGeoID() {				return this->geoID; }
 unsigned int PorousMedia::getSizePM() {				return this->sizePM; }
+unsigned int PorousMedia::getLevelPM() {			return this->level; }
 unsigned int* PorousMedia::getHostNodeIDsPM() {		return this->hostNodeIDsPM; }
 unsigned int* PorousMedia::getDeviceNodeIDsPM() {	return this->deviceNodeIDsPM; }
+double PorousMedia::getStartX(){					return this->startCoordX; }
+double PorousMedia::getStartY(){					return this->startCoordY; }
+double PorousMedia::getStartZ(){					return this->startCoordZ; }
+double PorousMedia::getEndX(){						return this->endCoordX; }
+double PorousMedia::getEndY(){						return this->endCoordY; }
+double PorousMedia::getEndZ(){						return this->endCoordZ; }
+

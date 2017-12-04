@@ -80,6 +80,10 @@ void writeInit(Parameter* para)
 			{
 				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
 			}
+			else if (para->getSimulatePorousMedia())
+			{
+				UnstrucuredGridWriter::writeUnstrucuredGridPM(para, lev, fname);
+			}
 			else
 			{
 				UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
@@ -245,6 +249,10 @@ void writeTimestep(Parameter* para, unsigned int t)
 			if (para->getUseWale())
 			{
 				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+			}
+			else if (para->getSimulatePorousMedia())
+			{
+				UnstrucuredGridWriter::writeUnstrucuredGridPM(para, lev, fname);
 			}
 			else
 			{

@@ -184,6 +184,16 @@ void Simulation::init(std::string &cstr)
    }
 
    //////////////////////////////////////////////////////////////////////////
+   //Porous Media
+   //////////////////////////////////////////////////////////////////////////
+   if (para->getSimulatePorousMedia())
+   {
+	   output << "define area(s) of porous media...";
+	   porousMedia();
+	   output << "done.\n";
+   }
+
+   //////////////////////////////////////////////////////////////////////////
    //enSightGold
    //////////////////////////////////////////////////////////////////////////
    //excludeGridInterfaceNodesForMirror(para, 7);
@@ -545,100 +555,105 @@ void Simulation::run()
 		 //getLastCudaError("KernelCasSPKum27 execution failed");
 		 //////////////////////////////////////////////////////////////////////////
 
-		////////////////////////////////////////////////////////////////////////////
-		////Wale 
-		//if (para->getUseWale())
-		//{
-		//	KernelWaleCumOneCompSP27(para->getParD(0)->numberofthreads,
-		//							 para->getParD(0)->omega,			
-		//							 para->getParD(0)->geoSP, 
-		//							 para->getParD(0)->neighborX_SP, 
-		//							 para->getParD(0)->neighborY_SP, 
-		//							 para->getParD(0)->neighborZ_SP,
-		//							 para->getParD(0)->neighborWSB_SP,
-		//						     para->getParD(0)->vx_SP,        
-		//						     para->getParD(0)->vy_SP,        
-		//						     para->getParD(0)->vz_SP,        
-		//							 para->getParD(0)->d0SP.f[0],
-		//							 para->getParD(0)->turbViscosity,
-		//							 para->getParD(0)->size_Mat_SP,
-		//							 para->getParD(0)->size_Array_SP,
-		//							 0,
-		//							 para->getForcesDev(),
-		//							 para->getParD(0)->evenOrOdd); 
-		//	getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
+		//////////////////////////////////////////////////////////////////////////
+		//Wale 
+		if (para->getUseWale())
+		{
+			KernelWaleCumOneCompSP27(para->getParD(0)->numberofthreads,
+									 para->getParD(0)->omega,			
+									 para->getParD(0)->geoSP, 
+									 para->getParD(0)->neighborX_SP, 
+									 para->getParD(0)->neighborY_SP, 
+									 para->getParD(0)->neighborZ_SP,
+									 para->getParD(0)->neighborWSB_SP,
+								     para->getParD(0)->vx_SP,        
+								     para->getParD(0)->vy_SP,        
+								     para->getParD(0)->vz_SP,        
+									 para->getParD(0)->d0SP.f[0],
+									 para->getParD(0)->turbViscosity,
+									 para->getParD(0)->size_Mat_SP,
+									 para->getParD(0)->size_Array_SP,
+									 0,
+									 para->getForcesDev(),
+									 para->getParD(0)->evenOrOdd); 
+			getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
 
-		//	//KernelWaleCumAA2016CompSP27(para->getParD(0)->numberofthreads,
-		//	//							para->getParD(0)->omega,			
-		//	//							para->getParD(0)->geoSP, 
-		//	//							para->getParD(0)->neighborX_SP, 
-		//	//							para->getParD(0)->neighborY_SP, 
-		//	//							para->getParD(0)->neighborZ_SP,
-		//	//							para->getParD(0)->neighborWSB_SP,
-		//	//							para->getParD(0)->vx_SP,        
-		//	//							para->getParD(0)->vy_SP,        
-		//	//							para->getParD(0)->vz_SP,        
-		//	//							para->getParD(0)->d0SP.f[0],
-		//	//							para->getParD(0)->turbViscosity,
-		//	//							para->getParD(0)->size_Mat_SP,
-		//	//							para->getParD(0)->size_Array_SP,
-		//	//							0,
-		//	//							para->getForcesDev(),
-		//	//							para->getParD(0)->evenOrOdd); 
-		//	//getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
+			//KernelWaleCumAA2016CompSP27(para->getParD(0)->numberofthreads,
+			//							para->getParD(0)->omega,			
+			//							para->getParD(0)->geoSP, 
+			//							para->getParD(0)->neighborX_SP, 
+			//							para->getParD(0)->neighborY_SP, 
+			//							para->getParD(0)->neighborZ_SP,
+			//							para->getParD(0)->neighborWSB_SP,
+			//							para->getParD(0)->vx_SP,        
+			//							para->getParD(0)->vy_SP,        
+			//							para->getParD(0)->vz_SP,        
+			//							para->getParD(0)->d0SP.f[0],
+			//							para->getParD(0)->turbViscosity,
+			//							para->getParD(0)->size_Mat_SP,
+			//							para->getParD(0)->size_Array_SP,
+			//							0,
+			//							para->getForcesDev(),
+			//							para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
 
-		//} 
-		//else
-		//{
-		//	KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
-		//						 para->getParD(0)->omega,			
-		//						 para->getParD(0)->geoSP, 
-		//						 para->getParD(0)->neighborX_SP, 
-		//						 para->getParD(0)->neighborY_SP, 
-		//						 para->getParD(0)->neighborZ_SP,
-		//						 para->getParD(0)->d0SP.f[0],    
-		//						 para->getParD(0)->size_Mat_SP,
-		//						 para->getParD(0)->size_Array_SP,
-		//						 0,
-		//						 para->getForcesDev(),
-		//						 para->getParD(0)->evenOrOdd); 
-		//	getLastCudaError("KernelCasSPKum27 execution failed");
+		} 
+		else
+		{
+			KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
+								 para->getParD(0)->omega,			
+								 para->getParD(0)->geoSP, 
+								 para->getParD(0)->neighborX_SP, 
+								 para->getParD(0)->neighborY_SP, 
+								 para->getParD(0)->neighborZ_SP,
+								 para->getParD(0)->d0SP.f[0],    
+								 para->getParD(0)->size_Mat_SP,
+								 para->getParD(0)->size_Array_SP,
+								 0,
+								 para->getForcesDev(),
+								 para->getParD(0)->evenOrOdd); 
+			getLastCudaError("KernelCasSPKum27 execution failed");
 
-		//	//KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
-		//	//					 para->getParD(0)->omega, 
-		//	//					 para->getParD(0)->geoSP, 
-		//	//					 para->getParD(0)->neighborX_SP, 
-		//	//					 para->getParD(0)->neighborY_SP, 
-		//	//					 para->getParD(0)->neighborZ_SP,
-		//	//					 para->getParD(0)->d0SP.f[0],    
-		//	//					 para->getParD(0)->size_Mat_SP,
-		//	//					 0,
-		//	//					 para->getForcesDev(),
-		//	//					 para->getParD(0)->evenOrOdd); 
-		//	//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+			//KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
+			//					 para->getParD(0)->omega, 
+			//					 para->getParD(0)->geoSP, 
+			//					 para->getParD(0)->neighborX_SP, 
+			//					 para->getParD(0)->neighborY_SP, 
+			//					 para->getParD(0)->neighborZ_SP,
+			//					 para->getParD(0)->d0SP.f[0],    
+			//					 para->getParD(0)->size_Mat_SP,
+			//					 0,
+			//					 para->getForcesDev(),
+			//					 para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
 
-		//}
-		////////////////////////////////////////////////////////////////////////////
+		}
+		//////////////////////////////////////////////////////////////////////////
 
 
 		//////////////////////////////////////////////////////////////////////////
 		//porous media
-		KernelPMCumOneCompSP27( para->getParD(0)->numberofthreads,
-								para->getParD(0)->omega,			
-								para->getParD(0)->geoSP, 
-								para->getParD(0)->neighborX_SP, 
-								para->getParD(0)->neighborY_SP, 
-								para->getParD(0)->neighborZ_SP,
-								para->getParD(0)->d0SP.f[0],    
-								para->getParD(0)->size_Mat_SP,
-								0,
-								para->getForcesDev(),
-								0.5,
-								134.4,
-								0.0068287,
-								GEO_PM_1,
-								para->getParD(0)->evenOrOdd); 
-		getLastCudaError("KernelPMCumOneCompSP27 execution failed");
+		if (para->getSimulatePorousMedia())
+		{
+			KernelPMCumOneCompSP27( para->getParD(0)->numberofthreads,
+									para->getParD(0)->omega,			
+									para->getParD(0)->geoSP, 
+									para->getParD(0)->neighborX_SP, 
+									para->getParD(0)->neighborY_SP, 
+									para->getParD(0)->neighborZ_SP,
+									para->getParD(0)->d0SP.f[0],    
+									para->getParD(0)->size_Mat_SP,
+									0,
+									para->getForcesDev(),
+									pm0->getPorosity(),
+									pm0->getDarcyLBM(),
+									pm0->getForchheimerLBM(),
+									pm0->getGeoID(),
+									para->getParD(0)->evenOrOdd); 
+			getLastCudaError("KernelPMCumOneCompSP27 execution failed");
+		}
+		//////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -2608,7 +2623,60 @@ void Simulation::run()
 void Simulation::porousMedia()
 {
 	//Kondensator = porous media 0
-	double porosity = 0.5;
-	//pm0 = new PorousMedia(porosity, GEO_PM_0,)
+	double porosity = 0.7;
+	double darcySI = 137.36; //[1/s]
+	double forchheimerSI = 1037.8; //[1/m]
+	double dxLBM = 0.0004;
+	double dtLBM = 0.000007;
+	unsigned int level = 0;
+	output << "\nnew instance of PM \n";
+	pm0 = new PorousMedia(porosity, GEO_PM_0, darcySI, forchheimerSI, dxLBM, dtLBM, level);
+	output << "setStartCoordinates \n";
+	pm0->setStartCoordinates(20, 0, 0);
+	output << "setEndCoordinates \n";
+	pm0->setEndCoordinates(40, 20, 20);
+	output << "definePMarea \n";
+	definePMarea(pm0);
+}
+void Simulation::definePMarea(PorousMedia* pm)
+{
+	unsigned int counter = 0;
+	unsigned int level = pm->getLevelPM();
+	std::vector< unsigned int > nodeIDsPorousMedia;
+	output << "definePMarea....find nodes \n";
 
+	for (unsigned int i = 0; i < para->getParH(level)->size_Mat_SP; i++)
+	{
+		//output << "definePMarea....find nodes...for loop \n";
+		if (((para->getParH(level)->coordX_SP[i] >= pm->getStartX()) && (para->getParH(level)->coordX_SP[i] <= pm->getEndX())) &&
+			((para->getParH(level)->coordY_SP[i] >= pm->getStartY()) && (para->getParH(level)->coordY_SP[i] <= pm->getEndY())) &&
+			((para->getParH(level)->coordZ_SP[i] >= pm->getStartZ()) && (para->getParH(level)->coordZ_SP[i] <= pm->getEndZ())) )
+		{
+			//output << "definePMarea....find nodes...if area \n";
+			if (para->getParH(level)->geoSP[i] >= GEO_FLUID)
+			{
+				//output << "definePMarea....find nodes...if area and fluid \n";
+				para->getParH(level)->geoSP[i] = pm->getGeoID();
+				nodeIDsPorousMedia.push_back(i);
+				counter++;
+			}
+		}
+	}
+
+	output << "definePMarea....cuda alloc \n";
+	pm->setSizePM(counter);
+	para->cudaAllocPorousMedia(pm0, level);
+	unsigned int *tpmArrayIDs = pm->getHostNodeIDsPM();
+
+	output << "definePMarea....copy vector to array \n";
+	for (unsigned int j = 0; j <= pm->getSizePM(); j++)
+	{
+		tpmArrayIDs[j] = nodeIDsPorousMedia[j];
+	}
+
+	output << "definePMarea....setHostNodeIDsPM \n";
+	pm->setHostNodeIDsPM(tpmArrayIDs);
+
+	output << "definePMarea....cudaCopyPorousMedia \n";
+	para->cudaCopyPorousMedia(pm, level);
 }

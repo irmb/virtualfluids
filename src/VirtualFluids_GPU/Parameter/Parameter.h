@@ -453,9 +453,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//Porous Media
-	void cudaAllocPorousMedia(PorousMedia* pm, int pmID, int lev);
-	void cudaCopyPorousMedia(PorousMedia* pm, int pmID, int lev);
-	void cudaFreePorousMedia(PorousMedia* pm, int pmID, int lev);
+	void cudaAllocPorousMedia(PorousMedia* pm, int lev);
+	void cudaCopyPorousMedia(PorousMedia* pm, int lev);
+	void cudaFreePorousMedia(PorousMedia* pm, int lev);
 	//////////////////////////////////////////////////////////////////////////
 
 
@@ -662,6 +662,7 @@ public:
 	void setConcFile(bool concFile);
 	void setUseMeasurePoints(bool useMeasurePoints);
 	void setUseWale(bool useWale);
+	void setSimulatePorousMedia(bool simulatePorousMedia);
 	void setclockCycleForMP(doubflo clockCycleForMP);
 	void setDevices(std::vector<int> devices);
 	void setGridX(std::vector<int> GridX);
@@ -890,6 +891,7 @@ public:
 	bool getConcFile();
 	bool getUseMeasurePoints();
 	bool getUseWale();
+	bool getSimulatePorousMedia();
 	double getMemsizeGPU();
 	//1D domain decomposition
 	std::vector<std::string> getPossNeighborFiles(std::string sor);

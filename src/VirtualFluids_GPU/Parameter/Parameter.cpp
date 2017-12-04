@@ -1967,9 +1967,9 @@ void Parameter::cudaAllocRandomValues()
 }
 //////////////////////////////////////////////////////////////////////////
 //porous media
-void Parameter::cudaAllocPorousMedia(PorousMedia* pm, int pmID, int lev)
+void Parameter::cudaAllocPorousMedia(PorousMedia* pm, int lev)
 {
-	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm[pmID].getSizePM();
+	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm->getSizePM();
 	unsigned int *tmpIDHost, *tmpIDDevice;
 
 	//Host
@@ -1979,25 +1979,25 @@ void Parameter::cudaAllocPorousMedia(PorousMedia* pm, int pmID, int lev)
 	checkCudaErrors(cudaMalloc((void**) &(tmpIDDevice), mem_size_IDsPM));
 
 	//////////////////////////////////////////////////////////////////////////
-	pm[pmID].setHostNodeIDsPM(tmpIDHost);
-	pm[pmID].setDeviceNodeIDsPM(tmpIDDevice);
+	pm->setHostNodeIDsPM(tmpIDHost);
+	pm->setDeviceNodeIDsPM(tmpIDDevice);
 	//////////////////////////////////////////////////////////////////////////
 	double tmp = (double)mem_size_IDsPM;
 	setMemsizeGPU(tmp, false);
 }
-void Parameter::cudaCopyPorousMedia(PorousMedia* pm, int pmID, int lev)
+void Parameter::cudaCopyPorousMedia(PorousMedia* pm, int lev)
 {
-	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm[pmID].getSizePM();
-	unsigned int *tmpIDHost   = pm[pmID].getHostNodeIDsPM();
-	unsigned int *tmpIDDevice = pm[pmID].getDeviceNodeIDsPM();
+	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm->getSizePM();
+	unsigned int *tmpIDHost   = pm->getHostNodeIDsPM();
+	unsigned int *tmpIDDevice = pm->getDeviceNodeIDsPM();
 	//////////////////////////////////////////////////////////////////////////
 	checkCudaErrors(cudaMemcpy(tmpIDDevice, tmpIDHost, mem_size_IDsPM, cudaMemcpyHostToDevice));
 	//////////////////////////////////////////////////////////////////////////
-	pm[pmID].setDeviceNodeIDsPM(tmpIDDevice);
+	pm->setDeviceNodeIDsPM(tmpIDDevice);
 }
-void Parameter::cudaFreePorousMedia(PorousMedia* pm, int pmID, int lev)
+void Parameter::cudaFreePorousMedia(PorousMedia* pm, int lev)
 {
-	checkCudaErrors(cudaFreeHost(pm[pmID].getHostNodeIDsPM()));
+	checkCudaErrors(cudaFreeHost(pm->getHostNodeIDsPM()));
 }
 //////////////////////////////////////////////////////////////////////////
 //advection diffusion
@@ -2870,6 +2870,10 @@ void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 void Parameter::setUseWale(bool useWale)
 {
 	ic.isWale = useWale;
+}
+void Parameter::setSimulatePorousMedia(bool simulatePorousMedia)
+{
+	ic.simulatePorousMedia = simulatePorousMedia;
 }
 void Parameter::setGridX(std::vector<int> GridX)
 {
@@ -4143,6 +4147,10 @@ bool Parameter::getUseMeasurePoints()
 bool Parameter::getUseWale()
 {
 	return ic.isWale;
+}
+bool Parameter::getSimulatePorousMedia()
+{
+	return ic.simulatePorousMedia;
 }
 bool Parameter::getIsGeometryValues()
 {

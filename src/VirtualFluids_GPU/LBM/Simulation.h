@@ -24,6 +24,7 @@ public:
 	void init(std::string &cstr);
 	void bulk();
 	void porousMedia();
+	void definePMarea(PorousMedia* pm);
 protected:
 
 	Buffer2D <doubflo> sbuf_t; 

@@ -35,6 +35,7 @@ void setParameters(Parameter* para, Communicator* comm, std::string &cstr)
    para->setConcFile(            StringUtil::toBool( cf.getValue( "UseConcFile" )));                       
    para->setUseMeasurePoints(    StringUtil::toBool( cf.getValue( "UseMeasurePoints")));
    para->setUseWale(             StringUtil::toBool( cf.getValue( "UseWale" )));
+   para->setSimulatePorousMedia( StringUtil::toBool( cf.getValue( "SimulatePorousMedia" )));
    para->setD3Qxx(               StringUtil::toInt(  cf.getValue( "D3Qxx" )));
    para->setMaxLevel(            StringUtil::toInt(  cf.getValue( "NOGL" )));                             
    para->setTEnd(                StringUtil::toInt(  cf.getValue( "TimeEnd" )));                          

@@ -102,6 +102,7 @@ typedef struct InitCond{
    doubflo delta_rho, delta_press;
    bool  printFiles, readGeo, doRestart, doCheckPoint, isGeo, isProp, isCp, calcMedian, GeometryValues, isConc, is2ndOrderMoments, is3rdOrderMoments, isHighOrderMoments, isWale, isMeasurePoints;
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
+   bool simulatePorousMedia;
 } InitCondition;
 
 //Interface Cells

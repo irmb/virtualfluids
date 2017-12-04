@@ -443,6 +443,149 @@ namespace UnstrucuredGridWriter
 
 
 	//////////////////////////////////////////////////////////////////////////
+	void writeUnstrucuredGridPM(Parameter* para, int level, vector<string >& fname)
+	{
+		vector< UbTupleFloat3 > nodes;
+		vector< UbTupleUInt8 > cells;
+		//vector< UbTupleUInt8 > cells2;
+		vector< string > nodedatanames;
+		nodedatanames.push_back("press");
+		nodedatanames.push_back("rho");
+		nodedatanames.push_back("vx1");
+		nodedatanames.push_back("vx2");
+		nodedatanames.push_back("vx3");
+		nodedatanames.push_back("geo");
+		unsigned int number1, number2, number3, number4, number5, number6, number7, number8;
+		unsigned int dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8;
+		bool neighborsFluid;
+		double vxmax = 0;
+		unsigned int startpos = 0;
+		unsigned int endpos = 0;
+		unsigned int sizeOfNodes = 0;
+		vector< vector< double > > nodedata(nodedatanames.size());
+
+
+		//printf("\n test for if... \n");
+		for (unsigned int part = 0; part < fname.size(); part++)
+		{
+			vxmax = 0;
+			//printf("\n test in if I... \n");
+			//////////////////////////////////////////////////////////////////////////
+			if (((part + 1)*para->getlimitOfNodesForVTK()) > para->getParH(level)->size_Mat_SP)
+			{
+				sizeOfNodes = para->getParH(level)->size_Mat_SP - (part * para->getlimitOfNodesForVTK());
+			}
+			else
+			{
+				sizeOfNodes = para->getlimitOfNodesForVTK();
+			}
+			//////////////////////////////////////////////////////////////////////////
+			startpos = part * para->getlimitOfNodesForVTK();
+			endpos = startpos + sizeOfNodes;
+			//////////////////////////////////////////////////////////////////////////
+			cells.clear();
+			nodes.resize(sizeOfNodes);
+			nodedata[0].resize(sizeOfNodes);
+			nodedata[1].resize(sizeOfNodes);
+			nodedata[2].resize(sizeOfNodes);
+			nodedata[3].resize(sizeOfNodes);
+			nodedata[4].resize(sizeOfNodes);
+			nodedata[5].resize(sizeOfNodes);
+			//////////////////////////////////////////////////////////////////////////
+			//int counter = 0;
+			//////////////////////////////////////////////////////////////////////////
+			//printf("\n test in if II... \n");
+
+			for (unsigned int pos = startpos; pos < endpos; pos++)
+			{
+				if (/*para->getParH(level)->geoSP[pos] >= GEO_FLUID*/true)
+				{
+					//////////////////////////////////////////////////////////////////////////
+					double x1 = para->getParH(level)->coordX_SP[pos];
+					double x2 = para->getParH(level)->coordY_SP[pos];
+					double x3 = para->getParH(level)->coordZ_SP[pos];
+					//////////////////////////////////////////////////////////////////////////
+					number1 = pos;
+					dn1 = pos - startpos;
+					neighborsFluid = true;
+					//////////////////////////////////////////////////////////////////////////
+					//printf("\n test vor node data... \n");
+					nodes[dn1] = (makeUbTuple((float)(x1), (float)(x2), (float)(x3)));
+					nodedata[0][dn1] = (double)para->getParH(level)->press_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[1][dn1] = (double)para->getParH(level)->rho_SP[pos] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+					nodedata[2][dn1] = (double)para->getParH(level)->vx_SP[pos] * (double)para->getVelocityRatio();
+					nodedata[3][dn1] = (double)para->getParH(level)->vy_SP[pos] * (double)para->getVelocityRatio();
+					nodedata[4][dn1] = (double)para->getParH(level)->vz_SP[pos] * (double)para->getVelocityRatio();
+					nodedata[5][dn1] = (double)para->getParH(level)->geoSP[pos];
+					//////////////////////////////////////////////////////////////////////////
+					//printf("\n test vor numbers... \n");
+					number2 = para->getParH(level)->neighborX_SP[number1];
+					number3 = para->getParH(level)->neighborY_SP[number2];
+					number4 = para->getParH(level)->neighborY_SP[number1];
+					number5 = para->getParH(level)->neighborZ_SP[number1];
+					number6 = para->getParH(level)->neighborZ_SP[number2];
+					number7 = para->getParH(level)->neighborZ_SP[number3];
+					number8 = para->getParH(level)->neighborZ_SP[number4];
+					//////////////////////////////////////////////////////////////////////////
+					//printf("\n test vor neighborsFluid... \n");
+					//if (para->getParH(level)->geoSP[number2] < GEO_FLUID ||
+					//	para->getParH(level)->geoSP[number3] < GEO_FLUID ||
+					//	para->getParH(level)->geoSP[number4] < GEO_FLUID ||
+					//	para->getParH(level)->geoSP[number5] < GEO_FLUID ||
+					//	para->getParH(level)->geoSP[number6] < GEO_FLUID ||
+					//	para->getParH(level)->geoSP[number7] < GEO_FLUID ||
+					//	para->getParH(level)->geoSP[number8] < GEO_FLUID)  neighborsFluid = false;
+					//////////////////////////////////////////////////////////////////////////
+					//if(neighborsFluid==false) counter++;
+					//////////////////////////////////////////////////////////////////////////
+					//printf("\n test vor numbers and neighborsFluid... \n");
+					if (number2 > endpos ||
+						number3 > endpos ||
+						number4 > endpos ||
+						number5 > endpos ||
+						number6 > endpos ||
+						number7 > endpos ||
+						number8 > endpos)  neighborsFluid = false;
+					//////////////////////////////////////////////////////////////////////////
+					//if(neighborsFluid==false) counter++;
+					//////////////////////////////////////////////////////////////////////////
+					//printf("\n test vor dn... \n");
+					dn2 = number2 - startpos;
+					dn3 = number3 - startpos;
+					dn4 = number4 - startpos;
+					dn5 = number5 - startpos;
+					dn6 = number6 - startpos;
+					dn7 = number7 - startpos;
+					dn8 = number8 - startpos;
+					//////////////////////////////////////////////////////////////////////////
+					//if( std::fabs(nodedata[2][dn1]) > std::fabs(vxmax) ) vxmax = nodedata[2][dn1];
+					//////////////////////////////////////////////////////////////////////////
+
+					if (isPeriodicCell(para, level, number2, number1, number3, number5))
+						continue;
+
+					//counter++;
+					if (neighborsFluid) cells.push_back(makeUbTuple(dn1, dn2, dn3, dn4, dn5, dn6, dn7, dn8));
+					//////////////////////////////////////////////////////////////////////////
+				}
+				//printf("\n test II... \n");
+			}
+			//printf("\n number of cells: %d at level: %d\n", cells.size(), level);
+			WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(fname[part], nodes, cells, nodedatanames, nodedata);
+			//WbWriterVtkXmlBinary::getInstance()->writeNodesWithNodeData(fname[part], nodes, nodedatanames, nodedata);
+			//////////////////////////////////////////////////////////////////////////
+			//printf("\n vx max: %.1f at level: %d\n", vxmax, level);
+			//printf("\n counter: %d at level: %d\n", counter, level);
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////
 	void writeUnstrucuredGridLTConc(Parameter* para, int level, vector<string >& fname) 
 	{
 		vector< UbTupleFloat3 > nodes;

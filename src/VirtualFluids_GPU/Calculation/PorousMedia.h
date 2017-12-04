@@ -14,7 +14,7 @@ class PorousMedia
 {
 public:
 	PorousMedia();
-	PorousMedia(double porosity, unsigned int geoID, double darcySI, double forchheimerSI, double dxLBM, double dtLBM);
+	PorousMedia(double porosity, unsigned int geoID, double darcySI, double forchheimerSI, double dxLBM, double dtLBM, unsigned int level);
 	~PorousMedia();
 
 	//setter
@@ -26,6 +26,7 @@ public:
 	//void definePMarea(Parameter* para, unsigned int level);
 	void setHostNodeIDsPM(unsigned int* hostNodeIDsPM);
 	void setDeviceNodeIDsPM(unsigned int* deviceNodeIDsPM);
+	void setSizePM(unsigned int sizePM);
 
 	//getter
 	double getPorosity();
@@ -35,8 +36,15 @@ public:
 	double getForchheimerLBM();
 	unsigned int getGeoID();
 	unsigned int getSizePM();
+	unsigned int getLevelPM();
 	unsigned int* getHostNodeIDsPM();
 	unsigned int* getDeviceNodeIDsPM();
+	double getStartX();
+	double getStartY();
+	double getStartZ();
+	double getEndX();
+	double getEndY();
+	double getEndZ();
 
 private:
 	double porosity;
@@ -53,8 +61,9 @@ private:
 	double endCoordY;
 	double endCoordZ;
 	unsigned int geoID;
-	std::vector< unsigned int > nodeIDsPorousMedia;
+	//std::vector< unsigned int > nodeIDsPorousMedia;
 	unsigned int sizePM;
+	unsigned int level;
 	unsigned int *hostNodeIDsPM;
 	unsigned int *deviceNodeIDsPM;
 
