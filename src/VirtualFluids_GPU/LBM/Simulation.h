@@ -52,9 +52,10 @@ protected:
 	ForceCalculations* forceCalculator;
 
 	//Porous Media
-	PorousMedia* pm0;
-	PorousMedia* pm1;
-	PorousMedia* pm2;
+	PorousMedia* pm[3];
+	//PorousMedia* pm0;
+	//PorousMedia* pm1;
+	//PorousMedia* pm2;
 
 	//KQ - Schlaff
 	unsigned int            kNQ, kSQ, kEQ, kWQ;

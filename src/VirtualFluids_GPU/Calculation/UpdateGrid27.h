@@ -5,7 +5,8 @@
 #include "GPU/GPU_Interface.h"
 #include "Parameter/Parameter.h"
 #include "Communication/Communicator.h"
+#include "Calculation/PorousMedia.h"
 
-extern "C" void updateGrid27(Parameter* para, Communicator* comm, int level, int max_level, unsigned int t);
+extern "C" void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int level, int max_level, unsigned int t);
 
 #endif
