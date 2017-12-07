@@ -959,7 +959,6 @@ extern "C" void KernelWaleCumOneCompSP27(unsigned int numberOfThreads,
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads, 
 									   doubflo omega,
-									   unsigned int* bcMatD,
 									   unsigned int* neighborX,
 									   unsigned int* neighborY,
 									   unsigned int* neighborZ,
@@ -970,7 +969,8 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 									   doubflo porosity,
 									   doubflo darcy,
 									   doubflo forchheimer,
-									   unsigned int porousMedia,
+									   unsigned int sizeOfPorousMedia,
+									   unsigned int* nodeIdsPorousMedia, 
 									   bool EvenOrOdd)
 {
 	int Grid = (size_Mat / numberOfThreads) + 1;
@@ -989,7 +989,6 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 	dim3 threads(numberOfThreads, 1, 1);
 
 	LB_Kernel_PM_Cum_One_Comp_SP_27 <<< grid, threads >>>(omega,
-														  bcMatD,
 														  neighborX,
 														  neighborY,
 														  neighborZ,
@@ -1000,7 +999,8 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 														  porosity,
 														  darcy,
 														  forchheimer,
-														  porousMedia,
+														  sizeOfPorousMedia,
+														  nodeIdsPorousMedia,
 														  EvenOrOdd); 
 	getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed"); 
 }

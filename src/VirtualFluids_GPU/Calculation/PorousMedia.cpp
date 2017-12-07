@@ -27,10 +27,12 @@ PorousMedia::PorousMedia(double porosity, unsigned int geoID, double darcySI, do
 	this->forchheimerSI = forchheimerSI;
 	this->dxLBM = dxLBM;
 	this->dtLBM = dtLBM;
-	this->forchheimerLBM = this->forchheimerSI * this->dxLBM;
-	this->darcyLBM = this->darcySI * this->dtLBM;
+	//this->lengthOfPorousMedia = 1.0;
+	//this->forchheimerLBM = this->forchheimerSI * this->dxLBM / this->lengthOfPorousMedia;
+	//this->darcyLBM = this->darcySI * this->dtLBM / this->lengthOfPorousMedia;
 	this->level = level;
 	setCoordinatesToZero();
+	setResistanceLBM();
 }
 
 PorousMedia::~PorousMedia()
@@ -70,6 +72,20 @@ void PorousMedia::setDeviceNodeIDsPM(unsigned int* deviceNodeIDsPM)
 void PorousMedia::setSizePM(unsigned int sizePM)
 {
 	this->sizePM = sizePM;
+}
+
+void PorousMedia::setResistanceLBM() 
+{
+	if ((this->endCoordX - this->startCoordX) > 1.0)
+	{
+		this->lengthOfPorousMedia = (this->endCoordX - this->startCoordX);
+	}
+	else
+	{
+		this->lengthOfPorousMedia = 1.0;
+	}
+	this->forchheimerLBM = this->forchheimerSI * this->dxLBM / this->lengthOfPorousMedia;
+	this->darcyLBM = this->darcySI * this->dtLBM / this->lengthOfPorousMedia;
 }
 
 //void PorousMedia::definePMarea(Parameter* para, unsigned int level)

@@ -9773,7 +9773,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(doubflo omega,
 		unsigned int BC;
 		BC = bcMatD[k];
 
-		if( (BC != GEO_SOLID) && (BC != GEO_VOID) )
+		if( BC >= GEO_FLUID/*(BC != GEO_SOLID) && (BC != GEO_VOID)*/ )
 		{
 			Distributions27 D;
 			if (EvenOrOdd==true)

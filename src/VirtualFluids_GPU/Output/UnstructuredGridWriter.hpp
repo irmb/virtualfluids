@@ -498,7 +498,7 @@ namespace UnstrucuredGridWriter
 
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if (/*para->getParH(level)->geoSP[pos] >= GEO_FLUID*/true)
+				if (/*(para->getParH(level)->geoSP[pos] >= GEO_FLUID) || ((para->getParH(level)->geoSP[pos] >= GEO_PM_0) && (para->getParH(level)->geoSP[pos] <= GEO_PM_2))*/true)
 				{
 					//////////////////////////////////////////////////////////////////////////
 					double x1 = para->getParH(level)->coordX_SP[pos];
@@ -528,13 +528,13 @@ namespace UnstrucuredGridWriter
 					number8 = para->getParH(level)->neighborZ_SP[number4];
 					//////////////////////////////////////////////////////////////////////////
 					//printf("\n test vor neighborsFluid... \n");
-					//if (para->getParH(level)->geoSP[number2] < GEO_FLUID ||
-					//	para->getParH(level)->geoSP[number3] < GEO_FLUID ||
-					//	para->getParH(level)->geoSP[number4] < GEO_FLUID ||
-					//	para->getParH(level)->geoSP[number5] < GEO_FLUID ||
-					//	para->getParH(level)->geoSP[number6] < GEO_FLUID ||
-					//	para->getParH(level)->geoSP[number7] < GEO_FLUID ||
-					//	para->getParH(level)->geoSP[number8] < GEO_FLUID)  neighborsFluid = false;
+					if (((para->getParH(level)->geoSP[number2] != GEO_FLUID) && (para->getParH(level)->geoSP[number2] < GEO_PM_0) && (para->getParH(level)->geoSP[number2] > GEO_PM_2)) ||
+						((para->getParH(level)->geoSP[number3] != GEO_FLUID) && (para->getParH(level)->geoSP[number3] < GEO_PM_0) && (para->getParH(level)->geoSP[number3] > GEO_PM_2)) ||
+						((para->getParH(level)->geoSP[number4] != GEO_FLUID) && (para->getParH(level)->geoSP[number4] < GEO_PM_0) && (para->getParH(level)->geoSP[number4] > GEO_PM_2)) ||
+						((para->getParH(level)->geoSP[number5] != GEO_FLUID) && (para->getParH(level)->geoSP[number5] < GEO_PM_0) && (para->getParH(level)->geoSP[number5] > GEO_PM_2)) ||
+						((para->getParH(level)->geoSP[number6] != GEO_FLUID) && (para->getParH(level)->geoSP[number6] < GEO_PM_0) && (para->getParH(level)->geoSP[number6] > GEO_PM_2)) ||
+						((para->getParH(level)->geoSP[number7] != GEO_FLUID) && (para->getParH(level)->geoSP[number7] < GEO_PM_0) && (para->getParH(level)->geoSP[number7] > GEO_PM_2)) ||
+						((para->getParH(level)->geoSP[number8] != GEO_FLUID) && (para->getParH(level)->geoSP[number8] < GEO_PM_0) && (para->getParH(level)->geoSP[number8] > GEO_PM_2)))  neighborsFluid = false;
 					//////////////////////////////////////////////////////////////////////////
 					//if(neighborsFluid==false) counter++;
 					//////////////////////////////////////////////////////////////////////////

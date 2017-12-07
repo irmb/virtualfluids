@@ -27,6 +27,7 @@ public:
 	void setHostNodeIDsPM(unsigned int* hostNodeIDsPM);
 	void setDeviceNodeIDsPM(unsigned int* deviceNodeIDsPM);
 	void setSizePM(unsigned int sizePM);
+	void setResistanceLBM();
 
 	//getter
 	double getPorosity();
@@ -60,6 +61,7 @@ private:
 	double endCoordX;
 	double endCoordY;
 	double endCoordZ;
+	double lengthOfPorousMedia;
 	unsigned int geoID;
 	//std::vector< unsigned int > nodeIDsPorousMedia;
 	unsigned int sizePM;

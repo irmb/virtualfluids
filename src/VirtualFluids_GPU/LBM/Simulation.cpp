@@ -637,7 +637,6 @@ void Simulation::run()
 		{
 			KernelPMCumOneCompSP27( para->getParD(0)->numberofthreads,
 									para->getParD(0)->omega,			
-									para->getParD(0)->geoSP, 
 									para->getParD(0)->neighborX_SP, 
 									para->getParD(0)->neighborY_SP, 
 									para->getParD(0)->neighborZ_SP,
@@ -648,7 +647,8 @@ void Simulation::run()
 									pm0->getPorosity(),
 									pm0->getDarcyLBM(),
 									pm0->getForchheimerLBM(),
-									pm0->getGeoID(),
+									pm0->getSizePM(),
+									pm0->getHostNodeIDsPM(),
 									para->getParD(0)->evenOrOdd); 
 			getLastCudaError("KernelPMCumOneCompSP27 execution failed");
 		}
@@ -1333,12 +1333,12 @@ void Simulation::run()
 			//getLastCudaError("QDevComp27 (Geom) execution failed");
 
 
-		//QPressDevOld27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
-		//				para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
-		//				para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
-		//				para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-		//				para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-		//getLastCudaError("QPressDev27 execution failed");
+		QPressDevOld27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
+						para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
+						para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
+						para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+						para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		getLastCudaError("QPressDev27 execution failed");
 
 		//QPressDevEQZ27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
 		//				para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
@@ -1480,12 +1480,12 @@ void Simulation::run()
 		  //getLastCudaError("QPressDevIncompNEQ27 execution failed");
 		  //////////////////////////////////////////////////////////////////////////////////
 		  //press NEQ comp
-		  QPressDevNEQ27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
-		  				  para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
-		  				  para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
-		  				  para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-		  				  para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-		  getLastCudaError("QPressDevNEQ27 execution failed");
+		  //QPressDevNEQ27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
+		  //				  para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
+		  //				  para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
+		  //				  para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+		  //				  para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		  //getLastCudaError("QPressDevNEQ27 execution failed");
 		  ////////////////////////////////////////////////////////////////////////////////
           //if (  myid == numprocs - 1)  
           //   PressSchlaffer27( para->getParD(0)->numberofthreads,  para->getParD(0)->Qoutflow.RhoBC,
@@ -2622,21 +2622,93 @@ void Simulation::run()
 }
 void Simulation::porousMedia()
 {
-	//Kondensator = porous media 0
-	double porosity = 0.7;
-	double darcySI = 137.36; //[1/s]
-	double forchheimerSI = 1037.8; //[1/m]
-	double dxLBM = 0.0004;
+	double porosity, darcySI, forchheimerSI;
+	double dxLBM = 0.004;
 	double dtLBM = 0.000007;
-	unsigned int level = 0;
-	output << "\nnew instance of PM \n";
-	pm0 = new PorousMedia(porosity, GEO_PM_0, darcySI, forchheimerSI, dxLBM, dtLBM, level);
-	output << "setStartCoordinates \n";
-	pm0->setStartCoordinates(20, 0, 0);
-	output << "setEndCoordinates \n";
-	pm0->setEndCoordinates(40, 20, 20);
-	output << "definePMarea \n";
+	unsigned int level, geo;
+	double startX, startY, startZ, endX, endY, endZ;
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	//Test = porous media 0
+	porosity = 0.7;
+	darcySI = 137.36; //[1/s]
+	forchheimerSI = 1037.8; //[1/m]
+	level = para->getFine();
+	geo = GEO_PM_0;
+	startX = 20.0;
+	startY =  0.0;
+	startZ =  0.0;
+	endX = 40.0;
+	endY = 22.0;
+	endZ = 22.0;
+	pm0 = new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level);
+	pm0->setStartCoordinates(startX, startY, startZ);
+	pm0->setEndCoordinates(endX, endY, endZ);
+	pm0->setResistanceLBM();
 	definePMarea(pm0);
+	//////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////
+	////Kondensator = porous media 0
+	//porosity = 0.7;
+	//darcySI = 137.36; //[1/s]
+	//forchheimerSI = 1037.8; //[1/m]
+	//level = para->getFine();
+	//geo = GEO_PM_0;
+	//startX = -0.715882;
+	//startY = -0.260942;
+	//startZ = -0.031321;
+	//endX = -0.692484;
+	//endY =  0.277833;
+	//endZ =  0.360379;
+	//pm0 = new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level);
+	//pm0->setStartCoordinates(startX, startY, startZ);
+	//pm0->setEndCoordinates(endX, endY, endZ);
+	//pm0->setResistanceLBM();
+	//definePMarea(pm0);
+	////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////
+	////NT-Kuehler = porous media 1
+	//porosity = 0.6;
+	//darcySI = 149.98; //[1/s]
+	//forchheimerSI = 960.57; //[1/m]
+	//level = para->getFine();
+	//geo = GEO_PM_1;
+	//startX = -0.696146;
+	//startY = -0.32426;
+	//startZ = -0.0421345;
+	//endX = -0.651847;
+	//endY =  0.324822;
+	//endZ =  0.057098;
+	//pm1 = new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level);
+	//pm1->setStartCoordinates(startX, startY, startZ);
+	//pm1->setEndCoordinates(endX, endY, endZ);
+	//pm1->setResistanceLBM();
+	//definePMarea(pm1);
+	////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////
+	////Wasserkuehler = porous media 2
+	//porosity = 0.6;
+	//darcySI = 148.69; //[1/s]
+	//forchheimerSI = 629.45; //[1/m]
+	//level = para->getFine();
+	//geo = GEO_PM_2;
+	//startX = -0.692681;
+	//startY = -0.324954;
+	//startZ = 0.0789429;
+	//endX = -0.657262;
+	//endY =  0.32538;
+	//endZ =  0.400974;
+	//pm2 = new PorousMedia(porosity, geo, darcySI, forchheimerSI, dxLBM, dtLBM, level);
+	//pm2->setStartCoordinates(startX, startY, startZ);
+	//pm2->setEndCoordinates(endX, endY, endZ);
+	//pm2->setResistanceLBM();
+	//definePMarea(pm2);
+	////////////////////////////////////////////////////////////////////////////
+
 }
 void Simulation::definePMarea(PorousMedia* pm)
 {
@@ -2647,15 +2719,12 @@ void Simulation::definePMarea(PorousMedia* pm)
 
 	for (unsigned int i = 0; i < para->getParH(level)->size_Mat_SP; i++)
 	{
-		//output << "definePMarea....find nodes...for loop \n";
 		if (((para->getParH(level)->coordX_SP[i] >= pm->getStartX()) && (para->getParH(level)->coordX_SP[i] <= pm->getEndX())) &&
 			((para->getParH(level)->coordY_SP[i] >= pm->getStartY()) && (para->getParH(level)->coordY_SP[i] <= pm->getEndY())) &&
 			((para->getParH(level)->coordZ_SP[i] >= pm->getStartZ()) && (para->getParH(level)->coordZ_SP[i] <= pm->getEndZ())) )
 		{
-			//output << "definePMarea....find nodes...if area \n";
 			if (para->getParH(level)->geoSP[i] >= GEO_FLUID)
 			{
-				//output << "definePMarea....find nodes...if area and fluid \n";
 				para->getParH(level)->geoSP[i] = pm->getGeoID();
 				nodeIDsPorousMedia.push_back(i);
 				counter++;
@@ -2663,20 +2732,16 @@ void Simulation::definePMarea(PorousMedia* pm)
 		}
 	}
 
-	output << "definePMarea....cuda alloc \n";
+	para->cudaCopySP(level);
 	pm->setSizePM(counter);
 	para->cudaAllocPorousMedia(pm0, level);
 	unsigned int *tpmArrayIDs = pm->getHostNodeIDsPM();
-
-	output << "definePMarea....copy vector to array \n";
+	
 	for (unsigned int j = 0; j <= pm->getSizePM(); j++)
 	{
 		tpmArrayIDs[j] = nodeIDsPorousMedia[j];
 	}
-
-	output << "definePMarea....setHostNodeIDsPM \n";
+	
 	pm->setHostNodeIDsPM(tpmArrayIDs);
-
-	output << "definePMarea....cudaCopyPorousMedia \n";
 	para->cudaCopyPorousMedia(pm, level);
 }
