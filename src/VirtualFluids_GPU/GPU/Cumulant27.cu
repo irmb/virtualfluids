@@ -327,15 +327,15 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(doubflo omega,
 			vz2 = vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
 			doubflo wadjust;
-			doubflo qudricLimitP = 0.01f;// * 0.0001f;
-			doubflo qudricLimitM = 0.01f;// * 0.0001f;
-			doubflo qudricLimitD = 0.01f;// * 0.001f;
-										 ////////////////////////////////////////////////////////////////////////////////////
-										 //Hin
-										 ////////////////////////////////////////////////////////////////////////////////////
-										 // mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
-										 ////////////////////////////////////////////////////////////////////////////////////
-										 // Z - Dir
+			doubflo qudricLimitP = 1.0e10;// 0.01f;// * 0.0001f;
+			doubflo qudricLimitM = 1.0e10;//0.01f;// * 0.0001f;
+			doubflo qudricLimitD = 1.0e10;//0.01f;// * 0.001f;
+			////////////////////////////////////////////////////////////////////////////////////
+			//Hin
+			////////////////////////////////////////////////////////////////////////////////////
+			// mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
+			////////////////////////////////////////////////////////////////////////////////////
+			// Z - Dir
 			m2 = mfaaa + mfaac;
 			m1 = mfaac - mfaaa;
 			m0 = m2 + mfaab;
@@ -579,13 +579,13 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(doubflo omega,
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
-			doubflo O4 = one;
+			//doubflo O4 = one;
 			//////////////////////////////
-			//doubflo O4        = omega;//TRT
+			doubflo O4        = one/(100*(one/ omega-c1o2)+c1o2);//TRT
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			doubflo O5 = 0.03;// OxyyPxzz;// two - omega; // one;
+			doubflo O5 =  OxyyPxzz;// two - omega; // one;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
@@ -686,9 +686,9 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(doubflo omega,
 			//dyyuy *= limAdvect / (limAdvect + sqrt(abs(divTest)));
 			//dzzuz *= limAdvect / (limAdvect + sqrt(abs(divTest)));
 
-			dxxux *= exp(-sqrt(fabs(divTest))/limAdvect);
-			dyyuy *= exp(-sqrt(fabs(divTest)) / limAdvect);
-			dzzuz *= exp(-sqrt(fabs(divTest)) / limAdvect);
+			//dxxux *= exp(-sqrt(fabs(divTest))/limAdvect);
+			//dyyuy *= exp(-sqrt(fabs(divTest)) / limAdvect);
+			//dzzuz *= exp(-sqrt(fabs(divTest)) / limAdvect);
 
 			////////////////////////////////////////////////////////////////////////////
 			//relax
