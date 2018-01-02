@@ -1944,6 +1944,29 @@ void Grid3D::deleteBlockIDs()
    this->blockIdMap.clear();
 }
 //////////////////////////////////////////////////////////////////////////
+void Grid3D::renumberBlockIDs()
+{
+   deleteBlockIDs();
+
+   int startLevel = getCoarsestInitializedLevel();
+   int stopLevel = getFinestInitializedLevel();
+   int counter = 0;
+   
+   for (int l = startLevel; l <= stopLevel; l++)
+   {
+      std::vector<Block3DPtr> blockVector;
+      getBlocks(l, blockVector);
+      BOOST_FOREACH(Block3DPtr block, blockVector)
+      {
+         block->setGlobalID(counter);
+         blockIdMap.insert(std::make_pair(counter, block));
+         Block3D::setMaxGlobalID(counter);
+         counter++;
+      }
+   }
+}
+
+//////////////////////////////////////////////////////////////////////////
 void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
 {
    
@@ -1965,6 +1988,7 @@ void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
             blocks.push_back(block->getX3());
             blocks.push_back(l);
             blocks.push_back(block->getGlobalID());
+            blocks.push_back(block->getRank());
          }
       }
    }
@@ -1986,10 +2010,11 @@ void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
       levelSet.resize(Grid3DSystem::MAXLEVEL+1);
 
       int rsize = blocks.size();
-      for (int i = 0; i < rsize; i+=5)
+      for (int i = 0; i < rsize; i+=6)
       {
          Block3DPtr block(new Block3D(blocks[i], blocks[i+1], blocks[i+2], blocks[i+3]));
          block->setGlobalID(blocks[i+4]);
+         block->setRank(blocks[i+5]);
          this->addBlock(block);
       }
 

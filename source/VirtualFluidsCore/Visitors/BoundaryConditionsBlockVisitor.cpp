@@ -68,13 +68,13 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
                      if (bca)
                      {
                         bca = bca->clone();
-                        bca->addNode(x1, x2, x3);
-                        bca->addBcPointer(bcPtr);
+                        bca->setNodeIndex(x1, x2, x3);
+                        bca->setBcPointer(bcPtr);
                         bca->addDistributions(distributions);
                         bca->setCollFactor(collFactor);
                         bca->setCompressible(compressible);
-                        bcProcessor->addBC(bca);
                         bca->setBcArray(bcArray);
+                        bcProcessor->addBC(bca);
                      }
                   }
                }

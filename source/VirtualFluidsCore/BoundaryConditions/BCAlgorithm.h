@@ -36,25 +36,19 @@ public:
    BCAlgorithm();
    virtual ~BCAlgorithm() {}
    
-   void apply();
    virtual void addDistributions(DistributionArray3DPtr distributions) = 0;
-   void addNode(int x1, int x2, int x3);
-   void addBcPointer(BoundaryConditionsPtr bcPtr);
+   void setNodeIndex(int x1, int x2, int x3);
+   void setBcPointer(BoundaryConditionsPtr bcPtr);
    void setCompressible(bool c);
    void setCollFactor(LBMReal cf);
    char getType();
    bool isPreCollision();
    virtual BCAlgorithmPtr clone()=0;
-   void clearData();
    BCArray3DPtr getBcArray();
    void setBcArray(BCArray3DPtr bcarray);
+   virtual void applyBC() = 0;
 
 protected:
-   virtual void applyBC() = 0;
-   
-   std::vector <int> nodeVector;
-   std::vector <BoundaryConditionsPtr> bcVector;
-
    bool compressible;
    char type;
    bool preCollision;
@@ -75,21 +69,6 @@ protected:
    CalcFeqForDirFct calcFeqsForDirFct ;
    CalcMacrosFct    calcMacrosFct;
    CalcFeqFct       calcFeqFct;
-
-   
-
-private:
-   //friend class boost::serialization::access;
-   //template<class Archive>
-   //void serialize(Archive & ar, const unsigned int version)
-   //{
-   //   ar & nodeVector;
-   //   ar & bcVector;
-   //   ar & compressible;
-   //   ar & type;
-   //   ar & distributions;
-   //   ar & collFactor;
-   //}
 };
 
 

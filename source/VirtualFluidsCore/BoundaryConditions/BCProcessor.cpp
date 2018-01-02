@@ -9,7 +9,6 @@ BCProcessor::BCProcessor()
 BCProcessor::BCProcessor(LBMKernelPtr kernel)
 {
    DistributionArray3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
-   //bcArray->resize( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID);
    bcArray = BCArray3DPtr(new BCArray3D( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID));
 }
 //////////////////////////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ void BCProcessor::applyPreCollisionBC()
 {
    BOOST_FOREACH(BCAlgorithmPtr bc, preBC)
    {
-      bc->apply();
+      bc->applyBC();
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -58,7 +57,7 @@ void BCProcessor::applyPostCollisionBC()
 {
    BOOST_FOREACH(BCAlgorithmPtr bc, postBC)
    {
-      bc->apply();
+      bc->applyBC();
    }
 }
 //////////////////////////////////////////////////////////////////////////

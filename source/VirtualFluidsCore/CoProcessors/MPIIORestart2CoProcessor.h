@@ -168,6 +168,8 @@ private:
    int chunk;
    LBMKernelPtr lbmKernel;
    BCProcessorPtr bcProcessor;
+   
+   DataSet* dataSetArrayTest;
 
 };
 

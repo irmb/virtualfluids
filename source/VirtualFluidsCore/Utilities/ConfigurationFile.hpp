@@ -1,5 +1,5 @@
-#ifndef Configuration_h__
-#define Configuration_h__
+#ifndef ConfigurationFile_h__
+#define ConfigurationFile_h__
 
 #include <map>
 #include <string>

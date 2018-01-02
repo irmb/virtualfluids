@@ -13,8 +13,9 @@ public:
    ~NonEqDensityBCAlgorithm();
    BCAlgorithmPtr clone();
    void addDistributions(DistributionArray3DPtr distributions);
-protected:
    void applyBC();
+protected:
+   
 private:
    //friend class boost::serialization::access;
    //template<class Archive>

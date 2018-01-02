@@ -210,6 +210,8 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    datanames.resize(0);
 
    datanames.push_back("level");
+   
+   datanames.push_back("Rho");
 
    if ((options&Density) == Density)
    {
@@ -281,6 +283,9 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    maxX2 -= 2;
    maxX3 -= 2;
 
+   LBMReal f[D3Q27System::ENDF+1];
+   LBMReal vx1,vx2,vx3,rho;
+
    //D3Q27BoundaryConditionPtr bcPtr;
 
    int nr = (int)nodes.size();
@@ -300,6 +305,11 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
                   float(val<3>(org) - val<3>(nodeOffset) + ix3*dx)));
 
                data[index++].push_back(level);
+
+               distributions->getDistribution(f, ix1, ix2, ix3);
+               calcMacros(f, rho, vx1, vx2, vx3);
+
+               data[index++].push_back(rho);
 
                if ((options&Density) == Density)
                {

@@ -32,7 +32,7 @@ void ThinWallBCProcessor::applyPostCollisionBC()
       if (bc->getType() == BCAlgorithm::ThinWallNoSlipBCAlgorithm)
       {
          boost::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(2); 
-         bc->apply();
+         bc->applyBC();
          boost::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(1);
       }
    }

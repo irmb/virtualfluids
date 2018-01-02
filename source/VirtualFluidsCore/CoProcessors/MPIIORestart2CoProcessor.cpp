@@ -5,7 +5,7 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <UbSystem.h>
 #include <MemoryUtil.h>
-#include "RenumberBlockVisitor.h"
+#include "MetisPartitioningGridVisitor.h"
 
 MPIIORestart2CoProcessor::MPIIORestart2CoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
    const std::string& path,
@@ -119,7 +119,15 @@ void MPIIORestart2CoProcessor::process(double step)
       writeBlocks((int)step);
       writeDataSet((int)step);
       writeBoundaryConds((int)step);
+
+      
+      //MPI_Barrier(MPI_COMM_WORLD);
+      
       if (comm->isRoot()) UBLOG(logINFO, "Save check point - end");
+      
+      
+      //readDataSet((int)step);
+
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -162,13 +170,17 @@ void MPIIORestart2CoProcessor::writeBlocks(int step)
    //MPI_Comm_size(MPI_COMM_WORLD, &size);
    size=1;
 
-   if (comm->isRoot())
+   
+   //if (comm->isRoot())
    {
-      grid->deleteBlockIDs();
-      RenumberBlockVisitor renumber;
-      grid->accept(renumber);
+      //grid->deleteBlockIDs();
+      //RenumberBlockVisitor renumber;
+      //grid->accept(renumber);
+      grid->renumberBlockIDs();
    }
-   grid->updateDistributedBlocks(comm);
+   //grid->updateDistributedBlocks(comm);
+
+//UBLOG(logINFO, "MPIIORestart2CoProcessor::writeBlocks BlockIDs size =  "<<grid->getBlockIDs().size()<<" rank = "<<rank);
 
    if (comm->isRoot())
    {
@@ -458,6 +470,8 @@ void MPIIORestart2CoProcessor::writeDataSet(int step)
 
    DataSet* dataSetArray = new DataSet[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks
+   
+   //dataSetArrayTest = new DataSet[blocksCount];
 
    if (comm->isRoot())
    {
@@ -465,17 +479,27 @@ void MPIIORestart2CoProcessor::writeDataSet(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
    }
 
+//UBLOG(logINFO, "MPIIORestart2CoProcessor::writeDataSet minInitLevel="<<minInitLevel<<" maxInitLevel="<<maxInitLevel<<" blocksCount="<<blocksCount<<" rank = "<<rank);
+   
    int ic = 0;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
       BOOST_FOREACH(Block3DPtr block, blocksVector[level])  //	blocks of the current level
       {
          dataSetArray[ic].globalID = block->getGlobalID();     // id of the block needed to find it while regenerating the grid
+         //UBLOG(logINFO, "MPIIORestart2CoProcessor::writeDataSet dataSetArray[n].globalID: "<<dataSetArray[ic].globalID<< " rank = "<<rank<<" ic = "<<ic);
          dataSetArray[ic].ghostLayerWidth = block->getKernel()->getGhostLayerWidth();
          dataSetArray[ic].collFactor = block->getKernel()->getCollisionFactor();
          dataSetArray[ic].deltaT = block->getKernel()->getDeltaT();
          dataSetArray[ic].compressible = block->getKernel()->getCompressible();
          dataSetArray[ic].withForcing = block->getKernel()->getWithForcing();
+         
+         //dataSetArrayTest[ic].globalID = block->getGlobalID();     // id of the block needed to find it while regenerating the grid
+         //dataSetArrayTest[ic].ghostLayerWidth = block->getKernel()->getGhostLayerWidth();
+         //dataSetArrayTest[ic].collFactor = block->getKernel()->getCollisionFactor();
+         //dataSetArrayTest[ic].deltaT = block->getKernel()->getDeltaT();
+         //dataSetArrayTest[ic].compressible = block->getKernel()->getCompressible();
+         //dataSetArrayTest[ic].withForcing = block->getKernel()->getWithForcing();
 
          boost::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageValuesArray3DPtr = block->getKernel()->getDataSet()->getAverageValues();
          if (AverageValuesArray3DPtr&&(blockParamStr.nx[0][0]>0)&&(blockParamStr.nx[0][1]>0)&&(blockParamStr.nx[0][2]>0)&&(blockParamStr.nx[0][3]>0))
@@ -746,6 +770,10 @@ void MPIIORestart2CoProcessor::restart(int step)
    if (comm->isRoot()) UBLOG(logINFO, "MPIIORestart2CoProcessor restart step: "<<step);
    if (comm->isRoot()) UBLOG(logINFO, "Load check point - start");
    readBlocks(step);
+   
+   Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+   grid->accept(metisVisitor);
+   
    readDataSet(step);
    readBoundaryConds(step);
    if (comm->isRoot()) UBLOG(logINFO, "Load check point - end");
@@ -933,7 +961,7 @@ void MPIIORestart2CoProcessor::readDataSet(int step)
 
    DataSet* dataSetArray = new DataSet[blocksCount];
    std::vector<double> doubleValuesArray(blocksCount * blockParamStr.doubleCountInBlock); // double-values in all blocks 
-
+   
    MPI_File file_handler;
    std::string filename = path+"/mpi_io_cp/mpi_io_cp_"+UbSystem::toString(step)+"/cpDataSet.bin";
    int rc = MPI_File_open(MPI_COMM_WORLD, filename.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler);
@@ -947,6 +975,7 @@ void MPIIORestart2CoProcessor::readDataSet(int step)
       BOOST_FOREACH(Block3DPtr block, blocksVector[level])  //	blocks of the current level
       {
          read_offset = (MPI_Offset)(block->getGlobalID() * sizeofOneDataSet);
+         //UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet read_offset="<<read_offset<<" sizeofOneDataSet="<<sizeofOneDataSet<<" GlobalID="<<block->getGlobalID()<< " rank="<<rank);
          MPI_File_read_at(file_handler, read_offset, &dataSetArray[ic], 1, dataSetType, MPI_STATUS_IGNORE);
          MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSet)), &doubleValuesArray[ic*blockParamStr.doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
@@ -955,6 +984,7 @@ void MPIIORestart2CoProcessor::readDataSet(int step)
 
    MPI_File_close(&file_handler);
 
+
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
@@ -962,6 +992,19 @@ void MPIIORestart2CoProcessor::readDataSet(int step)
       UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet start of restore of data, rank = "<<rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
    }
+
+   //for (int n = 0; n<blocksCount; n++)
+   //{
+      //if(dataSetArray[n].globalID != dataSetArrayTest[n].globalID)
+      //{
+         //UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet dataSetArray[n].globalID: "<<dataSetArray[n].globalID<< " rank = "<<rank<<" n = "<<n);
+         ////UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet dataSetArray[n].globalID: "<<dataSetArray[n].globalID);
+         ////UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet SetArrayTest[n].globalID: "<<dataSetArrayTest[n].globalID);
+      //}
+   //}
+   
+   //UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet grid size 1: "<<grid->getNumberOfBlocks()<<" rank = "<<rank);
+   //UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet BlockIDs size 1: "<<grid->getBlockIDs().size()<<" rank = "<<rank);
    
    size_t index = 0, nextVectorSize = 0;
    std::vector<double> vectorsOfValues[9];
@@ -1033,7 +1076,13 @@ void MPIIORestart2CoProcessor::readDataSet(int step)
 
       // find the nesessary block and fill it
       Block3DPtr block = grid->getBlock(dataSetArray[n].globalID);
-      //LBMKernelPtr kernel(new CompressibleCumulantLBMKernel(0, 0, 0, CompressibleCumulantLBMKernel::NORMAL));
+      //Block3DPtr block = grid->getBlock(2);
+      if (!block)
+      {
+         UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet don't find block dataSetArray[n].globalID: "<<dataSetArray[n].globalID<< " rank = "<<rank<<" n = "<<n);
+         UBLOG(logINFO, "MPIIORestart2CoProcessor::readDataSet grid size 2: "<<grid->getNumberOfBlocks()<<" rank = "<<rank);
+      }
+      ////LBMKernelPtr kernel(new CompressibleCumulantLBMKernel(0, 0, 0, CompressibleCumulantLBMKernel::NORMAL));
       LBMKernelPtr kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);
@@ -1097,8 +1146,8 @@ void MPIIORestart2CoProcessor::readBoundaryConds(int step)
 
    if (comm->isRoot())
    {
-      finish = MPI_Wtime();
-      UBLOG(logINFO, "MPIIORestart2CoProcessor::readBoundaryConds time: " << finish - start << " s");
+      //finish = MPI_Wtime();
+      //UBLOG(logINFO, "MPIIORestart2CoProcessor::readBoundaryConds time: " << finish - start << " s");
       UBLOG(logINFO, "MPIIORestart2CoProcessor::readBoundaryConds start of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
@@ -1203,6 +1252,8 @@ void MPIIORestart2CoProcessor::readBoundaryConds(int step)
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIORestart2CoProcessor::readBoundaryConds end of restore of data, rank = "<<rank);
+      finish = MPI_Wtime();
+      UBLOG(logINFO, "MPIIORestart2CoProcessor::readBoundaryConds time: " << finish - start << " s");
       UBLOG(logINFO, "Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
    }
 }

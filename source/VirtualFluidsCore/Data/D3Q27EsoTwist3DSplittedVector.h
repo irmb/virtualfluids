@@ -63,9 +63,10 @@ protected:
    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
    size_t NX1, NX2, NX3;
 
-   friend class MPIIORestartCoProcessor;
+   friend class MPIIORestart1CoProcessor;
    friend class MPIIORestart2CoProcessor;
-   friend class MPIIORestart3CoProcessor;
+   friend class MPIIORestart11CoProcessor;
+   friend class MPIIORestart21CoProcessor;
 
    friend class boost::serialization::access;
    template<class Archive>

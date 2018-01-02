@@ -108,6 +108,7 @@ public:
    std::string toString() ;
 
    static int getMaxGlobalID() { return counter; }
+   static void setMaxGlobalID(int c) { counter = 0; }
 private:
   int   x1;
   int   x2;
@@ -131,9 +132,10 @@ private:
   int level;
   static int counter;
 
-  friend class MPIIORestartCoProcessor;
+  friend class MPIIORestart1CoProcessor;
   friend class MPIIORestart2CoProcessor;
-  friend class MPIIORestart3CoProcessor;
+  friend class MPIIORestart11CoProcessor;
+  friend class MPIIORestart21CoProcessor;
 
   friend class boost::serialization::access;
   template<class Archive>
