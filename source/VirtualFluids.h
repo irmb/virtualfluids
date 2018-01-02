@@ -1,3 +1,6 @@
+#ifndef VirtualFluids_h__
+#define VirtualFluids_h__
+
 //VirtualFluids header files
  
 #if defined VF_FETOL
@@ -160,9 +163,10 @@
 //#include <CoProcessors/MeanValuesCoProcessor.h>
 #include <CoProcessors/TimeAveragedValuesCoProcessor.h>
 #include <CoProcessors/InSituCatalystCoProcessor.h>
-#include <CoProcessors/MPIIORestartCoProcessor.h>
+#include <CoProcessors/MPIIORestart1CoProcessor.h>
 #include <CoProcessors/MPIIORestart2CoProcessor.h>
-#include <CoProcessors/MPIIORestart3CoProcessor.h>
+#include <CoProcessors/MPIIORestart11CoProcessor.h>
+#include <CoProcessors/MPIIORestart21CoProcessor.h>
 #include <CoProcessors/PressureCoefficientCoProcessor.h>
 #include <LineTimeSeriesCoProcessor.h>
 #include <IntegrateValuesHelper.h>
@@ -181,6 +185,7 @@
 #include <LBM/LBMKernel.h>
 #include <LBM/IncompressibleCumulantLBMKernel.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
+#include <LBM/CompressibleCumulant2LBMKernel.h>
 #include <LBM/InitDensityLBMKernel.h>
 #include <LBM/VoidLBMKernel.h>
 #include <LBM/LBMSystem.h>
@@ -310,3 +315,4 @@
    #include <FETOL/FETOLTransmitterBondPool.h>   
 #endif
 
+#endif // VirtualFluids_h__

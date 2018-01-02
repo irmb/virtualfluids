@@ -28,14 +28,15 @@ void run(string configname)
       double          pmL2 = config.getDouble("pmL2");
       double          pmL3 = config.getDouble("pmL3");
       int             blocknx = config.getInt("blocknx");
-      double          nx3 = config.getDouble("nx3");
-      double          dp_LB = config.getDouble("dp_LB");
+      //double          nx3 = config.getDouble("nx3");
+      double          dpLB = config.getDouble("dp_LB");
       double          nu_LB = config.getDouble("nu_LB");
       string          timeSeriesFile = config.getString("timeSeriesFile");
       double          restartStep = config.getDouble("restartStep");
-      double          restartStepStart = config.getDouble("restartStepStart");
+      //double          restartStepStart = config.getDouble("restartStepStart");
       double          endTime = config.getDouble("endTime");
-      double          outTime = config.getDouble("outTime");
+      double          outTimeStep = config.getValue<double>("outTimeStep");
+      double          outTimeStart = config.getValue<double>("outTimeStart");
       double          availMem = config.getDouble("availMem");
       bool            rawFile = config.getBool("rawFile");
       double          timeSeriesOutTime = config.getDouble("timeSeriesOutTime");
@@ -54,6 +55,9 @@ void run(string configname)
       double          vx3 = config.getDouble("vx3");
       bool            yDir = config.getBool("yDir");
       bool            zDir = config.getBool("zDir");
+      double          cpStep = config.getDouble("cpStep");
+      double          cpStepStart = config.getDouble("cpStepStart");
+      bool            newStart = config.getValue<bool>("newStart");
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -90,8 +94,8 @@ void run(string configname)
       int blocknx2 = blocknx;
       int blocknx3 = blocknx;
 
-      LBMReal rho_LB = 0.0;
-      double rhoLBinflow = dp_LB*3.0;
+      LBMReal rhoLB = 0.0;
+      double rhoLBinflow = dpLB*3.0;
 
       LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
 
@@ -104,8 +108,22 @@ void run(string configname)
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      UbSchedulerPtr rSch(new UbScheduler(restartStep, restartStepStart));
-      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      //UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStepStart));
+      //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      
+      UbSchedulerPtr rSch2(new UbScheduler(cpStep, cpStepStart));
+      MPIIORestart11CoProcessor rcp(grid, rSch2, pathname, comm);
+
+      LBMKernelPtr kernel;
+      kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+
+      //BCProcessorPtr bcProc(new BCProcessor());
+      BCProcessorPtr bcProc = BCProcessorPtr(new ThinWallBCProcessor());
+      kernel->setBCProcessor(bcProc);
+
+      rcp.setLBMKernel(kernel);
+      rcp.setBCProcessor(bcProc);
+      rcp.setChunk(1);
       //////////////////////////////////////////////////////////////////////////
 
       //BC Adapter
@@ -117,7 +135,7 @@ void run(string configname)
       BCAdapterPtr denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
       denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rho_LB));
+      BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
       denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
@@ -126,7 +144,7 @@ void run(string configname)
       bcVisitor.addBC(denBCAdapterInflow);
       bcVisitor.addBC(denBCAdapterOutflow);
 
-      if (grid->getTimeStep() == 0)
+      if (newStart)
       {
          if (myid==0) UBLOG(logINFO, "new start..");
          if (myid==0) UBLOG(logINFO, "preprocess start..");
@@ -197,9 +215,9 @@ void run(string configname)
          double g_maxX3 = sample->getX3Maximum();
 
          ////////////////////////////////////////////////////////////////////////////
-         double nx1_temp = floor((g_maxX1-g_minX1)/(deltax*(double)blocknx));
+         //double nx1_temp = floor((g_maxX1-g_minX1)/(deltax*(double)blocknx));
 
-         deltax = (g_maxX1-g_minX1)/(nx1_temp*(double)blocknx);
+         //deltax = (g_maxX1-g_minX1)/(nx1_temp*(double)blocknx);
 
          // g_maxX3 -= 0.5* deltax;
           ////////////////////////////////////////////////////////////////////////////
@@ -223,9 +241,9 @@ void run(string configname)
          if (myid==0)
          {
             UBLOG(logINFO, "Parameters:");
-            UBLOG(logINFO, "rho_LB = "<<rho_LB);
+            UBLOG(logINFO, "rho_LB = "<<rhoLB);
             UBLOG(logINFO, "nu_LB = "<<nu_LB);
-            UBLOG(logINFO, "dp_LB = "<<dp_LB);
+            UBLOG(logINFO, "dp_LB = "<<dpLB);
             UBLOG(logINFO, "dx = "<<deltax<<" m");
             UBLOG(logINFO, "numOfThreads = "<<numOfThreads);
             UBLOG(logINFO, "path = "<<pathname);
@@ -339,11 +357,11 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         LBMKernelPtr kernel;
-         kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+         //LBMKernelPtr kernel;
+         //kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
 
-         //BCProcessorPtr bcProc(new BCProcessor());
-         BCProcessorPtr bcProc = BCProcessorPtr(new ThinWallBCProcessor());
+         ////BCProcessorPtr bcProc(new BCProcessor());
+         //BCProcessorPtr bcProc = BCProcessorPtr(new ThinWallBCProcessor());
          kernel->setBCProcessor(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nu_LB, availMem, needMem);
@@ -359,11 +377,11 @@ void run(string configname)
          //initialization of distributions
          mu::Parser fct;
          fct.SetExpr("(x1max-x1)/l*dp*3.0");
-         fct.DefineConst("dp", dp_LB);
+         fct.DefineConst("dp", dpLB);
          fct.DefineConst("x1max", g_maxX1);
          fct.DefineConst("l", g_maxX1-g_minX1);
 
-         InitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
+         InitDistributionsBlockVisitor initVisitor(nu_LB, rhoLB);
          initVisitor.setRho(fct);
          grid->accept(initVisitor);
 
@@ -416,6 +434,9 @@ void run(string configname)
          double availMem = inf.readDouble();
          double needMem = inf.readDouble();
          ////////////////////////////////////////////////////////
+         
+         rcp.restart((int)restartStep);
+         grid->setTimeStep(restartStep);
 
          //new nu
          if (newViscosity)
@@ -439,9 +460,9 @@ void run(string configname)
          if (myid==0)
          {
             UBLOG(logINFO, "Parameters:");
-            UBLOG(logINFO, "rho_LB = "<<rho_LB);
+            UBLOG(logINFO, "rho_LB = "<<rhoLB);
             UBLOG(logINFO, "nu_LB = "<<nu_LB);
-            UBLOG(logINFO, "dp_LB = "<<dp_LB);
+            UBLOG(logINFO, "dp_LB = "<<dpLB);
             UBLOG(logINFO, "dx = "<<deltax<<" m");
          }
 
@@ -457,13 +478,18 @@ void run(string configname)
          //BS visitor
          grid->accept(bcVisitor);
 
+         UbSchedulerPtr geoSch(new UbScheduler(1));
+         WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+         ppgeo.process(1);
+
+
          if (myid==0) UBLOG(logINFO, "Restart - end");
       }
-
       UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
+      //nupsSch->addSchedule(nupsStep[0], nupsStep[1], nupsStep[2]);
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      UbSchedulerPtr stepSch(new UbScheduler(outTime));
+      UbSchedulerPtr stepSch(new UbScheduler(outTimeStep,outTimeStart));
 
       WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
@@ -504,6 +530,14 @@ void run(string configname)
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
+      
+      //////MPIIORestart2CoProcessor 
+      //grid->deleteBlockIDs();
+      //RenumberBlockVisitor renumber;
+      //grid->accept(renumber);
+      //UbSchedulerPtr iiSch(new UbScheduler(1));
+      //MPIIORestart2CoProcessor rcpInit(grid, iiSch, pathname, comm);
+      //rcpInit.process(300);
    }
    catch (exception& e)
    {

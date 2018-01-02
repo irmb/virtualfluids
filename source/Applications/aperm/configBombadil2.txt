@@ -1,26 +1,26 @@
-pathname = d:/temp/apermSBP120
-#pathGeo = d:/Projects/SFB880/GeometrienPoroeseMedien/isotrop/PA80-110
-pathGeo = d:/Projects/SFB880/GeometrienPoroeseMedien/isotrop/SBP120
+pathname = d:/temp/aperm5
+pathGeo = d:/Projects/SFB880/GeometrienPoroeseMedien/isotrop/PA80-110
+#pathGeo = d:/Projects/SFB880/GeometrienPoroeseMedien/isotrop/SBP120
 numOfThreads = 4
 availMem = 5e9
 logToFile = false
 
 #poroeses Medium
 rawFile = false
-#sampleFilename = /alu_80-110.vti
-sampleFilename = /SBP120s500_center.vti
+sampleFilename = /alu_80-110.vti
+#sampleFilename = /SBP120s500_center.vti
 #sampleFilename = /Sinterbronze_SBP120_1358x1376x1572_new.raw
 
 #sampleFilename = /1.raw
 
 #Diminsion in Voxel
-#pmNX1 = 200
-#pmNX2 = 200
-#pmNX3 = 200
+pmNX1 = 200
+pmNX2 = 200
+pmNX3 = 200
 
-pmNX1 = 500
-pmNX2 = 500
-pmNX3 = 500
+#pmNX1 = 500
+#pmNX2 = 500
+#pmNX3 = 500
 
 #pmNX1 = 1358
 #pmNX2 = 1376
@@ -28,10 +28,10 @@ pmNX3 = 500
 
 
 #Threshold
-#lthreshold = 29041
+lthreshold = 29041
 uthreshold = 65535
 
-lthreshold = 38370
+#lthreshold = 38370
 
 #Diminsion in m
 pmL1 = 0.726e-3
@@ -41,29 +41,29 @@ pmL3 = 0.786e-3
 pmDeltas = true
 
 #deltas [m]
-#pmDeltaX1 = 3.6e-6
-#pmDeltaX2 = 3.6e-6
-#pmDeltaX3 = 3.6e-6
+pmDeltaX1 = 3.6e-6
+pmDeltaX2 = 3.6e-6
+pmDeltaX3 = 3.6e-6
 
-pmDeltaX1 = 3.75e-6
-pmDeltaX2 = 3.75e-6
-pmDeltaX3 = 3.75e-6
+#pmDeltaX1 = 3.75e-6
+#pmDeltaX2 = 3.75e-6
+#pmDeltaX3 = 3.75e-6
 
 yDir = false
 zDir = false
 
 #grid
-blocknx = 10
+blocknx = 95
 nx3 = 5
 deltax = 10e-6
 spongeLayer=false
 
 #physic
 newPressure = false
-dp_LB = 0.001
+dp_LB = 1e-6
 
 newViscosity = false
-nu_LB = 0.168666666667e-4
+nu_LB = 0.0005
 
 vx1=0
 vx2=0
@@ -72,12 +72,19 @@ vx3=0
 timeSeriesFile = /timeseries/1
 timeSeriesOutTime = 100
 
-#restartFile = txt
-restartStep = 100000
-restartStepStart=100000
+nupsStep = 10000 10000 10000000
 
-endTime = 100000
-outTime = 10000
+restartStepStart = 240000
 
-nupsStep = 10 30 100
+newStart    = false
+restartStep = 10
+
+cpStep      = 20
+cpStepStart = 20
+
+outTimeStart = 0
+outTimeStep = 1
+
+endTime = 20
+
 

@@ -12,6 +12,150 @@ double rangeRandom1()
    return (2.0*rand())/RAND_MAX-1.0;
 }
 
+void setBC(Grid3DPtr grid, string pathGeo, string fngFileWhole, string zigZagTape, vector<double>  boundingBox, double uLB, double rhoLB, double blockLength, BCProcessorPtr bcProcessor)
+{
+   CommunicatorPtr comm = MPICommunicator::getInstance();
+   int myid = comm->getProcessID();
+   
+   std::vector<std::vector<Block3DPtr> > blockVector;
+   int minInitLevel;
+   int maxInitLevel;
+   int gridRank;
+
+   gridRank = comm->getProcessID();
+   minInitLevel = grid->getCoarsestInitializedLevel();
+   maxInitLevel = grid->getFinestInitializedLevel();
+   blockVector.resize(maxInitLevel+1);
+   for (int level = minInitLevel; level<=maxInitLevel; level++)
+   {
+      grid->getBlocks(level, gridRank, true, blockVector[level]);
+   }
+
+   for (int level = minInitLevel; level<=maxInitLevel; level++)
+   {
+      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      {
+         if (block)
+         {
+            LBMKernelPtr kernel = block->getKernel();
+            kernel->setBCProcessor(bcProcessor->clone(kernel));
+         }
+      }
+   }
+   
+   SetUndefinedNodesBlockVisitor undefNodesVisitor;
+   grid->accept(undefNodesVisitor);
+   
+   BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
+   noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NoSlipBCAlgorithm()));
+   if (myid==0) UBLOG(logINFO, "Read fngFileWhole:start");
+   GbTriFaceMesh3DPtr fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+   if (myid==0) UBLOG(logINFO, "Read fngFileWhole:end");
+   fngMeshWhole->rotate(0.0, 0.5, 0.0);
+   D3Q27TriFaceMeshInteractorPtr fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
+   if (myid==0) UBLOG(logINFO, "Read zigZagTape:start");
+   string ZckbndFilename = pathGeo+"/"+zigZagTape;
+   GbTriFaceMesh3DPtr meshBand1(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape1"));
+   meshBand1->rotate(0.0, 5, 0.0);
+   meshBand1->translate(15, 0, -12.850);
+   // Zackenband2
+   GbTriFaceMesh3DPtr meshBand2(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape2"));
+   meshBand2->rotate(0.0, 5, 0.0);
+   meshBand2->translate(15, 5, -12.850);
+
+   GbTriFaceMesh3DPtr meshBand5(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape5"));
+   meshBand5->rotate(0.0, -1, 0.0);
+   meshBand5->rotate(0.0, 0.0, 180.0);
+   //meshBand5->translate(30, 0, -37.3);
+   meshBand5->translate(30, 0, -37.2);
+   
+   // Zackenband6
+   GbTriFaceMesh3DPtr meshBand6(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape6"));
+   meshBand6->rotate(0.0, -1, 0.0);
+   meshBand6->rotate(0.0, 0.0, 180.0);
+   //meshBand6->translate(30, 5, -37.3);
+   meshBand6->translate(30, 5, -37.2);
+
+   D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+   D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+   D3Q27TriFaceMeshInteractorPtr triBand3Interactor(new D3Q27TriFaceMeshInteractor(meshBand5, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+   D3Q27TriFaceMeshInteractorPtr triBand4Interactor(new D3Q27TriFaceMeshInteractor(meshBand6, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+
+   mu::Parser fct;
+   fct.SetExpr("U");
+   fct.DefineConst("U", uLB);
+   BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+   velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
+
+   BCAdapterPtr outflowBCAdapter(new DensityBCAdapter(rhoLB));
+   outflowBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
+
+   double g_minX1 = boundingBox[0]*1000.0;
+   double g_minX2 = boundingBox[2]*1000.0;
+   double g_minX3 = boundingBox[4]*1000.0;
+
+   double g_maxX1 = boundingBox[1]*1000.0;
+   double g_maxX2 = boundingBox[3]*1000.0;
+   double g_maxX3 = boundingBox[5]*1000.0;
+   
+   GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
+   
+   GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+   
+   D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, velBCAdapter, Interactor3D::SOLID));
+   D3Q27InteractorPtr addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, velBCAdapter, Interactor3D::SOLID));
+   //inflow
+   GbCuboid3DPtr geoInflow(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
+   //outflow
+   GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+   //inflow
+   D3Q27InteractorPtr inflowIntr = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+   //outflow
+   D3Q27InteractorPtr outflowIntr = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, outflowBCAdapter, Interactor3D::SOLID));
+
+   SetSolidBlockVisitor v1(fngIntrWhole, SetSolidBlockVisitor::BC);
+   grid->accept(v1);
+
+   SetSolidBlockVisitor v2(triBand1Interactor, SetSolidBlockVisitor::BC);
+   grid->accept(v2);
+
+   SetSolidBlockVisitor v3(triBand1Interactor, SetSolidBlockVisitor::BC);
+   grid->accept(v3);
+
+   SetSolidBlockVisitor v4(triBand2Interactor, SetSolidBlockVisitor::BC);
+   grid->accept(v4);
+   
+   SetSolidBlockVisitor v5(triBand3Interactor, SetSolidBlockVisitor::BC);
+   grid->accept(v5);
+
+   SetSolidBlockVisitor v6(triBand4Interactor, SetSolidBlockVisitor::BC);
+   grid->accept(v6);
+
+   SetSolidBlockVisitor v7(addWallZminInt, SetSolidBlockVisitor::BC);
+   grid->accept(v7);
+
+   SetSolidBlockVisitor v8(addWallZmaxInt, SetSolidBlockVisitor::BC);
+   grid->accept(v8);
+
+   SetSolidBlockVisitor v9(inflowIntr, SetSolidBlockVisitor::BC);
+   grid->accept(v9);
+
+   SetSolidBlockVisitor v10(outflowIntr, SetSolidBlockVisitor::BC);
+   grid->accept(v10);
+   
+   inflowIntr->initInteractor();
+   outflowIntr->initInteractor();
+   addWallZminInt->initInteractor();
+   addWallZmaxInt->initInteractor();
+   fngIntrWhole->initInteractor();
+   triBand1Interactor->initInteractor();
+   triBand2Interactor->initInteractor();
+   triBand3Interactor->initInteractor();
+   triBand3Interactor->initInteractor();
+   triBand4Interactor->initInteractor();
+}
+
 void run(string configname)
 {
    try
@@ -22,7 +166,8 @@ void run(string configname)
 
       string          pathOut = config.getValue<string>("pathOut");
       string          pathGeo = config.getValue<string>("pathGeo");
-      string          fngFileWhole = config.getValue<string>("fngFileWhole");
+      string          fngFileWhole1 = config.getValue<string>("fngFileWhole1");
+      string          fngFileWhole2 = config.getValue<string>("fngFileWhole2");
       string          fngFileTrailingEdge = config.getValue<string>("fngFileTrailingEdge");
       string          fngFileBodyPart = config.getValue<string>("fngFileBodyPart");
       string          zigZagTape = config.getValue<string>("zigZagTape");
@@ -34,7 +179,8 @@ void run(string configname)
       double          cpStart = config.getValue<double>("cpStart");
       double          cpStep = config.getValue<double>("cpStep");
       double          endTime = config.getValue<double>("endTime");
-      double          outTime = config.getValue<double>("outTime");
+      double          outTimeStep = config.getValue<double>("outTimeStep");
+      double          outTimeStart = config.getValue<double>("outTimeStart");
       double          availMem = config.getValue<double>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
@@ -47,8 +193,18 @@ void run(string configname)
       bool            newStart = config.getValue<bool>("newStart");
       bool            writeBlocks = config.getValue<bool>("writeBlocks");
       string          sampleFilename = config.getValue<string>("sampleFilename");
+      string          pathReInit = config.getValue<string>("pathReInit");
+      int             stepReInit = config.getValue<int>("stepReInit");
+      
+      double          pcpStart = config.getValue<double>("pcpStart");
+      double          pcpStop  = config.getValue<double>("pcpStop");
+      //double          p_inf    = config.getValue<double>("p_inf");
+      
+      double          timeAvStart       = config.getValue<double>("timeAvStart");
+      double          timeAvStop        = config.getValue<double>("timeAvStop");
+      
+      int             chunk = config.getValue<int>("chunk");
 
-      //Sleep(30000);
 
       CommunicatorPtr comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -167,13 +323,38 @@ void run(string configname)
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(outflowBCAdapter);
 
+      LBMKernelPtr kernel = LBMKernelPtr(new CompressibleCumulant2LBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulant2LBMKernel::NORMAL));
+      BCProcessorPtr bcProc;
+      if (thinWall)
+      {
+         bcProc = BCProcessorPtr(new ThinWallBCProcessor());
+      }
+      else
+      {
+         bcProc = BCProcessorPtr(new BCProcessor());
+      }
+      kernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
       //restart
-      //Grid3DPtr oldGrid(new Grid3D(comm));
       UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStart));
-      //RestartCoProcessor rp(grid, rSch, comm, pathOut, RestartCoProcessor::BINARY);
-      MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
-      //rcp.restart(5000);
+      //MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
+      //rcp.setChunk(chunk);
+      
+      UbSchedulerPtr rSch2(new UbScheduler(restartStep));
+      //RestartCoProcessor rp(grid, rSch2, comm, pathOut, RestartCoProcessor::BINARY);
+     
+      //MPIIORestart2CoProcessor rcp2(grid, rSch2, pathOut+"/mpiio2", comm);      
+      //rcp2.setLBMKernel(kernel);
+      //rcp2.setBCProcessor(bcProc);
+      
+      
+      MPIIORestart1CoProcessor rcp3(grid, rSch, pathOut+"/mpiio3", comm);
+      rcp3.setLBMKernel(kernel);
+      rcp3.setBCProcessor(bcProc);
+      
+      //MPIIORestart3CoProcessor rcp4(grid, rSch, pathOut+"/mpiio4", comm);
+      //rcp4.setLBMKernel(kernel);
+      //rcp4.setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -199,7 +380,7 @@ void run(string configname)
 
          grid->setPeriodicX1(false);
          grid->setPeriodicX2(true);
-         grid->setPeriodicX3(true);
+         grid->setPeriodicX3(false);
 
          if (myid==0)
          {
@@ -222,7 +403,8 @@ void run(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
-         GbTriFaceMesh3DPtr fngMeshWhole;
+         GbTriFaceMesh3DPtr fngMeshWhole1;
+         GbTriFaceMesh3DPtr fngMeshWhole2;
          GbTriFaceMesh3DPtr fngMeshBodyPart;
          GbTriFaceMesh3DPtr fngMeshTrailingEdge;
          GbTriFaceMesh3DPtr porousTrailingEdge;
@@ -287,11 +469,17 @@ void run(string configname)
          }
          else
          {
-            if (myid==0) UBLOG(logINFO, "Read fngFileWhole:start");
-            fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-            if (myid==0) UBLOG(logINFO, "Read fngFileWhole:end");
-            fngMeshWhole->rotate(0.0, 0.5, 0.0);
-            if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut+"/geo/fngMeshWhole", WbWriterVtkXmlBinary::getInstance());
+            //if (myid==0) UBLOG(logINFO, "Read fngFileWhole1:start");
+            //fngMeshWhole1 = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole1, "fngMeshWhole1", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+            //if (myid==0) UBLOG(logINFO, "Read fngFileWhole1:end");
+            //fngMeshWhole1->rotate(0.0, 0.5, 0.0);
+            //if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole1.get(), pathOut+"/geo/fngMeshWhole1", WbWriterVtkXmlBinary::getInstance());
+            
+            if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:start");
+            fngMeshWhole2 = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole2, "fngMeshWhole2", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+            if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:end");
+            fngMeshWhole2->rotate(0.0, 0.5, 0.0);
+            if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole2.get(), pathOut+"/geo/fngMeshWhole2", WbWriterVtkXmlBinary::getInstance());
          }
 
          //////////////////////////////////////////////////////////////////////////
@@ -356,7 +544,8 @@ void run(string configname)
          //////////////////////////////////////////////////////////////////////////
          //return;
 
-         Interactor3DPtr fngIntrWhole;
+         //Interactor3DPtr fngIntrWhole1;
+         Interactor3DPtr fngIntrWhole2;
          Interactor3DPtr fngIntrBodyPart;
          Interactor3DPtr fngIntrTrailingEdge;
          Interactor3DPtr porousIntrTrailingEdge;
@@ -369,7 +558,8 @@ void run(string configname)
          }
          else
          {
-            fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::EDGES));
+            //fngIntrWhole1 = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole1, grid, noSlipBCAdapter, Interactor3D::SOLID));
+            fngIntrWhole2 = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole2, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
          }
 
          D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
@@ -399,7 +589,7 @@ void run(string configname)
             }
             else
             {
-               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
+               boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole2)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
             }
 
             //boost::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(triBand1Interactor)->refineBlockGridToLevel(refineLevel, 0.0, refineDistance);
@@ -431,17 +621,37 @@ void run(string configname)
             //grid->accept(refVisitor2);
 
             //GbObject3DPtr teBox1(new GbCuboid3D(269.0, 0.0, 1.0, 270.0, 100.0, 8.5));
-            GbObject3DPtr teBox1(new GbCuboid3D(269.0, 0.0, -10.0, 310.0, 100.0, 20.5));
-            if (myid==0) GbSystem3D::writeGeoObject(teBox1.get(), pathOut+"/geo/teBox1", WbWriterVtkXmlASCII::getInstance());
+            // for porous teY
+            //GbObject3DPtr teBox1(new GbCuboid3D(269.0, 0.0, -10.0, 310.0, 100.0, 20.5));
+            //GbObject3DPtr teBox1(new GbCuboid3D(200.0, 0.0, -20.0, 400.0, 100.0, 20.0));
+            //if (myid==0) GbSystem3D::writeGeoObject(teBox1.get(), pathOut+"/geo/teBox1", WbWriterVtkXmlASCII::getInstance());
 
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitor3(teBox1, refineLevel);
-            grid->accept(refVisitor3);
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitor3(teBox1, 5);
+            //grid->accept(refVisitor3);
 
             //GbObject3DPtr teBox2(new GbCuboid3D(271.0, 0.0, 3.0, 279.0, 100.0, 5.7));
             //if (myid==0) GbSystem3D::writeGeoObject(teBox2.get(), pathOut+"/geo/teBox2", WbWriterVtkXmlASCII::getInstance());
 
             //RefineCrossAndInsideGbObjectBlockVisitor refVisitor4(teBox2, refineLevel);
             //grid->accept(refVisitor4);
+
+            //level 1
+            GbObject3DPtr wakeBoxL1(new GbCuboid3D(200.0, 0.0, -20.0, 2000.0, 100.0, 20.0));
+            if (myid==0) GbSystem3D::writeGeoObject(wakeBoxL1.get(), pathOut+"/geo/wakeBoxL1", WbWriterVtkXmlASCII::getInstance());
+            RefineCrossAndInsideGbObjectBlockVisitor refVisitorWakeBoxL1(wakeBoxL1, 1);
+            grid->accept(refVisitorWakeBoxL1);
+            
+            //level 4
+            //GbObject3DPtr teBoxL5(new GbCuboid3D(200.0, 0.0, -20.0, 400.0, 100.0, 20.0));
+            //if (myid==0) GbSystem3D::writeGeoObject(teBoxL5.get(), pathOut+"/geo/teBoxL5", WbWriterVtkXmlASCII::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorTeBoxL5(teBoxL5, 4);
+            //grid->accept(refVisitorTeBoxL5);
+            
+            //level 5
+            //GbObject3DPtr teBoxL6(new GbCuboid3D(270.0, 0.0, -3.0, 320.0, 100.0, 10.0));
+            //if (myid==0) GbSystem3D::writeGeoObject(teBoxL6.get(), pathOut+"/geo/teBoxL6", WbWriterVtkXmlASCII::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorTeBoxL6(teBoxL6, 5);
+            //grid->accept(refVisitorTeBoxL6);
 
             grid->setRank(rank);
 
@@ -471,7 +681,7 @@ void run(string configname)
 
             if (porousTralingEdge)
             {
-               SetSolidOrTransBlockVisitor v(fngIntrBodyPart, SetSolidOrTransBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrBodyPart, SetSolidBlockVisitor::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrBodyPart->getSolidBlockSet();
                BOOST_FOREACH(Block3DPtr block, sb)
@@ -479,19 +689,19 @@ void run(string configname)
                   grid->deleteBlock(block);
                }
                fngIntrBodyPart->removeSolidBlocks();
-               fngIntrBodyPart->removeTransBlocks();
+               fngIntrBodyPart->removeBcBlocks();
             }
             else
             {
-               SetSolidOrTransBlockVisitor v(fngIntrWhole, SetSolidOrTransBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrWhole2, SetSolidBlockVisitor::SOLID);
                grid->accept(v);
-               std::vector<Block3DPtr>& sb = fngIntrWhole->getSolidBlockSet();
+               std::vector<Block3DPtr>& sb = fngIntrWhole2->getSolidBlockSet();
                BOOST_FOREACH(Block3DPtr block, sb)
                {
                   grid->deleteBlock(block);
                }
-               fngIntrWhole->removeSolidBlocks();
-               fngIntrWhole->removeTransBlocks();
+               fngIntrWhole2->removeSolidBlocks();
+               fngIntrWhole2->removeBcBlocks();
             }
 
             if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - end");
@@ -552,12 +762,16 @@ void run(string configname)
          //}
          //else
          //{
-         //   rcp.readBlocks(0);
+           //rcp.readBlocks(restartStep);
+           //grid->setTimeStep(restartStep);
          //}
 
          //return;
 
          //Sleep(1000*myid);
+
+           
+
 
          std::vector<int> dirs;
          for (int i = D3Q27System::E; i<=D3Q27System::TS; i++)
@@ -650,7 +864,7 @@ void run(string configname)
          }
          else
          {
-            intHelper.addInteractor(fngIntrWhole);
+            intHelper.addInteractor(fngIntrWhole2);
          }
 
          //////////////////////////////////////////////////////////////////////////
@@ -695,21 +909,21 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         LBMKernelPtr kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
-         //LBMKernelPtr kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         //LBMKernelPtr kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
+         ////LBMKernelPtr kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], IncompressibleCumulantLBMKernel::NORMAL));
 
-         BCProcessorPtr bcProc;
+         //BCProcessorPtr bcProc;
 
-         if (thinWall)
-         {
-            bcProc = BCProcessorPtr(new ThinWallBCProcessor());
-         }
-         else
-         {
-            bcProc = BCProcessorPtr(new BCProcessor());
-         }
+         //if (thinWall)
+         //{
+            //bcProc = BCProcessorPtr(new ThinWallBCProcessor());
+         //}
+         //else
+         //{
+            //bcProc = BCProcessorPtr(new BCProcessor());
+         //}
 
-         kernel->setBCProcessor(bcProc);
+         //kernel->setBCProcessor(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
@@ -740,14 +954,7 @@ void run(string configname)
             UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
          }
 
-         grid->accept(bcVisitor);
-         if (myid==0) UBLOG(logINFO, "grid->accept(bcVisitor);:end");
 
-         if (myid==0)
-         {
-            UBLOG(logINFO, "PID = "<<myid<<" Point 7");
-            UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
-         }
 
          //initialization of distributions
          mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3;
@@ -761,13 +968,13 @@ void run(string configname)
          inflowProfileVx3.DefineConst("U", uLB);
          inflowProfileVx3.DefineFun("rangeRandom1", rangeRandom1);
 
-         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
-         initVisitor.setVx1(fct);
-         //initVisitor.setVx1(inflowProfileVx1);
-         //initVisitor.setVx2(inflowProfileVx2);
-         //initVisitor.setVx3(inflowProfileVx3);
-         //initVisitor.setNu(nuLB);
-         grid->accept(initVisitor);
+         InitDistributionsBlockVisitor initVisitor1(nuLB, rhoLB);
+         initVisitor1.setVx1(fct);
+         ////initVisitor.setVx1(inflowProfileVx1);
+         ////initVisitor.setVx2(inflowProfileVx2);
+         ////initVisitor.setVx3(inflowProfileVx3);
+         ////initVisitor.setNu(nuLB);
+         grid->accept(initVisitor1);
 
 
 
@@ -779,16 +986,39 @@ void run(string configname)
 
          
          //Grid3DPtr oldGrid(new Grid3D(comm));
+         //
+         ////with MPIIORestartCoProcessor
          //UbSchedulerPtr iSch(new UbScheduler());
-         //MPIIORestartCoProcessor rcpInit(oldGrid, iSch, pathOut, comm);
-         //rcpInit.restart(5000);
+         //MPIIORestart1CoProcessor rcpInit(oldGrid, iSch, pathReInit, comm);
+         //rcpInit.setChunk(chunk);
+         //rcpInit.restart(stepReInit);
+
+         //////with MPIIORestart2CoProcessor
+         ////UbSchedulerPtr iSch(new UbScheduler());
+         ////MPIIORestart2CoProcessor rcp(oldGrid, iSch, pathReInit, comm);
+         ////rcp.readBlocks(stepReInit);
+         ////Grid3DVisitorPtr newMetisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+         ////oldGrid->accept(newMetisVisitor);
+         ////rcp.readDataSet(stepReInit);
+         ////rcp.readBoundaryConds(stepReInit);
 
          //InitDistributionsWithInterpolationGridVisitor initVisitor(oldGrid, iProcessor, nuLB);
          //grid->accept(initVisitor);
 
          //domain decomposition for threads
-         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         //grid->accept(pqPartVisitor);
+         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         grid->accept(pqPartVisitor);
+
+         //bcVisitor should be accept after initialization!!!!
+         grid->accept(bcVisitor);
+         if (myid==0) UBLOG(logINFO, "grid->accept(bcVisitor):end");
+
+         if (myid==0)
+         {
+            UBLOG(logINFO, "PID = "<<myid<<" Point 7");
+            UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
+         }
+
 
          //Postrozess
          {
@@ -803,53 +1033,92 @@ void run(string configname)
             UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
          }
 
-         fngIntrWhole.reset();
+         //fngIntrWhole1.reset();
+         fngIntrWhole2.reset();
+
+         ////UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStart));
+         ////MPIIORestartCoProcessor rcp(grid, rSch, pathOut, comm);
+
+         GbCuboid3DPtr sponfeLayerBB1(new GbCuboid3D(g_maxX1-750, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathOut+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitor(sponfeLayerBB1);
 
          if (myid==0) UBLOG(logINFO, "Preprozess - end");
       }
       else
       {
          
-         
+         //rcp2.process(restartStep);
+         //return;
          //////////////////////////////////////////////////////////////////////////
-         //MPIIORestart2CoProcessor test
-         //UbSchedulerPtr iSch(new UbScheduler(10));
-         //MPIIORestart2CoProcessor rcp(grid, iSch, pathOut+"/mpiio2", comm);
-         //rcp.readBlocks(10);
-         ////RenumberBlockVisitor renumber;
-         ////grid->accept(renumber);
-         //Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
-         //grid->accept(metisVisitor);
-         //rcp.readDataSet(10);
-         //rcp.readBoundaryConds(10);
-         //grid->setTimeStep(10);
-         //////////////////////////////////////////////////////////////////////////
+         //////MPIIORestart2CoProcessor
+         //UbSchedulerPtr iSch(new UbScheduler());
+         //rcp2.readBlocks(restartStep);
+         //grid->updateDistributedBlocks(comm);
          
-         rcp.restart((int)restartStep);
+         //Grid3DVisitorPtr newMetisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+         //grid->accept(newMetisVisitor);
+         
+         //rcp2.restart((int)restartStep);
+         //grid->setTimeStep(restartStep);
+         
+         //rcp.readBlocks(restartStep);
+         //rcp.readDataSet(restartStep);
+         //rcp.readBoundaryConds(restartStep);
+         //grid->setTimeStep(restartStep);
+         
+         //setBC(grid, pathGeo, fngFileWhole2, zigZagTape, boundingBox, uLB, rhoLB, blockLength, bcProc);
+         
+         //rp.process(restartStep);
+
+         rcp3.restart((int)restartStep);
          grid->setTimeStep(restartStep);
+         
+         //{
+            //WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut+"/mpiio3", WbWriterVtkXmlASCII::getInstance(), comm);
+            //ppblocks.process(0);
+         //}
+         
+         //{
+            //UbSchedulerPtr stepSch(new UbScheduler(1));
+            //WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathOut+"/mpiio3", WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            //pp.process(restartStep);
+         //} 
+ 
+         //{
+           
+            //UbSchedulerPtr geoSch(new UbScheduler(1));
+            //WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut+"/mpiio3", WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            //ppgeo.process(0);
+         //}
 
-         {
-            WriteBlocksCoProcessor ppblocks(grid, UbSchedulerPtr(new UbScheduler(1)), pathOut, WbWriterVtkXmlASCII::getInstance(), comm);
-            ppblocks.process(3);
-         }
-
+         //rcp3.process(restartStep);
+         
+         //return;
+         
+         
+     
+            
+         
+                 
+         ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
-         //domain decomposition for threads
-         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         //grid->accept(pqPartVisitor);
-
          grid->accept(bcVisitor);
+
+         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         grid->accept(pqPartVisitor);
+         
       }
 
       UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      UbSchedulerPtr stepSch(new UbScheduler(outTime));
+      UbSchedulerPtr stepSch(new UbScheduler(outTimeStep,outTimeStart));
 
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+
 
       if (myid==0)
       {
@@ -857,19 +1126,141 @@ void run(string configname)
          UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
       }
 
-      //////////////////////////////////////////////////////////////////////////
-      //MPIIORestart2CoProcessor test
-      //UbSchedulerPtr iSch(new UbScheduler(100,100));
+      ////////////////////////////////////////////////////////////////////////
+      ////MPIIORestart2CoProcessor 
+      //grid->deleteBlockIDs();
+      //RenumberBlockVisitor renumber;
+      //grid->accept(renumber);
+      //UbSchedulerPtr iSch(new UbScheduler(1));
       //MPIIORestart2CoProcessor rcpInit(grid, iSch, pathOut+"/mpiio2", comm);
+      //rcpInit.process(0);
+      ////////////////////////////////////////////////////////////////////////
+
+      //////////////////////////////////////////////////////////////////////////
+      ////MPIIORestartCoProcessor 
+      //UbSchedulerPtr iSch(new UbScheduler(1));
+      //MPIIORestartCoProcessor rcpInit(grid, iSch, pathOut, comm);
+      //rcpInit.process(0);
       //////////////////////////////////////////////////////////////////////////
 
+      WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      //pp.process(0);
+
+      //rcp.process(0);
+
+      //return;
+
+      //////////////////////////////////////////////////////////////////////////
+      ////Forces calculation
+      //////////////////////////////////////////////////////////////////////////
+      //if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:start");
+      //GbTriFaceMesh3DPtr fngMeshWhole2 = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole2, "fngMeshWhole2", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      //if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:end");
+      //fngMeshWhole2->rotate(0.0, 0.5, 0.0);
+      //D3Q27TriFaceMeshInteractorPtr fngIntrWhole2 = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole2, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
+      //SetSolidBlockVisitor fngVisitor(fngIntrWhole2, SetSolidBlockVisitor::BC);
+      //grid->accept(fngVisitor);
+      //fngIntrWhole2->initInteractor();
+      
+      //grid->accept(bcVisitor);
+
+      //string ZckbndFilename = pathGeo+"/"+zigZagTape;
+      //GbTriFaceMesh3DPtr meshBand1(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape1"));
+      //meshBand1->rotate(0.0, 5, 0.0);
+      //meshBand1->translate(15, 0, -12.850);
+      //// Zackenband2
+      //GbTriFaceMesh3DPtr meshBand2(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape2"));
+      //meshBand2->rotate(0.0, 5, 0.0);
+      //meshBand2->translate(15, 5, -12.850);
+
+      //GbTriFaceMesh3DPtr meshBand5(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape5"));
+      //meshBand5->rotate(0.0, -1, 0.0);
+      //meshBand5->rotate(0.0, 0.0, 180.0);
+      //meshBand5->translate(30, 0, -37.2);
+      //// Zackenband6
+      //GbTriFaceMesh3DPtr meshBand6(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(ZckbndFilename, "zigZagTape6"));
+      //meshBand6->rotate(0.0, -1, 0.0);
+      //meshBand6->rotate(0.0, 0.0, 180.0);
+      //meshBand6->translate(30, 5, -37.2);
+
+      //D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+      //D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+      //D3Q27TriFaceMeshInteractorPtr triBand3Interactor(new D3Q27TriFaceMeshInteractor(meshBand5, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+      //D3Q27TriFaceMeshInteractorPtr triBand4Interactor(new D3Q27TriFaceMeshInteractor(meshBand6, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+
+      //SetSolidOrTransBlockVisitor band1Visitor(triBand1Interactor, SetSolidOrTransBlockVisitor::TRANS);
+      //grid->accept(band1Visitor);
+      //triBand1Interactor->initInteractor();
+
+      //SetSolidOrTransBlockVisitor band2Visitor(triBand2Interactor, SetSolidOrTransBlockVisitor::TRANS);
+      //grid->accept(band2Visitor);
+      //triBand2Interactor->initInteractor();
+
+      //SetSolidOrTransBlockVisitor band3Visitor(triBand3Interactor, SetSolidOrTransBlockVisitor::TRANS);
+      //grid->accept(band3Visitor);
+      //triBand3Interactor->initInteractor();
+
+      //SetSolidOrTransBlockVisitor band4Visitor(triBand4Interactor, SetSolidOrTransBlockVisitor::TRANS);
+      //grid->accept(band4Visitor);
+      //triBand4Interactor->initInteractor();
+
+      //double b    = 30; //wingspan
+      //double t    = 300; //chord length
+      //double area = (b*t)/(deltaXcoarse*deltaXcoarse);
+      //double v    = uLB;
+
+      //CalculateForcesCoProcessor fp(grid, stepSch, pathOut + "/forces/forces.txt", comm, v, area);
+      //fp.addInteractor(fngIntrWhole2);
+      //fp.addInteractor(triBand1Interactor);
+      //fp.addInteractor(triBand2Interactor);
+      //fp.addInteractor(triBand3Interactor);
+      //fp.addInteractor(triBand4Interactor);
+      //////////////////////////////////////////////////////////////////////////
+
+      //////////////////////////////////////////////////////////////////////////
+      ////Cp calculation
+      //////////////////////////////////////////////////////////////////////////
+      //UbSchedulerPtr pcpSch(new UbScheduler(1, pcpStart, pcpStop));
+
+      //double planeCenter = g_minX2+(g_maxX2-g_minX2)/2.0;
+      //double planeX2min = planeCenter-deltaXfine;
+      //double planeX2max = planeCenter;//planeCenter+deltaXfine;
+      //GbCuboid3DPtr plane(new GbCuboid3D(g_minX1,planeX2min,g_minX3,g_maxX1,planeX2max,g_maxX3));
+      //if (myid==0) GbSystem3D::writeGeoObject(plane.get(), pathOut+"/geo/plane", WbWriterVtkXmlASCII::getInstance());
+
+      //PressureCoefficientCoProcessor pcp(grid, pcpSch, plane, pathOut+"/cp/cp", comm);
+      //pcp.addInteractor(fngIntrWhole2);
+      //////////////////////////////////////////////////////////////////////////
+
+      UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+        TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      tav->setWithGhostLayer(true);
+
+      IntegrateValuesHelperPtr mic1(new IntegrateValuesHelper(grid, comm,300-deltaXcoarse,35,-600-deltaXcoarse,
+         300,65,-600));
+      if (myid==0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(), pathOut+"/geo/mic1", WbWriterVtkXmlBinary::getInstance());
+      UbSchedulerPtr stepMV(new UbScheduler(1));
+      //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
+
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::MPI));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::MPI));
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::PrePostBc));
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
+      
+      ////////////////////////////////////////////////////////////////////////
+      //MPIIORestart2CoProcessor 
+      //grid->deleteBlockIDs();
+      //RenumberBlockVisitor renumber;
+      //grid->accept(renumber);
+      //UbSchedulerPtr iSch(new UbScheduler(1));
+      //MPIIORestart2CoProcessor rcpInit(grid, iSch, pathOut+"/mpiio2", comm);
+      //rcpInit.process(0);
+      ////////////////////////////////////////////////////////////////////////
 
       if (myid==0)
       {

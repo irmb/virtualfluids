@@ -343,7 +343,7 @@ void run(string configname)
             
             if (porousTralingEdge)
             {
-               SetSolidOrTransBlockVisitor v(fngIntrBodyPart, SetSolidOrTransBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrBodyPart, SetSolidBlockVisitor::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrBodyPart->getSolidBlockSet();
                BOOST_FOREACH(Block3DPtr block, sb)
@@ -351,11 +351,11 @@ void run(string configname)
                   grid->deleteBlock(block);
                }
                fngIntrBodyPart->removeSolidBlocks();
-               fngIntrBodyPart->removeTransBlocks();
+               fngIntrBodyPart->removeBcBlocks();
             }
             else
             {
-               SetSolidOrTransBlockVisitor v(fngIntrWhole, SetSolidOrTransBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrWhole, SetSolidBlockVisitor::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrWhole->getSolidBlockSet();
                BOOST_FOREACH(Block3DPtr block, sb)
@@ -363,7 +363,7 @@ void run(string configname)
                   grid->deleteBlock(block);
                }
                fngIntrWhole->removeSolidBlocks();
-               fngIntrWhole->removeTransBlocks();
+               fngIntrWhole->removeBcBlocks();
             }
 
             if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");

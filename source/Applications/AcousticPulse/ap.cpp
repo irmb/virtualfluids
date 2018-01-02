@@ -17,10 +17,10 @@ void run(string configname)
       double availMem = 5e9;
 
       //40
-      //string  pathname = "d:/temp/AcousticPulse40Cube2y";
-      //double  endTime = 20;
-      //double  outTime = 20;
-      //LBMReal dx =  0.05;
+      string  pathname = "d:/temp/AcousticPulse40Cube2y_test";
+      double  endTime = 20;
+      double  outTime = 20;
+      LBMReal dx =  0.05;
 
       //80
       //string  pathname = "d:/temp/AcousticPulse80Cube2y";
@@ -29,10 +29,10 @@ void run(string configname)
       //LBMReal dx = 0.025;
 
       //160
-      string  pathname = "d:/temp/AcousticPulse160Cube2y";
-      double  endTime = 80;
-      double  outTime = 80;
-      LBMReal dx = 0.0125;
+      //string  pathname = "d:/temp/AcousticPulse160Cube2y";
+      //double  endTime = 80;
+      //double  outTime = 80;
+      //LBMReal dx = 0.0125;
 
       //LBMReal dx = 0.1; 
       //LBMReal dx = 1.66666666667e-2; //120

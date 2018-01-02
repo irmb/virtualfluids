@@ -93,7 +93,7 @@ void run(string configname)
       //restart
       UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStart));
       //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
-      MPIIORestartCoProcessor rcp(grid, rSch, pathname, comm);
+      MPIIORestart1CoProcessor rcp(grid, rSch, pathname, comm);
       //////////////////////////////////////////////////////////////////////////
 
       if (newStart)

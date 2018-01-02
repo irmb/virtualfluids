@@ -86,10 +86,10 @@ void run(string configname)
       fct.DefineConst("U", uLB);
       fct.DefineConst("H", H);
       BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingVelocityBCAlgorithm()));
+      velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
 
       BCAdapterPtr denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingDensityBCAlgorithm()));
+      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
       
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipAdapter);
@@ -218,12 +218,6 @@ void run(string configname)
          ppblocks->process(0);
          ppblocks.reset();
 
-         //set connectors
-         //D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
-         grid->accept(setConnsVisitor);
-
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
          int ghostLayer = 3;
          unsigned long long numberOfNodesPerBlock = (unsigned long long)(blockNx[0])* (unsigned long long)(blockNx[1])* (unsigned long long)(blockNx[2]);
@@ -266,16 +260,22 @@ void run(string configname)
 
          intHelper.setBC();
 
-         grid->accept(bcVisitor);
-
          //domain decomposition
-         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         //grid->accept(pqPartVisitor);
+         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         grid->accept(pqPartVisitor);
 
          //initialization of distributions
          InitDistributionsBlockVisitor initVisitor(nueLB, rhoLB);
-         //initVisitor.setVx1(fct);
+         initVisitor.setVx1(fct);
          grid->accept(initVisitor);
+
+         //set connectors
+         //D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
+         grid->accept(setConnsVisitor);
+
+         grid->accept(bcVisitor);
 
          //Postrozess
          UbSchedulerPtr geoSch(new UbScheduler(1));
@@ -300,7 +300,7 @@ void run(string configname)
          //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
          //grid->accept(pqPartVisitor);
 
-         SetSolidOrTransBlockVisitor v(cylinderInt, SetSolidOrTransBlockVisitor::TRANS);
+         SetSolidBlockVisitor v(cylinderInt, SetSolidBlockVisitor::TRANS);
          grid->accept(v);
          cylinderInt->initInteractor();
 
@@ -320,7 +320,8 @@ void run(string configname)
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch, CalculationManager::MPI));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch, CalculationManager::MPI));
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch, CalculationManager::PrePostBc));
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
       calculation->calculate();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");
