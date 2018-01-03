@@ -728,9 +728,29 @@ void TimeAveragedValuesCoProcessor::reset()
       {
          if (block)
          {
-            block->getKernel()->getDataSet()->getAverageVelocity()->reset(0.0);
-            block->getKernel()->getDataSet()->getAverageFluctuations()->reset(0.0);
-            block->getKernel()->getDataSet()->getAverageTriplecorrelations()->reset(0.0);
+            AverageValuesArray3DPtr arho = block->getKernel()->getDataSet()->getAverageDencity();
+            if (arho)
+            {
+               arho->reset(0.0);
+            }
+
+            AverageValuesArray3DPtr avel = block->getKernel()->getDataSet()->getAverageVelocity();
+            if (avel)
+            {
+               avel->reset(0.0);
+            }
+
+            AverageValuesArray3DPtr afl = block->getKernel()->getDataSet()->getAverageFluctuations();
+            if (afl)
+            {
+               afl->reset(0.0);
+            }
+
+            AverageValuesArray3DPtr atrp = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+            if (atrp)
+            {
+               atrp->reset(0.0);
+            }
          }
       }
    }

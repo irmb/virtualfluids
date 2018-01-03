@@ -49,12 +49,6 @@ void SpongeLayerBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
          int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
          double index = ibX1-val<1>(ixMin)+1;
-         
-         //double a = oldCollFactor-1.0 / (double)ibMax;
-         //double b = val<1>(ixMin)-ibX1+1;
-         //double a = oldCollFactor-1.0 / (double)ibMax;
-         //double a = oldCollFactor-1.0 / (double)ibMax;
-
 
          double newCollFactor = oldCollFactor - (oldCollFactor-1.0)/ibMax*index;
 
