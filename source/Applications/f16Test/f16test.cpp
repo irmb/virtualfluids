@@ -147,10 +147,10 @@ void run(string configname)
       fct.SetExpr("U");
       fct.DefineConst("U", uLB);
       BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingVelocityBCAlgorithm()));
+      velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
 
       BCAdapterPtr denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingDensityBCAlgorithm()));
+      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
@@ -343,10 +343,10 @@ void run(string configname)
             
             if (porousTralingEdge)
             {
-               SetSolidBlockVisitor v(fngIntrBodyPart, SetSolidBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrBodyPart, BlockType::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrBodyPart->getSolidBlockSet();
-               BOOST_FOREACH(Block3DPtr block, sb)
+               for(Block3DPtr block : sb)
                {
                   grid->deleteBlock(block);
                }
@@ -355,10 +355,10 @@ void run(string configname)
             }
             else
             {
-               SetSolidBlockVisitor v(fngIntrWhole, SetSolidBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrWhole, BlockType::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrWhole->getSolidBlockSet();
-               BOOST_FOREACH(Block3DPtr block, sb)
+               for(Block3DPtr block : sb)
                {
                   grid->deleteBlock(block);
                }
@@ -616,7 +616,8 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
       //calculation->setTimeAveragedValuesCoProcessor(tav);
       if (myid == 0) UBLOG(logINFO, "Simulation-start");

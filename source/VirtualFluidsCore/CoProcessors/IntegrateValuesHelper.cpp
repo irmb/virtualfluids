@@ -1,14 +1,15 @@
 #include "IntegrateValuesHelper.h"
 
-#include <boost/foreach.hpp>
+
 #include <numerics/geometry3d/GbCuboid3D.h>
 #include <numerics/geometry3d/CoordinateTransformation3D.h>
 #include <vector>
 
 #include "LBMKernel.h"
 #include "BCProcessor.h"
+#include "DataSet3D.h"
+#include "BCArray3D.h"
 
-using namespace std;
 //////////////////////////////////////////////////////////////////////////
 IntegrateValuesHelper::IntegrateValuesHelper(Grid3DPtr grid, CommunicatorPtr comm,
    double minX1, double minX2,
@@ -67,9 +68,9 @@ void IntegrateValuesHelper::init(int level)
    double numFluids = 0.0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      vector<Block3DPtr> blockVector;
+      std::vector<Block3DPtr> blockVector;
       grid->getBlocks(level, gridRank, blockVector);
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          CalcNodes cn;
          cn.block = block;
@@ -80,7 +81,7 @@ void IntegrateValuesHelper::init(int level)
          orgX2 = val<2>(org);
          orgX3 = val<3>(org);
 
-         LBMKernelPtr kernel = boost::dynamic_pointer_cast<LBMKernel>(block->getKernel());
+         LBMKernelPtr kernel = std::dynamic_pointer_cast<LBMKernel>(block->getKernel());
          BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
          int ghostLayerWitdh = kernel->getGhostLayerWidth();
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
@@ -117,8 +118,8 @@ void IntegrateValuesHelper::init(int level)
             cnodes.push_back(cn);
       }
    }
-   vector<double> rvalues;
-   vector<double> values;
+   std::vector<double> rvalues;
+   std::vector<double> values;
    values.push_back(numSolids);
    values.push_back(numFluids);
    rvalues = comm->gather(values);
@@ -163,9 +164,9 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
    double numFluids = 0.0;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      vector<Block3DPtr> blockVector;
+      std::vector<Block3DPtr> blockVector;
       grid->getBlocks(level, gridRank, blockVector);
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          Node cn;
          cn.block = block;
@@ -176,7 +177,7 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
          orgX2 = val<2>(org);
          orgX3 = val<3>(org);
 
-         LBMKernelPtr kernel = block->getKernel();
+         ILBMKernelPtr kernel = block->getKernel();
          BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
          int ghostLayerWitdh = kernel->getGhostLayerWidth();
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
@@ -215,8 +216,8 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
 
       }
    }
-   vector<double> rvalues;
-   vector<double> values;
+   std::vector<double> rvalues;
+   std::vector<double> values;
    values.push_back(numSolids);
    values.push_back(numFluids);
    rvalues = comm->gather(values);
@@ -240,12 +241,12 @@ void IntegrateValuesHelper::calculateAV()
 {
    clearData();
 
-   BOOST_FOREACH(CalcNodes cn, cnodes)
+   for(CalcNodes cn : cnodes)
    {
-      LBMKernelPtr kernel = cn.block->getKernel();
+      ILBMKernelPtr kernel = cn.block->getKernel();
       AverageValuesArray3DPtr averagedValues = kernel->getDataSet()->getAverageValues();
 
-      BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
+      for(UbTupleInt3 node : cn.nodes)
       {
          double Avx = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVx);
          double Avy = (*averagedValues)(val<1>(node), val<2>(node), val<3>(node), AvVy);
@@ -268,8 +269,8 @@ void IntegrateValuesHelper::calculateAV()
          numberOfFluidsNodes++;
       }
    }
-   vector<double> values;
-   vector<double> rvalues;
+   std::vector<double> values;
+   std::vector<double> rvalues;
    values.push_back(sAvVx1);
    values.push_back(sAvVx2);
    values.push_back(sAvVx3);
@@ -343,14 +344,14 @@ void IntegrateValuesHelper::calculateAV2()
    double lsaVzzy = 0;
    double lsaVxyz = 0;
 
-   BOOST_FOREACH(CalcNodes cn, cnodes)
+   for(CalcNodes cn : cnodes)
    {
-      LBMKernelPtr kernel = cn.block->getKernel();
+      ILBMKernelPtr kernel = cn.block->getKernel();
       AverageValuesArray3DPtr averagedVelocity = kernel->getDataSet()->getAverageVelocity();
       AverageValuesArray3DPtr averagedFluctuations = kernel->getDataSet()->getAverageFluctuations();
       AverageValuesArray3DPtr averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
 
-      BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
+      for(UbTupleInt3 node : cn.nodes)
       {
          double aVx = (*averagedVelocity)(Vx, val<1>(node), val<2>(node), val<3>(node));
          double aVy = (*averagedVelocity)(Vy, val<1>(node), val<2>(node), val<3>(node));
@@ -399,8 +400,8 @@ void IntegrateValuesHelper::calculateAV2()
          //numberOfFluidsNodes++;
       }
    }
-   vector<double> values;
-   vector<double> rvalues;
+   std::vector<double> values;
+   std::vector<double> rvalues;
    values.push_back(lsaVx);
    values.push_back(lsaVy);
    values.push_back(lsaVz);
@@ -465,9 +466,9 @@ void IntegrateValuesHelper::calculateMQ()
 
    CalcMacrosFct calcMacros = NULL;
 
-   BOOST_FOREACH(CalcNodes cn, cnodes)
+   for(CalcNodes cn : cnodes)
    {
-      LBMKernelPtr kernel = cn.block->getKernel();
+      ILBMKernelPtr kernel = cn.block->getKernel();
       LBMReal dx = 1.0 / (LBMReal)(1 << cn.block->getLevel());
       LBMReal cellVolume = dx*dx*dx;
 
@@ -481,9 +482,8 @@ void IntegrateValuesHelper::calculateMQ()
       }
 
       BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-      int ghostLayerWitdh = kernel->getGhostLayerWidth();
       DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-      BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
+      for(UbTupleInt3 node : cn.nodes)
       {
          distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));
          calcMacros(f, rho, vx1, vx2, vx3);
@@ -494,8 +494,8 @@ void IntegrateValuesHelper::calculateMQ()
          sCellVolume += cellVolume;
       }
    }
-   vector<double> values(5);
-   vector<double> rvalues;
+   std::vector<double> values(5);
+   std::vector<double> rvalues;
    values[0] = sRho;
    values[1] = sVx1;
    values[2] = sVx2;

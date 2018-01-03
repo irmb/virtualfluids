@@ -4,7 +4,7 @@
 #include "InterpolationProcessor.h"
 
 class InterpolationHelper;
-typedef boost::shared_ptr<InterpolationHelper> InterpolationHelperPtr;
+typedef std::shared_ptr<InterpolationHelper> InterpolationHelperPtr;
 
 class InterpolationHelper
 {

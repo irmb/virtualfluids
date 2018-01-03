@@ -33,11 +33,11 @@ void setBC(Grid3DPtr grid, string pathGeo, string fngFileWhole, string zigZagTap
 
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             kernel->setBCProcessor(bcProcessor->clone(kernel));
          }
       }
@@ -114,34 +114,34 @@ void setBC(Grid3DPtr grid, string pathGeo, string fngFileWhole, string zigZagTap
    //outflow
    D3Q27InteractorPtr outflowIntr = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, outflowBCAdapter, Interactor3D::SOLID));
 
-   SetSolidBlockVisitor v1(fngIntrWhole, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v1(fngIntrWhole, BlockType::BC);
    grid->accept(v1);
 
-   SetSolidBlockVisitor v2(triBand1Interactor, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v2(triBand1Interactor, BlockType::BC);
    grid->accept(v2);
 
-   SetSolidBlockVisitor v3(triBand1Interactor, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v3(triBand1Interactor, BlockType::BC);
    grid->accept(v3);
 
-   SetSolidBlockVisitor v4(triBand2Interactor, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v4(triBand2Interactor, BlockType::BC);
    grid->accept(v4);
    
-   SetSolidBlockVisitor v5(triBand3Interactor, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v5(triBand3Interactor, BlockType::BC);
    grid->accept(v5);
 
-   SetSolidBlockVisitor v6(triBand4Interactor, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v6(triBand4Interactor, BlockType::BC);
    grid->accept(v6);
 
-   SetSolidBlockVisitor v7(addWallZminInt, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v7(addWallZminInt, BlockType::BC);
    grid->accept(v7);
 
-   SetSolidBlockVisitor v8(addWallZmaxInt, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v8(addWallZmaxInt, BlockType::BC);
    grid->accept(v8);
 
-   SetSolidBlockVisitor v9(inflowIntr, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v9(inflowIntr, BlockType::BC);
    grid->accept(v9);
 
-   SetSolidBlockVisitor v10(outflowIntr, SetSolidBlockVisitor::BC);
+   SetSolidBlockVisitor v10(outflowIntr, BlockType::BC);
    grid->accept(v10);
    
    inflowIntr->initInteractor();
@@ -681,10 +681,10 @@ void run(string configname)
 
             if (porousTralingEdge)
             {
-               SetSolidBlockVisitor v(fngIntrBodyPart, SetSolidBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrBodyPart, BlockType::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrBodyPart->getSolidBlockSet();
-               BOOST_FOREACH(Block3DPtr block, sb)
+               for(Block3DPtr block : sb)
                {
                   grid->deleteBlock(block);
                }
@@ -693,10 +693,10 @@ void run(string configname)
             }
             else
             {
-               SetSolidBlockVisitor v(fngIntrWhole2, SetSolidBlockVisitor::SOLID);
+               SetSolidBlockVisitor v(fngIntrWhole2, BlockType::SOLID);
                grid->accept(v);
                std::vector<Block3DPtr>& sb = fngIntrWhole2->getSolidBlockSet();
-               BOOST_FOREACH(Block3DPtr block, sb)
+               for(Block3DPtr block : sb)
                {
                   grid->deleteBlock(block);
                }
@@ -1246,7 +1246,10 @@ void run(string configname)
 
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::MPI));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::PrePostBc));
+
+
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();

@@ -3,8 +3,10 @@
 
 #include "BCAlgorithm.h"
 
+class DistributionArray3D;
+
 class HighViscosityNoSlipBCAlgorithm;
-typedef boost::shared_ptr<HighViscosityNoSlipBCAlgorithm> HighViscosityNoSlipBCAlgorithmPtr;
+typedef std::shared_ptr<HighViscosityNoSlipBCAlgorithm> HighViscosityNoSlipBCAlgorithmPtr;
 
 class HighViscosityNoSlipBCAlgorithm : public BCAlgorithm
 {
@@ -12,9 +14,9 @@ public:
    HighViscosityNoSlipBCAlgorithm();
    ~HighViscosityNoSlipBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
-protected:
-   void applyBC();
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+
+   void applyBC() override;
 private:
    //friend class boost::serialization::access;
    //template<class Archive>

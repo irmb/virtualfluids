@@ -8,24 +8,33 @@
 #ifndef BlocksCoProcessor_H_
 #define BlocksCoProcessor_H_
 
+#include <memory>
+#include <string>
+
 #include "CoProcessor.h"
-#include "Communicator.h"
-#include "WbWriter.h"
 
-#include <boost/shared_ptr.hpp>
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class WbWriter;
+
 class WriteBlocksCoProcessor;
-typedef boost::shared_ptr<WriteBlocksCoProcessor> WriteBlocksCoProcessorPtr;
+typedef std::shared_ptr<WriteBlocksCoProcessor> WriteBlocksCoProcessorPtr;
 
-class WriteBlocksCoProcessor: public CoProcessor {
+class WriteBlocksCoProcessor: public CoProcessor 
+{
 public:
-   WriteBlocksCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, WbWriter* const writer, CommunicatorPtr comm);
+   WriteBlocksCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, WbWriter* const writer, std::shared_ptr<Communicator> comm);
    virtual ~WriteBlocksCoProcessor();
-   void process(double step);
+
+   void process(double step) override;
+
 protected:
    void collectData(double step);
+
    std::string path;
    WbWriter* writer;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator>  comm;
 };
 
 

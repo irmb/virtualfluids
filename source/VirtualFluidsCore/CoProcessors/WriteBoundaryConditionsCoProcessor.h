@@ -1,30 +1,38 @@
 #ifndef WriteBoundaryConditionsCoProcessor_H
 #define WriteBoundaryConditionsCoProcessor_H
 
-#include "CoProcessor.h"
-#include "Grid3D.h"
-#include "Block3D.h"
-#include "LBMUnitConverter.h"
-#include "Communicator.h"
-#include "WbWriter.h"
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <boost/shared_ptr.hpp>
+#include "CoProcessor.h"
+
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class WbWriter;
+class Block3D;
+class LBMUnitConverter;
+
 class WriteBoundaryConditionsCoProcessor;
-typedef boost::shared_ptr<WriteBoundaryConditionsCoProcessor> WriteBoundaryConditionsCoProcessorPtr;
+typedef std::shared_ptr<WriteBoundaryConditionsCoProcessor> WriteBoundaryConditionsCoProcessorPtr;
 
 class WriteBoundaryConditionsCoProcessor : public  CoProcessor
 {
 public:
    WriteBoundaryConditionsCoProcessor();
-   WriteBoundaryConditionsCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+   WriteBoundaryConditionsCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
       const std::string& path, WbWriter* const writer,
-      LBMUnitConverterPtr conv, CommunicatorPtr comm);
+       std::shared_ptr<LBMUnitConverter> conv, std::shared_ptr<Communicator> comm);
    ~WriteBoundaryConditionsCoProcessor() {}
-   void process(double step);
+
+   void process(double step) override;
+
 protected:
    void collectData(double step);
-   void addDataGeo(Block3DPtr block);
+   void addDataGeo(std::shared_ptr<Block3D> block);
    void clearData();
+
 private:
    std::vector<UbTupleFloat3> nodes;
    std::vector<UbTupleInt8> cells;
@@ -32,13 +40,13 @@ private:
    std::vector<std::vector<double> > data;
    std::string path;
    WbWriter* writer;
-   LBMUnitConverterPtr conv;
+   std::shared_ptr<LBMUnitConverter> conv;
    bool bcInformation;
-   std::vector<std::vector<Block3DPtr> > blockVector;
+   std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator> comm;
 
    friend class boost::serialization::access;
    template<class Archive>

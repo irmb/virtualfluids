@@ -1,8 +1,19 @@
 #include "Calculator.h"
 #include <basics/utilities/UbException.h>
-#include <boost/foreach.hpp>
-#include "MathUtil.hpp"
+
+#include "Grid3D.h"
+#include "Synchronizer.h"
+
 #include "basics/writer/WbWriterVtkXmlASCII.h"
+
+#include "LBMKernel.h"
+#include "CalculationManager.h"
+#include "Block3DConnector.h"
+#include "Block3D.h"
+#include "BCProcessor.h"
+#include "TimeAveragedValuesCoProcessor.h"
+#include "UbScheduler.h"
+#include "Communicator.h"
 
 //#define TIMING
 //#define PRECOLLISIONBC
@@ -216,11 +227,11 @@ void Calculator::calculateBlocks(int startLevel, int maxInitLevel)
    try
    {
       //startLevel bis maxInitLevel
-      for(int level=startLevel; level<=maxInitLevel; level++)
+      for(int level = startLevel; level <= maxInitLevel; level++)
       {
          //timer.resetAndStart();
          //call LBM kernel
-         BOOST_FOREACH(Block3DPtr block, blocks[level])
+         for(Block3DPtr block : blocks[level])
          {
             blockTemp = block;
             block->getKernel()->calculate();
@@ -275,7 +286,7 @@ void Calculator::initConnectors()
 
    for (int l = minLevel; l <= maxLevel; l++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[l])
+      for(Block3DPtr block : blocks[l])
       {     
          block->pushBackLocalSameLevelConnectors(localConns[l]);
 
@@ -286,7 +297,7 @@ void Calculator::initConnectors()
       }
       if (l != maxLevel)
       {
-         BOOST_FOREACH(Block3DPtr block, blocks[l+1])
+         for(Block3DPtr block : blocks[l+1])
          {     
             block->pushBackLocalInterpolationConnectorsFC(localInterConns[l]);
          }
@@ -323,7 +334,7 @@ void Calculator::initRemoteConnectors()
       std::vector<Block3DPtr> blockVector;
       //grid->getBlocks(level, gridRank, true, blockVector);
       grid->getBlocks(level, blockVector);
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          int l = block->getLevel();
          block->pushBackRemoteSameLevelConnectors(remoteConns[l]);
@@ -356,7 +367,7 @@ void Calculator::initRemoteConnectors()
       if (l != maxLevel)
       {
          UBLOG(logDEBUG5, "Calculator::initRemoteConnectors()-initConnectors(remoteInterConns["<<l<<"])");
-         BOOST_FOREACH(Block3DConnectorPtr c, remoteInterConns[l] ) c->init();
+         for(Block3DConnectorPtr c : remoteInterConns[l] ) c->init();
       }
    }
    //UBLOG(logDEBUG5, "Calculator::initConnectors() - connectoren initialisieren - end");
@@ -368,7 +379,7 @@ void Calculator::initRemoteConnectors()
       if (l != maxLevel)
       {
          UBLOG(logDEBUG5, "Calculator::initRemoteConnectors()-sendTransmitterDataSize(remoteInterConns["<<l<<"])");
-         BOOST_FOREACH(Block3DConnectorPtr c, remoteInterConns[l] ) c->sendTransmitterDataSize();
+         for(Block3DConnectorPtr c : remoteInterConns[l] ) c->sendTransmitterDataSize();
       }
    }
    //UBLOG(logDEBUG5, "Calculator::initConnectors() - sendTransmitterDataSize - end");
@@ -381,7 +392,7 @@ void Calculator::initRemoteConnectors()
       if (l != maxLevel)
       {
          UBLOG(logDEBUG5, "Calculator::initRemoteConnectors()-receiveTransmitterDataSize(remoteInterConns["<<l<<"])");
-         BOOST_FOREACH(Block3DConnectorPtr c, remoteInterConns[l] ) c->receiveTransmitterDataSize();
+         for(Block3DConnectorPtr c : remoteInterConns[l] ) c->receiveTransmitterDataSize();
       }
    }
    //UBLOG(logDEBUG5, "Calculator::initConnectors() - receiveTransmitterDataSize - end");
@@ -396,18 +407,18 @@ void Calculator::initConnectors(std::vector<Block3DConnectorPtr>& connectors)
    //////////////////////////////////////////////////////////////////////////
    //initialize connectors
    UBLOG(logDEBUG5, "Calculator::initConnectors() - connectoren initialisieren - start");
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors ) c->init();
+   for(Block3DConnectorPtr c : connectors ) c->init();
    UBLOG(logDEBUG5, "Calculator::initConnectors() - connectoren initialisieren - end");
    //////////////////////////////////////////////////////////////////////////
    //sendTransmitterDataSize
    UBLOG(logDEBUG5, "Calculator::initConnectors() - sendTransmitterDataSize - start");
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors ) c->sendTransmitterDataSize();
+   for(Block3DConnectorPtr c : connectors ) c->sendTransmitterDataSize();
    UBLOG(logDEBUG5, "Calculator::initConnectors() - sendTransmitterDataSize - end");
    //////////////////////////////////////////////////////////////////////////
    //receiveTransmitterDataSize
    //wenn er hier bei verteilten berechnungen stopped, dann ist vermutlich auf einer seite ein nicht aktiver block!!!
    UBLOG(logDEBUG5, "Calculator::initConnectors() - receiveTransmitterDataSize - start");
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors ) c->receiveTransmitterDataSize();
+   for(Block3DConnectorPtr c : connectors ) c->receiveTransmitterDataSize();
    UBLOG(logDEBUG5, "Calculator::initConnectors() - receiveTransmitterDataSize - end");
 
    UBLOG(logDEBUG1, "Calculator::initConnectors() - end");
@@ -454,7 +465,7 @@ void Calculator::swapDistributions(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for(int level=startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->swapDistributions();
       }
@@ -463,7 +474,7 @@ void Calculator::swapDistributions(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void Calculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors)
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       c->prepareForReceive();
       c->prepareForSend();
@@ -472,7 +483,7 @@ void Calculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connector
 //////////////////////////////////////////////////////////////////////////
 void Calculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors)
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       c->fillSendVectors();
       c->sendVectors();
@@ -481,7 +492,7 @@ void Calculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors)
 //////////////////////////////////////////////////////////////////////////
 void Calculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors)
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       c->receiveVectors();
       c->distributeReceiveVectors();
@@ -523,19 +534,19 @@ void Calculator::setVisScheduler(UbSchedulerPtr s)
    visScheduler = s;
 }
 //////////////////////////////////////////////////////////////////////////
-//double Calculator::getCallculationTime()
+//double Calculator::getCalculationTime()
 //{
 //   return timer.getTotalTime();
 //}
 //////////////////////////////////////////////////////////////////////////
-std::vector< std::vector< Block3DPtr > > Calculator::getBlocks()
+std::vector< std::vector< Block3DPtr > > Calculator::getBlocks() const
 {
    return blocks;
 }
 //////////////////////////////////////////////////////////////////////////
 void Calculator::deleteBlocks()
 {
-   BOOST_FOREACH(std::vector< Block3DPtr > &bs, blocks)
+   for(std::vector< Block3DPtr > &bs : blocks)
       bs.resize(0);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -553,7 +564,7 @@ void Calculator::deleteConnectors()
 //////////////////////////////////////////////////////////////////////////
 void Calculator::deleteConnectors(std::vector< std::vector< Block3DConnectorPtr > >& conns)
 {
-   BOOST_FOREACH(std::vector< Block3DConnectorPtr > &c, conns)
+   for(std::vector< Block3DConnectorPtr > &c : conns)
       c.resize(0);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -569,7 +580,7 @@ void Calculator::setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorP
 //   for(int level=startLevel; level<=maxInitLevel; level++)
 //   {
 //      //call LBM kernel
-//      BOOST_FOREACH(Block3DPtr block, blocks[level])
+//      for(Block3DPtr block : blocks[level])
 //      {
 //         block->getKernel()->getBCProcessor()->applyBC();
 //      }
@@ -581,7 +592,7 @@ void Calculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPreCollisionBC();
       }
@@ -593,7 +604,7 @@ void Calculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPostCollisionBC();
       }

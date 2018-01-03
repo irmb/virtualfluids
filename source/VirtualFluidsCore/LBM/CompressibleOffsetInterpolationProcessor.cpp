@@ -1,7 +1,7 @@
 #include "CompressibleOffsetInterpolationProcessor.h"
 #include "D3Q27System.h"
 
-#include <boost/foreach.hpp>
+
 
 CompressibleOffsetInterpolationProcessor::CompressibleOffsetInterpolationProcessor()
    : omegaC(0.0), omegaF(0.0)
@@ -24,8 +24,8 @@ CompressibleOffsetInterpolationProcessor::~CompressibleOffsetInterpolationProces
 InterpolationProcessorPtr CompressibleOffsetInterpolationProcessor::clone()
 {
    InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetInterpolationProcessor(this->omegaC, this->omegaF));
-   //boost::dynamic_pointer_cast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingC = forcingC;
-   //boost::dynamic_pointer_cast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingF = forcingF;
+   //std::dynamic_pointer_cast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingC = forcingC;
+   //std::dynamic_pointer_cast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingF = forcingF;
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////

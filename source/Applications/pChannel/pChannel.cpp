@@ -767,7 +767,8 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (averaging)
       {
          calculation->setTimeAveragedValuesCoProcessor(tav);

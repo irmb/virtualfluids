@@ -1,5 +1,7 @@
 #include "RatioBlockVisitor.h"
 #include "Grid3DSystem.h"
+#include "Grid3D.h"
+#include "Block3D.h"
 
 RatioBlockVisitor::RatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks)
    :   Block3DVisitor(0, Grid3DSystem::MAXLEVEL)

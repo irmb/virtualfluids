@@ -1,15 +1,18 @@
 #include "TimeAveragedValuesCoProcessor.h"
+
+
 #include "LBMKernel.h"
 #include "BCProcessor.h"
-#include <vector>
-#include <sstream>
-#include <string>
-#include <iostream>
-#include <boost/foreach.hpp>
-#include "basics/writer/WbWriterVtkXmlASCII.h"
-#include "basics/utilities/UbMath.h"
 
-using namespace std;
+#include "basics/writer/WbWriterVtkXmlASCII.h"
+#include "DataSet3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "IntegrateValuesHelper.h"
+#include "BCArray3D.h"
+
 
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor()
 {
@@ -67,7 +70,7 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
 
       if (gridTimeStep == begin || gridTimeStep == 0)
       {
-         BOOST_FOREACH(Block3DPtr block, blockVector[level])
+         for(Block3DPtr block : blockVector[level])
          {
             UbTupleInt3 nx = grid->getBlockNX();
             
@@ -160,7 +163,7 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -169,21 +172,21 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
       }
    }
 
-   string pfilePath, partPath, subfolder, cfilePath;
+   std::string pfilePath, partPath, subfolder, cfilePath;
    subfolder = "tav" + UbSystem::toString(istep);
    pfilePath = path + "/tav/" + subfolder;
    partPath = pfilePath + "/tav" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
 
-   string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
+   std::string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
    size_t found = partName.find_last_of("/");
-   string piece = partName.substr(found + 1);
+   std::string piece = partName.substr(found + 1);
    piece = subfolder + "/" + piece;
 
-   vector<string> cellDataNames;
-   vector<string> pieces = comm->gather(piece);
+   std::vector<std::string> cellDataNames;
+   std::vector<std::string> pieces = comm->gather(piece);
    if (root)
    {
-      string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
+      std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
       UBLOG(logINFO, "TimeAveragedValuesCoProcessor::collectData() step: " << istep);
    }
 
@@ -210,7 +213,6 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    datanames.resize(0);
 
    datanames.push_back("level");
-   
    datanames.push_back("Rho");
 
    if ((options&Density) == Density)
@@ -256,7 +258,7 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   LBMKernelPtr kernel = block->getKernel();
+   ILBMKernelPtr kernel = block->getKernel();
    BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
@@ -283,8 +285,8 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    maxX2 -= 2;
    maxX3 -= 2;
 
-   LBMReal f[D3Q27System::ENDF+1];
-   LBMReal vx1,vx2,vx3,rho;
+   LBMReal f[D3Q27System::ENDF + 1];
+   LBMReal vx1, vx2, vx3, rho;
 
    //D3Q27BoundaryConditionPtr bcPtr;
 
@@ -304,12 +306,14 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
                   float(val<2>(org) - val<2>(nodeOffset) + ix2*dx),
                   float(val<3>(org) - val<3>(nodeOffset) + ix3*dx)));
 
-               data[index++].push_back(level);
+               data[index++].push_back(level);          
 
-               distributions->getDistribution(f, ix1, ix2, ix3);
+                distributions->getDistribution(f, ix1, ix2, ix3);
                calcMacros(f, rho, vx1, vx2, vx3);
 
                data[index++].push_back(rho);
+
+
 
                if ((options&Density) == Density)
                {
@@ -386,13 +390,13 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
       //#ifdef _OPENMP
       //   #pragma omp parallel for 
       //#endif
-            //BOOST_FOREACH(Block3DPtr block, blockVector[level])
+            //for(Block3DPtr block : blockVector[level])
       for (i = 0; i < blockVector[level].size(); i++)
       {
          Block3DPtr block = blockVector[level][i];
          if (block)
          {
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
             AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
@@ -509,13 +513,13 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
 #ifdef _OPENMP
 #pragma omp for schedule(dynamic)
 #endif
-            //BOOST_FOREACH(Block3DPtr block, blockVector[level])
+            //for(Block3DPtr block : blockVector[level])
             for (i = 0; i < blockVector[level].size(); i++)
             {
                Block3DPtr block = blockVector[level][i];
                if (block)
                {
-                  LBMKernelPtr kernel = block->getKernel();
+                  ILBMKernelPtr kernel = block->getKernel();
                   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
                   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
                   AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
@@ -616,14 +620,14 @@ void TimeAveragedValuesCoProcessor::planarAverage(double step)
    if (root)
    {
       int istep = int(step);
-      string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
+      std::string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
 
 
       ostr.open(fname.c_str(), std::ios_base::out);
       if (!ostr)
       {
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
       }
@@ -720,7 +724,7 @@ void TimeAveragedValuesCoProcessor::reset()
 {
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {

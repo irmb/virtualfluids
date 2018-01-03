@@ -1,4 +1,6 @@
 #include "VelocityWithDensityBCAlgorithm.h"
+#include "DistributionArray3D.h"
+#include "BCArray3D.h"
 
 VelocityWithDensityBCAlgorithm::VelocityWithDensityBCAlgorithm()
 {

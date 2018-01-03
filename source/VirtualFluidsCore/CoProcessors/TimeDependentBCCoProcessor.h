@@ -1,26 +1,33 @@
 #ifndef TimeDependentBCCoProcessor_H
 #define TimeDependentBCCoProcessor_H
 
-#include "CoProcessor.h"
-#include "Interactor3D.h"
+#include <vector>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
+#include "CoProcessor.h"
+
+class Interactor3D;
+class Grid3D;
+
 class TimeDependentBCCoProcessor;
-typedef boost::shared_ptr<TimeDependentBCCoProcessor> TimeDependentBCCoProcessorPtr;
+typedef std::shared_ptr<TimeDependentBCCoProcessor> TimeDependentBCCoProcessorPtr;
 
 //! \brief The class update interactors depend of time step. 
 //! \details TimeDependentBCCoProcessor update every time step information in BCAdapters throw Interactors
 //! \author Sonja Uphoff, Kostyantyn Kucher
-class TimeDependentBCCoProcessor: public CoProcessor {
+class TimeDependentBCCoProcessor : public CoProcessor
+{
 public:
-	TimeDependentBCCoProcessor(Grid3DPtr grid);
+	TimeDependentBCCoProcessor(std::shared_ptr<Grid3D> grid);
 	virtual ~TimeDependentBCCoProcessor();
-	void process(double step);
+
+	void process(double step) override;
+
    //! add interactors to CoProcessor
-   void addInteractor(Interactor3DPtr interactor);
-protected:
+   void addInteractor(std::shared_ptr<Interactor3D> interactor);
+
 private:
-   std::vector<Interactor3DPtr> interactors;
+   std::vector<std::shared_ptr<Interactor3D> > interactors;
 };
 
 

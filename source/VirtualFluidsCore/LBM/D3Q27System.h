@@ -139,6 +139,8 @@ namespace D3Q27System
    extern const int DX2[ENDDIR+1];
    extern const int DX3[ENDDIR+1];
    extern const double WEIGTH[ENDDIR+1];
+
+   extern const double cNorm[3][ENDDIR];
    
    //static const int ZERO /*f0 */ = 0;
    //static const int E    /*f1 */ = 1;

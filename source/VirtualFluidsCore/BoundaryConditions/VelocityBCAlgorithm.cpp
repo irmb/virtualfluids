@@ -1,5 +1,6 @@
 #include "VelocityBCAlgorithm.h"
-#include <boost/pointer_cast.hpp>
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
 VelocityBCAlgorithm::VelocityBCAlgorithm()
 {

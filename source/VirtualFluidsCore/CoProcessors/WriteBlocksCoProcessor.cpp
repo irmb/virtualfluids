@@ -1,7 +1,11 @@
 #include "WriteBlocksCoProcessor.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
-#include <boost/foreach.hpp>
+
 #include "D3Q27System.h"
+#include "Block3D.h"
+#include "UbScheduler.h"
+#include "Communicator.h"
+#include "Grid3D.h"
 
 WriteBlocksCoProcessor::WriteBlocksCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, 
                                          const std::string& path, WbWriter* const writer, 
@@ -56,7 +60,7 @@ void WriteBlocksCoProcessor::collectData(double step)
       {
          std::vector<Block3DPtr> blockVector;
          grid->getBlocks(level, blockVector);
-         BOOST_FOREACH(Block3DPtr block, blockVector)
+         for(Block3DPtr block : blockVector)
          {
             UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
             UbTupleDouble3 blockLength = grid->getBlockLengths(block);

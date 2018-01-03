@@ -2,9 +2,11 @@
 #define RefineCrossAndInsideGbObjectHelper_H
 
 #include <vector>
+#include <memory>
 
-#include <Grid3D.h>
-#include <GbObject3D.h>
+class Communicator;
+class Grid3D;
+class GbObject3D;
 
 //! \brief Refine blocks on base of bounding boxes.
 //! \details You need to use <i>addGbObject()</i> to add corresponding bounding boxes. Then call <i>refine()</i>.
@@ -15,20 +17,20 @@ public:
    //! Constructor
    //! \param grid a smart pointer to the grid object
    //! \param maxRefineLevel an integer for maximal refinement level
-   RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel, CommunicatorPtr comm);
-   virtual ~RefineCrossAndInsideGbObjectHelper(void);
+   RefineCrossAndInsideGbObjectHelper(std::shared_ptr<Grid3D> grid, int maxRefineLevel, std::shared_ptr<Communicator> comm);
+   virtual ~RefineCrossAndInsideGbObjectHelper();
    //! add geometric object
    //! \param object a smart pointer to bounding box
    //! \param refineLevel a value of refinement level for corresponding bounding box
-   void addGbObject(GbObject3DPtr object, int refineLevel);
+   void addGbObject(std::shared_ptr<GbObject3D> object, int refineLevel);
    //! start refinement
    void refine();
 private:
-   Grid3DPtr grid;
-   std::vector<GbObject3DPtr> objects;
+    std::shared_ptr<Grid3D> grid;
+   std::vector<std::shared_ptr<GbObject3D> > objects;
    std::vector<int> levels;
    int maxRefineLevel;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator> comm;
 };
 
 #endif 

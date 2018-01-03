@@ -1,4 +1,6 @@
 #include "NoSlipBCAlgorithm.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
 NoSlipBCAlgorithm::NoSlipBCAlgorithm()
 {

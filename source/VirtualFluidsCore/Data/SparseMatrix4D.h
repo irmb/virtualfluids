@@ -1,11 +1,10 @@
 #ifndef SparseMatrix4D_h
 #define SparseMatrix4D_h
 
-#include <boost/unordered_map.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 class SparseMatrix4D;
-typedef boost::shared_ptr<SparseMatrix4D> SparseMatrix4DPtr;
+typedef std::shared_ptr<SparseMatrix4D> SparseMatrix4DPtr;
 
 class SparseMatrix4D
 {
@@ -19,7 +18,6 @@ public:
    {
       return nx4*(nx3*(nx2*x1+x2)+x3)+x4;
    }
-protected:
 private:
    SparseMatrix4D();
    static SparseMatrix4DPtr instance;

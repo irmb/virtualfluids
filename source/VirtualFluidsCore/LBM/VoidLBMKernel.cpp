@@ -1,5 +1,7 @@
 #include "VoidLBMKernel.h"
 #include "VoidData3D.h"
+#include "BCProcessor.h"
+#include "DataSet3D.h"
 
 VoidLBMKernel::VoidLBMKernel()
 {
@@ -41,7 +43,7 @@ void VoidLBMKernel::swapDistributions()
 
 }
 
-double VoidLBMKernel::getCallculationTime()
+double VoidLBMKernel::getCalculationTime()
 {
    return 0.0;
 }

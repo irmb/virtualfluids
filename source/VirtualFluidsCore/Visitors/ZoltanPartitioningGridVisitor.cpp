@@ -66,7 +66,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
 
       //Verteilung von Ranks
       int rank = 0;
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          block->setRank(rank);
          block->setPart(rank);
@@ -77,7 +77,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
 
       int vertices = 0;
 
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          if (block->getRank() == myRank)
          {

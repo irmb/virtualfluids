@@ -12,11 +12,11 @@
 #include <map>
 
 struct sortMinMax {
-   bool operator() (int i,int j) { return (i<j);}
+   bool operator() (int i,int j) const { return (i<j);}
 };
 
 struct sortMaxMin {
-   bool operator() (int i,int j) { return (i>j);}
+   bool operator() (int i,int j) const { return (i>j);}
 };
 
 template <class T>

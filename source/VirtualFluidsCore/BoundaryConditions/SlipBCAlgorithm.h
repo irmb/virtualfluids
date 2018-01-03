@@ -3,8 +3,10 @@
 
 #include "BCAlgorithm.h"
 
+class DistributionArray3D;
+
 class SlipBCAlgorithm;
-typedef boost::shared_ptr<SlipBCAlgorithm> SlipBCAlgorithmPtr;
+typedef std::shared_ptr<SlipBCAlgorithm> SlipBCAlgorithmPtr;
 
 class SlipBCAlgorithm : public BCAlgorithm
 {
@@ -12,9 +14,8 @@ public:
    SlipBCAlgorithm();
    virtual ~SlipBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
-protected:
-   void applyBC();
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   void applyBC() override;
 private:
    //friend class boost::serialization::access;
    //template<class Archive>

@@ -1,25 +1,24 @@
 #ifndef ThinWallBCProcessor_H
 #define ThinWallBCProcessor_H
 
+#include <memory>
+
 #include "BCProcessor.h"
-#include "BoundaryConditions.h"
-#include "EsoTwist3D.h"
-#include "BCArray3D.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
 
 #include <boost/serialization/base_object.hpp>
 
 class ThinWallBCProcessor;
-typedef boost::shared_ptr<ThinWallBCProcessor> ThinWallBCProcessorPtr;
+typedef std::shared_ptr<ThinWallBCProcessor> ThinWallBCProcessorPtr;
+
+class LBMKernel;
 
 class ThinWallBCProcessor : public BCProcessor
 {
 public:
    ThinWallBCProcessor();
-   ThinWallBCProcessor(LBMKernelPtr kernel);
+   ThinWallBCProcessor(std::shared_ptr<LBMKernel> kernel);
    ~ThinWallBCProcessor();
-   BCProcessorPtr clone(LBMKernelPtr kernel);
+   std::shared_ptr<BCProcessor> clone(std::shared_ptr<LBMKernel> kernel);
    void applyPostCollisionBC();
 protected:
 private:

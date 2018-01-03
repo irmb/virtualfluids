@@ -9,7 +9,9 @@
 #define RenumberBlockVisitor_h
 
 #include "Block3DVisitor.h"
-#include "LBMKernel.h"
+
+class Grid3D;
+class Block3D;
 
 //! \brief  Visitor class which renumber blocks.
 //! \details Visitor class which renumber blocks.            
@@ -21,7 +23,7 @@ public:
 
    virtual ~RenumberBlockVisitor() {}
 
-   virtual void visit(Grid3DPtr grid, Block3DPtr block);
+   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 private:
    static int counter;

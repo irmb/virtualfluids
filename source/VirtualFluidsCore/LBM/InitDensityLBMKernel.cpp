@@ -1,6 +1,8 @@
 #include "InitDensityLBMKernel.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "BCProcessor.h"
+#include "DataSet3D.h"
+#include "BCArray3D.h"
 
 InitDensityLBMKernel::InitDensityLBMKernel()
 {
@@ -26,7 +28,7 @@ void InitDensityLBMKernel::calculate()
 LBMKernelPtr InitDensityLBMKernel::clone()
 {
    LBMKernelPtr kernel(new InitDensityLBMKernel(nx1, nx2, nx3));
-   boost::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->init();
+   std::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -35,7 +37,7 @@ LBMKernelPtr InitDensityLBMKernel::clone()
    kernel->setForcingX3(muForcingX3);
    kernel->setIndex(ix1, ix2, ix3);
    kernel->setDeltaT(deltaT);
-   boost::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->OxyyMxzz = 1.0;
+   std::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->OxyyMxzz = 1.0;
    return kernel;
 }
 
@@ -46,7 +48,7 @@ void InitDensityLBMKernel::setVelocity(int x1, int x2, int x3, LBMReal vvx, LBMR
    v(2, x1, x2, x3) = vvz;
 }
 
-double InitDensityLBMKernel::getCallculationTime()
+double InitDensityLBMKernel::getCalculationTime()
 {
    return 0;
 }
@@ -55,11 +57,11 @@ double InitDensityLBMKernel::getCallculationTime()
 //{
 //   using namespace D3Q27System;
 //
-//   localDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-//   nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-//   zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+//   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+//   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+//   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 //
-//   BCArray3D<D3Q27BoundaryCondition>& bcArray = boost::dynamic_pointer_cast<D3Q27ETBCProcessor>(this->getBCProcessor())->getBCArray();
+//   BCArray3D<D3Q27BoundaryCondition>& bcArray = std::dynamic_pointer_cast<D3Q27ETBCProcessor>(this->getBCProcessor())->getBCArray();
 //
 //   const int bcArrayMaxX1 = (int)bcArray->getNX1();
 //   const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -863,9 +865,9 @@ void InitDensityLBMKernel::collideAll()
 {
    using namespace D3Q27System;
 
-   localDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
    BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
    BoundaryConditionsPtr bcPtr;

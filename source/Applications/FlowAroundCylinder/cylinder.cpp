@@ -300,7 +300,7 @@ void run(string configname)
          //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
          //grid->accept(pqPartVisitor);
 
-         SetSolidBlockVisitor v(cylinderInt, SetSolidBlockVisitor::TRANS);
+         SetSolidBlockVisitor v(cylinderInt, BlockType::BC);
          grid->accept(v);
          cylinderInt->initInteractor();
 
@@ -321,7 +321,9 @@ void run(string configname)
 
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch, CalculationManager::MPI));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch, CalculationManager::PrePostBc));
+
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
       calculation->calculate();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");

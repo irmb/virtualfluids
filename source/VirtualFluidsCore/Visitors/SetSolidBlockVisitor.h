@@ -1,23 +1,26 @@
-#ifndef SetSolidOrTransBlockVisitor_h
-#define SetSolidOrTransBlockVisitor_h
+#ifndef SET_SOLID_OR_TRANS_BLOCK_VISITOR_H
+#define SET_SOLID_OR_TRANS_BLOCK_VISITOR_H
+
+#include <memory>
 
 #include "Block3DVisitor.h"
-#include "Interactor3D.h"
 
+class Grid3D;
+class Block3D;
+class Interactor3D;
+
+enum class BlockType { SOLID, BC };
 
 class SetSolidBlockVisitor : public Block3DVisitor
 {
 public:
-   enum BlockType{SOLID, BC};
-public:
-   SetSolidBlockVisitor(Interactor3DPtr interactor, BlockType type);
-
+   SetSolidBlockVisitor(std::shared_ptr<Interactor3D> interactor, BlockType type);
    virtual ~SetSolidBlockVisitor() {}
 
-   virtual void visit(Grid3DPtr grid, Block3DPtr block);
+   virtual void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block);
 
 private:
-   Interactor3DPtr interactor;
+    std::shared_ptr<Interactor3D> interactor;
    BlockType type;
 };
 

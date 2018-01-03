@@ -3,8 +3,8 @@
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
-#include <omp.h>
-
+//#include <omp.h>
+#include "DataSet3D.h"
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ void CompressibleCumulantLBMKernel::init()
 LBMKernelPtr CompressibleCumulantLBMKernel::clone()
 {
    LBMKernelPtr kernel(new CompressibleCumulantLBMKernel(nx1, nx2, nx3, parameter));
-   boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->init();
+   std::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -58,20 +58,20 @@ LBMKernelPtr CompressibleCumulantLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 1.0;
+      std::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 1.0;
       break;
    case MAGIC:
-      boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      std::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
       break;
    }
 
    if (bulkOmegaToOmega)
    {
-      boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxxPyyPzz = collFactor;
+      std::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxxPyyPzz = collFactor;
    }
    else
    {
-       boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxxPyyPzz = one;
+       std::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->OxxPyyPzz = one;
    }
    return kernel;
 }
@@ -112,9 +112,9 @@ void CompressibleCumulantLBMKernel::collideAll()
    }
    /////////////////////////////////////
 
-   localDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
    BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
 
@@ -1045,7 +1045,7 @@ void CompressibleCumulantLBMKernel::collideAll()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-double CompressibleCumulantLBMKernel::getCallculationTime()
+double CompressibleCumulantLBMKernel::getCalculationTime()
 {
    //return timer.getDuration();
    return timer.getTotalTime();

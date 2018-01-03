@@ -6,6 +6,13 @@
    #include "windows.h"
    #include "psapi.h"
    #pragma comment(lib, "psapi.lib")
+#elif defined __APPLE__
+#define MEMORYUTIL_APPLE
+   #include "sys/types.h"
+   #include "sys/sysctl.h"
+   #include "stdlib.h"
+   #include "stdio.h"
+   #include "string.h"
 #elif (defined(__amd64) || defined(__amd64__) || defined(__unix__) || defined(__CYGWIN__)) && !defined(__AIX__) 
    #define MEMORYUTIL_LINUX
    #include "sys/types.h"
@@ -35,6 +42,8 @@ namespace Utilities
          long long totalPhysMem = memInfo.totalram;
          //Multiply in next statement to avoid int overflow on right hand side...
          totalPhysMem *= memInfo.mem_unit;
+    #elif defined(MEMORYUTIL_APPLE)
+    long long totalPhysMem = 0;
       #else
       #error "MemoryUtil::getTotalPhysMem - UnknownMachine"
       #endif
@@ -55,6 +64,8 @@ namespace Utilities
          long long physMemUsed = memInfo.totalram - memInfo.freeram;
          //Multiply in next statement to avoid int overflow on right hand side...
          physMemUsed *= memInfo.mem_unit;
+         #elif defined(MEMORYUTIL_APPLE)
+         long long physMemUsed = 0;
       #else
       #error "MemoryUtil::getPhysMemUsed - UnknownMachine"
       #endif
@@ -62,7 +73,7 @@ namespace Utilities
       return (long long)physMemUsed;
    }
 //////////////////////////////////////////////////////////////////////////
-#if defined(MEMORYUTIL_LINUX)
+#if defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE)
    static int parseLine(char* line){
       int i = strlen(line);
       while (*line < '0' || *line > '9') line++;
@@ -94,7 +105,7 @@ namespace Utilities
          PROCESS_MEMORY_COUNTERS pmc;
          GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
          SIZE_T physMemUsedByMe = pmc.WorkingSetSize;          
-      #elif defined(MEMORYUTIL_LINUX)
+      #elif defined(MEMORYUTIL_LINUX) || defined(MEMORYUTIL_APPLE)
          long long physMemUsedByMe = (long long)getValue() * (long long)1024;
       #else
          #error "MemoryUtil::getPhysMemUsedByMe - UnknownMachine"

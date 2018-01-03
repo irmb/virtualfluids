@@ -1,14 +1,14 @@
 #ifndef SYNCHRONIZER_H
 #define SYNCHRONIZER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 
 
 class Synchronizer;
-typedef boost::shared_ptr<Synchronizer> SynchronizerPtr;
+typedef std::shared_ptr<Synchronizer> SynchronizerPtr;
 
 class Synchronizer
 {

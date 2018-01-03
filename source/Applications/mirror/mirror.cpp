@@ -260,7 +260,7 @@ void run(string configname)
             D3Q27TriFaceMeshInteractorPtr meshVRES1100SpiegelFineInteractor(new D3Q27TriFaceMeshInteractor(meshVRES1100SpiegelFine, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
             UBLOG(logINFO, "Refinement - start");
-            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
             ////refineHelper.addGbObject(geoVRES0100, refineLevel-4);
             //refineHelper.addGbObject(geoVRES0200, 1);
             //refineHelper.addGbObject(geoVRES0300, 2);
@@ -537,7 +537,8 @@ void run(string configname)
          UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe());
       }
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid==0) UBLOG(logINFO, "Simulation-end");

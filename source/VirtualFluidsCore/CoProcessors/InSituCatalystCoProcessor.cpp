@@ -71,7 +71,7 @@ void InSituCatalystCoProcessor::collectData(double step)
 
       for (int level = minInitLevel; level <= maxInitLevel; level++)
       {
-         BOOST_FOREACH(Block3DPtr block, blockVector[level])
+         for(Block3DPtr block : blockVector[level])
          {
             if (block)
             {
@@ -194,7 +194,7 @@ void InSituCatalystCoProcessor::buildVTKGrid()
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {

@@ -121,7 +121,8 @@ public:
    virtual void setCenterX1Coordinate(const double& value) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
    virtual void setCenterX2Coordinate(const double& value) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
    virtual void setCenterX3Coordinate(const double& value) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
-   virtual void setCenterCoordinates(const double& x1, const double& x2, const double& x3) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
+   virtual void setCenterCoordinates(const double& x1, const double& x2, const double& x3) { throw UbException(UB_EXARGS, "not implemented for " + (std::string)typeid(*this).name()); }
+   virtual void setCenterCoordinates(const UbTupleDouble3& position) { throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() ); }
 
    //Rotates the Point in relation to the origen.
    //Parameters must be radian measure.

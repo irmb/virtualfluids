@@ -3,8 +3,10 @@
 
 #include "BCAlgorithm.h"
 
+class DistributionArray3D;
+
 class EqDensityBCAlgorithm;
-typedef boost::shared_ptr<EqDensityBCAlgorithm> EqDensityBCAlgorithmPtr;
+typedef std::shared_ptr<EqDensityBCAlgorithm> EqDensityBCAlgorithmPtr;
 
 class EqDensityBCAlgorithm : public BCAlgorithm
 {
@@ -12,9 +14,8 @@ public:
    EqDensityBCAlgorithm();
    ~EqDensityBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
-protected:
-   void applyBC();
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   void applyBC() override;
 private:
    //friend class boost::serialization::access;
    //template<class Archive>

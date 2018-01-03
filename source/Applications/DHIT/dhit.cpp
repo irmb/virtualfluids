@@ -214,7 +214,8 @@ void run(string configname)
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      CalculationManagerPtr initialisation(new CalculationManager(grid, numOfThreads, initTime, outputSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(outputSch);
+      CalculationManagerPtr initialisation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (myid == 0) UBLOG(logINFO, "Initialisation-start");
       initialisation->calculate();
       if (myid == 0) UBLOG(logINFO, "Initialisation-end");
@@ -229,7 +230,9 @@ void run(string configname)
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       grid->setTimeStep(initTime+1.0);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
+
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory2 = std::make_shared<ConcreteCalculatorFactory>(visSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory2, CalculatorType::HYBRID));
       calculation->calculate();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
 

@@ -10,6 +10,7 @@
 #include "EsoTwistD3Q27System.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
+#include "EsoTwist3D.h"
 
 
 //daten werden in einen vector (dieser befindet sich im transmitter) kopiert

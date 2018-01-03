@@ -4,8 +4,11 @@
 #include "BCProcessor.h"
 #include "Grid3DSystem.h"
 #include "D3Q27System.h"
+#include "BCArray3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "ILBMKernel.h"
 
-#include <boost/pointer_cast.hpp>
 
 SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor() : 
                                     Block3DVisitor(0, Grid3DSystem::MAXLEVEL) 
@@ -17,7 +20,7 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 {
    if(!block->hasInterpolationFlag()) return;
 
-   LBMKernelPtr kernel = block->getKernel();
+   ILBMKernelPtr kernel = block->getKernel();
 
    if(!kernel && (block->getRank() != grid->getRank())) return;
 

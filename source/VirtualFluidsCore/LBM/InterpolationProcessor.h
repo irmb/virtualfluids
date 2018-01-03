@@ -21,7 +21,7 @@ struct D3Q27ICell
 };
 
 class InterpolationProcessor;
-typedef boost::shared_ptr<InterpolationProcessor> InterpolationProcessorPtr;
+typedef std::shared_ptr<InterpolationProcessor> InterpolationProcessorPtr;
 
 #include "InterpolationHelper.h"
 

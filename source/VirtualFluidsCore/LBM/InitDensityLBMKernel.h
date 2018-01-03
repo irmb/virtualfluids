@@ -3,6 +3,9 @@
 
 #include "LBMKernel.h"
 #include "basics/utilities/UbTiming.h"
+#include "CbArray4D.h"
+#include "D3Q27System.h"
+#include "CbArray3D.h"
 
 class InitDensityLBMKernel :  public LBMKernel
 {
@@ -13,7 +16,7 @@ public:
    void calculate();
    LBMKernelPtr clone();
    void setVelocity(int x1, int x2, int x3, LBMReal vvx, LBMReal vvy, LBMReal vvz);
-   double getCallculationTime();
+   double getCalculationTime();
 protected:
    void init();
    void collideAll();

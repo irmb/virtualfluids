@@ -160,7 +160,8 @@ void pf1()
    NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
    //start simulation 
-   CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
+   const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+   CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculation->calculate();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");

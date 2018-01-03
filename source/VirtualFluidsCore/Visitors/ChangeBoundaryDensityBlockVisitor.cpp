@@ -3,6 +3,9 @@
 #include "Grid3DSystem.h"
 #include "BoundaryConditions.h"
 #include "BCProcessor.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
 
 ChangeBoundaryDensityBlockVisitor::ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity) :
 Block3DVisitor(0, Grid3DSystem::MAXLEVEL), 
@@ -21,7 +24,7 @@ void ChangeBoundaryDensityBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 {
    if (block->getRank() == grid->getRank())
    {
-      LBMKernelPtr kernel = block->getKernel();
+       ILBMKernelPtr kernel = block->getKernel();
       BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
       int minX1 = 0;

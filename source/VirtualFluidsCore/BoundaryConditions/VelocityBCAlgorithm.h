@@ -3,8 +3,10 @@
 
 #include "BCAlgorithm.h"
 
+class DistributionArray3D;
+
 class VelocityBCAlgorithm;
-typedef boost::shared_ptr<VelocityBCAlgorithm> VelocityBCAlgorithmPtr;
+typedef std::shared_ptr<VelocityBCAlgorithm> VelocityBCAlgorithmPtr;
 
 class VelocityBCAlgorithm : public BCAlgorithm
 {
@@ -12,10 +14,9 @@ public:
    VelocityBCAlgorithm();
    ~VelocityBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
-   void applyBC();
-protected:
-   
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+
+   void applyBC() override;
 private:
    //friend class boost::serialization::access;
    //template<class Archive>

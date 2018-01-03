@@ -2,6 +2,14 @@
 #include "BCProcessor.h"
 #include "WbWriterVtkXmlASCII.h"
 
+#include "Block3D.h"
+#include "DataSet3D.h"
+#include "LBMKernel.h"
+#include "Communicator.h"
+#include "D3Q27Interactor.h"
+#include "UbScheduler.h"
+#include "BCArray3D.h"
+#include "InterpolationProcessor.h"
 
 ShearStressCoProcessor::ShearStressCoProcessor(Grid3DPtr grid, const std::string& path, 
                                                              WbWriter* const writer,
@@ -23,7 +31,7 @@ ShearStressCoProcessor::ShearStressCoProcessor(Grid3DPtr grid, const std::string
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
       grid->getBlocks(level, gridRank, true, blockVector[level]);
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          UbTupleInt3 nx = grid->getBlockNX();
          ShearStressValuesArray3DPtr shearStressValues = ShearStressValuesArray3DPtr(new ShearStressValuesArray3D(14, val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 0.0));
@@ -131,15 +139,15 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
    LBMReal f[27];
    LBMReal vx, vy, vz, sxx, syy, szz, sxy, syz, sxz;
 
-   BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
+   for(D3Q27InteractorPtr interactor : interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
+      for(TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
-         LBMKernelPtr kernel = block->getKernel();
+         ILBMKernelPtr kernel = block->getKernel();
          BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
@@ -154,7 +162,7 @@ void ShearStressCoProcessor::calculateShearStress(double timeStep)
          int minX3 = ghostLayer;
          int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayer;
 
-         BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
+         for(std::vector<int> node : transNodeIndicesSet)
          {
             int ix1 = node[0];
             int ix2 = node[1];
@@ -243,10 +251,10 @@ void ShearStressCoProcessor::addData()
 
    data.resize(datanames.size());
 
-   BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
+   for(D3Q27InteractorPtr interactor : interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
+      for(TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
@@ -256,7 +264,7 @@ void ShearStressCoProcessor::addData()
          UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
          double         dx           = grid->getDeltaX(block);
 
-         LBMKernelPtr kernel = block->getKernel();
+         ILBMKernelPtr kernel = block->getKernel();
          BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
@@ -276,7 +284,7 @@ void ShearStressCoProcessor::addData()
          {
             int le=0;
          }
-         BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
+         for(std::vector<int> node : transNodeIndicesSet)
          {
             int ix1 = node[0];
             int ix2 = node[1];
@@ -353,7 +361,7 @@ void ShearStressCoProcessor::resetData(double step)
 {
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -362,7 +370,7 @@ void ShearStressCoProcessor::resetData(double step)
             UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
             double         dx           = grid->getDeltaX(block);
 
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
             ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
@@ -418,7 +426,7 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
    double x3plane=0.0,y3plane=0.0,z3plane=0.0;
    BoundaryConditionsPtr bcPtr;
    double dx = grid->getDeltaX(block);
-   LBMKernelPtr kernel = block->getKernel();
+   ILBMKernelPtr kernel = block->getKernel();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
    BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
    bcPtr=bcArray->getBC(ix1,ix2,ix3);
@@ -477,11 +485,11 @@ void ShearStressCoProcessor::findPlane(int ix1,int ix2,int ix3,Grid3DPtr grid,Bl
          for(int j = y; j <= y + 1; j++){
             for (int k = z; k <= z + 1; k++)
             {
-               UbTupleDouble3 pointplane1 =  grid->getNodeCoordinates(block,  i,	  j,	 k);
+               Vector3D pointplane1 =  grid->getNodeCoordinates(block,  i,	  j,	 k);
 
-               double   iph=val<1>(pointplane1);
-               double   jph=val<2>(pointplane1);
-               double   kph=val<3>(pointplane1);
+               double   iph=pointplane1[0];
+               double   jph=pointplane1[1];
+               double   kph=pointplane1[2];
 
                if(!bcArray->isSolid(i, j, k))
                {
@@ -605,10 +613,10 @@ bool ShearStressCoProcessor::checkUndefindedNodes( BCArray3DPtr bcArray,int ix1,
 //////////////////////////////////////////////////////////////////////////////////////
 void ShearStressCoProcessor::initDistance()
 {
-   BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
+   for(D3Q27InteractorPtr interactor : interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
+      for (TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
@@ -618,7 +626,7 @@ void ShearStressCoProcessor::initDistance()
          UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
          double         dx           = grid->getDeltaX(block);
 
-         LBMKernelPtr kernel = block->getKernel();
+         ILBMKernelPtr kernel = block->getKernel();
          BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
          ShearStressValuesArray3DPtr ssv = kernel->getDataSet()->getShearStressValues();
@@ -633,7 +641,7 @@ void ShearStressCoProcessor::initDistance()
          int minX3 = ghostLayer;
          int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayer;
 
-         BOOST_FOREACH(std::vector<int> node, transNodeIndicesSet)
+         for(std::vector<int> node : transNodeIndicesSet)
          {
             int ix1 = node[0];
             int ix2 = node[1];
@@ -662,10 +670,10 @@ void ShearStressCoProcessor::initDistance()
                //////get normal and distance//////
                double A,B,C,D,ii=0.0;
                findPlane(ix1,ix2,ix3,grid,block,A,B,C,D,ii);
-               UbTupleDouble3 pointplane1 =  grid->getNodeCoordinates(block, ix1,ix2,ix3);
-               double   ix1ph=val<1>(pointplane1);
-               double   ix2ph=val<2>(pointplane1);
-               double   ix3ph=val<3>(pointplane1);
+               Vector3D pointplane1 =  grid->getNodeCoordinates(block, ix1,ix2,ix3);
+               double   ix1ph= pointplane1[0];
+               double   ix2ph= pointplane1[1];
+               double   ix3ph= pointplane1[2];
                double normalDis;
                if(ii!=3)
                {

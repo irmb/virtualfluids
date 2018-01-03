@@ -1,7 +1,13 @@
 #ifndef CheckRatioBlockVisitor_H
 #define CheckRatioBlockVisitor_H
 
+#include <string>
+#include <memory>
+
 #include "Block3DVisitor.h"
+
+class Grid3D;
+class Block3D;
 
 class CheckRatioBlockVisitor : public Block3DVisitor
 {
@@ -14,15 +20,13 @@ public:
    void resetState();
    std::string getStateString();
 
-   void visit(Grid3DPtr grid, Block3DPtr block);
-
-protected:
+      void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 private:
    int  levelDepth;
    bool includeNotActiveBlocks;
    bool state;
-   Block3DPtr falseBlock;
+   std::shared_ptr<Block3D> falseBlock;
 };
 
 #endif //OverlapBlockVisitor_H

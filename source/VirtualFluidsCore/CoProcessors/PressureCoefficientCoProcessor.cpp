@@ -1,6 +1,17 @@
 #include "PressureCoefficientCoProcessor.h"
 #include <WbWriterVtkXmlASCII.h>
 
+#include "LBMKernel.h"
+#include "BCProcessor.h"
+#include "DataSet3D.h"
+#include "Block3D.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
+#include "Communicator.h"
+#include "GbCuboid3D.h"
+#include "D3Q27Interactor.h"
+#include "BCArray3D.h"
+
 PressureCoefficientCoProcessor::PressureCoefficientCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
    GbCuboid3DPtr plane,
    const std::string& path, CommunicatorPtr comm)
@@ -43,15 +54,15 @@ void PressureCoefficientCoProcessor::calculateRho()
    std::vector<double> values;
    std::vector<double> rvalues;
 
-   BOOST_FOREACH(D3Q27InteractorPtr interactor, interactors)
+   for(D3Q27InteractorPtr interactor : interactors)
    {
       typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
-      BOOST_FOREACH(TransNodeIndicesMap::value_type t, interactor->getBcNodeIndicesMap())
+      for(TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
          Block3DPtr block = t.first;
          std::set< std::vector<int> >& bcNodeIndicesSet = t.second;
 
-         LBMKernelPtr kernel = block->getKernel();
+         ILBMKernelPtr kernel = block->getKernel();
          BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
          DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
 
@@ -77,7 +88,7 @@ void PressureCoefficientCoProcessor::calculateRho()
          int minX3 = ghostLayerWidth;
          int maxX3 = (int)bcArray->getNX3() - 1 - ghostLayerWidth;
 
-         BOOST_FOREACH(std::vector<int> node, bcNodeIndicesSet)
+         for(std::vector<int> node : bcNodeIndicesSet)
          {
             int x1 = node[0];
             int x2 = node[1];
@@ -182,7 +193,7 @@ void PressureCoefficientCoProcessor::writeValues(int step)
 }
 void PressureCoefficientCoProcessor::readValues(int step)
 {
-   if (comm->getProcessID() == comm->getRoot())
+   if (comm->isRoot())
    {
       std::string fname = path+UbSystem::toString(step)+".bin";
       std::ifstream in(fname.c_str(), std::ios::in | std::ios::binary);
@@ -193,7 +204,7 @@ void PressureCoefficientCoProcessor::readValues(int step)
 
       // get length of file:
       in.seekg(0, in.end);
-      int length = in.tellg();
+      int length = (int)in.tellg();
       in.seekg(0, in.beg);
 
       outValues.resize(length/sizeof(double));

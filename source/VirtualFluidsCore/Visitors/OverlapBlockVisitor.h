@@ -1,7 +1,13 @@
 #ifndef OverlapBlockVisitor_H
 #define OverlapBlockVisitor_H
 
+#include <string>
+#include <memory>
+
 #include "Block3DVisitor.h"
+
+class Grid3D;
+class Block3D;
 
 class OverlapBlockVisitor : public Block3DVisitor
 {
@@ -14,9 +20,8 @@ public:
 
    std::string getSpecificDescription();
 
-   void visit(Grid3DPtr grid, Block3DPtr block);
+   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
-protected:
 
 private:
    int  levelDepth;

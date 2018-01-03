@@ -353,10 +353,10 @@ void run(string configname)
             /////delete solid blocks
             if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - start");
 
-            SetSolidBlockVisitor v(fngIntrWhole, SetSolidBlockVisitor::SOLID);
+            SetSolidBlockVisitor v(fngIntrWhole, BlockType::SOLID);
             grid->accept(v);
             std::vector<Block3DPtr>& sb = fngIntrWhole->getSolidBlockSet();
-            BOOST_FOREACH(Block3DPtr block, sb)
+            for(Block3DPtr block : sb)
             {
                grid->deleteBlock(block);
             }
@@ -612,8 +612,9 @@ void run(string configname)
       UbSchedulerPtr stepMV(new UbScheduler(1));
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::MPI));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::PrePostBc));
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");

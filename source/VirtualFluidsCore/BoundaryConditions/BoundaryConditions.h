@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+#include "basics/utilities/Vector3D.h"
+
 #include <basics/utilities/UbException.h>                  
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbTuple.h>
@@ -18,7 +20,7 @@
 #include <boost/serialization/serialization.hpp>
 
 class BoundaryConditions;
-typedef boost::shared_ptr<BoundaryConditions> BoundaryConditionsPtr;
+typedef std::shared_ptr<BoundaryConditions> BoundaryConditionsPtr;
 
 class BoundaryConditions 
 {
@@ -118,6 +120,12 @@ public:
    bool       hasVelocityBoundaryFlag(const int& direction)                         { return ( ( ( velocityBoundaryFlags>>(optionDigits*direction) ) & maxOptionVal ) != 0);         }
    short      getVelocitySecondaryOption(const int& direction)                      { return (short)( (  ( velocityBoundaryFlags>>(optionDigits*direction) ) & maxOptionVal ) - 1 ); }
 
+   void setBoundaryVelocity(const Vector3D& vx) 
+    {
+       setBoundaryVelocityX1((float)vx[0]); 
+       setBoundaryVelocityX2((float)vx[1]);
+       setBoundaryVelocityX3((float)vx[2]);
+   }
    void  setBoundaryVelocityX1(const float& vx1) { this->bcVelocityX1 = vx1;  } 
    void  setBoundaryVelocityX2(const float& vx2) { this->bcVelocityX2 = vx2;  } 
    void  setBoundaryVelocityX3(const float& vx3) { this->bcVelocityX3 = vx3;  } 
@@ -260,6 +268,7 @@ private:
    friend class MPIIORestart2CoProcessor;
    friend class MPIIORestart11CoProcessor;
    friend class MPIIORestart21CoProcessor;
+
 
    friend class boost::serialization::access;
    template<class Archive>
