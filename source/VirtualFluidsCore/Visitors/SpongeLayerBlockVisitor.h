@@ -12,12 +12,13 @@
 class SpongeLayerBlockVisitor : public Block3DVisitor
 {
 public:
-   SpongeLayerBlockVisitor(GbCuboid3DPtr boundingBox);
+   SpongeLayerBlockVisitor(GbCuboid3DPtr boundingBox, LBMReal collFactor);
    virtual ~SpongeLayerBlockVisitor();
    virtual void visit(Grid3DPtr grid, Block3DPtr block);
 protected:
 private:
    GbCuboid3DPtr boundingBox;
+   LBMReal collFactor;
 };
 
 #endif // SetSpongeLayerBlockVisitor_h__
