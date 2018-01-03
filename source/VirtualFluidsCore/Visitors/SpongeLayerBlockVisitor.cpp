@@ -40,7 +40,25 @@ void SpongeLayerBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3))
       {
          ILBMKernelPtr kernel = block->getKernel();
-         kernel->setCollisionFactor(collFactor);
+         double oldCollFactor = kernel->getCollisionFactor();
+
+         int ibX1 = block->getX1();
+
+         UbTupleInt3 ixMin = grid->getBlockIndexes(boundingBox->getX1Minimum(),boundingBox->getX2Minimum(),boundingBox->getX3Minimum());
+         UbTupleInt3 ixMax = grid->getBlockIndexes(boundingBox->getX1Maximum(),boundingBox->getX2Maximum(),boundingBox->getX3Maximum());
+
+         int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
+         double index = ibX1-val<1>(ixMin)+1;
+         
+         //double a = oldCollFactor-1.0 / (double)ibMax;
+         //double b = val<1>(ixMin)-ibX1+1;
+         //double a = oldCollFactor-1.0 / (double)ibMax;
+         //double a = oldCollFactor-1.0 / (double)ibMax;
+
+
+         double newCollFactor = oldCollFactor - (oldCollFactor-1.0)/ibMax*index;
+
+         kernel->setCollisionFactor(newCollFactor);
       }
    }
 }

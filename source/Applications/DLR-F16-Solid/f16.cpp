@@ -140,6 +140,11 @@ void run(string configname)
       BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
       velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
 
+      fct.SetExpr("U");
+      fct.DefineConst("U", 0.01);
+      BCAdapterPtr velBCAdapterOut(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+      velBCAdapterOut->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+
       BCAdapterPtr outflowBCAdapter(new DensityBCAdapter(rhoLB));
       outflowBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
 
@@ -208,15 +213,15 @@ void run(string configname)
 
         
 
-         GbObject3DPtr fngMeshWhole(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 25.0));
-         GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut + "/geo/fngMeshWholeCylinder", WbWriterVtkXmlBinary::getInstance());
+         //GbObject3DPtr fngMeshWhole(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 25.0));
+         //GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut + "/geo/fngMeshWholeCylinder", WbWriterVtkXmlBinary::getInstance());
 
-         //GbTriFaceMesh3DPtr fngMeshWhole;
-         //if (myid==0) UBLOG(logINFO, "Read fngFileWhole:start");
-         //fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         //if (myid==0) UBLOG(logINFO, "Read fngFileWhole:end");
-         //fngMeshWhole->rotate(0.0, 0.5, 0.0);
-         //if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut+"/geo/fngMeshWhole2", WbWriterVtkXmlBinary::getInstance());
+         GbTriFaceMesh3DPtr fngMeshWhole;
+         if (myid==0) UBLOG(logINFO, "Read fngFileWhole:start");
+         fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         if (myid==0) UBLOG(logINFO, "Read fngFileWhole:end");
+         fngMeshWhole->rotate(0.0, 0.5, 0.0);
+         if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut+"/geo/fngMeshWhole2", WbWriterVtkXmlBinary::getInstance());
 
          ////////////////////////////////////////////////////////////////////////////
          //// Zackenband
@@ -260,8 +265,8 @@ void run(string configname)
          }
          //////////////////////////////////////////////////////////////////////////
          Interactor3DPtr fngIntrWhole;
-         fngIntrWhole = D3Q27InteractorPtr(new D3Q27Interactor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
-         //fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
+         //fngIntrWhole = D3Q27InteractorPtr(new D3Q27Interactor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
+         fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
 
          //D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
          //D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
@@ -550,15 +555,16 @@ void run(string configname)
 
          ////sponge layer
          ////////////////////////////////////////////////////////////////////////////
+
+         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-5.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         grid->accept(slVisitorX1max);
+
          //GbCuboid3DPtr spongeLayerX1min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1+75, g_maxX2+blockLength, g_maxX3+blockLength));
          //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1min.get(), pathOut+"/geo/spongeLayerX1min", WbWriterVtkXmlASCII::getInstance());
          //SpongeLayerBlockVisitor slVisitorX1min(spongeLayerX1min);
          //grid->accept(slVisitorX1min);
-
-         //GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-75, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         //SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max);
-         //grid->accept(slVisitorX1max);
 
          //GbCuboid3DPtr spongeLayerX3min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+75));
          //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX3min.get(), pathOut+"/geo/spongeLayerX3min", WbWriterVtkXmlASCII::getInstance());
@@ -587,6 +593,10 @@ void run(string configname)
          PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
          grid->accept(pqPartVisitor);
 
+         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-5.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         grid->accept(slVisitorX1max);
       }
 
       UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
@@ -613,9 +623,9 @@ void run(string configname)
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
       const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::PrePostBc));
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
