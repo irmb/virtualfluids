@@ -18,9 +18,10 @@
 #include "LBMKernel.h"
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+
 #include "BCProcessor.h"
+#include "DataSet3D.h"
 
 class Block3D;
 
@@ -38,7 +39,7 @@ public:
 
 protected:
 	typedef typename VectorTransmitter::value_type  vector_type;
-	typedef boost::shared_ptr< VectorTransmitter > VectorTransmitterPtr;
+	typedef std::shared_ptr< VectorTransmitter > VectorTransmitterPtr;
 public:
    D3Q27ETFCOffVectorConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, 
       InterpolationProcessorPtr iprocessor, CFconnectorType connType);
@@ -81,7 +82,7 @@ public:
 	void receiveVectorsX3() {}
 
 protected:
-	boost::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
+	std::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
 	//gegenstelle muss "inversen" connector besitzen
 	VectorTransmitterPtr sender, receiver;
 

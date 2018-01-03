@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <boost/foreach.hpp>
+
 #include <boost/algorithm/string.hpp>
 
 template <class T>
@@ -271,7 +271,7 @@ public:
       std::vector<T> v;
       std::vector<std::string> strings;
       boost::algorithm::split(strings, s,  boost::algorithm::is_any_of("\t\n "));
-      BOOST_FOREACH(std::string s, strings){
+      for(std::string s : strings){
          if (s != "")
          {
             v.push_back(fromString<T>(s));

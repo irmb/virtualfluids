@@ -2,22 +2,16 @@
 #ifndef BOUNDARYCONDITIONS_H
 #define BOUNDARYCONDITIONS_H
 
-#include <vector>
-#include <string>
+#include <memory>
 
-#include "BoundaryConditions.h"
 #include "D3Q27System.h"
-#include "EsoTwist3D.h"
-#include "BCArray3D.h"
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/export.hpp>
-
-#include <boost/shared_ptr.hpp>
+class DistributionArray3D;
+class BCArray3D;
+class BoundaryConditions;
 
 class BCAlgorithm;
-typedef boost::shared_ptr<BCAlgorithm> BCAlgorithmPtr;
+typedef std::shared_ptr<BCAlgorithm> BCAlgorithmPtr;
 
 class BCAlgorithm
 {
@@ -36,16 +30,16 @@ public:
    BCAlgorithm();
    virtual ~BCAlgorithm() {}
    
-   virtual void addDistributions(DistributionArray3DPtr distributions) = 0;
+   virtual void addDistributions(std::shared_ptr<DistributionArray3D> distributions) = 0;
    void setNodeIndex(int x1, int x2, int x3);
-   void setBcPointer(BoundaryConditionsPtr bcPtr);
+   void setBcPointer(std::shared_ptr<BoundaryConditions> bcPtr);
    void setCompressible(bool c);
    void setCollFactor(LBMReal cf);
    char getType();
    bool isPreCollision();
-   virtual BCAlgorithmPtr clone()=0;
-   BCArray3DPtr getBcArray();
-   void setBcArray(BCArray3DPtr bcarray);
+   virtual BCAlgorithmPtr clone() = 0;
+   std::shared_ptr<BCArray3D> getBcArray();
+   void setBcArray(std::shared_ptr<BCArray3D> bcarray);
    virtual void applyBC() = 0;
 
 protected:
@@ -53,9 +47,9 @@ protected:
    char type;
    bool preCollision;
 
-   BoundaryConditionsPtr bcPtr;
-   DistributionArray3DPtr distributions;
-   BCArray3DPtr bcArray;
+   std::shared_ptr<BoundaryConditions> bcPtr;
+   std::shared_ptr<DistributionArray3D> distributions;
+   std::shared_ptr<BCArray3D> bcArray;
 
    LBMReal collFactor;
    int x1, x2, x3;
@@ -68,7 +62,7 @@ protected:
    
    CalcFeqForDirFct calcFeqsForDirFct ;
    CalcMacrosFct    calcMacrosFct;
-   CalcFeqFct       calcFeqFct;
+   CalcFeqFct       calcFeqFct; 
 };
 
 

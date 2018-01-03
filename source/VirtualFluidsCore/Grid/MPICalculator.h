@@ -10,11 +10,14 @@
 #include "LoadBalancer.h"
 #include "TimeAveragedValuesCoProcessor.h"
 
+#include "Calculator.h"
 
 class MPICalculator;
-typedef boost::shared_ptr<MPICalculator> MPICalculatorPtr;
+typedef std::shared_ptr<MPICalculator> MPICalculatorPtr;
 
 #include "CalculationManager.h"
+
+class Block3DConnector;
 
 class MPICalculator  : public Calculator
 {
@@ -30,11 +33,11 @@ protected:
    void swapDistributions(int startLevel, int maxInitLevel);
    virtual void exchangeBlockData(int startLevel, int maxInitLevel);
    void exchangeInterfaceBlockData(int startLevel, int maxInitLevel);
-   virtual void connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors);
-   virtual void connectorsSend(std::vector< Block3DConnectorPtr >& connectors);
-   virtual void connectorsReceive(std::vector< Block3DConnectorPtr >& connectors);
+   virtual void connectorsPrepare(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   virtual void connectorsSend(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   virtual void connectorsReceive(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
    void interpolation(int startLevel, int maxInitLevel);
-   void deleteConnectors(std::vector< std::vector< Block3DConnectorPtr > >& conns);
+   void deleteConnectors(std::vector< std::vector< std::shared_ptr<Block3DConnector> > >& conns);
    void applyPreCollisionBC(int startLevel, int maxInitLevel);
    void applyPostCollisionBC(int startLevel, int maxInitLevel);
 private:

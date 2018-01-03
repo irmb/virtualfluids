@@ -1,29 +1,42 @@
 #ifndef PressureCoefficientCoProcessor_h__
 #define PressureCoefficientCoProcessor_h__
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "CoProcessor.h"
-#include "Communicator.h"
-#include "GbCuboid3D.h"
-#include "D3Q27Interactor.h"
+#include "LBMSystem.h"
+
+
+class GbCuboid3D;
+class D3Q27Interactor;
+class Communicator;
+class Grid3D;
+class UbScheduler;
 
 class PressureCoefficientCoProcessor: public CoProcessor
 {
 public:
-   PressureCoefficientCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-      GbCuboid3DPtr plane, const std::string& path, CommunicatorPtr comm);
+   PressureCoefficientCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
+       std::shared_ptr<GbCuboid3D> plane, const std::string& path, std::shared_ptr<Communicator> comm);
    ~PressureCoefficientCoProcessor();
-   void process(double step);
-   void addInteractor(D3Q27InteractorPtr interactor);
+
+   void process(double step) override;
+
+   void addInteractor(std::shared_ptr<D3Q27Interactor> interactor);
    void readValues(int step);
+
 protected:
    void collectData(double step);
    void calculateRho();
    void writeValues(int step);
+
 private:
-   GbCuboid3DPtr plane;
+    std::shared_ptr<GbCuboid3D> plane;
    std::string path;
-   CommunicatorPtr comm;
-   std::vector<D3Q27InteractorPtr> interactors;
+   std::shared_ptr<Communicator> comm;
+   std::vector<std::shared_ptr<D3Q27Interactor> > interactors;
    int numberOfSteps;
    double maxStep;
 

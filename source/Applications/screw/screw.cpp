@@ -233,7 +233,8 @@ int main(int argc, char* argv[])
 
       WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");

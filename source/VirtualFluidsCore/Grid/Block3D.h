@@ -1,23 +1,16 @@
 #ifndef BLOCK3D_H
 #define BLOCK3D_H
 
-#include <sstream>
-#include <iostream>
-
-#include "UbMath.h"
-#include "CoordinateTransformation3D.h"
-
-#include "Block3DConnector.h"
-
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/vector.hpp>
-#include <boost/foreach.hpp>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
+class Block3DConnector;
+class LBMKernel;
+class ILBMKernel;
+
 class Block3D;
-typedef boost::shared_ptr<Block3D> Block3DPtr;
-
-#include "LBMKernel.h"
+typedef std::shared_ptr<Block3D> Block3DPtr;
 
 class Block3D
 {
@@ -36,8 +29,8 @@ public:
    bool isActive()    const;
    bool isNotActive() const;
 
-   void setKernel(LBMKernelPtr kernel);
-   LBMKernelPtr getKernel() const;
+   void setKernel(std::shared_ptr<LBMKernel> kernel);
+   std::shared_ptr<ILBMKernel> getKernel() const;
    void deleteKernel();
 
    void setBundle(int bundle);
@@ -62,20 +55,20 @@ public:
    void setLevel(int level);
 
    //Connector-Section
-   void                 setConnector(Block3DConnectorPtr connector);
-   Block3DConnectorPtr  getConnector(int dir) const;
+   void                 setConnector(std::shared_ptr<Block3DConnector> connector);
+   std::shared_ptr<Block3DConnector>  getConnector(int dir) const;
    bool                 hasConnectors();
    void                 deleteConnectors();
-   void pushBackSameLevelConnectors(  std::vector<Block3DConnectorPtr>& localSameLevelConnectors
-                                    , std::vector<Block3DConnectorPtr>& remoteSameLevelConnectors );
-   void pushBackLocalSameLevelConnectors( std::vector<Block3DConnectorPtr>& localSameLevelConnectors );
-   void pushBackRemoteSameLevelConnectors( std::vector<Block3DConnectorPtr>& remoteSameLevelConnectors );
-   void pushBackLocalInterpolationConnectorsCF( std::vector<Block3DConnectorPtr>& localInterpolationConnectors );
-   void pushBackRemoteInterpolationConnectorsCF( std::vector<Block3DConnectorPtr>& remoteInterpolationConnectors );
-   void pushBackLocalInterpolationConnectorsFC( std::vector<Block3DConnectorPtr>& localInterpolationConnectors );
-   void pushBackRemoteInterpolationConnectorsFC( std::vector<Block3DConnectorPtr>& remoteInterpolationConnectors );
-   void pushBackLocalSameLevelConnectors( std::vector<Block3DConnectorPtr>& localSameLevelConnectors, const int& dir);
-   void pushBackRemoteSameLevelConnectors( std::vector<Block3DConnectorPtr>& remoteSameLevelConnectors, const int& dir );
+   void pushBackSameLevelConnectors(  std::vector<std::shared_ptr<Block3DConnector> >& localSameLevelConnectors
+                                    , std::vector<std::shared_ptr<Block3DConnector> >& remoteSameLevelConnectors );
+   void pushBackLocalSameLevelConnectors( std::vector<std::shared_ptr<Block3DConnector> >& localSameLevelConnectors );
+   void pushBackRemoteSameLevelConnectors( std::vector<std::shared_ptr<Block3DConnector> >& remoteSameLevelConnectors );
+   void pushBackLocalInterpolationConnectorsCF( std::vector<std::shared_ptr<Block3DConnector> >& localInterpolationConnectors );
+   void pushBackRemoteInterpolationConnectorsCF( std::vector<std::shared_ptr<Block3DConnector> >& remoteInterpolationConnectors );
+   void pushBackLocalInterpolationConnectorsFC( std::vector<std::shared_ptr<Block3DConnector> >& localInterpolationConnectors );
+   void pushBackRemoteInterpolationConnectorsFC( std::vector<std::shared_ptr<Block3DConnector> >& remoteInterpolationConnectors );
+   void pushBackLocalSameLevelConnectors( std::vector<std::shared_ptr<Block3DConnector> >& localSameLevelConnectors, const int& dir);
+   void pushBackRemoteSameLevelConnectors( std::vector<std::shared_ptr<Block3DConnector> >& remoteSameLevelConnectors, const int& dir );
    int getNumberOfLocalConnectors();
    int getNumberOfRemoteConnectors();
    int getNumberOfLocalConnectorsForSurfaces();
@@ -109,6 +102,7 @@ public:
 
    static int getMaxGlobalID() { return counter; }
    static void setMaxGlobalID(int c) { counter = 0; }
+
 private:
   int   x1;
   int   x2;
@@ -119,8 +113,8 @@ private:
   int interpolationFlagCF;
   int interpolationFlagFC;
 
-  LBMKernelPtr kernel;
-  std::vector<Block3DConnectorPtr> connectors;
+  std::shared_ptr<LBMKernel> kernel;
+  std::vector<std::shared_ptr<Block3DConnector> > connectors;
   std::map<int, int> weight;
 
   int bundle;
@@ -136,6 +130,7 @@ private:
   friend class MPIIORestart2CoProcessor;
   friend class MPIIORestart11CoProcessor;
   friend class MPIIORestart21CoProcessor;
+
 
   friend class boost::serialization::access;
   template<class Archive>

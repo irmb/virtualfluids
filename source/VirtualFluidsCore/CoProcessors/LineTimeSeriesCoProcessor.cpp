@@ -2,6 +2,16 @@
 #include "BCProcessor.h"
 #include "WbWriterVtkXmlASCII.h"
 
+#include "DataSet3D.h"
+#include "LBMKernel.h"
+#include "CoordinateTransformation3D.h"
+#include "Block3D.h"
+#include "GbLine3D.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
+#include "Communicator.h"
+#include "CompressibleCumulantLBMKernel.h"
+
 LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, GbLine3DPtr line, int level, CommunicatorPtr comm) :
    CoProcessor(grid, s),
    path(path),
@@ -118,7 +128,7 @@ void LineTimeSeriesCoProcessor::collectData()
       {
          if (block->getRank()==gridRank)
          {
-            LBMKernelPtr kernel = block->getKernel();
+             ILBMKernelPtr kernel = block->getKernel();
             calcMacros = NULL;
             if (kernel->getCompressible())
             {

@@ -3,8 +3,16 @@
 #include "BCProcessor.h"
 #include <vector>
 #include <string>
-#include <boost/foreach.hpp>
+
 #include "basics/writer/WbWriterVtkXmlASCII.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "LBMUnitConverter.h"
+#include "Communicator.h"
+#include "WbWriter.h"
+#include "UbScheduler.h"
+#include "CbArray3D.h"
+#include "BCArray3D.h"
 
 using namespace std;
 
@@ -48,7 +56,7 @@ void WriteBoundaryConditionsCoProcessor::collectData(double step)
 
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -120,7 +128,7 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
 
    data.resize(datanames.size());
 
-   LBMKernelPtr kernel = block->getKernel();
+   ILBMKernelPtr kernel = block->getKernel();
    BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
    //knotennummerierung faengt immer bei 0 an!

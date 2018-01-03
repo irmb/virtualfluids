@@ -8,16 +8,23 @@
 #ifndef NUPSCOUNTERCoProcessor_H_
 #define NUPSCOUNTERCoProcessor_H_
 
-#include "CoProcessor.h"
-#include "Communicator.h"
-#include "basics/utilities/UbTiming.h"
-#include <boost/timer.hpp>
+#include <memory>
 
-class NUPSCounterCoProcessor: public CoProcessor {
+#include "CoProcessor.h"
+#include "basics/utilities/UbTiming.h"
+
+class Communicator;
+class Grid3D;
+class UbScheduler;
+
+class NUPSCounterCoProcessor: public CoProcessor
+{
 public:
-   NUPSCounterCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, int numOfThreads, CommunicatorPtr comm);
+   NUPSCounterCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, int numOfThreads, std::shared_ptr<Communicator> comm);
    virtual ~NUPSCounterCoProcessor();
-   void process(double step);
+
+   void process(double step)override;
+
 protected:
    void collectData(double step);
    UbTimer timer;
@@ -28,7 +35,7 @@ protected:
    double nup;
    double nup_t;
    double nupsStep;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator> comm;
 };
 
 

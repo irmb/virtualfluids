@@ -13,8 +13,6 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <boost/exception/all.hpp>
-
 #include "./UbTuple.h"
 
 /*=========================================================================*/
@@ -63,7 +61,7 @@ usage: UB_THROW( UbException("error message") );
    #define UB_THROW(e) throw e
 #endif
 
-class UbException : public std::runtime_error, public boost::exception
+class UbException : public std::runtime_error
 {
 public:
    typedef UbTuple< std::string, int, std::string, std::string > ExceptionData;

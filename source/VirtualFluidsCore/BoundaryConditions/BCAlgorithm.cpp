@@ -1,5 +1,10 @@
 #include "BCAlgorithm.h"
 
+#include "BoundaryConditions.h"
+#include "EsoTwist3D.h"
+#include "BCArray3D.h"
+
+
 BCAlgorithm::BCAlgorithm() : compressible(false)
 {
 
@@ -7,14 +12,14 @@ BCAlgorithm::BCAlgorithm() : compressible(false)
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::setNodeIndex(int x1, int x2, int x3)
 {
-   this->x1 = x1;
-   this->x2 = x2;
-   this->x3 = x3;
+    this->x1 = x1;
+    this->x2 = x2;
+    this->x3 = x3;
 }
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::setBcPointer(BoundaryConditionsPtr bcPtr)
 {
-   this->bcPtr = bcPtr;
+    this->bcPtr = bcPtr;
 }
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::setCompressible(bool c)

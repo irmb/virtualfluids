@@ -1,6 +1,11 @@
 #include "EmergencyExitCoProcessor.h"
 #include <basics/utilities/UbFileOutputASCII.h>
 #include <basics/utilities/UbFileInputASCII.h>
+#include "UbLogger.h"
+#include "UbScheduler.h"
+#include "Communicator.h"
+#include "RestartCoProcessor.h"
+#include "Grid3D.h"
 
 EmergencyExitCoProcessor::EmergencyExitCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
                                                         const std::string& path, 

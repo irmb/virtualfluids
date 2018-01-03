@@ -1,6 +1,9 @@
 #include "Block3D.h"
+
 #include "Grid3DSystem.h"
-#include <boost/foreach.hpp>
+#include "Block3DConnector.h"
+#include "LBMKernel.h"
+
 
 int Block3D::counter = 0;
 //////////////////////////////////////////////////////////////////////////
@@ -77,7 +80,7 @@ void  Block3D::setKernel(LBMKernelPtr kernel)
    this->kernel = kernel; 
 }
 //////////////////////////////////////////////////////////////////////////
-LBMKernelPtr Block3D::getKernel() const              
+ILBMKernelPtr Block3D::getKernel() const              
 {  
    return this->kernel; 
 }
@@ -159,7 +162,7 @@ void Block3D::setLevel(int level)
 //////////////////////////////////////////////////////////////////////////
 Block3DConnectorPtr Block3D::getConnector(int dir) const
 { 
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       if( c ) 
       {
@@ -181,7 +184,7 @@ void Block3D::deleteConnectors()
 //////////////////////////////////////////////////////////////////////////
 bool Block3D::hasConnectors()
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
       if( c ) return true;
    
    return false;
@@ -419,7 +422,7 @@ void Block3D::deleteInterpolationFlag()
 //////////////////////////////////////////////////////////////////////////
 double Block3D::getWorkLoad()
 {
-   double l = kernel->getCallculationTime();
+   double l = kernel->getCalculationTime();
    l *= static_cast<double>(1<<level);
    return l;
 }
@@ -474,7 +477,7 @@ void Block3D::addWeight( int rank, int weight )
 void Block3D::addWeightForAll( int weight )
 {
    typedef std::map<int, int> wMap;
-   BOOST_FOREACH(wMap::value_type &w, this->weight)
+   for (wMap::value_type &w : this->weight)
    {
       w.second += weight;
    }
@@ -489,5 +492,3 @@ int Block3D::getWeightSize()
 {
    return static_cast<int>(this->weight.size());
 }
-
-

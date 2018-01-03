@@ -2,22 +2,21 @@
 #define DataSet3D_h
 
 #include <boost/serialization/serialization.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 #include "DistributionArray3D.h"
 
 class DataSet3D;
-typedef boost::shared_ptr<DataSet3D> DataSet3DPtr;
+typedef std::shared_ptr<DataSet3D> DataSet3DPtr;
 
 typedef CbArray4D<LBMReal,IndexerX4X3X2X1> AverageValuesArray3D;
-typedef boost::shared_ptr< AverageValuesArray3D > AverageValuesArray3DPtr;
+typedef std::shared_ptr< AverageValuesArray3D > AverageValuesArray3DPtr;
 
 typedef CbArray4D<LBMReal,IndexerX4X3X2X1> ShearStressValuesArray3D;
-typedef boost::shared_ptr< ShearStressValuesArray3D > ShearStressValuesArray3DPtr;
+typedef std::shared_ptr< ShearStressValuesArray3D > ShearStressValuesArray3DPtr;
 
 typedef CbArray3D<LBMReal, IndexerX3X2X1> RelaxationFactorArray3D;
-typedef boost::shared_ptr< RelaxationFactorArray3D > RelaxationFactorArray3DPtr;
+typedef std::shared_ptr< RelaxationFactorArray3D > RelaxationFactorArray3DPtr;
 
 class DataSet3D
 {

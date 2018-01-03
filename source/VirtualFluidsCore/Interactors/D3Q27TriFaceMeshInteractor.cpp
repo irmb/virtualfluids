@@ -21,9 +21,12 @@
 #include "BCProcessor.h"
 #include "basics/utilities/UbTiming.h"
 
-#include <omp.h>
+#include <numerics/geometry3d/GbTriFaceMesh3D.h>
+
+//#include <omp.h>
 
 #include <stack>
+#include "CoordinateTransformation3D.h"
 
 using namespace std;
 
@@ -75,7 +78,7 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
    bool gotQs         = false; //true, wenn "difference" gesetzt wurde
    BoundaryConditionsPtr bc;
 
-   LBMKernelPtr kernel = block->getKernel();
+   ILBMKernelPtr kernel = block->getKernel();
    BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
@@ -94,10 +97,10 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
       {
          for(int ix1=startIX1; ix1<stopIX1; ix1++)
          {
-            UbTupleDouble3 coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
-            internX1 = val<1>(coords);
-            internX2 = val<2>(coords);
-            internX3 = val<3>(coords);
+            Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+            internX1 = coords[0];
+            internX2 = coords[1];
+            internX3 = coords[2];
 
             if(this->isSolid() )
             {
@@ -146,13 +149,13 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    //////////////////////////////////////////////////////////////////////////
    //init bcs
    //////////////////////////////////////////////////////////////////////////
-   int nofAdapter = (int)this->bcAdapterVector.size();
+   int nofAdapter = (int)this->bcAdapters.size();
    if(nofAdapter==0) std::cout<<"WARNING - D3Q27TriFaceMeshInteractor::initInteractor Warning - no nodeAdapter available for "/*<<this->getName()*/<<std::endl;
    bool needTimeDependence = false;
    for(int pos=0; pos<nofAdapter; ++pos)
    {
-      this->bcAdapterVector[pos]->init(this,timeStep);
-      if(this->bcAdapterVector[pos]->isTimeDependent()) needTimeDependence = true;
+      this->bcAdapters[pos]->init(this,timeStep);
+      if(this->bcAdapters[pos]->isTimeDependent()) needTimeDependence = true;
    }
    if(needTimeDependence) this->setTimeDependent();
    else                   this->unsetTimeDependent();
@@ -345,7 +348,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
@@ -373,12 +376,12 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                {
                   for(int ix1=indexMinX1; ix1<indexMaxX1; ix1++)
                   {	
-                     UbTupleDouble3 pointplane1 =  grid.lock()->getNodeCoordinates(block, ix1,ix2,ix3);
-                     double   internX1=val<1>(pointplane1);
-                     double   internX2=val<2>(pointplane1);
-                     double   internX3=val<3>(pointplane1);
+                     Vector3D pointplane1 =  grid.lock()->getNodeCoordinates(block, ix1,ix2,ix3);
+                     double   internX1 = pointplane1[0];
+                     double   internX2 = pointplane1[1];
+                     double   internX3 = pointplane1[2];
 
-                     int blx1 =block->getX1();
+                     int blx1 = block->getX1();
                      int blx2 = block->getX2();
                      int blx3 = block->getX3();
 
@@ -518,8 +521,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                            bc->setBoundaryVelocityX2(vx2);
                            bc->setBoundaryVelocityX3(vx3);
 
-                           for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                              this->bcAdapterVector[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
+                           for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                              this->bcAdapters[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
 
                            //fuer beschleunigtes wiedereinlesen
                            if(this->reinitWithStoredQsFlag)
@@ -539,8 +542,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                         p[0]=ix1; p[1]=ix2; p[2]=ix3;
                         bcNodeIndices.insert(p);
 
-                        for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                           this->bcAdapterVector[index]->adaptBC(*this,bc,internX1,internX2,internX3);
+                        for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                           this->bcAdapters[index]->adaptBC(*this,bc,internX1,internX2,internX3);
                      }
                   }
                }
@@ -588,13 +591,13 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    //////////////////////////////////////////////////////////////////////////
    //init bcs
    //////////////////////////////////////////////////////////////////////////
-   int nofAdapter = (int)this->bcAdapterVector.size();
+   int nofAdapter = (int)this->bcAdapters.size();
    if(nofAdapter==0) std::cout<<"WARNING - D3Q27TriFaceMeshInteractor::initInteractor Warning - no nodeAdapter available for "/*<<this->getName()*/<<std::endl;
    bool needTimeDependence = false;
    for(int pos=0; pos<nofAdapter; ++pos)
    {
-      this->bcAdapterVector[pos]->init(this,timeStep);
-      if(this->bcAdapterVector[pos]->isTimeDependent()) needTimeDependence = true;
+      this->bcAdapters[pos]->init(this,timeStep);
+      if(this->bcAdapters[pos]->isTimeDependent()) needTimeDependence = true;
    }
    if(needTimeDependence) this->setTimeDependent();
    else                   this->unsetTimeDependent();
@@ -821,7 +824,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
@@ -1020,8 +1023,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                               bc->setBoundaryVelocityX2(vx2);
                               bc->setBoundaryVelocityX3(vx3);
 
-                              for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                                 this->bcAdapterVector[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
+                              for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                                 this->bcAdapters[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
 
                               //SG 26.08.2010 gotQs=blockGotBCs=true;
                            }
@@ -1043,8 +1046,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                         p[0]=ix1; p[1]=ix2; p[2]=ix3;
                         bcNodeIndices.insert(p);
 
-                        for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                           this->bcAdapterVector[index]->adaptBC(*this,bc,internX1,internX2,internX3);
+                        for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                           this->bcAdapters[index]->adaptBC(*this,bc,internX1,internX2,internX3);
                      }
                   }
                }
@@ -1117,7 +1120,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             scanlineCounter++;
             scanLineTimer.start();
 
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             if(!kernel) throw UbException(UB_EXARGS,"na sowas kein kernel bzw. kernel=NULL (2)");
             BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
@@ -1756,7 +1759,7 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    {
       Block3DPtr block = it1->first;
 
-      LBMKernelPtr kernel = block->getKernel();
+      ILBMKernelPtr kernel = block->getKernel();
       BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
       std::set< UbTupleInt3 >&  indicesSet = it1->second;
 
@@ -1771,7 +1774,7 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    for( it=bcNodeIndicesAndQsMap.begin(); it!=bcNodeIndicesAndQsMap.end(); ++it )
    {   
       Block3DPtr  block    = it->first;
-      LBMKernelPtr kernel = block->getKernel();
+      ILBMKernelPtr kernel = block->getKernel();
       BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
       std::map< UbTupleInt3, std::vector<float> >::iterator it2;
@@ -1810,14 +1813,14 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
             if( UbMath::greater(qs[fdir], -1.0) && UbMath::less( qs[fdir], bc->getQ(fdir) ) )
             {
                gotQs = true;
-               for(size_t index=0; index<this->bcAdapterVector.size(); index++)
-                  this->bcAdapterVector[index]->adaptBCForDirection( *this, bc, x1w, x2w, x3w, qs[fdir], fdir);
+               for(size_t index=0; index<this->bcAdapters.size(); index++)
+                  this->bcAdapters[index]->adaptBCForDirection( *this, bc, x1w, x2w, x3w, qs[fdir], fdir);
             }
          }
 
          if(gotQs)
-            for(size_t index=0; index<this->bcAdapterVector.size(); index++)
-               this->bcAdapterVector[index]->adaptBC( *this, bc, x1w, x2w, x3w);
+            for(size_t index=0; index<this->bcAdapters.size(); index++)
+               this->bcAdapters[index]->adaptBC( *this, bc, x1w, x2w, x3w);
       }
    }
 }

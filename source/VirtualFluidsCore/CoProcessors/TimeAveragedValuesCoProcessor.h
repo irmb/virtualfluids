@@ -1,17 +1,21 @@
 #ifndef TimeAveragedValuesCoProcessor_H
 #define TimeAveragedValuesCoProcessor_H
 
-#include "CoProcessor.h"
-#include "Grid3D.h"
-#include "Block3D.h"
-#include "LBMUnitConverter.h"
-#include "Communicator.h"
-#include "IntegrateValuesHelper.h"
-#include "WbWriter.h"
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <boost/shared_ptr.hpp>
+#include "CoProcessor.h"
+#include "LBMSystem.h"
+
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class WbWriter;
+class Block3D;
+
 class TimeAveragedValuesCoProcessor;
-typedef boost::shared_ptr<TimeAveragedValuesCoProcessor> TimeAveragedValuesCoProcessorPtr;
+typedef std::shared_ptr<TimeAveragedValuesCoProcessor> TimeAveragedValuesCoProcessorPtr;
 
 //! \brief  Computes the time averaged mean velocity and RMS values and writes to parallel .vtk
 //! \details writes at given time intervals specified in scheduler (s), does averaging according to scheduler (Avs) and resets according to scheduler (rs).  <br>
@@ -37,10 +41,10 @@ public:
    };
 public:
    TimeAveragedValuesCoProcessor();
-   TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-      UbSchedulerPtr s, CommunicatorPtr comm, int options);
-   TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-      UbSchedulerPtr s, CommunicatorPtr comm, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds, bool timeAveraging = true);
+   TimeAveragedValuesCoProcessor(std::shared_ptr<Grid3D> grid, const std::string& path, WbWriter* const writer,
+       std::shared_ptr<UbScheduler> s, std::shared_ptr<Communicator> comm, int options);
+   TimeAveragedValuesCoProcessor(std::shared_ptr<Grid3D> grid, const std::string& path, WbWriter* const writer,
+       std::shared_ptr<UbScheduler> s, std::shared_ptr<Communicator> comm, int options, std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds, bool timeAveraging = true);
    //! Make update
    void process(double step);
    //! Computes subtotal of velocity , fluctuations and triple correlations
@@ -54,21 +58,21 @@ protected:
    //! Prepare data and write in .vtk file
    void collectData(double step);
    //! prepare data
-   void addData(const Block3DPtr block);
+   void addData(const std::shared_ptr<Block3D> block);
    void clearData();
    //! Computes average values of velocity , fluctuations and triple correlations 
    void calculateAverageValues(double timeStep);
 
-   void init(UbSchedulerPtr s);
+   void init(std::shared_ptr<UbScheduler> s);
    void planarAverage(double step);
 
 private:
-   CommunicatorPtr comm;
+    std::shared_ptr<Communicator> comm;
    std::vector<UbTupleFloat3> nodes;
    std::vector<UbTupleInt8> cells;
    std::vector<std::string> datanames;
    std::vector<std::vector<double> > data;
-   std::vector<std::vector<Block3DPtr> > blockVector;
+   std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
    bool root;
    int minInitLevel; //min init level
    int maxInitLevel;
@@ -79,9 +83,9 @@ private:
    std::string path;
    WbWriter* writer;
    bool restart, compressible;
-   UbSchedulerPtr averageScheduler;  //additional scheduler to averaging after a given interval
-   UbSchedulerPtr resetSchedulerRMS;  //additional scheduler to restart averaging after a given interval
-   UbSchedulerPtr resetSchedulerMeans;  //additional scheduler to restart averaging after a given interval
+   std::shared_ptr<UbScheduler> averageScheduler;  //additional scheduler to averaging after a given interval
+   std::shared_ptr<UbScheduler> resetSchedulerRMS;  //additional scheduler to restart averaging after a given interval
+   std::shared_ptr<UbScheduler> resetSchedulerMeans;  //additional scheduler to restart averaging after a given interval
    //labels for the different components, e.g. AvVxx for time averaged RMS: 1/n SUM((U-Umean)^2)
    //you need to calculate a square root before plotting RMS
    enum Velocity { Vx, Vy, Vz };

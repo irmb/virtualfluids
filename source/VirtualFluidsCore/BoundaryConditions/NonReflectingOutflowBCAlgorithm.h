@@ -3,8 +3,10 @@
 
 #include "BCAlgorithm.h"
 
+class DistributionArray3D;
+
 class NonReflectingOutflowBCAlgorithm;
-typedef boost::shared_ptr<NonReflectingOutflowBCAlgorithm> NonReflectingOutflowBCAlgorithmPtr;
+typedef std::shared_ptr<NonReflectingOutflowBCAlgorithm> NonReflectingOutflowBCAlgorithmPtr;
 
 class NonReflectingOutflowBCAlgorithm : public BCAlgorithm
 {
@@ -12,9 +14,8 @@ public:
    NonReflectingOutflowBCAlgorithm();
    ~NonReflectingOutflowBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
-protected:
-   void applyBC();
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   void applyBC() override;
 private:
    int step;
    //friend class boost::serialization::access;

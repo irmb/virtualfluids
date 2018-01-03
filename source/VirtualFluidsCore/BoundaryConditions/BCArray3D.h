@@ -7,10 +7,10 @@
 #include <typeinfo>
 
 #include <boost/serialization/serialization.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class BCArray3D;
-typedef boost::shared_ptr<BCArray3D> BCArray3DPtr;
+typedef std::shared_ptr<BCArray3D> BCArray3DPtr;
 
 class BCArray3D
 {
@@ -86,7 +86,7 @@ public:
    //////////////////////////////////////////////////////////////////////////
    std::vector< int >& getBcindexmatrixDataVector();
    //////////////////////////////////////////////////////////////////////////
-
+   bool isInsideOfDomain(const int &x1, const int &x2, const int &x3, const int& ghostLayerWidth) const;
 
    static const int SOLID;     
    static const int FLUID;     
@@ -186,6 +186,18 @@ inline bool BCArray3D::isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t
 inline bool BCArray3D::isInterfaceFC(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
    return bcindexmatrix(x1, x2, x3) == INTERFACEFC;
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray3D::isInsideOfDomain(const int& x1, const int& x2, const int& x3, const int& ghostLayerWidth) const
+{
+    const int minX1 = ghostLayerWidth;
+    const int maxX1 = (int)this->getNX1() - 1 - ghostLayerWidth;
+    const int minX2 = ghostLayerWidth;
+    const int maxX2 = (int)this->getNX2() - 1 - ghostLayerWidth;
+    const int minX3 = ghostLayerWidth;
+    const int maxX3 = (int)this->getNX3() - 1 - ghostLayerWidth;
+
+    return (!(x1 < minX1 || x1 > maxX1 || x2 < minX2 || x2 > maxX2 || x3 < minX3 || x3 > maxX3));
 }
 
 #endif 

@@ -1,124 +1,126 @@
 #ifndef LBMKERNEL_H
 #define LBMKERNEL_H
 
-#include "LBMSystem.h"
-#include "DistributionArray3D.h"
-#include "DataSet3D.h"
+#include <memory>
 
-#include "InterpolationProcessor.h"
+#include "LBMSystem.h"
+
 #include <MuParser/include/muParser.h>
 
 #include <boost/serialization/serialization.hpp>
-#include <boost/enable_shared_from_this.hpp>
 
-#include <boost/weak_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include "ILBMKernel.h"
+
 class LBMKernel;
-typedef boost::shared_ptr<LBMKernel> LBMKernelPtr;
+typedef std::shared_ptr<LBMKernel> LBMKernelPtr;
 
-#include "BCProcessor.h"
-#include "Block3D.h"
+class BCProcessor;
+class DataSet3D;
+class Block3D;
 
-class LBMKernel : public boost::enable_shared_from_this<LBMKernel>
+class LBMKernel : public ILBMKernel, public std::enable_shared_from_this<LBMKernel>
 {
 public:
-   typedef std::numeric_limits<LBMReal> LBMRealLim;
+    typedef std::numeric_limits<LBMReal> LBMRealLim;
 public:
-   LBMKernel();
-   virtual ~LBMKernel();
+    LBMKernel();
+    virtual ~LBMKernel();
 
-   virtual LBMKernelPtr clone() = 0;
+    virtual LBMKernelPtr clone() = 0;
 
-   virtual void calculate() = 0;
-   virtual double getCallculationTime() = 0;
+    virtual void calculate() = 0;
+    virtual double getCalculationTime() = 0;
 
-   void setBCProcessor(BCProcessorPtr bcp);
-   BCProcessorPtr getBCProcessor();
-   
-   void setCollisionFactor(double collFactor);
-   double getCollisionFactor() const;
-   
-   void setGhostLayerWidth(int witdh);
-   int  getGhostLayerWidth() const;
+    void setBCProcessor(std::shared_ptr<BCProcessor> bcp);
+    std::shared_ptr<BCProcessor> getBCProcessor() const;
 
-   void setDataSet(DataSet3DPtr dataSet);
-   DataSet3DPtr getDataSet() const;
+    void setCollisionFactor(double collFactor);
+    double getCollisionFactor() const;
 
-   void setForcingX1(LBMReal forcingX1);
-   void setForcingX2(LBMReal forcingX2);
-   void setForcingX3(LBMReal forcingX3);
+    void setGhostLayerWidth(int witdh);
+    int  getGhostLayerWidth() const;
 
-   void setForcingX1( const mu::Parser& parser);
-   void setForcingX2( const mu::Parser& parser);
-   void setForcingX3( const mu::Parser& parser);
+    void setDataSet(std::shared_ptr<DataSet3D> dataSet);
+    std::shared_ptr<DataSet3D> getDataSet() const;
 
-   void setForcingX1( const std::string& muParserString);
-   void setForcingX2( const std::string& muParserString);
-   void setForcingX3( const std::string& muParserString);
+    void setForcingX1(LBMReal forcingX1);
+    void setForcingX2(LBMReal forcingX2);
+    void setForcingX3(LBMReal forcingX3);
 
-   void setIndex(int x1, int x2, int x3);
+    void setForcingX1(const mu::Parser& parser);
+    void setForcingX2(const mu::Parser& parser);
+    void setForcingX3(const mu::Parser& parser);
 
-   LBMReal getDeltaT();
-   void setDeltaT(LBMReal dt);
+    void setForcingX1(const std::string& muParserString);
+    void setForcingX2(const std::string& muParserString);
+    void setForcingX3(const std::string& muParserString);
 
-   bool getCompressible() const;
-   void setCompressible(bool val);
+    void setIndex(int x1, int x2, int x3);
 
-   bool getWithForcing() const;
-   void setWithForcing(bool val);
+    LBMReal getDeltaT() const;
+    void setDeltaT(LBMReal dt);
 
-   bool getWithSpongeLayer() const;
-   void setWithSpongeLayer(bool val);
+    bool getCompressible() const;
+    void setCompressible(bool val);
 
-   void setSpongeLayer(const mu::Parser& parser);
-   void setSpongeLayer(const std::string& muParserString);
+    bool getWithForcing() const;
+    void setWithForcing(bool val);
 
-   void setBlock(Block3DPtr block);
-   Block3DPtr getBlock() const;
+    bool getWithSpongeLayer() const;
+    void setWithSpongeLayer(bool val);
 
-   void swapDistributions();
+    void setSpongeLayer(const mu::Parser& parser);
+    void setSpongeLayer(const std::string& muParserString);
+
+    void setBlock(std::shared_ptr<Block3D> block);
+    std::shared_ptr<Block3D> getBlock() const;
+
+    bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const;
+
+
+    void swapDistributions();
 
 protected:
-   DataSet3DPtr dataSet;
-   BCProcessorPtr bcProcessor; 
-   LBMReal collFactor;
-   int ghostLayerWidth;
-   bool compressible;
-   
-   //forcing 
-   bool withForcing;
-   mu::Parser muForcingX1;
-   mu::Parser muForcingX2;
-   mu::Parser muForcingX3;
-   int ix1, ix2, ix3;
-   LBMReal deltaT;
+    std::shared_ptr<DataSet3D> dataSet;
+    std::shared_ptr<BCProcessor> bcProcessor;
+    LBMReal collFactor;
+    int ghostLayerWidth;
+    bool compressible;
 
-   //sponge layer
-   bool withSpongeLayer;
-   mu::Parser muSpongeLayer;
+    //forcing 
+    bool withForcing;
+    mu::Parser muForcingX1;
+    mu::Parser muForcingX2;
+    mu::Parser muForcingX3;
+    int ix1, ix2, ix3;
+    LBMReal deltaT;
 
-   boost::weak_ptr<Block3D> block;
+    //sponge layer
+    bool withSpongeLayer;
+    mu::Parser muSpongeLayer;
 
-   int nx1, nx2, nx3;
+    std::weak_ptr<Block3D> block;
+
+    int nx1, nx2, nx3;
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & collFactor;
-      ar & ghostLayerWidth;
-      ar & compressible;
-      ar & withForcing;
-      //ar & withSpongeLayer;
-      ar & deltaT;
-      ar & dataSet;
-      ar & bcProcessor;
-      ar & ix1 & ix2 & ix3;
-      ar & nx1 & nx2 & nx3;
-   }
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & collFactor;
+        ar & ghostLayerWidth;
+        ar & compressible;
+        ar & withForcing;
+        //ar & withSpongeLayer;
+        ar & deltaT;
+        ar & dataSet;
+        ar & bcProcessor;
+        ar & ix1 & ix2 & ix3;
+        ar & nx1 & nx2 & nx3;
+    }
 
-   void checkFunction(mu::Parser fct);
+    void checkFunction(mu::Parser fct);
 };
 
 #endif

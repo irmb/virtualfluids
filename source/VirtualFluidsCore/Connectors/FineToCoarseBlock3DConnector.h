@@ -13,8 +13,8 @@
 #include "LBMKernel.h"
 #include "InterpolationProcessor.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+
 
 class Block3D;
 
@@ -83,7 +83,7 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   boost::weak_ptr<Block3D> block; 
+   std::weak_ptr<Block3D> block; 
    VectorTransmitterPtr sender, receiver;
    InterpolationProcessorPtr iprocessor;
    CFconnectorType connType;

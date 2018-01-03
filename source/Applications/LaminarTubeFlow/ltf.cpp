@@ -167,7 +167,7 @@ void run(string configname)
 
          D3Q27InteractorPtr cylinderInt(new D3Q27Interactor(cylinder, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
 
-         double r = boost::dynamic_pointer_cast<GbCylinder3D>(cylinder)->getRadius();
+         double r = std::dynamic_pointer_cast<GbCylinder3D>(cylinder)->getRadius();
          double cx1 = g_minX1;
          double cx2 = cylinder->getX2Centroid();
          double cx3 = cylinder->getX3Centroid();
@@ -322,7 +322,10 @@ void run(string configname)
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch,CalculationManager::MPI));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
+
+
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");

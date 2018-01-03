@@ -8,12 +8,23 @@
 #include <basics/utilities/UbFileOutputASCII.h>
 #include <basics/utilities/UbFileInputASCII.h>
 
-#include "MetisPartitioningGridVisitor.h"
+#include <boost/serialization/map.hpp>
 
+#include "MetisPartitioningGridVisitor.h"
+#include "BCArray3D.h"
+#include "CoordinateTransformation3D.h"
 #include "BoostSerializationClassExportHelper.h"
 
 #include <MemoryUtil.h>
-#include <vector>
+
+
+#include "Grid3D.h"
+#include "Grid3DVisitor.h"
+#include "Block3DVisitor.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "Block3D.h"
+
 
 RestartCoProcessor::RestartCoProcessor(Grid3DPtr& grid, UbSchedulerPtr s, CommunicatorPtr comm, const std::string& path, ArchiveType type) :
    CoProcessor(grid, s),
@@ -146,7 +157,7 @@ Grid3DPtr RestartCoProcessor::restart()
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::acceptGridVisitors()
 {
-   BOOST_FOREACH(Grid3DVisitorPtr v, gridVisitors)
+   for(Grid3DVisitorPtr v : gridVisitors)
    {
       grid->accept(*(v.get()));
    }
@@ -154,7 +165,7 @@ void RestartCoProcessor::acceptGridVisitors()
 //////////////////////////////////////////////////////////////////////////
 void RestartCoProcessor::acceptBlockVisitors()
 {
-   BOOST_FOREACH(Block3DVisitorPtr v, blockVisitors)
+   for(Block3DVisitorPtr v : blockVisitors)
    {
       grid->accept(*(v.get()));
    }
@@ -188,7 +199,7 @@ void RestartCoProcessor::saveTxtArchive( std::string filename, Grid3DPtr grid )
    oa << psize;
 
    oa.register_type<CoProcessorPtr>();
-   BOOST_FOREACH(CoProcessorPtr pp, CoProcessors)
+   for(CoProcessorPtr pp : CoProcessors)
    {
       oa << pp;
    }
@@ -236,7 +247,7 @@ void RestartCoProcessor::saveBinArchive( std::string filename, Grid3DPtr grid )
    oa << psize;
 
    oa.register_type<CoProcessorPtr>();
-   BOOST_FOREACH(CoProcessorPtr pp, CoProcessors)
+   for(CoProcessorPtr pp : CoProcessors)
    {
       oa << pp;
    }
@@ -294,7 +305,7 @@ void RestartCoProcessor::writeDistributedGrid(Grid3DPtr sgrid, int numberOfProce
    using namespace std;
 
    Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
-   boost::dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(numberOfProcesses);
+   std::dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(numberOfProcesses);
    sgrid->accept(metisVisitor);
 
    int minInitLevel = sgrid->getCoarsestInitializedLevel();
@@ -320,9 +331,9 @@ void RestartCoProcessor::writeDistributedGrid(Grid3DPtr sgrid, int numberOfProce
 
       for (int level = minInitLevel; level<=maxInitLevel; level++)
       {
-         vector<Block3DPtr> blockVector;
+         std::vector<Block3DPtr> blockVector;
          grid->getBlocks(level, blockVector);
-         BOOST_FOREACH(Block3DPtr block, blockVector)
+         for(Block3DPtr block : blockVector)
          {
             if (block)
             {

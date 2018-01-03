@@ -8,32 +8,38 @@
 #ifndef EmergencyExitCoProcessor_H
 #define EmergencyExitCoProcessor_H
 
+#include <memory>
+#include <string>
+
 #include "CoProcessor.h"
-#include "Communicator.h"
-#include "RestartCoProcessor.h"
 
-#include <boost/shared_ptr.hpp>
+class RestartCoProcessor;
+class Communicator;
+class Grid3D;
+class UbScheduler;
+
 class EmergencyExitCoProcessor;
-typedef boost::shared_ptr<EmergencyExitCoProcessor> EmergencyExitCoProcessorPtr;
+typedef std::shared_ptr<EmergencyExitCoProcessor> EmergencyExitCoProcessorPtr;
 
-class EmergencyExitCoProcessor: public CoProcessor 
+class EmergencyExitCoProcessor : public CoProcessor
 {
 public:
-	EmergencyExitCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-                              const std::string& path, RestartCoProcessorPtr rp,
-                              CommunicatorPtr comm);
-	virtual ~EmergencyExitCoProcessor();
-	void process(double step);
+    EmergencyExitCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<RestartCoProcessor> rp, std::shared_ptr<Communicator> comm);
+    virtual ~EmergencyExitCoProcessor();
+
+    void process(double step) override;
+
 protected:
-	void collectData(double step);
-   void writeMetafile(int status);
-   bool readMetafile();
-   void checkMetafile();
+    void collectData(double step);
+    void writeMetafile(int status);
+    bool readMetafile();
+    void checkMetafile();
+
 private:
-   std::string path;
-   CommunicatorPtr comm;
-   RestartCoProcessorPtr rp;
-   std::string metafile;
+    std::string path;
+    std::shared_ptr<Communicator> comm;
+    std::shared_ptr<RestartCoProcessor> rp;
+    std::string metafile;
 };
 
 

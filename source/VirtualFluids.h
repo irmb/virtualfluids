@@ -304,9 +304,10 @@
 #include <InitDistributionsWithInterpolationGridVisitor.h>
 #include <CheckRatioBlockVisitor.h>
 #include <SpongeLayerBlockVisitor.h>
-
 #include <Visitors/RefineCrossAndInsideGbObjectHelper.h>
 #include <RefineAroundGbObjectHelper.h>
+
+#include <Grid/ConcreteCalculatorFactory.h>
 
 #if defined VF_FETOL
    #include <FETOL/FETOLCalculator.h>

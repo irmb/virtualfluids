@@ -3,10 +3,9 @@
 
 #include "EsoTwist3D.h"
 #include <boost/serialization/serialization.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 
 class VoidData3D;
-typedef boost::shared_ptr<VoidData3D> VoidData3DPtr;
+typedef std::shared_ptr<VoidData3D> VoidData3DPtr;
 
 class VoidData3D : public EsoTwist3D
 {

@@ -1,13 +1,16 @@
 #include "TurbulenceIntensityCoProcessor.h"
+
 #include "LBMKernel.h"
 #include "BCProcessor.h"
-#include <vector>
-#include <string>
-#include <boost/foreach.hpp>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 #include "basics/utilities/UbMath.h"
-
-using namespace std;
+#include "DataSet3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "LBMUnitConverter.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "BCArray3D.h"
 
 TurbulenceIntensityCoProcessor::TurbulenceIntensityCoProcessor(Grid3DPtr grid, const std::string& path, 
                                                                                        WbWriter* const writer,
@@ -32,7 +35,7 @@ void TurbulenceIntensityCoProcessor::init()
    {
       grid->getBlocks(level, gridRank, true, blockVector[level]);
 
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          UbTupleInt3 nx = grid->getBlockNX();
          AverageValuesArray3DPtr averageValues = AverageValuesArray3DPtr(new AverageValuesArray3D(val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 4, 0.0));
@@ -57,7 +60,7 @@ void TurbulenceIntensityCoProcessor::collectData(double step)
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -66,18 +69,18 @@ void TurbulenceIntensityCoProcessor::collectData(double step)
       }
    }
 
-   string partName = writer->writeOctsWithNodeData(path+ UbSystem::toString(gridRank)+ "_" + UbSystem::toString(istep),nodes,cells,datanames,data);
+   std::string partName = writer->writeOctsWithNodeData(path+ UbSystem::toString(gridRank)+ "_" + UbSystem::toString(istep),nodes,cells,datanames,data);
    size_t found=partName.find_last_of("//");
-   string piece = partName.substr(found+1);
+   std::string piece = partName.substr(found+1);
 
-   vector<string> cellDataNames;
+   std::vector<std::string> cellDataNames;
 
-   vector<string> pieces = comm->gather(piece);
+   std::vector<std::string> pieces = comm->gather(piece);
    if (comm->getProcessID() == comm->getRoot())
    {
-      string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(path+"_"+UbSystem::toString(istep),pieces,datanames,cellDataNames);
+      std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(path+"_"+UbSystem::toString(istep),pieces,datanames,cellDataNames);
 
-      vector<string> filenames;
+      std::vector<std::string> filenames;
       filenames.push_back(pname);
       if (step == CoProcessor::scheduler->getMinBegin())
       {
@@ -114,7 +117,7 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   LBMKernelPtr kernel = block->getKernel();
+   ILBMKernelPtr kernel = block->getKernel();
    BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
    AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
@@ -131,7 +134,7 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
    int maxX2 = int(distributions->getNX2());
    int maxX3 = int(distributions->getNX3());
 
-   //nummern vergeben und node vector erstellen + daten sammeln
+   //nummern vergeben und node std::vector erstellen + daten sammeln
    CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3,-1);
    //D3Q27BoundaryConditionPtr bcPtr;
    int nr = (int)nodes.size();
@@ -165,7 +168,7 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
          }
       }
    }
-   //cell vector erstellen
+   //cell std::vector erstellen
    for(int ix3=minX3; ix3<maxX3-1; ix3++)
    {
       for(int ix2=minX2; ix2<maxX2-1; ix2++)
@@ -199,11 +202,11 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
             AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();

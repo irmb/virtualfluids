@@ -6,9 +6,9 @@
 #include "InterpolationProcessor.h"
 #include "FineToCoarseBlock3DConnector.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 class ConnectorFactory;
-typedef boost::shared_ptr<ConnectorFactory> ConnectorFactoryPtr;
+typedef std::shared_ptr<ConnectorFactory> ConnectorFactoryPtr;
 
 class ConnectorFactory
 {

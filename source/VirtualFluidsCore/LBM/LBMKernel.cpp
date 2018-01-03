@@ -1,5 +1,8 @@
 #include "LBMKernel.h"
-
+#include "DataSet3D.h"
+#include "BCProcessor.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
 
 LBMKernel::LBMKernel() : ghostLayerWidth(1),
                              deltaT(1.0),
@@ -23,7 +26,7 @@ void LBMKernel::setBCProcessor(BCProcessorPtr bcp)
    bcProcessor = bcp;
 }
 //////////////////////////////////////////////////////////////////////////
-BCProcessorPtr LBMKernel::getBCProcessor() 
+BCProcessorPtr LBMKernel::getBCProcessor() const
 {
    return bcProcessor;
 }
@@ -133,7 +136,7 @@ DataSet3DPtr LBMKernel::getDataSet() const
    return this->dataSet;
 }
 //////////////////////////////////////////////////////////////////////////
-LBMReal LBMKernel::getDeltaT()
+LBMReal LBMKernel::getDeltaT() const
 {
    return this->deltaT;
 }
@@ -204,4 +207,9 @@ void LBMKernel::swapDistributions()
 {
    dataSet->getFdistributions()->swap();
 }
-
+//////////////////////////////////////////////////////////////////////////
+bool LBMKernel::isInsideOfDomain(const int& x1, const int& x2, const int& x3) const
+{
+    const BCArray3DPtr bcArray = this->bcProcessor->getBCArray();
+    return bcArray->isInsideOfDomain(x1, x2, x3, ghostLayerWidth);
+}

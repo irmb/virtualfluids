@@ -14,10 +14,10 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/export.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class BCAdapter;
-typedef boost::shared_ptr<BCAdapter> BCAdapterPtr;
+typedef std::shared_ptr<BCAdapter> BCAdapterPtr;
 
 #include "BoundaryConditions.h"
 #include "basics/objects/ObObject.h"

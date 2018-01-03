@@ -3,10 +3,10 @@
 
 #include "Communicator.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class NullCommunicator;
-typedef boost::shared_ptr<NullCommunicator> NullCommunicatorPtr;
+typedef std::shared_ptr<NullCommunicator> NullCommunicatorPtr;
 
 class NullCommunicator : public Communicator
 {

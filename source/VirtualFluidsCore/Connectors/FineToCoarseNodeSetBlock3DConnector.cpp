@@ -1,5 +1,7 @@
 #include "FineToCoarseNodeSetBlock3DConnector.h"
 #include "BCProcessor.h"
+#include "DataSet3D.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 FineToCoarseNodeSetBlock3DConnector::FineToCoarseNodeSetBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
@@ -696,7 +698,7 @@ void FineToCoarseNodeSetBlock3DConnector::fillSendVectors()
 
    vector_type& data = this->sender->getData();
 
-   BOOST_FOREACH(INodeVector inode, iNodeSetSender)
+   for(INodeVector  inode : iNodeSetSender)
    {
       LBMReal icellC[27];
       D3Q27ICell icellF;
@@ -1122,7 +1124,7 @@ void FineToCoarseNodeSetBlock3DConnector::distributeReceiveVectors()
 
    vector_type& data = this->receiver->getData();
 
-   BOOST_FOREACH(INodeVector inode, iNodeSetReceiver)
+   for(INodeVector  inode : iNodeSetReceiver)
    {
       D3Q27ICell icellF;
       this->readICellFfromData(data, index, icellF);

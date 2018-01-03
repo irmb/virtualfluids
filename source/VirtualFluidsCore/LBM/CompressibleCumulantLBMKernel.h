@@ -10,7 +10,7 @@
 #include "basics/container/CbArray3D.h"
 
 class CompressibleCumulantLBMKernel;
-typedef boost::shared_ptr<CompressibleCumulantLBMKernel> CompressibleCumulantLBMKernelPtr;
+typedef std::shared_ptr<CompressibleCumulantLBMKernel> CompressibleCumulantLBMKernelPtr;
 
 //! \brief   compressible cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
@@ -31,7 +31,7 @@ public:
    virtual ~CompressibleCumulantLBMKernel(void);
    virtual void calculate();
    virtual LBMKernelPtr clone();
-   double getCallculationTime();
+   double getCalculationTime();
    void setBulkOmegaToOmega(bool value);
 protected:
    friend class boost::serialization::access;

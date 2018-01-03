@@ -166,7 +166,7 @@ void run(string configname)
          if (refineLevel > 0)
          {
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
-            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
             refineHelper.addGbObject(sphere, refineLevel);
             //refineHelper.addGbObject(refCube, refineLevel);
             refineHelper.refine();
@@ -327,7 +327,8 @@ void run(string configname)
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endstep, stepSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endstep, calculatorFactory, CalculatorType::HYBRID));
 
       if (myid == 0)
          UBLOG(logINFO, "Simulation-start");

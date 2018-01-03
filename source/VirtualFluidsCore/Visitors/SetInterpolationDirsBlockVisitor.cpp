@@ -1,7 +1,9 @@
 #include "SetInterpolationDirsBlockVisitor.h"
 #include "Grid3DSystem.h"
 #include <D3Q27System.h>
-#include <boost/foreach.hpp>
+#include "Grid3D.h"
+#include "Block3D.h"
+
 
 SetInterpolationDirsBlockVisitor::SetInterpolationDirsBlockVisitor(std::vector<int>& dirs) : 
    Block3DVisitor(0, Grid3DSystem::MAXLEVEL), dirs(dirs)
@@ -22,7 +24,7 @@ void SetInterpolationDirsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    Block3DPtr parentblock = grid->getSuperBlock(ix1,ix2,ix3,level);
    if(!parentblock) return;
 
-   BOOST_FOREACH(int dir, dirs)
+   for(int dir : dirs)
    {
       Block3DPtr nblock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
       if(!nblock)

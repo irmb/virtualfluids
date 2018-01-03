@@ -12,10 +12,10 @@
 
 #include <basics/utilities/UbTuple.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Block3DConnector;
-typedef boost::shared_ptr<Block3DConnector> Block3DConnectorPtr;
+typedef std::shared_ptr<Block3DConnector> Block3DConnectorPtr;
 
 class Block3DConnector
 {

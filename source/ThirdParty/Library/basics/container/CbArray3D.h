@@ -36,7 +36,6 @@
 #include <algorithm>
 #include <typeinfo>
 #include <boost/serialization/serialization.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
@@ -127,7 +126,7 @@ template<typename T, typename IndexClass = IndexerX3X2X1>
 class CbArray3D
 {
 public:
-   typedef boost::shared_ptr< CbArray3D <T,IndexClass> > CbArray3DPtr;
+   typedef std::shared_ptr< CbArray3D <T,IndexClass> > CbArray3DPtr;
 
    typedef T                                                   value_type;
    typedef IndexClass                                          indexer_type;

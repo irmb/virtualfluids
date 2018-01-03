@@ -18,6 +18,7 @@
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
+#include <basics/utilities/Vector3D.h>
 #include <basics/writer/WbWriter.h>
 
 #include <basics/memory/MbSmartPtr.h>
@@ -186,12 +187,12 @@ public:
          //GbVector3D AC = C-A;
          //GbVector3D N = AB.Cross(AC);
          //return 0.5*N.Length();
-         UbMath::Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
-         UbMath::Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
-         UbMath::Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
-         UbMath::Vector3D AB = B-A;
-         UbMath::Vector3D AC = C-A;
-         UbMath::Vector3D N = AB.Cross(AC);
+         Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
+         Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
+         Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
+         Vector3D AB = B-A;
+         Vector3D AC = C-A;
+         Vector3D N = AB.Cross(AC);
          return 0.5*N.Length();
       }
       void calculateNormal(std::vector<Vertex>& nodes)

@@ -48,6 +48,9 @@ public:
    GbSphere3D* clone() { return new GbSphere3D(*this);}
    void finalize();
 
+
+   bool intersects(GbSphere3DPtr sphere);
+
    double getRadius() const	{	return this->radius;	}
 
    double getX1Centroid()  { return midPoint->getX1Coordinate();}
@@ -64,6 +67,7 @@ public:
    void setCenterX2Coordinate(const double& value);
    void setCenterX3Coordinate(const double& value);
    void setCenterCoordinates(const double& x1, const double& x2, const double& x3);
+   virtual void setCenterCoordinates(const UbTupleDouble3& position);
    void setRadius(const double& radius);
 
    GbLine3D* createClippedLine3D(GbPoint3D& point1, GbPoint3D& point2);

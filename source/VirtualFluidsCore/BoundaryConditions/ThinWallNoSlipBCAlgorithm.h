@@ -1,10 +1,12 @@
 #ifndef ThinWallNoSlipBCAlgorithm_h__
 #define ThinWallNoSlipBCAlgorithm_h__
 
-#include "NoSlipBCAlgorithm.h"
+#include "BCAlgorithm.h"
+
+class DistributionArray3D;
 
 class ThinWallNoSlipBCAlgorithm;
-typedef boost::shared_ptr<ThinWallNoSlipBCAlgorithm> ThinWallNoSlipBCAlgorithmPtr;
+typedef std::shared_ptr<ThinWallNoSlipBCAlgorithm> ThinWallNoSlipBCAlgorithmPtr;
 
 class ThinWallNoSlipBCAlgorithm : public BCAlgorithm
 {
@@ -12,11 +14,12 @@ public:
    ThinWallNoSlipBCAlgorithm();
    virtual ~ThinWallNoSlipBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
    void setPass(int pass);
+   void applyBC() override;
+
 protected:
-   void applyBC();
-   DistributionArray3DPtr distributionsTemp;
+   std::shared_ptr<DistributionArray3D> distributionsTemp;
 private:
    int pass;
    LBMReal fTemp[D3Q27System::ENDF + 1];

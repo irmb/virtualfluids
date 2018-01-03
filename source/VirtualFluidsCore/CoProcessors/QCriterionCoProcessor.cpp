@@ -1,15 +1,15 @@
 #include "QCriterionCoProcessor.h"
 #include "LBMKernel.h"
-#include "LBMKernel.h"
 #include "BCProcessor.h"
-#include <vector>
-#include <string>
-#include <boost/foreach.hpp>
 #include "basics/writer/WbWriterVtkXmlASCII.h"
+#include "DataSet3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
 
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "BCArray3D.h"
 
-using namespace std;
-using namespace D3Q27System;
 
 QCriterionCoProcessor::QCriterionCoProcessor(Grid3DPtr grid, const std::string& path, 
 	WbWriter* const writer,
@@ -50,7 +50,7 @@ void QCriterionCoProcessor::collectData(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		BOOST_FOREACH(Block3DPtr block, blockVector[level])
+		for(Block3DPtr block : blockVector[level])
 		{
 			if (block)
 			{
@@ -60,19 +60,19 @@ void QCriterionCoProcessor::collectData(double step)
 		}
 	}
 
-	string partName = writer->writeOctsWithNodeData(path+ UbSystem::toString(gridRank)+ "_" + UbSystem::toString(istep),nodes,cells,datanames,data);
+	std::string partName = writer->writeOctsWithNodeData(path+ UbSystem::toString(gridRank)+ "_" + UbSystem::toString(istep),nodes,cells,datanames,data);
 	size_t found=partName.find_last_of("//");
-	string piece = partName.substr(found+1);
+	std::string piece = partName.substr(found+1);
 
-	vector<string> cellDataNames;
+	std::vector<std::string> cellDataNames;
 
 	//distributed writing as in MacroscopicValuesCoProcessor.cpp
-	vector<string> pieces = comm->gather(piece); //comm: MPI-Wrapper
+	std::vector<std::string> pieces = comm->gather(piece); //comm: MPI-Wrapper
 	if (comm->getProcessID() == comm->getRoot())
 	{
-		string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(path+"_"+UbSystem::toString(istep),pieces,datanames,cellDataNames);
+		std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(path+"_"+UbSystem::toString(istep),pieces,datanames,cellDataNames);
 
-		vector<string> filenames;
+		std::vector<std::string> filenames;
 		filenames.push_back(pname);
 		if (step == CoProcessor::scheduler->getMinBegin()) //first time in timeseries
 		{
@@ -112,7 +112,7 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 	data.resize(datanames.size());
 
 
-	LBMKernelPtr kernel = block->getKernel();
+	ILBMKernelPtr kernel = block->getKernel();
 	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();  
 
@@ -127,7 +127,7 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 	int maxX3 = (int)(distributions->getNX3());
 
 	int currentLevel = block->getLevel();
-	//nummern vergeben und node vector erstellen + daten sammeln
+	//nummern vergeben und node std::vector erstellen + daten sammeln
 	CbArray3D<int> nodeNumbers((int)maxX1, (int)maxX2, (int)maxX3,-1);
 	maxX1 -= 2; //-2 wegen ghost layer: 
 	maxX2 -= 2; //0-maxXi-1 ist arraygroesse. 
@@ -218,7 +218,7 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 
 void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3, const Block3DPtr block, LBMReal* vE, LBMReal* vW)
 {
-	LBMKernelPtr kernel = block->getKernel();
+	ILBMKernelPtr kernel = block->getKernel();
 	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();   
 
@@ -245,10 +245,10 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 	if ((ix1==0 && offx==1) || (ix2==0 && offy==1) || (ix3==0 && offz==1))
 	{
 		int RankNeighborW; 
-		UbTupleDouble3 orgNodeRW =  grid->getNodeCoordinates(block,  ix1, ix2, ix3);
-		double xp000= ( val<1>(orgNodeRW));
-		double yp000= ( val<2>(orgNodeRW));
-		double zp000= ( val<3>(orgNodeRW));
+		Vector3D orgNodeRW =  grid->getNodeCoordinates(block,  ix1, ix2, ix3);
+		double xp000= orgNodeRW[0];
+		double yp000= orgNodeRW[1];
+		double zp000= orgNodeRW[2];
 
 		int currentLevel = block->getLevel();
 		UbTupleInt3 blockIndexes = grid->getBlockIndexes(xp000,yp000, zp000,currentLevel);
@@ -298,7 +298,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
 		if (checkInterpolation==false || neighNodeIsBC)
 		{
-			LBMKernelPtr kernelW = blockNeighW->getKernel();
+			ILBMKernelPtr kernelW = blockNeighW->getKernel();
 			BCArray3DPtr bcArrayW = kernelW->getBCProcessor()->getBCArray();          
 			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW2[27];
@@ -328,7 +328,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		}
 		else
 		{
-			LBMKernelPtr kernelW = blockNeighW->getKernel();
+			ILBMKernelPtr kernelW = blockNeighW->getKernel();
 			BCArray3DPtr bcArrayW = kernelW->getBCProcessor()->getBCArray();          
 			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW[27];

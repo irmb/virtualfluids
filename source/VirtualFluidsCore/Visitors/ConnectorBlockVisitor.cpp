@@ -1,5 +1,9 @@
 #include "ConnectorBlockVisitor.h"
 #include "Grid3DSystem.h"
+#include "ConnectorFactory.h"
+#include "InterpolationProcessor.h"
+#include "Communicator.h"
+#include "Grid3D.h"
 
 ConnectorBlockVisitor::ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, InterpolationProcessorPtr iProcessor, ConnectorFactoryPtr cFactory) :
    Block3DVisitor(0, Grid3DSystem::MAXLEVEL),

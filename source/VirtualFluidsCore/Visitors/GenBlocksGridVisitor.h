@@ -1,22 +1,28 @@
 #ifndef GenBlocksGridVisitor_h
 #define GenBlocksGridVisitor_h
 
+#include <memory>
+
+#include <basics/utilities/UbTuple.h>
+
 #include "Grid3DVisitor.h" 
-#include <numerics/geometry3d/GbObject3D.h>
+
+class GbObject3D;
+class Grid3D;
 
 class GenBlocksGridVisitor : public Grid3DVisitor
 {
 public:
-   GenBlocksGridVisitor(GbObject3DPtr boundingBox);
+   GenBlocksGridVisitor(std::shared_ptr<GbObject3D> boundingBox);
    virtual ~GenBlocksGridVisitor(){}
 
-   void visit(Grid3DPtr grid);
+   void visit(std::shared_ptr<Grid3D> grid);
 
 private:
    UbTupleInt3 minInd, maxInd;
-   GbObject3DPtr boundingBox;
-   void fillExtentWithBlocks(Grid3DPtr grid);
-   void genBlocks(Grid3DPtr grid);
+   std::shared_ptr<GbObject3D> boundingBox;
+   void fillExtentWithBlocks(std::shared_ptr<Grid3D> grid);
+   void genBlocks(std::shared_ptr<Grid3D> grid);
 };
 
 #endif 

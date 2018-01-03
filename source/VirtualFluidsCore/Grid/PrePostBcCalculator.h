@@ -8,11 +8,11 @@
 #include "basics/utilities/UbScheduler.h"
 #include "basics/utilities/UbTiming.h"
 #include "LoadBalancer.h"
-#include "PrePostBcCalculator.h"
 
+#include "Calculator.h"
 
 class PrePostBcCalculator;
-typedef boost::shared_ptr<PrePostBcCalculator> PrePostBcCalculatorPtr;
+typedef std::shared_ptr<PrePostBcCalculator> PrePostBcCalculatorPtr;
 
 #include "CalculationManager.h"
 

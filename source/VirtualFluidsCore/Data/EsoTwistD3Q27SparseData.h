@@ -10,15 +10,15 @@
 #include <boost/serialization/base_object.hpp>
 
 class EsoTwistD3Q27SparseData;
-typedef boost::shared_ptr<EsoTwistD3Q27SparseData> EsoTwistD3Q27SparseDataPtr;
+typedef std::shared_ptr<EsoTwistD3Q27SparseData> EsoTwistD3Q27SparseDataPtr;
 
 class EsoTwistD3Q27SparseData : public EsoTwist3D
 {
 public:
    typedef boost::unordered_map<size_t, LBMReal> SparseData;
-   typedef boost::shared_ptr<SparseData> SparseDataPtr;
+   typedef std::shared_ptr<SparseData> SparseDataPtr;
    //typedef std::map<size_t, LBMReal> SparseData;
-   //typedef boost::shared_ptr<SparseData> SparseDataPtr;
+   //typedef std::shared_ptr<SparseData> SparseDataPtr;
 public:
    EsoTwistD3Q27SparseData();
    EsoTwistD3Q27SparseData(size_t ibx[3], size_t nx[3], size_t level, double value );

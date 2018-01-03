@@ -22,7 +22,7 @@
 
 #include <basics/memory/MbSharedPointerDefines.h>
 class CoordinateTransformation3D;
-typedef VFSharedPtr<CoordinateTransformation3D> CoordinateTransformation3DPtr;
+typedef std::shared_ptr<CoordinateTransformation3D> CoordinateTransformation3DPtr;
 
 #include <boost/serialization/serialization.hpp>
 
@@ -154,6 +154,7 @@ private:
    bool   active;
    bool   transformation;
 
+   friend class MPIIORestartCoProcessor;
    friend class MPIIORestart1CoProcessor;
    friend class MPIIORestart2CoProcessor;
    friend class MPIIORestart11CoProcessor;

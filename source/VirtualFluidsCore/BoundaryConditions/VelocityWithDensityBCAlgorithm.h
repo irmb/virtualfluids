@@ -7,8 +7,10 @@
 
 #include "BCAlgorithm.h"
 
+class DistributionArray3D;
+
 class VelocityWithDensityBCAlgorithm;
-typedef boost::shared_ptr<VelocityWithDensityBCAlgorithm> VelocityWithDensityBCAlgorithmPtr;
+typedef std::shared_ptr<VelocityWithDensityBCAlgorithm> VelocityWithDensityBCAlgorithmPtr;
 
 //!  \brief Class implements Dirichlet boundary condition for velocity. Set density in system. It is used together with non reflecting outflow.  
 
@@ -18,8 +20,7 @@ public:
    VelocityWithDensityBCAlgorithm();
    ~VelocityWithDensityBCAlgorithm();
    BCAlgorithmPtr clone();
-   void addDistributions(DistributionArray3DPtr distributions);
-protected:
+   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
    void applyBC();
 private:
    //friend class boost::serialization::access;

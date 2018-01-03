@@ -1,20 +1,17 @@
 /*
 * D3Q27AdjustForcingCoProcessor.cpp
-*
-*
 *  Author: Konstantin Kutscher
 */
-
 #include "AdjustForcingCoProcessor.h"
 
-#include <SetForcingBlockVisitor.h>
-
-#include <iostream>
 #include <fstream>
 
-#include <boost/foreach.hpp>
+#include <SetForcingBlockVisitor.h>
+#include "IntegrateValuesHelper.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
 
-using namespace std;
 
 AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
    const std::string& path,
@@ -57,7 +54,7 @@ AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPt
       if (!ostr)
       {
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
       }
@@ -102,7 +99,7 @@ void AdjustForcingCoProcessor::collectData(double step)
       if (!ostr2)
       {
          ostr2.clear();
-         string path = UbSystem::getPathFromString(fNameCfg);
+         std::string path = UbSystem::getPathFromString(fNameCfg);
          if (path.size() > 0) { UbSystem::makeDirectory(path); ostr2.open(fNameCfg.c_str(), std::ios_base::out); }
          if (!ostr2) throw UbException(UB_EXARGS, "couldn't open file " + fNameCfg);
       }
@@ -140,7 +137,7 @@ void AdjustForcingCoProcessor::collectData(double step)
    SetForcingBlockVisitor forcingVisitor(fctForcingX1, fctForcingX2, fctForcingX3);
    grid->accept(forcingVisitor);
 
-   //BOOST_FOREACH(CalcNodes cn, cnodes)
+   //for(CalcNodes cn : cnodes)
    //{
    //   LBMKernel3DPtr kernel = cn.block->getKernel();
    //   if (kernel)
@@ -162,7 +159,7 @@ void AdjustForcingCoProcessor::collectData(double step)
       if (!ostr)
       {
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
       }

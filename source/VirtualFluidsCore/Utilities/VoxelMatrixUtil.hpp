@@ -24,9 +24,9 @@ namespace Utilities
       GbCuboid3DPtr vmBox(new GbCuboid3D(matrix->getX1Minimum(), matrix->getX2Minimum(), matrix->getX3Minimum(), matrix->getX1Maximum(), matrix->getX2Maximum(), matrix->getX3Maximum()));
       if (myid == 0) GbSystem3D::writeGeoObject(vmBox.get(), pathname + "/geo/vmbox" + UbSystem::toString(fileCounter), WbWriterVtkXmlASCII::getInstance());
       D3Q27InteractorPtr vmBoxInt = D3Q27InteractorPtr(new D3Q27Interactor(vmBox, grid, noSlipPM, Interactor3D::SOLID));
-      SetSolidBlockVisitor v1(vmBoxInt, SetSolidBlockVisitor::SOLID);
+      SetSolidBlockVisitor v1(vmBoxInt, BlockType::SOLID);
       grid->accept(v1);
-      SetSolidBlockVisitor v2(vmBoxInt, SetSolidBlockVisitor::BC);
+      SetSolidBlockVisitor v2(vmBoxInt, BlockType::BC);
       grid->accept(v2);
 
       std::vector<Block3DPtr> blocks;
@@ -39,7 +39,7 @@ namespace Utilities
 
       if (myid == 0) UBLOG(logINFO, "number of blocks = " << blocks.size());
 
-      BOOST_FOREACH(Block3DPtr block, blocks)
+      for(Block3DPtr block : blocks)
       {
          block->setActive(true);
          vmInt->setDifferencesToGbObject3D(block);

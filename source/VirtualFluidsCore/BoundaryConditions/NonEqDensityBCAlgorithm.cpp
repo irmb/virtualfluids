@@ -1,5 +1,7 @@
 #include "NonEqDensityBCAlgorithm.h"
-#include <boost/pointer_cast.hpp>
+
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
 NonEqDensityBCAlgorithm::NonEqDensityBCAlgorithm()
 {

@@ -1,9 +1,11 @@
 #include "PrePostBcCalculator.h"
 #include <basics/utilities/UbException.h>
-#include <boost/foreach.hpp>
+
 #include "MathUtil.hpp"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 //#define TIMING
 
 PrePostBcCalculator::PrePostBcCalculator()
@@ -164,7 +166,7 @@ void PrePostBcCalculator::calculate(const double& endTime, CalculationManagerPtr
       //error = boost::current_exception();
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
-      boost::dynamic_pointer_cast<MPICommunicator>(Communicator::getInstance())->~MPICommunicator();
+      std::dynamic_pointer_cast<MPICommunicator>(Communicator::getInstance())->~MPICommunicator();
       exit(EXIT_FAILURE);
    }
 }
@@ -174,7 +176,7 @@ void PrePostBcCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPreCollisionBC();
       }
@@ -186,7 +188,7 @@ void PrePostBcCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPostCollisionBC();
       }

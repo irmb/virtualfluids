@@ -450,10 +450,10 @@ void run(string configname)
          {
             Grid3D::Interactor3DSet interactors = grid->getInteractors();
             interactors[0]->setGrid3D(grid);
-            boost::dynamic_pointer_cast<D3Q27Interactor>(interactors[0])->deleteBCAdapter();
+            std::dynamic_pointer_cast<D3Q27Interactor>(interactors[0])->deleteBCAdapter();
             BCAdapterPtr denBCAdapterFront(new DensityBCAdapter(rhoLBinflow));
             denBCAdapterFront->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
-            boost::dynamic_pointer_cast<D3Q27Interactor>(interactors[0])->addBCAdapter(denBCAdapterFront);
+            std::dynamic_pointer_cast<D3Q27Interactor>(interactors[0])->addBCAdapter(denBCAdapterFront);
             interactors[0]->updateInteractor();
          }
 
@@ -526,7 +526,8 @@ void run(string configname)
          UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe());
       }
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid==0) UBLOG(logINFO, "Simulation-end");

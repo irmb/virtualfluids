@@ -2,6 +2,12 @@
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
 
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "ILBMKernel.h"
+
+#include <numerics/geometry3d/GbCuboid3D.h>
+
 using namespace std;
 
 SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(GbCuboid3DPtr boundingBox, LBMReal collFactor) : 
@@ -33,8 +39,7 @@ void SpongeLayerBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
       if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3))
       {
-         LBMKernelPtr kernel = block->getKernel();
-         //kernel->setCollisionFactor(LBMSystem::calcCollisionFactor(0.01, block->getLevel()));
+         ILBMKernelPtr kernel = block->getKernel();
          kernel->setCollisionFactor(collFactor);
       }
    }

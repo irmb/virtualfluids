@@ -29,7 +29,7 @@
 // LBMUnitConverter conv(, 100 /*L_World*/, LBMUnitConverter::WATER, 1000/*L_LB*/  );
 
 class LBMUnitConverter;
-typedef boost::shared_ptr<LBMUnitConverter> LBMUnitConverterPtr;
+typedef std::shared_ptr<LBMUnitConverter> LBMUnitConverterPtr;
 
 class LBMUnitConverter
 {

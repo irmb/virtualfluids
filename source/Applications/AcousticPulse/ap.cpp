@@ -118,7 +118,7 @@ void run(string configname)
       //set connectors
       //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
       InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      boost::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
+      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
@@ -157,7 +157,7 @@ void run(string configname)
 
 
       LBMKernelPtr kernel = LBMKernelPtr(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
-      boost::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
+      std::dynamic_pointer_cast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
       BCProcessorPtr bcProcessor(new BCProcessor());
 
@@ -215,7 +215,9 @@ void run(string configname)
       UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
+      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");

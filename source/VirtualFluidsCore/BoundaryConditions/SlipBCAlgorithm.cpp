@@ -1,4 +1,6 @@
 #include "SlipBCAlgorithm.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
 
 SlipBCAlgorithm::SlipBCAlgorithm()
 {

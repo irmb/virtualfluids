@@ -4,6 +4,11 @@
 #include "Grid3DSystem.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include "ThinWallNoSlipBCAlgorithm.h"
+#include "DataSet3D.h"
+#include "Grid3D.h"
+#include "BCAdapter.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
 
 BoundaryConditionsBlockVisitor::BoundaryConditionsBlockVisitor() :
 Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
@@ -20,7 +25,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 {
    if (block->getRank() == grid->getRank())
    {
-      LBMKernelPtr kernel = block->getKernel();
+      ILBMKernelPtr kernel = block->getKernel();
 
       if (!kernel)
       {

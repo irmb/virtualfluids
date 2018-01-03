@@ -1,4 +1,7 @@
 #include "CoarsenCrossAndInsideGbObjectBlockVisitor.h"
+#include "Block3D.h"
+#include "Grid3D.h"
+#include <numerics/geometry3d/GbObject3D.h>
 
 CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor()
    : Block3DVisitor(), notActive(true)

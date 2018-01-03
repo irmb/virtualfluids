@@ -8,9 +8,12 @@
 #include "WbWriter.h"
 
 #include <boost/shared_ptr.hpp>
+#include "UbScheduler.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
 
 class MPIIORestart21CoProcessor;
-typedef boost::shared_ptr<MPIIORestart21CoProcessor> MPIIORestart21CoProcessorPtr;
+typedef std::shared_ptr<MPIIORestart21CoProcessor> MPIIORestart21CoProcessorPtr;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  

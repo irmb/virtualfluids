@@ -1,5 +1,10 @@
 #include "RefineCrossAndInsideGbObjectBlockVisitor.h"
 
+#include <numerics/geometry3d/GbObject3D.h>
+#include "Grid3D.h"
+#include "Block3D.h"
+
+
 RefineCrossAndInsideGbObjectBlockVisitor::RefineCrossAndInsideGbObjectBlockVisitor()
 :  Block3DVisitor() , notActive(true)
 {

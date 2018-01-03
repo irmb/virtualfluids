@@ -252,8 +252,7 @@ inline void Output2Stream::output(const std::string& msg)
 //////////////////////////////////////////////////////////////////////////
 class UbLog : public UbLogger< Output2Stream > 
 {
-public:
-   typedef Output2Stream output_policy;
+
 };
 
 //Makro um compilerseitig maxLevel zu beschränken

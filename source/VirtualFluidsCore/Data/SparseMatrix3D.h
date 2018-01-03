@@ -3,9 +3,9 @@
 
 #include <boost/unordered_map.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 class SparseMatrix3D;
-typedef boost::shared_ptr<SparseMatrix3D> SparseMatrix3DPtr;
+typedef std::shared_ptr<SparseMatrix3D> SparseMatrix3DPtr;
 
 class SparseMatrix3D
 {

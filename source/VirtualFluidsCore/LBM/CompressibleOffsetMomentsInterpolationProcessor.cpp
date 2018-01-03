@@ -1,7 +1,7 @@
 #include "CompressibleOffsetMomentsInterpolationProcessor.h"
 #include "D3Q27System.h"
 
-#include <boost/foreach.hpp>
+
 
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
    : omegaC(0.0), omegaF(0.0)
@@ -29,13 +29,13 @@ InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone
    InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetMomentsInterpolationProcessor(this->omegaC, this->omegaF));
    if (bulkOmegaToOmega)
    {
-      boost::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = omegaC;
-      boost::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = omegaF;
+      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = omegaC;
+      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = omegaF;
    }
    else
    {
-      boost::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = one;
-      boost::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = one;
+      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = one;
+      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = one;
    }
    return iproc;
 }

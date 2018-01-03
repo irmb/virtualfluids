@@ -46,9 +46,9 @@ usage: ...
 
 // this class is not thread save
 //
-#include <boost/smart_ptr.hpp>
+
 class UbScheduler;
-typedef boost::shared_ptr<UbScheduler> UbSchedulerPtr;
+typedef std::shared_ptr<UbScheduler> UbSchedulerPtr;
 
 class UbScheduler
 {

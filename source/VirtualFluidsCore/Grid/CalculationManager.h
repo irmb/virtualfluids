@@ -1,46 +1,51 @@
 #ifndef CALCULATORMANAGER_H
 #define CALCULATORMANAGER_H
 
-#include "Grid3D.h"
-#include "Communicator.h"
+
+#include <memory>
+#include <vector>
 
 class CalculationManager;
-typedef boost::shared_ptr<CalculationManager> CalculationManagerPtr;
+typedef std::shared_ptr<CalculationManager> CalculationManagerPtr;
 
-#include "Calculator.h"
+class LoadBalancer;
+class Communicator;
+class Grid3D;
+class Calculator;
+class CalculatorFactory;
+class TimeAveragedValuesCoProcessor;
+enum class CalculatorType;
 
-class CalculationManager : public boost::enable_shared_from_this<CalculationManager>
+
+class CalculationManager : public std::enable_shared_from_this<CalculationManager>
 {
+
 public:
-   enum CalculatorType{Hybrid, MPI, FETOL, PrePostBc};
-public:
-   CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, CalculatorType calcType = CalculationManager::Hybrid);
-   CalculationManager(Grid3DPtr grid, int numOfThreads, double endTime, UbSchedulerPtr visScheduler, 
-                      CommunicatorPtr comm, int endDir, LBMReal nu, CalculatorType calcType = CalculationManager::MPI);
+   CalculationManager(std::shared_ptr<Grid3D> grid, int numOfThreads, double endTime, std::shared_ptr<CalculatorFactory> calculatorFactory, CalculatorType type);
+   CalculationManager(std::shared_ptr<Grid3D> grid, int numOfThreads, double endTime, std::shared_ptr<Communicator> comm, int endDir, std::shared_ptr<CalculatorFactory> calculatorFactory);
    virtual ~CalculationManager();
+
    void calculate();
-   void setVisScheduler(UbSchedulerPtr s);
+   void mpiCalculate();
    bool balance();
-   void setTimeAveragedValuesCoProcessor(TimeAveragedValuesCoProcessorPtr coProcessor);
+   void setTimeAveragedValuesCoProcessor(std::shared_ptr<TimeAveragedValuesCoProcessor> coProcessor);
+
 private:
-   void init();
-   void calculateMain();
    void initCalcThreads();
    void reinitCalcThreads();
    void addBlocksToCalcThreads();
-   CalculatorPtr createCalculator(Grid3DPtr grid, SynchronizerPtr sync, bool mainThread);
-   Grid3DPtr grid;
+
+   std::shared_ptr<Grid3D> grid;
    int numOfThreads;
-   //boost::exception_ptr error;
-   CalculatorType calcType;
-   std::vector<CalculatorPtr> calcThreads;
    double endTime;
-   UbSchedulerPtr visScheduler;
-   CommunicatorPtr comm;   
-   int endDir;
-   LoadBalancerPtr loadBalancer;
-   int rank;
-   LBMReal nu;
+
+   std::vector<std::shared_ptr<Calculator> > calcThreads;
+
+   std::shared_ptr<LoadBalancer> loadBalancer;
+
+   std::shared_ptr<CalculatorFactory> calculatorFactory;
+   CalculatorType type;
+
 }; 
 
 #endif 
