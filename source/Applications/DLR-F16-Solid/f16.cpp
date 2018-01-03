@@ -646,7 +646,7 @@ void run(string configname)
 
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::MPI));
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, tavSch, CalculationManager::PrePostBc));
+      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch, CalculationManager::PrePostBc));
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
