@@ -32,6 +32,7 @@
    #include <sys/syscall.h>
    #include <sys/stat.h>
    #include <unistd.h>
+   #include <string.h>
 #elif defined(__AIX__)
    #define UBSYSTEM_AIX
    #include "dirent.h"

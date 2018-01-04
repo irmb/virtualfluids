@@ -169,7 +169,7 @@ public:
    double getDeltaX(int level) const;
    double getDeltaX(std::shared_ptr<Block3D> block) const;
    UbTupleDouble3 getNodeOffset(std::shared_ptr<Block3D> block) const ;
-    Vector3D getNodeCoordinates(std::shared_ptr<Block3D> block, int ix1, int ix2, int ix3) const;
+   Vector3D getNodeCoordinates(std::shared_ptr<Block3D> block, int ix1, int ix2, int ix3) const;
    UbTupleInt3 getNodeIndexes(std::shared_ptr<Block3D> block, double nodeX1Coord, double nodeX2Coord, double nodeX3Coord) const;
    void setBlockNX(int nx1, int nx2, int nx3);
    UbTupleInt3 getBlockNX() const;
