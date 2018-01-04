@@ -42,41 +42,43 @@ CalculationManager::~CalculationManager()
 {
 
 }
-//////////////////////////////////////////////////////////////////////////
-void CalculationManager::mpiCalculate()
-{
-    try
-    {
-        std::dynamic_pointer_cast<MPICalculator>(calcThreads[0])->calculate(endTime, shared_from_this());
-    }
-    catch (std::exception& e)
-    {
-        UBLOG(logERROR, e.what());
-        //throw e;
-        exit(EXIT_FAILURE);
-    }
-}
 
 //////////////////////////////////////////////////////////////////////////
 void CalculationManager::calculate()
 {
-    try
+    if (type == CalculatorType::MPI)
     {
-        boost::thread_group threads;
-        boost::exception_ptr error;
-
-        for (int i = 1; i < calcThreads.size(); i++)
-            threads.create_thread(boost::bind(&Calculator::calculate, calcThreads[i], endTime, shared_from_this(), boost::ref(error)));
-
-        calcThreads[0]->calculate(endTime, shared_from_this(), boost::ref(error));
-
-        threads.join_all();
+        try
+        {
+            std::dynamic_pointer_cast<MPICalculator>(calcThreads[0])->calculate(endTime, shared_from_this());
+        }
+        catch (std::exception& e)
+        {
+            UBLOG(logERROR, e.what());
+            //throw e;
+            exit(EXIT_FAILURE);
+        }
     }
-    catch (std::exception& e)
+    else
     {
-        UBLOG(logERROR, e.what());
-        //throw e;
-        exit(EXIT_FAILURE);
+        try
+        {
+            boost::thread_group threads;
+            boost::exception_ptr error;
+
+            for (int i = 1; i < calcThreads.size(); i++)
+                threads.create_thread(boost::bind(&Calculator::calculate, calcThreads[i], endTime, shared_from_this(), boost::ref(error)));
+
+            calcThreads[0]->calculate(endTime, shared_from_this(), boost::ref(error));
+
+            threads.join_all();
+        }
+        catch (std::exception& e)
+        {
+            UBLOG(logERROR, e.what());
+            //throw e;
+            exit(EXIT_FAILURE);
+        }
     }
 }
 //////////////////////////////////////////////////////////////////////////

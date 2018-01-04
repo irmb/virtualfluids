@@ -26,7 +26,6 @@ public:
    virtual ~CalculationManager();
 
    void calculate();
-   void mpiCalculate();
    bool balance();
    void setTimeAveragedValuesCoProcessor(std::shared_ptr<TimeAveragedValuesCoProcessor> coProcessor);
 
