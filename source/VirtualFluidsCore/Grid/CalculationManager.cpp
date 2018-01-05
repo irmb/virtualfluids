@@ -6,6 +6,7 @@
 
 #include <Calculator.h>
 #include <MPICalculator.h>
+#include <OMPCalculator.h>
 #if defined VF_FETOL
 #include <FETOLCalculator.h>
 #endif
@@ -58,6 +59,19 @@ void CalculationManager::calculate()
             //throw e;
             exit(EXIT_FAILURE);
         }
+    }
+    else if (type == CalculatorType::OMP)
+    {
+       try
+       {
+          std::dynamic_pointer_cast<OMPCalculator>(calcThreads[0])->calculate(endTime, shared_from_this());
+       }
+       catch (std::exception& e)
+       {
+          UBLOG(logERROR, e.what());
+          //throw e;
+          exit(EXIT_FAILURE);
+       }
     }
     else
     {

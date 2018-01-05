@@ -14,7 +14,7 @@ class Grid3D;
 
 enum class CalculatorType
 {
-    HYBRID, MPI, PREPOSTBC, FETOL, DEM
+    HYBRID, MPI, OMP, PREPOSTBC, FETOL, DEM
 };
 
 class CalculatorFactory

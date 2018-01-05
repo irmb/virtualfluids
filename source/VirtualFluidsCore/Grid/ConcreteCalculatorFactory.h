@@ -8,6 +8,7 @@
 
 #include "Calculator.h"
 #include "MPICalculator.h"
+#include "OMPCalculator.h"
 #include "PrePostBcCalculator.h"
 
 #include "CalculatorFactory.h"
@@ -30,6 +31,9 @@ public:
         case CalculatorType::MPI:
             calculator = std::make_shared<MPICalculator>(grid);
             break;
+        case CalculatorType::OMP:
+           calculator = std::make_shared<OMPCalculator>(grid);
+           break;
         case CalculatorType::PREPOSTBC:
             calculator = std::make_shared<PrePostBcCalculator>(grid, sync, isMainThread);
             break;
