@@ -52,7 +52,7 @@ protected:
 	ForceCalculations* forceCalculator;
 
 	//Porous Media
-	PorousMedia* pm[3];
+	PorousMedia** pm = new PorousMedia *[3];
 	//PorousMedia* pm0;
 	//PorousMedia* pm1;
 	//PorousMedia* pm2;

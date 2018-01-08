@@ -1971,13 +1971,15 @@ void Parameter::cudaAllocPorousMedia(PorousMedia* pm, int lev)
 {
 	unsigned int mem_size_IDsPM = sizeof(unsigned int)*pm->getSizePM();
 	unsigned int *tmpIDHost, *tmpIDDevice;
-
+	//std::cout << "cudaMallocHost" << endl;
 	//Host
 	checkCudaErrors(cudaMallocHost((void**) &(tmpIDHost), mem_size_IDsPM));
 
+	//std::cout << "cudaMalloc" << endl;
 	//Device
 	checkCudaErrors(cudaMalloc((void**) &(tmpIDDevice), mem_size_IDsPM));
 
+	//std::cout << "set Host and Device arrays PM" << endl;
 	//////////////////////////////////////////////////////////////////////////
 	pm->setHostNodeIDsPM(tmpIDHost);
 	pm->setDeviceNodeIDsPM(tmpIDDevice);

@@ -203,42 +203,42 @@ void Interface::allocArrays_CoordNeighborGeo(Parameter* para) {
 		//	para->getParH(i)->press_SP[j] = myPress;
 		//}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		////Taylor Green Vortex uniform
-		//doubflo PI = 3.141592653589793238462643383279f;
-		//doubflo gridX = para->getParH(i)->gridNX - 1;
-		//doubflo gridY = para->getParH(i)->gridNY - 1;
-		//doubflo gridZ = para->getParH(i)->gridNZ - 1;
-		////like MG
-		////doubflo uAdvect = doubflo (1. / 250.); //32 nodes -> 250; 40 nodes -> 200; 64 nodes -> 500; 128 nodes -> 1000; 256 nodes -> 2000; 512 nodes -> 4000
-		//doubflo uAdvect = doubflo(0.008); //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
+		//Taylor Green Vortex uniform
+		doubflo PI = 3.141592653589793238462643383279f;
+		doubflo gridX = para->getParH(i)->gridNX - 1;
+		doubflo gridY = para->getParH(i)->gridNY - 1;
+		doubflo gridZ = para->getParH(i)->gridNZ - 1;
+		//like MG
+		//doubflo uAdvect = doubflo (1. / 250.); //32 nodes -> 250; 40 nodes -> 200; 64 nodes -> 500; 128 nodes -> 1000; 256 nodes -> 2000; 512 nodes -> 4000
+		doubflo uAdvect = doubflo(0.0008); //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
 
-		//for (int j = 0; j <= temp; j++)
-		//{
-		//	para->getParH(i)->rho_SP[j] = 
-		//		(doubflo)((para->getVelocity()*para->getVelocity())*3.0 / 4.0*(cos(para->getParH(i)->coordX_SP[j]*4.0*PI / 
-		//		(doubflo)gridX) + cos(para->getParH(i)->coordZ_SP[j] *4.0*PI /
-		//		(doubflo)gridZ)))*(doubflo)(gridZ) / (doubflo)(gridX);
-		//	
-		//	para->getParH(i)->vy_SP[j] = (doubflo)0.0;
+		for (int j = 0; j <= temp; j++)
+		{
+			para->getParH(i)->rho_SP[j] = 
+				(doubflo)((para->getVelocity()*para->getVelocity())*3.0 / 4.0*(cos(para->getParH(i)->coordX_SP[j]*4.0*PI / 
+				(doubflo)gridX) + cos(para->getParH(i)->coordZ_SP[j] *4.0*PI /
+				(doubflo)gridZ)))*(doubflo)(gridZ) / (doubflo)(gridX);
+			
+			para->getParH(i)->vy_SP[j] = (doubflo)0.0;
 
-		//	//incl. additional velocity
-		//	//para->getParH(i)->vx_SP[j] = 
-		//	//	(doubflo)((32. * 32. ) / (1000. * 32.) * para->getVelocity() / 0.1 + para->getVelocity()*sin((para->getParH(i)->coordX_SP[j]*2.0*PI /
-		//	//	(doubflo)gridX))*cos(para->getParH(i)->coordZ_SP[j]*2.0*PI / (doubflo)gridZ));
-		//	//like MG
-		//	para->getParH(i)->vx_SP[j] =
-		//		(doubflo)(para->getVelocity()*sin((para->getParH(i)->coordX_SP[j] * 2.0*PI / (doubflo)gridX))*cos(para->getParH(i)->coordZ_SP[j] * 2.0*PI / (doubflo)gridZ)) + uAdvect * (1.0 + para->getParH(i)->rho_SP[j]);
+			//incl. additional velocity
+			//para->getParH(i)->vx_SP[j] = 
+			//	(doubflo)((32. * 32. ) / (1000. * 32.) * para->getVelocity() / 0.1 + para->getVelocity()*sin((para->getParH(i)->coordX_SP[j]*2.0*PI /
+			//	(doubflo)gridX))*cos(para->getParH(i)->coordZ_SP[j]*2.0*PI / (doubflo)gridZ));
+			//like MG
+			para->getParH(i)->vx_SP[j] =
+				(doubflo)(para->getVelocity()*sin((para->getParH(i)->coordX_SP[j] * 2.0*PI / (doubflo)gridX))*cos(para->getParH(i)->coordZ_SP[j] * 2.0*PI / (doubflo)gridZ)) + uAdvect * (1.0 + para->getParH(i)->rho_SP[j]);
 
-		//	//no additional velocity
-		//	//para->getParH(i)->vz_SP[j] = 
-		//	//	(doubflo)(-para->getVelocity()*cos((para->getParH(i)->coordX_SP[j] *2.0*PI / (doubflo)gridX))*sin(para->getParH(i)->coordZ_SP[j]*2.0*PI /
-		//	//	(doubflo)gridZ))*(doubflo)(gridZ) / (doubflo)(gridX);
-		//	//like MG
-		//	para->getParH(i)->vz_SP[j] =
-		//		(doubflo)(-para->getVelocity()*cos((para->getParH(i)->coordX_SP[j] * 2.0*PI / (doubflo)gridX))*sin(para->getParH(i)->coordZ_SP[j] * 2.0*PI / (doubflo)gridZ));// *(doubflo)(gridZ) / (doubflo)(gridX);
-		//	//cout << "\n Ich lebe: " << j << endl;
-		//}
-		////cout << "\n GridNx: " << gridX << " GridNy: " << gridY << " GridNz: " << gridZ << endl;
+			//no additional velocity
+			//para->getParH(i)->vz_SP[j] = 
+			//	(doubflo)(-para->getVelocity()*cos((para->getParH(i)->coordX_SP[j] *2.0*PI / (doubflo)gridX))*sin(para->getParH(i)->coordZ_SP[j]*2.0*PI /
+			//	(doubflo)gridZ))*(doubflo)(gridZ) / (doubflo)(gridX);
+			//like MG
+			para->getParH(i)->vz_SP[j] =
+				(doubflo)(-para->getVelocity()*cos((para->getParH(i)->coordX_SP[j] * 2.0*PI / (doubflo)gridX))*sin(para->getParH(i)->coordZ_SP[j] * 2.0*PI / (doubflo)gridZ));// *(doubflo)(gridZ) / (doubflo)(gridX);
+			//cout << "\n Ich lebe: " << j << endl;
+		}
+		//cout << "\n GridNx: " << gridX << " GridNy: " << gridY << " GridNz: " << gridZ << endl;
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		////Desox fix
 		//int levelToChange = 0;//uniform ... otherwise 7;

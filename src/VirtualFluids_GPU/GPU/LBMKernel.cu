@@ -3139,6 +3139,102 @@ extern "C" void QDevComp27( unsigned int numberOfThreads,
       getLastCudaError("QDeviceComp27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void QDevCompThinWallsPartOne27( unsigned int numberOfThreads,
+											int nx,
+											int ny,
+											doubflo* DD, 
+											int* k_Q, 
+											doubflo* QQ,
+											unsigned int sizeQ,
+											unsigned int kQ, 
+											doubflo om1, 
+											unsigned int* neighborX,
+											unsigned int* neighborY,
+											unsigned int* neighborZ,
+											unsigned int size_Mat, 
+											bool evenOrOdd)
+{
+   int Grid = (kQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+   QDeviceCompThinWallsPartOne27 <<< gridQ, threads >>> (nx,
+														 ny,
+														 DD, 
+														 k_Q, 
+														 QQ,
+														 sizeQ,
+														 kQ, 
+														 om1, 
+														 neighborX,
+														 neighborY,
+														 neighborZ,
+														 size_Mat, 
+														 evenOrOdd);
+   getLastCudaError("QDeviceCompThinWallsPartOne27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void QDevCompThinWallsPartTwo27( unsigned int numberOfThreads,
+											int nx,
+											int ny,
+											doubflo* DD, 
+											int* k_Q, 
+											doubflo* QQ,
+											unsigned int sizeQ,
+											unsigned int kQ, 
+											doubflo om1, 
+											unsigned int* geom,
+											unsigned int* neighborX,
+											unsigned int* neighborY,
+											unsigned int* neighborZ,
+											unsigned int* neighborWSB,
+											unsigned int size_Mat, 
+											bool evenOrOdd)
+{
+   int Grid = (kQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+   QDeviceCompThinWallsPartTwo27 <<< gridQ, threads >>> (nx,
+														 ny,
+														 DD, 
+														 k_Q, 
+														 QQ,
+														 sizeQ,
+														 kQ, 
+														 om1, 
+														 geom,
+														 neighborX,
+														 neighborY,
+														 neighborZ,
+														 neighborWSB,
+														 size_Mat, 
+														 evenOrOdd);
+   getLastCudaError("QDeviceCompThinWallsPartTwo27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void QDev3rdMomentsComp27(   unsigned int numberOfThreads,
 										int nx,
 										int ny,

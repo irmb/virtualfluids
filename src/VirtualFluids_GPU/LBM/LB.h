@@ -40,8 +40,8 @@
 //////////////////////////////////////////////////////////////////////////
 // precision                             (change between double and float)
 //
-#define ISFLOAT
-//#define ISDOUBLE
+//#define ISFLOAT
+#define ISDOUBLE
 ///////////////////////////
 #ifdef ISDOUBLE
 typedef double doubflo;

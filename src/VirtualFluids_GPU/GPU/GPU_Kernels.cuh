@@ -713,6 +713,38 @@ extern "C" __global__ void QDeviceComp27(int inx,
 										 unsigned int size_Mat, 
 										 bool evenOrOdd);
 
+extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
+														 int iny,
+														 doubflo* DD, 
+														 int* k_Q, 
+														 doubflo* QQ,
+														 unsigned int sizeQ,
+														 int kQ, 
+														 doubflo om1, 
+														 unsigned int* neighborX,
+														 unsigned int* neighborY,
+														 unsigned int* neighborZ,
+														 unsigned int size_Mat, 
+														 bool evenOrOdd);
+
+extern "C" __global__ void QDeviceCompThinWallsPartTwo27(int inx,
+														 int iny,
+														 doubflo* DD, 
+														 int* k_Q, 
+														 doubflo* QQ,
+														 unsigned int sizeQ,
+														 int kQ, 
+														 doubflo om1, 
+														 unsigned int* geom,
+														 unsigned int* neighborX,
+														 unsigned int* neighborY,
+														 unsigned int* neighborZ,
+														 unsigned int* neighborWSB,
+														 unsigned int size_Mat, 
+														 bool evenOrOdd);
+
+
+
 extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
 													 int iny,
 													 doubflo* DD, 
