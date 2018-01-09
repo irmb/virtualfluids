@@ -23,8 +23,8 @@
 class UbFileOutput;
 class UbFileInput;
 
-#include <BoundaryConditions/BCAdapter.h>
-#include <BoundaryConditions/BCFunction.h>
+#include <BCAdapter.h>
+#include <BCFunction.h>
 
 //example:
 //        vector<D3Q27BCFunction> vx1BCs,vx2BCs,vx3BCs;

@@ -19,7 +19,6 @@
 class GbVector3D;
 typedef VFSharedPtr<GbVector3D> GbVector3DPtr;
 
-
 class GbPoint3D;
 
 class GbVector3D 

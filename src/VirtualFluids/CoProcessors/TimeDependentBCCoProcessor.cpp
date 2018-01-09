@@ -1,7 +1,8 @@
 #include "TimeDependentBCCoProcessor.h"
-#include <boost/foreach.hpp>
 
-using namespace std;
+#include "Interactor3D.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
 
 TimeDependentBCCoProcessor::TimeDependentBCCoProcessor(Grid3DPtr grid) : CoProcessor(grid,  UbSchedulerPtr(new UbScheduler(1)))
 {
@@ -15,7 +16,7 @@ TimeDependentBCCoProcessor::~TimeDependentBCCoProcessor()
 //////////////////////////////////////////////////////////////////////////
 void TimeDependentBCCoProcessor::process(double step)
 {
-   BOOST_FOREACH(Interactor3DPtr inter, interactors)
+   for(Interactor3DPtr inter : interactors)
       inter->updateInteractor( step );
    UBLOG(logDEBUG3, "TimeDependentBCCoProcessor::update:" << step);
 }

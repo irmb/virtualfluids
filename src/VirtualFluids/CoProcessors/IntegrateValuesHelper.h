@@ -6,6 +6,7 @@
 #include "Communicator.h"
 #include "GbCuboid3D.h"
 #include "CbArray2D.h"
+#include "Block3D.h"
 
 //struct CalcNodes 
 //{
@@ -20,7 +21,7 @@
 //};
 
 class IntegrateValuesHelper;
-typedef boost::shared_ptr<IntegrateValuesHelper> IntegrateValuesHelperPtr;
+typedef std::shared_ptr<IntegrateValuesHelper> IntegrateValuesHelperPtr;
 
 class IntegrateValuesHelper
 {

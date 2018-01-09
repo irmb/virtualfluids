@@ -1,11 +1,10 @@
 #ifndef InitDistributionsBlockVisitor_H
 #define InitDistributionsBlockVisitor_H
 
-#include <boost/foreach.hpp>
+#include <memory>
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
-#include "Block3D.h"
 
 #include <MuParser/include/muParser.h>
 
@@ -32,6 +31,8 @@ if function is invalid an UbException with detailed information is thrown
 //! init.setVx1("0.01*x2^2");<BR>
 //! patch.adaptByPatchCriterion(init);
 
+class Grid3D;
+class Block3D;
 
 
 class InitDistributionsBlockVisitor : public Block3DVisitor
@@ -69,7 +70,7 @@ public:
    void setRho( LBMReal rho );
    void setNu( LBMReal nu );
 
-   void visit(Grid3DPtr grid, Block3DPtr block);
+   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 protected:
    void checkFunction(mu::Parser fct);

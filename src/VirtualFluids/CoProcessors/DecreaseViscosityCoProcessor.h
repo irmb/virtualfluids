@@ -1,14 +1,21 @@
 #ifndef DecreaseViscosityCoProcessor_H
 #define DecreaseViscosityCoProcessor_H
 
+#include <memory>
+
 #include "CoProcessor.h"
 #include "IntegrateValuesHelper.h"
 #include "LBMUnitConverter.h"
-#include "Communicator.h"
 
-#include <boost/shared_ptr.hpp>
+#include "MuParser/include/muParser.h"
+
+
 class DecreaseViscosityCoProcessor;
-typedef boost::shared_ptr<DecreaseViscosityCoProcessor> DecreaseViscosityCoProcessorPtr;
+typedef std::shared_ptr<DecreaseViscosityCoProcessor> DecreaseViscosityCoProcessorPtr;
+
+class UbScheduler;
+class Grid3D;
+class Communicator;
 
 //! \brief The class sets viscosity/collision factor according to a previously defined function in time. 
 //! \details initialization in test case (example): 
@@ -26,15 +33,15 @@ typedef boost::shared_ptr<DecreaseViscosityCoProcessor> DecreaseViscosityCoProce
 class DecreaseViscosityCoProcessor: public CoProcessor 
 { 
 public:
-   DecreaseViscosityCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-      mu::Parser* nueFunc, CommunicatorPtr comm);
+   DecreaseViscosityCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
+      mu::Parser* nueFunc, std::shared_ptr<Communicator> comm);
    virtual ~DecreaseViscosityCoProcessor();
    //! calls collect PostprocessData.
    void process(double step); 
 protected:
    //! resets the collision factor depending on the current timestep.
    void setViscosity(double step);  
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator>  comm;
 private:
    mutable mu::value_type timeStep;
    mu::Parser* nueFunc;

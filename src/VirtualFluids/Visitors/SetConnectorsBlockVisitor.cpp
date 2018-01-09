@@ -6,6 +6,9 @@
 #include "Grid3DSystem.h"
 #include <basics/transmitter/TbTransmitterLocal.h>
 
+#include "Communicator.h"
+#include "InterpolationProcessor.h"
+
 SetConnectorsBlockVisitor::SetConnectorsBlockVisitor(CommunicatorPtr comm, bool fullConnector, int dirs, 
 															   LBMReal nue, InterpolationProcessorPtr iProcessor) :
 Block3DVisitor(0, Grid3DSystem::MAXLEVEL), 

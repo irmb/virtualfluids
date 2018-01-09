@@ -24,7 +24,7 @@
 #include <basics/container/CbVector.h>
 #include <basics/container/CbVectorPool.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ template<typename T>
 class TbCbVectorBondPool : public CbVectorPool<T>
 {
 public:
-   typedef boost::shared_ptr< TbCbVectorBondPool< T > > BondPoolPtr;
+   typedef std::shared_ptr< TbCbVectorBondPool< T > > BondPoolPtr;
 
    //////////////////////////////////////////////////////////////////////////
    typedef std::map< int, BondPoolPtr >      BondPoolPtrMap;

@@ -8,9 +8,17 @@
 #ifndef D3Q27ForcesCoProcessor_H
 #define D3Q27ForcesCoProcessor_H
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "CoProcessor.h"
-#include "Communicator.h"
-#include "D3Q27Interactor.h"
+
+class ForceCalculator;
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class D3Q27Interactor;
 
 class CalculateForcesCoProcessor: public CoProcessor 
 {
@@ -18,30 +26,28 @@ public:
    //! Constructor
    //! \param v - velocity of fluid in LB units
    //! \param a - area of object in LB units
-   CalculateForcesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-                            const std::string &path,
-                            CommunicatorPtr comm, double v, double a);
-	virtual ~CalculateForcesCoProcessor();             
-	void process(double step); 
-   void addInteractor(D3Q27InteractorPtr interactor);
+   CalculateForcesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm, double v, double a,
+                            std::shared_ptr<ForceCalculator> forceCalculator);
+	virtual ~CalculateForcesCoProcessor(); 
+    
+	void process(double step) override; 
+
+   void addInteractor(std::shared_ptr<D3Q27Interactor> interactor);
+
 protected:
-	void collectData(double step);
-   void calculateForces();
-   UbTupleDouble3 getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, BoundaryConditionsPtr bc);
-   void calculateCoefficients();
+   void collectData(double step);
+   double getCoefficient(double force);
    void write(std::ofstream *fileObject, double value, char *separator);
+
 private:
+    std::shared_ptr<ForceCalculator> forceCalculator;
    std::string path;
-   CommunicatorPtr comm;
-   std::vector<D3Q27InteractorPtr> interactors;
-   double forceX1global;
-   double forceX2global;
-   double forceX3global;
+   std::shared_ptr<Communicator> comm;
+   std::vector<std::shared_ptr<D3Q27Interactor> > interactors;
+
    double v;     //!< is the speed of the object relative to the fluid
    double a;     //!< is the reference area
-   double C1;
-   double C2;
-   double C3;
+
 
    friend class boost::serialization::access;
    template<class Archive>

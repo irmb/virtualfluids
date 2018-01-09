@@ -226,7 +226,7 @@ void FETOLCalculator::initFETOLConnectors()
    UBLOG(logDEBUG5, "FETOLCalculator::initFETOLConnectors():start");
    for(int l = minLevel; l <= maxLevel; l++)
    {
-      BOOST_FOREACH(Block3DConnectorPtr c, remoteConns[l])
+      for(Block3DConnectorPtr c : remoteConns[l])
       {
          if(c->getTransmitterType() == Block3DConnector::MPI)
          {
@@ -323,7 +323,7 @@ void FETOLCalculator::ifRestart(int startLevel, int maxInitLevel, bool invStep)
 //////////////////////////////////////////////////////////////////////////
 //void FETOLCalculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors)
 //{
-//   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+//   for(Block3DConnectorPtr c : connectors)
 //   {
 //      c->prepareForReceive();
 //      c->prepareForSend();
@@ -332,7 +332,7 @@ void FETOLCalculator::ifRestart(int startLevel, int maxInitLevel, bool invStep)
 ////////////////////////////////////////////////////////////////////////////
 //void FETOLCalculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
 //{
-//   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+//   for(Block3DConnectorPtr c : connectors)
 //   {
 //      c->setInvStep(invStep);
 //      c->fillSendVectors();
@@ -342,7 +342,7 @@ void FETOLCalculator::ifRestart(int startLevel, int maxInitLevel, bool invStep)
 ////////////////////////////////////////////////////////////////////////////
 //void FETOLCalculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
 //{
-//   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+//   for(Block3DConnectorPtr c : connectors)
 //   {
 //      c->receiveVectors();
 //      c->setInvStep(invStep);
@@ -352,7 +352,7 @@ void FETOLCalculator::ifRestart(int startLevel, int maxInitLevel, bool invStep)
 ////////////////////////////////////////////////////////////////////////////
 //void FETOLCalculator::bondConnectorsPrepare(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
 //{
-//   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+//   for(Block3DConnectorPtr c : connectors)
 //   {
 //      c->prepareForReceive();
 //      c->prepareForSend();
@@ -361,7 +361,7 @@ void FETOLCalculator::ifRestart(int startLevel, int maxInitLevel, bool invStep)
 ////////////////////////////////////////////////////////////////////////////
 //void FETOLCalculator::bondConnectorsSend(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
 //{
-//   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+//   for(Block3DConnectorPtr c : connectors)
 //   {
 //      c->setInvStep(invStep);
 //      c->fillSendVectors();
@@ -371,7 +371,7 @@ void FETOLCalculator::ifRestart(int startLevel, int maxInitLevel, bool invStep)
 ////////////////////////////////////////////////////////////////////////////
 //void FETOLCalculator::bondConnectorsReceive(std::vector< Block3DConnectorPtr >& connectors, bool invStep)
 //{
-//   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+//   for(Block3DConnectorPtr c : connectors)
 //   {
 //      c->receiveVectors();
 //      c->setInvStep(invStep);

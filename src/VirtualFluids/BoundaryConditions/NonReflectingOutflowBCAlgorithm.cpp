@@ -1,6 +1,9 @@
 #include "NonReflectingOutflowBCAlgorithm.h"
-#include <boost/pointer_cast.hpp>
-#include "LBM/D3Q27System.h"
+
+#include "D3Q27System.h"
+#include "DistributionArray3D.h"
+#include "BoundaryConditions.h"
+
 
 NonReflectingOutflowBCAlgorithm::NonReflectingOutflowBCAlgorithm()
 {

@@ -12,7 +12,7 @@ public:
    LBMKernelPtr clone();
    void calculate();
    void swapDistributions();
-   double getCallculationTime();
+   double getCalculationTime();
 protected:
 private:
    int nx1, nx2, nx3;

@@ -4,6 +4,12 @@
 #include "BCProcessor.h"
 #include "Grid3DSystem.h"
 #include "InitDensityLBMKernel.h"
+#include "DataSet3D.h"
+#include "EsoTwist3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
+
 
 InitDistributionsFromFileBlockVisitor::InitDistributionsFromFileBlockVisitor(LBMReal nu, LBMReal rho, std::string filename)
    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), nu(nu), rho(rho)
@@ -61,7 +67,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
    if (blockRank==gridRank && block->isActive())
    {
-      LBMKernelPtr kernel = block->getKernel();
+      ILBMKernelPtr kernel = block->getKernel();
       if (!kernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
@@ -72,8 +78,8 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
       UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
-      EsoTwist3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
+      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+      EsoTwist3DPtr distributions = std::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
       LBMReal f[D3Q27System::ENDF+1];
 
@@ -85,9 +91,9 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
       int minX2 = 0;
       int minX3 = 0;
 
-      int maxX1 = (int)bcArray.getNX1();
-      int maxX2 = (int)bcArray.getNX2();
-      int maxX3 = (int)bcArray.getNX3();
+      int maxX1 = (int)bcArray->getNX1();
+      int maxX2 = (int)bcArray->getNX2();
+      int maxX3 = (int)bcArray->getNX3();
 
       int maxMX1 = (int)matrix.getNX2();
       int maxMX2 = (int)matrix.getNX3();
@@ -244,7 +250,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
                distributions->setDistribution(f, ix1, ix2, ix3);
                distributions->setDistributionInv(f, ix1, ix2, ix3);
-               boost::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->setVelocity(ix1, ix2, ix3, vx1, vx2, vx3);
+               std::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->setVelocity(ix1, ix2, ix3, vx1, vx2, vx3);
             }
       
    }

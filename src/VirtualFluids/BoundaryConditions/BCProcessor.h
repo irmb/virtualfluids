@@ -1,38 +1,36 @@
-#ifndef BCPROCESSSOR_H
-#define BCPROCESSSOR_H
+#ifndef BC_PROCESSSOR_H
+#define BC_PROCESSSOR_H
 
-#include "BCAlgorithm.h"
-#include "Data/EsoTwist3D.h"
-#include "BCArray3D.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
-
+#include <memory>
 #include <vector>
 
 #include <boost/serialization/base_object.hpp>
 
 class BCProcessor;
-typedef boost::shared_ptr<BCProcessor> BCProcessorPtr;
+typedef std::shared_ptr<BCProcessor> BCProcessorPtr;
 
-#include "LBM/LBMKernel.h"
+class BCArray3D;
+class BCAlgorithm;
+class ILBMKernel;
 
 class BCProcessor
 {
 public:
    BCProcessor();
-   BCProcessor(LBMKernelPtr kernel);
+   BCProcessor(std::shared_ptr<ILBMKernel> kernel);
    virtual ~BCProcessor();
-   virtual BCArray3D& getBCArray();
-   virtual BCProcessorPtr clone(LBMKernelPtr kernel);
+   virtual std::shared_ptr<BCArray3D> getBCArray();
+   virtual void setBCArray(std::shared_ptr<BCArray3D> bcarray);
+   virtual BCProcessorPtr clone(std::shared_ptr<ILBMKernel> kernel);
 
-   void addBC(BCAlgorithmPtr bc);
+   void addBC(std::shared_ptr<BCAlgorithm> bc);
    void applyPreCollisionBC();
    void applyPostCollisionBC();
    void clearBC();
 protected:
-   std::vector<BCAlgorithmPtr> preBC;
-   std::vector<BCAlgorithmPtr> postBC;
-   BCArray3D bcArray;
+   std::vector<std::shared_ptr<BCAlgorithm> > preBC;
+   std::vector<std::shared_ptr<BCAlgorithm> > postBC;
+   std::shared_ptr<BCArray3D> bcArray;
 
 private:
    friend class boost::serialization::access;

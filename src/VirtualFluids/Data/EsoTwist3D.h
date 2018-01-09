@@ -2,12 +2,12 @@
 #define ESOTWIST3D_H
 
 #include "DistributionArray3D.h"
-#include <LBM/LBMSystem.h>
+#include <LBMSystem.h>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/base_object.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
+
 class EsoTwist3D;
-typedef boost::shared_ptr<EsoTwist3D> EsoTwist3DPtr;
+typedef std::shared_ptr<EsoTwist3D> EsoTwist3DPtr;
 
 class EsoTwistD3Q27UnrollArray{};
 class EsoTwistPlusD3Q27UnrollArray{};

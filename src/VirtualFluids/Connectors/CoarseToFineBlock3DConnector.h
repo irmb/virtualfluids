@@ -11,8 +11,8 @@
 #include "D3Q27System.h"
 #include "Block3D.h"
 #include "InterpolationProcessor.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+
 
 class Block3D;
 
@@ -88,7 +88,7 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   boost::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
+   std::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
    VectorTransmitterPtr sender00, receiver00,
                         sender01, receiver01,
                         sender10, receiver10,

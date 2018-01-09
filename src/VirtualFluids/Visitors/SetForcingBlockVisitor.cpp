@@ -1,6 +1,8 @@
 #include "SetForcingBlockVisitor.h"
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
+#include "Grid3D.h"
+#include "Block3D.h"
 
 SetForcingBlockVisitor::SetForcingBlockVisitor(LBMReal forcingX1, LBMReal forcingX2, LBMReal forcingX3) : 
                         Block3DVisitor(0, Grid3DSystem::MAXLEVEL), forcingX1(forcingX1), 
@@ -30,33 +32,37 @@ SetForcingBlockVisitor::SetForcingBlockVisitor(const std::string& sForcingX1, co
 //////////////////////////////////////////////////////////////////////////
 void SetForcingBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 {
+    LBMKernelPtr kernel = std::dynamic_pointer_cast<LBMKernel>(block->getKernel());
+    if (!kernel)
+        throw std::runtime_error("SetForcingBlockVisitor: Kernel is not a LBMKernel");
+
    if(block->getRank() == grid->getRank())
    {
       switch (ftype)
       {
       case 0:
-         block->getKernel()->setForcingX1(forcingX1);
-         block->getKernel()->setForcingX2(forcingX2);
-         block->getKernel()->setForcingX3(forcingX3);
-         block->getKernel()->setWithForcing(true);
+         kernel->setForcingX1(forcingX1);
+         kernel->setForcingX2(forcingX2);
+         kernel->setForcingX3(forcingX3);
+         kernel->setWithForcing(true);
          break;
       case 1:
-         block->getKernel()->setForcingX1(muForcingX1);
-         block->getKernel()->setForcingX2(muForcingX2);
-         block->getKernel()->setForcingX3(muForcingX3);
-         block->getKernel()->setWithForcing(true);
+         kernel->setForcingX1(muForcingX1);
+         kernel->setForcingX2(muForcingX2);
+         kernel->setForcingX3(muForcingX3);
+         kernel->setWithForcing(true);
          break;
       case 2:
-         block->getKernel()->setForcingX1(sForcingX1);
-         block->getKernel()->setForcingX2(sForcingX2);
-         block->getKernel()->setForcingX3(sForcingX3);
-         block->getKernel()->setWithForcing(true);
+         kernel->setForcingX1(sForcingX1);
+         kernel->setForcingX2(sForcingX2);
+         kernel->setForcingX3(sForcingX3);
+         kernel->setWithForcing(true);
          break;
       default:
-         block->getKernel()->setForcingX1(0.0);
-         block->getKernel()->setForcingX2(0.0);
-         block->getKernel()->setForcingX3(0.0);
-         block->getKernel()->setWithForcing(false);
+         kernel->setForcingX1(0.0);
+         kernel->setForcingX2(0.0);
+         kernel->setForcingX3(0.0);
+         kernel->setWithForcing(false);
          break;
       }
    }

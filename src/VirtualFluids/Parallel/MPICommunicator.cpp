@@ -2,7 +2,7 @@
 
 #include "MPICommunicator.h"
 #include <mpi.h>
-#include <boost/foreach.hpp>
+
 #include <sstream>
 using namespace std;
 //////////////////////////////////////////////////////////////////////////

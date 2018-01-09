@@ -1,9 +1,18 @@
 #ifndef LineTimeSeriesCoProcessor_h__
 #define LineTimeSeriesCoProcessor_h__
 
+#include <memory>
+#include <string>
+
+#include <mpi.h>
+
 #include "CoProcessor.h"
-#include "GbLine3D.h"
-#include "MPICommunicator.h"
+#include "LBMSystem.h"
+
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class GbLine3D;
 
 //! \brief  Writes to .csv file time series for a line in x1 direction.
 //! \details It can be used to compute for given time range  the time averaged two-point correlations for a line. <br>
@@ -16,17 +25,19 @@ class LineTimeSeriesCoProcessor : public CoProcessor
 public:
 enum Direction {X1, X2, X3};
 public:
-   LineTimeSeriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, GbLine3DPtr line, int level, CommunicatorPtr comm);
+   LineTimeSeriesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<GbLine3D> line, int level,std::shared_ptr<Communicator> comm);
    ~LineTimeSeriesCoProcessor(){}
-   void process(double step);
+
+   void process(double step) override;
    void writeLine(const std::string& path);
+
 protected:
    void collectData();
 private:
    std::string path;
    std::string fname;
    bool root;
-   GbLine3DPtr line;
+   std::shared_ptr<GbLine3D> line;
    //function pointer
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;

@@ -4,6 +4,8 @@
 #include "Block3D.h"
 #include "Communicator.h"
 
+#include "LBMSystem.h"
+
 #include <basics/transmitter/TbTransmitter.h>
 #include <basics/transmitter/TbTransmitterMpiPool.h>
 #include <basics/container/CbVector.h>
@@ -20,7 +22,7 @@ public:
    enum TransmitterType {MPI, BOND, MPI2BOND};
 public:
    typedef CbVector <LBMReal> DataType;
-   typedef boost::shared_ptr< TbTransmitter< DataType > > TransmitterPtr;
+   typedef std::shared_ptr< TbTransmitter< DataType > > TransmitterPtr;
 public:
    CreateTransmittersHelper();
    void createTransmitters(const Block3DPtr sblock, const Block3DPtr tblock, int dir, IBlock ib,

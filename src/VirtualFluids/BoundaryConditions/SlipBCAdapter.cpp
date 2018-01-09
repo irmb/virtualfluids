@@ -1,8 +1,8 @@
 #include "SlipBCAdapter.h"
-#include "LBM/D3Q27System.h"
-#include "Interactors//D3Q27Interactor.h"
+#include "D3Q27System.h"
+#include "D3Q27Interactor.h"
 #include "numerics/geometry3d/GbCuboid3D.h"
-#include <boost/pointer_cast.hpp>
+
 
 //*==========================================================*/
 //ObObject* D3Q27SlipBCAdapterCreator::createObObject()
@@ -20,7 +20,7 @@ void SlipBCAdapter::adaptBC(const D3Q27Interactor& interactor, BoundaryCondition
    //////////////////////////////////////////////////////////////////////////
    //>>> nur workaround! -> Hendrick nach normalen berechnung aus qs fragen
    
-   GbCuboid3DPtr geo = boost::dynamic_pointer_cast<GbCuboid3D>(interactor.getGbObject3D());
+   GbCuboid3DPtr geo = std::dynamic_pointer_cast<GbCuboid3D>(interactor.getGbObject3D());
    if(!geo) throw UbException(UB_EXARGS,"derzeit nur fuer Cubes valide");
 
    if     ( bc->hasSlipBoundaryFlag(D3Q27System::E) ) bc->setNormalVector( 1.0, 0.0, 0.0);  

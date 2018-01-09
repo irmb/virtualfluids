@@ -1,5 +1,8 @@
 #include "NUPSCounterCoProcessor.h"
 
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
 
 NUPSCounterCoProcessor::NUPSCounterCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, int numOfThreads, CommunicatorPtr comm)
                                                    : CoProcessor(grid, s),

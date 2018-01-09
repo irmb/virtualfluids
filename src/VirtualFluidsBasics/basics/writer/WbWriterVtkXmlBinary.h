@@ -3,13 +3,11 @@
 
 #include <string>
 
-#include "VirtualFluidsBasics_EXPORT.h"
-
 #include <basics/writer/WbWriter.h>
 
 #include <boost/serialization/base_object.hpp>
 
-class VirtualFluidsBasics_EXPORT WbWriterVtkXmlBinary  : public WbWriter
+class WbWriterVtkXmlBinary  : public WbWriter
 {
 public:
 #ifndef SWIG
@@ -35,6 +33,8 @@ private:
    static std::string  pvdEndTag;
 public:
    std::string getFileExtension() { return ".bin.vtu";   }
+
+   std::string getHeaderTag();
 
    //write a metafile 
    std::string writeCollection(const std::string& filename, const std::vector<std::string>& filenames, const double& timestep, const bool& sepGroups);

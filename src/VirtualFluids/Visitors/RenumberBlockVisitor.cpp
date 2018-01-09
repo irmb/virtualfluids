@@ -1,6 +1,8 @@
 #include "RenumberBlockVisitor.h"
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
+#include "Grid3D.h"
+#include "Block3D.h"
 
 int RenumberBlockVisitor::counter = 0;
 

@@ -12,7 +12,7 @@
 #include "basics/container/CbArray3D.h"
 
 class IncompressibleCumulantLBMKernel;
-typedef boost::shared_ptr<IncompressibleCumulantLBMKernel> LBMKernelETD3Q27CCLBPtr;
+typedef std::shared_ptr<IncompressibleCumulantLBMKernel> LBMKernelETD3Q27CCLBPtr;
 
 //! \brief   Cascaded Cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
@@ -33,7 +33,7 @@ public:
    virtual ~IncompressibleCumulantLBMKernel(void);
    virtual void calculate();
    virtual LBMKernelPtr clone();
-   double getCallculationTime();
+   double getCalculationTime();
 
 protected:
    friend class boost::serialization::access;

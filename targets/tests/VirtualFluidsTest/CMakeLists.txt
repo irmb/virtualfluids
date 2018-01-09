@@ -1,8 +1,8 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
 
 set(linkDirectories "")
-set(libsToLink "VirtualFluids")
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src/VirtualFluids)
+set(libsToLink "VirtualFluids" "VirtualFluidsBasics")
+set(includeDirectories ${CMAKE_SOURCE_DIR}/src/VirtualFluids ${CMAKE_SOURCE_DIR}/src)
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)

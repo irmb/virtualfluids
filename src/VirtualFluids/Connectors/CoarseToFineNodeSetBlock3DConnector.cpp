@@ -1,4 +1,6 @@
 #include "CoarseToFineNodeSetBlock3DConnector.h"
+#include "DataSet3D.h"
+
 
 ////////////////////////////////////////////////////////////////////////////
 CoarseToFineNodeSetBlock3DConnector::CoarseToFineNodeSetBlock3DConnector(Block3DPtr block,
@@ -107,7 +109,7 @@ void CoarseToFineNodeSetBlock3DConnector::findCFCells(int lMinX1, int lMinX2, in
    LBMReal x1off, x2off, x3off;
 
    DistributionArray3DPtr  fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
-   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3<=lMaxX3; ix3++)
    {
@@ -528,7 +530,7 @@ void CoarseToFineNodeSetBlock3DConnector::fillSendVectors()
    vector_type& data10 = this->sender10->getData();
    vector_type& data11 = this->sender11->getData();
 
-   BOOST_FOREACH(INodeVector inode, iNodeSetSender00)
+   for(INodeVector inode : iNodeSetSender00)
    {
       D3Q27ICell icellC;
       D3Q27ICell icellF;
@@ -536,7 +538,7 @@ void CoarseToFineNodeSetBlock3DConnector::fillSendVectors()
       iprocessor->interpolateCoarseToFine(icellC, icellF, inode[3], inode[4], inode[5]);
       writeICellFtoData(data00, index00, icellF);
    }
-   BOOST_FOREACH(INodeVector inode, iNodeSetSender01)
+   for(INodeVector inode : iNodeSetSender01)
    {
       D3Q27ICell icellC;
       D3Q27ICell icellF;
@@ -544,7 +546,7 @@ void CoarseToFineNodeSetBlock3DConnector::fillSendVectors()
       iprocessor->interpolateCoarseToFine(icellC, icellF, inode[3], inode[4], inode[5]);
       writeICellFtoData(data01, index01, icellF);
    }
-   BOOST_FOREACH(INodeVector inode, iNodeSetSender10)
+   for(INodeVector inode : iNodeSetSender10)
    {
       D3Q27ICell icellC;
       D3Q27ICell icellF;
@@ -552,7 +554,7 @@ void CoarseToFineNodeSetBlock3DConnector::fillSendVectors()
       iprocessor->interpolateCoarseToFine(icellC, icellF, inode[3], inode[4], inode[5]);
       writeICellFtoData(data10, index10, icellF);
    }
-   BOOST_FOREACH(INodeVector inode, iNodeSetSender11)
+   for(INodeVector inode : iNodeSetSender11)
    {
       D3Q27ICell icellC;
       D3Q27ICell icellF;
@@ -1245,29 +1247,29 @@ void CoarseToFineNodeSetBlock3DConnector::distributeReceiveVectors()
    vector_type& data10 = this->receiver10->getData();
    vector_type& data11 = this->receiver11->getData();
 
-   BOOST_FOREACH(INodeVector inode, iNodeSetReceiver00)
+   for(INodeVector inode : iNodeSetReceiver00)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data00, index00, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
-   BOOST_FOREACH(INodeVector inode, iNodeSetReceiver01)
+   for(INodeVector inode : iNodeSetReceiver01)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data01, index01, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
-   BOOST_FOREACH(INodeVector inode, iNodeSetReceiver10)
+   for(INodeVector inode : iNodeSetReceiver10)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data10, index10, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
-   BOOST_FOREACH(INodeVector inode, iNodeSetReceiver11)
+   for(INodeVector inode : iNodeSetReceiver11)
    {
       LBMReal icellC[27];
       this->readICellCfromData(data11, index11, icellC);
-      iprocessor->writeINode(fTo, icellC, inode[0], inode[1], inode[2]);
+      iprocessor->writeINodeInv(fTo, icellC, inode[0], inode[1], inode[2]);
    }
 }
 //////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,7 @@
 #if defined VF_MPI
 
 #include "LoadBalancer.h"
-#include <boost/foreach.hpp>
+
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/algorithm/string.hpp>
@@ -57,7 +57,7 @@ void LoadBalancer::prepareToSendLoad()
    sendBuffer.clear();
    removeBlocksSend.resize(0);
    int conv = 1;
-   BOOST_FOREACH(NeighbourProcess neighbProzess, neighbourProcesses)
+   for(NeighbourProcess neighbProzess : neighbourProcesses)
    {
       if (this->load != neighbProzess.load)
       {
@@ -89,14 +89,14 @@ void LoadBalancer::prepareToSendLoad(const int& nProcessID, const double& transL
 
       std::string str_out;
 
-      BOOST_FOREACH(LoadBalancer::BBlocks::value_type b, boundaryBlocks)
+      for(LoadBalancer::BBlocks::value_type b : boundaryBlocks)
       {
          TransferBlock &tBlock = b.second;
          tBlocks.insert(std::make_pair(tBlock.weight, tBlock));
       }
 
       double lsum = 0;
-      BOOST_FOREACH(LoadBalancer::TBlocks::value_type t, tBlocks)
+      for(LoadBalancer::TBlocks::value_type t : tBlocks)
       {
          TransferBlock &tBlock = t.second;
          lsum += tBlock.load;
@@ -105,7 +105,7 @@ void LoadBalancer::prepareToSendLoad(const int& nProcessID, const double& transL
             break;
 
          sendBlocks.push_back(tBlock.block);
-         BOOST_FOREACH(BBlocksMap::value_type &bbm, neighboursMap)
+         for(BBlocksMap::value_type &bbm : neighboursMap)
             bbm.second.erase(tBlock.block);
 
          //if(lsum >= transLoad)
@@ -116,7 +116,7 @@ void LoadBalancer::prepareToSendLoad(const int& nProcessID, const double& transL
          boost::archive::text_oarchive oa(ss_out);
          oa.register_type<Block3D>();
 
-         BOOST_FOREACH(Block3DPtr b, sendBlocks)
+         for(Block3DPtr b : sendBlocks)
          {
             oa << b;
          }
@@ -128,7 +128,7 @@ void LoadBalancer::prepareToSendLoad(const int& nProcessID, const double& transL
          sbuf.comFlag = 1;
          sendBuffer.insert(std::make_pair(nProcessID, sbuf));
 
-         BOOST_FOREACH(Block3DPtr b, sendBlocks)
+         for(Block3DPtr b : sendBlocks)
          {
             b->deleteKernel();
             b->setRank(nProcessID);
@@ -155,9 +155,9 @@ void LoadBalancer::prepareToSendLoad(const int& nProcessID, const double& transL
 //////////////////////////////////////////////////////////////////////////
 void LoadBalancer::prepareToRecieveLoad()
 {
-   recieveBuffer.clear();
+   receiveBuffer.clear();
    int conv = 1;
-   BOOST_FOREACH(NeighbourProcess neighbProzess, neighbourProcesses)
+   for(NeighbourProcess neighbProzess : neighbourProcesses)
    {
       if (this->load != neighbProzess.load)
       {
@@ -170,7 +170,7 @@ void LoadBalancer::prepareToRecieveLoad()
                   UBLOG(logINFO,"rank = " << comm->getProcessID() << " : recieve Abweichung =  " << (static_cast<double>(neighbProzess.load)/static_cast<double>(this->load) - 1.0)*100.0);
                conv *= 0;
                TransferBuffer rbuf;
-               recieveBuffer.insert(std::make_pair(neighbProzess.processID, rbuf));
+               receiveBuffer.insert(std::make_pair(neighbProzess.processID, rbuf));
             }
          }
       }
@@ -183,7 +183,7 @@ void LoadBalancer::sendRecieveLoad()
    std::vector<MPI_Request> request;
    request.resize(0);
    int rcount = 0;
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, recieveBuffer)
+   for(TransferBufferMap::value_type &tb : receiveBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &rbuf = tb.second;
@@ -191,7 +191,7 @@ void LoadBalancer::sendRecieveLoad()
       MPI_Irecv(&rbuf.comFlag, 1, MPI_INT, nProcessID, 0, mpi_comm, &request[rcount]);
       rcount++;
    }
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, sendBuffer)
+   for(TransferBufferMap::value_type &tb : sendBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &sbuf = tb.second;
@@ -206,7 +206,7 @@ void LoadBalancer::sendRecieveLoad()
    //////////////////////////////////////////////////////////////////////////
    request.resize(0);
    rcount = 0;
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, recieveBuffer)
+   for(TransferBufferMap::value_type &tb : receiveBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &rbuf = tb.second;
@@ -217,7 +217,7 @@ void LoadBalancer::sendRecieveLoad()
          rcount++;
       }
    }
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, sendBuffer)
+   for(TransferBufferMap::value_type &tb : sendBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &sbuf = tb.second;
@@ -235,7 +235,7 @@ void LoadBalancer::sendRecieveLoad()
    //////////////////////////////////////////////////////////////////////////
    request.resize(0);
    rcount = 0;
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, recieveBuffer)
+   for(TransferBufferMap::value_type &tb : receiveBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &rbuf = tb.second;
@@ -246,7 +246,7 @@ void LoadBalancer::sendRecieveLoad()
          rcount++;
       }
    }
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, sendBuffer)
+   for(TransferBufferMap::value_type &tb : sendBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &sbuf = tb.second;
@@ -264,7 +264,7 @@ void LoadBalancer::sendRecieveLoad()
    //////////////////////////////////////////////////////////////////////////
    request.resize(0);
    rcount = 0;
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, recieveBuffer)
+   for(TransferBufferMap::value_type &tb : receiveBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &rbuf = tb.second;
@@ -276,7 +276,7 @@ void LoadBalancer::sendRecieveLoad()
          rcount++;
       }
    }
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, sendBuffer)
+   for(TransferBufferMap::value_type &tb : sendBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &sbuf = tb.second;
@@ -318,7 +318,7 @@ void LoadBalancer::sendRecieveChanges()
 //////////////////////////////////////////////////////////////////////////
 void LoadBalancer::saveRecievedLoad()
 {
-   BOOST_FOREACH(TransferBufferMap::value_type &tb, recieveBuffer)
+   for(TransferBufferMap::value_type &tb : receiveBuffer)
    {
       int nProcessID = tb.first;
       TransferBuffer &rbuf = tb.second;
@@ -347,7 +347,7 @@ void LoadBalancer::saveRecievedLoad()
 bool LoadBalancer::isConverged()
 {
    int conv = 1;
-   BOOST_FOREACH(int c, converged)
+   for(int c : converged)
       conv *= c;
    
    if(conv)
@@ -382,7 +382,7 @@ void LoadBalancer::collectData()
    {
       std::vector<Block3DPtr> blockVector;
       grid->getBlocks(level, gridRank, true, blockVector);
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          if (block)
          {
@@ -404,7 +404,7 @@ void LoadBalancer::collectData()
             //search for child blocks
             std::vector<Block3DPtr> childBlocks;
             grid->getSubBlocks(block, 1, childBlocks);
-            BOOST_FOREACH(Block3DPtr b, childBlocks)
+            for(Block3DPtr b : childBlocks)
             {
                int childRank = b->getRank();
                if(childRank != blockRank && b->isActive())
@@ -437,7 +437,7 @@ void LoadBalancer::collectNeighboursLoad()
 {
    loadThreshold = 0;
    neighbourProcesses.resize(0);
-   BOOST_FOREACH(BBlocksMap::value_type b,  neighboursMap)
+   for(BBlocksMap::value_type b :  neighboursMap)
    {
       int neighbourProcessID = b.first;
       NeighbourProcess nProc;
@@ -452,7 +452,7 @@ void LoadBalancer::collectNeighboursLoad()
    request.resize(0);
    int rcount = 0;
 
-   BOOST_FOREACH(NeighbourProcess &np, neighbourProcesses)
+   for(NeighbourProcess &np : neighbourProcesses)
    {
       request.push_back(0);
       MPI_Irecv(&np.load, 1, MPI_DOUBLE, np.processID, 0, mpi_comm, &request[rcount]);
@@ -467,7 +467,7 @@ void LoadBalancer::collectNeighboursLoad()
    if(request.size() > 0)
       MPI_Waitall(static_cast<int>(request.size()), &request[0], MPI_STATUSES_IGNORE);
 
-   BOOST_FOREACH(NeighbourProcess &np, neighbourProcesses)
+   for(NeighbourProcess &np : neighbourProcesses)
    {
       loadThreshold += np.load;
       //std::cout<<"rank = " << comm->getProcessID() << " : neighbor process load =  " << np.load <<std::endl;

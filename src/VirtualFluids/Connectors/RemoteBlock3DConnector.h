@@ -62,7 +62,7 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   boost::weak_ptr<Block3D> block; 
+   std::weak_ptr<Block3D> block; 
    VectorTransmitterPtr sender;
    VectorTransmitterPtr receiver;
 };

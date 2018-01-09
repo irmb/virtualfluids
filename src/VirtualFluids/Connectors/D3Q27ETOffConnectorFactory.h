@@ -3,9 +3,9 @@
 //
 //#include "Block3DConnectorFactory.h"
 //
-//#include <boost/shared_ptr.hpp>
+//#include <memory>
 //class D3Q27ETOffConnectorFactory;
-//typedef boost::shared_ptr<D3Q27ETOffConnectorFactory> D3Q27ETOffConnectorFactoryPtr;
+//typedef std::shared_ptr<D3Q27ETOffConnectorFactory> D3Q27ETOffConnectorFactoryPtr;
 //
 //class D3Q27ETOffConnectorFactory : public Block3DConnectorFactory
 //{

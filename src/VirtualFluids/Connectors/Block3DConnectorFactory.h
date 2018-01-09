@@ -3,9 +3,9 @@
 
 #include "ConnectorFactory.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 class Block3DConnectorFactory;
-typedef boost::shared_ptr<Block3DConnectorFactory> Block3DConnectorFactoryPtr;
+typedef std::shared_ptr<Block3DConnectorFactory> Block3DConnectorFactoryPtr;
 
 class Block3DConnectorFactory : public ConnectorFactory
 {

@@ -2,15 +2,21 @@
 #include "D3Q27System.h"
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
+#include "DataSet3D.h"
 #include <math.h>
-#include <omp.h>
+//#include <omp.h>
 
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantLBMKernel::IncompressibleCumulantLBMKernel()
 {
-
+   this->nx1 = 0;
+   this->nx2 = 0;
+   this->nx3 = 0;
+   this->parameter = NORMAL;
+   this->OxyyMxzz = 1.0;
+   this->compressible = false;
 }
 //////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantLBMKernel::IncompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p) 
@@ -37,7 +43,7 @@ void IncompressibleCumulantLBMKernel::init()
 LBMKernelPtr IncompressibleCumulantLBMKernel::clone()
 {
    LBMKernelPtr kernel(new IncompressibleCumulantLBMKernel(nx1, nx2, nx3, parameter));
-   boost::dynamic_pointer_cast<IncompressibleCumulantLBMKernel>(kernel)->init();
+   std::dynamic_pointer_cast<IncompressibleCumulantLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -49,10 +55,10 @@ LBMKernelPtr IncompressibleCumulantLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      boost::dynamic_pointer_cast<IncompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 1.0;
+      std::dynamic_pointer_cast<IncompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 1.0;
    	break;
    case MAGIC:
-      boost::dynamic_pointer_cast<IncompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      std::dynamic_pointer_cast<IncompressibleCumulantLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
       break;
    }
    return kernel;
@@ -94,15 +100,15 @@ void IncompressibleCumulantLBMKernel::collideAll()
    }
    /////////////////////////////////////
 
-   localDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
 
-   const int bcArrayMaxX1 = (int)bcArray.getNX1();
-   const int bcArrayMaxX2 = (int)bcArray.getNX2();
-   const int bcArrayMaxX3 = (int)bcArray.getNX3();
+   const int bcArrayMaxX1 = (int)bcArray->getNX1();
+   const int bcArrayMaxX2 = (int)bcArray->getNX2();
+   const int bcArrayMaxX3 = (int)bcArray->getNX3();
 
    int minX1 = ghostLayerWidth;
    int minX2 = ghostLayerWidth;
@@ -124,7 +130,7 @@ void IncompressibleCumulantLBMKernel::collideAll()
       {
          for(int x1 = minX1; x1 < maxX1; x1++)
          {
-            if(!bcArray.isSolid(x1,x2,x3) && !bcArray.isUndefined(x1,x2,x3))
+            if(!bcArray->isSolid(x1,x2,x3) && !bcArray->isUndefined(x1,x2,x3))
             {
                int x1p = x1 + 1;
                int x2p = x2 + 1;
@@ -906,7 +912,7 @@ void IncompressibleCumulantLBMKernel::collideAll()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-double IncompressibleCumulantLBMKernel::getCallculationTime()
+double IncompressibleCumulantLBMKernel::getCalculationTime()
 {
    //return timer.getDuration();
    return timer.getTotalTime();

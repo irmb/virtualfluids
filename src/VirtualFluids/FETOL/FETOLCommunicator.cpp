@@ -5,7 +5,7 @@
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbException.h>
 
-#include <boost/foreach.hpp>
+
 
 #include <fbond.h>
 #include <Version.h>

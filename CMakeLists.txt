@@ -24,7 +24,7 @@ endif()
 
 
 if(APPLE)
-   set(CMAKE_CXX_FLAGS -std=c++11)
+  set(CMAKE_CXX_STANDARD 11)
 endif()
 
 #############################################################
@@ -46,7 +46,11 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 ###                   PROJECT SETTINGS                    ###
 #############################################################
 project(HULC)
-enable_language(CUDA)
+
+option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
+if(HULC.BUILD_GPU_CODE)
+  enable_language(CUDA)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -60,7 +64,6 @@ set(testFolder "tests")
 set(appFolder "apps")
 set(thirdPartyFolder "3rdParty")
 
-
 IF(MSVC)
    ADD_DEFINITIONS ( "-DNOMINMAX" )                # Disable Min/Max-Macros
    ADD_DEFINITIONS ( "-D_CRT_SECURE_NO_WARNINGS" ) # disable warnings promoting Microsoft's security enhanced CRT
@@ -70,37 +73,78 @@ IF(MSVC)
 ENDIF(MSVC)
 
 #############################################################
+###                  Virtual Fluids                       ###
+#############################################################
+option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
+IF (HULC.BUILD_VirtualFluids)
+  add_definitions(-DVF_METIS)
+  add_definitions(-DVF_MPI)
+  
+  add_subdirectory(3rdParty/MuParser)
+  add_subdirectory(3rdParty/metis/metis-5.1.0)
+  add_subdirectory(targets/libs/VirtualFluids)
+ELSE()
+  MESSAGE( STATUS "exclude Virtual Fluids." )
+ENDIF()
+
+
+#############################################################
+###                dem_coupling                           ###
+#############################################################
+option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
+IF (HULC.BUILD_dem_coupling AND HULC.BUILD_VirtualFluids)
+  link_directories("${PE_BINARY_DIR}/src/pe" "${PE_BINARY_DIR}/src/core" "${PE_BINARY_DIR}/src/blockforest" "${PE_BINARY_DIR}/src/domain_decomposition" )
+IF(MSVC)
+   SET( CMAKE_CXX_FLAGS "/FI ${PE_BINARY_DIR}/src/pe/extern/libccd/ccd/config.h ${CMAKE_CXX_FLAGS}" )
+ELSE(MSVC)
+   SET( CMAKE_CXX_FLAGS "-include ${PE_BINARY_DIR}/src/pe/extern/libccd/ccd/config.h ${CMAKE_CXX_FLAGS}" )
+ENDIF(MSVC)
+   
+   add_subdirectory(targets/libs/dem_coupling)
+ELSE()
+  MESSAGE(STATUS "exclude dem-coupling." )
+ENDIF()
+
+#############################################################
+###                  Virtual Fluids GPU                   ###
+#############################################################
+IF (HULC.BUILD_GPU_CODE)
+ add_subdirectory(targets/libs/VirtualFluids_GPU)
+ add_subdirectory(targets/libs/GridGenerator)
+ add_subdirectory(3rdParty/metis/metis-5.1.0)
+ELSE()
+  MESSAGE( STATUS "exclude Virtual Fluids GPU." )
+ENDIF()
+
+#############################################################
 ###                     JSONCPP                           ###
 #############################################################
-option(HULC.BUILD_JSONCPP "Builds json cpp " OFF)
+option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
 IF (NOT HULC.BUILD_JSONCPP)
    MESSAGE( STATUS "Build Input Project without JsonCpp." )
 ELSE()
    add_subdirectory(3rdParty/jsoncpp)
-   add_definitions(BUILD_JSONCPP)
+   add_definitions(-DBUILD_JSONCPP)
 ENDIF()
 
 #############################################################
 ###                   SUBDIRECTORIES                      ###
 #############################################################
 
-#add_subdirectory(3rdParty/MuParser)
-#add_subdirectory(3rdParty/metis/metis-5.1.0)
-
-
 add_subdirectory(targets/apps/HULC)
+add_subdirectory(targets/libs/VirtualFluidsBasics)
 
-#add_subdirectory(targets/libs/VirtualFluids)
-#add_subdirectory(targets/libs/VirtualFluidsBasics)
-add_subdirectory(targets/libs/VirtualFluids_GPU)
-#add_subdirectory(targets/libs/GridGenerator)
-
-
-set(BUILD_TESTS OFF CACHE BOOL "Build shared libraries")
+set(BUILD_TESTS ON CACHE BOOL "Build shared libraries")
 if(BUILD_TESTS)
   add_subdirectory(3rdParty/googletest)
+  if (HULC.BUILD_GPU_CODE)
   add_subdirectory(targets/tests/GridGeneratorTest)
-  #add_subdirectory(targets/tests/VirtualFluidsTest)
+  endif()
+  
+  if (HULC.BUILD_VirtualFluids)
+  add_subdirectory(targets/tests/VirtualFluidsTest)
+  endif()
+  
   add_subdirectory(targets/tests/VirtualFluidsBasicsTest)
 endif()
 

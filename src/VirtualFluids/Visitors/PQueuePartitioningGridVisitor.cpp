@@ -1,9 +1,12 @@
 #include "PQueuePartitioningGridVisitor.h"
-#include "PriorityQueueDecompositor.h"
-#include <vector>
-#include <boost/foreach.hpp>
 
-using namespace std;
+#include <vector>
+
+#include "PriorityQueueDecompositor.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "UbLogger.h"
+
 
 PQueuePartitioningGridVisitor::PQueuePartitioningGridVisitor(int numOfParts) : numOfParts(numOfParts)
 {
@@ -13,9 +16,9 @@ PQueuePartitioningGridVisitor::PQueuePartitioningGridVisitor(int numOfParts) : n
 void PQueuePartitioningGridVisitor::visit(Grid3DPtr grid)
 {
    UBLOG(logDEBUG5, "PQueuePartitioningGridVisitor::visit() - start");
-   vector<Block3DPtr> blocks;
-   vector<int> weights;
-   vector< vector <Block3DPtr> > parts;
+   std::vector<Block3DPtr> blocks;
+   std::vector<int> weights;
+   std::vector< std::vector <Block3DPtr> > parts;
    int gridRank = grid->getRank();
 
    int minInitLevel = grid->getCoarsestInitializedLevel();
@@ -23,9 +26,9 @@ void PQueuePartitioningGridVisitor::visit(Grid3DPtr grid)
 
    for(int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      vector<Block3DPtr> blockVector;
+       std::vector<Block3DPtr> blockVector;
       grid->getBlocks(level, gridRank, true, blockVector);
-      BOOST_FOREACH(Block3DPtr block, blockVector)
+      for(Block3DPtr block : blockVector)
       {
          if (block)
          {
@@ -38,9 +41,9 @@ void PQueuePartitioningGridVisitor::visit(Grid3DPtr grid)
    dec.getDecomposition(parts);
 
    int i = 0;
-   BOOST_FOREACH(vector<Block3DPtr> p, parts)
+   for(std::vector<Block3DPtr> p : parts)
    {
-      BOOST_FOREACH(Block3DPtr block, p)
+      for(Block3DPtr block : p)
       {
          block->setPart(i);
       }

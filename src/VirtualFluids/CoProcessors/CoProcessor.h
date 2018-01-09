@@ -1,56 +1,33 @@
 #ifndef CoProcessor_H
 #define CoProcessor_H
 
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+
 #include <boost/serialization/serialization.hpp>
 
-#include <Grid/Grid3D.h>
-#include <basics/utilities/UbScheduler.h>
+#include "Grid3D.h"
+
+class UbScheduler;
 
 class CoProcessor;
-typedef boost::shared_ptr<CoProcessor> CoProcessorPtr;
+typedef std::shared_ptr<CoProcessor> CoProcessorPtr;
 
 class CoProcessor
 {
 public:
-   CoProcessor()
-   {
-
-   }
-
-   CoProcessor(Grid3DPtr grid, UbSchedulerPtr s)
-      : grid(grid)
-      , scheduler(s)
-   {
-      connection = grid->connect(boost::bind(&CoProcessor::process, this, _1));
-   }
-
-   virtual ~CoProcessor()
-   {
-      grid->disconnect(connection);
-   }
+    CoProcessor();
+    CoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s);
+    virtual ~CoProcessor();
 
    virtual void process(double step) = 0;
 
-   virtual void disconnect()
-   {
-      grid->disconnect(connection);
-   }
-
-   virtual void reconnect(Grid3DPtr grid)
-   {
-      this->grid = grid;
-      this->grid->disconnect(connection);
-      connection = this->grid->connect(boost::bind(&CoProcessor::process, this, _1));
-   }
+   virtual void disconnect();
+   virtual void reconnect(std::shared_ptr<Grid3D> grid);
 
 protected:
-   Grid3DPtr grid;
-   UbSchedulerPtr scheduler;
+   std::shared_ptr<Grid3D> grid;
+   std::shared_ptr<UbScheduler> scheduler;
    Grid3D::connection_t connection;
-private:
-   
 
 private:
    friend class boost::serialization::access;

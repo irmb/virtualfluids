@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 class CompressibleOffsetMomentsInterpolationProcessor;
-typedef boost::shared_ptr<CompressibleOffsetMomentsInterpolationProcessor> CompressibleOffsetMomentsInterpolationProcessorPtr;
+typedef std::shared_ptr<CompressibleOffsetMomentsInterpolationProcessor> CompressibleOffsetMomentsInterpolationProcessorPtr;
 
 class CompressibleOffsetMomentsInterpolationProcessor : public InterpolationProcessor
 {

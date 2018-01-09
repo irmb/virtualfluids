@@ -1,8 +1,6 @@
-include(${CMAKE_CURRENT_LIST_DIR}/FindJsonCpp.cmake)
-
 macro(linkJsonCpp targetName)
 
-	include_directories(${JSONCPP_INCLUDE_DIRS})
-	target_link_libraries(${targetName} ${JSONCPP_LIBRARIES})
+	target_include_directories(${targetName} PUBLIC ${JSONCPP_ROOT}/include)
+	target_link_libraries(${targetName} jsoncpp)
 
 endmacro(linkJsonCpp)

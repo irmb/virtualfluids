@@ -14,7 +14,7 @@ class FETOLSetConnectorsBlockVisitor : public Block3DVisitor
 public:
    FETOLSetConnectorsBlockVisitor(CommunicatorPtr comm, bool fullConnector, int dirs, LBMReal nue, D3Q27InterpolationProcessorPtr iProcessor);
    virtual ~FETOLSetConnectorsBlockVisitor();
-   void visit(Grid3DPtr grid, Block3DPtr block);
+      void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
    //////////////////////////////////////////////////////////////////////////
 protected:
    void setSameLevelConnectors(Grid3DPtr grid, Block3DPtr block);

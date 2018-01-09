@@ -1,5 +1,5 @@
-#ifndef _MPIIORestartCoProcessor_H_
-#define _MPIIORestartCoProcessor_H_
+#ifndef _MPIIORestart11CoProcessor_H_
+#define _MPIIORestart11CoProcessor_H_
 
 #include "mpi.h"
 
@@ -7,14 +7,17 @@
 #include "Communicator.h"
 #include "WbWriter.h"
 
-#include <boost/shared_ptr.hpp>
 
-class MPIIORestartCoProcessor;
-typedef boost::shared_ptr<MPIIORestartCoProcessor> MPIIORestartCoProcessorPtr;
+#include "UbScheduler.h"
+#include "LBMKernel.h"
+#include "BCProcessor.h"
+
+class MPIIORestart11CoProcessor;
+typedef std::shared_ptr<MPIIORestart11CoProcessor> MPIIORestart11CoProcessorPtr;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
-class MPIIORestartCoProcessor: public CoProcessor
+class MPIIORestart11CoProcessor: public CoProcessor
 {
    //! \struct GridParam
    //! \brief Structure describes parameters of the grid
@@ -36,27 +39,12 @@ class MPIIORestartCoProcessor: public CoProcessor
       bool transformation;
     };
 
-   //! \struct blockParam
-   //! \brief Structure describes parameters of the block that are equal in all blocks
-   //! \details The structure used to store some parameters needed to restore dataSet arrays
-   struct BlockParam
-    {
-       int nx1;   //	to find the right block
-       int nx2;
-       int nx3;
-       int nx[9][4]; // 9 arrays x (nx1, nx2, nx3, nx4)
-       int doubleCountInBlock;   // how many double-values are in all arrays dataSet in one (any) block
-       int bcindexmatrix_count;	// how many bcindexmatrix-values are in one (any) block 
-    };
-
    //! \struct Block3d
    //! \brief Structure contains information of the block
    //! \details The structure is used to write the data describing the block in the grid when saving the grid 
    //! and to read it when restoring the grid
    struct Block3d
 	{
-		//double collFactor;
-		//double deltaT;
 		int x1;
 		int x2;
 		int x3;
@@ -70,11 +58,20 @@ class MPIIORestartCoProcessor: public CoProcessor
 		int interpolationFlagCF;
 		int interpolationFlagFC;
 		int counter;
-		//int ghostLayerWidth;
 		bool active;
-		//bool compressible;
-		//bool withForcing;
 	};
+
+   //! \struct dataSetParam
+   //! \brief Structure describes parameters of the dataSet that are equal in all blocks
+   //! \details The structure used to store some parameters needed to restore dataSet arrays
+   struct dataSetParam
+   {
+      int nx1;   //	to find the right block
+      int nx2;
+      int nx3;
+      int nx[9][4]; // 9 arrays x (nx1, nx2, nx3, nx4)
+      int doubleCountInBlock;   // how many double-values are in all arrays dataSet in one (any) block
+   };
 
    //! \struct dataSet
    //! \brief Structure containes information identifying the block 
@@ -121,6 +118,17 @@ class MPIIORestartCoProcessor: public CoProcessor
       char algorithmType;
    };
 
+   //! \struct boundCondParam
+   //! \brief Structure describes parameters of the boundaryConditions that are equal in all blocks
+   //! \details The structure used to store some parameters needed to restore boundaryConditions arrays
+   struct boundCondParam
+   {
+      int nx1;
+      int nx2;
+      int nx3;
+      int bcindexmatrixCount;	// how many bcindexmatrix-values in one (any) block 
+   };
+   
    //! \struct BCAdd
    //! \brief Structure containes information identifying the block 
    //! and some parameters of the arrays of boundary conditions that are equal in all blocks
@@ -137,8 +145,8 @@ class MPIIORestartCoProcessor: public CoProcessor
    };
 
 public:
-   MPIIORestartCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, CommunicatorPtr comm);
-   virtual ~MPIIORestartCoProcessor();
+   MPIIORestart11CoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, CommunicatorPtr comm);
+   virtual ~MPIIORestart11CoProcessor();
    //! Each timestep writes the grid into the files
    void process(double step);
    //! Reads the grid from the files before grid reconstruction
@@ -155,6 +163,14 @@ public:
    void readDataSet(int step);
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
    void readBoundaryConds(int step);
+   //! The function sets number of ranks that read simultaneously 
+   void setChunk(int val);
+   //! The function sets LBMKernel
+   void setLBMKernel(LBMKernelPtr kernel);
+   //!The function sets BCProcessor
+   void setBCProcessor(BCProcessorPtr bcProcessor);
+   //!The function truncates the data files
+   void clearAllFiles(int step);
 
 protected:
    std::string path;
@@ -162,8 +178,18 @@ protected:
    bool mpiTypeFreeFlag;
 
 private:
-	MPI_Datatype gridParamType, blockParamType, block3dType, dataSetType, dataSetDoubleType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
-   BlockParam blockParamStr;
+	MPI_Datatype gridParamType, block3dType, dataSetParamType, dataSetType, dataSetDoubleType, boundCondParamType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
+   dataSetParam dataSetParamStr;
+   boundCondParam boundCondParamStr;
+   int chunk;
+   LBMKernelPtr lbmKernel;
+   BCProcessorPtr bcProcessor;
+
+   /*DataSet dataSetArrayGW[128];
+   std::vector<double> doubleValuesArrayGW;
+   std::vector<BoundaryCondition> bcVectorGW;
+   std::vector<int> bcindexmatrixVGW;
+   std::vector<int> indexContainerVGW;*/
 
 };
 

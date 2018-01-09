@@ -1,13 +1,17 @@
 #include "AverageValuesCoProcessor.h"
+
 #include "LBMKernel.h"
 #include "BCProcessor.h"
-#include <vector>
-#include <sstream>
-#include <string>
-#include <iostream>
-#include <boost/foreach.hpp>
+
 #include "basics/writer/WbWriterVtkXmlASCII.h"
-#include "basics/utilities/UbMath.h"
+
+#include "DataSet3D.h"
+#include "WbWriter.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "UbScheduler.h"
+#include "Communicator.h"
+#include "BCArray3D.h"
 
 using namespace std;
 
@@ -44,7 +48,7 @@ AverageValuesCoProcessor::AverageValuesCoProcessor(Grid3DPtr grid, const std::st
 
       if (!restart)
       {
-         BOOST_FOREACH(Block3DPtr block, blockVector[level])
+         for(Block3DPtr block : blockVector[level])
          {
             UbTupleInt3 nx = grid->getBlockNX();
             AverageValuesArray3DPtr averageValues = AverageValuesArray3DPtr(new AverageValuesArray3D(11, val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 0.0));
@@ -87,12 +91,12 @@ void AverageValuesCoProcessor::resetDataRMS(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		BOOST_FOREACH(Block3DPtr block, blockVector[level])
+		for(Block3DPtr block : blockVector[level])
 		{
 			if (block)
 			{
-				LBMKernelPtr kernel = block->getKernel();
-				BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+				ILBMKernelPtr kernel = block->getKernel();
+				BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 
@@ -110,7 +114,7 @@ void AverageValuesCoProcessor::resetDataRMS(double step)
 					{
 						for(int ix1=minX1; ix1<maxX1-1; ix1++)
 						{
-							if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+							if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
 							{
 								//////////////////////////////////////////////////////////////////////////
 								//compute average values
@@ -138,12 +142,12 @@ void AverageValuesCoProcessor::resetDataMeans(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		BOOST_FOREACH(Block3DPtr block, blockVector[level])
+		for(Block3DPtr block : blockVector[level])
 		{
 			if (block)
 			{
-				LBMKernelPtr kernel = block->getKernel();
-				BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+				ILBMKernelPtr kernel = block->getKernel();
+				BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 
@@ -161,7 +165,7 @@ void AverageValuesCoProcessor::resetDataMeans(double step)
 					{
 						for(int ix1=minX1; ix1<maxX1-1; ix1++)
 						{
-							if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+							if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
 							{
 								//////////////////////////////////////////////////////////////////////////
 								//compute average values
@@ -186,7 +190,7 @@ void AverageValuesCoProcessor::collectData(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		BOOST_FOREACH(Block3DPtr block, blockVector[level])
+		for(Block3DPtr block : blockVector[level])
 		{
 			if (block)
 			{
@@ -263,8 +267,8 @@ void AverageValuesCoProcessor::addData(const Block3DPtr block)
 
 	data.resize(datanames.size());
 
-	LBMKernelPtr kernel = block->getKernel();
-	BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+	ILBMKernelPtr kernel = block->getKernel();
+	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 	AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 	//int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -297,7 +301,7 @@ void AverageValuesCoProcessor::addData(const Block3DPtr block)
 		{
 			for(int ix1=minX1; ix1<=maxX1; ix1++)
 			{
-				if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+				if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
 				{
 					int index = 0;
 					nodeNumbers(ix1,ix2,ix3) = nr++;
@@ -386,12 +390,12 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		BOOST_FOREACH(Block3DPtr block, blockVector[level])
+		for(Block3DPtr block : blockVector[level])
 		{
 			if (block)
 			{
-				LBMKernelPtr kernel = block->getKernel();
-				BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+				ILBMKernelPtr kernel = block->getKernel();
+				BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
 				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
 				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
 
@@ -413,7 +417,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 					{
 						for(int ix1=minX1; ix1<=maxX1; ix1++)
 						{
-							if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+							if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
 							{
 								//////////////////////////////////////////////////////////////////////////
 								//read distribution

@@ -2,22 +2,26 @@
 #define RefineInterGbObjectsVisirtor_H
 
 #include <vector>
+#include <memory>
 
 #include "Block3DVisitor.h"
-#include <numerics/geometry3d/GbObject3D.h>
+
+class Grid3D;
+class Block3D;
+class GbObject3D;
 
 //////////////////////////////////////////////////////////////////////////
 class RefineInterGbObjectsBlockVisitor : public Block3DVisitor
 {
 public:
    RefineInterGbObjectsBlockVisitor();
-   RefineInterGbObjectsBlockVisitor(GbObject3DPtr includeGbObject3D, GbObject3DPtr excludeGbObject3D, int startlevel, int stoplevel);
-   RefineInterGbObjectsBlockVisitor(std::vector<GbObject3DPtr> includeGbObjects3D, std::vector<GbObject3DPtr> excludeGbObjects3D, int startlevel, int stoplevel);
-   void visit(Grid3DPtr grid, Block3DPtr block);
+   RefineInterGbObjectsBlockVisitor(std::shared_ptr<GbObject3D> includeGbObject3D, std::shared_ptr<GbObject3D> excludeGbObject3D, int startlevel, int stoplevel);
+   RefineInterGbObjectsBlockVisitor(std::vector<std::shared_ptr<GbObject3D> > includeGbObjects3D, std::vector<std::shared_ptr<GbObject3D> > excludeGbObjects3D, int startlevel, int stoplevel);
+   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 private:
-   std::vector<GbObject3DPtr> includeGbObjects3D;
-   std::vector<GbObject3DPtr> excludeGbObjects3D;
+   std::vector<std::shared_ptr<GbObject3D> > includeGbObjects3D;
+   std::vector<std::shared_ptr<GbObject3D> > excludeGbObjects3D;
 };
 
 #endif //RefineInterGbObjectsVisirtor_H

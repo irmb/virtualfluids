@@ -1,12 +1,11 @@
 #ifndef DistributionArray3D_H
 #define DistributionArray3D_H
 
-#include <LBM/LBMSystem.h>
+#include <LBMSystem.h>
 #include <boost/serialization/serialization.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
 
 class DistributionArray3D;
-typedef boost::shared_ptr<DistributionArray3D> DistributionArray3DPtr;
+typedef std::shared_ptr<DistributionArray3D> DistributionArray3DPtr;
 
 class DistributionArray3D
 {

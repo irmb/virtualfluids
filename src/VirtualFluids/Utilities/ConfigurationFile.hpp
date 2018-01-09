@@ -206,7 +206,7 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
    std::vector<T> v;
    std::vector<std::string> strings;
    boost::algorithm::split(strings, str, boost::algorithm::is_any_of("\t\n\r;, "));
-   BOOST_FOREACH(std::string s, strings)
+   for(std::string s : strings)
    {
       if (s != "")
       {

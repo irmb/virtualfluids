@@ -3,10 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
 class Communicator;
-typedef boost::shared_ptr<Communicator> CommunicatorPtr;
+typedef std::shared_ptr<Communicator> CommunicatorPtr;
 
 class Communicator
 {

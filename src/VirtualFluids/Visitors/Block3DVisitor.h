@@ -1,12 +1,13 @@
 #ifndef Block3DVisitor_h
 #define Block3DVisitor_h
 
-#include <boost/shared_ptr.hpp>
-class Block3DVisitor;
-typedef boost::shared_ptr<Block3DVisitor> Block3DVisitorPtr;
+#include <memory>
 
-#include "Grid3D.h"
-#include "Block3D.h"
+class Block3DVisitor;
+typedef std::shared_ptr<Block3DVisitor> Block3DVisitorPtr;
+
+class Block3D;
+class Grid3D;
 
 class Block3DVisitor
 {
@@ -23,7 +24,7 @@ public:
    {
    }
 	
-   virtual void visit(Grid3DPtr grid, Block3DPtr block)=0;
+   virtual void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) = 0;
    
    int  getStartLevel() const; 
    int  getStopLevel() const;

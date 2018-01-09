@@ -2,6 +2,8 @@
 
 #include "ThinWallNoSlipBCAlgorithm.h"
 
+#include "LBMKernel.h"
+
 ThinWallBCProcessor::ThinWallBCProcessor()
 {
 
@@ -27,13 +29,13 @@ void ThinWallBCProcessor::applyPostCollisionBC()
 {
    BCProcessor::applyPostCollisionBC();
 
-   BOOST_FOREACH(BCAlgorithmPtr bc, postBC)
+   for(BCAlgorithmPtr bc : postBC)
    {
       if (bc->getType() == BCAlgorithm::ThinWallNoSlipBCAlgorithm)
       {
-         boost::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(2); 
-         bc->apply();
-         boost::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(1);
+         std::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(2); 
+         bc->applyBC();
+         std::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(1);
       }
    }
 }

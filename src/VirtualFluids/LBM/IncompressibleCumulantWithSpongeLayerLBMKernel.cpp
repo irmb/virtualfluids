@@ -2,6 +2,8 @@
 #include "D3Q27System.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
+#include "DataSet3D.h"
+#include "BCArray3D.h"
 
 #define PROOF_CORRECTNESS
 
@@ -50,11 +52,11 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
 
    LBMReal spongeFactor;
 
-   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
 
-   const int bcArrayMaxX1 = (int)bcArray.getNX1();
-   const int bcArrayMaxX2 = (int)bcArray.getNX2();
-   const int bcArrayMaxX3 = (int)bcArray.getNX3();
+   const int bcArrayMaxX1 = (int)bcArray->getNX1();
+   const int bcArrayMaxX2 = (int)bcArray->getNX2();
+   const int bcArrayMaxX3 = (int)bcArray->getNX3();
 
    int minX1 = 0;
    int minX2 = 0;
@@ -122,7 +124,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
 LBMKernelPtr IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
 {
    LBMKernelPtr kernel(new IncompressibleCumulantWithSpongeLayerLBMKernel(nx1, nx2, nx3, parameter));
-   boost::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->init();
+   std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -134,16 +136,16 @@ LBMKernelPtr IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      boost::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 1.0;
+      std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 1.0;
       break;
    case MAGIC:
-      boost::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
       break;
    }
 
    kernel->setWithSpongeLayer(withSpongeLayer);
    if(withSpongeLayer) kernel->setSpongeLayer(muSpongeLayer);
-   boost::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->initRelaxFactor(direction, L1, dx, SP);
+   std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->initRelaxFactor(direction, L1, dx, SP);
    return kernel;
 }  
 //////////////////////////////////////////////////////////////////////////
@@ -195,16 +197,16 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
    //}
    /////////////////////////////////////
 
-   localDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = boost::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   BCArray3D& bcArray = this->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
    RelaxationFactorArray3DPtr relaxationFactorPtr = dataSet->getRelaxationFactor();
 
-   const int bcArrayMaxX1 = (int)bcArray.getNX1();
-   const int bcArrayMaxX2 = (int)bcArray.getNX2();
-   const int bcArrayMaxX3 = (int)bcArray.getNX3();
+   const int bcArrayMaxX1 = (int)bcArray->getNX1();
+   const int bcArrayMaxX2 = (int)bcArray->getNX2();
+   const int bcArrayMaxX3 = (int)bcArray->getNX3();
 
    int minX1 = ghostLayerWidth;
    int minX2 = ghostLayerWidth;
@@ -222,7 +224,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
       {
          for(int x1 = minX1; x1 <= maxX1; x1++)
          {
-            if(!bcArray.isSolid(x1,x2,x3) && !bcArray.isUndefined(x1,x2,x3))
+            if(!bcArray->isSolid(x1,x2,x3) && !bcArray->isUndefined(x1,x2,x3))
             {
                int x1p = x1 + 1;
                int x2p = x2 + 1;

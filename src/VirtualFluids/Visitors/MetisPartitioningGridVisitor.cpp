@@ -2,7 +2,9 @@
 
 #include "MetisPartitioningGridVisitor.h"
 #include <math.h>
-#include <boost/foreach.hpp>
+#include "Block3D.h"
+#include "Grid3D.h"
+#include "Communicator.h"
 
 using namespace std;
 
@@ -131,7 +133,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
     const int edgeWeightChildFactor = 8;
     int n = 0;
 
-    BOOST_FOREACH(Grid3D::BlockIDMap::value_type b,  grid->getBlockIDs())
+    for(Grid3D::BlockIDMap::value_type b :  grid->getBlockIDs())
     { 
         Block3DPtr block = b.second;
         if (this->getPartitionCondition(block, level))
@@ -144,7 +146,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
 
     MetisPartitioner metis;
 
-    BOOST_FOREACH(Grid3D::BlockIDMap::value_type b,  grid->getBlockIDs())
+    for(Grid3D::BlockIDMap::value_type b :  grid->getBlockIDs())
     { 
         const Block3DPtr block = b.second;
         if (this->getPartitionCondition(block, level))
@@ -168,7 +170,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
             }
             vector<Block3DPtr> subBlocks;
             grid->getSubBlocks(block, 1, subBlocks);
-            BOOST_FOREACH(Block3DPtr subBlock, subBlocks)
+            for(Block3DPtr subBlock : subBlocks)
             {
                 if (subBlock)
                 {
@@ -204,7 +206,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int
         grid->getBlocks(l, blockVector);
         vector<Block3DPtr> tBlockID;
 
-        BOOST_FOREACH(Block3DPtr block, blockVector)
+        for(Block3DPtr block : blockVector)
         { 
             if (this->getPartitionCondition(block, level))
             {
@@ -226,7 +228,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int
         int edges = 0;
         const int edgeWeight= 1;
 
-        BOOST_FOREACH(Block3DPtr block, tBlockID)
+        for(Block3DPtr block : tBlockID)
         {
             metis.xadj.push_back(edges);
             metis.vwgt.push_back(vertexWeight);
@@ -257,7 +259,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int
         }
         metis.partition(tnofSegments, partType);
 
-        BOOST_FOREACH(idx_t p, metis.part)
+        for(idx_t p : metis.part)
         {
             parts.push_back(p);
         }

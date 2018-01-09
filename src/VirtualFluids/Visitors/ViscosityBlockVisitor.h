@@ -1,9 +1,13 @@
 #ifndef ViscosityBlockVisitor_h
 #define ViscosityBlockVisitor_h
 
-#include "Block3DVisitor.h"
-#include "LBMKernel.h"
+#include <memory>
 
+#include "Block3DVisitor.h"
+#include "LBMSystem.h"
+
+class Grid3D;
+class Block3D;
 
 class ViscosityBlockVisitor : public Block3DVisitor
 {
@@ -12,7 +16,7 @@ public:
 
    virtual ~ViscosityBlockVisitor() {}
 
-   virtual void visit(Grid3DPtr grid, Block3DPtr block);
+   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 private:
    LBMReal nu;

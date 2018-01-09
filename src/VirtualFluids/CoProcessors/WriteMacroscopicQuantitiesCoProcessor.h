@@ -1,32 +1,41 @@
 #ifndef D3Q27MACROSCOPICQUANTITIESCoProcessor_H
 #define D3Q27MACROSCOPICQUANTITIESCoProcessor_H
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "CoProcessor.h"
-#include "Grid3D.h"
-#include "Block3D.h"
-#include "LBMUnitConverter.h"
-#include "Communicator.h"
-#include "WbWriter.h"
 
-#include <boost/shared_ptr.hpp>
+#include "LBMSystem.h"
+
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class LBMUnitConverter;
+class WbWriter;
+class Block3D;
+
 class WriteMacroscopicQuantitiesCoProcessor;
-typedef boost::shared_ptr<WriteMacroscopicQuantitiesCoProcessor> MacroscopicQuantitiesCoProcessorPtr;
+typedef std::shared_ptr<WriteMacroscopicQuantitiesCoProcessor> MacroscopicQuantitiesCoProcessorPtr;
 
-class WriteMacroscopicQuantitiesCoProcessor : public  CoProcessor 
+class WriteMacroscopicQuantitiesCoProcessor : public CoProcessor 
 {
 public:
    WriteMacroscopicQuantitiesCoProcessor();
-   WriteMacroscopicQuantitiesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, 
+   WriteMacroscopicQuantitiesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
                                            const std::string& path, WbWriter* const writer, 
-                                           LBMUnitConverterPtr conv,  
-                                           CommunicatorPtr comm);
+                                           std::shared_ptr<LBMUnitConverter> conv, std::shared_ptr<Communicator> comm);
    ~WriteMacroscopicQuantitiesCoProcessor(){}
-   void process(double step);
+
+   void process(double step) override;
+
 protected:
    void collectData(double step);
-   void addDataMQ(Block3DPtr block);
-   void addDataGeo(Block3DPtr block);
+   void addDataMQ(std::shared_ptr<Block3D> block);
+   void addDataGeo(std::shared_ptr<Block3D> block);
    void clearData();
+
 private:
    void init();
    std::vector<UbTupleFloat3> nodes;
@@ -35,13 +44,16 @@ private:
    std::vector<std::vector<double> > data; 
    std::string path;
    WbWriter* writer;
-   LBMUnitConverterPtr conv;
+   std::shared_ptr<LBMUnitConverter> conv;
    bool bcInformation;
-   std::vector<std::vector<Block3DPtr> > blockVector;
+   std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator> comm;
+
+   typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
+   CalcMacrosFct calcMacros;
 
    //friend class boost::serialization::access;
    //template<class Archive>
@@ -57,4 +69,5 @@ private:
    //   ar & writer;
    //}
 };
+
 #endif

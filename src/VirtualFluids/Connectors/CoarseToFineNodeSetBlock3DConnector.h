@@ -21,8 +21,8 @@
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include "Grid3D.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+
 
 class Block3D;
 

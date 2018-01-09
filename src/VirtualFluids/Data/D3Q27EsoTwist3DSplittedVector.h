@@ -2,7 +2,7 @@
 #define D3Q27EsoTwist3DSplittedVector_h
 
 #include "EsoTwist3D.h"
-#include "LBM/D3Q27System.h"
+#include "D3Q27System.h"
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 #include <boost/serialization/serialization.hpp>
@@ -63,8 +63,11 @@ protected:
    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
    size_t NX1, NX2, NX3;
 
-   friend class MPIIORestartCoProcessor;
+   friend class MPIIORestart1CoProcessor;
    friend class MPIIORestart2CoProcessor;
+   friend class MPIIORestart11CoProcessor;
+   friend class MPIIORestart21CoProcessor;
+
 
    friend class boost::serialization::access;
    template<class Archive>

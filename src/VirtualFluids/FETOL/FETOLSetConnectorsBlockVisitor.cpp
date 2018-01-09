@@ -21,7 +21,7 @@ FETOLSetConnectorsBlockVisitor::FETOLSetConnectorsBlockVisitor(CommunicatorPtr c
                                                                nue(nue),
                                                                iProcessor(iProcessor)
 {
-   this->comm = boost::dynamic_pointer_cast<FETOLCommunicator>(comm);
+   this->comm = std::dynamic_pointer_cast<FETOLCommunicator>(comm);
    gridBundle = this->comm->getBundleID();
    gridRank = comm->getProcessID();
    UBLOG(logDEBUG5, "D3Q27BondSetConnectorsBlockVisitor: gridBundle = "<<gridBundle<<" gridRank = "<<gridRank);

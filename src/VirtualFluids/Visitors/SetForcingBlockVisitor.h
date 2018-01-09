@@ -4,6 +4,9 @@
 #include "Block3DVisitor.h"
 #include "LBMKernel.h"
 
+class Block3D;
+class Grid3D;
+
 //! \brief Set forcing for all kernels of grid
 //! \details This visitor is useful if you need to set or reset forcing in kernels (e.g. after restart because forcing is not serializable). 
 //! \author K. Kucher
@@ -18,7 +21,7 @@ public:
 
    virtual ~SetForcingBlockVisitor() {}
 
-   virtual void visit(Grid3DPtr grid, Block3DPtr block);
+   virtual void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 private:
    int ftype;

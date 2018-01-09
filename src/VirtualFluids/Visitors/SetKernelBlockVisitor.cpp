@@ -1,6 +1,11 @@
 #include "SetKernelBlockVisitor.h"
 #include "Grid3DSystem.h"
 #include "LBMSystem.h"
+#include "DataSet3D.h"
+#include "BCProcessor.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "LBMKernel.h"
 
 //SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue) : 
 //                        Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue)

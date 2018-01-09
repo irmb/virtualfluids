@@ -1,5 +1,7 @@
 #include "CheckRatioBlockVisitor.h"
 #include "Grid3DSystem.h"
+#include "Block3D.h"
+#include "Grid3D.h"
 
 CheckRatioBlockVisitor::CheckRatioBlockVisitor(int levelDepth/*shut be maxGridLevel*/, bool includeNotActiveBlocks)
    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)

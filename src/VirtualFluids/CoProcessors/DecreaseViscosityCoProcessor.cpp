@@ -6,12 +6,14 @@
 */
 
 #include "DecreaseViscosityCoProcessor.h"
-#include <boost/foreach.hpp>
 
-#include <iostream>
-#include <fstream>
+#include <vector>
 
-using namespace std;
+#include "LBMKernel.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
+#include "Block3D.h"
 
 DecreaseViscosityCoProcessor::DecreaseViscosityCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                                                mu::Parser* nueFunc, CommunicatorPtr comm)
@@ -49,11 +51,11 @@ void DecreaseViscosityCoProcessor::setViscosity(double step)
 
       for(int level = minInitLevel; level<=maxInitLevel;level++)
       {
-         vector<Block3DPtr> blockVector;
+         std::vector<Block3DPtr> blockVector;
          grid->getBlocks(level, gridRank, blockVector);
-         BOOST_FOREACH(Block3DPtr block, blockVector)
+         for(Block3DPtr block : blockVector)
          {
-            LBMKernelPtr kernel =block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
          }
       }
 
@@ -64,11 +66,11 @@ void DecreaseViscosityCoProcessor::setViscosity(double step)
 
       for(int level = minInitLevel; level<=maxInitLevel;level++)
       {
-         vector<Block3DPtr> blockVector;
+          std::vector<Block3DPtr> blockVector;
          grid->getBlocks(level, gridRank, blockVector);
-         BOOST_FOREACH(Block3DPtr block, blockVector)
+         for(Block3DPtr block : blockVector)
          {
-            LBMKernelPtr kernel =block->getKernel();
+            ILBMKernelPtr kernel =block->getKernel();
             if(kernel)      
             {
                LBMReal collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());

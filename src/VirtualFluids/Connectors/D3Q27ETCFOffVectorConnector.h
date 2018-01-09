@@ -20,8 +20,8 @@
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include "Grid3D.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+
 #include "D3Q27ETFCOffVectorConnector.h"
 #include "BCProcessor.h"
 
@@ -45,7 +45,7 @@ class D3Q27ETCFOffVectorConnector : public Block3DConnector
 {
 public:
    typedef typename VectorTransmitter::value_type  vector_type;
-   typedef boost::shared_ptr< VectorTransmitter > VectorTransmitterPtr;
+   typedef std::shared_ptr< VectorTransmitter > VectorTransmitterPtr;
 public:
    D3Q27ETCFOffVectorConnector(Block3DPtr block,
       VectorTransmitterPtr senderEvenEvenSW, VectorTransmitterPtr receiverEvenEvenSW,
@@ -92,7 +92,7 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   boost::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
+   std::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
    VectorTransmitterPtr senderEvenEvenSW, receiverEvenEvenSW,
       senderEvenOddNW, receiverEvenOddNW,
       senderOddEvenSE, receiverOddEvenSE,
@@ -768,7 +768,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::fillSendVectorExt(Distribu
    if (data.size() == 0) return;
    int ix1, ix2, ix3;
    LBMReal xoff, yoff, zoff;
-   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3 < lMaxX3; ix3++)
    {
@@ -1586,7 +1586,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::distributeReceiveVector(Di
          {
             LBMReal icellC[27];
             this->readICellCfromData(data, index, icellC);
-            iprocessor->writeINode(fTo, icellC, ix1, ix2, ix3);
+            iprocessor->writeINodeInv(fTo, icellC, ix1, ix2, ix3);
          }
       }
    }
@@ -1880,7 +1880,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::findCFnodes(DistributionAr
    if (data.size() == 0) return;
    int ix1, ix2, ix3;
    LBMReal xoff, yoff, zoff;
-   BCArray3D& bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3 < lMaxX3; ix3++)
    {
@@ -1921,7 +1921,7 @@ void D3Q27ETCFOffVectorConnector< VectorTransmitter>::findCFnodes(DistributionAr
             //   {
             //      for (int iix1 = ix1; iix1<=ix1+1; iix1++)
             //      {
-            //         bcArray.setInterfaceCF(iix1, iix2, iix3);
+            //         bcArray->setInterfaceCF(iix1, iix2, iix3);
             //      }
             //   }
             //}

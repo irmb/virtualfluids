@@ -1,14 +1,17 @@
 #include "Grid3D.h"
 
-#include <vector>
-#include <boost/foreach.hpp>
-#include <boost/functional/hash.hpp>
+#include <set>
 
-#include <basics/writer/WbWriterVtkXmlASCII.h>
+#include <VirtualFluidsBasics/numerics/geometry3d/CoordinateTransformation3D.h>
+#include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlASCII.h>
+
 #include "Grid3DVisitor.h"
 #include "Block3DVisitor.h"
 #include "Interactor3D.h"
 #include "Grid3DSystem.h"
+#include "LBMSystem.h"
+#include <Block3D.h>
+#include <Communicator.h>
 
 
 using namespace std;
@@ -122,7 +125,7 @@ void Grid3D::accept(Block3DVisitor& blockVisitor)
    {
       std::vector<Block3DPtr> blockVector;
       getBlocks(l, blockVector);
-      BOOST_FOREACH(Block3DPtr b, blockVector)
+      for(Block3DPtr b : blockVector)
       {
          blockVisitor.visit( shared_from_this(), b );
       }
@@ -133,7 +136,6 @@ void Grid3D::accept(Block3DVisitor& blockVisitor)
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::accept(Grid3DVisitor& gridVisitor)
 {
-   std::size_t counter =0;
    gridVisitor.visit( shared_from_this() );
 }
 //////////////////////////////////////////////////////////////////////////
@@ -396,9 +398,9 @@ Block3DPtr Grid3D::collapseBlock(int fix1, int fix2, int fix3, int flevel, int l
 // TODO: make visitor for this
 void Grid3D::deleteConnectors()
 {
-   BOOST_FOREACH(Block3DMap blockMap, levelSet)
+   for(Block3DMap blockMap : levelSet)
    {
-      BOOST_FOREACH(Block3DMap::value_type b, blockMap)
+      for(Block3DMap::value_type b : blockMap)
       {
          Block3DPtr block =  b.second;
          block->deleteConnectors();
@@ -564,10 +566,10 @@ double Grid3D::getDeltaX(Block3DPtr block) const
 UbTupleDouble3  Grid3D::getNodeOffset(Block3DPtr block) const 
 { 
    double delta = this->getDeltaX(block);
-   return makeUbTuple(0.5*delta,0.5*delta,0.5*delta);
+   return makeUbTuple(OFFSET * delta, OFFSET * delta, OFFSET * delta);
 }
 ////////////////////////////////////////////////////////////////////////////
-UbTupleDouble3 Grid3D::getNodeCoordinates(Block3DPtr block, int ix1, int ix2, int ix3) const
+Vector3D Grid3D::getNodeCoordinates(Block3DPtr block, int ix1, int ix2, int ix3) const
 {
    UbTupleDouble3 org = this->getBlockWorldCoordinates(block);
    UbTupleDouble3 nodeOffset = this->getNodeOffset(block);
@@ -577,7 +579,7 @@ UbTupleDouble3 Grid3D::getNodeCoordinates(Block3DPtr block, int ix1, int ix2, in
    double x2 = val<2>(org) - val<2>(nodeOffset) + (double)ix2*deltaX;
    double x3 = val<3>(org) - val<3>(nodeOffset) + (double)ix3*deltaX;
 
-   return makeUbTuple(x1, x2, x3);
+   return Vector3D(x1, x2, x3);
 }
 ////////////////////////////////////////////////////////////////////////////
 UbTupleInt3 Grid3D::getNodeIndexes(Block3DPtr block, double nodeX1Coord, double nodeX2Coord, double nodeX3Coord) const
@@ -1206,6 +1208,7 @@ void Grid3D::getSubBlocksEast(int ix1, int ix2, int ix3, int level,vector<Block3
    if(block != NULL)      blockVector.push_back(block);
    else if(l < levelDepth) this->getSubBlocksEast(x1, x2N, x3T, l, blockVector,levelDepth);
 }
+
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getSubBlocksWest(int ix1, int ix2, int ix3, int level,vector<Block3DPtr> &blockVector, int levelDepth)
 {
@@ -1648,7 +1651,7 @@ void Grid3D::getSubBlocksBottomSouthWest(int ix1, int ix2, int ix3, int level, s
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getBlocks(int level, std::vector<Block3DPtr>& blockVector)
 {
-   BOOST_FOREACH(Block3DMap::value_type b, levelSet[level])
+   for(Block3DMap::value_type b : levelSet[level])
    {
       blockVector.push_back(b.second);
    }
@@ -1656,7 +1659,7 @@ void Grid3D::getBlocks(int level, std::vector<Block3DPtr>& blockVector)
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getBlocks(int level, int rank, std::vector<Block3DPtr>& blockVector)
 {
-   BOOST_FOREACH(Block3DMap::value_type b, levelSet[level])
+   for(Block3DMap::value_type b : levelSet[level])
    {
       Block3DPtr block = b.second;
       int blockRank = block->getRank();
@@ -1669,7 +1672,7 @@ void Grid3D::getBlocks(int level, int rank, std::vector<Block3DPtr>& blockVector
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::getBlocks(int level, int rank, bool active, std::vector<Block3DPtr>& blockVector)
 {
-   BOOST_FOREACH(Block3DMap::value_type b, levelSet[level])
+   for(Block3DMap::value_type b : levelSet[level])
    {
       Block3DPtr block = b.second;
       int blockRank = block->getRank();
@@ -1725,7 +1728,7 @@ int Grid3D::getNX3() const
 //////////////////////////////////////////////////////////////////////////
 void Grid3D::deleteBlocks( const std::vector<int>& ids )
 {
-   BOOST_FOREACH(int i, ids)
+   for(int i : ids)
    {
       Block3DPtr block = getBlock(i);
       if(block) this->deleteBlock(block);
@@ -1735,7 +1738,7 @@ void Grid3D::deleteBlocks( const std::vector<int>& ids )
 int Grid3D::getNumberOfBlocks()
 {
    int c = 0;
-   BOOST_FOREACH(Block3DMap l, levelSet)
+   for(Block3DMap l : levelSet)
    {
       c += (int)l.size();
    }
@@ -1903,7 +1906,7 @@ void Grid3D::fillExtentWithBlocks( UbTupleInt3 minInd, UbTupleInt3 maxInd )
 //////////////////////////////////////////////////////////////////////////
 //void Grid3D::notifyObservers( double step )
 //{
-//   BOOST_FOREACH(ObserverPtr o, observers)
+//   for(ObserverPtr o, observers)
 //   {
 //      o->update(step);
 //   }
@@ -1944,6 +1947,30 @@ void Grid3D::deleteBlockIDs()
    this->blockIdMap.clear();
 }
 //////////////////////////////////////////////////////////////////////////
+void Grid3D::renumberBlockIDs()
+{
+    deleteBlockIDs();
+
+    int startLevel = getCoarsestInitializedLevel();
+    int stopLevel = getFinestInitializedLevel();
+    int counter = 0;
+
+    for (int l = startLevel; l <= stopLevel; l++)
+    {
+        std::vector<Block3DPtr> blockVector;
+        getBlocks(l, blockVector);
+        for(Block3DPtr block : blockVector)
+        {
+            block->setGlobalID(counter);
+            blockIdMap.insert(std::make_pair(counter, block));
+            Block3D::setMaxGlobalID(counter);
+            counter++;
+        }
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
 {
    
@@ -1958,7 +1985,7 @@ void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
       {
          std::vector<Block3DPtr> blockVector;
          getBlocks(l, blockVector);
-         BOOST_FOREACH(Block3DPtr block, blockVector)
+         for(Block3DPtr block : blockVector)
          {
             blocks.push_back(block->getX1());
             blocks.push_back(block->getX2());
@@ -1985,7 +2012,7 @@ void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
       this->levelSet.clear();
       levelSet.resize(Grid3DSystem::MAXLEVEL+1);
 
-      int rsize = blocks.size();
+      int rsize = (int)blocks.size();
       for (int i = 0; i < rsize; i+=5)
       {
          Block3DPtr block(new Block3D(blocks[i], blocks[i+1], blocks[i+2], blocks[i+3]));
@@ -1998,5 +2025,3 @@ void Grid3D::updateDistributedBlocks(CommunicatorPtr comm)
 }
 
 //////////////////////////////////////////////////////////////////////////
-
-

@@ -6,13 +6,13 @@
 #include <mpi.h>
 #include <vector>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbLogger.h>
 #include "Communicator.h"
 
 class MPICommunicator;
-typedef boost::shared_ptr<MPICommunicator> MPICommunicatorPtr;
+typedef std::shared_ptr<MPICommunicator> MPICommunicatorPtr;
 
 //! \brief A class uses MPI library to communication.
 //! \details Support MPI communication. Implements singleton pattern.

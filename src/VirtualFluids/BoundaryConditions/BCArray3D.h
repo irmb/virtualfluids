@@ -7,12 +7,10 @@
 #include <typeinfo>
 
 #include <boost/serialization/serialization.hpp>
-#include <boost/shared_ptr.hpp>
-
-typedef boost::shared_ptr<BoundaryConditions> BCClassPtr;
+#include <memory>
 
 class BCArray3D;
-typedef boost::shared_ptr<BCArray3D> BCArray3DPtr;
+typedef std::shared_ptr<BCArray3D> BCArray3DPtr;
 
 class BCArray3D
 {
@@ -40,13 +38,13 @@ public:
    //////////////////////////////////////////////////////////////////////////
    inline bool hasBC(std::size_t x1, std::size_t x2, std::size_t x3)  const;
    //////////////////////////////////////////////////////////////////////////
-   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, BCClassPtr const& bc);
+   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, BoundaryConditionsPtr const& bc);
    //////////////////////////////////////////////////////////////////////////
    inline int getBCVectorIndex(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline const BCClassPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
+   inline const BoundaryConditionsPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline BCClassPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3);
+   inline BoundaryConditionsPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
    void setSolid(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
@@ -88,7 +86,7 @@ public:
    //////////////////////////////////////////////////////////////////////////
    std::vector< int >& getBcindexmatrixDataVector();
    //////////////////////////////////////////////////////////////////////////
-
+   bool isInsideOfDomain(const int &x1, const int &x2, const int &x3, const int& ghostLayerWidth) const;
 
    static const int SOLID;     
    static const int FLUID;     
@@ -102,8 +100,10 @@ private:
    //////////////////////////////////////////////////////////////////////////
    void deleteBC(std::size_t x1, std::size_t x2, std::size_t x3);
 
-   friend class MPIIORestartCoProcessor;
+   friend class MPIIORestart1CoProcessor;
    friend class MPIIORestart2CoProcessor;
+   friend class MPIIORestart11CoProcessor;
+   friend class MPIIORestart21CoProcessor;
 
    friend class boost::serialization::access;
    template<class Archive>
@@ -117,7 +117,7 @@ protected:
    //////////////////////////////////////////////////////////////////////////
    //-1 solid // -2 fluid -...
    CbArray3D<int, IndexerX3X2X1> bcindexmatrix;
-   std::vector<BCClassPtr> bcvector;
+   std::vector<BoundaryConditionsPtr> bcvector;
    std::vector<int> indexContainer;
 };
 
@@ -139,18 +139,18 @@ inline int BCArray3D::getBCVectorIndex(std::size_t x1, std::size_t x2, std::size
    return bcindexmatrix(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-inline const BCClassPtr  BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
+inline const BoundaryConditionsPtr  BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
    int index = bcindexmatrix(x1, x2, x3);
-   if (index < 0) return BCClassPtr(); //=> NULL Pointer
+   if (index < 0) return BoundaryConditionsPtr(); //=> NULL Pointer
 
    return bcvector[index];
 }
 //////////////////////////////////////////////////////////////////////////
-inline BCClassPtr BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
+inline BoundaryConditionsPtr BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
 {
    int index = bcindexmatrix(x1, x2, x3);
-   if (index < 0) return BCClassPtr(); //=> NULL Pointer
+   if (index < 0) return BoundaryConditionsPtr(); //=> NULL Pointer
 
    return bcvector[index];
 }
@@ -186,6 +186,18 @@ inline bool BCArray3D::isInterfaceCF(std::size_t x1, std::size_t x2, std::size_t
 inline bool BCArray3D::isInterfaceFC(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
    return bcindexmatrix(x1, x2, x3) == INTERFACEFC;
+}
+//////////////////////////////////////////////////////////////////////////
+inline bool BCArray3D::isInsideOfDomain(const int& x1, const int& x2, const int& x3, const int& ghostLayerWidth) const
+{
+    const int minX1 = ghostLayerWidth;
+    const int maxX1 = (int)this->getNX1() - 1 - ghostLayerWidth;
+    const int minX2 = ghostLayerWidth;
+    const int maxX2 = (int)this->getNX2() - 1 - ghostLayerWidth;
+    const int minX3 = ghostLayerWidth;
+    const int maxX3 = (int)this->getNX3() - 1 - ghostLayerWidth;
+
+    return (!(x1 < minX1 || x1 > maxX1 || x2 < minX2 || x2 > maxX2 || x3 < minX3 || x3 > maxX3));
 }
 
 #endif 

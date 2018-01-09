@@ -1,12 +1,47 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/utilities/UbLogger.h>
+#include <buildInfo.h>
 #include <cstring>
 
 using namespace std;
 
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::pvdEndTag ="   </Collection>\n</VTKFile>";
+
+std::string WbWriterVtkXmlBinary::getHeaderTag()
+{
+    std::string header = "<!--- \n";
+
+    header += "git-commit-hash=\"";
+    header += buildInfo::gitCommitHash();
+    header += "\" \n";
+
+    header += "git-branch=\"";
+    header += buildInfo::gitBranch();
+    header += "\" \n";
+
+    header += "compiler-flag=\"";
+    header += buildInfo::compilerFlags();
+    header += "\" \n";
+
+    header += "buildMachine=\"";
+    header += buildInfo::buildMachine();
+    header += "\" \n";
+
+    header += "ProjectDir=\"";
+    header += buildInfo::projectDir();
+    header += "\" \n";
+
+    header += "binaryDir=\"";
+    header += buildInfo::binaryDir();
+    header += "\" \n";
+
+
+    header += "-->\n";
+    return header;
+}
+
 /*===============================================================================*/
 string WbWriterVtkXmlBinary::writeCollection(const string& filename, const vector<string>& filenames, const double& timeStep, const bool& sepGroups)
 {
@@ -1185,6 +1220,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
    int offset = 0;
    //VTK FILE
    out<<"<?xml version=\"1.0\"?>\n";
+   out<< getHeaderTag();
    out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
    out<<"   <UnstructuredGrid>"<<"\n";
    out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\" NumberOfCells=\""<<nofCells<<"\">\n";

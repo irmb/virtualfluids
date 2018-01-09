@@ -13,13 +13,13 @@ namespace Utilities
    {
       std::vector<IntegrateValuesHelper::CalcNodes> cnodes = integrateValues->getCNodes();
       
-      BOOST_FOREACH(IntegrateValuesHelper::CalcNodes cn, cnodes)
+      for(IntegrateValuesHelper::CalcNodes cn : cnodes)
       {
-         LBMKernelPtr kernel = cn.block->getKernel();
-         BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
-         BOOST_FOREACH(UbTupleInt3 node, cn.nodes)
+         ILBMKernelPtr kernel = cn.block->getKernel();
+         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+         for(UbTupleInt3 node : cn.nodes)
          {
-            BoundaryConditionsPtr bc = bcArray.getBC(val<1>(node), val<2>(node), val<3>(node));
+            BoundaryConditionsPtr bc = bcArray->getBC(val<1>(node), val<2>(node), val<3>(node));
             if (bc)
             {
 	            for (int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)

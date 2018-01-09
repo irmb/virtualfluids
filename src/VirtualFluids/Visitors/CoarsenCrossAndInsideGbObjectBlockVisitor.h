@@ -1,8 +1,13 @@
 #ifndef CoarsenCrossAndInsideGbObjectBlockVisitor_H
 #define CoarsenCrossAndInsideGbObjectBlockVisitor_H
 
+#include <memory>
+
 #include "Block3DVisitor.h"
-#include <numerics/geometry3d/GbObject3D.h>
+
+class GbObject3D;
+class Block3D;
+class Grid3D;
 
 //! \brief Refine blocks on base of bounding box which is defined with <i>geoObject</i>
 //! \details The class uses a geometry object for define a bounding box. Inside and across this bounding box will be grid on block basis refinement.
@@ -15,12 +20,12 @@ public:
    //! A constructor
    //! \param geoObject a smart pointer to bounding box
    //! \param refineLevel an integer for refine on this level
-   CoarsenCrossAndInsideGbObjectBlockVisitor(GbObject3DPtr geoObject, int fineLevel, int coarseLevel);
+   CoarsenCrossAndInsideGbObjectBlockVisitor(std::shared_ptr<GbObject3D> geoObject, int fineLevel, int coarseLevel);
    virtual ~CoarsenCrossAndInsideGbObjectBlockVisitor();
-   void visit(Grid3DPtr grid, Block3DPtr block);
+      void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
    //////////////////////////////////////////////////////////////////////////
 protected:
-   GbObject3DPtr geoObject;
+    std::shared_ptr<GbObject3D> geoObject;
    bool notActive;
    int coarseLevel;
 };

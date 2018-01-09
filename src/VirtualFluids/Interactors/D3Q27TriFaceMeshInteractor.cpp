@@ -21,9 +21,12 @@
 #include "BCProcessor.h"
 #include "basics/utilities/UbTiming.h"
 
-#include <omp.h>
+#include <numerics/geometry3d/GbTriFaceMesh3D.h>
+
+//#include <omp.h>
 
 #include <stack>
+#include "CoordinateTransformation3D.h"
 
 using namespace std;
 
@@ -65,8 +68,8 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
 {
    if(!block) return false;
 
-   transNodeIndicesMap[block] = set< std::vector<int> >();
-   set< std::vector<int> >& transNodeIndices = transNodeIndicesMap[block];
+   bcNodeIndicesMap[block] = set< std::vector<int> >();
+   set< std::vector<int> >& transNodeIndices = bcNodeIndicesMap[block];
    solidNodeIndicesMap[block] = set< UbTupleInt3 >();
    set< UbTupleInt3 >& solidNodeIndices = solidNodeIndicesMap[block];
 
@@ -75,13 +78,13 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
    bool gotQs         = false; //true, wenn "difference" gesetzt wurde
    BoundaryConditionsPtr bc;
 
-   LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+   ILBMKernelPtr kernel = block->getKernel();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
   
    int startIX1 = 0, startIX2 = 0, startIX3 = 0; 
-   int stopIX1  = (int)bcArray.getNX1(), stopIX2  = (int)bcArray.getNX2(), stopIX3  = (int)bcArray.getNX3(); 
+   int stopIX1  = (int)bcArray->getNX1(), stopIX2  = (int)bcArray->getNX2(), stopIX3  = (int)bcArray->getNX3(); 
 
    double         dx       = grid.lock()->getDeltaX(block);
    UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
@@ -94,19 +97,19 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
       {
          for(int ix1=startIX1; ix1<stopIX1; ix1++)
          {
-            UbTupleDouble3 coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
-            internX1 = val<1>(coords);
-            internX2 = val<2>(coords);
-            internX3 = val<3>(coords);
+            Vector3D coords = grid.lock()->getNodeCoordinates(block, ix1, ix2, ix3);
+            internX1 = coords[0];
+            internX2 = coords[1];
+            internX3 = coords[2];
 
             if(this->isSolid() )
             {
                if(this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3))
                {
-                  if(bcArray.isFluid(ix1,ix2,ix3))
+                  if(bcArray->isFluid(ix1,ix2,ix3))
                   {
                      solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                     bcArray.setSolid(ix1,ix2,ix3); 
+                     bcArray->setSolid(ix1,ix2,ix3); 
                   }
                }
             }
@@ -115,10 +118,10 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
                //bei inverse solid sind alle Knoten AUSSERHALB und auf der boundary SOLID
                if( !this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3, pointOnBoundary) || pointOnBoundary == true )
                {
-                  if(bcArray.isFluid(ix1,ix2,ix3))
+                  if(bcArray->isFluid(ix1,ix2,ix3))
                   {
                      solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
-                     bcArray.setSolid(ix1,ix2,ix3);
+                     bcArray->setSolid(ix1,ix2,ix3);
                   }
                }
             }
@@ -135,7 +138,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    UBLOGML(logDEBUG1,"\nLBMTriFaceMeshInteractor - setQs start ");
    if( !this->grid.lock() ) throw UbException(UB_EXARGS,"ups, no grid.lock()!!");
 
-   if( this->reinitWithStoredQsFlag && !transNodeIndicesAndQsMap.empty() )
+   if( this->reinitWithStoredQsFlag && !bcNodeIndicesAndQsMap.empty() )
    {
       this->reinitWithStoredQs(timeStep);
       return;
@@ -146,13 +149,13 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    //////////////////////////////////////////////////////////////////////////
    //init bcs
    //////////////////////////////////////////////////////////////////////////
-   int nofAdapter = (int)this->bcAdapterVector.size();
+   int nofAdapter = (int)this->bcAdapters.size();
    if(nofAdapter==0) std::cout<<"WARNING - D3Q27TriFaceMeshInteractor::initInteractor Warning - no nodeAdapter available for "/*<<this->getName()*/<<std::endl;
    bool needTimeDependence = false;
    for(int pos=0; pos<nofAdapter; ++pos)
    {
-      this->bcAdapterVector[pos]->init(this,timeStep);
-      if(this->bcAdapterVector[pos]->isTimeDependent()) needTimeDependence = true;
+      this->bcAdapters[pos]->init(this,timeStep);
+      if(this->bcAdapters[pos]->isTimeDependent()) needTimeDependence = true;
    }
    if(needTimeDependence) this->setTimeDependent();
    else                   this->unsetTimeDependent();
@@ -345,18 +348,18 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            LBMKernelPtr kernel = block->getKernel();
-            BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+            ILBMKernelPtr kernel = block->getKernel();
+            BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
             int indexMinX2 = 0;
             int indexMinX3 = 0;
 
-            int indexMaxX1 = (int)bcMatrix.getNX1();
-            int indexMaxX2 = (int)bcMatrix.getNX2();
-            int indexMaxX3 = (int)bcMatrix.getNX3();
+            int indexMaxX1 = (int)bcMatrix->getNX1();
+            int indexMaxX2 = (int)bcMatrix->getNX2();
+            int indexMaxX3 = (int)bcMatrix->getNX3();
 
-            std::set< std::vector<int> >& transNodeIndices           = this->transNodeIndicesMap[block];
+            std::set< std::vector<int> >& bcNodeIndices           = this->bcNodeIndicesMap[block];
             std::set< UbTupleInt3 >& solidsFromOtherInteractors = tmpSolidNodesFromOtherInteractors[block];
             double q, distance;
 
@@ -373,16 +376,16 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                {
                   for(int ix1=indexMinX1; ix1<indexMaxX1; ix1++)
                   {	
-                     UbTupleDouble3 pointplane1 =  grid.lock()->getNodeCoordinates(block, ix1,ix2,ix3);
-                     double   internX1=val<1>(pointplane1);
-                     double   internX2=val<2>(pointplane1);
-                     double   internX3=val<3>(pointplane1);
+                     Vector3D pointplane1 =  grid.lock()->getNodeCoordinates(block, ix1,ix2,ix3);
+                     double   internX1 = pointplane1[0];
+                     double   internX2 = pointplane1[1];
+                     double   internX3 = pointplane1[2];
 
-                     int blx1 =block->getX1();
+                     int blx1 = block->getX1();
                      int blx2 = block->getX2();
                      int blx3 = block->getX3();
 
-                     if(bcMatrix.isSolid(ix1,ix2,ix3) || bcMatrix.isUndefined(ix1,ix2,ix3))
+                     if(bcMatrix->isSolid(ix1,ix2,ix3) || bcMatrix->isUndefined(ix1,ix2,ix3))
                      {
                         continue;
                      }
@@ -487,7 +490,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                            //durchgehen. diese punkte werden später jedoch nicht mehr auf solid getestet, da sie ja ne BC bekommen haben
                            //--> da mind ein q==0.0 für eines der dreiecke -> dort solid setzen
                            this->solidNodeIndicesMap[block].insert( UbTupleInt3(ix1,ix2,ix3) );
-                           bcMatrix.setSolid( ix1, ix2, ix3 );
+                           bcMatrix->setSolid( ix1, ix2, ix3 );
                            continue;
                         }
 
@@ -496,13 +499,13 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                         {
                            gotQs=blockGotBCs=true;
 
-                           bc = bcMatrix.getBC(ix1,ix2,ix3);
+                           bc = bcMatrix->getBC(ix1,ix2,ix3);
 
-                           //SG 26.08.2010 if(!bc && !bcMatrix.isSolid())
+                           //SG 26.08.2010 if(!bc && !bcMatrix->isSolid())
                            if(!bc)
                            {
                               bc = BoundaryConditionsPtr(new BoundaryConditions);;
-                              bcMatrix.setBC(ix1,ix2,ix3,bc);
+                              bcMatrix->setBC(ix1,ix2,ix3,bc);
                            }
                            else if( UbMath::less( bc->getQ(fdir), q ) )  //schon ein kuerzeres q voehanden?
                            {
@@ -518,17 +521,17 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                            bc->setBoundaryVelocityX2(vx2);
                            bc->setBoundaryVelocityX3(vx3);
 
-                           for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                              this->bcAdapterVector[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
+                           for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                              this->bcAdapters[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
 
                            //fuer beschleunigtes wiedereinlesen
                            if(this->reinitWithStoredQsFlag)
                            {
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ].resize(D3Q27System::FENDDIR+1+3, -1.0f);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][fdir                    ] = float(q);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+0] = float(internX1);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+1] = float(internX2);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+2] = float(internX3);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ].resize(D3Q27System::FENDDIR+1+3, -1.0f);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][fdir                    ] = float(q);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+0] = float(internX1);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+1] = float(internX2);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+2] = float(internX3);
                            }
                         }
                      }
@@ -537,10 +540,10 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                      {
                         std::vector<int> p(3);
                         p[0]=ix1; p[1]=ix2; p[2]=ix3;
-                        transNodeIndices.insert(p);
+                        bcNodeIndices.insert(p);
 
-                        for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                           this->bcAdapterVector[index]->adaptBC(*this,bc,internX1,internX2,internX3);
+                        for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                           this->bcAdapters[index]->adaptBC(*this,bc,internX1,internX2,internX3);
                      }
                   }
                }
@@ -571,7 +574,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    UBLOGML(logDEBUG1,"\nLBMTriFaceMeshInteractor - initInteractor start ");
    if( !this->grid.lock() ) throw UbException(UB_EXARGS,"ups, no grid.lock()!!");
 
-   if( this->reinitWithStoredQsFlag && !transNodeIndicesAndQsMap.empty() )
+   if( this->reinitWithStoredQsFlag && !bcNodeIndicesAndQsMap.empty() )
    {
       this->reinitWithStoredQs(timeStep);
       return;
@@ -582,19 +585,19 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    UBLOGML(logDEBUG1,"\nLBMTriFaceMeshInteractor - initInteractor for \""<<mesh->getName()<<" \" t="<<timeStep);
    //cout<<" - init basics ...";
 
-   this->removeTransBlocks();  //hier wird auch die nodeIndicesMap geloescht!
+   this->removeBcBlocks();  //hier wird auch die nodeIndicesMap geloescht!
    this->removeSolidBlocks();
 
    //////////////////////////////////////////////////////////////////////////
    //init bcs
    //////////////////////////////////////////////////////////////////////////
-   int nofAdapter = (int)this->bcAdapterVector.size();
+   int nofAdapter = (int)this->bcAdapters.size();
    if(nofAdapter==0) std::cout<<"WARNING - D3Q27TriFaceMeshInteractor::initInteractor Warning - no nodeAdapter available for "/*<<this->getName()*/<<std::endl;
    bool needTimeDependence = false;
    for(int pos=0; pos<nofAdapter; ++pos)
    {
-      this->bcAdapterVector[pos]->init(this,timeStep);
-      if(this->bcAdapterVector[pos]->isTimeDependent()) needTimeDependence = true;
+      this->bcAdapters[pos]->init(this,timeStep);
+      if(this->bcAdapters[pos]->isTimeDependent()) needTimeDependence = true;
    }
    if(needTimeDependence) this->setTimeDependent();
    else                   this->unsetTimeDependent();
@@ -821,18 +824,18 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            LBMKernelPtr kernel = block->getKernel();
-            BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+            ILBMKernelPtr kernel = block->getKernel();
+            BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
             int indexMinX2 = 0;
             int indexMinX3 = 0;
 
-            int indexMaxX1 = (int)bcMatrix.getNX1();
-            int indexMaxX2 = (int)bcMatrix.getNX2();
-            int indexMaxX3 = (int)bcMatrix.getNX3();
+            int indexMaxX1 = (int)bcMatrix->getNX1();
+            int indexMaxX2 = (int)bcMatrix->getNX2();
+            int indexMaxX3 = (int)bcMatrix->getNX3();
 
-            std::set< std::vector<int> >& transNodeIndices           = this->transNodeIndicesMap[block];
+            std::set< std::vector<int> >& bcNodeIndices           = this->bcNodeIndicesMap[block];
             std::set< std::vector<int> >& solidsFromOtherInteractors = tmpSolidNodesFromOtherInteractors[block];
             double q, internX1, internX2, internX3,distance;
 
@@ -870,7 +873,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                      //in der front und der block wird u.U. faelschlicher weise komplett solid markiert
                      //Lsg: positionen merken und erst Nach dem fuellarlgo wieder auf not active setzen :-)
                      solidFromOtherInteractor = false;
-                     if(bcMatrix.isSolid(ix1,ix2,ix3))
+                     if(bcMatrix->isSolid(ix1,ix2,ix3))
                      {
                         if(this->reinitWithStoredQsFlag)
                         {
@@ -983,7 +986,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                            //durchgehen. diese punkte werden später jedoch nicht mehr auf solid getestet, da sie ja ne BC bekommen haben
                            //--> da mind ein q==0.0 für eines der dreiecke -> dort solid setzen
                            this->solidNodeIndicesMap[block].insert( UbTupleInt3(ix1,ix2,ix3) );
-                           bcMatrix.setSolid( ix1, ix2, ix3 );
+                           bcMatrix->setSolid( ix1, ix2, ix3 );
                            continue;
                         }
 
@@ -998,13 +1001,13 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                               //markiert
                               gotQs=blockGotBCs=true;
 
-                              bc = bcMatrix.getBC(ix1,ix2,ix3);
+                              bc = bcMatrix->getBC(ix1,ix2,ix3);
 
-                              //SG 26.08.2010 if(!bc && !bcMatrix.isSolid())
+                              //SG 26.08.2010 if(!bc && !bcMatrix->isSolid())
                               if(!bc)
                               {
                                  bc = BoundaryConditionsPtr(new BoundaryConditions);;
-                                 bcMatrix.setBC(ix1,ix2,ix3,bc);
+                                 bcMatrix->setBC(ix1,ix2,ix3,bc);
                               }
                               else if( UbMath::less( bc->getQ(fdir), q ) )  //schon ein kuerzeres q voehanden?
                               {
@@ -1020,19 +1023,19 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                               bc->setBoundaryVelocityX2(vx2);
                               bc->setBoundaryVelocityX3(vx3);
 
-                              for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                                 this->bcAdapterVector[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
+                              for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                                 this->bcAdapters[index]->adaptBCForDirection(*this,bc,internX1,internX2,internX3,q,fdir);
 
                               //SG 26.08.2010 gotQs=blockGotBCs=true;
                            }
                            //fuer beschleunigtes wiedereinlesen
                            if(this->reinitWithStoredQsFlag)
                            {
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ].resize(D3Q27System::FENDDIR+1+3, -1.0f);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][fdir                    ] = float(q);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+0] = float(internX1);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+1] = float(internX2);
-                              transNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+2] = float(internX3);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ].resize(D3Q27System::FENDDIR+1+3, -1.0f);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][fdir                    ] = float(q);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+0] = float(internX1);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+1] = float(internX2);
+                              bcNodeIndicesAndQsMap[block][ UbTupleInt3(ix1, ix2, ix3) ][D3Q27System::FENDDIR+1+2] = float(internX3);
                            }
                         }
                      }
@@ -1041,10 +1044,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                      {
                         std::vector<int> p(3);
                         p[0]=ix1; p[1]=ix2; p[2]=ix3;
-                        transNodeIndices.insert(p);
+                        bcNodeIndices.insert(p);
 
-                        for(int index=(int)this->bcAdapterVector.size()-1; index>=0; --index)
-                           this->bcAdapterVector[index]->adaptBC(*this,bc,internX1,internX2,internX3);
+                        for(int index=(int)this->bcAdapters.size()-1; index>=0; --index)
+                           this->bcAdapters[index]->adaptBC(*this,bc,internX1,internX2,internX3);
                      }
                   }
                }
@@ -1117,17 +1120,17 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             scanlineCounter++;
             scanLineTimer.start();
 
-            LBMKernelPtr kernel = block->getKernel();
+            ILBMKernelPtr kernel = block->getKernel();
             if(!kernel) throw UbException(UB_EXARGS,"na sowas kein kernel bzw. kernel=NULL (2)");
-            BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+            BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             //            bvd->getTimer().start();
             int indexMinX1 = 0;
             int indexMinX2 = 0;
             int indexMinX3 = 0;
-            int indexMaxX1 = (int)bcMatrix.getNX1();
-            int indexMaxX2 = (int)bcMatrix.getNX2();
-            int indexMaxX3 = (int)bcMatrix.getNX3();
+            int indexMaxX1 = (int)bcMatrix->getNX1();
+            int indexMaxX2 = (int)bcMatrix->getNX2();
+            int indexMaxX3 = (int)bcMatrix->getNX3();
 
             //quick and dirty
             blocknx1 = indexMaxX1;
@@ -1144,7 +1147,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             CbArray3D<FLAGS> flagField(blocknx1,blocknx2,blocknx3,UNDEF_FLAG);
 
             //hier gesetzte bcs markieren
-            std::set< std::vector<int> >& transNodeIndices = this->transNodeIndicesMap[block];
+            std::set< std::vector<int> >& transNodeIndices = this->bcNodeIndicesMap[block];
             std::set< std::vector<int> >::iterator setPos;
             for(setPos=transNodeIndices.begin(); setPos!=transNodeIndices.end();  ++setPos)
                flagField( (*setPos)[0], (*setPos)[1], (*setPos)[2] ) = BC_FLAG;
@@ -1187,11 +1190,11 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                         //hier ist noch das Problem, das "alle" solid in die solidNodeIndices kommen
                         //evtl. Abhilfe durch einführen eines anderen Flags bei tmpSolidNodeIndices ..
                         solidNodeIndices.insert(UbTupleInt3(bx1,bx2,bx3));
-                        bcMatrix.setSolid(bx1,bx2,bx3);
+                        bcMatrix->setSolid(bx1,bx2,bx3);
                      }
                      //SG 28.08.2010  else if( flagField(bx1,bx2,bx3)==OLDSOLID_FLAG )
                      //SG 28.08.2010  {
-                     //SG 28.08.2010     bcMatrix.setSolid(bx1,bx2,bx3);
+                     //SG 28.08.2010     bcMatrix->setSolid(bx1,bx2,bx3);
                      //SG 28.08.2010  }
                   }
                }
@@ -1200,10 +1203,10 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             //SG 28.08.2010 halt danach setzen, damit die BCs die fälschlicherweise gesetzt wurden korrigiert werden
             std::set< std::vector<int> >& tmpSolidNodeIndices = tmpSolidNodesFromOtherInteractors[block];
             for(setPos=tmpSolidNodeIndices.begin(); setPos!=tmpSolidNodeIndices.end();  ++setPos)
-               bcMatrix.setSolid((*setPos)[0], (*setPos)[1], (*setPos)[2] );
+               bcMatrix->setSolid((*setPos)[0], (*setPos)[1], (*setPos)[2] );
 
             //block hat  in initInteractor mind eine BC erhalten -> transBlock
-            this->transBlocks.push_back(block);
+            this->bcBlocks.push_back(block);
             scanLineTimer.stop();
 
             //            bvd->getTimer().stop();
@@ -1756,23 +1759,23 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    {
       Block3DPtr block = it1->first;
 
-      LBMKernelPtr kernel = block->getKernel();
-      BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+      ILBMKernelPtr kernel = block->getKernel();
+      BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
       std::set< UbTupleInt3 >&  indicesSet = it1->second;
 
       for( std::set< UbTupleInt3 >::iterator setIt=indicesSet.begin(); setIt!=indicesSet.end(); ++setIt )
       {
-         bcMatrix.setSolid( val<1>(*setIt), val<2>(*setIt), val<3>(*setIt) );
+         bcMatrix->setSolid( val<1>(*setIt), val<2>(*setIt), val<3>(*setIt) );
       }
    }
 
    //BCS WIEDERHERSTELLEN
    std::map<Block3DPtr, std::map< UbTupleInt3, std::vector<float> > >::iterator it;
-   for( it=transNodeIndicesAndQsMap.begin(); it!=transNodeIndicesAndQsMap.end(); ++it )
+   for( it=bcNodeIndicesAndQsMap.begin(); it!=bcNodeIndicesAndQsMap.end(); ++it )
    {   
       Block3DPtr  block    = it->first;
-      LBMKernelPtr kernel = block->getKernel();
-      BCArray3D& bcMatrix = kernel->getBCProcessor()->getBCArray();
+      ILBMKernelPtr kernel = block->getKernel();
+      BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
 
       std::map< UbTupleInt3, std::vector<float> >::iterator it2;
       for( it2=it->second.begin(); it2!=it->second.end(); ++it2 )
@@ -1781,13 +1784,13 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
          std::vector< float >       qs  = it2->second;
 
          //SG_27.08.2010 
-         if(bcMatrix.isSolid(val<1>(pos), val<2>(pos), val<3>(pos))) continue;
+         if(bcMatrix->isSolid(val<1>(pos), val<2>(pos), val<3>(pos))) continue;
 
-         BoundaryConditionsPtr   bc = bcMatrix.getBC( val<1>(pos), val<2>(pos), val<3>(pos) );
+         BoundaryConditionsPtr   bc = bcMatrix->getBC( val<1>(pos), val<2>(pos), val<3>(pos) );
          if(!bc)
          {
             bc = BoundaryConditionsPtr(new BoundaryConditions);
-            bcMatrix.setBC( val<1>(pos), val<2>(pos), val<3>(pos), bc );
+            bcMatrix->setBC( val<1>(pos), val<2>(pos), val<3>(pos), bc );
          }
 
          double x1w = qs[D3Q27System::FENDDIR+1+0];
@@ -1810,14 +1813,14 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
             if( UbMath::greater(qs[fdir], -1.0) && UbMath::less( qs[fdir], bc->getQ(fdir) ) )
             {
                gotQs = true;
-               for(size_t index=0; index<this->bcAdapterVector.size(); index++)
-                  this->bcAdapterVector[index]->adaptBCForDirection( *this, bc, x1w, x2w, x3w, qs[fdir], fdir);
+               for(size_t index=0; index<this->bcAdapters.size(); index++)
+                  this->bcAdapters[index]->adaptBCForDirection( *this, bc, x1w, x2w, x3w, qs[fdir], fdir);
             }
          }
 
          if(gotQs)
-            for(size_t index=0; index<this->bcAdapterVector.size(); index++)
-               this->bcAdapterVector[index]->adaptBC( *this, bc, x1w, x2w, x3w);
+            for(size_t index=0; index<this->bcAdapters.size(); index++)
+               this->bcAdapters[index]->adaptBC( *this, bc, x1w, x2w, x3w);
       }
    }
 }

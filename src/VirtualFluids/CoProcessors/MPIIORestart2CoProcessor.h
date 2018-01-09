@@ -1,16 +1,21 @@
 #ifndef _MPIIORestart2CoProcessor_H_
 #define _MPIIORestart2CoProcessor_H_
 
+#include <memory>
+#include <string>
+
 #include "mpi.h"
 
 #include "CoProcessor.h"
-#include "Communicator.h"
-#include "WbWriter.h"
 
-#include <boost/shared_ptr.hpp>
+class Communicator;
+class Grid3D;
+class UbScheduler;
+class LBMKernel;
+class BCProcessor;
 
 class MPIIORestart2CoProcessor;
-typedef boost::shared_ptr<MPIIORestart2CoProcessor> MPIIORestart2CoProcessorPtr;
+typedef std::shared_ptr<MPIIORestart2CoProcessor> MPIIORestart2CoProcessorPtr;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
@@ -130,7 +135,7 @@ class MPIIORestart2CoProcessor: public CoProcessor
    };
 
 public:
-   MPIIORestart2CoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, CommunicatorPtr comm);
+   MPIIORestart2CoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm);
    virtual ~MPIIORestart2CoProcessor();
    //! Each timestep writes the grid into the files
    void process(double step);
@@ -148,15 +153,28 @@ public:
    void readDataSet(int step);
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
    void readBoundaryConds(int step);
+   //! The function sets number of ranks that read simultaneously 
+   void setChunk(int val);
+   //! The function sets LBMKernel
+   void setLBMKernel(std::shared_ptr<LBMKernel> kernel);
+   //!The function sets BCProcessor
+   void setBCProcessor(std::shared_ptr<BCProcessor> bcProcessor);
+   //!The function truncates the data files
+   void clearAllFiles(int step);
 
 protected:
    std::string path;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator> comm;
    bool mpiTypeFreeFlag;
 
 private:
 	MPI_Datatype gridParamType, blockParamType, block3dType, dataSetType, dataSetDoubleType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
    BlockParam blockParamStr;
+   int chunk;
+   std::shared_ptr<LBMKernel> lbmKernel;
+   std::shared_ptr<BCProcessor> bcProcessor;
+
+   DataSet* dataSetArrayTest;
 
 };
 

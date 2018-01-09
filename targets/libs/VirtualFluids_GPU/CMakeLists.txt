@@ -14,6 +14,7 @@ include(CMakePackage.cmake)
 buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
 generateExportHeader(${targetName} ${CMAKE_SOURCE_DIR}/src/${targetName})
 groupTarget(${targetName} ${libraryFolder})
+set_target_properties(${targetName} PROPERTIES LINK_FLAGS "/ignore:4251")
 
 #Specify the linking to 3rdParty libs
 include(3rdPartyLinking.cmake)

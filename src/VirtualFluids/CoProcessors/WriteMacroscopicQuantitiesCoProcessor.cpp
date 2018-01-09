@@ -3,10 +3,15 @@
 #include "BCProcessor.h"
 #include <vector>
 #include <string>
-#include <boost/foreach.hpp>
-#include "basics/writer/WbWriterVtkXmlASCII.h"
 
-using namespace std;
+#include "basics/writer/WbWriterVtkXmlASCII.h"
+#include "DataSet3D.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
+#include "Communicator.h"
+#include "LBMUnitConverter.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
 
 WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor()
 {
@@ -54,7 +59,7 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -63,7 +68,7 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
       }
    }
 
-   string pfilePath, partPath, subfolder, cfilePath;
+   std::string pfilePath, partPath, subfolder, cfilePath;
 
       subfolder = "mq"+UbSystem::toString(istep);
       pfilePath =  path+"/mq/"+subfolder;
@@ -71,21 +76,21 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
       partPath = pfilePath+"/mq"+UbSystem::toString(gridRank)+ "_" + UbSystem::toString(istep);
 
 
-   string partName = writer->writeOctsWithNodeData(partPath,nodes,cells,datanames,data);
+   std::string partName = writer->writeOctsWithNodeData(partPath,nodes,cells,datanames,data);
    size_t found=partName.find_last_of("/");
-   string piece = partName.substr(found+1);
+   std::string piece = partName.substr(found+1);
    piece = subfolder + "/" + piece;
 
-   vector<string> cellDataNames;
+   std::vector<std::string> cellDataNames;
    CommunicatorPtr comm = Communicator::getInstance();
-   vector<string> pieces = comm->gather(piece);
+   std::vector<std::string> pieces = comm->gather(piece);
    if (comm->getProcessID() == comm->getRoot())
    {
-      string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath,pieces,datanames,cellDataNames);
+      std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath,pieces,datanames,cellDataNames);
       found=pname.find_last_of("/");
       piece = pname.substr(found+1);
 
-      vector<string> filenames;
+      std::vector<std::string> filenames;
       filenames.push_back(piece);
       if (step == CoProcessor::scheduler->getMinBegin())
       {
@@ -111,11 +116,6 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
 //////////////////////////////////////////////////////////////////////////
 void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
 {
-   UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
-   UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
-   UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
-   double         dx           = grid->getDeltaX(block);
-
    double level = (double)block->getLevel();
    double blockID = (double)block->getGlobalID();
 
@@ -126,26 +126,21 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
    datanames.push_back("Vy");
    datanames.push_back("Vz");
    //datanames.push_back("Press");
-   //datanames.push_back("Level");
+   datanames.push_back("Level");
    //datanames.push_back("BlockID");
 
      
 
    data.resize(datanames.size());
 
-   LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();          
+   ILBMKernelPtr kernel = block->getKernel();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal vx1,vx2,vx3,rho;
 
    //knotennummerierung faengt immer bei 0 an!
    int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
-
-   //Funktionszeiger
-   typedef void (*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/,LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
-
-   CalcMacrosFct calcMacros = NULL;
 
    if(block->getKernel()->getCompressible())
    {
@@ -187,13 +182,14 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
       {
          for(size_t ix1=minX1; ix1<=maxX1; ix1++)
          {
-            if(!bcArray.isUndefined(ix1,ix2,ix3) && !bcArray.isSolid(ix1,ix2,ix3))
+            if(!bcArray->isUndefined(ix1,ix2,ix3) && !bcArray->isSolid(ix1,ix2,ix3))
             {
                int index = 0;
                nodeNumbers(ix1,ix2,ix3) = nr++;
-               nodes.push_back( makeUbTuple(float(val<1>(org) - val<1>(nodeOffset) + ix1*dx),
-                                            float(val<2>(org) - val<2>(nodeOffset) + ix2*dx),
-                                            float(val<3>(org) - val<3>(nodeOffset) + ix3*dx)) );
+               Vector3D worldCoordinates = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+               nodes.push_back( UbTupleFloat3(float(worldCoordinates[0]),
+                                              float(worldCoordinates[1]),
+                                              float(worldCoordinates[2]) ));
 
                distributions->getDistribution(f, ix1, ix2, ix3);
                calcMacros(f,rho,vx1,vx2,vx3);
@@ -229,7 +225,7 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
                //data[index++].push_back(vx2 * conv->getFactorVelocityLbToW2());
                //data[index++].push_back(vx3 * conv->getFactorVelocityLbToW2());
                //data[index++].push_back(press * conv->getFactorPressureLbToW2());
-               //data[index++].push_back(level);
+               data[index++].push_back(level);
                //data[index++].push_back(blockID);
             }
          }

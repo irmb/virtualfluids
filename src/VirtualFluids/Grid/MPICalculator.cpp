@@ -1,11 +1,15 @@
 #include "MPICalculator.h"
 #include <basics/utilities/UbException.h>
-#include <boost/foreach.hpp>
+
 #include "MathUtil.hpp"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
 
+#include "BCProcessor.h"
+#include "LBMKernel.h"
 //#define TIMING
 //#define PRECOLLISIONBC
+
+#include "Block3DConnector.h"
 
 MPICalculator::MPICalculator()
 {
@@ -80,10 +84,7 @@ void MPICalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             timer.resetAndStart();
 #endif
             //////////////////////////////////////////////////////////////////////////
-
-                        //applyPreCollisionBC(straightStartLevel, maxInitLevel);
-
-
+            applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
             calculateBlocks(straightStartLevel, maxInitLevel);
             ////calculateBlocks(minInitLevel, maxInitLevel, staggeredStep);
@@ -197,7 +198,7 @@ void MPICalculator::calculateBlocks(int startLevel, int maxInitLevel)
       {
          //timer.resetAndStart();
          //call LBM kernel
-         BOOST_FOREACH(Block3DPtr block, blocks[level])
+         for(Block3DPtr block : blocks[level])
          {
             blockTemp = block;
             block->getKernel()->calculate();
@@ -280,7 +281,7 @@ void MPICalculator::swapDistributions(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->swapDistributions();
       }
@@ -289,7 +290,7 @@ void MPICalculator::swapDistributions(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void MPICalculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors)
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       c->prepareForReceive();
       c->prepareForSend();
@@ -298,7 +299,7 @@ void MPICalculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connec
 //////////////////////////////////////////////////////////////////////////
 void MPICalculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors)
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       c->fillSendVectors();
       c->sendVectors();
@@ -307,7 +308,7 @@ void MPICalculator::connectorsSend(std::vector< Block3DConnectorPtr >& connector
 //////////////////////////////////////////////////////////////////////////
 void MPICalculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors)
 {
-   BOOST_FOREACH(Block3DConnectorPtr c, connectors)
+   for(Block3DConnectorPtr c : connectors)
    {
       c->receiveVectors();
       c->distributeReceiveVectors();
@@ -345,12 +346,24 @@ void MPICalculator::interpolation(int startLevel, int maxInitLevel)
 }
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+void MPICalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
+{
+   //startLevel bis maxInitLevel
+   for (int level = startLevel; level<=maxInitLevel; level++)
+   {
+      for(Block3DPtr block : blocks[level])
+      {
+         block->getKernel()->getBCProcessor()->applyPreCollisionBC();
+      }
+   }
+}
+//////////////////////////////////////////////////////////////////////////
 void MPICalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 {
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blocks[level])
+      for(Block3DPtr block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPostCollisionBC();
       }

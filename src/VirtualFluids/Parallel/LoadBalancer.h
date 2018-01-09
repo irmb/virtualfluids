@@ -9,6 +9,7 @@
 #include "Communicator.h"
 #include "MPICommunicator.h"
 #include "Grid3D.h"
+#include "LBMKernel.h"
 
 struct NeighbourProcess
 {
@@ -39,9 +40,9 @@ struct  TransferBlock
    Block3DPtr block;
 };
 
-#include <boost/smart_ptr.hpp>
+
 class LoadBalancer;
-typedef boost::shared_ptr<LoadBalancer> LoadBalancerPtr;
+typedef std::shared_ptr<LoadBalancer> LoadBalancerPtr;
 
 class LoadBalancer
 {
@@ -91,7 +92,7 @@ private:
    MPI_Comm mpi_comm;
 
    TransferBufferMap sendBuffer;
-   TransferBufferMap recieveBuffer;
+   TransferBufferMap receiveBuffer;
 
    std::vector<int> removeBlocksSend;
    

@@ -1,7 +1,7 @@
 #include "ThinWallNoSlipBCAlgorithm.h"
 
-#include "Data/D3Q27EsoTwist3DSplittedVector.h"
-
+#include "D3Q27EsoTwist3DSplittedVector.h"
+#include "BoundaryConditions.h"
 
 ThinWallNoSlipBCAlgorithm::ThinWallNoSlipBCAlgorithm()
 {

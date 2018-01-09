@@ -1,15 +1,19 @@
 #include "BCProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
+#include "DataSet3D.h"
+#include "ILBMKernel.h"
+#include "BCArray3D.h"
+#include "BCAlgorithm.h"
 
 BCProcessor::BCProcessor()
 {
    
 }
 //////////////////////////////////////////////////////////////////////////
-BCProcessor::BCProcessor(LBMKernelPtr kernel)
+BCProcessor::BCProcessor(ILBMKernelPtr kernel)
 {
-   DistributionArray3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
-   bcArray.resize( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID);
+   DistributionArray3DPtr distributions = std::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
+   bcArray = BCArray3DPtr(new BCArray3D( distributions->getNX1(), distributions->getNX2(), distributions->getNX3(), BCArray3D::FLUID));
 }
 //////////////////////////////////////////////////////////////////////////
 BCProcessor::~BCProcessor()
@@ -17,15 +21,20 @@ BCProcessor::~BCProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCProcessorPtr BCProcessor::clone(LBMKernelPtr kernel)
+BCProcessorPtr BCProcessor::clone(ILBMKernelPtr kernel)
 {
    BCProcessorPtr bcProcessor(new BCProcessor(kernel));
    return bcProcessor;
 }
 //////////////////////////////////////////////////////////////////////////
-BCArray3D& BCProcessor::getBCArray()
+BCArray3DPtr BCProcessor::getBCArray()
 { 
-   return this->bcArray; 
+   return bcArray; 
+}
+//////////////////////////////////////////////////////////////////////////
+void BCProcessor::setBCArray(BCArray3DPtr bcarray)
+{
+   bcArray = bcarray;
 }
 //////////////////////////////////////////////////////////////////////////
 void BCProcessor::addBC(BCAlgorithmPtr bc)
@@ -42,18 +51,14 @@ void BCProcessor::addBC(BCAlgorithmPtr bc)
 //////////////////////////////////////////////////////////////////////////
 void BCProcessor::applyPreCollisionBC()
 {
-   BOOST_FOREACH(BCAlgorithmPtr bc, preBC)
-   {
-      bc->apply();
-   }
+   for(BCAlgorithmPtr bc : preBC)
+      bc->applyBC();
 }
 //////////////////////////////////////////////////////////////////////////
 void BCProcessor::applyPostCollisionBC()
 {
-   BOOST_FOREACH(BCAlgorithmPtr bc, postBC)
-   {
-      bc->apply();
-   }
+    for (BCAlgorithmPtr bc : postBC)
+        bc->applyBC();
 }
 //////////////////////////////////////////////////////////////////////////
 void BCProcessor::clearBC()

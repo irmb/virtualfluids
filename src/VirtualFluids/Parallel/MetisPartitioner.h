@@ -13,12 +13,12 @@
 #include "metis.h"
 #include <vector>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "basics/utilities/UbLogger.h"
 #include "basics/utilities/UbSystem.h"
 
 class MetisPartitioner;
-typedef boost::shared_ptr<MetisPartitioner> MetisPartitionerPtr;
+typedef std::shared_ptr<MetisPartitioner> MetisPartitionerPtr;
 
 class MetisPartitioner
 {

@@ -1,7 +1,7 @@
 #ifndef LocalBlock3DConnector_H
 #define LocalBlock3DConnector_H
 
-#include <boost/weak_ptr.hpp>
+
 
 #include "Block3DConnector.h"
 #include "Block3D.h"
@@ -52,8 +52,8 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   boost::weak_ptr<Block3D> from;
-   boost::weak_ptr<Block3D> to;
+   std::weak_ptr<Block3D> from;
+   std::weak_ptr<Block3D> to;
 };
 
 #endif //LocalBlock3DConnector_H

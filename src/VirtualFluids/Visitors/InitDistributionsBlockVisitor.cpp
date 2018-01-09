@@ -2,6 +2,11 @@
 #include "LBMKernel.h"
 #include "BCProcessor.h"
 #include "Grid3DSystem.h"
+#include "DataSet3D.h"
+#include "EsoTwist3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
 
 InitDistributionsBlockVisitor::InitDistributionsBlockVisitor() 
    : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
@@ -133,7 +138,7 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
    if (blockRank == gridRank && block->isActive())
    {
-      LBMKernelPtr kernel = block->getKernel();
+       ILBMKernelPtr kernel = block->getKernel();
       if (!kernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
@@ -144,8 +149,8 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
       //UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-      BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
-      EsoTwist3DPtr distributions = boost::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
+      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+      EsoTwist3DPtr distributions = std::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
 
       LBMReal f[D3Q27System::ENDF+1];
 
@@ -153,14 +158,14 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
       size_t nx2 = distributions->getNX2();
       size_t nx3 = distributions->getNX3();
 
-      for(int ix3=0; ix3<bcArray.getNX3(); ix3++)
-         for(int ix2=0; ix2<bcArray.getNX2(); ix2++)
-            for(int ix1=0; ix1<bcArray.getNX1(); ix1++)
+      for(int ix3=0; ix3<bcArray->getNX3(); ix3++)
+         for(int ix2=0; ix2<bcArray->getNX2(); ix2++)
+            for(int ix1=0; ix1<bcArray->getNX1(); ix1++)
             {
-               UbTupleDouble3 coords = grid->getNodeCoordinates(block, ix1, ix2, ix3);
-               x1 = val<1>(coords);
-               x2 = val<2>(coords);
-               x3 = val<3>(coords);
+               Vector3D coords = grid->getNodeCoordinates(block, ix1, ix2, ix3);
+               x1 = coords[0];
+               x2 = coords[1];
+               x3 = coords[2];
 
                vx1 = muVx1.Eval();
                vx2 = muVx2.Eval();
@@ -169,36 +174,36 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
                //x-derivative
                double deltaX=dx*0.5;
-               x1 = val<1>(coords)+deltaX;
+               x1 = coords[0]+deltaX;
                double vx1Plusx1 = muVx1.Eval();
                double vx2Plusx1 = muVx2.Eval();
                double vx3Plusx1 = muVx3.Eval();
 
-               x1 = val<1>(coords)-deltaX;
+               x1 = coords[0]-deltaX;
                double vx1Minusx1 = muVx1.Eval();
                double vx2Minusx1 = muVx2.Eval();
                double vx3Minusx1 = muVx3.Eval();
 
                //y-derivative
-               x1 = val<1>(coords);
-               x2 = val<2>(coords)+deltaX;
+               x1 = coords[0];
+               x2 = coords[1]+deltaX;
                double vx1Plusx2 = muVx1.Eval();
                double vx2Plusx2 = muVx2.Eval();
                double vx3Plusx2 = muVx3.Eval();
 
-               x2 = val<2>(coords)-deltaX;
+               x2 = coords[1]-deltaX;
                double vx1Minusx2 = muVx1.Eval();
                double vx2Minusx2 = muVx2.Eval();
                double vx3Minusx2 = muVx3.Eval();
 
                //z-derivative
-               x2 = val<2>(coords);
-               x3 = val<3>(coords)+deltaX;
+               x2 = coords[1];
+               x3 = coords[2]+deltaX;
                double vx1Plusx3 = muVx1.Eval();
                double vx2Plusx3 = muVx2.Eval();
                double vx3Plusx3 = muVx3.Eval();
 
-               x3 = val<3>(coords)-deltaX;
+               x3 = coords[2]-deltaX;
                double vx1Minusx3 = muVx1.Eval();
                double vx2Minusx3 = muVx2.Eval();
                double vx3Minusx3 = muVx3.Eval();

@@ -7,11 +7,14 @@
 
 #include "PressureDifferenceCoProcessor.h"
 
-
-#include <iostream>
 #include <fstream>
 
-using namespace std;
+#include "IntegrateValuesHelper.h"
+#include "LBMUnitConverter.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
+
 
 PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path,
                                                                  IntegrateValuesHelperPtr h1, IntegrateValuesHelperPtr h2, 
@@ -27,19 +30,19 @@ PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(Grid3DPtr grid, UbS
    if (comm->getProcessID() == comm->getRoot())
    {
       std::ofstream ostr;
-      string fname = path;
+      std::string fname = path;
       ostr.open(fname.c_str(), std::ios_base::out);
       if(!ostr)
       { 
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out);}
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }
       ostr << "step" << "\t" << "nodes1" << "\t" << "nodes2" << "\t";
       ostr << "sRho1" << "\t" << "p1_1"  << "\t" << "sRho2" << "\t" << "p1_2" << "\t" << "deltaP1"<< "\t";
       ostr << "sPress1" << "\t" << "p2_1" << "\t" << "sPress2" << "\t" << "p2_2" << "\t" << "deltaP2";
-      ostr << endl;
+      ostr << std::endl;
       ostr.close();
 
       factor1 = (1.0/3.0)*rhoReal*(uReal/uLB)*(uReal/uLB);
@@ -80,12 +83,12 @@ void PressureDifferenceCoProcessor::collectData(double step)
       //double p2_2 = (press2/nn2) * factor2;
       //double dp2 = p2_1 - p2_2;
 
-      string fname = path;
+      std::string fname = path;
       ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
       if(!ostr)
       { 
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }
@@ -93,7 +96,7 @@ void PressureDifferenceCoProcessor::collectData(double step)
       ostr << istep << "\t" << nn1 << "\t"  << nn2 << "\t"; 
       ostr << rho1 << "\t" << p1_1 << "\t" << rho2 << "\t" << p1_2 << "\t" << dp1 << "\t";
       //ostr << press1 << "\t" << p2_1 << "\t" << press2 << "\t" << p2_2 << "\t" << dp2;
-      ostr << endl;
+      ostr << std::endl;
       ostr.close();
    }
 }

@@ -1,7 +1,12 @@
 #ifndef RatioSmoothBlockVisitor_H
 #define RatioSmoothBlockVisitor_H
 
+#include <string>
+
 #include "Block3DVisitor.h"
+
+class Grid3D;
+class Block3D;
 
 class RatioSmoothBlockVisitor : public Block3DVisitor
 {
@@ -27,11 +32,11 @@ public:
 
    std::string getSpecificDescription();
 
-   void visit(Grid3DPtr grid, Block3DPtr block);
+   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
 
 protected:
-   bool lookForExpand(Grid3DPtr grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
-   bool lookForCollapse(Grid3DPtr grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
+   bool lookForExpand(std::shared_ptr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
+   bool lookForCollapse(std::shared_ptr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
 
 private:
    int  maxLevelRatio;

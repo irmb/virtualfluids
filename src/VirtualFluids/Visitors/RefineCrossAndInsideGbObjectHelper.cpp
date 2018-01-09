@@ -6,6 +6,9 @@
 #include "OverlapBlockVisitor.h"
 #include "SetInterpolationDirsBlockVisitor.h"
 #include <D3Q27System.h>
+#include "Communicator.h"
+#include <Grid3D.h>
+#include <GbObject3D.h>
 
 
 RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel, CommunicatorPtr comm) :

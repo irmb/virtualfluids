@@ -9,9 +9,9 @@
 
 #include <MPICommunicator.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 class FETOLCommunicator;
-typedef boost::shared_ptr<FETOLCommunicator> BondCommunicatorPtr;
+typedef std::shared_ptr<FETOLCommunicator> BondCommunicatorPtr;
 
 ///\brief Communicator for agent-based framework BOND
 

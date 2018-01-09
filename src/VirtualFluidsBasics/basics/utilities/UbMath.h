@@ -389,166 +389,76 @@ namespace UbMath
 //       if(tmp>a4) tmp=a4;
 //       return tmp;
    }
-   /*=======================================================*/
-
-   class Vector3D
-   {
-   public:
-      // construction
-      Vector3D(); 
-      Vector3D(const double& fX1, const double& fX2, const double& fX3);
-      Vector3D(const Vector3D& rkV);
-
-      std::string toString() const;
-
-      // coordinate access
-      operator const double*() const;
-      operator double*();
-      double   operator[](const int& i) const;
-      double&  operator[](const int& i);
-      double   X1() const;
-      double&  X1();
-      double   X2() const;
-      double&  X2();                                    
-      double   X3() const;
-      double&  X3();
-
-      // assignment
-      Vector3D& operator=(const Vector3D& rkV);
-
-      // comparison
-      bool operator==(const Vector3D& rkV) const;
-      bool operator!=(const Vector3D& rkV) const;
-      bool operator< (const Vector3D& rkV) const;
-      bool operator<=(const Vector3D& rkV) const;
-      bool operator> (const Vector3D& rkV) const;
-      bool operator>=(const Vector3D& rkV) const;
-
-      // arithmetic operations
-      Vector3D operator+(const Vector3D& rkV) const;
-      Vector3D operator-(const Vector3D& rkV) const;
-      Vector3D operator*(const double& fScalar) const;
-      Vector3D operator/(const double& fScalar) const;
-      Vector3D operator-() const;
-
-      // arithmetic updates
-      Vector3D& operator+= (const Vector3D& rkV);
-      Vector3D& operator-= (const Vector3D& rkV);
-      Vector3D& operator*= (const double& fScalar);
-      Vector3D& operator/= (const double& fScalar);
-
-      Vector3D Add(Vector3D& vector);
-      Vector3D Subtract(Vector3D& vector);
-      Vector3D Scale(const double& x);
-
-      // vector operations
-      double Length () const;
-      double SquaredLength () const;
-      double Dot (const Vector3D& rkV) const;
-      double Normalize ();
-
-      // The cross products are computed using the right-handed rule.  Be aware
-      // that some graphics APIs use a left-handed rule.  If you have to compute
-      // a cross product with these functions and send the result to the API
-      // that expects left-handed, you will need to change sign on the vector
-      // (replace each component value c by -c).
-      Vector3D Cross (const Vector3D& rkV) const;
-      Vector3D UnitCross (const Vector3D& rkV) const;
-
-      // Compute the barycentric coordinates of the point with respect to the
-      // tetrahedron <V0,V1,V2,V3>, P = b0*V0 + b1*V1 + b2*V2 + b3*V3, where
-      // b0 + b1 + b2 + b3 = 1.
-      void GetBarycentrics (const Vector3D& rkV0, const Vector3D& rkV1, const Vector3D& rkV2, const Vector3D& rkV3, double afBary[4]) const;
-
-      // Gram-Schmidt orthonormalization.  Take linearly independent vectors
-      // U, V, and W and compute an orthonormal set (unit length, mutually
-      // perpendicular).
-      static void Orthonormalize (Vector3D& rkU, Vector3D& rkV, Vector3D& rkW);
-      static void Orthonormalize (Vector3D* akV);
-
-      // Input W must be initialized to a nonzero vector, output is {U,V,W},
-      // an orthonormal basis.  A hint is provided about whether or not W
-      // is already unit length.
-      static void GenerateOrthonormalBasis (Vector3D& rkU, Vector3D& rkV, Vector3D& rkW, bool bUnitLengthW);
-
-      // special vectors
-      static const Vector3D ZERO;
-      static const Vector3D UNIT_X1;
-      static const Vector3D UNIT_X2;
-      static const Vector3D UNIT_X3;
-
-   #ifdef CAB_RCF
-         template<class Archive>
-         void serialize(Archive & ar, const unsigned int version)
-         {
-            ar & m_afTuple;
-         }
-   #endif //CAB_RCF
-
-   protected:
-      // support for comparisons
-      int CompareArrays (const Vector3D& rkV) const;
-
-      double m_afTuple[3];
-   };
-   
-   //globaler multiplaktor mit skalar
-   Vector3D operator*(const double& fScalar, const Vector3D& rkV);
-   std::ostream& operator<<(std::ostream& os, const Vector3D& rkV);
 
    //////////////////////////////////////////////////////////////////////////
    //
    //constants
    //
    //////////////////////////////////////////////////////////////////////////
-   static const double c8o27=8./27.;
-   static const double c2o27=2./27.;
-   static const double c1o54=1./54.;
-   static const double c1o216=1./216.;
-   static const double c9o2=9./2.;
-   static const double c3o9=3./9.;
-   static const double c3o54=3./54.;
-   static const double c3o216=3./216.;
+   static const double c8o27 = 8. / 27.;
+   static const double c2o27 = 2. / 27.;
+   static const double c1o54 = 1. / 54.;
+   static const double c1o216 = 1. / 216.;
+   static const double c9o2 = 9. / 2.;
+   static const double c3o9 = 3. / 9.;
+   static const double c3o54 = 3. / 54.;
+   static const double c3o216 = 3. / 216.;
 
-   static const double c1o27=1./27.;
+   static const double c1o27 = 1. / 27.;
 
-   static const double c1o72  = 1./72.;          //0.01388888
-   static const double c1o36  = 1./36.;          //0.02777777
-   static const double c1o48  = 1./48.;          //0.02083333
-   static const double c1o32  = 1./32.;          //0.03125
-   static const double c1o24  = 1./24.;          //0.04166666
-   static const double c1o20  = 1./20.;          //0.05
-   static const double c1o18  = 1./18.;          //0.05555555
-   static const double c1o16  = 1./16.;          //0.0625
-   static const double c1o12  = 1./12.;          //0.08333333
-   static const double c1o9   = 1./9.;           //0.11111111
-   static const double c1o8   = 1./8.;           //0.125
-   static const double c1o6   = 1./6.;           //0.16666666
-   static const double c1o5   = 1./5.;           //0.2
-   static const double c1o4   = 1./4.;           //0.25
-   static const double c5o16  = 5./16.;          //0.3125
-   static const double c1o3   = 1./3.;           //0.33333333
-   static const double c3o8   = 3./8.;           //0.375
-   static const double c4o9   = 4./9.;           //0.44444444
-   static const double c1o2   = 1./2.;           //0.5
-   static const double c9o16  = 9./16.;          //0.5625
-   static const double c2o3   = 2./3.;           //0.66666666
-   static const double c3o4   = 3./4.;           //0.75
-   static const double c3o2   = 3./2.;           //1.5
-   static const double c4o3   = 4./3.;           //1.33333333
-   static const double c5o3   = 5./3.;           //1.66666666
-   static const double c9o5   = 9./5.;           //1.8
-   static const double c2o9   = 2./9.;           //0.22222222
-   static const double one_over_sqrt2 =  1.0/sqrt(2.0); //0.707106781
-   static const double one_over_sqrt3 =  1.0/sqrt(3.0); //0.577350269
-   static const double sqrt2  = sqrt(2.0); //1.4142135
-   static const double sqrt3  = sqrt(3.0); //1.7320508
+   static const double c1o72 = 1. / 72.;          //0.01388888
+   static const double c1o36 = 1. / 36.;          //0.02777777
+   static const double c1o48 = 1. / 48.;          //0.02083333
+   static const double c1o32 = 1. / 32.;          //0.03125
+   static const double c1o24 = 1. / 24.;          //0.04166666
+   static const double c1o20 = 1. / 20.;          //0.05
+   static const double c1o18 = 1. / 18.;          //0.05555555
+   static const double c1o16 = 1. / 16.;          //0.0625
+   static const double c1o12 = 1. / 12.;          //0.08333333
+   static const double c1o9 = 1. / 9.;           //0.11111111
+   static const double c1o8 = 1. / 8.;           //0.125
+   static const double c1o6 = 1. / 6.;           //0.16666666
+   static const double c1o5 = 1. / 5.;           //0.2
+   static const double c1o4 = 1. / 4.;           //0.25
+   static const double c5o16 = 5. / 16.;          //0.3125
+   static const double c1o3 = 1. / 3.;           //0.33333333
+   static const double c3o8 = 3. / 8.;           //0.375
+   static const double c4o9 = 4. / 9.;           //0.44444444
+   static const double c1o2 = 1. / 2.;           //0.5
+   static const double c9o16 = 9. / 16.;          //0.5625
+   static const double c2o3 = 2. / 3.;           //0.66666666
+   static const double c3o4 = 3. / 4.;           //0.75
+   static const double c3o2 = 3. / 2.;           //1.5
+   static const double c4o3 = 4. / 3.;           //1.33333333
+   static const double c5o3 = 5. / 3.;           //1.66666666
+   static const double c9o5 = 9. / 5.;           //1.8
+   static const double c2o9 = 2. / 9.;           //0.22222222
+   static const double one_over_sqrt2 = 1.0 / sqrt(2.0); //0.707106781
+   static const double one_over_sqrt3 = 1.0 / sqrt(3.0); //0.577350269
+   static const double sqrt2 = sqrt(2.0); //1.4142135
+   static const double sqrt3 = sqrt(3.0); //1.7320508
    static const double zeroReal = 0.0;
    static const double one = 1.0;
    static const double two = 2.0;
    static const double three = 3.0;
    static const double four = 4.0;
+   static const double five = 5.0;
+   static const double six = 6.0;
+   static const double seven = 7.0;
+   static const double eight = 8.0;
+   static const double nine = 9.0;
+   static const double fourteen = 14.0;
+   static const double fiveteen = 15.0;
    static const double sixteen = 16.0;
+   static const double twentyone = 21.0;
+   static const double twentyfour = 24.0;
+   static const double twentyeight = 28.0;
+   static const double twentynine = 29.0;
+   static const double fourtyeight = 48.0;
+   static const double fifty = 50.0;
+   static const double fiftysix = 56.0;
+   static const double c152 = 152.0;
+   static const double c130 = 130.0;
 }
 
 #endif

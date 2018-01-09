@@ -7,7 +7,7 @@
 
 
 class FETOLCalculator;
-typedef boost::shared_ptr<FETOLCalculator> FETOLCalculator2Ptr;
+typedef std::shared_ptr<FETOLCalculator> FETOLCalculator2Ptr;
 
 #include "CalculationManager.h"
 

@@ -10,7 +10,7 @@
 #include "basics/container/CbArray3D.h"
 
 class IncompressibleCumulantWithSpongeLayerLBMKernel;
-typedef boost::shared_ptr<IncompressibleCumulantWithSpongeLayerLBMKernel> LBMKernelETD3Q27CCLBWithSpongeLayerPtr;
+typedef std::shared_ptr<IncompressibleCumulantWithSpongeLayerLBMKernel> LBMKernelETD3Q27CCLBWithSpongeLayerPtr;
 
 //! \brief   Cascaded Cumulant LBM kernel. 
 //! \details CFD solver with sponge layer that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model <br>

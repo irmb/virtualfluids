@@ -15,8 +15,8 @@
 #include "LBMKernel.h"
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+
 
 class Block3D;
 

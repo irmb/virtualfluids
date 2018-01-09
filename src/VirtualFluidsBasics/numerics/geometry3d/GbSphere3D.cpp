@@ -73,11 +73,22 @@ void GbSphere3D::finalize()
 
    if(this->midPoint) this->midPoint->removeObserver(this);
 }
+/*=====================================================*/
+bool GbSphere3D::intersects(GbSphere3DPtr sphere)
+{
+    return this->getDistance(sphere->midPoint) < radius + sphere->radius;
+}
 /*=======================================================*/
 void GbSphere3D::setCenterCoordinates(const double& x1, const double& x2, const double& x3)
 {
    this->translate(x1-getX1Centroid(), x2-getX2Centroid(), x3-getX3Centroid() );
 }
+
+void GbSphere3D::setCenterCoordinates(const UbTupleDouble3& position)
+{
+    this->setCenterCoordinates(val<1>(position), val<2>(position), val<3>(position));
+}
+
 /*=====================================================*/
 double GbSphere3D::getDistance(GbPoint3D* p)
 {
@@ -410,7 +421,7 @@ void GbSphere3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& nodes, vector<UbTu
       float deltaPhi = (float)UbMath::PI/(float)segments;
       float phiX1a,phiX1b,phiX3a,phiX3b;
       float x1a,x2a,x3a,x1b,x2b,x3b,x1c,x2c,x3c,x1d,x2d,x3d;
-      int nodeNr = 0;
+      int nodeNr = nodes.size();
       for(phiX3a=(float)(0.5*UbMath::PI); phiX3a > (float)(-1.5*UbMath::PI); phiX3a-=deltaPhi)
       {
          for(phiX1a=0.0; phiX1a<UbMath::PI; phiX1a+=deltaPhi)

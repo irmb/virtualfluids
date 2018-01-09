@@ -1,42 +1,25 @@
 #include "BCAlgorithm.h"
 
+#include "BoundaryConditions.h"
+#include "EsoTwist3D.h"
+#include "BCArray3D.h"
+
+
 BCAlgorithm::BCAlgorithm() : compressible(false)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::apply()
+void BCAlgorithm::setNodeIndex(int x1, int x2, int x3)
 {
-   int cbc = 0;
-   int cn = 0;
-   int j;
-
-   int nsize = (int)nodeVector.size();
-
-      for (j = cn; j < nsize;)
-      {
-         x1 = nodeVector[j++];
-         x2 = nodeVector[j++];
-         x3 = nodeVector[j++];
-
-         bcPtr = bcVector[cbc];
-         cbc++;
-
-         applyBC();
-      }
-      cn = j;
+    this->x1 = x1;
+    this->x2 = x2;
+    this->x3 = x3;
 }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::addNode(int x1, int x2, int x3)
+void BCAlgorithm::setBcPointer(BoundaryConditionsPtr bcPtr)
 {
-   nodeVector.push_back(x1);
-   nodeVector.push_back(x2);
-   nodeVector.push_back(x3);
-}
-//////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::addBcPointer(BoundaryConditionsPtr bcPtr)
-{
-   bcVector.push_back(bcPtr);
+    this->bcPtr = bcPtr;
 }
 //////////////////////////////////////////////////////////////////////////
 void BCAlgorithm::setCompressible(bool c)
@@ -73,12 +56,6 @@ char BCAlgorithm::getType()
 bool BCAlgorithm::isPreCollision()
 {
    return preCollision;
-}
-//////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::clearData()
-{
-   nodeVector.clear();
-   bcVector.clear();
 }
 //////////////////////////////////////////////////////////////////////////
 BCArray3DPtr BCAlgorithm::getBcArray()

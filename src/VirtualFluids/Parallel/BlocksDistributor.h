@@ -4,10 +4,10 @@
 #include "Communicator.h"
 #include "Grid3D.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class BlocksDistributor;
-typedef boost::shared_ptr<BlocksDistributor> BlocksDistributorPtr;
+typedef std::shared_ptr<BlocksDistributor> BlocksDistributorPtr;
 
 class BlocksDistributor
 {

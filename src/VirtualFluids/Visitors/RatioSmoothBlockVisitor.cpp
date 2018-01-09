@@ -1,5 +1,7 @@
 #include "RatioSmoothBlockVisitor.h"
 #include "Grid3DSystem.h"
+#include "Block3D.h"
+#include "Grid3D.h"
 
 RatioSmoothBlockVisitor::RatioSmoothBlockVisitor(int levelDepth, bool includeNotActiveBlocks)
    :   Block3DVisitor(Grid3DSystem::MAXLEVEL, 0)

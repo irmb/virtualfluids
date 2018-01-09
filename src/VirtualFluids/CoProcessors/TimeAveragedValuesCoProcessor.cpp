@@ -1,15 +1,18 @@
 #include "TimeAveragedValuesCoProcessor.h"
+
+
 #include "LBMKernel.h"
 #include "BCProcessor.h"
-#include <vector>
-#include <sstream>
-#include <string>
-#include <iostream>
-#include <boost/foreach.hpp>
-#include "basics/writer/WbWriterVtkXmlASCII.h"
-#include "basics/utilities/UbMath.h"
 
-using namespace std;
+#include "basics/writer/WbWriterVtkXmlASCII.h"
+#include "DataSet3D.h"
+#include "Grid3D.h"
+#include "Block3D.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "IntegrateValuesHelper.h"
+#include "BCArray3D.h"
+
 
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor()
 {
@@ -26,6 +29,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
 {
    init(s);
    planarAveraging = false;
+   timeAveraging = true;
 }
 //////////////////////////////////////////////////////////////////////////
 TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
@@ -66,9 +70,16 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
 
       if (gridTimeStep == begin || gridTimeStep == 0)
       {
-         BOOST_FOREACH(Block3DPtr block, blockVector[level])
+         for(Block3DPtr block : blockVector[level])
          {
             UbTupleInt3 nx = grid->getBlockNX();
+            
+            if ((options&Density) == Density)
+            {
+               AverageValuesArray3DPtr ar = AverageValuesArray3DPtr(new AverageValuesArray3D(1, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               block->getKernel()->getDataSet()->setAverageDencity(ar);
+            }
+
             if ((options&Velocity) == Velocity)
             {
                AverageValuesArray3DPtr av = AverageValuesArray3DPtr(new AverageValuesArray3D(3, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
@@ -86,7 +97,6 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
                AverageValuesArray3DPtr at = AverageValuesArray3DPtr(new AverageValuesArray3D(10, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageTriplecorrelations(at);
             }
-
          }
       }
    }
@@ -97,9 +107,8 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
    //breakStep = scheduler->getMaxEnd()*(double)(1 << maxInitLevel);
    //UBLOG(logINFO, "breakSteps = " << breakStep);
 
-   iMinX1 = 1;
-   iMinX2 = 1;
-   iMinX3 = 1;
+   withGhostLayer = false;
+   iMinC = 1;
 
    lcounter = 0;
 
@@ -154,7 +163,7 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -163,21 +172,21 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
       }
    }
 
-   string pfilePath, partPath, subfolder, cfilePath;
+   std::string pfilePath, partPath, subfolder, cfilePath;
    subfolder = "tav" + UbSystem::toString(istep);
    pfilePath = path + "/tav/" + subfolder;
    partPath = pfilePath + "/tav" + UbSystem::toString(gridRank) + "_" + UbSystem::toString(istep);
 
-   string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
+   std::string partName = writer->writeOctsWithNodeData(partPath, nodes, cells, datanames, data);
    size_t found = partName.find_last_of("/");
-   string piece = partName.substr(found + 1);
+   std::string piece = partName.substr(found + 1);
    piece = subfolder + "/" + piece;
 
-   vector<string> cellDataNames;
-   vector<string> pieces = comm->gather(piece);
+   std::vector<std::string> cellDataNames;
+   std::vector<std::string> pieces = comm->gather(piece);
    if (root)
    {
-      string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
+      std::string pname = WbWriterVtkXmlASCII::getInstance()->writeParallelFile(pfilePath, pieces, datanames, cellDataNames);
       UBLOG(logINFO, "TimeAveragedValuesCoProcessor::collectData() step: " << istep);
    }
 
@@ -198,9 +207,18 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
    UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
    double         dx = grid->getDeltaX(block);
+   int            level = block->getLevel();      
 
    //Diese Daten werden geschrieben:
    datanames.resize(0);
+
+   datanames.push_back("level");
+   datanames.push_back("Rho");
+
+   if ((options&Density) == Density)
+   {
+      datanames.push_back("taRho");
+   }
 
    if ((options&Velocity) == Velocity)
    {
@@ -240,9 +258,10 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   LBMKernelPtr kernel = block->getKernel();
-   BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+   ILBMKernelPtr kernel = block->getKernel();
+   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
    DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+   AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
    AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
    AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
    AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
@@ -251,9 +270,9 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    //knotennummerierung faengt immer bei 0 an!
    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
 
-   int minX1 = iMinX1;
-   int minX2 = iMinX2;
-   int minX3 = iMinX3;
+   int minX1 = iMinC;
+   int minX2 = iMinC;
+   int minX3 = iMinC;
 
    int maxX1 = int(distributions->getNX1());
    int maxX2 = int(distributions->getNX2());
@@ -266,6 +285,9 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
    maxX2 -= 2;
    maxX3 -= 2;
 
+   LBMReal f[D3Q27System::ENDF + 1];
+   LBMReal vx1, vx2, vx3, rho;
+
    //D3Q27BoundaryConditionPtr bcPtr;
 
    int nr = (int)nodes.size();
@@ -276,13 +298,27 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
       {
          for (int ix1 = minX1; ix1 <= maxX1; ix1++)
          {
-            if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
+            if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3))
             {
                int index = 0;
                nodeNumbers(ix1, ix2, ix3) = nr++;
                nodes.push_back(makeUbTuple(float(val<1>(org) - val<1>(nodeOffset) + ix1*dx),
                   float(val<2>(org) - val<2>(nodeOffset) + ix2*dx),
                   float(val<3>(org) - val<3>(nodeOffset) + ix3*dx)));
+
+               data[index++].push_back(level);          
+
+                distributions->getDistribution(f, ix1, ix2, ix3);
+               calcMacros(f, rho, vx1, vx2, vx3);
+
+               data[index++].push_back(rho);
+
+
+
+               if ((options&Density) == Density)
+               {
+                  data[index++].push_back((*ar)(0, ix1, ix2, ix3));
+               }
 
                if ((options&Velocity) == Velocity)
                {
@@ -314,10 +350,6 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
                   data[index++].push_back((*at)(Vzzy, ix1, ix2, ix3));
                   data[index++].push_back((*at)(Vxyz, ix1, ix2, ix3));
                }
-
-               //LBMReal vp=(*av)(P, ix1, ix2, ix3);
-               //LBMReal vprms=(*av)(Prms, ix1, ix2, ix3);
-
             }
          }
       }
@@ -358,22 +390,23 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
       //#ifdef _OPENMP
       //   #pragma omp parallel for 
       //#endif
-            //BOOST_FOREACH(Block3DPtr block, blockVector[level])
+            //for(Block3DPtr block : blockVector[level])
       for (i = 0; i < blockVector[level].size(); i++)
       {
          Block3DPtr block = blockVector[level][i];
          if (block)
          {
-            LBMKernelPtr kernel = block->getKernel();
-            BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+            ILBMKernelPtr kernel = block->getKernel();
+            BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
             DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+            AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
             AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
             AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
             AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
 
-            int minX1 = iMinX1;
-            int minX2 = iMinX2;
-            int minX3 = iMinX3;
+            int minX1 = iMinC;
+            int minX2 = iMinC;
+            int minX3 = iMinC;
 
             int maxX1 = int(distributions->getNX1());
             int maxX2 = int(distributions->getNX2());
@@ -383,7 +416,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
             maxX2 -= 2;
             maxX3 -= 2;
 
-            LBMReal ux, uy, uz, uxx, uzz, uyy, uxy, uxz, uyz;
+            LBMReal rho, ux, uy, uz, uxx, uzz, uyy, uxy, uxz, uyz;
 
             for (int ix3 = minX3; ix3 <= maxX3; ix3++)
             {
@@ -391,11 +424,19 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                {
                   for (int ix1 = minX1; ix1 <= maxX1; ix1++)
                   {
-                     if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
+                     if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3))
                      {
                         //////////////////////////////////////////////////////////////////////////
                         //compute average values
                         //////////////////////////////////////////////////////////////////////////
+
+                        //mean density
+                        if ((options&Density) == Density)
+                        {
+                           rho = (*ar)(0, ix1, ix2, ix3) / timeSteps;
+                           
+                           (*ar)(0, ix1, ix2, ix3) = rho; 
+                        }
 
                         //mean velocity
                         if ((options&Velocity) == Velocity)
@@ -472,22 +513,23 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
 #ifdef _OPENMP
 #pragma omp for schedule(dynamic)
 #endif
-            //BOOST_FOREACH(Block3DPtr block, blockVector[level])
+            //for(Block3DPtr block : blockVector[level])
             for (i = 0; i < blockVector[level].size(); i++)
             {
                Block3DPtr block = blockVector[level][i];
                if (block)
                {
-                  LBMKernelPtr kernel = block->getKernel();
-                  BCArray3D& bcArray = kernel->getBCProcessor()->getBCArray();
+                  ILBMKernelPtr kernel = block->getKernel();
+                  BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
                   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+                  AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
                   AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
                   AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
                   AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
 
-                  int minX1 = iMinX1;
-                  int minX2 = iMinX2;
-                  int minX3 = iMinX3;
+                  int minX1 = iMinC;
+                  int minX2 = iMinC;
+                  int minX3 = iMinC;
 
                   int maxX1 = int(distributions->getNX1());
                   int maxX2 = int(distributions->getNX2());
@@ -503,7 +545,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                      {
                         for (int ix1 = minX1; ix1 <= maxX1; ix1++)
                         {
-                           if (!bcArray.isUndefined(ix1, ix2, ix3) && !bcArray.isSolid(ix1, ix2, ix3))
+                           if (!bcArray->isUndefined(ix1, ix2, ix3) && !bcArray->isSolid(ix1, ix2, ix3))
                            {
                               //////////////////////////////////////////////////////////////////////////
                               //read distribution
@@ -519,6 +561,12 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                               //////////////////////////////////////////////////////////////////////////
                               //compute subtotals
                               //////////////////////////////////////////////////////////////////////////
+
+                              //mean density
+                              if ((options&Density) == Density)
+                              {
+                                 (*ar)(0, ix1, ix2, ix3) = (*ar)(0, ix1, ix2, ix3) + rho;
+                              }
 
                               //mean velocity
                               if ((options&Velocity) == Velocity)
@@ -572,14 +620,14 @@ void TimeAveragedValuesCoProcessor::planarAverage(double step)
    if (root)
    {
       int istep = int(step);
-      string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
+      std::string fname = path + "/tav/" + "tav" + UbSystem::toString(istep) + ".csv";
 
 
       ostr.open(fname.c_str(), std::ios_base::out);
       if (!ostr)
       {
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
       }
@@ -616,13 +664,21 @@ void TimeAveragedValuesCoProcessor::planarAverage(double step)
             double numberOfFluidsNodes = intValHelp.getNumberOfFluidsNodes();
             if (numberOfFluidsNodes > 0)
             {
+               ostr << j + 0.5*dx;
+
+               ////mean density
+               //if ((options&Density) == Density)
+               //{
+               //   double rho = intValHelp.getARho() / numberOfFluidsNodes;
+               //}
+
                //mean velocity
                if ((options&Velocity) == Velocity)
                {
                   double Vx = intValHelp.getAVx() / numberOfFluidsNodes;
                   double Vy = intValHelp.getAVy() / numberOfFluidsNodes;
                   double Vz = intValHelp.getAVz() / numberOfFluidsNodes;
-                  ostr << j + 0.5*dx << ";" << Vx << ";" << Vy << ";" << Vz;
+                  ostr << ";" << Vx << ";" << Vy << ";" << Vz;
                }
                //fluctuations
                if ((options&Fluctuations) == Fluctuations)
@@ -668,7 +724,7 @@ void TimeAveragedValuesCoProcessor::reset()
 {
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      BOOST_FOREACH(Block3DPtr block, blockVector[level])
+      for(Block3DPtr block : blockVector[level])
       {
          if (block)
          {
@@ -679,5 +735,23 @@ void TimeAveragedValuesCoProcessor::reset()
       }
    }
 }
+//////////////////////////////////////////////////////////////////////////
+void TimeAveragedValuesCoProcessor::setWithGhostLayer(bool val)
+{
+   withGhostLayer = val;
 
+   if (withGhostLayer)
+   {
+      iMinC = 0;
+   } 
+   else
+   {
+      iMinC = 1;
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+bool TimeAveragedValuesCoProcessor::getWithGhostLayer()
+{
+   return withGhostLayer;
+}
 

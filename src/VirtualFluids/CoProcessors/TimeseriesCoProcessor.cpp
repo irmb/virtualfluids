@@ -7,11 +7,14 @@
 
 #include "TimeseriesCoProcessor.h"
 
-
-#include <iostream>
 #include <fstream>
 
-using namespace std;
+#include "IntegrateValuesHelper.h"
+#include "LBMUnitConverter.h"
+#include "Communicator.h"
+#include "UbScheduler.h"
+#include "Grid3D.h"
+
 
 TimeseriesCoProcessor::TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
                                                              IntegrateValuesHelperPtr h1,
@@ -31,7 +34,7 @@ TimeseriesCoProcessor::TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
       if(!ostr)
       { 
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }
@@ -73,7 +76,7 @@ void TimeseriesCoProcessor::collectData(double step)
       if(!ostr)
       { 
          ostr.clear();
-         string path = UbSystem::getPathFromString(fname);
+         std::string path = UbSystem::getPathFromString(fname);
          if(path.size()>0){ UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);}
          if(!ostr) throw UbException(UB_EXARGS,"couldn't open file "+fname);
       }

@@ -2,32 +2,24 @@
 #define D3Q19AMRTRIFACEMESHINTERACTOR_H
 
 #include <string>
-#include <sstream>
 #include <vector>
-#include <list>
 #include <map>
-#include <cmath>
-
+#include <memory>
 
 #include "D3Q27Interactor.h"
-#include <numerics/geometry3d/GbTriFaceMesh3D.h>
-
-class UbFileInput;
-class UbFileOutput;
-class GbObject3D;
-class Grid3D;
-
-//////////////////////////////////////////////////////////////////////////
-
-#include <boost/shared_ptr.hpp>
+#include "CbArray3D.h"
 
 class D3Q27TriFaceMeshInteractor;
-typedef boost::shared_ptr<D3Q27TriFaceMeshInteractor> D3Q27TriFaceMeshInteractorPtr;
+typedef std::shared_ptr<D3Q27TriFaceMeshInteractor> D3Q27TriFaceMeshInteractorPtr;
 
-//////////////////////////////////////////////////////////////////////////
-// D3Q27TriFaceMeshInteractor
-//
-//////////////////////////////////////////////////////////////////////////
+
+class GbObject3D;
+class Grid3D;
+class BCAdapter;
+class GbTriFaceMesh3D;
+class Block3D;
+
+
 class D3Q27TriFaceMeshInteractor : public D3Q27Interactor 
 {
 public:
@@ -35,10 +27,10 @@ public:
    static const int STRESSALTERNATIV=1;
 
    D3Q27TriFaceMeshInteractor();
-   D3Q27TriFaceMeshInteractor(Grid3DPtr grid, std::string name="D3Q27TriFaceMeshInteractor");
-   D3Q27TriFaceMeshInteractor(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type);
-   D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type);
-   D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type, Interactor3D::Accuracy a);
+   D3Q27TriFaceMeshInteractor(std::shared_ptr<Grid3D> grid, std::string name="D3Q27TriFaceMeshInteractor");
+   D3Q27TriFaceMeshInteractor(std::shared_ptr<GbObject3D> geoObject3D, std::shared_ptr<Grid3D> grid, int type);
+   D3Q27TriFaceMeshInteractor(std::shared_ptr<GbTriFaceMesh3D> triFaceMesh, std::shared_ptr<Grid3D> grid, std::shared_ptr<BCAdapter> bcAdapter, int type);
+   D3Q27TriFaceMeshInteractor(std::shared_ptr<GbTriFaceMesh3D> triFaceMesh, std::shared_ptr<Grid3D> grid, std::shared_ptr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy a);
    //D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, std::string name="D3Q27TriFaceMeshInteractor");
 
    ~D3Q27TriFaceMeshInteractor();
@@ -52,7 +44,7 @@ public:
    void setQs(const double& timeStep);
    void refineBlockGridToLevel(int level, double startDistance, double stopDistance);
 
-   bool setDifferencesToGbObject3D(const Block3DPtr block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/);
+   bool setDifferencesToGbObject3D(const std::shared_ptr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/);
 
    void setRegardPointInObjectTest( bool opt ) { this->regardPIOTest = opt; }
 
@@ -86,7 +78,7 @@ public:
    bool   getForceShiftPolicy() { return forceshiftpolicy;}
    bool   getVelocityShiftPolicy() { return velocityshiftpolicy;}
 
-   void clearTransNodeIndicesAndQsMap() { this->transNodeIndicesAndQsMap.clear();}
+   void clearBcNodeIndicesAndQsMap() { this->bcNodeIndicesAndQsMap.clear();}
 
    virtual std::string toString();
 
@@ -103,7 +95,7 @@ protected:
 
    void reinitWithStoredQs(const double& timeStep);
    //   bool reinitWithStoredQsFlag;
-   std::map< Block3DPtr, std::map < UbTupleInt3, std::vector< float > > > transNodeIndicesAndQsMap;    //!!! es kann sein, dass in diesem interactor
+   std::map< std::shared_ptr<Block3D>, std::map < UbTupleInt3, std::vector< float > > > bcNodeIndicesAndQsMap;    //!!! es kann sein, dass in diesem interactor
    //an eine rpos eine BC gesetzt wurde, aber derselbe node in
    //in einem anderen in einen anderen Typ (z.B. Solid) geaendert
    //wurde --> es ist keine BC mehr an der stelle!

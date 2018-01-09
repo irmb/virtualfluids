@@ -13,6 +13,7 @@
 #include "D3Q27System.h"
 #include "basics/container/CbArray3D.h"
 #include "basics/container/CbArray4D.h"
+#include "EsoTwist3D.h"
 
 //! \brief   Exchange data between blocks. 
 //! \details Connector send and receive full distributions between two blocks in shared memory.

@@ -4,7 +4,9 @@
 #include "OverlapBlockVisitor.h"
 #include "SetInterpolationDirsBlockVisitor.h"
 #include <D3Q27System.h>
-
+#include <Grid3D.h>
+#include <D3Q27TriFaceMeshInteractor.h>
+#include "Communicator.h"
 
 RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(Grid3DPtr grid, int refineLevel, D3Q27TriFaceMeshInteractorPtr objectIter, double startDistance, double stopDistance, CommunicatorPtr comm) :
    grid(grid),

@@ -10,7 +10,7 @@
 #include <basics/utilities/UbException.h>
 #include <basics/transmitter/TbTransmitter.h>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /*================================================================================*/
 /*   TbLocalTransmitter, TbVectorSenderLocal, TbVectorReceiverLocal               */
@@ -33,7 +33,7 @@ template<typename T>
 class TbLocalTransmitter : public TbTransmitter<T>
 {
 public:
-   typedef boost::shared_ptr< TbLocalTransmitter<T> > TbLocalTransmitterPtr;
+   typedef std::shared_ptr< TbLocalTransmitter<T> > TbLocalTransmitterPtr;
 
    typedef T value_type;
 
@@ -93,7 +93,7 @@ public:
    typedef T value_type;
 
 public:
-   TbVectorSenderLocal(boost::shared_ptr< TbVectorReceiverLocal< value_type > > receiver) 
+   TbVectorSenderLocal(std::shared_ptr< TbVectorReceiverLocal< value_type > > receiver) 
       : TbTransmitter< value_type >(), receiver(receiver) 
    {
 
@@ -124,7 +124,7 @@ public:
    std::string toString() const { return "TbVectorSenderLocal<"+(std::string)typeid(T).name()+">"; }
 
 protected:
-   boost::shared_ptr< TbVectorReceiverLocal< value_type > > receiver; 
+   std::shared_ptr< TbVectorReceiverLocal< value_type > > receiver; 
 };
                                         
 #endif //TOTRANSMITTERLOCAL_H 
