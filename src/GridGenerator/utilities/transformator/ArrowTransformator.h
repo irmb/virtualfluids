@@ -3,14 +3,14 @@
 
 #include <memory>
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 class Arrow;
 
 class ArrowTransformator
 {
 public:
-    static GridGenerator_EXPORT std::shared_ptr<ArrowTransformator> makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
+    static VF_PUBLIC std::shared_ptr<ArrowTransformator> makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
 	virtual ~ArrowTransformator() {}
 
 protected:

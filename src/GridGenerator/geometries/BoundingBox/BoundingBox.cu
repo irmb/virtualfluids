@@ -235,5 +235,5 @@ template <typename T>
  }
 
 
- template class GridGenerator_EXPORT BoundingBox<int>;
- template class GridGenerator_EXPORT BoundingBox<doubflo>;
+ template class VF_PUBLIC BoundingBox<int>;
+ template class VF_PUBLIC BoundingBox<doubflo>;

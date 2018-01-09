@@ -2,9 +2,10 @@
 #define SimulationFileNames_H
 
 #include <string>
-#include "GridGenerator_EXPORT.h"
 
-struct GridGenerator_EXPORT simulationFileNames
+#include <VirtualFluidsDefinitions.h>
+
+struct VF_PUBLIC simulationFileNames
 {
 	static const std::string coordX;
 	static const std::string coordY;

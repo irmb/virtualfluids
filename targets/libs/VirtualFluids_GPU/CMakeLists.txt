@@ -12,7 +12,6 @@ include(CMakePackage.cmake)
 #https://stackoverflow.com/questions/27442885/syntax-error-with-stdnumeric-limitsmax
 
 buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-generateExportHeader(${targetName} ${CMAKE_SOURCE_DIR}/src/${targetName})
 groupTarget(${targetName} ${libraryFolder})
 set_target_properties(${targetName} PROPERTIES LINK_FLAGS "/ignore:4251")
 

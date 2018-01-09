@@ -41,21 +41,14 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/BuildTargetUtilities.cmake
 include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/EndingsToCollect.cmake)
 include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 
-
 #############################################################
 ###                   PROJECT SETTINGS                    ###
 #############################################################
 project(HULC)
 
-option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
-if(HULC.BUILD_GPU_CODE)
-  enable_language(CUDA)
-endif()
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries")
-sharedLibs()
+include_directories(${CMAKE_BINARY_DIR})
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
@@ -73,9 +66,28 @@ IF(MSVC)
 ENDIF(MSVC)
 
 #############################################################
+###                         OPTIONS                       ###
+#############################################################
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
+option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
+option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
+option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
+option(HULC.BUILD_TESTS "Build shared libraries" ON)
+
+option(VF_DOUBLE_ACCURACY "Build shared libraries" ON)
+
+if(HULC.BUILD_GPU_CODE)
+  enable_language(CUDA)
+endif()
+sharedLibs()
+
+include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FindCompiler.cmake)
+configure_file(src/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
+
+#############################################################
 ###                  Virtual Fluids                       ###
 #############################################################
-option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
 IF (HULC.BUILD_VirtualFluids)
   add_definitions(-DVF_METIS)
   add_definitions(-DVF_MPI)
@@ -91,7 +103,6 @@ ENDIF()
 #############################################################
 ###                dem_coupling                           ###
 #############################################################
-option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
 IF (HULC.BUILD_dem_coupling AND HULC.BUILD_VirtualFluids)
   link_directories("${PE_BINARY_DIR}/src/pe" "${PE_BINARY_DIR}/src/core" "${PE_BINARY_DIR}/src/blockforest" "${PE_BINARY_DIR}/src/domain_decomposition" )
 IF(MSVC)
@@ -119,7 +130,6 @@ ENDIF()
 #############################################################
 ###                     JSONCPP                           ###
 #############################################################
-option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
 IF (NOT HULC.BUILD_JSONCPP)
    MESSAGE( STATUS "Build Input Project without JsonCpp." )
 ELSE()
@@ -134,8 +144,7 @@ ENDIF()
 add_subdirectory(targets/apps/HULC)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
 
-set(BUILD_TESTS ON CACHE BOOL "Build shared libraries")
-if(BUILD_TESTS)
+if(HULC.BUILD_TESTS)
   add_subdirectory(3rdParty/googletest)
   if (HULC.BUILD_GPU_CODE)
   add_subdirectory(targets/tests/GridGeneratorTest)

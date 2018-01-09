@@ -2,7 +2,7 @@
 #define TriangleNeighborFinder_h
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 
@@ -19,11 +19,11 @@ struct IntegerPtr2D {
 class TriangleNeighborFinder
 {
 public:
-    GridGenerator_EXPORT TriangleNeighborFinder(Triangle *triangles_ptr, int size);
-    GridGenerator_EXPORT ~TriangleNeighborFinder();
+    VF_PUBLIC TriangleNeighborFinder(Triangle *triangles_ptr, int size);
+    VF_PUBLIC ~TriangleNeighborFinder();
     
-    void GridGenerator_EXPORT fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
-	void GridGenerator_EXPORT fillWithNeighborAngles(Geometry *geom) const;
+    void VF_PUBLIC fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
+	void VF_PUBLIC fillWithNeighborAngles(Geometry *geom) const;
 
 private:
     void initalSortedInSpaceWithCoords(Triangle *triangles_ptr, int size);

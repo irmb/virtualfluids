@@ -1,7 +1,7 @@
 //#ifndef PolyDataWriterWrapper_H
 //#define PolyDataWriterWrapper_H
 //
-//#include "GridGenerator_EXPORT.h"
+//
 //#include <string>
 //#include <memory>
 //
@@ -11,11 +11,11 @@
 //class PolyDataWriterWrapper
 //{
 //public:
-//	GridGenerator_EXPORT PolyDataWriterWrapper();
-//	GridGenerator_EXPORT ~PolyDataWriterWrapper();
+//	VF_PUBLIC PolyDataWriterWrapper();
+//	VF_PUBLIC ~PolyDataWriterWrapper();
 //
-//	GridGenerator_EXPORT virtual void addVectorArrow(std::shared_ptr<const Arrow> arrow);
-//	GridGenerator_EXPORT virtual void writePolyDataToFile(const std::string &filename) const;
+//	VF_PUBLIC virtual void addVectorArrow(std::shared_ptr<const Arrow> arrow);
+//	VF_PUBLIC virtual void writePolyDataToFile(const std::string &filename) const;
 //
 //private:
 //    std::shared_ptr<PolyDataWriter> writer;

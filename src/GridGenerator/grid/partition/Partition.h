@@ -2,7 +2,7 @@
 #define Partition_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 #include <string>
@@ -15,7 +15,7 @@ struct Vertex;
 struct Grid;
 class Transformator;
 
-class GridGenerator_EXPORT Partition
+class VF_PUBLIC Partition
 {
 public:
     static void partitionGridMesh(const Grid &grid);

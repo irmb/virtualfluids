@@ -2,7 +2,7 @@
 #define _APP_H_
 #include <string>
 
-#include <VirtualFluids_GPU_EXPORT.h>
+#include <VirtualFluidsDefinitions.h>
 
 ////Gemeinsame Variablen
 //Buffer2D <float> sbuf_t; 
@@ -19,8 +19,8 @@
 class App
 {
 public:
-	VirtualFluids_GPU_EXPORT static App* getInstanz();
-	VirtualFluids_GPU_EXPORT void run(std::string &cstr);
+	VF_PUBLIC static App* getInstanz();
+    VF_PUBLIC void run(std::string &cstr);
 protected:
 
 private:

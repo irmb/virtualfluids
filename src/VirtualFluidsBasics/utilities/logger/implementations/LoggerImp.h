@@ -2,7 +2,7 @@
 #define LoggerImp_H
 
 
-#include "VirtualFluidsBasics_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 
 
 #include <string>
@@ -14,7 +14,7 @@
 namespace logging
 {
 
-    class VirtualFluidsBasics_EXPORT LoggerImp : public Logger
+    class VF_PUBLIC LoggerImp : public Logger
     {
     public:
         LoggerImp(std::ostream &stream);

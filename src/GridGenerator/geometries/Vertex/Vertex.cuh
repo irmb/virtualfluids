@@ -2,7 +2,7 @@
 #define VERTEX_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <stdio.h>
 #include <cuda_runtime.h>
@@ -11,7 +11,7 @@
 
 class VertexMemento;
 
-struct GridGenerator_EXPORT Vertex 
+struct VF_PUBLIC Vertex 
 {
 public:
     doubflo x, y, z;

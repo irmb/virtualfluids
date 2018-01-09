@@ -28,5 +28,6 @@ typedef float doubflo;
 
 
 #include <GridGenerator/utilities/cuda/cudaDefines.h>
+#include "VirtualFluidsDefinitions.h"
 
 #endif // !global_h

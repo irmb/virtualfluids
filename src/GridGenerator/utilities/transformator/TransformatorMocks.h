@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 
-#include "GridGenerator_EXPORT.h"
+
 #include "GridGenerator/global.h"
 
 #include "Transformator.h"

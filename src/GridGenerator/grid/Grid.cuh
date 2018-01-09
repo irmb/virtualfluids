@@ -2,7 +2,7 @@
 #define GRID_H
 
 #include "GridGenerator/global.h"
-#include <GridGenerator_EXPORT.h>
+
 
 #include <stdio.h>
 #include <sstream>
@@ -16,7 +16,7 @@ struct Triangle;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-struct GridGenerator_EXPORT Grid 
+struct VF_PUBLIC Grid 
 {
 	char *field;
 	int startX, startY, startZ;

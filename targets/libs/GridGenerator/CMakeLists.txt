@@ -8,7 +8,6 @@ set(includeDirectories ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/${targetN
 include(CMakePackage.cmake)
 
 buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-generateExportHeader(${targetName} ${CMAKE_SOURCE_DIR}/src/${targetName})
 groupTarget(${targetName} ${libraryFolder})
 
 # Specify the linking to 3rdParty libs

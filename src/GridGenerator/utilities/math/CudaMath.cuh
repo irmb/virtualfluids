@@ -2,7 +2,7 @@
 #define CudaMath_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include "cuda.h"
 #include <cuda_runtime.h>
@@ -10,7 +10,7 @@
 
 #define EPSILON FLT_EPSILON
 
-struct GridGenerator_EXPORT CudaMath
+struct VF_PUBLIC CudaMath
 {
 	HOSTDEVICE static bool equal(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff = EPSILON);
 	HOSTDEVICE static bool lessEqual(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff = EPSILON);

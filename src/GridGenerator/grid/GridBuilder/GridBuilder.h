@@ -2,7 +2,7 @@
 #define GridBuilder_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 #include <string>
@@ -32,7 +32,7 @@ class BoundingBox;
 class GridBuilder
 {
 public:
-    virtual GridGenerator_EXPORT ~GridBuilder() {};
+    virtual VF_PUBLIC ~GridBuilder() {};
 
     virtual void addGrid(doubflo length, doubflo width, doubflo high, doubflo delta, std::string distribution, std::shared_ptr<Transformator> trans) = 0;
     virtual void meshGeometry(std::string input, int level) = 0;

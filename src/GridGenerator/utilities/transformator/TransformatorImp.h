@@ -1,7 +1,7 @@
 #ifndef TransformatorImp_h
 #define TransformatorImp_h
 
-#include "GridGenerator_EXPORT.h"
+
 #include "GridGenerator/global.h"
 #include <exception>
 
@@ -28,25 +28,25 @@ class TransformatorImp
 	: public Transformator, public ArrowTransformator
 {
 public:
-	GridGenerator_EXPORT TransformatorImp();
-	GridGenerator_EXPORT TransformatorImp(const TransformatorImp& trafo);
-	GridGenerator_EXPORT TransformatorImp(doubflo delta, Vertex& translater);
-	GridGenerator_EXPORT TransformatorImp(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
-	GridGenerator_EXPORT virtual ~TransformatorImp();
+	VF_PUBLIC TransformatorImp();
+	VF_PUBLIC TransformatorImp(const TransformatorImp& trafo);
+	VF_PUBLIC TransformatorImp(doubflo delta, Vertex& translater);
+	VF_PUBLIC TransformatorImp(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
+	VF_PUBLIC virtual ~TransformatorImp();
 	
-	GridGenerator_EXPORT void transformWorldToGrid(Triangle &value) const;
-	GridGenerator_EXPORT void transformWorldToGrid(Geometry &geom) const;
-	GridGenerator_EXPORT void transformWorldToGrid(Vertex &value) const;
+	VF_PUBLIC void transformWorldToGrid(Triangle &value) const;
+	VF_PUBLIC void transformWorldToGrid(Geometry &geom) const;
+	VF_PUBLIC void transformWorldToGrid(Vertex &value) const;
 
-    GridGenerator_EXPORT void transformGridToWorld(Triangle &t) const;
-	GridGenerator_EXPORT void transformGridToWorld(Vertex &value) const;
+    VF_PUBLIC void transformGridToWorld(Triangle &t) const;
+	VF_PUBLIC void transformGridToWorld(Vertex &value) const;
 
-	GridGenerator_EXPORT void transformGridToWorld(BoundingBox<doubflo> &box) const;
-	GridGenerator_EXPORT void transformWorldToGrid(BoundingBox<doubflo> &box) const;
+	VF_PUBLIC void transformGridToWorld(BoundingBox<doubflo> &box) const;
+	VF_PUBLIC void transformWorldToGrid(BoundingBox<doubflo> &box) const;
 
-	GridGenerator_EXPORT bool operator==(const TransformatorImp& trafo) const;
+	VF_PUBLIC bool operator==(const TransformatorImp& trafo) const;
 
-	GridGenerator_EXPORT virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
+	VF_PUBLIC virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
 
 private:
 	doubflo delta;

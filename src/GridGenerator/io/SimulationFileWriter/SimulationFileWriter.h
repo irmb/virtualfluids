@@ -1,7 +1,7 @@
 #ifndef SimulationFileWriter_H
 #define SimulationFileWriter_H
 
-#include "GridGenerator_EXPORT.h"
+
 
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@ class GridBuilder;
 class SimulationFileWriter
 {
 public:
-	GridGenerator_EXPORT static void writeSimulationFiles(std::string folder, std::shared_ptr<GridBuilder> builder, bool binaer, std::shared_ptr<Transformator> trans);
+	VF_PUBLIC static void writeSimulationFiles(std::string folder, std::shared_ptr<GridBuilder> builder, bool binaer, std::shared_ptr<Transformator> trans);
 
 private:
     SimulationFileWriter() {};

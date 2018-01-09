@@ -3,12 +3,13 @@
 
 #include <string>
 #include <memory>
-#include "GridGenerator_EXPORT.h"
+
+#include <VirtualFluidsDefinitions.h>
 
 class Transformator;
 struct Grid;
 
-class GridGenerator_EXPORT GridVTKWriter
+class VF_PUBLIC GridVTKWriter
 {
 public:
     static void writeGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer = true);

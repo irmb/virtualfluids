@@ -2,7 +2,7 @@
 #define GridBuilderImp_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 #include <string>
@@ -23,39 +23,39 @@ class BoundingBox;
 class GridBuilderImp : public GridBuilder
 {
 public:
-    GridGenerator_EXPORT static std::shared_ptr<GridBuilder> make(std::string);
+    VF_PUBLIC static std::shared_ptr<GridBuilder> make(std::string);
 
-    GridGenerator_EXPORT virtual ~GridBuilderImp();
+    VF_PUBLIC virtual ~GridBuilderImp();
 
-    GridGenerator_EXPORT virtual void addGrid(doubflo length, doubflo width, doubflo high, doubflo delta, std::string distribution, std::shared_ptr<Transformator> trans);
+    VF_PUBLIC virtual void addGrid(doubflo length, doubflo width, doubflo high, doubflo delta, std::string distribution, std::shared_ptr<Transformator> trans);
 
-	GridGenerator_EXPORT virtual void meshGeometry(std::string input, int level);
-    GridGenerator_EXPORT virtual void deleteSolidNodes();
+	VF_PUBLIC virtual void meshGeometry(std::string input, int level);
+    VF_PUBLIC virtual void deleteSolidNodes();
 
-	GridGenerator_EXPORT virtual void flood(Vertex &startFlood, int level);
+	VF_PUBLIC virtual void flood(Vertex &startFlood, int level);
 
-	GridGenerator_EXPORT virtual void writeGridToVTK(std::string output, int level);
-	GridGenerator_EXPORT virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
+	VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
+	VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
 
-	GridGenerator_EXPORT virtual std::shared_ptr<GridWrapper> getKernel(int level, int box);
+	VF_PUBLIC virtual std::shared_ptr<GridWrapper> getKernel(int level, int box);
 
-    GridGenerator_EXPORT virtual void createBoundaryConditions();
+    VF_PUBLIC virtual void createBoundaryConditions();
 
-    GridGenerator_EXPORT virtual unsigned int getNumberOfNodes(unsigned int level) const;;
-    GridGenerator_EXPORT virtual std::vector<std::vector<std::vector<doubflo> > > getQsValues() const;
+    VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;;
+    VF_PUBLIC virtual std::vector<std::vector<std::vector<doubflo> > > getQsValues() const;
 
-    GridGenerator_EXPORT virtual int getBoundaryConditionSize(int rb) const;
-    GridGenerator_EXPORT virtual std::vector<std::string> getTypeOfBoundaryConditions() const;
+    VF_PUBLIC virtual int getBoundaryConditionSize(int rb) const;
+    VF_PUBLIC virtual std::vector<std::string> getTypeOfBoundaryConditions() const;
 
-    GridGenerator_EXPORT virtual void getNodeValues(doubflo *xCoords, doubflo *yCoords, doubflo *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
-    GridGenerator_EXPORT virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
+    VF_PUBLIC virtual void getNodeValues(doubflo *xCoords, doubflo *yCoords, doubflo *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
+    VF_PUBLIC virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
 
-    GridGenerator_EXPORT virtual void setQs(doubflo** q27, int* k, int channelSide, unsigned int level) const;
-    GridGenerator_EXPORT virtual void setOutflowValues(doubflo* RhoBC, int* kN, int channelSide, int level) const;
-    GridGenerator_EXPORT virtual void setVelocityValues(doubflo* vx, doubflo* vy, doubflo* vz, int channelSide, int level) const;
-    GridGenerator_EXPORT virtual void setPressValues(doubflo* RhoBC, int* kN, int channelSide, int level) const;
+    VF_PUBLIC virtual void setQs(doubflo** q27, int* k, int channelSide, unsigned int level) const;
+    VF_PUBLIC virtual void setOutflowValues(doubflo* RhoBC, int* kN, int channelSide, int level) const;
+    VF_PUBLIC virtual void setVelocityValues(doubflo* vx, doubflo* vy, doubflo* vz, int channelSide, int level) const;
+    VF_PUBLIC virtual void setPressValues(doubflo* RhoBC, int* kN, int channelSide, int level) const;
 
-    GridGenerator_EXPORT void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
+    VF_PUBLIC void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
 
 protected:
     GridBuilderImp();

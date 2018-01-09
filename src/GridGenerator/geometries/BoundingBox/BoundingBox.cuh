@@ -2,7 +2,7 @@
 #define BoundingBox_h
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 #include "cuda_runtime.h"
@@ -13,7 +13,7 @@ struct Triangle;
 class BoundingBoxMemento;
 
 template <typename T>
-class GridGenerator_EXPORT BoundingBox
+class VF_PUBLIC BoundingBox
 {
 public:
 	T minX;

@@ -1,7 +1,7 @@
 //#ifndef UnstructuredGridWrapper_H
 //#define UnstructuredGridWrapper_H
 //
-//#include "GridGenerator_EXPORT.h"
+//
 //#include <string>
 //#include <vector>
 //
@@ -13,7 +13,7 @@
 //struct Vertex;
 //struct Grid;
 //
-//class GridGenerator_EXPORT UnstructuredGridWrapper
+//class VF_PUBLIC UnstructuredGridWrapper
 //{
 //public:
 //    UnstructuredGridWrapper();

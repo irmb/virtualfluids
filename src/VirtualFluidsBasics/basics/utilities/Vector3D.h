@@ -21,9 +21,9 @@
 /*
 usage: ...
 */
-#include "VirtualFluidsBasics_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 
-   class VirtualFluidsBasics_EXPORT Vector3D
+   class VF_PUBLIC Vector3D
    {
    public:
       // construction

@@ -8,7 +8,7 @@
 #include <json/json.h>
 
 
-#include "VirtualFluidsBasics_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 
 
 #include "../Input.h"
@@ -18,10 +18,10 @@ namespace input
 	class JsonInput : public Input
 	{
 	public:
-        VirtualFluidsBasics_EXPORT JsonInput(std::istream &stream);
+        VF_PUBLIC JsonInput(std::istream &stream);
 
-        VirtualFluidsBasics_EXPORT virtual bool hasValue(const std::string &key) const override;
-        VirtualFluidsBasics_EXPORT virtual std::string getValue(const std::string &key) override;
+        VF_PUBLIC virtual bool hasValue(const std::string &key) const override;
+        VF_PUBLIC virtual std::string getValue(const std::string &key) override;
 
     private:
         Json::Value jsonValue;

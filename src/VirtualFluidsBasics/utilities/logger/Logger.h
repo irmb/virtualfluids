@@ -1,7 +1,7 @@
 #ifndef Logger_H
 #define Logger_H
 
-#include "VirtualFluidsBasics_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 
 #include <string>
 #include <memory>
@@ -9,7 +9,7 @@
 
 namespace logging 
 {
-    class VirtualFluidsBasics_EXPORT Logger
+    class VF_PUBLIC Logger
     {
     protected:
         Logger(std::ostream &stream);
@@ -42,7 +42,7 @@ namespace logging
 
     };
 
-    extern VirtualFluidsBasics_EXPORT std::unique_ptr<Logger> out;
+    extern VF_PUBLIC std::unique_ptr<Logger> out;
 }
 
 

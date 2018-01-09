@@ -4,7 +4,7 @@
 #define DIR_END_MAX 27
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 #include <string>
@@ -21,7 +21,7 @@ struct Distribution
 
 struct Grid;
 
-class GridGenerator_EXPORT DistributionHelper
+class VF_PUBLIC DistributionHelper
 {
 public:
     static Distribution getDistribution7();

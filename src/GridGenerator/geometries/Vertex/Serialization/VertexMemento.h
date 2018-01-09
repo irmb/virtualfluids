@@ -1,7 +1,7 @@
 #ifndef VertexSerializer_H
 #define VertexSerializer_H
 
-#include "GridGenerator_EXPORT.h"
+
 #include "GridGenerator/global.h"
 
 #include <memory>
@@ -12,7 +12,7 @@
 #endif
 
 
-class GridGenerator_EXPORT VertexMemento
+class VF_PUBLIC VertexMemento
 {
 #ifndef __CUDACC__
     friend class boost::serialization::access;

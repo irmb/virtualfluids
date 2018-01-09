@@ -1,7 +1,7 @@
 //#ifndef BoundingBoxMemento_H
 //#define BoundingBoxMemento_H
 //
-//#include "GridGenerator_EXPORT.h"
+//
 //#include "GridGenerator/global.h"
 //
 //#include <memory>
@@ -13,7 +13,7 @@
 //#endif
 //
 //
-//class GridGenerator_EXPORT BoundingBoxMemento
+//class VF_PUBLIC BoundingBoxMemento
 //{
 //#ifndef __CUDACC__
 //    friend class boost::serialization::access;

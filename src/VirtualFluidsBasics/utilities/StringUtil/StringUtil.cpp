@@ -107,7 +107,7 @@ std::string StringUtil::toString(const T& t)
     return stream.str();
 }
 
-template VirtualFluidsBasics_EXPORT std::string StringUtil::toString<int>(const int& t);
+template VF_PUBLIC std::string StringUtil::toString<int>(const int& t);
 
 
 bool StringUtil::endsWith(const std::string &input, const std::string &end)

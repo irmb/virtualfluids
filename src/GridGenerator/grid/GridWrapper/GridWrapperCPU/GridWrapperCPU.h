@@ -1,7 +1,7 @@
 #ifndef GridKernelCPU_H
 #define GridKernelCPU_H
 
-#include "GridGenerator_EXPORT.h"
+
 #include "GridGenerator/global.h"
 #include "../GridWrapper.h"
 
@@ -14,7 +14,7 @@ struct Vertex;
 template <class T>
 class BoundingBox;
 
-class GridGenerator_EXPORT GridWrapperCPU : public GridWrapper
+class VF_PUBLIC GridWrapperCPU : public GridWrapper
 {
 public:
     GridWrapperCPU(){};

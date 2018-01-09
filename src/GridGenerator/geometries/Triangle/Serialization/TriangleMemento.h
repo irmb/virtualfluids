@@ -1,7 +1,7 @@
 #ifndef TriangleMemento_H
 #define TriangleMemento_H
 
-#include "GridGenerator_EXPORT.h"
+
 #include "GridGenerator/global.h"
 
 #include <memory>
@@ -13,7 +13,7 @@
 
 #include <GridGenerator/geometries/Vertex/Serialization/VertexMemento.h>
 
-class GridGenerator_EXPORT TriangleMemento
+class VF_PUBLIC TriangleMemento
 {
 #ifndef __CUDACC__
     friend class boost::serialization::access;

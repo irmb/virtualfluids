@@ -2,7 +2,7 @@
 #define GridKernel_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <string>
 #include <GridGenerator/grid/Grid.cuh>
@@ -10,7 +10,7 @@
 struct Vertex;
 struct Geometry;
 
-class GridGenerator_EXPORT GridWrapper
+class VF_PUBLIC GridWrapper
 {
 public:
     virtual ~GridWrapper() {};

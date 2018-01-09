@@ -7,7 +7,7 @@
 #include <map>
 #include <list>
 
-#include "VirtualFluidsBasics_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 #include "../Input.h"
 
 namespace input 
@@ -15,11 +15,11 @@ namespace input
     class  ConfigInput : public Input
     {
     public:
-        VirtualFluidsBasics_EXPORT ConfigInput(std::istream &stream);
-        VirtualFluidsBasics_EXPORT virtual ~ConfigInput(void);
+        VF_PUBLIC ConfigInput(std::istream &stream);
+        VF_PUBLIC virtual ~ConfigInput(void);
    
-        VirtualFluidsBasics_EXPORT bool hasValue(const std::string &key) const;
-        VirtualFluidsBasics_EXPORT std::string getValue(const std::string &key);
+        VF_PUBLIC bool hasValue(const std::string &key) const;
+        VF_PUBLIC std::string getValue(const std::string &key);
 
     protected:
         virtual void setTokenValuePair();

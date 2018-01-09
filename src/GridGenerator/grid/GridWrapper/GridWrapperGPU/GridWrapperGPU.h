@@ -1,7 +1,7 @@
 #ifndef GridKernelGPU_H
 #define GridKernelGPU_H
 
-#include <GridGenerator_EXPORT.h>
+
 
 #include <string>
 #include "../GridWrapper.h"
@@ -10,7 +10,7 @@ template <class T>
 class BoundingBox;
 struct Geometry;
 
-class GridGenerator_EXPORT GridWrapperGPU : public GridWrapper
+class VF_PUBLIC GridWrapperGPU : public GridWrapper
 {
 public:
     GridWrapperGPU(){};

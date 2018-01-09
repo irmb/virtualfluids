@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 template<typename T>
 class BoundingBox;
@@ -15,7 +15,7 @@ struct Vertex;
 class Transformator
 {
 public:
-    static GridGenerator_EXPORT std::shared_ptr<Transformator> makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
+    static VF_PUBLIC std::shared_ptr<Transformator> makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
 	virtual ~Transformator() {}
 
 protected:

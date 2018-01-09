@@ -2,7 +2,7 @@
 #define Triangle_h
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include "../Vertex/Vertex.cuh"
 
@@ -11,7 +11,7 @@
 class TriangleMemento;
 
 
-struct GridGenerator_EXPORT Triangle
+struct VF_PUBLIC Triangle
 {
     Vertex v1, v2, v3, normal;
     doubflo alphaAngles[3];

@@ -2,7 +2,7 @@
 #define GridCpuBuilder_H
 
 #include "GridGenerator/global.h"
-#include "GridGenerator_EXPORT.h"
+
 
 #include <vector>
 #include <string>
@@ -14,8 +14,8 @@
 class GridCpuBuilder : public GridBuilderImp
 {
 public:
-    GridGenerator_EXPORT GridCpuBuilder();
-    virtual GridGenerator_EXPORT ~GridCpuBuilder();
+    VF_PUBLIC GridCpuBuilder();
+    virtual VF_PUBLIC ~GridCpuBuilder();
 
 protected:
     void createGridKernels(std::string distribution);

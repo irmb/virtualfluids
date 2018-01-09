@@ -1,11 +1,13 @@
 #ifndef STLReader_H
 #define STLReader_H
 
-#include "GridGenerator_EXPORT.h"
+
 #include <vector>
 #include <fstream>
 #include <string>
 #include <memory>
+
+#include <VirtualFluidsDefinitions.h>
 
 class Transformator;
 struct Triangle;
@@ -14,7 +16,7 @@ template<class T>
 class BoundingBox;
 struct Geometry;
 
-class GridGenerator_EXPORT STLReader
+class VF_PUBLIC STLReader
 {
 public:
 	static std::vector<Triangle> readSTL(const std::string& name, const Transformator& trans);
