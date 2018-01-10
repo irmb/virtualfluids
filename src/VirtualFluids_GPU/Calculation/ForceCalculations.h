@@ -2,7 +2,6 @@
 #define FORCE_CALCULATIONS_H
 
 #include "Parameter/Parameter.h"
-#include "Utilities/StringUtil.hpp"
 #include "basics/utilities/UbSystem.h"
 
 #include <iostream>

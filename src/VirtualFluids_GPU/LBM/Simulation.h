@@ -1,8 +1,9 @@
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
+#include <VirtualFluidsDefinitions.h>
+
 #include "Output/LogWriter.hpp"
-#include "Communication/Communicator.h"
 #include "Utilities/Buffer2D.hpp"
 //#include "Input/ConfigFile.h"
 #include "Calculation/ForceCalculations.h"
@@ -10,12 +11,13 @@
 #include "Parameter/Parameter.h"
 #include "Restart/RestartPostprocessor.h"
 #include "Restart/RestartObject.h"
-#include "Utilities/StringUtil.hpp"
 #include "LBM/LB.h"
 //#include "LBM/D3Q27.h"
 
+class Communicator;
 
-class Simulation
+
+class VF_PUBLIC Simulation
 {
 public:
 	Simulation(void);

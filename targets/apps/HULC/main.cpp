@@ -9,10 +9,11 @@
 #include <string>
 #include <iostream>
 
-#include "VirtualFluids_GPU/Application/App.h"
+#include "LBM/Simulation.h"
 using namespace std;
 
-int main( int argc, char* argv[]){
+int main( int argc, char* argv[])
+{
    MPI_Init(&argc, &argv);
    string str, str2; 
    if ( argv != NULL )
@@ -21,7 +22,17 @@ int main( int argc, char* argv[]){
       if (argc > 1)
       {
          str2 = static_cast<string>(argv[1]);
-         App::getInstanz()->run(str2);
+         try
+         {
+             Simulation sim;
+             sim.init(str2);
+             sim.run();
+         }
+         catch (std::string e)
+         {
+             std::cout << e << std::flush;
+             //MPI_Abort(MPI_COMM_WORLD, -1);
+         }
       }
       else
       {

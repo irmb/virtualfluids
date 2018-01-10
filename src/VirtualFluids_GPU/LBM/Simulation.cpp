@@ -54,11 +54,14 @@
 
 Simulation::Simulation(void)
 {
+
 }
 
 Simulation::~Simulation(void)
 {
+
 }
+
 void Simulation::init(std::string &cstr)
 {
    comm = Communicator::getInstanz();
@@ -318,10 +321,12 @@ void Simulation::init(std::string &cstr)
    output << "used Device Memory: " << para->getMemsizeGPU() / 1000000.0 << " MB\n";
    //////////////////////////////////////////////////////////////////////////
 }
+
 void Simulation::bulk()
 {
 
 }
+
 void Simulation::run()
 {
    double ftimeE, ftimeS, fnups, durchsatz;
@@ -2632,6 +2637,7 @@ void Simulation::run()
    }
    //////////////////////////////////////////////////////////////////////////
 }
+
 void Simulation::porousMedia()
 {
 	double porosity, darcySI, forchheimerSI;
@@ -2722,6 +2728,7 @@ void Simulation::porousMedia()
 	//////////////////////////////////////////////////////////////////////////
 
 }
+
 void Simulation::definePMarea(PorousMedia* pMedia)
 {
 	unsigned int counter = 0;
