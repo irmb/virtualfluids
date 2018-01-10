@@ -31,13 +31,15 @@ protected:
    void calculateBlocks(int startLevel, int maxInitLevel);
    void calculateBlocks(int minInitLevel, int maxInitLevel, int staggeredStep);
    void swapDistributions(int startLevel, int maxInitLevel);
-   virtual void exchangeBlockData(int startLevel, int maxInitLevel);
-   void exchangeInterfaceBlockData(int startLevel, int maxInitLevel);
-   virtual void connectorsPrepare(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
-   virtual void connectorsSend(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
-   virtual void connectorsReceive(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   void exchangeBlockData(int startLevel, int maxInitLevel);
+   void connectorsPrepareLocal(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   void connectorsSendLocal(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   void connectorsReceiveLocal(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   void connectorsPrepareRemote(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   void connectorsSendRemote(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
+   void connectorsReceiveRemote(std::vector< std::shared_ptr<Block3DConnector> >& connectors);
    void interpolation(int startLevel, int maxInitLevel);
-   void deleteConnectors(std::vector< std::vector< std::shared_ptr<Block3DConnector> > >& conns);
+   //void deleteConnectors(std::vector< std::vector< std::shared_ptr<Block3DConnector> > >& conns);
    void applyPreCollisionBC(int startLevel, int maxInitLevel);
    void applyPostCollisionBC(int startLevel, int maxInitLevel);
 private:

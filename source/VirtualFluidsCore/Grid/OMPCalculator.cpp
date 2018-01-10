@@ -6,9 +6,11 @@
 
 #include "BCProcessor.h"
 #include "LBMKernel.h"
-#include <omp.h>
+
+#ifdef _OPENMP
+   #include <omp.h>
+#endif
 //#define TIMING
-//#define PRECOLLISIONBC
 
 #include "Block3DConnector.h"
 
@@ -27,8 +29,7 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
 {
    UBLOG(logDEBUG1, "MPICalculator::calculate() - started");
    try
-   {
-      omp_set_num_threads(4);
+   {      
       initConnectors();
 
       int anzLevel = maxLevel-minLevel+1;
@@ -54,16 +55,6 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
 
       for (calcStep = startStep; calcStep<=anzCalcSteps+1; calcStep++)
       {
-
-         //exchange data between blocks for visualization
-         //sync->wait();
-         ////if(visScheduler->isDue((double)(calcStep-1)))
-         ////{
-         //   //exchangeBlockData(minInitLevel, maxInitLevel, true);
-         ////}
-
-         ////wait for write dump files
-         //write dump 
          grid->coProcess((double)(calcStep-1));
 
          //////////////////////////////////////////////////////////////////////////
@@ -89,16 +80,13 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
             calculateBlocks(straightStartLevel, maxInitLevel);
-            ////calculateBlocks(minInitLevel, maxInitLevel, staggeredStep);
 //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[0] = timer.stop();
             UBLOG(logINFO, "calculateBlocks time = "<<time[0]);
 #endif
             //////////////////////////////////////////////////////////////////////////
-
-                        //exchange data between blocks
-                        //Sleep(10000);
+            //exchange data between blocks
             exchangeBlockData(straightStartLevel, maxInitLevel);
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -115,39 +103,26 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             UBLOG(logINFO, "applyBCs time = "<<time[2]);
 #endif
             //////////////////////////////////////////////////////////////////////////
-
-                        //swap distributions in kernel
+            //swap distributions in kernel
             swapDistributions(straightStartLevel, maxInitLevel);
-
-#ifdef PRECOLLISIONBC
-            exchangeBlockData(straightStartLevel, maxInitLevel);
-            applyPreCollisionBC(straightStartLevel, maxInitLevel);
-#endif
-
-
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[3] = timer.stop();
             UBLOG(logINFO, "swapDistributions time = "<<time[3]);
 #endif
             //////////////////////////////////////////////////////////////////////////
-
             if (refinement)
             {
-               //      //exchange data between blocks for grid refinement
-                     ////exchangeInterfaceBlockData(straightStartLevel, maxInitLevel, true);
-               //DOES NOT NEED 
                if (straightStartLevel<maxInitLevel)
                   exchangeBlockData(straightStartLevel, maxInitLevel);
-               //         //exchangeInterfaceBlockData(straightStartLevel, maxInitLevel, true);
-      //////////////////////////////////////////////////////////////////////////
+           //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
                time[4] = timer.stop();
                UBLOG(logINFO, "refinement exchangeBlockData time = "<<time[4]);
 #endif
                //////////////////////////////////////////////////////////////////////////
-                              //now ghost nodes have actual values
-                              //interpolation of interface nodes between grid levels
+               //now ghost nodes have actual values
+               //interpolation of interface nodes between grid levels
                interpolation(straightStartLevel, maxInitLevel);
                //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -156,13 +131,6 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
 #endif
                //////////////////////////////////////////////////////////////////////////
             }
-
-            if (taValuesCoProcessor)
-            {
-               taValuesCoProcessor->calculateSubtotal(calcStep-1);
-            }
-
-
          }
          //exchange data between blocks for visualization
          if (mainThread) visScheduler->isDue((double)(calcStep-1));
@@ -184,7 +152,6 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
    }
    catch (std::exception& e)
    {
-      //error = boost::current_exception();
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
    }
@@ -192,7 +159,9 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
 //////////////////////////////////////////////////////////////////////////
 void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel)
 {
-   #pragma omp parallel 
+#ifdef _OPENMP
+   #pragma omp parallel
+#endif
    {
    Block3DPtr blockTemp;
    try
@@ -203,7 +172,9 @@ void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel)
          //timer.resetAndStart();
          //call LBM kernel
          int size = (int)blocks[level].size();
-         #pragma omp for schedule(dynamic)
+#ifdef _OPENMP
+   #pragma omp for schedule(dynamic)
+#endif
             for (int i =0; i<size; i++)
             {
                blockTemp = blocks[level][i];
@@ -256,49 +227,50 @@ void OMPCalculator::exchangeBlockData(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      connectorsPrepare(localConns[level]);
-      connectorsPrepare(remoteConns[level]);
+      connectorsPrepareLocal(localConns[level]);
+      connectorsSendLocal(localConns[level]);
+      connectorsReceiveLocal(localConns[level]);
 
-      connectorsSend(localConns[level]);
-      connectorsSend(remoteConns[level]);
-
-      connectorsReceive(localConns[level]);
-      connectorsReceive(remoteConns[level]);
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-void OMPCalculator::exchangeInterfaceBlockData(int startLevel, int maxInitLevel)
-{
-   //startLevel bis maxInitLevel
-   for (int level = startLevel; level<=maxInitLevel; level++)
-   {
-      connectorsPrepare(localInterfaceBlockConns[level]);
-      connectorsPrepare(remoteInterfaceBlockConns[level]);
-
-      connectorsSend(localInterfaceBlockConns[level]);
-      connectorsSend(remoteInterfaceBlockConns[level]);
-
-      connectorsReceive(localInterfaceBlockConns[level]);
-      connectorsReceive(remoteInterfaceBlockConns[level]);
+#ifdef _OPENMP
+      //int numOfThr = omp_get_num_threads();
+      //omp_set_num_threads(1);
+#endif
+      connectorsPrepareRemote(remoteConns[level]);
+      connectorsSendRemote(remoteConns[level]);
+      connectorsReceiveRemote(remoteConns[level]);
+#ifdef _OPENMP
+      //omp_set_num_threads(numOfThr);
+#endif
    }
 }
 //////////////////////////////////////////////////////////////////////////
 void OMPCalculator::swapDistributions(int startLevel, int maxInitLevel)
 {
+#ifdef _OPENMP
+   #pragma omp parallel
+#endif
+   {
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      for(Block3DPtr block : blocks[level])
+      int size = (int)blocks[level].size();
+#ifdef _OPENMP
+   #pragma omp for schedule(dynamic)
+#endif
+      for (int i =0; i<size; i++)
       {
-         block->getKernel()->swapDistributions();
+         blocks[level][i]->getKernel()->swapDistributions();
       }
+   }
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsPrepareLocal(std::vector< Block3DConnectorPtr >& connectors)
 {
    int size = (int)connectors.size();
+#ifdef _OPENMP
    #pragma omp parallel for schedule(dynamic)
+#endif
    for (int i =0; i<size; i++)
    {
       connectors[i]->prepareForReceive();
@@ -306,10 +278,12 @@ void OMPCalculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connec
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsSendLocal(std::vector< Block3DConnectorPtr >& connectors)
 {
    int size = (int)connectors.size();
+#ifdef _OPENMP
    #pragma omp parallel for schedule(dynamic)
+#endif
    for (int i =0; i<size; i++)
    {
       connectors[i]->fillSendVectors();
@@ -317,10 +291,41 @@ void OMPCalculator::connectorsSend(std::vector< Block3DConnectorPtr >& connector
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsReceiveLocal(std::vector< Block3DConnectorPtr >& connectors)
 {
    int size = (int)connectors.size();
+#ifdef _OPENMP
    #pragma omp parallel for schedule(dynamic)
+#endif
+   for (int i =0; i<size; i++)
+   {
+      connectors[i]->receiveVectors();
+      connectors[i]->distributeReceiveVectors();
+   }
+}
+void OMPCalculator::connectorsPrepareRemote(std::vector< Block3DConnectorPtr >& connectors)
+{
+   int size = (int)connectors.size();
+   for (int i =0; i<size; i++)
+   {
+      connectors[i]->prepareForReceive();
+      connectors[i]->prepareForSend();
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+void OMPCalculator::connectorsSendRemote(std::vector< Block3DConnectorPtr >& connectors)
+{
+   int size = (int)connectors.size();
+   for (int i =0; i<size; i++)
+   {
+      connectors[i]->fillSendVectors();
+      connectors[i]->sendVectors();
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+void OMPCalculator::connectorsReceiveRemote(std::vector< Block3DConnectorPtr >& connectors)
+{
+   int size = (int)connectors.size();
    for (int i =0; i<size; i++)
    {
       connectors[i]->receiveVectors();
@@ -330,15 +335,11 @@ void OMPCalculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connec
 //////////////////////////////////////////////////////////////////////////
 void OMPCalculator::interpolation(int startLevel, int maxInitLevel)
 {
-
-
    for (int level = startLevel; level<maxInitLevel; level++)
    {
       connectorsPrepare(localInterConns[level]);
       connectorsPrepare(remoteInterConns[level]);
    }
-
-
 
    for (int level = startLevel; level<maxInitLevel; level++)
    {
@@ -346,18 +347,12 @@ void OMPCalculator::interpolation(int startLevel, int maxInitLevel)
       connectorsSend(remoteInterConns[level]);
    }
 
-
-
    for (int level = startLevel; level<maxInitLevel; level++)
    {
       connectorsReceive(localInterConns[level]);
       connectorsReceive(remoteInterConns[level]);
    }
-
-
-
 }
-//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 void OMPCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 {
@@ -365,7 +360,9 @@ void OMPCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
       int size = (int)blocks[level].size();
-      #pragma omp for
+#ifdef _OPENMP
+      #pragma omp parallel for
+#endif
       for (int i =0; i<size; i++)
       {
          blocks[level][i]->getKernel()->getBCProcessor()->applyPreCollisionBC();
@@ -379,7 +376,9 @@ void OMPCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
       int size = (int)blocks[level].size();
+#ifdef _OPENMP
       #pragma omp parallel for
+#endif
       for (int i =0; i<size; i++)
       {
          blocks[level][i]->getKernel()->getBCProcessor()->applyPostCollisionBC();

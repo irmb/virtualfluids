@@ -13,8 +13,8 @@ MPICommunicator::MPICommunicator()
    MPI_Initialized(&mpiInitialized);
    if (!mpiInitialized)
    {
-      //MPI_Init(0, 0);	
-      MPI_Init_thread(NULL, NULL, MPI_THREAD_FUNNELED, NULL);
+      MPI_Init(NULL, NULL);	
+      //MPI_Init_thread(NULL, NULL, MPI_THREAD_FUNNELED, NULL);
    }
    MPI_Comm_rank(MPI_COMM_WORLD, &PID);
    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);

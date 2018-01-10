@@ -35,5 +35,11 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    ###############################################################################################################
    #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-pthread")
    #LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-pthread")
+   
+   #############################################################################################################
+   # c++ 11 support
+   #############################################################################################################
+   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-std=c++11")
+   LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-std=c++11")
 
 ENDMACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)

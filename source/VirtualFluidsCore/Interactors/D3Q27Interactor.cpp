@@ -337,7 +337,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                      if( UbMath::inClosedInterval(q, 1.0, 1.0) ) q = 1.0;
                      if( UbMath::greater(q, 0.0) && UbMath::lessEqual(q, 1.0) )
                      {
-                        #pragma omp critical (BC_CHANGE)
+                        //#pragma omp critical (BC_CHANGE)
                         {
                            bc = bcArray->getBC(ix1,ix2,ix3);
                            if(!bc)
@@ -368,9 +368,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 
                   if(gotQs)
                   {
-#ifdef _OPENMP
-                     #pragma omp critical (TRANSNODE_SET_CHANGE)
-#endif
+//#ifdef _OPENMP
+//                     #pragma omp critical (TRANSNODE_SET_CHANGE)
+//#endif
                      {
                         oneEntryGotBC = true;
 
@@ -389,9 +389,9 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                   if( !this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3, pointOnBoundary) 
                      || pointOnBoundary == true )
                  {
-#ifdef _OPENMP 
-   #pragma omp critical (SOLID_SET_CHANGE)
-#endif
+//#ifdef _OPENMP 
+//   #pragma omp critical (SOLID_SET_CHANGE)
+//#endif
                      {
                         solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                         bcArray->setSolid(ix1,ix2,ix3); 
@@ -406,7 +406,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
    else  //clipping -> langsamer (wird derzeit auch fuer alle inverseSolid objekte verwendet deren raytracing nicht fuer nodes INNERHALB der geo funzt)
    {
       bool pointOnBoundary = false;
-      #pragma omp parallel for private(internX1,internX2,internX3,gotQs,bc,pointOnBoundary )
+      //#pragma omp parallel for private(internX1,internX2,internX3,gotQs,bc,pointOnBoundary )
       for(int ix1=startIX1; ix1<stopIX1; ix1++)
       {
          for(int ix2=startIX2; ix2<stopIX2; ix2++)
@@ -424,7 +424,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                {
                   if( this->isSolid() && this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3) )
                   {
-                     #pragma omp critical (SOLID_SET_CHANGE)
+                     //#pragma omp critical (SOLID_SET_CHANGE)
                      {
                         solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                         bcArray->setSolid(ix1,ix2,ix3); 
@@ -437,7 +437,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                      if( !this->geoObject3D->isPointInGbObject3D(internX1, internX2, internX3, pointOnBoundary) 
                          || pointOnBoundary == true )
                      {
-                        #pragma omp critical (SOLID_SET_CHANGE)
+                        //#pragma omp critical (SOLID_SET_CHANGE)
                         {
                            solidNodeIndices.insert(UbTupleInt3(ix1, ix2, ix3));
                            bcArray->setSolid(ix1,ix2,ix3); 
@@ -497,7 +497,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                         if(UbMath::inClosedInterval(q, 1.0, 1.0)) q = 1.0;
                         if(UbMath::lessEqual(q, 1.0) && UbMath::greater(q, 0.0))
                         {
-                           #pragma omp critical (BC_CHANGE)
+                           //#pragma omp critical (BC_CHANGE)
                            {
                               bc = bcArray->getBC(ix1,ix2,ix3);
                               if(!bc)
@@ -521,7 +521,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 
                   if(gotQs)
                   {
-                     #pragma omp critical (TRANSNODE_SET_CHANGE)
+                     //#pragma omp critical (TRANSNODE_SET_CHANGE)
                      {
                         oneEntryGotBC = true;
 

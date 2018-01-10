@@ -12,7 +12,7 @@ void run(string configname)
    try
    {
 //      omp_set_dynamic(0); 
-//      omp_set_num_threads(4);
+      omp_set_num_threads(2);
 //#pragma omp parallel
 //      {
 //
@@ -41,7 +41,7 @@ void run(string configname)
       double          availMem = config.getValue<double>("availMem");
       int             refineLevel = config.getValue<int>("refineLevel");
       bool            logToFile = config.getValue<bool>("logToFile");
-      double          deltaXfine = config.getValue<double>("deltaXfine")*1000.0;
+      double          deltaXfine = config.getValue<double>("deltaXfine");
       double          refineDistance = config.getValue<double>("refineDistance");
       double          startDistance = config.getValue<double>("startDistance");
       vector<double>  nupsStep = config.getVector<double>("nupsStep");
@@ -88,13 +88,13 @@ void run(string configname)
 
       //the geometry is in mm
 
-      double g_minX1 = boundingBox[0]*1000.0;
-      double g_minX2 = boundingBox[2]*1000.0;
-      double g_minX3 = boundingBox[4]*1000.0;
+      double g_minX1 = boundingBox[0];
+      double g_minX2 = boundingBox[2];
+      double g_minX3 = boundingBox[4];
 
-      double g_maxX1 = boundingBox[1]*1000.0;
-      double g_maxX2 = boundingBox[3]*1000.0;
-      double g_maxX3 = boundingBox[5]*1000.0;
+      double g_maxX1 = boundingBox[1];
+      double g_maxX2 = boundingBox[3];
+      double g_maxX3 = boundingBox[5];
 
       //////////////////////////////////////////////////////////////////////////
       double deltaXcoarse = deltaXfine*(double)(1<<refineLevel);
@@ -150,10 +150,10 @@ void run(string configname)
       BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
       velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityWithDensityBCAlgorithm()));
 
-      fct.SetExpr("U");
-      fct.DefineConst("U", 0.01);
-      BCAdapterPtr velBCAdapterOut(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapterOut->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+      //fct.SetExpr("U");
+      //fct.DefineConst("U", 0.01);
+      //BCAdapterPtr velBCAdapterOut(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+      //velBCAdapterOut->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
 
       BCAdapterPtr outflowBCAdapter(new DensityBCAdapter(rhoLB));
       outflowBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonReflectingOutflowBCAlgorithm()));
@@ -210,8 +210,8 @@ void run(string configname)
             UBLOG(logINFO, "* velocity LB (uLB)   = "<<uLB);
             UBLOG(logINFO, "* viscosity LB (nuLB) = "<<nuLB);
             UBLOG(logINFO, "* chord length (l_LB) = "<<lLB<<" dx_base");
-            UBLOG(logINFO, "* dx_base             = "<<deltaXcoarse/1000<<" m");
-            UBLOG(logINFO, "* dx_refine           = "<<deltaXfine/1000<<" m");
+            UBLOG(logINFO, "* dx_base             = "<<deltaXcoarse<<" m");
+            UBLOG(logINFO, "* dx_refine           = "<<deltaXfine<<" m");
             UBLOG(logINFO, "* blocknx             = "<<blockNx[0]<<"x"<<blockNx[1]<<"x"<<blockNx[2]);
             UBLOG(logINFO, "* refineDistance      = "<<refineDistance);
             UBLOG(logINFO, "* number of levels    = "<<refineLevel+1);
@@ -228,9 +228,11 @@ void run(string configname)
 
          GbTriFaceMesh3DPtr fngMeshWhole;
          if (myid==0) UBLOG(logINFO, "Read fngFileWhole:start");
-         fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         fngMeshWhole = GbTriFaceMesh3DPtr(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/"+fngFileWhole, "fngMeshWhole", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
          if (myid==0) UBLOG(logINFO, "Read fngFileWhole:end");
          fngMeshWhole->rotate(0.0, 0.5, 0.0);
+         //fngMeshWhole->scale(1e-3,1e-3,1e-3);
+         //fngMeshWhole->translate(-150.0,-50.0,-1.28);
          if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut+"/geo/fngMeshWhole", WbWriterVtkXmlBinary::getInstance());
 
          ////////////////////////////////////////////////////////////////////////////
@@ -276,7 +278,7 @@ void run(string configname)
          //////////////////////////////////////////////////////////////////////////
          Interactor3DPtr fngIntrWhole;
          //fngIntrWhole = D3Q27InteractorPtr(new D3Q27Interactor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
-         fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
+         fngIntrWhole = D3Q27TriFaceMeshInteractorPtr(new D3Q27TriFaceMeshInteractor(fngMeshWhole, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::POINTS));
 
          //D3Q27TriFaceMeshInteractorPtr triBand1Interactor(new D3Q27TriFaceMeshInteractor(meshBand1, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
          //D3Q27TriFaceMeshInteractorPtr triBand2Interactor(new D3Q27TriFaceMeshInteractor(meshBand2, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
@@ -566,10 +568,10 @@ void run(string configname)
          ////sponge layer
          ////////////////////////////////////////////////////////////////////////////
 
-         //GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-5.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         //SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
-         //grid->accept(slVisitorX1max);
+         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         grid->accept(slVisitorX1max);
 
          //GbCuboid3DPtr spongeLayerX1min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1+75, g_maxX2+blockLength, g_maxX3+blockLength));
          //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1min.get(), pathOut+"/geo/spongeLayerX1min", WbWriterVtkXmlASCII::getInstance());
@@ -633,7 +635,9 @@ void run(string configname)
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
       const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      //omp_set_num_threads(4);
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::OMP));
+      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
       //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
 

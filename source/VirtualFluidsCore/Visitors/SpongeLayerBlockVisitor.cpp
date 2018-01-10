@@ -50,7 +50,7 @@ void SpongeLayerBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
          int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
          double index = ibX1-val<1>(ixMin)+1;
 
-         double newCollFactor = oldCollFactor - (oldCollFactor-1.0)/ibMax*index;
+         double newCollFactor = oldCollFactor - (oldCollFactor-1.5)/ibMax*index;
 
          kernel->setCollisionFactor(newCollFactor);
       }
