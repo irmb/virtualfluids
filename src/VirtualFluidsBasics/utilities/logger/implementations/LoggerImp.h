@@ -14,7 +14,7 @@
 namespace logging
 {
 
-    class VF_PUBLIC LoggerImp : public Logger
+    class __declspec(dllexport) LoggerImp : public Logger
     {
     public:
         LoggerImp(std::ostream &stream);

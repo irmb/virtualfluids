@@ -12,6 +12,8 @@ class Block3D;
 class Block3DConnector;
 class TimeAveragedValuesCoProcessor;
 
+#include <VirtualFluidsDefinitions.h>
+
 
 #include <boost/thread/barrier.hpp>
 #include <boost/exception_ptr.hpp>
@@ -20,7 +22,7 @@ class Calculator;
 typedef std::shared_ptr<Calculator> CalculatorPtr;
 
 
-class Calculator 
+class VF_PUBLIC Calculator 
 {
 public:
    Calculator();

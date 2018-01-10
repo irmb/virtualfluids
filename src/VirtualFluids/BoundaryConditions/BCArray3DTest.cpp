@@ -3,6 +3,7 @@
 #include "BCArray3D.h"
 
 
+
 TEST(BCArray3DTest, checkIfCoordinatesAreInsideOfTheBlock)
 {
     const int nx = 10, ny = 10, nz = 10;

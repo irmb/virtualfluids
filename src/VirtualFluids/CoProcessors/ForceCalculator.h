@@ -11,6 +11,7 @@
 #include <vector>
 #include <memory>
 
+#include <VirtualFluidsDefinitions.h>
 #include "VirtualFluidsBasics/basics/utilities/Vector3D.h"
 
 class D3Q27Interactor;
@@ -18,7 +19,7 @@ class Communicator;
 class DistributionArray3D;
 class BoundaryConditions;
 
-class ForceCalculator
+class VF_PUBLIC ForceCalculator
 {
 public:
     ForceCalculator(std::shared_ptr<Communicator> comm);

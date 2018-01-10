@@ -7,7 +7,7 @@
 
 PePhysicsEngineGeometryAdapter::PePhysicsEngineGeometryAdapter(walberla::pe::RigidBody* peGeoObject) : peGeoObject(peGeoObject)
 {
-    this->id = peGeoObject->getID();
+    this->id = (int)peGeoObject->getID();
 }
 
 void PePhysicsEngineGeometryAdapter::addForce(const Vector3D& force)

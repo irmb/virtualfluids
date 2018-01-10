@@ -32,7 +32,7 @@
 #include <typeinfo>
 #include <boost/serialization/serialization.hpp>
 
-
+#include <VirtualFluidsDefinitions.h>
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
@@ -50,7 +50,7 @@
 //  for(alle X2)
 //    for(alle X3)
 //      for(alle X4)
-class IndexerX1X2X3X4
+class VF_PUBLIC IndexerX1X2X3X4
 {
 public:
    typedef int size_type;

@@ -5,7 +5,8 @@
 #include <boost/serialization/vector.hpp>
 #include <memory>
 
-#include <VirtualFluids_EXPORT.h>
+#include <VirtualFluidsDefinitions.h>
+
 
 class Block3DConnector;
 class LBMKernel;
@@ -14,7 +15,7 @@ class ILBMKernel;
 class Block3D;
 typedef std::shared_ptr<Block3D> Block3DPtr;
 
-class VirtualFluids_EXPORT Block3D
+class VF_PUBLIC Block3D
 {
 public:
    Block3D();

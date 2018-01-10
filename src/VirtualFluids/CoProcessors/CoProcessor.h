@@ -3,6 +3,9 @@
 
 #include <memory>
 
+#include <VirtualFluidsDefinitions.h>
+
+
 #include <boost/serialization/serialization.hpp>
 
 #include "Grid3D.h"
@@ -12,7 +15,7 @@ class UbScheduler;
 class CoProcessor;
 typedef std::shared_ptr<CoProcessor> CoProcessorPtr;
 
-class CoProcessor
+class VF_PUBLIC CoProcessor
 {
 public:
     CoProcessor();

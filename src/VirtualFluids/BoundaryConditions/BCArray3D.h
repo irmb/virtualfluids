@@ -1,6 +1,9 @@
 #ifndef BCArray_H
 #define BCArray_H
 
+#include <VirtualFluidsDefinitions.h>
+
+
 #include "BoundaryConditions.h"
 #include "basics/container/CbArray3D.h"
 
@@ -12,7 +15,7 @@
 class BCArray3D;
 typedef std::shared_ptr<BCArray3D> BCArray3DPtr;
 
-class BCArray3D
+class VF_PUBLIC BCArray3D
 {
 public:
    //////////////////////////////////////////////////////////////////////////

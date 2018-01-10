@@ -69,7 +69,7 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
+option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" ON)
 option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
 option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
 option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
@@ -93,7 +93,6 @@ IF (HULC.BUILD_VirtualFluids)
   add_definitions(-DVF_MPI)
   
   add_subdirectory(3rdParty/MuParser)
-  add_subdirectory(3rdParty/metis/metis-5.1.0)
   add_subdirectory(targets/libs/VirtualFluids)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids." )
@@ -122,7 +121,6 @@ ENDIF()
 IF (HULC.BUILD_GPU_CODE)
  add_subdirectory(targets/libs/VirtualFluids_GPU)
  add_subdirectory(targets/libs/GridGenerator)
- add_subdirectory(3rdParty/metis/metis-5.1.0)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()
@@ -143,17 +141,25 @@ ENDIF()
 
 add_subdirectory(targets/apps/HULC)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
+add_subdirectory(targets/libs/core)
+
+if(HULC.BUILD_GPU_CODE OR HULC.BUILD_VirtualFluids)
+ add_subdirectory(3rdParty/metis/metis-5.1.0)
+endif()
+
 
 if(HULC.BUILD_TESTS)
   add_subdirectory(3rdParty/googletest)
   if (HULC.BUILD_GPU_CODE)
-  add_subdirectory(targets/tests/GridGeneratorTest)
+    add_subdirectory(targets/tests/GridGeneratorTest)
+	add_subdirectory(targets/tests/VirtualFluids_GPUTest)
   endif()
   
   if (HULC.BUILD_VirtualFluids)
-  add_subdirectory(targets/tests/VirtualFluidsTest)
+    add_subdirectory(targets/tests/VirtualFluidsTest)
   endif()
   
+  add_subdirectory(targets/tests/coreTest)
   add_subdirectory(targets/tests/VirtualFluidsBasicsTest)
 endif()
 

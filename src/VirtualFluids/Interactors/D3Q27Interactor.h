@@ -16,6 +16,8 @@
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/set.hpp>
 
+#include <VirtualFluidsDefinitions.h>
+
 #include "UbException.h"
 #include "UbTuple.h"
 #include "GbPoint3D.h"
@@ -33,7 +35,7 @@ class GbObject3D;
 typedef std::map<std::shared_ptr<Block3D>, std::set< std::vector<int> > > BcNodeIndicesMap;
 typedef std::map<std::shared_ptr<Block3D>, std::set< UbTupleInt3 > > SolidNodeIndicesMap;
 
-class D3Q27Interactor : public Interactor3D 
+class VF_PUBLIC D3Q27Interactor : public Interactor3D 
 {
 public:
    D3Q27Interactor();

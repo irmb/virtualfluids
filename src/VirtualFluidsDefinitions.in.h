@@ -3,9 +3,12 @@
 
 #cmakedefine BUILD_SHARED_LIBS
 
+// disable warnings 
+#pragma warning(disable: 4251)// occurs normally while exporting standard library: "needs to have dll-interface to be"
+
+
 // double or single precision
 #cmakedefine VF_DOUBLE_ACCURACY
-
 
 // External libraries
 #cmakedefine VF_BUILD_WITH_MPI

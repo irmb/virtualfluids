@@ -5,10 +5,12 @@
 #include <string>
 #include <memory>
 
+#include <VirtualFluidsDefinitions.h>
+
 class Communicator;
 typedef std::shared_ptr<Communicator> CommunicatorPtr;
 
-class Communicator
+class VF_PUBLIC Communicator
 {
 public:
    virtual ~Communicator(){}

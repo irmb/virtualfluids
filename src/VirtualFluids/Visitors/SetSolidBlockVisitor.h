@@ -5,13 +5,15 @@
 
 #include "Block3DVisitor.h"
 
+#include <VirtualFluidsDefinitions.h>
+
 class Grid3D;
 class Block3D;
 class Interactor3D;
 
 enum class BlockType { SOLID, BC };
 
-class SetSolidBlockVisitor : public Block3DVisitor
+class VF_PUBLIC SetSolidBlockVisitor : public Block3DVisitor
 {
 public:
    SetSolidBlockVisitor(std::shared_ptr<Interactor3D> interactor, BlockType type);

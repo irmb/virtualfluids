@@ -7,9 +7,10 @@
 #include <memory>
 #include <ostream>
 
+
 namespace logging 
 {
-    class VF_PUBLIC Logger
+    class __declspec(dllexport) Logger
     {
     protected:
         Logger(std::ostream &stream);
@@ -42,7 +43,7 @@ namespace logging
 
     };
 
-    extern VF_PUBLIC std::unique_ptr<Logger> out;
+    extern __declspec(dllimport) std::shared_ptr<Logger> out;
 }
 
 

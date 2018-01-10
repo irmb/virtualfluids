@@ -10,6 +10,8 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 
+#include <VirtualFluidsDefinitions.h>
+
 class Block3D;
 class Grid3D;
 class UbFileInput;
@@ -20,7 +22,7 @@ class Block3D;
 class Interactor3D;
 typedef std::shared_ptr<Interactor3D> Interactor3DPtr;
 
-class Interactor3D : public std::enable_shared_from_this<Interactor3D>
+class VF_PUBLIC Interactor3D : public std::enable_shared_from_this<Interactor3D>
 {
 public:
    enum Accuracy{SIMPLE, EDGES, FACES, POINTS};

@@ -1,7 +1,6 @@
 #ifndef GRID3D_H
 #define GRID3D_H
 
-
 #include <vector>
 #include <map>
 #include <memory>
@@ -13,7 +12,7 @@
 #include <VirtualFluidsBasics/basics/utilities/UbTuple.h>
 #include <VirtualFluidsBasics/basics/utilities/UbKeys.h>
 
-#include <VirtualFluids_EXPORT.h>
+#include <VirtualFluidsDefinitions.h>
 
 class CoordinateTransformation3D;
 
@@ -32,7 +31,7 @@ class Interactor3D;
 #define OFFSET 0.5
 
 //////////////////////////////////////////////////////////////////////////
-class VirtualFluids_EXPORT Grid3D : public std::enable_shared_from_this<Grid3D>
+class VF_PUBLIC Grid3D : public std::enable_shared_from_this<Grid3D>
 {
 public:
    typedef UbKeys::Key3<int>                  Block3DKey;

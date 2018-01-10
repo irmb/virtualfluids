@@ -9,7 +9,7 @@
 
 namespace logging {
 
-    std::unique_ptr<Logger> out = std::unique_ptr<Logger>(new LoggerImp(std::cout));;
+    std::shared_ptr<Logger> out = std::make_shared<LoggerImp>(std::cout);
 
     logging::Logger::Level logging::Logger::globalLogLevel = logging::Logger::INTERMEDIATE;
     logging::Logger::Level logging::Logger::localLogLevel = logging::Logger::INTERMEDIATE;
@@ -28,7 +28,7 @@ namespace logging {
 
     void logging::Logger::setStream(std::ostream &stream)
     {
-        out = std::unique_ptr<Logger>(new LoggerImp(stream));
+        out = std::make_shared<LoggerImp>(stream);
     }
 
     void logging::Logger::setDebugLevel(const Level &level)
