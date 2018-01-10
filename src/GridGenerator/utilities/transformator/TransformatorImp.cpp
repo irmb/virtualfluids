@@ -15,12 +15,12 @@ TransformatorImp::TransformatorImp()
 	this->translater->z = 0;
 }
 
-TransformatorImp::TransformatorImp(doubflo delta, Vertex& translater) : delta(delta), translater(std::make_shared<Vertex>(translater))
+TransformatorImp::TransformatorImp(real delta, Vertex& translater) : delta(delta), translater(std::make_shared<Vertex>(translater))
 {
 	this->verifyDelta(delta);
 }
 
-TransformatorImp::TransformatorImp(doubflo delta, doubflo dx, doubflo dy, doubflo dz) : TransformatorImp(delta, Vertex(dx,dy,dz))
+TransformatorImp::TransformatorImp(real delta, real dx, real dy, real dz) : TransformatorImp(delta, Vertex(dx,dy,dz))
 {
 
 }
@@ -98,7 +98,7 @@ void TransformatorImp::translateGridToWorld(Vertex & value) const
 }
 
 
-void TransformatorImp::transformGridToWorld(BoundingBox<doubflo> &box) const
+void TransformatorImp::transformGridToWorld(BoundingBox<real> &box) const
 {
 	//scale
 	box.minX = (box.minX * this->delta);
@@ -119,7 +119,7 @@ void TransformatorImp::transformGridToWorld(BoundingBox<doubflo> &box) const
 	box.maxZ = (box.maxZ - this->translater->z);
 }
 
-void TransformatorImp::transformWorldToGrid(BoundingBox<doubflo> &box) const
+void TransformatorImp::transformWorldToGrid(BoundingBox<real> &box) const
 {
 	//translate
 	box.minX += this->translater->x;
@@ -141,7 +141,7 @@ void TransformatorImp::transformWorldToGrid(BoundingBox<doubflo> &box) const
 }
 
 
-void TransformatorImp::verifyDelta(doubflo delta) const
+void TransformatorImp::verifyDelta(real delta) const
 {
 	if (delta <= 0.0)
 		throw invalidDelta();

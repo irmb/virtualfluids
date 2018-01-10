@@ -14,7 +14,7 @@ protected:
 	unsigned int maxLevel; 
 	std::vector<unsigned int> levelSizes;
 	std::vector< std::vector<unsigned int> > neighbors;
-	std::vector< std::vector< doubflo> > coordinates; 
+	std::vector< std::vector< real> > coordinates; 
 
 public:
 	CoordNeighborGeoV();
@@ -30,9 +30,9 @@ public:
 	void setVec(unsigned int level, std::vector<unsigned int> vec);
 
 	void initalNeighbors(unsigned int *int_ptr, unsigned int level ) const;
-	void initalCoords(doubflo *int_ptr, unsigned int level ) const;
+	void initalCoords(real *int_ptr, unsigned int level ) const;
 
-private:
+protected:
 	void skipSpace();
 	void readLevelSize(unsigned int level);
 	void readNeighbors(unsigned int level);

@@ -2,7 +2,7 @@
 
 #include "TransformatorImp.h"
 
-std::shared_ptr<Transformator> Transformator::makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz)
+std::shared_ptr<Transformator> Transformator::makeTransformator(real delta, real dx, real dy, real dz)
 {
     return std::shared_ptr<Transformator>(new TransformatorImp(delta, dx, dy, dz));
 }

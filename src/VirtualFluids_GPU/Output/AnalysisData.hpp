@@ -51,9 +51,9 @@ public:
 		//}
 		int numberNodes = (int)para->getParH(0)->size_Mat_SP;
 
-		doubflo deltaX = 1.0f;
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
+		real deltaX = 1.0f;
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
 
 		for (int u = 0; u < numberNodes; u++)
 		{
@@ -89,12 +89,12 @@ public:
 	{
 		UbFileOutputASCII out(para->getFName() + "_AD_X_" + StringUtil::toString<int>(t) + ".dat");
 
-		doubflo level = 0; //uniform
+		real level = 0; //uniform
 		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
 
-		doubflo deltaX = 1.0f / pow(2, level);
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
+		real deltaX = 1.0f / pow(2, level);
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
 
 		for (int u = 0; u < numberNodes; u++)
 		{
@@ -111,12 +111,12 @@ public:
 	{
 		UbFileOutputASCII out(para->getFName() + "_AD_Y_" + StringUtil::toString<int>(t) + ".dat");
 
-		doubflo level = 0; //uniform
+		real level = 0; //uniform
 		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
 
-		doubflo deltaX = 1.0f / pow(2, level);
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
+		real deltaX = 1.0f / pow(2, level);
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
 
 		for (int u = 0; u < numberNodes; u++)
 		{
@@ -133,12 +133,12 @@ public:
 	{
 		UbFileOutputASCII out(para->getFName() + "_AD_Z_" + StringUtil::toString<int>(t) + ".dat");
 
-		doubflo level = 0; //uniform
+		real level = 0; //uniform
 		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
 
-		doubflo deltaX = 1.0f / pow(2, level);
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
+		real deltaX = 1.0f / pow(2, level);
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
 
 		for (int u = 0; u < numberNodes; u++)
 		{

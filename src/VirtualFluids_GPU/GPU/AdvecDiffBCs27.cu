@@ -5,16 +5,16 @@
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADPress7(  int inx,
                                        int iny,
-                                       doubflo* DD, 
-                                       doubflo* DD7, 
-                                       doubflo* temp,
-                                       doubflo* velo,
-                                       doubflo diffusivity,
+                                       real* DD, 
+                                       real* DD7, 
+                                       real* temp,
+                                       real* velo,
+                                       real diffusivity,
                                        int* k_Q, 
-                                       doubflo* QQ,
+                                       real* QQ,
                                        unsigned int sizeQ,
                                        int kQ, 
-                                       doubflo om1, 
+                                       real om1, 
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
@@ -120,7 +120,7 @@ extern "C" __global__ void QADPress7(  int inx,
    if(k<kQ)
    {
       //////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
       //         *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
       //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
       //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -183,7 +183,7 @@ extern "C" __global__ void QADPress7(  int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -213,52 +213,52 @@ extern "C" __global__ void QADPress7(  int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      /*doubflo drho*/;
-      //doubflo vx1_Inflow   = zero;
-      //doubflo vx2_Inflow   = zero;
-      //doubflo vx3_Inflow   = velo[k];
-      //doubflo ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
-      //doubflo uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
-      //doubflo uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
+      /*real drho*/;
+      //real vx1_Inflow   = zero;
+      //real vx2_Inflow   = zero;
+      //real vx3_Inflow   = velo[k];
+      //real ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
+      //real uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
+      //real uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
 
 
       //drho   =    f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       //            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       //            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
 
-      //doubflo vx1 =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+      //real vx1 =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //               ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
       //               (f_E - f_W); 
 
-      //doubflo vx2 =  (-(f_TSE - f_BNW) + (f_TNW - f_BSE))  + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+      //real vx2 =  (-(f_TSE - f_BNW) + (f_TNW - f_BSE))  + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //               ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
       //               (f_N - f_S); 
 
-      //doubflo vx3 =  ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+      //real vx3 =  ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //               (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //               (f_T - f_B); 
 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
-      doubflo vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
+      real vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-	  //doubflo cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
-      doubflo ux_sq       = vx1 * vx1;
-      doubflo uy_sq       = vx2 * vx2;
-      doubflo uz_sq       = vx3 * vx3;
-      doubflo omegaD     = three - sqrt(three);
-      doubflo Lam         = -(c1o2-one/omegaD);
-      doubflo nue_d       = Lam/three;
-      //doubflo ae          = zero;
-      doubflo ae          = diffusivity/nue_d - one;
+	  //real cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real ux_sq       = vx1 * vx1;
+      real uy_sq       = vx2 * vx2;
+      real uz_sq       = vx3 * vx3;
+      real omegaD     = three - sqrt(three);
+      real Lam         = -(c1o2-one/omegaD);
+      real nue_d       = Lam/three;
+      //real ae          = zero;
+      real ae          = diffusivity/nue_d - one;
 
-      doubflo f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      doubflo /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      doubflo /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
-      //doubflo TempD = temp[k];
+      real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      //real TempD = temp[k];
 
 
       f7_ZERO =  (D7.f[0])[kzero];
@@ -269,7 +269,7 @@ extern "C" __global__ void QADPress7(  int inx,
       f7_B    =  (D7.f[5])[kt   ];
       f7_T    =  (D7.f[6])[kb   ];
 
-      doubflo ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
+      real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       //feq7_ZERO = ConcD*(c1o3*(ae*(-3.0))-(ux_sq+uy_sq+uz_sq));
       feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
@@ -323,7 +323,7 @@ extern "C" __global__ void QADPress7(  int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //mit Q's
-      doubflo /*feq,*/ q;
+      real /*feq,*/ q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {
@@ -368,7 +368,7 @@ extern "C" __global__ void QADPress7(  int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////ohne Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -449,16 +449,16 @@ extern "C" __global__ void QADPress7(  int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADPress27( int inx,
                                        int iny,
-                                       doubflo* DD, 
-                                       doubflo* DD27, 
-                                       doubflo* temp,
-                                       doubflo* velo,
-                                       doubflo diffusivity,
+                                       real* DD, 
+                                       real* DD27, 
+                                       real* temp,
+                                       real* velo,
+                                       real diffusivity,
                                        int* k_Q, 
-                                       doubflo* QQ,
+                                       real* QQ,
                                        unsigned int sizeQ,
                                        int kQ, 
-                                       doubflo om1, 
+                                       real om1, 
                                        unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
@@ -602,7 +602,7 @@ extern "C" __global__ void QADPress27( int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -664,35 +664,35 @@ extern "C" __global__ void QADPress27( int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, /*drho, feq,*/ q;
+      real vx1, vx2, vx3, /*drho, feq,*/ q;
       //drho   = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       //         f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       //         f_T + f_B + f_N + f_S + f_E + f_W + f_ZERO; 
@@ -709,142 +709,142 @@ extern "C" __global__ void QADPress27( int inx,
       //vx3    = ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ f_ZERO;
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ f_ZERO;
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
       vx1            =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2            =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3            =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
                         f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      ////doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      //doubflo feq27_E    =   c2over27* (ConcD+(one+ConcD)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq));
-      //doubflo feq27_W    =   c2over27* (ConcD+(one+ConcD)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq));
-      //doubflo feq27_N    =   c2over27* (ConcD+(one+ConcD)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq));
-      //doubflo feq27_S    =   c2over27* (ConcD+(one+ConcD)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq));
-      //doubflo feq27_T    =   c2over27* (ConcD+(one+ConcD)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq));
-      //doubflo feq27_B    =   c2over27* (ConcD+(one+ConcD)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq));
-      //doubflo feq27_NE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      //doubflo feq27_SW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      //doubflo feq27_SE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      //doubflo feq27_NW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      //doubflo feq27_TE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      //doubflo feq27_BW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      //doubflo feq27_BE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      //doubflo feq27_TW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      //doubflo feq27_TN   =   c1over54* (ConcD+(one+ConcD)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      //doubflo feq27_BS   =   c1over54* (ConcD+(one+ConcD)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      //doubflo feq27_BN   =   c1over54* (ConcD+(one+ConcD)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      //doubflo feq27_TS   =   c1over54* (ConcD+(one+ConcD)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      //doubflo feq27_TNE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      //doubflo feq27_BSW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      //doubflo feq27_BNE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      //doubflo feq27_TSW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      //doubflo feq27_TSE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      //doubflo feq27_BNW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      //doubflo feq27_BSE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      //doubflo feq27_TNW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      ////real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      //real feq27_E    =   c2over27* (ConcD+(one+ConcD)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq));
+      //real feq27_W    =   c2over27* (ConcD+(one+ConcD)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq));
+      //real feq27_N    =   c2over27* (ConcD+(one+ConcD)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq));
+      //real feq27_S    =   c2over27* (ConcD+(one+ConcD)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq));
+      //real feq27_T    =   c2over27* (ConcD+(one+ConcD)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq));
+      //real feq27_B    =   c2over27* (ConcD+(one+ConcD)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq));
+      //real feq27_NE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      //real feq27_SW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      //real feq27_SE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      //real feq27_NW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      //real feq27_TE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      //real feq27_BW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      //real feq27_BE   =   c1over54* (ConcD+(one+ConcD)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      //real feq27_TW   =   c1over54* (ConcD+(one+ConcD)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      //real feq27_TN   =   c1over54* (ConcD+(one+ConcD)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      //real feq27_BS   =   c1over54* (ConcD+(one+ConcD)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      //real feq27_BN   =   c1over54* (ConcD+(one+ConcD)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      //real feq27_TS   =   c1over54* (ConcD+(one+ConcD)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      //real feq27_TNE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      //real feq27_BSW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      //real feq27_BNE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      //real feq27_TSW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      //real feq27_TSE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      //real feq27_BNW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      //real feq27_BSE  =   c1over216*(ConcD+(one+ConcD)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      //real feq27_TNW  =   c1over216*(ConcD+(one+ConcD)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
       //
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //doubflo TempD = temp[k];
+      //real TempD = temp[k];
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // velocity inflow
       //vx1   = zero;
       //vx2   = zero;
       //vx3   = velo[k];
 
-      //doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      doubflo feqW27_E    =  feq27_E  ;// c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feqW27_W    =  feq27_W  ;// c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feqW27_N    =  feq27_N  ;// c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feqW27_S    =  feq27_S  ;// c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feqW27_T    =  feq27_T  ;// c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feqW27_B    =  feq27_B  ;// c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feqW27_NE   =  feq27_NE ;// c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feqW27_SW   =  feq27_SW ;// c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feqW27_SE   =  feq27_SE ;// c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feqW27_NW   =  feq27_NW ;// c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feqW27_TE   =  feq27_TE ;// c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feqW27_BW   =  feq27_BW ;// c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feqW27_BE   =  feq27_BE ;// c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feqW27_TW   =  feq27_TW ;// c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feqW27_TN   =  feq27_TN ;// c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feqW27_BS   =  feq27_BS ;// c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feqW27_BN   =  feq27_BN ;// c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feqW27_TS   =  feq27_TS ;// c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feqW27_TNE  =  feq27_TNE;// c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feqW27_BSW  =  feq27_BSW;// c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_BNE  =  feq27_BNE;// c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_TSW  =  feq27_TSW;// c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_TSE  =  feq27_TSE;// c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_BNW  =  feq27_BNW;// c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_BSE  =  feq27_BSE;// c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_TNW  =  feq27_TNW;// c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      real feqW27_E    =  feq27_E  ;// c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =  feq27_W  ;// c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =  feq27_N  ;// c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =  feq27_S  ;// c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =  feq27_T  ;// c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =  feq27_B  ;// c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =  feq27_NE ;// c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =  feq27_SW ;// c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =  feq27_SE ;// c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =  feq27_NW ;// c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =  feq27_TE ;// c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =  feq27_BW ;// c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =  feq27_BE ;// c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =  feq27_TW ;// c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =  feq27_TN ;// c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =  feq27_BS ;// c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =  feq27_BN ;// c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =  feq27_TS ;// c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =  feq27_TNE;// c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =  feq27_BSW;// c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =  feq27_BNE;// c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =  feq27_TSW;// c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =  feq27_TSE;// c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =  feq27_BNW;// c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =  feq27_BSE;// c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =  feq27_TNW;// c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -983,16 +983,16 @@ extern "C" __global__ void QADPress27( int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADVel7( int inx,
                                     int iny,
-                                    doubflo* DD, 
-                                    doubflo* DD7, 
-                                    doubflo* temp,
-                                    doubflo* velo,
-                                    doubflo diffusivity,
+                                    real* DD, 
+                                    real* DD7, 
+                                    real* temp,
+                                    real* velo,
+                                    real diffusivity,
                                     int* k_Q, 
-                                    doubflo* QQ,
+                                    real* QQ,
                                     unsigned int sizeQ,
                                     int kQ, 
-                                    doubflo om1, 
+                                    real om1, 
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
@@ -1098,7 +1098,7 @@ extern "C" __global__ void QADVel7( int inx,
    if(k<kQ)
    {
       //////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
       //         *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
       //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
       //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -1161,7 +1161,7 @@ extern "C" __global__ void QADVel7( int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -1191,52 +1191,52 @@ extern "C" __global__ void QADVel7( int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      /*doubflo drho*/;
-      doubflo vx1_Inflow   = zero;
-      doubflo vx2_Inflow   = zero;
-      doubflo vx3_Inflow   = velo[k];
-      doubflo ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
-      doubflo uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
-      doubflo uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
+      /*real drho*/;
+      real vx1_Inflow   = zero;
+      real vx2_Inflow   = zero;
+      real vx3_Inflow   = velo[k];
+      real ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
+      real uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
+      real uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
 
 
       ////drho   =    f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       ////            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       ////            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
 
-      //doubflo vx1 =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+      //real vx1 =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //               ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
       //               (f_E - f_W); 
 
-      //doubflo vx2 =  (-(f_TSE - f_BNW) + (f_TNW - f_BSE))  + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
+      //real vx2 =  (-(f_TSE - f_BNW) + (f_TNW - f_BSE))  + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //               ((f_BN - f_TS)   + (f_TN - f_BS))    + (-(f_SE - f_NW)  + (f_NE - f_SW)) +
       //               (f_N - f_S); 
 
-      //doubflo vx3 =  ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
+      //real vx3 =  ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //               (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //               (f_T - f_B); 
 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
-      doubflo vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
+      real vx1    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2    =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3    =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-	  //doubflo cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
-      doubflo ux_sq       = vx1 * vx1;
-      doubflo uy_sq       = vx2 * vx2;
-      doubflo uz_sq       = vx3 * vx3;
-      doubflo omegaD     = three - sqrt(three);
-      doubflo Lam         = -(c1o2-one/omegaD);
-      doubflo nue_d       = Lam/three;
-      //doubflo ae          = zero;
-      doubflo ae          = diffusivity/nue_d - one;
+	  //real cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real ux_sq       = vx1 * vx1;
+      real uy_sq       = vx2 * vx2;
+      real uz_sq       = vx3 * vx3;
+      real omegaD     = three - sqrt(three);
+      real Lam         = -(c1o2-one/omegaD);
+      real nue_d       = Lam/three;
+      //real ae          = zero;
+      real ae          = diffusivity/nue_d - one;
 
-      doubflo f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      doubflo /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      doubflo /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
-      doubflo TempD = temp[k];
+      real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      real TempD = temp[k];
 
 
       f7_ZERO =  (D7.f[0])[kzero];
@@ -1247,7 +1247,7 @@ extern "C" __global__ void QADVel7( int inx,
       f7_B    =  (D7.f[5])[kt   ];
       f7_T    =  (D7.f[6])[kb   ];
 
-      doubflo ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
+      real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       //feq7_ZERO = ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
       feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
@@ -1301,7 +1301,7 @@ extern "C" __global__ void QADVel7( int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //mit Q's
-      doubflo /*feq,*/ q;
+      real /*feq,*/ q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {
@@ -1346,7 +1346,7 @@ extern "C" __global__ void QADVel7( int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////ohne Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -1427,16 +1427,16 @@ extern "C" __global__ void QADVel7( int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADVel27(int inx,
                                     int iny,
-                                    doubflo* DD, 
-                                    doubflo* DD27, 
-                                    doubflo* temp,
-                                    doubflo* velo,
-                                    doubflo diffusivity,
+                                    real* DD, 
+                                    real* DD27, 
+                                    real* temp,
+                                    real* velo,
+                                    real diffusivity,
                                     int* k_Q, 
-                                    doubflo* QQ,
+                                    real* QQ,
                                     unsigned int sizeQ,
                                     int kQ, 
-                                    doubflo om1, 
+                                    real om1, 
                                     unsigned int* neighborX,
                                     unsigned int* neighborY,
                                     unsigned int* neighborZ,
@@ -1580,7 +1580,7 @@ extern "C" __global__ void QADVel27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -1642,35 +1642,35 @@ extern "C" __global__ void QADVel27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, /*drho, feq,*/ q;
+      real vx1, vx2, vx3, /*drho, feq,*/ q;
       ////drho   = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       ////         f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       ////         f_T + f_B + f_N + f_S + f_E + f_W + f_ZERO; 
@@ -1687,143 +1687,143 @@ extern "C" __global__ void QADVel27(int inx,
       //vx3    = ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ f_ZERO;
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ f_ZERO;
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
                         f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      //doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo TempD = temp[k];
-      //doubflo TempD = four;
+      real TempD = temp[k];
+      //real TempD = four;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // velocity inflow
       //vx1   = velo[k]; //zero;
       //vx2   = zero; //velo[k];//zero;//velo[k];
       //vx3   = zero;
 
-      ////doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      //doubflo feqW27_E    =   c2over27* (TempD+(one+TempD)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq));
-      //doubflo feqW27_W    =   c2over27* (TempD+(one+TempD)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq));
-      //doubflo feqW27_N    =   c2over27* (TempD+(one+TempD)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq));
-      //doubflo feqW27_S    =   c2over27* (TempD+(one+TempD)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq));
-      //doubflo feqW27_T    =   c2over27* (TempD+(one+TempD)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq));
-      //doubflo feqW27_B    =   c2over27* (TempD+(one+TempD)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq));
-      //doubflo feqW27_NE   =   c1over54* (TempD+(one+TempD)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
-      //doubflo feqW27_SW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
-      //doubflo feqW27_SE   =   c1over54* (TempD+(one+TempD)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
-      //doubflo feqW27_NW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
-      //doubflo feqW27_TE   =   c1over54* (TempD+(one+TempD)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
-      //doubflo feqW27_BW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
-      //doubflo feqW27_BE   =   c1over54* (TempD+(one+TempD)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
-      //doubflo feqW27_TW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
-      //doubflo feqW27_TN   =   c1over54* (TempD+(one+TempD)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
-      //doubflo feqW27_BS   =   c1over54* (TempD+(one+TempD)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
-      //doubflo feqW27_BN   =   c1over54* (TempD+(one+TempD)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
-      //doubflo feqW27_TS   =   c1over54* (TempD+(one+TempD)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
-      //doubflo feqW27_TNE  =   c1over216*(TempD+(one+TempD)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
-      //doubflo feqW27_BSW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
-      //doubflo feqW27_BNE  =   c1over216*(TempD+(one+TempD)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
-      //doubflo feqW27_TSW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
-      //doubflo feqW27_TSE  =   c1over216*(TempD+(one+TempD)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
-      //doubflo feqW27_BNW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
-      //doubflo feqW27_BSE  =   c1over216*(TempD+(one+TempD)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
-      //doubflo feqW27_TNW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
+      ////real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      //real feqW27_E    =   c2over27* (TempD+(one+TempD)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq));
+      //real feqW27_W    =   c2over27* (TempD+(one+TempD)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq));
+      //real feqW27_N    =   c2over27* (TempD+(one+TempD)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq));
+      //real feqW27_S    =   c2over27* (TempD+(one+TempD)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq));
+      //real feqW27_T    =   c2over27* (TempD+(one+TempD)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq));
+      //real feqW27_B    =   c2over27* (TempD+(one+TempD)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq));
+      //real feqW27_NE   =   c1over54* (TempD+(one+TempD)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq));
+      //real feqW27_SW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq));
+      //real feqW27_SE   =   c1over54* (TempD+(one+TempD)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq));
+      //real feqW27_NW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq));
+      //real feqW27_TE   =   c1over54* (TempD+(one+TempD)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq));
+      //real feqW27_BW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq));
+      //real feqW27_BE   =   c1over54* (TempD+(one+TempD)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq));
+      //real feqW27_TW   =   c1over54* (TempD+(one+TempD)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq));
+      //real feqW27_TN   =   c1over54* (TempD+(one+TempD)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq));
+      //real feqW27_BS   =   c1over54* (TempD+(one+TempD)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq));
+      //real feqW27_BN   =   c1over54* (TempD+(one+TempD)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq));
+      //real feqW27_TS   =   c1over54* (TempD+(one+TempD)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq));
+      //real feqW27_TNE  =   c1over216*(TempD+(one+TempD)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq));
+      //real feqW27_BSW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq));
+      //real feqW27_BNE  =   c1over216*(TempD+(one+TempD)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq));
+      //real feqW27_TSW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq));
+      //real feqW27_TSE  =   c1over216*(TempD+(one+TempD)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq));
+      //real feqW27_BNW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq));
+      //real feqW27_BSE  =   c1over216*(TempD+(one+TempD)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq));
+      //real feqW27_TNW  =   c1over216*(TempD+(one+TempD)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq));
       //
-      doubflo feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -2018,15 +2018,15 @@ extern "C" __global__ void QADVel27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QAD7( int inx,
                                  int iny,
-                                 doubflo* DD, 
-                                 doubflo* DD7, 
-                                 doubflo* temp,
-                                 doubflo diffusivity,
+                                 real* DD, 
+                                 real* DD7, 
+                                 real* temp,
+                                 real diffusivity,
                                  int* k_Q, 
-                                 doubflo* QQ,
+                                 real* QQ,
                                  unsigned int sizeQ,
                                  int kQ, 
-                                 doubflo om1, 
+                                 real om1, 
                                  unsigned int* neighborX,
                                  unsigned int* neighborY,
                                  unsigned int* neighborZ,
@@ -2132,7 +2132,7 @@ extern "C" __global__ void QAD7( int inx,
    if(k<kQ)
    {
       //////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;//, 
       //         *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
       //         *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
       //         *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2195,7 +2195,7 @@ extern "C" __global__ void QAD7( int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -2225,7 +2225,7 @@ extern "C" __global__ void QAD7( int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3/*, drho*/;
+      real vx1, vx2, vx3/*, drho*/;
       //drho   =    f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       //            f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       //            f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -2242,27 +2242,27 @@ extern "C" __global__ void QAD7( int inx,
       //vx3    = ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+ ((D.f[dirZERO])[kzero]);
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-      //doubflo cu_sq       =c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
-      doubflo ux_sq       = vx1 * vx1;
-      doubflo uy_sq       = vx2 * vx2;
-      doubflo uz_sq       = vx3 * vx3;
-      doubflo omegaD     = three - sqrt(three);
-      doubflo Lam         = -(c1o2-one/omegaD);
-      doubflo nue_d       = Lam/three;
-      //doubflo ae          = zero;
-      doubflo ae          = diffusivity/nue_d - one;
+      //real cu_sq       =c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real ux_sq       = vx1 * vx1;
+      real uy_sq       = vx2 * vx2;
+      real uz_sq       = vx3 * vx3;
+      real omegaD     = three - sqrt(three);
+      real Lam         = -(c1o2-one/omegaD);
+      real nue_d       = Lam/three;
+      //real ae          = zero;
+      real ae          = diffusivity/nue_d - one;
 
-      doubflo f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      doubflo /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      doubflo /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
-      doubflo TempD = temp[k];
+      real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      real TempD = temp[k];
 
 
       f7_ZERO =  (D7.f[0])[kzero];
@@ -2273,7 +2273,7 @@ extern "C" __global__ void QAD7( int inx,
       f7_B    =  (D7.f[5])[kt   ];
       f7_T    =  (D7.f[6])[kb   ];
 
-      doubflo ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
+      real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       //feq7_ZERO = ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
       feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
@@ -2327,7 +2327,7 @@ extern "C" __global__ void QAD7( int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////mit Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -2372,7 +2372,7 @@ extern "C" __global__ void QAD7( int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //ohne Q's
-      doubflo /*feq,*/ q;
+      real /*feq,*/ q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {
@@ -2453,15 +2453,15 @@ extern "C" __global__ void QAD7( int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADDirichlet27(	 int inx,
 											 int iny,
-											 doubflo* DD, 
-											 doubflo* DD27, 
-											 doubflo* temp,
-											 doubflo diffusivity,
+											 real* DD, 
+											 real* DD27, 
+											 real* temp,
+											 real diffusivity,
 											 int* k_Q, 
-											 doubflo* QQ,
+											 real* QQ,
 											 unsigned int sizeQ,
 											 int kQ, 
-											 doubflo om1, 
+											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
@@ -2605,7 +2605,7 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2667,35 +2667,35 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, /*drho, feq,*/ q;
+      real vx1, vx2, vx3, /*drho, feq,*/ q;
       ////drho   = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       ////         f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       ////         f_T + f_B + f_N + f_S + f_E + f_W + f_ZERO; 
@@ -2712,110 +2712,110 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
       //vx3    = ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+f_ZERO;
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+f_ZERO;
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
          f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
          f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      //doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo TempD = one;//temp[k];
+      real TempD = one;//temp[k];
 
-      //doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      doubflo feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -2981,15 +2981,15 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADBB27(int inx,
                                    int iny,
-                                   doubflo* DD, 
-                                   doubflo* DD27, 
-                                   doubflo* temp,
-                                   doubflo diffusivity,
+                                   real* DD, 
+                                   real* DD27, 
+                                   real* temp,
+                                   real diffusivity,
                                    int* k_Q, 
-                                   doubflo* QQ,
+                                   real* QQ,
                                    unsigned int sizeQ,
                                    int kQ, 
-                                   doubflo om1, 
+                                   real om1, 
                                    unsigned int* neighborX,
                                    unsigned int* neighborY,
                                    unsigned int* neighborZ,
@@ -3133,7 +3133,7 @@ extern "C" __global__ void QADBB27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -3195,35 +3195,35 @@ extern "C" __global__ void QADBB27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, /*drho, feq,*/ q;
+      real vx1, vx2, vx3, /*drho, feq,*/ q;
       ////drho   = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
       ////         f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
       ////         f_T + f_B + f_N + f_S + f_E + f_W + f_ZERO; 
@@ -3240,110 +3240,110 @@ extern "C" __global__ void QADBB27(int inx,
       //vx3    = ((f_TSE - f_BNW) + (f_TNW - f_BSE)) + ((f_TNE - f_BSW) + (f_TSW - f_BNE)) +
       //         (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //         (f_T - f_B); 
-      doubflo rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+f_ZERO;
-      doubflo rho    =  rho0 + one;
-      doubflo OORho  =  one/rho;
+      real rho0   =  (f_TNE+f_BSW)+(f_TSW+f_BNE)+(f_TSE+f_BNW)+(f_TNW+f_BSE)+(f_NE+f_SW)+(f_NW+f_SE)+(f_TE+f_BW)+(f_BE+f_TW)+(f_TN+f_BS)+(f_BN+f_TS)+(f_E+f_W)+(f_N+f_S)+(f_T+f_B)+f_ZERO;
+      real rho    =  rho0 + one;
+      real OORho  =  one/rho;
       vx1     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
       vx2     =  OORho*((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
       vx3     =  OORho*((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
          f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
          f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      //doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo TempD = temp[k];
+      real TempD = temp[k];
 
-      //doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      doubflo feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -3498,15 +3498,15 @@ extern "C" __global__ void QADBB27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QNoSlipADincomp7( int inx,
 											 int iny,
-											 doubflo* DD, 
-											 doubflo* DD7, 
-											 doubflo* temp,
-											 doubflo diffusivity,
+											 real* DD, 
+											 real* DD7, 
+											 real* temp,
+											 real diffusivity,
 											 int* k_Q, 
-											 doubflo* QQ,
+											 real* QQ,
 											 unsigned int sizeQ,
 											 int kQ, 
-											 doubflo om1, 
+											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
@@ -3612,7 +3612,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
    if(k<kQ)
    {
       //////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB;
 
       q_dirE   = &QQ[dirE   *sizeQ];
       q_dirW   = &QQ[dirW   *sizeQ];
@@ -3651,56 +3651,56 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3 =  ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real vx1 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3 =  ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 		 ////dörrrrrty !!!!!!!!!!!!!
-   //      doubflo vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-   //      doubflo vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-   //      doubflo vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+   //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+   //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+   //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-      //doubflo cu_sq       =c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
-      doubflo ux_sq       = vx1 * vx1;
-      doubflo uy_sq       = vx2 * vx2;
-      doubflo uz_sq       = vx3 * vx3;
+      //real cu_sq       =c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real ux_sq       = vx1 * vx1;
+      real uy_sq       = vx2 * vx2;
+      real uz_sq       = vx3 * vx3;
       ////////////////////////////////////////////////////////////////////////////////
 	  //BGK
-      //doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam         = -(c1o2-one/omegaD);
-      //doubflo nue_d       = Lam/three;
-      //doubflo ae          = diffusivity/nue_d - one; //zero;
+      //real omegaD     = three - sqrt(three);
+      //real Lam         = -(c1o2-one/omegaD);
+      //real nue_d       = Lam/three;
+      //real ae          = diffusivity/nue_d - one; //zero;
 
-      doubflo f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      doubflo /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      doubflo /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
-      doubflo TempD = temp[k];
+      real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      real TempD = temp[k];
 
 
       f7_ZERO =  (D7.f[0])[kzero];
@@ -3711,7 +3711,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
       f7_B    =  (D7.f[5])[kt   ];
       f7_T    =  (D7.f[6])[kb   ];
 
-      doubflo ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
+      real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       ////feq7_ZERO = ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
       //feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
@@ -3731,7 +3731,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 
       ////////////////////////////////////////////////////////////////////////////////
 	  //TRT
-      doubflo cs2     = c1o4;
+      real cs2     = c1o4;
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
       if (evenOrOdd==false)
@@ -3757,7 +3757,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////mit Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -3802,7 +3802,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////ohne Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -3842,7 +3842,7 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //ohne Q's aber mit TRT
-      doubflo /*feq,*/ q;
+      real /*feq,*/ q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {
@@ -3924,15 +3924,15 @@ extern "C" __global__ void QNoSlipADincomp7( int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QNoSlipADincomp27(int inx,
 											 int iny,
-											 doubflo* DD, 
-											 doubflo* DD27, 
-											 doubflo* temp,
-											 doubflo diffusivity,
+											 real* DD, 
+											 real* DD27, 
+											 real* temp,
+											 real diffusivity,
 											 int* k_Q, 
-											 doubflo* QQ,
+											 real* QQ,
 											 unsigned int sizeQ,
 											 int kQ, 
-											 doubflo om1, 
+											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
@@ -4076,7 +4076,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -4138,135 +4138,135 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3 =  ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real vx1 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2 =  ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3 =  ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
          f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
          f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      //doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo TempD = temp[k];
+      real TempD = temp[k];
 
-      //doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      doubflo feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -4334,7 +4334,7 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
       //Test
       //(D.f[dirZERO])[k]=0.1f;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo q;
+	  real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]=(two*feqW27_W  -(f27_E  *(q*omegaD-one)-omegaD*feq27_E  *(q-one))/(omegaD-one)+f27_W  *q)/(q+one);
       q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]=(two*feqW27_E  -(f27_W  *(q*omegaD-one)-omegaD*feq27_W  *(q-one))/(omegaD-one)+f27_E  *q)/(q+one);
@@ -4407,16 +4407,16 @@ extern "C" __global__ void QNoSlipADincomp27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADVeloIncomp7(  int inx,
 											int iny,
-											doubflo* DD, 
-											doubflo* DD7, 
-											doubflo* temp,
-											doubflo* velo,
-											doubflo diffusivity,
+											real* DD, 
+											real* DD7, 
+											real* temp,
+											real* velo,
+											real diffusivity,
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											unsigned int sizeQ,
 											int kQ, 
-											doubflo om1, 
+											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
@@ -4522,7 +4522,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
    if(k<kQ)
    {
       //////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB; 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB; 
 
       q_dirE   = &QQ[dirE   *sizeQ];
       q_dirW   = &QQ[dirW   *sizeQ];
@@ -4561,57 +4561,57 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1_Inflow   = zero;
-      doubflo vx2_Inflow   = velo[k];
-      doubflo vx3_Inflow   = zero;
-      doubflo ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
-      doubflo uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
-      doubflo uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
+      real vx1_Inflow   = zero;
+      real vx2_Inflow   = velo[k];
+      real vx3_Inflow   = zero;
+      real ux_sq_Inflow = vx1_Inflow * vx1_Inflow;
+      real uy_sq_Inflow = vx2_Inflow * vx2_Inflow;
+      real uz_sq_Inflow = vx3_Inflow * vx3_Inflow;
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 		 ////dörrrrrty !!!!!!!!!!!!!
-   //      doubflo vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-   //      doubflo vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-   //      doubflo vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+   //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+   //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+   //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-	  //doubflo cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
-      doubflo ux_sq       = vx1 * vx1;
-      doubflo uy_sq       = vx2 * vx2;
-      doubflo uz_sq       = vx3 * vx3;
+	  //real cu_sq       =1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real ux_sq       = vx1 * vx1;
+      real uy_sq       = vx2 * vx2;
+      real uz_sq       = vx3 * vx3;
 
-      doubflo f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      doubflo /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      doubflo /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
-      doubflo TempD = temp[k];
+      real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      real TempD = temp[k];
 
       f7_ZERO =  (D7.f[0])[kzero];
       f7_W    =  (D7.f[1])[ke   ];
@@ -4621,15 +4621,15 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
       f7_B    =  (D7.f[5])[kt   ];
       f7_T    =  (D7.f[6])[kb   ];
 
-      doubflo ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
+      real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       ////////////////////////////////////////////////////////////////////////////////
 	  //BGK
-      //doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam         = -(c1o2-one/omegaD);
-      //doubflo nue_d       = Lam/three;
-      ////doubflo ae          = zero;
-      //doubflo ae          = diffusivity/nue_d - one;
+      //real omegaD     = three - sqrt(three);
+      //real Lam         = -(c1o2-one/omegaD);
+      //real nue_d       = Lam/three;
+      ////real ae          = zero;
+      //real ae          = diffusivity/nue_d - one;
 
       ////feq7_ZERO = ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
       //feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
@@ -4649,26 +4649,26 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 
    //      ////////////////////////////////////////////////////////////////////////////////
 		 ////TRT  Yoshida Kernel - based on Ying
-         doubflo cs2         = c1o4;
-   //      doubflo Lam         = diffusivity/(one)/cs2;
-   //      doubflo omegaD      = - one / (Lam + c1o2);
-   //      doubflo ae          = zero;
+         real cs2         = c1o4;
+   //      real Lam         = diffusivity/(one)/cs2;
+   //      real omegaD      = - one / (Lam + c1o2);
+   //      real ae          = zero;
    //      ////////////////////////////////////////////////////////////////////////////////
-		 //doubflo Mom000 = f7_ZERO + f7_W + f7_E + f7_N + f7_S + f7_T + f7_B; //1
-   //      doubflo Mom100 = f7_E - f7_W;
-   //      doubflo Mom010 = f7_N - f7_S;
-   //      doubflo Mom001 = f7_T - f7_B;
-   //      doubflo Mom222 = six*f7_ZERO - f7_W - f7_E - f7_N - f7_S - f7_T - f7_B;
-   //      doubflo Mom200 = two*f7_W + two*f7_E - f7_N - f7_S - f7_T - f7_B;
-   //      doubflo Mom022 = f7_N + f7_S - f7_T - f7_B;
+		 //real Mom000 = f7_ZERO + f7_W + f7_E + f7_N + f7_S + f7_T + f7_B; //1
+   //      real Mom100 = f7_E - f7_W;
+   //      real Mom010 = f7_N - f7_S;
+   //      real Mom001 = f7_T - f7_B;
+   //      real Mom222 = six*f7_ZERO - f7_W - f7_E - f7_N - f7_S - f7_T - f7_B;
+   //      real Mom200 = two*f7_W + two*f7_E - f7_N - f7_S - f7_T - f7_B;
+   //      real Mom022 = f7_N + f7_S - f7_T - f7_B;
 
-   //      doubflo Meq000 = ConcD;
-   //      doubflo Meq100 = ConcD*vx1;
-   //      doubflo Meq010 = ConcD*vx2;
-   //      doubflo Meq001 = ConcD*vx3;
-   //      doubflo Meq222 = c3o4*ConcD;
-   //      doubflo Meq200 = zero;
-   //      doubflo Meq022 = zero;
+   //      real Meq000 = ConcD;
+   //      real Meq100 = ConcD*vx1;
+   //      real Meq010 = ConcD*vx2;
+   //      real Meq001 = ConcD*vx3;
+   //      real Meq222 = c3o4*ConcD;
+   //      real Meq200 = zero;
+   //      real Meq022 = zero;
 
    //      // relaxation TRT Yoshida
 
@@ -4721,7 +4721,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////mit Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -4766,7 +4766,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////ohne Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -4805,7 +4805,7 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //ohne Q's aber mit TRT
-      doubflo /*feq,*/ q;
+      real /*feq,*/ q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {
@@ -4887,16 +4887,16 @@ extern "C" __global__ void QADVeloIncomp7(  int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADVeloIncomp27( int inx,
 											int iny,
-											doubflo* DD, 
-											doubflo* DD27, 
-											doubflo* temp,
-											doubflo* velo,
-											doubflo diffusivity,
+											real* DD, 
+											real* DD27, 
+											real* temp,
+											real* velo,
+											real diffusivity,
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											unsigned int sizeQ,
 											int kQ, 
-											doubflo om1, 
+											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
@@ -5040,7 +5040,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -5102,140 +5102,140 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
                         f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      //doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo TempD = temp[k];
+      real TempD = temp[k];
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // velocity inflow
       vx1   = velo[k];//zero;
       vx2   = zero;//velo[k];
       vx3   = zero;
 
-      //doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      doubflo feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feqW27_W    =   c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feqW27_N    =   c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feqW27_S    =   c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feqW27_T    =   c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feqW27_B    =   c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feqW27_NE   =   c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feqW27_SW   =   c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feqW27_SE   =   c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feqW27_NW   =   c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feqW27_TE   =   c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feqW27_BW   =   c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feqW27_BE   =   c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feqW27_TW   =   c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feqW27_TN   =   c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feqW27_BS   =   c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feqW27_BN   =   c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feqW27_TS   =   c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feqW27_TNE  =   c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feqW27_BSW  =   c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feqW27_BNE  =   c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feqW27_TSW  =   c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feqW27_TSE  =   c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feqW27_BNW  =   c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feqW27_BSE  =   c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feqW27_TNW  =   c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -5303,7 +5303,7 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo q;
+      real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]= -feqW27_W  + two * c2over27  * TempD;
       q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]= -feqW27_E  + two * c2over27  * TempD;
@@ -5402,16 +5402,16 @@ extern "C" __global__ void QADVeloIncomp27( int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADPressIncomp7(int inx,
 										   int iny,
-										   doubflo* DD, 
-										   doubflo* DD7, 
-										   doubflo* temp,
-										   doubflo* velo,
-										   doubflo diffusivity,
+										   real* DD, 
+										   real* DD7, 
+										   real* temp,
+										   real* velo,
+										   real diffusivity,
 										   int* k_Q, 
-										   doubflo* QQ,
+										   real* QQ,
 										   unsigned int sizeQ,
 										   int kQ, 
-										   doubflo om1, 
+										   real om1, 
 										   unsigned int* neighborX,
 										   unsigned int* neighborY,
 										   unsigned int* neighborZ,
@@ -5517,7 +5517,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
    if(k<kQ)
    {
       //////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB; 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB; 
 
       q_dirE   = &QQ[dirE   *sizeQ];
       q_dirW   = &QQ[dirW   *sizeQ];
@@ -5556,7 +5556,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -5586,30 +5586,30 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real vx1 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2 = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3 = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 		 ////dörrrrrty !!!!!!!!!!!!!
-   //      doubflo vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-   //      doubflo vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-   //      doubflo vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+   //      real vx1     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+   //      real vx2     =  ten * ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+   //      real vx3     =  ten * ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
 
-	  //doubflo cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
-      doubflo ux_sq       = vx1 * vx1;
-      doubflo uy_sq       = vx2 * vx2;
-      doubflo uz_sq       = vx3 * vx3;
+	  //real cu_sq       =1.5*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real ux_sq       = vx1 * vx1;
+      real uy_sq       = vx2 * vx2;
+      real uz_sq       = vx3 * vx3;
       //////////////////////////////////////////////////////////////////////////
 	  //BGK
-      //doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam         = -(c1o2-one/omegaD);
-      //doubflo nue_d       = Lam/three;
-      ////doubflo ae          = zero;
-      //doubflo ae          = diffusivity/nue_d - one;
+      //real omegaD     = three - sqrt(three);
+      //real Lam         = -(c1o2-one/omegaD);
+      //real nue_d       = Lam/three;
+      ////real ae          = zero;
+      //real ae          = diffusivity/nue_d - one;
 
-      doubflo f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-      doubflo /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
-      doubflo /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
-      //doubflo TempD = temp[k];
+      real f7_ZERO,f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+      real /*feq7_ZERO,*/feq7_E,feq7_W,feq7_N,feq7_S,feq7_T,feq7_B;
+      real /*feqW7_ZERO,*/feqW7_E,feqW7_W,feqW7_N,feqW7_S,feqW7_T,feqW7_B;
+      //real TempD = temp[k];
 
 
       f7_ZERO =  (D7.f[0])[kzero];
@@ -5620,7 +5620,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
       f7_B    =  (D7.f[5])[kt   ];
       f7_T    =  (D7.f[6])[kb   ];
 
-      doubflo ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
+      real ConcD = f7_ZERO + f7_E + f7_W + f7_N + f7_S + f7_T + f7_B;
 
       ////feq7_ZERO = ConcD*(c1o3*(ae*(-3.0))-(ux_sq+uy_sq+uz_sq));
       //feq7_E    = ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx1*c1o2);
@@ -5640,10 +5640,10 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 
       //////////////////////////////////////////////////////////////////////////
 	  //TRT  Yoshida Kernel - based on Ying
-      doubflo cs2         = c1o4;
-      doubflo Lam         = diffusivity/(one)/cs2;
-      doubflo omegaD      = - one / (Lam + c1o2);
-      doubflo nue_d       = Lam/three;
+      real cs2         = c1o4;
+      real Lam         = diffusivity/(one)/cs2;
+      real omegaD      = - one / (Lam + c1o2);
+      real nue_d       = Lam/three;
 
       //////////////////////////////////////////////////////////////////////////
       //pointertausch
@@ -5670,7 +5670,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////mit Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -5715,7 +5715,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 
       ////////////////////////////////////////////////////////////////////////////
       ////ohne Q's
-      //doubflo /*feq,*/ q;
+      //real /*feq,*/ q;
       //q = q_dirE[k];
       //if (q>=zero && q<=one)
       //{
@@ -5761,7 +5761,7 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 
       //////////////////////////////////////////////////////////////////////////
       //ohne Q's aber mit TRT
-      doubflo /*feq,*/ q;
+      real /*feq,*/ q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {
@@ -5843,16 +5843,16 @@ extern "C" __global__ void QADPressIncomp7(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADPressIncomp27(   int inx,
 											   int iny,
-											   doubflo* DD, 
-											   doubflo* DD27, 
-											   doubflo* temp,
-											   doubflo* velo,
-											   doubflo diffusivity,
+											   real* DD, 
+											   real* DD27, 
+											   real* temp,
+											   real* velo,
+											   real diffusivity,
 											   int* k_Q, 
-											   doubflo* QQ,
+											   real* QQ,
 											   unsigned int sizeQ,
 											   int kQ, 
-											   doubflo om1, 
+											   real om1, 
 											   unsigned int* neighborX,
 											   unsigned int* neighborY,
 											   unsigned int* neighborZ,
@@ -5996,7 +5996,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real  *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -6058,140 +6058,140 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1      = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
-      doubflo vx2      = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
-      doubflo vx3      = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
+      real vx1      = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)+(f_BSE-f_TNW) +(f_NE-f_SW)+(f_SE-f_NW)+(f_TE-f_BW)+(f_BE-f_TW)+(f_E-f_W));
+      real vx2      = ((f_TNE-f_BSW)+(f_BNE-f_TSW)+(f_BNW-f_TSE)+(f_TNW-f_BSE) +(f_NE-f_SW)+(f_NW-f_SE)+(f_TN-f_BS)+(f_BN-f_TS)+(f_N-f_S));
+      real vx3      = ((f_TNE-f_BSW)+(f_TSW-f_BNE)+(f_TSE-f_BNW)+(f_TNW-f_BSE) +(f_TE-f_BW)+(f_TW-f_BE)+(f_TN-f_BS)+(f_TS-f_BN)+(f_T-f_B));
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f27_W    = (D27.f[dirE   ])[ke   ];
-      doubflo f27_E    = (D27.f[dirW   ])[kw   ];
-      doubflo f27_S    = (D27.f[dirN   ])[kn   ];
-      doubflo f27_N    = (D27.f[dirS   ])[ks   ];
-      doubflo f27_B    = (D27.f[dirT   ])[kt   ];
-      doubflo f27_T    = (D27.f[dirB   ])[kb   ];
-      doubflo f27_SW   = (D27.f[dirNE  ])[kne  ];
-      doubflo f27_NE   = (D27.f[dirSW  ])[ksw  ];
-      doubflo f27_NW   = (D27.f[dirSE  ])[kse  ];
-      doubflo f27_SE   = (D27.f[dirNW  ])[knw  ];
-      doubflo f27_BW   = (D27.f[dirTE  ])[kte  ];
-      doubflo f27_TE   = (D27.f[dirBW  ])[kbw  ];
-      doubflo f27_TW   = (D27.f[dirBE  ])[kbe  ];
-      doubflo f27_BE   = (D27.f[dirTW  ])[ktw  ];
-      doubflo f27_BS   = (D27.f[dirTN  ])[ktn  ];
-      doubflo f27_TN   = (D27.f[dirBS  ])[kbs  ];
-      doubflo f27_TS   = (D27.f[dirBN  ])[kbn  ];
-      doubflo f27_BN   = (D27.f[dirTS  ])[kts  ];
-      doubflo f27_ZERO = (D27.f[dirZERO])[kzero];
-      doubflo f27_BSW  = (D27.f[dirTNE ])[ktne ];
-      doubflo f27_BNE  = (D27.f[dirTSW ])[ktsw ];
-      doubflo f27_BNW  = (D27.f[dirTSE ])[ktse ];
-      doubflo f27_BSE  = (D27.f[dirTNW ])[ktnw ];
-      doubflo f27_TSW  = (D27.f[dirBNE ])[kbne ];
-      doubflo f27_TNE  = (D27.f[dirBSW ])[kbsw ];
-      doubflo f27_TNW  = (D27.f[dirBSE ])[kbse ];
-      doubflo f27_TSE  = (D27.f[dirBNW ])[kbnw ];
+      real f27_W    = (D27.f[dirE   ])[ke   ];
+      real f27_E    = (D27.f[dirW   ])[kw   ];
+      real f27_S    = (D27.f[dirN   ])[kn   ];
+      real f27_N    = (D27.f[dirS   ])[ks   ];
+      real f27_B    = (D27.f[dirT   ])[kt   ];
+      real f27_T    = (D27.f[dirB   ])[kb   ];
+      real f27_SW   = (D27.f[dirNE  ])[kne  ];
+      real f27_NE   = (D27.f[dirSW  ])[ksw  ];
+      real f27_NW   = (D27.f[dirSE  ])[kse  ];
+      real f27_SE   = (D27.f[dirNW  ])[knw  ];
+      real f27_BW   = (D27.f[dirTE  ])[kte  ];
+      real f27_TE   = (D27.f[dirBW  ])[kbw  ];
+      real f27_TW   = (D27.f[dirBE  ])[kbe  ];
+      real f27_BE   = (D27.f[dirTW  ])[ktw  ];
+      real f27_BS   = (D27.f[dirTN  ])[ktn  ];
+      real f27_TN   = (D27.f[dirBS  ])[kbs  ];
+      real f27_TS   = (D27.f[dirBN  ])[kbn  ];
+      real f27_BN   = (D27.f[dirTS  ])[kts  ];
+      real f27_ZERO = (D27.f[dirZERO])[kzero];
+      real f27_BSW  = (D27.f[dirTNE ])[ktne ];
+      real f27_BNE  = (D27.f[dirTSW ])[ktsw ];
+      real f27_BNW  = (D27.f[dirTSE ])[ktse ];
+      real f27_BSE  = (D27.f[dirTNW ])[ktnw ];
+      real f27_TSW  = (D27.f[dirBNE ])[kbne ];
+      real f27_TNE  = (D27.f[dirBSW ])[kbsw ];
+      real f27_TNW  = (D27.f[dirBSE ])[kbse ];
+      real f27_TSE  = (D27.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
+      real ConcD =   f27_TSE + f27_TNW + f27_TNE + f27_TSW + f27_BSE + f27_BNW + f27_BNE + f27_BSW +
                         f27_BN  + f27_TS  + f27_TN  + f27_BS  + f27_BE  + f27_TW  + f27_TE  + f27_BW  + f27_SE + f27_NW + f27_NE + f27_SW + 
                         f27_T   + f27_B   + f27_N   + f27_S   + f27_E   + f27_W   + f27_ZERO; 
 
-      //doubflo feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
-      doubflo feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
-      doubflo feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
-      doubflo feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
-      doubflo feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
-      doubflo feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
-      doubflo feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
-      doubflo feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
-      doubflo feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
-      doubflo feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
-      doubflo feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
-      doubflo feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
-      doubflo feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
-      doubflo feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
-      doubflo feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
-      doubflo feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
-      doubflo feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
-      doubflo feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
-      doubflo feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
-      doubflo feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
-      doubflo feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
-      doubflo feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
-      doubflo feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
-      doubflo feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
+      //real feq27_ZERO =   c8over27* ConcD*(one-cu_sq);
+      real feq27_E    =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
+      real feq27_W    =   c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq);
+      real feq27_N    =   c2over27* ConcD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq);
+      real feq27_S    =   c2over27* ConcD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq);
+      real feq27_T    =   c2over27* ConcD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq);
+      real feq27_B    =   c2over27* ConcD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq);
+      real feq27_NE   =   c1over54* ConcD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq);
+      real feq27_SW   =   c1over54* ConcD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq);
+      real feq27_SE   =   c1over54* ConcD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq);
+      real feq27_NW   =   c1over54* ConcD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq);
+      real feq27_TE   =   c1over54* ConcD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq);
+      real feq27_BW   =   c1over54* ConcD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq);
+      real feq27_BE   =   c1over54* ConcD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq);
+      real feq27_TW   =   c1over54* ConcD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq);
+      real feq27_TN   =   c1over54* ConcD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq);
+      real feq27_BS   =   c1over54* ConcD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq);
+      real feq27_BN   =   c1over54* ConcD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq);
+      real feq27_TS   =   c1over54* ConcD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq);
+      real feq27_TNE  =   c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq);
+      real feq27_BSW  =   c1over216*ConcD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq);
+      real feq27_BNE  =   c1over216*ConcD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq);
+      real feq27_TSW  =   c1over216*ConcD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq);
+      real feq27_TSE  =   c1over216*ConcD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq);
+      real feq27_BNW  =   c1over216*ConcD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq);
+      real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
+      real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo TempD = temp[k];
+      real TempD = temp[k];
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // velocity inflow
       //vx1   = zero;
       //vx2   = zero;
       //vx3   = velo[k];
 
-      //doubflo feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
-      doubflo feqW27_E    =  c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); //feq27_E  ;// 
-      doubflo feqW27_W    =  c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); //feq27_W  ;// 
-      doubflo feqW27_N    =  c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); //feq27_N  ;// 
-      doubflo feqW27_S    =  c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); //feq27_S  ;// 
-      doubflo feqW27_T    =  c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); //feq27_T  ;// 
-      doubflo feqW27_B    =  c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); //feq27_B  ;// 
-      doubflo feqW27_NE   =  c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); //feq27_NE ;// 
-      doubflo feqW27_SW   =  c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); //feq27_SW ;// 
-      doubflo feqW27_SE   =  c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); //feq27_SE ;// 
-      doubflo feqW27_NW   =  c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); //feq27_NW ;// 
-      doubflo feqW27_TE   =  c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); //feq27_TE ;// 
-      doubflo feqW27_BW   =  c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); //feq27_BW ;// 
-      doubflo feqW27_BE   =  c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); //feq27_BE ;// 
-      doubflo feqW27_TW   =  c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); //feq27_TW ;// 
-      doubflo feqW27_TN   =  c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); //feq27_TN ;// 
-      doubflo feqW27_BS   =  c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); //feq27_BS ;// 
-      doubflo feqW27_BN   =  c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); //feq27_BN ;// 
-      doubflo feqW27_TS   =  c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); //feq27_TS ;// 
-      doubflo feqW27_TNE  =  c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); //feq27_TNE;// 
-      doubflo feqW27_BSW  =  c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); //feq27_BSW;// 
-      doubflo feqW27_BNE  =  c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); //feq27_BNE;// 
-      doubflo feqW27_TSW  =  c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); //feq27_TSW;// 
-      doubflo feqW27_TSE  =  c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); //feq27_TSE;// 
-      doubflo feqW27_BNW  =  c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); //feq27_BNW;// 
-      doubflo feqW27_BSE  =  c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); //feq27_BSE;// 
-      doubflo feqW27_TNW  =  c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); //feq27_TNW;// 
+      //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
+      real feqW27_E    =  c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq); //feq27_E  ;// 
+      real feqW27_W    =  c2over27* TempD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cu_sq); //feq27_W  ;// 
+      real feqW27_N    =  c2over27* TempD*(one+three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cu_sq); //feq27_N  ;// 
+      real feqW27_S    =  c2over27* TempD*(one+three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cu_sq); //feq27_S  ;// 
+      real feqW27_T    =  c2over27* TempD*(one+three*(         vx3)+c9over2*(         vx3)*(         vx3)-cu_sq); //feq27_T  ;// 
+      real feqW27_B    =  c2over27* TempD*(one+three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cu_sq); //feq27_B  ;// 
+      real feqW27_NE   =  c1over54* TempD*(one+three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cu_sq); //feq27_NE ;// 
+      real feqW27_SW   =  c1over54* TempD*(one+three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cu_sq); //feq27_SW ;// 
+      real feqW27_SE   =  c1over54* TempD*(one+three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cu_sq); //feq27_SE ;// 
+      real feqW27_NW   =  c1over54* TempD*(one+three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cu_sq); //feq27_NW ;// 
+      real feqW27_TE   =  c1over54* TempD*(one+three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cu_sq); //feq27_TE ;// 
+      real feqW27_BW   =  c1over54* TempD*(one+three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cu_sq); //feq27_BW ;// 
+      real feqW27_BE   =  c1over54* TempD*(one+three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cu_sq); //feq27_BE ;// 
+      real feqW27_TW   =  c1over54* TempD*(one+three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cu_sq); //feq27_TW ;// 
+      real feqW27_TN   =  c1over54* TempD*(one+three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cu_sq); //feq27_TN ;// 
+      real feqW27_BS   =  c1over54* TempD*(one+three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cu_sq); //feq27_BS ;// 
+      real feqW27_BN   =  c1over54* TempD*(one+three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cu_sq); //feq27_BN ;// 
+      real feqW27_TS   =  c1over54* TempD*(one+three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cu_sq); //feq27_TS ;// 
+      real feqW27_TNE  =  c1over216*TempD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cu_sq); //feq27_TNE;// 
+      real feqW27_BSW  =  c1over216*TempD*(one+three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cu_sq); //feq27_BSW;// 
+      real feqW27_BNE  =  c1over216*TempD*(one+three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cu_sq); //feq27_BNE;// 
+      real feqW27_TSW  =  c1over216*TempD*(one+three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cu_sq); //feq27_TSW;// 
+      real feqW27_TSE  =  c1over216*TempD*(one+three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cu_sq); //feq27_TSE;// 
+      real feqW27_BNW  =  c1over216*TempD*(one+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cu_sq); //feq27_BNW;// 
+      real feqW27_BSE  =  c1over216*TempD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq); //feq27_BSE;// 
+      real feqW27_TNW  =  c1over216*TempD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq); //feq27_TNW;// 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo omegaD     = three - sqrt(three);
-      //doubflo Lam        = -(c1o2-one/omegaD);
-      //doubflo nue_d      = Lam/three;
-      //doubflo ae         = zero;
-      //doubflo ae         = diffusivity/nue_d - one;
+      real omegaD     = three - sqrt(three);
+      //real Lam        = -(c1o2-one/omegaD);
+      //real nue_d      = Lam/three;
+      //real ae         = zero;
+      //real ae         = diffusivity/nue_d - one;
 
 
       //////////////////////////////////////////////////////////////////////////
@@ -6259,7 +6259,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo q;
+      real q;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       q = q_dirE[k];   if (q>=zero && q<=one) (D27.f[dirW  ])[kw  ]= -feqW27_W  + two * c2over27  * TempD;
       q = q_dirW[k];   if (q>=zero && q<=one) (D27.f[dirE  ])[ke  ]= -feqW27_E  + two * c2over27  * TempD;

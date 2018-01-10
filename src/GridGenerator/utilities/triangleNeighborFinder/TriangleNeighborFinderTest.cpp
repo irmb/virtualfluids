@@ -17,18 +17,18 @@ public:
     IntegerPtr2D indices;
 
     void SetUp() {
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)1), Vertex((doubflo)0, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)1), Vertex((doubflo)1, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)0, (doubflo)1), Vertex((doubflo)1, (doubflo)0, (doubflo)0), Vertex((doubflo)1, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)0, (doubflo)0), Vertex((doubflo)1, (doubflo)1, (doubflo)0), Vertex((doubflo)1, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)0, (doubflo)1), Vertex((doubflo)0, (doubflo)0, (doubflo)0), Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)0, (doubflo)0), Vertex((doubflo)1, (doubflo)0, (doubflo)0), Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)1), Vertex((doubflo)0, (doubflo)1, (doubflo)1), Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)1), Vertex((doubflo)0, (doubflo)0, (doubflo)1), Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)0), Vertex((doubflo)1, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)0)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)0), Vertex((doubflo)1, (doubflo)0, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)0)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)1), Vertex((real)0, (real)1, (real)0), Vertex((real)0, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)0), Vertex((real)0, (real)0, (real)0), Vertex((real)0, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)1), Vertex((real)1, (real)1, (real)0), Vertex((real)0, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)0), Vertex((real)0, (real)1, (real)0), Vertex((real)0, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)0, (real)1), Vertex((real)1, (real)0, (real)0), Vertex((real)1, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)0, (real)0), Vertex((real)1, (real)1, (real)0), Vertex((real)1, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)0, (real)1), Vertex((real)0, (real)0, (real)0), Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)0, (real)0), Vertex((real)1, (real)0, (real)0), Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)1), Vertex((real)0, (real)1, (real)1), Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)1), Vertex((real)0, (real)0, (real)1), Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)0), Vertex((real)1, (real)1, (real)0), Vertex((real)0, (real)0, (real)0)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)0), Vertex((real)1, (real)0, (real)0), Vertex((real)0, (real)0, (real)0)));
 
         finder = std::make_shared<TriangleNeighborFinder>(&triangles[0], (int)triangles.size());
         indices.size = (int) triangles.size();

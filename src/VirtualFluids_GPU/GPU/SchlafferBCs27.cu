@@ -3,16 +3,16 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void PressSchlaff27(doubflo* rhoBC,
-                                          doubflo* DD,
-                                          doubflo* vx0,
-                                          doubflo* vy0,
-                                          doubflo* vz0,
-                                          doubflo* deltaVz0,
+extern "C" __global__ void PressSchlaff27(real* rhoBC,
+                                          real* DD,
+                                          real* vx0,
+                                          real* vy0,
+                                          real* vz0,
+                                          real* deltaVz0,
                                           int* k_Q, 
                                           int* k_N, 
                                           int kQ, 
-                                          doubflo om1, 
+                                          real om1, 
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
@@ -125,7 +125,7 @@ extern "C" __global__ void PressSchlaff27(doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_E    = (D.f[dirE   ])[ke   ];
       f1_W    = (D.f[dirW   ])[kw   ];
@@ -155,10 +155,10 @@ extern "C" __global__ void PressSchlaff27(doubflo* rhoBC,
       f1_BSE  = (D.f[dirBSE ])[kbse ];
       f1_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-      doubflo cs       = one/sqrt(three);
-      doubflo csp1     = cs + one;
-      doubflo csp1Sq  = (one + cs)*(one + cs);
-      doubflo relFac   = c21o20; // 0.9...1.0
+      real cs       = one/sqrt(three);
+      real csp1     = cs + one;
+      real csp1Sq  = (one + cs)*(one + cs);
+      real relFac   = c21o20; // 0.9...1.0
       //////////////////////////////////////////////////////////////////////////
       // For adaption:
       //     Pressure limits with rho0 = 1:
@@ -171,24 +171,24 @@ extern "C" __global__ void PressSchlaff27(doubflo* rhoBC,
       const double dRlimit  = dPlimit * three;// three = c1oCs2;
       const double uSlimit  = dRlimit * one;// one = c1oRho0;
       //////////////////////////////////////////////////////////////////////////
-      doubflo VX = vx0[k];
-      doubflo VY = vy0[k];
-      doubflo VZ = vz0[k];
+      real VX = vx0[k];
+      real VY = vy0[k];
+      real VZ = vz0[k];
       //////////////////////////////////////////////////////////////////////////
 
-      doubflo temp = two*(f1_TNE + f1_TSE + f1_TSW + f1_TNW) + two*(f1_TE + f1_TW + f1_TN + f1_TS) + f1_NE + f1_SW + f1_SE + f1_NW + two*f1_T + f1_E + f1_W + f1_N + f1_S + f1_ZERO;
+      real temp = two*(f1_TNE + f1_TSE + f1_TSW + f1_TNW) + two*(f1_TE + f1_TW + f1_TN + f1_TS) + f1_NE + f1_SW + f1_SE + f1_NW + two*f1_T + f1_E + f1_W + f1_N + f1_S + f1_ZERO;
 
-      doubflo vs_z = relFac * (VZ+cs) * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );    //old =  relFac * cs * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );
+      real vs_z = relFac * (VZ+cs) * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );    //old =  relFac * cs * ( csp1 - sqrt(csp1Sq + two*VZ - two*temp) );
 
       // 3. Compute density of compensated velocity:		
-      doubflo tempDeltaV = deltaVz0[k];
-      doubflo rholoc = temp - one * (VZ + tempDeltaV + vs_z);
+      real tempDeltaV = deltaVz0[k];
+      real rholoc = temp - one * (VZ + tempDeltaV + vs_z);
 
       // 4. Compute density deviation:
-      doubflo drho = rholoc - rhoBC[k];
+      real drho = rholoc - rhoBC[k];
 
       // 5. Adapt Speed:
-      doubflo dv = tempDeltaV + vs_z;
+      real dv = tempDeltaV + vs_z;
 
       if( drho > dRlimit) {
          VZ += dv + uSlimit;
@@ -270,13 +270,13 @@ extern "C" __global__ void PressSchlaff27(doubflo* rhoBC,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void VelSchlaff27(  int t,
-                                          doubflo* DD,
-                                          doubflo* vz0,
-                                          doubflo* deltaVz0,
+                                          real* DD,
+                                          real* vz0,
+                                          real* deltaVz0,
                                           int* k_Q, 
                                           int* k_N, 
                                           int kQ, 
-                                          doubflo om1, 
+                                          real om1, 
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
@@ -389,7 +389,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_E    = (D.f[dirE   ])[ke   ];
@@ -447,10 +447,10 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //f1_TNW  = (D.f[dirBSE ])[kbse ];
       //f1_TSE  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-      doubflo cs       = one/sqrt(three);
-      doubflo csp1     = cs + one;
-      doubflo csp1Sq  = (one + cs)*(one + cs);
-      doubflo relFac   = c19o20; // 0.9...1.0
+      real cs       = one/sqrt(three);
+      real csp1     = cs + one;
+      real csp1Sq  = (one + cs)*(one + cs);
+      real relFac   = c19o20; // 0.9...1.0
       //////////////////////////////////////////////////////////////////////////
       // For adaption:
       //     Pressure limits with rho0 = 1:
@@ -459,16 +459,16 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //      6.2e-9  ~  29.9 dB
       //      2.0e-7  ~  60.1 dB   /Vel
       //      2.0e-5  ~ 100.1 dB   /press
-      doubflo uSlimit  = Op0000002; 
+      real uSlimit  = Op0000002; 
       //////////////////////////////////////////////////////////////////////////
-      doubflo VX = zero;
-      doubflo VY = zero;
-      doubflo VZ = vz0[k];
+      real VX = zero;
+      real VY = zero;
+      real VZ = vz0[k];
       //////////////////////////////////////////////////////////////////////////
-      doubflo temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + two*(f1_B + f1_BE + f1_BW + f1_BN + f1_BS + f1_BNE + f1_BSE + f1_BSW + f1_BNW);
-      //doubflo temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + two*(f1_T + f1_TE + f1_TW + f1_TN + f1_TS + f1_TNE + f1_TSE + f1_TSW + f1_TNW);
-      ////doubflo temp2= c1mcsSq + two*VZ - two*temp;
-      doubflo vs_z;
+      real temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + two*(f1_B + f1_BE + f1_BW + f1_BN + f1_BS + f1_BNE + f1_BSE + f1_BSW + f1_BNW);
+      //real temp = f1_ZERO + f1_E + f1_W + f1_N + f1_S + f1_NE + f1_SW + f1_SE + f1_NW + two*(f1_T + f1_TE + f1_TW + f1_TN + f1_TS + f1_TNE + f1_TSE + f1_TSW + f1_TNW);
+      ////real temp2= c1mcsSq + two*VZ - two*temp;
+      real vs_z;
       //if (t < 5)
       //{
       //   vs_z = zero;
@@ -479,8 +479,8 @@ extern "C" __global__ void VelSchlaff27(  int t,
       //}
       
       // 3. Adapt Speed:
-      doubflo tempDeltaV = deltaVz0[k];
-      doubflo dv = tempDeltaV + vs_z;
+      real tempDeltaV = deltaVz0[k];
+      real dv = tempDeltaV + vs_z;
 
       if( dv > uSlimit) {
          VZ  += dv - uSlimit;

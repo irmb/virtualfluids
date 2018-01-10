@@ -109,9 +109,9 @@ void ForceCalculations::calcPIDControllerForForce(Parameter* para)
 	 para->getForcesDouble()[1] = (para->getForcesDouble()[1] + y) * 0.0;
 	 para->getForcesDouble()[2] = (para->getForcesDouble()[2] + y) * 0.0;
 	 //////////////////////////////////////////////////////////////////////////
-	 para->getForcesHost()[0] = (doubflo)(para->getForcesHost()[0] + y);
-	 para->getForcesHost()[1] = (doubflo)(para->getForcesHost()[1] + y) * (doubflo)0.0;
-	 para->getForcesHost()[2] = (doubflo)(para->getForcesHost()[2] + y) * (doubflo)0.0;
+	 para->getForcesHost()[0] = (real)(para->getForcesHost()[0] + y);
+	 para->getForcesHost()[1] = (real)(para->getForcesHost()[1] + y) * (real)0.0;
+	 para->getForcesHost()[2] = (real)(para->getForcesHost()[2] + y) * (real)0.0;
 	 //////////////////////////////////////////////////////////////////////////
 	 para->cudaCopyForcingToDevice();
 	 //////////////////////////////////////////////////////////////////////////

@@ -51,8 +51,8 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			 // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			 // KernelKum1hSP27(    para->getParD(level)->numberofthreads,       
 				//				  para->getParD(level)->omega,
-				//				  (doubflo)0.0,
-				//				  (doubflo)0.0,
+				//				  (real)0.0,
+				//				  (real)0.0,
 				//				  para->getParD(level)->geoSP, 
 				//				  para->getParD(level)->neighborX_SP, 
 				//				  para->getParD(level)->neighborY_SP, 
@@ -69,7 +69,7 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 				//				para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
 				//				para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
 				//				para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,          
-				//				para->getPhi(),                        (doubflo)0.0,
+				//				para->getPhi(),                        (real)0.0,
 				//				para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
 				//				para->getParD(level)->coordX_SP,       para->getParD(level)->coordY_SP,    para->getParD(level)->coordZ_SP,
 				//				para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
@@ -941,8 +941,8 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 		  //else{
 			 // KernelKum1hSP27(    para->getParD(level)->numberofthreads,       
 				//				  para->getParD(level)->omega,
-				//				  (doubflo)0.0,
-				//				  (doubflo)0.0,
+				//				  (real)0.0,
+				//				  (real)0.0,
 				//				  para->getParD(level)->geoSP, 
 				//				  para->getParD(level)->neighborX_SP, 
 				//				  para->getParD(level)->neighborY_SP, 
@@ -959,7 +959,7 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 				//				para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
 				//				para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
 				//				para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,          
-				//				para->getPhi(),                        (doubflo)0.0,
+				//				para->getPhi(),                        (real)0.0,
 				//				para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
 				//				para->getParD(level)->coordX_SP,       para->getParD(level)->coordY_SP,    para->getParD(level)->coordZ_SP,
 				//				para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);

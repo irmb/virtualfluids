@@ -1,16 +1,17 @@
 #ifndef COMMUNICATOR_H
 #define COMMUNICATOR_H
 
-#include <mpi.h>
 #include <vector>
+
+#include <mpi.h>
+
+
 #include "LBM/LB.h"
 
 //////////////////////////////////
-#ifdef ISDOUBLE
+#ifdef VF_DOUBLE_ACCURACY
 #define MPI_Type_GPU  MPI_DOUBLE
-#endif
-//////////////////////////////////
-#ifdef ISFLOAT
+#else
 #define MPI_Type_GPU  MPI_FLOAT
 #endif
 //////////////////////////////////
@@ -33,12 +34,12 @@ public:
    void exchngData(float* sbuf_t, float* rbuf_t, float* sbuf_b, float* rbuf_b, int count);
    void exchngDataNB(float* sbuf_t, int count_st, float* rbuf_t, int count_rt, float* sbuf_b, int count_sb, float* rbuf_b, int count_rb);
    //////////////////////////////////////////////////////////////////////////
-   void exchngDataGPU(doubflo* sbuf, int count_s, doubflo* rbuf, int count_r, int nb_rank);
-   void sendRecvGPU(doubflo* sbuf, int count_s, doubflo* rbuf, int count_r, int nb_rank);
-   void nbRecvDataGPU( doubflo* rbuf, int count_r, int nb_rank );
-   void nbSendDataGPU( doubflo* sbuf, int count_s, int nb_rank );
+   void exchngDataGPU(real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank);
+   void sendRecvGPU(real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank);
+   void nbRecvDataGPU( real* rbuf, int count_r, int nb_rank );
+   void nbSendDataGPU( real* sbuf, int count_s, int nb_rank );
    void waitallGPU();
-   void sendDataGPU( doubflo* sbuf, int count_s, int nb_rank );
+   void sendDataGPU( real* sbuf, int count_s, int nb_rank );
    void waitGPU(int id);
    void resetRequest();
    void barrierGPU();

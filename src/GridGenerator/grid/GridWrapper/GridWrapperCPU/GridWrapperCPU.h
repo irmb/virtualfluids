@@ -27,7 +27,7 @@ public:
     virtual void copyDataFromGPU() {};
 
 private:
-	doubflo initalUniformGrid3d();
+	real initalUniformGrid3d();
 	void initialGridNodes();
 	virtual void allocDistribution();
 	virtual void allocField();

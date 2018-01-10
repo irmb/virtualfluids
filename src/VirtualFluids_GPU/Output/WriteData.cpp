@@ -11,8 +11,11 @@
 #include "Output/OffsetWriter.hpp"
 #include "Output/MeasurePointWriter.hpp"
 
+#include "Parameter/Parameter.h"
+
+
 ////////////////////////////////////////////////////////////////////////////////
-void writeInit(Parameter* para)
+void writeInit(SPtr<Parameter> para)
 {
 	for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
 	{
@@ -60,7 +63,7 @@ void writeInit(Parameter* para)
 		if (para->getDiffOn()==true)
 		{
 			//printf("vor writeUnstrucuredGridLTConc");
-			UnstrucuredGridWriter::writeUnstrucuredGridLTConc(para, lev, fname);
+			UnstrucuredGridWriter::writeUnstrucuredGridLTConc(para.get(), lev, fname);
 			//printf("nach writeUnstrucuredGridLTConc");
 			//VtkSGWriter::writeVTKsgThS(para->getParH(lev)->nx,      para->getParH(lev)->ny,     para->getParH(lev)->nz, STARTOFFX, STARTOFFY, STARTOFFZ, 
 			//                           para->getParH(lev)->gridNX,  para->getParH(lev)->gridNY, para->getParH(lev)->gridNZ, 
@@ -78,7 +81,7 @@ void writeInit(Parameter* para)
 
 			if (para->getUseWale())
 			{
-				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para.get(), lev, fname);
 			}
 			//else if (para->getSimulatePorousMedia())
 			//{
@@ -86,7 +89,7 @@ void writeInit(Parameter* para)
 			//}
 			else
 			{
-				UnstrucuredGridWriter::writeUnstrucuredGridLT(para, lev, fname);
+				UnstrucuredGridWriter::writeUnstrucuredGridLT(para.get(), lev, fname);
 			}
 
 			//Debug
@@ -314,7 +317,7 @@ void writeTimestep(Parameter* para, unsigned int t)
 			//if (((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()))
 			//{
 			// //Median
-			// doubflo tdiff = (doubflo)t - (doubflo)t_prev;
+			// real tdiff = (real)t - (real)t_prev;
 			// VtkSGWriter::writeVTKmedSPbin(para->getParH(lev)->nx,           para->getParH(lev)->ny,         para->getParH(lev)->nz,         STARTOFFX, STARTOFFY, STARTOFFZ, 
 			//									    para->getParH(lev)->gridNX,       para->getParH(lev)->gridNY,     para->getParH(lev)->gridNZ, 
 			//									    para->getParH(lev)->startz,       para->getParH(lev)->endz,       ffname_bin_med,                 para->getParH(lev)->geoSP,  para->getParH(lev)->geo,    

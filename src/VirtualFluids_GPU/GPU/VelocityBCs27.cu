@@ -5,15 +5,15 @@
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 													int iny,
-													doubflo* vx,
-													doubflo* vy,
-													doubflo* vz,
-													doubflo* DD, 
+													real* vx,
+													real* vy,
+													real* vz,
+													real* DD, 
 													int* k_Q, 
-													doubflo* QQ,
+													real* QQ,
 													unsigned int sizeQ,
 													int kQ, 
-													doubflo om1, 
+													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
@@ -95,11 +95,11 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
    if (k < kQ)
    {
 	   ////////////////////////////////////////////////////////////////////////////////
-	   doubflo VeloX = vx[k];
-	   doubflo VeloY = vy[k];
-	   doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+	   real VeloX = vx[k];
+	   real VeloY = vy[k];
+	   real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
 	   ////////////////////////////////////////////////////////////////////////////////
-	   doubflo *q_dirE, *q_dirW, *q_dirN, *q_dirS, *q_dirT, *q_dirB,
+	   real *q_dirE, *q_dirW, *q_dirN, *q_dirS, *q_dirT, *q_dirB,
 		   *q_dirNE, *q_dirSW, *q_dirSE, *q_dirNW, *q_dirTE, *q_dirBW,
 		   *q_dirBE, *q_dirTW, *q_dirTN, *q_dirBS, *q_dirBN, *q_dirTS,
 		   *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -161,7 +161,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 	   unsigned int ktne = KQK;
 	   unsigned int kbsw = neighborZ[ksw];
 	   ////////////////////////////////////////////////////////////////////////////////
-	   doubflo f_E, f_W, f_N, f_S, f_T, f_B, f_NE, f_SW, f_SE, f_NW, f_TE, f_BW, f_BE,
+	   real f_E, f_W, f_N, f_S, f_T, f_B, f_NE, f_SW, f_SE, f_NW, f_TE, f_BW, f_BE,
 		   f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
 	   f_W = (D.f[dirE])[ke];
@@ -191,7 +191,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 	   f_TNW = (D.f[dirBSE])[kbse];
 	   f_TSE = (D.f[dirBNW])[kbnw];
 	   ////////////////////////////////////////////////////////////////////////////////
-	   doubflo vx1, vx2, vx3, drho, feq, q;
+	   real vx1, vx2, vx3, drho, feq, q;
 	   drho = f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 		   f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW +
 		   f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]);
@@ -209,7 +209,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 		   (-(f_BN - f_TS) + (f_TN - f_BS)) + ((f_TE - f_BW) - (f_BE - f_TW)) +
 		   (f_T - f_B)) / (one + drho);
 
-	   doubflo cu_sq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3) * (one + drho);
+	   real cu_sq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3) * (one + drho);
 
 	   //////////////////////////////////////////////////////////////////////////
 	   if (evenOrOdd == false)
@@ -285,7 +285,7 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 		{
 		   // vt=v-(n \dot v) *n
 		   // n=(VeloX,VeloY,VeloZ) a misuse of the velocity variable!
-		   doubflo normalV = VeloX*vx1 + VeloY*vx2 + VeloZ*vx3;
+		   real normalV = VeloX*vx1 + VeloY*vx2 + VeloZ*vx3;
 		   vx1 = vx1 - normalV*VeloX;
 		   vx2 = vx2 - normalV*VeloY;
 		   vx3 = vx3 - normalV*VeloZ;
@@ -542,13 +542,13 @@ extern "C" __global__ void QVelDeviceCompPlusSlip27(int inx,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVeloDeviceEQ27(doubflo* VeloX,
-										   doubflo* VeloY,
-										   doubflo* VeloZ,
-                                           doubflo* DD, 
+extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
+										   real* VeloY,
+										   real* VeloZ,
+                                           real* DD, 
                                            int* k_Q, 
                                            int kQ, 
-                                           doubflo om1, 
+                                           real om1, 
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
@@ -664,45 +664,45 @@ extern "C" __global__ void QVeloDeviceEQ27(doubflo* VeloX,
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // based on BGK Plus Comp
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[ke   ];
-			doubflo mfabb = (D.f[dirW   ])[kw   ];
-			doubflo mfbcb = (D.f[dirN   ])[kn   ];
-			doubflo mfbab = (D.f[dirS   ])[ks   ];
-			doubflo mfbbc = (D.f[dirT   ])[kt   ];
-			doubflo mfbba = (D.f[dirB   ])[kb   ];
-			doubflo mfccb = (D.f[dirNE  ])[kne  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw  ];
-			doubflo mfcab = (D.f[dirSE  ])[kse  ];
-			doubflo mfacb = (D.f[dirNW  ])[knw  ];
-			doubflo mfcbc = (D.f[dirTE  ])[kte  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw  ];
-			doubflo mfcba = (D.f[dirBE  ])[kbe  ];
-			doubflo mfabc = (D.f[dirTW  ])[ktw  ];
-			doubflo mfbcc = (D.f[dirTN  ])[ktn  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs  ];
-			doubflo mfbca = (D.f[dirBN  ])[kbn  ];
-			doubflo mfbac = (D.f[dirTS  ])[kts  ];
-			doubflo mfbbb = (D.f[dirZERO])[kzero];
-			doubflo mfccc = (D.f[dirTNE ])[ktne ];
-			doubflo mfaac = (D.f[dirTSW ])[ktsw ];
-			doubflo mfcac = (D.f[dirTSE ])[ktse ];
-			doubflo mfacc = (D.f[dirTNW ])[ktnw ];
-			doubflo mfcca = (D.f[dirBNE ])[kbne ];
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw ];
-			doubflo mfcaa = (D.f[dirBSE ])[kbse ];
-			doubflo mfaca = (D.f[dirBNW ])[kbnw ];
+			real mfcbb = (D.f[dirE   ])[ke   ];
+			real mfabb = (D.f[dirW   ])[kw   ];
+			real mfbcb = (D.f[dirN   ])[kn   ];
+			real mfbab = (D.f[dirS   ])[ks   ];
+			real mfbbc = (D.f[dirT   ])[kt   ];
+			real mfbba = (D.f[dirB   ])[kb   ];
+			real mfccb = (D.f[dirNE  ])[kne  ];
+			real mfaab = (D.f[dirSW  ])[ksw  ];
+			real mfcab = (D.f[dirSE  ])[kse  ];
+			real mfacb = (D.f[dirNW  ])[knw  ];
+			real mfcbc = (D.f[dirTE  ])[kte  ];
+			real mfaba = (D.f[dirBW  ])[kbw  ];
+			real mfcba = (D.f[dirBE  ])[kbe  ];
+			real mfabc = (D.f[dirTW  ])[ktw  ];
+			real mfbcc = (D.f[dirTN  ])[ktn  ];
+			real mfbaa = (D.f[dirBS  ])[kbs  ];
+			real mfbca = (D.f[dirBN  ])[kbn  ];
+			real mfbac = (D.f[dirTS  ])[kts  ];
+			real mfbbb = (D.f[dirZERO])[kzero];
+			real mfccc = (D.f[dirTNE ])[ktne ];
+			real mfaac = (D.f[dirTSW ])[ktsw ];
+			real mfcac = (D.f[dirTSE ])[ktse ];
+			real mfacc = (D.f[dirTNW ])[ktnw ];
+			real mfcca = (D.f[dirBNE ])[kbne ];
+			real mfaaa = (D.f[dirBSW ])[kbsw ];
+			real mfcaa = (D.f[dirBSE ])[kbse ];
+			real mfaca = (D.f[dirBNW ])[kbnw ];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo rho   = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real rho   = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 							 mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 							 mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb + one);//!!!!Achtung + one
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vvx    = ((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    = ((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) / rho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) / rho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -710,19 +710,19 @@ extern "C" __global__ void QVeloDeviceEQ27(doubflo* VeloX,
 			if(VeloY[k]!=zero) vvy = VeloY[k];
 			if(VeloZ[k]!=zero) vvz = VeloZ[k];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vx2    = vvx * vvx;
-			doubflo vy2    = vvy * vvy;
-			doubflo vz2    = vvz * vvz;
+			real vx2    = vvx * vvx;
+			real vy2    = vvy * vvy;
+			real vz2    = vvz * vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-            doubflo XXb    = -c2o3 + vx2;
-            doubflo XXc    = -c1o2 * (XXb + one + vvx);
-            doubflo XXa    = XXc + vvx;
-            doubflo YYb    = -c2o3 + vy2;
-            doubflo YYc    = -c1o2 * (YYb + one + vvy);
-            doubflo YYa    = YYc + vvy;
-            doubflo ZZb    = -c2o3 + vz2;
-            doubflo ZZc    = -c1o2 * (ZZb + one + vvz);
-            doubflo ZZa    = ZZc + vvz;
+            real XXb    = -c2o3 + vx2;
+            real XXc    = -c1o2 * (XXb + one + vvx);
+            real XXa    = XXc + vvx;
+            real YYb    = -c2o3 + vy2;
+            real YYc    = -c1o2 * (YYb + one + vvy);
+            real YYa    = YYc + vvy;
+            real ZZb    = -c2o3 + vz2;
+            real ZZc    = -c1o2 * (ZZb + one + vvz);
+            real ZZa    = ZZc + vvz;
 			////////////////////////////////////////////////////////////////////////////////////
             mfcbb = -rho * XXc * YYb * ZZb - c2over27 ; 
 			mfabb = -rho * XXa * YYb * ZZb - c2over27 ;
@@ -824,15 +824,15 @@ extern "C" __global__ void QVeloDeviceEQ27(doubflo* VeloX,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 													int iny,
-													doubflo* vx,
-													doubflo* vy,
-													doubflo* vz,
-													doubflo* DD, 
+													real* vx,
+													real* vy,
+													real* vz,
+													real* DD, 
 													int* k_Q, 
-													doubflo* QQ,
+													real* QQ,
 													unsigned int sizeQ,
 													int kQ, 
-													doubflo om1, 
+													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
@@ -914,11 +914,11 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = vx[k];
-      doubflo VeloY = vy[k];
-      doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      real VeloX = vx[k];
+      real VeloY = vy[k];
+      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -980,7 +980,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_E   = (D.f[dirE   ])[ke   ];
@@ -1010,7 +1010,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
       f_BSE = (D.f[dirBSE ])[kbse ];
       f_BNW = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -1028,7 +1028,7 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B));// / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);// * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);// * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1324,15 +1324,15 @@ extern "C" __global__ void QVelDeviceIncompHighNu27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
 													int iny,
-													doubflo* vx,
-													doubflo* vy,
-													doubflo* vz,
-													doubflo* DD, 
+													real* vx,
+													real* vy,
+													real* vz,
+													real* DD, 
 													int* k_Q, 
-													doubflo* QQ,
+													real* QQ,
 													unsigned int sizeQ,
 													int kQ, 
-													doubflo om1, 
+													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
@@ -1414,11 +1414,11 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = vx[k];
-      doubflo VeloY = vy[k];
-      doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      real VeloX = vx[k];
+      real VeloY = vy[k];
+      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -1480,7 +1480,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_E   = (D.f[dirE   ])[ke   ];
@@ -1536,7 +1536,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
       //f_TNW  = (D.f[dirBSE ])[kbse ];
       //f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -1554,7 +1554,7 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1902,15 +1902,15 @@ extern "C" __global__ void QVelDeviceCompHighNu27(  int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
 														int iny,
-														doubflo* vx,
-														doubflo* vy,
-														doubflo* vz,
-														doubflo* DD, 
+														real* vx,
+														real* vy,
+														real* vz,
+														real* DD, 
 														int* k_Q, 
-														doubflo* QQ,
+														real* QQ,
 														unsigned int sizeQ,
 														//int kQ, 
-														doubflo om1, 
+														real om1, 
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
@@ -1992,11 +1992,11 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
    if(k<sizeQ/*kQ*/)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = vx[k];
-      doubflo VeloY = vy[k];
-      doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      real VeloX = vx[k];
+      real VeloY = vy[k];
+      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2058,7 +2058,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -2088,7 +2088,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -2106,7 +2106,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2428,23 +2428,23 @@ extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
 														int iny,
-														doubflo* vx,
-														doubflo* vy,
-														doubflo* vz,
-														doubflo* DD, 
+														real* vx,
+														real* vy,
+														real* vz,
+														real* DD, 
 														int* k_Q, 
-														doubflo* QQ,
+														real* QQ,
 														unsigned int sizeQ,
 														int kQ, 
-														doubflo om1, 
-														doubflo Phi,
-														doubflo angularVelocity,
+														real om1, 
+														real Phi,
+														real angularVelocity,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
-														doubflo* coordX,
-														doubflo* coordY,
-														doubflo* coordZ,
+														real* coordX,
+														real* coordY,
+														real* coordZ,
 														unsigned int size_Mat, 
 														bool evenOrOdd)
 {
@@ -2523,25 +2523,25 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      //doubflo VeloX = vx[k];
-      //doubflo VeloY = vy[k];
-      //doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      //real VeloX = vx[k];
+      //real VeloY = vy[k];
+      //real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo VeloX = cosf(Phi)*vx[k] - sinf(Phi)*vy[k];
-		doubflo VeloY = sinf(Phi)*vx[k] + cosf(Phi)*vy[k];
-		//doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+		real VeloX = cosf(Phi)*vx[k] - sinf(Phi)*vy[k];
+		real VeloY = sinf(Phi)*vx[k] + cosf(Phi)*vy[k];
+		//real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
 		////////////////////////////////////////////////////////////////////////////////////
 		//Ship
-		doubflo coord0X = 281.125f;//7.5f;
-		doubflo coord0Y = 388.125f;//7.5f;
-		doubflo ux = - angularVelocity * (coordY[k_Q[k]] - coord0Y);
-		doubflo uy =   angularVelocity * (coordX[k_Q[k]] - coord0X);
-		doubflo VeloXpur=VeloX;
-		doubflo VeloYpur=VeloY;
+		real coord0X = 281.125f;//7.5f;
+		real coord0Y = 388.125f;//7.5f;
+		real ux = - angularVelocity * (coordY[k_Q[k]] - coord0Y);
+		real uy =   angularVelocity * (coordX[k_Q[k]] - coord0X);
+		real VeloXpur=VeloX;
+		real VeloYpur=VeloY;
 		VeloX-=ux;
 		VeloY-=uy;
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2664,7 +2664,7 @@ extern "C" __global__ void QVelDeviceCompZeroPress1h27( int inx,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo vx1, vx2, vx3, drho, feq, q, cu_sq;
+	  real vx1, vx2, vx3, drho, feq, q, cu_sq;
 	  ///////// equilibrium BC
 	  cu_sq=c3o2*(VeloX*VeloX +VeloY*VeloY);
 	  VeloXpur*=-one;
@@ -2906,13 +2906,13 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
                                               unsigned int* neighborX,
                                               unsigned int* neighborY,
                                               unsigned int* neighborZ,
-                                              doubflo* DD, 
+                                              real* DD, 
                                               unsigned int size_Mat, 
                                               bool evenOrOdd, 
-                                              doubflo u0x, 
+                                              real u0x, 
                                               unsigned int grid_nx, 
                                               unsigned int grid_ny, 
-                                              doubflo om) 
+                                              real om) 
 {
    //thread-index
    unsigned int ity = blockIdx.x;
@@ -3105,7 +3105,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
       //unsigned int k1tne = k1;
       //unsigned int k1bsw = k1 + nxny + nx + 1;
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
          f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_W    = (D.f[dirE   ])[k1e   ];
@@ -3136,19 +3136,19 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
       f1_TNW  = (D.f[dirBSE ])[k1bse ];
       f1_TSE  = (D.f[dirBNW ])[k1bnw ];
 
-      doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
+      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
          f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
 
       __syncthreads();
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo drho = drho1;
-      doubflo  vx1 = zero;
-      doubflo  vx2 = zero;
-      doubflo  vx3 = u0x;
+      real drho = drho1;
+      real  vx1 = zero;
+      real  vx2 = zero;
+      real  vx3 = u0x;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       (D.f[dirZERO])[kzero] =   c8over27* (drho-cu_sq);
       (D.f[dirE   ])[ke   ] =   c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
@@ -3221,15 +3221,15 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDevPlainBB27(doubflo* vx,
-											doubflo* vy,
-	 										doubflo* vz,
-											doubflo* DD,
+extern "C" __global__ void QVelDevPlainBB27(real* vx,
+											real* vy,
+	 										real* vz,
+											real* DD,
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											unsigned int sizeQ,
 											int kQ, 
-											doubflo om1, 
+											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
@@ -3311,11 +3311,11 @@ extern "C" __global__ void QVelDevPlainBB27(doubflo* vx,
    if(k<kQ)
    {
 	  ////////////////////////////////////////////////////////////////////////////////
-	  doubflo VeloX = vx[k];
-	  doubflo VeloY = vy[k];
-	  doubflo VeloZ = vz[k];
+	  real VeloX = vx[k];
+	  real VeloY = vy[k];
+	  real VeloZ = vz[k];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo*q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real*q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			 *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			 *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			 *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -3379,32 +3379,32 @@ extern "C" __global__ void QVelDevPlainBB27(doubflo* vx,
       ////////////////////////////////////////////////////////////////////////////////
      
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////
@@ -3469,7 +3469,7 @@ extern "C" __global__ void QVelDevPlainBB27(doubflo* vx,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
 	  ////////////////////////////////////////////////////////////////////////////////
-      doubflo q;
+      real q;
       q = q_dirE[k];	if (q>=zero && q<=one)	(D.f[dirW  ])[kw  ]=f_E   + c2over27  * VeloX;	
       q = q_dirW[k];	if (q>=zero && q<=one)	(D.f[dirE  ])[ke  ]=f_W   - c2over27  * VeloX;	
       q = q_dirN[k];	if (q>=zero && q<=one)	(D.f[dirS  ])[ks  ]=f_N   + c2over27  * VeloY;	
@@ -3539,15 +3539,15 @@ extern "C" __global__ void QVelDevPlainBB27(doubflo* vx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QVelDevCouhette27(doubflo* vx,
-											doubflo* vy,
-	 										doubflo* vz,
-											doubflo* DD,
+extern "C" __global__ void QVelDevCouhette27(real* vx,
+											real* vy,
+	 										real* vz,
+											real* DD,
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											unsigned int sizeQ,
 											int kQ, 
-											doubflo om1, 
+											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
@@ -3629,11 +3629,11 @@ extern "C" __global__ void QVelDevCouhette27(doubflo* vx,
    if(k<kQ)
    {
 	  ////////////////////////////////////////////////////////////////////////////////
-	  doubflo VeloX = vx[k];
-	  doubflo VeloY = vy[k];
-	  doubflo VeloZ = vz[k];
+	  real VeloX = vx[k];
+	  real VeloY = vy[k];
+	  real VeloZ = vz[k];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo*q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real*q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			 *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			 *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			 *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -3697,32 +3697,32 @@ extern "C" __global__ void QVelDevCouhette27(doubflo* vx,
       ////////////////////////////////////////////////////////////////////////////////
      
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
 	  ////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////
@@ -3790,20 +3790,20 @@ extern "C" __global__ void QVelDevCouhette27(doubflo* vx,
 	  ///////               FlowDirection Y !!!!!!!!!!                                                           ///////////////////////////////////
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //calculate velocity
-	  //doubflo vx1 = ((f_TNE-f_BSW)+(f_BSE-f_TNW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W);
-	  doubflo vx2 = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S);
-	  //doubflo vx3 = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSW-f_BNE)+(f_TSE-f_BNW)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B);
+	  //real vx1 = ((f_TNE-f_BSW)+(f_BSE-f_TNW)+(f_BNE-f_TSW)+(f_TSE-f_BNW)) + (((f_NE-f_SW)+(f_TE-f_BW))+((f_SE-f_NW)+(f_BE-f_TW))) + (f_E-f_W);
+	  real vx2 = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_BNE-f_TSW)+(f_BNW-f_TSE)) + (((f_NE-f_SW)+(f_TN-f_BS))+((f_BN-f_TS)+(f_NW-f_SE))) + (f_N-f_S);
+	  //real vx3 = ((f_TNE-f_BSW)+(f_TNW-f_BSE)+(f_TSW-f_BNE)+(f_TSE-f_BNW)) + (((f_TE-f_BW)+(f_TN-f_BS))+((f_TW-f_BE)+(f_TS-f_BN))) + (f_T-f_B);
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //constant
-	  doubflo on=zero;//c1o2;//one;
-	  doubflo ms=-six;
+	  real on=zero;//c1o2;//one;
+	  real ms=-six;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //2nd order moment
-	  doubflo kxxMyyFromfcNEQ = zero;//-c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all E+W minus all N+S (no combinations of xy left)
+	  real kxxMyyFromfcNEQ = zero;//-c3o2 * (f_BW+f_W+f_TW-f_BS-f_S-f_TS-f_BN-f_N-f_TN+f_BE+f_E+f_TE-(vx1*vx1-vx2*vx2));		//all E+W minus all N+S (no combinations of xy left)
 
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //set distributions
-      doubflo q;
+      real q;
       q = q_dirE[k];	if (q>=zero && q<=one)	(D.f[dirW  ])[kw  ]=f_E   + ms*c2over27  * VeloX;	
       q = q_dirW[k];	if (q>=zero && q<=one)	(D.f[dirE  ])[ke  ]=f_W   - ms*c2over27  * VeloX;	
       q = q_dirN[k];	if (q>=zero && q<=one)	(D.f[dirS  ])[ks  ]=f_N   + ms*c2over27  * VeloY;	
@@ -3902,23 +3902,23 @@ extern "C" __global__ void QVelDevCouhette27(doubflo* vx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDev1h27( int inx,
 										int iny,
-										doubflo* vx,
-										doubflo* vy,
-										doubflo* vz,
-										doubflo* DD, 
+										real* vx,
+										real* vy,
+										real* vz,
+										real* DD, 
 										int* k_Q, 
-										doubflo* QQ,
+										real* QQ,
 										unsigned int sizeQ,
 										int kQ, 
-										doubflo om1,
-										doubflo Phi,
-										doubflo angularVelocity,
+										real om1,
+										real Phi,
+										real angularVelocity,
 										unsigned int* neighborX,
 										unsigned int* neighborY,
 										unsigned int* neighborZ,
-										doubflo* coordX,
-										doubflo* coordY,
-										doubflo* coordZ,
+										real* coordX,
+										real* coordY,
+										real* coordZ,
 										unsigned int size_Mat, 
 										bool evenOrOdd)
 {
@@ -3997,21 +3997,21 @@ extern "C" __global__ void QVelDev1h27( int inx,
 	if(k<kQ)
 	{
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo VeloX = cosf(Phi)*vx[k] - sinf(Phi)*vy[k];
-		doubflo VeloY = sinf(Phi)*vx[k] + cosf(Phi)*vy[k];
-		//doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+		real VeloX = cosf(Phi)*vx[k] - sinf(Phi)*vy[k];
+		real VeloY = sinf(Phi)*vx[k] + cosf(Phi)*vy[k];
+		//real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
 		////////////////////////////////////////////////////////////////////////////////////
 		//Ship
-		doubflo coord0X = 281.125f;//7.5f;
-		doubflo coord0Y = 388.125f;//7.5f;
-		doubflo ux = - angularVelocity * (coordY[k_Q[k]] - coord0Y);
-		doubflo uy =   angularVelocity * (coordX[k_Q[k]] - coord0X);
-		doubflo VeloXpur=VeloX;
-		doubflo VeloYpur=VeloY;
+		real coord0X = 281.125f;//7.5f;
+		real coord0Y = 388.125f;//7.5f;
+		real ux = - angularVelocity * (coordY[k_Q[k]] - coord0Y);
+		real uy =   angularVelocity * (coordX[k_Q[k]] - coord0X);
+		real VeloXpur=VeloX;
+		real VeloYpur=VeloY;
 		VeloX-=ux;
 		VeloY-=uy;
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -4101,7 +4101,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		//unsigned int ktne = KQK;
 		//unsigned int kbsw = KQK + nxny + nx + 1;
 		////////////////////////////////////////////////////////////////////////////////
-		//doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+		//real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
 		//	f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
 		//f_W    = (D.f[dirE   ])[ke   ];
@@ -4131,7 +4131,7 @@ extern "C" __global__ void QVelDev1h27( int inx,
 		//f_TNW  = (D.f[dirBSE ])[kbse ];
 		//f_TSE  = (D.f[dirBNW ])[kbnw ];
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo /*vx1, vx2,*/ vx3, drho, feq, q, cu_sq;
+		real /*vx1, vx2,*/ vx3, drho, feq, q, cu_sq;
 		//drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 		//	f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 		//	f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -4686,15 +4686,15 @@ extern "C" __global__ void QVelDev1h27( int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDeviceComp27(int inx,
 											int iny,
-											doubflo* vx,
-											doubflo* vy,
-											doubflo* vz,
-											doubflo* DD, 
+											real* vx,
+											real* vy,
+											real* vz,
+											real* DD, 
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											unsigned int sizeQ,
 											int kQ, 
-											doubflo om1, 
+											real om1, 
 											unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
@@ -4776,11 +4776,11 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = vx[k];
-      doubflo VeloY = vy[k];
-      doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      real VeloX = vx[k];
+      real VeloY = vy[k];
+      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -4842,7 +4842,7 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -4872,7 +4872,7 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -4890,7 +4890,7 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -5212,15 +5212,15 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QVelDevice27(int inx,
                                         int iny,
-                                        doubflo* vx,
-                                        doubflo* vy,
-                                        doubflo* vz,
-                                        doubflo* DD, 
+                                        real* vx,
+                                        real* vy,
+                                        real* vz,
+                                        real* DD, 
                                         int* k_Q, 
-                                        doubflo* QQ,
+                                        real* QQ,
                                         unsigned int sizeQ,
                                         int kQ, 
-                                        doubflo om1, 
+                                        real om1, 
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
@@ -5302,11 +5302,11 @@ extern "C" __global__ void QVelDevice27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = vx[k];
-      doubflo VeloY = vy[k];
-      doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      real VeloX = vx[k];
+      real VeloY = vy[k];
+      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -5396,7 +5396,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       //unsigned int ktne = KQK;
       //unsigned int kbsw = KQK + nxny + nx + 1;
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -5426,7 +5426,7 @@ extern "C" __global__ void QVelDevice27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -5444,7 +5444,7 @@ extern "C" __global__ void QVelDevice27(int inx,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -5767,15 +5767,15 @@ extern "C" __global__ void QVelDevice27(int inx,
 extern "C" __global__ void PropellerBC(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
-                                       doubflo* rho,
-                                       doubflo* ux,
-                                       doubflo* uy,
-                                       doubflo* uz,
+                                       real* rho,
+                                       real* ux,
+                                       real* uy,
+                                       real* uz,
                                        int* k_Q, 
 									   unsigned int size_Prop,
                                        unsigned int size_Mat,
                                        unsigned int* bcMatD,
-                                       doubflo* DD,
+                                       real* DD,
                                        bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -5859,12 +5859,12 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 		if( (BC != GEO_SOLID) && (BC != GEO_VOID))
 		{		
 		//////////////////////////////////////////////////////////////////////////
-        doubflo  vx1 = ux[k];
-        doubflo  vx2 = uy[k];
-        doubflo  vx3 = uz[k];
-        //doubflo  vx1 = -c1o100;
-        //doubflo  vx2 = zero;
-        //doubflo  vx3 = zero;
+        real  vx1 = ux[k];
+        real  vx2 = uy[k];
+        real  vx3 = uz[k];
+        //real  vx1 = -c1o100;
+        //real  vx2 = zero;
+        //real  vx3 = zero;
         //////////////////////////////////////////////////////////////////////////
         //index
         //////////////////////////////////////////////////////////////////////////
@@ -5896,7 +5896,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
         //////////////////////////////////////////////////////////////////////////
-		doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
 		f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW, f_ZERO;
 
 		f_ZERO= (D.f[dirZERO])[kzero];
@@ -5953,7 +5953,7 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 		//f_TNW  = (D.f[dirBSE ])[kbse ];
 		//f_BSE  = (D.f[dirTNW ])[ktnw ];
 		//////////////////////////////////////////////////////////////////////////////////
-		doubflo vxo1, vxo2, vxo3, drho;
+		real vxo1, vxo2, vxo3, drho;
 		drho   =  /*zero;*/f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				  f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				  f_T + f_B + f_N + f_S + f_E + f_W + f_ZERO; 
@@ -5971,11 +5971,11 @@ extern "C" __global__ void PropellerBC(unsigned int* neighborX,
 		 			(-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
 					(f_T - f_B) )/ (one + drho); 
 
-		doubflo cusq=c3o2*(vxo1*vxo1+vxo2*vxo2+vxo3*vxo3);
+		real cusq=c3o2*(vxo1*vxo1+vxo2*vxo2+vxo3*vxo3);
 		//vx1 = vx1 * two - vxo1;
 		//vx2 = vx2 * two - vxo2;
 		//vx3 = vx3 * two - vxo3;
-		doubflo cusq2=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+		real cusq2=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          //f_ZERO = ((one+drho) * (   c8over27 *(one+(-cusq2)))) - c8over27;
          //f_E    = ((one+drho) * (   c2over27 *(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq2))) - c2over27 ;

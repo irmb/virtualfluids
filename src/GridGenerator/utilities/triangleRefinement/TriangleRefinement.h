@@ -40,7 +40,7 @@ private:
 
 public:
     static int VF_PUBLIC getEdgeWithLongestDistance(Triangle &t);
-    static doubflo VF_PUBLIC getLongestEdgeDistance(Triangle &t);
+    static real VF_PUBLIC getLongestEdgeDistance(Triangle &t);
 };
 
 

@@ -123,7 +123,7 @@ void GridWrapperGPU::allocAndCopyTrianglesToGPU(Geometry &geom)
     *logging::out << logging::Logger::INTERMEDIATE << "start copying triangles ...\n";
     clock_t begin = clock();
     int size_in_bytes_triangles = sizeof(Triangle)*geom.size;
-    doubflo sizeInMB = size_in_bytes_triangles / (1024.f*1024.f);
+    real sizeInMB = size_in_bytes_triangles / (1024.f*1024.f);
 
     *logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] device memory for triangles.\n\n";
 
@@ -133,7 +133,7 @@ void GridWrapperGPU::allocAndCopyTrianglesToGPU(Geometry &geom)
     geom.triangles = triangles_d;
     CudaCheckError();
     clock_t end = clock();
-    doubflo time = doubflo(end - begin) / CLOCKS_PER_SEC;
+    real time = real(end - begin) / CLOCKS_PER_SEC;
     *logging::out << logging::Logger::INTERMEDIATE << "time copying triangles: " + SSTR(time) + "s\n";
     *logging::out << logging::Logger::INTERMEDIATE << "...copying triangles finish!\n\n";
 }
@@ -145,8 +145,8 @@ void GridWrapperGPU::allocDistribution()
     CudaCheckError();
 
     unsigned long long distributionSize = grid.size * (grid.d.dir_end + 1);
-    unsigned long long size_in_bytes = distributionSize * sizeof(doubflo);
-    doubflo sizeInMB = size_in_bytes / (1024.f*1024.f);
+    unsigned long long size_in_bytes = distributionSize * sizeof(real);
+    real sizeInMB = size_in_bytes / (1024.f*1024.f);
     *logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] device memory for distributions.\n\n";
 
     CudaSafeCall(cudaMalloc(&grid.d.f, size_in_bytes));
@@ -210,8 +210,8 @@ void GridWrapperGPU::copyAndFreeFieldFromGPU()
 void GridWrapperGPU::copyAndFreeDistributiondFromGPU()
 {
     unsigned long long distributionSize = grid.size * (grid.d.dir_end + 1);
-    doubflo *f_host = new doubflo[distributionSize];
-    CudaSafeCall(cudaMemcpy(f_host, grid.d.f, distributionSize * sizeof(doubflo), cudaMemcpyDeviceToHost));
+    real *f_host = new real[distributionSize];
+    CudaSafeCall(cudaMemcpy(f_host, grid.d.f, distributionSize * sizeof(real), cudaMemcpyDeviceToHost));
     CudaSafeCall(cudaFree(grid.d.f));
     CudaCheckError();
     grid.d.f = f_host;

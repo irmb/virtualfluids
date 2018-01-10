@@ -1,50 +1,52 @@
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
+#include <memory>
+#include <core/PointerDefinitions.h>
+
 #include <VirtualFluidsDefinitions.h>
 
 #include "Output/LogWriter.hpp"
 #include "Utilities/Buffer2D.hpp"
-//#include "Input/ConfigFile.h"
-#include "Calculation/ForceCalculations.h"
-#include "Calculation/PorousMedia.h"
-#include "Parameter/Parameter.h"
-#include "Restart/RestartPostprocessor.h"
-#include "Restart/RestartObject.h"
 #include "LBM/LB.h"
-//#include "LBM/D3Q27.h"
 
 class Communicator;
+class Parameter;
+class GridProvider;
+class PorousMedia;
+class RestartObject;
+class RestartPostprocessor;
+class ForceCalculations;
 
 
 class VF_PUBLIC Simulation
 {
 public:
-	Simulation(void);
-	~Simulation(void);
+	Simulation();
+	~Simulation();
 	void run();
-	void init(std::string &cstr);
+	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider);
 	void bulk();
 	void porousMedia();
 	void definePMarea(PorousMedia* pm);
-protected:
 
-	Buffer2D <doubflo> sbuf_t; 
-	Buffer2D <doubflo> rbuf_t;
-	Buffer2D <doubflo> sbuf_b;
-	Buffer2D <doubflo> rbuf_b;
+protected:
+	Buffer2D <real> sbuf_t; 
+	Buffer2D <real> rbuf_t;
+	Buffer2D <real> sbuf_b;
+	Buffer2D <real> rbuf_b;
 
 	Buffer2D <int> geo_sbuf_t; 
 	Buffer2D <int> geo_rbuf_t;
 	Buffer2D <int> geo_sbuf_b;
 	Buffer2D <int> geo_rbuf_b;
 
-	//for MPI
-	Communicator* comm;
+
 	LogWriter output;
 
-	//Parameter
-	Parameter* para;
+    SPtr<Communicator> comm;
+    SPtr<Parameter> para;
+    SPtr<GridProvider> gridProvider;
 
 	//Restart object
 	RestartObject* restObj;
@@ -65,13 +67,13 @@ protected:
 	QforBoundaryConditions  QsH, QsD;
 	QforBoundaryConditions  QeH, QeD;
 	QforBoundaryConditions  QwH, QwD;
-	doubflo *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
-	doubflo *VxND,          *VyND,       *VzND,       *deltaVND;
-	doubflo *VxSH,          *VySH,       *VzSH,       *deltaVSH;
-	doubflo *VxSD,          *VySD,       *VzSD,       *deltaVSD;
-	doubflo *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
-	doubflo *VxED,          *VyED,       *VzED,       *deltaVED;
-	doubflo *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
-	doubflo *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+	real *VxNH,          *VyNH,       *VzNH,       *deltaVNH;
+	real *VxND,          *VyND,       *VzND,       *deltaVND;
+	real *VxSH,          *VySH,       *VzSH,       *deltaVSH;
+	real *VxSD,          *VySD,       *VzSD,       *deltaVSD;
+	real *VxEH,          *VyEH,       *VzEH,       *deltaVEH;
+	real *VxED,          *VyED,       *VzED,       *deltaVED;
+	real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
+	real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
  };
 #endif

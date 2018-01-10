@@ -275,7 +275,7 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
     for (int level = 0; level < boxes.size(); level++) {
         for (int i = 0; i < boxes[level].size(); i++) {
         	
-			BoundingBox<doubflo> box = boxes[level][i];
+			BoundingBox<real> box = boxes[level][i];
             transformators[level]->transformGridToWorld(box);
 
             int index = i + (int)boxes[level].size() * level;
@@ -285,7 +285,7 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
                     if (index == indexCompare)
                         continue;
 
-					BoundingBox<doubflo> boxCompare = boxes[levelCompare][iCompare];
+					BoundingBox<real> boxCompare = boxes[levelCompare][iCompare];
                     transformators[level]->transformGridToWorld(boxCompare);
                     if (box.intersect(boxCompare)) {
                         adjncy.push_back(indexCompare);
@@ -517,7 +517,7 @@ std::vector<std::vector<Triangle> >  Partition::splitTriangles(std::vector<Trian
 void Partition::splitAndPushTriangle(BoundingBox<int> &box, std::vector<Triangle> &trianglesPerProcess, std::vector<Triangle> &triangleVec, int indexTriangle)
 {
     Triangle triangleToSplit = triangleVec[indexTriangle];
-	BoundingBox<doubflo> triangleBox = BoundingBox<doubflo>::makeExactBox(triangleToSplit);
+	BoundingBox<real> triangleBox = BoundingBox<real>::makeExactBox(triangleToSplit);
     std::vector<std::vector<Vertex> > intersectionsBox = box.getIntersectionPoints(triangleBox);
 
     //UnstructuredGridWriter writer;
@@ -546,9 +546,9 @@ void Partition::splitAndPushTriangle(BoundingBox<int> &box, std::vector<Triangle
         Vertex v5 = (triangleToSplit.v2 - point);
         Vertex v6 = (triangleToSplit.v3 - point);
 
-        doubflo d1 = v4 * normal;
-        doubflo d2 = v5 * normal;
-        doubflo d3 = v6 * normal;
+        real d1 = v4 * normal;
+        real d2 = v5 * normal;
+        real d3 = v6 * normal;
 
         // a to b crosses the clipping plane
         if (d1 * d2 < 0.0f)
@@ -572,9 +572,9 @@ void Partition::sliceTriangle(
     const Vertex& a, // First point on triangle, CCW order
     const Vertex& b, // Second point on triangle, CCW order
     const Vertex& c, // Third point on triangle, CCW order
-    doubflo d1,        // Distance of point a to the splitting plane
-    doubflo d2,        // Distance of point b to the splitting plane
-    doubflo d3         // Distance of point c to the splitting plane
+    real d1,        // Distance of point a to the splitting plane
+    real d2,        // Distance of point b to the splitting plane
+    real d3         // Distance of point c to the splitting plane
     )
 {
     // Calculate the intersection point from a to b

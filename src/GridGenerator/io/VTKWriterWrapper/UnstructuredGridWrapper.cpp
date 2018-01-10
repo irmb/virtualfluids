@@ -134,4 +134,4 @@
 //#endif
 //}
 //
-//template void UnstructuredGridWrapper::addBoundingBox<doubflo>(BoundingBox<doubflo> b, int type);
+//template void UnstructuredGridWrapper::addBoundingBox<real>(BoundingBox<real> b, int type);

@@ -37,8 +37,8 @@ private:
     bool isTriangleNeighborOfParentTriangle(Vertex, Vertex);
 
     int numberOfRows;
-    doubflo **sortedToTriangles;
-    doubflo **sortedInSpace;
+    real **sortedToTriangles;
+    real **sortedInSpace;
 };
 
 #endif

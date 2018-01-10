@@ -26,7 +26,7 @@ Geometry::Geometry(const Geometry& geo)
 	this->triangleVec = geo.triangleVec;
     this->triangles = geo.triangles;
     this->size = geo.size;
-	this->minmax = BoundingBox<doubflo>(geo.minmax);
+	this->minmax = BoundingBox<real>(geo.minmax);
 }
 
 Geometry::Geometry()
@@ -39,7 +39,7 @@ Geometry::~Geometry()
 	delete this->transformator;
 }
 
-void Geometry::transformChannelGeometry(const doubflo resolution)
+void Geometry::transformChannelGeometry(const real resolution)
 {
 	delete this->transformator;
 	this->transformator = new TransformatorImp(resolution, -minmax.minX, -minmax.minY, -minmax.minZ);
@@ -59,7 +59,7 @@ void Geometry::findNeighbors()
 	finder.fillWithNeighborAngles(this);
 	clock_t end = clock();
 
-	doubflo time = doubflo(end - begin) / CLOCKS_PER_SEC;
+	real time = real(end - begin) / CLOCKS_PER_SEC;
 	*logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << SSTR(time) << "s\n";
 }
 
@@ -74,7 +74,7 @@ void Geometry::setTriangles(std::vector<Triangle> triangles)
 	initalizeDataFromTriangles();
 }
 
-void Geometry::setMinMax(BoundingBox<doubflo> minmax)
+void Geometry::setMinMax(BoundingBox<real> minmax)
 {
 	this->minmax = minmax;
 }

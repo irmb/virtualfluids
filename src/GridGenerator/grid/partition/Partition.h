@@ -39,7 +39,7 @@ private:
     static void findMaxBoxSize(std::vector<BoundingBox<int>> &boxes, bool &splitX, bool &splitY, bool &splitZ);
 
     static void splitAndPushTriangle(BoundingBox<int> &box, std::vector<Triangle> &trianglesPerProcess, std::vector<Triangle> &triangleVec, int indexTriangle);
-    static void sliceTriangle(std::vector<Triangle> &out, std::vector<Triangle>& triangleVec, int index, const Vertex& a, const Vertex& b, const Vertex& c, doubflo d1, doubflo d2, doubflo d3);
+    static void sliceTriangle(std::vector<Triangle> &out, std::vector<Triangle>& triangleVec, int index, const Vertex& a, const Vertex& b, const Vertex& c, real d1, real d2, real d3);
 
 };
 

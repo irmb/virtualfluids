@@ -17,7 +17,7 @@ void defineGrid(Parameter* para, Communicator* comm)
 		///////////////////////////////////////////////////////////////////////////////////////////////////
 		if (para->getDiffOn()==true)
 		{
-			checkCudaErrors( cudaMallocHost((void**) &(para->getParH(lev)->Conc_Full ), para->getParH(lev)->mem_size_doubflo));
+			checkCudaErrors( cudaMallocHost((void**) &(para->getParH(lev)->Conc_Full ), para->getParH(lev)->mem_size_real));
 		}
 		///////////////////////////////////////////////////////////////////////////////////////////////////
 		if (lev==para->getCoarse())
@@ -59,14 +59,14 @@ void defineGrid(Parameter* para, Communicator* comm)
 							////unsigned int centerX = para->getParH(lev)->gridNX / 2 + STARTOFFX;
 							////unsigned int centerY = para->getParH(lev)->gridNY / 2 + STARTOFFY;
 							////unsigned int centerZ = para->getParH(lev)->gridNZ / 4 + STARTOFFZ;
-							//doubflo centerX = para->getParH(lev)->gridNX / 2. + STARTOFFX - 0.5;
-							//doubflo centerY = para->getParH(lev)->gridNY / 2. + STARTOFFY - 0.5;
-							//doubflo centerZ = para->getParH(lev)->gridNZ / 4. + STARTOFFZ - 0.5;
-							//doubflo      radius  = para->getParH(lev)->gridNY / 10.;//2.56f;
+							//real centerX = para->getParH(lev)->gridNX / 2. + STARTOFFX - 0.5;
+							//real centerY = para->getParH(lev)->gridNY / 2. + STARTOFFY - 0.5;
+							//real centerZ = para->getParH(lev)->gridNZ / 4. + STARTOFFZ - 0.5;
+							//real      radius  = para->getParH(lev)->gridNY / 10.;//2.56f;
 							//////unsigned int distSq  = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j);
 							////unsigned int distSq  = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j)+(centerZ-k)*(centerZ-k);
-							//doubflo distSq  = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j)+(centerZ-k)*(centerZ-k);
-							//doubflo      radiSq  = radius*radius;
+							//real distSq  = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j)+(centerZ-k)*(centerZ-k);
+							//real      radiSq  = radius*radius;
 							////////////////////////////////////////////////////////////////////////////////////////////////
 
 							if (   i < STARTOFFX || i > para->getParH(lev)->gridNX + STARTOFFX - 1 
@@ -150,7 +150,7 @@ void defineGrid(Parameter* para, Communicator* comm)
 								para->getParH(lev)->geo[m] = GEO_FLUID;
 								if (para->getDiffOn()==true)
 								{
-									para->getParH(lev)->Conc_Full[m] = (doubflo)para->getTemperatureInit();
+									para->getParH(lev)->Conc_Full[m] = (real)para->getTemperatureInit();
 								}
 							}
 							//if (i == STARTOFFZ)
@@ -179,20 +179,20 @@ void defineGrid(Parameter* para, Communicator* comm)
 						//unsigned int centerX = para->getParH(lev)->gridNX / 2 + STARTOFFX;
 						//unsigned int centerY = para->getParH(lev)->gridNY / 2 + STARTOFFY;
 						//unsigned int centerZ = para->getParH(lev)->gridNZ / 2 + STARTOFFZ;
-						//doubflo        radius  = para->getParH(lev)->gridNY / 5.f;//2.56f;
-						//doubflo centerX = para->getParH(lev)->gridNX / 2.f + STARTOFFX - 0.5f;
-						//doubflo centerY = para->getParH(lev)->gridNY / 2.f + STARTOFFY - 0.5f;
-						//doubflo centerZ = para->getParH(lev)->gridNZ / 2.f + STARTOFFZ - 0.5f;
-						//doubflo      radius  = para->getParH(lev)->gridNY / 5.f;//2.56f;
+						//real        radius  = para->getParH(lev)->gridNY / 5.f;//2.56f;
+						//real centerX = para->getParH(lev)->gridNX / 2.f + STARTOFFX - 0.5f;
+						//real centerY = para->getParH(lev)->gridNY / 2.f + STARTOFFY - 0.5f;
+						//real centerZ = para->getParH(lev)->gridNZ / 2.f + STARTOFFZ - 0.5f;
+						//real      radius  = para->getParH(lev)->gridNY / 5.f;//2.56f;
 
 						int m = para->getParH(lev)->nx*(para->getParH(lev)->ny*k + j) + i;
 
 						////unsigned int distSq = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j)+(centerZ-k)*(centerZ-k);
-						//doubflo distSq = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j)+(centerZ-k)*(centerZ-k);
-						//doubflo radiSq = radius*radius;
+						//real distSq = (centerX-i)*(centerX-i)+(centerY-j)*(centerY-j)+(centerZ-k)*(centerZ-k);
+						//real radiSq = radius*radius;
 
 						//diff stuff
-						//doubflo mradsq = (doubflo)((doubflo)i-(STARTOFFX + 30)) * (doubflo)((doubflo)i-(STARTOFFX + 30)) + (doubflo)((doubflo)j-(STARTOFFY + 30)) *  (doubflo)((doubflo)j-(STARTOFFY + 30)) +(doubflo) ((doubflo)k-(STARTOFFZ + 30)) * (doubflo) ((doubflo)k-(STARTOFFZ + 30)); 
+						//real mradsq = (real)((real)i-(STARTOFFX + 30)) * (real)((real)i-(STARTOFFX + 30)) + (real)((real)j-(STARTOFFY + 30)) *  (real)((real)j-(STARTOFFY + 30)) +(real) ((real)k-(STARTOFFZ + 30)) * (real) ((real)k-(STARTOFFZ + 30)); 
 
 						if (  i <  STARTOFFX || i >  para->getParH(lev)->gridNX + STARTOFFX - 1 
 							|| j <  STARTOFFY || j >  para->getParH(lev)->gridNY + STARTOFFY - 1 

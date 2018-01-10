@@ -3,7 +3,7 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void CalcCP27(doubflo* DD, 
+extern "C" __global__ void CalcCP27(real* DD, 
 									int* cpIndex, 
 									int nonCp, 
 									double *cpPress,

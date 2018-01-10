@@ -1,7 +1,7 @@
 #ifndef global_h
 #define global_h
 
-typedef float doubflo;
+#include "core/DataTypes.h"
 
 #define DEBUG 1
 #define GLOB_NODE 5

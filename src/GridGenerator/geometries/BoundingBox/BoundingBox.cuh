@@ -26,10 +26,10 @@ public:
 	BoundingBox(T minX, T maxX, T minY, T maxY, T minZ, T maxZ);
     HOSTDEVICE BoundingBox();
 	BoundingBox(const BoundingBox<int> &box);
-	BoundingBox(const BoundingBox<doubflo> &t);
+	BoundingBox(const BoundingBox<real> &t);
 
 public:
-	HOST static BoundingBox<doubflo> makeExactBox(const Triangle &t);
+	HOST static BoundingBox<real> makeExactBox(const Triangle &t);
 	HOSTDEVICE static BoundingBox<int> makeNodeBox(const Triangle &t);
     HOST static BoundingBox<T> makeInvalidMinMaxBox();
 
@@ -39,18 +39,18 @@ public:
 	bool isInside(const Triangle &t) const;
 	bool intersect(const Triangle &t) const;
 
-	std::vector<std::vector<Vertex> > getIntersectionPoints(const BoundingBox<doubflo> &b) const;
+	std::vector<std::vector<Vertex> > getIntersectionPoints(const BoundingBox<real> &b) const;
 	bool intersect(const BoundingBox<T> &box) const;
 
 
     HOST BoundingBoxMemento getState() const;
     HOST void setState(const BoundingBoxMemento &memento);
 
-    HOST bool operator==(const BoundingBox<doubflo> &box) const;
+    HOST bool operator==(const BoundingBox<real> &box) const;
     
 
 private:
-    HOSTDEVICE static void calculateMinMaxOnNodes(int &minNode, int &maxNode, const doubflo &minExact, const doubflo &maxExact);
+    HOSTDEVICE static void calculateMinMaxOnNodes(int &minNode, int &maxNode, const real &minExact, const real &maxExact);
 
 	bool isInside(const Vertex &v) const;
 	void getPoints(Vertex v[8]) const;

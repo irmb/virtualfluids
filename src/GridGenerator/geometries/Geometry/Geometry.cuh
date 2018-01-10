@@ -27,13 +27,13 @@ public:
 	VF_PUBLIC Transformator* getTransformator();
 
 	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
-	VF_PUBLIC void setMinMax(BoundingBox<doubflo> minmax);
-	VF_PUBLIC void transformChannelGeometry(const doubflo resolution);
+	VF_PUBLIC void setMinMax(BoundingBox<real> minmax);
+	VF_PUBLIC void transformChannelGeometry(const real resolution);
 
 	std::vector<Triangle> triangleVec;
 	Triangle *triangles;
 	int size;
-	BoundingBox<doubflo> minmax;
+	BoundingBox<real> minmax;
 
     HOST VF_PUBLIC bool operator==(const Geometry &geometry) const;
 

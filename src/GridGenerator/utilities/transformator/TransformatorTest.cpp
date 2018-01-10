@@ -17,7 +17,7 @@ public:
 	std::shared_ptr<Transformator> sut;
 	Vertex v;
 
-	doubflo delta;
+	real delta;
 	Vertex translater;
 
 	void SetUp() override 
@@ -30,17 +30,17 @@ public:
 
 void expectEqual(const Vertex& actual, const Vertex& expected)
 {
-	EXPECT_THAT(actual.x, FloatEq(expected.x));
-	EXPECT_THAT(actual.y, FloatEq(expected.y));
-	EXPECT_THAT(actual.z, FloatEq(expected.z));
+	EXPECT_THAT(actual.x, DoubleEq(expected.x));
+	EXPECT_THAT(actual.y, DoubleEq(expected.y));
+	EXPECT_THAT(actual.z, DoubleEq(expected.z));
 }
 
 TEST(TransformatorCopyConstructorTest, copyTransformatorShouldCreateSameTransformator)
 {
-	doubflo delta = 0.01f;
-	doubflo dx = 0.1f;
-	doubflo dy = 0.2f;
-	doubflo dz = 0.3f;
+	real delta = 0.01f;
+	real dx = 0.1f;
+	real dy = 0.2f;
+	real dz = 0.3f;
 	TransformatorImp trafoToCopy(delta, dx, dy, dz);
 
 	std::shared_ptr<TransformatorImp> sut = std::shared_ptr<TransformatorImp>(new TransformatorImp(trafoToCopy));
@@ -70,13 +70,13 @@ TEST_F(TransformatorTest, transformVectorToViewWithSmallDelta_ExpectVectorScales
 
 TEST_F(TransformatorTest, transformVectorWithNullDelta_ExpectExcpetion) 
 {
-    doubflo invalidDeltaValue = 0.0f;
+    real invalidDeltaValue = 0.0f;
     ASSERT_THROW(TransformatorImp trafo(invalidDeltaValue, Vertex(0, 0, 0)), invalidDelta);
 }
 
 TEST_F(TransformatorTest, transformVectorWithNegativeDelta_ExpectExcpetion)
 {
-    doubflo invalidDeltaValue = -1.0f;
+    real invalidDeltaValue = -1.0f;
     ASSERT_THROW(TransformatorImp trafo(invalidDeltaValue, Vertex(0, 0, 0)), invalidDelta);
 }
 
@@ -128,13 +128,13 @@ TEST_F(TransformatorTest, transformGeometryToView)
 	expectEqual(g.triangleVec[0].v3, expected);
 }
 
-TEST(TransformatorTestBoundingBox, transformDoubfloBoundingBoxToView)
+TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToView)
 {
-	doubflo delta = 0.01f;
+	real delta = 0.01f;
 	Vertex translater = Vertex(-2.6f, 3434.0f, 0.1f);
 	std::shared_ptr<Transformator> sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
 
-	BoundingBox<doubflo> box(0, 0, 0, 0, 0, 0);
+	BoundingBox<real> box(0, 0, 0, 0, 0, 0);
 
 	sut->transformWorldToGrid(box);
 
@@ -147,13 +147,13 @@ TEST(TransformatorTestBoundingBox, transformDoubfloBoundingBoxToView)
 	EXPECT_THAT(box.maxZ, Eq(translater.z * (1.0f / delta)));
 }
 
-TEST(TransformatorTestBoundingBox, transformDoubfloBoundingBoxToWorld)
+TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToWorld)
 {
-	doubflo delta = 0.01f;
+	real delta = 0.01f;
 	Vertex translater = Vertex(-2.6f, 3434.0f, 0.1f);
 	std::shared_ptr<Transformator> sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
 
-	BoundingBox<doubflo> box(0, 0, 0, 0, 0, 0);
+	BoundingBox<real> box(0, 0, 0, 0, 0, 0);
 
 	sut->transformGridToWorld(box);
 
@@ -172,24 +172,24 @@ TEST_F(TransformatorTest, transformArrowToWorld)
 	translater = Vertex(0, 0, 0);
 	std::shared_ptr<ArrowTransformator> sut = std::shared_ptr<ArrowTransformator>(new TransformatorImp(delta, translater));
 
-	doubflo x1 = 1.23f;
-	doubflo y1 = 2.23f;
-	doubflo z1 = 0.023f;
+	real x1 = 1.23f;
+	real y1 = 2.23f;
+	real z1 = 0.023f;
 
-	doubflo x2 = -1.23f;
-	doubflo y2 = 1.23f;
-	doubflo z2 = -0.20233f;
+	real x2 = -1.23f;
+	real y2 = 1.23f;
+	real z2 = -0.20233f;
 	auto v1 = std::shared_ptr<Vertex>(new Vertex(x1, y1, z1));
 	auto v2 = std::shared_ptr<Vertex>(new Vertex(x2, y2, z2));
 	auto arrow = ArrowStub::make(v1, v2);
 
 	sut->transformGridToWorld(arrow);
 
-	EXPECT_THAT(arrow->getStart()->x, FloatEq(x1 * delta - translater.x));
-	EXPECT_THAT(arrow->getStart()->y, FloatEq(y1 * delta - translater.y));
-	EXPECT_THAT(arrow->getStart()->z, FloatEq(z1 * delta - translater.z));
+	EXPECT_THAT(arrow->getStart()->x, DoubleEq(x1 * delta - translater.x));
+	EXPECT_THAT(arrow->getStart()->y, DoubleEq(y1 * delta - translater.y));
+	EXPECT_THAT(arrow->getStart()->z, DoubleEq(z1 * delta - translater.z));
 
-	EXPECT_THAT(arrow->getEnd()->x, FloatEq(x2 * delta - translater.x));
-	EXPECT_THAT(arrow->getEnd()->y, FloatEq(y2 * delta - translater.y));
-	EXPECT_THAT(arrow->getEnd()->z, FloatEq(z2 * delta - translater.z));
+	EXPECT_THAT(arrow->getEnd()->x, DoubleEq(x2 * delta - translater.x));
+	EXPECT_THAT(arrow->getEnd()->y, DoubleEq(y2 * delta - translater.y));
+	EXPECT_THAT(arrow->getEnd()->z, DoubleEq(z2 * delta - translater.z));
 }

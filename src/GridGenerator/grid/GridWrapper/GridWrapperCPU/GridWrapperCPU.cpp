@@ -44,14 +44,14 @@ GridWrapperCPU::~GridWrapperCPU()
     delete[] this->grid.d.f;
 }
 
-doubflo GridWrapperCPU::initalUniformGrid3d()
+real GridWrapperCPU::initalUniformGrid3d()
 {
 	time_t begin = clock();
 
 	this->initialGridNodes();
 
 	time_t end = clock();
-	return (doubflo)(doubflo(end - begin) / CLOCKS_PER_SEC);
+	return (real)(real(end - begin) / CLOCKS_PER_SEC);
 }
 
 void GridWrapperCPU::initialGridNodes()
@@ -70,7 +70,7 @@ void GridWrapperCPU::meshGrid(Geometry &geom)
 	clock_t begin = clock();
     runMeshing(geom);
 	clock_t end = clock();
-    float time = (doubflo)(doubflo(end - begin) / CLOCKS_PER_SEC);
+    float time = (real)(real(end - begin) / CLOCKS_PER_SEC);
 
 	*logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " + SSTR(time) + "s\n";
 }
@@ -84,18 +84,18 @@ void GridWrapperCPU::deleteSolidNodes()
     findNeighborIndices();
 
     clock_t end = clock();
-    float time = (doubflo)(doubflo(end - begin) / CLOCKS_PER_SEC);
+    float time = (real)(real(end - begin) / CLOCKS_PER_SEC);
     *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR(time / 1000) + "sec\n";
 }
 
 void GridWrapperCPU::allocDistribution()
 {
 	unsigned long distributionSize = grid.size * (grid.d.dir_end + 1);
-	doubflo sizeInMB = distributionSize * sizeof(doubflo) / (1024.f*1024.f);
+	real sizeInMB = distributionSize * sizeof(real) / (1024.f*1024.f);
 
 	*logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] host memory for distributions.\n";
 
-	this->grid.d.f = new doubflo[distributionSize](); // automatic initialized with zeros
+	this->grid.d.f = new real[distributionSize](); // automatic initialized with zeros
 }
 
 void GridWrapperCPU::allocField()

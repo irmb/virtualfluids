@@ -2,7 +2,7 @@
 #define GridReaderGenerator_H
 
 #include "../GridProvider.h"
-#include "VirtualFluids_GPU_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -22,14 +22,15 @@ private:
 	std::shared_ptr<GridBuilder> builder;
 
 public:
-	VirtualFluids_GPU_EXPORT GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
-	VirtualFluids_GPU_EXPORT virtual ~GridGenerator();
+    VF_PUBLIC GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
+	VF_PUBLIC virtual ~GridGenerator();
 
 	void setUnstructuredGridBuilder(std::shared_ptr<GridBuilder> builder);
 
-	virtual void allocArrays_CoordNeighborGeo();
-	virtual void allocArrays_BoundaryValues();
-	virtual void allocArrays_BoundaryQs();
+	virtual void allocArrays_CoordNeighborGeo()override;
+	virtual void allocArrays_BoundaryValues()override;
+	virtual void allocArrays_BoundaryQs()override;
+    void allocArrays_OffsetScale() override;
 
 	virtual void setDimensions();
 	virtual void setBoundingBox();
@@ -57,8 +58,9 @@ private:
 	void printQSize(std::string bc,int channelSide, unsigned int level) const;
 	void setSizeNoSlip(int channelSide, unsigned int level) const;
 	void setSizeGeoQs(unsigned int level) const;
-	void setQ27Size(QforBoundaryConditions &Q, doubflo* QQ, unsigned int sizeQ) const;
+	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(int channelSide, unsigned int level) const;
+
 };
 
 #endif

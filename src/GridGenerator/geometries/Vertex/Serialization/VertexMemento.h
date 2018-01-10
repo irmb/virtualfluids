@@ -23,7 +23,7 @@ class VF_PUBLIC VertexMemento
     }
 #endif
 public:
-    doubflo x, y, z;
+    real x, y, z;
 };
 
 

@@ -6,15 +6,15 @@
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void WallFunction27(int inx,
 										  int iny,
-										  doubflo* vx,
-										  doubflo* vy,
-										  doubflo* vz,
-										  doubflo* DD, 
+										  real* vx,
+										  real* vy,
+										  real* vz,
+										  real* DD, 
 										  int* k_Q, 
-										  doubflo* QQ,
+										  real* QQ,
 										  unsigned int sizeQ,
 									      int kQ, 
-										  doubflo om1, 
+										  real om1, 
 										  unsigned int* neighborX,
 										  unsigned int* neighborY,
 										  unsigned int* neighborZ,
@@ -96,11 +96,11 @@ extern "C" __global__ void WallFunction27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = vx[k];
-      doubflo VeloY = vy[k];
-      doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+      real VeloX = vx[k];
+      real VeloY = vy[k];
+      real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
       ////////////////////////////////////////////////////////////////////////////////
-      //doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      //real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
       //      *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
       //      *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
       //      *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -162,7 +162,7 @@ extern "C" __global__ void WallFunction27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -192,7 +192,7 @@ extern "C" __global__ void WallFunction27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -210,11 +210,11 @@ extern "C" __global__ void WallFunction27(int inx,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      //doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
-	  doubflo nu = c1o3 * (one / om1 - c1o2);
-	  doubflo qw = one;
-	  doubflo uTau = sqrt(nu * (vx1 - VeloX) / qw);
+	  real nu = c1o3 * (one / om1 - c1o2);
+	  real qw = one;
+	  real uTau = sqrt(nu * (vx1 - VeloX) / qw);
 
 	  if (abs(uTau)/nu>11){
 	  uTau = vx1 * 0.41 / (log10(9.8 * uTau * qw / nu));

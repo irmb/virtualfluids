@@ -23,9 +23,9 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
 {
 	para->getParH(level)->size_Mat_SP = numberOfNodes;
 	para->getParD(level)->size_Mat_SP = numberOfNodes;
-	para->getParH(level)->mem_size_doubflo_SP = sizeof(doubflo) * para->getParH(level)->size_Mat_SP;
+	para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->size_Mat_SP;
 	para->getParH(level)->mem_size_int_SP = sizeof(unsigned int) * para->getParH(level)->size_Mat_SP;
-	para->getParD(level)->mem_size_doubflo_SP = sizeof(doubflo) * para->getParD(level)->size_Mat_SP;
+	para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
 	para->getParD(level)->mem_size_int_SP = sizeof(unsigned int) * para->getParD(level)->size_Mat_SP;
 }
 

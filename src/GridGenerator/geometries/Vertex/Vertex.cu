@@ -6,7 +6,7 @@
 #include "Serialization/VertexMemento.h"
 
 
-HOSTDEVICE Vertex::Vertex(doubflo x, doubflo y, doubflo z) : x(x), y(y), z(z){}
+HOSTDEVICE Vertex::Vertex(real x, real y, real z) : x(x), y(y), z(z){}
 HOSTDEVICE Vertex::Vertex() { x = 0.0f; y = 0.0f; z = 0.0f; }
 
 HOSTDEVICE Vertex::Vertex(const Vertex& v)
@@ -16,7 +16,7 @@ HOSTDEVICE Vertex::Vertex(const Vertex& v)
 	this->z = v.z;
 }
 
-HOSTDEVICE  doubflo Vertex::getEuclideanDistanceTo(const Vertex &w) const
+HOSTDEVICE  real Vertex::getEuclideanDistanceTo(const Vertex &w) const
 {
     return CudaMath::sqrt((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
 }
@@ -31,47 +31,47 @@ HOSTDEVICE Vertex Vertex::operator+(const Vertex &v) const
     return Vertex(this->x + v.x, this->y + v.y, this->z + v.z);
 }
 
-HOSTDEVICE Vertex Vertex::operator*(const doubflo value) const
+HOSTDEVICE Vertex Vertex::operator*(const real value) const
 {
     return Vertex(value * this->x, value * this->y, value * this->z);
 }
 
 
 
-HOSTDEVICE doubflo Vertex::operator*(const Vertex &w) const
+HOSTDEVICE real Vertex::operator*(const Vertex &w) const
 {
     return x*w.x + y*w.y + z*w.z;
 }
 
 HOSTDEVICE struct Vertex Vertex::crossProduct(const Vertex &w) const
 {
-    doubflo a = y*w.z - z*w.y;
-    doubflo b = z*w.x - x*w.z;
-    doubflo c = x*w.y - y*w.x;
+    real a = y*w.z - z*w.y;
+    real b = z*w.x - x*w.z;
+    real c = x*w.y - y*w.x;
     return Vertex(a, b, c);
 }
 
-HOSTDEVICE doubflo Vertex::length() const 
+HOSTDEVICE real Vertex::length() const 
 {
     return CudaMath::sqrt(x * x + y * y + z * z);
 }
 
 HOSTDEVICE void Vertex::normalize()
 {
-    doubflo len = length();
+    real len = length();
 
     if (len > EPSILON)
     {
-        doubflo invLen = 1.0f / len;
+        real invLen = 1.0f / len;
         x *= invLen;
         y *= invLen;
         z *= invLen;
     }
 }
 
-HOSTDEVICE doubflo Vertex::getMagnitude() const
+HOSTDEVICE real Vertex::getMagnitude() const
 {
-    doubflo temp = x*x + y*y + z*z;
+    real temp = x*x + y*y + z*z;
     return CudaMath::sqrt(temp);
 }
 
@@ -80,15 +80,15 @@ HOSTDEVICE int Vertex::isEqual(const Vertex &w) const
     return CudaMath::equal(x, w.x) && CudaMath::equal(y, w.y) && CudaMath::equal(z, w.z);
 }
 
-HOSTDEVICE doubflo Vertex::getInnerAngle(const Vertex &w) const
+HOSTDEVICE real Vertex::getInnerAngle(const Vertex &w) const
 {
     if (isEqual(w))
         return 0.0;
     if (this->getMagnitude() == 0 || w.getMagnitude() == 0)
         return 0.0;
 
-    doubflo mag = this->getMagnitude() * w.getMagnitude();
-    doubflo skal = *this * w;
+    real mag = this->getMagnitude() * w.getMagnitude();
+    real skal = *this * w;
     if (mag - fabs(skal) < 0.0001)
         return 0.0f;
     return  CudaMath::acos(skal / mag) * 180.0f / CudaMath::acos(-1.0f); // acos(-1.0f) = PI 
@@ -134,22 +134,22 @@ HOST void Vertex::setState(const VertexMemento &memento)
     this->z = memento.z;
 }
 
-HOST bool Vertex::isXbetween(doubflo min, doubflo max) const
+HOST bool Vertex::isXbetween(real min, real max) const
 {
     return x >= min && x <= max;
 }
 
-HOST bool Vertex::isYbetween(doubflo min, doubflo max) const
+HOST bool Vertex::isYbetween(real min, real max) const
 {
     return y >= min && y <= max;
 }
 
-HOST bool Vertex::isZbetween(doubflo min, doubflo max) const
+HOST bool Vertex::isZbetween(real min, real max) const
 {
     return z >= min && z <= max;
 }
 
-HOSTDEVICE void Vertex::setMinMax(doubflo & minX, doubflo & maxX, doubflo & minY, doubflo & maxY, doubflo & minZ, doubflo & maxZ, const Vertex & v1, const Vertex & v2, const Vertex & v3)
+HOSTDEVICE void Vertex::setMinMax(real & minX, real & maxX, real & minY, real & maxY, real & minZ, real & maxZ, const Vertex & v1, const Vertex & v2, const Vertex & v3)
 {
     calculateMinMax(v1.x, v2.x, v3.x, minX, maxX);
     calculateMinMax(v1.y, v2.y, v3.y, minY, maxY);
@@ -157,7 +157,7 @@ HOSTDEVICE void Vertex::setMinMax(doubflo & minX, doubflo & maxX, doubflo & minY
 }
 
 
-HOSTDEVICE void Vertex::calculateMinMax(const doubflo &value1, const doubflo &value2, const doubflo &value3, doubflo &min, doubflo &max)
+HOSTDEVICE void Vertex::calculateMinMax(const real &value1, const real &value2, const real &value3, real &min, real &max)
 {
     min = value1;
     max = value2;

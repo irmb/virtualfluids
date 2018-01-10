@@ -117,15 +117,15 @@ void writeVTKsg(unsigned int nx, unsigned int ny, unsigned int nz, int startoffx
 
 void writeVTKsgSP(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int startoffx_D, int startoffy_D, int startoffz_D,
                   unsigned int nnx_D, unsigned int nny_D, unsigned int nnz_D, unsigned int start_z, unsigned int end_z, std::string& fname,
-                  unsigned int*   bcMatH, doubflo* vxH_D, doubflo* vyH_D, doubflo* vzH_D, doubflo* rhoH_D, doubflo* pressH_D, doubflo v_ratio_D, doubflo rho_ratio_D, 
-                  doubflo startx_D, doubflo starty_D, doubflo startz_D, doubflo deltax_D, unsigned int *kFull)
+                  unsigned int*   bcMatH, real* vxH_D, real* vyH_D, real* vzH_D, real* rhoH_D, real* pressH_D, real v_ratio_D, real rho_ratio_D, 
+                  real startx_D, real starty_D, real startz_D, real deltax_D, unsigned int *kFull)
  {
     //Test
-	DOUBFLO* /*float* double**/ vxH      = vxH_D      ;
-	DOUBFLO* /*float* double**/ vyH      = vyH_D      ;
-	DOUBFLO* /*float* double**/ vzH      = vzH_D      ;
-	DOUBFLO* /*float* double**/ rhoH     = rhoH_D     ;
-	DOUBFLO* /*float* double**/ pressH   = pressH_D   ;
+	real* /*float* double**/ vxH      = vxH_D      ;
+	real* /*float* double**/ vyH      = vyH_D      ;
+	real* /*float* double**/ vzH      = vzH_D      ;
+	real* /*float* double**/ rhoH     = rhoH_D     ;
+	real* /*float* double**/ pressH   = pressH_D   ;
     double  v_ratio  = v_ratio_D  ;
     double  rho_ratio= rho_ratio_D;
     double  startx   = startx_D   ;
@@ -271,15 +271,15 @@ void writeVTKsgSP(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int s
 
  void writeVTKsgSPbin(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int startoffx_D, int startoffy_D, int startoffz_D,
 					 unsigned int nnx_D, unsigned int nny_D, unsigned int nnz_D, unsigned int start_z, unsigned int end_z, std::string& fname,
-					 unsigned int*   bcMatH, int*   bcMatHFull, doubflo* vxH_D, doubflo* vyH_D, doubflo* vzH_D, doubflo* rhoH_D, doubflo* pressH_D, doubflo v_ratio_D, doubflo rho_ratio_D, 
-					 doubflo startx_D, doubflo starty_D, doubflo startz_D, doubflo deltax_D, unsigned int *kFull)
+					 unsigned int*   bcMatH, int*   bcMatHFull, real* vxH_D, real* vyH_D, real* vzH_D, real* rhoH_D, real* pressH_D, real v_ratio_D, real rho_ratio_D, 
+					 real startx_D, real starty_D, real startz_D, real deltax_D, unsigned int *kFull)
  {
 	 //Test 
-	 DOUBFLO* /*float* double**/ vxH      = vxH_D      ;
-	 DOUBFLO* /*float* double**/ vyH      = vyH_D      ;
-	 DOUBFLO* /*float* double**/ vzH      = vzH_D      ;
-	 DOUBFLO* /*float* double**/ rhoH     = rhoH_D     ;
-	 DOUBFLO* /*float* double**/ pressH   = pressH_D   ;
+	 real* /*float* double**/ vxH      = vxH_D      ;
+	 real* /*float* double**/ vyH      = vyH_D      ;
+	 real* /*float* double**/ vzH      = vzH_D      ;
+	 real* /*float* double**/ rhoH     = rhoH_D     ;
+	 real* /*float* double**/ pressH   = pressH_D   ;
 	 float  v_ratio  = (float)v_ratio_D  ;
 	 float  rho_ratio= (float)rho_ratio_D;
 	 float  startx   = (float)startx_D   ;
@@ -412,15 +412,15 @@ void writeVTKsgSP(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int s
 
 void writeVTKmedSPbin(   unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int startoffx_D, int startoffy_D, int startoffz_D,
 						 unsigned int nnx_D, unsigned int nny_D, unsigned int nnz_D, unsigned int start_z, unsigned int end_z, std::string& fname,
-						 unsigned int*   bcMatH, int*   bcMatHFull, doubflo* vxH_D, doubflo* vyH_D, doubflo* vzH_D, doubflo* rhoH_D, doubflo* pressH_D, doubflo tdiff, doubflo v_ratio_D, doubflo rho_ratio_D, 
-						 doubflo startx_D, doubflo starty_D, doubflo startz_D, doubflo deltax_D, unsigned int *kFull)
+						 unsigned int*   bcMatH, int*   bcMatHFull, real* vxH_D, real* vyH_D, real* vzH_D, real* rhoH_D, real* pressH_D, real tdiff, real v_ratio_D, real rho_ratio_D, 
+						 real startx_D, real starty_D, real startz_D, real deltax_D, unsigned int *kFull)
  {
 	 //Test 
-	 DOUBFLO* /*float* double**/ vxH      = vxH_D      ;
-	 DOUBFLO* /*float* double**/ vyH      = vyH_D      ;
-	 DOUBFLO* /*float* double**/ vzH      = vzH_D      ;
-	 DOUBFLO* /*float* double**/ rhoH     = rhoH_D     ;
-	 DOUBFLO* /*float* double**/ pressH   = pressH_D   ;
+	 real* /*float* double**/ vxH      = vxH_D      ;
+	 real* /*float* double**/ vyH      = vyH_D      ;
+	 real* /*float* double**/ vzH      = vzH_D      ;
+	 real* /*float* double**/ rhoH     = rhoH_D     ;
+	 real* /*float* double**/ pressH   = pressH_D   ;
 	 float  v_ratio  = (float)v_ratio_D  ;
 	 float  rho_ratio= (float)rho_ratio_D;
 	 float  startx   = (float)startx_D   ;
@@ -645,15 +645,15 @@ void writeVTKmedSPbin(   unsigned int nx_D, unsigned int ny_D, unsigned int nz_D
 
 void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int startoffx, int startoffy, int startoffz,
                    unsigned int nnx, unsigned int nny, unsigned int nnz, unsigned int start_z, unsigned int end_z, std::string& fname,
-                   unsigned int*   bcMatH, doubflo* vxH_D, doubflo* vyH_D, doubflo* vzH_D, doubflo* rhoH_D, doubflo v_ratio_D, doubflo rho_ratio_D, 
-                   doubflo startx_D, doubflo starty_D, doubflo startz_D, doubflo deltax_D, unsigned int *kFull, doubflo* ConcD)
+                   unsigned int*   bcMatH, real* vxH_D, real* vyH_D, real* vzH_D, real* rhoH_D, real v_ratio_D, real rho_ratio_D, 
+                   real startx_D, real starty_D, real startz_D, real deltax_D, unsigned int *kFull, real* ConcD)
 {
    //Test
-	DOUBFLO* /*float* double**/ vxH      = vxH_D      ;
-	DOUBFLO* /*float* double**/ vyH      = vyH_D      ;
-	DOUBFLO* /*float* double**/ vzH      = vzH_D      ;
-	DOUBFLO* /*float* double**/ rhoH     = rhoH_D     ;
-	DOUBFLO* /*float* double**/ ConcH    = ConcD   ;
+	real* /*float* double**/ vxH      = vxH_D      ;
+	real* /*float* double**/ vyH      = vyH_D      ;
+	real* /*float* double**/ vzH      = vzH_D      ;
+	real* /*float* double**/ rhoH     = rhoH_D     ;
+	real* /*float* double**/ ConcH    = ConcD   ;
    double  v_ratio  = v_ratio_D  ;
    double  rho_ratio= rho_ratio_D;
    double  startx   = startx_D   ;
@@ -775,17 +775,17 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 
  void writeVTKsgSPbinAS(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int startoffx_D, int startoffy_D, int startoffz_D,
 						unsigned int nnx_D, unsigned int nny_D, unsigned int nnz_D, unsigned int start_z, unsigned int end_z, std::string& fname,
-						unsigned int*   bcMatH, int*   bcMatHFull, doubflo* vxH_D, doubflo* vyH_D, doubflo* vzH_D, doubflo* rhoH_D, doubflo* pressH_D, 
-						doubflo v_ratio_D, doubflo rho_ratio_D, 
-						doubflo startx_D, doubflo starty_D, doubflo startz_D, doubflo deltax_D, 
-						doubflo *coordX, doubflo *coordY, doubflo *coordZ)
+						unsigned int*   bcMatH, int*   bcMatHFull, real* vxH_D, real* vyH_D, real* vzH_D, real* rhoH_D, real* pressH_D, 
+						real v_ratio_D, real rho_ratio_D, 
+						real startx_D, real starty_D, real startz_D, real deltax_D, 
+						real *coordX, real *coordY, real *coordZ)
  {
 	 //Test 
-	 DOUBFLO* /*float* double**/ vxH      = vxH_D      ;
-	 DOUBFLO* /*float* double**/ vyH      = vyH_D      ;
-	 DOUBFLO* /*float* double**/ vzH      = vzH_D      ;
-	 DOUBFLO* /*float* double**/ rhoH     = rhoH_D     ;
-	 DOUBFLO* /*float* double**/ pressH   = pressH_D   ;
+	 real* /*float* double**/ vxH      = vxH_D      ;
+	 real* /*float* double**/ vyH      = vyH_D      ;
+	 real* /*float* double**/ vzH      = vzH_D      ;
+	 real* /*float* double**/ rhoH     = rhoH_D     ;
+	 real* /*float* double**/ pressH   = pressH_D   ;
 	 float  v_ratio  = (float)v_ratio_D  ;
 	 float  rho_ratio= (float)rho_ratio_D;
 	 float  startx   = (float)startx_D   ;
@@ -931,17 +931,17 @@ void writeVTKsgThS(unsigned int nx, unsigned int ny, unsigned int nz, int starto
 
  void writeVTKmedSPbinAS(unsigned int nx_D, unsigned int ny_D, unsigned int nz_D, int startoffx_D, int startoffy_D, int startoffz_D,
 						 unsigned int nnx_D, unsigned int nny_D, unsigned int nnz_D, unsigned int start_z, unsigned int end_z, std::string& fname,
-						 unsigned int*   bcMatH, int*   bcMatHFull, doubflo* vxH_D, doubflo* vyH_D, doubflo* vzH_D, doubflo* rhoH_D, doubflo* pressH_D, 
-						 doubflo tdiff, doubflo v_ratio_D, doubflo rho_ratio_D, 
-						 doubflo startx_D, doubflo starty_D, doubflo startz_D, doubflo deltax_D, 
+						 unsigned int*   bcMatH, int*   bcMatHFull, real* vxH_D, real* vyH_D, real* vzH_D, real* rhoH_D, real* pressH_D, 
+						 real tdiff, real v_ratio_D, real rho_ratio_D, 
+						 real startx_D, real starty_D, real startz_D, real deltax_D, 
 						 unsigned int *coordX, unsigned int *coordY, unsigned int *coordZ)
  {
 	 //Test 
-	 DOUBFLO* /*float* double**/ vxH      = vxH_D      ;
-	 DOUBFLO* /*float* double**/ vyH      = vyH_D      ;
-	 DOUBFLO* /*float* double**/ vzH      = vzH_D      ;
-	 DOUBFLO* /*float* double**/ rhoH     = rhoH_D     ;
-	 DOUBFLO* /*float* double**/ pressH   = pressH_D   ;
+	 real* /*float* double**/ vxH      = vxH_D      ;
+	 real* /*float* double**/ vyH      = vyH_D      ;
+	 real* /*float* double**/ vzH      = vzH_D      ;
+	 real* /*float* double**/ rhoH     = rhoH_D     ;
+	 real* /*float* double**/ pressH   = pressH_D   ;
 	 float  v_ratio  = (float)v_ratio_D  ;
 	 float  rho_ratio= (float)rho_ratio_D;
 	 float  startx   = (float)startx_D   ;

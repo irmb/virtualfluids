@@ -115,7 +115,7 @@ void CoordNeighborGeoV::readCoordinates(unsigned int level)
 	for (unsigned int j = 0; j < levelSizes[level]; j++)
 	{
 		file.read((char*)&bufferDouble, sizeof(double));
-		coordinates[level][j + 1] = (doubflo)bufferDouble;
+		coordinates[level][j + 1] = (real)bufferDouble;
 	}
 }
 
@@ -143,7 +143,7 @@ void CoordNeighborGeoV::setVec(unsigned int level, std::vector<unsigned int> vec
 }
 
 
-void CoordNeighborGeoV::initalCoords(doubflo *data, unsigned int level) const
+void CoordNeighborGeoV::initalCoords(real *data, unsigned int level) const
 {
 	for (int index = 0; index < coordinates[level].size(); index++)
 		data[index] = coordinates[level][index];

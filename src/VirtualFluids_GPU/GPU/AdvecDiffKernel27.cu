@@ -4,13 +4,13 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_ThS27(  doubflo diffusivity,
+extern "C" __global__ void LB_Kernel_ThS27(  real diffusivity,
                                              unsigned int* bcMatD,
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
-                                             doubflo* DDStart,
-                                             doubflo* DD27,
+                                             real* DDStart,
+                                             real* DD27,
                                              int size_Mat,
                                              bool EvenOrOdd)
 {
@@ -167,84 +167,84 @@ extern "C" __global__ void LB_Kernel_ThS27(  doubflo diffusivity,
          unsigned int kbs  = neighborZ[ks];
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fW    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fE    =  (D.f[dirW   ])[kw ];
-         doubflo fS    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fN    =  (D.f[dirS   ])[ks ];
-         doubflo fB    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fT    =  (D.f[dirB   ])[kb ];
-         doubflo fSW   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fNE   =  (D.f[dirSW  ])[ksw];
-         doubflo fNW   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fSE   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fBW   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fTE   =  (D.f[dirBW  ])[kbw];
-         doubflo fTW   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fBE   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fBS   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fTN   =  (D.f[dirBS  ])[kbs];
-         doubflo fTS   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fBN   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fBSW  =  (D.f[dirTNE ])[k  ];//ktne
-         doubflo fBNE  =  (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fBNW  =  (D.f[dirTSE ])[ks ];//ktse
-         doubflo fBSE  =  (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fTSW  =  (D.f[dirBNE ])[kb ];//kbne
-         doubflo fTNE  =  (D.f[dirBSW ])[kbsw];
-         doubflo fTNW  =  (D.f[dirBSE ])[kbs];//kbse
-         doubflo fTSE  =  (D.f[dirBNW ])[kbw];//kbnw
+         real fW    =  (D.f[dirE   ])[k  ];//ke
+         real fE    =  (D.f[dirW   ])[kw ];
+         real fS    =  (D.f[dirN   ])[k  ];//kn
+         real fN    =  (D.f[dirS   ])[ks ];
+         real fB    =  (D.f[dirT   ])[k  ];//kt
+         real fT    =  (D.f[dirB   ])[kb ];
+         real fSW   =  (D.f[dirNE  ])[k  ];//kne
+         real fNE   =  (D.f[dirSW  ])[ksw];
+         real fNW   =  (D.f[dirSE  ])[ks ];//kse
+         real fSE   =  (D.f[dirNW  ])[kw ];//knw
+         real fBW   =  (D.f[dirTE  ])[k  ];//kte
+         real fTE   =  (D.f[dirBW  ])[kbw];
+         real fTW   =  (D.f[dirBE  ])[kb ];//kbe
+         real fBE   =  (D.f[dirTW  ])[kw ];//ktw
+         real fBS   =  (D.f[dirTN  ])[k  ];//ktn
+         real fTN   =  (D.f[dirBS  ])[kbs];
+         real fTS   =  (D.f[dirBN  ])[kb ];//kbn
+         real fBN   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fBSW  =  (D.f[dirTNE ])[k  ];//ktne
+         real fBNE  =  (D.f[dirTSW ])[ksw];//ktsw
+         real fBNW  =  (D.f[dirTSE ])[ks ];//ktse
+         real fBSE  =  (D.f[dirTNW ])[kw ];//ktnw
+         real fTSW  =  (D.f[dirBNE ])[kb ];//kbne
+         real fTNE  =  (D.f[dirBSW ])[kbsw];
+         real fTNW  =  (D.f[dirBSE ])[kbs];//kbse
+         real fTSE  =  (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D27.f[dirE   ])[k  ];
-			doubflo mfabb = (D27.f[dirW   ])[kw ];
-			doubflo mfbcb = (D27.f[dirN   ])[k  ];
-			doubflo mfbab = (D27.f[dirS   ])[ks ];
-			doubflo mfbbc = (D27.f[dirT   ])[k  ];
-			doubflo mfbba = (D27.f[dirB   ])[kb ];
-			doubflo mfccb = (D27.f[dirNE  ])[k  ];
-			doubflo mfaab = (D27.f[dirSW  ])[ksw];
-			doubflo mfcab = (D27.f[dirSE  ])[ks ];
-			doubflo mfacb = (D27.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D27.f[dirTE  ])[k  ];
-			doubflo mfaba = (D27.f[dirBW  ])[kbw];
-			doubflo mfcba = (D27.f[dirBE  ])[kb ];
-			doubflo mfabc = (D27.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D27.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D27.f[dirBS  ])[kbs];
-			doubflo mfbca = (D27.f[dirBN  ])[kb ];
-			doubflo mfbac = (D27.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D27.f[dirZERO])[k  ];
-			doubflo mfccc = (D27.f[dirTNE ])[k  ];
-			doubflo mfaac = (D27.f[dirTSW ])[ksw];
-			doubflo mfcac = (D27.f[dirTSE ])[ks ];
-			doubflo mfacc = (D27.f[dirTNW ])[kw ];
-			doubflo mfcca = (D27.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D27.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D27.f[dirBSE ])[kbs];
-			doubflo mfaca = (D27.f[dirBNW ])[kbw];
+			real mfcbb = (D27.f[dirE   ])[k  ];
+			real mfabb = (D27.f[dirW   ])[kw ];
+			real mfbcb = (D27.f[dirN   ])[k  ];
+			real mfbab = (D27.f[dirS   ])[ks ];
+			real mfbbc = (D27.f[dirT   ])[k  ];
+			real mfbba = (D27.f[dirB   ])[kb ];
+			real mfccb = (D27.f[dirNE  ])[k  ];
+			real mfaab = (D27.f[dirSW  ])[ksw];
+			real mfcab = (D27.f[dirSE  ])[ks ];
+			real mfacb = (D27.f[dirNW  ])[kw ];
+			real mfcbc = (D27.f[dirTE  ])[k  ];
+			real mfaba = (D27.f[dirBW  ])[kbw];
+			real mfcba = (D27.f[dirBE  ])[kb ];
+			real mfabc = (D27.f[dirTW  ])[kw ];
+			real mfbcc = (D27.f[dirTN  ])[k  ];
+			real mfbaa = (D27.f[dirBS  ])[kbs];
+			real mfbca = (D27.f[dirBN  ])[kb ];
+			real mfbac = (D27.f[dirTS  ])[ks ];
+			real mfbbb = (D27.f[dirZERO])[k  ];
+			real mfccc = (D27.f[dirTNE ])[k  ];
+			real mfaac = (D27.f[dirTSW ])[ksw];
+			real mfcac = (D27.f[dirTSE ])[ks ];
+			real mfacc = (D27.f[dirTNW ])[kw ];
+			real mfcca = (D27.f[dirBNE ])[kb ];
+			real mfaaa = (D27.f[dirBSW ])[kbsw];
+			real mfcaa = (D27.f[dirBSE ])[kbs];
+			real mfaca = (D27.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
 			//Conc
-			doubflo drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			doubflo rho = one+drho;
+			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////
-			doubflo rho0fluid   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
-			doubflo rhofluid    =  rho0fluid + one;
-			doubflo OORhofluid  =  one/rhofluid;
-			doubflo vvx     =  OORhofluid*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-			doubflo vvy     =  OORhofluid*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-			doubflo vvz     =  OORhofluid*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+			real rho0fluid   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
+			real rhofluid    =  rho0fluid + one;
+			real OORhofluid  =  one/rhofluid;
+			real vvx     =  OORhofluid*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+			real vvy     =  OORhofluid*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+			real vvz     =  OORhofluid*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
 			////////////////////////////////////////////////////////////////////////////////
-			//doubflo omegaD     = zero;
-			doubflo omegaD     = two / (six * diffusivity + one);
+			//real omegaD     = zero;
+			real omegaD     = two / (six * diffusivity + one);
 
-			doubflo oMdrho = zero;//one; // comp special
-			doubflo m0, m1, m2;
-			doubflo vx2=vvx*vvx;
-			doubflo vy2=vvy*vvy;
-			doubflo vz2=vvz*vvz;
+			real oMdrho = zero;//one; // comp special
+			real m0, m1, m2;
+			real vx2=vvx*vvx;
+			real vy2=vvy*vvy;
+			real vz2=vvz*vvz;
 
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
@@ -477,24 +477,24 @@ extern "C" __global__ void LB_Kernel_ThS27(  doubflo diffusivity,
 			////////////////////////////////////////////////////////////////////////////////////
 
 			//if(mfaaa < zero) omegaD = one;
-			doubflo limit=nine*omegaD*omegaD*(mfbaa*mfbaa+mfaba*mfaba+mfaab*mfaab);
-			//doubflo CC=c1o2;
+			real limit=nine*omegaD*omegaD*(mfbaa*mfbaa+mfaba*mfaba+mfaab*mfaab);
+			//real CC=c1o2;
 			//if ((two*mfaaa*mfaaa<limit)) omegaD=two / (six * (diffusivity+((limit/(1.0e-10f+two*mfaaa*mfaaa)-one)*(c1o6-diffusivity))*c1o2) + one);
 			if ((two*mfaaa*mfaaa<limit)) omegaD=one;
 			//omegaD = two / (six * (diffusivity+CC*limit) + one);
 
 			//mfaaa = c1o2;
 			//trans 3.
-			doubflo Mabc=mfabc-mfaba*c1o3;
-			doubflo Mbca=mfbca-mfbaa*c1o3;
-			doubflo Macb=mfacb-mfaab*c1o3;
-			doubflo Mcba=mfcba-mfaba*c1o3;
-			doubflo Mcab=mfcab-mfaab*c1o3;
-			doubflo Mbac=mfbac-mfbaa*c1o3;
+			real Mabc=mfabc-mfaba*c1o3;
+			real Mbca=mfbca-mfbaa*c1o3;
+			real Macb=mfacb-mfaab*c1o3;
+			real Mcba=mfcba-mfaba*c1o3;
+			real Mcab=mfcab-mfaab*c1o3;
+			real Mbac=mfbac-mfbaa*c1o3;
 			//trans 5.
-			doubflo Mcbc=mfcbc-mfaba*c1o9;
-			doubflo Mbcc=mfbcc-mfbaa*c1o9;
-			doubflo Mccb=mfccb-mfaab*c1o9;
+			real Mcbc=mfcbc-mfaba*c1o9;
+			real Mbcc=mfbcc-mfbaa*c1o9;
+			real Mccb=mfccb-mfaab*c1o9;
 
 			//1.
 			mfbaa *= one - omegaD;
@@ -829,13 +829,13 @@ extern "C" __global__ void LB_Kernel_ThS27(  doubflo diffusivity,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_ThS7( doubflo diffusivity,
+extern "C" __global__ void LB_Kernel_ThS7( real diffusivity,
                                            unsigned int* bcMatD,
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
-                                           doubflo* DDStart,
-                                           doubflo* DD7,
+                                           real* DDStart,
+                                           real* DD7,
                                            int size_Mat,
                                            bool EvenOrOdd)
 {
@@ -952,85 +952,85 @@ extern "C" __global__ void LB_Kernel_ThS7( doubflo diffusivity,
          unsigned int kbs  = neighborZ[ks];
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fW    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fE    =  (D.f[dirW   ])[kw ];
-         doubflo fS    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fN    =  (D.f[dirS   ])[ks ];
-         doubflo fB    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fT    =  (D.f[dirB   ])[kb ];
-         doubflo fSW   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fNE   =  (D.f[dirSW  ])[ksw];
-         doubflo fNW   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fSE   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fBW   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fTE   =  (D.f[dirBW  ])[kbw];
-         doubflo fTW   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fBE   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fBS   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fTN   =  (D.f[dirBS  ])[kbs];
-         doubflo fTS   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fBN   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fBSW   = (D.f[dirTNE ])[k  ];//ktne
-         doubflo fBNE   = (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fBNW   = (D.f[dirTSE ])[ks ];//ktse
-         doubflo fBSE   = (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fTSW   = (D.f[dirBNE ])[kb ];//kbne
-         doubflo fTNE   = (D.f[dirBSW ])[kbsw];
-         doubflo fTNW   = (D.f[dirBSE ])[kbs];//kbse
-         doubflo fTSE   = (D.f[dirBNW ])[kbw];//kbnw
-         //doubflo fE    =  (D.f[dirE   ])[k  ];//ke
-         //doubflo fW    =  (D.f[dirW   ])[kw ];
-         //doubflo fN    =  (D.f[dirN   ])[k  ];//kn
-         //doubflo fS    =  (D.f[dirS   ])[ks ];
-         //doubflo fT    =  (D.f[dirT   ])[k  ];//kt
-         //doubflo fB    =  (D.f[dirB   ])[kb ];
-         //doubflo fNE   =  (D.f[dirNE  ])[k  ];//kne
-         //doubflo fSW   =  (D.f[dirSW  ])[ksw];
-         //doubflo fSE   =  (D.f[dirSE  ])[ks ];//kse
-         //doubflo fNW   =  (D.f[dirNW  ])[kw ];//knw
-         //doubflo fTE   =  (D.f[dirTE  ])[k  ];//kte
-         //doubflo fBW   =  (D.f[dirBW  ])[kbw];
-         //doubflo fBE   =  (D.f[dirBE  ])[kb ];//kbe
-         //doubflo fTW   =  (D.f[dirTW  ])[kw ];//ktw
-         //doubflo fTN   =  (D.f[dirTN  ])[k  ];//ktn
-         //doubflo fBS   =  (D.f[dirBS  ])[kbs];
-         //doubflo fBN   =  (D.f[dirBN  ])[kb ];//kbn
-         //doubflo fTS   =  (D.f[dirTS  ])[ks ];//kts
-         //doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         //doubflo fTNE   = (D.f[dirTNE ])[k  ];//ktne
-         //doubflo fTSW   = (D.f[dirTSW ])[ksw];//ktsw
-         //doubflo fTSE   = (D.f[dirTSE ])[ks ];//ktse
-         //doubflo fTNW   = (D.f[dirTNW ])[kw ];//ktnw
-         //doubflo fBNE   = (D.f[dirBNE ])[kb ];//kbne
-         //doubflo fBSW   = (D.f[dirBSW ])[kbsw];
-         //doubflo fBSE   = (D.f[dirBSE ])[kbs];//kbse
-         //doubflo fBNW   = (D.f[dirBNW ])[kbw];//kbnw
+         real fW    =  (D.f[dirE   ])[k  ];//ke
+         real fE    =  (D.f[dirW   ])[kw ];
+         real fS    =  (D.f[dirN   ])[k  ];//kn
+         real fN    =  (D.f[dirS   ])[ks ];
+         real fB    =  (D.f[dirT   ])[k  ];//kt
+         real fT    =  (D.f[dirB   ])[kb ];
+         real fSW   =  (D.f[dirNE  ])[k  ];//kne
+         real fNE   =  (D.f[dirSW  ])[ksw];
+         real fNW   =  (D.f[dirSE  ])[ks ];//kse
+         real fSE   =  (D.f[dirNW  ])[kw ];//knw
+         real fBW   =  (D.f[dirTE  ])[k  ];//kte
+         real fTE   =  (D.f[dirBW  ])[kbw];
+         real fTW   =  (D.f[dirBE  ])[kb ];//kbe
+         real fBE   =  (D.f[dirTW  ])[kw ];//ktw
+         real fBS   =  (D.f[dirTN  ])[k  ];//ktn
+         real fTN   =  (D.f[dirBS  ])[kbs];
+         real fTS   =  (D.f[dirBN  ])[kb ];//kbn
+         real fBN   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fBSW   = (D.f[dirTNE ])[k  ];//ktne
+         real fBNE   = (D.f[dirTSW ])[ksw];//ktsw
+         real fBNW   = (D.f[dirTSE ])[ks ];//ktse
+         real fBSE   = (D.f[dirTNW ])[kw ];//ktnw
+         real fTSW   = (D.f[dirBNE ])[kb ];//kbne
+         real fTNE   = (D.f[dirBSW ])[kbsw];
+         real fTNW   = (D.f[dirBSE ])[kbs];//kbse
+         real fTSE   = (D.f[dirBNW ])[kbw];//kbnw
+         //real fE    =  (D.f[dirE   ])[k  ];//ke
+         //real fW    =  (D.f[dirW   ])[kw ];
+         //real fN    =  (D.f[dirN   ])[k  ];//kn
+         //real fS    =  (D.f[dirS   ])[ks ];
+         //real fT    =  (D.f[dirT   ])[k  ];//kt
+         //real fB    =  (D.f[dirB   ])[kb ];
+         //real fNE   =  (D.f[dirNE  ])[k  ];//kne
+         //real fSW   =  (D.f[dirSW  ])[ksw];
+         //real fSE   =  (D.f[dirSE  ])[ks ];//kse
+         //real fNW   =  (D.f[dirNW  ])[kw ];//knw
+         //real fTE   =  (D.f[dirTE  ])[k  ];//kte
+         //real fBW   =  (D.f[dirBW  ])[kbw];
+         //real fBE   =  (D.f[dirBE  ])[kb ];//kbe
+         //real fTW   =  (D.f[dirTW  ])[kw ];//ktw
+         //real fTN   =  (D.f[dirTN  ])[k  ];//ktn
+         //real fBS   =  (D.f[dirBS  ])[kbs];
+         //real fBN   =  (D.f[dirBN  ])[kb ];//kbn
+         //real fTS   =  (D.f[dirTS  ])[ks ];//kts
+         //real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         //real fTNE   = (D.f[dirTNE ])[k  ];//ktne
+         //real fTSW   = (D.f[dirTSW ])[ksw];//ktsw
+         //real fTSE   = (D.f[dirTSE ])[ks ];//ktse
+         //real fTNW   = (D.f[dirTNW ])[kw ];//ktnw
+         //real fBNE   = (D.f[dirBNE ])[kb ];//kbne
+         //real fBSW   = (D.f[dirBSW ])[kbsw];
+         //real fBSE   = (D.f[dirBSE ])[kbs];//kbse
+         //real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo f7ZERO =  (D7.f[0])[k  ];
-         doubflo f7E    =  (D7.f[1])[k  ];
-         doubflo f7W    =  (D7.f[2])[kw ];
-         doubflo f7N    =  (D7.f[3])[k  ];
-         doubflo f7S    =  (D7.f[4])[ks ];
-         doubflo f7T    =  (D7.f[5])[k  ];
-         doubflo f7B    =  (D7.f[6])[kb ];
+         real f7ZERO =  (D7.f[0])[k  ];
+         real f7E    =  (D7.f[1])[k  ];
+         real f7W    =  (D7.f[2])[kw ];
+         real f7N    =  (D7.f[3])[k  ];
+         real f7S    =  (D7.f[4])[ks ];
+         real f7T    =  (D7.f[5])[k  ];
+         real f7B    =  (D7.f[6])[kb ];
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo rho0   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
-         doubflo rho    =  rho0 + one;
-         doubflo OORho  =  one/rho;
-         doubflo vx     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-         doubflo vy     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-         doubflo vz     =  OORho*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+         real rho0   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
+         real rho    =  rho0 + one;
+         real OORho  =  one/rho;
+         real vx     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+         real vy     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+         real vz     =  OORho*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo omegaD     = -three + sqrt(three);
-         doubflo Lam         = -(c1o2+one/omegaD);
-         doubflo nue_d       = Lam/three;
-         doubflo ae          = diffusivity/nue_d - one;
-         doubflo ux_sq       = vx * vx;
-         doubflo uy_sq       = vy * vy;
-         doubflo uz_sq       = vz * vz;
+         real omegaD     = -three + sqrt(three);
+         real Lam         = -(c1o2+one/omegaD);
+         real nue_d       = Lam/three;
+         real ae          = diffusivity/nue_d - one;
+         real ux_sq       = vx * vx;
+         real uy_sq       = vy * vy;
+         real uz_sq       = vz * vz;
 
-         doubflo ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
+         real ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
 
          (D7.f[0])[k  ] = f7ZERO*(one+omegaD)-omegaD*ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
          (D7.f[2])[kw ] = f7E   *(one+omegaD)-omegaD*ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx*c1o2);
@@ -1099,13 +1099,13 @@ extern "C" __global__ void LB_Kernel_ThS7( doubflo diffusivity,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_AD_Incomp_27(   doubflo diffusivity,
+extern "C" __global__ void LB_Kernel_AD_Incomp_27(   real diffusivity,
 													 unsigned int* bcMatD,
 													 unsigned int* neighborX,
 													 unsigned int* neighborY,
 													 unsigned int* neighborZ,
-													 doubflo* DDStart,
-													 doubflo* DD27,
+													 real* DDStart,
+													 real* DD27,
 													 int size_Mat,
 													 bool EvenOrOdd)
 {
@@ -1262,121 +1262,121 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(   doubflo diffusivity,
          unsigned int kbs  = neighborZ[ks];
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fW    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fE    =  (D.f[dirW   ])[kw ];
-         doubflo fS    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fN    =  (D.f[dirS   ])[ks ];
-         doubflo fB    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fT    =  (D.f[dirB   ])[kb ];
-         doubflo fSW   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fNE   =  (D.f[dirSW  ])[ksw];
-         doubflo fNW   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fSE   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fBW   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fTE   =  (D.f[dirBW  ])[kbw];
-         doubflo fTW   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fBE   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fBS   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fTN   =  (D.f[dirBS  ])[kbs];
-         doubflo fTS   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fBN   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fBSW  =  (D.f[dirTNE ])[k  ];//ktne
-         doubflo fBNE  =  (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fBNW  =  (D.f[dirTSE ])[ks ];//ktse
-         doubflo fBSE  =  (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fTSW  =  (D.f[dirBNE ])[kb ];//kbne
-         doubflo fTNE  =  (D.f[dirBSW ])[kbsw];
-         doubflo fTNW  =  (D.f[dirBSE ])[kbs];//kbse
-         doubflo fTSE  =  (D.f[dirBNW ])[kbw];//kbnw
+         real fW    =  (D.f[dirE   ])[k  ];//ke
+         real fE    =  (D.f[dirW   ])[kw ];
+         real fS    =  (D.f[dirN   ])[k  ];//kn
+         real fN    =  (D.f[dirS   ])[ks ];
+         real fB    =  (D.f[dirT   ])[k  ];//kt
+         real fT    =  (D.f[dirB   ])[kb ];
+         real fSW   =  (D.f[dirNE  ])[k  ];//kne
+         real fNE   =  (D.f[dirSW  ])[ksw];
+         real fNW   =  (D.f[dirSE  ])[ks ];//kse
+         real fSE   =  (D.f[dirNW  ])[kw ];//knw
+         real fBW   =  (D.f[dirTE  ])[k  ];//kte
+         real fTE   =  (D.f[dirBW  ])[kbw];
+         real fTW   =  (D.f[dirBE  ])[kb ];//kbe
+         real fBE   =  (D.f[dirTW  ])[kw ];//ktw
+         real fBS   =  (D.f[dirTN  ])[k  ];//ktn
+         real fTN   =  (D.f[dirBS  ])[kbs];
+         real fTS   =  (D.f[dirBN  ])[kb ];//kbn
+         real fBN   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fBSW  =  (D.f[dirTNE ])[k  ];//ktne
+         real fBNE  =  (D.f[dirTSW ])[ksw];//ktsw
+         real fBNW  =  (D.f[dirTSE ])[ks ];//ktse
+         real fBSE  =  (D.f[dirTNW ])[kw ];//ktnw
+         real fTSW  =  (D.f[dirBNE ])[kb ];//kbne
+         real fTNE  =  (D.f[dirBSW ])[kbsw];
+         real fTNW  =  (D.f[dirBSE ])[kbs];//kbse
+         real fTSE  =  (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         //doubflo f27E    =  (D27.f[dirE   ])[k  ];//ke
-         //doubflo f27W    =  (D27.f[dirW   ])[kw ];
-         //doubflo f27N    =  (D27.f[dirN   ])[k  ];//kn
-         //doubflo f27S    =  (D27.f[dirS   ])[ks ];
-         //doubflo f27T    =  (D27.f[dirT   ])[k  ];//kt
-         //doubflo f27B    =  (D27.f[dirB   ])[kb ];
-         //doubflo f27NE   =  (D27.f[dirNE  ])[k  ];//kne
-         //doubflo f27SW   =  (D27.f[dirSW  ])[ksw];
-         //doubflo f27SE   =  (D27.f[dirSE  ])[ks ];//kse
-         //doubflo f27NW   =  (D27.f[dirNW  ])[kw ];//knw
-         //doubflo f27TE   =  (D27.f[dirTE  ])[k  ];//kte
-         //doubflo f27BW   =  (D27.f[dirBW  ])[kbw];
-         //doubflo f27BE   =  (D27.f[dirBE  ])[kb ];//kbe
-         //doubflo f27TW   =  (D27.f[dirTW  ])[kw ];//ktw
-         //doubflo f27TN   =  (D27.f[dirTN  ])[k  ];//ktn
-         //doubflo f27BS   =  (D27.f[dirBS  ])[kbs];
-         //doubflo f27BN   =  (D27.f[dirBN  ])[kb ];//kbn
-         //doubflo f27TS   =  (D27.f[dirTS  ])[ks ];//kts
-         //doubflo f27ZERO =  (D27.f[dirZERO])[k  ];//kzero
-         //doubflo f27TNE  =  (D27.f[dirTNE ])[k  ];//ktne
-         //doubflo f27TSW  =  (D27.f[dirTSW ])[ksw];//ktsw
-         //doubflo f27TSE  =  (D27.f[dirTSE ])[ks ];//ktse
-         //doubflo f27TNW  =  (D27.f[dirTNW ])[kw ];//ktnw
-         //doubflo f27BNE  =  (D27.f[dirBNE ])[kb ];//kbne
-         //doubflo f27BSW  =  (D27.f[dirBSW ])[kbsw];
-         //doubflo f27BSE  =  (D27.f[dirBSE ])[kbs];//kbse
-         //doubflo f27BNW  =  (D27.f[dirBNW ])[kbw];//kbnw
+         //real f27E    =  (D27.f[dirE   ])[k  ];//ke
+         //real f27W    =  (D27.f[dirW   ])[kw ];
+         //real f27N    =  (D27.f[dirN   ])[k  ];//kn
+         //real f27S    =  (D27.f[dirS   ])[ks ];
+         //real f27T    =  (D27.f[dirT   ])[k  ];//kt
+         //real f27B    =  (D27.f[dirB   ])[kb ];
+         //real f27NE   =  (D27.f[dirNE  ])[k  ];//kne
+         //real f27SW   =  (D27.f[dirSW  ])[ksw];
+         //real f27SE   =  (D27.f[dirSE  ])[ks ];//kse
+         //real f27NW   =  (D27.f[dirNW  ])[kw ];//knw
+         //real f27TE   =  (D27.f[dirTE  ])[k  ];//kte
+         //real f27BW   =  (D27.f[dirBW  ])[kbw];
+         //real f27BE   =  (D27.f[dirBE  ])[kb ];//kbe
+         //real f27TW   =  (D27.f[dirTW  ])[kw ];//ktw
+         //real f27TN   =  (D27.f[dirTN  ])[k  ];//ktn
+         //real f27BS   =  (D27.f[dirBS  ])[kbs];
+         //real f27BN   =  (D27.f[dirBN  ])[kb ];//kbn
+         //real f27TS   =  (D27.f[dirTS  ])[ks ];//kts
+         //real f27ZERO =  (D27.f[dirZERO])[k  ];//kzero
+         //real f27TNE  =  (D27.f[dirTNE ])[k  ];//ktne
+         //real f27TSW  =  (D27.f[dirTSW ])[ksw];//ktsw
+         //real f27TSE  =  (D27.f[dirTSE ])[ks ];//ktse
+         //real f27TNW  =  (D27.f[dirTNW ])[kw ];//ktnw
+         //real f27BNE  =  (D27.f[dirBNE ])[kb ];//kbne
+         //real f27BSW  =  (D27.f[dirBSW ])[kbsw];
+         //real f27BSE  =  (D27.f[dirBSE ])[kbs];//kbse
+         //real f27BNW  =  (D27.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         //doubflo vx1     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-         //doubflo vx2     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-         //doubflo vx3     =  ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+         //real vx1     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+         //real vx2     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+         //real vx3     =  ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
          ////////////////////////////////////////////////////////////////////////////////
 
 		 
-		 	doubflo mfcbb = (D27.f[dirE   ])[k  ];
-			doubflo mfabb = (D27.f[dirW   ])[kw ];
-			doubflo mfbcb = (D27.f[dirN   ])[k  ];
-			doubflo mfbab = (D27.f[dirS   ])[ks ];
-			doubflo mfbbc = (D27.f[dirT   ])[k  ];
-			doubflo mfbba = (D27.f[dirB   ])[kb ];
-			doubflo mfccb = (D27.f[dirNE  ])[k  ];
-			doubflo mfaab = (D27.f[dirSW  ])[ksw];
-			doubflo mfcab = (D27.f[dirSE  ])[ks ];
-			doubflo mfacb = (D27.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D27.f[dirTE  ])[k  ];
-			doubflo mfaba = (D27.f[dirBW  ])[kbw];
-			doubflo mfcba = (D27.f[dirBE  ])[kb ];
-			doubflo mfabc = (D27.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D27.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D27.f[dirBS  ])[kbs];
-			doubflo mfbca = (D27.f[dirBN  ])[kb ];
-			doubflo mfbac = (D27.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D27.f[dirZERO])[k  ];
-			doubflo mfccc = (D27.f[dirTNE ])[k  ];
-			doubflo mfaac = (D27.f[dirTSW ])[ksw];
-			doubflo mfcac = (D27.f[dirTSE ])[ks ];
-			doubflo mfacc = (D27.f[dirTNW ])[kw ];
-			doubflo mfcca = (D27.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D27.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D27.f[dirBSE ])[kbs];
-			doubflo mfaca = (D27.f[dirBNW ])[kbw];
+		 	real mfcbb = (D27.f[dirE   ])[k  ];
+			real mfabb = (D27.f[dirW   ])[kw ];
+			real mfbcb = (D27.f[dirN   ])[k  ];
+			real mfbab = (D27.f[dirS   ])[ks ];
+			real mfbbc = (D27.f[dirT   ])[k  ];
+			real mfbba = (D27.f[dirB   ])[kb ];
+			real mfccb = (D27.f[dirNE  ])[k  ];
+			real mfaab = (D27.f[dirSW  ])[ksw];
+			real mfcab = (D27.f[dirSE  ])[ks ];
+			real mfacb = (D27.f[dirNW  ])[kw ];
+			real mfcbc = (D27.f[dirTE  ])[k  ];
+			real mfaba = (D27.f[dirBW  ])[kbw];
+			real mfcba = (D27.f[dirBE  ])[kb ];
+			real mfabc = (D27.f[dirTW  ])[kw ];
+			real mfbcc = (D27.f[dirTN  ])[k  ];
+			real mfbaa = (D27.f[dirBS  ])[kbs];
+			real mfbca = (D27.f[dirBN  ])[kb ];
+			real mfbac = (D27.f[dirTS  ])[ks ];
+			real mfbbb = (D27.f[dirZERO])[k  ];
+			real mfccc = (D27.f[dirTNE ])[k  ];
+			real mfaac = (D27.f[dirTSW ])[ksw];
+			real mfcac = (D27.f[dirTSE ])[ks ];
+			real mfacc = (D27.f[dirTNW ])[kw ];
+			real mfcca = (D27.f[dirBNE ])[kb ];
+			real mfaaa = (D27.f[dirBSW ])[kbsw];
+			real mfcaa = (D27.f[dirBSE ])[kbs];
+			real mfaca = (D27.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
 			//Conc
-			doubflo drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
-			doubflo rho = one+drho;
+			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
 
-			doubflo vvx     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-			doubflo vvy     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-			doubflo vvz     =  ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+			real vvx     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+			real vvy     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+			real vvz     =  ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
 		 ////////////////////////////////////////////////////////////////////////////////
-         doubflo omegaD     = two / (six * diffusivity + one);
-         ////doubflo omegaD     = -three + sqrt(three);
-         ////doubflo Lam         = -(c1o2+one/omegaD);
-         ////doubflo nue_d       = Lam/three;
-         //doubflo ae          = zero;
-         ////doubflo ae          = diffusivity/nue_d - one;
-         //doubflo ux_sq       = vx * vx;
-         //doubflo uy_sq       = vy * vy;
-         //doubflo uz_sq       = vz * vz;
+         real omegaD     = two / (six * diffusivity + one);
+         ////real omegaD     = -three + sqrt(three);
+         ////real Lam         = -(c1o2+one/omegaD);
+         ////real nue_d       = Lam/three;
+         //real ae          = zero;
+         ////real ae          = diffusivity/nue_d - one;
+         //real ux_sq       = vx * vx;
+         //real uy_sq       = vy * vy;
+         //real uz_sq       = vz * vz;
 
 
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          //D3Q7
-         //doubflo ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
+         //real ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
          //(D7.f[0])[k  ] = f7ZERO*(one+omegaD)-omegaD*ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
          //(D7.f[2])[kw ] = f7E   *(one+omegaD)-omegaD*ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx*c1o2);
          //(D7.f[1])[k  ] = f7W   *(one+omegaD)-omegaD*ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)-vx*c1o2);
@@ -1389,10 +1389,10 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(   doubflo diffusivity,
 
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          ////D3Q27
-         //doubflo ConcD   = (f27TNE+f27BSW)+(f27TSW+f27BNE)+(f27TSE+f27BNW)+(f27TNW+f27BSE)+
+         //real ConcD   = (f27TNE+f27BSW)+(f27TSW+f27BNE)+(f27TSE+f27BNW)+(f27TNW+f27BSE)+
          //                  (f27NE+f27SW)+(f27NW+f27SE)+(f27TE+f27BW)+(f27BE+f27TW)+(f27TN+f27BS)+(f27BN+f27TS)+
          //                  (f27E+f27W)+(f27N+f27S)+(f27T+f27B)+f27ZERO;
-         //doubflo cusq    =  c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         //real cusq    =  c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          //(D27.f[ dirE   ])[k   ] = f27W    *(one-omegaD)+omegaD* c2over27* ConcD*(one+three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq);                                                                     
          //(D27.f[ dirW   ])[kw  ] = f27E    *(one-omegaD)+omegaD* c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);                                                                     
@@ -1423,11 +1423,11 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(   doubflo diffusivity,
          //(D27.f[ dirBSW ])[kbsw] = f27TNE  *(one-omegaD)+omegaD* c1over216*ConcD*(one+three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq);
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		 	doubflo oMdrho = zero;//one; // comp special
-			doubflo m0, m1, m2;
-			doubflo vx2=vvx*vvx;
-			doubflo vy2=vvy*vvy;
-			doubflo vz2=vvz*vvz;
+		 	real oMdrho = zero;//one; // comp special
+			real m0, m1, m2;
+			real vx2=vvx*vvx;
+			real vy2=vvy*vvy;
+			real vz2=vvz*vvz;
 
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
@@ -1660,24 +1660,24 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(   doubflo diffusivity,
 			////////////////////////////////////////////////////////////////////////////////////
 
 			//if(mfaaa < zero) omegaD = one;
-			doubflo limit=nine*omegaD*omegaD*(mfbaa*mfbaa+mfaba*mfaba+mfaab*mfaab);
-			//doubflo CC=c1o2;
+			real limit=nine*omegaD*omegaD*(mfbaa*mfbaa+mfaba*mfaba+mfaab*mfaab);
+			//real CC=c1o2;
 			//if ((two*mfaaa*mfaaa<limit)) omegaD=two / (six * (diffusivity+((limit/(1.0e-10f+two*mfaaa*mfaaa)-one)*(c1o6-diffusivity))*c1o2) + one);
 			if ((two*mfaaa*mfaaa<limit)) omegaD=one;
 			//omegaD = two / (six * (diffusivity+CC*limit) + one);
 
 			//mfaaa = c1o2;
 			//trans 3.
-			doubflo Mabc=mfabc-mfaba*c1o3;
-			doubflo Mbca=mfbca-mfbaa*c1o3;
-			doubflo Macb=mfacb-mfaab*c1o3;
-			doubflo Mcba=mfcba-mfaba*c1o3;
-			doubflo Mcab=mfcab-mfaab*c1o3;
-			doubflo Mbac=mfbac-mfbaa*c1o3;
+			real Mabc=mfabc-mfaba*c1o3;
+			real Mbca=mfbca-mfbaa*c1o3;
+			real Macb=mfacb-mfaab*c1o3;
+			real Mcba=mfcba-mfaba*c1o3;
+			real Mcab=mfcab-mfaab*c1o3;
+			real Mbac=mfbac-mfbaa*c1o3;
 			//trans 5.
-			doubflo Mcbc=mfcbc-mfaba*c1o9;
-			doubflo Mbcc=mfbcc-mfbaa*c1o9;
-			doubflo Mccb=mfccb-mfaab*c1o9;
+			real Mcbc=mfcbc-mfaba*c1o9;
+			real Mbcc=mfbcc-mfbaa*c1o9;
+			real Mccb=mfccb-mfaab*c1o9;
 
 			//1.
 			mfbaa *= one - omegaD;
@@ -2013,13 +2013,13 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_27(   doubflo diffusivity,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_AD_Incomp_7(  doubflo diffusivity,
+extern "C" __global__ void LB_Kernel_AD_Incomp_7(  real diffusivity,
 												   unsigned int* bcMatD,
 												   unsigned int* neighborX,
 												   unsigned int* neighborY,
 												   unsigned int* neighborZ,
-												   doubflo* DDStart,
-												   doubflo* DD7,
+												   real* DDStart,
+												   real* DD7,
 												   int size_Mat,
 												   bool EvenOrOdd)
 {
@@ -2136,88 +2136,88 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(  doubflo diffusivity,
          unsigned int kbs  = neighborZ[ks];
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fW    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fE    =  (D.f[dirW   ])[kw ];
-         doubflo fS    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fN    =  (D.f[dirS   ])[ks ];
-         doubflo fB    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fT    =  (D.f[dirB   ])[kb ];
-         doubflo fSW   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fNE   =  (D.f[dirSW  ])[ksw];
-         doubflo fNW   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fSE   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fBW   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fTE   =  (D.f[dirBW  ])[kbw];
-         doubflo fTW   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fBE   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fBS   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fTN   =  (D.f[dirBS  ])[kbs];
-         doubflo fTS   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fBN   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fBSW   = (D.f[dirTNE ])[k  ];//ktne
-         doubflo fBNE   = (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fBNW   = (D.f[dirTSE ])[ks ];//ktse
-         doubflo fBSE   = (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fTSW   = (D.f[dirBNE ])[kb ];//kbne
-         doubflo fTNE   = (D.f[dirBSW ])[kbsw];
-         doubflo fTNW   = (D.f[dirBSE ])[kbs];//kbse
-         doubflo fTSE   = (D.f[dirBNW ])[kbw];//kbnw
-         //doubflo fE    =  (D.f[dirE   ])[k  ];//ke
-         //doubflo fW    =  (D.f[dirW   ])[kw ];
-         //doubflo fN    =  (D.f[dirN   ])[k  ];//kn
-         //doubflo fS    =  (D.f[dirS   ])[ks ];
-         //doubflo fT    =  (D.f[dirT   ])[k  ];//kt
-         //doubflo fB    =  (D.f[dirB   ])[kb ];
-         //doubflo fNE   =  (D.f[dirNE  ])[k  ];//kne
-         //doubflo fSW   =  (D.f[dirSW  ])[ksw];
-         //doubflo fSE   =  (D.f[dirSE  ])[ks ];//kse
-         //doubflo fNW   =  (D.f[dirNW  ])[kw ];//knw
-         //doubflo fTE   =  (D.f[dirTE  ])[k  ];//kte
-         //doubflo fBW   =  (D.f[dirBW  ])[kbw];
-         //doubflo fBE   =  (D.f[dirBE  ])[kb ];//kbe
-         //doubflo fTW   =  (D.f[dirTW  ])[kw ];//ktw
-         //doubflo fTN   =  (D.f[dirTN  ])[k  ];//ktn
-         //doubflo fBS   =  (D.f[dirBS  ])[kbs];
-         //doubflo fBN   =  (D.f[dirBN  ])[kb ];//kbn
-         //doubflo fTS   =  (D.f[dirTS  ])[ks ];//kts
-         //doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         //doubflo fTNE   = (D.f[dirTNE ])[k  ];//ktne
-         //doubflo fTSW   = (D.f[dirTSW ])[ksw];//ktsw
-         //doubflo fTSE   = (D.f[dirTSE ])[ks ];//ktse
-         //doubflo fTNW   = (D.f[dirTNW ])[kw ];//ktnw
-         //doubflo fBNE   = (D.f[dirBNE ])[kb ];//kbne
-         //doubflo fBSW   = (D.f[dirBSW ])[kbsw];
-         //doubflo fBSE   = (D.f[dirBSE ])[kbs];//kbse
-         //doubflo fBNW   = (D.f[dirBNW ])[kbw];//kbnw
+         real fW    =  (D.f[dirE   ])[k  ];//ke
+         real fE    =  (D.f[dirW   ])[kw ];
+         real fS    =  (D.f[dirN   ])[k  ];//kn
+         real fN    =  (D.f[dirS   ])[ks ];
+         real fB    =  (D.f[dirT   ])[k  ];//kt
+         real fT    =  (D.f[dirB   ])[kb ];
+         real fSW   =  (D.f[dirNE  ])[k  ];//kne
+         real fNE   =  (D.f[dirSW  ])[ksw];
+         real fNW   =  (D.f[dirSE  ])[ks ];//kse
+         real fSE   =  (D.f[dirNW  ])[kw ];//knw
+         real fBW   =  (D.f[dirTE  ])[k  ];//kte
+         real fTE   =  (D.f[dirBW  ])[kbw];
+         real fTW   =  (D.f[dirBE  ])[kb ];//kbe
+         real fBE   =  (D.f[dirTW  ])[kw ];//ktw
+         real fBS   =  (D.f[dirTN  ])[k  ];//ktn
+         real fTN   =  (D.f[dirBS  ])[kbs];
+         real fTS   =  (D.f[dirBN  ])[kb ];//kbn
+         real fBN   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fBSW   = (D.f[dirTNE ])[k  ];//ktne
+         real fBNE   = (D.f[dirTSW ])[ksw];//ktsw
+         real fBNW   = (D.f[dirTSE ])[ks ];//ktse
+         real fBSE   = (D.f[dirTNW ])[kw ];//ktnw
+         real fTSW   = (D.f[dirBNE ])[kb ];//kbne
+         real fTNE   = (D.f[dirBSW ])[kbsw];
+         real fTNW   = (D.f[dirBSE ])[kbs];//kbse
+         real fTSE   = (D.f[dirBNW ])[kbw];//kbnw
+         //real fE    =  (D.f[dirE   ])[k  ];//ke
+         //real fW    =  (D.f[dirW   ])[kw ];
+         //real fN    =  (D.f[dirN   ])[k  ];//kn
+         //real fS    =  (D.f[dirS   ])[ks ];
+         //real fT    =  (D.f[dirT   ])[k  ];//kt
+         //real fB    =  (D.f[dirB   ])[kb ];
+         //real fNE   =  (D.f[dirNE  ])[k  ];//kne
+         //real fSW   =  (D.f[dirSW  ])[ksw];
+         //real fSE   =  (D.f[dirSE  ])[ks ];//kse
+         //real fNW   =  (D.f[dirNW  ])[kw ];//knw
+         //real fTE   =  (D.f[dirTE  ])[k  ];//kte
+         //real fBW   =  (D.f[dirBW  ])[kbw];
+         //real fBE   =  (D.f[dirBE  ])[kb ];//kbe
+         //real fTW   =  (D.f[dirTW  ])[kw ];//ktw
+         //real fTN   =  (D.f[dirTN  ])[k  ];//ktn
+         //real fBS   =  (D.f[dirBS  ])[kbs];
+         //real fBN   =  (D.f[dirBN  ])[kb ];//kbn
+         //real fTS   =  (D.f[dirTS  ])[ks ];//kts
+         //real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         //real fTNE   = (D.f[dirTNE ])[k  ];//ktne
+         //real fTSW   = (D.f[dirTSW ])[ksw];//ktsw
+         //real fTSE   = (D.f[dirTSE ])[ks ];//ktse
+         //real fTNW   = (D.f[dirTNW ])[kw ];//ktnw
+         //real fBNE   = (D.f[dirBNE ])[kb ];//kbne
+         //real fBSW   = (D.f[dirBSW ])[kbsw];
+         //real fBSE   = (D.f[dirBSE ])[kbs];//kbse
+         //real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo f7ZERO =  (D7.f[0])[k  ];
-         doubflo f7E    =  (D7.f[1])[k  ];
-         doubflo f7W    =  (D7.f[2])[kw ];
-         doubflo f7N    =  (D7.f[3])[k  ];
-         doubflo f7S    =  (D7.f[4])[ks ];
-         doubflo f7T    =  (D7.f[5])[k  ];
-         doubflo f7B    =  (D7.f[6])[kb ];
+         real f7ZERO =  (D7.f[0])[k  ];
+         real f7E    =  (D7.f[1])[k  ];
+         real f7W    =  (D7.f[2])[kw ];
+         real f7N    =  (D7.f[3])[k  ];
+         real f7S    =  (D7.f[4])[ks ];
+         real f7T    =  (D7.f[5])[k  ];
+         real f7B    =  (D7.f[6])[kb ];
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo vx     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-         doubflo vy     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-         doubflo vz     =  ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+         real vx     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+         real vy     =  ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+         real vz     =  ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
 		 ////dörrrrrty !!!!!!!!!!!!!
-   //      doubflo vx     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-   //      doubflo vy     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-   //      doubflo vz     =  ten * ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+   //      real vx     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+   //      real vy     =  ten * ((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+   //      real vz     =  ten * ((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo ux_sq       = vx * vx;
-         doubflo uy_sq       = vy * vy;
-         doubflo uz_sq       = vz * vz;
+         real ux_sq       = vx * vx;
+         real uy_sq       = vy * vy;
+         real uz_sq       = vz * vz;
          ////////////////////////////////////////////////////////////////////////////////
 		 //BGK
-         //doubflo omegaD     = -three + sqrt(three); !!!!!!!!!!!!!!Achtung!!!!!!!!!!!!!!!!!! anderes Vorzeichen als in den Randbedingungen
-         //doubflo Lam         = -(c1o2+one/omegaD);
-         //doubflo nue_d       = Lam/three;
-         //doubflo ae          = diffusivity/nue_d - one;
+         //real omegaD     = -three + sqrt(three); !!!!!!!!!!!!!!Achtung!!!!!!!!!!!!!!!!!! anderes Vorzeichen als in den Randbedingungen
+         //real Lam         = -(c1o2+one/omegaD);
+         //real nue_d       = Lam/three;
+         //real ae          = diffusivity/nue_d - one;
 
-         //doubflo ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
+         //real ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
 
          //(D7.f[0])[k  ] = f7ZERO*(one+omegaD)-omegaD*ConcD*(c1o3*(ae*(-three))-(ux_sq+uy_sq+uz_sq));
          //(D7.f[2])[kw ] = f7E   *(one+omegaD)-omegaD*ConcD*(c1o6*(ae+one)+c1o2*(ux_sq)+vx*c1o2);
@@ -2229,28 +2229,28 @@ extern "C" __global__ void LB_Kernel_AD_Incomp_7(  doubflo diffusivity,
 
          ////////////////////////////////////////////////////////////////////////////////
 		 //TRT  Yoshida Kernel - based on Ying
-         doubflo cs2         = c1o4;
-         doubflo Lam         = diffusivity*four;//diffusivity/(one)/cs2;
-         doubflo omegaD      = - one / (Lam + c1o2);
-         doubflo ae          = zero;
+         real cs2         = c1o4;
+         real Lam         = diffusivity*four;//diffusivity/(one)/cs2;
+         real omegaD      = - one / (Lam + c1o2);
+         real ae          = zero;
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
+         real ConcD       = f7ZERO+f7E+f7W+f7N+f7S+f7T+f7B;
 
-		 doubflo Mom000 = f7ZERO + f7W + f7E + f7N + f7S + f7T + f7B; //1
-         doubflo Mom100 = f7E - f7W;
-         doubflo Mom010 = f7N - f7S;
-         doubflo Mom001 = f7T - f7B;
-         doubflo Mom222 = six*f7ZERO - f7W - f7E - f7N - f7S - f7T - f7B;
-         doubflo Mom200 = two*f7W + two*f7E - f7N - f7S - f7T - f7B;
-         doubflo Mom022 = f7N + f7S - f7T - f7B;
+		 real Mom000 = f7ZERO + f7W + f7E + f7N + f7S + f7T + f7B; //1
+         real Mom100 = f7E - f7W;
+         real Mom010 = f7N - f7S;
+         real Mom001 = f7T - f7B;
+         real Mom222 = six*f7ZERO - f7W - f7E - f7N - f7S - f7T - f7B;
+         real Mom200 = two*f7W + two*f7E - f7N - f7S - f7T - f7B;
+         real Mom022 = f7N + f7S - f7T - f7B;
 
-         doubflo Meq000 = ConcD;
-         doubflo Meq100 = ConcD*vx;
-         doubflo Meq010 = ConcD*vy;
-         doubflo Meq001 = ConcD*vz;
-         doubflo Meq222 = c3o4*ConcD;
-         doubflo Meq200 = zero;
-         doubflo Meq022 = zero;
+         real Meq000 = ConcD;
+         real Meq100 = ConcD*vx;
+         real Meq010 = ConcD*vy;
+         real Meq001 = ConcD*vz;
+         real Meq222 = c3o4*ConcD;
+         real Meq200 = zero;
+         real Meq022 = zero;
 
          // relaxation TRT Yoshida
 

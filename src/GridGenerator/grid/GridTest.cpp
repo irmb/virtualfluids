@@ -7,7 +7,7 @@
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
 
 
-std::vector<Vertex> getPointsInBoundingBox(Triangle t, doubflo delta)
+std::vector<Vertex> getPointsInBoundingBox(Triangle t, real delta)
 {
 	int x, y, z;
 	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(t);
@@ -17,7 +17,7 @@ std::vector<Vertex> getPointsInBoundingBox(Triangle t, doubflo delta)
 	for (x = box.minX; x <= box.maxX; x++) {
 		for (y = box.minY; y <= box.maxY; y++) {
 			for (z = box.minZ; z <= box.maxZ; z++) {
-				points.push_back(Vertex((doubflo)x, (doubflo)y, (doubflo)z));
+				points.push_back(Vertex((real)x, (real)y, (real)z));
 			}
 		}
 	}

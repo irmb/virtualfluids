@@ -14,6 +14,8 @@
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
+#include "core/PointerDefinitions.h"
+#include "VirtualFluidsDefinitions.h"
 
 //struct
 struct ParameterStruct{
@@ -31,8 +33,8 @@ struct ParameterStruct{
 	//thermo//////////////////
 	Distributions7 d7;
 	Distributions27 d27;
-	doubflo *Conc, *Conc_Full;
-	doubflo diffusivity;
+	real *Conc, *Conc_Full;
+	real diffusivity;
 	//BC NoSlip
 	TempforBoundaryConditions Temp;
 	//BC Velocity
@@ -40,16 +42,16 @@ struct ParameterStruct{
 	//BC Pressure
 	TempPressforBoundaryConditions TempPress;
 	//Plane Conc
-	doubflo *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
+	real *ConcPlaneIn, *ConcPlaneOut1, *ConcPlaneOut2;
 	std::vector<double> PlaneConcVectorIn, PlaneConcVectorOut1, PlaneConcVectorOut2;
 
 	//trafo///////////////////
-	doubflo mTtoWx, mTtoWy, mTtoWz;
-	doubflo cTtoWx, cTtoWy, cTtoWz;
+	real mTtoWx, mTtoWy, mTtoWz;
+	real cTtoWx, cTtoWy, cTtoWz;
 
 	//MGstrafo////////////////
-	doubflo cStartx, cStarty, cStartz;
-	doubflo cFx, cFy, cFz;
+	real cStartx, cStarty, cStartz;
+	real cFx, cFy, cFz;
 
 	//geo/////////////////////
 	int *geo;
@@ -64,22 +66,22 @@ struct ParameterStruct{
 
 	//coordinates////////////
 	//unsigned int *coordX_SP, *coordY_SP, *coordZ_SP;
-	doubflo *coordX_SP, *coordY_SP, *coordZ_SP;
+	real *coordX_SP, *coordY_SP, *coordZ_SP;
 
 	//vel parab///////////////
-	doubflo *vParab;
+	real *vParab;
 
 	// turbulent viscosity ///
-	doubflo *turbViscosity;
+	real *turbViscosity;
 
 	//macroscopic values//////
-	doubflo *vx,    *vy,    *vz,    *rho;
-	doubflo *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
-	doubflo vis, omega;
+	real *vx,    *vy,    *vz,    *rho;
+	real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
+	real vis, omega;
 
 	//median-macro-values/////
-	doubflo *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
-	doubflo *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
+	real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
+	real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
 
 	//grid////////////////////
 	unsigned int nx, ny, nz;
@@ -106,19 +108,19 @@ struct ParameterStruct{
 	bool isSetPress;
 
 	//memsizeSP/////////////////
-	unsigned int mem_size_doubflo_SP;
+	unsigned int mem_size_real_SP;
 	unsigned int mem_size_int_SP;
 
 	//memsize/////////////////
-	unsigned int mem_size_doubflo;
+	unsigned int mem_size_real;
 	unsigned int mem_size_int;
 	unsigned int mem_size_bool;
-	unsigned int mem_size_doubflo_yz;
+	unsigned int mem_size_real_yz;
 
 	//print///////////////////
 	unsigned int startz, endz;
-	doubflo Lx,Ly,Lz,dx;
-	doubflo distX, distY, distZ;
+	real Lx,Ly,Lz,dx;
+	real distX, distY, distZ;
 
 	//interface////////////////
 	bool need_interface[6];
@@ -156,17 +158,17 @@ struct ParameterStruct{
 
 	//////////////////////////////////////////////////////////////////////////
 	//velocities to fit the force
-	doubflo *VxForce, *VyForce, *VzForce;
+	real *VxForce, *VyForce, *VzForce;
 	//////////////////////////////////////////////////////////////////////////
 
 	//Measure Points/////////
 	std::vector<MeasurePoints> MP; 
 	unsigned int* kMP;
-	doubflo* VxMP;
-	doubflo* VyMP;
-	doubflo* VzMP;
-	doubflo* RhoMP;
-	unsigned int memSizeDoubflokMP, memSizeIntkMP,    numberOfPointskMP;
+	real* VxMP;
+	real* VyMP;
+	real* VzMP;
+	real* RhoMP;
+	unsigned int memSizerealkMP, memSizeIntkMP,    numberOfPointskMP;
 	unsigned int numberOfValuesMP;
 
 	//Drag Lift//////////////
@@ -178,13 +180,13 @@ struct ParameterStruct{
 	std::vector<double> DragZvector;
 
 	//2ndMoments////////////
-	doubflo *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
+	real *kxyFromfcNEQ, *kyzFromfcNEQ, *kxzFromfcNEQ, *kxxMyyFromfcNEQ, *kxxMzzFromfcNEQ;
 
 	//3rdMoments////////////
-	doubflo *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
+	real *CUMbbb, *CUMabc, *CUMbac, *CUMbca, *CUMcba, *CUMacb, *CUMcab;
 																				
 	//HigherMoments/////////
-	doubflo *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
+	real *CUMcbb, *CUMbcb, *CUMbbc, *CUMcca, *CUMcac, *CUMacc, *CUMbcc, *CUMcbc, *CUMccb, *CUMccc;
 
 	//CpTop/////////////////													
 	int *cpTopIndex;															
@@ -213,7 +215,7 @@ struct ParameterStruct{
 	unsigned int numberOfPointsConc;
 
 	//deltaPhi
-	doubflo deltaPhi;
+	real deltaPhi;
 
 	////////////////////////////////////////////////////////////////////////////
 	//particles
@@ -264,13 +266,15 @@ struct ParameterStruct{
 	////////////////////////////////////////////////////////////////////////////
 };
 
-class Parameter
+class VF_PUBLIC Parameter
 {
 public:
 	////////////////////////////////////////////////////////////////////////////
 	////really ugly...should be in private...
 	//Parameter();
 	////////////////////////////////////////////////////////////////////////////
+    static SPtr<Parameter> make();
+
 
 	static Parameter* getInstanz();
 	ParameterStruct* getParH(int level);
@@ -543,9 +547,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//setter
-	void setForcing(doubflo forcingX, doubflo forcingY, doubflo forcingZ);
-	void setPhi(doubflo inPhi);
-	void setAngularVelocity(doubflo inAngVel);
+	void setForcing(real forcingX, real forcingY, real forcingZ);
+	void setPhi(real inPhi);
+	void setAngularVelocity(real inAngVel);
 	void setStepEnsight(unsigned int step);
 	void setOutputCount(unsigned int outputCount);
 	void setlimitOfNodesForVTK(unsigned int limitOfNodesForVTK);
@@ -553,15 +557,15 @@ public:
 	void setSizeMatSparse(int level);
 	void setDiffOn(bool isDiff);
 	void setDiffMod(int DiffMod);
-	void setDiffusivity(doubflo Diffusivity);
+	void setDiffusivity(real Diffusivity);
 	void setD3Qxx(int d3qxx);
 	void setMaxLevel(int maxlevel);
 	void setParticleBasicLevel(int pbl);
 	void setParticleInitLevel(int pil);
 	void setNumberOfParticles(int nop);
 	void setCalcParticles(bool calcParticles);
-	void setStartXHotWall(doubflo startXHotWall);
-	void setEndXHotWall(doubflo endXHotWall);
+	void setStartXHotWall(real startXHotWall);
+	void setEndXHotWall(real endXHotWall);
 	void setTEnd(unsigned int tend);
 	void setTOut(unsigned int tout);
 	void setTStartOut(unsigned int tStartOut);
@@ -641,18 +645,18 @@ public:
 	void setConcentration(std::string concFile);
 	void setPrintFiles(bool printfiles);
 	void setReadGeo(bool readGeo);
-	void setTemperatureInit(doubflo Temp);
-	void setTemperatureBC(doubflo TempBC);
-	void setViscosity(doubflo Viscosity);
-	void setVelocity(doubflo Velocity);
-	void setViscosityRatio(doubflo ViscosityRatio);
-	void setVelocityRatio(doubflo VelocityRatio);
-	void setDensityRatio(doubflo DensityRatio);
-	void setPressRatio(doubflo PressRatio);
-	void setRealX(doubflo RealX);
-	void setRealY(doubflo RealY);
-	void setRe(doubflo Re);
-	void setFactorPressBC(doubflo factorPressBC);
+	void setTemperatureInit(real Temp);
+	void setTemperatureBC(real TempBC);
+	void setViscosity(real Viscosity);
+	void setVelocity(real Velocity);
+	void setViscosityRatio(real ViscosityRatio);
+	void setVelocityRatio(real VelocityRatio);
+	void setDensityRatio(real DensityRatio);
+	void setPressRatio(real PressRatio);
+	void setRealX(real RealX);
+	void setRealY(real RealY);
+	void setRe(real Re);
+	void setFactorPressBC(real factorPressBC);
 	void setIsGeo(bool isGeo);
 	void setIsGeoNormal(bool isGeoNormal);
 	void setIsInflowNormal(bool isInflowNormal);
@@ -663,7 +667,7 @@ public:
 	void setUseMeasurePoints(bool useMeasurePoints);
 	void setUseWale(bool useWale);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
-	void setclockCycleForMP(doubflo clockCycleForMP);
+	void setclockCycleForMP(real clockCycleForMP);
 	void setDevices(std::vector<int> devices);
 	void setGridX(std::vector<int> GridX);
 	void setGridY(std::vector<int> GridY);
@@ -671,14 +675,14 @@ public:
 	void setDistX(std::vector<int> DistX);
 	void setDistY(std::vector<int> DistY);
 	void setDistZ(std::vector<int> DistZ);
-	void setScaleLBMtoSI(std::vector<doubflo> scaleLBMtoSI);
-	void setTranslateLBMtoSI(std::vector<doubflo> translateLBMtoSI);
-	void setMinCoordX(std::vector<doubflo> MinCoordX);
-	void setMinCoordY(std::vector<doubflo> MinCoordY);
-	void setMinCoordZ(std::vector<doubflo> MinCoordZ);
-	void setMaxCoordX(std::vector<doubflo> MaxCoordX);
-	void setMaxCoordY(std::vector<doubflo> MaxCoordY);
-	void setMaxCoordZ(std::vector<doubflo> MaxCoordZ);
+	void setScaleLBMtoSI(std::vector<real> scaleLBMtoSI);
+	void setTranslateLBMtoSI(std::vector<real> translateLBMtoSI);
+	void setMinCoordX(std::vector<real> MinCoordX);
+	void setMinCoordY(std::vector<real> MinCoordY);
+	void setMinCoordZ(std::vector<real> MinCoordZ);
+	void setMaxCoordX(std::vector<real> MaxCoordX);
+	void setMaxCoordY(std::vector<real> MaxCoordY);
+	void setMaxCoordZ(std::vector<real> MaxCoordZ);
 	void setNeedInterface(std::vector<bool> NeedInterface);
 	void setTempH(TempforBoundaryConditions* TempH);
 	void setTempD(TempforBoundaryConditions* TempD);
@@ -729,12 +733,12 @@ public:
 
 	//getter
 	double* getForcesDouble();
-	doubflo* getForcesHost();
-	doubflo* getForcesDev();
-	doubflo getPhi();
-	doubflo getAngularVelocity();
-	doubflo getStartXHotWall();
-	doubflo getEndXHotWall();	
+	real* getForcesHost();
+	real* getForcesDev();
+	real getPhi();
+	real getAngularVelocity();
+	real getStartXHotWall();
+	real getEndXHotWall();	
 	unsigned int getStepEnsight();
 	unsigned int getOutputCount();
 	unsigned int getlimitOfNodesForVTK();
@@ -826,10 +830,10 @@ public:
 	unsigned int getPressOutID();
 	unsigned int getPressInZ();
 	unsigned int getPressOutZ();
-	unsigned int getMemSizedoubflo(int level);
+	unsigned int getMemSizereal(int level);
 	unsigned int getMemSizeInt(int level);
 	unsigned int getMemSizeBool(int level);
-	unsigned int getMemSizedoubfloYZ(int level);
+	unsigned int getMemSizerealYZ(int level);
 	unsigned int getSizeMat(int level);
 	unsigned int getTStart();
 	unsigned int getTInit();
@@ -837,20 +841,20 @@ public:
 	unsigned int getTOut();
 	unsigned int getTStartOut();
 	unsigned int getTimestepForMP();
-	doubflo getDiffusivity();
-	doubflo getTemperatureInit();
-	doubflo getTemperatureBC();
-	doubflo getViscosity();
-	doubflo getVelocity();
-	doubflo getViscosityRatio();
-	doubflo getVelocityRatio();
-	doubflo getDensityRatio();
-	doubflo getPressRatio();
-	doubflo getRealX();
-	doubflo getRealY();
-	doubflo getRe();
-	doubflo getFactorPressBC();
-	doubflo getclockCycleForMP();
+	real getDiffusivity();
+	real getTemperatureInit();
+	real getTemperatureBC();
+	real getViscosity();
+	real getVelocity();
+	real getViscosityRatio();
+	real getVelocityRatio();
+	real getDensityRatio();
+	real getPressRatio();
+	real getRealX();
+	real getRealY();
+	real getRe();
+	real getFactorPressBC();
+	real getclockCycleForMP();
 	std::vector<int> getDevices();
 	std::vector<int> getGridX();
 	std::vector<int> getGridY();
@@ -858,14 +862,14 @@ public:
 	std::vector<int> getDistX();
 	std::vector<int> getDistY();
 	std::vector<int> getDistZ();
-	std::vector<doubflo> getScaleLBMtoSI();
-	std::vector<doubflo> getTranslateLBMtoSI();
-	std::vector<doubflo> getMinCoordX();
-	std::vector<doubflo> getMinCoordY();
-	std::vector<doubflo> getMinCoordZ();
-	std::vector<doubflo> getMaxCoordX();
-	std::vector<doubflo> getMaxCoordY();
-	std::vector<doubflo> getMaxCoordZ();
+	std::vector<real> getScaleLBMtoSI();
+	std::vector<real> getTranslateLBMtoSI();
+	std::vector<real> getMinCoordX();
+	std::vector<real> getMinCoordY();
+	std::vector<real> getMinCoordZ();
+	std::vector<real> getMaxCoordX();
+	std::vector<real> getMaxCoordY();
+	std::vector<real> getMaxCoordZ();
 	std::vector<bool> getNeedInterface();
 	TempforBoundaryConditions* getTempH();
 	TempforBoundaryConditions* getTempD();
@@ -921,7 +925,10 @@ public:
 	curandState* getRandomState();
 
 
-
+    public:
+        //Forcing///////////////
+        real *forcingH, *forcingD;
+        double hostForcing[3];
 
 protected:
 private:
@@ -941,8 +948,8 @@ private:
 	int particleBasicLevel, particleInitLevel;
 	int numberOfParticles;
 	bool calcParticles;
-	doubflo stickToSolid;
-	doubflo startXHotWall, endXHotWall;
+	real stickToSolid;
+	real startXHotWall, endXHotWall;
 	//////////////////////////////////////////////////////////////////////////
 	//CUDA random number generation
 	curandState* devState;
@@ -956,15 +963,11 @@ private:
 	TempPressforBoundaryConditions *TempPressH, *TempPressD;
 
 	//Drehung///////////////
-	doubflo Phi, angularVelocity;
+	real Phi, angularVelocity;
 	unsigned int startTurn;
 
 	//Step of Ensight writing//
 	unsigned int stepEnsight;
-
-	//Forcing///////////////
-	doubflo *forcingH, *forcingD;
-	double hostForcing[3];
 
 	std::vector<ParameterStruct*> parH;
 	std::vector<ParameterStruct*> parD;
@@ -973,12 +976,12 @@ private:
 	Parameter();
 	Parameter(const Parameter&);
 	void initInterfaceParameter(int level);
-	doubflo TrafoXtoWorld(int CoordX, int level);
-	doubflo TrafoYtoWorld(int CoordY, int level);
-	doubflo TrafoZtoWorld(int CoordZ, int level);
-	doubflo TrafoXtoMGsWorld(int CoordX, int level);
-	doubflo TrafoYtoMGsWorld(int CoordY, int level);
-	doubflo TrafoZtoMGsWorld(int CoordZ, int level);
+	real TrafoXtoWorld(int CoordX, int level);
+	real TrafoYtoWorld(int CoordY, int level);
+	real TrafoZtoWorld(int CoordZ, int level);
+	real TrafoXtoMGsWorld(int CoordX, int level);
+	real TrafoYtoMGsWorld(int CoordY, int level);
+	real TrafoZtoMGsWorld(int CoordZ, int level);
 
 	//Multi GPGPU///////////////
 	//1D domain decomposition

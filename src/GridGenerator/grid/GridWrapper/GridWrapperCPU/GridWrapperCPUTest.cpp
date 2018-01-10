@@ -29,9 +29,9 @@
 //        for (z = min; z <= max; z++)
 //        {
 //            x = min;
-//            EXPECT_THAT(grid.getFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z)), Eq(expectedNode));
+//            EXPECT_THAT(grid.getFieldEntry(Vertex((real)x, (real)y, (real)z)), Eq(expectedNode));
 //            x = max;
-//            EXPECT_THAT(grid.getFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z)), Eq(expectedNode));
+//            EXPECT_THAT(grid.getFieldEntry(Vertex((real)x, (real)y, (real)z)), Eq(expectedNode));
 //        }
 //    }
 //
@@ -41,9 +41,9 @@
 //        for (z = min; z <= max; z++)
 //        {
 //            y = min;
-//            EXPECT_THAT(grid.getFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z)), Eq(expectedNode));
+//            EXPECT_THAT(grid.getFieldEntry(Vertex((real)x, (real)y, (real)z)), Eq(expectedNode));
 //            y = max;
-//            EXPECT_THAT(grid.getFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z)), Eq(expectedNode));
+//            EXPECT_THAT(grid.getFieldEntry(Vertex((real)x, (real)y, (real)z)), Eq(expectedNode));
 //        }
 //    }
 //
@@ -53,9 +53,9 @@
 //        for (y = min; y <= max; y++)
 //        {
 //            z = min;
-//            EXPECT_THAT(grid.getFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z)), Eq(expectedNode));
+//            EXPECT_THAT(grid.getFieldEntry(Vertex((real)x, (real)y, (real)z)), Eq(expectedNode));
 //            z = max;
-//            EXPECT_THAT(grid.getFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z)), Eq(expectedNode));
+//            EXPECT_THAT(grid.getFieldEntry(Vertex((real)x, (real)y, (real)z)), Eq(expectedNode));
 //        }
 //    }
 //}
@@ -69,9 +69,9 @@
 //        for (z = min; z <= max; z++)
 //        {
 //            x = min;
-//            grid.setFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z), newNode);
+//            grid.setFieldEntry(Vertex((real)x, (real)y, (real)z), newNode);
 //            x = max;
-//            grid.setFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z), newNode);
+//            grid.setFieldEntry(Vertex((real)x, (real)y, (real)z), newNode);
 //        }
 //    }
 //
@@ -81,9 +81,9 @@
 //        for (z = min; z <= max; z++)
 //        {
 //            y = min;
-//            grid.setFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z), newNode);
+//            grid.setFieldEntry(Vertex((real)x, (real)y, (real)z), newNode);
 //            y = max;
-//            grid.setFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z), newNode);
+//            grid.setFieldEntry(Vertex((real)x, (real)y, (real)z), newNode);
 //        }
 //    }
 //
@@ -93,9 +93,9 @@
 //        for (y = min; y <= max; y++)
 //        {
 //            z = min;
-//            grid.setFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z), newNode);
+//            grid.setFieldEntry(Vertex((real)x, (real)y, (real)z), newNode);
 //            z = max;
-//            grid.setFieldEntry(Vertex((doubflo)x, (doubflo)y, (doubflo)z), newNode);
+//            grid.setFieldEntry(Vertex((real)x, (real)y, (real)z), newNode);
 //        }
 //    }
 //}
@@ -120,10 +120,10 @@
 //    std::vector<Triangle> triangles;
 //
 //    void SetUp() {
-//        doubflo length = 30.0f;
-//        doubflo width = 30.0f;
-//        doubflo high = 30.0f;
-//        doubflo delta = 1.0f;
+//        real length = 30.0f;
+//        real width = 30.0f;
+//        real high = 30.0f;
+//        real delta = 1.0f;
 //        Transformator trans(delta, Vertex(0.0f, 0.0f, 0.0f));
 //        std::string path = PATH_TO_DATA;
 //        std::string test = TESTSUITE;
@@ -167,7 +167,7 @@
 //
 //    verifyInitalClearGridField(gridCPU->grid);
 //
-//    /*std::vector<std::vector<doubflo> > qs_ausgeduennt = DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(*(gridCPU->grid), gridCPU->d);
+//    /*std::vector<std::vector<real> > qs_ausgeduennt = DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(*(gridCPU->grid), gridCPU->d);
 //    DistributionHelper::printQs(qs_ausgeduennt, 2);*/
 //}
 //
@@ -178,10 +178,10 @@
 //    std::vector<Triangle> triangles;
 //    
 //    void SetUp() {
-//        doubflo length = 30.0f;
-//        doubflo width = 30.0f;
-//        doubflo high = 30.0f;
-//        doubflo delta = 1.0f;
+//        real length = 30.0f;
+//        real width = 30.0f;
+//        real high = 30.0f;
+//        real delta = 1.0f;
 //        Transformator trans;
 //        std::string path = PATH_TO_DATA;
 //        std::string test = TESTSUITE;
@@ -226,13 +226,13 @@
 //TEST_F(GridKernelCubeIsBetweenNodesTest, calculateQ_validateAllQs_shouldBe_0_5_D3Q7){
 //    gridCPU->meshGrid(&triangles[0], (int)triangles.size());
 //
-//    std::vector<std::vector<doubflo> > qs_ausgeduennt = DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(gridCPU->grid, gridCPU->grid.d);
+//    std::vector<std::vector<real> > qs_ausgeduennt = DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(gridCPU->grid, gridCPU->grid.d);
 //
 //    for (int node = 0; node < qs_ausgeduennt.size(); node++) {
 //        for (int dir = DIR_7_START; dir < DIR_7_END; dir++) {
-//            doubflo q =  qs_ausgeduennt[node][dir+1];
+//            real q =  qs_ausgeduennt[node][dir+1];
 //            if (q != 0.0f){
-//                EXPECT_THAT(q, FloatEq(0.5));
+//                EXPECT_THAT(q, DoubleEq(0.5));
 //            }
 //        }
 //    }
@@ -248,10 +248,10 @@
 //    std::vector<Triangle> triangles;
 //
 //    void SetUp() {
-//        doubflo length = 30.0f;
-//        doubflo width = 30.0f;
-//        doubflo high = 30.0f;
-//        doubflo delta = 1.0f;
+//        real length = 30.0f;
+//        real width = 30.0f;
+//        real high = 30.0f;
+//        real delta = 1.0f;
 //        Transformator trans;
 //        std::string path = PATH_TO_DATA;
 //        std::string test = TESTSUITE;
@@ -276,13 +276,13 @@
 //TEST_F(GridKernelCubeIsBetweenNodesD3Q27Test, calculateQ_validateAllQs_shouldBe_0_5_D3Q27){
 //    gridCPU->meshGrid(&triangles[0], (int)triangles.size());
 //
-//    std::vector<std::vector<doubflo> > qs_ausgeduennt = DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(gridCPU->grid, gridCPU->grid.d);
+//    std::vector<std::vector<real> > qs_ausgeduennt = DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(gridCPU->grid, gridCPU->grid.d);
 //
 //    for (int node = 0; node < qs_ausgeduennt.size(); node++) {
 //        for (int dir = DIR_7_START; dir < DIR_7_END; dir++) {
-//            doubflo q = qs_ausgeduennt[node][dir + 1];
+//            real q = qs_ausgeduennt[node][dir + 1];
 //            if (q != 0.0f){
-//                EXPECT_THAT(q, FloatEq(0.5));
+//                EXPECT_THAT(q, DoubleEq(0.5));
 //            }
 //        }
 //    }
@@ -313,7 +313,7 @@
 //    ////writeArrowsToFile();
 //
 //    //UnstructuredGridWriter writer;
-//    //doubflo v1_arr[3], v2_arr[3], v3_arr[3];
+//    //real v1_arr[3], v2_arr[3], v3_arr[3];
 //    //convertVertexToArray(t.v1, v1_arr); convertVertexToArray(t.v2, v2_arr); convertVertexToArray(t.v3, v3_arr);
 //    //writer.addTriangle(v1_arr, v2_arr, v3_arr);
 //    //writer.writeUnstructuredGridToFile("triangleTest.vtu");
@@ -323,6 +323,6 @@
 //    //VertexInteger v = getVertexInt(3, 5, 5);
 //    //Distributions7 d;
 //    //int dirs = 7;
-//    //d.f[0] = new doubflo[grid.size * dirs];
+//    //d.f[0] = new real[grid.size * dirs];
 //    ////calculateQs(grid, v, t, d.f[0]);
 //}

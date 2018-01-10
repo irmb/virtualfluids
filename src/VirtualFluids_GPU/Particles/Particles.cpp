@@ -32,14 +32,14 @@ void allocParticles(Parameter* para)
 		//set memory size
 		para->getParH(lev)->plp.memSizeTimestep      = sizeof(unsigned int)*(para->getParH(lev)->plp.numberOfTimestepsParticles);
 		para->getParH(lev)->plp.memSizeID            = sizeof(unsigned int)*(para->getParH(lev)->plp.numberOfParticles);
-		para->getParH(lev)->plp.memSizeDoubflo       = sizeof(doubflo)*(para->getParH(lev)->plp.numberOfParticles);
-		para->getParH(lev)->plp.memSizeDoubfloAll	 = sizeof(doubflo)*(para->getParH(lev)->plp.numberOfParticles * para->getParH(lev)->plp.numberOfTimestepsParticles);
+		para->getParH(lev)->plp.memSizereal       = sizeof(real)*(para->getParH(lev)->plp.numberOfParticles);
+		para->getParH(lev)->plp.memSizerealAll	 = sizeof(real)*(para->getParH(lev)->plp.numberOfParticles * para->getParH(lev)->plp.numberOfTimestepsParticles);
 		para->getParH(lev)->plp.memSizeBool          = sizeof(bool)*(para->getParH(lev)->plp.numberOfParticles);
 		para->getParH(lev)->plp.memSizeBoolBC        = sizeof(bool)*(para->getParH(lev)->QGeom.kQ);//depends on Geometry!!!
 		para->getParD(lev)->plp.memSizeTimestep      = para->getParH(lev)->plp.memSizeTimestep;
 		para->getParD(lev)->plp.memSizeID            = para->getParH(lev)->plp.memSizeID;        
-		para->getParD(lev)->plp.memSizeDoubflo       = para->getParH(lev)->plp.memSizeDoubflo;
-		para->getParD(lev)->plp.memSizeDoubfloAll	 = para->getParH(lev)->plp.memSizeDoubfloAll;
+		para->getParD(lev)->plp.memSizereal       = para->getParH(lev)->plp.memSizereal;
+		para->getParD(lev)->plp.memSizerealAll	 = para->getParH(lev)->plp.memSizerealAll;
 		para->getParD(lev)->plp.memSizeBool          = para->getParH(lev)->plp.memSizeBool;
 		para->getParD(lev)->plp.memSizeBoolBC        = para->getParH(lev)->plp.memSizeBoolBC;
 		//////////////////////////////////////////////////////////////////////////
@@ -93,21 +93,21 @@ void initParticles(Parameter* para)
 		int maximumT = para->getParH(lev)->plp.numberOfParticles * para->getParH(lev)->plp.numberOfTimestepsParticles;
 		for (int i = 0; i < maximumT; i++)
 		{
-			para->getParH(lev)->plp.coordXlocal[i]   = (doubflo)0.0;
-			para->getParH(lev)->plp.coordYlocal[i]   = (doubflo)0.0; 
-			para->getParH(lev)->plp.coordZlocal[i]   = (doubflo)0.0; 
-			para->getParH(lev)->plp.coordXabsolut[i] = (doubflo)0.0; 
-			para->getParH(lev)->plp.coordYabsolut[i] = (doubflo)0.0; 
-			para->getParH(lev)->plp.coordZabsolut[i] = (doubflo)0.0; 
-			para->getParH(lev)->plp.veloX[i]         = (doubflo)0.0; 
-			para->getParH(lev)->plp.veloY[i]         = (doubflo)0.0; 
-			para->getParH(lev)->plp.veloZ[i]         = (doubflo)0.0; 
+			para->getParH(lev)->plp.coordXlocal[i]   = (real)0.0;
+			para->getParH(lev)->plp.coordYlocal[i]   = (real)0.0; 
+			para->getParH(lev)->plp.coordZlocal[i]   = (real)0.0; 
+			para->getParH(lev)->plp.coordXabsolut[i] = (real)0.0; 
+			para->getParH(lev)->plp.coordYabsolut[i] = (real)0.0; 
+			para->getParH(lev)->plp.coordZabsolut[i] = (real)0.0; 
+			para->getParH(lev)->plp.veloX[i]         = (real)0.0; 
+			para->getParH(lev)->plp.veloY[i]         = (real)0.0; 
+			para->getParH(lev)->plp.veloZ[i]         = (real)0.0; 
 		}
 		//////////////////////////////////////////////////////////////////////////
-		doubflo centerX  =  1.0f;					//uebergabeparameter
-		doubflo centerY  = 10.5f;					//uebergabeparameter
-		doubflo centerZ  = 10.5f;					//uebergabeparameter
-		doubflo diameter = 15.0f;//21.0f;					//uebergabeparameter
+		real centerX  =  1.0f;					//uebergabeparameter
+		real centerY  = 10.5f;					//uebergabeparameter
+		real centerZ  = 10.5f;					//uebergabeparameter
+		real diameter = 15.0f;//21.0f;					//uebergabeparameter
 		unsigned int numberOfParticleSizes = 41;	//uebergabeparameter
 		//////////////////////////////////////////////////////////////////////////
 		//random
@@ -121,7 +121,7 @@ void initParticles(Parameter* para)
 		std::vector< double > zCoordVec;
 		double dist;
 		//////////////////////////////////////////////////////////////////////////
-		doubflo dx = (doubflo)(1.0/pow(2,lev));
+		real dx = (real)(1.0/pow(2,lev));
 		std::vector< int > tempID;
 		//////////////////////////////////////////////////////////////////////////
 
@@ -136,9 +136,9 @@ void initParticles(Parameter* para)
 			{
 				zCoordVec[i] = sqrt(pow((diameter/2),2) - pow((yCoordVec[i]-centerY),2)) + centerZ;
 			}
-			para->getParH(lev)->plp.coordXabsolut[i] = (doubflo)2.0; 
-			para->getParH(lev)->plp.coordYabsolut[i] = (doubflo)yCoordVec[i]; 
-			para->getParH(lev)->plp.coordZabsolut[i] = (doubflo)zCoordVec[i]; 
+			para->getParH(lev)->plp.coordXabsolut[i] = (real)2.0; 
+			para->getParH(lev)->plp.coordYabsolut[i] = (real)yCoordVec[i]; 
+			para->getParH(lev)->plp.coordZabsolut[i] = (real)zCoordVec[i]; 
 
 			// find IDs
 			for (unsigned int ii = 0; ii < para->getParH(lev)->size_Mat_SP; ii++)
@@ -256,15 +256,15 @@ void initParticles(Parameter* para)
 		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.stuck,         para->getParH(lev)->plp.stuck,         para->getParH(lev)->plp.memSizeBool,       cudaMemcpyHostToDevice));
 		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.ID,            para->getParH(lev)->plp.ID,            para->getParH(lev)->plp.memSizeID,         cudaMemcpyHostToDevice));
 		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.cellBaseID,    para->getParH(lev)->plp.cellBaseID,    para->getParH(lev)->plp.memSizeID,         cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXlocal,   para->getParH(lev)->plp.coordXlocal,   para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYlocal,   para->getParH(lev)->plp.coordYlocal,   para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZlocal,   para->getParH(lev)->plp.coordZlocal,   para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXabsolut, para->getParH(lev)->plp.coordXabsolut, para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYabsolut, para->getParH(lev)->plp.coordYabsolut, para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZabsolut, para->getParH(lev)->plp.coordZabsolut, para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloX,         para->getParH(lev)->plp.veloX,         para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloY,         para->getParH(lev)->plp.veloY,         para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloZ,         para->getParH(lev)->plp.veloZ,         para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXlocal,   para->getParH(lev)->plp.coordXlocal,   para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYlocal,   para->getParH(lev)->plp.coordYlocal,   para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZlocal,   para->getParH(lev)->plp.coordZlocal,   para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXabsolut, para->getParH(lev)->plp.coordXabsolut, para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYabsolut, para->getParH(lev)->plp.coordYabsolut, para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZabsolut, para->getParH(lev)->plp.coordZabsolut, para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloX,         para->getParH(lev)->plp.veloX,         para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloY,         para->getParH(lev)->plp.veloY,         para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+		checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloZ,         para->getParH(lev)->plp.veloZ,         para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
 		////////////////////////////////////////////////////////////////////////////
 		////put some particles in the flow domain
 		//InitParticlesDevice(para->getParD(lev)->coordX_SP,
@@ -418,15 +418,15 @@ void copyAndPrintParticles(Parameter* para, unsigned int t, bool isInit)
 			//para->getParH(lev)->plp.veloY[0]         = para->getParH(lev)->plp.veloY[maximumT]        ; 
 			//para->getParH(lev)->plp.veloZ[0]         = para->getParH(lev)->plp.veloZ[maximumT]        ; 
 			//////////////////////////////////////////////////////////////////////////
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXlocal,   para->getParH(lev)->plp.coordXlocal,   para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYlocal,   para->getParH(lev)->plp.coordYlocal,   para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZlocal,   para->getParH(lev)->plp.coordZlocal,   para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXabsolut, para->getParH(lev)->plp.coordXabsolut, para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYabsolut, para->getParH(lev)->plp.coordYabsolut, para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZabsolut, para->getParH(lev)->plp.coordZabsolut, para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloX,         para->getParH(lev)->plp.veloX,         para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloY,         para->getParH(lev)->plp.veloY,         para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
-			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloZ,         para->getParH(lev)->plp.veloZ,         para->getParH(lev)->plp.memSizeDoubfloAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXlocal,   para->getParH(lev)->plp.coordXlocal,   para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYlocal,   para->getParH(lev)->plp.coordYlocal,   para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZlocal,   para->getParH(lev)->plp.coordZlocal,   para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordXabsolut, para->getParH(lev)->plp.coordXabsolut, para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordYabsolut, para->getParH(lev)->plp.coordYabsolut, para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.coordZabsolut, para->getParH(lev)->plp.coordZabsolut, para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloX,         para->getParH(lev)->plp.veloX,         para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloY,         para->getParH(lev)->plp.veloY,         para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
+			checkCudaErrors( cudaMemcpy(para->getParD(lev)->plp.veloZ,         para->getParH(lev)->plp.veloZ,         para->getParH(lev)->plp.memSizerealAll, cudaMemcpyHostToDevice));
 			////////////////////////////////////////////////////////////////////////////
 		}
 	}

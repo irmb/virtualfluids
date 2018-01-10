@@ -3,12 +3,12 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void GetVeloforForcing27( doubflo* DD, 
+extern "C" __global__ void GetVeloforForcing27( real* DD, 
 												int* bcIndex, 
 												int nonAtBC, 
-												doubflo* Vx,
-												doubflo* Vy,
-												doubflo* Vz,
+												real* Vx,
+												real* Vy,
+												real* Vz,
 												unsigned int* neighborX,
 												unsigned int* neighborY,
 												unsigned int* neighborZ,
@@ -119,45 +119,45 @@ extern "C" __global__ void GetVeloforForcing27( doubflo* DD,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo mfcbb = (D.f[dirE   ])[ke   ];
-		doubflo mfabb = (D.f[dirW   ])[kw   ];
-		doubflo mfbcb = (D.f[dirN   ])[kn   ];
-		doubflo mfbab = (D.f[dirS   ])[ks   ];
-		doubflo mfbbc = (D.f[dirT   ])[kt   ];
-		doubflo mfbba = (D.f[dirB   ])[kb   ];
-		doubflo mfccb = (D.f[dirNE  ])[kne  ];
-		doubflo mfaab = (D.f[dirSW  ])[ksw  ];
-		doubflo mfcab = (D.f[dirSE  ])[kse  ];
-		doubflo mfacb = (D.f[dirNW  ])[knw  ];
-		doubflo mfcbc = (D.f[dirTE  ])[kte  ];
-		doubflo mfaba = (D.f[dirBW  ])[kbw  ];
-		doubflo mfcba = (D.f[dirBE  ])[kbe  ];
-		doubflo mfabc = (D.f[dirTW  ])[ktw  ];
-		doubflo mfbcc = (D.f[dirTN  ])[ktn  ];
-		doubflo mfbaa = (D.f[dirBS  ])[kbs  ];
-		doubflo mfbca = (D.f[dirBN  ])[kbn  ];
-		doubflo mfbac = (D.f[dirTS  ])[kts  ];
-		doubflo mfbbb = (D.f[dirZERO])[kzero];
-		doubflo mfccc = (D.f[dirTNE ])[ktne ];
-		doubflo mfaac = (D.f[dirTSW ])[ktsw ];
-		doubflo mfcac = (D.f[dirTSE ])[ktse ];
-		doubflo mfacc = (D.f[dirTNW ])[ktnw ];
-		doubflo mfcca = (D.f[dirBNE ])[kbne ];
-		doubflo mfaaa = (D.f[dirBSW ])[kbsw ];
-		doubflo mfcaa = (D.f[dirBSE ])[kbse ];
-		doubflo mfaca = (D.f[dirBNW ])[kbnw ];
+		real mfcbb = (D.f[dirE   ])[ke   ];
+		real mfabb = (D.f[dirW   ])[kw   ];
+		real mfbcb = (D.f[dirN   ])[kn   ];
+		real mfbab = (D.f[dirS   ])[ks   ];
+		real mfbbc = (D.f[dirT   ])[kt   ];
+		real mfbba = (D.f[dirB   ])[kb   ];
+		real mfccb = (D.f[dirNE  ])[kne  ];
+		real mfaab = (D.f[dirSW  ])[ksw  ];
+		real mfcab = (D.f[dirSE  ])[kse  ];
+		real mfacb = (D.f[dirNW  ])[knw  ];
+		real mfcbc = (D.f[dirTE  ])[kte  ];
+		real mfaba = (D.f[dirBW  ])[kbw  ];
+		real mfcba = (D.f[dirBE  ])[kbe  ];
+		real mfabc = (D.f[dirTW  ])[ktw  ];
+		real mfbcc = (D.f[dirTN  ])[ktn  ];
+		real mfbaa = (D.f[dirBS  ])[kbs  ];
+		real mfbca = (D.f[dirBN  ])[kbn  ];
+		real mfbac = (D.f[dirTS  ])[kts  ];
+		real mfbbb = (D.f[dirZERO])[kzero];
+		real mfccc = (D.f[dirTNE ])[ktne ];
+		real mfaac = (D.f[dirTSW ])[ktsw ];
+		real mfcac = (D.f[dirTSE ])[ktse ];
+		real mfacc = (D.f[dirTNW ])[ktnw ];
+		real mfcca = (D.f[dirBNE ])[kbne ];
+		real mfaaa = (D.f[dirBSW ])[kbsw ];
+		real mfcaa = (D.f[dirBSE ])[kbse ];
+		real mfaca = (D.f[dirBNW ])[kbnw ];
 		////////////////////////////////////////////////////////////////////////////////////
-		doubflo rho   = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+		real rho   = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 					 	 mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 						 mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb + one);//!!!!Achtung + one
 		////////////////////////////////////////////////////////////////////////////////////
-		doubflo vx =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+		real vx =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 			         (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 				       (mfcbb-mfabb))/ rho;
-		doubflo vy =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+		real vy =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 			         (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 			           (mfbcb-mfbab)) / rho;
-		doubflo vz =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+		real vz =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 			         (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 			           (mfbbc-mfbba)) / rho;
 		////////////////////////////////////////////////////////////////////////////////////

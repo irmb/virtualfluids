@@ -75,7 +75,7 @@ void Communicator::exchngDataNB( float* sbuf_t, int count_st, float* rbuf_t, int
 }
 //////////////////////////////////////////////////////////////////////////
 //Crap by Martin Sch.
-void Communicator::exchngDataGPU( doubflo* sbuf, int count_s, doubflo* rbuf, int count_r, int nb_rank )
+void Communicator::exchngDataGPU( real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank )
 {
 	MPI_Status MSstatus;
 	MPI_Send(sbuf, count_s, MPI_Type_GPU, nb_rank, 0, commGPU);
@@ -83,12 +83,12 @@ void Communicator::exchngDataGPU( doubflo* sbuf, int count_s, doubflo* rbuf, int
 	////test only - please don't use
 	//MPI_Sendrecv(sbuf, count_s, MPI_Type_GPU, nb_rank, 0, rbuf, count_r, MPI_Type_GPU, nb_rank, 0, comm1d, MPI_STATUSES_IGNORE);
 }
-void Communicator::sendRecvGPU( doubflo* sbuf, int count_s, doubflo* rbuf, int count_r, int nb_rank )
+void Communicator::sendRecvGPU( real* sbuf, int count_s, real* rbuf, int count_r, int nb_rank )
 {
 	//test only - please don't use
 	MPI_Sendrecv(sbuf, count_s, MPI_Type_GPU, nb_rank, 0, rbuf, count_r, MPI_Type_GPU, nb_rank, 0, commGPU, MPI_STATUSES_IGNORE);
 }
-void Communicator::nbRecvDataGPU( doubflo* rbuf, int count_r, int nb_rank )
+void Communicator::nbRecvDataGPU( real* rbuf, int count_r, int nb_rank )
 {
 	//printf("\n Start Recv Rank: %d, neighbor Rank: %d, request = %d \n", PID, nb_rank, (int)requestGPU.size());
 	//fflush(stdout);
@@ -100,7 +100,7 @@ void Communicator::nbRecvDataGPU( doubflo* rbuf, int count_r, int nb_rank )
 	//printf("\n End Recv - Rank: %d , neighbor Rank: %d \n", PID, nb_rank);  
 	//fflush(stdout);
 }
-void Communicator::nbSendDataGPU( doubflo* sbuf, int count_s, int nb_rank )
+void Communicator::nbSendDataGPU( real* sbuf, int count_s, int nb_rank )
 {
 	//printf("\n Start Send Rank: %d, neighbor Rank: %d, request = %d \n", PID, nb_rank, (int)requestGPU.size());
 	//fflush(stdout);
@@ -125,7 +125,7 @@ void Communicator::waitallGPU()
 	//printf("\n End Waitall \n");
 	//fflush(stdout);
 }
-void Communicator::sendDataGPU( doubflo* sbuf, int count_s, int nb_rank )
+void Communicator::sendDataGPU( real* sbuf, int count_s, int nb_rank )
 {
 	MPI_Send(sbuf, count_s, MPI_Type_GPU, nb_rank, 0, commGPU);
 }

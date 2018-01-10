@@ -110,7 +110,7 @@ void findBC27(Parameter* para)
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////North
    //unsigned int mem_size_N_Q_k = sizeof(int)*QnH.kQ;
-   //unsigned int mem_size_N_Q_q = sizeof(doubflo)*QnH.kQ;
+   //unsigned int mem_size_N_Q_q = sizeof(real)*QnH.kQ;
    //kNQ = QnH.kQ;
    //printf("kNQ= %d\n",kNQ);
    //cudaHostMemoryAllocate((void**) &QnH.q27[0], para->getD3Qxx()*mem_size_N_Q_q );
@@ -122,7 +122,7 @@ void findBC27(Parameter* para)
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////South
    //unsigned int mem_size_S_Q_k = sizeof(int)*QsH.kQ;
-   //unsigned int mem_size_S_Q_q = sizeof(doubflo)*QsH.kQ;
+   //unsigned int mem_size_S_Q_q = sizeof(real)*QsH.kQ;
    //kSQ = QsH.kQ;
    //printf("kSQ= %d\n",kSQ);
    //cudaHostMemoryAllocate((void**) &QsH.q27[0], para->getD3Qxx()*mem_size_S_Q_q );
@@ -134,7 +134,7 @@ void findBC27(Parameter* para)
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////East
    //unsigned int mem_size_E_Q_k = sizeof(int)*QeH.kQ;
-   //unsigned int mem_size_E_Q_q = sizeof(doubflo)*QeH.kQ;
+   //unsigned int mem_size_E_Q_q = sizeof(real)*QeH.kQ;
    //kEQ = QeH.kQ;
    //printf("kEQ= %d\n",kEQ);
    //cudaHostMemoryAllocate((void**) &QeH.q27[0], para->getD3Qxx()*mem_size_E_Q_q );
@@ -146,7 +146,7 @@ void findBC27(Parameter* para)
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    ////West
    //unsigned int mem_size_W_Q_k = sizeof(int)*QwH.kQ;
-   //unsigned int mem_size_W_Q_q = sizeof(doubflo)*QwH.kQ;
+   //unsigned int mem_size_W_Q_q = sizeof(real)*QwH.kQ;
    //kWQ = QwH.kQ;
    //printf("kWQ= %d\n",kWQ);
    //cudaHostMemoryAllocate((void**) &QwH.q27[0], para->getD3Qxx()*mem_size_W_Q_q );

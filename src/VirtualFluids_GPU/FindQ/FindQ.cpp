@@ -9,7 +9,7 @@ void findQ(Parameter* para, int lev)
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   doubflo ON[27];
+   real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m, mm, l;
    int nx                       = para->getParH(lev)->nx;    
@@ -20,7 +20,7 @@ void findQ(Parameter* para, int lev)
    int* geo_mat                 = para->getParH(lev)->geo;
    unsigned int* kk             = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ           = para->getParH(lev)->kQ; 
-   doubflo* QQ                  = para->getParH(lev)->QWall.q27[0]; 
+   real* QQ                  = para->getParH(lev)->QWall.q27[0]; 
    QforBoundaryConditions &QIN  = para->getParH(lev)->QWall;
    QIN.kQ = 0;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ void findQ(Parameter* para, int lev)
    //unsigned int centerX = nnx / 2;
    //unsigned int centerY = nny / 2;
    //unsigned int centerZ = nnz / 2;
-   //doubflo        radius  = nny / 5.f;//2.56f;
+   //real        radius  = nny / 5.f;//2.56f;
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    QforBoundaryConditions Q;
    Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -68,23 +68,23 @@ void findQ(Parameter* para, int lev)
                //relx = i - STARTOFFX - centerX;
                //rely = j - STARTOFFY - centerY;
                //relz = k - STARTOFFZ - centerZ;
-               ON[18] = (doubflo)-1.f;
+               ON[18] = (real)-1.f;
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if((geo_mat[mm] == GEO_SOLID) || (geo_mat[mm] == GEO_VOID)){
-                     //ON[l] = -(((doubflo)ex[l]*(doubflo)relx + (doubflo)ey[l]*(doubflo)rely + (doubflo)ez[l]*(doubflo)relz +/*+/- Achtung, innen und außen nicht verwechseln!!*/ 
-                     //           sqrt(pow((doubflo)ex[l]*(doubflo)relx + (doubflo)ey[l]*(doubflo)rely + (doubflo)ez[l]*(doubflo)relz,2) + 
-                     //               (pow((doubflo)ex[l],2) + pow((doubflo)ey[l],2) + pow((doubflo)ez[l],2))* (pow(radius,2) - 
-                     //                pow((doubflo)relx,2) - pow((doubflo)rely,2) - pow((doubflo)relz,2))))
-                     //           /(pow((doubflo)ex[l],2) + pow((doubflo)ey[l],2) + pow((doubflo)ez[l],2)));
-                     ON[l] = (doubflo)0.5f;//1.0f;
-                     ON[18] = (doubflo)1.f; //ZERO
+                     //ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz +/*+/- Achtung, innen und außen nicht verwechseln!!*/ 
+                     //           sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) + 
+                     //               (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))* (pow(radius,2) - 
+                     //                pow((real)relx,2) - pow((real)rely,2) - pow((real)relz,2))))
+                     //           /(pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2)));
+                     ON[l] = (real)0.5f;//1.0f;
+                     ON[18] = (real)1.f; //ZERO
                   }
                   else{
-                     ON[l] = (doubflo)-1.f;
+                     ON[l] = (real)-1.f;
                   }
                }
-               if (ON[18]==(doubflo)1.f)
+               if (ON[18]==(real)1.f)
                {
                   QIN.k[QIN.kQ]          = kk[m];
 
@@ -188,10 +188,10 @@ void findKforQ(Parameter* para, int lev)
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   doubflo ON[27];
+   real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m, mm, l;
-   doubflo test = (doubflo)0.f;
+   real test = (real)0.f;
    int nx                       = para->getParH(lev)->nx;    
    int ny                       = para->getParH(lev)->ny; 
    unsigned int nnx             = para->getParH(lev)->gridNX;
@@ -207,14 +207,14 @@ void findKforQ(Parameter* para, int lev)
          for(i=STARTOFFX + 1; i<=nnx+STARTOFFX-2 ; i++){
             m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
-               test =(doubflo)0.f;
+               test =(real)0.f;
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if((geo_mat[mm] == GEO_SOLID) || (geo_mat[mm] == GEO_VOID)){
-                     ON[l] =(doubflo) 1.f; 
+                     ON[l] =(real) 1.f; 
                   }
                   else{
-                     ON[l] = (doubflo)0.f;
+                     ON[l] = (real)0.f;
                   }
                   test += ON[l];
                }
@@ -229,7 +229,7 @@ void findKforQ(Parameter* para, int lev)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, unsigned int sizeQ, doubflo* QQ, QforBoundaryConditions &QIN)
+void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, unsigned int sizeQ, real* QQ, QforBoundaryConditions &QIN)
 {
    QforBoundaryConditions Q;
    Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -265,7 +265,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   doubflo ON[27];
+   real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    unsigned int i, j, k, m, mm, l;
@@ -274,7 +274,7 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
    unsigned int centerX = nnx / 2;
    unsigned int centerY = nny / 2;
    unsigned int centerZ = nnz / 2;
-   doubflo      radius  = nny / 2.56f;
+   real      radius  = nny / 2.56f;
 
    QIN.kQ = 0;
 
@@ -286,20 +286,20 @@ void findQ_MG( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int 
                relx = i - STARTOFFX - centerX;
                rely = j - STARTOFFY - centerY;
                relz = k - STARTOFFZ - centerZ;
-               ON[18] = (doubflo)-1.f;
+               ON[18] = (real)-1.f;
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(geo_mat[mm] == GEO_FLUID){
-                     ON[l] = -(((doubflo)ex[l]*(doubflo)relx + (doubflo)ey[l]*(doubflo)rely + (doubflo)ez[l]*(doubflo)relz + 
-                        sqrt(pow((doubflo)ex[l]*(doubflo)relx + (doubflo)ey[l]*(doubflo)rely + (doubflo)ez[l]*(doubflo)relz,2) + 
-                        (pow((doubflo)ex[l],2) + pow((doubflo)ey[l],2) + pow((doubflo)ez[l],2))*
-                        (pow(radius,2) - pow((doubflo)relx,2) - pow((doubflo)rely,2) - 
-                        pow((doubflo)relz,2))))/(pow((doubflo)ex[l],2) + pow((doubflo)ey[l],2) + pow((doubflo)ez[l],2)));
+                     ON[l] = -(((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz + 
+                        sqrt(pow((real)ex[l]*(real)relx + (real)ey[l]*(real)rely + (real)ez[l]*(real)relz,2) + 
+                        (pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2))*
+                        (pow(radius,2) - pow((real)relx,2) - pow((real)rely,2) - 
+                        pow((real)relz,2))))/(pow((real)ex[l],2) + pow((real)ey[l],2) + pow((real)ez[l],2)));
 
-                     ON[18] = (doubflo)1.f; //ZERO
+                     ON[18] = (real)1.f; //ZERO
                   }
                   else{
-                     ON[l] = (doubflo)-1.f;
+                     ON[l] = (real)-1.f;
                   }
                }
                if (ON[18]==1.f)
@@ -350,11 +350,11 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   doubflo ON[27];
+   real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    unsigned int i, j, k, m, mm, l;
-   doubflo test = (doubflo)0.f;
+   real test = (real)0.f;
 
    QIN.kQ = 0;
 
@@ -363,14 +363,14 @@ void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned i
          for(i=STARTOFFX +2; i<=nnx+STARTOFFX-3 ; i++){
             m = nx*(ny*k + j) + i;
             if((geo_mat[m] == GEO_SOLID) || (geo_mat[m] == GEO_VOID)){
-               test =(doubflo)0.f;
+               test =(real)0.f;
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(geo_mat[mm] == GEO_FLUID){
-                     ON[l] = (doubflo)1.f; 
+                     ON[l] = (real)1.f; 
                   }
                   else{
-                     ON[l] = (doubflo)0.f;
+                     ON[l] = (real)0.f;
                   }
                   test += ON[l];
                }
@@ -392,7 +392,7 @@ void findQInflow(Parameter* para)
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   //doubflo ON[27];
+   //real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
    //int nx                        = para->getParH(para->getFine())->nx;     
@@ -410,13 +410,13 @@ void findQInflow(Parameter* para)
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;   
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ            = para->getParH(para->getCoarse())->kInflowQ; 
-   doubflo* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
-   doubflo u0                    = para->getVelocity(); 
-   doubflo* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;     
-   doubflo* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;     
-   doubflo* vz                   = para->getParH(para->getCoarse())->Qinflow.Vz;     
-   doubflo*deltaVz               = para->getParH(para->getCoarse())->Qinflow.deltaVz;
-   doubflo* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0]; 
+   real* rhoBC                = para->getParH(para->getCoarse())->Qinflow.RhoBC;
+   real u0                    = para->getVelocity(); 
+   real* vx                   = para->getParH(para->getCoarse())->Qinflow.Vx;     
+   real* vy                   = para->getParH(para->getCoarse())->Qinflow.Vy;     
+   real* vz                   = para->getParH(para->getCoarse())->Qinflow.Vz;     
+   real*deltaVz               = para->getParH(para->getCoarse())->Qinflow.deltaVz;
+   real* QQ                   = para->getParH(para->getCoarse())->Qinflow.q27[0]; 
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qinflow;
    unsigned int nxny = nx*ny;
    QIN.kQ = 0;
@@ -461,71 +461,71 @@ void findQInflow(Parameter* para)
          m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
                QIN.k[QIN.kQ]          = kk[m];
-               //vx[QIN.kQ]             = (doubflo)0.f;
+               //vx[QIN.kQ]             = (real)0.f;
 			   vx[QIN.kQ]             = u0;
-               vy[QIN.kQ]             = (doubflo)0.f;
-               vz[QIN.kQ]             = (doubflo)0.f;
+               vy[QIN.kQ]             = (real)0.f;
+               vz[QIN.kQ]             = (real)0.f;
                //vz[QIN.kQ]             = u0;
-               //vz[QIN.kQ]             = (doubflo)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-               //vz[QIN.kQ]             = (doubflo)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-               //vz[QIN.kQ]             = (doubflo)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-               deltaVz[QIN.kQ]        = (doubflo)0.f;
+               //vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+               //vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+               //vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+               deltaVz[QIN.kQ]        = (real)0.f;
 			   //////////////////////////////////////////////////////////////////////////
-               //Q.q27[dirE   ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirW   ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirN   ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirS   ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirT   ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirB   ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirNE  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirSW  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirSE  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirNW  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirTE  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirBW  ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirBE  ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirTW  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirTN  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirBS  ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirBN  ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirTS  ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirZERO][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirTNE ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirTSW ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirTSE ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirTNW ][QIN.kQ] = (doubflo)-1.f;
-               //Q.q27[dirBNE ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirBSW ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirBSE ][QIN.kQ] = (doubflo)1.f;
-               //Q.q27[dirBNW ][QIN.kQ] = (doubflo)1.f;
+               //Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirT   ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirB   ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirTE  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirBW  ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirBE  ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirTW  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirTN  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirBS  ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirBN  ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirTS  ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirTNE ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirTSW ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirTSE ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirTNW ][QIN.kQ] = (real)-1.f;
+               //Q.q27[dirBNE ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirBSW ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirBSE ][QIN.kQ] = (real)1.f;
+               //Q.q27[dirBNW ][QIN.kQ] = (real)1.f;
 			   //////////////////////////////////////////////////////////////////////////
-			   Q.q27[dirE   ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirW   ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirN   ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirS   ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirT   ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirB   ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirNE  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirSW  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirSE  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirNW  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirTE  ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirBW  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirBE  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirTW  ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirTN  ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirBS  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirBN  ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirTS  ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirZERO][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirTNE ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirTSW ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirTSE ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirTNW ][QIN.kQ] = (doubflo)1.f;
-			   Q.q27[dirBNE ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirBSW ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirBSE ][QIN.kQ] = (doubflo)-1.f;
-			   Q.q27[dirBNW ][QIN.kQ] = (doubflo)-1.f;
+			   Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirT   ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirTE  ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirBW  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirBE  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirTW  ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirTN  ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirTS  ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirTNE ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirTSW ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirTSE ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirTNW ][QIN.kQ] = (real)1.f;
+			   Q.q27[dirBNE ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirBSW ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirBSE ][QIN.kQ] = (real)-1.f;
+			   Q.q27[dirBNW ][QIN.kQ] = (real)-1.f;
 			   //////////////////////////////////////////////////////////////////////////
 			   QIN.kQ++;
             }
@@ -659,10 +659,10 @@ void findKforQInflow(Parameter* para)
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   doubflo ON[27];
+   real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m, mm, l;
-   doubflo test = 0.f;
+   real test = 0.f;
    //int nx                        = para->getParH(para->getFine())->nx;     
    //int ny                        = para->getParH(para->getFine())->ny; 
    //unsigned int nnx              = para->getParH(para->getFine())->gridNX; 
@@ -686,14 +686,14 @@ void findKforQInflow(Parameter* para)
          for(i=STARTOFFX/*+1*/; i<=nnx+STARTOFFX/*-2*/ ; i++){
             m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
-               test = (doubflo)0.f;
+               test = (real)0.f;
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(ez[l]==1/*-1*/){
-                     ON[l] = (doubflo) 1.f; 
+                     ON[l] = (real) 1.f; 
                   }
                   else{
-                     ON[l] = (doubflo) 0.f;
+                     ON[l] = (real) 0.f;
                   }
                   test += ON[l];
                }
@@ -741,7 +741,7 @@ void findQOutflow(Parameter* para)
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   //doubflo ON[27];
+   //real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m;//, mm, l;
    //int nx                        = para->getParH(para->getFine())->nx;     
@@ -759,13 +759,13 @@ void findQOutflow(Parameter* para)
    int* geo_mat                  = para->getParH(para->getCoarse())->geo;   
    unsigned int* kk              = para->getParH(para->getCoarse())->k;
    unsigned int sizeQ            = para->getParH(para->getCoarse())->kOutflowQ; 
-   doubflo* rhoBC                = para->getParH(para->getCoarse())->Qoutflow.RhoBC;
-   doubflo u0                    = para->getVelocity(); 
-   doubflo* vx                   = para->getParH(para->getCoarse())->Qoutflow.Vx;     
-   doubflo* vy                   = para->getParH(para->getCoarse())->Qoutflow.Vy;     
-   doubflo* vz                   = para->getParH(para->getCoarse())->Qoutflow.Vz;     
-   doubflo*deltaVz               = para->getParH(para->getCoarse())->Qoutflow.deltaVz;
-   doubflo* QQ                   = para->getParH(para->getCoarse())->Qoutflow.q27[0]; 
+   real* rhoBC                = para->getParH(para->getCoarse())->Qoutflow.RhoBC;
+   real u0                    = para->getVelocity(); 
+   real* vx                   = para->getParH(para->getCoarse())->Qoutflow.Vx;     
+   real* vy                   = para->getParH(para->getCoarse())->Qoutflow.Vy;     
+   real* vz                   = para->getParH(para->getCoarse())->Qoutflow.Vz;     
+   real*deltaVz               = para->getParH(para->getCoarse())->Qoutflow.deltaVz;
+   real* QQ                   = para->getParH(para->getCoarse())->Qoutflow.q27[0]; 
    QforBoundaryConditions &QIN   = para->getParH(para->getCoarse())->Qoutflow;
    unsigned int nxny = nx*ny;
    QIN.kQ = 0;
@@ -811,41 +811,41 @@ void findQOutflow(Parameter* para)
             if(geo_mat[m]==GEO_FLUID){
                QIN.k[QIN.kQ]          = kk[m];
                QIN.kN[QIN.kQ]         = kk[m-nxny];
-               rhoBC[QIN.kQ]          = (doubflo)0.f;
-               vx[QIN.kQ]             = (doubflo)0.f;
-               vy[QIN.kQ]             = (doubflo)0.f;
+               rhoBC[QIN.kQ]          = (real)0.f;
+               vx[QIN.kQ]             = (real)0.f;
+               vy[QIN.kQ]             = (real)0.f;
 			   //vz[QIN.kQ]             = u0;
-               vz[QIN.kQ]             = (doubflo)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-               //vz[QIN.kQ]             =  (doubflo)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-               //vz[QIN.kQ]             = (doubflo)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-               deltaVz[QIN.kQ]        = (doubflo)0.f;
-               Q.q27[dirE   ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirW   ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirN   ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirS   ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirT   ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirB   ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirNE  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirSW  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirSE  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirNW  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirTE  ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirBW  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirBE  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirTW  ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirTN  ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirBS  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirBN  ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirTS  ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirZERO][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirTNE ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirTSW ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirTSE ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirTNW ][QIN.kQ] = (doubflo)1.f;
-               Q.q27[dirBNE ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirBSW ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirBSE ][QIN.kQ] = (doubflo)-1.f;
-               Q.q27[dirBNW ][QIN.kQ] = (doubflo)-1.f;
+               vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+               //vz[QIN.kQ]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+               //vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+               deltaVz[QIN.kQ]        = (real)0.f;
+               Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirT   ][QIN.kQ] = (real)1.f;
+               Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirTE  ][QIN.kQ] = (real)1.f;
+               Q.q27[dirBW  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirBE  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirTW  ][QIN.kQ] = (real)1.f;
+               Q.q27[dirTN  ][QIN.kQ] = (real)1.f;
+               Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirTS  ][QIN.kQ] = (real)1.f;
+               Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
+               Q.q27[dirTNE ][QIN.kQ] = (real)1.f;
+               Q.q27[dirTSW ][QIN.kQ] = (real)1.f;
+               Q.q27[dirTSE ][QIN.kQ] = (real)1.f;
+               Q.q27[dirTNW ][QIN.kQ] = (real)1.f;
+               Q.q27[dirBNE ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirBSW ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirBSE ][QIN.kQ] = (real)-1.f;
+               Q.q27[dirBNW ][QIN.kQ] = (real)-1.f;
                QIN.kQ++;
             }
        }
@@ -868,10 +868,10 @@ void findKforQOutflow(Parameter* para)
    int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
    int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
    int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-   doubflo ON[27];
+   real ON[27];
    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    unsigned int i, j, k, m, mm, l;
-   doubflo test = (doubflo) 0.f;
+   real test = (real) 0.f;
    //int nx                        = para->getParH(para->getFine())->nx;     
    //int ny                        = para->getParH(para->getFine())->ny; 
    //unsigned int nnx              = para->getParH(para->getFine())->gridNX; 
@@ -894,14 +894,14 @@ void findKforQOutflow(Parameter* para)
          for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
             m = nx*(ny*k + j) + i;
             if(geo_mat[m]==GEO_FLUID){
-               test = (doubflo)0.f;
+               test = (real)0.f;
                for(l=0;l<=26;l++){
                   mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
                   if(ez[l]==1){
-                     ON[l] = (doubflo) 1.f; 
+                     ON[l] = (real) 1.f; 
                   }
                   else{
-                     ON[l] = (doubflo) 0.f;
+                     ON[l] = (real) 0.f;
                   }
                   test += ON[l];
                }
@@ -921,10 +921,10 @@ void findKforQOutflow(Parameter* para)
 
 //////////////////////////////////////////////////////////////////////////////////
 //void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, 
-//                   unsigned int sizeQN, doubflo* vxN, doubflo* vyN, doubflo* vzN, doubflo*deltaVN, doubflo* QQN, QforBoundaryConditions &QNin,
-//                   unsigned int sizeQS, doubflo* vxS, doubflo* vyS, doubflo* vzS, doubflo*deltaVS, doubflo* QQS, QforBoundaryConditions &QSin,
-//                   unsigned int sizeQE, doubflo* vxE, doubflo* vyE, doubflo* vzE, doubflo*deltaVE, doubflo* QQE, QforBoundaryConditions &QEin,
-//                   unsigned int sizeQW, doubflo* vxW, doubflo* vyW, doubflo* vzW, doubflo*deltaVW, doubflo* QQW, QforBoundaryConditions &QWin)
+//                   unsigned int sizeQN, real* vxN, real* vyN, real* vzN, real*deltaVN, real* QQN, QforBoundaryConditions &QNin,
+//                   unsigned int sizeQS, real* vxS, real* vyS, real* vzS, real*deltaVS, real* QQS, QforBoundaryConditions &QSin,
+//                   unsigned int sizeQE, real* vxE, real* vyE, real* vzE, real*deltaVE, real* QQE, QforBoundaryConditions &QEin,
+//                   unsigned int sizeQW, real* vxW, real* vyW, real* vzW, real*deltaVW, real* QQW, QforBoundaryConditions &QWin)
 //{
 //   QforBoundaryConditions QN;
 //   QN.q27[dirE   ] = &QQN[dirE   *sizeQN];
@@ -960,7 +960,7 @@ void findKforQOutflow(Parameter* para)
 //   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 //   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 //   int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-//   //doubflo ON[27];
+//   //real ON[27];
 //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //}
 //
@@ -973,10 +973,10 @@ void findKforQOutflow(Parameter* para)
 //   int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 //   int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 //   int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-//   doubflo ON[27];
+//   real ON[27];
 //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   unsigned int i, j, k, m, mm, l;
-//   doubflo test = (doubflo) 0.f;
+//   real test = (real) 0.f;
 //
 //   QN.kQ = 0;
 //   QS.kQ = 0;
@@ -988,14 +988,14 @@ void findKforQOutflow(Parameter* para)
 //         for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
 //            m = nx*(ny*k + j) + i;
 //            if(geo_mat[m]==GEO_FLUID){
-//               test = (doubflo)0.f;
+//               test = (real)0.f;
 //               for(l=0;l<=26;l++){
 //                  mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 //                  if(ez[l]==1){
-//                     ON[l] = (doubflo) 1.f; 
+//                     ON[l] = (real) 1.f; 
 //                  }
 //                  else{
-//                     ON[l] = (doubflo) 0.f;
+//                     ON[l] = (real) 0.f;
 //                  }
 //                  test += ON[l];
 //               }
@@ -1030,13 +1030,13 @@ void findQPressX0(Parameter* para, int lev)
 	unsigned int* kk              = para->getParH(lev)->k;
 	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ; 
 	unsigned int sizeQ            = para->getParH(lev)->QpressX0.kQ;
-	doubflo* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
-	doubflo u0                    = para->getVelocity(); 
-	doubflo* vx                   = para->getParH(lev)->QpressX0.Vx;     
-	doubflo* vy                   = para->getParH(lev)->QpressX0.Vy;     
-	doubflo* vz                   = para->getParH(lev)->QpressX0.Vz;     
-	doubflo*deltaVz               = para->getParH(lev)->QpressX0.deltaVz;
-	doubflo* QQ                   = para->getParH(lev)->QpressX0.q27[0]; 
+	real* rhoBC                = para->getParH(lev)->QpressX0.RhoBC;
+	real u0                    = para->getVelocity(); 
+	real* vx                   = para->getParH(lev)->QpressX0.Vx;     
+	real* vy                   = para->getParH(lev)->QpressX0.Vy;     
+	real* vz                   = para->getParH(lev)->QpressX0.Vz;     
+	real*deltaVz               = para->getParH(lev)->QpressX0.deltaVz;
+	real* QQ                   = para->getParH(lev)->QpressX0.q27[0]; 
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX0;
 	unsigned int nxny = nx*ny;
 	QIN.kQ = 0;
@@ -1083,41 +1083,41 @@ void findQPressX0(Parameter* para, int lev)
 			if(geo_mat[m]==GEO_FLUID){
 				QIN.k[QIN.kQ]          = kk[m];
 				QIN.kN[QIN.kQ]         = kk[m+1];
-				rhoBC[QIN.kQ]          = (doubflo)0.f;
-				vx[QIN.kQ]             = (doubflo)0.f;
-				vy[QIN.kQ]             = (doubflo)0.f;
+				rhoBC[QIN.kQ]          = (real)0.f;
+				vx[QIN.kQ]             = (real)0.f;
+				vy[QIN.kQ]             = (real)0.f;
 				//vz[QIN.kQ]             = u0;
-				vz[QIN.kQ]             = (doubflo)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-				//vz[QIN.kQ]             =  (doubflo)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-				//vz[QIN.kQ]             = (doubflo)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-				deltaVz[QIN.kQ]        = (doubflo)0.f;
-				Q.q27[dirE   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirW   ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirN   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirS   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirT   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirB   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirNE  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirSW  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirSE  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirNW  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirTE  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBW  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirBE  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTW  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirTN  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBS  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBN  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTS  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirZERO][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTNE ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTSW ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirTSE ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTNW ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirBNE ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBSW ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirBSE ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBNW ][QIN.kQ] = (doubflo)1.f;
+				vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+				//vz[QIN.kQ]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+				//vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+				deltaVz[QIN.kQ]        = (real)0.f;
+				Q.q27[dirE   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirW   ][QIN.kQ] = (real)1.f;
+				Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirT   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirNE  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirSW  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirSE  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirNW  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirTE  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBW  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirBE  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTW  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirTN  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTS  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTNE ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTSW ][QIN.kQ] = (real)1.f;
+				Q.q27[dirTSE ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTNW ][QIN.kQ] = (real)1.f;
+				Q.q27[dirBNE ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBSW ][QIN.kQ] = (real)1.f;
+				Q.q27[dirBSE ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBNW ][QIN.kQ] = (real)1.f;
 				QIN.kQ++;
 			}
 		}
@@ -1132,10 +1132,10 @@ void findKforQPressX0(Parameter* para, int lev)
 	int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 	int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-	doubflo ON[27];
+	real ON[27];
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int i, j, k, m, mm, l;
-	doubflo test = (doubflo) 0.f;
+	real test = (real) 0.f;
 	int nx                        = para->getParH(lev)->nx;     
 	int ny                        = para->getParH(lev)->ny; 
 	unsigned int nnx              = para->getParH(lev)->gridNX; 
@@ -1154,14 +1154,14 @@ void findKforQPressX0(Parameter* para, int lev)
 			//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
 				m = nx*(ny*k + j) + i;
 				if(geo_mat[m]==GEO_FLUID){
-					test = (doubflo)0.f;
+					test = (real)0.f;
 					for(l=0;l<=26;l++){
 						mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 						if(ez[l]==1){
-							ON[l] = (doubflo) 1.f; 
+							ON[l] = (real) 1.f; 
 						}
 						else{
-							ON[l] = (doubflo) 0.f;
+							ON[l] = (real) 0.f;
 						}
 						test += ON[l];
 					}
@@ -1195,13 +1195,13 @@ void findQPressX1(Parameter* para, int lev)
 	unsigned int* kk              = para->getParH(lev)->k;
 	//unsigned int sizeQ            = para->getParH(lev)->kOutflowQ; 
 	unsigned int sizeQ            = para->getParH(lev)->QpressX1.kQ;
-	doubflo* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
-	doubflo u0                    = para->getVelocity(); 	   
-	doubflo* vx                   = para->getParH(lev)->QpressX1.Vx;     
-	doubflo* vy                   = para->getParH(lev)->QpressX1.Vy;     
-	doubflo* vz                   = para->getParH(lev)->QpressX1.Vz;     
-	doubflo*deltaVz               = para->getParH(lev)->QpressX1.deltaVz;
-	doubflo* QQ                   = para->getParH(lev)->QpressX1.q27[0]; 
+	real* rhoBC                = para->getParH(lev)->QpressX1.RhoBC;
+	real u0                    = para->getVelocity(); 	   
+	real* vx                   = para->getParH(lev)->QpressX1.Vx;     
+	real* vy                   = para->getParH(lev)->QpressX1.Vy;     
+	real* vz                   = para->getParH(lev)->QpressX1.Vz;     
+	real*deltaVz               = para->getParH(lev)->QpressX1.deltaVz;
+	real* QQ                   = para->getParH(lev)->QpressX1.q27[0]; 
 	QforBoundaryConditions &QIN   = para->getParH(lev)->QpressX1;
 	unsigned int nxny = nx*ny;
 	QIN.kQ = 0;
@@ -1248,41 +1248,41 @@ void findQPressX1(Parameter* para, int lev)
 			if(geo_mat[m]==GEO_FLUID){
 				QIN.k[QIN.kQ]          = kk[m];
 				QIN.kN[QIN.kQ]         = kk[m-1];
-				rhoBC[QIN.kQ]          = (doubflo)0.f;
-				vx[QIN.kQ]             = (doubflo)0.f;
-				vy[QIN.kQ]             = (doubflo)0.f;
+				rhoBC[QIN.kQ]          = (real)0.f;
+				vx[QIN.kQ]             = (real)0.f;
+				vy[QIN.kQ]             = (real)0.f;
 				//vz[QIN.kQ]             = u0;
-				vz[QIN.kQ]             = (doubflo)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
-				//vz[QIN.kQ]             =  (doubflo)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
-				//vz[QIN.kQ]             = (doubflo)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
-				deltaVz[QIN.kQ]        = (doubflo)0.f;
-				Q.q27[dirE   ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirW   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirN   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirS   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirT   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirB   ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirNE  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirSW  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirSE  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirNW  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTE  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirBW  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBE  ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirTW  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTN  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBS  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBN  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTS  ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirZERO][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTNE ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirTSW ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirTSE ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirTNW ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBNE ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirBSW ][QIN.kQ] = (doubflo)-1.f;
-				Q.q27[dirBSE ][QIN.kQ] = (doubflo)1.f;
-				Q.q27[dirBNW ][QIN.kQ] = (doubflo)-1.f;
+				vz[QIN.kQ]             = (real)(u0*2.f)*((-4.f*i*i + nnx*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*nnx + 8.f*STARTOFFX))*(-4.f*j*j + nny*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*nny + 8.f*STARTOFFY)))/((2.f - nnx)*(2.f - nnx)*(2.f - nny)*(2.f - nny));
+				//vz[QIN.kQ]             =  (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);
+				//vz[QIN.kQ]             = (real)(16.f*(u0*2.f)*i*j*(nx-i)*(ny-j))/(nx*nx*ny*ny);
+				deltaVz[QIN.kQ]        = (real)0.f;
+				Q.q27[dirE   ][QIN.kQ] = (real)1.f;
+				Q.q27[dirW   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirN   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirS   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirT   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirB   ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirNE  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirSW  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirSE  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirNW  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTE  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirBW  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBE  ][QIN.kQ] = (real)1.f;
+				Q.q27[dirTW  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTN  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBS  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBN  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTS  ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirZERO][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTNE ][QIN.kQ] = (real)1.f;
+				Q.q27[dirTSW ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirTSE ][QIN.kQ] = (real)1.f;
+				Q.q27[dirTNW ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBNE ][QIN.kQ] = (real)1.f;
+				Q.q27[dirBSW ][QIN.kQ] = (real)-1.f;
+				Q.q27[dirBSE ][QIN.kQ] = (real)1.f;
+				Q.q27[dirBNW ][QIN.kQ] = (real)-1.f;
 				QIN.kQ++;
 			}
 		}
@@ -1297,10 +1297,10 @@ void findKforQPressX1(Parameter* para, int lev)
 	int   ex[27]={  1, -1,  0,  0,  0,  0,  1, -1,  1, -1,  1, -1,  1, -1,  0,  0,  0,  0,   0,  1,  1,  1,  1, -1, -1, -1, -1};
 	int   ey[27]={  0,  0,  1, -1,  0,  0,  1, -1, -1,  1,  0,  0,  0,  0,  1, -1,  1, -1,   0,  1,  1, -1, -1,  1,  1, -1, -1};
 	int   ez[27]={  0,  0,  0,  0,  1, -1,  0,  0,  0,  0,  1, -1, -1,  1,  1, -1, -1,  1,   0,  1, -1,  1, -1,  1, -1,  1, -1};
-	doubflo ON[27];
+	real ON[27];
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	unsigned int i, j, k, m, mm, l;
-	doubflo test = (doubflo) 0.f;
+	real test = (real) 0.f;
 	int nx                        = para->getParH(lev)->nx;     
 	int ny                        = para->getParH(lev)->ny; 
 	unsigned int nnx              = para->getParH(lev)->gridNX; 
@@ -1319,14 +1319,14 @@ void findKforQPressX1(Parameter* para, int lev)
 				//for(i=STARTOFFX+1; i<=nnx+STARTOFFX-2 ; i++){
 				m = nx*(ny*k + j) + i;
 				if(geo_mat[m]==GEO_FLUID){
-					test = (doubflo)0.f;
+					test = (real)0.f;
 					for(l=0;l<=26;l++){
 						mm = nx*(ny*(k+ez[l]) + (j+ey[l])) + (i+ex[l]);
 						if(ez[l]==1){
-							ON[l] = (doubflo) 1.f; 
+							ON[l] = (real) 1.f; 
 						}
 						else{
-							ON[l] = (doubflo) 0.f;
+							ON[l] = (real) 0.f;
 						}
 						test += ON[l];
 					}

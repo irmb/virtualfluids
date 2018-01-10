@@ -12,6 +12,10 @@
 //#endif
 //lib for windows Ws2_32.lib
 
+SPtr<Parameter> Parameter::make()
+{
+    return SPtr<Parameter>(new Parameter());
+}
 
 Parameter::Parameter()
 {
@@ -52,56 +56,56 @@ void Parameter::initParameter()
 		parH[i]->sizePlaneXY           = parH[i]->nx * parH[i]->ny;
 		parH[i]->sizePlaneYZ           = parH[i]->ny * parH[i]->nz;
 		parH[i]->sizePlaneXZ           = parH[i]->nx * parH[i]->nz;
-		parH[i]->mem_size_doubflo      = sizeof(doubflo     ) * parH[i]->size_Mat;
+		parH[i]->mem_size_real      = sizeof(real     ) * parH[i]->size_Mat;
 		parH[i]->mem_size_int          = sizeof(unsigned int) * parH[i]->size_Mat;
 		parH[i]->mem_size_bool         = sizeof(bool        ) * parH[i]->size_Mat;
-		parH[i]->mem_size_doubflo_yz   = sizeof(doubflo     ) * parH[i]->ny * parH[i]->nz;
+		parH[i]->mem_size_real_yz   = sizeof(real     ) * parH[i]->ny * parH[i]->nz;
 		parH[i]->evenOrOdd             = true;
 		parH[i]->startz                = parH[i]->gridNZ * ic.myid;
 		parH[i]->endz                  = parH[i]->gridNZ * ic.myid + parH[i]->gridNZ;
-		parH[i]->Lx                    = (doubflo)((1.f*parH[i]->gridNX - 1.f)/(pow(2.f,i)));
-		parH[i]->Ly                    = (doubflo)((1.f*parH[i]->gridNY - 1.f)/(pow(2.f,i)));
-		parH[i]->Lz                    = (doubflo)((1.f*parH[i]->gridNZ - 1.f)/(pow(2.f,i)));
-		parH[i]->dx                    = (doubflo)(1.f/(pow(2.f,i)));
+		parH[i]->Lx                    = (real)((1.f*parH[i]->gridNX - 1.f)/(pow(2.f,i)));
+		parH[i]->Ly                    = (real)((1.f*parH[i]->gridNY - 1.f)/(pow(2.f,i)));
+		parH[i]->Lz                    = (real)((1.f*parH[i]->gridNZ - 1.f)/(pow(2.f,i)));
+		parH[i]->dx                    = (real)(1.f/(pow(2.f,i)));
 		parH[i]->XdistKn               = getDistX().at(i);
 		parH[i]->YdistKn               = getDistY().at(i);
 		parH[i]->ZdistKn               = getDistZ().at(i);
 		if (i==coarse)
 		{
-			parH[i]->distX                 = (doubflo)getDistX().at(i);
-			parH[i]->distY                 = (doubflo)getDistY().at(i);
-			parH[i]->distZ                 = (doubflo)getDistZ().at(i);
-			parH[i]->mTtoWx                = (doubflo)1.0f;
-			parH[i]->mTtoWy                = (doubflo)1.0f;
-			parH[i]->mTtoWz                = (doubflo)1.0f;
-			parH[i]->cTtoWx                = (doubflo)0.0f;
-			parH[i]->cTtoWy                = (doubflo)0.0f;
-			parH[i]->cTtoWz                = (doubflo)0.0f;
+			parH[i]->distX                 = (real)getDistX().at(i);
+			parH[i]->distY                 = (real)getDistY().at(i);
+			parH[i]->distZ                 = (real)getDistZ().at(i);
+			parH[i]->mTtoWx                = (real)1.0f;
+			parH[i]->mTtoWy                = (real)1.0f;
+			parH[i]->mTtoWz                = (real)1.0f;
+			parH[i]->cTtoWx                = (real)0.0f;
+			parH[i]->cTtoWy                = (real)0.0f;
+			parH[i]->cTtoWz                = (real)0.0f;
 			////MGs Trafo///////////////////////////////////////////////////////////////
-			//parH[i]->cStartx               = (doubflo)parH[i]->XdistKn;
-			//parH[i]->cStarty               = (doubflo)parH[i]->XdistKn;
-			//parH[i]->cStartz               = (doubflo)parH[i]->XdistKn;
+			//parH[i]->cStartx               = (real)parH[i]->XdistKn;
+			//parH[i]->cStarty               = (real)parH[i]->XdistKn;
+			//parH[i]->cStartz               = (real)parH[i]->XdistKn;
 			////////////////////////////////////////////////////////////////////////////
 		} 
 		else
 		{
 			//Geller
-			parH[i]->distX                 = ((doubflo)getDistX().at(i) + 0.25f) * parH[i-1]->dx;
-			parH[i]->distY                 = ((doubflo)getDistY().at(i) + 0.25f) * parH[i-1]->dx;
-			parH[i]->distZ                 = ((doubflo)getDistZ().at(i) + 0.25f) * parH[i-1]->dx;
-			//parH[i]->distX                 = ((doubflo)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
-			//parH[i]->distY                 = ((doubflo)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
-			//parH[i]->distZ                 = ((doubflo)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
-			parH[i]->mTtoWx                = (doubflo)pow(0.5f,i);
-			parH[i]->mTtoWy                = (doubflo)pow(0.5f,i);
-			parH[i]->mTtoWz                = (doubflo)pow(0.5f,i);
-			parH[i]->cTtoWx                = (doubflo)(STARTOFFX/2.f + (parH[i]->gridNX+1.f)/4.f); //funzt nur für zwei level
-			parH[i]->cTtoWy                = (doubflo)(STARTOFFY/2.f + (parH[i]->gridNY+1.f)/4.f); //funzt nur für zwei level
-			parH[i]->cTtoWz                = (doubflo)(STARTOFFZ/2.f + (parH[i]->gridNZ+1.f)/4.f); //funzt nur für zwei level
+			parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx;
+			parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx;
+			parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx;
+			//parH[i]->distX                 = ((real)getDistX().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distX;
+			//parH[i]->distY                 = ((real)getDistY().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distY;
+			//parH[i]->distZ                 = ((real)getDistZ().at(i) + 0.25f) * parH[i-1]->dx + parH[i-1]->distZ;
+			parH[i]->mTtoWx                = (real)pow(0.5f,i);
+			parH[i]->mTtoWy                = (real)pow(0.5f,i);
+			parH[i]->mTtoWz                = (real)pow(0.5f,i);
+			parH[i]->cTtoWx                = (real)(STARTOFFX/2.f + (parH[i]->gridNX+1.f)/4.f); //funzt nur für zwei level
+			parH[i]->cTtoWy                = (real)(STARTOFFY/2.f + (parH[i]->gridNY+1.f)/4.f); //funzt nur für zwei level
+			parH[i]->cTtoWz                = (real)(STARTOFFZ/2.f + (parH[i]->gridNZ+1.f)/4.f); //funzt nur für zwei level
 			////MGs Trafo///////////////////////////////////////////////////////////////
-			//parH[i]->cStartx               = (doubflo)parH[i]->XdistKn;
-			//parH[i]->cStarty               = (doubflo)parH[i]->XdistKn;
-			//parH[i]->cStartz               = (doubflo)parH[i]->XdistKn;
+			//parH[i]->cStartx               = (real)parH[i]->XdistKn;
+			//parH[i]->cStarty               = (real)parH[i]->XdistKn;
+			//parH[i]->cStartz               = (real)parH[i]->XdistKn;
 			////////////////////////////////////////////////////////////////////////////
 		}
 		parH[i]->need_interface[INTERFACE_E]=getNeedInterface().at(INTERFACE_E);
@@ -130,10 +134,10 @@ void Parameter::initParameter()
 		parD[i]->sizePlaneXY           = parH[i]->sizePlaneXY;
 		parD[i]->sizePlaneYZ           = parH[i]->sizePlaneYZ;
 		parD[i]->sizePlaneXZ           = parH[i]->sizePlaneXZ;
-		parD[i]->mem_size_doubflo      = sizeof(doubflo     ) * parD[i]->size_Mat;
+		parD[i]->mem_size_real      = sizeof(real     ) * parD[i]->size_Mat;
 		parD[i]->mem_size_int          = sizeof(unsigned int) * parD[i]->size_Mat;
 		parD[i]->mem_size_bool         = sizeof(bool        ) * parD[i]->size_Mat;
-		parD[i]->mem_size_doubflo_yz   = sizeof(doubflo     ) * parD[i]->ny * parD[i]->nz;
+		parD[i]->mem_size_real_yz   = sizeof(real     ) * parD[i]->ny * parD[i]->nz;
 		parD[i]->evenOrOdd             = parH[i]->evenOrOdd;
 		parD[i]->startz                = parH[i]->startz;
 		parD[i]->endz                  = parH[i]->endz;
@@ -241,18 +245,18 @@ void Parameter::setSizeMatSparse(int level)
 			}
 		}
 	}
-	parH[level]->mem_size_doubflo_SP    = sizeof(doubflo     ) * parH[level]->size_Mat_SP;
+	parH[level]->mem_size_real_SP    = sizeof(real     ) * parH[level]->size_Mat_SP;
 	parH[level]->mem_size_int_SP        = sizeof(unsigned int) * parH[level]->size_Mat_SP;
-	parD[level]->mem_size_doubflo_SP    = sizeof(doubflo     ) * parD[level]->size_Mat_SP;
+	parD[level]->mem_size_real_SP    = sizeof(real     ) * parD[level]->size_Mat_SP;
 	parD[level]->mem_size_int_SP        = sizeof(unsigned int) * parD[level]->size_Mat_SP;
 }
 void Parameter::fillSparse(int level)
 {
 	unsigned int li = ((parH[level]->gridNX+STARTOFFX-2)-(STARTOFFX+1)-1);
 	unsigned int lj = ((parH[level]->gridNY+STARTOFFY-2)-(STARTOFFY+1)-1);
-	doubflo globalX, globalY, globalZ;
-	//doubflo InitglobalX, InitglobalY, InitglobalZ;
-	doubflo PI = 3.141592653589793238462643383279f;
+	real globalX, globalY, globalZ;
+	//real InitglobalX, InitglobalY, InitglobalZ;
+	real PI = 3.141592653589793238462643383279f;
 
 	for (unsigned int k=1; k<parH[level]->gridNZ + 2 * STARTOFFZ - 1; k++)
 	{
@@ -309,69 +313,69 @@ void Parameter::fillSparse(int level)
 				//   if(   i == parH[level]->gridNX/2 + STARTOFFX
 				//      && j == parH[level]->gridNY/2 + STARTOFFY 
 				//      && k == parH[level]->gridNZ/2 + STARTOFFZ) 
-				//      parH[level]->rho_SP[parH[level]->k[m]]       = (doubflo)0.1f;             
+				//      parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.1f;             
 				//   else 
-				//      parH[level]->rho_SP[parH[level]->k[m]]       = (doubflo)0.0f;
+				//      parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
 				//} 
 				//else
 				//{
-				//   parH[level]->rho_SP[parH[level]->k[m]]       = (doubflo)0.0f;
+				//   parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;
 				//}
 				globalX = TrafoXtoWorld(i,level);
 				globalY = TrafoYtoWorld(j,level);
 				globalZ = TrafoZtoWorld(k,level);
 				//without setting a pressure
-				parH[level]->rho_SP[parH[level]->k[m]]       = (doubflo)0.0f;       //parH[level]->Conc_Full[m];//bitte schnell wieder entfernen!!!
+				parH[level]->rho_SP[parH[level]->k[m]]       = (real)0.0f;       //parH[level]->Conc_Full[m];//bitte schnell wieder entfernen!!!
 				//////////////////////////////////////////////////////////////////////////
-				parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)0.0f;
+				parH[level]->vx_SP[parH[level]->k[m]]        = (real)0.0f;
 				//parH[level]->vx_SP[parH[level]->k[m]]        = u0/3.0;
-				parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)0.0f;
+				parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0f;
 				//parH[level]->vy_SP[parH[level]->k[m]]        = u0/3.0;
-				parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)0.0f;
+				parH[level]->vz_SP[parH[level]->k[m]]        = (real)0.0f;
 				//parH[level]->vz_SP[parH[level]->k[m]]        = u0/3.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)(u0*2.f)*((-4.f*globalX*globalX + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + globalX*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*globalY*globalY + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + globalY*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)(u0*2.f)*((-4.f*i*i + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*j*j + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);//(16.f*(u0*2.f)*i*j*(parH[level]->nx-i)*(parH[level]->ny-j))/(parH[level]->nx*parH[level]->nx*parH[level]->ny*parH[level]->ny); //u0;
+				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(u0*2.f)*((-4.f*globalX*globalX + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + globalX*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*globalY*globalY + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + globalY*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
+				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(u0*2.f)*((-4.f*i*i + parH[level]->gridNX*(-2.f - 4.f*STARTOFFX) - 4.f*(-1.5f + STARTOFFX)*(0.5f + STARTOFFX) + i*(-4.f + 4.f*parH[level]->gridNX + 8.f*STARTOFFX))*(-4.f*j*j + parH[level]->gridNY*(-2.f - 4.f*STARTOFFY) - 4.f*(-1.5f + STARTOFFY)*(0.5f + STARTOFFY) + j*(-4.f + 4.f*parH[level]->gridNY + 8.f*STARTOFFY)))/((2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNX)*(2.f - parH[level]->gridNY)*(2.f - parH[level]->gridNY));
+				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(16.f*(u0*2.f)*(i-(STARTOFFX+1)-0.5f)*(li-1.5f-(i-(STARTOFFX+1)))*(j-(STARTOFFY+1)-0.5f)*(lj-1.5f-(j-(STARTOFFY+1))))/(li*lj*li*lj);//(16.f*(u0*2.f)*i*j*(parH[level]->nx-i)*(parH[level]->ny-j))/(parH[level]->nx*parH[level]->nx*parH[level]->ny*parH[level]->ny); //u0;
 				//////////////////////////////////////////////////////////////////////////
 				////gerade
-				//parH[level]->vx_SP[parH[level]->k[m]] = (doubflo)((32. * 32. * 3.) / (1000.*(doubflo)parH[level]->gridNX));//(doubflo)parH[level]->gridNX / (doubflo)1000 * 3.0;
-				//parH[level]->vy_SP[parH[level]->k[m]] = (doubflo)((getVelocity() * sin(2.0 * i / parH[level]->gridNX * PI) * cos(2.0 * k / parH[level]->gridNZ * PI)) * (32. / (doubflo)parH[level]->gridNX));
-				//parH[level]->vz_SP[parH[level]->k[m]] = (doubflo)0.0f;
+				//parH[level]->vx_SP[parH[level]->k[m]] = (real)((32. * 32. * 3.) / (1000.*(real)parH[level]->gridNX));//(real)parH[level]->gridNX / (real)1000 * 3.0;
+				//parH[level]->vy_SP[parH[level]->k[m]] = (real)((getVelocity() * sin(2.0 * i / parH[level]->gridNX * PI) * cos(2.0 * k / parH[level]->gridNZ * PI)) * (32. / (real)parH[level]->gridNX));
+				//parH[level]->vz_SP[parH[level]->k[m]] = (real)0.0f;
 				//schräg x
-				// 			parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)((32. * 32. * 3.)/(1000.*(doubflo)parH[level]->gridNX) + (getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				// 			parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)0.0;
-				// 			parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)(getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
+				// 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
+				// 			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
+				// 			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
 				//schräg z
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)0.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)((32. * 32. * 3.)/(1000.*(doubflo)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
+				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
+				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
+				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
 
 				  			//Taylor Green Vortex uniform
-				  			parH[level]->rho_SP[parH[level]->k[m]]       = (doubflo)((getVelocity()*getVelocity())*3.0/4.0*(cos((i)*4.0*PI/(doubflo)parH[level]->gridNX)+cos((k)*4.0*PI/(doubflo)parH[level]->gridNZ)))*(doubflo)(parH[level]->gridNZ)/(doubflo)(parH[level]->gridNX);
+				  			parH[level]->rho_SP[parH[level]->k[m]]       = (real)((getVelocity()*getVelocity())*3.0/4.0*(cos((i)*4.0*PI/(real)parH[level]->gridNX)+cos((k)*4.0*PI/(real)parH[level]->gridNZ)))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);
 				  			//inkl. überlagerter Geschwindigkeit
-				  // 			parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)((32. * 32. * 3.)/(1000.*(doubflo)parH[level]->gridNX) + getVelocity()*sin(((i)*2.0*PI/(doubflo)parH[level]->gridNX))*cos((k)*2.0*PI/(doubflo)parH[level]->gridNZ));
-				  			parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)((32. * 32. * 3.)/(1000. * 32.) * getVelocity() / 0.001 + getVelocity()*sin(((i)*2.0*PI/(doubflo)parH[level]->gridNX))*cos((k)*2.0*PI/(doubflo)parH[level]->gridNZ));
+				  // 			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
+				  			parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000. * 32.) * getVelocity() / 0.001 + getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
 				  			//ohne überlagerter Geschwindigkeit
-				  //			parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)(getVelocity()*sin(((i)*2.0*PI/(doubflo)parH[level]->gridNX))*cos((k)*2.0*PI/(doubflo)parH[level]->gridNZ));
-				  			parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)0.0;
-				  			parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)(-getVelocity()*cos(((i)*2.0*PI/(doubflo)parH[level]->gridNX))*sin((k)*2.0*PI/(doubflo)parH[level]->gridNZ))*(doubflo)(parH[level]->gridNZ)/(doubflo)(parH[level]->gridNX);            
+				  //			parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity()*sin(((i)*2.0*PI/(real)parH[level]->gridNX))*cos((k)*2.0*PI/(real)parH[level]->gridNZ));
+				  			parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
+				  			parH[level]->vz_SP[parH[level]->k[m]]        = (real)(-getVelocity()*cos(((i)*2.0*PI/(real)parH[level]->gridNX))*sin((k)*2.0*PI/(real)parH[level]->gridNZ))*(real)(parH[level]->gridNZ)/(real)(parH[level]->gridNX);            
 
 				//Kernel Fix Test
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)((32. * 32. * 3.)/(1000.*(doubflo)parH[level]->gridNX) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)0.0;
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				////parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
-				////parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)0.0;
-				////parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)((32. * 32. * 3.)/(1000.*(doubflo)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
+				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNX) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
+				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
+				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
+				////parH[level]->vx_SP[parH[level]->k[m]]        = (real)(getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI)));
+				////parH[level]->vy_SP[parH[level]->k[m]]        = (real)0.0;
+				////parH[level]->vz_SP[parH[level]->k[m]]        = (real)((32. * 32. * 3.)/(1000.*(real)parH[level]->gridNZ) + (getVelocity() * std::cos((2.0 * k / parH[level]->gridNZ * PI) + (2.0 * i / parH[level]->gridNX * PI))));
 				//////////////////////////////////////////////////////////////////////////
 				//Taylor Green Vortex
 				//InitglobalX = TrafoXtoMGsWorld(i,level);
 				//InitglobalY = TrafoYtoMGsWorld(j,level);
 				//InitglobalZ = TrafoZtoMGsWorld(k,level);
-				//parH[level]->rho_SP[parH[level]->k[m]]       = (doubflo)((u0*u0)*3.f/4.f*(cos((InitglobalX)*4.f*PI/parH[level]->gridNX)+cos((InitglobalY)*4.f*PI/parH[level]->gridNY)));
-				//parH[level]->vx_SP[parH[level]->k[m]]        = (doubflo)( u0*sin(((InitglobalX)*2.f*PI/parH[level]->gridNX))*cos((InitglobalY)*2.f*PI/parH[level]->gridNY));
-				//parH[level]->vy_SP[parH[level]->k[m]]        = (doubflo)(-u0*cos(((InitglobalX)*2.f*PI/parH[level]->gridNX))*sin((InitglobalY)*2.f*PI/parH[level]->gridNY));
-				//parH[level]->vz_SP[parH[level]->k[m]]        = (doubflo)0.0f;            
+				//parH[level]->rho_SP[parH[level]->k[m]]       = (real)((u0*u0)*3.f/4.f*(cos((InitglobalX)*4.f*PI/parH[level]->gridNX)+cos((InitglobalY)*4.f*PI/parH[level]->gridNY)));
+				//parH[level]->vx_SP[parH[level]->k[m]]        = (real)( u0*sin(((InitglobalX)*2.f*PI/parH[level]->gridNX))*cos((InitglobalY)*2.f*PI/parH[level]->gridNY));
+				//parH[level]->vy_SP[parH[level]->k[m]]        = (real)(-u0*cos(((InitglobalX)*2.f*PI/parH[level]->gridNX))*sin((InitglobalY)*2.f*PI/parH[level]->gridNY));
+				//parH[level]->vz_SP[parH[level]->k[m]]        = (real)0.0f;            
 				//////////////////////////////////////////////////////////////////////////
 			}
 		}
@@ -380,10 +384,10 @@ void Parameter::fillSparse(int level)
 	parH[level]->neighborY_SP[parH[level]->k[0]] = 0;
 	parH[level]->neighborZ_SP[parH[level]->k[0]] = 0;
 	parH[level]->geoSP[       parH[level]->k[0]] = GEO_VOID;
-	parH[level]->rho_SP[      parH[level]->k[0]] = (doubflo)0.f;
-	parH[level]->vx_SP[       parH[level]->k[0]] = (doubflo)0.f;
-	parH[level]->vy_SP[       parH[level]->k[0]] = (doubflo)0.f;
-	parH[level]->vz_SP[       parH[level]->k[0]] = (doubflo)0.f;
+	parH[level]->rho_SP[      parH[level]->k[0]] = (real)0.f;
+	parH[level]->vx_SP[       parH[level]->k[0]] = (real)0.f;
+	parH[level]->vy_SP[       parH[level]->k[0]] = (real)0.f;
+	parH[level]->vz_SP[       parH[level]->k[0]] = (real)0.f;
 	////////////////////////////////////////////////////////////////////////////
 	////Coordinates
 	//parH[level]->coordX_SP[parH[level]->k[0]]    = 0;
@@ -428,24 +432,24 @@ void Parameter::cudaFreeFull(int lev)
 void Parameter::cudaAllocCoord(int lev)
 {
 	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->coordX_SP      ), parH[lev]->mem_size_doubflo_SP  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->coordY_SP      ), parH[lev]->mem_size_doubflo_SP  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->coordZ_SP      ), parH[lev]->mem_size_doubflo_SP  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->coordX_SP      ), parH[lev]->mem_size_real_SP  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->coordY_SP      ), parH[lev]->mem_size_real_SP  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->coordZ_SP      ), parH[lev]->mem_size_real_SP  ));
 	//Device (spinning ship)
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->coordX_SP      ), parH[lev]->mem_size_doubflo_SP  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->coordY_SP      ), parH[lev]->mem_size_doubflo_SP  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->coordZ_SP      ), parH[lev]->mem_size_doubflo_SP  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->coordX_SP      ), parH[lev]->mem_size_real_SP  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->coordY_SP      ), parH[lev]->mem_size_real_SP  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->coordZ_SP      ), parH[lev]->mem_size_real_SP  ));
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = 3. * (double)parH[lev]->mem_size_doubflo_SP;
+	double tmp = 3. * (double)parH[lev]->mem_size_real_SP;
 	setMemsizeGPU(tmp, false);
 	//printf("Coord = %f MB",tmp/1000000.);  
 }
 void Parameter::cudaCopyCoord(int lev)
 {
 	//copy host to device
-	checkCudaErrors( cudaMemcpy(parD[lev]->coordX_SP,  parH[lev]->coordX_SP,  parH[lev]->mem_size_doubflo_SP     , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->coordY_SP,  parH[lev]->coordY_SP,  parH[lev]->mem_size_doubflo_SP     , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->coordZ_SP,  parH[lev]->coordZ_SP,  parH[lev]->mem_size_doubflo_SP     , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->coordX_SP,  parH[lev]->coordX_SP,  parH[lev]->mem_size_real_SP     , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->coordY_SP,  parH[lev]->coordY_SP,  parH[lev]->mem_size_real_SP     , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->coordZ_SP,  parH[lev]->coordZ_SP,  parH[lev]->mem_size_real_SP     , cudaMemcpyHostToDevice));
 }
 void Parameter::cudaFreeCoord(int lev)
 {
@@ -456,19 +460,19 @@ void Parameter::cudaFreeCoord(int lev)
 //print
 void Parameter::cudaCopyPrint(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parH[lev]->vx_SP   , parD[lev]->vx_SP   , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->vy_SP   , parD[lev]->vy_SP   , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->vz_SP   , parD[lev]->vz_SP   , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->rho_SP  , parD[lev]->rho_SP  , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->press_SP, parD[lev]->press_SP, parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vx_SP   , parD[lev]->vx_SP   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vy_SP   , parD[lev]->vy_SP   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vz_SP   , parD[lev]->vz_SP   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->rho_SP  , parD[lev]->rho_SP  , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->press_SP, parD[lev]->press_SP, parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaCopyMedianPrint(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parH[lev]->vx_SP_Med   , parD[lev]->vx_SP_Med   , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->vy_SP_Med   , parD[lev]->vy_SP_Med   , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->vz_SP_Med   , parD[lev]->vz_SP_Med   , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->rho_SP_Med  , parD[lev]->rho_SP_Med  , parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->press_SP_Med, parD[lev]->press_SP_Med, parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vx_SP_Med   , parD[lev]->vx_SP_Med   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vy_SP_Med   , parD[lev]->vy_SP_Med   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vz_SP_Med   , parD[lev]->vz_SP_Med   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->rho_SP_Med  , parD[lev]->rho_SP_Med  , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->press_SP_Med, parD[lev]->press_SP_Med, parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
 //sparse
 void Parameter::cudaAllocSP(int lev)
@@ -478,25 +482,25 @@ void Parameter::cudaAllocSP(int lev)
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->neighborX_SP    ), parH[lev]->mem_size_int_SP    ));
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->neighborY_SP    ), parH[lev]->mem_size_int_SP    ));
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->neighborZ_SP    ), parH[lev]->mem_size_int_SP    ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->rho_SP          ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vx_SP           ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vy_SP           ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vz_SP           ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->press_SP        ), parH[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->rho_SP          ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vx_SP           ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vy_SP           ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vz_SP           ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->press_SP        ), parH[lev]->mem_size_real_SP));
 	//Device						 
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->geoSP               ), parD[lev]->mem_size_int_SP    ));
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->neighborX_SP        ), parD[lev]->mem_size_int_SP    ));
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->neighborY_SP        ), parD[lev]->mem_size_int_SP    ));
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->neighborZ_SP        ), parD[lev]->mem_size_int_SP    ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->rho_SP              ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vx_SP               ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vy_SP               ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vz_SP               ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->press_SP            ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d0SP.f[0]           ), (unsigned long long)getD3Qxx()*(unsigned long long)parD[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->rho_SP              ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vx_SP               ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vy_SP               ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vz_SP               ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->press_SP            ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d0SP.f[0]           ), (unsigned long long)getD3Qxx()*(unsigned long long)parD[lev]->mem_size_real_SP));
 	//////////////////////////////////////////////////////////////////////////
-	//double tmp = 4. * (double)parH[lev]->mem_size_int_SP + 10. * (double)parH[lev]->mem_size_doubflo_SP + (double)getD3Qxx() * (double)parH[lev]->mem_size_doubflo_SP;
-	double tmp = 4. * (double)parH[lev]->mem_size_int_SP + 5. * (double)parH[lev]->mem_size_doubflo_SP + (double)getD3Qxx() * (double)parH[lev]->mem_size_doubflo_SP;
+	//double tmp = 4. * (double)parH[lev]->mem_size_int_SP + 10. * (double)parH[lev]->mem_size_real_SP + (double)getD3Qxx() * (double)parH[lev]->mem_size_real_SP;
+	double tmp = 4. * (double)parH[lev]->mem_size_int_SP + 5. * (double)parH[lev]->mem_size_real_SP + (double)getD3Qxx() * (double)parH[lev]->mem_size_real_SP;
 	setMemsizeGPU(tmp, false);
 
 	//int test = sizeof(int);
@@ -505,7 +509,7 @@ void Parameter::cudaAllocSP(int lev)
 	//printf("AlocSP = %f MB \n",tmp/1000000.);  
 	//int test = sizeof(float*);
 	//printf("float* = %d \n",test); 
-	//unsigned long long test2 = (unsigned long long)getD3Qxx()*(unsigned long long)parD[lev]->mem_size_doubflo_SP;
+	//unsigned long long test2 = (unsigned long long)getD3Qxx()*(unsigned long long)parD[lev]->mem_size_real_SP;
 	//test2 = test2 / 1000000000; 
 	//printf("test2 = %d \n",test2); 
 }
@@ -516,11 +520,11 @@ void Parameter::cudaCopySP(int lev)
 	checkCudaErrors( cudaMemcpy(parD[lev]->neighborX_SP,  parH[lev]->neighborX_SP,  parH[lev]->mem_size_int_SP     , cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->neighborY_SP,  parH[lev]->neighborY_SP,  parH[lev]->mem_size_int_SP     , cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->neighborZ_SP,  parH[lev]->neighborZ_SP,  parH[lev]->mem_size_int_SP     , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->rho_SP      ,  parH[lev]->rho_SP      ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->vx_SP       ,  parH[lev]->vx_SP       ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->vy_SP       ,  parH[lev]->vy_SP       ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->vz_SP       ,  parH[lev]->vz_SP       ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->press_SP    ,  parH[lev]->press_SP    ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->rho_SP      ,  parH[lev]->rho_SP      ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->vx_SP       ,  parH[lev]->vx_SP       ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->vy_SP       ,  parH[lev]->vy_SP       ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->vz_SP       ,  parH[lev]->vz_SP       ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->press_SP    ,  parH[lev]->press_SP    ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
 }
 void Parameter::cudaFreeSP(int lev)
 {
@@ -538,9 +542,9 @@ void Parameter::cudaFreeSP(int lev)
 void Parameter::cudaAllocF3SP(int lev)
 {
 	//Device						 
-	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->g6.g[0]), (unsigned long long)6*(unsigned long long)parD[lev]->mem_size_doubflo_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->g6.g[0]), (unsigned long long)6*(unsigned long long)parD[lev]->mem_size_real_SP));
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (double)6 * (double)parH[lev]->mem_size_doubflo_SP;
+	double tmp = (double)6 * (double)parH[lev]->mem_size_real_SP;
 	setMemsizeGPU(tmp, false);
 }
 //negative neighbor (WSB)
@@ -567,22 +571,22 @@ void Parameter::cudaFreeNeighborWSB(int lev)
 void Parameter::cudaAllocTurbulentViscosity(int lev)
 {
 	//Host
-	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->turbViscosity), parH[lev]->mem_size_doubflo_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->turbViscosity), parH[lev]->mem_size_real_SP));
 	//Device						 
-	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->turbViscosity), parD[lev]->mem_size_doubflo_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->turbViscosity), parD[lev]->mem_size_real_SP));
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (double)parH[lev]->mem_size_doubflo_SP;
+	double tmp = (double)parH[lev]->mem_size_real_SP;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyTurbulentViscosityHD(int lev)
 {
 	//copy host to device
-	checkCudaErrors(cudaMemcpy(parD[lev]->turbViscosity, parH[lev]->turbViscosity, parH[lev]->mem_size_doubflo_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->turbViscosity, parH[lev]->turbViscosity, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
 }
 void Parameter::cudaCopyTurbulentViscosityDH(int lev)
 {
 	//copy device to host
-	checkCudaErrors(cudaMemcpy(parH[lev]->turbViscosity, parD[lev]->turbViscosity, parH[lev]->mem_size_doubflo_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->turbViscosity, parD[lev]->turbViscosity, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreeTurbulentViscosity(int lev)
 {
@@ -592,29 +596,29 @@ void Parameter::cudaFreeTurbulentViscosity(int lev)
 void Parameter::cudaAllocMedianSP(int lev)
 {
 	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->rho_SP_Med      ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vx_SP_Med       ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vy_SP_Med       ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vz_SP_Med       ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->press_SP_Med    ), parH[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->rho_SP_Med      ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vx_SP_Med       ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vy_SP_Med       ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vz_SP_Med       ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->press_SP_Med    ), parH[lev]->mem_size_real_SP));
 	//Device						 
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->rho_SP_Med          ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vx_SP_Med           ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vy_SP_Med           ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vz_SP_Med           ), parD[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->press_SP_Med        ), parD[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->rho_SP_Med          ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vx_SP_Med           ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vy_SP_Med           ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->vz_SP_Med           ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->press_SP_Med        ), parD[lev]->mem_size_real_SP));
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = 5. * (double)parH[lev]->mem_size_doubflo_SP;
+	double tmp = 5. * (double)parH[lev]->mem_size_real_SP;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyMedianSP(int lev)
 {
 	//copy host to device
-	checkCudaErrors( cudaMemcpy(parD[lev]->rho_SP_Med  ,  parH[lev]->rho_SP_Med  ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->vx_SP_Med   ,  parH[lev]->vx_SP_Med   ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->vy_SP_Med   ,  parH[lev]->vy_SP_Med   ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->vz_SP_Med   ,  parH[lev]->vz_SP_Med   ,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->press_SP_Med,  parH[lev]->press_SP_Med,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->rho_SP_Med  ,  parH[lev]->rho_SP_Med  ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->vx_SP_Med   ,  parH[lev]->vx_SP_Med   ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->vy_SP_Med   ,  parH[lev]->vy_SP_Med   ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->vz_SP_Med   ,  parH[lev]->vz_SP_Med   ,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->press_SP_Med,  parH[lev]->press_SP_Med,  parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
 }
 void Parameter::cudaFreeMedianSP(int lev)
 {
@@ -627,11 +631,11 @@ void Parameter::cudaFreeMedianSP(int lev)
 void Parameter::cudaAllocMedianOut(int lev)
 {
 	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->rho_SP_Med_Out      ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vx_SP_Med_Out       ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vy_SP_Med_Out       ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vz_SP_Med_Out       ), parH[lev]->mem_size_doubflo_SP));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->press_SP_Med_Out    ), parH[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->rho_SP_Med_Out      ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vx_SP_Med_Out       ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vy_SP_Med_Out       ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->vz_SP_Med_Out       ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->press_SP_Med_Out    ), parH[lev]->mem_size_real_SP));
 }
 void Parameter::cudaFreeMedianOut(int lev)
 {
@@ -752,9 +756,9 @@ void Parameter::cudaFreeInterfaceOffFC(int lev)
 void Parameter::cudaAllocVeloBC(int lev)
 {
 	unsigned int mem_size_inflow_Q_k = sizeof(int)*parH[lev]->Qinflow.kArray;
-	unsigned int mem_size_inflow_Q_q = sizeof(doubflo)*parH[lev]->Qinflow.kArray;
+	unsigned int mem_size_inflow_Q_q = sizeof(real)*parH[lev]->Qinflow.kArray;
 	//unsigned int mem_size_inflow_Q_k = sizeof(int)*parH[lev]->Qinflow.kQ;
-	//unsigned int mem_size_inflow_Q_q = sizeof(doubflo)*parH[lev]->Qinflow.kQ;
+	//unsigned int mem_size_inflow_Q_q = sizeof(real)*parH[lev]->Qinflow.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->Qinflow.q27[0]),  getD3Qxx()*mem_size_inflow_Q_q ));
@@ -780,9 +784,9 @@ void Parameter::cudaAllocVeloBC(int lev)
 void Parameter::cudaCopyVeloBC(int lev)
 {
 	unsigned int mem_size_inflow_Q_k = sizeof(int)*parH[lev]->Qinflow.kArray;
-	unsigned int mem_size_inflow_Q_q = sizeof(doubflo)*parH[lev]->Qinflow.kArray;
+	unsigned int mem_size_inflow_Q_q = sizeof(real)*parH[lev]->Qinflow.kArray;
 	//unsigned int mem_size_inflow_Q_k = sizeof(int)*parH[lev]->Qinflow.kQ;
-	//unsigned int mem_size_inflow_Q_q = sizeof(doubflo)*parH[lev]->Qinflow.kQ;
+	//unsigned int mem_size_inflow_Q_q = sizeof(real)*parH[lev]->Qinflow.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->Qinflow.q27[0],  parH[lev]->Qinflow.q27[0], getD3Qxx()* mem_size_inflow_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->Qinflow.k,       parH[lev]->Qinflow.k,                  mem_size_inflow_Q_k,  cudaMemcpyHostToDevice));
@@ -805,7 +809,7 @@ void Parameter::cudaFreeVeloBC(int lev)
 void Parameter::cudaAllocOutflowBC(int lev)
 {
 	unsigned int mem_size_outflow_Q_k = sizeof(int)*parH[lev]->Qoutflow.kQ;
-	unsigned int mem_size_outflow_Q_q = sizeof(doubflo)*parH[lev]->Qoutflow.kQ;
+	unsigned int mem_size_outflow_Q_q = sizeof(real)*parH[lev]->Qoutflow.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->Qoutflow.q27[0]), getD3Qxx()*mem_size_outflow_Q_q ));
@@ -826,7 +830,7 @@ void Parameter::cudaAllocOutflowBC(int lev)
 void Parameter::cudaCopyOutflowBC(int lev)
 {
 	unsigned int mem_size_outflow_Q_k = sizeof(int)*parH[lev]->Qoutflow.kQ;
-	unsigned int mem_size_outflow_Q_q = sizeof(doubflo)*parH[lev]->Qoutflow.kQ;
+	unsigned int mem_size_outflow_Q_q = sizeof(real)*parH[lev]->Qoutflow.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->Qoutflow.q27[0],  parH[lev]->Qoutflow.q27[0], getD3Qxx()* mem_size_outflow_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->Qoutflow.k,       parH[lev]->Qoutflow.k,                  mem_size_outflow_Q_k,  cudaMemcpyHostToDevice));
@@ -844,7 +848,7 @@ void Parameter::cudaFreeOutflowBC(int lev)
 void Parameter::cudaAllocInlet(int lev)
 {
 	unsigned int mem_size_inlet_Q_k = sizeof(int)*parH[lev]->QInlet.kQ;
-	unsigned int mem_size_inlet_Q_q = sizeof(doubflo)*parH[lev]->QInlet.kQ;
+	unsigned int mem_size_inlet_Q_q = sizeof(real)*parH[lev]->QInlet.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QInlet.q27[0]), getD3Qxx()*mem_size_inlet_Q_q ));
@@ -865,7 +869,7 @@ void Parameter::cudaAllocInlet(int lev)
 void Parameter::cudaCopyInlet(int lev)
 {
 	unsigned int mem_size_inlet_Q_k = sizeof(int)*parH[lev]->QInlet.kQ;
-	unsigned int mem_size_inlet_Q_q = sizeof(doubflo)*parH[lev]->QInlet.kQ;
+	unsigned int mem_size_inlet_Q_q = sizeof(real)*parH[lev]->QInlet.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QInlet.q27[0],  parH[lev]->QInlet.q27[0], getD3Qxx()* mem_size_inlet_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QInlet.k,       parH[lev]->QInlet.k,                  mem_size_inlet_Q_k,  cudaMemcpyHostToDevice));
@@ -883,7 +887,7 @@ void Parameter::cudaFreeInlet(int lev)
 void Parameter::cudaAllocOutlet(int lev)
 {
 	unsigned int mem_size_outlet_Q_k = sizeof(int)*parH[lev]->QOutlet.kQ;
-	unsigned int mem_size_outlet_Q_q = sizeof(doubflo)*parH[lev]->QOutlet.kQ;
+	unsigned int mem_size_outlet_Q_q = sizeof(real)*parH[lev]->QOutlet.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QOutlet.q27[0]), getD3Qxx()*mem_size_outlet_Q_q ));
@@ -904,7 +908,7 @@ void Parameter::cudaAllocOutlet(int lev)
 void Parameter::cudaCopyOutlet(int lev)
 {
 	unsigned int mem_size_outlet_Q_k = sizeof(int)*parH[lev]->QOutlet.kQ;
-	unsigned int mem_size_outlet_Q_q = sizeof(doubflo)*parH[lev]->QOutlet.kQ;
+	unsigned int mem_size_outlet_Q_q = sizeof(real)*parH[lev]->QOutlet.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QOutlet.q27[0],  parH[lev]->QOutlet.q27[0], getD3Qxx()* mem_size_outlet_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QOutlet.k,       parH[lev]->QOutlet.k,                  mem_size_outlet_Q_k,  cudaMemcpyHostToDevice));
@@ -922,9 +926,9 @@ void Parameter::cudaFreeOutlet(int lev)
 void Parameter::cudaAllocWallBC(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QWall.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QWall.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QWall.kQ;
 	unsigned int mem_size_Q_value  = sizeof(long long)*parH[lev]->QWall.kQ; //Geller
-	unsigned int mem_size_Q_q_read = sizeof(doubflo)*parH[lev]->kQread;     //Geller
+	unsigned int mem_size_Q_q_read = sizeof(real)*parH[lev]->kQread;     //Geller
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QWall.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -943,7 +947,7 @@ void Parameter::cudaAllocWallBC(int lev)
 void Parameter::cudaCopyWallBC(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QWall.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QWall.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QWall.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QWall.q27[0], parH[lev]->QWall.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QWall.k,      parH[lev]->QWall.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -959,7 +963,7 @@ void Parameter::cudaFreeWallBC(int lev)
 void Parameter::cudaAllocGeomBC(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QGeom.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QGeom.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QGeom.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QGeom.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -976,7 +980,7 @@ void Parameter::cudaAllocGeomBC(int lev)
 void Parameter::cudaCopyGeomBC(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QGeom.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QGeom.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QGeom.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QGeom.q27[0], parH[lev]->QGeom.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QGeom.k,      parH[lev]->QGeom.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -989,7 +993,7 @@ void Parameter::cudaFreeGeomBC(int lev)
 //Geometrie inkl. Values
 void Parameter::cudaAllocGeomValuesBC(int lev)
 {
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QGeom.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QGeom.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QGeom.Vx),  mem_size_Q_q ));
@@ -1007,7 +1011,7 @@ void Parameter::cudaAllocGeomValuesBC(int lev)
 }
 void Parameter::cudaCopyGeomValuesBC(int lev)
 {
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QGeom.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QGeom.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QGeom.Vx, parH[lev]->QGeom.Vx,  mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QGeom.Vy, parH[lev]->QGeom.Vy,  mem_size_Q_q,       cudaMemcpyHostToDevice));
@@ -1023,7 +1027,7 @@ void Parameter::cudaFreeGeomValuesBC(int lev)
 void Parameter::cudaAllocGeomNormals(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QGeomNormalX.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QGeomNormalX.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QGeomNormalX.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QGeomNormalX.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -1048,7 +1052,7 @@ void Parameter::cudaAllocGeomNormals(int lev)
 void Parameter::cudaCopyGeomNormals(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QGeomNormalX.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QGeomNormalX.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QGeomNormalX.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QGeomNormalX.q27[0], parH[lev]->QGeomNormalX.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QGeomNormalX.k,      parH[lev]->QGeomNormalX.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1070,7 +1074,7 @@ void Parameter::cudaFreeGeomNormals(int lev)
 void Parameter::cudaAllocInflowNormals(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QInflowNormalX.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QInflowNormalX.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QInflowNormalX.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QInflowNormalX.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -1095,7 +1099,7 @@ void Parameter::cudaAllocInflowNormals(int lev)
 void Parameter::cudaCopyInflowNormals(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QInflowNormalX.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QInflowNormalX.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QInflowNormalX.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QInflowNormalX.q27[0], parH[lev]->QInflowNormalX.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QInflowNormalX.k,      parH[lev]->QInflowNormalX.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1117,7 +1121,7 @@ void Parameter::cudaFreeInflowNormals(int lev)
 void Parameter::cudaAllocOutflowNormals(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QOutflowNormalX.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QOutflowNormalX.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QOutflowNormalX.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QOutflowNormalX.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -1142,7 +1146,7 @@ void Parameter::cudaAllocOutflowNormals(int lev)
 void Parameter::cudaCopyOutflowNormals(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QOutflowNormalX.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QOutflowNormalX.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QOutflowNormalX.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QOutflowNormalX.q27[0], parH[lev]->QOutflowNormalX.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QOutflowNormalX.k,      parH[lev]->QOutflowNormalX.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1164,9 +1168,9 @@ void Parameter::cudaFreeOutflowNormals(int lev)
 void Parameter::cudaAllocSlipBC(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QSlip.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QSlip.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QSlip.kQ;
 	//unsigned int mem_size_Q_value  = sizeof(long long)*parH[lev]->QSlip.kQ; //Geller
-	//unsigned int mem_size_Q_q_read = sizeof(doubflo)*parH[lev]->kSlipQread;     //Geller
+	//unsigned int mem_size_Q_q_read = sizeof(real)*parH[lev]->kSlipQread;     //Geller
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QSlip.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -1185,7 +1189,7 @@ void Parameter::cudaAllocSlipBC(int lev)
 void Parameter::cudaCopySlipBC(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QSlip.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QSlip.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QSlip.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QSlip.q27[0], parH[lev]->QSlip.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QSlip.k,      parH[lev]->QSlip.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1201,9 +1205,9 @@ void Parameter::cudaFreeSlipBC(int lev)
 void Parameter::cudaAllocPress(int lev)
 {
 	unsigned int mem_size_Q_k      = sizeof(int)*parH[lev]->QPress.kQ;
-	unsigned int mem_size_Q_q      = sizeof(doubflo)*parH[lev]->QPress.kQ;
+	unsigned int mem_size_Q_q      = sizeof(real)*parH[lev]->QPress.kQ;
 	//unsigned int mem_size_Q_value  = sizeof(long long)*parH[lev]->QPress.kQ; //Geller
-	//unsigned int mem_size_Q_q_read = sizeof(doubflo)*parH[lev]->kPressQread;     //Geller
+	//unsigned int mem_size_Q_q_read = sizeof(real)*parH[lev]->kPressQread;     //Geller
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QPress.q27[0]), getD3Qxx()*mem_size_Q_q      ));
@@ -1226,7 +1230,7 @@ void Parameter::cudaAllocPress(int lev)
 void Parameter::cudaCopyPress(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QPress.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QPress.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QPress.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QPress.q27[0], parH[lev]->QPress.q27[0], getD3Qxx()* mem_size_Q_q,       cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QPress.k,      parH[lev]->QPress.k,                  mem_size_Q_k,       cudaMemcpyHostToDevice));
@@ -1245,7 +1249,7 @@ void Parameter::cudaFreePress(int lev)
 //Test roundoff error
 void Parameter::cudaAllocTestRE(int lev, unsigned int size)
 {
-	unsigned int mem_size = sizeof(doubflo)*size;
+	unsigned int mem_size = sizeof(real)*size;
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->kDistTestRE.f[0]), (1+getD3Qxx())*mem_size));
 	//Device
@@ -1256,12 +1260,12 @@ void Parameter::cudaAllocTestRE(int lev, unsigned int size)
 }
 void Parameter::cudaCopyTestREtoDevice(int lev, unsigned int size)
 {
-	unsigned int mem_size = sizeof(doubflo)*size;
+	unsigned int mem_size = sizeof(real)*size;
 	checkCudaErrors( cudaMemcpy(parD[lev]->kDistTestRE.f[0], parH[lev]->kDistTestRE.f[0], (1+getD3Qxx())*mem_size, cudaMemcpyHostToDevice));
 }
 void Parameter::cudaCopyTestREtoHost(int lev, unsigned int size)
 {
-	unsigned int mem_size = sizeof(doubflo)*size;
+	unsigned int mem_size = sizeof(real)*size;
 	checkCudaErrors( cudaMemcpy(parH[lev]->kDistTestRE.f[0], parD[lev]->kDistTestRE.f[0], (1+getD3Qxx())*mem_size, cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreeTestRE(int lev)
@@ -1272,7 +1276,7 @@ void Parameter::cudaFreeTestRE(int lev)
 void Parameter::cudaAllocPressX0(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QpressX0.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QpressX0.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QpressX0.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QpressX0.q27[0]), getD3Qxx()*mem_size_Q_q ));
@@ -1301,7 +1305,7 @@ void Parameter::cudaAllocPressX0(int lev)
 void Parameter::cudaCopyPressX0(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QpressX0.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QpressX0.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QpressX0.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QpressX0.q27[0],  parH[lev]->QpressX0.q27[0], getD3Qxx()* mem_size_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QpressX0.k,       parH[lev]->QpressX0.k,                  mem_size_Q_k,  cudaMemcpyHostToDevice));
@@ -1327,7 +1331,7 @@ void Parameter::cudaFreePressX0(int lev)
 void Parameter::cudaAllocPressX1(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QpressX1.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QpressX1.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QpressX1.kQ;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QpressX1.q27[0]), getD3Qxx()*mem_size_Q_q ));
@@ -1356,7 +1360,7 @@ void Parameter::cudaAllocPressX1(int lev)
 void Parameter::cudaCopyPressX1(int lev)
 {
 	unsigned int mem_size_Q_k = sizeof(int)*parH[lev]->QpressX1.kQ;
-	unsigned int mem_size_Q_q = sizeof(doubflo)*parH[lev]->QpressX1.kQ;
+	unsigned int mem_size_Q_q = sizeof(real)*parH[lev]->QpressX1.kQ;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->QpressX1.q27[0],  parH[lev]->QpressX1.q27[0], getD3Qxx()* mem_size_Q_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QpressX1.k,       parH[lev]->QpressX1.k,                  mem_size_Q_k,  cudaMemcpyHostToDevice));
@@ -1382,7 +1386,7 @@ void Parameter::cudaFreePressX1(int lev)
 void Parameter::cudaAllocVeloPropeller(int lev)
 {
 	unsigned int mem_size_Propeller_k = sizeof(int)*parH[lev]->QPropeller.kQ;
-	unsigned int mem_size_Propeller_q = sizeof(doubflo)*parH[lev]->QPropeller.kQ;
+	unsigned int mem_size_Propeller_q = sizeof(real)*parH[lev]->QPropeller.kQ;
 
 	//Host
 	//checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->QPropeller.q27[0]),  getD3Qxx()*mem_size_Propeller_q ));
@@ -1407,7 +1411,7 @@ void Parameter::cudaAllocVeloPropeller(int lev)
 void Parameter::cudaCopyVeloPropeller(int lev)
 {
 	unsigned int mem_size_Propeller_k = sizeof(int)*parH[lev]->QPropeller.kQ;
-	unsigned int mem_size_Propeller_q = sizeof(doubflo)*parH[lev]->QPropeller.kQ;
+	unsigned int mem_size_Propeller_q = sizeof(real)*parH[lev]->QPropeller.kQ;
 
 	//checkCudaErrors( cudaMemcpy(parD[lev]->QPropeller.q27[0],  parH[lev]->QPropeller.q27[0], getD3Qxx()* mem_size_Propeller_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->QPropeller.k,       parH[lev]->QPropeller.k,                  mem_size_Propeller_k,  cudaMemcpyHostToDevice));
@@ -1429,23 +1433,23 @@ void Parameter::cudaFreeVeloPropeller(int lev)
 //void Parameter::cudaAllocMeasurePoints(int lev, int i)
 //{
 //	//Host
-//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Vx),                 parH[lev]->memSizeDoubfloMP ));
-//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Vy),                 parH[lev]->memSizeDoubfloMP ));
-//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Vz),                 parH[lev]->memSizeDoubfloMP ));
-//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Rho),                parH[lev]->memSizeDoubfloMP ));
+//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Vx),                 parH[lev]->memSizerealMP ));
+//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Vy),                 parH[lev]->memSizerealMP ));
+//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Vz),                 parH[lev]->memSizerealMP ));
+//	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->MP[i].Rho),                parH[lev]->memSizerealMP ));
 //
 //	//Device
-//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Vx),                     parD[lev]->memSizeDoubfloMP ));
-//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Vy),                     parD[lev]->memSizeDoubfloMP ));
-//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Vz),                     parD[lev]->memSizeDoubfloMP ));
-//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Rho),                    parD[lev]->memSizeDoubfloMP ));
+//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Vx),                     parD[lev]->memSizerealMP ));
+//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Vy),                     parD[lev]->memSizerealMP ));
+//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Vz),                     parD[lev]->memSizerealMP ));
+//	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->MP[i].Rho),                    parD[lev]->memSizerealMP ));
 //}
 //void Parameter::cudaCopyMeasurePoints(int lev, int i)
 //{
-//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Vx,      parH[lev]->MP[i].Vx,           parH[lev]->memSizeDoubfloMP,  cudaMemcpyHostToDevice));
-//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Vy,      parH[lev]->MP[i].Vy,           parH[lev]->memSizeDoubfloMP,  cudaMemcpyHostToDevice));
-//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Vz,      parH[lev]->MP[i].Vz,           parH[lev]->memSizeDoubfloMP,  cudaMemcpyHostToDevice));
-//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Rho,     parH[lev]->MP[i].Rho,          parH[lev]->memSizeDoubfloMP,  cudaMemcpyHostToDevice));
+//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Vx,      parH[lev]->MP[i].Vx,           parH[lev]->memSizerealMP,  cudaMemcpyHostToDevice));
+//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Vy,      parH[lev]->MP[i].Vy,           parH[lev]->memSizerealMP,  cudaMemcpyHostToDevice));
+//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Vz,      parH[lev]->MP[i].Vz,           parH[lev]->memSizerealMP,  cudaMemcpyHostToDevice));
+//	checkCudaErrors( cudaMemcpy(parD[lev]->MP[i].Rho,     parH[lev]->MP[i].Rho,          parH[lev]->memSizerealMP,  cudaMemcpyHostToDevice));
 //}
 //void Parameter::cudaFreeMeasurePoints(int lev, int i)
 //{
@@ -1458,37 +1462,37 @@ void Parameter::cudaAllocMeasurePointsIndex(int lev)
 {
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->kMP),						parH[lev]->memSizeIntkMP     ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VxMP),					parH[lev]->memSizeDoubflokMP ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VyMP),					parH[lev]->memSizeDoubflokMP ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VzMP),					parH[lev]->memSizeDoubflokMP ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->RhoMP),					parH[lev]->memSizeDoubflokMP ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VxMP),					parH[lev]->memSizerealkMP ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VyMP),					parH[lev]->memSizerealkMP ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VzMP),					parH[lev]->memSizerealkMP ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->RhoMP),					parH[lev]->memSizerealkMP ));
 
 	//Device
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->kMP),							parD[lev]->memSizeIntkMP     ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VxMP),						parD[lev]->memSizeDoubflokMP ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VyMP),						parD[lev]->memSizeDoubflokMP ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VzMP),						parD[lev]->memSizeDoubflokMP ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->RhoMP),						parD[lev]->memSizeDoubflokMP ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VxMP),						parD[lev]->memSizerealkMP ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VyMP),						parD[lev]->memSizerealkMP ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VzMP),						parD[lev]->memSizerealkMP ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->RhoMP),						parD[lev]->memSizerealkMP ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (double)parH[lev]->memSizeIntkMP + 4. * (double)parH[lev]->memSizeDoubflokMP;
+	double tmp = (double)parH[lev]->memSizeIntkMP + 4. * (double)parH[lev]->memSizerealkMP;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyMeasurePointsIndex(int lev)
 {
 	checkCudaErrors( cudaMemcpy(parD[lev]->kMP,           parH[lev]->kMP,                parH[lev]->memSizeIntkMP,      cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->VxMP,          parH[lev]->VxMP,               parH[lev]->memSizeDoubflokMP,  cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->VyMP,          parH[lev]->VyMP,               parH[lev]->memSizeDoubflokMP,  cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->VzMP,          parH[lev]->VzMP,               parH[lev]->memSizeDoubflokMP,  cudaMemcpyHostToDevice));
-	checkCudaErrors( cudaMemcpy(parD[lev]->RhoMP,         parH[lev]->RhoMP,              parH[lev]->memSizeDoubflokMP,  cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->VxMP,          parH[lev]->VxMP,               parH[lev]->memSizerealkMP,  cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->VyMP,          parH[lev]->VyMP,               parH[lev]->memSizerealkMP,  cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->VzMP,          parH[lev]->VzMP,               parH[lev]->memSizerealkMP,  cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->RhoMP,         parH[lev]->RhoMP,              parH[lev]->memSizerealkMP,  cudaMemcpyHostToDevice));
 }
 void Parameter::cudaCopyMeasurePointsToHost(int lev)
 {
 	checkCudaErrors( cudaMemcpy(parH[lev]->kMP,           parD[lev]->kMP,                parH[lev]->memSizeIntkMP,      cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->VxMP,          parD[lev]->VxMP,               parH[lev]->memSizeDoubflokMP,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->VyMP,          parD[lev]->VyMP,               parH[lev]->memSizeDoubflokMP,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->VzMP,          parD[lev]->VzMP,               parH[lev]->memSizeDoubflokMP,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->RhoMP,         parD[lev]->RhoMP,              parH[lev]->memSizeDoubflokMP,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->VxMP,          parD[lev]->VxMP,               parH[lev]->memSizerealkMP,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->VyMP,          parD[lev]->VyMP,               parH[lev]->memSizerealkMP,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->VzMP,          parD[lev]->VzMP,               parH[lev]->memSizerealkMP,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->RhoMP,         parD[lev]->RhoMP,              parH[lev]->memSizerealkMP,  cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreeMeasurePointsIndex(int lev)
 {
@@ -1500,15 +1504,15 @@ void Parameter::cudaFreeMeasurePointsIndex(int lev)
 }
 void Parameter::cudaAllocFsForCheckPointAndRestart(int lev)
 {
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->d0SP.f[0] ),           (unsigned long long)getD3Qxx()*(unsigned long long)parH[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->d0SP.f[0] ),           (unsigned long long)getD3Qxx()*(unsigned long long)parH[lev]->mem_size_real_SP));
 }
 void Parameter::cudaCopyFsForRestart(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parD[lev]->d0SP.f[0],  parH[lev]->d0SP.f[0],     (unsigned long long)getD3Qxx()*(unsigned long long)parH[lev]->mem_size_doubflo_SP , cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->d0SP.f[0],  parH[lev]->d0SP.f[0],     (unsigned long long)getD3Qxx()*(unsigned long long)parH[lev]->mem_size_real_SP , cudaMemcpyHostToDevice));
 }
 void Parameter::cudaCopyFsForCheckPoint(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parH[lev]->d0SP.f[0],  parD[lev]->d0SP.f[0],     (unsigned long long)getD3Qxx()*(unsigned long long)parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->d0SP.f[0],  parD[lev]->d0SP.f[0],     (unsigned long long)getD3Qxx()*(unsigned long long)parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreeFsForCheckPointAndRestart(int lev)
 {
@@ -1562,7 +1566,7 @@ void Parameter::cudaFreeDragLift(int lev)
 //2ndMoments
 void Parameter::cudaAlloc2ndMoments(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->kxyFromfcNEQ   ), mem_size  ));
@@ -1579,12 +1583,12 @@ void Parameter::cudaAlloc2ndMoments(int lev, int numofelem)
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->kxxMzzFromfcNEQ), mem_size  ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = 5. * (doubflo)mem_size;
+	double tmp = 5. * (real)mem_size;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopy2ndMoments(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	checkCudaErrors( cudaMemcpy(parH[lev]->kxyFromfcNEQ   , parD[lev]->kxyFromfcNEQ   , mem_size, cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->kyzFromfcNEQ   , parD[lev]->kyzFromfcNEQ   , mem_size, cudaMemcpyDeviceToHost));
@@ -1603,7 +1607,7 @@ void Parameter::cudaFree2ndMoments(int lev)
 //3rdMoments
 void Parameter::cudaAlloc3rdMoments(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->CUMbbb ), mem_size ));
@@ -1624,12 +1628,12 @@ void Parameter::cudaAlloc3rdMoments(int lev, int numofelem)
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->CUMcab ), mem_size ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = 7. * (doubflo)mem_size;
+	double tmp = 7. * (real)mem_size;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopy3rdMoments(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	checkCudaErrors( cudaMemcpy(parH[lev]->CUMbbb, parD[lev]->CUMbbb, mem_size, cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->CUMabc, parD[lev]->CUMabc, mem_size, cudaMemcpyDeviceToHost));
@@ -1652,7 +1656,7 @@ void Parameter::cudaFree3rdMoments(int lev)
 //higher order moments
 void Parameter::cudaAllocHigherMoments(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->CUMcbb ), mem_size ));
@@ -1679,12 +1683,12 @@ void Parameter::cudaAllocHigherMoments(int lev, int numofelem)
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->CUMccc ), mem_size ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = 7. * (doubflo)mem_size;
+	double tmp = 7. * (real)mem_size;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyHigherMoments(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	checkCudaErrors( cudaMemcpy(parH[lev]->CUMcbb, parD[lev]->CUMcbb, mem_size, cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->CUMbcb, parD[lev]->CUMbcb, mem_size, cudaMemcpyDeviceToHost));
@@ -1713,7 +1717,7 @@ void Parameter::cudaFreeHigherMoments(int lev)
 //Velcities to fit the Forcing
 void Parameter::cudaAllocForceVelo(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->VxForce   ), mem_size  ));
@@ -1726,12 +1730,12 @@ void Parameter::cudaAllocForceVelo(int lev, int numofelem)
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->VzForce   ), mem_size  ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = 3. * (doubflo)mem_size;
+	double tmp = 3. * (real)mem_size;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyForceVelo(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 
 	checkCudaErrors( cudaMemcpy(parH[lev]->VxForce   , parD[lev]->VxForce   , mem_size, cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->VyForce   , parD[lev]->VyForce   , mem_size, cudaMemcpyDeviceToHost));
@@ -1746,23 +1750,23 @@ void Parameter::cudaFreeForceVelo(int lev)
 //Forcing
 void Parameter::cudaAllocForcing()
 {
-	unsigned int mem_size = sizeof(doubflo) * 3;
+	unsigned int mem_size = sizeof(real) * 3;
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(this->forcingH ), mem_size));
 	//Device
 	checkCudaErrors( cudaMalloc(    (void**) &(this->forcingD ), mem_size));
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (doubflo)mem_size;
+	double tmp = (real)mem_size;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyForcingToDevice()
 {
-	unsigned int mem_size = sizeof(doubflo) * 3;
+	unsigned int mem_size = sizeof(real) * 3;
 	checkCudaErrors( cudaMemcpy(this->forcingD, this->forcingH , mem_size, cudaMemcpyHostToDevice));
 }
 void Parameter::cudaCopyForcingToHost()
 {
-	unsigned int mem_size = sizeof(doubflo) * 3;
+	unsigned int mem_size = sizeof(real) * 3;
 	checkCudaErrors( cudaMemcpy(this->forcingH, this->forcingD , mem_size, cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreeForcing()
@@ -1889,16 +1893,16 @@ void Parameter::cudaFreeCpBottom2(int lev)
 void Parameter::cudaAllocParticles(int lev)
 {
 	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordXlocal),        parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordYlocal),        parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordZlocal),        parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordXabsolut),      parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordYabsolut),      parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordZabsolut),      parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.veloX),              parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.veloY),              parH[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.veloZ),              parH[lev]->plp.memSizeDoubfloAll  ));
-	//checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.randomLocationInit), parH[lev]->plp.memSizeDoubflo     ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordXlocal),        parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordYlocal),        parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordZlocal),        parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordXabsolut),      parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordYabsolut),      parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.coordZabsolut),      parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.veloX),              parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.veloY),              parH[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.veloZ),              parH[lev]->plp.memSizerealAll  ));
+	//checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.randomLocationInit), parH[lev]->plp.memSizereal     ));
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.ID),                 parH[lev]->plp.memSizeID          ));
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.cellBaseID),         parH[lev]->plp.memSizeID          ));
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.timestep),           parH[lev]->plp.memSizeTimestep    ));
@@ -1906,16 +1910,16 @@ void Parameter::cudaAllocParticles(int lev)
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->plp.hot),                parH[lev]->plp.memSizeBoolBC      ));
 
 	//Device
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordXlocal),            parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordYlocal),            parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordZlocal),            parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordXabsolut),          parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordYabsolut),          parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordZabsolut),          parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.veloX),                  parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.veloY),                  parD[lev]->plp.memSizeDoubfloAll  ));
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.veloZ),                  parD[lev]->plp.memSizeDoubfloAll  ));
-	//checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.randomLocationInit),     parD[lev]->plp.memSizeDoubflo     ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordXlocal),            parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordYlocal),            parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordZlocal),            parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordXabsolut),          parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordYabsolut),          parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.coordZabsolut),          parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.veloX),                  parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.veloY),                  parD[lev]->plp.memSizerealAll  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.veloZ),                  parD[lev]->plp.memSizerealAll  ));
+	//checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.randomLocationInit),     parD[lev]->plp.memSizereal     ));
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.ID),                     parD[lev]->plp.memSizeID          ));
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.cellBaseID),             parD[lev]->plp.memSizeID          ));
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.timestep),               parD[lev]->plp.memSizeTimestep    ));
@@ -1923,22 +1927,22 @@ void Parameter::cudaAllocParticles(int lev)
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->plp.hot),                    parD[lev]->plp.memSizeBoolBC      ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (double)parD[lev]->plp.memSizeDoubfloAll * (double)9.0 + (double)parD[lev]->plp.memSizeID * (double)2.0 + (double)parD[lev]->plp.memSizeTimestep 
+	double tmp = (double)parD[lev]->plp.memSizerealAll * (double)9.0 + (double)parD[lev]->plp.memSizeID * (double)2.0 + (double)parD[lev]->plp.memSizeTimestep 
 		+ (double)parD[lev]->plp.memSizeBool + (double)parD[lev]->plp.memSizeBoolBC;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyParticles(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordXlocal,        parD[lev]->plp.coordXlocal,        parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordYlocal,        parD[lev]->plp.coordYlocal,        parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordZlocal,        parD[lev]->plp.coordZlocal,        parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordXabsolut,      parD[lev]->plp.coordXabsolut,      parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordYabsolut,      parD[lev]->plp.coordYabsolut,      parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordZabsolut,      parD[lev]->plp.coordZabsolut,      parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.veloX,              parD[lev]->plp.veloX,              parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.veloY,              parD[lev]->plp.veloY,              parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	checkCudaErrors( cudaMemcpy(parH[lev]->plp.veloZ,              parD[lev]->plp.veloZ,              parH[lev]->plp.memSizeDoubfloAll,  cudaMemcpyDeviceToHost));
-	//checkCudaErrors( cudaMemcpy(parH[lev]->plp.randomLocationInit, parD[lev]->plp.randomLocationInit, parH[lev]->plp.memSizeDoubflo,     cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordXlocal,        parD[lev]->plp.coordXlocal,        parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordYlocal,        parD[lev]->plp.coordYlocal,        parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordZlocal,        parD[lev]->plp.coordZlocal,        parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordXabsolut,      parD[lev]->plp.coordXabsolut,      parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordYabsolut,      parD[lev]->plp.coordYabsolut,      parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.coordZabsolut,      parD[lev]->plp.coordZabsolut,      parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.veloX,              parD[lev]->plp.veloX,              parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.veloY,              parD[lev]->plp.veloY,              parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->plp.veloZ,              parD[lev]->plp.veloZ,              parH[lev]->plp.memSizerealAll,  cudaMemcpyDeviceToHost));
+	//checkCudaErrors( cudaMemcpy(parH[lev]->plp.randomLocationInit, parD[lev]->plp.randomLocationInit, parH[lev]->plp.memSizereal,     cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->plp.ID,                 parD[lev]->plp.ID,                 parH[lev]->plp.memSizeID,          cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->plp.cellBaseID,         parD[lev]->plp.cellBaseID,         parH[lev]->plp.memSizeID,          cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->plp.timestep,           parD[lev]->plp.timestep,           parH[lev]->plp.memSizeTimestep,    cudaMemcpyDeviceToHost));
@@ -2006,17 +2010,17 @@ void Parameter::cudaFreePorousMedia(PorousMedia* pm, int lev)
 void Parameter::cudaAllocConc(int lev)
 {
 	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->Conc), parH[lev]->mem_size_doubflo_SP));	
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->Conc), parH[lev]->mem_size_real_SP));	
 	//Device
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->Conc), parD[lev]->mem_size_doubflo_SP));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->Conc), parD[lev]->mem_size_real_SP));
 }
 void Parameter::cudaCopyConcDH(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parH[lev]->Conc, parD[lev]->Conc,  parH[lev]->mem_size_doubflo_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->Conc, parD[lev]->Conc,  parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaCopyConcHD(int lev)
 {
-	checkCudaErrors( cudaMemcpy(parD[lev]->Conc, parH[lev]->Conc, parH[lev]->mem_size_doubflo_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->Conc, parH[lev]->Conc, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
 }
 void Parameter::cudaFreeConc(int lev)
 {
@@ -2028,18 +2032,18 @@ void Parameter::cudaAllocTempFs(int lev)
 	//Device
 	if (getDiffMod() == 7)
 	{
-		checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d7.f[0]), getDiffMod()*parH[lev]->mem_size_doubflo_SP));
+		checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d7.f[0]), getDiffMod()*parH[lev]->mem_size_real_SP));
 	} 
 	else if (getDiffMod() == 27)
 	{
-		checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d27.f[0]), getDiffMod()*parH[lev]->mem_size_doubflo_SP));
+		checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d27.f[0]), getDiffMod()*parH[lev]->mem_size_real_SP));
 	}	
 }
 //////////////////////////////////////////////////////////////////////////
 void Parameter::cudaAllocTempPressBC(int lev)
 {
 	unsigned int mem_size_TempPress_k = sizeof(int)*parH[lev]->TempPress.kTemp;
-	unsigned int mem_size_TempPress_q = sizeof(doubflo)*parH[lev]->TempPress.kTemp;
+	unsigned int mem_size_TempPress_q = sizeof(real)*parH[lev]->TempPress.kTemp;
 
 	// Host Memory
 	checkCudaErrors( cudaMallocHost((void**) &parH[lev]->TempPress.temp, mem_size_TempPress_q ));
@@ -2055,7 +2059,7 @@ void Parameter::cudaAllocTempPressBC(int lev)
 void Parameter::cudaCopyTempPressBCHD(int lev)
 {
 	unsigned int mem_size_TempPress_k = sizeof(int)*parH[lev]->TempPress.kTemp;
-	unsigned int mem_size_TempPress_q = sizeof(doubflo)*parH[lev]->TempPress.kTemp;
+	unsigned int mem_size_TempPress_q = sizeof(real)*parH[lev]->TempPress.kTemp;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->TempPress.temp, parH[lev]->TempPress.temp, mem_size_TempPress_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->TempPress.velo, parH[lev]->TempPress.velo, mem_size_TempPress_q,  cudaMemcpyHostToDevice));
@@ -2071,7 +2075,7 @@ void Parameter::cudaFreeTempPressBC(int lev)
 void Parameter::cudaAllocTempVeloBC(int lev)
 {
 	unsigned int mem_size_TempVel_k = sizeof(int)*parH[lev]->TempVel.kTemp;
-	unsigned int mem_size_TempVel_q = sizeof(doubflo)*parH[lev]->TempVel.kTemp;
+	unsigned int mem_size_TempVel_q = sizeof(real)*parH[lev]->TempVel.kTemp;
 
 	printf("mem_size_TempVel_k = %d,  mem_size_TempVel_q = %d \n", mem_size_TempVel_k, mem_size_TempVel_q);
 	// Host Memory
@@ -2089,7 +2093,7 @@ void Parameter::cudaAllocTempVeloBC(int lev)
 void Parameter::cudaCopyTempVeloBCHD(int lev)
 {
 	unsigned int mem_size_TempVel_k = sizeof(int)*parH[lev]->TempVel.kTemp;
-	unsigned int mem_size_TempVel_q = sizeof(doubflo)*parH[lev]->TempVel.kTemp;
+	unsigned int mem_size_TempVel_q = sizeof(real)*parH[lev]->TempVel.kTemp;
 
 	printf("mem_size_TempVel_k = %d,  mem_size_TempVel_q = %d \n", mem_size_TempVel_k, mem_size_TempVel_q);
 	checkCudaErrors( cudaMemcpy(parD[lev]->TempVel.temp,      parH[lev]->TempVel.temp,      mem_size_TempVel_q,  cudaMemcpyHostToDevice));
@@ -2108,7 +2112,7 @@ void Parameter::cudaFreeTempVeloBC(int lev)
 void Parameter::cudaAllocTempNoSlipBC(int lev)
 {
 	unsigned int mem_size_Temp_k = sizeof(int)*parH[lev]->Temp.kTemp;
-	unsigned int mem_size_Temp_q = sizeof(doubflo)*parH[lev]->Temp.kTemp;
+	unsigned int mem_size_Temp_q = sizeof(real)*parH[lev]->Temp.kTemp;
 
 	// Host Memory
 	checkCudaErrors( cudaMallocHost((void**) &parH[lev]->Temp.temp, mem_size_Temp_q ));
@@ -2122,7 +2126,7 @@ void Parameter::cudaAllocTempNoSlipBC(int lev)
 void Parameter::cudaCopyTempNoSlipBCHD(int lev)
 {
 	unsigned int mem_size_Temp_k = sizeof(int)*parH[lev]->Temp.kTemp;
-	unsigned int mem_size_Temp_q = sizeof(doubflo)*parH[lev]->Temp.kTemp;
+	unsigned int mem_size_Temp_q = sizeof(real)*parH[lev]->Temp.kTemp;
 
 	checkCudaErrors( cudaMemcpy(parD[lev]->Temp.temp, parH[lev]->Temp.temp, mem_size_Temp_q,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->Temp.k,    parH[lev]->Temp.k,    mem_size_Temp_k,  cudaMemcpyHostToDevice));
@@ -2135,7 +2139,7 @@ void Parameter::cudaFreeTempNoSlipBC(int lev)
 //PlaneConc
 void Parameter::cudaAllocPlaneConcIn(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->ConcPlaneIn), mem_size  ));
 	//Device
@@ -2146,13 +2150,13 @@ void Parameter::cudaAllocPlaneConcIn(int lev, int numofelem)
 }
 void Parameter::cudaCopyPlaneConcIn(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 	checkCudaErrors( cudaMemcpy(parH[lev]->ConcPlaneIn,   parD[lev]->ConcPlaneIn,   mem_size, cudaMemcpyDeviceToHost));
 }
 //////////////////////////////////////////////////////////////////////////
 void Parameter::cudaAllocPlaneConcOut1(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->ConcPlaneOut1), mem_size  ));
 	//Device
@@ -2163,13 +2167,13 @@ void Parameter::cudaAllocPlaneConcOut1(int lev, int numofelem)
 }
 void Parameter::cudaCopyPlaneConcOut1(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 	checkCudaErrors( cudaMemcpy(parH[lev]->ConcPlaneOut1, parD[lev]->ConcPlaneOut1, mem_size, cudaMemcpyDeviceToHost));
 }
 //////////////////////////////////////////////////////////////////////////
 void Parameter::cudaAllocPlaneConcOut2(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->ConcPlaneOut2), mem_size  ));
 	//Device
@@ -2181,7 +2185,7 @@ void Parameter::cudaAllocPlaneConcOut2(int lev, int numofelem)
 }
 void Parameter::cudaCopyPlaneConcOut2(int lev, int numofelem)
 {
-	unsigned int mem_size = sizeof(doubflo)*numofelem;
+	unsigned int mem_size = sizeof(real)*numofelem;
 	checkCudaErrors( cudaMemcpy(parH[lev]->ConcPlaneOut2, parD[lev]->ConcPlaneOut2, mem_size, cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreePlaneConc(int lev)
@@ -2617,7 +2621,7 @@ void Parameter::cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //set-methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Parameter::setForcing(doubflo forcingX, doubflo forcingY, doubflo forcingZ)
+void Parameter::setForcing(real forcingX, real forcingY, real forcingZ)
 {
 	cudaAllocForcing();
 	//copy forces
@@ -2627,11 +2631,11 @@ void Parameter::setForcing(doubflo forcingX, doubflo forcingY, doubflo forcingZ)
 	//copy data to device
 	cudaCopyForcingToDevice();
 }
-void Parameter::setPhi(doubflo inPhi)
+void Parameter::setPhi(real inPhi)
 {
 	Phi = inPhi;
 }
-void Parameter::setAngularVelocity(doubflo inAngVel)
+void Parameter::setAngularVelocity(real inAngVel)
 {
 	angularVelocity = inAngVel;
 }
@@ -2683,11 +2687,11 @@ void Parameter::setCalcParticles(bool calcParticles)
 {
 	this->calcParticles = calcParticles;
 }
-void Parameter::setStartXHotWall(doubflo startXHotWall)
+void Parameter::setStartXHotWall(real startXHotWall)
 {
 	this->startXHotWall = startXHotWall;
 }
-void Parameter::setEndXHotWall(doubflo endXHotWall)
+void Parameter::setEndXHotWall(real endXHotWall)
 {
 	this->endXHotWall = endXHotWall;
 }
@@ -2737,47 +2741,47 @@ void Parameter::setReadGeo(bool readGeo)
 {
 	ic.readGeo = readGeo;
 }
-void Parameter::setDiffusivity(doubflo Diffusivity)
+void Parameter::setDiffusivity(real Diffusivity)
 {
 	ic.Diffusivity = Diffusivity;
 }
-void Parameter::setTemperatureInit(doubflo Temp)
+void Parameter::setTemperatureInit(real Temp)
 {
 	ic.Temp = Temp;
 }
-void Parameter::setTemperatureBC(doubflo TempBC)
+void Parameter::setTemperatureBC(real TempBC)
 {
 	ic.TempBC = TempBC;
 }
-void Parameter::setViscosity(doubflo Viscosity)
+void Parameter::setViscosity(real Viscosity)
 {
 	ic.vis = Viscosity;
 }
-void Parameter::setVelocity(doubflo Velocity)
+void Parameter::setVelocity(real Velocity)
 {
 	ic.u0 = Velocity;
 }
-void Parameter::setViscosityRatio(doubflo ViscosityRatio)
+void Parameter::setViscosityRatio(real ViscosityRatio)
 {
 	ic.vis_ratio = ViscosityRatio;
 }
-void Parameter::setVelocityRatio(doubflo VelocityRatio)
+void Parameter::setVelocityRatio(real VelocityRatio)
 {
 	ic.u0_ratio = VelocityRatio;
 }
-void Parameter::setDensityRatio(doubflo DensityRatio)
+void Parameter::setDensityRatio(real DensityRatio)
 {
 	ic.delta_rho = DensityRatio;
 }
-void Parameter::setPressRatio(doubflo PressRatio)
+void Parameter::setPressRatio(real PressRatio)
 {
 	ic.delta_press = PressRatio;
 }
-void Parameter::setRealX(doubflo RealX)
+void Parameter::setRealX(real RealX)
 {
 	ic.RealX = RealX;
 }
-void Parameter::setRealY(doubflo RealY)
+void Parameter::setRealY(real RealY)
 {
 	ic.RealY = RealY;
 }
@@ -2829,11 +2833,11 @@ void Parameter::setNeedInterface(std::vector<bool> NeedInterface)
 {
 	ic.NeedInterface = NeedInterface;
 }
-void Parameter::setRe(doubflo Re)
+void Parameter::setRe(real Re)
 {
 	ic.Re = Re;
 }
-void Parameter::setFactorPressBC(doubflo factorPressBC)
+void Parameter::setFactorPressBC(real factorPressBC)
 {
 	ic.factorPressBC = factorPressBC;
 }
@@ -2901,35 +2905,35 @@ void Parameter::setDistZ(std::vector<int> DistZ)
 {
 	ic.DistZ = DistZ;
 }
-void Parameter::setScaleLBMtoSI(std::vector<doubflo> scaleLBMtoSI)
+void Parameter::setScaleLBMtoSI(std::vector<real> scaleLBMtoSI)
 {
 	ic.scaleLBMtoSI = scaleLBMtoSI;
 }
-void Parameter::setTranslateLBMtoSI(std::vector<doubflo> translateLBMtoSI)
+void Parameter::setTranslateLBMtoSI(std::vector<real> translateLBMtoSI)
 {
 	ic.translateLBMtoSI = translateLBMtoSI;
 }
-void Parameter::setMinCoordX(std::vector<doubflo> MinCoordX)
+void Parameter::setMinCoordX(std::vector<real> MinCoordX)
 {
 	ic.minCoordX = MinCoordX;
 }
-void Parameter::setMinCoordY(std::vector<doubflo> MinCoordY)
+void Parameter::setMinCoordY(std::vector<real> MinCoordY)
 {
 	ic.minCoordY = MinCoordY;
 }
-void Parameter::setMinCoordZ(std::vector<doubflo> MinCoordZ)
+void Parameter::setMinCoordZ(std::vector<real> MinCoordZ)
 {
 	ic.minCoordZ = MinCoordZ;
 }
-void Parameter::setMaxCoordX(std::vector<doubflo> MaxCoordX)
+void Parameter::setMaxCoordX(std::vector<real> MaxCoordX)
 {
 	ic.maxCoordX = MaxCoordX;
 }
-void Parameter::setMaxCoordY(std::vector<doubflo> MaxCoordY)
+void Parameter::setMaxCoordY(std::vector<real> MaxCoordY)
 {
 	ic.maxCoordY = MaxCoordY;
 }
-void Parameter::setMaxCoordZ(std::vector<doubflo> MaxCoordZ)
+void Parameter::setMaxCoordZ(std::vector<real> MaxCoordZ)
 {
 	ic.maxCoordZ = MaxCoordZ;
 }
@@ -3209,7 +3213,7 @@ void Parameter::setConcentration(std::string concFile)
 {
 	ic.concentration = concFile;
 }
-void Parameter::setclockCycleForMP(doubflo clockCycleForMP)
+void Parameter::setclockCycleForMP(real clockCycleForMP)
 {
 	ic.clockCycleForMP = clockCycleForMP;
 }
@@ -3484,27 +3488,27 @@ double* Parameter::getForcesDouble()
 {
 	return this->hostForcing;
 }
-doubflo* Parameter::getForcesHost()
+real* Parameter::getForcesHost()
 {
 	return this->forcingH;
 }
-doubflo* Parameter::getForcesDev()
+real* Parameter::getForcesDev()
 {
 	return this->forcingD;
 }
-doubflo Parameter::getPhi()
+real Parameter::getPhi()
 {
 	return Phi;
 }
-doubflo Parameter::getAngularVelocity()
+real Parameter::getAngularVelocity()
 {
 	return angularVelocity;
 }
-doubflo Parameter::getStartXHotWall()
+real Parameter::getStartXHotWall()
 {
 	return this->startXHotWall;
 }
-doubflo Parameter::getEndXHotWall()
+real Parameter::getEndXHotWall()
 {
 	return this->endXHotWall;
 }
@@ -3536,9 +3540,9 @@ unsigned int Parameter::getSizeMat(int level)
 {
 	return parH[level]->size_Mat;
 }
-unsigned int Parameter::getMemSizedoubflo(int level)
+unsigned int Parameter::getMemSizereal(int level)
 {
-	return parH[level]->mem_size_doubflo;
+	return parH[level]->mem_size_real;
 }
 unsigned int Parameter::getMemSizeInt(int level)
 {
@@ -3548,9 +3552,9 @@ unsigned int Parameter::getMemSizeBool(int level)
 {
 	return parH[level]->mem_size_bool;
 }
-unsigned int Parameter::getMemSizedoubfloYZ(int level)
+unsigned int Parameter::getMemSizerealYZ(int level)
 {
-	return parH[level]->mem_size_doubflo_yz;
+	return parH[level]->mem_size_real_yz;
 }
 int Parameter::getFine()
 {
@@ -3666,47 +3670,47 @@ bool Parameter::getReadGeo()
 {
 	return ic.readGeo;
 }
-doubflo Parameter::getDiffusivity()
+real Parameter::getDiffusivity()
 {
 	return ic.Diffusivity;
 }
-doubflo Parameter::getTemperatureInit()
+real Parameter::getTemperatureInit()
 {
 	return ic.Temp;
 }
-doubflo Parameter::getTemperatureBC()
+real Parameter::getTemperatureBC()
 {
 	return ic.TempBC;
 }
-doubflo Parameter::getViscosity()
+real Parameter::getViscosity()
 {
 	return ic.vis;
 }
-doubflo Parameter::getVelocity()
+real Parameter::getVelocity()
 {
 	return ic.u0;
 }
-doubflo Parameter::getViscosityRatio()
+real Parameter::getViscosityRatio()
 {
 	return ic.vis_ratio;
 }
-doubflo Parameter::getVelocityRatio()
+real Parameter::getVelocityRatio()
 {
 	return ic.u0_ratio;
 }
-doubflo Parameter::getDensityRatio()
+real Parameter::getDensityRatio()
 {
 	return ic.delta_rho;
 }
-doubflo Parameter::getPressRatio()
+real Parameter::getPressRatio()
 {
 	return ic.delta_press;
 }
-doubflo Parameter::getRealX()
+real Parameter::getRealX()
 {
 	return ic.RealX;
 }
-doubflo Parameter::getRealY()
+real Parameter::getRealY()
 {
 	return ic.RealY;
 }
@@ -3758,11 +3762,11 @@ std::vector<bool> Parameter::getNeedInterface()
 {
 	return ic.NeedInterface;
 }
-doubflo Parameter::getRe()
+real Parameter::getRe()
 {
 	return ic.Re;
 }
-doubflo Parameter::getFactorPressBC()
+real Parameter::getFactorPressBC()
 {
 	return ic.factorPressBC;
 }
@@ -3790,35 +3794,35 @@ std::vector<int> Parameter::getDistZ()
 {
 	return ic.DistZ;
 }
-std::vector<doubflo> Parameter::getScaleLBMtoSI()
+std::vector<real> Parameter::getScaleLBMtoSI()
 {
 	return ic.scaleLBMtoSI;
 }
-std::vector<doubflo> Parameter::getTranslateLBMtoSI()
+std::vector<real> Parameter::getTranslateLBMtoSI()
 {
 	return ic.translateLBMtoSI;
 }
-std::vector<doubflo> Parameter::getMinCoordX()
+std::vector<real> Parameter::getMinCoordX()
 {
 	return ic.minCoordX;
 }
-std::vector<doubflo> Parameter::getMinCoordY()
+std::vector<real> Parameter::getMinCoordY()
 {
 	return ic.minCoordY;
 }
-std::vector<doubflo> Parameter::getMinCoordZ()
+std::vector<real> Parameter::getMinCoordZ()
 {
 	return ic.minCoordZ;
 }
-std::vector<doubflo> Parameter::getMaxCoordX()
+std::vector<real> Parameter::getMaxCoordX()
 {
 	return ic.maxCoordX;
 }
-std::vector<doubflo> Parameter::getMaxCoordY()
+std::vector<real> Parameter::getMaxCoordY()
 {
 	return ic.maxCoordY;
 }
-std::vector<doubflo> Parameter::getMaxCoordZ()
+std::vector<real> Parameter::getMaxCoordZ()
 {
 	return ic.maxCoordZ;
 }
@@ -4098,7 +4102,7 @@ std::string Parameter::getConcentration()
 {
 	return ic.concentration;
 }
-doubflo Parameter::getclockCycleForMP()
+real Parameter::getclockCycleForMP()
 {
 	return ic.clockCycleForMP;
 }
@@ -4390,8 +4394,8 @@ void Parameter::initInterfaceParameter(int level)
 	//                                  (((parH[level+1]->gridNY-6)/2)*((parH[level+1]->gridNX-6)/2)*2);
 	parH[level]->mem_size_kCF       = sizeof(unsigned int)*parH[level]->K_CF;
 	parH[level]->mem_size_kFC       = sizeof(unsigned int)*parH[level]->K_FC;
-	parH[level]->mem_size_kCF_off   = sizeof(doubflo)*parH[level]->K_CF;
-	parH[level]->mem_size_kFC_off   = sizeof(doubflo)*parH[level]->K_FC;
+	parH[level]->mem_size_kCF_off   = sizeof(real)*parH[level]->K_CF;
+	parH[level]->mem_size_kFC_off   = sizeof(real)*parH[level]->K_FC;
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	//device
 	parD[level]->K_CF               = parH[level]->K_CF;
@@ -4402,46 +4406,46 @@ void Parameter::initInterfaceParameter(int level)
 	parD[level]->mem_size_kFC_off   = parH[level]->mem_size_kFC_off;
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 }
-doubflo Parameter::TrafoXtoWorld(int CoordX, int level)
+real Parameter::TrafoXtoWorld(int CoordX, int level)
 {
 	return (parH[level]->mTtoWx*CoordX+parH[level]->cTtoWx);
 }
-doubflo Parameter::TrafoYtoWorld(int CoordY, int level)
+real Parameter::TrafoYtoWorld(int CoordY, int level)
 {
 	return (parH[level]->mTtoWy*CoordY+parH[level]->cTtoWy);
 }
-doubflo Parameter::TrafoZtoWorld(int CoordZ, int level)
+real Parameter::TrafoZtoWorld(int CoordZ, int level)
 {
 	return (parH[level]->mTtoWz*CoordZ+parH[level]->cTtoWz);
 }
-doubflo Parameter::TrafoXtoMGsWorld(int CoordX, int level)
+real Parameter::TrafoXtoMGsWorld(int CoordX, int level)
 {
-	doubflo temp = 0;
+	real temp = 0;
 	for (int i = 0; i <= level; i++)
 	{
 		temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->dx;
 	}
-	temp += (doubflo)((CoordX - STARTOFFX) * parH[level]->dx);
+	temp += (real)((CoordX - STARTOFFX) * parH[level]->dx);
 	return temp;
 }
-doubflo Parameter::TrafoYtoMGsWorld(int CoordY, int level)
+real Parameter::TrafoYtoMGsWorld(int CoordY, int level)
 {
-	doubflo temp = 0;
+	real temp = 0;
 	for (int i = 0; i <= level; i++)
 	{
 		temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->dx;
 	}
-	temp += (doubflo)((CoordY - STARTOFFY) * parH[level]->dx);
+	temp += (real)((CoordY - STARTOFFY) * parH[level]->dx);
 	return temp;
 }
-doubflo Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
+real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 {
-	doubflo temp = 0;
+	real temp = 0;
 	for (int i = 0; i <= level; i++)
 	{
 		temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->dx;
 	}
-	temp += (doubflo)((CoordZ - STARTOFFZ) * parH[level]->dx);
+	temp += (real)((CoordZ - STARTOFFZ) * parH[level]->dx);
 	return temp;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

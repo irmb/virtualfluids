@@ -24,12 +24,12 @@ private:
     SimulationFileWriter() {};
     ~SimulationFileWriter() {};
     static void writeCoordFiles(bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans);
-    static void writeBoundaryQsFile(std::vector<std::vector<std::vector<doubflo> > > qFiles);
+    static void writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles);
 
     static void openFiles();
-    static void writeLevelAndLevelSize(int sizeCoords, std::vector<std::vector<std::vector<doubflo> > > qFiles);
+    static void writeLevelAndLevelSize(int sizeCoords, std::vector<std::vector<std::vector<real> > > qFiles);
     static void writeCoordsNeighborsGeo(const int& index, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans);
-    static void writeBoundary(std::vector<doubflo> boundary, int rb);
+    static void writeBoundary(std::vector<real> boundary, int rb);
     static void closeFiles();
 
 	static std::ofstream xCoordFile;

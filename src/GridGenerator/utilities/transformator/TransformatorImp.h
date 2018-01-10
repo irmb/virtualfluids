@@ -30,8 +30,8 @@ class TransformatorImp
 public:
 	VF_PUBLIC TransformatorImp();
 	VF_PUBLIC TransformatorImp(const TransformatorImp& trafo);
-	VF_PUBLIC TransformatorImp(doubflo delta, Vertex& translater);
-	VF_PUBLIC TransformatorImp(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
+	VF_PUBLIC TransformatorImp(real delta, Vertex& translater);
+	VF_PUBLIC TransformatorImp(real delta, real dx, real dy, real dz);
 	VF_PUBLIC virtual ~TransformatorImp();
 	
 	VF_PUBLIC void transformWorldToGrid(Triangle &value) const;
@@ -41,15 +41,15 @@ public:
     VF_PUBLIC void transformGridToWorld(Triangle &t) const;
 	VF_PUBLIC void transformGridToWorld(Vertex &value) const;
 
-	VF_PUBLIC void transformGridToWorld(BoundingBox<doubflo> &box) const;
-	VF_PUBLIC void transformWorldToGrid(BoundingBox<doubflo> &box) const;
+	VF_PUBLIC void transformGridToWorld(BoundingBox<real> &box) const;
+	VF_PUBLIC void transformWorldToGrid(BoundingBox<real> &box) const;
 
 	VF_PUBLIC bool operator==(const TransformatorImp& trafo) const;
 
 	VF_PUBLIC virtual void transformGridToWorld(std::shared_ptr<Arrow> arrow) const override;
 
 private:
-	doubflo delta;
+	real delta;
 	std::shared_ptr<Vertex> translater;
 
 	void scaleWorldToView(Vertex & v) const;
@@ -58,7 +58,7 @@ private:
 	void translateGridToWorld(Vertex & value) const;
 	void scaleGridToWorld(Vertex & value) const;
 
-	void verifyDelta(doubflo delta) const;
+	void verifyDelta(real delta) const;
 };
 
 

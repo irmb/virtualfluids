@@ -3,17 +3,17 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  doubflo* kxyFromfcNEQ,
-														doubflo* kyzFromfcNEQ,
-														doubflo* kxzFromfcNEQ,
-														doubflo* kxxMyyFromfcNEQ,
-														doubflo* kxxMzzFromfcNEQ,
+extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
+														real* kyzFromfcNEQ,
+														real* kxzFromfcNEQ,
+														real* kxxMyyFromfcNEQ,
+														real* kxxMzzFromfcNEQ,
 														unsigned int* geoD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
 														unsigned int size_Mat,
-														doubflo* DD,
+														real* DD,
 														bool evenOrOdd)
 {
    Distributions27 D;
@@ -120,7 +120,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  doubflo* kxyFromfcNEQ,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+      real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 	  f_E    = (D.f[dirE   ])[ke   ];
 	  f_W    = (D.f[dirW   ])[kw   ];
 	  f_N    = (D.f[dirN   ])[kn   ];
@@ -149,7 +149,7 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  doubflo* kxyFromfcNEQ,
 	  f_BSE  = (D.f[dirBSE ])[kbse ];
 	  f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-	  doubflo vx1, vx2, vx3;
+	  real vx1, vx2, vx3;
       kxyFromfcNEQ[k]       = zero;
 	  kyzFromfcNEQ[k]       = zero;
 	  kxzFromfcNEQ[k]       = zero;
@@ -202,17 +202,17 @@ extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  doubflo* kxyFromfcNEQ,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc2ndMomentsCompSP27(doubflo* kxyFromfcNEQ,
-													doubflo* kyzFromfcNEQ,
-													doubflo* kxzFromfcNEQ,
-													doubflo* kxxMyyFromfcNEQ,
-													doubflo* kxxMzzFromfcNEQ,
+extern "C" __global__ void LBCalc2ndMomentsCompSP27(real* kxyFromfcNEQ,
+													real* kyzFromfcNEQ,
+													real* kxzFromfcNEQ,
+													real* kxxMyyFromfcNEQ,
+													real* kxxMzzFromfcNEQ,
 													unsigned int* geoD,
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
 													unsigned int size_Mat,
-													doubflo* DD,
+													real* DD,
 													bool evenOrOdd)
 {
    Distributions27 D;
@@ -319,7 +319,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(doubflo* kxyFromfcNEQ,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+      real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 	  f_E    = (D.f[dirE   ])[ke   ];
 	  f_W    = (D.f[dirW   ])[kw   ];
 	  f_N    = (D.f[dirN   ])[kn   ];
@@ -348,7 +348,7 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(doubflo* kxyFromfcNEQ,
 	  f_BSE  = (D.f[dirBSE ])[kbse ];
 	  f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-	  doubflo vx1, vx2, vx3, drho, rho;
+	  real vx1, vx2, vx3, drho, rho;
       kxyFromfcNEQ[k]       = zero;
 	  kyzFromfcNEQ[k]       = zero;
 	  kxzFromfcNEQ[k]       = zero;
@@ -405,18 +405,18 @@ extern "C" __global__ void LBCalc2ndMomentsCompSP27(doubflo* kxyFromfcNEQ,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  doubflo* CUMbbb,
-														doubflo* CUMabc,
-														doubflo* CUMbac,
-														doubflo* CUMbca,
-														doubflo* CUMcba,
-														doubflo* CUMacb,
-														doubflo* CUMcab,
+extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  real* CUMbbb,
+														real* CUMabc,
+														real* CUMbac,
+														real* CUMbca,
+														real* CUMcba,
+														real* CUMacb,
+														real* CUMcab,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
-														doubflo* DDStart,
+														real* DDStart,
 														int size_Mat,
 														bool EvenOrOdd)
 {
@@ -511,52 +511,52 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  doubflo* CUMbbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];
-			doubflo mfabb = (D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];
-			doubflo mfbab = (D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];
-			doubflo mfbba = (D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];
-			doubflo mfacb = (D.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];
-			doubflo mfabc = (D.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];
-			doubflo mfbac = (D.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D.f[dirZERO])[k  ];
-			doubflo mfccc = (D.f[dirTNE ])[k  ];
-			doubflo mfaac = (D.f[dirTSW ])[ksw];
-			doubflo mfcac = (D.f[dirTSE ])[ks ];
-			doubflo mfacc = (D.f[dirTNW ])[kw ];
-			doubflo mfcca = (D.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];
-			doubflo mfaca = (D.f[dirBNW ])[kbw];
+			real mfcbb = (D.f[dirE   ])[k  ];
+			real mfabb = (D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];
+			real mfbab = (D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];
+			real mfbba = (D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];
+			real mfaab = (D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];
+			real mfacb = (D.f[dirNW  ])[kw ];
+			real mfcbc = (D.f[dirTE  ])[k  ];
+			real mfaba = (D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];
+			real mfabc = (D.f[dirTW  ])[kw ];
+			real mfbcc = (D.f[dirTN  ])[k  ];
+			real mfbaa = (D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];
+			real mfbac = (D.f[dirTS  ])[ks ];
+			real mfbbb = (D.f[dirZERO])[k  ];
+			real mfccc = (D.f[dirTNE ])[k  ];
+			real mfaac = (D.f[dirTSW ])[ksw];
+			real mfcac = (D.f[dirTSE ])[ks ];
+			real mfacc = (D.f[dirTNW ])[kw ];
+			real mfcca = (D.f[dirBNE ])[kb ];
+			real mfaaa = (D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];
+			real mfaca = (D.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb));
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab));
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 								   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 								   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
@@ -839,18 +839,18 @@ extern "C" __global__ void LBCalc3rdMomentsIncompSP27(  doubflo* CUMbbb,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalc3rdMomentsCompSP27(doubflo* CUMbbb,
-													doubflo* CUMabc,
-													doubflo* CUMbac,
-													doubflo* CUMbca,
-													doubflo* CUMcba,
-													doubflo* CUMacb,
-													doubflo* CUMcab,
+extern "C" __global__ void LBCalc3rdMomentsCompSP27(real* CUMbbb,
+													real* CUMabc,
+													real* CUMbac,
+													real* CUMbca,
+													real* CUMcba,
+													real* CUMacb,
+													real* CUMcab,
 													unsigned int* bcMatD,
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
-													doubflo* DDStart,
+													real* DDStart,
 													int size_Mat,
 													bool EvenOrOdd)
 {
@@ -945,56 +945,56 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(doubflo* CUMbbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];
-			doubflo mfabb = (D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];
-			doubflo mfbab = (D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];
-			doubflo mfbba = (D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];
-			doubflo mfacb = (D.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];
-			doubflo mfabc = (D.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];
-			doubflo mfbac = (D.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D.f[dirZERO])[k  ];
-			doubflo mfccc = (D.f[dirTNE ])[k  ];
-			doubflo mfaac = (D.f[dirTSW ])[ksw];
-			doubflo mfcac = (D.f[dirTSE ])[ks ];
-			doubflo mfacc = (D.f[dirTNW ])[kw ];
-			doubflo mfcca = (D.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];
-			doubflo mfaca = (D.f[dirBNW ])[kbw];
+			real mfcbb = (D.f[dirE   ])[k  ];
+			real mfabb = (D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];
+			real mfbab = (D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];
+			real mfbba = (D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];
+			real mfaab = (D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];
+			real mfacb = (D.f[dirNW  ])[kw ];
+			real mfcbc = (D.f[dirTE  ])[k  ];
+			real mfaba = (D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];
+			real mfabc = (D.f[dirTW  ])[kw ];
+			real mfbcc = (D.f[dirTN  ])[k  ];
+			real mfbaa = (D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];
+			real mfbac = (D.f[dirTS  ])[ks ];
+			real mfbbb = (D.f[dirZERO])[k  ];
+			real mfccc = (D.f[dirTNE ])[k  ];
+			real mfaac = (D.f[dirTSW ])[ksw];
+			real mfcac = (D.f[dirTSE ])[ks ];
+			real mfacc = (D.f[dirTNW ])[kw ];
+			real mfcca = (D.f[dirBNE ])[kb ];
+			real mfaaa = (D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];
+			real mfaca = (D.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			doubflo rho = one+drho;
+			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) / rho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) / rho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo oMdrho = one; // comp special
+			real oMdrho = one; // comp special
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
@@ -1277,21 +1277,21 @@ extern "C" __global__ void LBCalc3rdMomentsCompSP27(doubflo* CUMbbb,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   doubflo* CUMcbb,
-															doubflo* CUMbcb,
-															doubflo* CUMbbc,
-															doubflo* CUMcca,
-															doubflo* CUMcac,
-															doubflo* CUMacc,
-															doubflo* CUMbcc,
-															doubflo* CUMcbc,
-															doubflo* CUMccb,
-															doubflo* CUMccc,
+extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   real* CUMcbb,
+															real* CUMbcb,
+															real* CUMbbc,
+															real* CUMcca,
+															real* CUMcac,
+															real* CUMacc,
+															real* CUMbcc,
+															real* CUMcbc,
+															real* CUMccb,
+															real* CUMccc,
 															unsigned int* bcMatD,
 															unsigned int* neighborX,
 															unsigned int* neighborY,
 															unsigned int* neighborZ,
-															doubflo* DDStart,
+															real* DDStart,
 															int size_Mat,
 															bool EvenOrOdd)
 {
@@ -1386,52 +1386,52 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   doubflo* CUMcbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];
-			doubflo mfabb = (D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];
-			doubflo mfbab = (D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];
-			doubflo mfbba = (D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];
-			doubflo mfacb = (D.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];
-			doubflo mfabc = (D.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];
-			doubflo mfbac = (D.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D.f[dirZERO])[k  ];
-			doubflo mfccc = (D.f[dirTNE ])[k  ];
-			doubflo mfaac = (D.f[dirTSW ])[ksw];
-			doubflo mfcac = (D.f[dirTSE ])[ks ];
-			doubflo mfacc = (D.f[dirTNW ])[kw ];
-			doubflo mfcca = (D.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];
-			doubflo mfaca = (D.f[dirBNW ])[kbw];
+			real mfcbb = (D.f[dirE   ])[k  ];
+			real mfabb = (D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];
+			real mfbab = (D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];
+			real mfbba = (D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];
+			real mfaab = (D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];
+			real mfacb = (D.f[dirNW  ])[kw ];
+			real mfcbc = (D.f[dirTE  ])[k  ];
+			real mfaba = (D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];
+			real mfabc = (D.f[dirTW  ])[kw ];
+			real mfbcc = (D.f[dirTN  ])[k  ];
+			real mfbaa = (D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];
+			real mfbac = (D.f[dirTS  ])[ks ];
+			real mfbbb = (D.f[dirZERO])[k  ];
+			real mfccc = (D.f[dirTNE ])[k  ];
+			real mfaac = (D.f[dirTSW ])[ksw];
+			real mfcac = (D.f[dirTSE ])[ks ];
+			real mfacc = (D.f[dirTNW ])[kw ];
+			real mfcca = (D.f[dirBNE ])[kb ];
+			real mfaaa = (D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];
+			real mfaca = (D.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb));
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab));
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 								   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 								   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
@@ -1731,21 +1731,21 @@ extern "C" __global__ void LBCalcHigherMomentsIncompSP27(   doubflo* CUMcbb,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcHigherMomentsCompSP27( doubflo* CUMcbb,
-														doubflo* CUMbcb,
-														doubflo* CUMbbc,
-														doubflo* CUMcca,
-														doubflo* CUMcac,
-														doubflo* CUMacc,
-														doubflo* CUMbcc,
-														doubflo* CUMcbc,
-														doubflo* CUMccb,
-														doubflo* CUMccc,
+extern "C" __global__ void LBCalcHigherMomentsCompSP27( real* CUMcbb,
+														real* CUMbcb,
+														real* CUMbbc,
+														real* CUMcca,
+														real* CUMcac,
+														real* CUMacc,
+														real* CUMbcc,
+														real* CUMcbc,
+														real* CUMccb,
+														real* CUMccc,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
-														doubflo* DDStart,
+														real* DDStart,
 														int size_Mat,
 														bool EvenOrOdd)
 {
@@ -1840,56 +1840,56 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( doubflo* CUMcbb,
 			unsigned int kbs  = neighborZ[ks];
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];
-			doubflo mfabb = (D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];
-			doubflo mfbab = (D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];
-			doubflo mfbba = (D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];
-			doubflo mfacb = (D.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];
-			doubflo mfabc = (D.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];
-			doubflo mfbac = (D.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D.f[dirZERO])[k  ];
-			doubflo mfccc = (D.f[dirTNE ])[k  ];
-			doubflo mfaac = (D.f[dirTSW ])[ksw];
-			doubflo mfcac = (D.f[dirTSE ])[ks ];
-			doubflo mfacc = (D.f[dirTNW ])[kw ];
-			doubflo mfcca = (D.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];
-			doubflo mfaca = (D.f[dirBNW ])[kbw];
+			real mfcbb = (D.f[dirE   ])[k  ];
+			real mfabb = (D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];
+			real mfbab = (D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];
+			real mfbba = (D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];
+			real mfaab = (D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];
+			real mfacb = (D.f[dirNW  ])[kw ];
+			real mfcbc = (D.f[dirTE  ])[k  ];
+			real mfaba = (D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];
+			real mfabc = (D.f[dirTW  ])[kw ];
+			real mfbcc = (D.f[dirTN  ])[k  ];
+			real mfbaa = (D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];
+			real mfbac = (D.f[dirTS  ])[ks ];
+			real mfbbb = (D.f[dirZERO])[k  ];
+			real mfccc = (D.f[dirTNE ])[k  ];
+			real mfaac = (D.f[dirTSW ])[ksw];
+			real mfcac = (D.f[dirTSE ])[ks ];
+			real mfacc = (D.f[dirTNW ])[kw ];
+			real mfcca = (D.f[dirBNE ])[kb ];
+			real mfaaa = (D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];
+			real mfaca = (D.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			doubflo rho = one+drho;
+			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) / rho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) / rho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo oMdrho = one; // comp special
+			real oMdrho = one; // comp special
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
@@ -2123,9 +2123,9 @@ extern "C" __global__ void LBCalcHigherMomentsCompSP27( doubflo* CUMcbb,
 			////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////////////////////////////////////////
 
-			doubflo OxxPyyPzz = one;
-			doubflo omega = one / (three*0.001 + c1o2);
-			doubflo B = (four * omega * OxxPyyPzz * (nine * omega - sixteen) - four * omega * omega - two * OxxPyyPzz * OxxPyyPzz * (two + nine * omega * (omega - two))) /
+			real OxxPyyPzz = one;
+			real omega = one / (three*0.001 + c1o2);
+			real B = (four * omega * OxxPyyPzz * (nine * omega - sixteen) - four * omega * omega - two * OxxPyyPzz * OxxPyyPzz * (two + nine * omega * (omega - two))) /
 				(three * (omega - OxxPyyPzz) * (OxxPyyPzz * (two + three * omega) - eight * omega));
 
 			CUMbcc[k] = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac)*(one + rho*six*B / (two + three * B))) / rho;

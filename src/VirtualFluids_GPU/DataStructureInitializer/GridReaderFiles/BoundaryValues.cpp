@@ -175,7 +175,7 @@ void BoundaryValues::resizeVectors()
 	indices.resize(maxLevel + 1);
 }
 
-void BoundaryValues::setBoundarys(std::vector<std::vector<std::vector<doubflo> > > &qs) const
+void BoundaryValues::setBoundarys(std::vector<std::vector<std::vector<real> > > &qs) const
 {
 	for (unsigned int level = 0; level < values.size(); level++)
 		for (unsigned int index = 0; index < values[level].size(); index++)
@@ -217,7 +217,7 @@ bool BoundaryValues::getProcNeighbor()
 }
 
 
-void BoundaryValues::setPressValues(doubflo *RhoBC, int* kN, int level) const
+void BoundaryValues::setPressValues(real *RhoBC, int* kN, int level) const
 {
 	for (int column = 0; column < values[level].size(); column++) {
 		for (int index = 0; index < values[level][column].size(); index++) {
@@ -227,7 +227,7 @@ void BoundaryValues::setPressValues(doubflo *RhoBC, int* kN, int level) const
 	}
 }
 
-void BoundaryValues::setVelocityValues(doubflo *vx, doubflo *vy, doubflo *vz, int level) const
+void BoundaryValues::setVelocityValues(real *vx, real *vy, real *vz, int level) const
 {
 	for (int column = 0; column < values[level].size(); column++) {
 		for (int index = 0; index < values[level][column].size(); index++) {
@@ -238,7 +238,7 @@ void BoundaryValues::setVelocityValues(doubflo *vx, doubflo *vy, doubflo *vz, in
 	}
 }
 
-void BoundaryValues::setOutflowValues(doubflo *RhoBC, int* kN, int level) const
+void BoundaryValues::setOutflowValues(real *RhoBC, int* kN, int level) const
 {
 	for (int column = 0; column < values[level].size(); column++) {
 		for (int index = 0; index < values[level][column].size(); index++) {

@@ -44,13 +44,13 @@ TEST_F(VertexTest, overloadPlusOperator)
 
 TEST_F(VertexTest, overloadTimesOperatorWithSkalarProduct)
 {
-    doubflo skalar = vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
+    real skalar = vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
     ASSERT_THAT((double)(vec1 * vec2), DoubleEq(skalar));
 }
 
 TEST_F(VertexTest, overloadTimesOperatorWithSkalarMultiplication)
 {
-    doubflo skalar = 1.0f / 3.0f;
+    real skalar = 1.0f / 3.0f;
     Vertex vec3;
     vec3.x = skalar * vec1.x;
     vec3.y = skalar * vec1.y;

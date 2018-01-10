@@ -33,10 +33,10 @@ private:
 
 public:
 	void setIndex(int *indices, unsigned int level) const;
-	void setValues(doubflo** q27, unsigned int level) const;
+	void setValues(real** q27, unsigned int level) const;
 
 private:
-	std::vector< std::vector<std::vector<doubflo> > >values;
+	std::vector< std::vector<std::vector<real> > >values;
 	std::vector< std::vector<unsigned int> >indices;
 
 	std::ifstream file;

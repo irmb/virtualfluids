@@ -27,7 +27,7 @@ public:
 
     VF_PUBLIC virtual ~GridBuilderImp();
 
-    VF_PUBLIC virtual void addGrid(doubflo length, doubflo width, doubflo high, doubflo delta, std::string distribution, std::shared_ptr<Transformator> trans);
+    VF_PUBLIC virtual void addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans);
 
 	VF_PUBLIC virtual void meshGeometry(std::string input, int level);
     VF_PUBLIC virtual void deleteSolidNodes();
@@ -42,18 +42,18 @@ public:
     VF_PUBLIC virtual void createBoundaryConditions();
 
     VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;;
-    VF_PUBLIC virtual std::vector<std::vector<std::vector<doubflo> > > getQsValues() const;
+    VF_PUBLIC virtual std::vector<std::vector<std::vector<real> > > getQsValues() const;
 
     VF_PUBLIC virtual int getBoundaryConditionSize(int rb) const;
     VF_PUBLIC virtual std::vector<std::string> getTypeOfBoundaryConditions() const;
 
-    VF_PUBLIC virtual void getNodeValues(doubflo *xCoords, doubflo *yCoords, doubflo *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
+    VF_PUBLIC virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
     VF_PUBLIC virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
 
-    VF_PUBLIC virtual void setQs(doubflo** q27, int* k, int channelSide, unsigned int level) const;
-    VF_PUBLIC virtual void setOutflowValues(doubflo* RhoBC, int* kN, int channelSide, int level) const;
-    VF_PUBLIC virtual void setVelocityValues(doubflo* vx, doubflo* vy, doubflo* vz, int channelSide, int level) const;
-    VF_PUBLIC virtual void setPressValues(doubflo* RhoBC, int* kN, int channelSide, int level) const;
+    VF_PUBLIC virtual void setQs(real** q27, int* k, int channelSide, unsigned int level) const;
+    VF_PUBLIC virtual void setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const;
+    VF_PUBLIC virtual void setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const;
+    VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 
     VF_PUBLIC void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
 
@@ -67,7 +67,7 @@ protected:
     std::vector<std::vector<int> > gridDimensions;
 
 
-    std::vector<std::vector<std::vector<doubflo> > > Qs;
+    std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
 
     void checkLevel(int level);
@@ -75,7 +75,7 @@ protected:
 protected:
     virtual void createGridKernels(std::string distribution) = 0;
 
-    void setNumberOfNodes(doubflo length, doubflo width, doubflo high, doubflo delta);
+    void setNumberOfNodes(real length, real width, real high, real delta);
     void printMasterInformation(int nx, int ny, int nz);
     void setCudaDevice(int rank);
     void rebuildBoxes();

@@ -4,19 +4,19 @@
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void InitParticles( doubflo* coordX,
-										  doubflo* coordY,
-										  doubflo* coordZ, 
-										  doubflo* coordParticleXlocal,
-										  doubflo* coordParticleYlocal,
-										  doubflo* coordParticleZlocal,
-										  doubflo* coordParticleXglobal,
-										  doubflo* coordParticleYglobal,
-										  doubflo* coordParticleZglobal,
-										  doubflo* veloParticleX,
-										  doubflo* veloParticleY,
-										  doubflo* veloParticleZ,
-										  doubflo* randArray,
+extern "C" __global__ void InitParticles( real* coordX,
+										  real* coordY,
+										  real* coordZ, 
+										  real* coordParticleXlocal,
+										  real* coordParticleYlocal,
+										  real* coordParticleZlocal,
+										  real* coordParticleXglobal,
+										  real* coordParticleYglobal,
+										  real* coordParticleZglobal,
+										  real* veloParticleX,
+										  real* veloParticleY,
+										  real* veloParticleZ,
+										  real* randArray,
 										  unsigned int* particleID,
 										  unsigned int* cellBaseID,
 										  unsigned int* bcMatD,
@@ -41,25 +41,25 @@ extern "C" __global__ void InitParticles( doubflo* coordX,
 
    if(k < numberOfParticles)
    {
-	 //   doubflo centerX = one;						//uebergabeparameter
-	 //   doubflo centerY = 10.5f;					//uebergabeparameter
-		//doubflo centerZ = 10.5f;					//uebergabeparameter
-		//doubflo diameter = 21.0f;					//uebergabeparameter
+	 //   real centerX = one;						//uebergabeparameter
+	 //   real centerY = 10.5f;					//uebergabeparameter
+		//real centerZ = 10.5f;					//uebergabeparameter
+		//real diameter = 21.0f;					//uebergabeparameter
 		//unsigned int numberOfParticleSizes = 41;	//uebergabeparameter
 		//unsigned int nops = (unsigned int)(randArray[k]*numberOfParticleSizes);
-		//doubflo xCoordPart = one;
-		//doubflo yCoordPart = (doubflo)(randArray[k]*diameter);
-		//doubflo zCoordPart = one;
+		//real xCoordPart = one;
+		//real yCoordPart = (real)(randArray[k]*diameter);
+		//real zCoordPart = one;
 		//if (k==0)
 		//{
-		//	zCoordPart = (doubflo)(randArray[k+1]*diameter);
+		//	zCoordPart = (real)(randArray[k+1]*diameter);
 		//}
 		//else
 		//{
-		//	zCoordPart = (doubflo)(randArray[k-1]*diameter);
+		//	zCoordPart = (real)(randArray[k-1]*diameter);
 		//}
-		//doubflo distance = powf((zCoordPart-centerZ),2) + powf((yCoordPart-centerY),2);
-		//doubflo refDistance = powf((diameter*c1o2),2);
+		//real distance = powf((zCoordPart-centerZ),2) + powf((yCoordPart-centerY),2);
+		//real refDistance = powf((diameter*c1o2),2);
 		//if (distance > refDistance)
 		//{
 		//	zCoordPart = sqrtf(powf((diameter*c1o2),2) - powf((yCoordPart-centerY),2)) + centerZ;
@@ -77,9 +77,9 @@ extern "C" __global__ void InitParticles( doubflo* coordX,
 			cbID = (unsigned int)(randArray[k]*(size_Mat - i)); 
 		}
 	   
-		doubflo coordinateX;
-		doubflo coordinateY;
-		doubflo coordinateZ;
+		real coordinateX;
+		real coordinateY;
+		real coordinateZ;
 
 		unsigned int BC  = bcMatD[cbID];
 		unsigned int BCx = bcMatD[neighborX[cbID]];
@@ -109,17 +109,17 @@ extern "C" __global__ void InitParticles( doubflo* coordX,
 		}
 
 
-		doubflo localX = randArray[k] / (doubflo)(pow(two,level));
-		doubflo localY = randArray[k] / (doubflo)(pow(two,level));
-		doubflo localZ = randArray[k] / (doubflo)(pow(two,level));
+		real localX = randArray[k] / (real)(pow(two,level));
+		real localY = randArray[k] / (real)(pow(two,level));
+		real localZ = randArray[k] / (real)(pow(two,level));
 
-		doubflo globalX = coordinateX + localX;
-		doubflo globalY = coordinateY + localY;
-		doubflo globalZ = coordinateZ + localZ;
+		real globalX = coordinateX + localX;
+		real globalY = coordinateY + localY;
+		real globalZ = coordinateZ + localZ;
 
-  		doubflo veloX = zero;
-		doubflo veloY = zero;
-		doubflo veloZ = zero;
+  		real veloX = zero;
+		real veloY = zero;
+		real veloZ = zero;
 
 		particleID[k]           = k      ;
 		cellBaseID[k]           = cbID   ;
@@ -155,20 +155,20 @@ extern "C" __global__ void InitParticles( doubflo* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void MoveParticles( doubflo* coordX,
-										  doubflo* coordY,
-										  doubflo* coordZ, 
-										  doubflo* coordParticleXlocal,
-										  doubflo* coordParticleYlocal,
-										  doubflo* coordParticleZlocal,
-										  doubflo* coordParticleXglobal,
-										  doubflo* coordParticleYglobal,
-										  doubflo* coordParticleZglobal,
-										  doubflo* veloParticleX,
-										  doubflo* veloParticleY,
-										  doubflo* veloParticleZ,
-										  doubflo* DD,
-										  doubflo  omega,
+extern "C" __global__ void MoveParticles( real* coordX,
+										  real* coordY,
+										  real* coordZ, 
+										  real* coordParticleXlocal,
+										  real* coordParticleYlocal,
+										  real* coordParticleZlocal,
+										  real* coordParticleXglobal,
+										  real* coordParticleYglobal,
+										  real* coordParticleZglobal,
+										  real* veloParticleX,
+										  real* veloParticleY,
+										  real* veloParticleZ,
+										  real* DD,
+										  real  omega,
 										  unsigned int* particleID,
 										  unsigned int* cellBaseID,
 										  unsigned int* bcMatD,
@@ -194,29 +194,29 @@ extern "C" __global__ void MoveParticles( doubflo* coordX,
    const unsigned k = nx*(ny*iz + iy) + ix;
    //////////////////////////////////////////////////////////////////////////
 
-   doubflo press,vx1,vx2,vx3;
-   doubflo drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
-   doubflo kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
-   doubflo d0, dx, dy, dz, dxy, dxz, dyz, dxyz;
+   real press,vx1,vx2,vx3;
+   real drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
+   real kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
+   real d0, dx, dy, dz, dxy, dxz, dyz, dxyz;
 
-   doubflo x,y,z;
+   real x,y,z;
 
    if(k < numberOfParticles)
    {
@@ -873,30 +873,30 @@ extern "C" __global__ void MoveParticles( doubflo* coordX,
 
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			  unsigned int kTimeStepOld = kTimeStep - numberOfParticles;
-			  doubflo localX = coordParticleXlocal[kTimeStepOld];
-			  doubflo localY = coordParticleYlocal[kTimeStepOld];
-			  doubflo localZ = coordParticleZlocal[kTimeStepOld];
+			  real localX = coordParticleXlocal[kTimeStepOld];
+			  real localY = coordParticleYlocal[kTimeStepOld];
+			  real localZ = coordParticleZlocal[kTimeStepOld];
 
-			  x = (localX * (doubflo)(pow(two,level))) - c1o2; //-c1o4;
-			  y = (localY * (doubflo)(pow(two,level))) - c1o2; //-c1o4;
-			  z = (localZ * (doubflo)(pow(two,level))) - c1o2; //-c1o4;
+			  x = (localX * (real)(pow(two,level))) - c1o2; //-c1o4;
+			  y = (localY * (real)(pow(two,level))) - c1o2; //-c1o4;
+			  z = (localZ * (real)(pow(two,level))) - c1o2; //-c1o4;
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 			  vx1 = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 			  vx2 = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);
 			  vx3 = (c0 + x*cx + y*cy + z*cz + x*x*cxx + y*y*cyy + z*z*czz + x*y*cxy + x*z*cxz + y*z*cyz + x*y*z*cxyz);
 
-			  doubflo veloPreX = veloParticleX[kTimeStepOld];
-			  doubflo veloPreY = veloParticleY[kTimeStepOld];
-			  doubflo veloPreZ = veloParticleZ[kTimeStepOld];
+			  real veloPreX = veloParticleX[kTimeStepOld];
+			  real veloPreY = veloParticleY[kTimeStepOld];
+			  real veloPreZ = veloParticleZ[kTimeStepOld];
 
-			  doubflo veloPostX = (veloPreX + vx1) * c1o2;
-			  doubflo veloPostY = (veloPreY + vx2) * c1o2;
-			  doubflo veloPostZ = (veloPreZ + vx3) * c1o2;
+			  real veloPostX = (veloPreX + vx1) * c1o2;
+			  real veloPostY = (veloPreY + vx2) * c1o2;
+			  real veloPostZ = (veloPreZ + vx3) * c1o2;
 
-			  //doubflo veloPostX = vx1;
-			  //doubflo veloPostY = vx2;
-			  //doubflo veloPostZ = vx3;
+			  //real veloPostX = vx1;
+			  //real veloPostY = vx2;
+			  //real veloPostZ = vx3;
 
 			  veloParticleX[kTimeStep] = veloPostX;
 			  veloParticleY[kTimeStep] = veloPostY;
@@ -928,9 +928,9 @@ extern "C" __global__ void MoveParticles( doubflo* coordX,
 				  z = z - one;
 			  }
 
-			  doubflo tempX = x;
-			  doubflo tempY = y;
-			  doubflo tempZ = z;
+			  real tempX = x;
+			  real tempY = y;
+			  real tempZ = z;
 
 			  if ((x < -c1o2) || (y < -c1o2) || (z < -c1o2))
 			  {
@@ -960,18 +960,18 @@ extern "C" __global__ void MoveParticles( doubflo* coordX,
 			  y = tempY;
 			  z = tempZ;
 
-			  localX = (x + c1o2) / (doubflo)(pow(two,level));
-			  localY = (y + c1o2) / (doubflo)(pow(two,level));
-			  localZ = (z + c1o2) / (doubflo)(pow(two,level));
+			  localX = (x + c1o2) / (real)(pow(two,level));
+			  localY = (y + c1o2) / (real)(pow(two,level));
+			  localZ = (z + c1o2) / (real)(pow(two,level));
 			  coordParticleXlocal[kTimeStep] = localX;
 			  coordParticleYlocal[kTimeStep] = localY;
 			  coordParticleZlocal[kTimeStep] = localZ;
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			  doubflo globalX = localX + coordX[cbID];
-			  doubflo globalY = localY + coordY[cbID];
-			  doubflo globalZ = localZ + coordZ[cbID];
+			  real globalX = localX + coordX[cbID];
+			  real globalY = localY + coordY[cbID];
+			  real globalZ = localZ + coordZ[cbID];
 			  coordParticleXglobal[kTimeStep] = globalX;
 			  coordParticleYglobal[kTimeStep] = globalY;
 			  coordParticleZglobal[kTimeStep] = globalZ;
@@ -1026,20 +1026,20 @@ extern "C" __global__ void MoveParticles( doubflo* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void MoveParticlesWithoutBCs(   doubflo* coordX,
-													  doubflo* coordY,
-													  doubflo* coordZ, 
-													  doubflo* coordParticleXlocal,
-													  doubflo* coordParticleYlocal,
-													  doubflo* coordParticleZlocal,
-													  doubflo* coordParticleXglobal,
-													  doubflo* coordParticleYglobal,
-													  doubflo* coordParticleZglobal,
-													  doubflo* veloParticleX,
-													  doubflo* veloParticleY,
-													  doubflo* veloParticleZ,
-													  doubflo* DD,
-													  doubflo  omega,
+extern "C" __global__ void MoveParticlesWithoutBCs(   real* coordX,
+													  real* coordY,
+													  real* coordZ, 
+													  real* coordParticleXlocal,
+													  real* coordParticleYlocal,
+													  real* coordParticleZlocal,
+													  real* coordParticleXglobal,
+													  real* coordParticleYglobal,
+													  real* coordParticleZglobal,
+													  real* veloParticleX,
+													  real* veloParticleY,
+													  real* veloParticleZ,
+													  real* DD,
+													  real  omega,
 													  unsigned int* particleID,
 													  unsigned int* cellBaseID,
 													  unsigned int* bcMatD,
@@ -1065,29 +1065,29 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   doubflo* coordX,
    const unsigned k = nx*(ny*iz + iy) + ix;
    //////////////////////////////////////////////////////////////////////////
 
-   doubflo press,vx1,vx2,vx3;
-   doubflo drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
-   doubflo kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
-   doubflo d0, dx, dy, dz, dxy, dxz, dyz, dxyz;
+   real press,vx1,vx2,vx3;
+   real drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC, *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
+   real kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz, axyz, bxyz, cxyz;
+   real d0, dx, dy, dz, dxy, dxz, dyz, dxyz;
 
-   doubflo x,y,z;
+   real x,y,z;
 
    if(k < numberOfParticles)
    {
@@ -1738,30 +1738,30 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   doubflo* coordX,
 
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			  unsigned int kTimeStepOld = kTimeStep - numberOfParticles;
-			  doubflo localX = coordParticleXlocal[kTimeStepOld];
-			  doubflo localY = coordParticleYlocal[kTimeStepOld];
-			  doubflo localZ = coordParticleZlocal[kTimeStepOld];
+			  real localX = coordParticleXlocal[kTimeStepOld];
+			  real localY = coordParticleYlocal[kTimeStepOld];
+			  real localZ = coordParticleZlocal[kTimeStepOld];
 
-			  x = (localX * (doubflo)(pow(two,level))) - c1o2; //-c1o4;
-			  y = (localY * (doubflo)(pow(two,level))) - c1o2; //-c1o4;
-			  z = (localZ * (doubflo)(pow(two,level))) - c1o2; //-c1o4;
+			  x = (localX * (real)(pow(two,level))) - c1o2; //-c1o4;
+			  y = (localY * (real)(pow(two,level))) - c1o2; //-c1o4;
+			  z = (localZ * (real)(pow(two,level))) - c1o2; //-c1o4;
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			  press = d0 + x*dx + y*dy + z*dz + x*y*dxy + x*z*dxz + y*z*dyz + x*y*z*dxyz;
 			  vx1 = (a0 + x*ax + y*ay + z*az + x*x*axx + y*y*ayy + z*z*azz + x*y*axy + x*z*axz + y*z*ayz + x*y*z*axyz);
 			  vx2 = (b0 + x*bx + y*by + z*bz + x*x*bxx + y*y*byy + z*z*bzz + x*y*bxy + x*z*bxz + y*z*byz + x*y*z*bxyz);
 			  vx3 = (c0 + x*cx + y*cy + z*cz + x*x*cxx + y*y*cyy + z*z*czz + x*y*cxy + x*z*cxz + y*z*cyz + x*y*z*cxyz);
 
-			  doubflo veloPreX = veloParticleX[kTimeStepOld];
-			  doubflo veloPreY = veloParticleY[kTimeStepOld];
-			  doubflo veloPreZ = veloParticleZ[kTimeStepOld];
+			  real veloPreX = veloParticleX[kTimeStepOld];
+			  real veloPreY = veloParticleY[kTimeStepOld];
+			  real veloPreZ = veloParticleZ[kTimeStepOld];
 
-			  doubflo veloPostX = (veloPreX + vx1) * c1o2;
-			  doubflo veloPostY = (veloPreY + vx2) * c1o2;
-			  doubflo veloPostZ = (veloPreZ + vx3) * c1o2;
+			  real veloPostX = (veloPreX + vx1) * c1o2;
+			  real veloPostY = (veloPreY + vx2) * c1o2;
+			  real veloPostZ = (veloPreZ + vx3) * c1o2;
 
-			  //doubflo veloPostX = vx1;
-			  //doubflo veloPostY = vx2;
-			  //doubflo veloPostZ = vx3;
+			  //real veloPostX = vx1;
+			  //real veloPostY = vx2;
+			  //real veloPostZ = vx3;
 
 			  veloParticleX[kTimeStep] = veloPostX;
 			  veloParticleY[kTimeStep] = veloPostY;
@@ -1793,9 +1793,9 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   doubflo* coordX,
 				  z = z - one;
 			  }
 
-			  doubflo tempX = x;
-			  doubflo tempY = y;
-			  doubflo tempZ = z;
+			  real tempX = x;
+			  real tempY = y;
+			  real tempZ = z;
 
 			  if ((x < -c1o2) || (y < -c1o2) || (z < -c1o2))
 			  {
@@ -1825,18 +1825,18 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   doubflo* coordX,
 			  y = tempY;
 			  z = tempZ;
 
-			  localX = (x + c1o2) / (doubflo)(pow(two,level));
-			  localY = (y + c1o2) / (doubflo)(pow(two,level));
-			  localZ = (z + c1o2) / (doubflo)(pow(two,level));
+			  localX = (x + c1o2) / (real)(pow(two,level));
+			  localY = (y + c1o2) / (real)(pow(two,level));
+			  localZ = (z + c1o2) / (real)(pow(two,level));
 			  coordParticleXlocal[kTimeStep] = localX;
 			  coordParticleYlocal[kTimeStep] = localY;
 			  coordParticleZlocal[kTimeStep] = localZ;
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			  doubflo globalX = localX + coordX[cbID];
-			  doubflo globalY = localY + coordY[cbID];
-			  doubflo globalZ = localZ + coordZ[cbID];
+			  real globalX = localX + coordX[cbID];
+			  real globalY = localY + coordY[cbID];
+			  real globalZ = localZ + coordZ[cbID];
 			  coordParticleXglobal[kTimeStep] = globalX;
 			  coordParticleYglobal[kTimeStep] = globalY;
 			  coordParticleZglobal[kTimeStep] = globalZ;
@@ -1891,21 +1891,21 @@ extern "C" __global__ void MoveParticlesWithoutBCs(   doubflo* coordX,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
-													  doubflo* coordY,
-													  doubflo* coordZ, 
-													  doubflo* coordParticleXlocal,
-													  doubflo* coordParticleYlocal,
-													  doubflo* coordParticleZlocal,
-													  doubflo* coordParticleXglobal,
-													  doubflo* coordParticleYglobal,
-													  doubflo* coordParticleZglobal,
-													  doubflo* veloParticleX,
-													  doubflo* veloParticleY,
-													  doubflo* veloParticleZ,
-													  doubflo* randArray,
-													  doubflo* DD,
-													  doubflo  omega,
+extern "C" __global__ void ParticleNoSlipDeviceComp27(real* coordX,
+													  real* coordY,
+													  real* coordZ, 
+													  real* coordParticleXlocal,
+													  real* coordParticleYlocal,
+													  real* coordParticleZlocal,
+													  real* coordParticleXglobal,
+													  real* coordParticleYglobal,
+													  real* coordParticleZglobal,
+													  real* veloParticleX,
+													  real* veloParticleY,
+													  real* veloParticleZ,
+													  real* randArray,
+													  real* DD,
+													  real  omega,
 													  unsigned int* particleID,
 													  unsigned int* cellBaseID,
 													  unsigned int* bcMatD,
@@ -1918,11 +1918,11 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
 													  unsigned int timestep, 
 													  unsigned int numberOfParticles, 
 													  int* k_Q, 
-													  doubflo* QQ,
+													  real* QQ,
 													  unsigned int sizeQ,
-													  doubflo* NormalX,
-													  doubflo* NormalY,
-													  doubflo* NormalZ,
+													  real* NormalX,
+													  real* NormalY,
+													  real* NormalZ,
 													  unsigned int size_Mat, 
 													  bool evenOrOdd)
 {
@@ -2001,7 +2001,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
    if(k<sizeQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2033,7 +2033,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
       q_dirBSE = &QQ[dirBSE *sizeQ];
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
+      real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
               *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
               *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
               *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
@@ -2065,7 +2065,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
       nx_dirBSE = &NormalX[dirBSE *sizeQ];
       nx_dirBNW = &NormalX[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
+      real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
               *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
               *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
               *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
@@ -2097,7 +2097,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
       ny_dirBSE = &NormalY[dirBSE *sizeQ];
       ny_dirBNW = &NormalY[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
+      real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
               *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
               *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
               *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
@@ -2181,34 +2181,34 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -2226,7 +2226,7 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2290,9 +2290,9 @@ extern "C" __global__ void ParticleNoSlipDeviceComp27(doubflo* coordX,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo VeloX = vx1;
-	  doubflo VeloY = vx2;
-	  doubflo VeloZ = vx3;
+	  real VeloX = vx1;
+	  real VeloY = vx2;
+	  real VeloZ = vx3;
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    }

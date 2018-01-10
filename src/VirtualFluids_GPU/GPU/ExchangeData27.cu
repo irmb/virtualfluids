@@ -3,8 +3,8 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendFsPost27(doubflo* DD,
-										   doubflo* bufferFs,
+extern "C" __global__ void getSendFsPost27(real* DD,
+										   real* bufferFs,
 										   int* sendIndex,
                                            int buffmax,
                                            unsigned int* neighborX,
@@ -239,8 +239,8 @@ extern "C" __global__ void getSendFsPost27(doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvFsPost27(doubflo* DD,
-										   doubflo* bufferFs,
+extern "C" __global__ void setRecvFsPost27(real* DD,
+										   real* bufferFs,
 										   int* recvIndex,
                                            int buffmax,
                                            unsigned int* neighborX,
@@ -474,8 +474,8 @@ extern "C" __global__ void setRecvFsPost27(doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void getSendFsPre27(doubflo* DD,
-										  doubflo* bufferFs,
+extern "C" __global__ void getSendFsPre27(real* DD,
+										  real* bufferFs,
 										  int* sendIndex,
                                           int buffmax,
                                           unsigned int* neighborX,
@@ -683,8 +683,8 @@ extern "C" __global__ void getSendFsPre27(doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void setRecvFsPre27(doubflo* DD,
-										  doubflo* bufferFs,
+extern "C" __global__ void setRecvFsPre27(real* DD,
+										  real* bufferFs,
 										  int* recvIndex,
                                           int buffmax,
                                           unsigned int* neighborX,

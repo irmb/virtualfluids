@@ -4,12 +4,12 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Cascade_SP_27(     doubflo omega,
+extern "C" __global__ void LB_Kernel_Cascade_SP_27(     real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
-														doubflo* DDStart,
+														real* DDStart,
 														int size_Mat,
 														bool EvenOrOdd)
 {
@@ -124,63 +124,63 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     doubflo omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			doubflo mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			doubflo mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			doubflo mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			doubflo mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			doubflo mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			doubflo mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			doubflo mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			doubflo mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			doubflo mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			doubflo mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			doubflo mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			doubflo mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			doubflo mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			doubflo mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			doubflo mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			real mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
+			real mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
+			real mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
+			real mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
+			real mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
+			real mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
+			real mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
+			real mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
+			real mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
+			real mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
+			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
+			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
+			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
+			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
+			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
+			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
+			real mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
+			real mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
+			real mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
+			real mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
-			//doubflo oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			//real oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 			//					   (((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 			//						((mfabb+mfcbb) + (mfbab+mfbcb)  +  (mfbba+mfbbc)));//fehlt mfbbb
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb));
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab));
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba));
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			doubflo oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 								   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 								   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);//fehlt mfbbb nicht mehr
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo wadjust;
-			doubflo qudricLimit = 0.01f;
+			real wadjust;
+			real qudricLimit = 0.01f;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
@@ -417,25 +417,25 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     doubflo omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cascade
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo OxxPyyPzz = omega;
-			doubflo OxyyPxzz  = one;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
-			doubflo OxyyMxzz  = one;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
-			doubflo O4        = one;
-			doubflo O5        = one;
-			doubflo O6        = one;
+			real OxxPyyPzz = omega;
+			real OxyyPxzz  = one;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
+			real OxyyMxzz  = one;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
+			real O4        = one;
+			real O5        = one;
+			real O6        = one;
 
 			//2.
 			// linear combinations
-			doubflo mxxPyyPzz = mfcaa + mfaca + mfaac;
-			doubflo mxxMyy    = mfcaa - mfaca;
-			doubflo mxxMzz	   = mfcaa - mfaac;
+			real mxxPyyPzz = mfcaa + mfaca + mfaac;
+			real mxxMyy    = mfcaa - mfaca;
+			real mxxMzz	   = mfcaa - mfaac;
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//incl. correction
 			{
-				doubflo dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
-				doubflo dyuy = dxux + omega * c3o2 * mxxMyy;
-				doubflo dzuz = dxux + omega * c3o2 * mxxMzz;
+				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+				real dyuy = dxux + omega * c3o2 * mxxMyy;
+				real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 				//relax
 				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -462,14 +462,14 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     doubflo omega,
 			//3.
 			// linear combinations
 
-			doubflo mxxyPyzz = mfcba + mfabc;
-			doubflo mxxyMyzz = mfcba - mfabc;
+			real mxxyPyzz = mfcba + mfabc;
+			real mxxyMyzz = mfcba - mfabc;
 
-			doubflo mxxzPyyz = mfcab + mfacb;
-			doubflo mxxzMyyz = mfcab - mfacb;
+			real mxxzPyyz = mfcab + mfacb;
+			real mxxzMyyz = mfcab - mfacb;
 
-			doubflo mxyyPxzz = mfbca + mfbac;
-			doubflo mxyyMxzz = mfbca - mfbac;
+			real mxyyPxzz = mfbca + mfbac;
+			real mxyyMxzz = mfbca - mfbac;
 
 			//relax
 			wadjust    = OxyyMxzz+(one-OxyyMxzz)*abs(mfbbb)/(abs(mfbbb)+qudricLimit);
@@ -798,12 +798,12 @@ extern "C" __global__ void LB_Kernel_Cascade_SP_27(     doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(doubflo omega,
+extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
-														doubflo* DDStart,
+														real* DDStart,
 														int size_Mat,
 														bool EvenOrOdd)
 {
@@ -918,68 +918,68 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(doubflo omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			doubflo mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			doubflo mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			doubflo mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			doubflo mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			doubflo mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			doubflo mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			doubflo mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			doubflo mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			doubflo mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			doubflo mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			doubflo mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			doubflo mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			doubflo mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			doubflo mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			doubflo mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			doubflo mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
+			real mfcbb = (D.f[dirE   ])[k  ];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
+			real mfabb = (D.f[dirW   ])[kw ];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
+			real mfbab = (D.f[dirS   ])[ks ];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
+			real mfbba = (D.f[dirB   ])[kb ];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
+			real mfaab = (D.f[dirSW  ])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
+			real mfacb = (D.f[dirNW  ])[kw ];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
+			real mfcbc = (D.f[dirTE  ])[k  ];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
+			real mfaba = (D.f[dirBW  ])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
+			real mfabc = (D.f[dirTW  ])[kw ];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
+			real mfbcc = (D.f[dirTN  ])[k  ];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
+			real mfbaa = (D.f[dirBS  ])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
+			real mfbac = (D.f[dirTS  ])[ks ];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
+			real mfbbb = (D.f[dirZERO])[k  ];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
+			real mfccc = (D.f[dirTNE ])[k  ];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
+			real mfaac = (D.f[dirTSW ])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
+			real mfcac = (D.f[dirTSE ])[ks ];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
+			real mfacc = (D.f[dirTNW ])[kw ];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
+			real mfcca = (D.f[dirBNE ])[kb ];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
+			real mfaaa = (D.f[dirBSW ])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
+			real mfaca = (D.f[dirBNW ])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo rho = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real rho = (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 						   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 						   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb) + one;//!!!Achtung + one
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
-			//doubflo oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			//real oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 			//					   (((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 			//						((mfabb+mfcbb) + (mfbab+mfbcb)  +  (mfbba+mfbbc)));//fehlt mfbbb
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) / rho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) / rho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			doubflo oMdrho = one; // comp special 
-			//doubflo oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
+			real oMdrho = one; // comp special 
+			//real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
 			//					   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
 			//					   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);//fehlt mfbbb nicht mehr
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo wadjust;
-			doubflo qudricLimit = 0.01f;
+			real wadjust;
+			real qudricLimit = 0.01f;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
@@ -1216,25 +1216,25 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(doubflo omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cascade
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo OxxPyyPzz = one;
-			doubflo OxyyPxzz  = one;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
-			doubflo OxyyMxzz  = one;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
-			doubflo O4        = one;
-			doubflo O5        = one;
-			doubflo O6        = one;
+			real OxxPyyPzz = one;
+			real OxyyPxzz  = one;//two-omega;//eight*(two-omega)/(eight -omega);//one;//omega;//two-omega;//
+			real OxyyMxzz  = one;//omega;//one;//eight*(two-omega)/(eight -omega);//one;//two-omega;//one;// 
+			real O4        = one;
+			real O5        = one;
+			real O6        = one;
 
 			//2.
 			// linear combinations
-			doubflo mxxPyyPzz = mfcaa + mfaca + mfaac;
-			doubflo mxxMyy    = mfcaa - mfaca;
-			doubflo mxxMzz	   = mfcaa - mfaac;
+			real mxxPyyPzz = mfcaa + mfaca + mfaac;
+			real mxxMyy    = mfcaa - mfaca;
+			real mxxMzz	   = mfcaa - mfaac;
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//incl. correction
 			{
-				doubflo dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
-				doubflo dyuy = dxux + omega * c3o2 * mxxMyy;
-				doubflo dzuz = dxux + omega * c3o2 * mxxMzz;
+				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+				real dyuy = dxux + omega * c3o2 * mxxMyy;
+				real dzuz = dxux + omega * c3o2 * mxxMzz;
 
 				//relax
 				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -1261,14 +1261,14 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(doubflo omega,
 			//3.
 			// linear combinations
 
-			doubflo mxxyPyzz = mfcba + mfabc;
-			doubflo mxxyMyzz = mfcba - mfabc;
+			real mxxyPyzz = mfcba + mfabc;
+			real mxxyMyzz = mfcba - mfabc;
 
-			doubflo mxxzPyyz = mfcab + mfacb;
-			doubflo mxxzMyyz = mfcab - mfacb;
+			real mxxzPyyz = mfcab + mfacb;
+			real mxxzMyyz = mfcab - mfacb;
 
-			doubflo mxyyPxzz = mfbca + mfbac;
-			doubflo mxyyMxzz = mfbca - mfbac;
+			real mxyyPxzz = mfbca + mfbac;
+			real mxyyMxzz = mfbca - mfbac;
 
 			//relax
 			wadjust    = OxyyMxzz+(one-OxyyMxzz)*abs(mfbbb)/(abs(mfbbb)+qudricLimit);
@@ -1597,12 +1597,12 @@ extern "C" __global__ void LB_Kernel_Cascade_Comp_SP_27(doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      doubflo omega,
+extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      real omega,
 														   unsigned int* bcMatD,
 														   unsigned int* neighborX,
 														   unsigned int* neighborY,
 														   unsigned int* neighborZ,
-														   doubflo* DDStart,
+														   real* DDStart,
 														   int size_Mat,
 														   bool EvenOrOdd)
 {
@@ -1717,73 +1717,73 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      doubflo omega,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo E     = (D.f[dirE   ])[ke   ];// +  c2over27 ;
-         doubflo W     = (D.f[dirW   ])[kw   ];// +  c2over27 ;
-         doubflo N     = (D.f[dirN   ])[kn   ];// +  c2over27 ;
-         doubflo S     = (D.f[dirS   ])[ks   ];// +  c2over27 ;
-         doubflo F     = (D.f[dirT   ])[kt   ];// +  c2over27 ;
-         doubflo B     = (D.f[dirB   ])[kb   ];// +  c2over27 ;
-         doubflo Ne    = (D.f[dirNE  ])[kne  ];// +  c1over54 ;
-         doubflo Sw    = (D.f[dirSW  ])[ksw  ];// +  c1over54 ;
-         doubflo Se    = (D.f[dirSE  ])[kse  ];// +  c1over54 ;
-         doubflo Nw    = (D.f[dirNW  ])[knw  ];// +  c1over54 ;
-         doubflo Ef    = (D.f[dirTE  ])[kte  ];// +  c1over54 ;
-         doubflo Wb    = (D.f[dirBW  ])[kbw  ];// +  c1over54 ;
-         doubflo Eb    = (D.f[dirBE  ])[kbe  ];// +  c1over54 ;
-         doubflo Wf    = (D.f[dirTW  ])[ktw  ];// +  c1over54 ;
-         doubflo Nf    = (D.f[dirTN  ])[ktn  ];// +  c1over54 ;
-         doubflo Sb    = (D.f[dirBS  ])[kbs  ];// +  c1over54 ;
-         doubflo Nb    = (D.f[dirBN  ])[kbn  ];// +  c1over54 ;
-         doubflo Sf    = (D.f[dirTS  ])[kts  ];// +  c1over54 ;
-         doubflo R     = (D.f[dirZERO])[kzero];// +  c8over27 ;
-         doubflo Nef   = (D.f[dirTNE ])[ktne ];// +  c1over216;
-         doubflo Swf   = (D.f[dirTSW ])[ktsw ];// +  c1over216;
-         doubflo Sef   = (D.f[dirTSE ])[ktse ];// +  c1over216;
-         doubflo Nwf   = (D.f[dirTNW ])[ktnw ];// +  c1over216;
-         doubflo Neb   = (D.f[dirBNE ])[kbne ];// +  c1over216;
-         doubflo Swb   = (D.f[dirBSW ])[kbsw ];// +  c1over216;
-         doubflo Seb   = (D.f[dirBSE ])[kbse ];// +  c1over216;
-         doubflo Nwb   = (D.f[dirBNW ])[kbnw ];// +  c1over216;
+         real E     = (D.f[dirE   ])[ke   ];// +  c2over27 ;
+         real W     = (D.f[dirW   ])[kw   ];// +  c2over27 ;
+         real N     = (D.f[dirN   ])[kn   ];// +  c2over27 ;
+         real S     = (D.f[dirS   ])[ks   ];// +  c2over27 ;
+         real F     = (D.f[dirT   ])[kt   ];// +  c2over27 ;
+         real B     = (D.f[dirB   ])[kb   ];// +  c2over27 ;
+         real Ne    = (D.f[dirNE  ])[kne  ];// +  c1over54 ;
+         real Sw    = (D.f[dirSW  ])[ksw  ];// +  c1over54 ;
+         real Se    = (D.f[dirSE  ])[kse  ];// +  c1over54 ;
+         real Nw    = (D.f[dirNW  ])[knw  ];// +  c1over54 ;
+         real Ef    = (D.f[dirTE  ])[kte  ];// +  c1over54 ;
+         real Wb    = (D.f[dirBW  ])[kbw  ];// +  c1over54 ;
+         real Eb    = (D.f[dirBE  ])[kbe  ];// +  c1over54 ;
+         real Wf    = (D.f[dirTW  ])[ktw  ];// +  c1over54 ;
+         real Nf    = (D.f[dirTN  ])[ktn  ];// +  c1over54 ;
+         real Sb    = (D.f[dirBS  ])[kbs  ];// +  c1over54 ;
+         real Nb    = (D.f[dirBN  ])[kbn  ];// +  c1over54 ;
+         real Sf    = (D.f[dirTS  ])[kts  ];// +  c1over54 ;
+         real R     = (D.f[dirZERO])[kzero];// +  c8over27 ;
+         real Nef   = (D.f[dirTNE ])[ktne ];// +  c1over216;
+         real Swf   = (D.f[dirTSW ])[ktsw ];// +  c1over216;
+         real Sef   = (D.f[dirTSE ])[ktse ];// +  c1over216;
+         real Nwf   = (D.f[dirTNW ])[ktnw ];// +  c1over216;
+         real Neb   = (D.f[dirBNE ])[kbne ];// +  c1over216;
+         real Swb   = (D.f[dirBSW ])[kbsw ];// +  c1over216;
+         real Seb   = (D.f[dirBSE ])[kbse ];// +  c1over216;
+         real Nwb   = (D.f[dirBNW ])[kbnw ];// +  c1over216;
          ////////////////////////////////////////////////////////////////////////////////////
-		 doubflo rho=Nw+W+Sw+S+Se+E+Ne+N+R+Nf+Nb+Sf+Sb+Ef+Eb+Wf+Wb+Nwf+Nwb+Nef+Neb+Swf+Swb+Sef+Seb+F+B+one;// ACHTUNG ne EINS !!!!!!!!
-		 doubflo pix=(Ne+E+Se+Ef+Eb-Nw-W-Sw-Wf-Wb+Nef+Neb+Sef+Seb-Nwf-Nwb-Swf-Swb);
-		 doubflo piy=(Ne+N+Nw+Nf+Nb-Se-S-Sw-Sf-Sb+Nef+Neb+Nwf+Nwb-Sef-Seb-Swf-Swb);
-		 doubflo piz=(Nf+Sf+Wf+Ef+F-Nb-Sb-Wb-Eb-B+Nef+Nwf+Sef+Swf-Neb-Nwb-Seb-Swb);
-		 doubflo vvx=pix/rho;
-		 doubflo vvy=piy/rho;
-		 doubflo vvz=piz/rho;
-		 doubflo vx2=vvx*vvx;
-		 doubflo vy2=vvy*vvy;
-		 doubflo vz2=vvz*vvz;
+		 real rho=Nw+W+Sw+S+Se+E+Ne+N+R+Nf+Nb+Sf+Sb+Ef+Eb+Wf+Wb+Nwf+Nwb+Nef+Neb+Swf+Swb+Sef+Seb+F+B+one;// ACHTUNG ne EINS !!!!!!!!
+		 real pix=(Ne+E+Se+Ef+Eb-Nw-W-Sw-Wf-Wb+Nef+Neb+Sef+Seb-Nwf-Nwb-Swf-Swb);
+		 real piy=(Ne+N+Nw+Nf+Nb-Se-S-Sw-Sf-Sb+Nef+Neb+Nwf+Nwb-Sef-Seb-Swf-Swb);
+		 real piz=(Nf+Sf+Wf+Ef+F-Nb-Sb-Wb-Eb-B+Nef+Nwf+Sef+Swf-Neb-Nwb-Seb-Swb);
+		 real vvx=pix/rho;
+		 real vvy=piy/rho;
+		 real vvz=piz/rho;
+		 real vx2=vvx*vvx;
+		 real vy2=vvy*vvy;
+		 real vz2=vvz*vvz;
 		 ////////////////////////////////////////////////////////////////////////////////////
-		 doubflo mfaaa = Swb;
-		 doubflo mfaab = Sw;
-		 doubflo mfaac = Swf;
-		 doubflo mfaba = Wb;
-		 doubflo mfabb = W;
-		 doubflo mfabc = Wf;
-		 doubflo mfbaa = Sb;
-		 doubflo mfbab = S;
-		 doubflo mfbac = Sf;
-		 doubflo mfbba = B;
-		 doubflo mfbbb = R;
-		 doubflo mfbbc = F;
-		 doubflo mfaca = Nwb;
-		 doubflo mfacb = Nw;
-		 doubflo mfacc = Nwf;
-		 doubflo mfcaa = Seb;
-		 doubflo mfcab = Se;
-		 doubflo mfcac = Sef;
-		 doubflo mfcca = Neb;
-		 doubflo mfccb = Ne;
-		 doubflo mfccc = Nef;
-		 doubflo mfbca = Nb;
-		 doubflo mfbcb = N;
-		 doubflo mfbcc = Nf;
-		 doubflo mfcba = Eb;
-		 doubflo mfcbb = E;
-		 doubflo mfcbc = Ef;
-		 doubflo m0, m1, m2;
+		 real mfaaa = Swb;
+		 real mfaab = Sw;
+		 real mfaac = Swf;
+		 real mfaba = Wb;
+		 real mfabb = W;
+		 real mfabc = Wf;
+		 real mfbaa = Sb;
+		 real mfbab = S;
+		 real mfbac = Sf;
+		 real mfbba = B;
+		 real mfbbb = R;
+		 real mfbbc = F;
+		 real mfaca = Nwb;
+		 real mfacb = Nw;
+		 real mfacc = Nwf;
+		 real mfcaa = Seb;
+		 real mfcab = Se;
+		 real mfcac = Sef;
+		 real mfcca = Neb;
+		 real mfccb = Ne;
+		 real mfccc = Nef;
+		 real mfbca = Nb;
+		 real mfbcb = N;
+		 real mfbcc = Nf;
+		 real mfcba = Eb;
+		 real mfcbb = E;
+		 real mfcbc = Ef;
+		 real m0, m1, m2;
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 //Hin
 		 ////////////////////////////////////////////////////////////////////////////////////
@@ -2062,19 +2062,19 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      doubflo omega,
 		 ////////////////////////////////////////////////////////////////////////////////////
 		 // Cascaded simple
 		 ////////////////////////////////////////////////////////////////////////////////////
-		 doubflo OxxPyyPzz = one;
-		 doubflo OxyyPxzz  = one;
-		 doubflo OxyyMxzz  = one;
-		 doubflo O4        = one;
-		 doubflo O5        = one;
-		 doubflo O6        = one;
+		 real OxxPyyPzz = one;
+		 real OxyyPxzz  = one;
+		 real OxyyMxzz  = one;
+		 real O4        = one;
+		 real O5        = one;
+		 real O6        = one;
 
 
 		 //2.
 		 // linear combinations
-		 doubflo mxxPyyPzz = mfcaa + mfaca + mfaac;
-		 doubflo mxxMyy    = mfcaa - mfaca;
-		 doubflo mxxMzz	   = mfcaa - mfaac;
+		 real mxxPyyPzz = mfcaa + mfaca + mfaac;
+		 real mxxMyy    = mfcaa - mfaca;
+		 real mxxMzz	   = mfcaa - mfaac;
 
 		 //relax
 		 mxxPyyPzz += OxxPyyPzz*(mfaaa-mxxPyyPzz);
@@ -2102,14 +2102,14 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      doubflo omega,
 
 		 //3.
 		 // linear combinations
-		 doubflo mxxyPyzz = mfcba + mfabc;
-		 doubflo mxxyMyzz = mfcba - mfabc;
+		 real mxxyPyzz = mfcba + mfabc;
+		 real mxxyMyzz = mfcba - mfabc;
 		 
-		 doubflo mxxzPyyz = mfcab + mfacb;
-		 doubflo mxxzMyyz = mfcab - mfacb;
+		 real mxxzPyyz = mfcab + mfacb;
+		 real mxxzMyyz = mfcab - mfacb;
 
-		 doubflo mxyyPxzz = mfbca + mfbac;
-		 doubflo mxyyMxzz = mfbca - mfbac;
+		 real mxyyPxzz = mfbca + mfbac;
+		 real mxyyMxzz = mfbca - mfbac;
 
 		 //relax
 		 mfbbb     += OxyyMxzz * (-mfbbb);
@@ -2444,12 +2444,12 @@ extern "C" __global__ void LB_Kernel_Casc_Comp_SP_27(      doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
+extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  real omega,
                                                          unsigned int* bcMatD,
                                                          unsigned int* neighborX,
                                                          unsigned int* neighborY,
                                                          unsigned int* neighborZ,
-                                                         doubflo* DDStart,
+                                                         real* DDStart,
                                                          int size_Mat,
                                                          bool EvenOrOdd)
 {
@@ -2564,40 +2564,40 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fE    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fW    =  (D.f[dirW   ])[kw ];
-         doubflo fN    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fS    =  (D.f[dirS   ])[ks ];
-         doubflo fT    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fB    =  (D.f[dirB   ])[kb ];
-         doubflo fNE   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fSW   =  (D.f[dirSW  ])[ksw];
-         doubflo fSE   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fNW   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fTE   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fBW   =  (D.f[dirBW  ])[kbw];
-         doubflo fBE   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fTW   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fTN   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fBS   =  (D.f[dirBS  ])[kbs];
-         doubflo fBN   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fTS   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fTNE   = (D.f[dirTNE ])[k  ];//ktne
-         doubflo fTSW   = (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fTSE   = (D.f[dirTSE ])[ks ];//ktse
-         doubflo fTNW   = (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fBNE   = (D.f[dirBNE ])[kb ];//kbne
-         doubflo fBSW   = (D.f[dirBSW ])[kbsw];
-         doubflo fBSE   = (D.f[dirBSE ])[kbs];//kbse
-         doubflo fBNW   = (D.f[dirBNW ])[kbw];//kbnw
+         real fE    =  (D.f[dirE   ])[k  ];//ke
+         real fW    =  (D.f[dirW   ])[kw ];
+         real fN    =  (D.f[dirN   ])[k  ];//kn
+         real fS    =  (D.f[dirS   ])[ks ];
+         real fT    =  (D.f[dirT   ])[k  ];//kt
+         real fB    =  (D.f[dirB   ])[kb ];
+         real fNE   =  (D.f[dirNE  ])[k  ];//kne
+         real fSW   =  (D.f[dirSW  ])[ksw];
+         real fSE   =  (D.f[dirSE  ])[ks ];//kse
+         real fNW   =  (D.f[dirNW  ])[kw ];//knw
+         real fTE   =  (D.f[dirTE  ])[k  ];//kte
+         real fBW   =  (D.f[dirBW  ])[kbw];
+         real fBE   =  (D.f[dirBE  ])[kb ];//kbe
+         real fTW   =  (D.f[dirTW  ])[kw ];//ktw
+         real fTN   =  (D.f[dirTN  ])[k  ];//ktn
+         real fBS   =  (D.f[dirBS  ])[kbs];
+         real fBN   =  (D.f[dirBN  ])[kb ];//kbn
+         real fTS   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fTNE   = (D.f[dirTNE ])[k  ];//ktne
+         real fTSW   = (D.f[dirTSW ])[ksw];//ktsw
+         real fTSE   = (D.f[dirTSE ])[ks ];//ktse
+         real fTNW   = (D.f[dirTNW ])[kw ];//ktnw
+         real fBNE   = (D.f[dirBNE ])[kb ];//kbne
+         real fBSW   = (D.f[dirBSW ])[kbsw];
+         real fBSE   = (D.f[dirBSE ])[kbs];//kbse
+         real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo rho0   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
-         doubflo rho    =  rho0 + one;
-         doubflo OORho  =  one/rho;
-         doubflo vx     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
-         doubflo vy     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
-         doubflo vz     =  OORho*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
+         real rho0   =  (fTNE+fBSW)+(fTSW+fBNE)+(fTSE+fBNW)+(fTNW+fBSE)+(fNE+fSW)+(fNW+fSE)+(fTE+fBW)+(fBE+fTW)+(fTN+fBS)+(fBN+fTS)+(fE+fW)+(fN+fS)+(fT+fB)+fZERO;
+         real rho    =  rho0 + one;
+         real OORho  =  one/rho;
+         real vx     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fTSE-fBNW)+(fBSE-fTNW) +(fNE-fSW)+(fSE-fNW)+(fTE-fBW)+(fBE-fTW)+(fE-fW));
+         real vy     =  OORho*((fTNE-fBSW)+(fBNE-fTSW)+(fBNW-fTSE)+(fTNW-fBSE) +(fNE-fSW)+(fNW-fSE)+(fTN-fBS)+(fBN-fTS)+(fN-fS));
+         real vz     =  OORho*((fTNE-fBSW)+(fTSW-fBNE)+(fTSE-fBNW)+(fTNW-fBSE) +(fTE-fBW)+(fTW-fBE)+(fTN-fBS)+(fTS-fBN)+(fT-fB));
          ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2605,11 +2605,11 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          ////BGK incomp
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         //doubflo drho    =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         //doubflo vx1     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
-         //doubflo vx2     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
-         //doubflo vx3     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
-         //doubflo cusq    =  c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         //real drho    =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
+         //real vx1     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
+         //real vx2     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
+         //real vx3     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
+         //real cusq    =  c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          //fZERO = fZERO *(one+(-omega))-(-omega)*   c8over27*  (drho-cusq);
          //fE    = fE    *(one+(-omega))-(-omega)*   c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
@@ -2643,13 +2643,13 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
 		 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    //      //BGK comp
    //      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //      doubflo drho    =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-   //      doubflo rho     =  one + drho;
-   //      doubflo OoRho   =  one / rho;
-   //      doubflo vx1     =  OoRho * (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
-   //      doubflo vx2     =  OoRho * (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
-   //      doubflo vx3     =  OoRho * (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
-   //      doubflo cusq    =  c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+   //      real drho    =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
+   //      real rho     =  one + drho;
+   //      real OoRho   =  one / rho;
+   //      real vx1     =  OoRho * (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
+   //      real vx2     =  OoRho * (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
+   //      real vx3     =  OoRho * (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
+   //      real cusq    =  c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
    //      fZERO = fZERO *(one+(-omega))-(-omega)*   c8over27*  (drho-rho * cusq);
    //      fE    = fE    *(one+(-omega))-(-omega)*   c2over27*  (drho+rho * (three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
@@ -2683,79 +2683,79 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
 
 
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo vx2    = vx*vx;
-         doubflo vy2    = vy*vy;
-         doubflo vz2    = vz*vz;
-         doubflo vxy    = vx*vy;
-         doubflo vxz    = vx*vz;
-         doubflo vyz    = vy*vz;
-         doubflo vx2y   = vx*vx*vy;
-         doubflo vx2z   = vx*vx*vz;
-         doubflo vy2z   = vy*vy*vz;
-         doubflo vxy2   = vx*vy*vy;
-         doubflo vyz2   = vy*vz*vz;
-         doubflo vxz2   = vx*vz*vz;
-         doubflo vxyz   = vx*vy*vz;
-         //doubflo vx2y2  = vx*vx*vy*vy;
-         //doubflo vx2z2  = vx*vx*vz*vz;
-         //doubflo vy2z2  = vy*vy*vz*vz;
-         //doubflo vx2yz  = vx*vx*vy*vz;
-         //doubflo vxyz2  = vx*vy*vz*vz;
-         //doubflo vxy2z  = vx*vy*vy*vz;
-         //doubflo vx2y2z = vx*vx*vy*vy*vz;
-         //doubflo vx2yz2 = vx*vx*vy*vz*vz;
-         //doubflo vxy2z2 = vx*vy*vy*vz*vz;
-         //doubflo vx2y2z2= vx*vx*vy*vy*vz*vz;
+         real vx2    = vx*vx;
+         real vy2    = vy*vy;
+         real vz2    = vz*vz;
+         real vxy    = vx*vy;
+         real vxz    = vx*vz;
+         real vyz    = vy*vz;
+         real vx2y   = vx*vx*vy;
+         real vx2z   = vx*vx*vz;
+         real vy2z   = vy*vy*vz;
+         real vxy2   = vx*vy*vy;
+         real vyz2   = vy*vz*vz;
+         real vxz2   = vx*vz*vz;
+         real vxyz   = vx*vy*vz;
+         //real vx2y2  = vx*vx*vy*vy;
+         //real vx2z2  = vx*vx*vz*vz;
+         //real vy2z2  = vy*vy*vz*vz;
+         //real vx2yz  = vx*vx*vy*vz;
+         //real vxyz2  = vx*vy*vz*vz;
+         //real vxy2z  = vx*vy*vy*vz;
+         //real vx2y2z = vx*vx*vy*vy*vz;
+         //real vx2yz2 = vx*vx*vy*vz*vz;
+         //real vxy2z2 = vx*vy*vy*vz*vz;
+         //real vx2y2z2= vx*vx*vy*vy*vz*vz;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         //doubflo mu200   =(fE+fW+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu020   =(fN+fS+fNE+fSW+fSE+fNW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu002   =(fT+fB+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu110   =(fNE-fSE+fSW-fNW+fTNE-fTSE+fBNE-fBSE+fTSW-fTNW+fBSW-fBNW) * OORho;
-         //doubflo mu101   =(fTE+fBW-fBE-fTW+fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
-         //doubflo mu011   =(fTN+fBS-fBN-fTS+fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
-         //doubflo mu210   =(fNE-fSW-fSE+fNW+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         //doubflo mu120   =(fNE-fSW+fSE-fNW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         //doubflo mu102   =(fTE-fBW+fBE-fTW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         //doubflo mu111   =(fTNE-fBNE-fTSE+fBSE-fTNW+fBNW+fTSW-fBSW) * OORho;
-         //doubflo mu201   =(fTE-fBW-fBE+fTW+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         //doubflo mu021   =(fTN-fBS-fBN+fTS+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         //doubflo mu012   =(fTN-fBS+fBN-fTS+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         //doubflo mu220   =(fNE+fSW+fSE+fNW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu121   =(fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
-         //doubflo mu202   =(fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu211   =(fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
-         //doubflo mu112   =(fTNE+fBNE-fTSE-fBSE-fTNW-fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu022   =(fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         //doubflo mu221   =(fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         //doubflo mu122   =(fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         //doubflo mu212   =(fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         //doubflo mu222   =(fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu200   =(fE+fW+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu020   =(fN+fS+fNE+fSW+fSE+fNW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu002   =(fT+fB+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu110   =(fNE-fSE+fSW-fNW+fTNE-fTSE+fBNE-fBSE+fTSW-fTNW+fBSW-fBNW) * OORho;
+         //real mu101   =(fTE+fBW-fBE-fTW+fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
+         //real mu011   =(fTN+fBS-fBN-fTS+fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
+         //real mu210   =(fNE-fSW-fSE+fNW+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         //real mu120   =(fNE-fSW+fSE-fNW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         //real mu102   =(fTE-fBW+fBE-fTW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         //real mu111   =(fTNE-fBNE-fTSE+fBSE-fTNW+fBNW+fTSW-fBSW) * OORho;
+         //real mu201   =(fTE-fBW-fBE+fTW+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         //real mu021   =(fTN-fBS-fBN+fTS+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         //real mu012   =(fTN-fBS+fBN-fTS+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         //real mu220   =(fNE+fSW+fSE+fNW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu121   =(fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
+         //real mu202   =(fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu211   =(fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
+         //real mu112   =(fTNE+fBNE-fTSE-fBSE-fTNW-fBNW+fTSW+fBSW) * OORho;
+         //real mu022   =(fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         //real mu221   =(fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         //real mu122   =(fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         //real mu212   =(fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         //real mu222   =(fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo mu200   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE))) + ((fNE+fSW) + (fNW+fSE)) + ((fTE+fBW) + (fTW+fBE))                           + (fE+fW)                    );
-         doubflo mu020   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE))) + ((fNE+fSW) + (fNW+fSE))                           + ((fTN+fBS) + (fTS+fBN))           + (fN+fS)          );
-         doubflo mu002   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                           + ((fTE+fBW) + (fTW+fBE)) + ((fTN+fBS) + (fTS+fBN))                     + (fT+fB));
-         doubflo mu110   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) - ((fTSE+fBNW) - (fTSW+fBNE))) + ((fNE+fSW) - (fNW+fSE))                                                                                  );
-         doubflo mu101   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) + ((fTSE+fBNW) - (fTSW+fBNE)))                           + ((fTE+fBW) - (fTW+fBE))                                                        );
-         doubflo mu011   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) - ((fTSE+fBNW) + (fTSW+fBNE)))                                                     + ((fTN+fBS) - (fTS+fBN))                              );
-         doubflo mu210   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) - ((fTSE-fBNW) + (fTSW-fBNE))) + ((fNE-fSW) + (fNW-fSE))                                                                                  );
-         doubflo mu120   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) + ((fTSE-fBNW) - (fTSW-fBNE))) + ((fNE-fSW) + (fNW-fSE))                                                                                  );
-         doubflo mu102   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) + ((fTSE-fBNW) - (fTSW-fBNE)))                           + ((fTE-fBW) - (fTW-fBE))                                                        );
-         doubflo mu111   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) - ((fTSE-fBNW) - (fTSW-fBNE)))                                                                                                            );
-         doubflo mu201   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) + ((fTSE-fBNW) + (fTSW-fBNE)))                           + ((fTE-fBW) + (fTW-fBE))                                                        );
-         doubflo mu021   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) + ((fTSE-fBNW) + (fTSW-fBNE)))                                                     + ((fTN-fBS) + (fTS-fBN))                              );
-         doubflo mu012   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) - ((fTSE-fBNW) + (fTSW-fBNE)))                                                     + ((fTN-fBS) - (fTS-fBN))                              );
-         doubflo mu220   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE))) + ((fNE+fSW) + (fNW+fSE))                                                                                  );
-         doubflo mu121   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) + ((fTSE+fBNW) - (fTSW+fBNE)))                                                                                                            );
-         doubflo mu202   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                           + ((fTE+fBW) + (fTW+fBE))                                                        );
-         doubflo mu211   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) - ((fTSE+fBNW) + (fTSW+fBNE)))                                                                                                            );
-         doubflo mu112   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) - ((fTSE+fBNW) - (fTSW+fBNE)))                                                                                                            );
-         doubflo mu022   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                                                     + ((fTN+fBS) + (fTS+fBN))                              );
-         doubflo mu221   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) + ((fTSE-fBNW) + (fTSW-fBNE)))                                                                                                            );
-         doubflo mu122   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) + ((fTSE-fBNW) - (fTSW-fBNE)))                                                                                                            );
-         doubflo mu212   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) - ((fTSE-fBNW) + (fTSW-fBNE)))                                                                                                            );
-         doubflo mu222   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                                                                                                            );
+         real mu200   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE))) + ((fNE+fSW) + (fNW+fSE)) + ((fTE+fBW) + (fTW+fBE))                           + (fE+fW)                    );
+         real mu020   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE))) + ((fNE+fSW) + (fNW+fSE))                           + ((fTN+fBS) + (fTS+fBN))           + (fN+fS)          );
+         real mu002   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                           + ((fTE+fBW) + (fTW+fBE)) + ((fTN+fBS) + (fTS+fBN))                     + (fT+fB));
+         real mu110   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) - ((fTSE+fBNW) - (fTSW+fBNE))) + ((fNE+fSW) - (fNW+fSE))                                                                                  );
+         real mu101   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) + ((fTSE+fBNW) - (fTSW+fBNE)))                           + ((fTE+fBW) - (fTW+fBE))                                                        );
+         real mu011   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) - ((fTSE+fBNW) + (fTSW+fBNE)))                                                     + ((fTN+fBS) - (fTS+fBN))                              );
+         real mu210   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) - ((fTSE-fBNW) + (fTSW-fBNE))) + ((fNE-fSW) + (fNW-fSE))                                                                                  );
+         real mu120   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) + ((fTSE-fBNW) - (fTSW-fBNE))) + ((fNE-fSW) + (fNW-fSE))                                                                                  );
+         real mu102   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) + ((fTSE-fBNW) - (fTSW-fBNE)))                           + ((fTE-fBW) - (fTW-fBE))                                                        );
+         real mu111   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) - ((fTSE-fBNW) - (fTSW-fBNE)))                                                                                                            );
+         real mu201   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) + ((fTSE-fBNW) + (fTSW-fBNE)))                           + ((fTE-fBW) + (fTW-fBE))                                                        );
+         real mu021   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) + ((fTSE-fBNW) + (fTSW-fBNE)))                                                     + ((fTN-fBS) + (fTS-fBN))                              );
+         real mu012   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) - ((fTSE-fBNW) + (fTSW-fBNE)))                                                     + ((fTN-fBS) - (fTS-fBN))                              );
+         real mu220   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE))) + ((fNE+fSW) + (fNW+fSE))                                                                                  );
+         real mu121   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) + ((fTSE+fBNW) - (fTSW+fBNE)))                                                                                                            );
+         real mu202   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                           + ((fTE+fBW) + (fTW+fBE))                                                        );
+         real mu211   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) - ((fTSE+fBNW) + (fTSW+fBNE)))                                                                                                            );
+         real mu112   = OORho * ((((fTNE+fBSW) - (fTNW+fBSE)) - ((fTSE+fBNW) - (fTSW+fBNE)))                                                                                                            );
+         real mu022   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                                                     + ((fTN+fBS) + (fTS+fBN))                              );
+         real mu221   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) + ((fTSE-fBNW) + (fTSW-fBNE)))                                                                                                            );
+         real mu122   = OORho * ((((fTNE-fBSW) - (fTNW-fBSE)) + ((fTSE-fBNW) - (fTSW-fBNE)))                                                                                                            );
+         real mu212   = OORho * ((((fTNE-fBSW) + (fTNW-fBSE)) - ((fTSE-fBNW) + (fTSW-fBNE)))                                                                                                            );
+         real mu222   = OORho * ((((fTNE+fBSW) + (fTNW+fBSE)) + ((fTSE+fBNW) + (fTSW+fBNE)))                                                                                                            );
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo MzXX,MzYY,MzZZ,MzXY,MzXZ,MzYZ,MzXXY,MzXYY,MzXXZ,MzXZZ,MzYYZ,MzYZZ,MzXYZ,MzXXYY,MzXXZZ,MzYYZZ,MzXXYZ,MzXYYZ,MzXYZZ,MzXXYYZ,MzXXYZZ,MzXYYZZ,MzXXYYZZ;
+         real MzXX,MzYY,MzZZ,MzXY,MzXZ,MzYZ,MzXXY,MzXYY,MzXXZ,MzXZZ,MzYYZ,MzYZZ,MzXYZ,MzXXYY,MzXXZZ,MzYYZZ,MzXXYZ,MzXYYZ,MzXYZZ,MzXXYYZ,MzXXYZZ,MzXYYZZ,MzXXYYZZ;
          {
             //2.
             MzXX      =   mu200-vx2;
@@ -2765,9 +2765,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
             MzYZ      =   mu011-vyz;
             MzZZ      =   mu002-vz2;
 
-            doubflo pimpmu200 = mu200 + c1o3 * OORho;
-            doubflo pimpmu020 = mu020 + c1o3 * OORho;
-            doubflo pimpmu002 = mu002 + c1o3 * OORho;
+            real pimpmu200 = mu200 + c1o3 * OORho;
+            real pimpmu020 = mu020 + c1o3 * OORho;
+            real pimpmu002 = mu002 + c1o3 * OORho;
 
             //3.
             MzXXY     =    two*vx2y - two*vx*mu110 - vy*pimpmu200 + mu210; 
@@ -2786,9 +2786,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
             MzXYZZ    =   /*-three*vxyz2+*/pimpmu002*vxy/*+two*vxz*mu011*/-mu012*vx/*+two*vyz*mu101*/-vy*mu102/*+vz2*mu110-two*vz*mu111*/+mu112; 
             MzYYZZ    =   /*-three*vy2z2+*/pimpmu002*vy2/*+four*vyz*mu011*/-two*vy*mu012+vz2*pimpmu020-two*vz*mu021+mu022; 
 
-            doubflo pimpmu220 = mu220 + c1o9 * OORho;
-            doubflo pimpmu202 = mu202 + c1o9 * OORho;
-            doubflo pimpmu022 = mu022 + c1o9 * OORho;
+            real pimpmu220 = mu220 + c1o9 * OORho;
+            real pimpmu202 = mu202 + c1o9 * OORho;
+            real pimpmu022 = mu022 + c1o9 * OORho;
 
             //5.
             MzXXYYZ   =    /*four*(vx2y2z-vxyz*mu110+vxy*mu111)+*/ 
@@ -2811,22 +2811,22 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
             //               two*(vy*mu212/*-vy2z*mu201-vxz2*mu120-vyz2*mu210-vxy2*mu102-vx2z*mu021-vx2y*mu012*/-vx*mu122-vz*mu221); 
          }
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
+         real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
          {
             //coll faktoren:
-            doubflo w1 =   (-omega);
-            doubflo w2 = -one;//(-omega);
-            doubflo w3 = -(two+(-omega));//-one;
-            doubflo w4 = -(two+(-omega));//-one;
-            doubflo w5 = -(two+(-omega));//-one;
-            doubflo w6 = -one;
-            doubflo w7 = -one;
-            doubflo w8 = -one;
-            doubflo w9 = -one;
-            doubflo w10= -one;
+            real w1 =   (-omega);
+            real w2 = -one;//(-omega);
+            real w3 = -(two+(-omega));//-one;
+            real w4 = -(two+(-omega));//-one;
+            real w5 = -(two+(-omega));//-one;
+            real w6 = -one;
+            real w7 = -one;
+            real w8 = -one;
+            real w9 = -one;
+            real w10= -one;
 
-			doubflo wadjust;
-			doubflo qudricLimit = c1o100;
+			real wadjust;
+			real qudricLimit = c1o100;
 
             ////////lin kombi bilden:
             MXXpMYYpMZZ =  MzXX + MzYY + MzZZ;
@@ -2840,9 +2840,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
             MXYYpMXZZ   =  MzXYY+MzXZZ;
             MXYYmMXZZ   =  MzXYY-MzXZZ;
 
-            doubflo MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
-            doubflo MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
-            doubflo MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
+            real MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
+            real MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
+            real MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
 
             //relaxation:
             MXXpMYYpMZZ -= w2*(one-OORho-MXXpMYYpMZZ);
@@ -3076,12 +3076,12 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_OHM_27(  doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
+extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   real omega,
                                                       unsigned int* bcMatD,
                                                       unsigned int* neighborX,
                                                       unsigned int* neighborY,
                                                       unsigned int* neighborZ,
-                                                      doubflo* DDStart,
+                                                      real* DDStart,
                                                       int size_Mat,
                                                       bool EvenOrOdd)
 {
@@ -3196,51 +3196,51 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fE    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fW    =  (D.f[dirW   ])[kw ];
-         doubflo fN    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fS    =  (D.f[dirS   ])[ks ];
-         doubflo fT    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fB    =  (D.f[dirB   ])[kb ];
-         doubflo fNE   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fSW   =  (D.f[dirSW  ])[ksw];
-         doubflo fSE   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fNW   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fTE   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fBW   =  (D.f[dirBW  ])[kbw];
-         doubflo fBE   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fTW   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fTN   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fBS   =  (D.f[dirBS  ])[kbs];
-         doubflo fBN   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fTS   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fTNE   = (D.f[dirTNE ])[k  ];//ktne
-         doubflo fTSW   = (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fTSE   = (D.f[dirTSE ])[ks ];//ktse
-         doubflo fTNW   = (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fBNE   = (D.f[dirBNE ])[kb ];//kbne
-         doubflo fBSW   = (D.f[dirBSW ])[kbsw];
-         doubflo fBSE   = (D.f[dirBSE ])[kbs];//kbse
-         doubflo fBNW   = (D.f[dirBNW ])[kbw];//kbnw
+         real fE    =  (D.f[dirE   ])[k  ];//ke
+         real fW    =  (D.f[dirW   ])[kw ];
+         real fN    =  (D.f[dirN   ])[k  ];//kn
+         real fS    =  (D.f[dirS   ])[ks ];
+         real fT    =  (D.f[dirT   ])[k  ];//kt
+         real fB    =  (D.f[dirB   ])[kb ];
+         real fNE   =  (D.f[dirNE  ])[k  ];//kne
+         real fSW   =  (D.f[dirSW  ])[ksw];
+         real fSE   =  (D.f[dirSE  ])[ks ];//kse
+         real fNW   =  (D.f[dirNW  ])[kw ];//knw
+         real fTE   =  (D.f[dirTE  ])[k  ];//kte
+         real fBW   =  (D.f[dirBW  ])[kbw];
+         real fBE   =  (D.f[dirBE  ])[kb ];//kbe
+         real fTW   =  (D.f[dirTW  ])[kw ];//ktw
+         real fTN   =  (D.f[dirTN  ])[k  ];//ktn
+         real fBS   =  (D.f[dirBS  ])[kbs];
+         real fBN   =  (D.f[dirBN  ])[kb ];//kbn
+         real fTS   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fTNE   = (D.f[dirTNE ])[k  ];//ktne
+         real fTSW   = (D.f[dirTSW ])[ksw];//ktsw
+         real fTSE   = (D.f[dirTSE ])[ks ];//ktse
+         real fTNW   = (D.f[dirTNW ])[kw ];//ktnw
+         real fBNE   = (D.f[dirBNE ])[kb ];//kbne
+         real fBSW   = (D.f[dirBSW ])[kbsw];
+         real fBSE   = (D.f[dirBSE ])[kbs];//kbse
+         real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         doubflo rho    =  rho0 + one;
-         doubflo OORho  =  one/rho;
-         doubflo vx     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW) * OORho;
-         doubflo vy     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW) * OORho;
-         doubflo vz     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW) * OORho;
+         real rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
+         real rho    =  rho0 + one;
+         real OORho  =  one/rho;
+         real vx     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW) * OORho;
+         real vy     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW) * OORho;
+         real vz     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW) * OORho;
 
          //////////////////////////////////////////////////////////////////////////
          //BGK
          //////////////////////////////////////////////////////////////////////////
-         //doubflo drho   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         //doubflo vx1     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
-         //doubflo vx2     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
-         //doubflo vx3     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
+         //real drho   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
+         //real vx1     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
+         //real vx2     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
+         //real vx3     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
 
 
-         //doubflo cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         //real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          //fZERO = fZERO *(one+(-omega))-(-omega)*   c8over27*  (drho-cusq);
          //fE    = fE    *(one+(-omega))-(-omega)*   c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
@@ -3271,55 +3271,55 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
          //fTNW  = fTNW  *(one+(-omega))-(-omega)*    c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq);
 
 
-         doubflo vx2    = vx*vx;
-         doubflo vy2    = vy*vy;
-         doubflo vz2    = vz*vz;
-         doubflo vxy    = vx*vy;
-         doubflo vxz    = vx*vz;
-         doubflo vyz    = vy*vz;
-         doubflo vx2y   = vx*vx*vy;
-         doubflo vx2z   = vx*vx*vz;
-         doubflo vy2z   = vy*vy*vz;
-         doubflo vxy2   = vx*vy*vy;
-         doubflo vyz2   = vy*vz*vz;
-         doubflo vxz2   = vx*vz*vz;
-         doubflo vxyz   = vx*vy*vz;
-         doubflo vx2y2  = vx*vx*vy*vy;
-         doubflo vx2z2  = vx*vx*vz*vz;
-         doubflo vy2z2  = vy*vy*vz*vz;
-         doubflo vx2yz  = vx*vx*vy*vz;
-         doubflo vxyz2  = vx*vy*vz*vz;
-         doubflo vxy2z  = vx*vy*vy*vz;
-         doubflo vx2y2z = vx*vx*vy*vy*vz;
-         doubflo vx2yz2 = vx*vx*vy*vz*vz;
-         doubflo vxy2z2 = vx*vy*vy*vz*vz;
-         doubflo vx2y2z2= vx*vx*vy*vy*vz*vz;
+         real vx2    = vx*vx;
+         real vy2    = vy*vy;
+         real vz2    = vz*vz;
+         real vxy    = vx*vy;
+         real vxz    = vx*vz;
+         real vyz    = vy*vz;
+         real vx2y   = vx*vx*vy;
+         real vx2z   = vx*vx*vz;
+         real vy2z   = vy*vy*vz;
+         real vxy2   = vx*vy*vy;
+         real vyz2   = vy*vz*vz;
+         real vxz2   = vx*vz*vz;
+         real vxyz   = vx*vy*vz;
+         real vx2y2  = vx*vx*vy*vy;
+         real vx2z2  = vx*vx*vz*vz;
+         real vy2z2  = vy*vy*vz*vz;
+         real vx2yz  = vx*vx*vy*vz;
+         real vxyz2  = vx*vy*vz*vz;
+         real vxy2z  = vx*vy*vy*vz;
+         real vx2y2z = vx*vx*vy*vy*vz;
+         real vx2yz2 = vx*vx*vy*vz*vz;
+         real vxy2z2 = vx*vy*vy*vz*vz;
+         real vx2y2z2= vx*vx*vy*vy*vz*vz;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo mu200   =(fE+fW+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu020   =(fN+fS+fNE+fSW+fSE+fNW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu002   =(fT+fB+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu110   =(fNE-fSE+fSW-fNW+fTNE-fTSE+fBNE-fBSE+fTSW-fTNW+fBSW-fBNW) * OORho;
-         doubflo mu101   =(fTE+fBW-fBE-fTW+fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
-         doubflo mu011   =(fTN+fBS-fBN-fTS+fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
-         doubflo mu210   =(fNE-fSW-fSE+fNW+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         doubflo mu120   =(fNE-fSW+fSE-fNW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         doubflo mu102   =(fTE-fBW+fBE-fTW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         doubflo mu111   =(fTNE-fBNE-fTSE+fBSE-fTNW+fBNW+fTSW-fBSW) * OORho;
-         doubflo mu201   =(fTE-fBW-fBE+fTW+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         doubflo mu021   =(fTN-fBS-fBN+fTS+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         doubflo mu012   =(fTN-fBS+fBN-fTS+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         doubflo mu220   =(fNE+fSW+fSE+fNW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu121   =(fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
-         doubflo mu202   =(fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu211   =(fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
-         doubflo mu112   =(fTNE+fBNE-fTSE-fBSE-fTNW-fBNW+fTSW+fBSW) * OORho;
-         doubflo mu022   =(fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu221   =(fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         doubflo mu122   =(fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         doubflo mu212   =(fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         doubflo mu222   =(fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu200   =(fE+fW+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu020   =(fN+fS+fNE+fSW+fSE+fNW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu002   =(fT+fB+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu110   =(fNE-fSE+fSW-fNW+fTNE-fTSE+fBNE-fBSE+fTSW-fTNW+fBSW-fBNW) * OORho;
+         real mu101   =(fTE+fBW-fBE-fTW+fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
+         real mu011   =(fTN+fBS-fBN-fTS+fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
+         real mu210   =(fNE-fSW-fSE+fNW+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         real mu120   =(fNE-fSW+fSE-fNW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         real mu102   =(fTE-fBW+fBE-fTW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         real mu111   =(fTNE-fBNE-fTSE+fBSE-fTNW+fBNW+fTSW-fBSW) * OORho;
+         real mu201   =(fTE-fBW-fBE+fTW+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         real mu021   =(fTN-fBS-fBN+fTS+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         real mu012   =(fTN-fBS+fBN-fTS+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         real mu220   =(fNE+fSW+fSE+fNW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu121   =(fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
+         real mu202   =(fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu211   =(fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
+         real mu112   =(fTNE+fBNE-fTSE-fBSE-fTNW-fBNW+fTSW+fBSW) * OORho;
+         real mu022   =(fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu221   =(fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         real mu122   =(fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         real mu212   =(fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         real mu222   =(fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo MzXX,MzYY,MzZZ,MzXY,MzXZ,MzYZ,MzXXY,MzXYY,MzXXZ,MzXZZ,MzYYZ,MzYZZ,MzXYZ,MzXXYY,MzXXZZ,MzYYZZ,MzXXYZ,MzXYYZ,MzXYZZ,MzXXYYZ,MzXXYZZ,MzXYYZZ,MzXXYYZZ;
+         real MzXX,MzYY,MzZZ,MzXY,MzXZ,MzYZ,MzXXY,MzXYY,MzXXZ,MzXZZ,MzYYZ,MzYZZ,MzXYZ,MzXXYY,MzXXZZ,MzYYZZ,MzXXYZ,MzXYYZ,MzXYZZ,MzXXYYZ,MzXXYZZ,MzXYYZZ,MzXXYYZZ;
          {
             //2.
             MzXX      =   mu200-vx2;
@@ -3329,9 +3329,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
             MzYZ      =   mu011-vyz;
             MzZZ      =   mu002-vz2;
 
-            doubflo pimpmu200 = mu200 + c1o3 * OORho;
-            doubflo pimpmu020 = mu020 + c1o3 * OORho;
-            doubflo pimpmu002 = mu002 + c1o3 * OORho;
+            real pimpmu200 = mu200 + c1o3 * OORho;
+            real pimpmu020 = mu020 + c1o3 * OORho;
+            real pimpmu002 = mu002 + c1o3 * OORho;
 
             //3.
             MzXXY     =    two*vx2y - two*vx*mu110 - vy*pimpmu200 + mu210; 
@@ -3350,9 +3350,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
             MzXYZZ    =   -three*vxyz2+pimpmu002*vxy+two*vxz*mu011-mu012*vx+two*vyz*mu101-vy*mu102+vz2*mu110-two*vz*mu111+mu112; 
             MzYYZZ    =   -three*vy2z2+pimpmu002*vy2+four*vyz*mu011-two*vy*mu012+vz2*pimpmu020-two*vz*mu021+mu022; 
                              
-            doubflo pimpmu220 = mu220 + c1o9 * OORho;
-            doubflo pimpmu202 = mu202 + c1o9 * OORho;
-            doubflo pimpmu022 = mu022 + c1o9 * OORho;
+            real pimpmu220 = mu220 + c1o9 * OORho;
+            real pimpmu202 = mu202 + c1o9 * OORho;
+            real pimpmu022 = mu022 + c1o9 * OORho;
 
             //5.
             MzXXYYZ   =    four*vx2y2z-four*vxyz*mu110+four*vxy*mu111+ 
@@ -3374,19 +3374,19 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
             //               two*(vy*mu212-vy2z*mu201-vxz2*mu120-vyz2*mu210-vxy2*mu102-vx2z*mu021-vx2y*mu012-vx*mu122-vz*mu221); 
          }
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
+         real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
          {
             //coll faktoren:
-            doubflo w1 =  -omega;
-            doubflo w2 = -one;//-omega;
-            doubflo w3 = -one;
-            doubflo w4 = -one;
-            doubflo w5 = -one;
-            doubflo w6 = -one;
-            doubflo w7 = -one;
-            doubflo w8 = -one;
-            doubflo w9 = -one;
-            doubflo w10= -one;
+            real w1 =  -omega;
+            real w2 = -one;//-omega;
+            real w3 = -one;
+            real w4 = -one;
+            real w5 = -one;
+            real w6 = -one;
+            real w7 = -one;
+            real w8 = -one;
+            real w9 = -one;
+            real w10= -one;
 
             ////////lin kombi bilden:
             MXXpMYYpMZZ = MzXX + MzYY + MzZZ;
@@ -3400,9 +3400,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
             MXYYpMXZZ   =  MzXYY+MzXZZ;
             MXYYmMXZZ   =  MzXYY-MzXZZ;
 
-            doubflo MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
-            doubflo MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
-            doubflo MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
+            real MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
+            real MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
+            real MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
 
             //relaxation:
             MXXpMYYpMZZ -= w2*(one-OORho-MXXpMYYpMZZ);
@@ -3601,12 +3601,12 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_27(   doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
+extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(real omega,
                                                         unsigned int* bcMatD,
                                                         unsigned int* neighborX,
                                                         unsigned int* neighborY,
                                                         unsigned int* neighborZ,
-                                                        doubflo* DDStart,
+                                                        real* DDStart,
                                                         int size_Mat,
                                                         bool EvenOrOdd)
 {
@@ -3721,51 +3721,51 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
          //unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo fE    =  (D.f[dirE   ])[k  ];//ke
-         doubflo fW    =  (D.f[dirW   ])[kw ];
-         doubflo fN    =  (D.f[dirN   ])[k  ];//kn
-         doubflo fS    =  (D.f[dirS   ])[ks ];
-         doubflo fT    =  (D.f[dirT   ])[k  ];//kt
-         doubflo fB    =  (D.f[dirB   ])[kb ];
-         doubflo fNE   =  (D.f[dirNE  ])[k  ];//kne
-         doubflo fSW   =  (D.f[dirSW  ])[ksw];
-         doubflo fSE   =  (D.f[dirSE  ])[ks ];//kse
-         doubflo fNW   =  (D.f[dirNW  ])[kw ];//knw
-         doubflo fTE   =  (D.f[dirTE  ])[k  ];//kte
-         doubflo fBW   =  (D.f[dirBW  ])[kbw];
-         doubflo fBE   =  (D.f[dirBE  ])[kb ];//kbe
-         doubflo fTW   =  (D.f[dirTW  ])[kw ];//ktw
-         doubflo fTN   =  (D.f[dirTN  ])[k  ];//ktn
-         doubflo fBS   =  (D.f[dirBS  ])[kbs];
-         doubflo fBN   =  (D.f[dirBN  ])[kb ];//kbn
-         doubflo fTS   =  (D.f[dirTS  ])[ks ];//kts
-         doubflo fZERO =  (D.f[dirZERO])[k  ];//kzero
-         doubflo fTNE   = (D.f[dirTNE ])[k  ];//ktne
-         doubflo fTSW   = (D.f[dirTSW ])[ksw];//ktsw
-         doubflo fTSE   = (D.f[dirTSE ])[ks ];//ktse
-         doubflo fTNW   = (D.f[dirTNW ])[kw ];//ktnw
-         doubflo fBNE   = (D.f[dirBNE ])[kb ];//kbne
-         doubflo fBSW   = (D.f[dirBSW ])[kbsw];
-         doubflo fBSE   = (D.f[dirBSE ])[kbs];//kbse
-         doubflo fBNW   = (D.f[dirBNW ])[kbw];//kbnw
+         real fE    =  (D.f[dirE   ])[k  ];//ke
+         real fW    =  (D.f[dirW   ])[kw ];
+         real fN    =  (D.f[dirN   ])[k  ];//kn
+         real fS    =  (D.f[dirS   ])[ks ];
+         real fT    =  (D.f[dirT   ])[k  ];//kt
+         real fB    =  (D.f[dirB   ])[kb ];
+         real fNE   =  (D.f[dirNE  ])[k  ];//kne
+         real fSW   =  (D.f[dirSW  ])[ksw];
+         real fSE   =  (D.f[dirSE  ])[ks ];//kse
+         real fNW   =  (D.f[dirNW  ])[kw ];//knw
+         real fTE   =  (D.f[dirTE  ])[k  ];//kte
+         real fBW   =  (D.f[dirBW  ])[kbw];
+         real fBE   =  (D.f[dirBE  ])[kb ];//kbe
+         real fTW   =  (D.f[dirTW  ])[kw ];//ktw
+         real fTN   =  (D.f[dirTN  ])[k  ];//ktn
+         real fBS   =  (D.f[dirBS  ])[kbs];
+         real fBN   =  (D.f[dirBN  ])[kb ];//kbn
+         real fTS   =  (D.f[dirTS  ])[ks ];//kts
+         real fZERO =  (D.f[dirZERO])[k  ];//kzero
+         real fTNE   = (D.f[dirTNE ])[k  ];//ktne
+         real fTSW   = (D.f[dirTSW ])[ksw];//ktsw
+         real fTSE   = (D.f[dirTSE ])[ks ];//ktse
+         real fTNW   = (D.f[dirTNW ])[kw ];//ktnw
+         real fBNE   = (D.f[dirBNE ])[kb ];//kbne
+         real fBSW   = (D.f[dirBSW ])[kbsw];
+         real fBSE   = (D.f[dirBSE ])[kbs];//kbse
+         real fBNW   = (D.f[dirBNW ])[kbw];//kbnw
          ////////////////////////////////////////////////////////////////////////////////
-         doubflo rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         doubflo rho    =  rho0 + one;
-         doubflo OORho  =  one/rho;
-         doubflo vx     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW) * OORho;
-         doubflo vy     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW) * OORho;
-         doubflo vz     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW) * OORho;
+         real rho0   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
+         real rho    =  rho0 + one;
+         real OORho  =  one/rho;
+         real vx     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW) * OORho;
+         real vy     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW) * OORho;
+         real vz     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW) * OORho;
 
          //////////////////////////////////////////////////////////////////////////
          //BGK
          //////////////////////////////////////////////////////////////////////////
-         //doubflo drho   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
-         //doubflo vx1     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
-         //doubflo vx2     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
-         //doubflo vx3     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
+         //real drho   =  fZERO+fE+fW+fN+fS+fT+fB+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fTSW+fTSE+fTNW+fBNE+fBSW+fBSE+fBNW;
+         //real vx1     =  (fE -fW +fNE-fSW+fSE-fNW+fTE-fBW+fBE-fTW+ fTNE-fTSW+fTSE-fTNW+ fBNE-fBSW+fBSE-fBNW);
+         //real vx2     =  (fN -fS +fNE-fSW-fSE+fNW+fTN-fBS+fBN-fTS+ fTNE-fTSW-fTSE+fTNW+ fBNE-fBSW-fBSE+fBNW);
+         //real vx3     =  (fT -fB +fTE-fBW-fBE+fTW+fTN-fBS-fBN+fTS+ fTNE+fTSW+fTSE+fTNW- fBNE-fBSW-fBSE-fBNW);
 
 
-         //doubflo cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         //real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          //fZERO = fZERO *(one+(-omega))-(-omega)*   c8over27*  (drho-cusq);
          //fE    = fE    *(one+(-omega))-(-omega)*   c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
@@ -3796,55 +3796,55 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
          //fTNW  = fTNW  *(one+(-omega))-(-omega)*    c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq);
 
 
-         doubflo vx2    = vx*vx;
-         doubflo vy2    = vy*vy;
-         doubflo vz2    = vz*vz;
-         doubflo vxy    = vx*vy;
-         doubflo vxz    = vx*vz;
-         doubflo vyz    = vy*vz;
-         doubflo vx2y   = vx*vx*vy;
-         doubflo vx2z   = vx*vx*vz;
-         doubflo vy2z   = vy*vy*vz;
-         doubflo vxy2   = vx*vy*vy;
-         doubflo vyz2   = vy*vz*vz;
-         doubflo vxz2   = vx*vz*vz;
-         doubflo vxyz   = vx*vy*vz;
-         doubflo vx2y2  = vx*vx*vy*vy;
-         doubflo vx2z2  = vx*vx*vz*vz;
-         doubflo vy2z2  = vy*vy*vz*vz;
-         doubflo vx2yz  = vx*vx*vy*vz;
-         doubflo vxyz2  = vx*vy*vz*vz;
-         doubflo vxy2z  = vx*vy*vy*vz;
-         doubflo vx2y2z = vx*vx*vy*vy*vz;
-         doubflo vx2yz2 = vx*vx*vy*vz*vz;
-         doubflo vxy2z2 = vx*vy*vy*vz*vz;
-         doubflo vx2y2z2= vx*vx*vy*vy*vz*vz;
+         real vx2    = vx*vx;
+         real vy2    = vy*vy;
+         real vz2    = vz*vz;
+         real vxy    = vx*vy;
+         real vxz    = vx*vz;
+         real vyz    = vy*vz;
+         real vx2y   = vx*vx*vy;
+         real vx2z   = vx*vx*vz;
+         real vy2z   = vy*vy*vz;
+         real vxy2   = vx*vy*vy;
+         real vyz2   = vy*vz*vz;
+         real vxz2   = vx*vz*vz;
+         real vxyz   = vx*vy*vz;
+         real vx2y2  = vx*vx*vy*vy;
+         real vx2z2  = vx*vx*vz*vz;
+         real vy2z2  = vy*vy*vz*vz;
+         real vx2yz  = vx*vx*vy*vz;
+         real vxyz2  = vx*vy*vz*vz;
+         real vxy2z  = vx*vy*vy*vz;
+         real vx2y2z = vx*vx*vy*vy*vz;
+         real vx2yz2 = vx*vx*vy*vz*vz;
+         real vxy2z2 = vx*vy*vy*vz*vz;
+         real vx2y2z2= vx*vx*vy*vy*vz*vz;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo mu200   =(fE+fW+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu020   =(fN+fS+fNE+fSW+fSE+fNW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu002   =(fT+fB+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu110   =(fNE-fSE+fSW-fNW+fTNE-fTSE+fBNE-fBSE+fTSW-fTNW+fBSW-fBNW) * OORho;
-         doubflo mu101   =(fTE+fBW-fBE-fTW+fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
-         doubflo mu011   =(fTN+fBS-fBN-fTS+fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
-         doubflo mu210   =(fNE-fSW-fSE+fNW+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         doubflo mu120   =(fNE-fSW+fSE-fNW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         doubflo mu102   =(fTE-fBW+fBE-fTW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         doubflo mu111   =(fTNE-fBNE-fTSE+fBSE-fTNW+fBNW+fTSW-fBSW) * OORho;
-         doubflo mu201   =(fTE-fBW-fBE+fTW+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         doubflo mu021   =(fTN-fBS-fBN+fTS+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         doubflo mu012   =(fTN-fBS+fBN-fTS+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         doubflo mu220   =(fNE+fSW+fSE+fNW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu121   =(fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
-         doubflo mu202   =(fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu211   =(fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
-         doubflo mu112   =(fTNE+fBNE-fTSE-fBSE-fTNW-fBNW+fTSW+fBSW) * OORho;
-         doubflo mu022   =(fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
-         doubflo mu221   =(fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
-         doubflo mu122   =(fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
-         doubflo mu212   =(fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
-         doubflo mu222   =(fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu200   =(fE+fW+fNE+fSW+fSE+fNW+fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu020   =(fN+fS+fNE+fSW+fSE+fNW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu002   =(fT+fB+fTE+fBW+fBE+fTW+fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu110   =(fNE-fSE+fSW-fNW+fTNE-fTSE+fBNE-fBSE+fTSW-fTNW+fBSW-fBNW) * OORho;
+         real mu101   =(fTE+fBW-fBE-fTW+fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
+         real mu011   =(fTN+fBS-fBN-fTS+fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
+         real mu210   =(fNE-fSW-fSE+fNW+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         real mu120   =(fNE-fSW+fSE-fNW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         real mu102   =(fTE-fBW+fBE-fTW+fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         real mu111   =(fTNE-fBNE-fTSE+fBSE-fTNW+fBNW+fTSW-fBSW) * OORho;
+         real mu201   =(fTE-fBW-fBE+fTW+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         real mu021   =(fTN-fBS-fBN+fTS+fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         real mu012   =(fTN-fBS+fBN-fTS+fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         real mu220   =(fNE+fSW+fSE+fNW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu121   =(fTNE-fBNE+fTSE-fBSE-fTNW+fBNW-fTSW+fBSW) * OORho;
+         real mu202   =(fTE+fBW+fBE+fTW+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu211   =(fTNE-fBNE-fTSE+fBSE+fTNW-fBNW-fTSW+fBSW) * OORho;
+         real mu112   =(fTNE+fBNE-fTSE-fBSE-fTNW-fBNW+fTSW+fBSW) * OORho;
+         real mu022   =(fTN+fBS+fBN+fTS+fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
+         real mu221   =(fTNE-fBNE+fTSE-fBSE+fTNW-fBNW+fTSW-fBSW) * OORho;
+         real mu122   =(fTNE-fTNW+fBNE-fBNW+fTSE-fTSW+fBSE-fBSW) * OORho;
+         real mu212   =(fTNE+fBNE-fTSE-fBSE+fTNW+fBNW-fTSW-fBSW) * OORho;
+         real mu222   =(fTNE+fBNE+fTSE+fBSE+fTNW+fBNW+fTSW+fBSW) * OORho;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo MzXX,MzYY,MzZZ,MzXY,MzXZ,MzYZ,MzXXY,MzXYY,MzXXZ,MzXZZ,MzYYZ,MzYZZ,MzXYZ,MzXXYY,MzXXZZ,MzYYZZ,MzXXYZ,MzXYYZ,MzXYZZ,MzXXYYZ,MzXXYZZ,MzXYYZZ,MzXXYYZZ;
+         real MzXX,MzYY,MzZZ,MzXY,MzXZ,MzYZ,MzXXY,MzXYY,MzXXZ,MzXZZ,MzYYZ,MzYZZ,MzXYZ,MzXXYY,MzXXZZ,MzYYZZ,MzXXYZ,MzXYYZ,MzXYZZ,MzXXYYZ,MzXXYZZ,MzXYYZZ,MzXXYYZZ;
          {
             //2.
             MzXX      =   mu200-vx2;
@@ -3854,9 +3854,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
             MzYZ      =   mu011-vyz;
             MzZZ      =   mu002-vz2;
 
-            doubflo pimpmu200 = mu200 + c1o3 * OORho;
-            doubflo pimpmu020 = mu020 + c1o3 * OORho;
-            doubflo pimpmu002 = mu002 + c1o3 * OORho;
+            real pimpmu200 = mu200 + c1o3 * OORho;
+            real pimpmu020 = mu020 + c1o3 * OORho;
+            real pimpmu002 = mu002 + c1o3 * OORho;
 
             //3.
             MzXXY     =    two*vx2y - two*vx*mu110 - vy*pimpmu200 + mu210; 
@@ -3875,9 +3875,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
             MzXYZZ    =   -three*vxyz2+pimpmu002*vxy+two*vxz*mu011-mu012*vx+two*vyz*mu101-vy*mu102+vz2*mu110-two*vz*mu111+mu112; 
             MzYYZZ    =   -three*vy2z2+pimpmu002*vy2+four*vyz*mu011-two*vy*mu012+vz2*pimpmu020-two*vz*mu021+mu022; 
 
-            doubflo pimpmu220 = mu220 + c1o9 * OORho;
-            doubflo pimpmu202 = mu202 + c1o9 * OORho;
-            doubflo pimpmu022 = mu022 + c1o9 * OORho;
+            real pimpmu220 = mu220 + c1o9 * OORho;
+            real pimpmu202 = mu202 + c1o9 * OORho;
+            real pimpmu022 = mu022 + c1o9 * OORho;
 
             //5.
             MzXXYYZ   =    four*vx2y2z-four*vxyz*mu110+four*vxy*mu111+ 
@@ -3896,19 +3896,19 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
                two*(vy*mu212-vy2z*mu201-vxz2*mu120-vyz2*mu210-vxy2*mu102-vx2z*mu021-vx2y*mu012-vx*mu122-vz*mu221); 
          }
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
+         real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ;
          {
             //coll faktoren:
-            doubflo w1 =  -omega;
-            doubflo w2 = -one;//-omega;
-            doubflo w3 = -one;
-            doubflo w4 = -one;
-            doubflo w5 = -one;
-            doubflo w6 = -one;
-            doubflo w7 = -one;
-            doubflo w8 = -one;
-            doubflo w9 = -one;
-            doubflo w10= -one;
+            real w1 =  -omega;
+            real w2 = -one;//-omega;
+            real w3 = -one;
+            real w4 = -one;
+            real w5 = -one;
+            real w6 = -one;
+            real w7 = -one;
+            real w8 = -one;
+            real w9 = -one;
+            real w10= -one;
 
             ////////lin kombi bilden:
             MXXpMYYpMZZ = MzXX + MzYY + MzZZ;
@@ -3922,9 +3922,9 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
             MXYYpMXZZ   =  MzXYY+MzXZZ;
             MXYYmMXZZ   =  MzXYY-MzXZZ;
 
-            doubflo MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
-            doubflo MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
-            doubflo MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
+            real MXXYYppp    = MzXXYY + MzXXZZ + MzYYZZ;
+            real MXXYYpm2p   = MzXXYY - two*MzXXZZ + MzYYZZ;
+            real MXXYYppm2   = MzXXYY + MzXXZZ - two*MzYYZZ;
 
             //relaxation:
             MXXpMYYpMZZ -= w2*(one-OORho-MXXpMYYpMZZ);
@@ -4123,12 +4123,12 @@ extern "C" __global__ void LB_Kernel_Casc_SP_MS_Diff_27(doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
+extern "C" __global__ void LB_Kernel_Casc_SP_27(  real omega,
                                                   unsigned int* bcMatD,
                                                   unsigned int* neighborX,
                                                   unsigned int* neighborY,
                                                   unsigned int* neighborZ,
-                                                  doubflo* DDStart,
+                                                  real* DDStart,
                                                   int size_Mat,
                                                   bool EvenOrOdd)
 {
@@ -4271,7 +4271,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
        //unsigned int ktne = k;
        //unsigned int kbsw = k + nxny + nx + 1;
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       doubflo f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
+       real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        f_E    =  (D.f[dirE   ])[ke]+c2over27;
        f_W    =  (D.f[dirW   ])[kw]+c2over27;
@@ -4306,17 +4306,17 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
        {
           {
          //    /////////////////////////version 13.04.
-         //   doubflo drho     = f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
-         //   doubflo vx1     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
-         //   doubflo vx2     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
-         //   doubflo vx3     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
+         //   real drho     = f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
+         //   real vx1     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
+         //   real vx2     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
+         //   real vx3     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
          ////   vx1=vx1/(drho); vx2=vx2/(drho); vx3=vx3/(drho);
          //   //////////////////////////////////////////////////////////////////////////
          //   //BGK
          //   //////////////////////////////////////////////////////////////////////////
 
 
-         //   doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         //   real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          //   f_ZERO = f_ZERO *(one+(-omega))-(-omega)*   c8over27*  (drho-cu_sq);
          //   f_E    = f_E    *(one+(-omega))-(-omega)*   c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
@@ -4347,14 +4347,14 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
          //   f_TNW  = f_TNW  *(one+(-omega))-(-omega)*    c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
 
             ///////////////////////version 13.04.
-            doubflo rho   =  f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
-            //doubflo rho    =  rho0 + one;
-            doubflo vx     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
-            doubflo vy     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
-            doubflo vz     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
+            real rho   =  f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
+            //real rho    =  rho0 + one;
+            real vx     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
+            real vy     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
+            real vz     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
             vx=vx/(rho); vy=vy/(rho); vz=vz/(rho);
 
-            doubflo mu[3][3][3];
+            real mu[3][3][3];
 
             mu[2][0][0]=(f_E+f_W+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TNE+f_BNE+f_TSE+f_BSE+f_TNW+f_BNW+f_TSW+f_BSW)/(rho);//+(c1o3);
             mu[0][2][0]=(f_N+f_S+f_NE+f_SW+f_SE+f_NW+f_TN+f_BS+f_BN+f_TS+f_TNE+f_BNE+f_TSE+f_BSE+f_TNW+f_BNW+f_TSW+f_BSW)/(rho);//+(c1o3);
@@ -4384,13 +4384,13 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
             mu[0][1][0]=vy;
             mu[0][0][1]=vz;
 
-            doubflo M_zXX=zero;      doubflo M_zYY=zero;      doubflo M_zZZ=zero;      doubflo M_zXY=zero;     doubflo M_zXZ=zero;   doubflo M_zYZ=zero;
-            doubflo M_zXXY=zero;     doubflo M_zXYY=zero;     doubflo M_zXXZ=zero;     doubflo M_zXZZ=zero;    doubflo M_zYYZ=zero;  doubflo M_zYZZ=zero;  doubflo M_zXYZ=zero;
-            doubflo M_zXXYY=zero;    doubflo M_zXXZZ=zero;    doubflo M_zYYZZ=zero;    doubflo M_zXXYZ=zero;   doubflo M_zXYYZ=zero; doubflo M_zXYZZ=zero;
-            doubflo M_zXXYYZ=zero;   doubflo M_zXXYZZ=zero;   doubflo M_zXYYZZ=zero;   doubflo M_zXXYYZZ=zero;
-            doubflo M_zXYeq=zero;    doubflo M_zXZeq=zero;    doubflo M_zYZeq=zero;    doubflo M_zXYZeq=zero;
-            doubflo M_zXXYZeq=zero;  doubflo M_zXYYZeq=zero;  doubflo M_zXYZZeq=zero;
-            doubflo M_zXXYYZeq=zero; doubflo M_zXXYZZeq=zero; doubflo M_zXYYZZeq=zero; doubflo M_zXXYYZZeq=zero;
+            real M_zXX=zero;      real M_zYY=zero;      real M_zZZ=zero;      real M_zXY=zero;     real M_zXZ=zero;   real M_zYZ=zero;
+            real M_zXXY=zero;     real M_zXYY=zero;     real M_zXXZ=zero;     real M_zXZZ=zero;    real M_zYYZ=zero;  real M_zYZZ=zero;  real M_zXYZ=zero;
+            real M_zXXYY=zero;    real M_zXXZZ=zero;    real M_zYYZZ=zero;    real M_zXXYZ=zero;   real M_zXYYZ=zero; real M_zXYZZ=zero;
+            real M_zXXYYZ=zero;   real M_zXXYZZ=zero;   real M_zXYYZZ=zero;   real M_zXXYYZZ=zero;
+            real M_zXYeq=zero;    real M_zXZeq=zero;    real M_zYZeq=zero;    real M_zXYZeq=zero;
+            real M_zXXYZeq=zero;  real M_zXYYZeq=zero;  real M_zXYZZeq=zero;
+            real M_zXXYYZeq=zero; real M_zXXYZZeq=zero; real M_zXYYZZeq=zero; real M_zXXYYZZeq=zero;
 
             M_zXXYYZZ= -five*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
                              mu[1][0][0] +     mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
@@ -4496,11 +4496,11 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
             M_zXYYZeq=zero;
             M_zXYZZeq=zero;
 
-            doubflo MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ, MXXYYppp,MXXYYpm2p, MXXYYppm2;
-            doubflo MXXpMYYpMZZeq,MXXmMYYeq, MXXmMZZeq, MXXYpMYZZeq,MXXZpMYYZeq,MXYYpMXZZeq, MXXYmMYZZeq,MXXZmMYYZeq,MXYYmMXZZeq, MXXYYpppeq,MXXYYpm2peq, MXXYYppm2eq;
+            real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ, MXXYYppp,MXXYYpm2p, MXXYYppm2;
+            real MXXpMYYpMZZeq,MXXmMYYeq, MXXmMZZeq, MXXYpMYZZeq,MXXZpMYYZeq,MXYYpMXZZeq, MXXYmMYZZeq,MXXZmMYYZeq,MXYYmMXZZeq, MXXYYpppeq,MXXYYpm2peq, MXXYYppm2eq;
 
             //coll faktoren:
-            doubflo w1,w2,w3,w4,w5,w6,w7,w8,w9,w10;
+            real w1,w2,w3,w4,w5,w6,w7,w8,w9,w10;
             w2=-one;//-omega;
             w7=-one;
             w9=-one;
@@ -4668,7 +4668,7 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
               M_zXXZZ = -c1o3* MXXYYpm2p + c1o3* MXXYYppp;
               M_zYYZZ = -c1o3* MXXYYppm2 + c1o3* MXXYYppp;
             }
-            //doubflo forcingX1=1.11986e-8;//1.41342e-8;//5.48288e-9;//<-96//1.03093e-8;//1.59178e-8;//1.6256e-8; 
+            //real forcingX1=1.11986e-8;//1.41342e-8;//5.48288e-9;//<-96//1.03093e-8;//1.59178e-8;//1.6256e-8; 
 
             //mu[1][0][0]+=forcingX1;
 
@@ -4815,12 +4815,12 @@ extern "C" __global__ void LB_Kernel_Casc_SP_27(  doubflo omega,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
+extern "C" __global__ void LB_Kernel_Casc27(real omega,
                                             unsigned int* bcMatD,
                                             unsigned int* neighborX,
                                             unsigned int* neighborY,
                                             unsigned int* neighborZ,
-                                            doubflo* DDStart,
+                                            real* DDStart,
                                             int size_Mat,
                                             bool EvenOrOdd)
 {
@@ -4967,7 +4967,7 @@ extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
       //unsigned int ktne = k;
       //unsigned int kbsw = k + nxny + nx + 1;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
+      real f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO, f_TNE,f_TNW,f_TSE,f_TSW, f_BNE,f_BNW,f_BSE,f_BSW;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       f_E    =  (D.f[dirE   ])[ke]+c2over27;
       f_W    =  (D.f[dirW   ])[kw]+c2over27;
@@ -5002,17 +5002,17 @@ extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
       {
          {
             //    /////////////////////////version 13.04.
-            //   doubflo drho     = f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
-            //   doubflo vx1     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
-            //   doubflo vx2     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
-            //   doubflo vx3     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
+            //   real drho     = f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
+            //   real vx1     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
+            //   real vx2     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
+            //   real vx3     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
             ////   vx1=vx1/(drho); vx2=vx2/(drho); vx3=vx3/(drho);
             //   //////////////////////////////////////////////////////////////////////////
             //   //BGK
             //   //////////////////////////////////////////////////////////////////////////
 
 
-            //   doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+            //   real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
             //   f_ZERO = f_ZERO *(one+(-omega))-(-omega)*   c8over27*  (drho-cu_sq);
             //   f_E    = f_E    *(one+(-omega))-(-omega)*   c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
@@ -5043,14 +5043,14 @@ extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
             //   f_TNW  = f_TNW  *(one+(-omega))-(-omega)*    c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
 
             ///////////////////////version 13.04.
-            doubflo rho   =  f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
-            //doubflo rho    =  rho0 + one;
-            doubflo vx     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
-            doubflo vy     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
-            doubflo vz     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
+            real rho   =  f_ZERO+f_E +f_W +f_N +f_S +f_T +f_B +f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW+ f_BNE+f_BSW+f_BSE+f_BNW;
+            //real rho    =  rho0 + one;
+            real vx     =  f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW;
+            real vy     =  f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW;
+            real vz     =  f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW;
             vx=vx/(rho); vy=vy/(rho); vz=vz/(rho);
 
-            doubflo mu[3][3][3];
+            real mu[3][3][3];
 
             mu[2][0][0]=(f_E+f_W+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TNE+f_BNE+f_TSE+f_BSE+f_TNW+f_BNW+f_TSW+f_BSW)/(rho);//+(c1o3);
             mu[0][2][0]=(f_N+f_S+f_NE+f_SW+f_SE+f_NW+f_TN+f_BS+f_BN+f_TS+f_TNE+f_BNE+f_TSE+f_BSE+f_TNW+f_BNW+f_TSW+f_BSW)/(rho);//+(c1o3);
@@ -5080,13 +5080,13 @@ extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
             mu[0][1][0]=vy;
             mu[0][0][1]=vz;
 
-            doubflo M_zXX=zero;      doubflo M_zYY=zero;      doubflo M_zZZ=zero;      doubflo M_zXY=zero;     doubflo M_zXZ=zero;   doubflo M_zYZ=zero;
-            doubflo M_zXXY=zero;     doubflo M_zXYY=zero;     doubflo M_zXXZ=zero;     doubflo M_zXZZ=zero;    doubflo M_zYYZ=zero;  doubflo M_zYZZ=zero;  doubflo M_zXYZ=zero;
-            doubflo M_zXXYY=zero;    doubflo M_zXXZZ=zero;    doubflo M_zYYZZ=zero;    doubflo M_zXXYZ=zero;   doubflo M_zXYYZ=zero; doubflo M_zXYZZ=zero;
-            doubflo M_zXXYYZ=zero;   doubflo M_zXXYZZ=zero;   doubflo M_zXYYZZ=zero;   doubflo M_zXXYYZZ=zero;
-            doubflo M_zXYeq=zero;    doubflo M_zXZeq=zero;    doubflo M_zYZeq=zero;    doubflo M_zXYZeq=zero;
-            doubflo M_zXXYZeq=zero;  doubflo M_zXYYZeq=zero;  doubflo M_zXYZZeq=zero;
-            doubflo M_zXXYYZeq=zero; doubflo M_zXXYZZeq=zero; doubflo M_zXYYZZeq=zero; doubflo M_zXXYYZZeq=zero;
+            real M_zXX=zero;      real M_zYY=zero;      real M_zZZ=zero;      real M_zXY=zero;     real M_zXZ=zero;   real M_zYZ=zero;
+            real M_zXXY=zero;     real M_zXYY=zero;     real M_zXXZ=zero;     real M_zXZZ=zero;    real M_zYYZ=zero;  real M_zYZZ=zero;  real M_zXYZ=zero;
+            real M_zXXYY=zero;    real M_zXXZZ=zero;    real M_zYYZZ=zero;    real M_zXXYZ=zero;   real M_zXYYZ=zero; real M_zXYZZ=zero;
+            real M_zXXYYZ=zero;   real M_zXXYZZ=zero;   real M_zXYYZZ=zero;   real M_zXXYYZZ=zero;
+            real M_zXYeq=zero;    real M_zXZeq=zero;    real M_zYZeq=zero;    real M_zXYZeq=zero;
+            real M_zXXYZeq=zero;  real M_zXYYZeq=zero;  real M_zXYZZeq=zero;
+            real M_zXXYYZeq=zero; real M_zXXYZZeq=zero; real M_zXYYZZeq=zero; real M_zXXYYZZeq=zero;
 
             M_zXXYYZZ=  -five*mu[0][0][1] *     mu[0][0][1] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
                mu[1][0][0] +     mu[0][0][2] *     mu[0][1][0] *     mu[0][1][0] *     mu[1][0][0] * 
@@ -5192,11 +5192,11 @@ extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
             M_zXYYZeq=zero;
             M_zXYZZeq=zero;
 
-            doubflo MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ, MXXYYppp,MXXYYpm2p, MXXYYppm2;
-            doubflo MXXpMYYpMZZeq,MXXmMYYeq, MXXmMZZeq, MXXYpMYZZeq,MXXZpMYYZeq,MXYYpMXZZeq, MXXYmMYZZeq,MXXZmMYYZeq,MXYYmMXZZeq, MXXYYpppeq,MXXYYpm2peq, MXXYYppm2eq;
+            real MXXpMYYpMZZ,MXXmMYY, MXXmMZZ, MXXYpMYZZ,MXXZpMYYZ,MXYYpMXZZ, MXXYmMYZZ,MXXZmMYYZ,MXYYmMXZZ, MXXYYppp,MXXYYpm2p, MXXYYppm2;
+            real MXXpMYYpMZZeq,MXXmMYYeq, MXXmMZZeq, MXXYpMYZZeq,MXXZpMYYZeq,MXYYpMXZZeq, MXXYmMYZZeq,MXXZmMYYZeq,MXYYmMXZZeq, MXXYYpppeq,MXXYYpm2peq, MXXYYppm2eq;
 
             //coll faktoren:
-            doubflo w1,w2,w3,w4,w5,w6,w7,w8,w9,w10;
+            real w1,w2,w3,w4,w5,w6,w7,w8,w9,w10;
             w2=-one;//-omega;
             w7=-one;
             w9=-one;
@@ -5364,7 +5364,7 @@ extern "C" __global__ void LB_Kernel_Casc27(doubflo omega,
                M_zXXZZ = -c1o3* MXXYYpm2p + c1o3* MXXYYppp;
                M_zYYZZ = -c1o3* MXXYYppm2 + c1o3* MXXYYppp;
             }
-            //doubflo forcingX1=1.11986e-8;//1.41342e-8;//5.48288e-9;//<-96//1.03093e-8;//1.59178e-8;//1.6256e-8; 
+            //real forcingX1=1.11986e-8;//1.41342e-8;//5.48288e-9;//<-96//1.03093e-8;//1.59178e-8;//1.6256e-8; 
 
             //mu[1][0][0]+=forcingX1;
 

@@ -1,8 +1,12 @@
-#include "GPU/devCheck.h"
-#include <cuda_runtime.h>
+#include "devCheck.h"
+
+#include <stdio.h>
 #include <stdlib.h> 
+
+#include <cuda_runtime.h>
+
   
-extern "C" int devCheck(int gpudevice) 
+int devCheck(int gpudevice) 
 { 
    int device_count=0; 
     int device;  // used with  cudaGetDevice() to verify cudaSetDevice() 

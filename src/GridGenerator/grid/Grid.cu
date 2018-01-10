@@ -66,7 +66,7 @@ HOSTDEVICE char Grid::getFieldEntry(const Vertex &v) const
 
 HOSTDEVICE int Grid::transCoordToIndex(const int &x, const int &y, const int &z) const
 {
-	return transCoordToIndex(Vertex((doubflo)x, (doubflo)y, (doubflo)z));
+	return transCoordToIndex(Vertex((real)x, (real)y, (real)z));
 }
 
 HOSTDEVICE int Grid::transCoordToIndex(const Vertex &v) const
@@ -132,7 +132,7 @@ HOSTDEVICE void Grid::meshTriangle(const Triangle &triangle)
 	for (x = box.minX; x <= box.maxX; x++) {
 		for (y = box.minY; y <= box.maxY; y++) {
 			for (z = box.minZ; z <= box.maxZ; z++) {
-				point = Vertex((doubflo)x, (doubflo)y, (doubflo)z);
+				point = Vertex((real)x, (real)y, (real)z);
 				if (isOutOfRange(point))
 					continue;
                 int value = triangle.isUnderFace(point);
@@ -149,13 +149,13 @@ HOSTDEVICE void Grid::calculateQs(const Vertex &point, const Triangle &triangle)
 {
 	Vertex pointOnTriangle, dir;
 	//VertexInteger solid_node;
-	doubflo qVal;
+	real qVal;
 	int err;
 	for (int i = d.dir_start; i <= d.dir_end; i++) {
 	#if defined(__CUDA_ARCH__)
 		dir = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
 	#else
-		dir = Vertex((doubflo)d.dirs[i * DIMENSION + 0], (doubflo)d.dirs[i * DIMENSION + 1], (doubflo)d.dirs[i * DIMENSION + 2]);
+		dir = Vertex((real)d.dirs[i * DIMENSION + 0], (real)d.dirs[i * DIMENSION + 1], (real)d.dirs[i * DIMENSION + 2]);
 	#endif
 
 		err = triangle.getTriangleIntersection(point, dir, pointOnTriangle, qVal);

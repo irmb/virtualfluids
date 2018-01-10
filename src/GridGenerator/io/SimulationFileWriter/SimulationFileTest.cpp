@@ -22,17 +22,17 @@
 //    std::vector<unsigned int> neighborXFoam, neighborYFoam, neighborZFoam, geoFoam;
 //    std::vector<unsigned int> neighborX, neighborY, neighborZ, geo;
 //
-//    std::vector<doubflo> coordXFoam, coordYFoam, coordZFoam;
-//    std::vector<doubflo> coordX, coordY, coordZ;
+//    std::vector<real> coordXFoam, coordYFoam, coordZFoam;
+//    std::vector<real> coordX, coordY, coordZ;
 //
-//    std::vector<std::vector<doubflo> > inletQFoam, outletQFoam;
-//    std::vector<std::vector<doubflo> > inletQ, outletQ;
+//    std::vector<std::vector<real> > inletQFoam, outletQFoam;
+//    std::vector<std::vector<real> > inletQ, outletQ;
 //
 //    void SetUp() {
-//        doubflo length = 10.0f;
-//        doubflo width = 10.0f;
-//        doubflo high = 10.0f;
-//        doubflo delta = 1.0f;
+//        real length = 10.0f;
+//        real width = 10.0f;
+//        real high = 10.0f;
+//        real delta = 1.0f;
 //
 //        int nx = (int)(length / delta) + 1;
 //        int ny = (int)(width / delta) + 1;
@@ -58,7 +58,7 @@
 //        bool binaer = false;
 //        Transformator dummy;
 //        std::vector<Node> coords = builder.getNodes();
-//        std::vector<std::vector<std::vector<doubflo> > > qs = builder.getQsValues();
+//        std::vector<std::vector<std::vector<real> > > qs = builder.getQsValues();
 //        SimulationFileWriter::writeSimulationFiles(path + folder + "gridGeneration/", coords, qs, binaer, gridCPU.grid, dummy);
 //
 //        //open OpenFoam files
@@ -121,9 +121,9 @@
 //	EXPECT_TRUE(filesizes);
 //
 //    for (int i = 1; i < neighborXFoam.size(); i++) {
-//        EXPECT_THAT(coordXFoam[i] - 1.5f, FloatEq(coordX[i]));
-//        EXPECT_THAT(coordYFoam[i] - 1.5f, FloatEq(coordY[i]));
-//        EXPECT_THAT(coordZFoam[i] - 1.5f, FloatEq(coordZ[i]));
+//        EXPECT_THAT(coordXFoam[i] - 1.5f, DoubleEq(coordX[i]));
+//        EXPECT_THAT(coordYFoam[i] - 1.5f, DoubleEq(coordY[i]));
+//        EXPECT_THAT(coordZFoam[i] - 1.5f, DoubleEq(coordZ[i]));
 //
 //        EXPECT_THAT(neighborXFoam[i], Eq(neighborX[i]));
 //        EXPECT_THAT(neighborYFoam[i], Eq(neighborY[i]));
@@ -139,14 +139,14 @@
 //    for (int i = 0; i < inletQFoam.size(); i++) {
 //        for (int j = 0; j < inletQFoam[i].size(); j++) {
 //
-//            EXPECT_THAT(inletQFoam[i][j], FloatEq(inletQ[i][j]));
+//            EXPECT_THAT(inletQFoam[i][j], DoubleEq(inletQ[i][j]));
 //        }
 //    }
 //
 //    for (int i = 0; i < inletQFoam.size(); i++) {
 //        for (int j = 0; j < inletQFoam[i].size(); j++) {
 //
-//            EXPECT_THAT(outletQFoam[i][j], FloatEq(outletQ[i][j]));
+//            EXPECT_THAT(outletQFoam[i][j], DoubleEq(outletQ[i][j]));
 //        }
 //    }
 //}

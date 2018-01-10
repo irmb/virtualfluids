@@ -19,18 +19,18 @@ public:
     std::vector<Triangle> triangles;
 
     void SetUp() {
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)1), Vertex((doubflo)0, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)0), Vertex((doubflo)0, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)1),Vertex((doubflo)1, (doubflo)1, (doubflo)0),Vertex((doubflo)0, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)0),Vertex((doubflo)0, (doubflo)1, (doubflo)0),Vertex((doubflo)0, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)0, (doubflo)1),Vertex((doubflo)1, (doubflo)0, (doubflo)0),Vertex((doubflo)1, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)0, (doubflo)0),Vertex((doubflo)1, (doubflo)1, (doubflo)0),Vertex((doubflo)1, (doubflo)1, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)0, (doubflo)1),Vertex((doubflo)0, (doubflo)0, (doubflo)0),Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)0, (doubflo)0),Vertex((doubflo)1, (doubflo)0, (doubflo)0),Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)1),Vertex((doubflo)0, (doubflo)1, (doubflo)1),Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)1),Vertex((doubflo)0, (doubflo)0, (doubflo)1),Vertex((doubflo)1, (doubflo)0, (doubflo)1)));
-		triangles.push_back(Triangle(Vertex((doubflo)0, (doubflo)1, (doubflo)0),Vertex((doubflo)1, (doubflo)1, (doubflo)0),Vertex((doubflo)0, (doubflo)0, (doubflo)0)));
-		triangles.push_back(Triangle(Vertex((doubflo)1, (doubflo)1, (doubflo)0),Vertex((doubflo)1, (doubflo)0, (doubflo)0),Vertex((doubflo)0, (doubflo)0, (doubflo)0)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)1), Vertex((real)0, (real)1, (real)0), Vertex((real)0, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)0), Vertex((real)0, (real)0, (real)0), Vertex((real)0, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)1),Vertex((real)1, (real)1, (real)0),Vertex((real)0, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)0),Vertex((real)0, (real)1, (real)0),Vertex((real)0, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)0, (real)1),Vertex((real)1, (real)0, (real)0),Vertex((real)1, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)0, (real)0),Vertex((real)1, (real)1, (real)0),Vertex((real)1, (real)1, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)0, (real)1),Vertex((real)0, (real)0, (real)0),Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)0, (real)0),Vertex((real)1, (real)0, (real)0),Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)1),Vertex((real)0, (real)1, (real)1),Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)1),Vertex((real)0, (real)0, (real)1),Vertex((real)1, (real)0, (real)1)));
+		triangles.push_back(Triangle(Vertex((real)0, (real)1, (real)0),Vertex((real)1, (real)1, (real)0),Vertex((real)0, (real)0, (real)0)));
+		triangles.push_back(Triangle(Vertex((real)1, (real)1, (real)0),Vertex((real)1, (real)0, (real)0),Vertex((real)0, (real)0, (real)0)));
 
         refiner = std::make_shared<TriangleRefinement>(&triangles);
     }
@@ -88,7 +88,7 @@ TEST_F(TriangleRefinementTest, getLongestDistance){
 
     Triangle t = Triangle(Vertex(0, 0, 0), Vertex(10, 0, 0), Vertex(1, 1, 0), Vertex(0, 0, 0));
 
-    doubflo d = TriangleRefinement::getLongestEdgeDistance(t);
+    real d = TriangleRefinement::getLongestEdgeDistance(t);
     ASSERT_THAT((double)d, DoubleEq(10.0));
 }
 

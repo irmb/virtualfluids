@@ -32,7 +32,7 @@ void SimulationFileWriter::writeSimulationFiles(std::string folder, std::shared_
     closeFiles();
 
     clock_t  end = clock();
-    doubflo time = doubflo(end - begin) / CLOCKS_PER_SEC;
+    real time = real(end - begin) / CLOCKS_PER_SEC;
     std::cout << "time write files: " << time << " sec" << std::endl;
     std::cout << "... finish writing Simulation Files!\n";
 }
@@ -48,7 +48,7 @@ void SimulationFileWriter::writeCoordFiles(bool binaer, std::shared_ptr<GridBuil
     }
 }
 
-void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vector<doubflo> > > qFiles)
+void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles)
 {
     for (int rb = 0; rb < QFILES; rb++) {
         for (int index = 0; index < qFiles[rb].size(); index++) {
@@ -97,7 +97,7 @@ void SimulationFileWriter::openFiles()
     }
 }
 
-void SimulationFileWriter::writeLevelAndLevelSize(int sizeCoords, std::vector<std::vector<std::vector<doubflo> > > qFiles)
+void SimulationFileWriter::writeLevelAndLevelSize(int sizeCoords, std::vector<std::vector<std::vector<real> > > qFiles)
 {
     std::string zeroIndex = "0 ";
     std::string zeroGeo = "16 ";
@@ -128,7 +128,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(const int& i, bool binaer, st
 	unsigned int x, y, z;
     grid.transIndexToCoords(index, x, y, z);
 
-    Vertex v = Vertex((doubflo)x, (doubflo)y, (doubflo)z);
+    Vertex v = Vertex((real)x, (real)y, (real)z);
     trans->transformGridToWorld(v);
     double xWorld = v.x;
     double yWorld = v.y;
@@ -160,7 +160,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(const int& i, bool binaer, st
     }
 }
 
-void SimulationFileWriter::writeBoundary(std::vector<doubflo> boundary, int rb)
+void SimulationFileWriter::writeBoundary(std::vector<real> boundary, int rb)
 {
     uint32_t key = *((uint32_t*)&boundary[boundary.size() - 2]);
     int index = (int)boundary[boundary.size() - 1];

@@ -1,7 +1,7 @@
 #pragma once
-#include "Standard.h"
 
-
+#include <vector>
+#include <fstream>
 
 using namespace std;
 

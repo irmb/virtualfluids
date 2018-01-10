@@ -333,18 +333,18 @@ Distribution DistributionHelper::getDistribution(std::string name)
 
 }
 
-std::vector<std::vector<doubflo> > DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(const Grid &grid, const Distribution &d)
+std::vector<std::vector<real> > DistributionHelper::getQsWithoutRowsWithOnlyZeroValues(const Grid &grid, const Distribution &d)
 {
     return getVectorWithoutRowsWithOnlyZeroValues(getAllQsOnFluidNodes(grid, d));
 }
 
-std::vector<std::vector<doubflo> > DistributionHelper::getAllQsOnFluidNodes(const Grid &grid, const Distribution &d)
+std::vector<std::vector<real> > DistributionHelper::getAllQsOnFluidNodes(const Grid &grid, const Distribution &d)
 {
-    std::vector<std::vector<doubflo> > qs(grid.size, std::vector<doubflo>(d.dir_end + 1, 0));
+    std::vector<std::vector<real> > qs(grid.size, std::vector<real>(d.dir_end + 1, 0));
     for (unsigned int node = 0; node < grid.size; node++) {
-        qs[node][0] = (doubflo)node;
+        qs[node][0] = (real)node;
         for (int i = d.dir_start; i < d.dir_end; i++) {
-            doubflo qVal = (d.f)[i * grid.size + node];
+            real qVal = (d.f)[i * grid.size + node];
             if (qVal == 0.0f)
                 continue;
             int index_fluidNode = getNeighborNodeIndexInGivenDirection(d, grid, node, i);
@@ -356,17 +356,17 @@ std::vector<std::vector<doubflo> > DistributionHelper::getAllQsOnFluidNodes(cons
 
 int DistributionHelper::getNeighborNodeIndexInGivenDirection(const Distribution &d, const Grid &grid, const int node, const int dir_index)
 {
-    Vertex dir = Vertex((doubflo)d.dirs[dir_index * DIMENSION + 0], (doubflo)d.dirs[dir_index * DIMENSION + 1], (doubflo)d.dirs[dir_index * DIMENSION + 2]);
+    Vertex dir = Vertex((real)d.dirs[dir_index * DIMENSION + 0], (real)d.dirs[dir_index * DIMENSION + 1], (real)d.dirs[dir_index * DIMENSION + 2]);
     unsigned int x, y, z;
     grid.transIndexToCoords(node, x, y, z);
-    Vertex solid_node = Vertex((doubflo)x, (doubflo)y,(doubflo)z);
+    Vertex solid_node = Vertex((real)x, (real)y,(real)z);
     Vertex fluid_node = Vertex(solid_node.x - dir.x, solid_node.y - dir.y, solid_node.z - dir.z);
     return grid.transCoordToIndex(fluid_node);
 }
 
-std::vector<std::vector<doubflo> > DistributionHelper::getVectorWithoutRowsWithOnlyZeroValues(std::vector<std::vector<doubflo> > qs)
+std::vector<std::vector<real> > DistributionHelper::getVectorWithoutRowsWithOnlyZeroValues(std::vector<std::vector<real> > qs)
 {
-    std::vector<std::vector<doubflo> > qs_ausgeduennt;
+    std::vector<std::vector<real> > qs_ausgeduennt;
     bool hasQs = false;
     for (int node = 0; node < qs.size(); node++) {
         for (int dir = 0; dir < qs[node].size() - 1; dir++) {
@@ -374,7 +374,7 @@ std::vector<std::vector<doubflo> > DistributionHelper::getVectorWithoutRowsWithO
                 hasQs = true;
         }
         if (hasQs) {
-            std::vector<doubflo> qRow(qs[node].begin(), qs[node].end());
+            std::vector<real> qRow(qs[node].begin(), qs[node].end());
             qs_ausgeduennt.push_back(qRow);
             hasQs = false;
         }
@@ -382,7 +382,7 @@ std::vector<std::vector<doubflo> > DistributionHelper::getVectorWithoutRowsWithO
     return qs_ausgeduennt;
 }
 
-void DistributionHelper::printQs(std::vector<std::vector<doubflo> > qs, int decimalPlaces)
+void DistributionHelper::printQs(std::vector<std::vector<real> > qs, int decimalPlaces)
 {
     for (int node = 0; node < qs.size(); node++) {
         printf("index %d: ", node);

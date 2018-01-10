@@ -2,38 +2,38 @@
 
 #include <cmath>
 
-HOSTDEVICE bool CudaMath::equal(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff)
+HOSTDEVICE bool CudaMath::equal(const real& val1, const real& val2, real maxRelDiff)
 {
-	doubflo diff = std::fabs(val1 - val2);
-	doubflo val1_abs = std::fabs(val1);
-	doubflo val2_abs = std::fabs(val2);
+	real diff = std::fabs(val1 - val2);
+	real val1_abs = std::fabs(val1);
+	real val2_abs = std::fabs(val2);
 
-	doubflo largest = (val2_abs > val1_abs) ? val2_abs : val1_abs;
+	real largest = (val2_abs > val1_abs) ? val2_abs : val1_abs;
 	if (diff <= largest * maxRelDiff)
 		return true;
 	return false;
 }
 
-HOSTDEVICE bool CudaMath::lessEqual(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff)
+HOSTDEVICE bool CudaMath::lessEqual(const real& val1, const real& val2, real maxRelDiff)
 {
 	if (val1 < val2 || equal(val1, val2, maxRelDiff))
 		return true;
 	return false;
 }
 
-HOSTDEVICE bool CudaMath::greaterEqual(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff)
+HOSTDEVICE bool CudaMath::greaterEqual(const real& val1, const real& val2, real maxRelDiff)
 {
 	if (val1 > val2 || equal(val1, val2, maxRelDiff))
 		return true;
 	return false;
 }
 
-HOSTDEVICE doubflo CudaMath::sqrt(const doubflo& val)
+HOSTDEVICE real CudaMath::sqrt(const real& val)
 {
     return sqrtf(val);
 }
 
-HOSTDEVICE doubflo CudaMath::acos(const doubflo& val)
+HOSTDEVICE real CudaMath::acos(const real& val)
 {
     return acosf(val);
 }

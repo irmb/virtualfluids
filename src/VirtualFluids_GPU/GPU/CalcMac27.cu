@@ -4,16 +4,16 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMac27( doubflo* vxD,
-                                        doubflo* vyD,
-                                        doubflo* vzD,
-                                        doubflo* rhoD,
+extern "C" __global__ void LBCalcMac27( real* vxD,
+                                        real* vyD,
+                                        real* vzD,
+                                        real* rhoD,
                                         unsigned int* geoD,
                                         unsigned int* neighborX,
                                         unsigned int* neighborY,
                                         unsigned int* neighborZ,
                                         unsigned int size_Mat,
-                                        doubflo* DD,
+                                        real* DD,
                                         bool evenOrOdd)
 {
    Distributions27 D;
@@ -210,17 +210,17 @@ extern "C" __global__ void LBCalcMac27( doubflo* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacSP27( doubflo* vxD,
-                                          doubflo* vyD,
-                                          doubflo* vzD,
-                                          doubflo* rhoD,
-                                          doubflo* pressD,
+extern "C" __global__ void LBCalcMacSP27( real* vxD,
+                                          real* vyD,
+                                          real* vzD,
+                                          real* rhoD,
+                                          real* pressD,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
-                                          doubflo* DD,
+                                          real* DD,
                                           bool evenOrOdd)
 {
    Distributions27 D;
@@ -430,17 +430,17 @@ extern "C" __global__ void LBCalcMacSP27( doubflo* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacCompSP27( doubflo* vxD,
-											  doubflo* vyD,
-											  doubflo* vzD,
-											  doubflo* rhoD,
-											  doubflo* pressD,
+extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
+											  real* vyD,
+											  real* vzD,
+											  real* rhoD,
+											  real* pressD,
 											  unsigned int* geoD,
 											  unsigned int* neighborX,
 											  unsigned int* neighborY,
 											  unsigned int* neighborZ,
 											  unsigned int size_Mat,
-											  doubflo* DD,
+											  real* DD,
 											  bool evenOrOdd)
 {
    Distributions27 D;
@@ -649,13 +649,13 @@ extern "C" __global__ void LBCalcMacCompSP27( doubflo* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacThS7( doubflo* Conc,
+extern "C" __global__ void LBCalcMacThS7( real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
-                                          doubflo* DD7,
+                                          real* DD7,
                                           bool evenOrOdd)
 {
    Distributions7 D7;
@@ -743,7 +743,7 @@ extern "C" __global__ void LBCalcMacThS7( doubflo* Conc,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void GetPlaneConcThS7(doubflo* Conc,
+extern "C" __global__ void GetPlaneConcThS7(real* Conc,
 								            int* kPC,
 								            unsigned int numberOfPointskPC,
 											unsigned int* geoD,
@@ -751,7 +751,7 @@ extern "C" __global__ void GetPlaneConcThS7(doubflo* Conc,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int size_Mat,
-											doubflo* DD7,
+											real* DD7,
 											bool evenOrOdd)
 {
    Distributions7 D7;
@@ -846,7 +846,7 @@ extern "C" __global__ void GetPlaneConcThS7(doubflo* Conc,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void GetPlaneConcThS27(doubflo* Conc,
+extern "C" __global__ void GetPlaneConcThS27(real* Conc,
 								             int* kPC,
 								             unsigned int numberOfPointskPC,
 											 unsigned int* geoD,
@@ -854,7 +854,7 @@ extern "C" __global__ void GetPlaneConcThS27(doubflo* Conc,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
 											 unsigned int size_Mat,
-											 doubflo* DD27,
+											 real* DD27,
 											 bool evenOrOdd)
 {
    Distributions27 D27;
@@ -1019,13 +1019,13 @@ extern "C" __global__ void GetPlaneConcThS27(doubflo* Conc,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacThS27(doubflo* Conc,
+extern "C" __global__ void LBCalcMacThS27(real* Conc,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
-                                          doubflo* DD27,
+                                          real* DD27,
                                           bool evenOrOdd)
 {
    Distributions27 D27;
@@ -1174,17 +1174,17 @@ extern "C" __global__ void LBCalcMacThS27(doubflo* Conc,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMedSP27( doubflo* vxD,
-                                          doubflo* vyD,
-                                          doubflo* vzD,
-                                          doubflo* rhoD,
-                                          doubflo* pressD,
+extern "C" __global__ void LBCalcMedSP27( real* vxD,
+                                          real* vyD,
+                                          real* vzD,
+                                          real* rhoD,
+                                          real* pressD,
                                           unsigned int* geoD,
                                           unsigned int* neighborX,
                                           unsigned int* neighborY,
                                           unsigned int* neighborZ,
                                           unsigned int size_Mat,
-                                          doubflo* DD,
+                                          real* DD,
                                           bool evenOrOdd)
 {
    Distributions27 D;
@@ -1291,11 +1291,11 @@ extern "C" __global__ void LBCalcMedSP27( doubflo* vxD,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      doubflo PRESS = pressD[k];
-      doubflo RHO   = rhoD[k];
-      doubflo VX    = vxD[k];
-      doubflo VY    = vyD[k];
-      doubflo VZ    = vzD[k];
+      real PRESS = pressD[k];
+      real RHO   = rhoD[k];
+      real VX    = vxD[k];
+      real VY    = vyD[k];
+      real VZ    = vzD[k];
       //////////////////////////////////////////////////////////////////////////
       pressD[k] = zero;
 	  rhoD[k]   = zero;
@@ -1398,17 +1398,17 @@ extern "C" __global__ void LBCalcMedSP27( doubflo* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMedCompSP27( doubflo* vxD,
-											  doubflo* vyD,
-											  doubflo* vzD,
-											  doubflo* rhoD,
-											  doubflo* pressD,
+extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
+											  real* vyD,
+											  real* vzD,
+											  real* rhoD,
+											  real* pressD,
 											  unsigned int* geoD,
 											  unsigned int* neighborX,
 											  unsigned int* neighborY,
 											  unsigned int* neighborZ,
 											  unsigned int size_Mat,
-											  doubflo* DD,
+											  real* DD,
 											  bool evenOrOdd)
 {
    Distributions27 D;
@@ -1515,11 +1515,11 @@ extern "C" __global__ void LBCalcMedCompSP27( doubflo* vxD,
       unsigned int ktne = k;
       unsigned int kbsw = neighborZ[ksw];
       //////////////////////////////////////////////////////////////////////////
-      doubflo PRESS = pressD[k];
-      doubflo RHO   = rhoD[k];
-      doubflo VX    = vxD[k];
-      doubflo VY    = vyD[k];
-      doubflo VZ    = vzD[k];
+      real PRESS = pressD[k];
+      real RHO   = rhoD[k];
+      real VX    = vxD[k];
+      real VY    = vyD[k];
+      real VZ    = vzD[k];
       //////////////////////////////////////////////////////////////////////////
       pressD[k] = zero;
 	  rhoD[k]   = zero;
@@ -1622,11 +1622,11 @@ extern "C" __global__ void LBCalcMedCompSP27( doubflo* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMacMedSP27( doubflo* vxD,
-                                             doubflo* vyD,
-                                             doubflo* vzD,
-                                             doubflo* rhoD,
-                                             doubflo* pressD,
+extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
+                                             real* vyD,
+                                             real* vzD,
+                                             real* rhoD,
+                                             real* pressD,
                                              unsigned int* geoD,
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
@@ -1649,11 +1649,11 @@ extern "C" __global__ void LBCalcMacMedSP27( doubflo* vxD,
    if(k<size_Mat)
    {
       //////////////////////////////////////////////////////////////////////////
-      doubflo PRESS = pressD[k];
-      doubflo RHO   = rhoD[k];
-      doubflo VX    = vxD[k];
-      doubflo VY    = vyD[k];
-      doubflo VZ    = vzD[k];
+      real PRESS = pressD[k];
+      real RHO   = rhoD[k];
+      real VX    = vxD[k];
+      real VY    = vyD[k];
+      real VZ    = vzD[k];
       //////////////////////////////////////////////////////////////////////////
       pressD[k] = zero;
       rhoD[k]   = zero;
@@ -1694,10 +1694,10 @@ extern "C" __global__ void LBCalcMacMedSP27( doubflo* vxD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBCalcMeasurePoints( doubflo* vxMP,
-												doubflo* vyMP,
-												doubflo* vzMP,
-												doubflo* rhoMP,
+extern "C" __global__ void LBCalcMeasurePoints( real* vxMP,
+												real* vyMP,
+												real* vzMP,
+												real* rhoMP,
 												unsigned int* kMP,
 												unsigned int numberOfPointskMP,
 												unsigned int MPClockCycle,
@@ -1707,7 +1707,7 @@ extern "C" __global__ void LBCalcMeasurePoints( doubflo* vxMP,
 												unsigned int* neighborY,
 												unsigned int* neighborZ,
 												unsigned int size_Mat,
-												doubflo* DD,
+												real* DD,
 												bool evenOrOdd)
 {
 	Distributions27 D;
@@ -1905,22 +1905,22 @@ extern "C" __global__ void LBCalcMeasurePoints( doubflo* vxMP,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LBSetOutputWallVelocitySP27( doubflo* vxD,
-														doubflo* vyD,
-														doubflo* vzD,
-														doubflo* vxWall,
-														doubflo* vyWall,
-														doubflo* vzWall,
+extern "C" __global__ void LBSetOutputWallVelocitySP27( real* vxD,
+														real* vyD,
+														real* vzD,
+														real* vxWall,
+														real* vyWall,
+														real* vzWall,
 														int numberOfWallNodes, 
 														int* kWallNodes, 
-														doubflo* rhoD,
-														doubflo* pressD,
+														real* rhoD,
+														real* pressD,
 														unsigned int* geoD,
 														unsigned int* neighborX,
 														unsigned int* neighborY,
 														unsigned int* neighborZ,
 														unsigned int size_Mat,
-														doubflo* DD,
+														real* DD,
 														bool evenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////

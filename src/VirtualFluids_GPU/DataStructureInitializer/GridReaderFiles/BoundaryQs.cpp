@@ -102,7 +102,7 @@ void BoundaryQs::init_Binary()
 
 	std::string bufferString;
 	unsigned int bufferInt;
-	doubflo bufferDouble;
+	real bufferDouble;
 	uint32_t bufferUint32_t;
 
 	file >> maxLevel;
@@ -166,7 +166,7 @@ unsigned int BoundaryQs::getLevel()
 }
 
 
-void BoundaryQs::setValues(doubflo** q27, unsigned int level) const
+void BoundaryQs::setValues(real** q27, unsigned int level) const
 {
 	for (int column = 0; column < values[level].size(); column++)
 		for (int index = 0; index < values[level][column].size(); index++)

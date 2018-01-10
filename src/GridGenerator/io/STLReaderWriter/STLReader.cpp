@@ -82,7 +82,7 @@ Geometry STLReader::getGeometryFromBinarySTL(const std::string& name, const Tran
 
 	char facet[50];
 	Geometry geometry;
-	BoundingBox<doubflo> box = BoundingBox<doubflo>::makeInvalidMinMaxBox();
+	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
 	for (unsigned int i = 0; i < nTriLong; i++) {
 		fread(facet, sizeof(char), 50, file);
@@ -122,7 +122,7 @@ Geometry STLReader::getGeometryFromASCIISTL(const std::string& name, const Trans
 	std::getline(file, line); // solid ascii
 
 	Geometry geometry;
-	BoundingBox<doubflo> box = BoundingBox<doubflo>::makeInvalidMinMaxBox();
+	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
 	for (int t = 0; t < nTriangles; t++) {
 		Vertex normal = parseLineToCoordinates(file, "%*s %*s %f %f %f");
@@ -332,7 +332,7 @@ Vertex STLReader::parseLineToCoordinates(std::ifstream& file, std::string format
     std::string line;
     getline(file, line);
     const char* buffer = line.c_str();
-    doubflo x, y, z;
+    real x, y, z;
     sscanf(buffer, format.c_str(), &x, &y, &z);
     return Vertex(x, y, z);
 }
@@ -361,5 +361,5 @@ Vertex STLReader::getVertexFromChar(const char* facet)
     float yy = *((float*)f2);
     float zz = *((float*)f3);
 
-    return Vertex((doubflo)(xx), (doubflo)(yy), (doubflo)(zz));
+    return Vertex((real)(xx), (real)(yy), (real)(zz));
 }

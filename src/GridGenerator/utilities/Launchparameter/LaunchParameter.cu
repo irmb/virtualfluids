@@ -14,7 +14,7 @@ HOST LaunchParameter LaunchParameter::make_2D1D_launchParameter(int size, int th
 	LaunchParameter para;
 	para.threads = dim3(threadDim, 1, 1);
 
-	int blocks_ = (int)(ceil((size / ((doubflo)threadDim))));
+	int blocks_ = (int)(ceil((size / ((real)threadDim))));
 	para.blocks = dim3(blocks_, 1, 1);
 
 	if (blocks_ > MAXBLOCKSIZE) {
@@ -28,7 +28,7 @@ HOST LaunchParameter LaunchParameter::make_1D1D_launchParameter(int size, int th
 {
 	LaunchParameter para;
 	para.threads = dim3(threadDim, 1, 1);
-	int blocks_ = (int)(ceil((doubflo)size / (doubflo)threadDim));
+	int blocks_ = (int)(ceil((real)size / (real)threadDim));
 	para.blocks = dim3(blocks_, 1);
 	return para;
 }

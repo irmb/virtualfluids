@@ -12,12 +12,12 @@
 
 struct VF_PUBLIC CudaMath
 {
-	HOSTDEVICE static bool equal(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff = EPSILON);
-	HOSTDEVICE static bool lessEqual(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff = EPSILON);
-	HOSTDEVICE static bool greaterEqual(const doubflo& val1, const doubflo& val2, doubflo maxRelDiff = EPSILON);
+	HOSTDEVICE static bool equal(const real& val1, const real& val2, real maxRelDiff = EPSILON);
+	HOSTDEVICE static bool lessEqual(const real& val1, const real& val2, real maxRelDiff = EPSILON);
+	HOSTDEVICE static bool greaterEqual(const real& val1, const real& val2, real maxRelDiff = EPSILON);
 
-	HOSTDEVICE static doubflo sqrt(const doubflo& val);
-	HOSTDEVICE static doubflo acos(const doubflo& val);
+	HOSTDEVICE static real sqrt(const real& val);
+	HOSTDEVICE static real acos(const real& val);
 
 };
 

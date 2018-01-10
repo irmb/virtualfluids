@@ -21,9 +21,9 @@ template <typename T>
      minZ(0),
      maxZ(0) {}
 
- BoundingBox<doubflo>::BoundingBox(const BoundingBox<doubflo> &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
+ BoundingBox<real>::BoundingBox(const BoundingBox<real> &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
 
- BoundingBox<int>::BoundingBox(const BoundingBox<doubflo> &box)
+ BoundingBox<int>::BoundingBox(const BoundingBox<real> &box)
  {
      this->minX = (int)(box.minX);
      this->minY = (int)(box.minY);
@@ -37,19 +37,19 @@ template <typename T>
  template <typename T>
  BoundingBox<T>::BoundingBox(const BoundingBox<int> &box)
  {
-	 this->minX = (doubflo)box.minX;
-	 this->minY = (doubflo)box.minY;
-	 this->minZ = (doubflo)box.minZ;
+	 this->minX = (real)box.minX;
+	 this->minY = (real)box.minY;
+	 this->minZ = (real)box.minZ;
 
-	 this->maxX = (doubflo)box.maxX;
-	 this->maxY = (doubflo)box.maxY;
-	 this->maxZ = (doubflo)box.maxZ;
+	 this->maxX = (real)box.maxX;
+	 this->maxY = (real)box.maxY;
+	 this->maxZ = (real)box.maxZ;
  }
 
 
- HOSTDEVICE BoundingBox<doubflo> BoundingBox<doubflo>::makeExactBox(const Triangle &t)
+ HOSTDEVICE BoundingBox<real> BoundingBox<real>::makeExactBox(const Triangle &t)
  {
-	 BoundingBox<doubflo> box;
+	 BoundingBox<real> box;
      t.setMinMax(box.minX, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ);
 	 return box;
  }
@@ -71,7 +71,7 @@ template <typename T>
  {
 	 BoundingBox<int> box;
 
-     doubflo minX, maxX, minY, maxY, minZ, maxZ;
+     real minX, maxX, minY, maxY, minZ, maxZ;
      t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
 
 	 calculateMinMaxOnNodes(box.minX, box.maxX, minX, maxX);
@@ -81,13 +81,13 @@ template <typename T>
  }
 
  template <>
- HOSTDEVICE void BoundingBox<int>::calculateMinMaxOnNodes(int &minNode, int &maxNode, const doubflo &minExact, const doubflo &maxExact)
+ HOSTDEVICE void BoundingBox<int>::calculateMinMaxOnNodes(int &minNode, int &maxNode, const real &minExact, const real &maxExact)
  {
      minNode = ceil(minExact - 1.0);
      maxNode = floor(maxExact + 1.0);
  }
 
- void BoundingBox<doubflo>::setMinMax(const Triangle& t)
+ void BoundingBox<real>::setMinMax(const Triangle& t)
  {
      t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
  }
@@ -117,46 +117,46 @@ template <typename T>
  }
 
  template <typename T>
- std::vector<std::vector<Vertex> > BoundingBox<T>::getIntersectionPoints(const BoundingBox<doubflo> &b) const
+ std::vector<std::vector<Vertex> > BoundingBox<T>::getIntersectionPoints(const BoundingBox<real> &b) const
  {
 	 std::vector<std::vector<Vertex> > intersectionBox;
 	 intersectionBox.resize(6);
 
 	 int intersects = 0;
 	 if (b.minX < maxX && b.maxX > maxX) { //maxX is intersect
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)minY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)maxY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)minY, (doubflo)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)maxY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)maxZ));
 		 intersects++;
 	 }
 	 if (b.minX < minX && b.maxX > minX) { //minX is intersect
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)minY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)maxY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)minY, (doubflo)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
 		 intersects++;
 	 }
 	 if (b.minY < minY && b.maxY > minY) { //minY is intersect
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)minY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)minY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)minY, (doubflo)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
 		 intersects++;
 	 }
 	 if (b.minY < maxY && b.maxY > maxY) { //maxY is intersect
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)maxY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)maxY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)maxY, (doubflo)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)maxY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)maxZ));
 		 intersects++;
 	 }
 	 if (b.minZ < minZ && b.maxZ > minZ) { //minZ is intersect
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)minY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)minY, (doubflo)minZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)maxY, (doubflo)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)minZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)minZ));
 		 intersects++;
 	 }
 	 if (b.minZ < maxZ && b.maxZ > maxZ) { //maxZ is intersect
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)minY, (doubflo)maxZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)maxX, (doubflo)minY, (doubflo)maxZ));
-		 intersectionBox[intersects].push_back(Vertex((doubflo)minX, (doubflo)maxY, (doubflo)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)minY, (real)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)maxX, (real)minY, (real)maxZ));
+		 intersectionBox[intersects].push_back(Vertex((real)minX, (real)maxY, (real)maxZ));
 		 intersects++;
 	 }
 
@@ -195,11 +195,11 @@ template <typename T>
  template <typename T>
  void BoundingBox<T>::print() const
  {
-	 printf("min/max - x: %2.4f/ %2.4f, y: %2.4f, %2.4f, z: %2.4f, %2.4f \n", (doubflo)minX, (doubflo)maxX, (doubflo)minY, (doubflo)maxY, (doubflo)minZ, (doubflo)maxZ);
+	 printf("min/max - x: %2.4f/ %2.4f, y: %2.4f, %2.4f, z: %2.4f, %2.4f \n", (real)minX, (real)maxX, (real)minY, (real)maxY, (real)minZ, (real)maxZ);
  }
 
 
- HOST bool BoundingBox<doubflo>::operator==(const BoundingBox<doubflo> &box) const
+ HOST bool BoundingBox<real>::operator==(const BoundingBox<real> &box) const
  {
      return CudaMath::equal(minX, box.minX)
          && CudaMath::equal(maxX, box.maxX)
@@ -214,12 +214,12 @@ template <typename T>
  HOST BoundingBoxMemento BoundingBox<T>::getState() const
  {
      BoundingBoxMemento memento;
-     memento.minX = (doubflo)minX;
-     memento.maxX = (doubflo)maxX;
-     memento.minY = (doubflo)minY;
-     memento.maxY = (doubflo)maxY;
-     memento.minZ = (doubflo)minZ;
-     memento.maxZ = (doubflo)maxZ;
+     memento.minX = (real)minX;
+     memento.maxX = (real)maxX;
+     memento.minY = (real)minY;
+     memento.maxY = (real)maxY;
+     memento.minZ = (real)minZ;
+     memento.maxZ = (real)maxZ;
      return memento;
  }
 
@@ -236,4 +236,4 @@ template <typename T>
 
 
  template class VF_PUBLIC BoundingBox<int>;
- template class VF_PUBLIC BoundingBox<doubflo>;
+ template class VF_PUBLIC BoundingBox<real>;

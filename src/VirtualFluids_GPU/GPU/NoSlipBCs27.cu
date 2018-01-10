@@ -5,12 +5,12 @@
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
 														 int iny,
-														 doubflo* DD, 
+														 real* DD, 
 														 int* k_Q, 
-														 doubflo* QQ,
+														 real* QQ,
 														 unsigned int sizeQ,
 														 int kQ, 
-														 doubflo om1, 
+														 real om1, 
 														 unsigned int* neighborX,
 														 unsigned int* neighborY,
 														 unsigned int* neighborZ,
@@ -92,7 +92,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -154,7 +154,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
             f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -184,7 +184,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -202,7 +202,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       //if (evenOrOdd==false)
@@ -525,12 +525,12 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDeviceCompThinWallsPartTwo27(int inx,
 														 int iny,
-														 doubflo* DD, 
+														 real* DD, 
 														 int* k_Q, 
-														 doubflo* QQ,
+														 real* QQ,
 														 unsigned int sizeQ,
 														 int kQ, 
-														 doubflo om1, 
+														 real om1, 
 														 unsigned int* geom,
 														 unsigned int* neighborX,
 														 unsigned int* neighborY,
@@ -553,7 +553,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartTwo27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -759,7 +759,7 @@ extern "C" __global__ void QDeviceCompThinWallsPartTwo27(int inx,
 	  //directions exchange if solid neighbor
 	  //( 1  1  1) ( 1  0  0) ( 0  1  0) ( 0  0  1) ( 1  1  0) ( 1  0  1) ( 0  1  1) (-1 -1  1) (-1  1 -1) ( 1 -1 -1) (-1  1  0) (-1  0  1) ( 0 -1  1)
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo q, tmp;
+	  real q, tmp;
       q = q_dirE[k];   if (q>=zero && q<=one){ if (geom[kw  ] < GEO_FLUID){tmp = (DN.f[dirW  ])[kw  ]; (DN.f[dirW  ])[kw  ]=(D.f[dirW  ])[kw  ]; (D.f[dirW  ])[kw  ]=tmp;}}
 	  q = q_dirW[k];   if (q>=zero && q<=one){                            {tmp = (DN.f[dirE  ])[ke  ]; (DN.f[dirE  ])[ke  ]=(D.f[dirE  ])[ke  ]; (D.f[dirE  ])[ke  ]=tmp;}}
       q = q_dirN[k];   if (q>=zero && q<=one){ if (geom[ks  ] < GEO_FLUID){tmp = (DN.f[dirS  ])[ks  ]; (DN.f[dirS  ])[ks  ]=(D.f[dirS  ])[ks  ]; (D.f[dirS  ])[ks  ]=tmp;}}
@@ -831,12 +831,12 @@ extern "C" __global__ void QDeviceCompThinWallsPartTwo27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
 													 int iny,
-													 doubflo* DD, 
+													 real* DD, 
 													 int* k_Q, 
-													 doubflo* QQ,
+													 real* QQ,
 													 unsigned int sizeQ,
 													 int kQ, 
-													 doubflo om1, 
+													 real om1, 
 													 unsigned int* neighborX,
 													 unsigned int* neighborY,
 													 unsigned int* neighborZ,
@@ -918,7 +918,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -980,7 +980,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
             f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -1010,7 +1010,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q, m3;
+      real vx1, vx2, vx3, drho, feq, q, m3;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -1028,7 +1028,7 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1377,12 +1377,12 @@ extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDeviceIncompHighNu27(int inx,
 												 int iny,
-												 doubflo* DD, 
+												 real* DD, 
 												 int* k_Q, 
-												 doubflo* QQ,
+												 real* QQ,
 												 unsigned int sizeQ,
 												 int kQ, 
-												 doubflo om1, 
+												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -1464,7 +1464,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -1526,7 +1526,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
             f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_E   = (D.f[dirE   ])[ke   ];
@@ -1556,7 +1556,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       f_BSE = (D.f[dirBSE ])[kbse ];
       f_BNW = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -1574,7 +1574,7 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B));// / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);// * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);// * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1641,9 +1641,9 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
       //Test
          //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = zero;
-      doubflo VeloY = zero;
-      doubflo VeloZ = zero;
+      real VeloX = zero;
+      real VeloY = zero;
+      real VeloZ = zero;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  
 	  
@@ -1875,12 +1875,12 @@ extern "C" __global__ void QDeviceIncompHighNu27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDeviceCompHighNu27(  int inx,
 												 int iny,
-												 doubflo* DD, 
+												 real* DD, 
 												 int* k_Q, 
-												 doubflo* QQ,
+												 real* QQ,
 												 unsigned int sizeQ,
 												 int kQ, 
-												 doubflo om1, 
+												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -1962,7 +1962,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2024,7 +2024,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
             f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_E   = (D.f[dirE   ])[ke   ];
@@ -2080,7 +2080,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
       //f_TNW  = (D.f[dirBSE ])[kbse ];
       //f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -2098,7 +2098,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2165,9 +2165,9 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
       //Test
          //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo VeloX = zero;
-      doubflo VeloY = zero;
-      doubflo VeloZ = zero;
+      real VeloX = zero;
+      real VeloY = zero;
+      real VeloZ = zero;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  
 	  
@@ -2451,12 +2451,12 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDeviceComp27(int inx,
 										 int iny,
-										 doubflo* DD, 
+										 real* DD, 
 										 int* k_Q, 
-										 doubflo* QQ,
+										 real* QQ,
 										 unsigned int sizeQ,
 										 int kQ, 
-										 doubflo om1, 
+										 real om1, 
 										 unsigned int* neighborX,
 										 unsigned int* neighborY,
 										 unsigned int* neighborZ,
@@ -2538,7 +2538,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2600,7 +2600,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
             f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -2630,7 +2630,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -2648,7 +2648,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2971,12 +2971,12 @@ extern "C" __global__ void QDeviceComp27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QDevice27(int inx,
                                      int iny,
-                                     doubflo* DD, 
+                                     real* DD, 
                                      int* k_Q, 
-                                     doubflo* QQ,
+                                     real* QQ,
                                      unsigned int sizeQ,
                                      int kQ, 
-                                     doubflo om1, 
+                                     real om1, 
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
@@ -3058,7 +3058,7 @@ extern "C" __global__ void QDevice27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -3148,7 +3148,7 @@ extern "C" __global__ void QDevice27(int inx,
       //unsigned int ktne = KQK;
       //unsigned int kbsw = KQK + nxny + nx + 1;
       ////////////////////////////////////////////////////////////////////////////////
-      //doubflo vx1, vx2, vx3, drho, feq, q;
+      //real vx1, vx2, vx3, drho, feq, q;
       //drho    =   (D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
       //            (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
       //            (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
@@ -3194,9 +3194,9 @@ extern "C" __global__ void QDevice27(int inx,
       //            (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
       //            (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw];
 
-      //doubflo cu_sq=1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq=1.5f*(vx1*vx1+vx2*vx2+vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
             f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -3226,7 +3226,7 @@ extern "C" __global__ void QDevice27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 				f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 				f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -3244,7 +3244,7 @@ extern "C" __global__ void QDevice27(int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
 	  //böser lecktest
 	  //q = q_dirE[k];
@@ -3907,12 +3907,12 @@ extern "C" __global__ void QDevice27(int inx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void BBDevice27(int inx,
                                      int iny,
-                                     doubflo* DD, 
+                                     real* DD, 
                                      int* k_Q, 
-                                     doubflo* QQ,
+                                     real* QQ,
                                      unsigned int sizeQ,
                                      int kQ, 
-                                     doubflo om1, 
+                                     real om1, 
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
@@ -3994,7 +3994,7 @@ extern "C" __global__ void BBDevice27(int inx,
    if(k<kQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -4086,7 +4086,7 @@ extern "C" __global__ void BBDevice27(int inx,
       ////////////////////////////////////////////////////////////////////////////////
      
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -4181,7 +4181,7 @@ extern "C" __global__ void BBDevice27(int inx,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo q;
+      real q;
       q = q_dirE[k];
       if (q>=zero && q<=one)
       {

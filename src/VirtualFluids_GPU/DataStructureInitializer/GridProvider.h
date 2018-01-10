@@ -5,13 +5,13 @@
 #include <vector>
 #include <memory>
 
-#include "VirtualFluids_GPU_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 
 class Parameter;
 class GridBuilder;
 class CudaMemoryManager;
 
-class VirtualFluids_GPU_EXPORT GridProvider
+class VF_PUBLIC GridProvider
 {
 public:
     static std::shared_ptr<GridProvider> makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
@@ -20,6 +20,7 @@ public:
 	virtual void allocArrays_CoordNeighborGeo() = 0;
 	virtual void allocArrays_BoundaryValues() = 0;
 	virtual void allocArrays_BoundaryQs() = 0;
+    virtual void allocArrays_OffsetScale() = 0;
 	virtual void setDimensions() = 0;
 	virtual void setBoundingBox() = 0;
 	virtual void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way) = 0;

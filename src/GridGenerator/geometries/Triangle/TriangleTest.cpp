@@ -26,17 +26,17 @@ TEST(TriangleTest, changeTriangleWithSetMethod)
 {
 	Triangle t;
 
-	doubflo v1x = 3.0f;
-	doubflo v1y = 3.0f;
-	doubflo v1z = 3.0f;
+	real v1x = 3.0f;
+	real v1y = 3.0f;
+	real v1z = 3.0f;
 
-	doubflo v2x = 1.0f;
-	doubflo v2y = 1.0f;
-	doubflo v2z = 3.0f;
+	real v2x = 1.0f;
+	real v2y = 1.0f;
+	real v2z = 3.0f;
 
-	doubflo v3x = -1.0f;
-	doubflo v3y = 1.0f;
-	doubflo v3z = 3.0f;
+	real v3x = -1.0f;
+	real v3y = 1.0f;
+	real v3z = 3.0f;
 
 	t.set(Vertex(v1x,v1y,v1z), Vertex(v2x, v2y, v2z), Vertex(v3x, v3y, v3z));
 
@@ -97,7 +97,7 @@ TEST(TriangleTest, pointintersectTriangle_directionIntoTriangle_ExpectReturn1)
     Vertex direction = Vertex(1.0f, 0, 0);
     Vertex intersect;
 
-    doubflo q;
+    real q;
     int err = t.getTriangleIntersection(v, direction, intersect, q);
     ASSERT_THAT(err, Eq(1));
 }
@@ -111,7 +111,7 @@ TEST(TriangleTest, pointintersectTriangle_directionAgainstTriangle_ExpectReturn0
     Vertex direction = Vertex(-1.0f, 0, 0);
     Vertex intersect;
 
-    doubflo q;
+    real q;
     int err = t.getTriangleIntersection(v, direction, intersect, q);
     ASSERT_THAT(err, Eq(0));
 }
@@ -122,8 +122,8 @@ TEST(TriangleTest, getHalfAngleBetweenTwoEqualTriangles_ExpectNullAngle)
     Triangle t1 = Triangle(Vertex(0, 0, 0), Vertex(10, 0, 0), Vertex(0, 10, 0), Vertex(0, 0, 1));
     Triangle t2 = Triangle(Vertex(0, 0, 0), Vertex(10, 0, 0), Vertex(0, 10, 0), Vertex(0, 0, 1));
 
-	doubflo alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, FloatEq(0.0));
+	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
+    ASSERT_THAT(alpha, DoubleEq(0.0));
 }
 
 TEST(TriangleTest, checkSTLwith90degreeOutpointingNormal) 
@@ -131,8 +131,8 @@ TEST(TriangleTest, checkSTLwith90degreeOutpointingNormal)
 	Triangle t1 = Triangle(Vertex(40.0f, 20.0f, 20.0f), Vertex(40.0f, 20.0f, 0.0f), Vertex(60.0f, 20.0f, 20.0f));
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
-	doubflo alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, FloatEq(90.0 / 2.0));
+	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
+    ASSERT_THAT(alpha, DoubleEq(90.0 / 2.0));
 }
 
 TEST(TriangleTest, checkSTLwith90degreeInpointingNormal) 
@@ -140,8 +140,8 @@ TEST(TriangleTest, checkSTLwith90degreeInpointingNormal)
 	Triangle t1 = Triangle(Vertex(40.0f, 20.0f, 20.0f), Vertex(40.0f, 20.0f, 40.0f), Vertex(60.0f, 20.0f, 20.0f));
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
-	doubflo alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, FloatEq(270.0 / 2.0));
+	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
+    ASSERT_THAT(alpha, DoubleEq(270.0 / 2.0));
 }
 
 TEST(TriangleTest, checkSTLwith180degreeOutpointingNormal)
@@ -149,8 +149,8 @@ TEST(TriangleTest, checkSTLwith180degreeOutpointingNormal)
 	Triangle t1 = Triangle(Vertex(40.0f, 20.0f, 20.0f), Vertex(40.0f, 0.0f, 20.0f), Vertex(60.0f, 20.0f, 20.0f));
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
-	doubflo alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, FloatEq(180.0 / 2.0));
+	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
+    ASSERT_THAT(alpha, DoubleEq(180.0 / 2.0));
 }
 
 TEST(TriangleTest, checkSTLwithSmallDegreeOutpointingNormal) 
@@ -158,7 +158,7 @@ TEST(TriangleTest, checkSTLwithSmallDegreeOutpointingNormal)
 	Triangle t2 = Triangle(Vertex(40.0f, 40.0f, 18.0f), Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 	Triangle t1 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
-	doubflo alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
+	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
     ASSERT_TRUE(alpha < 30.0);
 }
 
@@ -167,7 +167,7 @@ TEST(TriangleTest, checkSTLwithBigDegreeInpointingNormal)
 	Triangle t1 = Triangle(Vertex(40.0f, 40.0f, 20.0f), Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 18.0f), Vertex(40.0f, 20.0f, 20.0f));
 
-    doubflo alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
+    real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
     ASSERT_TRUE(alpha > 330.0 / 2);
 }
 

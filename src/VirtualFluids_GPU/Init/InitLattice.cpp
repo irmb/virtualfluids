@@ -2,8 +2,12 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
+#include "Parameter/Parameter.h"
+#include "GPU/GPU_Interface.h"
+#include "Temperature/FindTemperature.h"
+
 ////////////////////////////////////////////////////////////////////////////////
-void initLattice(Parameter* para)
+void initLattice(SPtr<Parameter> para)
 {
     for (int lev=para->getFine(); lev >= para->getCoarse(); lev--)
     {
@@ -153,7 +157,7 @@ void initLattice(Parameter* para)
 			}
 			//malloc and init fs
 			//printf("vor initTemperatur\n");
-			initTemperatur(para, lev);
+			initTemperatur(para.get(), lev);
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }

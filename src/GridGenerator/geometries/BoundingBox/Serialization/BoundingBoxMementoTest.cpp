@@ -27,7 +27,7 @@ TEST(BoundingBoxMementoTest, serializeAndDeserializeBB)
 {
     std::string fileName = "boundingbox";
 
-    BoundingBox<doubflo> box(1.2, 22.2, -23.2, 2, 0.0001, 1212122.1);
+    BoundingBox<real> box(1.2, 22.2, -23.2, 2, 0.0001, 1212122.1);
 
 
     BoundingBoxMemento sut = box.getState();
@@ -35,7 +35,7 @@ TEST(BoundingBoxMementoTest, serializeAndDeserializeBB)
 
     BoundingBoxMemento newSut;
     deserialize(newSut, fileName);
-    BoundingBox<doubflo> boxNew;
+    BoundingBox<real> boxNew;
     boxNew.setState(newSut);
 
     EXPECT_TRUE(box == boxNew);

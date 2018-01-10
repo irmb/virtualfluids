@@ -173,11 +173,11 @@ void TriangleRefinement::refine(Triangle t, Triangle &firstNewTriangle, Triangle
 
 int TriangleRefinement::getEdgeWithLongestDistance(Triangle &t)
 {
-    doubflo d1 = t.v2.getEuclideanDistanceTo(t.v1);
-    doubflo d2 = t.v3.getEuclideanDistanceTo(t.v2);
-    doubflo d3 = t.v1.getEuclideanDistanceTo(t.v3);
+    real d1 = t.v2.getEuclideanDistanceTo(t.v1);
+    real d2 = t.v3.getEuclideanDistanceTo(t.v2);
+    real d3 = t.v1.getEuclideanDistanceTo(t.v3);
 
-    doubflo max = d1;
+    real max = d1;
     int edge = 0;
 
     if (d2 > d1) {
@@ -193,7 +193,7 @@ int TriangleRefinement::getEdgeWithLongestDistance(Triangle &t)
     return edge;
 }
 
-doubflo TriangleRefinement::getLongestEdgeDistance(Triangle &t) {
+real TriangleRefinement::getLongestEdgeDistance(Triangle &t) {
 
     int edge = getEdgeWithLongestDistance(t);
     Vertex v[3];

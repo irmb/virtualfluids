@@ -27,7 +27,7 @@ class VF_PUBLIC TriangleMemento
 
 public:
     VertexMemento v1, v2, v3, normal;
-    doubflo alphaAngles[3];
+    real alphaAngles[3];
 
 };
 

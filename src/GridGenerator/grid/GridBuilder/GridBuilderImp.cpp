@@ -110,7 +110,7 @@ void GridBuilderImp::meshGeometry(std::string input, int level)
                 geometry->setState(memento);
                 clock_t end = clock();
 
-                doubflo time = doubflo(end - begin) / CLOCKS_PER_SEC;
+                real time = real(end - begin) / CLOCKS_PER_SEC;
                 *logging::out << logging::Logger::INTERMEDIATE << "time reading memento: " << SSTR(time) << "s\n";
             }
             
@@ -145,7 +145,7 @@ unsigned int GridBuilderImp::getNumberOfNodes(unsigned int level) const
     return (unsigned int) this->gridKernels[level][0]->grid.reducedSize;
 }
 
-std::vector<std::vector<std::vector<doubflo> > > GridBuilderImp::getQsValues() const
+std::vector<std::vector<std::vector<real> > > GridBuilderImp::getQsValues() const
 {
     return this->Qs;
 }
@@ -187,7 +187,7 @@ void GridBuilderImp::writeSimulationFiles(std::string output, BoundingBox<int> &
     //builder.buildUnstructuredGrid(this->gridKernels[level]->grid, nodesDelete);
 
     //std::vector<Node> coords = builder.getCoordsVec();
-    //std::vector<std::vector<std::vector<doubflo> > > qs = builder.getQsValues();
+    //std::vector<std::vector<std::vector<real> > > qs = builder.getQsValues();
     //SimulationFileWriter::writeSimulationFiles(output, coords, qs, writeFilesBinary, this->gridKernels[level]->grid, this->transformators[level]);
 }
 
@@ -202,7 +202,7 @@ void GridBuilderImp::checkLevel(int level)
 }
 
 
-void GridBuilderImp::addGrid(doubflo length, doubflo width, doubflo high, doubflo delta, std::string distribution, std::shared_ptr<Transformator> trans)
+void GridBuilderImp::addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans)
 {
     this->transformators.push_back(trans);
 
@@ -221,7 +221,7 @@ void GridBuilderImp::addGrid(doubflo length, doubflo width, doubflo high, doubfl
     this->createGridKernels(distribution);
 }
 
-void GridBuilderImp::setNumberOfNodes(doubflo length, doubflo width, doubflo high, doubflo delta)
+void GridBuilderImp::setNumberOfNodes(real length, real width, real high, real delta)
 {
     int nx = (int)(length / delta);
     int ny = (int)(width / delta);
@@ -316,7 +316,7 @@ void GridBuilderImp::writeBoxes(std::string name)
     //for (int i = 0; i < rankTasks.size(); i += 2) {
     //    int level = rankTasks[i];
     //    int index = rankTasks[i + 1];
-    //    BoundingBox<doubflo> box = boxes[level][index];
+    //    BoundingBox<real> box = boxes[level][index];
     //    transformators[level]->transformGridToWorld(box);
     //    writer.addBoundingBox(box, rank);
     //}
@@ -331,7 +331,7 @@ void GridBuilderImp::getDimensions(int &nx, int &ny, int &nz, const int level) c
     nz = this->gridKernels[level][0]->grid.nz;
 }
 
-void GridBuilderImp::getNodeValues(doubflo *xCoords, doubflo *yCoords, doubflo *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
+void GridBuilderImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
 {
     xCoords[0] = 0;
     yCoords[0] = 0;
@@ -348,9 +348,9 @@ void GridBuilderImp::getNodeValues(doubflo *xCoords, doubflo *yCoords, doubflo *
         unsigned int x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
 
-        xCoords[i + 1] = (doubflo)x;
-        yCoords[i + 1] = (doubflo)y;
-        zCoords[i + 1] = (doubflo)z;
+        xCoords[i + 1] = (real)x;
+        yCoords[i + 1] = (real)y;
+        zCoords[i + 1] = (real)z;
         neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[grid.matrixIndex[i]] + 1);
         neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[grid.matrixIndex[i]] + 1);
         neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[grid.matrixIndex[i]] + 1);
@@ -358,7 +358,7 @@ void GridBuilderImp::getNodeValues(doubflo *xCoords, doubflo *yCoords, doubflo *
     }
 }
 
-void GridBuilderImp::setQs(doubflo** q27, int* k, int channelSide, unsigned int level) const
+void GridBuilderImp::setQs(real** q27, int* k, int channelSide, unsigned int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         k[index] = (int)Qs[channelSide][index][0];
@@ -369,7 +369,7 @@ void GridBuilderImp::setQs(doubflo** q27, int* k, int channelSide, unsigned int 
     }
 }
 
-void GridBuilderImp::setOutflowValues(doubflo* RhoBC, int* kN, int channelSide, int level) const
+void GridBuilderImp::setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         RhoBC[index] = 0.0;
@@ -377,7 +377,7 @@ void GridBuilderImp::setOutflowValues(doubflo* RhoBC, int* kN, int channelSide, 
     }
 }
 
-void GridBuilderImp::setVelocityValues(doubflo* vx, doubflo* vy, doubflo* vz, int channelSide, int level) const
+void GridBuilderImp::setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         vx[index] = 0.0;
@@ -386,7 +386,7 @@ void GridBuilderImp::setVelocityValues(doubflo* vx, doubflo* vy, doubflo* vz, in
     }
 }
 
-void GridBuilderImp::setPressValues(doubflo* RhoBC, int* kN, int channelSide, int level) const
+void GridBuilderImp::setPressValues(real* RhoBC, int* kN, int channelSide, int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         RhoBC[index] = 0.0;
@@ -421,13 +421,13 @@ void GridBuilderImp::createBCVectors()
 void GridBuilderImp::addShortQsToVector(int index)
 {
     uint32_t qKey = 0;
-    std::vector<doubflo> qNode;
+    std::vector<real> qNode;
 
     Grid grid = this->gridKernels[0][0]->grid;
     for (int i = grid.d.dir_end; i >= 0; i--)
     {
         int qIndex = i * grid.size + grid.matrixIndex[index];
-        doubflo q = grid.d.f[qIndex];
+        real q = grid.d.f[qIndex];
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
             qKey += (uint32_t)pow(2, 26 - i);
@@ -435,9 +435,9 @@ void GridBuilderImp::addShortQsToVector(int index)
         }
     }
     if (qKey > 0) {
-        doubflo transportKey = *((doubflo*)&qKey);
+        real transportKey = *((real*)&qKey);
         qNode.push_back(transportKey);
-        qNode.push_back((doubflo)index);
+        qNode.push_back((real)index);
         Qs[GEOMQS].push_back(qNode);
     }
     qNode.clear();
@@ -445,14 +445,14 @@ void GridBuilderImp::addShortQsToVector(int index)
 
 void GridBuilderImp::addQsToVector(int index)
 {
-    std::vector<doubflo> qNode;
-    qNode.push_back((doubflo)index);
+    std::vector<real> qNode;
+    qNode.push_back((real)index);
 
     Grid grid = this->gridKernels[0][0]->grid;
     for (int i = grid.d.dir_end; i >= 0; i--)
     {
         int qIndex = i * grid.size + grid.matrixIndex[index];
-        doubflo q = grid.d.f[qIndex];
+        real q = grid.d.f[qIndex];
         if (q > 0)
             qNode.push_back(q);
         else
@@ -465,7 +465,7 @@ void GridBuilderImp::addQsToVector(int index)
 void GridBuilderImp::fillRBForNode(int x, int y, int z, int index, int direction, int directionSign, int rb)
 {
     uint32_t qKey = 0;
-    std::vector<doubflo> qNode;
+    std::vector<real> qNode;
 
     Grid grid = this->gridKernels[0][0]->grid;
     for (int i = grid.d.dir_end; i >= 0; i--)
@@ -477,9 +477,9 @@ void GridBuilderImp::fillRBForNode(int x, int y, int z, int index, int direction
         qNode.push_back(0.5f);
     }
     if (qKey > 0) {
-        doubflo transportKey = *((doubflo*)&qKey);
+        real transportKey = *((real*)&qKey);
         qNode.push_back(transportKey);
-        qNode.push_back((doubflo)index);
+        qNode.push_back((real)index);
         Qs[rb].push_back(qNode);
     }
     qNode.clear();
@@ -501,11 +501,11 @@ void GridBuilderImp::writeArrows(std::string fileName, std::shared_ptr<ArrowTran
 void GridBuilderImp::writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const
 {
     Grid grid = this->gridKernels[0][0]->grid;
-    doubflo qval = Qs[GEOMQS][i][qi + 1];
+    real qval = Qs[GEOMQS][i][qi + 1];
     if (qval > 0.0f)
     {
         int qReverse = grid.d.dir_end - qi;
-        Vertex dir((doubflo)grid.d.dirs[qReverse * DIMENSION + 0], (doubflo)grid.d.dirs[qReverse* DIMENSION + 1], (doubflo)grid.d.dirs[qReverse * DIMENSION + 2]);
+        Vertex dir((real)grid.d.dirs[qReverse * DIMENSION + 0], (real)grid.d.dirs[qReverse* DIMENSION + 1], (real)grid.d.dirs[qReverse * DIMENSION + 2]);
         Vertex nodeOnGeometry(startNode + (dir * qval));
         std::shared_ptr<Arrow> arrow = ArrowImp::make(startNode, nodeOnGeometry);
         trans->transformGridToWorld(arrow);
@@ -517,7 +517,7 @@ Vertex GridBuilderImp::getVertex(int matrixIndex) const
 {
     unsigned int x, y, z;
     this->gridKernels[0][0]->grid.transIndexToCoords(matrixIndex, x, y, z);
-    return Vertex((doubflo)x, (doubflo)y, (doubflo)z);
+    return Vertex((real)x, (real)y, (real)z);
 }
 
 int GridBuilderImp::getMatrixIndex(int i) const

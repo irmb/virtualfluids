@@ -8,12 +8,12 @@ extern "C" __global__ void LBInitF3(unsigned int* neighborX,
 									unsigned int* neighborY,
 									unsigned int* neighborZ,
 									unsigned int* geoD,
-									doubflo* rho,
-									doubflo* ux,
-									doubflo* uy,
-									doubflo* uz,
+									real* rho,
+									real* ux,
+									real* uy,
+									real* uz,
 									unsigned int size_Mat,
-									doubflo* G6,
+									real* G6,
 									bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -85,17 +85,17 @@ extern "C" __global__ void LBInitF3(unsigned int* neighborX,
 ////////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void LBInit27( int myid,
                                      int numprocs,
-                                     doubflo u0,
+                                     real u0,
                                      unsigned int* geoD,
                                      unsigned int* neighborX,
                                      unsigned int* neighborY,
                                      unsigned int* neighborZ,
-                                     doubflo* vParabel,
+                                     real* vParabel,
                                      unsigned int size_Mat,
                                      unsigned int grid_nx, 
                                      unsigned int grid_ny, 
                                      unsigned int grid_nz, 
-                                     doubflo* DD,
+                                     real* DD,
                                      int lev,
                                      int maxlev)
 {
@@ -159,18 +159,18 @@ extern "C" __global__ void LBInit27( int myid,
       unsigned int centerX = grid_nx / 2;
       unsigned int centerY = grid_ny / 2;
       unsigned int centerZ = grid_nz / 2;
-      doubflo        radius  = grid_ny / 2.56;
+      real        radius  = grid_ny / 2.56;
 
       unsigned int distSq = (centerX-tx)*(centerX-tx)+(centerY-by)*(centerY-by)+(centerZ-bz)*(centerZ-bz);
-      doubflo radiSq = radius*radius;
+      real radiSq = radius*radius;
 
       if( distSq < radiSq)        geoD[k] = GEO_SOLID;
    }
    //////////////////////////////////////////////////////////////////////////
-   doubflo drho = zero;
-   doubflo  vx1 = zero;
-   doubflo  vx2 = zero;
-   doubflo  vx3 = u0;
+   real drho = zero;
+   real  vx1 = zero;
+   real  vx2 = zero;
+   real  vx3 = u0;
    vParabel[k] = vx3;
    ////////////////////////////////////////////////////////////////////////////////
    //index
@@ -215,7 +215,7 @@ extern "C" __global__ void LBInit27( int myid,
    unsigned int kbsw = k + nxny + nx + 1;
    //////////////////////////////////////////////////////////////////////////
 
-   doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+   real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
    (D.f[dirZERO])[kzero] =   c8over27* (drho-cu_sq);
    (D.f[dirE   ])[ke   ] =   c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
@@ -262,12 +262,12 @@ extern "C" __global__ void LBInitSP27( unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
-                                       doubflo* rho,
-                                       doubflo* ux,
-                                       doubflo* uy,
-                                       doubflo* uz,
+                                       real* rho,
+                                       real* ux,
+                                       real* uy,
+                                       real* uz,
                                        unsigned int size_Mat,
-                                       doubflo* DD,
+                                       real* DD,
                                        bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -351,10 +351,10 @@ extern "C" __global__ void LBInitSP27( unsigned int* neighborX,
             D.f[dirTSE ] = &DD[dirBNW *size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
-         doubflo drho = rho[k];//0.0f;//
-         doubflo  vx1 = ux[k]; //0.0f;//
-         doubflo  vx2 = uy[k]; //0.0f;//
-         doubflo  vx3 = uz[k]; //0.0f;//
+         real drho = rho[k];//0.0f;//
+         real  vx1 = ux[k]; //0.0f;//
+         real  vx2 = uy[k]; //0.0f;//
+         real  vx3 = uz[k]; //0.0f;//
          //////////////////////////////////////////////////////////////////////////
          //index
          //////////////////////////////////////////////////////////////////////////
@@ -386,7 +386,7 @@ extern "C" __global__ void LBInitSP27( unsigned int* neighborX,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////
-         doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          (D.f[dirZERO])[kzero] =   c8over27* (drho-cu_sq);
          (D.f[dirE   ])[ke   ] =   c2over27* (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
@@ -439,12 +439,12 @@ extern "C" __global__ void LBInitCompSP27( unsigned int* neighborX,
 										   unsigned int* neighborY,
 										   unsigned int* neighborZ,
 										   unsigned int* geoD,
-										   doubflo* rho,
-										   doubflo* ux,
-										   doubflo* uy,
-										   doubflo* uz,
+										   real* rho,
+										   real* ux,
+										   real* uy,
+										   real* uz,
 										   unsigned int size_Mat,
-										   doubflo* DD,
+										   real* DD,
 										   bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -528,10 +528,10 @@ extern "C" __global__ void LBInitCompSP27( unsigned int* neighborX,
             D.f[dirTSE ] = &DD[dirBNW *size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
-         doubflo drho = rho[k];//0.0f;//
-         doubflo  vx1 = ux[k]; //0.0f;//
-         doubflo  vx2 = uy[k]; //0.0f;//
-         doubflo  vx3 = uz[k]; //0.0f;//
+         real drho = rho[k];//0.0f;//
+         real  vx1 = ux[k]; //0.0f;//
+         real  vx2 = uy[k]; //0.0f;//
+         real  vx3 = uz[k]; //0.0f;//
          //////////////////////////////////////////////////////////////////////////
          //index
          //////////////////////////////////////////////////////////////////////////
@@ -563,7 +563,7 @@ extern "C" __global__ void LBInitCompSP27( unsigned int* neighborX,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          //////////////////////////////////////////////////////////////////////////
-         doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          (D.f[dirZERO])[kzero] =   c8over27* (drho-cu_sq*(one+drho));
          (D.f[dirE   ])[ke   ] =   c2over27* (drho+ (one+drho) * (three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq));
@@ -615,12 +615,12 @@ extern "C" __global__ void LBInitThS7( unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
-                                       doubflo* Conc,
-                                       doubflo* ux,
-                                       doubflo* uy,
-                                       doubflo* uz,
+                                       real* Conc,
+                                       real* ux,
+                                       real* uy,
+                                       real* uz,
                                        unsigned int size_Mat,
-                                       doubflo* DD7,
+                                       real* DD7,
                                        bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -664,18 +664,18 @@ extern "C" __global__ void LBInitThS7( unsigned int* neighborX,
             D7.f[5] = &DD7[6*size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
-         doubflo ConcD = Conc[k];
-         doubflo   vx1 = ux[k];
-         doubflo   vx2 = uy[k];
-         doubflo   vx3 = uz[k];
-         doubflo lambdaD     = -three + sqrt(three);
-         doubflo Diffusivity = c1o20;
-         doubflo Lam         = -(c1o2+one/lambdaD);
-         doubflo nue_d       = Lam/three;
-         doubflo ae          = Diffusivity/nue_d - one;
-         doubflo ux_sq       = vx1 * vx1;
-         doubflo uy_sq       = vx2 * vx2;
-         doubflo uz_sq       = vx3 * vx3;
+         real ConcD = Conc[k];
+         real   vx1 = ux[k];
+         real   vx2 = uy[k];
+         real   vx3 = uz[k];
+         real lambdaD     = -three + sqrt(three);
+         real Diffusivity = c1o20;
+         real Lam         = -(c1o2+one/lambdaD);
+         real nue_d       = Lam/three;
+         real ae          = Diffusivity/nue_d - one;
+         real ux_sq       = vx1 * vx1;
+         real uy_sq       = vx2 * vx2;
+         real uz_sq       = vx3 * vx3;
          //////////////////////////////////////////////////////////////////////////
          //index
          //////////////////////////////////////////////////////////////////////////
@@ -715,12 +715,12 @@ extern "C" __global__ void LBInitThS27(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,
                                        unsigned int* geoD,
-                                       doubflo* Conc,
-                                       doubflo* ux,
-                                       doubflo* uy,
-                                       doubflo* uz,
+                                       real* Conc,
+                                       real* ux,
+                                       real* uy,
+                                       real* uz,
                                        unsigned int size_Mat,
-                                       doubflo* DD27,
+                                       real* DD27,
                                        bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -804,18 +804,18 @@ extern "C" __global__ void LBInitThS27(unsigned int* neighborX,
             D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
-         doubflo ConcD = Conc[k];
-         doubflo   vx1 = ux[k];
-         doubflo   vx2 = uy[k];
-         doubflo   vx3 = uz[k];
-         //doubflo lambdaD     = -three + sqrt(three);
-         //doubflo Diffusivity = c1o20;
-         //doubflo Lam         = -(c1o2+one/lambdaD);
-         //doubflo nue_d       = Lam/three;
-         //doubflo ae          = Diffusivity/nue_d - one;
-         //doubflo ux_sq       = vx1 * vx1;
-         //doubflo uy_sq       = vx2 * vx2;
-         //doubflo uz_sq       = vx3 * vx3;
+         real ConcD = Conc[k];
+         real   vx1 = ux[k];
+         real   vx2 = uy[k];
+         real   vx3 = uz[k];
+         //real lambdaD     = -three + sqrt(three);
+         //real Diffusivity = c1o20;
+         //real Lam         = -(c1o2+one/lambdaD);
+         //real nue_d       = Lam/three;
+         //real ae          = Diffusivity/nue_d - one;
+         //real ux_sq       = vx1 * vx1;
+         //real uy_sq       = vx2 * vx2;
+         //real uz_sq       = vx3 * vx3;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          //D3Q7
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -870,7 +870,7 @@ extern "C" __global__ void LBInitThS27(unsigned int* neighborX,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          (D27.f[dirZERO])[kzero] =   c8over27* ConcD*(one-cu_sq);
          (D27.f[dirE   ])[ke   ] =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
@@ -923,12 +923,12 @@ extern "C" __global__ void LBInitIncompAD7(unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int* geoD,
-											doubflo* Conc,
-											doubflo* ux,
-											doubflo* uy,
-											doubflo* uz,
+											real* Conc,
+											real* ux,
+											real* uy,
+											real* uz,
 											unsigned int size_Mat,
-											doubflo* DD7,
+											real* DD7,
 											bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -972,18 +972,18 @@ extern "C" __global__ void LBInitIncompAD7(unsigned int* neighborX,
             D7.f[5] = &DD7[6*size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
-         doubflo ConcD = Conc[k];
-         doubflo   vx1 = ux[k];
-         doubflo   vx2 = uy[k];
-         doubflo   vx3 = uz[k];
-         doubflo lambdaD     = -three + sqrt(three);
-         doubflo Diffusivity = c1o20;
-         doubflo Lam         = -(c1o2+one/lambdaD);
-         doubflo nue_d       = Lam/three;
-         doubflo ae          = Diffusivity/nue_d - one;
-         doubflo ux_sq       = vx1 * vx1;
-         doubflo uy_sq       = vx2 * vx2;
-         doubflo uz_sq       = vx3 * vx3;
+         real ConcD = Conc[k];
+         real   vx1 = ux[k];
+         real   vx2 = uy[k];
+         real   vx3 = uz[k];
+         real lambdaD     = -three + sqrt(three);
+         real Diffusivity = c1o20;
+         real Lam         = -(c1o2+one/lambdaD);
+         real nue_d       = Lam/three;
+         real ae          = Diffusivity/nue_d - one;
+         real ux_sq       = vx1 * vx1;
+         real uy_sq       = vx2 * vx2;
+         real uz_sq       = vx3 * vx3;
          //////////////////////////////////////////////////////////////////////////
          //index
          //////////////////////////////////////////////////////////////////////////
@@ -1023,12 +1023,12 @@ extern "C" __global__ void LBInitIncompAD27(unsigned int* neighborX,
 											unsigned int* neighborY,
 											unsigned int* neighborZ,
 											unsigned int* geoD,
-											doubflo* Conc,
-											doubflo* ux,
-											doubflo* uy,
-											doubflo* uz,
+											real* Conc,
+											real* ux,
+											real* uy,
+											real* uz,
 											unsigned int size_Mat,
-											doubflo* DD27,
+											real* DD27,
 											bool EvenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -1112,18 +1112,18 @@ extern "C" __global__ void LBInitIncompAD27(unsigned int* neighborX,
             D27.f[dirTSE ] = &DD27[dirBNW *size_Mat];
          }
          //////////////////////////////////////////////////////////////////////////
-         doubflo ConcD = Conc[k];
-         doubflo   vx1 = ux[k];
-         doubflo   vx2 = uy[k];
-         doubflo   vx3 = uz[k];
-         //doubflo lambdaD     = -three + sqrt(three);
-         //doubflo Diffusivity = c1o20;
-         //doubflo Lam         = -(c1o2+one/lambdaD);
-         //doubflo nue_d       = Lam/three;
-         //doubflo ae          = Diffusivity/nue_d - one;
-         //doubflo ux_sq       = vx1 * vx1;
-         //doubflo uy_sq       = vx2 * vx2;
-         //doubflo uz_sq       = vx3 * vx3;
+         real ConcD = Conc[k];
+         real   vx1 = ux[k];
+         real   vx2 = uy[k];
+         real   vx3 = uz[k];
+         //real lambdaD     = -three + sqrt(three);
+         //real Diffusivity = c1o20;
+         //real Lam         = -(c1o2+one/lambdaD);
+         //real nue_d       = Lam/three;
+         //real ae          = Diffusivity/nue_d - one;
+         //real ux_sq       = vx1 * vx1;
+         //real uy_sq       = vx2 * vx2;
+         //real uz_sq       = vx3 * vx3;
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          //D3Q7
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1178,7 +1178,7 @@ extern "C" __global__ void LBInitIncompAD27(unsigned int* neighborX,
          unsigned int ktne = k;
          unsigned int kbsw = neighborZ[ksw];
          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-         doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+         real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
          (D27.f[dirZERO])[kzero] =   c8over27* ConcD*(one-cu_sq);
          (D27.f[dirE   ])[ke   ] =   c2over27* ConcD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);

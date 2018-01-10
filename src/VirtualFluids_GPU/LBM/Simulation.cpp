@@ -4,7 +4,7 @@
 #include "Communication/ExchangeData27.h"
 #include "Parameter/Parameter.h"
 #include "GPU/GPU_Interface.h"
-#include "Interface_OpenFOAM/Interface.h"
+#include "GPU/devCheck.h"
 #include "basics/utilities/UbFileOutputASCII.h"
 //////////////////////////////////////////////////////////////////////////
 #include "Input/ConfigFile.h"
@@ -50,27 +50,43 @@
 #include <boost/foreach.hpp>
 #include <stdio.h>
 #include <vector>
+#include "Restart/RestartPostprocessor.h"
 //////////////////////////////////////////////////////////////////////////
+#include "DataStructureInitializer/GridProvider.h"
 
-Simulation::Simulation(void)
+Simulation::Simulation()
 {
 
 }
 
-Simulation::~Simulation(void)
+Simulation::~Simulation()
 {
 
 }
 
-void Simulation::init(std::string &cstr)
+void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
 {
-   comm = Communicator::getInstanz();
-   //myid = comm->getPID();
-   //numprocs = comm->getNummberOfProcess();
-   para = Parameter::getInstanz();
+   this->gridProvider = gridProvider;
+   comm = SPtr<Communicator>(Communicator::getInstanz());
+   this->para = para;
 
-   //read from config file and set the parameters
-   setParameters(para, comm, cstr);
+   para->setMyID(comm->getPID());
+   para->setNumprocs(comm->getNummberOfProcess());
+   devCheck(comm->mapCudaDevice(para->getMyID(), para->getNumprocs(), para->getDevices(), para->getMaxDev()));
+
+   gridProvider->allocAndCopyForcing();
+   gridProvider->setDimensions();
+   gridProvider->setBoundingBox();
+
+   para->initParameter();
+   para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
+   para->setPhi((real) 0.0);
+   para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
+   if (para->getDoRestart())
+       para->setStartTurn(para->getTimeDoRestart());
+   else
+       para->setStartTurn((unsigned int)0); //100000
+
    //Restart object
    restObj = new RestartObject();
    rest = new RestartPostprocessor(restObj, RestartPostprocessor::TXT);
@@ -99,23 +115,13 @@ void Simulation::init(std::string &cstr)
    output << "delta_rho:  "   << para->getDensityRatio()   << "\n";
    //////////////////////////////////////////////////////////////////////////
 
-
-
-   //////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////
    para->setMemsizeGPU(0, true);
    //////////////////////////////////////////////////////////////////////////
-
-
-
-   //////////////////////////////////////////////////////////////////////////
-   //read AS
-   //////////////////////////////////////////////////////////////////////////
-   Interface *config = new Interface(true); //binaer == true, ascii== false
-   config->allocArrays_CoordNeighborGeo(para);
-   config->allocArrays_OffsetScale(para);
-   config->allocArrays_BoundaryValues(para);
-   config->allocArrays_BoundaryQs(para);
-   delete config;
+   gridProvider->allocArrays_CoordNeighborGeo();
+   gridProvider->allocArrays_BoundaryValues();
+   gridProvider->allocArrays_BoundaryQs();
+   gridProvider->allocArrays_OffsetScale();
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -123,9 +129,9 @@ void Simulation::init(std::string &cstr)
    //////////////////////////////////////////////////////////////////////////
    if (para->getCalcParticle())
    {
-	   rearrangeGeometry(para);
+	   rearrangeGeometry(para.get());
 	   //////////////////////////////////////////////////////////////////////////
-	   allocParticles(para);
+	   allocParticles(para.get());
 	   //////////////////////////////////////////////////////////////////////////
 	   ////CUDA random number generation
 	   //para->cudaAllocRandomValues();
@@ -142,7 +148,7 @@ void Simulation::init(std::string &cstr)
 		  // para->getParD(0)->numberofthreads);
 
 	   //////////////////////////////////////////////////////////////////////////////
-	   initParticles(para);
+	   initParticles(para.get());
    }
    ////////////////////////////////////////////////////////////////////////////
 
@@ -159,21 +165,21 @@ void Simulation::init(std::string &cstr)
    //////////////////////////////////////////////////////////////////////////
    //Allocate Memory for Plane Conc Calculation
    //////////////////////////////////////////////////////////////////////////
-   if (para->getDiffOn()) allocPlaneConc(para);
+   if (para->getDiffOn()) allocPlaneConc(para.get());
 
 
    //////////////////////////////////////////////////////////////////////////
    //Median
    //////////////////////////////////////////////////////////////////////////
-   if (para->getCalcMedian())   allocMedian(para);
+   if (para->getCalcMedian())   allocMedian(para.get());
 
 
    //////////////////////////////////////////////////////////////////////////
    //allocate memory and initialize 2nd, 3rd and higher order moments
    //////////////////////////////////////////////////////////////////////////
-   if (para->getCalc2ndOrderMoments()){  alloc2ndMoments(para);         init2ndMoments(para);         }
-   if (para->getCalc3rdOrderMoments()){  alloc3rdMoments(para);         init3rdMoments(para);         }
-   if (para->getCalcHighOrderMoments()){ allocHigherOrderMoments(para); initHigherOrderMoments(para); }
+   if (para->getCalc2ndOrderMoments()){  alloc2ndMoments(para.get());         init2ndMoments(para.get());         }
+   if (para->getCalc3rdOrderMoments()){  alloc3rdMoments(para.get());         init3rdMoments(para.get());         }
+   if (para->getCalcHighOrderMoments()){ allocHigherOrderMoments(para.get()); initHigherOrderMoments(para.get()); }
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -182,7 +188,7 @@ void Simulation::init(std::string &cstr)
    if (para->getUseMeasurePoints())
    {
 	   output << "read measure points...";
-	   readMeasurePoints(para);
+	   readMeasurePoints(para.get());
 	   output << "done.\n";
    }
 
@@ -211,7 +217,7 @@ void Simulation::init(std::string &cstr)
    //Forcing
    //////////////////////////////////////////////////////////////////////////
    //allocVeloForForcing(para);
-   forceCalculator = new ForceCalculations(para);
+   forceCalculator = new ForceCalculations(para.get());
 
    //////////////////////////////////////////////////////////////////////////
    //output << "define the Grid..." ;
@@ -279,7 +285,7 @@ void Simulation::init(std::string &cstr)
 	   output << "Restart...\n...get the Object...\n";
 	   restObj = rest->restart(para->getFName(), para->getTimeDoRestart(), para->getMyID());
 	   output << "...load...\n";
-	   restObj->load(para);
+	   restObj->load(para.get());
 	   //para = rest->restart(para->getTimeDoRestart());
 	   output << "...copy Memory for Restart...\n";
 	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
@@ -314,7 +320,7 @@ void Simulation::init(std::string &cstr)
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
    writeInit(para);
-   if (para->getCalcParticle()) copyAndPrintParticles(para, 0, true);
+   if (para->getCalcParticle()) copyAndPrintParticles(para.get(), 0, true);
    output << "done.\n";
 
    //////////////////////////////////////////////////////////////////////////
@@ -340,20 +346,20 @@ void Simulation::run()
    //////////////////////////////////////////////////////////////////////////
    para->setStepEnsight(0);
    //////////////////////////////////////////////////////////////////////////
-   doubflo visSponge = 0.001f;
-   doubflo omegaSponge = 1.f / ( 3.f * visSponge + 0.5f );
+   real visSponge = 0.001f;
+   real omegaSponge = 1.f / ( 3.f * visSponge + 0.5f );
    //////////////////////////////////////////////////////////////////////////
    //turning Ship
-   doubflo Pi = (doubflo)3.14159265358979323846;
-   doubflo delta_x_F = (doubflo)0.1;
-   doubflo delta_t_F = (doubflo)(para->getVelocity() * delta_x_F / 3.75); 
-   doubflo delta_t_C = (doubflo)(delta_t_F * pow(2.,para->getMaxLevel()));
-   doubflo timesteps_C = (doubflo)(12.5 / delta_t_C);
-   doubflo AngularVelocity = (doubflo)(12.5 / timesteps_C * Pi / 180.);
+   real Pi = (real)3.14159265358979323846;
+   real delta_x_F = (real)0.1;
+   real delta_t_F = (real)(para->getVelocity() * delta_x_F / 3.75); 
+   real delta_t_C = (real)(delta_t_F * pow(2.,para->getMaxLevel()));
+   real timesteps_C = (real)(12.5 / delta_t_C);
+   real AngularVelocity = (real)(12.5 / timesteps_C * Pi / 180.);
    para->setAngularVelocity(AngularVelocity);
    for (int i = 0; i<= para->getMaxLevel(); i++)
    {
-	   para->getParD(i)->deltaPhi = (doubflo)(para->getAngularVelocity()/(pow(2.,i)));
+	   para->getParD(i)->deltaPhi = (real)(para->getAngularVelocity()/(pow(2.,i)));
    }
    //////////////////////////////////////////////////////////////////////////
 
@@ -380,7 +386,7 @@ void Simulation::run()
 		getLastCudaError("before starting a kernel we get an execution failed");
 		if (para->getMaxLevel()>=1)
          {
-            updateGrid27(para, comm, pm, 1, para->getMaxLevel(), t);
+            updateGrid27(para.get(), comm.get(), pm, 1, para->getMaxLevel(), t);
          }
          ////////////////////////////////////////////////////////////////////////////////
          // Collision and Propagation
@@ -418,8 +424,8 @@ void Simulation::run()
 			// //////////////////////////////////////////////////////////////////////////
 			// KernelKum1hSP27(    para->getParD(0)->numberofthreads,       
 			//					 para->getParD(0)->omega,
-			//					 (doubflo)0.0,
-			//					 (doubflo)0.0,
+			//					 (real)0.0,
+			//					 (real)0.0,
 			//					 para->getParD(0)->geoSP, 
 			//					 para->getParD(0)->neighborX_SP, 
 			//					 para->getParD(0)->neighborY_SP, 
@@ -436,7 +442,7 @@ void Simulation::run()
 			//					para->getParD(0)->Qinflow.Vx,      para->getParD(0)->Qinflow.Vy,   para->getParD(0)->Qinflow.Vz,
 			//					para->getParD(0)->d0SP.f[0],       para->getParD(0)->Qinflow.k,    para->getParD(0)->Qinflow.q27[0], 
 			//					para->getParD(0)->kInflowQ,        para->getParD(0)->kInflowQ,     para->getParD(0)->omega,          
-			//					para->getPhi(),                    (doubflo)0.0,
+			//					para->getPhi(),                    (real)0.0,
 			//					para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 			//					para->getParD(0)->coordX_SP,       para->getParD(0)->coordY_SP,    para->getParD(0)->coordZ_SP,
 			//					para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
@@ -1004,21 +1010,21 @@ void Simulation::run()
 			//////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition
 			//output << "start exchange Post X (level 0) \n";
-			exchangePostCollDataXGPU27(para, comm, 0);
+			exchangePostCollDataXGPU27(para.get(), comm.get(), 0);
 			//output << "end exchange Post X (level 0) \n";
 			//output << "start exchange Post Y (level 0) \n";
-			exchangePostCollDataYGPU27(para, comm, 0);
+			exchangePostCollDataYGPU27(para.get(), comm.get(), 0);
 			//output << "end exchange Post Y (level 0) \n";
 			//output << "start exchange Post Z (level 0) \n";
-			exchangePostCollDataZGPU27(para, comm, 0);
+			exchangePostCollDataZGPU27(para.get(), comm.get(), 0);
 			//output << "end exchange Post Z (level 0) \n";
 			////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition convection diffusion
 			if (para->getDiffOn()==true)
 			{
-				exchangePostCollDataADXGPU27(para, comm, 0);
-				exchangePostCollDataADYGPU27(para, comm, 0);
-				exchangePostCollDataADZGPU27(para, comm, 0);
+				exchangePostCollDataADXGPU27(para.get(), comm.get(), 0);
+				exchangePostCollDataADYGPU27(para.get(), comm.get(), 0);
+				exchangePostCollDataADZGPU27(para.get(), comm.get(), 0);
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////
@@ -1713,24 +1719,24 @@ void Simulation::run()
 			 if (para->getNumprocs() > 1)
 			 {
 				 ////1D domain decomposition
-				 //exchangePreCollDataGPU27(para, comm, 0);
+				 //exchangePreCollDataGPU27(para, comm.get(), 0);
 				 //3D domain decomposition
 				 //output << "start exchange Pre X (level 0) \n";
-				 exchangePreCollDataXGPU27(para, comm, 0);
+				 exchangePreCollDataXGPU27(para.get(), comm.get(), 0);
 				 //output << "end exchange Pre X (level 0) \n";
 				 //output << "start exchange Pre Y (level 0) \n";
-				 exchangePreCollDataYGPU27(para, comm, 0);
+				 exchangePreCollDataYGPU27(para.get(), comm.get(), 0);
 				 //output << "end exchange Pre Y (level 0) \n";
 				 //output << "start exchange Pre Z (level 0) \n";
-				 exchangePreCollDataZGPU27(para, comm, 0);
+				 exchangePreCollDataZGPU27(para.get(), comm.get(), 0);
 				 //output << "end exchange Pre Z (level 0) \n";
 				 //////////////////////////////////////////////////////////////////////////
 				 //3D domain decomposition convection diffusion
 				 if (para->getDiffOn()==true)
 				 {
-					 exchangePreCollDataADXGPU27(para, comm, 0);
-					 exchangePreCollDataADYGPU27(para, comm, 0);
-					 exchangePreCollDataADZGPU27(para, comm, 0);
+					 exchangePreCollDataADXGPU27(para.get(), comm.get(), 0);
+					 exchangePreCollDataADYGPU27(para.get(), comm.get(), 0);
+					 exchangePreCollDataADZGPU27(para.get(), comm.get(), 0);
 				 }
 			 }
 		    //////////////////////////////////////////////////////////////////////////
@@ -1926,7 +1932,7 @@ void Simulation::run()
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //Particles
 	  ////////////////////////////////////////////////////////////////////////////////
-	  if (para->getCalcParticle()) propagateParticles(para, t);
+	  if (para->getCalcParticle()) propagateParticles(para.get(), t);
 	  ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1999,7 +2005,7 @@ void Simulation::run()
 			  }
 
 			  output << "Dateien fuer CheckPoint schreiben t=" << t << "...";
-			  restObj->safe(para);
+			  restObj->safe(para.get());
 			  rest->doCheckPoint(para->getFName(), t, para->getMyID());
 			  output << "\n fertig\n";
 		  }
@@ -2048,9 +2054,9 @@ void Simulation::run()
 				  output << "\n Write MeasurePoints at level = " << lev << " and timestep = " << t << "\n";
 				  for (int j = 0; j < (int)para->getParH(lev)->MP.size(); j++)
 				  {
-					  MeasurePointWriter::writeMeasurePoints(para, lev, j, t);
+					  MeasurePointWriter::writeMeasurePoints(para.get(), lev, j, t);
 				  }
-				  MeasurePointWriter::calcAndWriteMeanAndFluctuations(para, lev, t, para->getTStartOut());
+				  MeasurePointWriter::calcAndWriteMeanAndFluctuations(para.get(), lev, t, para->getTStartOut());
 			  }
 			  t_MP = 0;
 		  }
@@ -2103,7 +2109,7 @@ void Simulation::run()
 		  //////////////////////////////////////////////////////////////////////////////////
 		  ////Calculation of concentration at the plane
 		  //////////////////////////////////////////////////////////////////////////////////
-		  calcPlaneConc(para, 0);
+		  calcPlaneConc(para.get(), 0);
 	  }
 	  //////////////////////////////////////////////////////////////////////////////////
 
@@ -2113,7 +2119,7 @@ void Simulation::run()
 	  ////////////////////////////////////////////////////////////////////////////////
       // File IO
       ////////////////////////////////////////////////////////////////////////////////
-      //comm->startTimer();
+      //comm.get()->startTimer();
       if(para->getTOut()>0 && t%para->getTOut()==0 && t>para->getTStartOut())
       {
 		  //////////////////////////////////////////////////////////////////////////////////
@@ -2156,24 +2162,24 @@ void Simulation::run()
 		 if (para->getNumprocs() > 1)
 		 {
 			 ////1D domain decomposition
-			 //exchangePreCollDataGPU27(para, comm, 0);
+			 //exchangePreCollDataGPU27(para, comm.get(), 0);
 			 //3D domain decomposition
 			 //output << "(print) start exchange Pre X (level 0) \n";
-			 exchangePreCollDataXGPU27(para, comm, 0);
+			 exchangePreCollDataXGPU27(para.get(), comm.get(), 0);
 			 //output << "(print) end exchange Pre X (level 0) \n";
 			 //output << "(print) start exchange Pre Y (level 0) \n";
-			 exchangePreCollDataYGPU27(para, comm, 0);
+			 exchangePreCollDataYGPU27(para.get(), comm.get(), 0);
 			 //output << "(print) end exchange Pre Y (level 0) \n";
 			 //output << "(print) start exchange Pre Z (level 0) \n";
-			 exchangePreCollDataZGPU27(para, comm, 0);
+			 exchangePreCollDataZGPU27(para.get(), comm.get(), 0);
 			 //output << "(print) end exchange Pre Z (level 0) \n";
 			 //////////////////////////////////////////////////////////////////////////
 			 //3D domain decomposition convection diffusion
 			 if (para->getDiffOn()==true)
 			 {
-				 exchangePreCollDataADXGPU27(para, comm, 0);
-				 exchangePreCollDataADYGPU27(para, comm, 0);
-				 exchangePreCollDataADZGPU27(para, comm, 0);
+				 exchangePreCollDataADXGPU27(para.get(), comm.get(), 0);
+				 exchangePreCollDataADYGPU27(para.get(), comm.get(), 0);
+				 exchangePreCollDataADZGPU27(para.get(), comm.get(), 0);
 			 }
 		 }
 		 //////////////////////////////////////////////////////////////////////////
@@ -2323,7 +2329,7 @@ void Simulation::run()
                   }
 
 				  para->cudaCopyConcDH(lev);
-                  //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_doubflo_SP , cudaMemcpyDeviceToHost);
+                  //cudaMemoryCopy(para->getParH(lev)->Conc, para->getParD(lev)->Conc,  para->getParH(lev)->mem_size_real_SP , cudaMemcpyDeviceToHost);
                }
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			   ////print cp
@@ -2400,9 +2406,9 @@ void Simulation::run()
 			////////////////////////////////////////////////////////////////////////
 			//calculate 2nd, 3rd and higher order moments
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalc2ndOrderMoments())  calc2ndMoments(para);
-			if (para->getCalc3rdOrderMoments())  calc3rdMoments(para);
-			if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para);
+			if (para->getCalc2ndOrderMoments())  calc2ndMoments(para.get());
+			if (para->getCalc3rdOrderMoments())  calc3rdMoments(para.get());
+			if (para->getCalcHighOrderMoments()) calcHigherOrderMoments(para.get());
 			////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////
@@ -2411,14 +2417,14 @@ void Simulation::run()
 			if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()) && ((t%(unsigned int)para->getclockCycleForMP())==0))
 			{
 				unsigned int tdiff = t - t_prev;
-				calcMedian(para, tdiff);
+				calcMedian(para.get(), tdiff);
 			}
 			////////////////////////////////////////////////////////////////////////
-			writeTimestep(para, t);
+			writeTimestep(para.get(), t);
 			////////////////////////////////////////////////////////////////////////
 			//printDragLift(para, t);
 			////////////////////////////////////////////////////////////////////////
-			if (para->getCalcParticle()) copyAndPrintParticles(para, t, false);
+			if (para->getCalcParticle()) copyAndPrintParticles(para.get(), t, false);
 			////////////////////////////////////////////////////////////////////////
 			output << "done.\n";
 			////////////////////////////////////////////////////////////////////////
@@ -2465,7 +2471,7 @@ void Simulation::run()
 	////////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////
-	if (para->getDiffOn()==true) printPlaneConc(para);
+	if (para->getDiffOn()==true) printPlaneConc(para.get());
 	////////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////////

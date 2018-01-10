@@ -4,8 +4,8 @@
 #include "GPU/constant.h"
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC, 
-												 doubflo* DF, 
+extern "C" __global__ void scaleFC_0817_comp_27( real* DC, 
+												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
 												 unsigned int* neighborCZ,
@@ -18,16 +18,16 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
-												 doubflo omCoarse, 
-												 doubflo omFine, 
-												 doubflo nu, 
+												 real omCoarse, 
+												 real omFine, 
+												 real nu, 
 												 unsigned int nxC, 
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
 												 OffFC offFC)
 {
-   doubflo 
+   real 
 	   *fP00source, *fM00source, *f0P0source, *f0M0source, *f00Psource, *f00Msource, *fPP0source, *fMM0source, *fPM0source,
 	   *fMP0source, *fP0Psource, *fM0Msource, *fP0Msource, *fM0Psource, *f0PPsource, *f0MMsource, *f0PMsource, *f0MPsource,
 	   *f000source, *fMMMsource, *fMMPsource, *fMPPsource, *fMPMsource, *fPPMsource, *fPPPsource, *fPMPsource, *fPMMsource;
@@ -61,7 +61,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
    fPMPsource = &DF[dirTSE *size_MatF];
    fPMMsource = &DF[dirBSE *size_MatF];
 
-   doubflo
+   real
 	   *fP00dest, *fM00dest, *f0P0dest, *f0M0dest, *f00Pdest, *f00Mdest, *fPP0dest, *fMM0dest, *fPM0dest,
 	   *fMP0dest, *fP0Pdest, *fM0Mdest, *fP0Mdest, *fM0Pdest, *f0PPdest, *f0MMdest, *f0PMdest, *f0MPdest,
 	   *f000dest, *fMMMdest, *fMMPdest, *fMPPdest, *fMPMdest, *fPPMdest, *fPPPdest, *fPMPdest, *fPMMdest;
@@ -138,36 +138,36 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        vvx, vvy, vvz, vx2, vy2, vz2, drho;
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*pressMMM,*/drhoMMM,vx1MMM,vx2MMM,vx3MMM;
-   doubflo        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
-   doubflo        /*pressMPP,*/drhoMPP,vx1MPP,vx2MPP,vx3MPP;
-   doubflo        /*pressMPM,*/drhoMPM,vx1MPM,vx2MPM,vx3MPM;
-   doubflo        /*pressPPM,*/drhoPPM,vx1PPM,vx2PPM,vx3PPM;
-   doubflo        /*pressPPP,*/drhoPPP,vx1PPP,vx2PPP,vx3PPP;
-   doubflo        /*pressPMP,*/drhoPMP,vx1PMP,vx2PMP,vx3PMP;
-   doubflo        /*pressPMM,*/drhoPMM,vx1PMM,vx2PMM,vx3PMM;
-   doubflo        fP00,fM00,f0P0,f0M0,f00P,f00M,fPP0,fMM0,fPM0,fMP0,fP0P,fM0M,fP0M,fM0P,f0PP,f0MM,f0PM,f0MP,f000,fPPP, fMMP, fPMP, fMPP, fPPM, fMMM, fPMM, fMPM;
-   doubflo        kxyFromfcNEQMMM, kyzFromfcNEQMMM, kxzFromfcNEQMMM, kxxMyyFromfcNEQMMM, kxxMzzFromfcNEQMMM, kyyMzzFromfcNEQMMM;
-   doubflo        kxyFromfcNEQMMP, kyzFromfcNEQMMP, kxzFromfcNEQMMP, kxxMyyFromfcNEQMMP, kxxMzzFromfcNEQMMP, kyyMzzFromfcNEQMMP;
-   doubflo        kxyFromfcNEQMPP, kyzFromfcNEQMPP, kxzFromfcNEQMPP, kxxMyyFromfcNEQMPP, kxxMzzFromfcNEQMPP, kyyMzzFromfcNEQMPP;
-   doubflo        kxyFromfcNEQMPM, kyzFromfcNEQMPM, kxzFromfcNEQMPM, kxxMyyFromfcNEQMPM, kxxMzzFromfcNEQMPM, kyyMzzFromfcNEQMPM;
-   doubflo        kxyFromfcNEQPPM, kyzFromfcNEQPPM, kxzFromfcNEQPPM, kxxMyyFromfcNEQPPM, kxxMzzFromfcNEQPPM, kyyMzzFromfcNEQPPM;
-   doubflo        kxyFromfcNEQPPP, kyzFromfcNEQPPP, kxzFromfcNEQPPP, kxxMyyFromfcNEQPPP, kxxMzzFromfcNEQPPP, kyyMzzFromfcNEQPPP;
-   doubflo        kxyFromfcNEQPMP, kyzFromfcNEQPMP, kxzFromfcNEQPMP, kxxMyyFromfcNEQPMP, kxxMzzFromfcNEQPMP, kyyMzzFromfcNEQPMP;
-   doubflo        kxyFromfcNEQPMM, kyzFromfcNEQPMM, kxzFromfcNEQPMM, kxxMyyFromfcNEQPMM, kxxMzzFromfcNEQPMM, kyyMzzFromfcNEQPMM;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*pressMMM,*/drhoMMM,vx1MMM,vx2MMM,vx3MMM;
+   real        /*pressMMP,*/drhoMMP,vx1MMP,vx2MMP,vx3MMP;
+   real        /*pressMPP,*/drhoMPP,vx1MPP,vx2MPP,vx3MPP;
+   real        /*pressMPM,*/drhoMPM,vx1MPM,vx2MPM,vx3MPM;
+   real        /*pressPPM,*/drhoPPM,vx1PPM,vx2PPM,vx3PPM;
+   real        /*pressPPP,*/drhoPPP,vx1PPP,vx2PPP,vx3PPP;
+   real        /*pressPMP,*/drhoPMP,vx1PMP,vx2PMP,vx3PMP;
+   real        /*pressPMM,*/drhoPMM,vx1PMM,vx2PMM,vx3PMM;
+   real        fP00,fM00,f0P0,f0M0,f00P,f00M,fPP0,fMM0,fPM0,fMP0,fP0P,fM0M,fP0M,fM0P,f0PP,f0MM,f0PM,f0MP,f000,fPPP, fMMP, fPMP, fMPP, fPPM, fMMM, fPMM, fMPM;
+   real        kxyFromfcNEQMMM, kyzFromfcNEQMMM, kxzFromfcNEQMMM, kxxMyyFromfcNEQMMM, kxxMzzFromfcNEQMMM, kyyMzzFromfcNEQMMM;
+   real        kxyFromfcNEQMMP, kyzFromfcNEQMMP, kxzFromfcNEQMMP, kxxMyyFromfcNEQMMP, kxxMzzFromfcNEQMMP, kyyMzzFromfcNEQMMP;
+   real        kxyFromfcNEQMPP, kyzFromfcNEQMPP, kxzFromfcNEQMPP, kxxMyyFromfcNEQMPP, kxxMzzFromfcNEQMPP, kyyMzzFromfcNEQMPP;
+   real        kxyFromfcNEQMPM, kyzFromfcNEQMPM, kxzFromfcNEQMPM, kxxMyyFromfcNEQMPM, kxxMzzFromfcNEQMPM, kyyMzzFromfcNEQMPM;
+   real        kxyFromfcNEQPPM, kyzFromfcNEQPPM, kxzFromfcNEQPPM, kxxMyyFromfcNEQPPM, kxxMzzFromfcNEQPPM, kyyMzzFromfcNEQPPM;
+   real        kxyFromfcNEQPPP, kyzFromfcNEQPPP, kxzFromfcNEQPPP, kxxMyyFromfcNEQPPP, kxxMzzFromfcNEQPPP, kyyMzzFromfcNEQPPP;
+   real        kxyFromfcNEQPMP, kyzFromfcNEQPMP, kxzFromfcNEQPMP, kxxMyyFromfcNEQPMP, kxxMzzFromfcNEQPMP, kyyMzzFromfcNEQPMP;
+   real        kxyFromfcNEQPMM, kyzFromfcNEQPMM, kxzFromfcNEQPMM, kxxMyyFromfcNEQPMM, kxxMzzFromfcNEQPMM, kyyMzzFromfcNEQPMM;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 
    if(k<kFC)
    {
@@ -683,11 +683,11 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
 	  c0 -= c1o4*(cxx + cyy + czz);
 
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage = zero;
-	  doubflo kyzAverage = zero;
-	  doubflo kxzAverage = zero;
-	  doubflo kxxMyyAverage = zero;
-	  doubflo kxxMzzAverage = zero;
+	  real kxyAverage = zero;
+	  real kyzAverage = zero;
+	  real kxzAverage = zero;
+	  real kxxMyyAverage = zero;
+	  real kxxMzzAverage = zero;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////Press
 	  //d0   = ( pressPPM + pressPPP + pressMPM + pressMPP + pressPMM + pressPMP + pressMMM + pressMMP) * c1o8;
@@ -733,41 +733,41 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
       cz = cz + two * zoff * czz + xoff * cxz + yoff * cyz;
 	  d0 = d0 + xoff * dx + yoff * dy + zoff * dz + xoff*yoff*dxy + xoff*zoff*dxz + yoff*zoff*dyz;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo mfcbb = zero;
-	  doubflo mfabb = zero;
-	  doubflo mfbcb = zero;
-	  doubflo mfbab = zero;
-	  doubflo mfbbc = zero;
-	  doubflo mfbba = zero;
-	  doubflo mfccb = zero;
-	  doubflo mfaab = zero;
-	  doubflo mfcab = zero;
-	  doubflo mfacb = zero;
-	  doubflo mfcbc = zero;
-	  doubflo mfaba = zero;
-	  doubflo mfcba = zero;
-	  doubflo mfabc = zero;
-	  doubflo mfbcc = zero;
-	  doubflo mfbaa = zero;
-	  doubflo mfbca = zero;
-	  doubflo mfbac = zero;
-	  doubflo mfbbb = zero;
-	  doubflo mfccc = zero;
-	  doubflo mfaac = zero;
-	  doubflo mfcac = zero;
-	  doubflo mfacc = zero;
-	  doubflo mfcca = zero;
-	  doubflo mfaaa = zero;
-	  doubflo mfcaa = zero;
-	  doubflo mfaca = zero;
+	  real mfcbb = zero;
+	  real mfabb = zero;
+	  real mfbcb = zero;
+	  real mfbab = zero;
+	  real mfbbc = zero;
+	  real mfbba = zero;
+	  real mfccb = zero;
+	  real mfaab = zero;
+	  real mfcab = zero;
+	  real mfacb = zero;
+	  real mfcbc = zero;
+	  real mfaba = zero;
+	  real mfcba = zero;
+	  real mfabc = zero;
+	  real mfbcc = zero;
+	  real mfbaa = zero;
+	  real mfbca = zero;
+	  real mfbac = zero;
+	  real mfbbb = zero;
+	  real mfccc = zero;
+	  real mfaac = zero;
+	  real mfcac = zero;
+	  real mfacc = zero;
+	  real mfcca = zero;
+	  real mfaaa = zero;
+	  real mfcaa = zero;
+	  real mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo m0, m1, m2, oMdrho;
-	  doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  doubflo O3 = two - o;
-	  doubflo residu, residutmp;
+	  real m0, m1, m2, oMdrho;
+	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  real O3 = two - o;
+	  real residu, residutmp;
 	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -779,9 +779,9 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = pressPPP * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  pressMPP * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -816,7 +816,7 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
 
 	  //two
 	  // linear combinations
-	  doubflo oP = o;// :(
+	  real oP = o;// :(
 	  mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(one+press); 
 	  //mxxMyy    = -c2o3*(ax - by)*eps_new/o;
 	  //mxxMzz    = -c2o3*(ax - cz)*eps_new/o;
@@ -1199,8 +1199,8 @@ extern "C" __global__ void scaleFC_0817_comp_27( doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC, 
-												  doubflo* DF, 
+extern "C" __global__ void scaleFC_AA2016_comp_27(real* DC, 
+												  real* DF, 
 												  unsigned int* neighborCX,
 												  unsigned int* neighborCY,
 												  unsigned int* neighborCZ,
@@ -1213,16 +1213,16 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 												  unsigned int* posC, 
 												  unsigned int* posFSWB, 
 												  unsigned int kFC, 
-												  doubflo omCoarse, 
-												  doubflo omFine, 
-												  doubflo nu, 
+												  real omCoarse, 
+												  real omFine, 
+												  real nu, 
 												  unsigned int nxC, 
 												  unsigned int nyC, 
 												  unsigned int nxF, 
 												  unsigned int nyF,
 												  OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -1253,7 +1253,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -1328,55 +1328,55 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 	//////////////////////////////////////////////////////////////////////////////////////
-    doubflo	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	doubflo wadjust;
-	doubflo qudricLimitP = 0.01f;// * 0.0001f;
-	doubflo qudricLimitM = 0.01f;// * 0.0001f;
-	doubflo qudricLimitD = 0.01f;// * 0.001f;
-	doubflo omega = omFine;
+    real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
+	real wadjust;
+	real qudricLimitP = 0.01f;// * 0.0001f;
+	real qudricLimitM = 0.01f;// * 0.0001f;
+	real qudricLimitD = 0.01f;// * 0.001f;
+	real omega = omFine;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	doubflo NeqOn = one;
-	doubflo drho, rho;
+	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	real NeqOn = one;
+	real drho, rho;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	doubflo OxxPyyPzz;
-	doubflo OxyyPxzz;
-	doubflo OxyyMxzz;
-	doubflo Oxyz    ;
-	doubflo O4, O5, O6;
-	doubflo CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
+	real OxxPyyPzz;
+	real OxyyPxzz;
+	real OxyyMxzz;
+	real Oxyz    ;
+	real O4, O5, O6;
+	real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    if(k<kFC)
@@ -1742,13 +1742,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SWB    = mfbbb;
-			doubflo mxxyPyzz_SWB = mxxyPyzz;
-			doubflo mxxyMyzz_SWB = mxxyMyzz;
-			doubflo mxxzPyyz_SWB = mxxzPyyz;
-			doubflo mxxzMyyz_SWB = mxxzMyyz;
-			doubflo mxyyPxzz_SWB = mxyyPxzz;
-			doubflo mxyyMxzz_SWB = mxyyMxzz;
+			real mfbbb_SWB    = mfbbb;
+			real mxxyPyzz_SWB = mxxyPyzz;
+			real mxxyMyzz_SWB = mxxyMyzz;
+			real mxxzPyyz_SWB = mxxzPyyz;
+			real mxxzMyyz_SWB = mxxzMyyz;
+			real mxyyPxzz_SWB = mxyyPxzz;
+			real mxyyMxzz_SWB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -2149,13 +2149,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SWT    = mfbbb;
-			doubflo mxxyPyzz_SWT = mxxyPyzz;
-			doubflo mxxyMyzz_SWT = mxxyMyzz;
-			doubflo mxxzPyyz_SWT = mxxzPyyz;
-			doubflo mxxzMyyz_SWT = mxxzMyyz;
-			doubflo mxyyPxzz_SWT = mxyyPxzz;
-			doubflo mxyyMxzz_SWT = mxyyMxzz;
+			real mfbbb_SWT    = mfbbb;
+			real mxxyPyzz_SWT = mxxyPyzz;
+			real mxxyMyzz_SWT = mxxyMyzz;
+			real mxxzPyyz_SWT = mxxzPyyz;
+			real mxxzMyyz_SWT = mxxzMyyz;
+			real mxyyPxzz_SWT = mxyyPxzz;
+			real mxyyMxzz_SWT = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -2555,13 +2555,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SET    = mfbbb;
-			doubflo mxxyPyzz_SET = mxxyPyzz;
-			doubflo mxxyMyzz_SET = mxxyMyzz;
-			doubflo mxxzPyyz_SET = mxxzPyyz;
-			doubflo mxxzMyyz_SET = mxxzMyyz;
-			doubflo mxyyPxzz_SET = mxyyPxzz;
-			doubflo mxyyMxzz_SET = mxyyMxzz;
+			real mfbbb_SET    = mfbbb;
+			real mxxyPyzz_SET = mxxyPyzz;
+			real mxxyMyzz_SET = mxxyMyzz;
+			real mxxzPyyz_SET = mxxzPyyz;
+			real mxxzMyyz_SET = mxxzMyyz;
+			real mxyyPxzz_SET = mxyyPxzz;
+			real mxyyMxzz_SET = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -2961,13 +2961,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SEB    = mfbbb;
-			doubflo mxxyPyzz_SEB = mxxyPyzz;
-			doubflo mxxyMyzz_SEB = mxxyMyzz;
-			doubflo mxxzPyyz_SEB = mxxzPyyz;
-			doubflo mxxzMyyz_SEB = mxxzMyyz;
-			doubflo mxyyPxzz_SEB = mxyyPxzz;
-			doubflo mxyyMxzz_SEB = mxyyMxzz;
+			real mfbbb_SEB    = mfbbb;
+			real mxxyPyzz_SEB = mxxyPyzz;
+			real mxxyMyzz_SEB = mxxyMyzz;
+			real mxxzPyyz_SEB = mxxzPyyz;
+			real mxxzMyyz_SEB = mxxzMyyz;
+			real mxyyPxzz_SEB = mxyyPxzz;
+			real mxyyMxzz_SEB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -3377,13 +3377,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NWB    = mfbbb;
-			doubflo mxxyPyzz_NWB = mxxyPyzz;
-			doubflo mxxyMyzz_NWB = mxxyMyzz;
-			doubflo mxxzPyyz_NWB = mxxzPyyz;
-			doubflo mxxzMyyz_NWB = mxxzMyyz;
-			doubflo mxyyPxzz_NWB = mxyyPxzz;
-			doubflo mxyyMxzz_NWB = mxyyMxzz;
+			real mfbbb_NWB    = mfbbb;
+			real mxxyPyzz_NWB = mxxyPyzz;
+			real mxxyMyzz_NWB = mxxyMyzz;
+			real mxxzPyyz_NWB = mxxzPyyz;
+			real mxxzMyyz_NWB = mxxzMyyz;
+			real mxyyPxzz_NWB = mxyyPxzz;
+			real mxyyMxzz_NWB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -3783,13 +3783,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NWT    = mfbbb;
-			doubflo mxxyPyzz_NWT = mxxyPyzz;
-			doubflo mxxyMyzz_NWT = mxxyMyzz;
-			doubflo mxxzPyyz_NWT = mxxzPyyz;
-			doubflo mxxzMyyz_NWT = mxxzMyyz;
-			doubflo mxyyPxzz_NWT = mxyyPxzz;
-			doubflo mxyyMxzz_NWT = mxyyMxzz;
+			real mfbbb_NWT    = mfbbb;
+			real mxxyPyzz_NWT = mxxyPyzz;
+			real mxxyMyzz_NWT = mxxyMyzz;
+			real mxxzPyyz_NWT = mxxzPyyz;
+			real mxxzMyyz_NWT = mxxzMyyz;
+			real mxyyPxzz_NWT = mxyyPxzz;
+			real mxyyMxzz_NWT = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -4189,13 +4189,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NET    = mfbbb;
-			doubflo mxxyPyzz_NET = mxxyPyzz;
-			doubflo mxxyMyzz_NET = mxxyMyzz;
-			doubflo mxxzPyyz_NET = mxxzPyyz;
-			doubflo mxxzMyyz_NET = mxxzMyyz;
-			doubflo mxyyPxzz_NET = mxyyPxzz;
-			doubflo mxyyMxzz_NET = mxyyMxzz;
+			real mfbbb_NET    = mfbbb;
+			real mxxyPyzz_NET = mxxyPyzz;
+			real mxxyMyzz_NET = mxxyMyzz;
+			real mxxzPyyz_NET = mxxzPyyz;
+			real mxxzMyyz_NET = mxxzMyyz;
+			real mxyyPxzz_NET = mxyyPxzz;
+			real mxyyMxzz_NET = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -4595,13 +4595,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NEB    = mfbbb;
-			doubflo mxxyPyzz_NEB = mxxyPyzz;
-			doubflo mxxyMyzz_NEB = mxxyMyzz;
-			doubflo mxxzPyyz_NEB = mxxzPyyz;
-			doubflo mxxzMyyz_NEB = mxxzMyyz;
-			doubflo mxyyPxzz_NEB = mxyyPxzz;
-			doubflo mxyyMxzz_NEB = mxyyMxzz;
+			real mfbbb_NEB    = mfbbb;
+			real mxxyPyzz_NEB = mxxyPyzz;
+			real mxxyMyzz_NEB = mxxyMyzz;
+			real mxxzPyyz_NEB = mxxzPyyz;
+			real mxxzMyyz_NEB = mxxzMyyz;
+			real mxyyPxzz_NEB = mxyyPxzz;
+			real mxyyMxzz_NEB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -4658,13 +4658,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo mfbbbMean    = c1o8 * (mfbbb_SWB    + mfbbb_SWT    + mfbbb_SET    + mfbbb_SEB    + mfbbb_NWB    + mfbbb_NWT    + mfbbb_NET    + mfbbb_NEB);
-	  doubflo mxxyPyzzMean = c1o8 * (mxxyPyzz_SWB + mxxyPyzz_SWT + mxxyPyzz_SET + mxxyPyzz_SEB + mxxyPyzz_NWB + mxxyPyzz_NWT + mxxyPyzz_NET + mxxyPyzz_NEB);
-	  doubflo mxxyMyzzMean = c1o8 * (mxxyMyzz_SWB + mxxyMyzz_SWT + mxxyMyzz_SET + mxxyMyzz_SEB + mxxyMyzz_NWB + mxxyMyzz_NWT + mxxyMyzz_NET + mxxyMyzz_NEB);
-	  doubflo mxxzPyyzMean = c1o8 * (mxxzPyyz_SWB + mxxzPyyz_SWT + mxxzPyyz_SET + mxxzPyyz_SEB + mxxzPyyz_NWB + mxxzPyyz_NWT + mxxzPyyz_NET + mxxzPyyz_NEB);
-	  doubflo mxxzMyyzMean = c1o8 * (mxxzMyyz_SWB + mxxzMyyz_SWT + mxxzMyyz_SET + mxxzMyyz_SEB + mxxzMyyz_NWB + mxxzMyyz_NWT + mxxzMyyz_NET + mxxzMyyz_NEB);
-	  doubflo mxyyPxzzMean = c1o8 * (mxyyPxzz_SWB + mxyyPxzz_SWT + mxyyPxzz_SET + mxyyPxzz_SEB + mxyyPxzz_NWB + mxyyPxzz_NWT + mxyyPxzz_NET + mxyyPxzz_NEB);
-	  doubflo mxyyMxzzMean = c1o8 * (mxyyMxzz_SWB + mxyyMxzz_SWT + mxyyMxzz_SET + mxyyMxzz_SEB + mxyyMxzz_NWB + mxyyMxzz_NWT + mxyyMxzz_NET + mxyyMxzz_NEB);
+	  real mfbbbMean    = c1o8 * (mfbbb_SWB    + mfbbb_SWT    + mfbbb_SET    + mfbbb_SEB    + mfbbb_NWB    + mfbbb_NWT    + mfbbb_NET    + mfbbb_NEB);
+	  real mxxyPyzzMean = c1o8 * (mxxyPyzz_SWB + mxxyPyzz_SWT + mxxyPyzz_SET + mxxyPyzz_SEB + mxxyPyzz_NWB + mxxyPyzz_NWT + mxxyPyzz_NET + mxxyPyzz_NEB);
+	  real mxxyMyzzMean = c1o8 * (mxxyMyzz_SWB + mxxyMyzz_SWT + mxxyMyzz_SET + mxxyMyzz_SEB + mxxyMyzz_NWB + mxxyMyzz_NWT + mxxyMyzz_NET + mxxyMyzz_NEB);
+	  real mxxzPyyzMean = c1o8 * (mxxzPyyz_SWB + mxxzPyyz_SWT + mxxzPyyz_SET + mxxzPyyz_SEB + mxxzPyyz_NWB + mxxzPyyz_NWT + mxxzPyyz_NET + mxxzPyyz_NEB);
+	  real mxxzMyyzMean = c1o8 * (mxxzMyyz_SWB + mxxzMyyz_SWT + mxxzMyyz_SET + mxxzMyyz_SEB + mxxzMyyz_NWB + mxxzMyyz_NWT + mxxzMyyz_NET + mxxzMyyz_NEB);
+	  real mxyyPxzzMean = c1o8 * (mxyyPxzz_SWB + mxyyPxzz_SWT + mxyyPxzz_SET + mxyyPxzz_SEB + mxyyPxzz_NWB + mxyyPxzz_NWT + mxyyPxzz_NET + mxyyPxzz_NEB);
+	  real mxyyMxzzMean = c1o8 * (mxyyMxzz_SWB + mxyyMxzz_SWT + mxyyMxzz_SET + mxyyMxzz_SEB + mxyyMxzz_NWB + mxyyMxzz_NWT + mxyyMxzz_NET + mxyyMxzz_NEB);
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //kxyFromfcNEQ_SWB    = zero;
 	  //kyzFromfcNEQ_SWB    = zero;
@@ -4820,12 +4820,12 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage	 = zero;
-	  doubflo kyzAverage	 = zero;
-	  doubflo kxzAverage	 = zero;
-	  doubflo kxxMyyAverage	 = zero;
-	  doubflo kxxMzzAverage	 = zero;
-	  //doubflo kxyAverage	 =(kxyFromfcNEQ_SWB+
+	  real kxyAverage	 = zero;
+	  real kyzAverage	 = zero;
+	  real kxzAverage	 = zero;
+	  real kxxMyyAverage	 = zero;
+	  real kxxMzzAverage	 = zero;
+	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
 			//				   kxyFromfcNEQ_SEB+
@@ -4833,7 +4833,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 			//				   kxyFromfcNEQ_NWT+
 			//				   kxyFromfcNEQ_NET+
 			//				   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-	  //doubflo kyzAverage	 =(kyzFromfcNEQ_SWB+
+	  //real kyzAverage	 =(kyzFromfcNEQ_SWB+
 			//				   kyzFromfcNEQ_SWT+
 			//				   kyzFromfcNEQ_SET+
 			//				   kyzFromfcNEQ_SEB+
@@ -4841,7 +4841,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 			//				   kyzFromfcNEQ_NWT+
 			//				   kyzFromfcNEQ_NET+
 			//				   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-	  //doubflo kxzAverage	 =(kxzFromfcNEQ_SWB+
+	  //real kxzAverage	 =(kxzFromfcNEQ_SWB+
 			//				   kxzFromfcNEQ_SWT+
 			//				   kxzFromfcNEQ_SET+
 			//				   kxzFromfcNEQ_SEB+
@@ -4849,7 +4849,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 			//				   kxzFromfcNEQ_NWT+
 			//				   kxzFromfcNEQ_NET+
 			//				   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-	  //doubflo kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
+	  //real kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
 			//				   kxxMyyFromfcNEQ_SWT+
 			//				   kxxMyyFromfcNEQ_SET+
 			//				   kxxMyyFromfcNEQ_SEB+
@@ -4857,7 +4857,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 			//				   kxxMyyFromfcNEQ_NWT+
 			//				   kxxMyyFromfcNEQ_NET+
 			//				   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-	  //doubflo kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
+	  //real kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
 			//				   kxxMzzFromfcNEQ_SWT+
 			//				   kxxMzzFromfcNEQ_SET+
 			//				   kxxMzzFromfcNEQ_SEB+
@@ -4880,7 +4880,7 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 	  //dxyz =  -press_NEB + press_NET + press_NWB - press_NWT + press_SEB - press_SET - press_SWB + press_SWT;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //drho
-	  doubflo LapRho = ((xoff != zero) || (yoff != zero) || (zoff != zero)) ? zero : -three*(ax*ax + by*by + cz*cz) - six * (bx*ay + cx*az + cy*bz); 
+	  real LapRho = ((xoff != zero) || (yoff != zero) || (zoff != zero)) ? zero : -three*(ax*ax + by*by + cz*cz) - six * (bx*ay + cx*az + cy*bz); 
 	  d0   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT + drho_SEB + drho_SET + drho_SWB + drho_SWT - two*LapRho) * c1o8;
 	  dx   = ( drho_NEB + drho_NET - drho_NWB - drho_NWT + drho_SEB + drho_SET - drho_SWB - drho_SWT) * c1o4;
 	  dy   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT - drho_SEB - drho_SET - drho_SWB - drho_SWT) * c1o4;
@@ -4976,13 +4976,13 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 	  mfcaa = zero;
 	  mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	  //doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  //doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  //doubflo O3 = two - o;
-	  //doubflo residu, residutmp;
+	  //real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	  //real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  //real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  //real O3 = two - o;
+	  //real residu, residutmp;
 	  //residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  //doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  //real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4994,9 +4994,9 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = press_NET * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  press_NWT * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -5388,8 +5388,8 @@ extern "C" __global__ void scaleFC_AA2016_comp_27(doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC, 
-														doubflo* DF, 
+extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(real* DC, 
+														real* DF, 
 														unsigned int* neighborCX,
 														unsigned int* neighborCY,
 														unsigned int* neighborCZ,
@@ -5402,16 +5402,16 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 														unsigned int* posC, 
 														unsigned int* posFSWB, 
 														unsigned int kFC, 
-														doubflo omCoarse, 
-														doubflo omFine, 
-														doubflo nu, 
+														real omCoarse, 
+														real omFine, 
+														real nu, 
 														unsigned int nxC, 
 														unsigned int nyC, 
 														unsigned int nxF, 
 														unsigned int nyF,
 														OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -5442,7 +5442,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -5517,55 +5517,55 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 	//////////////////////////////////////////////////////////////////////////////////////
-    doubflo	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
-	doubflo wadjust;
-	doubflo qudricLimitP = 0.01f;// * 0.0001f;
-	doubflo qudricLimitM = 0.01f;// * 0.0001f;
-	doubflo qudricLimitD = 0.01f;// * 0.001f;
-	doubflo omega = omFine;
+    real	mfcbb, mfabb, mfbcb, mfbab, mfbbc, mfbba, mfccb, mfaab, mfcab, mfacb, mfcbc, mfaba, mfcba, mfabc, mfbcc, mfbaa, mfbca, mfbac, mfbbb, mfccc, mfaac, mfcac, mfacc, mfcca, mfaaa, mfcaa, mfaca;
+	real wadjust;
+	real qudricLimitP = 0.01f;// * 0.0001f;
+	real qudricLimitM = 0.01f;// * 0.0001f;
+	real qudricLimitD = 0.01f;// * 0.001f;
+	real omega = omFine;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	doubflo NeqOn = one;
-	doubflo drho, rho;
+	real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	real NeqOn = one;
+	real drho, rho;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	doubflo OxxPyyPzz;
-	doubflo OxyyPxzz;
-	doubflo OxyyMxzz;
-	doubflo Oxyz    ;
-	doubflo O4, O5, O6;
-	doubflo CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
+	real OxxPyyPzz;
+	real OxyyPxzz;
+	real OxyyMxzz;
+	real Oxyz    ;
+	real O4, O5, O6;
+	real CUMcbb, CUMbcb, CUMbbc, CUMcca, CUMcac, CUMacc, CUMbcc, CUMcbc, CUMccb, CUMccc;
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    if(k<kFC)
@@ -5931,13 +5931,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SWB    = mfbbb;
-			doubflo mxxyPyzz_SWB = mxxyPyzz;
-			doubflo mxxyMyzz_SWB = mxxyMyzz;
-			doubflo mxxzPyyz_SWB = mxxzPyyz;
-			doubflo mxxzMyyz_SWB = mxxzMyyz;
-			doubflo mxyyPxzz_SWB = mxyyPxzz;
-			doubflo mxyyMxzz_SWB = mxyyMxzz;
+			real mfbbb_SWB    = mfbbb;
+			real mxxyPyzz_SWB = mxxyPyzz;
+			real mxxyMyzz_SWB = mxxyMyzz;
+			real mxxzPyyz_SWB = mxxzPyyz;
+			real mxxzMyyz_SWB = mxxzMyyz;
+			real mxyyPxzz_SWB = mxyyPxzz;
+			real mxyyMxzz_SWB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -6338,13 +6338,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SWT    = mfbbb;
-			doubflo mxxyPyzz_SWT = mxxyPyzz;
-			doubflo mxxyMyzz_SWT = mxxyMyzz;
-			doubflo mxxzPyyz_SWT = mxxzPyyz;
-			doubflo mxxzMyyz_SWT = mxxzMyyz;
-			doubflo mxyyPxzz_SWT = mxyyPxzz;
-			doubflo mxyyMxzz_SWT = mxyyMxzz;
+			real mfbbb_SWT    = mfbbb;
+			real mxxyPyzz_SWT = mxxyPyzz;
+			real mxxyMyzz_SWT = mxxyMyzz;
+			real mxxzPyyz_SWT = mxxzPyyz;
+			real mxxzMyyz_SWT = mxxzMyyz;
+			real mxyyPxzz_SWT = mxyyPxzz;
+			real mxyyMxzz_SWT = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -6744,13 +6744,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SET    = mfbbb;
-			doubflo mxxyPyzz_SET = mxxyPyzz;
-			doubflo mxxyMyzz_SET = mxxyMyzz;
-			doubflo mxxzPyyz_SET = mxxzPyyz;
-			doubflo mxxzMyyz_SET = mxxzMyyz;
-			doubflo mxyyPxzz_SET = mxyyPxzz;
-			doubflo mxyyMxzz_SET = mxyyMxzz;
+			real mfbbb_SET    = mfbbb;
+			real mxxyPyzz_SET = mxxyPyzz;
+			real mxxyMyzz_SET = mxxyMyzz;
+			real mxxzPyyz_SET = mxxzPyyz;
+			real mxxzMyyz_SET = mxxzMyyz;
+			real mxyyPxzz_SET = mxyyPxzz;
+			real mxyyMxzz_SET = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -7150,13 +7150,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_SEB    = mfbbb;
-			doubflo mxxyPyzz_SEB = mxxyPyzz;
-			doubflo mxxyMyzz_SEB = mxxyMyzz;
-			doubflo mxxzPyyz_SEB = mxxzPyyz;
-			doubflo mxxzMyyz_SEB = mxxzMyyz;
-			doubflo mxyyPxzz_SEB = mxyyPxzz;
-			doubflo mxyyMxzz_SEB = mxyyMxzz;
+			real mfbbb_SEB    = mfbbb;
+			real mxxyPyzz_SEB = mxxyPyzz;
+			real mxxyMyzz_SEB = mxxyMyzz;
+			real mxxzPyyz_SEB = mxxzPyyz;
+			real mxxzMyyz_SEB = mxxzMyyz;
+			real mxyyPxzz_SEB = mxyyPxzz;
+			real mxyyMxzz_SEB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -7566,13 +7566,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NWB    = mfbbb;
-			doubflo mxxyPyzz_NWB = mxxyPyzz;
-			doubflo mxxyMyzz_NWB = mxxyMyzz;
-			doubflo mxxzPyyz_NWB = mxxzPyyz;
-			doubflo mxxzMyyz_NWB = mxxzMyyz;
-			doubflo mxyyPxzz_NWB = mxyyPxzz;
-			doubflo mxyyMxzz_NWB = mxyyMxzz;
+			real mfbbb_NWB    = mfbbb;
+			real mxxyPyzz_NWB = mxxyPyzz;
+			real mxxyMyzz_NWB = mxxyMyzz;
+			real mxxzPyyz_NWB = mxxzPyyz;
+			real mxxzMyyz_NWB = mxxzMyyz;
+			real mxyyPxzz_NWB = mxyyPxzz;
+			real mxyyMxzz_NWB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -7972,13 +7972,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NWT    = mfbbb;
-			doubflo mxxyPyzz_NWT = mxxyPyzz;
-			doubflo mxxyMyzz_NWT = mxxyMyzz;
-			doubflo mxxzPyyz_NWT = mxxzPyyz;
-			doubflo mxxzMyyz_NWT = mxxzMyyz;
-			doubflo mxyyPxzz_NWT = mxyyPxzz;
-			doubflo mxyyMxzz_NWT = mxyyMxzz;
+			real mfbbb_NWT    = mfbbb;
+			real mxxyPyzz_NWT = mxxyPyzz;
+			real mxxyMyzz_NWT = mxxyMyzz;
+			real mxxzPyyz_NWT = mxxzPyyz;
+			real mxxzMyyz_NWT = mxxzMyyz;
+			real mxyyPxzz_NWT = mxyyPxzz;
+			real mxyyMxzz_NWT = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -8378,13 +8378,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NET    = mfbbb;
-			doubflo mxxyPyzz_NET = mxxyPyzz;
-			doubflo mxxyMyzz_NET = mxxyMyzz;
-			doubflo mxxzPyyz_NET = mxxzPyyz;
-			doubflo mxxzMyyz_NET = mxxzMyyz;
-			doubflo mxyyPxzz_NET = mxyyPxzz;
-			doubflo mxyyMxzz_NET = mxyyMxzz;
+			real mfbbb_NET    = mfbbb;
+			real mxxyPyzz_NET = mxxyPyzz;
+			real mxxyMyzz_NET = mxxyMyzz;
+			real mxxzPyyz_NET = mxxzPyyz;
+			real mxxzMyyz_NET = mxxzMyyz;
+			real mxyyPxzz_NET = mxyyPxzz;
+			real mxyyMxzz_NET = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -8784,13 +8784,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 			//////////////////////////////////////////////////////////////////////////
 			//exclusive for this source node
-			doubflo mfbbb_NEB    = mfbbb;
-			doubflo mxxyPyzz_NEB = mxxyPyzz;
-			doubflo mxxyMyzz_NEB = mxxyMyzz;
-			doubflo mxxzPyyz_NEB = mxxzPyyz;
-			doubflo mxxzMyyz_NEB = mxxzMyyz;
-			doubflo mxyyPxzz_NEB = mxyyPxzz;
-			doubflo mxyyMxzz_NEB = mxyyMxzz;
+			real mfbbb_NEB    = mfbbb;
+			real mxxyPyzz_NEB = mxxyPyzz;
+			real mxxyMyzz_NEB = mxxyMyzz;
+			real mxxzPyyz_NEB = mxxzPyyz;
+			real mxxzMyyz_NEB = mxxzMyyz;
+			real mxyyPxzz_NEB = mxyyPxzz;
+			real mxyyMxzz_NEB = mxyyMxzz;
 			//////////////////////////////////////////////////////////////////////////
 
 
@@ -8847,13 +8847,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo mfbbbMean    = c1o8 * (mfbbb_SWB    + mfbbb_SWT    + mfbbb_SET    + mfbbb_SEB    + mfbbb_NWB    + mfbbb_NWT    + mfbbb_NET    + mfbbb_NEB);
-	  doubflo mxxyPyzzMean = c1o8 * (mxxyPyzz_SWB + mxxyPyzz_SWT + mxxyPyzz_SET + mxxyPyzz_SEB + mxxyPyzz_NWB + mxxyPyzz_NWT + mxxyPyzz_NET + mxxyPyzz_NEB);
-	  doubflo mxxyMyzzMean = c1o8 * (mxxyMyzz_SWB + mxxyMyzz_SWT + mxxyMyzz_SET + mxxyMyzz_SEB + mxxyMyzz_NWB + mxxyMyzz_NWT + mxxyMyzz_NET + mxxyMyzz_NEB);
-	  doubflo mxxzPyyzMean = c1o8 * (mxxzPyyz_SWB + mxxzPyyz_SWT + mxxzPyyz_SET + mxxzPyyz_SEB + mxxzPyyz_NWB + mxxzPyyz_NWT + mxxzPyyz_NET + mxxzPyyz_NEB);
-	  doubflo mxxzMyyzMean = c1o8 * (mxxzMyyz_SWB + mxxzMyyz_SWT + mxxzMyyz_SET + mxxzMyyz_SEB + mxxzMyyz_NWB + mxxzMyyz_NWT + mxxzMyyz_NET + mxxzMyyz_NEB);
-	  doubflo mxyyPxzzMean = c1o8 * (mxyyPxzz_SWB + mxyyPxzz_SWT + mxyyPxzz_SET + mxyyPxzz_SEB + mxyyPxzz_NWB + mxyyPxzz_NWT + mxyyPxzz_NET + mxyyPxzz_NEB);
-	  doubflo mxyyMxzzMean = c1o8 * (mxyyMxzz_SWB + mxyyMxzz_SWT + mxyyMxzz_SET + mxyyMxzz_SEB + mxyyMxzz_NWB + mxyyMxzz_NWT + mxyyMxzz_NET + mxyyMxzz_NEB);
+	  real mfbbbMean    = c1o8 * (mfbbb_SWB    + mfbbb_SWT    + mfbbb_SET    + mfbbb_SEB    + mfbbb_NWB    + mfbbb_NWT    + mfbbb_NET    + mfbbb_NEB);
+	  real mxxyPyzzMean = c1o8 * (mxxyPyzz_SWB + mxxyPyzz_SWT + mxxyPyzz_SET + mxxyPyzz_SEB + mxxyPyzz_NWB + mxxyPyzz_NWT + mxxyPyzz_NET + mxxyPyzz_NEB);
+	  real mxxyMyzzMean = c1o8 * (mxxyMyzz_SWB + mxxyMyzz_SWT + mxxyMyzz_SET + mxxyMyzz_SEB + mxxyMyzz_NWB + mxxyMyzz_NWT + mxxyMyzz_NET + mxxyMyzz_NEB);
+	  real mxxzPyyzMean = c1o8 * (mxxzPyyz_SWB + mxxzPyyz_SWT + mxxzPyyz_SET + mxxzPyyz_SEB + mxxzPyyz_NWB + mxxzPyyz_NWT + mxxzPyyz_NET + mxxzPyyz_NEB);
+	  real mxxzMyyzMean = c1o8 * (mxxzMyyz_SWB + mxxzMyyz_SWT + mxxzMyyz_SET + mxxzMyyz_SEB + mxxzMyyz_NWB + mxxzMyyz_NWT + mxxzMyyz_NET + mxxzMyyz_NEB);
+	  real mxyyPxzzMean = c1o8 * (mxyyPxzz_SWB + mxyyPxzz_SWT + mxyyPxzz_SET + mxyyPxzz_SEB + mxyyPxzz_NWB + mxyyPxzz_NWT + mxyyPxzz_NET + mxyyPxzz_NEB);
+	  real mxyyMxzzMean = c1o8 * (mxyyMxzz_SWB + mxyyMxzz_SWT + mxyyMxzz_SET + mxyyMxzz_SEB + mxyyMxzz_NWB + mxyyMxzz_NWT + mxyyMxzz_NET + mxyyMxzz_NEB);
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //kxyFromfcNEQ_SWB    = zero;
 	  //kyzFromfcNEQ_SWB    = zero;
@@ -9009,12 +9009,12 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage	 = zero;
-	  doubflo kyzAverage	 = zero;
-	  doubflo kxzAverage	 = zero;
-	  doubflo kxxMyyAverage	 = zero;
-	  doubflo kxxMzzAverage	 = zero;
-	  //doubflo kxyAverage	 =(kxyFromfcNEQ_SWB+
+	  real kxyAverage	 = zero;
+	  real kyzAverage	 = zero;
+	  real kxzAverage	 = zero;
+	  real kxxMyyAverage	 = zero;
+	  real kxxMzzAverage	 = zero;
+	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
 			//				   kxyFromfcNEQ_SEB+
@@ -9022,7 +9022,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 			//				   kxyFromfcNEQ_NWT+
 			//				   kxyFromfcNEQ_NET+
 			//				   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-	  //doubflo kyzAverage	 =(kyzFromfcNEQ_SWB+
+	  //real kyzAverage	 =(kyzFromfcNEQ_SWB+
 			//				   kyzFromfcNEQ_SWT+
 			//				   kyzFromfcNEQ_SET+
 			//				   kyzFromfcNEQ_SEB+
@@ -9030,7 +9030,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 			//				   kyzFromfcNEQ_NWT+
 			//				   kyzFromfcNEQ_NET+
 			//				   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-	  //doubflo kxzAverage	 =(kxzFromfcNEQ_SWB+
+	  //real kxzAverage	 =(kxzFromfcNEQ_SWB+
 			//				   kxzFromfcNEQ_SWT+
 			//				   kxzFromfcNEQ_SET+
 			//				   kxzFromfcNEQ_SEB+
@@ -9038,7 +9038,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 			//				   kxzFromfcNEQ_NWT+
 			//				   kxzFromfcNEQ_NET+
 			//				   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-	  //doubflo kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
+	  //real kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
 			//				   kxxMyyFromfcNEQ_SWT+
 			//				   kxxMyyFromfcNEQ_SET+
 			//				   kxxMyyFromfcNEQ_SEB+
@@ -9046,7 +9046,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 			//				   kxxMyyFromfcNEQ_NWT+
 			//				   kxxMyyFromfcNEQ_NET+
 			//				   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-	  //doubflo kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
+	  //real kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
 			//				   kxxMzzFromfcNEQ_SWT+
 			//				   kxxMzzFromfcNEQ_SET+
 			//				   kxxMzzFromfcNEQ_SEB+
@@ -9069,7 +9069,7 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 	  //dxyz =  -press_NEB + press_NET + press_NWB - press_NWT + press_SEB - press_SET - press_SWB + press_SWT;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //drho
-	  doubflo LapRho = ((xoff != zero) || (yoff != zero) || (zoff != zero)) ? zero : -three*(ax*ax + by*by + cz*cz) - six * (bx*ay + cx*az + cy*bz); 
+	  real LapRho = ((xoff != zero) || (yoff != zero) || (zoff != zero)) ? zero : -three*(ax*ax + by*by + cz*cz) - six * (bx*ay + cx*az + cy*bz); 
 	  d0   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT + drho_SEB + drho_SET + drho_SWB + drho_SWT - two*LapRho) * c1o8;
 	  dx   = ( drho_NEB + drho_NET - drho_NWB - drho_NWT + drho_SEB + drho_SET - drho_SWB - drho_SWT) * c1o4;
 	  dy   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT - drho_SEB - drho_SET - drho_SWB - drho_SWT) * c1o4;
@@ -9165,13 +9165,13 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 	  mfcaa = zero;
 	  mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	  //doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  //doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  //doubflo O3 = two - o;
-	  //doubflo residu, residutmp;
+	  //real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	  //real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  //real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  //real O3 = two - o;
+	  //real residu, residutmp;
 	  //residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  //doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  //real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9183,9 +9183,9 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = press_NET * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  press_NWT * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -9576,8 +9576,8 @@ extern "C" __global__ void scaleFC_RhoSq_3rdMom_comp_27(doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC, 
-												 doubflo* DF, 
+extern "C" __global__ void scaleFC_RhoSq_comp_27(real* DC, 
+												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
 												 unsigned int* neighborCZ,
@@ -9590,16 +9590,16 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
-												 doubflo omCoarse, 
-												 doubflo omFine, 
-												 doubflo nu, 
+												 real omCoarse, 
+												 real omFine, 
+												 real nu, 
 												 unsigned int nxC, 
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
 												 OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -9630,7 +9630,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -9705,36 +9705,36 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 
    if(k<kFC)
    {
@@ -10337,12 +10337,12 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage	 = zero;
-	  doubflo kyzAverage	 = zero;
-	  doubflo kxzAverage	 = zero;
-	  doubflo kxxMyyAverage	 = zero;
-	  doubflo kxxMzzAverage	 = zero;
-	  //doubflo kxyAverage	 =(kxyFromfcNEQ_SWB+
+	  real kxyAverage	 = zero;
+	  real kyzAverage	 = zero;
+	  real kxzAverage	 = zero;
+	  real kxxMyyAverage	 = zero;
+	  real kxxMzzAverage	 = zero;
+	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
 			//				   kxyFromfcNEQ_SEB+
@@ -10350,7 +10350,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 			//				   kxyFromfcNEQ_NWT+
 			//				   kxyFromfcNEQ_NET+
 			//				   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-	  //doubflo kyzAverage	 =(kyzFromfcNEQ_SWB+
+	  //real kyzAverage	 =(kyzFromfcNEQ_SWB+
 			//				   kyzFromfcNEQ_SWT+
 			//				   kyzFromfcNEQ_SET+
 			//				   kyzFromfcNEQ_SEB+
@@ -10358,7 +10358,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 			//				   kyzFromfcNEQ_NWT+
 			//				   kyzFromfcNEQ_NET+
 			//				   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-	  //doubflo kxzAverage	 =(kxzFromfcNEQ_SWB+
+	  //real kxzAverage	 =(kxzFromfcNEQ_SWB+
 			//				   kxzFromfcNEQ_SWT+
 			//				   kxzFromfcNEQ_SET+
 			//				   kxzFromfcNEQ_SEB+
@@ -10366,7 +10366,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 			//				   kxzFromfcNEQ_NWT+
 			//				   kxzFromfcNEQ_NET+
 			//				   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-	  //doubflo kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
+	  //real kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
 			//				   kxxMyyFromfcNEQ_SWT+
 			//				   kxxMyyFromfcNEQ_SET+
 			//				   kxxMyyFromfcNEQ_SEB+
@@ -10374,7 +10374,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 			//				   kxxMyyFromfcNEQ_NWT+
 			//				   kxxMyyFromfcNEQ_NET+
 			//				   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-	  //doubflo kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
+	  //real kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
 			//				   kxxMzzFromfcNEQ_SWT+
 			//				   kxxMzzFromfcNEQ_SET+
 			//				   kxxMzzFromfcNEQ_SEB+
@@ -10397,7 +10397,7 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 	  //dxyz =  -press_NEB + press_NET + press_NWB - press_NWT + press_SEB - press_SET - press_SWB + press_SWT;
 	  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //drho
-	  doubflo LapRho = ((xoff != zero) || (yoff != zero) || (zoff != zero)) ? zero : -three*(ax*ax + by*by + cz*cz) - six * (bx*ay + cx*az + cy*bz); 
+	  real LapRho = ((xoff != zero) || (yoff != zero) || (zoff != zero)) ? zero : -three*(ax*ax + by*by + cz*cz) - six * (bx*ay + cx*az + cy*bz); 
 	  d0   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT + drho_SEB + drho_SET + drho_SWB + drho_SWT - two*LapRho) * c1o8;
 	  dx   = ( drho_NEB + drho_NET - drho_NWB - drho_NWT + drho_SEB + drho_SET - drho_SWB - drho_SWT) * c1o4;
 	  dy   = ( drho_NEB + drho_NET + drho_NWB + drho_NWT - drho_SEB - drho_SET - drho_SWB - drho_SWT) * c1o4;
@@ -10465,41 +10465,41 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  doubflo mfcbb = zero;
-	  doubflo mfabb = zero;
-	  doubflo mfbcb = zero;
-	  doubflo mfbab = zero;
-	  doubflo mfbbc = zero;
-	  doubflo mfbba = zero;
-	  doubflo mfccb = zero;
-	  doubflo mfaab = zero;
-	  doubflo mfcab = zero;
-	  doubflo mfacb = zero;
-	  doubflo mfcbc = zero;
-	  doubflo mfaba = zero;
-	  doubflo mfcba = zero;
-	  doubflo mfabc = zero;
-	  doubflo mfbcc = zero;
-	  doubflo mfbaa = zero;
-	  doubflo mfbca = zero;
-	  doubflo mfbac = zero;
-	  doubflo mfbbb = zero;
-	  doubflo mfccc = zero;
-	  doubflo mfaac = zero;
-	  doubflo mfcac = zero;
-	  doubflo mfacc = zero;
-	  doubflo mfcca = zero;
-	  doubflo mfaaa = zero;
-	  doubflo mfcaa = zero;
-	  doubflo mfaca = zero;
+	  real mfcbb = zero;
+	  real mfabb = zero;
+	  real mfbcb = zero;
+	  real mfbab = zero;
+	  real mfbbc = zero;
+	  real mfbba = zero;
+	  real mfccb = zero;
+	  real mfaab = zero;
+	  real mfcab = zero;
+	  real mfacb = zero;
+	  real mfcbc = zero;
+	  real mfaba = zero;
+	  real mfcba = zero;
+	  real mfabc = zero;
+	  real mfbcc = zero;
+	  real mfbaa = zero;
+	  real mfbca = zero;
+	  real mfbac = zero;
+	  real mfbbb = zero;
+	  real mfccc = zero;
+	  real mfaac = zero;
+	  real mfcac = zero;
+	  real mfacc = zero;
+	  real mfcca = zero;
+	  real mfaaa = zero;
+	  real mfcaa = zero;
+	  real mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	  doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  doubflo O3 = two - o;
-	  doubflo residu, residutmp;
+	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  real O3 = two - o;
+	  real residu, residutmp;
 	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10511,9 +10511,9 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = press_NET * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  press_NWT * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -10930,8 +10930,8 @@ extern "C" __global__ void scaleFC_RhoSq_comp_27(doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC, 
-															 doubflo* DF, 
+extern "C" __global__ void scaleFC_staggered_time_comp_27(   real* DC, 
+															 real* DF, 
 															 unsigned int* neighborCX,
 															 unsigned int* neighborCY,
 															 unsigned int* neighborCZ,
@@ -10944,16 +10944,16 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 															 unsigned int* posC, 
 															 unsigned int* posFSWB, 
 															 unsigned int kFC, 
-															 doubflo omCoarse, 
-															 doubflo omFine, 
-															 doubflo nu, 
+															 real omCoarse, 
+															 real omFine, 
+															 real nu, 
 															 unsigned int nxC, 
 															 unsigned int nyC, 
 															 unsigned int nxF, 
 															 unsigned int nyF,
 															 OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -10984,7 +10984,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -11059,36 +11059,36 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 
    if(k<kFC)
    {
@@ -11599,10 +11599,10 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 		 // ftseC  = &DC[dirBNW *size_MatC];
 	  // }
 
- 	 // doubflo rho_tmp;
-	  //doubflo vx1_tmp;
-	  //doubflo vx2_tmp;
-	  //doubflo vx3_tmp;
+ 	 // real rho_tmp;
+	  //real vx1_tmp;
+	  //real vx2_tmp;
+	  //real vx3_tmp;
 
    //  //////////////////////////////////////////////////////////////////////////
    //   xoff = offFC.xOffFC[k];
@@ -12471,7 +12471,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage	 =(kxyFromfcNEQ_SWB+
+	  real kxyAverage	 =(kxyFromfcNEQ_SWB+
 							   kxyFromfcNEQ_SWT+
 							   kxyFromfcNEQ_SET+
 							   kxyFromfcNEQ_SEB+
@@ -12479,7 +12479,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 							   kxyFromfcNEQ_NWT+
 							   kxyFromfcNEQ_NET+
 							   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-	  doubflo kyzAverage	 =(kyzFromfcNEQ_SWB+
+	  real kyzAverage	 =(kyzFromfcNEQ_SWB+
 							   kyzFromfcNEQ_SWT+
 							   kyzFromfcNEQ_SET+
 							   kyzFromfcNEQ_SEB+
@@ -12487,7 +12487,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 							   kyzFromfcNEQ_NWT+
 							   kyzFromfcNEQ_NET+
 							   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-	  doubflo kxzAverage	 =(kxzFromfcNEQ_SWB+
+	  real kxzAverage	 =(kxzFromfcNEQ_SWB+
 							   kxzFromfcNEQ_SWT+
 							   kxzFromfcNEQ_SET+
 							   kxzFromfcNEQ_SEB+
@@ -12495,7 +12495,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 							   kxzFromfcNEQ_NWT+
 							   kxzFromfcNEQ_NET+
 							   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-	  doubflo kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
+	  real kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
 							   kxxMyyFromfcNEQ_SWT+
 							   kxxMyyFromfcNEQ_SET+
 							   kxxMyyFromfcNEQ_SEB+
@@ -12503,7 +12503,7 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 							   kxxMyyFromfcNEQ_NWT+
 							   kxxMyyFromfcNEQ_NET+
 							   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-	  doubflo kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
+	  real kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
 							   kxxMzzFromfcNEQ_SWT+
 							   kxxMzzFromfcNEQ_SET+
 							   kxxMzzFromfcNEQ_SEB+
@@ -12593,41 +12593,41 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  doubflo mfcbb = zero;
-	  doubflo mfabb = zero;
-	  doubflo mfbcb = zero;
-	  doubflo mfbab = zero;
-	  doubflo mfbbc = zero;
-	  doubflo mfbba = zero;
-	  doubflo mfccb = zero;
-	  doubflo mfaab = zero;
-	  doubflo mfcab = zero;
-	  doubflo mfacb = zero;
-	  doubflo mfcbc = zero;
-	  doubflo mfaba = zero;
-	  doubflo mfcba = zero;
-	  doubflo mfabc = zero;
-	  doubflo mfbcc = zero;
-	  doubflo mfbaa = zero;
-	  doubflo mfbca = zero;
-	  doubflo mfbac = zero;
-	  doubflo mfbbb = zero;
-	  doubflo mfccc = zero;
-	  doubflo mfaac = zero;
-	  doubflo mfcac = zero;
-	  doubflo mfacc = zero;
-	  doubflo mfcca = zero;
-	  doubflo mfaaa = zero;
-	  doubflo mfcaa = zero;
-	  doubflo mfaca = zero;
+	  real mfcbb = zero;
+	  real mfabb = zero;
+	  real mfbcb = zero;
+	  real mfbab = zero;
+	  real mfbbc = zero;
+	  real mfbba = zero;
+	  real mfccb = zero;
+	  real mfaab = zero;
+	  real mfcab = zero;
+	  real mfacb = zero;
+	  real mfcbc = zero;
+	  real mfaba = zero;
+	  real mfcba = zero;
+	  real mfabc = zero;
+	  real mfbcc = zero;
+	  real mfbaa = zero;
+	  real mfbca = zero;
+	  real mfbac = zero;
+	  real mfbbb = zero;
+	  real mfccc = zero;
+	  real mfaac = zero;
+	  real mfcac = zero;
+	  real mfacc = zero;
+	  real mfcca = zero;
+	  real mfaaa = zero;
+	  real mfcaa = zero;
+	  real mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	  doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  doubflo O3 = two - o;
-	  doubflo residu, residutmp;
+	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  real O3 = two - o;
+	  real residu, residutmp;
 	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12639,9 +12639,9 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = press_NET * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  press_NWT * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -13051,8 +13051,8 @@ extern "C" __global__ void scaleFC_staggered_time_comp_27(   doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC, 
-												 doubflo* DF, 
+extern "C" __global__ void scaleFC_Fix_comp_27(  real* DC, 
+												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
 												 unsigned int* neighborCZ,
@@ -13065,16 +13065,16 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
-												 doubflo omCoarse, 
-												 doubflo omFine, 
-												 doubflo nu, 
+												 real omCoarse, 
+												 real omFine, 
+												 real nu, 
 												 unsigned int nxC, 
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
 												 OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -13105,7 +13105,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -13180,37 +13180,37 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        vvx, vvy, vvz, vx2, vy2, vz2, drho;
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT, kyyMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT, kyyMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET, kyyMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET, kyyMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB, kyyMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB, kyyMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB, kyyMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB, kyyMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        vvx, vvy, vvz, vx2, vy2, vz2, drho;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT, kyyMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT, kyyMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET, kyyMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET, kyyMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB, kyyMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB, kyyMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB, kyyMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB, kyyMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 
    if(k<kFC)
    {
@@ -14308,14 +14308,14 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage = zero;
-	  doubflo kyzAverage = zero;
-	  doubflo kxzAverage = zero;
-	  doubflo kxxMyyAverage = zero;
-	  doubflo kxxMzzAverage = zero;
+	  real kxyAverage = zero;
+	  real kyzAverage = zero;
+	  real kxzAverage = zero;
+	  real kxxMyyAverage = zero;
+	  real kxxMzzAverage = zero;
 
 
-	  //doubflo kxyAverage	 =(kxyFromfcNEQ_SWB+
+	  //real kxyAverage	 =(kxyFromfcNEQ_SWB+
 			//				   kxyFromfcNEQ_SWT+
 			//				   kxyFromfcNEQ_SET+
 			//				   kxyFromfcNEQ_SEB+
@@ -14323,7 +14323,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 			//				   kxyFromfcNEQ_NWT+
 			//				   kxyFromfcNEQ_NET+
 			//				   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-	  //doubflo kyzAverage	 =(kyzFromfcNEQ_SWB+
+	  //real kyzAverage	 =(kyzFromfcNEQ_SWB+
 			//				   kyzFromfcNEQ_SWT+
 			//				   kyzFromfcNEQ_SET+
 			//				   kyzFromfcNEQ_SEB+
@@ -14331,7 +14331,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 			//				   kyzFromfcNEQ_NWT+
 			//				   kyzFromfcNEQ_NET+
 			//				   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-	  //doubflo kxzAverage	 =(kxzFromfcNEQ_SWB+
+	  //real kxzAverage	 =(kxzFromfcNEQ_SWB+
 			//				   kxzFromfcNEQ_SWT+
 			//				   kxzFromfcNEQ_SET+
 			//				   kxzFromfcNEQ_SEB+
@@ -14339,7 +14339,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 			//				   kxzFromfcNEQ_NWT+
 			//				   kxzFromfcNEQ_NET+
 			//				   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-	  //doubflo kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
+	  //real kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
 			//				   kxxMyyFromfcNEQ_SWT+
 			//				   kxxMyyFromfcNEQ_SET+
 			//				   kxxMyyFromfcNEQ_SEB+
@@ -14347,7 +14347,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 			//				   kxxMyyFromfcNEQ_NWT+
 			//				   kxxMyyFromfcNEQ_NET+
 			//				   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-	  //doubflo kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
+	  //real kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
 			//				   kxxMzzFromfcNEQ_SWT+
 			//				   kxxMzzFromfcNEQ_SET+
 			//				   kxxMzzFromfcNEQ_SEB+
@@ -14444,41 +14444,41 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  doubflo mfcbb = zero;
-	  doubflo mfabb = zero;
-	  doubflo mfbcb = zero;
-	  doubflo mfbab = zero;
-	  doubflo mfbbc = zero;
-	  doubflo mfbba = zero;
-	  doubflo mfccb = zero;
-	  doubflo mfaab = zero;
-	  doubflo mfcab = zero;
-	  doubflo mfacb = zero;
-	  doubflo mfcbc = zero;
-	  doubflo mfaba = zero;
-	  doubflo mfcba = zero;
-	  doubflo mfabc = zero;
-	  doubflo mfbcc = zero;
-	  doubflo mfbaa = zero;
-	  doubflo mfbca = zero;
-	  doubflo mfbac = zero;
-	  doubflo mfbbb = zero;
-	  doubflo mfccc = zero;
-	  doubflo mfaac = zero;
-	  doubflo mfcac = zero;
-	  doubflo mfacc = zero;
-	  doubflo mfcca = zero;
-	  doubflo mfaaa = zero;
-	  doubflo mfcaa = zero;
-	  doubflo mfaca = zero;
+	  real mfcbb = zero;
+	  real mfabb = zero;
+	  real mfbcb = zero;
+	  real mfbab = zero;
+	  real mfbbc = zero;
+	  real mfbba = zero;
+	  real mfccb = zero;
+	  real mfaab = zero;
+	  real mfcab = zero;
+	  real mfacb = zero;
+	  real mfcbc = zero;
+	  real mfaba = zero;
+	  real mfcba = zero;
+	  real mfabc = zero;
+	  real mfbcc = zero;
+	  real mfbaa = zero;
+	  real mfbca = zero;
+	  real mfbac = zero;
+	  real mfbbb = zero;
+	  real mfccc = zero;
+	  real mfaac = zero;
+	  real mfcac = zero;
+	  real mfacc = zero;
+	  real mfcca = zero;
+	  real mfaaa = zero;
+	  real mfcaa = zero;
+	  real mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo m0, m1, m2, oMdrho;
-	  doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  doubflo O3 = two - o;
-	  doubflo residu, residutmp;
+	  real m0, m1, m2, oMdrho;
+	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  real O3 = two - o;
+	  real residu, residutmp;
 	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14490,9 +14490,9 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = press_NET * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  press_NWT * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -14527,7 +14527,7 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 
 	  //two
 	  // linear combinations
-	  doubflo oP = o;// :(
+	  real oP = o;// :(
 	  mxxPyyPzz = mfaaa    -c2o3*(ax+by+cz)*eps_new/oP*(one+press); 
 	  //mxxMyy    = -c2o3*(ax - by)*eps_new/o;
 	  //mxxMzz    = -c2o3*(ax - cz)*eps_new/o;
@@ -14910,8 +14910,8 @@ extern "C" __global__ void scaleFC_Fix_comp_27(  doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC, 
-												 doubflo* DF, 
+extern "C" __global__ void scaleFC_NSPress_27(   real* DC, 
+												 real* DF, 
 												 unsigned int* neighborCX,
 												 unsigned int* neighborCY,
 												 unsigned int* neighborCZ,
@@ -14924,16 +14924,16 @@ extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC,
 												 unsigned int* posC, 
 												 unsigned int* posFSWB, 
 												 unsigned int kFC, 
-												 doubflo omCoarse, 
-												 doubflo omFine, 
-												 doubflo nu, 
+												 real omCoarse, 
+												 real omFine, 
+												 real nu, 
 												 unsigned int nxC, 
 												 unsigned int nyC, 
 												 unsigned int nxF, 
 												 unsigned int nyF,
 												 OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -14964,7 +14964,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -15039,35 +15039,35 @@ extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        press_SWT,drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        press_NWT,drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        press_NET,drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        press_SET,drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        press_SWB,drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        press_NWB,drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        press_NEB,drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        press_SEB,drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        press_SWT,drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        press_NWT,drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        press_NET,drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        press_SET,drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        press_SWB,drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        press_NWB,drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        press_NEB,drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        press_SEB,drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
 
    if(k<kFC)
    {
@@ -15691,39 +15691,39 @@ extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //  FIX  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo mfcbb = zero;
-	  doubflo mfabb = zero;
-	  doubflo mfbcb = zero;
-	  doubflo mfbab = zero;
-	  doubflo mfbbc = zero;
-	  doubflo mfbba = zero;
-	  doubflo mfccb = zero;
-	  doubflo mfaab = zero;
-	  doubflo mfcab = zero;
-	  doubflo mfacb = zero;
-	  doubflo mfcbc = zero;
-	  doubflo mfaba = zero;
-	  doubflo mfcba = zero;
-	  doubflo mfabc = zero;
-	  doubflo mfbcc = zero;
-	  doubflo mfbaa = zero;
-	  doubflo mfbca = zero;
-	  doubflo mfbac = zero;
-	  doubflo mfbbb = zero;
-	  doubflo mfccc = zero;
-	  doubflo mfaac = zero;
-	  doubflo mfcac = zero;
-	  doubflo mfacc = zero;
-	  doubflo mfcca = zero;
-	  doubflo mfaaa = zero;
-	  doubflo mfcaa = zero;
-	  doubflo mfaca = zero;
+	  real mfcbb = zero;
+	  real mfabb = zero;
+	  real mfbcb = zero;
+	  real mfbab = zero;
+	  real mfbbc = zero;
+	  real mfbba = zero;
+	  real mfccb = zero;
+	  real mfaab = zero;
+	  real mfcab = zero;
+	  real mfacb = zero;
+	  real mfcbc = zero;
+	  real mfaba = zero;
+	  real mfcba = zero;
+	  real mfabc = zero;
+	  real mfbcc = zero;
+	  real mfbaa = zero;
+	  real mfbca = zero;
+	  real mfbac = zero;
+	  real mfbbb = zero;
+	  real mfccc = zero;
+	  real mfaac = zero;
+	  real mfcac = zero;
+	  real mfacc = zero;
+	  real mfcca = zero;
+	  real mfaaa = zero;
+	  real mfcaa = zero;
+	  real mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	  doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  doubflo O3 = two - o;
-	  doubflo residu, residutmp;
+	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  real O3 = two - o;
+	  real residu, residutmp;
 	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -15739,7 +15739,7 @@ extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC,
 	  press = (press_NET + press_NWT + press_SET + press_SWT + press_NEB + press_NWB + press_SEB + press_SWB) * c1o8;
 	  
 	  if(xoff!=zero || yoff!=zero || zoff!=zero){
-		  doubflo dx, dy, dz;
+		  real dx, dy, dz;
 		  dx=two*nu*(axx+ayy+azz);
 		  dy=two*nu*(bxx+byy+bzz);
 		  dz=two*nu*(cxx+cyy+czz);
@@ -16116,8 +16116,8 @@ extern "C" __global__ void scaleFC_NSPress_27(   doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC, 
-                                             doubflo* DF, 
+extern "C" __global__ void scaleFC_Fix_27(   real* DC, 
+                                             real* DF, 
                                              unsigned int* neighborCX,
                                              unsigned int* neighborCY,
                                              unsigned int* neighborCZ,
@@ -16130,16 +16130,16 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
                                              unsigned int* posC, 
                                              unsigned int* posFSWB, 
                                              unsigned int kFC, 
-                                             doubflo omCoarse, 
-                                             doubflo omFine, 
-                                             doubflo nu, 
+                                             real omCoarse, 
+                                             real omFine, 
+                                             real nu, 
                                              unsigned int nxC, 
                                              unsigned int nyC, 
                                              unsigned int nxF, 
                                              unsigned int nyF,
                                              OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -16170,7 +16170,7 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -16245,36 +16245,36 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   //doubflo op = one;
-   //doubflo cu_sq;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   //real op = one;
+   //real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press;//,drho,vx1,vx2,vx3;
-   doubflo        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   //doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
-   doubflo        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
+   real        press;//,drho,vx1,vx2,vx3;
+   real        /*press_SWT,*/drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        /*press_NWT,*/drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        /*press_NET,*/drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        /*press_SET,*/drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        /*press_SWB,*/drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        /*press_NWB,*/drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        /*press_NEB,*/drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        /*press_SEB,*/drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   //real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        d0, dx, dy, dz, dxy, dxz, dyz/*, dxyz*/;
 
    if(k<kFC)
    {
@@ -16916,7 +16916,7 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
       //bxyz=-vx2_NEB + vx2_NET + vx2_NWB - vx2_NWT + vx2_SEB - vx2_SET - vx2_SWB + vx2_SWT;
       //cxyz=-vx3_NEB + vx3_NET + vx3_NWB - vx3_NWT + vx3_SEB - vx3_SET - vx3_SWB + vx3_SWT;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo kxyAverage	 =(kxyFromfcNEQ_SWB+
+	  real kxyAverage	 =(kxyFromfcNEQ_SWB+
 							   kxyFromfcNEQ_SWT+
 							   kxyFromfcNEQ_SET+
 							   kxyFromfcNEQ_SEB+
@@ -16924,7 +16924,7 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 							   kxyFromfcNEQ_NWT+
 							   kxyFromfcNEQ_NET+
 							   kxyFromfcNEQ_NEB)*c1o8-(ay+bx);
-	  doubflo kyzAverage	 =(kyzFromfcNEQ_SWB+
+	  real kyzAverage	 =(kyzFromfcNEQ_SWB+
 							   kyzFromfcNEQ_SWT+
 							   kyzFromfcNEQ_SET+
 							   kyzFromfcNEQ_SEB+
@@ -16932,7 +16932,7 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 							   kyzFromfcNEQ_NWT+
 							   kyzFromfcNEQ_NET+
 							   kyzFromfcNEQ_NEB)*c1o8-(bz+cy);
-	  doubflo kxzAverage	 =(kxzFromfcNEQ_SWB+
+	  real kxzAverage	 =(kxzFromfcNEQ_SWB+
 							   kxzFromfcNEQ_SWT+
 							   kxzFromfcNEQ_SET+
 							   kxzFromfcNEQ_SEB+
@@ -16940,7 +16940,7 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 							   kxzFromfcNEQ_NWT+
 							   kxzFromfcNEQ_NET+
 							   kxzFromfcNEQ_NEB)*c1o8-(az+cx);
-	  doubflo kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
+	  real kxxMyyAverage	 =(kxxMyyFromfcNEQ_SWB+
 							   kxxMyyFromfcNEQ_SWT+
 							   kxxMyyFromfcNEQ_SET+
 							   kxxMyyFromfcNEQ_SEB+
@@ -16948,7 +16948,7 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 							   kxxMyyFromfcNEQ_NWT+
 							   kxxMyyFromfcNEQ_NET+
 							   kxxMyyFromfcNEQ_NEB)*c1o8-(ax-by);
-	  doubflo kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
+	  real kxxMzzAverage	 =(kxxMzzFromfcNEQ_SWB+
 							   kxxMzzFromfcNEQ_SWT+
 							   kxxMzzFromfcNEQ_SET+
 							   kxxMzzFromfcNEQ_SEB+
@@ -17038,41 +17038,41 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 	  //cxz=zero;
 	  //cyz=zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	  
-	  doubflo mfcbb = zero;
-	  doubflo mfabb = zero;
-	  doubflo mfbcb = zero;
-	  doubflo mfbab = zero;
-	  doubflo mfbbc = zero;
-	  doubflo mfbba = zero;
-	  doubflo mfccb = zero;
-	  doubflo mfaab = zero;
-	  doubflo mfcab = zero;
-	  doubflo mfacb = zero;
-	  doubflo mfcbc = zero;
-	  doubflo mfaba = zero;
-	  doubflo mfcba = zero;
-	  doubflo mfabc = zero;
-	  doubflo mfbcc = zero;
-	  doubflo mfbaa = zero;
-	  doubflo mfbca = zero;
-	  doubflo mfbac = zero;
-	  doubflo mfbbb = zero;
-	  doubflo mfccc = zero;
-	  doubflo mfaac = zero;
-	  doubflo mfcac = zero;
-	  doubflo mfacc = zero;
-	  doubflo mfcca = zero;
-	  doubflo mfaaa = zero;
-	  doubflo mfcaa = zero;
-	  doubflo mfaca = zero;
+	  real mfcbb = zero;
+	  real mfabb = zero;
+	  real mfbcb = zero;
+	  real mfbab = zero;
+	  real mfbbc = zero;
+	  real mfbba = zero;
+	  real mfccb = zero;
+	  real mfaab = zero;
+	  real mfcab = zero;
+	  real mfacb = zero;
+	  real mfcbc = zero;
+	  real mfaba = zero;
+	  real mfcba = zero;
+	  real mfabc = zero;
+	  real mfbcc = zero;
+	  real mfbaa = zero;
+	  real mfbca = zero;
+	  real mfbac = zero;
+	  real mfbbb = zero;
+	  real mfccc = zero;
+	  real mfaac = zero;
+	  real mfcac = zero;
+	  real mfacc = zero;
+	  real mfcca = zero;
+	  real mfaaa = zero;
+	  real mfcaa = zero;
+	  real mfaca = zero;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
-	  doubflo mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
-	  doubflo qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
-	  doubflo O3 = two - o;
-	  doubflo residu, residutmp;
+	  real m0, m1, m2, vvx, vvy, vvz, vx2, vy2, vz2, oMdrho;
+	  real mxxPyyPzz, mxxMyy, mxxMzz, mxxyPyzz, mxxyMyzz, mxxzPyyz, mxxzMyyz, mxyyPxzz, mxyyMxzz;
+	  real qudricLimit = c1o100;//ganz schlechte Idee -> muss global sein
+	  real O3 = two - o;
+	  real residu, residutmp;
 	  residutmp = zero;///*-*/ c2o9 * (1./o - c1o2) * eps_new * eps_new;
-	  doubflo NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
+	  real NeqOn = one;//zero;//one;   //.... one = on ..... zero = off 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17084,9 +17084,9 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 	  //y = 0.;
 	  //z = 0.;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo mxoff = -xoff;
-	  //doubflo myoff = -yoff;
-	  //doubflo mzoff = -zoff;
+	  //real mxoff = -xoff;
+	  //real myoff = -yoff;
+	  //real mzoff = -zoff;
 	  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //press = press_NET * (c1o8 - c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
 			//  press_NWT * (c1o8 + c1o4 * mxoff - c1o4 * myoff - c1o4 * mzoff) + 
@@ -17476,8 +17476,8 @@ extern "C" __global__ void scaleFC_Fix_27(   doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCpress27(doubflo* DC, 
-                                          doubflo* DF, 
+extern "C" __global__ void scaleFCpress27(real* DC, 
+                                          real* DF, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
                                           unsigned int* neighborCZ,
@@ -17490,16 +17490,16 @@ extern "C" __global__ void scaleFCpress27(doubflo* DC,
                                           unsigned int* posC, 
                                           unsigned int* posFSWB, 
                                           unsigned int kFC, 
-                                          doubflo omCoarse, 
-                                          doubflo omFine, 
-                                          doubflo nu, 
+                                          real omCoarse, 
+                                          real omFine, 
+                                          real nu, 
                                           unsigned int nxC, 
                                           unsigned int nyC, 
                                           unsigned int nxF, 
                                           unsigned int nyF,
                                           OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -17530,7 +17530,7 @@ extern "C" __global__ void scaleFCpress27(doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -17605,38 +17605,38 @@ extern "C" __global__ void scaleFCpress27(doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   //doubflo epsylon = one;
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   doubflo op = one;
-   doubflo cu_sq;
+   //real epsylon = one;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   real op = one;
+   real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        press,drho,vx1,vx2,vx3;
-   doubflo        press_SWT,drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        press_NWT,drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        press_NET,drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        press_SET,drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        press_SWB,drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        press_NWB,drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        press_NEB,drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        press_SEB,drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        press,drho,vx1,vx2,vx3;
+   real        press_SWT,drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        press_NWT,drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        press_NET,drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        press_SET,drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        press_SWB,drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        press_NWB,drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        press_NEB,drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        press_SEB,drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
 
-   //doubflo x,y,z;
+   //real x,y,z;
 
    if(k<kFC)
    {
@@ -18401,8 +18401,8 @@ extern "C" __global__ void scaleFCpress27(doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCLast27( doubflo* DC, 
-                                          doubflo* DF, 
+extern "C" __global__ void scaleFCLast27( real* DC, 
+                                          real* DF, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
                                           unsigned int* neighborCZ,
@@ -18415,16 +18415,16 @@ extern "C" __global__ void scaleFCLast27( doubflo* DC,
                                           unsigned int* posC, 
                                           unsigned int* posFSWB, 
                                           unsigned int kFC, 
-                                          doubflo omCoarse, 
-                                          doubflo omFine, 
-                                          doubflo nu, 
+                                          real omCoarse, 
+                                          real omFine, 
+                                          real nu, 
                                           unsigned int nxC, 
                                           unsigned int nyC, 
                                           unsigned int nxF, 
                                           unsigned int nyF,
                                           OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -18455,7 +18455,7 @@ extern "C" __global__ void scaleFCLast27( doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -18530,38 +18530,38 @@ extern "C" __global__ void scaleFCLast27( doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   //doubflo epsylon = one;
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   doubflo op = one;
-   doubflo cu_sq;
+   //real epsylon = one;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   real op = one;
+   real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
-   doubflo        drho,vx1,vx2,vx3;
-   doubflo        drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
+   real        drho,vx1,vx2,vx3;
+   real        drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz/*, axyz, bxyz, cxyz*/;
 
-   //doubflo x,y,z;
+   //real x,y,z;
 
    if(k<kFC)
    {
@@ -19099,36 +19099,36 @@ extern "C" __global__ void scaleFCLast27( doubflo* DC,
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //// (_SWT _SEB _NWB _NET)
       ////merged
-      //doubflo tayz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET + kyzFromfcNEQ_SWT + kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
-      //doubflo tbxz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET + kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB + kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET;
-      //doubflo tcxy =-kxyFromfcNEQ_SWT + kxyFromfcNEQ_NWB + kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET; 
-      //doubflo tax  = four*(-vx1_SWT + vx1_SEB - vx1_NWB + vx1_NET) - tayz;
-      //doubflo tby  = four*(-vx2_SWT - vx2_SEB + vx2_NWB + vx2_NET) - tbxz;
-      //doubflo tcz  = four*( vx3_SWT - vx3_SEB - vx3_NWB + vx3_NET) - tcxy;
-      //doubflo taxy = two*( vx1_SWT - vx1_NWB - vx1_SEB + vx1_NET - vx3_SWT - vx3_NWB + vx3_SEB + vx3_NET) - kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET;
-      //doubflo taxz = two*(-vx1_SWT + vx1_NWB - vx1_SEB + vx1_NET - vx2_SWT - vx2_NWB + vx2_SEB + vx2_NET) + kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NET - kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET;
-      //doubflo tbxy = two*( vx2_SWT - vx2_NWB - vx2_SEB + vx2_NET - vx3_SWT + vx3_NWB - vx3_SEB + vx3_NET) + kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NET - kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
-      //doubflo tay  = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) - taxz;
-      //doubflo taz  = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) - taxy;
-      //doubflo tbz  = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) - tbxy;
-      //doubflo tbx  = two*(kxyFromfcNEQ_SWT + kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB + kxyFromfcNEQ_NET) - tay;
-      //doubflo tcy  = two*(kyzFromfcNEQ_SWT + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NWB + kyzFromfcNEQ_NET) - tbz;
-      //doubflo tcx  = two*(kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB + kxzFromfcNEQ_NET) - taz;
-      //doubflo tbyz = four*(-vx2_SWT + vx2_SEB - vx2_NWB + vx2_NET) - tbx;
-      //doubflo tcyz = four*(-vx3_SWT + vx3_SEB - vx3_NWB + vx3_NET) - tcx;
-      //doubflo tcxz = four*(-vx3_SWT - vx3_SEB + vx3_NWB + vx3_NET) - tcy;
-      //doubflo taxx = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) - tbz;
-      //doubflo tayy = four*(-vx2_SWT + vx2_SEB + vx2_NWB - vx2_NET) + two*(-kxyFromfcNEQ_SWT    - kxyFromfcNEQ_SEB    + kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + tbz;
-      //doubflo tazz = four*( vx3_SWT + vx3_SEB - vx3_NWB - vx3_NET) + two*( kxzFromfcNEQ_SWT    - kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tcy;
-      //doubflo tbxx = four*(-vx1_SWT + vx1_SEB + vx1_NWB - vx1_NET) + two*(-kxyFromfcNEQ_SWT    + kxyFromfcNEQ_SEB    - kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + taz;
-      //doubflo tbyy = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) + two*( kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_NET) - taz;
-      //doubflo tbzz = four*( vx3_SWT - vx3_SEB + vx3_NWB - vx3_NET) + two*( kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    - kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tcx;
-      //doubflo tcxx = four*( vx1_SWT + vx1_SEB - vx1_NWB - vx1_NET) + two*(-kxzFromfcNEQ_SWT    + kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tay;
-      //doubflo tcyy = four*( vx2_SWT - vx2_SEB + vx2_NWB - vx2_NET) + two*(-kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    + kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tbx;
-      //doubflo tczz = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) - tay;
-      //doubflo ta0  = eight*( vx1_SWT + vx1_NWB + vx1_SEB + vx1_NET) + two*( kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) + two*(-kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tayy;
-      //doubflo tb0  = eight*( vx2_SWT + vx2_NWB + vx2_SEB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) + two*( kxyFromfcNEQ_SWT - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB - kxyFromfcNEQ_NET   ) - tbzz;
-      //doubflo tc0  = eight*( vx3_SWT + vx3_NWB + vx3_SEB + vx3_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_NET) + two*( kxzFromfcNEQ_SWT - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tcyy;
+      //real tayz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET + kyzFromfcNEQ_SWT + kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
+      //real tbxz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET + kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB + kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET;
+      //real tcxy =-kxyFromfcNEQ_SWT + kxyFromfcNEQ_NWB + kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET; 
+      //real tax  = four*(-vx1_SWT + vx1_SEB - vx1_NWB + vx1_NET) - tayz;
+      //real tby  = four*(-vx2_SWT - vx2_SEB + vx2_NWB + vx2_NET) - tbxz;
+      //real tcz  = four*( vx3_SWT - vx3_SEB - vx3_NWB + vx3_NET) - tcxy;
+      //real taxy = two*( vx1_SWT - vx1_NWB - vx1_SEB + vx1_NET - vx3_SWT - vx3_NWB + vx3_SEB + vx3_NET) - kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET;
+      //real taxz = two*(-vx1_SWT + vx1_NWB - vx1_SEB + vx1_NET - vx2_SWT - vx2_NWB + vx2_SEB + vx2_NET) + kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NET - kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET;
+      //real tbxy = two*( vx2_SWT - vx2_NWB - vx2_SEB + vx2_NET - vx3_SWT + vx3_NWB - vx3_SEB + vx3_NET) + kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NET - kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
+      //real tay  = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) - taxz;
+      //real taz  = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) - taxy;
+      //real tbz  = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) - tbxy;
+      //real tbx  = two*(kxyFromfcNEQ_SWT + kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB + kxyFromfcNEQ_NET) - tay;
+      //real tcy  = two*(kyzFromfcNEQ_SWT + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NWB + kyzFromfcNEQ_NET) - tbz;
+      //real tcx  = two*(kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB + kxzFromfcNEQ_NET) - taz;
+      //real tbyz = four*(-vx2_SWT + vx2_SEB - vx2_NWB + vx2_NET) - tbx;
+      //real tcyz = four*(-vx3_SWT + vx3_SEB - vx3_NWB + vx3_NET) - tcx;
+      //real tcxz = four*(-vx3_SWT - vx3_SEB + vx3_NWB + vx3_NET) - tcy;
+      //real taxx = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) - tbz;
+      //real tayy = four*(-vx2_SWT + vx2_SEB + vx2_NWB - vx2_NET) + two*(-kxyFromfcNEQ_SWT    - kxyFromfcNEQ_SEB    + kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + tbz;
+      //real tazz = four*( vx3_SWT + vx3_SEB - vx3_NWB - vx3_NET) + two*( kxzFromfcNEQ_SWT    - kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tcy;
+      //real tbxx = four*(-vx1_SWT + vx1_SEB + vx1_NWB - vx1_NET) + two*(-kxyFromfcNEQ_SWT    + kxyFromfcNEQ_SEB    - kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + taz;
+      //real tbyy = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) + two*( kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_NET) - taz;
+      //real tbzz = four*( vx3_SWT - vx3_SEB + vx3_NWB - vx3_NET) + two*( kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    - kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tcx;
+      //real tcxx = four*( vx1_SWT + vx1_SEB - vx1_NWB - vx1_NET) + two*(-kxzFromfcNEQ_SWT    + kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tay;
+      //real tcyy = four*( vx2_SWT - vx2_SEB + vx2_NWB - vx2_NET) + two*(-kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    + kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tbx;
+      //real tczz = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) - tay;
+      //real ta0  = eight*( vx1_SWT + vx1_NWB + vx1_SEB + vx1_NET) + two*( kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) + two*(-kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tayy;
+      //real tb0  = eight*( vx2_SWT + vx2_NWB + vx2_SEB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) + two*( kxyFromfcNEQ_SWT - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB - kxyFromfcNEQ_NET   ) - tbzz;
+      //real tc0  = eight*( vx3_SWT + vx3_NWB + vx3_SEB + vx3_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_NET) + two*( kxzFromfcNEQ_SWT - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tcyy;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //a0  +=  ta0   ;
       //ax  +=  tax   ;
@@ -19797,10 +19797,10 @@ extern "C" __global__ void scaleFCLast27( doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThSMG7(    doubflo* DC, 
-                                             doubflo* DF, 
-                                             doubflo* DD7C, 
-                                             doubflo* DD7F, 
+extern "C" __global__ void scaleFCThSMG7(    real* DC, 
+                                             real* DF, 
+                                             real* DD7C, 
+                                             real* DD7F, 
                                              unsigned int* neighborCX,
                                              unsigned int* neighborCY,
                                              unsigned int* neighborCZ,
@@ -19813,11 +19813,11 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
                                              unsigned int* posC, 
                                              unsigned int* posFSWB, 
                                              unsigned int kFC, 
-                                             doubflo nu,
-                                             doubflo diffusivity_coarse,
+                                             real nu,
+                                             real diffusivity_coarse,
                                              OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -19848,7 +19848,7 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -19955,36 +19955,36 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo       /* drho,*/vx1,vx2,vx3;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real       /* drho,*/vx1,vx2,vx3;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-   doubflo /*f7_ZERO,*/f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-   doubflo Conc_C_C;
-   doubflo Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz/*, axyz*/;
+   real /*f7_ZERO,*/f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+   real Conc_C_C;
+   real Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz/*, axyz*/;
 
-   //doubflo omegaD_C     = two / (six * diffusivity_coarse + one);
-   //doubflo omegaD_F     = two / (six * diffusivity_coarse*two + one);
-   doubflo omegaD_C     = three - sqrt(three);        //Quick and Dörrrty
-   doubflo omegaD_F     = three - sqrt(three);        //Quick and Dörrrty
-   doubflo Lam         = -(c1o2-one/omegaD_C);
-   doubflo nue_d       = Lam/three;
-   //doubflo ae          = zero;
-   //doubflo ae_F        = zero;
-   doubflo ae          = diffusivity_coarse/nue_d - one;
-   doubflo ae_F        = (diffusivity_coarse*two)/nue_d - one;
+   //real omegaD_C     = two / (six * diffusivity_coarse + one);
+   //real omegaD_F     = two / (six * diffusivity_coarse*two + one);
+   real omegaD_C     = three - sqrt(three);        //Quick and Dörrrty
+   real omegaD_F     = three - sqrt(three);        //Quick and Dörrrty
+   real Lam         = -(c1o2-one/omegaD_C);
+   real nue_d       = Lam/three;
+   //real ae          = zero;
+   //real ae_F        = zero;
+   real ae          = diffusivity_coarse/nue_d - one;
+   real ae_F        = (diffusivity_coarse*two)/nue_d - one;
 
-   doubflo Mx,My,Mz,Mxx,Myy,Mzz,M0; 
+   real Mx,My,Mz,Mxx,Myy,Mzz,M0; 
 
 
    if(k<kFC){
       //////////////////////////////////////////////////////////////////////////
-      doubflo xoff = offFC.xOffFC[k];
-      doubflo yoff = offFC.yOffFC[k];
-      doubflo zoff = offFC.zOffFC[k];      
-      doubflo xoff_sq = xoff * xoff;
-      doubflo yoff_sq = yoff * yoff;
-      doubflo zoff_sq = zoff * zoff;
+      real xoff = offFC.xOffFC[k];
+      real yoff = offFC.yOffFC[k];
+      real zoff = offFC.zOffFC[k];      
+      real xoff_sq = xoff * xoff;
+      real yoff_sq = yoff * yoff;
+      real zoff_sq = zoff * zoff;
       //////////////////////////////////////////////////////////////////////////
       //SWB//
       //////////////////////////////////////////////////////////////////////////
@@ -20053,9 +20053,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSWB = (Conc_F_SWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSWB = (Conc_F_SWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSWB = (Conc_F_SWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSWB = (Conc_F_SWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSWB = (Conc_F_SWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSWB = (Conc_F_SWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20118,9 +20118,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSWT = (Conc_F_SWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSWT = (Conc_F_SWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSWT = (Conc_F_SWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSWT = (Conc_F_SWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSWT = (Conc_F_SWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSWT = (Conc_F_SWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20183,9 +20183,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSET = (Conc_F_SET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSET = (Conc_F_SET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSET = (Conc_F_SET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSET = (Conc_F_SET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSET = (Conc_F_SET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSET = (Conc_F_SET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20248,9 +20248,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSEB = (Conc_F_SEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSEB = (Conc_F_SEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSEB = (Conc_F_SEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSEB = (Conc_F_SEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSEB = (Conc_F_SEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSEB = (Conc_F_SEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20323,9 +20323,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNWB = (Conc_F_NWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNWB = (Conc_F_NWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNWB = (Conc_F_NWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNWB = (Conc_F_NWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNWB = (Conc_F_NWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNWB = (Conc_F_NWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20388,9 +20388,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNWT = (Conc_F_NWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNWT = (Conc_F_NWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNWT = (Conc_F_NWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNWT = (Conc_F_NWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNWT = (Conc_F_NWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNWT = (Conc_F_NWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20453,9 +20453,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNET = (Conc_F_NET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNET = (Conc_F_NET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNET = (Conc_F_NET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNET = (Conc_F_NET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNET = (Conc_F_NET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNET = (Conc_F_NET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20518,9 +20518,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNEB = (Conc_F_NEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNEB = (Conc_F_NEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNEB = (Conc_F_NEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNEB = (Conc_F_NEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNEB = (Conc_F_NEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNEB = (Conc_F_NEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
 
 
@@ -20532,9 +20532,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
 
 
       //linear
-      //doubflo Diff_Conc_XX = zero;
-      //doubflo Diff_Conc_YY = zero;
-      //doubflo Diff_Conc_ZZ = zero;
+      //real Diff_Conc_XX = zero;
+      //real Diff_Conc_YY = zero;
+      //real Diff_Conc_ZZ = zero;
 
 
 
@@ -20613,9 +20613,9 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
 
       Conc_C_C = a0; //c1o8 * (Conc_F_SWB+Conc_F_SWT+Conc_F_SEB+Conc_F_SET+Conc_F_NWB+Conc_F_NWT+Conc_F_NEB+Conc_F_NET) - c4o32 * (Diff_Conc_XX + Diff_Conc_YY + Diff_Conc_ZZ);
 
-      doubflo Diff_Conc_X_C = ax; //c1o4 * (Conc_F_NEB - Conc_F_NWB + Conc_F_NET - Conc_F_NWT + Conc_F_SEB - Conc_F_SWB + Conc_F_SET - Conc_F_SWT);
-      doubflo Diff_Conc_Y_C = ay; //c1o4 * (Conc_F_NEB - Conc_F_SEB + Conc_F_NET - Conc_F_SET + Conc_F_NWB - Conc_F_SWB + Conc_F_NWT - Conc_F_SWT);
-      doubflo Diff_Conc_Z_C = az; //c1o4 * (Conc_F_NET - Conc_F_NEB + Conc_F_NWT - Conc_F_NWB + Conc_F_SET - Conc_F_SEB + Conc_F_SWT - Conc_F_SWB);
+      real Diff_Conc_X_C = ax; //c1o4 * (Conc_F_NEB - Conc_F_NWB + Conc_F_NET - Conc_F_NWT + Conc_F_SEB - Conc_F_SWB + Conc_F_SET - Conc_F_SWT);
+      real Diff_Conc_Y_C = ay; //c1o4 * (Conc_F_NEB - Conc_F_SEB + Conc_F_NET - Conc_F_SET + Conc_F_NWB - Conc_F_SWB + Conc_F_NWT - Conc_F_SWT);
+      real Diff_Conc_Z_C = az; //c1o4 * (Conc_F_NET - Conc_F_NEB + Conc_F_NWT - Conc_F_NWB + Conc_F_SET - Conc_F_SEB + Conc_F_SWT - Conc_F_SWB);
 
       Mx = Conc_C_C*vx1-(one+ae)/(three*omegaD_C)*two/*c1o2*/*Diff_Conc_X_C;
       My = Conc_C_C*vx2-(one+ae)/(three*omegaD_C)*two/*c1o2*/*Diff_Conc_Y_C;
@@ -20670,10 +20670,10 @@ extern "C" __global__ void scaleFCThSMG7(    doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThS7(   doubflo* DC, 
-                                          doubflo* DF, 
-                                          doubflo* DD7C, 
-                                          doubflo* DD7F, 
+extern "C" __global__ void scaleFCThS7(   real* DC, 
+                                          real* DF, 
+                                          real* DD7C, 
+                                          real* DD7F, 
                                           unsigned int* neighborCX,
                                           unsigned int* neighborCY,
                                           unsigned int* neighborCZ,
@@ -20686,10 +20686,10 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
                                           unsigned int* posC, 
                                           unsigned int* posFSWB, 
                                           unsigned int kFC, 
-                                          doubflo nu,
-                                          doubflo diffusivity_coarse)
+                                          real nu,
+                                          real diffusivity_coarse)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -20720,7 +20720,7 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -20827,27 +20827,27 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo       /* drho,*/vx1,vx2,vx3;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real       /* drho,*/vx1,vx2,vx3;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-   //doubflo x,y,z;
-   doubflo /*f7_ZERO,*/f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
-   doubflo Conc_C_C;
-   doubflo Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
+   //real x,y,z;
+   real /*f7_ZERO,*/f7_E,f7_W,f7_N,f7_S,f7_T,f7_B;
+   real Conc_C_C;
+   real Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
 
-   //doubflo omegaD_C     = two / (six * diffusivity_coarse + one);
-   //doubflo omegaD_F     = two / (six * diffusivity_coarse*two + one);
-   doubflo omegaD_C     = three - sqrt(three);        //Quick and Dörrrty
-   doubflo omegaD_F     = three - sqrt(three);        //Quick and Dörrrty
-   doubflo Lam         = -(c1o2-one/omegaD_C);
-   doubflo nue_d       = Lam/three;
-   //doubflo ae          = zero;
-   //doubflo ae_F        = zero;
-   doubflo ae          = diffusivity_coarse/nue_d - one;
-   doubflo ae_F        = (diffusivity_coarse*two)/nue_d - one;
+   //real omegaD_C     = two / (six * diffusivity_coarse + one);
+   //real omegaD_F     = two / (six * diffusivity_coarse*two + one);
+   real omegaD_C     = three - sqrt(three);        //Quick and Dörrrty
+   real omegaD_F     = three - sqrt(three);        //Quick and Dörrrty
+   real Lam         = -(c1o2-one/omegaD_C);
+   real nue_d       = Lam/three;
+   //real ae          = zero;
+   //real ae_F        = zero;
+   real ae          = diffusivity_coarse/nue_d - one;
+   real ae_F        = (diffusivity_coarse*two)/nue_d - one;
 
-   //doubflo ux_sq, uy_sq, uz_sq;
-   doubflo Mx,My,Mz,Mxx,Myy,Mzz,M0; 
+   //real ux_sq, uy_sq, uz_sq;
+   real Mx,My,Mz,Mxx,Myy,Mzz,M0; 
 
 
    if(k<kFC){
@@ -20919,9 +20919,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSWB = (Conc_F_SWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSWB = (Conc_F_SWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSWB = (Conc_F_SWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSWB = (Conc_F_SWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSWB = (Conc_F_SWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSWB = (Conc_F_SWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //SWT//
@@ -20981,9 +20981,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSWT = (Conc_F_SWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSWT = (Conc_F_SWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSWT = (Conc_F_SWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSWT = (Conc_F_SWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSWT = (Conc_F_SWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSWT = (Conc_F_SWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //SET//
@@ -21043,9 +21043,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSET = (Conc_F_SET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSET = (Conc_F_SET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSET = (Conc_F_SET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSET = (Conc_F_SET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSET = (Conc_F_SET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSET = (Conc_F_SET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //SEB//
@@ -21105,9 +21105,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FSEB = (Conc_F_SEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FSEB = (Conc_F_SEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FSEB = (Conc_F_SEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FSEB = (Conc_F_SEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FSEB = (Conc_F_SEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FSEB = (Conc_F_SEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //NWB//
@@ -21177,9 +21177,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNWB = (Conc_F_NWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNWB = (Conc_F_NWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNWB = (Conc_F_NWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNWB = (Conc_F_NWB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNWB = (Conc_F_NWB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNWB = (Conc_F_NWB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //NWT//
@@ -21239,9 +21239,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNWT = (Conc_F_NWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNWT = (Conc_F_NWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNWT = (Conc_F_NWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNWT = (Conc_F_NWT * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNWT = (Conc_F_NWT * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNWT = (Conc_F_NWT * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //NET//
@@ -21301,9 +21301,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNET = (Conc_F_NET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNET = (Conc_F_NET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNET = (Conc_F_NET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNET = (Conc_F_NET * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNET = (Conc_F_NET * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNET = (Conc_F_NET * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       //////////////////////////////////////////////////////////////////////////
       //NEB//
@@ -21363,21 +21363,21 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
       My   = f7_N-f7_S;
       Mz   = f7_T-f7_B;
 
-      doubflo Diff_Conc_X_FNEB = (Conc_F_NEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Y_FNEB = (Conc_F_NEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
-      doubflo Diff_Conc_Z_FNEB = (Conc_F_NEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_X_FNEB = (Conc_F_NEB * vx1 - Mx) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Y_FNEB = (Conc_F_NEB * vx2 - My) * (three*omegaD_F) / (one + ae_F);
+      real Diff_Conc_Z_FNEB = (Conc_F_NEB * vx3 - Mz) * (three*omegaD_F) / (one + ae_F);
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       //linear
-      //doubflo Diff_Conc_XX = zero;
-      //doubflo Diff_Conc_YY = zero;
-      //doubflo Diff_Conc_ZZ = zero;
+      //real Diff_Conc_XX = zero;
+      //real Diff_Conc_YY = zero;
+      //real Diff_Conc_ZZ = zero;
 
       //quadratic
-      doubflo Diff_Conc_XX = ((Diff_Conc_X_FNEB + Diff_Conc_X_FSEB + Diff_Conc_X_FNET + Diff_Conc_X_FSET) - (Diff_Conc_X_FNWB + Diff_Conc_X_FSWB + Diff_Conc_X_FNWT + Diff_Conc_X_FSWT)) * c1o4;
-      doubflo Diff_Conc_YY = ((Diff_Conc_Y_FNEB + Diff_Conc_Y_FNWB + Diff_Conc_Y_FNET + Diff_Conc_Y_FNWT) - (Diff_Conc_Y_FSEB + Diff_Conc_Y_FSWB + Diff_Conc_Y_FSET + Diff_Conc_Y_FSWT)) * c1o4;
-      doubflo Diff_Conc_ZZ = ((Diff_Conc_Z_FSET + Diff_Conc_Z_FSWT + Diff_Conc_Z_FNET + Diff_Conc_Z_FNWT) - (Diff_Conc_Z_FSEB + Diff_Conc_Z_FSWB + Diff_Conc_Z_FNEB + Diff_Conc_Z_FNWB)) * c1o4;
+      real Diff_Conc_XX = ((Diff_Conc_X_FNEB + Diff_Conc_X_FSEB + Diff_Conc_X_FNET + Diff_Conc_X_FSET) - (Diff_Conc_X_FNWB + Diff_Conc_X_FSWB + Diff_Conc_X_FNWT + Diff_Conc_X_FSWT)) * c1o4;
+      real Diff_Conc_YY = ((Diff_Conc_Y_FNEB + Diff_Conc_Y_FNWB + Diff_Conc_Y_FNET + Diff_Conc_Y_FNWT) - (Diff_Conc_Y_FSEB + Diff_Conc_Y_FSWB + Diff_Conc_Y_FSET + Diff_Conc_Y_FSWT)) * c1o4;
+      real Diff_Conc_ZZ = ((Diff_Conc_Z_FSET + Diff_Conc_Z_FSWT + Diff_Conc_Z_FNET + Diff_Conc_Z_FNWT) - (Diff_Conc_Z_FSEB + Diff_Conc_Z_FSWB + Diff_Conc_Z_FNEB + Diff_Conc_Z_FNWB)) * c1o4;
 
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21404,9 +21404,9 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
 
       Conc_C_C = c1o8 * (Conc_F_SWB+Conc_F_SWT+Conc_F_SEB+Conc_F_SET+Conc_F_NWB+Conc_F_NWT+Conc_F_NEB+Conc_F_NET) - c4o32 * (Diff_Conc_XX + Diff_Conc_YY + Diff_Conc_ZZ);
 
-      doubflo Diff_Conc_X_C =c1o4 * (Conc_F_NEB - Conc_F_NWB + Conc_F_NET - Conc_F_NWT + Conc_F_SEB - Conc_F_SWB + Conc_F_SET - Conc_F_SWT);
-      doubflo Diff_Conc_Y_C =c1o4 * (Conc_F_NEB - Conc_F_SEB + Conc_F_NET - Conc_F_SET + Conc_F_NWB - Conc_F_SWB + Conc_F_NWT - Conc_F_SWT);
-      doubflo Diff_Conc_Z_C =c1o4 * (Conc_F_NET - Conc_F_NEB + Conc_F_NWT - Conc_F_NWB + Conc_F_SET - Conc_F_SEB + Conc_F_SWT - Conc_F_SWB);
+      real Diff_Conc_X_C =c1o4 * (Conc_F_NEB - Conc_F_NWB + Conc_F_NET - Conc_F_NWT + Conc_F_SEB - Conc_F_SWB + Conc_F_SET - Conc_F_SWT);
+      real Diff_Conc_Y_C =c1o4 * (Conc_F_NEB - Conc_F_SEB + Conc_F_NET - Conc_F_SET + Conc_F_NWB - Conc_F_SWB + Conc_F_NWT - Conc_F_SWT);
+      real Diff_Conc_Z_C =c1o4 * (Conc_F_NET - Conc_F_NEB + Conc_F_NWT - Conc_F_NWB + Conc_F_SET - Conc_F_SEB + Conc_F_SWT - Conc_F_SWB);
 
       Mx = Conc_C_C*vx1-(one+ae)/(three*omegaD_C)*two/*c1o2*/*Diff_Conc_X_C;
       My = Conc_C_C*vx2-(one+ae)/(three*omegaD_C)*two/*c1o2*/*Diff_Conc_Y_C;
@@ -21461,10 +21461,10 @@ extern "C" __global__ void scaleFCThS7(   doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCThS27(     doubflo* DC, 
-                                             doubflo* DF, 
-                                             doubflo* DD27C, 
-                                             doubflo* DD27F, 
+extern "C" __global__ void scaleFCThS27(     real* DC, 
+                                             real* DF, 
+                                             real* DD27C, 
+                                             real* DD27F, 
                                              unsigned int* neighborCX,
                                              unsigned int* neighborCY,
                                              unsigned int* neighborCZ,
@@ -21477,11 +21477,11 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
                                              unsigned int* posC, 
                                              unsigned int* posFSWB, 
                                              unsigned int kFC, 
-                                             doubflo nu,
-                                             doubflo diffusivity_coarse,
+                                             real nu,
+                                             real diffusivity_coarse,
 											 OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, //*fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -21512,7 +21512,7 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, //*fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -21679,27 +21679,27 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo       /* drho,*/vx1,vx2,vx3,cu_sq;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real       /* drho,*/vx1,vx2,vx3,cu_sq;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,/*f_ZERO,*/f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
-   doubflo f27E,f27W,f27N,f27S,f27T,f27B,f27NE,f27SW,f27SE,f27NW,f27TE,f27BW,f27BE,f27TW,f27TN,f27BS,f27BN,f27TS,f27ZERO,f27TNE,f27TSW,f27TSE,f27TNW,f27BNE,f27BSW,f27BSE,f27BNW;
-   doubflo Mx,My,Mz/*,Mxx,Myy,Mzz,M0*/; 
-   doubflo Conc_C_C;
-   doubflo Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
+   real f27E,f27W,f27N,f27S,f27T,f27B,f27NE,f27SW,f27SE,f27NW,f27TE,f27BW,f27BE,f27TW,f27TN,f27BS,f27BN,f27TS,f27ZERO,f27TNE,f27TSW,f27TSE,f27TNW,f27BNE,f27BSW,f27BSE,f27BNW;
+   real Mx,My,Mz/*,Mxx,Myy,Mzz,M0*/; 
+   real Conc_C_C;
+   real Conc_F_SWB, Conc_F_SWT, Conc_F_SET, Conc_F_SEB, Conc_F_NWB, Conc_F_NWT, Conc_F_NET, Conc_F_NEB;
 
-   doubflo omegaD_C     = two / (six * diffusivity_coarse + one);
-   doubflo omegaD_F     = two / (six * diffusivity_coarse*two + one);
-   //doubflo omegaD     = -three + sqrt(three);
-   //doubflo Lam         = -(c1o2+one/omegaD);
-   //doubflo nue_d       = Lam/three;
-   //doubflo ae          = zero;
-   //doubflo ae_F        = zero;
-   //doubflo ae          = diffusivity_fine/nue_d - one;
-   //doubflo ae_F        = (diffusivity_fine/two)/nue_d - one;
+   real omegaD_C     = two / (six * diffusivity_coarse + one);
+   real omegaD_F     = two / (six * diffusivity_coarse*two + one);
+   //real omegaD     = -three + sqrt(three);
+   //real Lam         = -(c1o2+one/omegaD);
+   //real nue_d       = Lam/three;
+   //real ae          = zero;
+   //real ae_F        = zero;
+   //real ae          = diffusivity_fine/nue_d - one;
+   //real ae_F        = (diffusivity_fine/two)/nue_d - one;
 
-   doubflo x,       y,       z;
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real x,       y,       z;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
 
    if(k<kFC){
       //////////////////////////////////////////////////////////////////////////
@@ -21799,9 +21799,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FSWB = (Conc_F_SWB * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FSWB = (Conc_F_SWB * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FSWB = (Conc_F_SWB * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FSWB = (Conc_F_SWB * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FSWB = (Conc_F_SWB * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FSWB = (Conc_F_SWB * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -21886,9 +21886,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FSWT = (Conc_F_SWT * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FSWT = (Conc_F_SWT * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FSWT = (Conc_F_SWT * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FSWT = (Conc_F_SWT * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FSWT = (Conc_F_SWT * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FSWT = (Conc_F_SWT * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -21973,9 +21973,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FSET = (Conc_F_SET * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FSET = (Conc_F_SET * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FSET = (Conc_F_SET * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FSET = (Conc_F_SET * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FSET = (Conc_F_SET * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FSET = (Conc_F_SET * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -22060,9 +22060,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FSEB = (Conc_F_SEB * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FSEB = (Conc_F_SEB * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FSEB = (Conc_F_SEB * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FSEB = (Conc_F_SEB * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FSEB = (Conc_F_SEB * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FSEB = (Conc_F_SEB * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -22157,9 +22157,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FNWB = (Conc_F_NWB * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FNWB = (Conc_F_NWB * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FNWB = (Conc_F_NWB * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FNWB = (Conc_F_NWB * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FNWB = (Conc_F_NWB * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FNWB = (Conc_F_NWB * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -22244,9 +22244,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FNWT = (Conc_F_NWT * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FNWT = (Conc_F_NWT * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FNWT = (Conc_F_NWT * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FNWT = (Conc_F_NWT * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FNWT = (Conc_F_NWT * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FNWT = (Conc_F_NWT * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -22331,9 +22331,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FNET = (Conc_F_NET * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FNET = (Conc_F_NET * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FNET = (Conc_F_NET * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FNET = (Conc_F_NET * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FNET = (Conc_F_NET * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FNET = (Conc_F_NET * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -22418,9 +22418,9 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
       My   =f27N+f27NE+f27NW+f27TN+f27BN-f27S-f27SE-f27SW-f27TS-f27BS+f27TNE-f27TSW-f27TSE+f27TNW+f27BNE-f27BSW-f27BSE+f27BNW;
       Mz   =f27T+f27TE+f27TW+f27TN+f27TS-f27B-f27BE-f27BW-f27BN-f27BS+f27TNE+f27TSW+f27TSE+f27TNW-f27BNE-f27BSW-f27BSE-f27BNW;
 
-      doubflo Diff_Conc_X_FNEB = (Conc_F_NEB * vx1 - Mx) * (three*omegaD_F);
-      doubflo Diff_Conc_Y_FNEB = (Conc_F_NEB * vx2 - My) * (three*omegaD_F);
-      doubflo Diff_Conc_Z_FNEB = (Conc_F_NEB * vx3 - Mz) * (three*omegaD_F);
+      real Diff_Conc_X_FNEB = (Conc_F_NEB * vx1 - Mx) * (three*omegaD_F);
+      real Diff_Conc_Y_FNEB = (Conc_F_NEB * vx2 - My) * (three*omegaD_F);
+      real Diff_Conc_Z_FNEB = (Conc_F_NEB * vx3 - Mz) * (three*omegaD_F);
 
 
 
@@ -22432,31 +22432,31 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
 
 
       //linear
-      //doubflo Diff_Conc_XX = zero;
-      //doubflo Diff_Conc_YY = zero;
-      //doubflo Diff_Conc_ZZ = zero;
+      //real Diff_Conc_XX = zero;
+      //real Diff_Conc_YY = zero;
+      //real Diff_Conc_ZZ = zero;
 
 
 
 
 
       //quadratic
-      doubflo Diff_Conc_XX = ((Diff_Conc_X_FNEB + Diff_Conc_X_FSEB + Diff_Conc_X_FNET + Diff_Conc_X_FSET) - (Diff_Conc_X_FNWB + Diff_Conc_X_FSWB + Diff_Conc_X_FNWT + Diff_Conc_X_FSWT)) * c1o4;
-      doubflo Diff_Conc_YY = ((Diff_Conc_Y_FNEB + Diff_Conc_Y_FNWB + Diff_Conc_Y_FNET + Diff_Conc_Y_FNWT) - (Diff_Conc_Y_FSEB + Diff_Conc_Y_FSWB + Diff_Conc_Y_FSET + Diff_Conc_Y_FSWT)) * c1o4;
-      doubflo Diff_Conc_ZZ = ((Diff_Conc_Z_FSET + Diff_Conc_Z_FSWT + Diff_Conc_Z_FNET + Diff_Conc_Z_FNWT) - (Diff_Conc_Z_FSEB + Diff_Conc_Z_FSWB + Diff_Conc_Z_FNEB + Diff_Conc_Z_FNWB)) * c1o4;
+      real Diff_Conc_XX = ((Diff_Conc_X_FNEB + Diff_Conc_X_FSEB + Diff_Conc_X_FNET + Diff_Conc_X_FSET) - (Diff_Conc_X_FNWB + Diff_Conc_X_FSWB + Diff_Conc_X_FNWT + Diff_Conc_X_FSWT)) * c1o4;
+      real Diff_Conc_YY = ((Diff_Conc_Y_FNEB + Diff_Conc_Y_FNWB + Diff_Conc_Y_FNET + Diff_Conc_Y_FNWT) - (Diff_Conc_Y_FSEB + Diff_Conc_Y_FSWB + Diff_Conc_Y_FSET + Diff_Conc_Y_FSWT)) * c1o4;
+      real Diff_Conc_ZZ = ((Diff_Conc_Z_FSET + Diff_Conc_Z_FSWT + Diff_Conc_Z_FNET + Diff_Conc_Z_FNWT) - (Diff_Conc_Z_FSEB + Diff_Conc_Z_FSWB + Diff_Conc_Z_FNEB + Diff_Conc_Z_FNWB)) * c1o4;
 
 
-	  doubflo dx = c1o4 * (Conc_F_NEB + Conc_F_NET - Conc_F_NWB - Conc_F_NWT + Conc_F_SEB + Conc_F_SET - Conc_F_SWB - Conc_F_SWT);
-	  doubflo dy = c1o4 * (Conc_F_NEB + Conc_F_NET + Conc_F_NWB + Conc_F_NWT - Conc_F_SEB - Conc_F_SET - Conc_F_SWB - Conc_F_SWT);
-	  doubflo dz = c1o4 * (-Conc_F_NEB + Conc_F_NET - Conc_F_NWB + Conc_F_NWT - Conc_F_SEB + Conc_F_SET - Conc_F_SWB + Conc_F_SWT);
-	  doubflo dxx = Diff_Conc_XX * c1o2;
-	  doubflo dyy = Diff_Conc_YY * c1o2;
-	  doubflo dzz = Diff_Conc_ZZ * c1o2;
-	  doubflo dxy = c1o2 * (Conc_F_NEB + Conc_F_NET - Conc_F_NWB - Conc_F_NWT - Conc_F_SEB - Conc_F_SET + Conc_F_SWB + Conc_F_SWT);
-	  doubflo dyz = c1o2 * (-Conc_F_NEB + Conc_F_NET - Conc_F_NWB + Conc_F_NWT + Conc_F_SEB - Conc_F_SET + Conc_F_SWB - Conc_F_SWT);
-	  doubflo dxz = c1o2 * (-Conc_F_NEB + Conc_F_NET + Conc_F_NWB - Conc_F_NWT - Conc_F_SEB + Conc_F_SET + Conc_F_SWB - Conc_F_SWT);
-	  //doubflo dxyz = -Conc_F_NEB + Conc_F_NET + Conc_F_NWB - Conc_F_NWT + Conc_F_SEB - Conc_F_SET - Conc_F_SWB + Conc_F_SWT;
-	  doubflo d0 = c1o8 * (-two * dxx - two * dyy - two * dzz + Conc_F_NEB + Conc_F_NET + Conc_F_NWB + Conc_F_NWT + Conc_F_SEB + Conc_F_SET + Conc_F_SWB + Conc_F_SWT);
+	  real dx = c1o4 * (Conc_F_NEB + Conc_F_NET - Conc_F_NWB - Conc_F_NWT + Conc_F_SEB + Conc_F_SET - Conc_F_SWB - Conc_F_SWT);
+	  real dy = c1o4 * (Conc_F_NEB + Conc_F_NET + Conc_F_NWB + Conc_F_NWT - Conc_F_SEB - Conc_F_SET - Conc_F_SWB - Conc_F_SWT);
+	  real dz = c1o4 * (-Conc_F_NEB + Conc_F_NET - Conc_F_NWB + Conc_F_NWT - Conc_F_SEB + Conc_F_SET - Conc_F_SWB + Conc_F_SWT);
+	  real dxx = Diff_Conc_XX * c1o2;
+	  real dyy = Diff_Conc_YY * c1o2;
+	  real dzz = Diff_Conc_ZZ * c1o2;
+	  real dxy = c1o2 * (Conc_F_NEB + Conc_F_NET - Conc_F_NWB - Conc_F_NWT - Conc_F_SEB - Conc_F_SET + Conc_F_SWB + Conc_F_SWT);
+	  real dyz = c1o2 * (-Conc_F_NEB + Conc_F_NET - Conc_F_NWB + Conc_F_NWT + Conc_F_SEB - Conc_F_SET + Conc_F_SWB - Conc_F_SWT);
+	  real dxz = c1o2 * (-Conc_F_NEB + Conc_F_NET + Conc_F_NWB - Conc_F_NWT - Conc_F_SEB + Conc_F_SET + Conc_F_SWB - Conc_F_SWT);
+	  //real dxyz = -Conc_F_NEB + Conc_F_NET + Conc_F_NWB - Conc_F_NWT + Conc_F_SEB - Conc_F_SET - Conc_F_SWB + Conc_F_SWT;
+	  real d0 = c1o8 * (-two * dxx - two * dyy - two * dzz + Conc_F_NEB + Conc_F_NET + Conc_F_NWB + Conc_F_NWT + Conc_F_SEB + Conc_F_SET + Conc_F_SWB + Conc_F_SWT);
 
      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //
@@ -22502,15 +22502,15 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
 
       //Conc_C_C = c1o8 * (Conc_F_SWB+Conc_F_SWT+Conc_F_SEB+Conc_F_SET+Conc_F_NWB+Conc_F_NWT+Conc_F_NEB+Conc_F_NET) - c4o32 * (Diff_Conc_XX + Diff_Conc_YY + Diff_Conc_ZZ);
 
-      //doubflo Diff_Conc_X_C = c1o4 * (Conc_F_NEB - Conc_F_NWB + Conc_F_NET - Conc_F_NWT + Conc_F_SEB - Conc_F_SWB + Conc_F_SET - Conc_F_SWT);
-      //doubflo Diff_Conc_Y_C = c1o4 * (Conc_F_NEB - Conc_F_SEB + Conc_F_NET - Conc_F_SET + Conc_F_NWB - Conc_F_SWB + Conc_F_NWT - Conc_F_SWT);
-      //doubflo Diff_Conc_Z_C = c1o4 * (Conc_F_NET - Conc_F_NEB + Conc_F_NWT - Conc_F_NWB + Conc_F_SET - Conc_F_SEB + Conc_F_SWT - Conc_F_SWB);
+      //real Diff_Conc_X_C = c1o4 * (Conc_F_NEB - Conc_F_NWB + Conc_F_NET - Conc_F_NWT + Conc_F_SEB - Conc_F_SWB + Conc_F_SET - Conc_F_SWT);
+      //real Diff_Conc_Y_C = c1o4 * (Conc_F_NEB - Conc_F_SEB + Conc_F_NET - Conc_F_SET + Conc_F_NWB - Conc_F_SWB + Conc_F_NWT - Conc_F_SWT);
+      //real Diff_Conc_Z_C = c1o4 * (Conc_F_NET - Conc_F_NEB + Conc_F_NWT - Conc_F_NWB + Conc_F_SET - Conc_F_SEB + Conc_F_SWT - Conc_F_SWB);
 
-      doubflo Conc_C = d0;
+      real Conc_C = d0;
 
-      doubflo Diff_Conc_X_C = dx;
-      doubflo Diff_Conc_Y_C = dy;
-      doubflo Diff_Conc_Z_C = dz;
+      real Diff_Conc_X_C = dx;
+      real Diff_Conc_Y_C = dy;
+      real Diff_Conc_Z_C = dz;
 
       Mx = Conc_C*vx1-(one)/(three*omegaD_C)*two*Diff_Conc_X_C;
       My = Conc_C*vx2-(one)/(three*omegaD_C)*two*Diff_Conc_Y_C;
@@ -22584,8 +22584,8 @@ extern "C" __global__ void scaleFCThS27(     doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFCEff27(doubflo* DC, 
-                                        doubflo* DF, 
+extern "C" __global__ void scaleFCEff27(real* DC, 
+                                        real* DF, 
                                         unsigned int* neighborCX,
                                         unsigned int* neighborCY,
                                         unsigned int* neighborCZ,
@@ -22598,16 +22598,16 @@ extern "C" __global__ void scaleFCEff27(doubflo* DC,
                                         unsigned int* posC, 
                                         unsigned int* posFSWB, 
                                         unsigned int kFC, 
-                                        doubflo omCoarse, 
-                                        doubflo omFine, 
-                                        doubflo nu, 
+                                        real omCoarse, 
+                                        real omFine, 
+                                        real nu, 
                                         unsigned int nxC, 
                                         unsigned int nyC, 
                                         unsigned int nxF, 
                                         unsigned int nyF,
                                         OffFC offFC)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
       *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -22638,7 +22638,7 @@ extern "C" __global__ void scaleFCEff27(doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
       *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -22713,38 +22713,38 @@ extern "C" __global__ void scaleFCEff27(doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   //doubflo epsylon = one;
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   doubflo op = one;
-   doubflo cu_sq;
+   //real epsylon = one;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   real op = one;
+   real cu_sq;
 
-   doubflo xoff,    yoff,    zoff;
-   doubflo xoff_sq, yoff_sq, zoff_sq;
+   real xoff,    yoff,    zoff;
+   real xoff_sq, yoff_sq, zoff_sq;
    
-   doubflo        drho,vx1,vx2,vx3;
-   doubflo        drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz;
+   real        drho,vx1,vx2,vx3;
+   real        drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz;
 
-   //doubflo x,y,z;
+   //real x,y,z;
 
    if(k<kFC)
    {
@@ -23282,36 +23282,36 @@ extern "C" __global__ void scaleFCEff27(doubflo* DC,
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // (_SWT _SEB _NWB _NET)
       //merged
-      doubflo tayz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET + kyzFromfcNEQ_SWT + kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
-      doubflo tbxz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET + kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB + kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET;
-      doubflo tcxy =-kxyFromfcNEQ_SWT + kxyFromfcNEQ_NWB + kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET; 
-      doubflo tax  = four*(-vx1_SWT + vx1_SEB - vx1_NWB + vx1_NET) - tayz;
-      doubflo tby  = four*(-vx2_SWT - vx2_SEB + vx2_NWB + vx2_NET) - tbxz;
-      doubflo tcz  = four*( vx3_SWT - vx3_SEB - vx3_NWB + vx3_NET) - tcxy;
-      doubflo taxy = two*( vx1_SWT - vx1_NWB - vx1_SEB + vx1_NET - vx3_SWT - vx3_NWB + vx3_SEB + vx3_NET) - kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET;
-      doubflo taxz = two*(-vx1_SWT + vx1_NWB - vx1_SEB + vx1_NET - vx2_SWT - vx2_NWB + vx2_SEB + vx2_NET) + kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NET - kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET;
-      doubflo tbxy = two*( vx2_SWT - vx2_NWB - vx2_SEB + vx2_NET - vx3_SWT + vx3_NWB - vx3_SEB + vx3_NET) + kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NET - kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
-      doubflo tay  = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) - taxz;
-      doubflo taz  = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) - taxy;
-      doubflo tbz  = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) - tbxy;
-      doubflo tbx  = two*(kxyFromfcNEQ_SWT + kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB + kxyFromfcNEQ_NET) - tay;
-      doubflo tcy  = two*(kyzFromfcNEQ_SWT + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NWB + kyzFromfcNEQ_NET) - tbz;
-      doubflo tcx  = two*(kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB + kxzFromfcNEQ_NET) - taz;
-      doubflo tbyz = four*(-vx2_SWT + vx2_SEB - vx2_NWB + vx2_NET) - tbx;
-      doubflo tcyz = four*(-vx3_SWT + vx3_SEB - vx3_NWB + vx3_NET) - tcx;
-      doubflo tcxz = four*(-vx3_SWT - vx3_SEB + vx3_NWB + vx3_NET) - tcy;
-      doubflo taxx = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) - tbz;
-      doubflo tayy = four*(-vx2_SWT + vx2_SEB + vx2_NWB - vx2_NET) + two*(-kxyFromfcNEQ_SWT    - kxyFromfcNEQ_SEB    + kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + tbz;
-      doubflo tazz = four*( vx3_SWT + vx3_SEB - vx3_NWB - vx3_NET) + two*( kxzFromfcNEQ_SWT    - kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tcy;
-      doubflo tbxx = four*(-vx1_SWT + vx1_SEB + vx1_NWB - vx1_NET) + two*(-kxyFromfcNEQ_SWT    + kxyFromfcNEQ_SEB    - kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + taz;
-      doubflo tbyy = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) + two*( kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_NET) - taz;
-      doubflo tbzz = four*( vx3_SWT - vx3_SEB + vx3_NWB - vx3_NET) + two*( kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    - kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tcx;
-      doubflo tcxx = four*( vx1_SWT + vx1_SEB - vx1_NWB - vx1_NET) + two*(-kxzFromfcNEQ_SWT    + kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tay;
-      doubflo tcyy = four*( vx2_SWT - vx2_SEB + vx2_NWB - vx2_NET) + two*(-kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    + kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tbx;
-      doubflo tczz = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) - tay;
-      doubflo ta0  = eight*( vx1_SWT + vx1_NWB + vx1_SEB + vx1_NET) + two*( kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) + two*(-kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tayy;
-      doubflo tb0  = eight*( vx2_SWT + vx2_NWB + vx2_SEB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) + two*( kxyFromfcNEQ_SWT - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB - kxyFromfcNEQ_NET   ) - tbzz;
-      doubflo tc0  = eight*( vx3_SWT + vx3_NWB + vx3_SEB + vx3_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_NET) + two*( kxzFromfcNEQ_SWT - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tcyy;
+      real tayz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET + kyzFromfcNEQ_SWT + kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
+      real tbxz = kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NET + kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB + kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET;
+      real tcxy =-kxyFromfcNEQ_SWT + kxyFromfcNEQ_NWB + kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET - kxzFromfcNEQ_SWT + kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NET; 
+      real tax  = four*(-vx1_SWT + vx1_SEB - vx1_NWB + vx1_NET) - tayz;
+      real tby  = four*(-vx2_SWT - vx2_SEB + vx2_NWB + vx2_NET) - tbxz;
+      real tcz  = four*( vx3_SWT - vx3_SEB - vx3_NWB + vx3_NET) - tcxy;
+      real taxy = two*( vx1_SWT - vx1_NWB - vx1_SEB + vx1_NET - vx3_SWT - vx3_NWB + vx3_SEB + vx3_NET) - kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kxzFromfcNEQ_SWT - kxzFromfcNEQ_NWB - kxzFromfcNEQ_SEB - kxzFromfcNEQ_NET;
+      real taxz = two*(-vx1_SWT + vx1_NWB - vx1_SEB + vx1_NET - vx2_SWT - vx2_NWB + vx2_SEB + vx2_NET) + kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NET - kxyFromfcNEQ_SWT - kxyFromfcNEQ_NWB - kxyFromfcNEQ_SEB - kxyFromfcNEQ_NET;
+      real tbxy = two*( vx2_SWT - vx2_NWB - vx2_SEB + vx2_NET - vx3_SWT + vx3_NWB - vx3_SEB + vx3_NET) + kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NET - kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NET - kyzFromfcNEQ_SWT - kyzFromfcNEQ_NWB - kyzFromfcNEQ_SEB - kyzFromfcNEQ_NET;
+      real tay  = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) - taxz;
+      real taz  = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) - taxy;
+      real tbz  = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) - tbxy;
+      real tbx  = two*(kxyFromfcNEQ_SWT + kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB + kxyFromfcNEQ_NET) - tay;
+      real tcy  = two*(kyzFromfcNEQ_SWT + kyzFromfcNEQ_SEB + kyzFromfcNEQ_NWB + kyzFromfcNEQ_NET) - tbz;
+      real tcx  = two*(kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB + kxzFromfcNEQ_NET) - taz;
+      real tbyz = four*(-vx2_SWT + vx2_SEB - vx2_NWB + vx2_NET) - tbx;
+      real tcyz = four*(-vx3_SWT + vx3_SEB - vx3_NWB + vx3_NET) - tcx;
+      real tcxz = four*(-vx3_SWT - vx3_SEB + vx3_NWB + vx3_NET) - tcy;
+      real taxx = four*( vx2_SWT - vx2_SEB - vx2_NWB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) - tbz;
+      real tayy = four*(-vx2_SWT + vx2_SEB + vx2_NWB - vx2_NET) + two*(-kxyFromfcNEQ_SWT    - kxyFromfcNEQ_SEB    + kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + tbz;
+      real tazz = four*( vx3_SWT + vx3_SEB - vx3_NWB - vx3_NET) + two*( kxzFromfcNEQ_SWT    - kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tcy;
+      real tbxx = four*(-vx1_SWT + vx1_SEB + vx1_NWB - vx1_NET) + two*(-kxyFromfcNEQ_SWT    + kxyFromfcNEQ_SEB    - kxyFromfcNEQ_NWB    + kxyFromfcNEQ_NET   ) + taz;
+      real tbyy = four*( vx1_SWT - vx1_SEB - vx1_NWB + vx1_NET) + two*( kxxMyyFromfcNEQ_SWT + kxxMyyFromfcNEQ_SEB - kxxMyyFromfcNEQ_NWB - kxxMyyFromfcNEQ_NET) - taz;
+      real tbzz = four*( vx3_SWT - vx3_SEB + vx3_NWB - vx3_NET) + two*( kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    - kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tcx;
+      real tcxx = four*( vx1_SWT + vx1_SEB - vx1_NWB - vx1_NET) + two*(-kxzFromfcNEQ_SWT    + kxzFromfcNEQ_SEB    - kxzFromfcNEQ_NWB    + kxzFromfcNEQ_NET   ) + tay;
+      real tcyy = four*( vx2_SWT - vx2_SEB + vx2_NWB - vx2_NET) + two*(-kyzFromfcNEQ_SWT    - kyzFromfcNEQ_SEB    + kyzFromfcNEQ_NWB    + kyzFromfcNEQ_NET   ) + tbx;
+      real tczz = four*(-vx1_SWT - vx1_SEB + vx1_NWB + vx1_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) - tay;
+      real ta0  = eight*( vx1_SWT + vx1_NWB + vx1_SEB + vx1_NET) + two*( kxxMzzFromfcNEQ_SWT - kxxMzzFromfcNEQ_SEB + kxxMzzFromfcNEQ_NWB - kxxMzzFromfcNEQ_NET) + two*(-kxzFromfcNEQ_SWT + kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tayy;
+      real tb0  = eight*( vx2_SWT + vx2_NWB + vx2_SEB + vx2_NET) + two*(-kxxMyyFromfcNEQ_SWT - kxxMyyFromfcNEQ_SEB + kxxMyyFromfcNEQ_NWB + kxxMyyFromfcNEQ_NET) + two*( kxyFromfcNEQ_SWT - kxyFromfcNEQ_SEB + kxyFromfcNEQ_NWB - kxyFromfcNEQ_NET   ) - tbzz;
+      real tc0  = eight*( vx3_SWT + vx3_NWB + vx3_SEB + vx3_NET) + two*(-kxxMzzFromfcNEQ_SWT + kxxMzzFromfcNEQ_SEB - kxxMzzFromfcNEQ_NWB + kxxMzzFromfcNEQ_NET) + two*( kxzFromfcNEQ_SWT - kxzFromfcNEQ_SEB + kxzFromfcNEQ_NWB - kxzFromfcNEQ_NET   ) - tcyy;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       a0  +=  ta0   ;
       ax  +=  tax   ;
@@ -23563,8 +23563,8 @@ extern "C" __global__ void scaleFCEff27(doubflo* DC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void scaleFC27(doubflo* DC, 
-                                     doubflo* DF, 
+extern "C" __global__ void scaleFC27(real* DC, 
+                                     real* DF, 
                                      unsigned int* neighborCX,
                                      unsigned int* neighborCY,
                                      unsigned int* neighborCZ,
@@ -23577,15 +23577,15 @@ extern "C" __global__ void scaleFC27(doubflo* DC,
                                      unsigned int* posC, 
                                      unsigned int* posFSWB, 
                                      unsigned int kFC, 
-										       doubflo omCoarse, 
-										       doubflo omFine, 
-										       doubflo nu, 
+										       real omCoarse, 
+										       real omFine, 
+										       real nu, 
 										       unsigned int nxC, 
 										       unsigned int nyC, 
 										       unsigned int nxF, 
 										       unsigned int nyF)
 {
-   doubflo *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
+   real *feF, *fwF, *fnF, *fsF, *ftF, *fbF, *fneF, *fswF, *fseF, *fnwF, *fteF, *fbwF, *fbeF, *ftwF, *ftnF, *fbsF, *fbnF, *ftsF, *fzeroF, 
          *ftneF, *ftswF, *ftseF, *ftnwF, *fbneF, *fbswF, *fbseF, *fbnwF;
 
    feF    = &DF[dirE   *size_MatF];
@@ -23616,7 +23616,7 @@ extern "C" __global__ void scaleFC27(doubflo* DC,
    fbseF  = &DF[dirBSE *size_MatF];
    fbnwF  = &DF[dirBNW *size_MatF];
 
-   doubflo *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
+   real *feC, *fwC, *fnC, *fsC, *ftC, *fbC, *fneC, *fswC, *fseC, *fnwC, *fteC, *fbwC, *fbeC, *ftwC, *ftnC, *fbsC, *fbnC, *ftsC, *fzeroC,
          *ftneC, *ftswC, *ftseC, *ftnwC, *fbneC, *fbswC, *fbseC, *fbnwC;
 
    if (evenOrOdd==true)
@@ -23691,35 +23691,35 @@ extern "C" __global__ void scaleFC27(doubflo* DC,
    //////////////////////////////////////////////////////////////////////////
 
    ////////////////////////////////////////////////////////////////////////////////
-   doubflo epsylon = one;
-   doubflo eps_new = two;
-   doubflo omegaS = omFine;//-omFine;
-   doubflo o  = omCoarse;//-omCoarse;
-   doubflo op = one;
-   doubflo cu_sq;
+   real epsylon = one;
+   real eps_new = two;
+   real omegaS = omFine;//-omFine;
+   real o  = omCoarse;//-omCoarse;
+   real op = one;
+   real cu_sq;
 
-   doubflo        drho,vx1,vx2,vx3;
-   doubflo        drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
-   doubflo        drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
-   doubflo        drho_NET,vx1_NET,vx2_NET,vx3_NET;
-   doubflo        drho_SET,vx1_SET,vx2_SET,vx3_SET;
-   doubflo        drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
-   doubflo        drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
-   doubflo        drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
-   doubflo        drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
-   doubflo        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
-   doubflo        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
-   doubflo        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
-   doubflo        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
-   doubflo        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
-   doubflo        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
-   doubflo        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
-   doubflo        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
-   doubflo        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
-   doubflo        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
-   doubflo        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz;
+   real        drho,vx1,vx2,vx3;
+   real        drho_SWT,vx1_SWT,vx2_SWT,vx3_SWT;
+   real        drho_NWT,vx1_NWT,vx2_NWT,vx3_NWT;
+   real        drho_NET,vx1_NET,vx2_NET,vx3_NET;
+   real        drho_SET,vx1_SET,vx2_SET,vx3_SET;
+   real        drho_SWB,vx1_SWB,vx2_SWB,vx3_SWB;
+   real        drho_NWB,vx1_NWB,vx2_NWB,vx3_NWB;
+   real        drho_NEB,vx1_NEB,vx2_NEB,vx3_NEB;
+   real        drho_SEB,vx1_SEB,vx2_SEB,vx3_SEB;
+   real        f_E,f_W,f_N,f_S,f_T,f_B,f_NE,f_SW,f_SE,f_NW,f_TE,f_BW,f_BE,f_TW,f_TN,f_BS,f_BN,f_TS,f_ZERO,f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
+   real        feq_E,feq_W,feq_N,feq_S,feq_T,feq_B,feq_NE,feq_SW,feq_SE,feq_NW,feq_TE,feq_BW,feq_BE,feq_TW,feq_TN,feq_BS,feq_BN,feq_TS,feq_ZERO,feq_TNE, feq_TSW, feq_TSE, feq_TNW, feq_BNE, feq_BSW, feq_BSE, feq_BNW;
+   real        kxyFromfcNEQ_SWT, kyzFromfcNEQ_SWT, kxzFromfcNEQ_SWT, kxxMyyFromfcNEQ_SWT, kxxMzzFromfcNEQ_SWT;
+   real        kxyFromfcNEQ_NWT, kyzFromfcNEQ_NWT, kxzFromfcNEQ_NWT, kxxMyyFromfcNEQ_NWT, kxxMzzFromfcNEQ_NWT;
+   real        kxyFromfcNEQ_NET, kyzFromfcNEQ_NET, kxzFromfcNEQ_NET, kxxMyyFromfcNEQ_NET, kxxMzzFromfcNEQ_NET;
+   real        kxyFromfcNEQ_SET, kyzFromfcNEQ_SET, kxzFromfcNEQ_SET, kxxMyyFromfcNEQ_SET, kxxMzzFromfcNEQ_SET;
+   real        kxyFromfcNEQ_SWB, kyzFromfcNEQ_SWB, kxzFromfcNEQ_SWB, kxxMyyFromfcNEQ_SWB, kxxMzzFromfcNEQ_SWB;
+   real        kxyFromfcNEQ_NWB, kyzFromfcNEQ_NWB, kxzFromfcNEQ_NWB, kxxMyyFromfcNEQ_NWB, kxxMzzFromfcNEQ_NWB;
+   real        kxyFromfcNEQ_NEB, kyzFromfcNEQ_NEB, kxzFromfcNEQ_NEB, kxxMyyFromfcNEQ_NEB, kxxMzzFromfcNEQ_NEB;
+   real        kxyFromfcNEQ_SEB, kyzFromfcNEQ_SEB, kxzFromfcNEQ_SEB, kxxMyyFromfcNEQ_SEB, kxxMzzFromfcNEQ_SEB;
+   real        a0, ax, ay, az, axx, ayy, azz, axy, axz, ayz, b0, bx, by, bz, bxx, byy, bzz, bxy, bxz, byz, c0, cx, cy, cz, cxx, cyy, czz, cxy, cxz, cyz;
 
-   doubflo x,y,z;
+   real x,y,z;
 
    if(k<kFC){
       //////////////////////////////////////////////////////////////////////////

@@ -156,7 +156,7 @@ void GridGenerator::setOutflow(int level, int sizePerLevel, int channelSide) con
 {
 	builder->setOutflowValues(para->getParH(level)->Qoutflow.RhoBC, para->getParH(level)->Qoutflow.kN, channelSide, level);
 	for (int index = 0; index < sizePerLevel; index++)
-		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (doubflo)0.0;
+		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
 }
 
 
@@ -179,6 +179,10 @@ void GridGenerator::allocArrays_BoundaryQs()
 		setGeoQs();
 
 	std::cout << "-----finish BoundaryQs------" << std::endl;
+}
+
+void GridGenerator::allocArrays_OffsetScale()
+{
 }
 
 
@@ -258,7 +262,7 @@ void GridGenerator::setGeoQs() const
 void GridGenerator::modifyQElement(int channelSide,  unsigned int level) const
 {
 	QforBoundaryConditions Q;
-	doubflo* QQ = para->getParH(level)->QGeom.q27[0];
+	real* QQ = para->getParH(level)->QGeom.q27[0];
 	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->QGeom.kQ];
 	for (int i = 0; i < builder->getBoundaryConditionSize(channelSide); i++)
 		Q.q27[dirZERO][i] = 0.0f;
@@ -279,7 +283,7 @@ bool GridGenerator::hasQs(int channelSide, unsigned int level) const
 	return builder->getBoundaryConditionSize(channelSide) > 0;
 }
 
-void GridGenerator::setQ27Size(QforBoundaryConditions &Q, doubflo* QQ, unsigned int sizeQ) const
+void GridGenerator::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
 	Q.q27[dirE] = &QQ[dirE   *sizeQ];
 	Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -353,14 +357,14 @@ void GridGenerator::setBoundingBox()
 	std::vector<int> localGridNZ(1);
 	builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
 
-	std::vector<doubflo> minX, maxX, minY, maxY, minZ, maxZ;
+	std::vector<real> minX, maxX, minY, maxY, minZ, maxZ;
 	minX.push_back(0);
 	minY.push_back(0);
 	minZ.push_back(0);
 
-	maxX.push_back((doubflo)localGridNX[0]);
-	maxY.push_back((doubflo)localGridNY[0]);
-	maxZ.push_back((doubflo)localGridNZ[0]);
+	maxX.push_back((real)localGridNX[0]);
+	maxY.push_back((real)localGridNY[0]);
+	maxZ.push_back((real)localGridNZ[0]);
 
 	para->setMinCoordX(minX);
 	para->setMinCoordY(minY);

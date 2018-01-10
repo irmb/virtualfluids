@@ -16,7 +16,7 @@ private:
 	std::string boundaryCondition;
 	bool procNeighbor;
 
-	std::vector< std::vector<std::vector<doubflo> > >values;
+	std::vector< std::vector<std::vector<real> > >values;
 	std::vector< std::vector<unsigned int> >indices;
 	std::vector<unsigned int> levelSizes;
 
@@ -32,15 +32,15 @@ public:
 	unsigned int getLevel();
 	unsigned int getSize(unsigned int level);
 	std::string getBoundaryCondition();
-	void setBoundarys(std::vector<std::vector<std::vector<doubflo> > > &qs) const;
+	void setBoundarys(std::vector<std::vector<std::vector<real> > > &qs) const;
 	void initIndex(/*unsigned*/ int *ptr, unsigned int level);
 
 	void setProcNeighbor(bool pN);
 	bool getProcNeighbor();
 
-	void setPressValues(doubflo *RhoBC, int* kN, int level) const;
-	void setVelocityValues(doubflo *vx, doubflo *vy, doubflo *vz, int level) const;
-	void setOutflowValues(doubflo *RhoBC, int* kN, int level) const;
+	void setPressValues(real *RhoBC, int* kN, int level) const;
+	void setVelocityValues(real *vx, real *vy, real *vz, int level) const;
+	void setOutflowValues(real *RhoBC, int* kN, int level) const;
 
 private:
 	void init();

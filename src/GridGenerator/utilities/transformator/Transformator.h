@@ -15,7 +15,7 @@ struct Vertex;
 class Transformator
 {
 public:
-    static VF_PUBLIC std::shared_ptr<Transformator> makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
+    static VF_PUBLIC std::shared_ptr<Transformator> makeTransformator(real delta, real dx, real dy, real dz);
 	virtual ~Transformator() {}
 
 protected:
@@ -29,8 +29,8 @@ public:
     virtual void transformGridToWorld(Triangle &t) const = 0;
 	virtual void transformGridToWorld(Vertex &value) const = 0;
 	
-	virtual void transformGridToWorld(BoundingBox<doubflo> &box) const = 0;
-	virtual void transformWorldToGrid(BoundingBox<doubflo> &box) const = 0;
+	virtual void transformGridToWorld(BoundingBox<real> &box) const = 0;
+	virtual void transformWorldToGrid(BoundingBox<real> &box) const = 0;
 
 };
 

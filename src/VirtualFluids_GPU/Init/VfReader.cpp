@@ -312,10 +312,10 @@ void readMeasurePoints(Parameter* para)
 		para->getParH(lev)->memSizeIntkMP = sizeof(unsigned int)*(int)para->getParH(lev)->MP.size();
 		para->getParD(lev)->memSizeIntkMP = para->getParH(lev)->memSizeIntkMP;
 
-		para->getParH(lev)->memSizeDoubflokMP = sizeof(doubflo)*para->getParH(lev)->numberOfValuesMP;
-		para->getParD(lev)->memSizeDoubflokMP = para->getParH(lev)->memSizeDoubflokMP;		
+		para->getParH(lev)->memSizerealkMP = sizeof(real)*para->getParH(lev)->numberOfValuesMP;
+		para->getParD(lev)->memSizerealkMP = para->getParH(lev)->memSizerealkMP;		
 		
-		printf("Level: %d, numberOfValuesMP: %d, memSizeIntkMP: %d, memSizeDoubflokMP: %d\n",lev,para->getParH(lev)->numberOfValuesMP,para->getParH(lev)->memSizeIntkMP, para->getParD(lev)->memSizeDoubflokMP);
+		printf("Level: %d, numberOfValuesMP: %d, memSizeIntkMP: %d, memSizerealkMP: %d\n",lev,para->getParH(lev)->numberOfValuesMP,para->getParH(lev)->memSizeIntkMP, para->getParD(lev)->memSizerealkMP);
 
 		para->cudaAllocMeasurePointsIndex(lev);
 
@@ -329,10 +329,10 @@ void readMeasurePoints(Parameter* para)
 		for(int index = 0; index < (int)para->getParH(lev)->numberOfValuesMP; index++)
 		{
 			//init values
-			para->getParH(lev)->VxMP[index]  = (doubflo)0.0;
-			para->getParH(lev)->VyMP[index]  = (doubflo)0.0;
-			para->getParH(lev)->VzMP[index]  = (doubflo)0.0;
-			para->getParH(lev)->RhoMP[index] = (doubflo)0.0;
+			para->getParH(lev)->VxMP[index]  = (real)0.0;
+			para->getParH(lev)->VyMP[index]  = (real)0.0;
+			para->getParH(lev)->VzMP[index]  = (real)0.0;
+			para->getParH(lev)->RhoMP[index] = (real)0.0;
 		}
 
 		//copy indices-arrays

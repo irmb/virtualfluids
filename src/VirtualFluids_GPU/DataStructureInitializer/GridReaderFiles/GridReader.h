@@ -1,7 +1,7 @@
 #ifndef GridReaderFiles_H
 #define GridReaderFiles_H
 
-#include "VirtualFluids_GPU_EXPORT.h"
+#include <VirtualFluidsDefinitions.h>
 
 #include "../GridProvider.h"
 
@@ -27,16 +27,17 @@ private:
 	std::vector<std::shared_ptr<BoundaryValues> > BC_Values;
 
 public:
-	VirtualFluids_GPU_EXPORT GridReader(bool binaer, std::shared_ptr<Parameter> para);
-	VirtualFluids_GPU_EXPORT ~GridReader();
-	void allocArrays_CoordNeighborGeo();
-	void allocArrays_BoundaryValues();
+	VF_PUBLIC GridReader(bool binaer, std::shared_ptr<Parameter> para);
+    VF_PUBLIC ~GridReader();
+	void allocArrays_CoordNeighborGeo()override;
+	void allocArrays_BoundaryValues()override;
+    void allocArrays_OffsetScale() override;
 
 	void initalValuesDomainDecompostion(int level);
 
 	void setChannelBoundaryCondition();
 
-	void allocArrays_BoundaryQs();
+	void allocArrays_BoundaryQs()override;
 	bool getBinaer();
 	void setDimensions();
 	void setBoundingBox();
@@ -67,9 +68,8 @@ private:
 	void printQSize(std::string bc, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
-	void setQ27Size(QforBoundaryConditions &Q, doubflo* QQ, unsigned int sizeQ) const;
+	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
-
 };
 
 #endif

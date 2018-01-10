@@ -40,18 +40,7 @@
 //////////////////////////////////////////////////////////////////////////
 // precision                             (change between double and float)
 //
-//#define ISFLOAT
-#define ISDOUBLE
-///////////////////////////
-#ifdef ISDOUBLE
-typedef double doubflo;
-#define DOUBFLO double
-#endif
-///////////////////////////
-#ifdef ISFLOAT
-typedef float doubflo;
-#define DOUBFLO float
-#endif
+#include <core/DataTypes.h>
 //////////////////////////////////////////////////////////////////////////
 
 #include <string>
@@ -61,18 +50,18 @@ typedef float doubflo;
 
 // Initial condition
 typedef struct InitCond{
-   doubflo Re;
-   doubflo factorPressBC;
-   doubflo Diffusivity, Temp, TempBC;
-   doubflo RealX, RealY;
+   real Re;
+   real factorPressBC;
+   real Diffusivity, Temp, TempBC;
+   real RealX, RealY;
    int numprocs, myid, maxdev;
    unsigned int tend, tout, tStartOut, tCalcMedStart, tCalcMedEnd, tDoCheckPoint, tDoRestart;
    unsigned int PressInID, PressOutID;
    unsigned int PressInZ, PressOutZ;
    std::vector<int> devices;
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
-   std::vector<doubflo> scaleLBMtoSI, translateLBMtoSI;
-   std::vector<doubflo> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
+   std::vector<real> scaleLBMtoSI, translateLBMtoSI;
+   std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
    std::vector<bool> NeedInterface;
    std::string fname, oPath, oPrefix;
    std::string geometryFileC, geometryFileM, geometryFileF;
@@ -96,10 +85,10 @@ typedef struct InitCond{
    std::string concentration;
    std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
    unsigned int timeStepForMP;
-   doubflo clockCycleForMP;
-   doubflo vis, vis_ratio;
-   doubflo u0, u0_ratio;
-   doubflo delta_rho, delta_press;
+   real clockCycleForMP;
+   real vis, vis_ratio;
+   real u0, u0_ratio;
+   real delta_rho, delta_press;
    bool  printFiles, readGeo, doRestart, doCheckPoint, isGeo, isProp, isCp, calcMedian, GeometryValues, isConc, is2ndOrderMoments, is3rdOrderMoments, isHighOrderMoments, isWale, isMeasurePoints;
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
    bool simulatePorousMedia;
@@ -120,35 +109,35 @@ typedef struct ICellFC{
 
 //Offset of the interface cells at the wall
 typedef struct OffCF{
-   doubflo* xOffCF;
-   doubflo* yOffCF;
-   doubflo* zOffCF;
+   real* xOffCF;
+   real* yOffCF;
+   real* zOffCF;
 } OffsetCF;
 
 typedef struct OffFC{
-   doubflo* xOffFC;
-   doubflo* yOffFC;
-   doubflo* zOffFC;
+   real* xOffFC;
+   real* yOffFC;
+   real* zOffFC;
 } OffsetFC;
 
 // Distribution functions g 6
 typedef struct  Distri6 {
-	doubflo* g[6];
+	real* g[6];
 } Distributions6;
 
 // Distribution functions f 7
 typedef struct  Distri7{
-   doubflo* f[7];
+   real* f[7];
 } Distributions7;
 
 // Distribution functions f 19
 typedef struct  Distri19{
-   doubflo* f[19];
+   real* f[19];
 } Distributions19;
 
 // Distribution functions f 27
 typedef struct  Distri27{
-   doubflo* f[27];
+   real* f[27];
    ////////////////////////////////////////////////////////////////////////////
    ////Restart
    //friend class boost::serialization::access;
@@ -166,35 +155,35 @@ typedef struct QforBC{
    int* k;
    int* kN;
    long long* valueQ;
-   doubflo* qread;
-   doubflo* q27[27];
-   doubflo* q19[19];
+   real* qread;
+   real* q27[27];
+   real* q19[19];
    int kQ;
    int kArray;
-   doubflo *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
+   real *Vx, *Vy, *Vz, *deltaVz, *RhoBC;
 }QforBoundaryConditions;
 
 //BCTemp
 typedef struct TempforBC{
    int* k;
-   doubflo* temp;
+   real* temp;
    int kTemp;
 }TempforBoundaryConditions;
 
 //BCTempVel
 typedef struct TempVelforBC{
    int* k;
-   doubflo* temp;
-   doubflo* tempPulse;
-   doubflo* velo;
+   real* temp;
+   real* tempPulse;
+   real* velo;
    int kTemp;
 }TempVelforBoundaryConditions;
 
 //BCTempPress
 typedef struct TempPressforBC{
    int* k;
-   doubflo* temp;
-   doubflo* velo;
+   real* temp;
+   real* velo;
    int kTemp;
 }TempPressforBoundaryConditions;
 
@@ -202,19 +191,19 @@ typedef struct TempPressforBC{
 typedef struct MeasP{
 	std::string name;
 	unsigned int k;
-	std::vector<doubflo> Vx;
-	std::vector<doubflo> Vy;
-	std::vector<doubflo> Vz;
-	std::vector<doubflo> Rho;
-	//doubflo* Vx;
-	//doubflo* Vy;
-	//doubflo* Vz;
-	//doubflo* Rho;
+	std::vector<real> Vx;
+	std::vector<real> Vy;
+	std::vector<real> Vz;
+	std::vector<real> Rho;
+	//real* Vx;
+	//real* Vy;
+	//real* Vz;
+	//real* Rho;
 }MeasurePoints;
 
 //Process Neighbors
 typedef struct PN27{
-	doubflo* f[27];
+	real* f[27];
 	unsigned int memsizeFs;
 	int* index;
 	unsigned int memsizeIndex;
@@ -226,15 +215,15 @@ typedef struct PN27{
 //path line particles
 typedef struct PLP{
 	bool    *stuck, *hot;
-	doubflo *coordXabsolut, *coordYabsolut, *coordZabsolut;
-	doubflo *coordXlocal,   *coordYlocal,   *coordZlocal;
-	doubflo *veloX,         *veloY,         *veloZ;
-	doubflo *randomLocationInit;
+	real *coordXabsolut, *coordYabsolut, *coordZabsolut;
+	real *coordXlocal,   *coordYlocal,   *coordZlocal;
+	real *veloX,         *veloY,         *veloZ;
+	real *randomLocationInit;
 	unsigned int *timestep;
 	unsigned int *ID;
 	unsigned int *cellBaseID;
 	unsigned int numberOfParticles, numberOfTimestepsParticles;
-	unsigned int memSizeID, memSizeTimestep, memSizeDoubfloAll, memSizeDoubflo, memSizeBool, memSizeBoolBC;
+	unsigned int memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
 
 //////////////////////////////////////////////////////////////////////////

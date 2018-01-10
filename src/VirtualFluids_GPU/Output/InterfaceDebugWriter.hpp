@@ -420,9 +420,9 @@ namespace InterfaceDebugWriter
 			{
 				int pos = para->getParH(level)->QPress.kN[u];
 
-				doubflo x1 = para->getParH(level)->coordX_SP[pos];
-				doubflo x2 = para->getParH(level)->coordY_SP[pos];
-				doubflo x3 = para->getParH(level)->coordZ_SP[pos];
+				real x1 = para->getParH(level)->coordX_SP[pos];
+				real x2 = para->getParH(level)->coordY_SP[pos];
+				real x3 = para->getParH(level)->coordZ_SP[pos];
 
 				nodesVec[nodeCount2++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 			}
@@ -449,9 +449,9 @@ namespace InterfaceDebugWriter
 		{
 			for(unsigned int u=0;u<para->getParH(level)->size_Mat_SP;u++)
 			{
-				doubflo x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[u]];
-				doubflo x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborX_SP[u]];
-				doubflo x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborX_SP[u]];
+				real x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[u]];
+				real x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborX_SP[u]];
+				real x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborX_SP[u]];
 
 				nodesVec[nodeCount2++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 			}
@@ -479,12 +479,12 @@ namespace InterfaceDebugWriter
 		{
 			for(unsigned int u=0;u<para->getParH(level)->size_Mat_SP;u++)
 			{
-				doubflo x1 = para->getParH(level)->coordX_SP[u];
-				doubflo x2 = para->getParH(level)->coordY_SP[u];
-				doubflo x3 = para->getParH(level)->coordZ_SP[u];
-				doubflo x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[u]];
-				doubflo x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborX_SP[u]];
-				doubflo x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborX_SP[u]];
+				real x1 = para->getParH(level)->coordX_SP[u];
+				real x2 = para->getParH(level)->coordY_SP[u];
+				real x3 = para->getParH(level)->coordZ_SP[u];
+				real x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[u]];
+				real x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborX_SP[u]];
+				real x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborX_SP[u]];
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1N),(float)(x2N),(float)(x3N) ) );
@@ -518,9 +518,9 @@ namespace InterfaceDebugWriter
 		{
 			for(unsigned int u=0;u<para->getParH(level)->size_Mat_SP;u++)
 			{
-				doubflo x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborY_SP[u]];
-				doubflo x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[u]];
-				doubflo x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborY_SP[u]];
+				real x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborY_SP[u]];
+				real x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[u]];
+				real x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborY_SP[u]];
 
 				nodesVec[nodeCount2++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 			}
@@ -548,12 +548,12 @@ namespace InterfaceDebugWriter
 		{
 			for(unsigned int u=0;u<para->getParH(level)->size_Mat_SP;u++)
 			{
-				doubflo x1 = para->getParH(level)->coordX_SP[u];
-				doubflo x2 = para->getParH(level)->coordY_SP[u];
-				doubflo x3 = para->getParH(level)->coordZ_SP[u];
-				doubflo x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborY_SP[u]];
-				doubflo x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[u]];
-				doubflo x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborY_SP[u]];
+				real x1 = para->getParH(level)->coordX_SP[u];
+				real x2 = para->getParH(level)->coordY_SP[u];
+				real x3 = para->getParH(level)->coordZ_SP[u];
+				real x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborY_SP[u]];
+				real x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[u]];
+				real x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborY_SP[u]];
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1N),(float)(x2N),(float)(x3N) ) );
@@ -587,9 +587,9 @@ namespace InterfaceDebugWriter
 		{
 			for(unsigned int u=0;u<para->getParH(level)->size_Mat_SP;u++)
 			{
-				doubflo x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborZ_SP[u]];
-				doubflo x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborZ_SP[u]];
-				doubflo x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[u]];
+				real x1 = para->getParH(level)->coordX_SP[para->getParH(level)->neighborZ_SP[u]];
+				real x2 = para->getParH(level)->coordY_SP[para->getParH(level)->neighborZ_SP[u]];
+				real x3 = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[u]];
 
 				nodesVec[nodeCount2++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 			}
@@ -617,12 +617,12 @@ namespace InterfaceDebugWriter
 		{
 			for(unsigned int u=0;u<para->getParH(level)->size_Mat_SP;u++)
 			{
-				doubflo x1 = para->getParH(level)->coordX_SP[u];
-				doubflo x2 = para->getParH(level)->coordY_SP[u];
-				doubflo x3 = para->getParH(level)->coordZ_SP[u];
-				doubflo x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborZ_SP[u]];
-				doubflo x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborZ_SP[u]];
-				doubflo x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[u]];
+				real x1 = para->getParH(level)->coordX_SP[u];
+				real x2 = para->getParH(level)->coordY_SP[u];
+				real x3 = para->getParH(level)->coordZ_SP[u];
+				real x1N = para->getParH(level)->coordX_SP[para->getParH(level)->neighborZ_SP[u]];
+				real x2N = para->getParH(level)->coordY_SP[para->getParH(level)->neighborZ_SP[u]];
+				real x3N = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[u]];
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1N),(float)(x2N),(float)(x3N) ) );

@@ -9,6 +9,7 @@
 #include "BoundaryValues.h"
 
 #include <GPU/CudaMemoryManager.h>
+#include "OffsetScale.h"
 
 GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para)
 {
@@ -101,6 +102,84 @@ void GridReader::allocArrays_BoundaryValues()
 	initalValuesDomainDecompostion(level);
 }
 
+void GridReader::allocArrays_OffsetScale()
+{
+    cout << "-----Config Arrays OffsetScale------" << endl;
+    OffsetScale *obj_offCF = new OffsetScale(para->getscaleOffsetCF(), true);
+    OffsetScale *obj_offFC = new OffsetScale(para->getscaleOffsetFC(), true);
+    OffsetScale *obj_scaleCFC = new OffsetScale(para->getscaleCFC(), false);
+    OffsetScale *obj_scaleCFF = new OffsetScale(para->getscaleCFF(), false);
+    OffsetScale *obj_scaleFCC = new OffsetScale(para->getscaleFCC(), false);
+    OffsetScale *obj_scaleFCF = new OffsetScale(para->getscaleFCF(), false);
+
+    int level = obj_offCF->getLevel();
+
+    int AnzahlKnotenGesCF = 0;
+    int AnzahlKnotenGesFC = 0;
+
+    for (int i = 0; i<level; i++) {
+        unsigned int tempCF = obj_offCF->getSize(i);
+        cout << "Groesse der Daten CF vom Level " << i << " : " << tempCF << endl;
+        unsigned int tempFC = obj_offFC->getSize(i);
+        cout << "Groesse der Daten FC vom Level " << i << " : " << tempFC << endl;
+
+        AnzahlKnotenGesCF += tempCF;
+        AnzahlKnotenGesFC += tempFC;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //size + memsize CF
+        para->getParH(i)->K_CF = tempCF;
+        para->getParD(i)->K_CF = para->getParH(i)->K_CF;
+        para->getParH(i)->intCF.kCF = para->getParH(i)->K_CF;
+        para->getParD(i)->intCF.kCF = para->getParH(i)->K_CF;
+        para->getParH(i)->mem_size_kCF = sizeof(unsigned int)* para->getParH(i)->K_CF;
+        para->getParD(i)->mem_size_kCF = sizeof(unsigned int)* para->getParD(i)->K_CF;
+        para->getParH(i)->mem_size_kCF_off = sizeof(real)* para->getParH(i)->K_CF;
+        para->getParD(i)->mem_size_kCF_off = sizeof(real)* para->getParD(i)->K_CF;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //size + memsize FC
+        para->getParH(i)->K_FC = tempFC;
+        para->getParD(i)->K_FC = para->getParH(i)->K_FC;
+        para->getParH(i)->intFC.kFC = para->getParH(i)->K_FC;
+        para->getParD(i)->intFC.kFC = para->getParH(i)->K_FC;
+        para->getParH(i)->mem_size_kFC = sizeof(unsigned int)* para->getParH(i)->K_FC;
+        para->getParD(i)->mem_size_kFC = sizeof(unsigned int)* para->getParD(i)->K_FC;
+        para->getParH(i)->mem_size_kFC_off = sizeof(real)* para->getParH(i)->K_FC;
+        para->getParD(i)->mem_size_kFC_off = sizeof(real)* para->getParD(i)->K_FC;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //alloc
+        para->cudaAllocInterfaceCF(i);
+        para->cudaAllocInterfaceFC(i);
+        para->cudaAllocInterfaceOffCF(i);
+        para->cudaAllocInterfaceOffFC(i);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //init
+        obj_offCF->initArrayOffset(para->getParH(i)->offCF.xOffCF, para->getParH(i)->offCF.yOffCF, para->getParH(i)->offCF.zOffCF, i);
+        obj_offFC->initArrayOffset(para->getParH(i)->offFC.xOffFC, para->getParH(i)->offFC.yOffFC, para->getParH(i)->offFC.zOffFC, i);
+        obj_scaleCFC->initScale(para->getParH(i)->intCF.ICellCFC, i);
+        obj_scaleCFF->initScale(para->getParH(i)->intCF.ICellCFF, i);
+        obj_scaleFCC->initScale(para->getParH(i)->intFC.ICellFCC, i);
+        obj_scaleFCF->initScale(para->getParH(i)->intFC.ICellFCF, i);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //copy
+        para->cudaCopyInterfaceCF(i);
+        para->cudaCopyInterfaceFC(i);
+        para->cudaCopyInterfaceOffCF(i);
+        para->cudaCopyInterfaceOffFC(i);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+    cout << "Gesamtanzahl Knoten CF = " << AnzahlKnotenGesCF << endl;
+    cout << "Gesamtanzahl Knoten FC = " << AnzahlKnotenGesFC << endl;
+
+    delete obj_offCF;
+    delete obj_offFC;
+    delete obj_scaleCFC;
+    delete obj_scaleCFF;
+    delete obj_scaleFCC;
+    delete obj_scaleFCF;
+    cout << "-----Ende OffsetScale------" << endl;
+}
+
 
 void GridReader::setPressureValues(int channelSide) const
 {
@@ -185,7 +264,7 @@ void GridReader::setOutflow(int level, int sizePerLevel, int channelSide) const
 {
 	BC_Values[channelSide]->setOutflowValues(para->getParH(level)->Qoutflow.RhoBC, para->getParH(level)->Qoutflow.kN, level);
 	for (int index = 0; index < sizePerLevel; index++)
-		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (doubflo)0.0;
+		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
 }
 
 
@@ -257,8 +336,8 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->sendProcessNeighborX[j].numberOfFs = para->getD3Qxx() * tempSend;
 					para->getParH(i)->sendProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempSend;
 					para->getParD(i)->sendProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempSend;
-					para->getParH(i)->sendProcessNeighborX[j].memsizeFs = sizeof(doubflo)     *tempSend;
-					para->getParD(i)->sendProcessNeighborX[j].memsizeFs = sizeof(doubflo)     *tempSend;
+					para->getParH(i)->sendProcessNeighborX[j].memsizeFs = sizeof(real)     *tempSend;
+					para->getParD(i)->sendProcessNeighborX[j].memsizeFs = sizeof(real)     *tempSend;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//recv
 					std::cout << "size of Data for X receive buffer, Level " << i << " : " << tempRecv << std::endl;
@@ -272,8 +351,8 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->recvProcessNeighborX[j].numberOfFs = para->getD3Qxx() * tempRecv;
 					para->getParH(i)->recvProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
 					para->getParD(i)->recvProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
-					para->getParH(i)->recvProcessNeighborX[j].memsizeFs = sizeof(doubflo)     *tempRecv;
-					para->getParD(i)->recvProcessNeighborX[j].memsizeFs = sizeof(doubflo)     *tempRecv;
+					para->getParH(i)->recvProcessNeighborX[j].memsizeFs = sizeof(real)     *tempRecv;
+					para->getParD(i)->recvProcessNeighborX[j].memsizeFs = sizeof(real)     *tempRecv;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//malloc on host and device
                     cudaMemoryManager->cudaAllocProcessNeighborX(i, j);
@@ -313,8 +392,8 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->sendProcessNeighborY[j].numberOfFs = para->getD3Qxx() * tempSend;
 					para->getParH(i)->sendProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempSend;
 					para->getParD(i)->sendProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempSend;
-					para->getParH(i)->sendProcessNeighborY[j].memsizeFs = sizeof(doubflo)     *tempSend;
-					para->getParD(i)->sendProcessNeighborY[j].memsizeFs = sizeof(doubflo)     *tempSend;
+					para->getParH(i)->sendProcessNeighborY[j].memsizeFs = sizeof(real)     *tempSend;
+					para->getParD(i)->sendProcessNeighborY[j].memsizeFs = sizeof(real)     *tempSend;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//recv
 					std::cout << "size of Data for Y receive buffer, Level " << i << " : " << tempRecv << std::endl;
@@ -328,8 +407,8 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->recvProcessNeighborY[j].numberOfFs = para->getD3Qxx() * tempRecv;
 					para->getParH(i)->recvProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
 					para->getParD(i)->recvProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
-					para->getParH(i)->recvProcessNeighborY[j].memsizeFs = sizeof(doubflo)     *tempRecv;
-					para->getParD(i)->recvProcessNeighborY[j].memsizeFs = sizeof(doubflo)     *tempRecv;
+					para->getParH(i)->recvProcessNeighborY[j].memsizeFs = sizeof(real)     *tempRecv;
+					para->getParD(i)->recvProcessNeighborY[j].memsizeFs = sizeof(real)     *tempRecv;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//malloc on host and device
                     cudaMemoryManager->cudaAllocProcessNeighborY(i, j);
@@ -369,8 +448,8 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->sendProcessNeighborZ[j].numberOfFs = para->getD3Qxx() * tempSend;
 					para->getParH(i)->sendProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempSend;
 					para->getParD(i)->sendProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempSend;
-					para->getParH(i)->sendProcessNeighborZ[j].memsizeFs = sizeof(doubflo)     *tempSend;
-					para->getParD(i)->sendProcessNeighborZ[j].memsizeFs = sizeof(doubflo)     *tempSend;
+					para->getParH(i)->sendProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempSend;
+					para->getParD(i)->sendProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempSend;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//recv
 					std::cout << "size of Data for Z receive buffer, Level " << i << " : " << tempRecv << std::endl;
@@ -384,8 +463,8 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->recvProcessNeighborZ[j].numberOfFs = para->getD3Qxx() * tempRecv;
 					para->getParH(i)->recvProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
 					para->getParD(i)->recvProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
-					para->getParH(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(doubflo)     *tempRecv;
-					para->getParD(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(doubflo)     *tempRecv;
+					para->getParH(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempRecv;
+					para->getParD(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempRecv;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//malloc on host and device
                     cudaMemoryManager->cudaAllocProcessNeighborZ(i, j);
@@ -501,7 +580,7 @@ void GridReader::setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 void GridReader::modifyQElement(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
 {
 	QforBoundaryConditions Q;
-	doubflo* QQ = para->getParH(level)->QGeom.q27[0];
+	real* QQ = para->getParH(level)->QGeom.q27[0];
 	Q.q27[dirZERO] = &QQ[dirZERO * para->getParH(level)->QGeom.kQ];
 	for (unsigned int i = 0; i < boundaryQ->getSize(level); i++)
 		Q.q27[dirZERO][i] = 0.0f;
@@ -523,7 +602,7 @@ bool GridReader::hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level
 	return boundaryQ->getSize(level) > 0;
 }
 
-void GridReader::setQ27Size(QforBoundaryConditions &Q, doubflo* QQ, unsigned int sizeQ) const
+void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
 	Q.q27[dirE] = &QQ[dirE   *sizeQ];
 	Q.q27[dirW] = &QQ[dirW   *sizeQ];
@@ -614,22 +693,22 @@ void GridReader::setBoundingBox()
 		std::cerr << "can't open file LBMvsSI" << std::endl;
 		exit(1);
 	}
-	doubflo bufferDoubflo;
-	std::vector<doubflo> minX, maxX, minY, maxY, minZ, maxZ;
+	real bufferreal;
+	std::vector<real> minX, maxX, minY, maxY, minZ, maxZ;
 
 	for (int i = 0; i <= para->getMaxLevel(); i++) {
-		numberNodes >> bufferDoubflo;
-		minX.push_back(bufferDoubflo);
-		numberNodes >> bufferDoubflo;
-		minY.push_back(bufferDoubflo);
-		numberNodes >> bufferDoubflo;
-		minZ.push_back(bufferDoubflo);
-		numberNodes >> bufferDoubflo;
-		maxX.push_back(bufferDoubflo);
-		numberNodes >> bufferDoubflo;
-		maxY.push_back(bufferDoubflo);
-		numberNodes >> bufferDoubflo;
-		maxZ.push_back(bufferDoubflo);
+		numberNodes >> bufferreal;
+		minX.push_back(bufferreal);
+		numberNodes >> bufferreal;
+		minY.push_back(bufferreal);
+		numberNodes >> bufferreal;
+		minZ.push_back(bufferreal);
+		numberNodes >> bufferreal;
+		maxX.push_back(bufferreal);
+		numberNodes >> bufferreal;
+		maxY.push_back(bufferreal);
+		numberNodes >> bufferreal;
+		maxZ.push_back(bufferreal);
 	}
 	para->setMinCoordX(minX);
 	para->setMinCoordY(minY);

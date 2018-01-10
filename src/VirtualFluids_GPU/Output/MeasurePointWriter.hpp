@@ -60,9 +60,9 @@ public:
 
 		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
 		
-		doubflo deltaX = 1.0f / pow(2, level);
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordZ()[0] + para->getMinCoordZ()[0]) / 2.f;
+		real deltaX = 1.0f / pow(2, level);
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordZ()[0] + para->getMinCoordZ()[0]) / 2.f;
 		//cout << "deltax: " << deltaX << ", halfDx: " << halfDx << ", middle of the grid: " << middleOfTheGrid << endl;
 
 		for (int u = 0; u < numberNodes; u++)
@@ -93,9 +93,9 @@ public:
 
 		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
 
-		doubflo deltaX = 1.0f / pow(2, level);
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordX()[0] + para->getMinCoordX()[0]) / 2.f;
+		real deltaX = 1.0f / pow(2, level);
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordX()[0] + para->getMinCoordX()[0]) / 2.f;
 
 		for (int u = 0; u < numberNodes; u++)
 		{
@@ -125,9 +125,9 @@ public:
 
 		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
 
-		doubflo deltaX = 1.0f / pow(2, level);
-		doubflo halfDx = deltaX / 2.0f;
-		doubflo middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
+		real deltaX = 1.0f / pow(2, level);
+		real halfDx = deltaX / 2.0f;
+		real middleOfTheGrid = (para->getMaxCoordY()[0] + para->getMinCoordY()[0]) / 2.f;
 
 		for (int u = 0; u < numberNodes; u++)
 		{

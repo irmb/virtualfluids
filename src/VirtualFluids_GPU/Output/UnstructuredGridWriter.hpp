@@ -1851,7 +1851,7 @@ namespace UnstrucuredGridWriter
 		int wall = 1;
 		int line = 0;
 		double dx = 1.0 / pow(2, level);
-		doubflo* QQ;
+		real* QQ;
 		QforBoundaryConditions Q;
 		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
 		//////////////////////////////////////////////////////////////////////////

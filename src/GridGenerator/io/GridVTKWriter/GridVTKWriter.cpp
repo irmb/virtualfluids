@@ -88,7 +88,7 @@ void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, cons
     unsigned int x, y, z;
     for (unsigned int i = 0; i < size; i++) {
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
-        Vertex v((doubflo)x, (doubflo)y, (doubflo)z);
+        Vertex v((real)x, (real)y, (real)z);
         trans->transformGridToWorld(v);
         if (binaer) {
             write_float((float)v.x);

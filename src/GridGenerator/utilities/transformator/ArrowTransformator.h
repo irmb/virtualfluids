@@ -10,7 +10,7 @@ class Arrow;
 class ArrowTransformator
 {
 public:
-    static VF_PUBLIC std::shared_ptr<ArrowTransformator> makeTransformator(doubflo delta, doubflo dx, doubflo dy, doubflo dz);
+    static VF_PUBLIC std::shared_ptr<ArrowTransformator> makeTransformator(real delta, real dx, real dy, real dz);
 	virtual ~ArrowTransformator() {}
 
 protected:

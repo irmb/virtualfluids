@@ -9,7 +9,7 @@ extern "C" void findQ(Parameter* para, int lev);
 
 extern "C" void findKforQ(Parameter* para, int lev);
 
-extern "C" void findQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, unsigned int sizeQ, doubflo* QQ, QforBoundaryConditions &QIN);
+extern "C" void findQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, unsigned int sizeQ, real* QQ, QforBoundaryConditions &QIN);
 
 extern "C" void findKforQ_MG(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, QforBoundaryConditions &QIN);
 
@@ -26,10 +26,10 @@ extern "C" void findQOutflow(Parameter* para);
 extern "C" void findKforQOutflow(Parameter* para);
 
 //extern "C" void findQSchlaff( int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, unsigned int* kk, 
-//                              unsigned int sizeQN, doubflo* vxN, doubflo* vyN, doubflo* vzN, doubflo*deltaVN, doubflo* QQN, QforBoundaryConditions &QNin,
-//                              unsigned int sizeQS, doubflo* vxS, doubflo* vyS, doubflo* vzS, doubflo*deltaVS, doubflo* QQS, QforBoundaryConditions &QSin,
-//                              unsigned int sizeQE, doubflo* vxE, doubflo* vyE, doubflo* vzE, doubflo*deltaVE, doubflo* QQE, QforBoundaryConditions &QEin,
-//                              unsigned int sizeQW, doubflo* vxW, doubflo* vyW, doubflo* vzW, doubflo*deltaVW, doubflo* QQW, QforBoundaryConditions &QWin);
+//                              unsigned int sizeQN, real* vxN, real* vyN, real* vzN, real*deltaVN, real* QQN, QforBoundaryConditions &QNin,
+//                              unsigned int sizeQS, real* vxS, real* vyS, real* vzS, real*deltaVS, real* QQS, QforBoundaryConditions &QSin,
+//                              unsigned int sizeQE, real* vxE, real* vyE, real* vzE, real*deltaVE, real* QQE, QforBoundaryConditions &QEin,
+//                              unsigned int sizeQW, real* vxW, real* vyW, real* vzW, real*deltaVW, real* QQW, QforBoundaryConditions &QWin);
 //
 //extern "C" void findKforQSchlaff(int nx, int ny, unsigned int nnx, unsigned int nny, unsigned int nnz, int* geo_mat, QforBoundaryConditions &QN, QforBoundaryConditions &QS, QforBoundaryConditions &QE, QforBoundaryConditions &QW);
 

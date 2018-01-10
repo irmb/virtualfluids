@@ -3,12 +3,12 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QInflowScaleByPressDevice27(  doubflo* rhoBC,
-														 doubflo* DD, 
+extern "C" __global__ void QInflowScaleByPressDevice27(  real* rhoBC,
+														 real* DD, 
 														 int* k_Q, 
 														 int* k_N, 
 														 int kQ, 
-														 doubflo om1, 
+														 real om1, 
 														 unsigned int* neighborX,
 														 unsigned int* neighborY,
 														 unsigned int* neighborZ,
@@ -151,63 +151,63 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo f1_E    = (D.f[dirE   ])[k1e   ];
-      doubflo f1_W    = (D.f[dirW   ])[k1w   ];
-      doubflo f1_N    = (D.f[dirN   ])[k1n   ];
-      doubflo f1_S    = (D.f[dirS   ])[k1s   ];
-      doubflo f1_T    = (D.f[dirT   ])[k1t   ];
-      doubflo f1_B    = (D.f[dirB   ])[k1b   ];
-      doubflo f1_NE   = (D.f[dirNE  ])[k1ne  ];
-      doubflo f1_SW   = (D.f[dirSW  ])[k1sw  ];
-      doubflo f1_SE   = (D.f[dirSE  ])[k1se  ];
-      doubflo f1_NW   = (D.f[dirNW  ])[k1nw  ];
-      doubflo f1_TE   = (D.f[dirTE  ])[k1te  ];
-      doubflo f1_BW   = (D.f[dirBW  ])[k1bw  ];
-      doubflo f1_BE   = (D.f[dirBE  ])[k1be  ];
-      doubflo f1_TW   = (D.f[dirTW  ])[k1tw  ];
-      doubflo f1_TN   = (D.f[dirTN  ])[k1tn  ];
-      doubflo f1_BS   = (D.f[dirBS  ])[k1bs  ];
-      doubflo f1_BN   = (D.f[dirBN  ])[k1bn  ];
-      doubflo f1_TS   = (D.f[dirTS  ])[k1ts  ];
-      doubflo f1_ZERO = (D.f[dirZERO])[k1zero];
-      doubflo f1_TNE  = (D.f[dirTNE ])[k1tne ];
-      doubflo f1_TSW  = (D.f[dirTSW ])[k1tsw ];
-      doubflo f1_TSE  = (D.f[dirTSE ])[k1tse ];
-      doubflo f1_TNW  = (D.f[dirTNW ])[k1tnw ];
-      doubflo f1_BNE  = (D.f[dirBNE ])[k1bne ];
-      doubflo f1_BSW  = (D.f[dirBSW ])[k1bsw ];
-      doubflo f1_BSE  = (D.f[dirBSE ])[k1bse ];
-      doubflo f1_BNW  = (D.f[dirBNW ])[k1bnw ];
+      real f1_E    = (D.f[dirE   ])[k1e   ];
+      real f1_W    = (D.f[dirW   ])[k1w   ];
+      real f1_N    = (D.f[dirN   ])[k1n   ];
+      real f1_S    = (D.f[dirS   ])[k1s   ];
+      real f1_T    = (D.f[dirT   ])[k1t   ];
+      real f1_B    = (D.f[dirB   ])[k1b   ];
+      real f1_NE   = (D.f[dirNE  ])[k1ne  ];
+      real f1_SW   = (D.f[dirSW  ])[k1sw  ];
+      real f1_SE   = (D.f[dirSE  ])[k1se  ];
+      real f1_NW   = (D.f[dirNW  ])[k1nw  ];
+      real f1_TE   = (D.f[dirTE  ])[k1te  ];
+      real f1_BW   = (D.f[dirBW  ])[k1bw  ];
+      real f1_BE   = (D.f[dirBE  ])[k1be  ];
+      real f1_TW   = (D.f[dirTW  ])[k1tw  ];
+      real f1_TN   = (D.f[dirTN  ])[k1tn  ];
+      real f1_BS   = (D.f[dirBS  ])[k1bs  ];
+      real f1_BN   = (D.f[dirBN  ])[k1bn  ];
+      real f1_TS   = (D.f[dirTS  ])[k1ts  ];
+      real f1_ZERO = (D.f[dirZERO])[k1zero];
+      real f1_TNE  = (D.f[dirTNE ])[k1tne ];
+      real f1_TSW  = (D.f[dirTSW ])[k1tsw ];
+      real f1_TSE  = (D.f[dirTSE ])[k1tse ];
+      real f1_TNW  = (D.f[dirTNW ])[k1tnw ];
+      real f1_BNE  = (D.f[dirBNE ])[k1bne ];
+      real f1_BSW  = (D.f[dirBSW ])[k1bsw ];
+      real f1_BSE  = (D.f[dirBSE ])[k1bse ];
+      real f1_BNW  = (D.f[dirBNW ])[k1bnw ];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E    = (D.f[dirE   ])[ke   ];
-      doubflo f_W    = (D.f[dirW   ])[kw   ];
-      doubflo f_N    = (D.f[dirN   ])[kn   ];
-      doubflo f_S    = (D.f[dirS   ])[ks   ];
-      doubflo f_T    = (D.f[dirT   ])[kt   ];
-      doubflo f_B    = (D.f[dirB   ])[kb   ];
-      doubflo f_NE   = (D.f[dirNE  ])[kne  ];
-      doubflo f_SW   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_SE   = (D.f[dirSE  ])[kse  ];
-      doubflo f_NW   = (D.f[dirNW  ])[knw  ];
-      doubflo f_TE   = (D.f[dirTE  ])[kte  ];
-      doubflo f_BW   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_BE   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_TW   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_TN   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_BS   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_BN   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_TS   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_TNE  = (D.f[dirTNE ])[ktne ];
-      doubflo f_TSW  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_TSE  = (D.f[dirTSE ])[ktse ];
-      doubflo f_TNW  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_BNE  = (D.f[dirBNE ])[kbne ];
-      doubflo f_BSW  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_BSE  = (D.f[dirBSE ])[kbse ];
-      doubflo f_BNW  = (D.f[dirBNW ])[kbnw ];
+      real f_E    = (D.f[dirE   ])[ke   ];
+      real f_W    = (D.f[dirW   ])[kw   ];
+      real f_N    = (D.f[dirN   ])[kn   ];
+      real f_S    = (D.f[dirS   ])[ks   ];
+      real f_T    = (D.f[dirT   ])[kt   ];
+      real f_B    = (D.f[dirB   ])[kb   ];
+      real f_NE   = (D.f[dirNE  ])[kne  ];
+      real f_SW   = (D.f[dirSW  ])[ksw  ];
+      real f_SE   = (D.f[dirSE  ])[kse  ];
+      real f_NW   = (D.f[dirNW  ])[knw  ];
+      real f_TE   = (D.f[dirTE  ])[kte  ];
+      real f_BW   = (D.f[dirBW  ])[kbw  ];
+      real f_BE   = (D.f[dirBE  ])[kbe  ];
+      real f_TW   = (D.f[dirTW  ])[ktw  ];
+      real f_TN   = (D.f[dirTN  ])[ktn  ];
+      real f_BS   = (D.f[dirBS  ])[kbs  ];
+      real f_BN   = (D.f[dirBN  ])[kbn  ];
+      real f_TS   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_TNE  = (D.f[dirTNE ])[ktne ];
+      real f_TSW  = (D.f[dirTSW ])[ktsw ];
+      real f_TSE  = (D.f[dirTSE ])[ktse ];
+      real f_TNW  = (D.f[dirTNW ])[ktnw ];
+      real f_BNE  = (D.f[dirBNE ])[kbne ];
+      real f_BSW  = (D.f[dirBSW ])[kbsw ];
+      real f_BSE  = (D.f[dirBSE ])[kbse ];
+      real f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, drho1;
+      real vx1, vx2, vx3, drho, drho1;
       //////////////////////////////////////////////////////////////////////////
 	  //Dichte
       drho1  =  f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
@@ -218,11 +218,11 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  doubflo* rhoBC,
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
       //////////////////////////////////////////////////////////////////////////
 	  //Schallgeschwindigkeit
-	  doubflo cs = one / sqrtf(three);
+	  real cs = one / sqrtf(three);
       //////////////////////////////////////////////////////////////////////////
-	  doubflo rhoInterpol = drho1 * cs + (one - cs) * drho; 
-	  //doubflo diffRho = (rhoBC[k] + one) / (rhoInterpol + one);
-	  doubflo diffRhoToAdd = rhoBC[k] - rhoInterpol;
+	  real rhoInterpol = drho1 * cs + (one - cs) * drho; 
+	  //real diffRho = (rhoBC[k] + one) / (rhoInterpol + one);
+	  real diffRhoToAdd = rhoBC[k] - rhoInterpol;
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //no velocity
 	  //////////////////////////////////////////
@@ -459,12 +459,12 @@ extern "C" __global__ void QInflowScaleByPressDevice27(  doubflo* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceIncompNEQ27( doubflo* rhoBC,
-													doubflo* DD, 
+extern "C" __global__ void QPressDeviceIncompNEQ27( real* rhoBC,
+													real* DD, 
 													int* k_Q, 
 													int* k_N, 
 													int kQ, 
-													doubflo om1, 
+													real om1, 
 													unsigned int* neighborX,
 													unsigned int* neighborY,
 													unsigned int* neighborZ,
@@ -607,7 +607,7 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_W    = (D.f[dirE   ])[k1e   ];
@@ -639,23 +639,23 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( doubflo* rhoBC,
       f1_TSE  = (D.f[dirBNW ])[k1bnw ];
 
       //////////////////////////////////////////////////////////////////////////
-      doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
+      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
                           f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
 
-      doubflo vx1      =  ((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
+      real vx1      =  ((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
 						  ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
 						  (f1_E - f1_W); 
 
 
-      doubflo vx2    =   (-(f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
+      real vx2    =   (-(f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
 						 ((f1_BN - f1_TS)   + (f1_TN - f1_BS))    + (-(f1_SE - f1_NW)  + (f1_NE - f1_SW)) +
 						 (f1_N - f1_S); 
 
-      doubflo vx3    =   ((f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) + (f1_TSW - f1_BNE)) +
+      real vx3    =   ((f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) + (f1_TSW - f1_BNE)) +
 						 (-(f1_BN - f1_TS)  + (f1_TN - f1_BS))   + ((f1_TE - f1_BW)   - (f1_BE - f1_TW)) +
 						 (f1_T - f1_B); 
 
-      doubflo cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       f1_ZERO  -= c8over27*  (drho1-(drho1+one)*cusq);
       f1_E     -= c2over27*  (drho1+(drho1+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
@@ -798,12 +798,12 @@ extern "C" __global__ void QPressDeviceIncompNEQ27( doubflo* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceNEQ27(doubflo* rhoBC,
-                                             doubflo* DD, 
+extern "C" __global__ void QPressDeviceNEQ27(real* rhoBC,
+                                             real* DD, 
                                              int* k_Q, 
                                              int* k_N, 
                                              int kQ, 
-                                             doubflo om1, 
+                                             real om1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
@@ -946,7 +946,7 @@ extern "C" __global__ void QPressDeviceNEQ27(doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_W    = (D.f[dirE   ])[k1e   ];
@@ -978,19 +978,19 @@ extern "C" __global__ void QPressDeviceNEQ27(doubflo* rhoBC,
       f1_TSE  = (D.f[dirBNW ])[k1bnw ];
 
       //////////////////////////////////////////////////////////////////////////
-      doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
+      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
                           f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
 
-      doubflo vx1      =  ((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
+      real vx1      =  ((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
 						  ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
 						  (f1_E - f1_W); 
 
 
-      doubflo vx2    =   (-(f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
+      real vx2    =   (-(f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
 						 ((f1_BN - f1_TS)   + (f1_TN - f1_BS))    + (-(f1_SE - f1_NW)  + (f1_NE - f1_SW)) +
 						 (f1_N - f1_S); 
 
-      doubflo vx3    =   ((f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) + (f1_TSW - f1_BNE)) +
+      real vx3    =   ((f1_TSE - f1_BNW) + (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) + (f1_TSW - f1_BNE)) +
 						 (-(f1_BN - f1_TS)  + (f1_TN - f1_BS))   + ((f1_TE - f1_BW)   - (f1_BE - f1_TW)) +
 						 (f1_T - f1_B); 
 
@@ -998,7 +998,7 @@ extern "C" __global__ void QPressDeviceNEQ27(doubflo* rhoBC,
 	  vx2 /= (drho1+one);
 	  vx3 /= (drho1+one);
 
-      doubflo cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       f1_ZERO  -= c8over27*  (drho1-(drho1+one)*cusq);
       f1_E     -= c2over27*  (drho1+(drho1+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
@@ -1141,7 +1141,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
                                                unsigned int* neighborX,
                                                unsigned int* neighborY,
                                                unsigned int* neighborZ,
-                                               doubflo* DD, 
+                                               real* DD, 
                                                unsigned int size_Mat, 
                                                bool evenOrOdd) 
 {
@@ -1336,7 +1336,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
       //unsigned int k1tne = k1;
       //unsigned int k1bsw = k1 + nxny + nx + 1;
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                    f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_W    = (D.f[dirE   ])[k1e   ];
@@ -1367,7 +1367,7 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
       f1_TNW  = (D.f[dirBSE ])[k1bse ];
       f1_TSE  = (D.f[dirBNW ])[k1bnw ];
 
-      doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
+      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
                         f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
 
       __syncthreads();
@@ -1445,13 +1445,13 @@ extern "C" __global__ void LB_BC_Press_East27( int nx,
 //////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QPressDevice27(int inx,
                                            int iny,
-                                           doubflo* rhoBC,
-                                           doubflo* DD, 
+                                           real* rhoBC,
+                                           real* DD, 
                                            int* k_Q, 
-                                           doubflo* QQ,
+                                           real* QQ,
                                            unsigned int sizeQ,
                                            int kQ, 
-                                           doubflo om1, 
+                                           real om1, 
                                            unsigned int* neighborX,
                                            unsigned int* neighborY,
                                            unsigned int* neighborZ,
@@ -1532,7 +1532,7 @@ extern "C" __global__ void QPressDevice27(int inx,
 
    if(k<kQ)
    {
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -1594,7 +1594,7 @@ extern "C" __global__ void QPressDevice27(int inx,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -1624,7 +1624,7 @@ extern "C" __global__ void QPressDevice27(int inx,
       f_TNW  = (D.f[dirBSE ])[kbse ];
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo q, vx1, vx2, vx3, drho;
+      real q, vx1, vx2, vx3, drho;
       vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
                   ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
                   (f_E - f_W); 
@@ -1638,7 +1638,7 @@ extern "C" __global__ void QPressDevice27(int inx,
                   (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                   (f_T - f_B); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       //////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////
       drho = rhoBC[k];
@@ -1929,15 +1929,15 @@ extern "C" __global__ void QPressDevice27(int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceAntiBB27(   doubflo* rhoBC,
-												   doubflo* vx,
-												   doubflo* vy,
-												   doubflo* vz,
-												   doubflo* DD, 
+extern "C" __global__ void QPressDeviceAntiBB27(   real* rhoBC,
+												   real* vx,
+												   real* vy,
+												   real* vz,
+												   real* DD, 
 												   int* k_Q, 
-												   doubflo* QQ,
+												   real* QQ,
 												   int kQ, 
-												   doubflo om1, 
+												   real om1, 
 												   unsigned int* neighborX,
 												   unsigned int* neighborY,
 												   unsigned int* neighborZ,
@@ -2018,7 +2018,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   doubflo* rhoBC,
 
    if(k<kQ)
    {
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
          *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
          *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
          *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2080,7 +2080,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   doubflo* rhoBC,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+      real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW, f_ZERO;
 
       f_W    = (D.f[dirE   ])[ke   ];
@@ -2111,7 +2111,7 @@ extern "C" __global__ void QPressDeviceAntiBB27(   doubflo* rhoBC,
       f_TSE  = (D.f[dirBNW ])[kbnw ];
       f_ZERO = (D.f[dirZERO])[kzero];
       ////////////////////////////////////////////////////////////////////////////////
-      //doubflo vx1, vx2, vx3, drho;
+      //real vx1, vx2, vx3, drho;
       //vx1    =  ((f_TSE - f_BNW) - (f_TNW - f_BSE)) + ((f_TNE - f_BSW) - (f_TSW - f_BNE)) +
       //            ((f_BE - f_TW)   + (f_TE - f_BW))   + ((f_SE - f_NW)   + (f_NE - f_SW)) +
       //            (f_E - f_W); 
@@ -2125,14 +2125,14 @@ extern "C" __global__ void QPressDeviceAntiBB27(   doubflo* rhoBC,
       //            (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
       //            (f_T - f_B); 
 
-      //doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       //////////////////////////////////////////////////////////////////////////
-      doubflo drho    = f_ZERO+f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+
+      real drho    = f_ZERO+f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+
 						f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
       drho = drho - rhoBC[k];
 	  drho *= 0.01f;
       ////////////////////////////////////////////////////////////////////////////////
-	  doubflo q;
+	  real q;
       //deltaRho = (rhoBC[k] + one) / (deltaRho + one);
       ////////////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2394,11 +2394,11 @@ extern "C" __global__ void QPressDeviceAntiBB27(   doubflo* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceFixBackflow27( doubflo* rhoBC,
-                                                      doubflo* DD, 
+extern "C" __global__ void QPressDeviceFixBackflow27( real* rhoBC,
+                                                      real* DD, 
                                                       int* k_Q, 
                                                       int kQ, 
-                                                      doubflo om1, 
+                                                      real om1, 
                                                       unsigned int* neighborX,
                                                       unsigned int* neighborY,
                                                       unsigned int* neighborZ,
@@ -2449,7 +2449,7 @@ extern "C" __global__ void QPressDeviceFixBackflow27( doubflo* rhoBC,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo deltaRho;
+      real deltaRho;
       ////////////////////////////////////////////////////////////////////////////////
       deltaRho = rhoBC[k];
       ////////////////////////////////////////////////////////////////////////////////
@@ -2585,11 +2585,11 @@ extern "C" __global__ void QPressDeviceFixBackflow27( doubflo* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceDirDepBot27(  doubflo* rhoBC,
-                                                     doubflo* DD, 
+extern "C" __global__ void QPressDeviceDirDepBot27(  real* rhoBC,
+                                                     real* DD, 
                                                      int* k_Q, 
                                                      int kQ, 
-                                                     doubflo om1, 
+                                                     real om1, 
                                                      unsigned int* neighborX,
                                                      unsigned int* neighborY,
                                                      unsigned int* neighborZ,
@@ -2640,7 +2640,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  doubflo* rhoBC,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo rho;
+      real rho;
       ////////////////////////////////////////////////////////////////////////////////
       rho = rhoBC[k];
       ////////////////////////////////////////////////////////////////////////////////
@@ -2706,7 +2706,7 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E,f_W,f_N,f_S,f_T,f_NE,f_SW,f_SE,f_NW,f_TE,f_TW,f_TN,f_TS,f_ZERO,f_TNE,f_TSW,f_TSE,f_TNW;//,
+      real f_E,f_W,f_N,f_S,f_T,f_NE,f_SW,f_SE,f_NW,f_TE,f_TW,f_TN,f_TS,f_ZERO,f_TNE,f_TSW,f_TSE,f_TNW;//,
             //f_B,f_BW,f_BE,f_BS,f_BN,f_BSW,f_BNE,f_BNW,f_BSE;
 
       f_E    = (D.f[dirE   ])[ke   ];
@@ -2739,12 +2739,12 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  doubflo* rhoBC,
       //f_BNW = ( two*rho-  two*f_SW-      four*f_TSW+     f_W-    four*f_TW+ four*f_NW-      four*f_TNW-five*f_S-    four*f_TS- two*f_ZERO-four*f_T+     f_N-    four*f_TN-eight*f_SE+sixtyeight*f_TSE-five*f_E-    four*f_TE-  two*f_NE-      four*f_TNE)/seventytwo;
       //f_BSE = ( two*rho-  two*f_SW-      four*f_TSW-five*f_W-    four*f_TW-eight*f_NW+sixtyeight*f_TNW+     f_S-    four*f_TS- two*f_ZERO-four*f_T-five*f_N-    four*f_TN+ four*f_SE-      four*f_TSE+     f_E-    four*f_TE-  two*f_NE-      four*f_TNE)/seventytwo;
 
-      //doubflo drho   =    f_ZERO+f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
-      //doubflo vx1     =  (f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW);
-      //doubflo vx2     =  (f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW);
-      //doubflo vx3     =  (f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW);
+      //real drho   =    f_ZERO+f_E+f_W+f_N+f_S+f_T+f_B+f_NE+f_SW+f_SE+f_NW+f_TE+f_BW+f_BE+f_TW+f_TN+f_BS+f_BN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW+f_BNE+f_BSW+f_BSE+f_BNW;
+      //real vx1     =  (f_E -f_W +f_NE-f_SW+f_SE-f_NW+f_TE-f_BW+f_BE-f_TW+ f_TNE-f_TSW+f_TSE-f_TNW+ f_BNE-f_BSW+f_BSE-f_BNW);
+      //real vx2     =  (f_N -f_S +f_NE-f_SW-f_SE+f_NW+f_TN-f_BS+f_BN-f_TS+ f_TNE-f_TSW-f_TSE+f_TNW+ f_BNE-f_BSW-f_BSE+f_BNW);
+      //real vx3     =  (f_T -f_B +f_TE-f_BW-f_BE+f_TW+f_TN-f_BS-f_BN+f_TS+ f_TNE+f_TSW+f_TSE+f_TNW- f_BNE-f_BSW-f_BSE-f_BNW);
 
-      //doubflo cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cusq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       //(D.f[dirZERO])[kzero] = c8over27*  (drho-cusq);
       //(D.f[dirE])[ke]    = c2over27*  (drho+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq);
@@ -2773,8 +2773,8 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  doubflo* rhoBC,
       //(D.f[dirBNW])[kbnw]  =  c1over216*(drho+three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq);
       //(D.f[dirBSE])[kbse]  =  c1over216*(drho+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq);
       //(D.f[dirTNW])[ktnw]  =  c1over216*(drho+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq);
-      doubflo drho   =    f_ZERO+f_E+f_W+f_N+f_S+f_T+f_NE+f_SW+f_SE+f_NW+f_TE+f_TW+f_TN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW;
-      doubflo dTop   =    f_T+f_TE+f_TW+f_TN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW;
+      real drho   =    f_ZERO+f_E+f_W+f_N+f_S+f_T+f_NE+f_SW+f_SE+f_NW+f_TE+f_TW+f_TN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW;
+      real dTop   =    f_T+f_TE+f_TW+f_TN+f_TS+f_TNE+f_TSW+f_TSE+f_TNW;
       (D.f[dirB])[kb]     = (f_T+c2over27)*(rho-drho+one/six)/(dTop+one/six)-c2over27;
       (D.f[dirBW])[kbw]   = (f_TW+c1over54)*(rho-drho+one/six)/(dTop+one/six)-c1over54;
       (D.f[dirBE])[kbe]   = (f_TE+c1over54)*(rho-drho+one/six)/(dTop+one/six)-c1over54;
@@ -2827,12 +2827,12 @@ extern "C" __global__ void QPressDeviceDirDepBot27(  doubflo* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressNoRhoDevice27(  doubflo* rhoBC,
-												 doubflo* DD, 
+extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
+												 real* DD, 
 												 int* k_Q, 
 												 int* k_N, 
 												 int kQ, 
-												 doubflo om1, 
+												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -2975,65 +2975,65 @@ extern "C" __global__ void QPressNoRhoDevice27(  doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo f1_E    = (D.f[dirE   ])[k1e   ];
-      doubflo f1_W    = (D.f[dirW   ])[k1w   ];
-      doubflo f1_N    = (D.f[dirN   ])[k1n   ];
-      doubflo f1_S    = (D.f[dirS   ])[k1s   ];
-      doubflo f1_T    = (D.f[dirT   ])[k1t   ];
-      doubflo f1_B    = (D.f[dirB   ])[k1b   ];
-      doubflo f1_NE   = (D.f[dirNE  ])[k1ne  ];
-      doubflo f1_SW   = (D.f[dirSW  ])[k1sw  ];
-      doubflo f1_SE   = (D.f[dirSE  ])[k1se  ];
-      doubflo f1_NW   = (D.f[dirNW  ])[k1nw  ];
-      doubflo f1_TE   = (D.f[dirTE  ])[k1te  ];
-      doubflo f1_BW   = (D.f[dirBW  ])[k1bw  ];
-      doubflo f1_BE   = (D.f[dirBE  ])[k1be  ];
-      doubflo f1_TW   = (D.f[dirTW  ])[k1tw  ];
-      doubflo f1_TN   = (D.f[dirTN  ])[k1tn  ];
-      doubflo f1_BS   = (D.f[dirBS  ])[k1bs  ];
-      doubflo f1_BN   = (D.f[dirBN  ])[k1bn  ];
-      doubflo f1_TS   = (D.f[dirTS  ])[k1ts  ];
-      doubflo f1_ZERO = (D.f[dirZERO])[k1zero];
-      doubflo f1_TNE  = (D.f[dirTNE ])[k1tne ];
-      doubflo f1_TSW  = (D.f[dirTSW ])[k1tsw ];
-      doubflo f1_TSE  = (D.f[dirTSE ])[k1tse ];
-      doubflo f1_TNW  = (D.f[dirTNW ])[k1tnw ];
-      doubflo f1_BNE  = (D.f[dirBNE ])[k1bne ];
-      doubflo f1_BSW  = (D.f[dirBSW ])[k1bsw ];
-      doubflo f1_BSE  = (D.f[dirBSE ])[k1bse ];
-      doubflo f1_BNW  = (D.f[dirBNW ])[k1bnw ];
+      real f1_E    = (D.f[dirE   ])[k1e   ];
+      real f1_W    = (D.f[dirW   ])[k1w   ];
+      real f1_N    = (D.f[dirN   ])[k1n   ];
+      real f1_S    = (D.f[dirS   ])[k1s   ];
+      real f1_T    = (D.f[dirT   ])[k1t   ];
+      real f1_B    = (D.f[dirB   ])[k1b   ];
+      real f1_NE   = (D.f[dirNE  ])[k1ne  ];
+      real f1_SW   = (D.f[dirSW  ])[k1sw  ];
+      real f1_SE   = (D.f[dirSE  ])[k1se  ];
+      real f1_NW   = (D.f[dirNW  ])[k1nw  ];
+      real f1_TE   = (D.f[dirTE  ])[k1te  ];
+      real f1_BW   = (D.f[dirBW  ])[k1bw  ];
+      real f1_BE   = (D.f[dirBE  ])[k1be  ];
+      real f1_TW   = (D.f[dirTW  ])[k1tw  ];
+      real f1_TN   = (D.f[dirTN  ])[k1tn  ];
+      real f1_BS   = (D.f[dirBS  ])[k1bs  ];
+      real f1_BN   = (D.f[dirBN  ])[k1bn  ];
+      real f1_TS   = (D.f[dirTS  ])[k1ts  ];
+      real f1_ZERO = (D.f[dirZERO])[k1zero];
+      real f1_TNE  = (D.f[dirTNE ])[k1tne ];
+      real f1_TSW  = (D.f[dirTSW ])[k1tsw ];
+      real f1_TSE  = (D.f[dirTSE ])[k1tse ];
+      real f1_TNW  = (D.f[dirTNW ])[k1tnw ];
+      real f1_BNE  = (D.f[dirBNE ])[k1bne ];
+      real f1_BSW  = (D.f[dirBSW ])[k1bsw ];
+      real f1_BSE  = (D.f[dirBSE ])[k1bse ];
+      real f1_BNW  = (D.f[dirBNW ])[k1bnw ];
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo f_E    = (D.f[dirE   ])[ke   ];
-      doubflo f_W    = (D.f[dirW   ])[kw   ];
-      doubflo f_N    = (D.f[dirN   ])[kn   ];
-      doubflo f_S    = (D.f[dirS   ])[ks   ];
-      doubflo f_T    = (D.f[dirT   ])[kt   ];
-      doubflo f_B    = (D.f[dirB   ])[kb   ];
-      doubflo f_NE   = (D.f[dirNE  ])[kne  ];
-      doubflo f_SW   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_SE   = (D.f[dirSE  ])[kse  ];
-      doubflo f_NW   = (D.f[dirNW  ])[knw  ];
-      doubflo f_TE   = (D.f[dirTE  ])[kte  ];
-      doubflo f_BW   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_BE   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_TW   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_TN   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_BS   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_BN   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_TS   = (D.f[dirTS  ])[kts  ];
-      doubflo f_ZERO = (D.f[dirZERO])[kzero];
-      doubflo f_TNE  = (D.f[dirTNE ])[ktne ];
-      doubflo f_TSW  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_TSE  = (D.f[dirTSE ])[ktse ];
-      doubflo f_TNW  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_BNE  = (D.f[dirBNE ])[kbne ];
-      doubflo f_BSW  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_BSE  = (D.f[dirBSE ])[kbse ];
-      doubflo f_BNW  = (D.f[dirBNW ])[kbnw ];
+      real f_E    = (D.f[dirE   ])[ke   ];
+      real f_W    = (D.f[dirW   ])[kw   ];
+      real f_N    = (D.f[dirN   ])[kn   ];
+      real f_S    = (D.f[dirS   ])[ks   ];
+      real f_T    = (D.f[dirT   ])[kt   ];
+      real f_B    = (D.f[dirB   ])[kb   ];
+      real f_NE   = (D.f[dirNE  ])[kne  ];
+      real f_SW   = (D.f[dirSW  ])[ksw  ];
+      real f_SE   = (D.f[dirSE  ])[kse  ];
+      real f_NW   = (D.f[dirNW  ])[knw  ];
+      real f_TE   = (D.f[dirTE  ])[kte  ];
+      real f_BW   = (D.f[dirBW  ])[kbw  ];
+      real f_BE   = (D.f[dirBE  ])[kbe  ];
+      real f_TW   = (D.f[dirTW  ])[ktw  ];
+      real f_TN   = (D.f[dirTN  ])[ktn  ];
+      real f_BS   = (D.f[dirBS  ])[kbs  ];
+      real f_BN   = (D.f[dirBN  ])[kbn  ];
+      real f_TS   = (D.f[dirTS  ])[kts  ];
+      real f_ZERO = (D.f[dirZERO])[kzero];
+      real f_TNE  = (D.f[dirTNE ])[ktne ];
+      real f_TSW  = (D.f[dirTSW ])[ktsw ];
+      real f_TSE  = (D.f[dirTSE ])[ktse ];
+      real f_TNW  = (D.f[dirTNW ])[ktnw ];
+      real f_BNE  = (D.f[dirBNE ])[kbne ];
+      real f_BSW  = (D.f[dirBSW ])[kbsw ];
+      real f_BSE  = (D.f[dirBSE ])[kbse ];
+      real f_BNW  = (D.f[dirBNW ])[kbnw ];
       //////////////////////////////////////////////////////////////////////////
 
-      //doubflo vx1, vx2, vx3, drho;
-      doubflo vx1, vx2, vx3, drho, drho1;
+      //real vx1, vx2, vx3, drho;
+      real vx1, vx2, vx3, drho, drho1;
       //////////////////////////////////////////////////////////////////////////
 	  //Dichte
       drho1  =  f1_TSE + f1_TNW + f1_TNE + f1_TSW + f1_BSE + f1_BNW + f1_BNE + f1_BSW +
@@ -3060,44 +3060,44 @@ extern "C" __global__ void QPressNoRhoDevice27(  doubflo* rhoBC,
    //               (f_T - f_B)) /(one + drho); 
 
 
-      //doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      //real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
    //   //////////////////////////////////////////////////////////////////////////
-	  ////doubflo omega = om1;
-   //   doubflo cusq  = c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+	  ////real omega = om1;
+   //   real cusq  = c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
    //   //////////////////////////////////////////////////////////////////////////
 	  ////Täst MK
 	  ////if(vx1 < zero) vx1 = zero;
    //   //////////////////////////////////////////////////////////////////////////
-   //   doubflo fZERO = c8over27*  (drho1-(one + drho1)*(cusq))                                                           ;
-   //   doubflo fE    = c2over27*  (drho1+(one + drho1)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-   //   doubflo fW    = c2over27*  (drho1+(one + drho1)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-   //   doubflo fN    = c2over27*  (drho1+(one + drho1)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-   //   doubflo fS    = c2over27*  (drho1+(one + drho1)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-   //   doubflo fT    = c2over27*  (drho1+(one + drho1)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-   //   doubflo fB    = c2over27*  (drho1+(one + drho1)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-   //   doubflo fNE   = c1over54*  (drho1+(one + drho1)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-   //   doubflo fSW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-   //   doubflo fSE   = c1over54*  (drho1+(one + drho1)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-   //   doubflo fNW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-   //   doubflo fTE   = c1over54*  (drho1+(one + drho1)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-   //   doubflo fBW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-   //   doubflo fBE   = c1over54*  (drho1+(one + drho1)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-   //   doubflo fTW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-   //   doubflo fTN   = c1over54*  (drho1+(one + drho1)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-   //   doubflo fBS   = c1over54*  (drho1+(one + drho1)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-   //   doubflo fBN   = c1over54*  (drho1+(one + drho1)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-   //   doubflo fTS   = c1over54*  (drho1+(one + drho1)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-   //   doubflo fTNE  = c1over216* (drho1+(one + drho1)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-   //   doubflo fBSW  = c1over216* (drho1+(one + drho1)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-   //   doubflo fBNE  = c1over216* (drho1+(one + drho1)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-   //   doubflo fTSW  = c1over216* (drho1+(one + drho1)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-   //   doubflo fTSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-   //   doubflo fBNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-   //   doubflo fBSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-   //   doubflo fTNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+   //   real fZERO = c8over27*  (drho1-(one + drho1)*(cusq))                                                           ;
+   //   real fE    = c2over27*  (drho1+(one + drho1)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
+   //   real fW    = c2over27*  (drho1+(one + drho1)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
+   //   real fN    = c2over27*  (drho1+(one + drho1)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
+   //   real fS    = c2over27*  (drho1+(one + drho1)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
+   //   real fT    = c2over27*  (drho1+(one + drho1)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
+   //   real fB    = c2over27*  (drho1+(one + drho1)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
+   //   real fNE   = c1over54*  (drho1+(one + drho1)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+   //   real fSW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+   //   real fSE   = c1over54*  (drho1+(one + drho1)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+   //   real fNW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+   //   real fTE   = c1over54*  (drho1+(one + drho1)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+   //   real fBW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+   //   real fBE   = c1over54*  (drho1+(one + drho1)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+   //   real fTW   = c1over54*  (drho1+(one + drho1)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+   //   real fTN   = c1over54*  (drho1+(one + drho1)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+   //   real fBS   = c1over54*  (drho1+(one + drho1)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+   //   real fBN   = c1over54*  (drho1+(one + drho1)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+   //   real fTS   = c1over54*  (drho1+(one + drho1)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+   //   real fTNE  = c1over216* (drho1+(one + drho1)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+   //   real fBSW  = c1over216* (drho1+(one + drho1)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+   //   real fBNE  = c1over216* (drho1+(one + drho1)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+   //   real fTSW  = c1over216* (drho1+(one + drho1)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+   //   real fTSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+   //   real fBNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+   //   real fBSE  = c1over216* (drho1+(one + drho1)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+   //   real fTNW  = c1over216* (drho1+(one + drho1)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
 
-	  doubflo cs = one / sqrtf(three);
+	  real cs = one / sqrtf(three);
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //no velocity
 	  //////////////////////////////////////////
@@ -3132,8 +3132,8 @@ extern "C" __global__ void QPressNoRhoDevice27(  doubflo* rhoBC,
 	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //with velocity
 	  //if(true){//vx1 >= zero){
-		 // doubflo csMvx = one / sqrtf(three) - vx1;
-		 // //doubflo csMvy = one / sqrtf(three) - vx2;
+		 // real csMvx = one / sqrtf(three) - vx1;
+		 // //real csMvy = one / sqrtf(three) - vx2;
 		 // ///////////////////////////////////////////
 		 // // X
 		 // f_W   = f1_W   * csMvx + (one - csMvx) * f_W   ;//- c2over27  * ((drho + drho1)*c1o2-((drho + drho1)*c1o2 )*three*vx1);
@@ -3344,12 +3344,12 @@ extern "C" __global__ void QPressNoRhoDevice27(  doubflo* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceOld27(doubflo* rhoBC,
-                                             doubflo* DD, 
+extern "C" __global__ void QPressDeviceOld27(real* rhoBC,
+                                             real* DD, 
                                              int* k_Q, 
                                              int* k_N, 
                                              int kQ, 
-                                             doubflo om1, 
+                                             real om1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
@@ -3492,7 +3492,7 @@ extern "C" __global__ void QPressDeviceOld27(doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
                      f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_W    = (D.f[dirE   ])[k1e   ];
@@ -3524,7 +3524,7 @@ extern "C" __global__ void QPressDeviceOld27(doubflo* rhoBC,
       f1_TSE  = (D.f[dirBNW ])[k1bnw ];
 
       //////////////////////////////////////////////////////////////////////////
-      doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
+      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
                           f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
 
 	  //drho1 = (drho1 + rhoBC[k])/2.f;
@@ -3603,13 +3603,13 @@ extern "C" __global__ void QPressDeviceOld27(doubflo* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
-                                             doubflo* DD, 
+extern "C" __global__ void QPressDeviceEQZ27(real* rhoBC,
+                                             real* DD, 
                                              int* k_Q, 
                                              int* k_N,
-											 doubflo* kTestRE,
+											 real* kTestRE,
                                              int kQ, 
-                                             doubflo om1, 
+                                             real om1, 
                                              unsigned int* neighborX,
                                              unsigned int* neighborY,
                                              unsigned int* neighborZ,
@@ -3781,7 +3781,7 @@ extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
          kDistTest.f[dirBSE ] = &kTestRE[dirBSE *kQ];
          kDistTest.f[dirBNW ] = &kTestRE[dirBNW *kQ];
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //   //doubflo f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
+   //   //real f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
    //   //f1_W    = (D.f[dirE   ])[k1e   ];
    //   //f1_E    = (D.f[dirW   ])[k1w   ];
    //   //f1_S    = (D.f[dirN   ])[k1n   ];
@@ -3812,7 +3812,7 @@ extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    //   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //   doubflo f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
+   //   real f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
    //   f1_E    = (D.f[dirE   ])[k1e   ];
    //   f1_W    = (D.f[dirW   ])[k1w   ];
    //   f1_N    = (D.f[dirN   ])[k1n   ];
@@ -3843,103 +3843,103 @@ extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
    //   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    //   //////////////////////////////////////////////////////////////////////////
-   //   doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+ f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
-	  //doubflo vx1      = (((f1_TNE-f1_BSW)+(f1_BSE-f1_TNW)+(f1_BNE-f1_TSW)+(f1_TSE-f1_BNW)) + (((f1_NE-f1_SW)+(f1_TE-f1_BW))+((f1_SE-f1_NW)+(f1_BE-f1_TW))) + (f1_E-f1_W)) / (one + drho1);
-	  //doubflo vx2      = (((f1_TNE-f1_BSW)+(f1_TNW-f1_BSE)+(f1_BNE-f1_TSW)+(f1_BNW-f1_TSE)) + (((f1_NE-f1_SW)+(f1_TN-f1_BS))+((f1_BN-f1_TS)+(f1_NW-f1_SE))) + (f1_N-f1_S)) / (one + drho1);
-	  //doubflo vx3      = (((f1_TNE-f1_BSW)+(f1_TNW-f1_BSE)+(f1_TSW-f1_BNE)+(f1_TSE-f1_BNW)) + (((f1_TE-f1_BW)+(f1_TN-f1_BS))+((f1_TW-f1_BE)+(f1_TS-f1_BN))) + (f1_T-f1_B)) / (one + drho1);
+   //   real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+ f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
+	  //real vx1      = (((f1_TNE-f1_BSW)+(f1_BSE-f1_TNW)+(f1_BNE-f1_TSW)+(f1_TSE-f1_BNW)) + (((f1_NE-f1_SW)+(f1_TE-f1_BW))+((f1_SE-f1_NW)+(f1_BE-f1_TW))) + (f1_E-f1_W)) / (one + drho1);
+	  //real vx2      = (((f1_TNE-f1_BSW)+(f1_TNW-f1_BSE)+(f1_BNE-f1_TSW)+(f1_BNW-f1_TSE)) + (((f1_NE-f1_SW)+(f1_TN-f1_BS))+((f1_BN-f1_TS)+(f1_NW-f1_SE))) + (f1_N-f1_S)) / (one + drho1);
+	  //real vx3      = (((f1_TNE-f1_BSW)+(f1_TNW-f1_BSE)+(f1_TSW-f1_BNE)+(f1_TSE-f1_BNW)) + (((f1_TE-f1_BW)+(f1_TN-f1_BS))+((f1_TW-f1_BE)+(f1_TS-f1_BN))) + (f1_T-f1_B)) / (one + drho1);
    //   //////////////////////////////////////////////////////////////////////////
-	  ////doubflo omega = om1;
-   //   doubflo cusq  = c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+	  ////real omega = om1;
+   //   real cusq  = c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
    //   //////////////////////////////////////////////////////////////////////////
 	  ////Täst MK
 	  ////if(vx1 < zero) vx1 = zero;
    //   //////////////////////////////////////////////////////////////////////////
 	  ////becomes higher with neighbor source and lower with local source
-   //   //doubflo fZERO = c8over27*  (rhoBC[k]-(one + rhoBC[k])*(cusq))                                                           ;
-   //   //doubflo fE    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
-   //   //doubflo fW    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
-   //   //doubflo fN    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
-   //   //doubflo fS    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
-   //   //doubflo fT    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
-   //   //doubflo fB    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
-   //   //doubflo fNE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
-   //   //doubflo fSW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
-   //   //doubflo fSE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
-   //   //doubflo fNW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
-   //   //doubflo fTE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
-   //   //doubflo fBW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
-   //   //doubflo fBE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
-   //   //doubflo fTW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
-   //   //doubflo fTN   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
-   //   //doubflo fBS   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
-   //   //doubflo fBN   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
-   //   //doubflo fTS   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
-   //   //doubflo fTNE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
-   //   //doubflo fBSW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
-   //   //doubflo fBNE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
-   //   //doubflo fTSW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
-   //   //doubflo fTSE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
-   //   //doubflo fBNW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
-   //   //doubflo fBSE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
-   //   //doubflo fTNW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+   //   //real fZERO = c8over27*  (rhoBC[k]-(one + rhoBC[k])*(cusq))                                                           ;
+   //   //real fE    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
+   //   //real fW    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
+   //   //real fN    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
+   //   //real fS    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
+   //   //real fT    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
+   //   //real fB    = c2over27*  (rhoBC[k]+(one + rhoBC[k])*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
+   //   //real fNE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+   //   //real fSW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+   //   //real fSE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+   //   //real fNW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+   //   //real fTE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+   //   //real fBW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+   //   //real fBE   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+   //   //real fTW   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+   //   //real fTN   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+   //   //real fBS   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+   //   //real fBN   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+   //   //real fTS   = c1over54*  (rhoBC[k]+(one + rhoBC[k])*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+   //   //real fTNE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+   //   //real fBSW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+   //   //real fBNE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+   //   //real fTSW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+   //   //real fTSE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+   //   //real fBNW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+   //   //real fBSE  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+   //   //real fTNW  = c1over216* (rhoBC[k]+(one + rhoBC[k])*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
    //   //////////////////////////////////////////////////////////////////////////
 	  //// based on VirtualFluids (kucher + fard)
-   //   doubflo fZERO = c8over27  * rhoBC[k] * (one                                                                      - cusq);
-   //   doubflo fE    = c2over27  * rhoBC[k] * (one + three * ( vx1        ) + c9over2 * ( vx1        ) * ( vx1        ) - cusq);
-   //   doubflo fW    = c2over27  * rhoBC[k] * (one + three * (-vx1        ) + c9over2 * (-vx1        ) * (-vx1        ) - cusq);
-   //   doubflo fN    = c2over27  * rhoBC[k] * (one + three * (     vx2    ) + c9over2 * (     vx2    ) * (     vx2    ) - cusq);
-   //   doubflo fS    = c2over27  * rhoBC[k] * (one + three * (    -vx2    ) + c9over2 * (    -vx2    ) * (    -vx2    ) - cusq);
-   //   doubflo fT    = c2over27  * rhoBC[k] * (one + three * (         vx3) + c9over2 * (         vx3) * (         vx3) - cusq);
-   //   doubflo fB    = c2over27  * rhoBC[k] * (one + three * (        -vx3) + c9over2 * (        -vx3) * (        -vx3) - cusq);
-   //   doubflo fNE   = c1over54  * rhoBC[k] * (one + three * ( vx1+vx2    ) + c9over2 * ( vx1+vx2    ) * ( vx1+vx2    ) - cusq);
-   //   doubflo fSW   = c1over54  * rhoBC[k] * (one + three * (-vx1-vx2    ) + c9over2 * (-vx1-vx2    ) * (-vx1-vx2    ) - cusq);
-   //   doubflo fSE   = c1over54  * rhoBC[k] * (one + three * ( vx1-vx2    ) + c9over2 * ( vx1-vx2    ) * ( vx1-vx2    ) - cusq);
-   //   doubflo fNW   = c1over54  * rhoBC[k] * (one + three * (-vx1+vx2    ) + c9over2 * (-vx1+vx2    ) * (-vx1+vx2    ) - cusq);
-   //   doubflo fTE   = c1over54  * rhoBC[k] * (one + three * ( vx1    +vx3) + c9over2 * ( vx1    +vx3) * ( vx1    +vx3) - cusq);
-   //   doubflo fBW   = c1over54  * rhoBC[k] * (one + three * (-vx1    -vx3) + c9over2 * (-vx1    -vx3) * (-vx1    -vx3) - cusq);
-   //   doubflo fBE   = c1over54  * rhoBC[k] * (one + three * ( vx1    -vx3) + c9over2 * ( vx1    -vx3) * ( vx1    -vx3) - cusq);
-   //   doubflo fTW   = c1over54  * rhoBC[k] * (one + three * (-vx1    +vx3) + c9over2 * (-vx1    +vx3) * (-vx1    +vx3) - cusq);
-   //   doubflo fTN   = c1over54  * rhoBC[k] * (one + three * (     vx2+vx3) + c9over2 * (     vx2+vx3) * (     vx2+vx3) - cusq);
-   //   doubflo fBS   = c1over54  * rhoBC[k] * (one + three * (    -vx2-vx3) + c9over2 * (    -vx2-vx3) * (    -vx2-vx3) - cusq);
-   //   doubflo fBN   = c1over54  * rhoBC[k] * (one + three * (     vx2-vx3) + c9over2 * (     vx2-vx3) * (     vx2-vx3) - cusq);
-   //   doubflo fTS   = c1over54  * rhoBC[k] * (one + three * (    -vx2+vx3) + c9over2 * (    -vx2+vx3) * (    -vx2+vx3) - cusq);
-   //   doubflo fTNE  = c1over216 * rhoBC[k] * (one + three * ( vx1+vx2+vx3) + c9over2 * ( vx1+vx2+vx3) * ( vx1+vx2+vx3) - cusq);
-   //   doubflo fBSW  = c1over216 * rhoBC[k] * (one + three * (-vx1-vx2-vx3) + c9over2 * (-vx1-vx2-vx3) * (-vx1-vx2-vx3) - cusq);
-   //   doubflo fBNE  = c1over216 * rhoBC[k] * (one + three * ( vx1+vx2-vx3) + c9over2 * ( vx1+vx2-vx3) * ( vx1+vx2-vx3) - cusq);
-   //   doubflo fTSW  = c1over216 * rhoBC[k] * (one + three * (-vx1-vx2+vx3) + c9over2 * (-vx1-vx2+vx3) * (-vx1-vx2+vx3) - cusq);
-   //   doubflo fTSE  = c1over216 * rhoBC[k] * (one + three * ( vx1-vx2+vx3) + c9over2 * ( vx1-vx2+vx3) * ( vx1-vx2+vx3) - cusq);
-   //   doubflo fBNW  = c1over216 * rhoBC[k] * (one + three * (-vx1+vx2-vx3) + c9over2 * (-vx1+vx2-vx3) * (-vx1+vx2-vx3) - cusq);
-   //   doubflo fBSE  = c1over216 * rhoBC[k] * (one + three * ( vx1-vx2-vx3) + c9over2 * ( vx1-vx2-vx3) * ( vx1-vx2-vx3) - cusq);
-   //   doubflo fTNW  = c1over216 * rhoBC[k] * (one + three * (-vx1+vx2+vx3) + c9over2 * (-vx1+vx2+vx3) * (-vx1+vx2+vx3) - cusq);
+   //   real fZERO = c8over27  * rhoBC[k] * (one                                                                      - cusq);
+   //   real fE    = c2over27  * rhoBC[k] * (one + three * ( vx1        ) + c9over2 * ( vx1        ) * ( vx1        ) - cusq);
+   //   real fW    = c2over27  * rhoBC[k] * (one + three * (-vx1        ) + c9over2 * (-vx1        ) * (-vx1        ) - cusq);
+   //   real fN    = c2over27  * rhoBC[k] * (one + three * (     vx2    ) + c9over2 * (     vx2    ) * (     vx2    ) - cusq);
+   //   real fS    = c2over27  * rhoBC[k] * (one + three * (    -vx2    ) + c9over2 * (    -vx2    ) * (    -vx2    ) - cusq);
+   //   real fT    = c2over27  * rhoBC[k] * (one + three * (         vx3) + c9over2 * (         vx3) * (         vx3) - cusq);
+   //   real fB    = c2over27  * rhoBC[k] * (one + three * (        -vx3) + c9over2 * (        -vx3) * (        -vx3) - cusq);
+   //   real fNE   = c1over54  * rhoBC[k] * (one + three * ( vx1+vx2    ) + c9over2 * ( vx1+vx2    ) * ( vx1+vx2    ) - cusq);
+   //   real fSW   = c1over54  * rhoBC[k] * (one + three * (-vx1-vx2    ) + c9over2 * (-vx1-vx2    ) * (-vx1-vx2    ) - cusq);
+   //   real fSE   = c1over54  * rhoBC[k] * (one + three * ( vx1-vx2    ) + c9over2 * ( vx1-vx2    ) * ( vx1-vx2    ) - cusq);
+   //   real fNW   = c1over54  * rhoBC[k] * (one + three * (-vx1+vx2    ) + c9over2 * (-vx1+vx2    ) * (-vx1+vx2    ) - cusq);
+   //   real fTE   = c1over54  * rhoBC[k] * (one + three * ( vx1    +vx3) + c9over2 * ( vx1    +vx3) * ( vx1    +vx3) - cusq);
+   //   real fBW   = c1over54  * rhoBC[k] * (one + three * (-vx1    -vx3) + c9over2 * (-vx1    -vx3) * (-vx1    -vx3) - cusq);
+   //   real fBE   = c1over54  * rhoBC[k] * (one + three * ( vx1    -vx3) + c9over2 * ( vx1    -vx3) * ( vx1    -vx3) - cusq);
+   //   real fTW   = c1over54  * rhoBC[k] * (one + three * (-vx1    +vx3) + c9over2 * (-vx1    +vx3) * (-vx1    +vx3) - cusq);
+   //   real fTN   = c1over54  * rhoBC[k] * (one + three * (     vx2+vx3) + c9over2 * (     vx2+vx3) * (     vx2+vx3) - cusq);
+   //   real fBS   = c1over54  * rhoBC[k] * (one + three * (    -vx2-vx3) + c9over2 * (    -vx2-vx3) * (    -vx2-vx3) - cusq);
+   //   real fBN   = c1over54  * rhoBC[k] * (one + three * (     vx2-vx3) + c9over2 * (     vx2-vx3) * (     vx2-vx3) - cusq);
+   //   real fTS   = c1over54  * rhoBC[k] * (one + three * (    -vx2+vx3) + c9over2 * (    -vx2+vx3) * (    -vx2+vx3) - cusq);
+   //   real fTNE  = c1over216 * rhoBC[k] * (one + three * ( vx1+vx2+vx3) + c9over2 * ( vx1+vx2+vx3) * ( vx1+vx2+vx3) - cusq);
+   //   real fBSW  = c1over216 * rhoBC[k] * (one + three * (-vx1-vx2-vx3) + c9over2 * (-vx1-vx2-vx3) * (-vx1-vx2-vx3) - cusq);
+   //   real fBNE  = c1over216 * rhoBC[k] * (one + three * ( vx1+vx2-vx3) + c9over2 * ( vx1+vx2-vx3) * ( vx1+vx2-vx3) - cusq);
+   //   real fTSW  = c1over216 * rhoBC[k] * (one + three * (-vx1-vx2+vx3) + c9over2 * (-vx1-vx2+vx3) * (-vx1-vx2+vx3) - cusq);
+   //   real fTSE  = c1over216 * rhoBC[k] * (one + three * ( vx1-vx2+vx3) + c9over2 * ( vx1-vx2+vx3) * ( vx1-vx2+vx3) - cusq);
+   //   real fBNW  = c1over216 * rhoBC[k] * (one + three * (-vx1+vx2-vx3) + c9over2 * (-vx1+vx2-vx3) * (-vx1+vx2-vx3) - cusq);
+   //   real fBSE  = c1over216 * rhoBC[k] * (one + three * ( vx1-vx2-vx3) + c9over2 * ( vx1-vx2-vx3) * ( vx1-vx2-vx3) - cusq);
+   //   real fTNW  = c1over216 * rhoBC[k] * (one + three * (-vx1+vx2+vx3) + c9over2 * (-vx1+vx2+vx3) * (-vx1+vx2+vx3) - cusq);
    ////   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //////test
-   ////   doubflo fZERO = c8over27  * ((drho1 + rhoBC[k]) / two) * (one                                                                      - cusq);
-   ////   doubflo fE    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1        ) + c9over2 * ( vx1        ) * ( vx1        ) - cusq);
-   ////   doubflo fW    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1        ) + c9over2 * (-vx1        ) * (-vx1        ) - cusq);
-   ////   doubflo fN    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (     vx2    ) + c9over2 * (     vx2    ) * (     vx2    ) - cusq);
-   ////   doubflo fS    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (    -vx2    ) + c9over2 * (    -vx2    ) * (    -vx2    ) - cusq);
-   ////   doubflo fT    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (         vx3) + c9over2 * (         vx3) * (         vx3) - cusq);
-   ////   doubflo fB    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (        -vx3) + c9over2 * (        -vx3) * (        -vx3) - cusq);
-   ////   doubflo fNE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1+vx2    ) + c9over2 * ( vx1+vx2    ) * ( vx1+vx2    ) - cusq);
-   ////   doubflo fSW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1-vx2    ) + c9over2 * (-vx1-vx2    ) * (-vx1-vx2    ) - cusq);
-   ////   doubflo fSE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1-vx2    ) + c9over2 * ( vx1-vx2    ) * ( vx1-vx2    ) - cusq);
-   ////   doubflo fNW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1+vx2    ) + c9over2 * (-vx1+vx2    ) * (-vx1+vx2    ) - cusq);
-   ////   doubflo fTE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1    +vx3) + c9over2 * ( vx1    +vx3) * ( vx1    +vx3) - cusq);
-   ////   doubflo fBW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1    -vx3) + c9over2 * (-vx1    -vx3) * (-vx1    -vx3) - cusq);
-   ////   doubflo fBE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1    -vx3) + c9over2 * ( vx1    -vx3) * ( vx1    -vx3) - cusq);
-   ////   doubflo fTW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1    +vx3) + c9over2 * (-vx1    +vx3) * (-vx1    +vx3) - cusq);
-   ////   doubflo fTN   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (     vx2+vx3) + c9over2 * (     vx2+vx3) * (     vx2+vx3) - cusq);
-   ////   doubflo fBS   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (    -vx2-vx3) + c9over2 * (    -vx2-vx3) * (    -vx2-vx3) - cusq);
-   ////   doubflo fBN   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (     vx2-vx3) + c9over2 * (     vx2-vx3) * (     vx2-vx3) - cusq);
-   ////   doubflo fTS   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (    -vx2+vx3) + c9over2 * (    -vx2+vx3) * (    -vx2+vx3) - cusq);
-   ////   doubflo fTNE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1+vx2+vx3) + c9over2 * ( vx1+vx2+vx3) * ( vx1+vx2+vx3) - cusq);
-   ////   doubflo fBSW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1-vx2-vx3) + c9over2 * (-vx1-vx2-vx3) * (-vx1-vx2-vx3) - cusq);
-   ////   doubflo fBNE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1+vx2-vx3) + c9over2 * ( vx1+vx2-vx3) * ( vx1+vx2-vx3) - cusq);
-   ////   doubflo fTSW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1-vx2+vx3) + c9over2 * (-vx1-vx2+vx3) * (-vx1-vx2+vx3) - cusq);
-   ////   doubflo fTSE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1-vx2+vx3) + c9over2 * ( vx1-vx2+vx3) * ( vx1-vx2+vx3) - cusq);
-   ////   doubflo fBNW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1+vx2-vx3) + c9over2 * (-vx1+vx2-vx3) * (-vx1+vx2-vx3) - cusq);
-   ////   doubflo fBSE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1-vx2-vx3) + c9over2 * ( vx1-vx2-vx3) * ( vx1-vx2-vx3) - cusq);
-   ////   doubflo fTNW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1+vx2+vx3) + c9over2 * (-vx1+vx2+vx3) * (-vx1+vx2+vx3) - cusq);
+   ////   real fZERO = c8over27  * ((drho1 + rhoBC[k]) / two) * (one                                                                      - cusq);
+   ////   real fE    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1        ) + c9over2 * ( vx1        ) * ( vx1        ) - cusq);
+   ////   real fW    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1        ) + c9over2 * (-vx1        ) * (-vx1        ) - cusq);
+   ////   real fN    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (     vx2    ) + c9over2 * (     vx2    ) * (     vx2    ) - cusq);
+   ////   real fS    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (    -vx2    ) + c9over2 * (    -vx2    ) * (    -vx2    ) - cusq);
+   ////   real fT    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (         vx3) + c9over2 * (         vx3) * (         vx3) - cusq);
+   ////   real fB    = c2over27  * ((drho1 + rhoBC[k]) / two) * (one + three * (        -vx3) + c9over2 * (        -vx3) * (        -vx3) - cusq);
+   ////   real fNE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1+vx2    ) + c9over2 * ( vx1+vx2    ) * ( vx1+vx2    ) - cusq);
+   ////   real fSW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1-vx2    ) + c9over2 * (-vx1-vx2    ) * (-vx1-vx2    ) - cusq);
+   ////   real fSE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1-vx2    ) + c9over2 * ( vx1-vx2    ) * ( vx1-vx2    ) - cusq);
+   ////   real fNW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1+vx2    ) + c9over2 * (-vx1+vx2    ) * (-vx1+vx2    ) - cusq);
+   ////   real fTE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1    +vx3) + c9over2 * ( vx1    +vx3) * ( vx1    +vx3) - cusq);
+   ////   real fBW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1    -vx3) + c9over2 * (-vx1    -vx3) * (-vx1    -vx3) - cusq);
+   ////   real fBE   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1    -vx3) + c9over2 * ( vx1    -vx3) * ( vx1    -vx3) - cusq);
+   ////   real fTW   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1    +vx3) + c9over2 * (-vx1    +vx3) * (-vx1    +vx3) - cusq);
+   ////   real fTN   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (     vx2+vx3) + c9over2 * (     vx2+vx3) * (     vx2+vx3) - cusq);
+   ////   real fBS   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (    -vx2-vx3) + c9over2 * (    -vx2-vx3) * (    -vx2-vx3) - cusq);
+   ////   real fBN   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (     vx2-vx3) + c9over2 * (     vx2-vx3) * (     vx2-vx3) - cusq);
+   ////   real fTS   = c1over54  * ((drho1 + rhoBC[k]) / two) * (one + three * (    -vx2+vx3) + c9over2 * (    -vx2+vx3) * (    -vx2+vx3) - cusq);
+   ////   real fTNE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1+vx2+vx3) + c9over2 * ( vx1+vx2+vx3) * ( vx1+vx2+vx3) - cusq);
+   ////   real fBSW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1-vx2-vx3) + c9over2 * (-vx1-vx2-vx3) * (-vx1-vx2-vx3) - cusq);
+   ////   real fBNE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1+vx2-vx3) + c9over2 * ( vx1+vx2-vx3) * ( vx1+vx2-vx3) - cusq);
+   ////   real fTSW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1-vx2+vx3) + c9over2 * (-vx1-vx2+vx3) * (-vx1-vx2+vx3) - cusq);
+   ////   real fTSE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1-vx2+vx3) + c9over2 * ( vx1-vx2+vx3) * ( vx1-vx2+vx3) - cusq);
+   ////   real fBNW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1+vx2-vx3) + c9over2 * (-vx1+vx2-vx3) * (-vx1+vx2-vx3) - cusq);
+   ////   real fBSE  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * ( vx1-vx2-vx3) + c9over2 * ( vx1-vx2-vx3) * ( vx1-vx2-vx3) - cusq);
+   ////   real fTNW  = c1over216 * ((drho1 + rhoBC[k]) / two) * (one + three * (-vx1+vx2+vx3) + c9over2 * (-vx1+vx2+vx3) * (-vx1+vx2+vx3) - cusq);
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // based on BGK Plus Comp
@@ -3971,77 +3971,77 @@ extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
 			//double mfccc = (D.f[dirBSW ])[k1bsw ];
 			//double mfacc = (D.f[dirBSE ])[k1bse ];
 			//double mfcac = (D.f[dirBNW ])[k1bnw ];
-			doubflo mfabb = (D.f[dirE   ])[k1e   ];
-			doubflo mfcbb = (D.f[dirW   ])[k1w   ];
-			doubflo mfbab = (D.f[dirN   ])[k1n   ];
-			doubflo mfbcb = (D.f[dirS   ])[k1s   ];
-			doubflo mfbba = (D.f[dirT   ])[k1t   ];
-			doubflo mfbbc = (D.f[dirB   ])[k1b   ];
-			doubflo mfaab = (D.f[dirNE  ])[k1ne  ];
-			doubflo mfccb = (D.f[dirSW  ])[k1sw  ];
-			doubflo mfacb = (D.f[dirSE  ])[k1se  ];
-			doubflo mfcab = (D.f[dirNW  ])[k1nw  ];
-			doubflo mfaba = (D.f[dirTE  ])[k1te  ];
-			doubflo mfcbc = (D.f[dirBW  ])[k1bw  ];
-			doubflo mfabc = (D.f[dirBE  ])[k1be  ];
-			doubflo mfcba = (D.f[dirTW  ])[k1tw  ];
-			doubflo mfbaa = (D.f[dirTN  ])[k1tn  ];
-			doubflo mfbcc = (D.f[dirBS  ])[k1bs  ];
-			doubflo mfbac = (D.f[dirBN  ])[k1bn  ];
-			doubflo mfbca = (D.f[dirTS  ])[k1ts  ];
-			doubflo mfbbb = (D.f[dirZERO])[k1zero];
-			doubflo mfaaa = (D.f[dirTNE ])[k1tne ];
-			doubflo mfcca = (D.f[dirTSW ])[k1tsw ];
-			doubflo mfaca = (D.f[dirTSE ])[k1tse ];
-			doubflo mfcaa = (D.f[dirTNW ])[k1tnw ];
-			doubflo mfaac = (D.f[dirBNE ])[k1bne ];
-			doubflo mfccc = (D.f[dirBSW ])[k1bsw ];
-			doubflo mfacc = (D.f[dirBSE ])[k1bse ];
-			doubflo mfcac = (D.f[dirBNW ])[k1bnw ];
+			real mfabb = (D.f[dirE   ])[k1e   ];
+			real mfcbb = (D.f[dirW   ])[k1w   ];
+			real mfbab = (D.f[dirN   ])[k1n   ];
+			real mfbcb = (D.f[dirS   ])[k1s   ];
+			real mfbba = (D.f[dirT   ])[k1t   ];
+			real mfbbc = (D.f[dirB   ])[k1b   ];
+			real mfaab = (D.f[dirNE  ])[k1ne  ];
+			real mfccb = (D.f[dirSW  ])[k1sw  ];
+			real mfacb = (D.f[dirSE  ])[k1se  ];
+			real mfcab = (D.f[dirNW  ])[k1nw  ];
+			real mfaba = (D.f[dirTE  ])[k1te  ];
+			real mfcbc = (D.f[dirBW  ])[k1bw  ];
+			real mfabc = (D.f[dirBE  ])[k1be  ];
+			real mfcba = (D.f[dirTW  ])[k1tw  ];
+			real mfbaa = (D.f[dirTN  ])[k1tn  ];
+			real mfbcc = (D.f[dirBS  ])[k1bs  ];
+			real mfbac = (D.f[dirBN  ])[k1bn  ];
+			real mfbca = (D.f[dirTS  ])[k1ts  ];
+			real mfbbb = (D.f[dirZERO])[k1zero];
+			real mfaaa = (D.f[dirTNE ])[k1tne ];
+			real mfcca = (D.f[dirTSW ])[k1tsw ];
+			real mfaca = (D.f[dirTSE ])[k1tse ];
+			real mfcaa = (D.f[dirTNW ])[k1tnw ];
+			real mfaac = (D.f[dirBNE ])[k1bne ];
+			real mfccc = (D.f[dirBSW ])[k1bsw ];
+			real mfacc = (D.f[dirBSE ])[k1bse ];
+			real mfcac = (D.f[dirBNW ])[k1bnw ];
 
-			//doubflo mfcbb = (D.f[dirE   ])[ke   ];
-			//doubflo mfabb = (D.f[dirW   ])[kw   ];
-			//doubflo mfbcb = (D.f[dirN   ])[kn   ];
-			//doubflo mfbab = (D.f[dirS   ])[ks   ];
-			//doubflo mfbbc = (D.f[dirT   ])[kt   ];
-			//doubflo mfbba = (D.f[dirB   ])[kb   ];
-			//doubflo mfccb = (D.f[dirNE  ])[kne  ];
-			//doubflo mfaab = (D.f[dirSW  ])[ksw  ];
-			//doubflo mfcab = (D.f[dirSE  ])[kse  ];
-			//doubflo mfacb = (D.f[dirNW  ])[knw  ];
-			//doubflo mfcbc = (D.f[dirTE  ])[kte  ];
-			//doubflo mfaba = (D.f[dirBW  ])[kbw  ];
-			//doubflo mfcba = (D.f[dirBE  ])[kbe  ];
-			//doubflo mfabc = (D.f[dirTW  ])[ktw  ];
-			//doubflo mfbcc = (D.f[dirTN  ])[ktn  ];
-			//doubflo mfbaa = (D.f[dirBS  ])[kbs  ];
-			//doubflo mfbca = (D.f[dirBN  ])[kbn  ];
-			//doubflo mfbac = (D.f[dirTS  ])[kts  ];
-			//doubflo mfbbb = (D.f[dirZERO])[kzero];
-			//doubflo mfccc = (D.f[dirTNE ])[ktne ];
-			//doubflo mfaac = (D.f[dirTSW ])[ktsw ];
-			//doubflo mfcac = (D.f[dirTSE ])[ktse ];
-			//doubflo mfacc = (D.f[dirTNW ])[ktnw ];
-			//doubflo mfcca = (D.f[dirBNE ])[kbne ];
-			//doubflo mfaaa = (D.f[dirBSW ])[kbsw ];
-			//doubflo mfcaa = (D.f[dirBSE ])[kbse ];
-			//doubflo mfaca = (D.f[dirBNW ])[kbnw ];
+			//real mfcbb = (D.f[dirE   ])[ke   ];
+			//real mfabb = (D.f[dirW   ])[kw   ];
+			//real mfbcb = (D.f[dirN   ])[kn   ];
+			//real mfbab = (D.f[dirS   ])[ks   ];
+			//real mfbbc = (D.f[dirT   ])[kt   ];
+			//real mfbba = (D.f[dirB   ])[kb   ];
+			//real mfccb = (D.f[dirNE  ])[kne  ];
+			//real mfaab = (D.f[dirSW  ])[ksw  ];
+			//real mfcab = (D.f[dirSE  ])[kse  ];
+			//real mfacb = (D.f[dirNW  ])[knw  ];
+			//real mfcbc = (D.f[dirTE  ])[kte  ];
+			//real mfaba = (D.f[dirBW  ])[kbw  ];
+			//real mfcba = (D.f[dirBE  ])[kbe  ];
+			//real mfabc = (D.f[dirTW  ])[ktw  ];
+			//real mfbcc = (D.f[dirTN  ])[ktn  ];
+			//real mfbaa = (D.f[dirBS  ])[kbs  ];
+			//real mfbca = (D.f[dirBN  ])[kbn  ];
+			//real mfbac = (D.f[dirTS  ])[kts  ];
+			//real mfbbb = (D.f[dirZERO])[kzero];
+			//real mfccc = (D.f[dirTNE ])[ktne ];
+			//real mfaac = (D.f[dirTSW ])[ktsw ];
+			//real mfcac = (D.f[dirTSE ])[ktse ];
+			//real mfacc = (D.f[dirTNW ])[ktnw ];
+			//real mfcca = (D.f[dirBNE ])[kbne ];
+			//real mfaaa = (D.f[dirBSW ])[kbsw ];
+			//real mfcaa = (D.f[dirBSE ])[kbse ];
+			//real mfaca = (D.f[dirBNW ])[kbnw ];
 			////////////////////////////////////////////////////////////////////////////////////
-			//doubflo rho   = (((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			//real rho   = (((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 			//				(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 			//				((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb) + one;//!!!!Achtung + one
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo rho = rhoBC[k];
+			real rho = rhoBC[k];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo OoRho = one / (rho * 1.5f);
+			real OoRho = one / (rho * 1.5f);
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo vvx    = ((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    = ((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) * OoRho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) * OoRho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) * OoRho;
 			/////////////////////////
@@ -4125,15 +4125,15 @@ extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
 			double vz2    = vvz * vvz;
 			//////////////////////////////////////////////////////////////////////////////////
 			//original
-            doubflo XXb    = -c2o3 + vx2;
-            doubflo XXc    = -c1o2 * (XXb + one + vvx);
-            doubflo XXa    = XXc + vvx;
-            doubflo YYb    = -c2o3 + vy2;
-            doubflo YYc    = -c1o2 * (YYb + one + vvy);
-            doubflo YYa    = YYc + vvy;
-            doubflo ZZb    = -c2o3 + vz2;
-            doubflo ZZc    = -c1o2 * (ZZb + one + vvz);
-            doubflo ZZa    = ZZc + vvz;
+            real XXb    = -c2o3 + vx2;
+            real XXc    = -c1o2 * (XXb + one + vvx);
+            real XXa    = XXc + vvx;
+            real YYb    = -c2o3 + vy2;
+            real YYc    = -c1o2 * (YYb + one + vvy);
+            real YYa    = YYc + vvy;
+            real ZZb    = -c2o3 + vz2;
+            real ZZc    = -c1o2 * (ZZb + one + vvz);
+            real ZZa    = ZZc + vvz;
 			//////////////////////////////////////////////////////////////////////////////////
 			//unkonditioniert
             mfcbb = -(rhoBC[k] + one) * XXc * YYb * ZZb - c2over27; 
@@ -4384,7 +4384,7 @@ extern "C" __global__ void QPressDeviceEQZ27(doubflo* rhoBC,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceZero27(	 doubflo* DD, 
+extern "C" __global__ void QPressDeviceZero27(	 real* DD, 
 												 int* k_Q, 
 												 int kQ, 
 												 unsigned int* neighborX,
@@ -4571,12 +4571,12 @@ extern "C" __global__ void QPressDeviceZero27(	 doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDeviceFake27(	 doubflo* rhoBC,
-												 doubflo* DD, 
+extern "C" __global__ void QPressDeviceFake27(	 real* rhoBC,
+												 real* DD, 
 												 int* k_Q, 
 												 int* k_N, 
 												 int kQ, 
-												 doubflo om1, 
+												 real om1, 
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -4719,7 +4719,7 @@ extern "C" __global__ void QPressDeviceFake27(	 doubflo* rhoBC,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
+      real        f1_E,f1_W,f1_N,f1_S,f1_T,f1_B,f1_NE,f1_SW,f1_SE,f1_NW,f1_TE,f1_BW,f1_BE,f1_TW,f1_TN,f1_BS,f1_BN,f1_TS,f1_ZERO,
          f1_TNE,f1_TSW,f1_TSE,f1_TNW,f1_BNE,f1_BSW,f1_BSE,f1_BNW;
 
       f1_W    = (D.f[dirE   ])[k1e   ];
@@ -4751,7 +4751,7 @@ extern "C" __global__ void QPressDeviceFake27(	 doubflo* rhoBC,
       f1_TSE  = (D.f[dirBNW ])[k1bnw ];
 
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3;
+      real vx1, vx2, vx3;
       vx1    =  ((f1_TSE - f1_BNW) - (f1_TNW - f1_BSE)) + ((f1_TNE - f1_BSW) - (f1_TSW - f1_BNE)) +
                   ((f1_BE - f1_TW)   + (f1_TE - f1_BW))   + ((f1_SE - f1_NW)   + (f1_NE - f1_SW)) +
                   (f1_E - f1_W); 
@@ -4765,9 +4765,9 @@ extern "C" __global__ void QPressDeviceFake27(	 doubflo* rhoBC,
                   (-(f1_BN - f1_TS)  + (f1_TN - f1_BS))   + ((f1_TE - f1_BW)   - (f1_BE - f1_TW)) +
                   (f1_T - f1_B); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
       //////////////////////////////////////////////////////////////////////////
-      doubflo drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
+      real drho1    =  f1_ZERO+f1_E+f1_W+f1_N+f1_S+f1_T+f1_B+f1_NE+f1_SW+f1_SE+f1_NW+f1_TE+f1_BW+f1_BE+f1_TW+f1_TN+f1_BS+f1_BN+f1_TS+
          f1_TNE+f1_TSW+f1_TSE+f1_TNW+f1_BNE+f1_BSW+f1_BSE+f1_BNW;
 
 	  //drho1 = (drho1 + rhoBC[k])/2.f;
@@ -4845,13 +4845,13 @@ extern "C" __global__ void QPressDeviceFake27(	 doubflo* rhoBC,
 
 
 //////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QPressDevice27_IntBB(doubflo* rho,
-												doubflo* DD, 
+extern "C" __global__ void QPressDevice27_IntBB(real* rho,
+												real* DD, 
 												int* k_Q, 
-												doubflo* QQ,
+												real* QQ,
 												unsigned int sizeQ,
 												int kQ, 
-												doubflo om1, 
+												real om1, 
 												unsigned int* neighborX,
 												unsigned int* neighborY,
 												unsigned int* neighborZ,
@@ -4933,11 +4933,11 @@ extern "C" __global__ void QPressDevice27_IntBB(doubflo* rho,
 	if(k<kQ)
 	{
 		////////////////////////////////////////////////////////////////////////////////
-		//doubflo VeloX = vx[k];
-		//doubflo VeloY = vy[k];
-		//doubflo VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
+		//real VeloX = vx[k];
+		//real VeloY = vy[k];
+		//real VeloZ = vz[k]; //(16.0*(u0*2.0)*bbx*bby*(grid_nx-bbx)*(grid_ny-bby))/(grid_nx*grid_nx*grid_ny*grid_ny)
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -4999,7 +4999,7 @@ extern "C" __global__ void QPressDevice27_IntBB(doubflo* rho,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
 			f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
 		f_W    = (D.f[dirE   ])[ke   ];
@@ -5029,7 +5029,7 @@ extern "C" __global__ void QPressDevice27_IntBB(doubflo* rho,
 		f_TNW  = (D.f[dirBSE ])[kbse ];
 		f_TSE  = (D.f[dirBNW ])[kbnw ];
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo vx1, vx2, vx3, drho, feq, q;
+		real vx1, vx2, vx3, drho, feq, q;
 		drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
 			f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
 			f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -5047,7 +5047,7 @@ extern "C" __global__ void QPressDevice27_IntBB(doubflo* rho,
 			(-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
 			(f_T - f_B))/(one+drho); 
 
-		doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+		real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
 		//////////////////////////////////////////////////////////////////////////
 		if (evenOrOdd==false)
@@ -5113,10 +5113,10 @@ extern "C" __global__ void QPressDevice27_IntBB(doubflo* rho,
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//Test
 		//(D.f[dirZERO])[k]=c1o10;
-		doubflo rhoDiff = drho - rho[k];
-		doubflo VeloX = vx1;
-		doubflo VeloY = vx2;
-		doubflo VeloZ = vx3;
+		real rhoDiff = drho - rho[k];
+		real VeloX = vx1;
+		real VeloY = vx2;
+		real VeloZ = vx3;
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		q = q_dirE[k];

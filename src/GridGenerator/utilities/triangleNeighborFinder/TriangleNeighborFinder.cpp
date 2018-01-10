@@ -12,8 +12,8 @@ struct IDS {
 
 int compare2DArrayAccordingToXYZ(const void *pa, const void *pb) {
 
-    doubflo *a = *((doubflo **)pa);
-    doubflo *b = *((doubflo **)pb);
+    real *a = *((real **)pa);
+    real *b = *((real **)pb);
 
     //compare X
     if (a[IDS::x] < b[IDS::x]) return -1;
@@ -33,8 +33,8 @@ int compare2DArrayAccordingToXYZ(const void *pa, const void *pb) {
 
 int compare2DArrayAccordingToIndex(const void *pa, const void *pb) {
 
-    doubflo *a = *((doubflo **)pa);
-    doubflo *b = *((doubflo **)pb);
+    real *a = *((real **)pa);
+    real *b = *((real **)pb);
 
     if (a[IDS::vertexID] < b[IDS::vertexID]) return -1;
     else if (a[IDS::vertexID] > b[IDS::vertexID]) return +1;
@@ -52,13 +52,13 @@ TriangleNeighborFinder::TriangleNeighborFinder(Triangle *triangles_ptr, int size
     this->fillSortedInSpaceWithFirstVertexAndCoordinateIDs(numberOfRows);
 
     //copy the array:
-    sortedToTriangles = new doubflo*[numberOfRows];
+    sortedToTriangles = new real*[numberOfRows];
     for (int i = 0; i < numberOfRows; i++) {
-        sortedToTriangles[i] = new doubflo[4];
+        sortedToTriangles[i] = new real[4];
         sortedToTriangles[i][IDS::vertexID] = sortedInSpace[i][IDS::vertexID];
         sortedToTriangles[i][IDS::firstVertexID] = sortedInSpace[i][IDS::firstVertexID];
         sortedToTriangles[i][IDS::coordinateID] = sortedInSpace[i][IDS::coordinateID];
-        sortedToTriangles[i][IDS::uniqueCoordID] = (doubflo)i;
+        sortedToTriangles[i][IDS::uniqueCoordID] = (real)i;
     }
 
     qsort(sortedToTriangles, numberOfRows, sizeof sortedToTriangles[0], compare2DArrayAccordingToIndex);
@@ -71,13 +71,13 @@ TriangleNeighborFinder::TriangleNeighborFinder(Triangle *triangles_ptr, int size
 
 void TriangleNeighborFinder::initalSortedInSpaceWithCoords(Triangle *triangles_ptr, int size)
 {
-    sortedInSpace = new doubflo*[numberOfRows];
+    sortedInSpace = new real*[numberOfRows];
 
     int vertexCounter = 0;
     int numberOfColumns = 6;
     for (int i = 0; i < size; i++){
-        sortedInSpace[vertexCounter] = new doubflo[numberOfColumns];
-        sortedInSpace[vertexCounter][IDS::vertexID] = (doubflo)vertexCounter;
+        sortedInSpace[vertexCounter] = new real[numberOfColumns];
+        sortedInSpace[vertexCounter][IDS::vertexID] = (real)vertexCounter;
         sortedInSpace[vertexCounter][IDS::firstVertexID] = 0.0f;                  
         sortedInSpace[vertexCounter][IDS::coordinateID]  = 0.0f;                   
         sortedInSpace[vertexCounter][IDS::x] = triangles_ptr[i].v1.x;
@@ -85,8 +85,8 @@ void TriangleNeighborFinder::initalSortedInSpaceWithCoords(Triangle *triangles_p
         sortedInSpace[vertexCounter][IDS::z] = triangles_ptr[i].v1.z;
 
         vertexCounter++;
-        sortedInSpace[vertexCounter] = new doubflo[numberOfColumns];
-        sortedInSpace[vertexCounter][IDS::vertexID]      = (doubflo)vertexCounter;
+        sortedInSpace[vertexCounter] = new real[numberOfColumns];
+        sortedInSpace[vertexCounter][IDS::vertexID]      = (real)vertexCounter;
         sortedInSpace[vertexCounter][IDS::firstVertexID] = 0.0f;
         sortedInSpace[vertexCounter][IDS::coordinateID]  = 0.0f;
         sortedInSpace[vertexCounter][IDS::x] = triangles_ptr[i].v2.x;
@@ -94,8 +94,8 @@ void TriangleNeighborFinder::initalSortedInSpaceWithCoords(Triangle *triangles_p
         sortedInSpace[vertexCounter][IDS::z] = triangles_ptr[i].v2.z;
 
         vertexCounter++;
-        sortedInSpace[vertexCounter] = new doubflo[numberOfColumns];
-        sortedInSpace[vertexCounter][IDS::vertexID]      = (doubflo)vertexCounter;
+        sortedInSpace[vertexCounter] = new real[numberOfColumns];
+        sortedInSpace[vertexCounter][IDS::vertexID]      = (real)vertexCounter;
         sortedInSpace[vertexCounter][IDS::firstVertexID] = 0.0f;
         sortedInSpace[vertexCounter][IDS::coordinateID]  = 0.0f;
         sortedInSpace[vertexCounter][IDS::x] = triangles_ptr[i].v3.x;
@@ -128,7 +128,7 @@ void TriangleNeighborFinder::fillSortedInSpaceWithFirstVertexAndCoordinateIDs(in
         while (a.getEuclideanDistanceTo(b) < 1e-7)
         {
             sortedInSpace[compareID][IDS::firstVertexID] = sortedInSpace[firstVertexID][0];
-            sortedInSpace[compareID][IDS::coordinateID] = (doubflo)coordinateID;
+            sortedInSpace[compareID][IDS::coordinateID] = (real)coordinateID;
             duplicates++;
             
             compareID++;
@@ -180,9 +180,9 @@ unsigned int TriangleNeighborFinder::findTriangleID(unsigned int uniqueCoordID)
 
 Vertex TriangleNeighborFinder::getCoordinatesIDfromTriangle(int triangleID)
 {
-    doubflo coordinateID1 = sortedToTriangles[triangleID * DIMENSION + 0][IDS::coordinateID];
-    doubflo coordinateID2 = sortedToTriangles[triangleID * DIMENSION + 1][IDS::coordinateID];
-    doubflo coordinateID3 = sortedToTriangles[triangleID * DIMENSION + 2][IDS::coordinateID];
+    real coordinateID1 = sortedToTriangles[triangleID * DIMENSION + 0][IDS::coordinateID];
+    real coordinateID2 = sortedToTriangles[triangleID * DIMENSION + 1][IDS::coordinateID];
+    real coordinateID3 = sortedToTriangles[triangleID * DIMENSION + 2][IDS::coordinateID];
     return Vertex(coordinateID1, coordinateID2, coordinateID3);
 }
 

@@ -10,13 +10,13 @@ using namespace testing;
 
 TEST(BoundingBoxTest, initWithTriangle_whenTheValueIsIntegerBoxHasToPLUS_or_MINUS_ONE) 
 {
-    doubflo minX = 1.0f;
-    doubflo minY = 23.0f;
-    doubflo minZ = 1.1222f;
+    real minX = 1.0f;
+    real minY = 23.0f;
+    real minZ = 1.1222f;
 
-    doubflo maxX = 110.0f;
-    doubflo maxY = 50.0f;
-    doubflo maxZ = 12122.23f;
+    real maxX = 110.0f;
+    real maxY = 50.0f;
+    real maxZ = 12122.23f;
 	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f)));
     EXPECT_THAT(box.minX, Eq(minX - 1));
     EXPECT_THAT(box.minY, Eq(minY - 1));
@@ -56,13 +56,13 @@ TEST(BoundingBoxTest, initWithTriangle3)
 
 TEST(BoundingBoxTest, whenAllValueAreFloat_BoxHasToCEIL_OR_FLOOR) 
 {
-    doubflo minX = 1.5f;
-    doubflo minY = 23.2f;
-    doubflo minZ = 1.1222f;
+    real minX = 1.5f;
+    real minY = 23.2f;
+    real minZ = 1.1222f;
 
-    doubflo maxX = 110.4f;
-    doubflo maxY = 50.5f;
-    doubflo maxZ = 12122.23f;
+    real maxX = 110.4f;
+    real maxY = 50.5f;
+    real maxZ = 12122.23f;
 
 	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f)));
 
@@ -78,31 +78,31 @@ TEST(BoundingBoxTest, whenAllValueAreFloat_BoxHasToCEIL_OR_FLOOR)
 
 TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
 {
-    BoundingBox<doubflo> box = BoundingBox<doubflo>::makeInvalidMinMaxBox();
+    BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
-    doubflo minX = 1.0f;
-    doubflo minY = 23.0f;
-    doubflo minZ = 1.1222f;
+    real minX = 1.0f;
+    real minY = 23.0f;
+    real minZ = 1.1222f;
 
-    doubflo maxX = 110.0f;
-    doubflo maxY = 50.0f;
-    doubflo maxZ = 12122.23f;
+    real maxX = 110.0f;
+    real maxY = 50.0f;
+    real maxZ = 12122.23f;
     Triangle t = Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f));
 
 	box.setMinMax(t);
 
-	EXPECT_THAT(box.minX, FloatEq(minX));
-	EXPECT_THAT(box.minY, FloatEq(minY));
-	EXPECT_THAT(box.minZ, FloatEq(minZ));
+	EXPECT_THAT(box.minX, DoubleEq(minX));
+	EXPECT_THAT(box.minY, DoubleEq(minY));
+	EXPECT_THAT(box.minZ, DoubleEq(minZ));
 	
-	EXPECT_THAT(box.maxX, FloatEq(maxX));
-	EXPECT_THAT(box.maxY, FloatEq(maxY));
-	EXPECT_THAT(box.maxZ, FloatEq(maxZ));
+	EXPECT_THAT(box.maxX, DoubleEq(maxX));
+	EXPECT_THAT(box.maxY, DoubleEq(maxY));
+	EXPECT_THAT(box.maxZ, DoubleEq(maxZ));
 }
 
 TEST(BoundingBoxTest, isInside_true)
 {
-    BoundingBox<doubflo> box = BoundingBox<doubflo>();
+    BoundingBox<real> box = BoundingBox<real>();
 
     box.minX = 0.0f;
     box.minY = 0.0f;
@@ -119,7 +119,7 @@ TEST(BoundingBoxTest, isInside_true)
 
 TEST(BoundingBoxTest, isInside_false)
 {
-    BoundingBox<doubflo> box = BoundingBox<doubflo>();
+    BoundingBox<real> box = BoundingBox<real>();
 
     box.minX = 0.0f;
     box.minY = 0.0f;

@@ -4,20 +4,20 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
+extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(real omega_in,
 															 unsigned int* bcMatD,
 															 unsigned int* neighborX,
 															 unsigned int* neighborY,
 															 unsigned int* neighborZ,
 															 unsigned int* neighborWSB,
-															 doubflo* veloX,
-															 doubflo* veloY,
-															 doubflo* veloZ,
-															 doubflo* DDStart,
-															 doubflo* turbulentViscosity,
+															 real* veloX,
+															 real* veloY,
+															 real* veloZ,
+															 real* DDStart,
+															 real* turbulentViscosity,
 															 int size_Mat,
 															 int level,
-															 doubflo* forces,
+															 real* forces,
 															 bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -132,52 +132,52 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 			unsigned int kbsw = neighborZ[ksw];
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];
-			doubflo mfabb = (D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];
-			doubflo mfbab = (D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];
-			doubflo mfbba = (D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];
-			doubflo mfacb = (D.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];
-			doubflo mfabc = (D.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];
-			doubflo mfbac = (D.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D.f[dirZERO])[k  ];
-			doubflo mfccc = (D.f[dirTNE ])[k  ];
-			doubflo mfaac = (D.f[dirTSW ])[ksw];
-			doubflo mfcac = (D.f[dirTSE ])[ks ];
-			doubflo mfacc = (D.f[dirTNW ])[kw ];
-			doubflo mfcca = (D.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D.f[dirBSW])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];
-			doubflo mfaca = (D.f[dirBNW ])[kbw];
+			real mfcbb = (D.f[dirE   ])[k  ];
+			real mfabb = (D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];
+			real mfbab = (D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];
+			real mfbba = (D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];
+			real mfaab = (D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];
+			real mfacb = (D.f[dirNW  ])[kw ];
+			real mfcbc = (D.f[dirTE  ])[k  ];
+			real mfaba = (D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];
+			real mfabc = (D.f[dirTW  ])[kw ];
+			real mfbcc = (D.f[dirTN  ])[k  ];
+			real mfbaa = (D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];
+			real mfbac = (D.f[dirTS  ])[ks ];
+			real mfbbb = (D.f[dirZERO])[k  ];
+			real mfccc = (D.f[dirTNE ])[k  ];
+			real mfaac = (D.f[dirTSW ])[ksw];
+			real mfcac = (D.f[dirTSE ])[ks ];
+			real mfacc = (D.f[dirTNW ])[kw ];
+			real mfcca = (D.f[dirBNE ])[kb ];
+			real mfaaa = (D.f[dirBSW])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];
+			real mfaca = (D.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			doubflo rho = one+drho;
+			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) / rho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) / rho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo nuTurb = zero;
+			real nuTurb = zero;
 			{
 				/////////////      Wale Model     ///////////////
 				//neighbor index
@@ -189,40 +189,40 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 				unsigned int kMy   = neighborZ[neighborX[kMxyz]];
 				unsigned int kMz   = neighborY[neighborX[kMxyz]];
 				//getVeloX//
-				doubflo veloXNeighborPx = veloX[kPx];
-				doubflo veloXNeighborMx = veloX[kMx];
-				doubflo veloXNeighborPy = veloX[kPy];
-				doubflo veloXNeighborMy = veloX[kMy];
-				doubflo veloXNeighborPz = veloX[kPz];
-				doubflo veloXNeighborMz = veloX[kMz];
+				real veloXNeighborPx = veloX[kPx];
+				real veloXNeighborMx = veloX[kMx];
+				real veloXNeighborPy = veloX[kPy];
+				real veloXNeighborMy = veloX[kMy];
+				real veloXNeighborPz = veloX[kPz];
+				real veloXNeighborMz = veloX[kMz];
 				//getVeloY//
-				doubflo veloYNeighborPx = veloY[kPx];
-				doubflo veloYNeighborMx = veloY[kMx];
-				doubflo veloYNeighborPy = veloY[kPy];
-				doubflo veloYNeighborMy = veloY[kMy];
-				doubflo veloYNeighborPz = veloY[kPz];
-				doubflo veloYNeighborMz = veloY[kMz];
+				real veloYNeighborPx = veloY[kPx];
+				real veloYNeighborMx = veloY[kMx];
+				real veloYNeighborPy = veloY[kPy];
+				real veloYNeighborMy = veloY[kMy];
+				real veloYNeighborPz = veloY[kPz];
+				real veloYNeighborMz = veloY[kMz];
 				//getVeloZ//
-				doubflo veloZNeighborPx = veloZ[kPx];
-				doubflo veloZNeighborMx = veloZ[kMx];
-				doubflo veloZNeighborPy = veloZ[kPy];
-				doubflo veloZNeighborMy = veloZ[kMy];
-				doubflo veloZNeighborPz = veloZ[kPz];
-				doubflo veloZNeighborMz = veloZ[kMz];
+				real veloZNeighborPx = veloZ[kPx];
+				real veloZNeighborMx = veloZ[kMx];
+				real veloZNeighborPy = veloZ[kPy];
+				real veloZNeighborMy = veloZ[kMy];
+				real veloZNeighborPz = veloZ[kPz];
+				real veloZNeighborMz = veloZ[kMz];
 				//partial Div vx in x, y, z//
-				doubflo dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
-				doubflo dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
-				doubflo dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
+				real dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
+				real dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
+				real dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
 			    //partial Div vy in x, y, z//
-				doubflo dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
-				doubflo dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
-				doubflo dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
+				real dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
+				real dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
+				real dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
 			    //partial Div vz in x, y, z//
-				doubflo dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
-				doubflo dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
-				doubflo dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
+				real dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
+				real dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
+				real dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
 				//SumSd
-				doubflo SumSd = 
+				real SumSd = 
 					c1o2 * powf(dzvx, four) + 
 					c1o2 * powf(dzvy, four) + 
 					c2o3 * powf(dzvz, four) +
@@ -239,7 +239,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 					c2o3 * powf(dzvz, two) * powf(dxvx, two) -
 					c2o3 * powf(dyvy, two) * powf(dxvx, two);
 				//SumS
-				doubflo SumS =
+				real SumS =
 					powf(dxvx, two) +
 					powf(dyvy, two) +
 					powf(dzvz, two) +
@@ -247,11 +247,11 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 					c1o2 * powf(dzvx + dxvz, two) + 
 					c1o2 * powf(dyvz + dzvy, two);
 				//nu turbulent
-				doubflo coefficient = 0.325;
-				doubflo delta = coefficient * one;
+				real coefficient = 0.325;
+				real delta = coefficient * one;
 				/////////////////////////////////
-				doubflo SumSsq = SumS * SumS;
-				doubflo SumSDsq = SumSd * SumSd;
+				real SumSsq = SumS * SumS;
+				real SumSDsq = SumSd * SumSd;
 				nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle);
 				/////////////////////////////////
 				//nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
@@ -265,32 +265,32 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
 			{
-				doubflo fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-				doubflo fy = forces[1] / (pow(two, level)); //zero;
-				doubflo fz = forces[2] / (pow(two, level)); //zero;
+				real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+				real fy = forces[1] / (pow(two, level)); //zero;
+				real fz = forces[2] / (pow(two, level)); //zero;
 				vvx += fx*c1o2;
 				vvy += fy*c1o2;
 				vvz += fz*c1o2;
 			}
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo nuOld = c1o3 * (one / omega_in - c1o2);
-			doubflo omega = one / (three * (nuOld + nuTurb) + c1o2);
-			//doubflo omega = omega_in + nuTurb;
+			real nuOld = c1o3 * (one / omega_in - c1o2);
+			real omega = one / (three * (nuOld + nuTurb) + c1o2);
+			//real omega = omega_in + nuTurb;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			doubflo oMdrho = one; // comp special
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real oMdrho = one; // comp special
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
 			//////////////////////////////////////////////////////////////////////////////////////
-			doubflo wadjust;
-			doubflo qudricLimitP = 0.01f;// * 0.0001f;
-			doubflo qudricLimitM = 0.01f;// * 0.0001f;
-			doubflo qudricLimitD = 0.01f;// * 0.001f;
+			real wadjust;
+			real qudricLimitP = 0.01f;// * 0.0001f;
+			real qudricLimitM = 0.01f;// * 0.0001f;
+			real qudricLimitD = 0.01f;// * 0.001f;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
@@ -525,52 +525,52 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo OxxPyyPzz = one;
+			real OxxPyyPzz = one;
 
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			doubflo OxyyPxzz  = one;
-			doubflo OxyyMxzz  = one;
-			doubflo Oxyz      = one;
+			real OxyyPxzz  = one;
+			real OxyyMxzz  = one;
+			real Oxyz      = one;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
-			doubflo O4        = one;
+			real O4        = one;
 			//////////////////////////////
-			//doubflo O4        = omega;//TRT
+			//real O4        = omega;//TRT
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			doubflo O5        = one;
+			real O5        = one;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
-			doubflo O6        = one;
+			real O6        = one;
 			////////////////////////////////////////////////////////////
 
 
 			//central moments to cumulants
 			//4.
-			//doubflo CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + two * mfbba * mfbab) / rho;  //bis 15.05.2015 verwendet
-			//doubflo CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + two * mfbba * mfabb) / rho;  //bis 15.05.2015 verwendet
-			//doubflo CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + two * mfbab * mfabb) / rho;  //bis 15.05.2015 verwendet
-			doubflo CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;	//ab 15.05.2015 verwendet
-			doubflo CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho; //ab 15.05.2015 verwendet
-			doubflo CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho; //ab 15.05.2015 verwendet
+			//real CUMcbb = mfcbb - ((mfcaa + c1o3 * oMdrho) * mfabb + two * mfbba * mfbab) / rho;  //bis 15.05.2015 verwendet
+			//real CUMbcb = mfbcb - ((mfaca + c1o3 * oMdrho) * mfbab + two * mfbba * mfabb) / rho;  //bis 15.05.2015 verwendet
+			//real CUMbbc = mfbbc - ((mfaac + c1o3 * oMdrho) * mfbba + two * mfbab * mfabb) / rho;  //bis 15.05.2015 verwendet
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;	//ab 15.05.2015 verwendet
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho; //ab 15.05.2015 verwendet
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho; //ab 15.05.2015 verwendet
 				  	 		
-			doubflo CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
-			doubflo CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
-			doubflo CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
+			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
 
 			//5.
-			doubflo CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
-			doubflo CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc) ) / rho ;
-			doubflo CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) ) / rho ;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc) ) / rho ;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) ) / rho ;
 			
 			//6.
 
-			doubflo CUMccc = mfccc + ((-four *  mfbbb * mfbbb  
+			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb  
 							-           (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 							-    four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
 							-     two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
@@ -589,17 +589,17 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 
 			//2.
 			// linear combinations
-			doubflo mxxPyyPzz = mfcaa + mfaca + mfaac;
-			doubflo mxxMyy    = mfcaa - mfaca;
-			doubflo mxxMzz	   = mfcaa - mfaac;
+			real mxxPyyPzz = mfcaa + mfaca + mfaac;
+			real mxxMyy    = mfcaa - mfaca;
+			real mxxMzz	   = mfcaa - mfaac;
 			
 			//////////////////////////////////////////////////////////////////////////
-// 			doubflo magicBulk=(CUMacc+CUMcac+CUMcca)*(one/OxxPyyPzz-c1o2)*c3o2*8.;
+// 			real magicBulk=(CUMacc+CUMcac+CUMcca)*(one/OxxPyyPzz-c1o2)*c3o2*8.;
 
 			//////////////////////////////////////////////////////////////////////////
 			//limiter-Scheise Teil 1
-			//doubflo oxxyy,oxxzz,oxy,oxz,oyz;
-			//doubflo smag=0.001;
+			//real oxxyy,oxxzz,oxy,oxz,oyz;
+			//real smag=0.001;
 			//oxxyy    = omega+(one-omega)*abs(mxxMyy)/(abs(mxxMyy)+smag);
 			//oxxzz    = omega+(one-omega)*abs(mxxMzz)/(abs(mxxMzz)+smag);
 			//oxy      = omega+(one-omega)*abs(mfbba)/(abs(mfbba)+smag);
@@ -608,14 +608,14 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 
 			////////////////////////////////////////////////////////////////////////////
 			////Teil 1b
-			//doubflo constante = 1000.0;
-			//doubflo nuEddi = constante * abs(mxxPyyPzz);
-			//doubflo omegaLimit = one / (one / omega + three * nuEddi);
+			//real constante = 1000.0;
+			//real nuEddi = constante * abs(mxxPyyPzz);
+			//real omegaLimit = one / (one / omega + three * nuEddi);
 
 			//{
-			//	doubflo dxux = c1o2 * (-omegaLimit) *(mxxMyy + mxxMzz) +  OxxPyyPzz * (mfaaa - mxxPyyPzz);
-			//	doubflo dyuy = dxux + omegaLimit * c3o2 * mxxMyy;
-			//	doubflo dzuz = dxux + omegaLimit * c3o2 * mxxMzz;
+			//	real dxux = c1o2 * (-omegaLimit) *(mxxMyy + mxxMzz) +  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+			//	real dyuy = dxux + omegaLimit * c3o2 * mxxMyy;
+			//	real dzuz = dxux + omegaLimit * c3o2 * mxxMzz;
 
 				////relax
 				//mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);
@@ -631,9 +631,9 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
  			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  			//incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
  			{
- 				doubflo dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
- 				doubflo dyuy = dxux + omega * c3o2 * mxxMyy;
- 				doubflo dzuz = dxux + omega * c3o2 * mxxMzz;
+ 				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+ 				real dyuy = dxux + omega * c3o2 * mxxMyy;
+ 				real dzuz = dxux + omega * c3o2 * mxxMzz;
  
  				//relax
  				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
@@ -674,14 +674,14 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 			//3.
 			// linear combinations
 
-			doubflo mxxyPyzz = mfcba + mfabc;
-			doubflo mxxyMyzz = mfcba - mfabc;
+			real mxxyPyzz = mfcba + mfabc;
+			real mxxyMyzz = mfcba - mfabc;
 
-			doubflo mxxzPyyz = mfcab + mfacb;
-			doubflo mxxzMyyz = mfcab - mfacb;
+			real mxxzPyyz = mfcab + mfacb;
+			real mxxzMyyz = mfcab - mfacb;
 
-			doubflo mxyyPxzz = mfbca + mfbac;
-			doubflo mxyyMxzz = mfbca - mfbac;
+			real mxyyPxzz = mfbca + mfbac;
+			real mxyyMxzz = mfbca - mfbac;
 
 			//relax
 			//////////////////////////////////////////////////////////////////////////
@@ -1092,20 +1092,20 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(doubflo omega_in,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_in,
+extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 																 unsigned int* bcMatD,
 																 unsigned int* neighborX,
 																 unsigned int* neighborY,
 																 unsigned int* neighborZ,
 																 unsigned int* neighborWSB,
-																 doubflo* veloX,
-																 doubflo* veloY,
-																 doubflo* veloZ,
-																 doubflo* DDStart,
-																 doubflo* turbulentViscosity,
+																 real* veloX,
+																 real* veloY,
+																 real* veloZ,
+																 real* DDStart,
+																 real* turbulentViscosity,
 																 int size_Mat,
 																 int level,
-																 doubflo* forces,
+																 real* forces,
 																 bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -1220,52 +1220,52 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 			unsigned int kbsw = neighborZ[ksw];
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			doubflo mfcbb = (D.f[dirE   ])[k  ];
-			doubflo mfabb = (D.f[dirW   ])[kw ];
-			doubflo mfbcb = (D.f[dirN   ])[k  ];
-			doubflo mfbab = (D.f[dirS   ])[ks ];
-			doubflo mfbbc = (D.f[dirT   ])[k  ];
-			doubflo mfbba = (D.f[dirB   ])[kb ];
-			doubflo mfccb = (D.f[dirNE  ])[k  ];
-			doubflo mfaab = (D.f[dirSW  ])[ksw];
-			doubflo mfcab = (D.f[dirSE  ])[ks ];
-			doubflo mfacb = (D.f[dirNW  ])[kw ];
-			doubflo mfcbc = (D.f[dirTE  ])[k  ];
-			doubflo mfaba = (D.f[dirBW  ])[kbw];
-			doubflo mfcba = (D.f[dirBE  ])[kb ];
-			doubflo mfabc = (D.f[dirTW  ])[kw ];
-			doubflo mfbcc = (D.f[dirTN  ])[k  ];
-			doubflo mfbaa = (D.f[dirBS  ])[kbs];
-			doubflo mfbca = (D.f[dirBN  ])[kb ];
-			doubflo mfbac = (D.f[dirTS  ])[ks ];
-			doubflo mfbbb = (D.f[dirZERO])[k  ];
-			doubflo mfccc = (D.f[dirTNE ])[k  ];
-			doubflo mfaac = (D.f[dirTSW ])[ksw];
-			doubflo mfcac = (D.f[dirTSE ])[ks ];
-			doubflo mfacc = (D.f[dirTNW ])[kw ];
-			doubflo mfcca = (D.f[dirBNE ])[kb ];
-			doubflo mfaaa = (D.f[dirBSW])[kbsw];
-			doubflo mfcaa = (D.f[dirBSE ])[kbs];
-			doubflo mfaca = (D.f[dirBNW ])[kbw];
+			real mfcbb = (D.f[dirE   ])[k  ];
+			real mfabb = (D.f[dirW   ])[kw ];
+			real mfbcb = (D.f[dirN   ])[k  ];
+			real mfbab = (D.f[dirS   ])[ks ];
+			real mfbbc = (D.f[dirT   ])[k  ];
+			real mfbba = (D.f[dirB   ])[kb ];
+			real mfccb = (D.f[dirNE  ])[k  ];
+			real mfaab = (D.f[dirSW  ])[ksw];
+			real mfcab = (D.f[dirSE  ])[ks ];
+			real mfacb = (D.f[dirNW  ])[kw ];
+			real mfcbc = (D.f[dirTE  ])[k  ];
+			real mfaba = (D.f[dirBW  ])[kbw];
+			real mfcba = (D.f[dirBE  ])[kb ];
+			real mfabc = (D.f[dirTW  ])[kw ];
+			real mfbcc = (D.f[dirTN  ])[k  ];
+			real mfbaa = (D.f[dirBS  ])[kbs];
+			real mfbca = (D.f[dirBN  ])[kb ];
+			real mfbac = (D.f[dirTS  ])[ks ];
+			real mfbbb = (D.f[dirZERO])[k  ];
+			real mfccc = (D.f[dirTNE ])[k  ];
+			real mfaac = (D.f[dirTSW ])[ksw];
+			real mfcac = (D.f[dirTSE ])[ks ];
+			real mfacc = (D.f[dirTNW ])[kw ];
+			real mfcca = (D.f[dirBNE ])[kb ];
+			real mfaaa = (D.f[dirBSW])[kbsw];
+			real mfcaa = (D.f[dirBSE ])[kbs];
+			real mfaca = (D.f[dirBNW ])[kbw];
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
+			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
 							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
 
-			doubflo rho = one+drho;
+			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
 			//slow
-			doubflo vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
+			real vvx    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfcaa-mfacc) + (mfcca-mfaac))) + 
 						     (((mfcba-mfabc) + (mfcbc-mfaba)) + ((mfcab-mfacb) + (mfccb-mfaab))) +
 						       (mfcbb-mfabb)) / rho;
-			doubflo vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
+			real vvy    =((((mfccc-mfaaa) + (mfaca-mfcac)) + ((mfacc-mfcaa) + (mfcca-mfaac))) + 
 				             (((mfbca-mfbac) + (mfbcc-mfbaa)) + ((mfacb-mfcab) + (mfccb-mfaab))) +
 				               (mfbcb-mfbab)) / rho;
-			doubflo vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
+			real vvz    =((((mfccc-mfaaa) + (mfcac-mfaca)) + ((mfacc-mfcaa) + (mfaac-mfcca))) + 
 				             (((mfbac-mfbca) + (mfbcc-mfbaa)) + ((mfabc-mfcba) + (mfcbc-mfaba))) +
 				               (mfbbc-mfbba)) / rho;
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo nuTurb = zero;
+			real nuTurb = zero;
 			{
 				/////////////      Wale Model     ///////////////
 				//neighbor index
@@ -1277,40 +1277,40 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 				unsigned int kMy   = neighborZ[neighborX[kMxyz]];
 				unsigned int kMz   = neighborY[neighborX[kMxyz]];
 				//getVeloX//
-				doubflo veloXNeighborPx = veloX[kPx];
-				doubflo veloXNeighborMx = veloX[kMx];
-				doubflo veloXNeighborPy = veloX[kPy];
-				doubflo veloXNeighborMy = veloX[kMy];
-				doubflo veloXNeighborPz = veloX[kPz];
-				doubflo veloXNeighborMz = veloX[kMz];
+				real veloXNeighborPx = veloX[kPx];
+				real veloXNeighborMx = veloX[kMx];
+				real veloXNeighborPy = veloX[kPy];
+				real veloXNeighborMy = veloX[kMy];
+				real veloXNeighborPz = veloX[kPz];
+				real veloXNeighborMz = veloX[kMz];
 				//getVeloY//
-				doubflo veloYNeighborPx = veloY[kPx];
-				doubflo veloYNeighborMx = veloY[kMx];
-				doubflo veloYNeighborPy = veloY[kPy];
-				doubflo veloYNeighborMy = veloY[kMy];
-				doubflo veloYNeighborPz = veloY[kPz];
-				doubflo veloYNeighborMz = veloY[kMz];
+				real veloYNeighborPx = veloY[kPx];
+				real veloYNeighborMx = veloY[kMx];
+				real veloYNeighborPy = veloY[kPy];
+				real veloYNeighborMy = veloY[kMy];
+				real veloYNeighborPz = veloY[kPz];
+				real veloYNeighborMz = veloY[kMz];
 				//getVeloZ//
-				doubflo veloZNeighborPx = veloZ[kPx];
-				doubflo veloZNeighborMx = veloZ[kMx];
-				doubflo veloZNeighborPy = veloZ[kPy];
-				doubflo veloZNeighborMy = veloZ[kMy];
-				doubflo veloZNeighborPz = veloZ[kPz];
-				doubflo veloZNeighborMz = veloZ[kMz];
+				real veloZNeighborPx = veloZ[kPx];
+				real veloZNeighborMx = veloZ[kMx];
+				real veloZNeighborPy = veloZ[kPy];
+				real veloZNeighborMy = veloZ[kMy];
+				real veloZNeighborPz = veloZ[kPz];
+				real veloZNeighborMz = veloZ[kMz];
 				//partial Div vx in x, y, z//
-				doubflo dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
-				doubflo dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
-				doubflo dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
+				real dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
+				real dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
+				real dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
 			    //partial Div vy in x, y, z//
-				doubflo dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
-				doubflo dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
-				doubflo dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
+				real dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
+				real dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
+				real dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
 			    //partial Div vz in x, y, z//
-				doubflo dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
-				doubflo dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
-				doubflo dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
+				real dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
+				real dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
+				real dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
 				//SumSd
-				doubflo SumSd = 
+				real SumSd = 
 					c1o2 * powf(dzvx, four) + 
 					c1o2 * powf(dzvy, four) + 
 					c2o3 * powf(dzvz, four) +
@@ -1327,7 +1327,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 					c2o3 * powf(dzvz, two) * powf(dxvx, two) -
 					c2o3 * powf(dyvy, two) * powf(dxvx, two);
 				//SumS
-				doubflo SumS =
+				real SumS =
 					powf(dxvx, two) +
 					powf(dyvy, two) +
 					powf(dzvz, two) +
@@ -1335,11 +1335,11 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 					c1o2 * powf(dzvx + dxvz, two) + 
 					c1o2 * powf(dyvz + dzvy, two);
 				//nu turbulent
-				doubflo coefficient = 0.325;
-				doubflo delta = coefficient * one;
+				real coefficient = 0.325;
+				real delta = coefficient * one;
 				/////////////////////////////////
-				doubflo SumSsq = SumS * SumS;
-				doubflo SumSDsq = SumSd * SumSd;
+				real SumSsq = SumS * SumS;
+				real SumSDsq = SumSd * SumSd;
 				nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle);
 				/////////////////////////////////
 				//nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
@@ -1353,32 +1353,32 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 			////////////////////////////////////////////////////////////////////////////////////
 			//the force be with you
 			{
-				doubflo fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
-				doubflo fy = forces[1] / (pow(two, level)); //zero;
-				doubflo fz = forces[2] / (pow(two, level)); //zero;
+				real fx = forces[0] / (pow(two, level)); //zero;//0.0032653/(pow(two,level)); //0.000000005;//(two/1600000.0) / 120.0; //
+				real fy = forces[1] / (pow(two, level)); //zero;
+				real fz = forces[2] / (pow(two, level)); //zero;
 				vvx += fx*c1o2;
 				vvy += fy*c1o2;
 				vvz += fz*c1o2;
 			}
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo nuOld = c1o3 * (one / omega_in - c1o2);
-			doubflo omega = one / (three * (nuOld + nuTurb) + c1o2);
-			//doubflo omega = omega_in + nuTurb;
+			real nuOld = c1o3 * (one / omega_in - c1o2);
+			real omega = one / (three * (nuOld + nuTurb) + c1o2);
+			//real omega = omega_in + nuTurb;
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
-			doubflo oMdrho = one; // comp special
-			doubflo m0, m1, m2;	
-			doubflo vx2;
-			doubflo vy2;
-			doubflo vz2;
+			real oMdrho = one; // comp special
+			real m0, m1, m2;	
+			real vx2;
+			real vy2;
+			real vz2;
 			vx2=vvx*vvx;
 			vy2=vvy*vvy;
 			vz2=vvz*vvz;
 			//////////////////////////////////////////////////////////////////////////////////////
-			doubflo wadjust;
-			doubflo qudricLimitP = 0.01f;// * 0.0001f;
-			doubflo qudricLimitM = 0.01f;// * 0.0001f;
-			doubflo qudricLimitD = 0.01f;// * 0.001f;
+			real wadjust;
+			real qudricLimitP = 0.01f;// * 0.0001f;
+			real qudricLimitM = 0.01f;// * 0.0001f;
+			real qudricLimitD = 0.01f;// * 0.001f;
 			////////////////////////////////////////////////////////////////////////////////////
 			//Hin
 			////////////////////////////////////////////////////////////////////////////////////
@@ -1613,49 +1613,49 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 			////////////////////////////////////////////////////////////////////////////////////
 			// Cumulants
 			////////////////////////////////////////////////////////////////////////////////////
-			doubflo OxxPyyPzz = one;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
+			real OxxPyyPzz = one;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
 
 			////////////////////////////////////////////////////////////
 			//3.
 			//////////////////////////////
-			doubflo OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
-			doubflo OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
-			doubflo Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);//one;
+			real OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
+			real OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
+			real Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);//one;
 			////////////////////////////////////////////////////////////
 			//4.
 			//////////////////////////////
-			doubflo O4        = one;
+			real O4        = one;
 			//////////////////////////////
-			//doubflo O4        = omega;//TRT
+			//real O4        = omega;//TRT
 			////////////////////////////////////////////////////////////
 			//5.
 			//////////////////////////////
-			doubflo O5        = one;
+			real O5        = one;
 			////////////////////////////////////////////////////////////
 			//6.
 			//////////////////////////////
-			doubflo O6        = one;
+			real O6        = one;
 			////////////////////////////////////////////////////////////
 
 
 			//central moments to cumulants
 			//4.
-			doubflo CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
-			doubflo CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
-			doubflo CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
+			real CUMcbb = mfcbb - ((mfcaa + c1o3) * mfabb + two * mfbba * mfbab) / rho;
+			real CUMbcb = mfbcb - ((mfaca + c1o3) * mfbab + two * mfbba * mfabb) / rho;
+			real CUMbbc = mfbbc - ((mfaac + c1o3) * mfbba + two * mfbab * mfabb) / rho;
 				  	 		
-			doubflo CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
-			doubflo CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
-			doubflo CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
+			real CUMcca = mfcca - (((mfcaa * mfaca + two * mfbba * mfbba) + c1o3 * (mfcaa + mfaca)) / rho  - c1o9*(drho/rho));
+			real CUMcac = mfcac - (((mfcaa * mfaac + two * mfbab * mfbab) + c1o3 * (mfcaa + mfaac)) / rho  - c1o9*(drho/rho));
+			real CUMacc = mfacc - (((mfaac * mfaca + two * mfabb * mfabb) + c1o3 * (mfaac + mfaca)) / rho  - c1o9*(drho/rho));
 
 			//5.
-			doubflo CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
-			doubflo CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc) ) / rho ;
-			doubflo CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) ) / rho ;
+			real CUMbcc = mfbcc - ((mfaac * mfbca + mfaca * mfbac + four * mfabb * mfbbb + two * (mfbab * mfacb + mfbba * mfabc)) + c1o3 * (mfbca + mfbac) ) / rho ;
+			real CUMcbc = mfcbc - ((mfaac * mfcba + mfcaa * mfabc + four * mfbab * mfbbb + two * (mfabb * mfcab + mfbba * mfbac)) + c1o3 * (mfcba + mfabc) ) / rho ;
+			real CUMccb = mfccb - ((mfcaa * mfacb + mfaca * mfcab + four * mfbba * mfbbb + two * (mfbab * mfbca + mfabb * mfcba)) + c1o3 * (mfacb + mfcab) ) / rho ;
 			
 			//6.
 
-			doubflo CUMccc = mfccc + ((-four *  mfbbb * mfbbb  
+			real CUMccc = mfccc + ((-four *  mfbbb * mfbbb  
 							-           (mfcaa * mfacc + mfaca * mfcac + mfaac * mfcca)
 							-    four * (mfabb * mfcbb + mfbab * mfbcb + mfbba * mfbbc)
 							-     two * (mfbca * mfbac + mfcba * mfabc + mfcab * mfacb)) / rho
@@ -1670,33 +1670,33 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
 
 			//2.
 			// linear combinations
-			doubflo mxxPyyPzz = mfcaa + mfaca + mfaac;
-			doubflo mxxMyy    = mfcaa - mfaca;
-			doubflo mxxMzz	   = mfcaa - mfaac;
+			real mxxPyyPzz = mfcaa + mfaca + mfaac;
+			real mxxMyy    = mfcaa - mfaca;
+			real mxxMzz	   = mfcaa - mfaac;
 			
 			////////////////////////////////////////////////////////////////////////////
-            doubflo Dxy =-three*omega*mfbba;
-            doubflo Dxz =-three*omega*mfbab;
-            doubflo Dyz =-three*omega*mfabb;
+            real Dxy =-three*omega*mfbba;
+            real Dxz =-three*omega*mfbab;
+            real Dyz =-three*omega*mfabb;
 
 			//3.
 			// linear combinations
 
-			doubflo mxxyPyzz = mfcba + mfabc;
-			doubflo mxxyMyzz = mfcba - mfabc;
+			real mxxyPyzz = mfcba + mfabc;
+			real mxxyMyzz = mfcba - mfabc;
 
-			doubflo mxxzPyyz = mfcab + mfacb;
-			doubflo mxxzMyyz = mfcab - mfacb;
+			real mxxzPyyz = mfcab + mfacb;
+			real mxxzMyyz = mfcab - mfacb;
 
-			doubflo mxyyPxzz = mfbca + mfbac;
-			doubflo mxyyMxzz = mfbca - mfbac;
+			real mxyyPxzz = mfbca + mfbac;
+			real mxyyMxzz = mfbca - mfbac;
 
  			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  			//incl. correction		(hat noch nicht so gut funktioniert...Optimierungsbedarf??)
  			
- 				doubflo dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
- 				doubflo dyuy = dxux + omega * c3o2 * mxxMyy;
- 				doubflo dzuz = dxux + omega * c3o2 * mxxMzz;
+ 				real dxux = c1o2 * (-omega) *(mxxMyy + mxxMzz) + c1o2 *  OxxPyyPzz * (mfaaa - mxxPyyPzz);
+ 				real dyuy = dxux + omega * c3o2 * mxxMyy;
+ 				real dzuz = dxux + omega * c3o2 * mxxMzz;
  
  				//relax
 				mxxPyyPzz += OxxPyyPzz*(mfaaa  - mxxPyyPzz)- three * (one - c1o2 * OxxPyyPzz) * (vx2 * dxux + vy2 * dyuy + vz2 * dzuz);//-magicBulk*OxxPyyPzz;
@@ -1775,8 +1775,8 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( doubflo omega_i
  		//	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
 			//CUMcbb    += wadjust * (-CUMcbb); 
 			//////////////////////////////////////////////////////////////////////////
-			doubflo A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
-			doubflo B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
+			real A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
+			real B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
 			//////////////////////////////////////////////////////////////////////////
 			//ohne limiter
 			//CUMacc += O4 * (-CUMacc); 

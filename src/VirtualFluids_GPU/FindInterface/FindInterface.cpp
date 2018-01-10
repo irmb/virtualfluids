@@ -10,9 +10,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
    unsigned int iC,iF,jC,jF,hC,hF;
    unsigned int posCSWB, posFSWB;
    unsigned int posC;
-   doubflo xOff = (doubflo)0.0f;
-   doubflo yOff = (doubflo)0.0f; 
-   doubflo zOff = (doubflo)0.0f;
+   real xOff = (real)0.0f;
+   real yOff = (real)0.0f; 
+   real zOff = (real)0.0f;
    intCF.kCF    = 0;
    intFC.kFC    = 0;
 
@@ -377,7 +377,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_E];
          iF = CF_NFine[  INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       } 
       else
       {
@@ -389,7 +389,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_N];
          jF = CF_NFine[  INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       } 
       else
       {
@@ -411,9 +411,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -482,7 +482,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_E];
          iF = CF_NFine[  INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       } 
       else
       {
@@ -494,7 +494,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_S];
          jF = CF_NFine[  INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       } 
       else
       {
@@ -516,9 +516,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -587,7 +587,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_E];
          iF = CF_NFine[  INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       } 
       else
       {
@@ -599,7 +599,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_T];                   
          hF = CF_NFine[  INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       } 
       else
       {
@@ -621,9 +621,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -692,7 +692,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_E];
          iF = CF_NFine[  INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       } 
       else
       {
@@ -704,7 +704,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_B];                   
          hF = CF_NFine[  INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       } 
       else
       {
@@ -726,9 +726,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -797,7 +797,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_W];
          iF = CF_NFine[  INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       } 
       else
       {
@@ -809,7 +809,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_N];
          jF = CF_NFine[  INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       } 
       else
       {
@@ -831,9 +831,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -902,7 +902,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_W];
          iF = CF_NFine[  INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       } 
       else
       {
@@ -914,7 +914,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_S];
          jF = CF_NFine[  INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       } 
       else
       {
@@ -936,9 +936,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1007,7 +1007,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_W];
          iF = CF_NFine[  INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       } 
       else
       {
@@ -1019,7 +1019,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_T];                   
          hF = CF_NFine[  INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       } 
       else
       {
@@ -1041,9 +1041,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1112,7 +1112,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          iC = CF_NCoarse[INTERFACE_W];
          iF = CF_NFine[  INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       } 
       else
       {
@@ -1124,7 +1124,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_B];                   
          hF = CF_NFine[  INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       } 
       else
       {
@@ -1146,9 +1146,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1217,7 +1217,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_N];
          jF = CF_NFine[  INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       } 
       else
       {
@@ -1229,7 +1229,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_T];                   
          hF = CF_NFine[  INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       } 
       else
       {
@@ -1251,9 +1251,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1322,7 +1322,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_N];
          jF = CF_NFine[  INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       } 
       else
       {
@@ -1334,7 +1334,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_B];                   
          hF = CF_NFine[  INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       } 
       else
       {
@@ -1356,9 +1356,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1427,7 +1427,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_S];
          jF = CF_NFine[  INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       } 
       else
       {
@@ -1439,7 +1439,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_T];                   
          hF = CF_NFine[  INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       } 
       else
       {
@@ -1461,9 +1461,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1532,7 +1532,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          jC = CF_NCoarse[INTERFACE_S];
          jF = CF_NFine[  INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       } 
       else
       {
@@ -1544,7 +1544,7 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       {
          hC = CF_NCoarse[INTERFACE_B];                   
          hF = CF_NFine[  INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       } 
       else
       {
@@ -1566,9 +1566,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1650,17 +1650,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_E]==false))
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_N]==false))
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_T]==false))
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -1676,9 +1676,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1807,17 +1807,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_E]==false))
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_N]==false))
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_B]==false))
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -1833,9 +1833,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -1964,17 +1964,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_E]==false))
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_S]==false))
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_T]==false))
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -1990,9 +1990,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2121,17 +2121,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_E]==false))
       {
          iC = CF_NCoarse[INTERFACE_E];               iF = CF_NFine[INTERFACE_E];
-         xOff = (doubflo)0.5f;
+         xOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_S]==false))
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_B]==false))
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -2147,9 +2147,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2278,17 +2278,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_W]==false))
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_N]==false))
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_T]==false))
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -2304,9 +2304,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2435,17 +2435,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_W]==false))
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_N]==false))
       {
          jC = CF_NCoarse[INTERFACE_N];               jF = CF_NFine[INTERFACE_N];
-         yOff = (doubflo)0.5f;
+         yOff = (real)0.5f;
       }
       if ((needInterface[INTERFACE_B]==false))
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -2461,9 +2461,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2592,17 +2592,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_W]==false))
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_S]==false))
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_T]==false))
       {
          hC = CF_NCoarse[INTERFACE_T];               hF = CF_NFine[INTERFACE_T];
-         zOff = (doubflo)0.5f;
+         zOff = (real)0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -2618,9 +2618,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2749,17 +2749,17 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
       if ((needInterface[INTERFACE_W]==false))
       {
          iC = CF_NCoarse[INTERFACE_W];               iF = CF_NFine[INTERFACE_W];
-         xOff = (doubflo)-0.5f;
+         xOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_S]==false))
       {
          jC = CF_NCoarse[INTERFACE_S];               jF = CF_NFine[INTERFACE_S];
-         yOff = (doubflo)-0.5f;
+         yOff = (real)-0.5f;
       }
       if ((needInterface[INTERFACE_B]==false))
       {
          hC = CF_NCoarse[INTERFACE_B];               hF = CF_NFine[INTERFACE_B];
-         zOff = (doubflo)-0.5f;
+         zOff = (real)-0.5f;
       }
       //////////////////////////////////////////////////////////////////////////
       posCSWB=vectorPosition(iC, jC, hC, LxCoarse, LyCoarse);
@@ -2775,9 +2775,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 
       //////////////////////////////////////////////////////////////////////////
       //reset
-      xOff = (doubflo)0.0f;
-      yOff = (doubflo)0.0f;
-      zOff = (doubflo)0.0f;
+      xOff = (real)0.0f;
+      yOff = (real)0.0f;
+      zOff = (real)0.0f;
       //////////////////////////////////////////////////////////////////////////
 
 
@@ -2930,9 +2930,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
 //            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
 //            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-//            offCF.xOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.yOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.zOffCF[intCF.kCF]   = (doubflo)0.0f;
+//            offCF.xOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.yOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.zOffCF[intCF.kCF]   = (real)0.0f;
 //            intCF.kCF++;
 //         }
 //      }
@@ -2949,9 +2949,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
 //            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-//            offFC.xOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.yOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.zOffFC[intFC.kFC]   = (doubflo)0.0f;
+//            offFC.xOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.yOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.zOffFC[intFC.kFC]   = (real)0.0f;
 //            intFC.kFC++;
 //         }
 //      }
@@ -2975,9 +2975,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
 //            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-//            offCF.xOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.yOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.zOffCF[intCF.kCF]   = (doubflo)0.0f;
+//            offCF.xOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.yOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.zOffCF[intCF.kCF]   = (real)0.0f;
 //            intCF.kCF++;
 //         }
 //      }
@@ -2994,9 +2994,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
 //            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-//            offFC.xOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.yOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.zOffFC[intFC.kFC]   = (doubflo)0.0f;
+//            offFC.xOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.yOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.zOffFC[intFC.kFC]   = (real)0.0f;
 //            intFC.kFC++;
 //         }
 //      }
@@ -3020,9 +3020,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
 //            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-//            offCF.xOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.yOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.zOffCF[intCF.kCF]   = (doubflo)0.0f;
+//            offCF.xOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.yOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.zOffCF[intCF.kCF]   = (real)0.0f;
 //            intCF.kCF++;
 //         }
 //      }
@@ -3039,9 +3039,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
 //            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-//            offFC.xOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.yOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.zOffFC[intFC.kFC]   = (doubflo)0.0f;
+//            offFC.xOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.yOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.zOffFC[intFC.kFC]   = (real)0.0f;
 //            intFC.kFC++;
 //         }
 //      }
@@ -3065,9 +3065,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
 //            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-//            offCF.xOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.yOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.zOffCF[intCF.kCF]   = (doubflo)0.0f;
+//            offCF.xOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.yOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.zOffCF[intCF.kCF]   = (real)0.0f;
 //            intCF.kCF++;
 //         }
 //      }
@@ -3084,9 +3084,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
 //            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-//            offFC.xOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.yOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.zOffFC[intFC.kFC]   = (doubflo)0.0f;
+//            offFC.xOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.yOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.zOffFC[intFC.kFC]   = (real)0.0f;
 //            intFC.kFC++;
 //         }
 //      }
@@ -3110,9 +3110,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
 //            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-//            offCF.xOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.yOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.zOffCF[intCF.kCF]   = (doubflo)0.0f;
+//            offCF.xOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.yOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.zOffCF[intCF.kCF]   = (real)0.0f;
 //            intCF.kCF++;
 //         }
 //      }
@@ -3129,9 +3129,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
 //            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-//            offFC.xOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.yOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.zOffFC[intFC.kFC]   = (doubflo)0.0f;
+//            offFC.xOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.yOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.zOffFC[intFC.kFC]   = (real)0.0f;
 //            intFC.kFC++;
 //         }
 //      }
@@ -3155,9 +3155,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine  , LyFine);
 //            intCF.ICellCFC[intCF.kCF] = kCoarse[posCSWB];
 //            intCF.ICellCFF[intCF.kCF] = kFine[posFSWB];
-//            offCF.xOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.yOffCF[intCF.kCF]   = (doubflo)0.0f;
-//            offCF.zOffCF[intCF.kCF]   = (doubflo)0.0f;
+//            offCF.xOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.yOffCF[intCF.kCF]   = (real)0.0f;
+//            offCF.zOffCF[intCF.kCF]   = (real)0.0f;
 //            intCF.kCF++;
 //         }
 //      }
@@ -3174,9 +3174,9 @@ void interpolation(InterpolationCellCF &intCF, InterpolationCellFC &intFC,
 //            posFSWB=vectorPosition(iF, jF, hF, LxFine,   LyFine);
 //            intFC.ICellFCC[intFC.kFC] = kCoarse[posC];
 //            intFC.ICellFCF[intFC.kFC] = kFine[posFSWB];
-//            offFC.xOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.yOffFC[intFC.kFC]   = (doubflo)0.0f;
-//            offFC.zOffFC[intFC.kFC]   = (doubflo)0.0f;
+//            offFC.xOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.yOffFC[intFC.kFC]   = (real)0.0f;
+//            offFC.zOffFC[intFC.kFC]   = (real)0.0f;
 //            intFC.kFC++;
 //         }
 //      }

@@ -3,11 +3,11 @@
 #include "GPU/constant.h"
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipDevice27(doubflo* DD, 
+extern "C" __global__ void QSlipDevice27(real* DD, 
                                          int* k_Q, 
-                                         doubflo* QQ,
+                                         real* QQ,
                                          unsigned int sizeQ,
-                                         doubflo om1, 
+                                         real om1, 
                                          unsigned int* neighborX,
                                          unsigned int* neighborY,
                                          unsigned int* neighborZ,
@@ -89,7 +89,7 @@ extern "C" __global__ void QSlipDevice27(doubflo* DD,
    if(k<sizeQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -151,34 +151,34 @@ extern "C" __global__ void QSlipDevice27(doubflo* DD,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -196,7 +196,7 @@ extern "C" __global__ void QSlipDevice27(doubflo* DD,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -263,10 +263,10 @@ extern "C" __global__ void QSlipDevice27(doubflo* DD,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo fac = one;//c99o100;
-	  doubflo VeloX = fac*vx1;
-	  doubflo VeloY = fac*vx2;
-	  doubflo VeloZ = fac*vx3;
+	  real fac = one;//c99o100;
+	  real VeloX = fac*vx1;
+	  real VeloY = fac*vx2;
+	  real VeloZ = fac*vx3;
 	  bool x = false;
 	  bool y = false;
 	  bool z = false;
@@ -653,11 +653,11 @@ extern "C" __global__ void QSlipDevice27(doubflo* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipDeviceComp27(doubflo* DD, 
+extern "C" __global__ void QSlipDeviceComp27(real* DD, 
 											 int* k_Q, 
-											 doubflo* QQ,
+											 real* QQ,
 											 unsigned int sizeQ,
-											 doubflo om1, 
+											 real om1, 
 											 unsigned int* neighborX,
 											 unsigned int* neighborY,
 											 unsigned int* neighborZ,
@@ -739,7 +739,7 @@ extern "C" __global__ void QSlipDeviceComp27(doubflo* DD,
    if(k<sizeQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -801,34 +801,34 @@ extern "C" __global__ void QSlipDeviceComp27(doubflo* DD,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -846,7 +846,7 @@ extern "C" __global__ void QSlipDeviceComp27(doubflo* DD,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -913,10 +913,10 @@ extern "C" __global__ void QSlipDeviceComp27(doubflo* DD,
       //Test
       //(D.f[dirZERO])[k]=c1o10;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo fac = one;//c99o100;
-	  doubflo VeloX = fac*vx1;
-	  doubflo VeloY = fac*vx2;
-	  doubflo VeloZ = fac*vx3;
+	  real fac = one;//c99o100;
+	  real VeloX = fac*vx1;
+	  real VeloY = fac*vx2;
+	  real VeloZ = fac*vx3;
 	  bool x = false;
 	  bool y = false;
 	  bool z = false;
@@ -1355,14 +1355,14 @@ extern "C" __global__ void QSlipDeviceComp27(doubflo* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD, 
+extern "C" __global__ void QSlipGeomDeviceComp27(real* DD, 
 												 int* k_Q, 
-												 doubflo* QQ,
+												 real* QQ,
 												 unsigned int sizeQ,
-												 doubflo om1, 
-												 doubflo* NormalX,
-												 doubflo* NormalY,
-												 doubflo* NormalZ,
+												 real om1, 
+												 real* NormalX,
+												 real* NormalY,
+												 real* NormalZ,
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -1444,7 +1444,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
    if(k<sizeQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -1476,7 +1476,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
       q_dirBSE = &QQ[dirBSE *sizeQ];
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
+      real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
               *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
               *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
               *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
@@ -1508,7 +1508,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
       nx_dirBSE = &NormalX[dirBSE *sizeQ];
       nx_dirBNW = &NormalX[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
+      real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
               *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
               *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
               *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
@@ -1540,7 +1540,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
       ny_dirBSE = &NormalY[dirBSE *sizeQ];
       ny_dirBNW = &NormalY[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
+      real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
               *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
               *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
               *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
@@ -1602,34 +1602,34 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -1647,7 +1647,7 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -1711,42 +1711,42 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo VeloX = vx1;
-	  doubflo VeloY = vx2;
-	  doubflo VeloZ = vx3;
-	  doubflo fac = zero;//0.5;
- 	  doubflo phi = zero;
-	  doubflo alpha = c1o100;
+	  real VeloX = vx1;
+	  real VeloY = vx2;
+	  real VeloZ = vx3;
+	  real fac = zero;//0.5;
+ 	  real phi = zero;
+	  real alpha = c1o100;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo kxyFromfcNEQ = -(three * om1 / (one-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (one + drho) - ((vx1*vx2)));
-      doubflo kyzFromfcNEQ = -(three * om1 / (one-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (one + drho) - ((vx2*vx3)));
-      doubflo kxzFromfcNEQ = -(three * om1 / (one-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (one + drho) - ((vx1*vx3)));
+      real kxyFromfcNEQ = -(three * om1 / (one-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (one + drho) - ((vx1*vx2)));
+      real kyzFromfcNEQ = -(three * om1 / (one-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (one + drho) - ((vx2*vx3)));
+      real kxzFromfcNEQ = -(three * om1 / (one-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (one + drho) - ((vx1*vx3)));
 
-	  doubflo kxxFromfcNEQ = -(three * om1 / (one-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx1*vx1)));
-	  doubflo kyyFromfcNEQ = -(three * om1 / (one-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx2*vx2)));
-	  doubflo kzzFromfcNEQ = -(three * om1 / (one-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx3*vx3)));
+	  real kxxFromfcNEQ = -(three * om1 / (one-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx1*vx1)));
+	  real kyyFromfcNEQ = -(three * om1 / (one-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx2*vx2)));
+	  real kzzFromfcNEQ = -(three * om1 / (one-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx3*vx3)));
 
-	  doubflo magS = sqrtf(kxyFromfcNEQ*kxyFromfcNEQ + kyzFromfcNEQ*kyzFromfcNEQ + kxzFromfcNEQ*kxzFromfcNEQ + kxxFromfcNEQ*kxxFromfcNEQ + kyyFromfcNEQ*kyyFromfcNEQ + kzzFromfcNEQ*kzzFromfcNEQ);
+	  real magS = sqrtf(kxyFromfcNEQ*kxyFromfcNEQ + kyzFromfcNEQ*kyzFromfcNEQ + kxzFromfcNEQ*kxzFromfcNEQ + kxxFromfcNEQ*kxxFromfcNEQ + kyyFromfcNEQ*kyyFromfcNEQ + kzzFromfcNEQ*kzzFromfcNEQ);
 
 	  //fac = fac * magS / (c1o3 * (one / om1 - c1o2));
    //   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo *facAst = &QQ[dirZERO *sizeQ];
+	  //real *facAst = &QQ[dirZERO *sizeQ];
 
 	  //fac = fac * alpha + facAst[k] * (one - alpha);
 	  //facAst[k] = fac;
 	  //(&QQ[dirZERO *sizeQ])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  ////doubflo uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
+	  ////real uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo phi = expf(magS/0.01f) - one;
+	  //real phi = expf(magS/0.01f) - one;
 	  //phi = (phi > one) ? one:phi;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo C = five;
-	  //doubflo kappa = 0.41f;
-	  //doubflo phi = (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))) - one) / (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))));
+	  //real C = five;
+	  //real kappa = 0.41f;
+	  //real phi = (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))) - one) / (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))));
 	  //phi = (phi < zero) ? zero:phi;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo sum = zero, count = zero;
+	  //real sum = zero, count = zero;
    //   q = q_dirE   [k]; if (q>=zero && q<=one) sum += (q *   nx_dirE[k] ); count += one;
    //   q = q_dirW   [k]; if (q>=zero && q<=one) sum += (q * (-nx_dirW[k])); count += one;
    //   q = q_dirN   [k]; if (q>=zero && q<=one) sum += (q *   nx_dirN[k] ); count += one;
@@ -1773,11 +1773,11 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
    //   q = q_dirBSW [k]; if (q>=zero && q<=one) sum += (q * ((-nx_dirBSW[k])- ny_dirBSW[k] - nz_dirBSW[k])/(sqrtf(three))); count += one;
    //   q = q_dirBSE [k]; if (q>=zero && q<=one) sum += (q * (  nx_dirBSE[k] - ny_dirBSE[k] - nz_dirBSE[k])/(sqrtf(three))); count += one;
    //   q = q_dirBNW [k]; if (q>=zero && q<=one) sum += (q * ((-nx_dirBNW[k])+ ny_dirBNW[k] - nz_dirBNW[k])/(sqrtf(three))); count += one;
-	  //doubflo qMed = sum/count;
-	  //doubflo phi = fac / (qMed + fac);
+	  //real qMed = sum/count;
+	  //real phi = fac / (qMed + fac);
 	  //phi = (phi > one) ? one:one;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo testQ = two;
+	  real testQ = two;
 
       q = q_dirE[k];
       if (q>=zero && q<=one)
@@ -2241,14 +2241,14 @@ extern "C" __global__ void QSlipGeomDeviceComp27(doubflo* DD,
 
 
 //////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD, 
+extern "C" __global__ void QSlipNormDeviceComp27(real* DD, 
 												 int* k_Q, 
-												 doubflo* QQ,
+												 real* QQ,
 												 unsigned int sizeQ,
-												 doubflo om1, 
-												 doubflo* NormalX,
-												 doubflo* NormalY,
-												 doubflo* NormalZ,
+												 real om1, 
+												 real* NormalX,
+												 real* NormalY,
+												 real* NormalZ,
 												 unsigned int* neighborX,
 												 unsigned int* neighborY,
 												 unsigned int* neighborZ,
@@ -2330,7 +2330,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
    if(k<sizeQ)
    {
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+      real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
             *q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
             *q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
             *q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -2362,7 +2362,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
       q_dirBSE = &QQ[dirBSE *sizeQ];
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
+      real *nx_dirE,   *nx_dirW,   *nx_dirN,   *nx_dirS,   *nx_dirT,   *nx_dirB, 
               *nx_dirNE,  *nx_dirSW,  *nx_dirSE,  *nx_dirNW,  *nx_dirTE,  *nx_dirBW,
               *nx_dirBE,  *nx_dirTW,  *nx_dirTN,  *nx_dirBS,  *nx_dirBN,  *nx_dirTS,
               *nx_dirTNE, *nx_dirTSW, *nx_dirTSE, *nx_dirTNW, *nx_dirBNE, *nx_dirBSW,
@@ -2394,7 +2394,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
       nx_dirBSE = &NormalX[dirBSE *sizeQ];
       nx_dirBNW = &NormalX[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
+      real *ny_dirE,   *ny_dirW,   *ny_dirN,   *ny_dirS,   *ny_dirT,   *ny_dirB, 
               *ny_dirNE,  *ny_dirSW,  *ny_dirSE,  *ny_dirNW,  *ny_dirTE,  *ny_dirBW,
               *ny_dirBE,  *ny_dirTW,  *ny_dirTN,  *ny_dirBS,  *ny_dirBN,  *ny_dirTS,
               *ny_dirTNE, *ny_dirTSW, *ny_dirTSE, *ny_dirTNW, *ny_dirBNE, *ny_dirBSW,
@@ -2426,7 +2426,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
       ny_dirBSE = &NormalY[dirBSE *sizeQ];
       ny_dirBNW = &NormalY[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
+      real *nz_dirE,   *nz_dirW,   *nz_dirN,   *nz_dirS,   *nz_dirT,   *nz_dirB, 
               *nz_dirNE,  *nz_dirSW,  *nz_dirSE,  *nz_dirNW,  *nz_dirTE,  *nz_dirBW,
               *nz_dirBE,  *nz_dirTW,  *nz_dirTN,  *nz_dirBS,  *nz_dirBN,  *nz_dirTS,
               *nz_dirTNE, *nz_dirTSW, *nz_dirTSE, *nz_dirTNW, *nz_dirBNE, *nz_dirBSW,
@@ -2488,34 +2488,34 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
       unsigned int ktne = KQK;
       unsigned int kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo f_W    = (D.f[dirE   ])[ke   ];
-      doubflo f_E    = (D.f[dirW   ])[kw   ];
-      doubflo f_S    = (D.f[dirN   ])[kn   ];
-      doubflo f_N    = (D.f[dirS   ])[ks   ];
-      doubflo f_B    = (D.f[dirT   ])[kt   ];
-      doubflo f_T    = (D.f[dirB   ])[kb   ];
-      doubflo f_SW   = (D.f[dirNE  ])[kne  ];
-      doubflo f_NE   = (D.f[dirSW  ])[ksw  ];
-      doubflo f_NW   = (D.f[dirSE  ])[kse  ];
-      doubflo f_SE   = (D.f[dirNW  ])[knw  ];
-      doubflo f_BW   = (D.f[dirTE  ])[kte  ];
-      doubflo f_TE   = (D.f[dirBW  ])[kbw  ];
-      doubflo f_TW   = (D.f[dirBE  ])[kbe  ];
-      doubflo f_BE   = (D.f[dirTW  ])[ktw  ];
-      doubflo f_BS   = (D.f[dirTN  ])[ktn  ];
-      doubflo f_TN   = (D.f[dirBS  ])[kbs  ];
-      doubflo f_TS   = (D.f[dirBN  ])[kbn  ];
-      doubflo f_BN   = (D.f[dirTS  ])[kts  ];
-      doubflo f_BSW  = (D.f[dirTNE ])[ktne ];
-      doubflo f_BNE  = (D.f[dirTSW ])[ktsw ];
-      doubflo f_BNW  = (D.f[dirTSE ])[ktse ];
-      doubflo f_BSE  = (D.f[dirTNW ])[ktnw ];
-      doubflo f_TSW  = (D.f[dirBNE ])[kbne ];
-      doubflo f_TNE  = (D.f[dirBSW ])[kbsw ];
-      doubflo f_TNW  = (D.f[dirBSE ])[kbse ];
-      doubflo f_TSE  = (D.f[dirBNW ])[kbnw ];
+      real f_W    = (D.f[dirE   ])[ke   ];
+      real f_E    = (D.f[dirW   ])[kw   ];
+      real f_S    = (D.f[dirN   ])[kn   ];
+      real f_N    = (D.f[dirS   ])[ks   ];
+      real f_B    = (D.f[dirT   ])[kt   ];
+      real f_T    = (D.f[dirB   ])[kb   ];
+      real f_SW   = (D.f[dirNE  ])[kne  ];
+      real f_NE   = (D.f[dirSW  ])[ksw  ];
+      real f_NW   = (D.f[dirSE  ])[kse  ];
+      real f_SE   = (D.f[dirNW  ])[knw  ];
+      real f_BW   = (D.f[dirTE  ])[kte  ];
+      real f_TE   = (D.f[dirBW  ])[kbw  ];
+      real f_TW   = (D.f[dirBE  ])[kbe  ];
+      real f_BE   = (D.f[dirTW  ])[ktw  ];
+      real f_BS   = (D.f[dirTN  ])[ktn  ];
+      real f_TN   = (D.f[dirBS  ])[kbs  ];
+      real f_TS   = (D.f[dirBN  ])[kbn  ];
+      real f_BN   = (D.f[dirTS  ])[kts  ];
+      real f_BSW  = (D.f[dirTNE ])[ktne ];
+      real f_BNE  = (D.f[dirTSW ])[ktsw ];
+      real f_BNW  = (D.f[dirTSE ])[ktse ];
+      real f_BSE  = (D.f[dirTNW ])[ktnw ];
+      real f_TSW  = (D.f[dirBNE ])[kbne ];
+      real f_TNE  = (D.f[dirBSW ])[kbsw ];
+      real f_TNW  = (D.f[dirBSE ])[kbse ];
+      real f_TSE  = (D.f[dirBNW ])[kbnw ];
       ////////////////////////////////////////////////////////////////////////////////
-      doubflo vx1, vx2, vx3, drho, feq, q;
+      real vx1, vx2, vx3, drho, feq, q;
       drho   =  f_TSE + f_TNW + f_TNE + f_TSW + f_BSE + f_BNW + f_BNE + f_BSW +
                 f_BN + f_TS + f_TN + f_BS + f_BE + f_TW + f_TE + f_BW + f_SE + f_NW + f_NE + f_SW + 
                 f_T + f_B + f_N + f_S + f_E + f_W + ((D.f[dirZERO])[kzero]); 
@@ -2533,7 +2533,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
                  (-(f_BN - f_TS)  + (f_TN - f_BS))   + ((f_TE - f_BW)   - (f_BE - f_TW)) +
                  (f_T - f_B)) / (one + drho); 
 
-      doubflo cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
+      real cu_sq=c3o2*(vx1*vx1+vx2*vx2+vx3*vx3) * (one + drho);
 
       //////////////////////////////////////////////////////////////////////////
       if (evenOrOdd==false)
@@ -2597,42 +2597,42 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
          D.f[dirBNW ] = &DD[dirTSE *size_Mat];
       }
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo VeloX = vx1;
-	  doubflo VeloY = vx2;
-	  doubflo VeloZ = vx3;
-	  doubflo fac = c1o100;//0.5;
- 	  doubflo phi = zero;
-	  doubflo alpha = c1o100;
+	  real VeloX = vx1;
+	  real VeloY = vx2;
+	  real VeloZ = vx3;
+	  real fac = c1o100;//0.5;
+ 	  real phi = zero;
+	  real alpha = c1o100;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      doubflo kxyFromfcNEQ = -(three * om1 / (one-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (one + drho) - ((vx1*vx2)));
-      doubflo kyzFromfcNEQ = -(three * om1 / (one-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (one + drho) - ((vx2*vx3)));
-      doubflo kxzFromfcNEQ = -(three * om1 / (one-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (one + drho) - ((vx1*vx3)));
+      real kxyFromfcNEQ = -(three * om1 / (one-om1))*((f_SW+f_BSW+f_TSW-f_NW-f_BNW-f_TNW-f_SE-f_BSE-f_TSE+f_NE+f_BNE+f_TNE ) / (one + drho) - ((vx1*vx2)));
+      real kyzFromfcNEQ = -(three * om1 / (one-om1))*((f_BS+f_BSE+f_BSW-f_TS-f_TSE-f_TSW-f_BN-f_BNE-f_BNW+f_TN+f_TNE+f_TNW ) / (one + drho) - ((vx2*vx3)));
+      real kxzFromfcNEQ = -(three * om1 / (one-om1))*((f_BW+f_BSW+f_BNW-f_TW-f_TSW-f_TNW-f_BE-f_BSE-f_BNE+f_TE+f_TSE+f_TNE ) / (one + drho) - ((vx1*vx3)));
 
-	  doubflo kxxFromfcNEQ = -(three * om1 / (one-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx1*vx1)));
-	  doubflo kyyFromfcNEQ = -(three * om1 / (one-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx2*vx2)));
-	  doubflo kzzFromfcNEQ = -(three * om1 / (one-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx3*vx3)));
+	  real kxxFromfcNEQ = -(three * om1 / (one-om1))*((f_E+f_NE+f_SE+f_TE+f_BE+f_W+f_NW+f_SW+f_TW+f_BW+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx1*vx1)));
+	  real kyyFromfcNEQ = -(three * om1 / (one-om1))*((f_N+f_NE+f_NW+f_TN+f_BN+f_S+f_SE+f_SW+f_TS+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx2*vx2)));
+	  real kzzFromfcNEQ = -(three * om1 / (one-om1))*((f_T+f_TE+f_TW+f_TN+f_BS+f_B+f_BE+f_BW+f_BN+f_BS+ f_TNE+f_TSE+f_BNE+f_TNE+ f_TNW+f_TSW+f_BNW+f_TNW ) / (one + drho) - ((c1o3*drho + vx3*vx3)));
 
-	  doubflo magS = sqrtf(kxyFromfcNEQ*kxyFromfcNEQ + kyzFromfcNEQ*kyzFromfcNEQ + kxzFromfcNEQ*kxzFromfcNEQ + kxxFromfcNEQ*kxxFromfcNEQ + kyyFromfcNEQ*kyyFromfcNEQ + kzzFromfcNEQ*kzzFromfcNEQ);
+	  real magS = sqrtf(kxyFromfcNEQ*kxyFromfcNEQ + kyzFromfcNEQ*kyzFromfcNEQ + kxzFromfcNEQ*kxzFromfcNEQ + kxxFromfcNEQ*kxxFromfcNEQ + kyyFromfcNEQ*kyyFromfcNEQ + kzzFromfcNEQ*kzzFromfcNEQ);
 
 	  fac = fac * magS / (c1o3 * (one / om1 - c1o2));
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo *facAst = &QQ[dirZERO *sizeQ];
+	  real *facAst = &QQ[dirZERO *sizeQ];
 
 	  fac = fac * alpha + facAst[k] * (one - alpha);
 	  facAst[k] = fac;
 	  //(&QQ[dirZERO *sizeQ])[KQK] = fac;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  ////doubflo uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
+	  ////real uk = sqrtf(vx1*vx1 + vx2*vx2 + vx3*vx3);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo phi = expf(magS/0.01f) - one;
+	  //real phi = expf(magS/0.01f) - one;
 	  //phi = (phi > one) ? one:phi;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo C = five;
-	  //doubflo kappa = 0.41f;
-	  //doubflo phi = (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))) - one) / (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))));
+	  //real C = five;
+	  //real kappa = 0.41f;
+	  //real phi = (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))) - one) / (C * kappa * c1o2 * logf(magS / (c1o3 * (one / om1 - c1o2))));
 	  //phi = (phi < zero) ? zero:phi;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  //doubflo sum = zero, count = zero;
+	  //real sum = zero, count = zero;
    //   q = q_dirE   [k]; if (q>=zero && q<=one) sum += (q *   nx_dirE[k] ); count += one;
    //   q = q_dirW   [k]; if (q>=zero && q<=one) sum += (q * (-nx_dirW[k])); count += one;
    //   q = q_dirN   [k]; if (q>=zero && q<=one) sum += (q *   nx_dirN[k] ); count += one;
@@ -2659,16 +2659,16 @@ extern "C" __global__ void QSlipNormDeviceComp27(doubflo* DD,
    //   q = q_dirBSW [k]; if (q>=zero && q<=one) sum += (q * ((-nx_dirBSW[k])- ny_dirBSW[k] - nz_dirBSW[k])/(sqrtf(three))); count += one;
    //   q = q_dirBSE [k]; if (q>=zero && q<=one) sum += (q * (  nx_dirBSE[k] - ny_dirBSE[k] - nz_dirBSE[k])/(sqrtf(three))); count += one;
    //   q = q_dirBNW [k]; if (q>=zero && q<=one) sum += (q * ((-nx_dirBNW[k])+ ny_dirBNW[k] - nz_dirBNW[k])/(sqrtf(three))); count += one;
-	  //doubflo qMed = sum/count;
-	  //doubflo phi = fac / (qMed + fac);
+	  //real qMed = sum/count;
+	  //real phi = fac / (qMed + fac);
 	  //phi = (phi > one) ? one:one;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	  doubflo sliplength = 0.9f;//c1o2;
-	  doubflo qSlip = zero;
-	  doubflo un = zero;
-	  doubflo ut = zero;
-	  doubflo tangential = zero;
-	  //doubflo smallSingle = Op0000002;
+	  real sliplength = 0.9f;//c1o2;
+	  real qSlip = zero;
+	  real un = zero;
+	  real ut = zero;
+	  real tangential = zero;
+	  //real smallSingle = Op0000002;
 
       q = q_dirE[k];
       if (q>=zero && q<=one)

@@ -26,7 +26,7 @@ HOSTDEVICE void Triangle::calcNormal()
 
 HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
 {
-    doubflo s, delta;
+    real s, delta;
     delta = abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z); //TODO: muss eigentlich nicht fuer jeden Punkt neu berechnet werden
 
     if (this->isUnterExtendedFace(point, s, delta))
@@ -47,13 +47,13 @@ HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
     
 }
 
-HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex &point, doubflo &s, doubflo &delta) const
+HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex &point, real &s, real &delta) const
 {
     s = this->getPerpedicularDistanceFrom(point);
     return ((CudaMath::greaterEqual(s, 0.0f)) && s < delta);
 }
 
-HOSTDEVICE doubflo Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
+HOSTDEVICE real Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
 {
     Vertex v = P - v1;
     return  (v * -1.0f) * normal;
@@ -64,7 +64,7 @@ HOSTDEVICE Vertex Triangle::getPerpedicularPointFrom(const Vertex &P) const
     return P + normal * getPerpedicularDistanceFrom(P);
 }
 
-HOSTDEVICE bool Triangle::isQNode(const Vertex &point, const doubflo &s, const doubflo &delta) const
+HOSTDEVICE bool Triangle::isQNode(const Vertex &point, const real &s, const real &delta) const
 {
     return (s < 0 && CudaMath::lessEqual(-s, delta));
     //calculateQs(actualPoint, actualTriangle);
@@ -88,9 +88,9 @@ HOSTDEVICE bool Triangle::isNotNextToFace(const Vertex &point) const
     Vertex t2 = w2.crossProduct(v3 - v2);
     Vertex t3 = w3.crossProduct(v1 - v3);
 
-    doubflo g1 = t1 * normal;
-    doubflo g2 = t2 * normal;
-    doubflo g3 = t3 * normal;
+    real g1 = t1 * normal;
+    real g2 = t2 * normal;
+    real g3 = t3 * normal;
 
     return CudaMath::lessEqual(g1, 0.0f) && CudaMath::lessEqual(g2, 0.0f) && CudaMath::lessEqual(g3, 0.0f);
 }
@@ -104,7 +104,7 @@ HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
     Vertex q[3];
     Vertex r[3];
 
-    doubflo betaAngles[3];
+    real betaAngles[3];
     for (int i = 0; i < 3; i++)
     {
         q[i] = point - Pci[i];
@@ -112,7 +112,7 @@ HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
         betaAngles[i] = q[i].getInnerAngle(r[i]);
     }
 
-    doubflo eps = EPSILON * 100.0f;
+    real eps = EPSILON * 100.0f;
     return (CudaMath::lessEqual(betaAngles[0], alphaAngles[0], eps) && CudaMath::lessEqual(betaAngles[1], alphaAngles[1], eps) && CudaMath::lessEqual(betaAngles[2], alphaAngles[2], eps));
 }
 
@@ -127,7 +127,7 @@ HOSTDEVICE void Triangle::getClosestPointsOnEdges(Vertex arr[], const Vertex &P)
     Vertex d2 = v3 - v2;
     Vertex d3 = v1 - v3;
 
-    doubflo temp = (v4 * d1) / (d1 * d1);
+    real temp = (v4 * d1) / (d1 * d1);
     Vertex tempV = d1 * temp;
     Pc1 = v1 + tempV;
 
@@ -149,11 +149,11 @@ Vertex Triangle::getCenterOfMass() const
     return (v1 + v2 + v3) * (1.0f / 3.0f);
 }
 
-doubflo Triangle::getHalfAngleBetweenToAdjacentTriangle(const Triangle &t2) const
+real Triangle::getHalfAngleBetweenToAdjacentTriangle(const Triangle &t2) const
 {
     if (isEqual(t2)) return 0.0f;
 
-    doubflo alpha = normal.getInnerAngle(t2.normal);
+    real alpha = normal.getInnerAngle(t2.normal);
 	if (alpha == 0.0f)
 		return 90.0f;
 
@@ -174,7 +174,7 @@ bool Triangle::doesNormalsShowToEachOther(const  Triangle &t2) const
     Vertex s2 = t2.getCenterOfMass();
 
     Vertex s1s2 = s1 - s2;
-    doubflo X = s1s2 * t2.normal;
+    real X = s1s2 * t2.normal;
     return X > 0 ? true : false;
 }
 
@@ -219,7 +219,7 @@ HOSTDEVICE int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
 }
 
 
-HOSTDEVICE int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, doubflo &qVal) const
+HOSTDEVICE int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const
 {
     Vertex edge1, edge2, tvec, pvec, qvec, tuv;
     float det, inv_det;
@@ -277,7 +277,7 @@ HOST bool Triangle::operator==(const Triangle &t) const
 }
 
 
-HOSTDEVICE void Triangle::setMinMax(doubflo &minX, doubflo &maxX, doubflo &minY, doubflo &maxY, doubflo &minZ, doubflo &maxZ) const
+HOSTDEVICE void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const
 {
     Vertex::setMinMax(minX, maxX, minY, maxY, minZ, maxZ, v1, v2, v3);
 }

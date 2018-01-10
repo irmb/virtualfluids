@@ -3,9 +3,9 @@
 #include "GPU/constant.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void DragLiftPost27(  doubflo* DD, 
+extern "C" __global__ void DragLiftPost27(  real* DD, 
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											int kQ, 
 											double *DragX,
 											double *DragY,
@@ -92,7 +92,7 @@ extern "C" __global__ void DragLiftPost27(  doubflo* DD,
 	{
 		unsigned int sizeQ = kQ;
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -154,7 +154,7 @@ extern "C" __global__ void DragLiftPost27(  doubflo* DD,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
                 f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
 		f_W    = (D.f[dirE   ])[ke   ];
@@ -191,7 +191,7 @@ extern "C" __global__ void DragLiftPost27(  doubflo* DD,
 				OnTNE = zero, OnTSW = zero, OnTSE = zero, OnTNW = zero, 
 				OnBNE = zero, OnBSW = zero, OnBSE = zero, OnBNW = zero;
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo q;
+		real q;
 		q = q_dirE[k];		if (q>=zero && q<=one) OnE   = one;
 		q = q_dirW[k];		if (q>=zero && q<=one) OnW   = one;
 		q = q_dirN[k];		if (q>=zero && q<=one) OnN   = one;
@@ -269,9 +269,9 @@ extern "C" __global__ void DragLiftPost27(  doubflo* DD,
 
 
 ////////////////////////////////////////////////////////////////////////////////
-extern "C" __global__ void DragLiftPre27(   doubflo* DD, 
+extern "C" __global__ void DragLiftPre27(   real* DD, 
 											int* k_Q, 
-											doubflo* QQ,
+											real* QQ,
 											int kQ, 
 											double *DragX,
 											double *DragY,
@@ -358,7 +358,7 @@ extern "C" __global__ void DragLiftPre27(   doubflo* DD,
 	{
 		unsigned int sizeQ = kQ;
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
+		real *q_dirE,   *q_dirW,   *q_dirN,   *q_dirS,   *q_dirT,   *q_dirB, 
 			*q_dirNE,  *q_dirSW,  *q_dirSE,  *q_dirNW,  *q_dirTE,  *q_dirBW,
 			*q_dirBE,  *q_dirTW,  *q_dirTN,  *q_dirBS,  *q_dirBN,  *q_dirTS,
 			*q_dirTNE, *q_dirTSW, *q_dirTSE, *q_dirTNW, *q_dirBNE, *q_dirBSW,
@@ -420,7 +420,7 @@ extern "C" __global__ void DragLiftPre27(   doubflo* DD,
 		unsigned int ktne = KQK;
 		unsigned int kbsw = neighborZ[ksw];
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
+		real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
                 f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
 
 		f_E   = (D.f[dirE   ])[ke   ];
@@ -457,7 +457,7 @@ extern "C" __global__ void DragLiftPre27(   doubflo* DD,
 				OnTNE = zero, OnTSW = zero, OnTSE = zero, OnTNW = zero, 
 				OnBNE = zero, OnBSW = zero, OnBSE = zero, OnBNW = zero;
 		////////////////////////////////////////////////////////////////////////////////
-		doubflo q;
+		real q;
 		q = q_dirE[k];		if (q>=zero && q<=one) OnW   = one;
 		q = q_dirW[k];		if (q>=zero && q<=one) OnE   = one;
 		q = q_dirN[k];		if (q>=zero && q<=one) OnS   = one;

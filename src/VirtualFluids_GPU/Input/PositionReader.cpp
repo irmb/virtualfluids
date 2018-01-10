@@ -106,12 +106,12 @@ void PositionReader::readFileForAlloc(const std::string fileName, Parameter* par
    {
 	   //Host
 	   para->getParH(level)->size_Mat_SP = in.readInteger();
-	   para->getParH(level)->mem_size_doubflo_SP    = sizeof(doubflo     ) * para->getParH(level)->size_Mat_SP;
+	   para->getParH(level)->mem_size_real_SP    = sizeof(real     ) * para->getParH(level)->size_Mat_SP;
 	   para->getParH(level)->mem_size_int_SP        = sizeof(unsigned int) * para->getParH(level)->size_Mat_SP;
 	   //Device
 	   para->getParD(level)->size_Mat_SP            = para->getParH(level)->size_Mat_SP;
 	   para->getParD(level)->mem_size_int_SP        = sizeof(unsigned int) * para->getParD(level)->size_Mat_SP;
-	   para->getParD(level)->mem_size_doubflo_SP    = sizeof(doubflo     ) * para->getParD(level)->size_Mat_SP;
+	   para->getParD(level)->mem_size_real_SP    = sizeof(real     ) * para->getParD(level)->size_Mat_SP;
 
 	   in.readLine();
 	   for(unsigned int u = /*1*/0; u<para->getParH(level)->size_Mat_SP; u++)
@@ -320,8 +320,8 @@ void PositionReader::readFileInterfaceOffsetForAlloc(const std::string fileName,
 			para->getParD(level)->K_CF                = para->getParH(level)->K_CF;
 			para->getParH(level)->intCF.kCF           = para->getParH(level)->K_CF;
 			para->getParD(level)->intCF.kCF           = para->getParH(level)->K_CF;
-			para->getParH(level)->mem_size_kCF_off    = sizeof(doubflo) * para->getParH(level)->K_CF;
-			para->getParD(level)->mem_size_kCF_off    = sizeof(doubflo) * para->getParD(level)->K_CF;
+			para->getParH(level)->mem_size_kCF_off    = sizeof(real) * para->getParH(level)->K_CF;
+			para->getParD(level)->mem_size_kCF_off    = sizeof(real) * para->getParD(level)->K_CF;
 			in.readLine();
 			for(unsigned int u=0; u<para->getParH(level)->K_CF; u++)
 			{
@@ -336,8 +336,8 @@ void PositionReader::readFileInterfaceOffsetForAlloc(const std::string fileName,
 			para->getParD(level)->K_FC                = para->getParH(level)->K_FC;
 			para->getParH(level)->intFC.kFC           = para->getParH(level)->K_FC;
 			para->getParD(level)->intFC.kFC           = para->getParH(level)->K_FC;
-			para->getParH(level)->mem_size_kFC_off    = sizeof(doubflo) * para->getParH(level)->K_FC;
-			para->getParD(level)->mem_size_kFC_off    = sizeof(doubflo) * para->getParD(level)->K_FC;
+			para->getParH(level)->mem_size_kFC_off    = sizeof(real) * para->getParH(level)->K_FC;
+			para->getParD(level)->mem_size_kFC_off    = sizeof(real) * para->getParD(level)->K_FC;
 			in.readLine();
 			for(unsigned int u=0; u<para->getParH(level)->K_FC; u++)
 			{
@@ -369,9 +369,9 @@ void PositionReader::readFileInterfaceOffset(const std::string fileName, std::st
 			in.readLine();
 			for(unsigned int u=0; u<para->getParH(level)->K_CF; u++)
 			{
-				para->getParH(level)->offCF.xOffCF[u] = (doubflo)in.readDouble();       
-				para->getParH(level)->offCF.yOffCF[u] = (doubflo)in.readDouble();       
-				para->getParH(level)->offCF.zOffCF[u] = (doubflo)in.readDouble();       
+				para->getParH(level)->offCF.xOffCF[u] = (real)in.readDouble();       
+				para->getParH(level)->offCF.yOffCF[u] = (real)in.readDouble();       
+				para->getParH(level)->offCF.zOffCF[u] = (real)in.readDouble();       
 			}
 			in.readLine();
 		}
@@ -388,9 +388,9 @@ void PositionReader::readFileInterfaceOffset(const std::string fileName, std::st
 				//para->getParH(level)->offFC.yOffFC[u] = 0.0;       
 				//para->getParH(level)->offFC.zOffFC[u] = 0.0;  
 				//in.readInteger();
-				para->getParH(level)->offFC.xOffFC[u] = (doubflo)in.readDouble();       
-				para->getParH(level)->offFC.yOffFC[u] = (doubflo)in.readDouble();       
-				para->getParH(level)->offFC.zOffFC[u] = (doubflo)in.readDouble();       
+				para->getParH(level)->offFC.xOffFC[u] = (real)in.readDouble();       
+				para->getParH(level)->offFC.yOffFC[u] = (real)in.readDouble();       
+				para->getParH(level)->offFC.zOffFC[u] = (real)in.readDouble();       
 			}
 			in.readLine();
 		}
@@ -470,7 +470,7 @@ void PositionReader::readFileNoSlipBcPos(const std::string fileName, Parameter* 
 void PositionReader::readFileNoSlipBcQs(const std::string fileName, Parameter* para)
 {
 	UbFileInputASCII in(fileName);
-	doubflo test;
+	real test;
 	int maxlevel = in.readInteger();
 	in.readLine();
 
@@ -480,7 +480,7 @@ void PositionReader::readFileNoSlipBcQs(const std::string fileName, Parameter* p
 		in.readLine();
 		for(unsigned int u=0; u<para->getParH(level)->kQread; u++)
 		{
-			test = (doubflo)in.readFloat();
+			test = (real)in.readFloat();
 			//if (test <= 0. && test >= -1.)
 			//{
 			//	test = -0.5;
@@ -498,7 +498,7 @@ void PositionReader::readFileNoSlipBcQs(const std::string fileName, Parameter* p
 			//para->getParH(level)->QWall.qread[u] = 0.5f;
 			//orig
 			para->getParH(level)->QWall.qread[u] = test;
-			//para->getParH(level)->QWall.qread[u] = (doubflo)in.readFloat();
+			//para->getParH(level)->QWall.qread[u] = (real)in.readFloat();
 		}
 		in.readLine();
 	}
@@ -534,7 +534,7 @@ void PositionReader::findQs(Parameter* para)
 	{
 		//////////////////////////////////////////////////////////////////
 		//preprocessing
-		doubflo* QQ                  = para->getParH(lev)->QWall.q27[0]; 
+		real* QQ                  = para->getParH(lev)->QWall.q27[0]; 
 		unsigned int sizeQ           = para->getParH(lev)->kQ; 
 		QforBoundaryConditions Q;
 		Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -675,7 +675,7 @@ void PositionReader::readFileSlipBcQs(const std::string fileName, Parameter* par
 		in.readLine();
 		for(unsigned int u=0; u<para->getParH(level)->kSlipQread; u++)
 		{
-			para->getParH(level)->QSlip.qread[u] = (doubflo)in.readFloat();
+			para->getParH(level)->QSlip.qread[u] = (real)in.readFloat();
 		}
 		in.readLine();
 	}
@@ -711,7 +711,7 @@ void PositionReader::findSlipQs(Parameter* para)
 	{
 		//////////////////////////////////////////////////////////////////
 		//preprocessing
-		doubflo* QQ                  = para->getParH(lev)->QSlip.q27[0]; 
+		real* QQ                  = para->getParH(lev)->QSlip.q27[0]; 
 		unsigned int sizeQ           = para->getParH(lev)->kSlipQ; 
 		QforBoundaryConditions Q;
 		Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -853,7 +853,7 @@ void PositionReader::readFilePressBcPos(const std::string fileName, Parameter* p
 				para->getParH(level)->QPress.k[u] = in.readInteger();
 			}
 			//setRhoBC
-			para->getParH(level)->QPress.RhoBC[u] = (doubflo)0.f;
+			para->getParH(level)->QPress.RhoBC[u] = (real)0.f;
 		}
 		in.readLine();
 	}
@@ -874,7 +874,7 @@ void PositionReader::readFilePressBcQs(const std::string fileName, Parameter* pa
 		in.readLine();
 		for(unsigned int u=0; u<para->getParH(level)->kPressQread; u++)
 		{
-			para->getParH(level)->QPress.qread[u] = (doubflo)in.readFloat();
+			para->getParH(level)->QPress.qread[u] = (real)in.readFloat();
 		}
 		in.readLine();
 	}
@@ -910,7 +910,7 @@ void PositionReader::findPressQs(Parameter* para)
 	{
 		//////////////////////////////////////////////////////////////////
 		//preprocessing
-		doubflo* QQ                  = para->getParH(lev)->QPress.q27[0]; 
+		real* QQ                  = para->getParH(lev)->QPress.q27[0]; 
 		unsigned int sizeQ           = para->getParH(lev)->kPressQ; 
 		QforBoundaryConditions Q;
 		Q.q27[dirE   ] = &QQ[dirE   *sizeQ];
@@ -1056,9 +1056,9 @@ void PositionReader::readFilePropellerCylinder(Parameter* para)
 				if (para->getParH(level)->geoSP[test] == GEO_FLUID)
 				{
 					para->getParH(level)->QPropeller.k[count] = test; 
-					para->getParH(level)->QPropeller.Vx[count] = (doubflo)in.readDouble();
-					para->getParH(level)->QPropeller.Vy[count] = (doubflo)in.readDouble();
-					para->getParH(level)->QPropeller.Vz[count] = (doubflo)in.readDouble();
+					para->getParH(level)->QPropeller.Vx[count] = (real)in.readDouble();
+					para->getParH(level)->QPropeller.Vy[count] = (real)in.readDouble();
+					para->getParH(level)->QPropeller.Vz[count] = (real)in.readDouble();
 					para->getParH(level)->QPropeller.RhoBC[count] = 0.0f;									
 					count++;
 				}
@@ -1069,9 +1069,9 @@ void PositionReader::readFilePropellerCylinder(Parameter* para)
 					in.readDouble();
 				}
 				//para->getParH(level)->QPropeller.k[count] = test; 
-				//para->getParH(level)->QPropeller.Vx[count] = (doubflo)in.readDouble();
-				//para->getParH(level)->QPropeller.Vy[count] = (doubflo)in.readDouble();
-				//para->getParH(level)->QPropeller.Vz[count] = (doubflo)in.readDouble();
+				//para->getParH(level)->QPropeller.Vx[count] = (real)in.readDouble();
+				//para->getParH(level)->QPropeller.Vy[count] = (real)in.readDouble();
+				//para->getParH(level)->QPropeller.Vz[count] = (real)in.readDouble();
 				//para->getParH(level)->QPropeller.Vx[count]	  = 0.07f;
 				//para->getParH(level)->QPropeller.Vy[count]	  = 0.0f;
 				//para->getParH(level)->QPropeller.Vz[count]	  = 0.0f;
@@ -1100,7 +1100,7 @@ void PositionReader::definePropellerQs(Parameter* para)
 {
 	//////////////////////////////////////////////////////////////////
 	//preprocessing
-	doubflo* QQ                  = para->getParH(para->getFine())->QPropeller.q27[0]; 
+	real* QQ                  = para->getParH(para->getFine())->QPropeller.q27[0]; 
 	unsigned int sizeQ           = para->getParH(para->getFine())->QPropeller.kQ; 
 	QforBoundaryConditions Q;
 	Q.q27[dirE   ] = &QQ[dirE   *sizeQ];

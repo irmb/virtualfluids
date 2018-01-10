@@ -30,12 +30,12 @@
 //#endif
 //
 //public:
-//    doubflo minX;
-//    doubflo maxX;
-//    doubflo minY;
-//    doubflo maxY;
-//    doubflo minZ;
-//    doubflo maxZ;
+//    real minX;
+//    real maxX;
+//    real minY;
+//    real maxY;
+//    real minZ;
+//    real maxZ;
 //
 //};
 //
