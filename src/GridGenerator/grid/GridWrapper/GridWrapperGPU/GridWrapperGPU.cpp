@@ -13,6 +13,7 @@
 
 
 #include <utilities/logger/Logger.h>
+#include <helper_cuda.h>
 
 
 GridWrapperGPU::GridWrapperGPU(BoundingBox<int> &channel, std::string d3Qxx)
@@ -149,7 +150,7 @@ void GridWrapperGPU::allocDistribution()
     real sizeInMB = size_in_bytes / (1024.f*1024.f);
     *logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] device memory for distributions.\n\n";
 
-    CudaSafeCall(cudaMalloc(&grid.d.f, size_in_bytes));
+    checkCudaErrors(cudaMalloc(&grid.d.f, size_in_bytes));
     CudaCheckError();
 }
 

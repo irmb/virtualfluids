@@ -2623,13 +2623,9 @@ void Parameter::cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void Parameter::setForcing(real forcingX, real forcingY, real forcingZ)
 {
-	cudaAllocForcing();
-	//copy forces
-	this->forcingH[0] = forcingX;
-	this->forcingH[1] = forcingY;
-	this->forcingH[2] = forcingZ;
-	//copy data to device
-	cudaCopyForcingToDevice();
+	this->hostForcing[0] = forcingX;
+	this->hostForcing[1] = forcingY;
+	this->hostForcing[2] = forcingZ;
 }
 void Parameter::setPhi(real inPhi)
 {
