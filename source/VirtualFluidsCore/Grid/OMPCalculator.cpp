@@ -194,53 +194,18 @@ void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::calculateBlocks(int minInitLevel, int maxInitLevel, int staggeredStep)
-{
-   int p, maxi, maxir, maxidp, start, end;
-   for (int level = minInitLevel; level<=maxInitLevel; level++)
-   {
-      p = 1<<(maxInitLevel-level);
-      maxi = maxir = static_cast<int>(blocks[level].size());
-      maxidp = maxi/p;
-      if (p>maxi && maxi!=0) {
-         maxidp = 1;
-         maxi = p;
-      }
-      start = (staggeredStep-1)*maxidp;
-      if (start>=maxi)
-         start = 0;
-      end = start+maxidp;
-      if ((end+p)>=maxi)
-         end = maxi;
-      for (int i = start; i<end; i++)
-      {
-         if (i<maxir)
-            blocks[level][i]->getKernel()->calculate();
-      }
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////
 void OMPCalculator::exchangeBlockData(int startLevel, int maxInitLevel)
 {
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      connectorsPrepareLocal(localConns[level]);
+      //connectorsPrepareLocal(localConns[level]);
       connectorsSendLocal(localConns[level]);
-      connectorsReceiveLocal(localConns[level]);
+      //connectorsReceiveLocal(localConns[level]);
 
-#ifdef _OPENMP
-      //int numOfThr = omp_get_num_threads();
-      //omp_set_num_threads(1);
-#endif
       connectorsPrepareRemote(remoteConns[level]);
       connectorsSendRemote(remoteConns[level]);
       connectorsReceiveRemote(remoteConns[level]);
-#ifdef _OPENMP
-      //omp_set_num_threads(numOfThr);
-#endif
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -337,20 +302,20 @@ void OMPCalculator::interpolation(int startLevel, int maxInitLevel)
 {
    for (int level = startLevel; level<maxInitLevel; level++)
    {
-      connectorsPrepare(localInterConns[level]);
-      connectorsPrepare(remoteInterConns[level]);
+      connectorsPrepareLocal(localInterConns[level]);
+      connectorsPrepareRemote(remoteInterConns[level]);
    }
 
    for (int level = startLevel; level<maxInitLevel; level++)
    {
-      connectorsSend(localInterConns[level]);
-      connectorsSend(remoteInterConns[level]);
+      connectorsSendLocal(localInterConns[level]);
+      connectorsSendRemote(remoteInterConns[level]);
    }
 
    for (int level = startLevel; level<maxInitLevel; level++)
    {
-      connectorsReceive(localInterConns[level]);
-      connectorsReceive(remoteInterConns[level]);
+      connectorsReceiveLocal(localInterConns[level]);
+      connectorsReceiveRemote(remoteInterConns[level]);
    }
 }
 //////////////////////////////////////////////////////////////////////////
