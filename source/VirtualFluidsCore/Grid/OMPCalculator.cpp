@@ -1,14 +1,18 @@
 #include "OMPCalculator.h"
-#include <basics/utilities/UbException.h>
 
-#include "MathUtil.hpp"
-#include "basics/writer/WbWriterVtkXmlASCII.h"
-
+#include "Grid3D.h"
+#include "Block3D.h"
 #include "BCProcessor.h"
 #include "LBMKernel.h"
+#include "Block3DConnector.h"
+
+#include "MathUtil.hpp"
+#include "UbScheduler.h"
+#include "UbTiming.h"
+#include <UbException.h>
 
 #ifdef _OPENMP
-   #include <omp.h>
+#include <omp.h>
 #endif
 //#define TIMING
 
@@ -19,43 +23,32 @@ OMPCalculator::OMPCalculator()
 
 }
 //////////////////////////////////////////////////////////////////////////
-OMPCalculator::OMPCalculator(Grid3DPtr grid) :
-Calculator(grid, SynchronizerPtr(), true)
+OMPCalculator::~OMPCalculator()
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
+void OMPCalculator::calculate()
 {
-   UBLOG(logDEBUG1, "MPICalculator::calculate() - started");
+   UBLOG(logDEBUG1, "OMPCalculator::calculate() - started");
+   int calcStep = 0;
    try
-   {      
-      initConnectors();
-
-      int anzLevel = maxLevel-minLevel+1;
-
+   {
       int minInitLevel = minLevel;
       int maxInitLevel = maxLevel-minLevel;
       int straightStartLevel = minInitLevel;
       int internalIterations = 1<<(maxInitLevel-minInitLevel);
       int forwardStartLevel;
       int threshold;
-      int startStep = int(grid->getTimeStep())+1;
 
-      //UBLOG(logINFO, "startStep="<<startStep);
-      int anzCalcSteps = static_cast<int>(endTime);
 #ifdef TIMING
       UbTimer timer;
       double time[6];
 #endif
 
-      //////////////////////////////////////////////////////////////////////////
-      //      UBLOG(logINFO, "Number of connectors = " <<this->localConns[0].size());
-      //////////////////////////////////////////////////////////////////////////
-
-      for (calcStep = startStep; calcStep<=anzCalcSteps+1; calcStep++)
+      for (calcStep = startTimeStep; calcStep<=lastTimeStep+1; calcStep++)
       {
-         grid->coProcess((double)(calcStep-1));
+         coProcess((double)(calcStep-1));
 
          //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -79,14 +72,16 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             //////////////////////////////////////////////////////////////////////////
             applyPreCollisionBC(straightStartLevel, maxInitLevel);
 
-            calculateBlocks(straightStartLevel, maxInitLevel);
-//////////////////////////////////////////////////////////////////////////
+            //do collision for all blocks
+            calculateBlocks(straightStartLevel, maxInitLevel, calcStep);
+            //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[0] = timer.stop();
             UBLOG(logINFO, "calculateBlocks time = "<<time[0]);
 #endif
             //////////////////////////////////////////////////////////////////////////
-            //exchange data between blocks
+                        //////////////////////////////////////////////////////////////////////////
+                        //exchange data between blocks
             exchangeBlockData(straightStartLevel, maxInitLevel);
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -94,9 +89,7 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             UBLOG(logINFO, "exchangeBlockData time = "<<time[1]);
 #endif
             //////////////////////////////////////////////////////////////////////////
-                        //applyBCs(straightStartLevel, maxInitLevel);
             applyPostCollisionBC(straightStartLevel, maxInitLevel);
-
             //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
             time[2] = timer.stop();
@@ -115,7 +108,7 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             {
                if (straightStartLevel<maxInitLevel)
                   exchangeBlockData(straightStartLevel, maxInitLevel);
-           //////////////////////////////////////////////////////////////////////////
+               //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
                time[4] = timer.stop();
                UBLOG(logINFO, "refinement exchangeBlockData time = "<<time[4]);
@@ -133,22 +126,13 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
             }
          }
          //exchange data between blocks for visualization
-         if (mainThread) visScheduler->isDue((double)(calcStep-1));
          if ((int)visScheduler->getNextDueTime()==calcStep)
          {
             exchangeBlockData(straightStartLevel, maxInitLevel);
          }
          //now ghost nodes have actual values
-
-         //dynamic load balancing
-         //sync->wait();
-         //if (mainThread && !loadBalancingComp)
-         //{
-         //   loadBalancingComp = cm->balance();
-         //}
-
       }
-      UBLOG(logDEBUG1, "MPICalculator::calculate() - stoped");
+      UBLOG(logDEBUG1, "OMPCalculator::calculate() - stoped");
    }
    catch (std::exception& e)
    {
@@ -157,40 +141,40 @@ void OMPCalculator::calculate(const double& endTime, CalculationManagerPtr cm)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel)
+void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calcStep)
 {
 #ifdef _OPENMP
-   #pragma omp parallel
+#pragma omp parallel
 #endif
    {
-   Block3DPtr blockTemp;
-   try
-   {
-      //startLevel bis maxInitLevel
-      for (int level = startLevel; level<=maxInitLevel; level++)
+      Block3DPtr blockTemp;
+      try
       {
-         //timer.resetAndStart();
-         //call LBM kernel
-         int size = (int)blocks[level].size();
+         //startLevel bis maxInitLevel
+         for (int level = startLevel; level<=maxInitLevel; level++)
+         {
+            //timer.resetAndStart();
+            //call LBM kernel
+            int size = (int)blocks[level].size();
 #ifdef _OPENMP
-   #pragma omp for schedule(dynamic)
+#pragma omp for schedule(dynamic)
 #endif
             for (int i =0; i<size; i++)
             {
                blockTemp = blocks[level][i];
                blockTemp->getKernel()->calculate();
             }
-         //timer.stop();
-         //UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size() << " collision time = " << timer.getTotalTime());
+            //timer.stop();
+            //UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size() << " collision time = " << timer.getTotalTime());
+         }
       }
-   }
-   catch (std::exception& e)
-   {
-      //error = boost::current_exception();
-      UBLOG(logERROR, e.what());
-      UBLOG(logERROR, blockTemp->toString()<<" step = "<<calcStep);
-      exit(EXIT_FAILURE);
-   }
+      catch (std::exception& e)
+      {
+         //error = boost::current_exception();
+         UBLOG(logERROR, e.what());
+         UBLOG(logERROR, blockTemp->toString()<<" step = "<<calcStep);
+         exit(EXIT_FAILURE);
+      }
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -212,21 +196,21 @@ void OMPCalculator::exchangeBlockData(int startLevel, int maxInitLevel)
 void OMPCalculator::swapDistributions(int startLevel, int maxInitLevel)
 {
 #ifdef _OPENMP
-   #pragma omp parallel
+#pragma omp parallel
 #endif
    {
-   //startLevel bis maxInitLevel
-   for (int level = startLevel; level<=maxInitLevel; level++)
-   {
-      int size = (int)blocks[level].size();
-#ifdef _OPENMP
-   #pragma omp for schedule(dynamic)
-#endif
-      for (int i =0; i<size; i++)
+      //startLevel bis maxInitLevel
+      for (int level = startLevel; level<=maxInitLevel; level++)
       {
-         blocks[level][i]->getKernel()->swapDistributions();
+         int size = (int)blocks[level].size();
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic)
+#endif
+         for (int i =0; i<size; i++)
+         {
+            blocks[level][i]->getKernel()->swapDistributions();
+         }
       }
-   }
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -234,7 +218,7 @@ void OMPCalculator::connectorsPrepareLocal(std::vector< Block3DConnectorPtr >& c
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
-   #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
 #endif
    for (int i =0; i<size; i++)
    {
@@ -247,7 +231,7 @@ void OMPCalculator::connectorsSendLocal(std::vector< Block3DConnectorPtr >& conn
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
-   #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
 #endif
    for (int i =0; i<size; i++)
    {
@@ -260,7 +244,7 @@ void OMPCalculator::connectorsReceiveLocal(std::vector< Block3DConnectorPtr >& c
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
-   #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic)
 #endif
    for (int i =0; i<size; i++)
    {
@@ -326,7 +310,7 @@ void OMPCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
    {
       int size = (int)blocks[level].size();
 #ifdef _OPENMP
-      #pragma omp parallel for
+#pragma omp parallel for
 #endif
       for (int i =0; i<size; i++)
       {
@@ -342,7 +326,7 @@ void OMPCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    {
       int size = (int)blocks[level].size();
 #ifdef _OPENMP
-      #pragma omp parallel for
+#pragma omp parallel for
 #endif
       for (int i =0; i<size; i++)
       {

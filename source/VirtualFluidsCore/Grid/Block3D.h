@@ -1,8 +1,6 @@
 #ifndef BLOCK3D_H
 #define BLOCK3D_H
 
-#include <boost/serialization/shared_ptr.hpp>
-#include <boost/serialization/vector.hpp>
 #include <memory>
 #include <vector>
 #include <map>
@@ -128,32 +126,9 @@ private:
   int level;
   static int counter;
 
-  friend class MPIIORestart1CoProcessor;
-  friend class MPIIORestart2CoProcessor;
-  friend class MPIIORestart11CoProcessor;
-  friend class MPIIORestart21CoProcessor;
+  friend class MPIIORestartCoProcessor;
+  friend class MPIIOMigrationCoProcessor;
 
-
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version)
-  {
-     ar & x1;
-     ar & x2;
-     ar & x3;
-     ar & active;
-     ar & bundle;
-     ar & rank;
-     ar & lrank;
-     ar & part;
-     ar & globalID;
-     ar & localID;
-     ar & level;
-     ar & kernel;
-     ar & interpolationFlagCF;
-     ar & interpolationFlagFC;
-     ar & counter;
-  }
 };
 
 #endif  //BLOCK3D_H

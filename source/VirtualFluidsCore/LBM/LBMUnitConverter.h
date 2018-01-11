@@ -12,9 +12,6 @@
 #include <basics/utilities/UbFileInput.h>
 #include <basics/utilities/UbFileOutput.h>
 
-#include <boost/smart_ptr/shared_ptr.hpp>
-#include <boost/serialization/serialization.hpp>
-
 // LBMUnitConverter conv(  100 /*L_World*/, 1484/*cs_water*/    , 1000/*rho_water*/
 //                         , 1000/*L_LB*/   , 1./srqt(3.)/*cs_Lb*/, 1/*rho_Lb*/ );
 // cout<<conv.toString()<<endl;
@@ -195,21 +192,6 @@ public:
    double factorDensityLbToW;
    double factorPressureLbToW;
 
-   private:
-      friend class boost::serialization::access;
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & factorLengthLbToW;
-         ar & factorTimeLbToW;
-         ar & factorMassLbToW;
-         ar & refRhoLb;
-         ar & factorTimeWithoutDx;
-         ar & factorVelocityLbToW;
-         ar & factorViscosityLbToW;
-         ar & factorDensityLbToW;
-         ar & factorPressureLbToW;
-      }
 };
 
 #endif //LBMUNITCONVERTER_H

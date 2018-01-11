@@ -9,7 +9,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS compiler_type build_type)
       MESSAGE(FATAL_ERROR "before SET_CAB_COMPILER-Macro PROJECT-Macro has to be called")
    ENDIF()
   
-  OPTION(USE_OPENMP "activate open" OFF)
+  OPTION(USE_OPENMP "activate open" ON)
   
   ###############################################################################################################
   ## Flags ruecksetzen

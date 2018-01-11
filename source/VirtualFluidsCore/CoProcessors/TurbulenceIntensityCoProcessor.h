@@ -3,9 +3,10 @@
 
 #include <memory>
 #include <string>
-#include <string>
+#include <vector>
 
 #include "CoProcessor.h"
+#include "UbTuple.h"
 
 class Communicator;
 class Grid3D;

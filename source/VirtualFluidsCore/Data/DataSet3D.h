@@ -1,7 +1,6 @@
 #ifndef DataSet3D_h
 #define DataSet3D_h
 
-#include <boost/serialization/serialization.hpp>
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 #include "DistributionArray3D.h"
@@ -58,19 +57,6 @@ private:
 
    RelaxationFactorArray3DPtr relaxationFactor;
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & fdistributions;
-      ar & averageValues;
-      ar & shearStressValues;
-      ar & averageDencity;
-      ar & averageVelocity;
-      ar & averageFluktuations;
-      ar & averageTriplecorrelations;
-      ar & relaxationFactor;
-   }
 };
 
 inline DistributionArray3DPtr DataSet3D::getFdistributions() const

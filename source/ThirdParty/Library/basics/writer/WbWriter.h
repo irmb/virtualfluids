@@ -27,8 +27,6 @@
 #include <basics/utilities/UbAutoRun.hpp>
 #include <basics/objects/ObFactory.h>
 
-#include <boost/serialization/serialization.hpp>
-
 class WbWriter
 {
 public:
@@ -95,12 +93,7 @@ public:
    virtual std::string writeOctsWithNodeData(const std::string& filename,std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt8 >& cells, std::vector<std::string >& datanames, std::vector<std::vector<double > >& nodedata){ throw UbException(UB_EXARGS,"not implemented for "+(std::string)typeid(*this).name() );  }
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
 
-   }
 };
 
 

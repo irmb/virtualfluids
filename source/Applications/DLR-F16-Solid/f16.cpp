@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 
-#include <boost/pointer_cast.hpp>
-
 #include "VirtualFluids.h"
 #include <omp.h>
 using namespace std;
@@ -11,17 +9,6 @@ void run(string configname)
 {
    try
    {
-//      omp_set_dynamic(0); 
-      omp_set_num_threads(2);
-//#pragma omp parallel
-//      {
-//
-//         // Code inside this region runs in parallel.
-//         printf("Hello!\n");
-//      }
-//
-//      return;
-
       ConfigurationFile   config;
       config.load(configname);
 
@@ -35,7 +22,7 @@ void run(string configname)
       double          restartStep = config.getValue<double>("restartStep");
       double          cpStart = config.getValue<double>("cpStart");
       double          cpStep = config.getValue<double>("cpStep");
-      double          endTime = config.getValue<double>("endTime");
+      int             endTime = config.getValue<int>("endTime");
       double          outTimeStep = config.getValue<double>("outTimeStep");
       double          outTimeStart = config.getValue<double>("outTimeStart");
       double          availMem = config.getValue<double>("availMem");
@@ -170,9 +157,9 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStart));
-      MPIIORestart11CoProcessor rcp(grid, rSch, pathOut, comm);
-      rcp.setLBMKernel(kernel);
-      rcp.setBCProcessor(bcProc);
+      MPIIORestartCoProcessorPtr restartCoProcessor(new MPIIORestartCoProcessor(grid, rSch, pathOut, comm));
+      restartCoProcessor->setLBMKernel(kernel);
+      restartCoProcessor->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
 
       if (myid==0)
@@ -291,74 +278,54 @@ void run(string configname)
             int rank = grid->getRank();
             grid->setRank(0);
 
-            //level 1
-            GbObject3DPtr refCylinderL1(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 55.0));
-            GbSystem3D::writeGeoObject(refCylinderL1.get(), pathOut + "/geo/refCylinderL1", WbWriterVtkXmlBinary::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL1(refCylinderL1, 1);
-            grid->accept(refVisitorCylinderL1);
-            
-            GbObject3DPtr refBoxL1(new GbCuboid3D(15.0, 0.0, -55.0, 1300.0, 100.0, 55.0));
-            if (myid==0) GbSystem3D::writeGeoObject(refBoxL1.get(), pathOut+"/geo/refBoxL1", WbWriterVtkXmlASCII::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL1(refBoxL1, 1);
-            grid->accept(refVisitorBoxL1);
+            int level;
 
-            //level 2
-            GbObject3DPtr refCylinderL2(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 40.0));
+            //level 1
+            level = 1;
+            GbObject3DPtr refCylinderL2(new GbCylinder3D(0.015, 0.0, 0.0, 0.015, 0.1, 0.0, 0.040));
             GbSystem3D::writeGeoObject(refCylinderL2.get(), pathOut + "/geo/refCylinderL2", WbWriterVtkXmlBinary::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL2(refCylinderL2, 2);
+            RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL2(refCylinderL2, level);
             grid->accept(refVisitorCylinderL2);
 
-            GbObject3DPtr refBoxL2(new GbCuboid3D(15.0, 0.0, -45.0, 1100.0, 100.0, 40.0));
+            GbObject3DPtr refBoxL2(new GbCuboid3D(0.015, 0.0, -0.04, 1.100, 0.1, 0.04));
             if (myid==0) GbSystem3D::writeGeoObject(refBoxL2.get(), pathOut+"/geo/refBoxL2", WbWriterVtkXmlASCII::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL2(refBoxL2, 2);
+            RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL2(refBoxL2, level);
             grid->accept(refVisitorBoxL2);
 
-            //level 3
-            GbObject3DPtr refCylinderL3(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 30.0));
-            GbSystem3D::writeGeoObject(refCylinderL3.get(), pathOut + "/geo/refCylinderL3", WbWriterVtkXmlBinary::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL3(refCylinderL3, 3);
-            grid->accept(refVisitorCylinderL3);
+            ////level 2
+            //level = 2;
+            //GbObject3DPtr refCylinderL3(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 30.0));
+            //GbSystem3D::writeGeoObject(refCylinderL3.get(), pathOut + "/geo/refCylinderL3", WbWriterVtkXmlBinary::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL3(refCylinderL3, level);
+            //grid->accept(refVisitorCylinderL3);
 
-            GbObject3DPtr refBoxL3(new GbCuboid3D(15.0, 0.0, -30.0, 700.0, 100.0, 30.0));
-            if (myid==0) GbSystem3D::writeGeoObject(refBoxL3.get(), pathOut+"/geo/refBoxL3", WbWriterVtkXmlASCII::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL3(refBoxL3, 3);
-            grid->accept(refVisitorBoxL3);
+            //GbObject3DPtr refBoxL3(new GbCuboid3D(15.0, 0.0, -30.0, 700.0, 100.0, 30.0));
+            //if (myid==0) GbSystem3D::writeGeoObject(refBoxL3.get(), pathOut+"/geo/refBoxL3", WbWriterVtkXmlASCII::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL3(refBoxL3, level);
+            //grid->accept(refVisitorBoxL3);
 
-            //level 4
-            GbObject3DPtr refCylinderL4(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 25.0));
-            GbSystem3D::writeGeoObject(refCylinderL4.get(), pathOut + "/geo/refCylinderL4", WbWriterVtkXmlBinary::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL4(refCylinderL4, 4);
-            grid->accept(refVisitorCylinderL4);
+            ////level 3
+            //level = 3;
+            //GbObject3DPtr refCylinderL4(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 25.0));
+            //GbSystem3D::writeGeoObject(refCylinderL4.get(), pathOut + "/geo/refCylinderL4", WbWriterVtkXmlBinary::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL4(refCylinderL4, level);
+            //grid->accept(refVisitorCylinderL4);
 
-            GbObject3DPtr refBoxL4(new GbCuboid3D(15.0, 0.0, -25.0, 400.0, 100.0, 25.0));
-            if (myid==0) GbSystem3D::writeGeoObject(refBoxL4.get(), pathOut+"/geo/refBoxL4", WbWriterVtkXmlASCII::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL4(refBoxL4, 4);
-            grid->accept(refVisitorBoxL4);
+            //GbObject3DPtr refBoxL4(new GbCuboid3D(15.0, 0.0, -25.0, 400.0, 100.0, 25.0));
+            //if (myid==0) GbSystem3D::writeGeoObject(refBoxL4.get(), pathOut+"/geo/refBoxL4", WbWriterVtkXmlASCII::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL4(refBoxL4, level);
+            //grid->accept(refVisitorBoxL4);
 
-            //level 5
-            //GbObject3DPtr refCylinderL5(new GbCylinder3D(120.0, 0.0, 1.5, 120.0, 100.0, 1.5, 21.5));
-            //GbSystem3D::writeGeoObject(refCylinderL5.get(), pathOut + "/geo/refCylinderL5", WbWriterVtkXmlBinary::getInstance());
-            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL5(refCylinderL5, 5);
-            //grid->accept(refVisitorCylinderL5);
+            ////level 4
+            //level = 4;
+            //GbObject3DPtr refBoxL5(new GbCuboid3D(120.0, 0.0, -9.0, 320.0, 100.0, 18.0));
+            //if (myid==0) GbSystem3D::writeGeoObject(refBoxL5.get(), pathOut+"/geo/refBoxL5", WbWriterVtkXmlASCII::getInstance());
+            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL5(refBoxL5, level);
+            //grid->accept(refVisitorBoxL5);
 
-            GbObject3DPtr refBoxL5(new GbCuboid3D(120.0, 0.0, -5.0, 320.0, 100.0, 18.0));
-            if (myid==0) GbSystem3D::writeGeoObject(refBoxL5.get(), pathOut+"/geo/refBoxL5", WbWriterVtkXmlASCII::getInstance());
-            RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL5(refBoxL5, 5);
-            grid->accept(refVisitorBoxL5);
+            //last level
+            //std::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
 
-            std::dynamic_pointer_cast<D3Q27TriFaceMeshInteractor>(fngIntrWhole)->refineBlockGridToLevel(refineLevel, startDistance, refineDistance);
-
-            //level 4
-            //GbObject3DPtr teBoxL5(new GbCuboid3D(200.0, 0.0, -20.0, 400.0, 100.0, 20.0));
-            //if (myid==0) GbSystem3D::writeGeoObject(teBoxL5.get(), pathOut+"/geo/teBoxL5", WbWriterVtkXmlASCII::getInstance());
-            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorTeBoxL5(teBoxL5, 4);
-            //grid->accept(refVisitorTeBoxL5);
-
-            //level 5
-            //GbObject3DPtr teBoxL6(new GbCuboid3D(270.0, 0.0, -3.0, 320.0, 100.0, 10.0));
-            //if (myid==0) GbSystem3D::writeGeoObject(teBoxL6.get(), pathOut+"/geo/teBoxL6", WbWriterVtkXmlASCII::getInstance());
-            //RefineCrossAndInsideGbObjectBlockVisitor refVisitorTeBoxL6(teBoxL6, 5);
-            //grid->accept(refVisitorTeBoxL6);
 
             grid->setRank(rank);
 
@@ -539,8 +506,8 @@ void run(string configname)
          grid->accept(setConnsVisitor);
 
          //domain decomposition for threads
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
+         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
+         //grid->accept(pqPartVisitor);
 
          //bcVisitor should be accept after initialization!!!!
          grid->accept(bcVisitor);
@@ -568,10 +535,10 @@ void run(string configname)
          ////sponge layer
          ////////////////////////////////////////////////////////////////////////////
 
-         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
-         grid->accept(slVisitorX1max);
+         //GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         //SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         //grid->accept(slVisitorX1max);
 
          //GbCuboid3DPtr spongeLayerX1min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1+75, g_maxX2+blockLength, g_maxX3+blockLength));
          //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1min.get(), pathOut+"/geo/spongeLayerX1min", WbWriterVtkXmlASCII::getInstance());
@@ -593,7 +560,7 @@ void run(string configname)
       }
       else
       {
-         rcp.restart((int)restartStep);
+         restartCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
@@ -602,13 +569,10 @@ void run(string configname)
 
          grid->accept(bcVisitor);
 
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
-
-         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-5.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
-         grid->accept(slVisitorX1max);
+         //GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-5.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         //SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         //grid->accept(slVisitorX1max);
       }
 
       UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
@@ -622,7 +586,7 @@ void run(string configname)
          UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
       }
 
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      WriteMacroscopicQuantitiesCoProcessorPtr writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       UbSchedulerPtr tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
       TimeAveragedValuesCoProcessorPtr tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
@@ -634,15 +598,17 @@ void run(string configname)
       UbSchedulerPtr stepMV(new UbScheduler(1));
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
-      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
-      //omp_set_num_threads(4);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::OMP));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, stepSch));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
+      omp_set_num_threads(2);
+      CalculatorPtr calculator(new OMPCalculator());
+      calculator->setGrid(grid);
+      calculator->setLastTimeStep(endTime);
+      calculator->setVisScheduler(stepSch);
+      calculator->addCoProcessor(restartCoProcessor);
+      calculator->addCoProcessor(writeMQCoProcessor);
+      
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
+      calculator->calculate();
       if (myid==0) UBLOG(logINFO, "Simulation-end");
 
       if (myid==0)

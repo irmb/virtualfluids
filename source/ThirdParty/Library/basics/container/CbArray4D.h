@@ -30,9 +30,6 @@
 #include <basics/utilities/UbEqual.h>
 #include <algorithm>
 #include <typeinfo>
-#include <boost/serialization/serialization.hpp>
-
-
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
@@ -447,16 +444,6 @@ protected:
    indexer_type indexer;
    std::vector< value_type > data;
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & nx1;
-      ar & nx2;
-      ar & nx3;
-      ar & nx4;
-      ar & data;
-   }
 };
 
 #endif //CBARRAY4D_H

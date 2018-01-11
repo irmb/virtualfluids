@@ -7,8 +7,6 @@
 
 #include <MuParser/include/muParser.h>
 
-#include <boost/serialization/serialization.hpp>
-
 #include "ILBMKernel.h"
 
 class LBMKernel;
@@ -104,22 +102,6 @@ protected:
     int nx1, nx2, nx3;
 
 private:
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    {
-        ar & collFactor;
-        ar & ghostLayerWidth;
-        ar & compressible;
-        ar & withForcing;
-        //ar & withSpongeLayer;
-        ar & deltaT;
-        ar & dataSet;
-        ar & bcProcessor;
-        ar & ix1 & ix2 & ix3;
-        ar & nx1 & nx2 & nx3;
-    }
-
     void checkFunction(mu::Parser fct);
 };
 

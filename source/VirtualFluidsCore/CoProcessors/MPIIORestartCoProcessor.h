@@ -1,23 +1,24 @@
 #ifndef _MPIIORestart11CoProcessor_H_
 #define _MPIIORestart11CoProcessor_H_
 
-#include "mpi.h"
+#include <mpi.h>
+#include <memory>
+#include <string>
 
 #include "CoProcessor.h"
-#include "Communicator.h"
-#include "WbWriter.h"
 
+class Grid3D;
+class UbScheduler;
+class Communicator;
+class BCProcessor;
+class LBMKernel;
 
-#include "UbScheduler.h"
-#include "LBMKernel.h"
-#include "BCProcessor.h"
-
-class MPIIORestart11CoProcessor;
-typedef std::shared_ptr<MPIIORestart11CoProcessor> MPIIORestart11CoProcessorPtr;
+class MPIIORestartCoProcessor;
+typedef std::shared_ptr<MPIIORestartCoProcessor> MPIIORestartCoProcessorPtr;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
-class MPIIORestart11CoProcessor: public CoProcessor
+class MPIIORestartCoProcessor: public CoProcessor
 {
    //! \struct GridParam
    //! \brief Structure describes parameters of the grid
@@ -145,8 +146,8 @@ class MPIIORestart11CoProcessor: public CoProcessor
    };
 
 public:
-   MPIIORestart11CoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, CommunicatorPtr comm);
-   virtual ~MPIIORestart11CoProcessor();
+   MPIIORestartCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm);
+   virtual ~MPIIORestartCoProcessor();
    //! Each timestep writes the grid into the files
    void process(double step);
    //! Reads the grid from the files before grid reconstruction
@@ -163,34 +164,24 @@ public:
    void readDataSet(int step);
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
    void readBoundaryConds(int step);
-   //! The function sets number of ranks that read simultaneously 
-   void setChunk(int val);
    //! The function sets LBMKernel
-   void setLBMKernel(LBMKernelPtr kernel);
+   void setLBMKernel(std::shared_ptr<LBMKernel> kernel);
    //!The function sets BCProcessor
-   void setBCProcessor(BCProcessorPtr bcProcessor);
+   void setBCProcessor(std::shared_ptr<BCProcessor> bcProcessor);
    //!The function truncates the data files
    void clearAllFiles(int step);
 
 protected:
    std::string path;
-   CommunicatorPtr comm;
+   std::shared_ptr<Communicator> comm;
    bool mpiTypeFreeFlag;
 
 private:
 	MPI_Datatype gridParamType, block3dType, dataSetParamType, dataSetType, dataSetDoubleType, boundCondParamType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
    dataSetParam dataSetParamStr;
    boundCondParam boundCondParamStr;
-   int chunk;
-   LBMKernelPtr lbmKernel;
-   BCProcessorPtr bcProcessor;
-
-   /*DataSet dataSetArrayGW[128];
-   std::vector<double> doubleValuesArrayGW;
-   std::vector<BoundaryCondition> bcVectorGW;
-   std::vector<int> bcindexmatrixVGW;
-   std::vector<int> indexContainerVGW;*/
-
+   std::shared_ptr<LBMKernel> lbmKernel;
+   std::shared_ptr<BCProcessor> bcProcessor;
 };
 
 #endif 

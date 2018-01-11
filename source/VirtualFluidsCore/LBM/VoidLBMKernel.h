@@ -16,13 +16,5 @@ public:
 protected:
 private:
    int nx1, nx2, nx3;
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<LBMKernel>(*this);
-      ar & nx1 & nx2 & nx3;
-   }
-
 };
 #endif // VoidLBMKernel_h__

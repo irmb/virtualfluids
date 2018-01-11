@@ -2,7 +2,6 @@
 #define DistributionArray3D_H
 
 #include <LBMSystem.h>
-#include <boost/serialization/serialization.hpp>
 
 class DistributionArray3D;
 typedef std::shared_ptr<DistributionArray3D> DistributionArray3DPtr;
@@ -28,10 +27,7 @@ public:
    virtual void swap() = 0;
 protected:
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {}
+
 };
 
 #endif

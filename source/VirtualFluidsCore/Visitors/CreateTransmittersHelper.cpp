@@ -1,7 +1,6 @@
 #include "CreateTransmittersHelper.h"
 #include <D3Q27System.h>
 #include <Communicator.h>
-#include <StringUtil.hpp>
 #include <string>
 
 #ifdef VF_FETOL
@@ -130,13 +129,13 @@ int CreateTransmittersHelper::generateMPITag(int srcLevel, int tgtLevel)
 string CreateTransmittersHelper::generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel)
 {
    std::string str;
-   str = StringUtil::toString<int>(srcLevel);
+   str = UbSystem::toString<int>(srcLevel);
    str += "#";
-   str += StringUtil::toString<int>(tgtLevel);
+   str += UbSystem::toString<int>(tgtLevel);
    str += "#";
-   str += StringUtil::toString<int>(srcRank);
+   str += UbSystem::toString<int>(srcRank);
    str += "#";
-   str += StringUtil::toString<int>(tgtRank);
+   str += UbSystem::toString<int>(tgtRank);
 
    return str;
 }
@@ -145,15 +144,15 @@ string CreateTransmittersHelper::generateVectorKey(int x1, int x2, int x3, int d
 {
    std::string str;
 
-   str += StringUtil::toString<int>(x1);
+   str += UbSystem::toString<int>(x1);
    str += "#";
-   str += StringUtil::toString<int>(x2);
+   str += UbSystem::toString<int>(x2);
    str += "#";
-   str += StringUtil::toString<int>(x3);
+   str += UbSystem::toString<int>(x3);
    str += "#";
-   str += StringUtil::toString<int>(dir);
+   str += UbSystem::toString<int>(dir);
    str += "#";
-   str += StringUtil::toString<int>(ib);
+   str += UbSystem::toString<int>(ib);
 
    return str;
 }

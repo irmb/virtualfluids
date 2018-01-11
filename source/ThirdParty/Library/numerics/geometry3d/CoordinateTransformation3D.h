@@ -24,7 +24,6 @@
 class CoordinateTransformation3D;
 typedef std::shared_ptr<CoordinateTransformation3D> CoordinateTransformation3DPtr;
 
-#include <boost/serialization/serialization.hpp>
 
 //description:     x1/x2/x3 = alt, x1*/x2*/x3* = neu
 //   x2      
@@ -155,30 +154,7 @@ private:
    bool   transformation;
 
    friend class MPIIORestartCoProcessor;
-   friend class MPIIORestart1CoProcessor;
-   friend class MPIIORestart2CoProcessor;
-   friend class MPIIORestart11CoProcessor;
-   friend class MPIIORestart21CoProcessor;
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & Tx1;   ar & Tx2; ar & Tx3; 
-      ar & Sx1;   ar & Sx2; ar & Sx3; 
-      ar & alpha; ar & beta; ar & gamma;
-
-      ar & toX1factorX1; ar & toX1factorX2; ar & toX1factorX3; ar & toX1delta;
-      ar & toX2factorX1; ar & toX2factorX2; ar & toX2factorX3; ar & toX2delta;
-      ar & toX3factorX1; ar & toX3factorX2; ar & toX3factorX3; ar & toX3delta;
-
-      ar & fromX1factorX1; ar & fromX1factorX2; ar & fromX1factorX3; ar & fromX1delta;
-      ar & fromX2factorX1; ar & fromX2factorX2; ar & fromX2factorX3; ar & fromX2delta;
-      ar & fromX3factorX1; ar & fromX3factorX2; ar & fromX3factorX3; ar & fromX3delta;
-
-      ar & active;
-      ar & transformation;
-   }
+   friend class MPIIOMigrationCoProcessor;
 };
 
 #endif //COORDINATETRANSFORMATION3D_H

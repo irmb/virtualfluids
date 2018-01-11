@@ -6,9 +6,6 @@
 #include <map>
 #include <memory>
 
-#include <boost/signals2/signal.hpp>
-#include <boost/serialization/vector.hpp>
-
 #include <basics/utilities/Vector3D.h>
 #include <basics/utilities/UbTuple.h>
 #include <basics/utilities/UbKeys.h>
@@ -39,10 +36,6 @@ public:
    typedef std::map< int, std::shared_ptr<Block3D> >    BlockIDMap;
    typedef std::vector<Block3DMap>        LevelSet;
    typedef std::vector<std::shared_ptr<Interactor3D> >   Interactor3DSet;
-   //typedef std::set<ObserverPtr>     GridObserversSet;
-
-   typedef boost::signals2::signal<void (double)>  signal_t;
-   typedef boost::signals2::connection  connection_t;
 
 public:
    Grid3D();
@@ -138,11 +131,6 @@ public:
    void accept(Grid3DVisitor& gridVisitor);
    void accept(std::shared_ptr<Grid3DVisitor> gridVisitor);
    //////////////////////////////////////////////////////////////////////////
-   //post processing
-   connection_t connect(signal_t::slot_function_type subscriber);
-   void disconnect(connection_t subscriber);
-   void coProcess(double step);
-   //////////////////////////////////////////////////////////////////////////
    //bundle and rank for distributed memory
    void setBundle(int bundle);
    int  getBundle() const;
@@ -233,9 +221,7 @@ private:
    LevelSet levelSet;
    BlockIDMap blockIdMap;
    Interactor3DSet interactors;
-   //GridObserversSet observers;
 
-   signal_t sig;
    int rank;
    int bundle;
    
@@ -256,28 +242,6 @@ private:
 
    double timeStep;
    
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & nx1;
-      ar & nx2;
-      ar & nx3;
-      ar & orgDeltaX;
-      ar & trafo;
-      ar & blockNx1;
-      ar & blockNx2;
-      ar & blockNx3;
-      ar & rank;
-      ar & bundle;
-      ar & periodicX1;
-      ar & periodicX2;
-      ar & periodicX3;
-      ar & levelSet;
-      ar & blockIdMap;
-      ar & timeStep;
-      ar & interactors;
-   }
 };
 
 #endif 

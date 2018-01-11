@@ -66,21 +66,6 @@ private:
    int maxInitLevel;
    std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
    enum Values{AvVx = 0, AvVy = 1, AvVz = 2, AvSxx = 3, AvSyy = 4, AvSzz = 5, AvSxy = 6, AvSyz = 7, AvSxz = 8, normalX1 = 9, normalX2 = 10, normalX3 = 11, normalq = 12,numberOfPoint=13}; 
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<CoProcessor>(*this);
-      ar & path;
-      ar & normals;
-      ar & interactors;
-      ar & blockVector;
-      ar & minInitLevel;
-      ar & maxInitLevel;
-      ar & gridRank;
-      ar & writer;
-   }
 };
 
 

@@ -7,9 +7,6 @@
 #include "UbSystem.h"
 #include "UbTuple.h"
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/shared_ptr.hpp>
-
 class Block3D;
 class Grid3D;
 class UbFileInput;
@@ -102,13 +99,6 @@ public:
    static const int CHANGENOTNECESSARY ;//= (1<<5); //32
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & bcBlocks;
-      ar & solidBlocks;
-   }
 
 };
 

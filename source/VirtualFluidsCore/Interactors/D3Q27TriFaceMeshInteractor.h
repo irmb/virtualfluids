@@ -105,13 +105,6 @@ protected:
    enum FLAGS { BC_FLAG, UNDEF_FLAG, FLUID_FLAG, SOLID_FLAG, OLDSOLID_FLAG };
    void recursiveGridFill(CbArray3D<FLAGS>& flagfield, const short& xs, const short& ys, const short& zs, const FLAGS& type);
    void iterativeGridFill(CbArray3D<FLAGS>& flagfield, const short& xs, const short& ys, const short& zs, const FLAGS& type); 
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<D3Q27Interactor>(*this);
-   }
 };
 
 

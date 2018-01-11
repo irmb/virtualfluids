@@ -1,25 +1,24 @@
-#ifndef _MPIIORestart2CoProcessor_H_
-#define _MPIIORestart2CoProcessor_H_
+#ifndef _MPIIORestart21CoProcessor_H_
+#define _MPIIORestart21CoProcessor_H_
 
+#include <mpi.h>
 #include <memory>
 #include <string>
 
-#include "mpi.h"
-
 #include "CoProcessor.h"
 
-class Communicator;
 class Grid3D;
 class UbScheduler;
-class LBMKernel;
+class Communicator;
 class BCProcessor;
+class LBMKernel;
 
-class MPIIORestart2CoProcessor;
-typedef std::shared_ptr<MPIIORestart2CoProcessor> MPIIORestart2CoProcessorPtr;
+class MPIIOMigrationCoProcessor;
+typedef std::shared_ptr<MPIIOMigrationCoProcessor> MPIIOMigrationCoProcessorPtr;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
-class MPIIORestart2CoProcessor: public CoProcessor
+class MPIIOMigrationCoProcessor: public CoProcessor
 {
    //! \struct GridParam
    //! \brief Structure describes parameters of the grid
@@ -39,19 +38,6 @@ class MPIIORestart2CoProcessor: public CoProcessor
       bool periodicX3;
       bool active;
       bool transformation;
-    };
-
-   //! \struct blockParam
-   //! \brief Structure describes parameters of the block that are equal in all blocks
-   //! \details The structure used to store some parameters needed to restore dataSet arrays
-   struct BlockParam
-    {
-       int nx1;   //	to find the right block
-       int nx2;
-       int nx3;
-       int nx[9][4]; // 9 arrays x (nx1, nx2, nx3, nx4)
-       int doubleCountInBlock;   // how many double-values are in all arrays dataSet in one (any) block
-       int bcindexmatrix_count;	// how many bcindexmatrix-values are in one (any) block 
     };
 
    //! \struct Block3d
@@ -75,6 +61,18 @@ class MPIIORestart2CoProcessor: public CoProcessor
 		int counter;
 		bool active;
 	};
+
+   //! \struct dataSetParam
+   //! \brief Structure describes parameters of the dataSet that are equal in all blocks
+   //! \details The structure used to store some parameters needed to restore dataSet arrays
+   struct dataSetParam
+   {
+      int nx1; 
+      int nx2;
+      int nx3;
+      int nx[9][4]; // 9 arrays x (nx1, nx2, nx3, nx4)
+      int doubleCountInBlock;   // how many double-values are in all arrays dataSet in one (any) block
+   };
 
    //! \struct dataSet
    //! \brief Structure containes information identifying the block 
@@ -118,6 +116,17 @@ class MPIIORestart2CoProcessor: public CoProcessor
       char algorithmType;
    };
 
+   //! \struct boundCondParam
+   //! \brief Structure describes parameters of the boundaryConditions that are equal in all blocks
+   //! \details The structure used to store some parameters needed to restore boundaryConditions arrays
+   struct boundCondParam
+   {
+      int nx1;   
+      int nx2;
+      int nx3;
+      int bcindexmatrixCount;	// how many bcindexmatrix-values in one (any) block 
+   };
+
    //! \struct BCAdd
    //! \brief Structure containes information identifying the block 
    //! and some parameters of the arrays of boundary conditions that are equal in all blocks
@@ -135,8 +144,8 @@ class MPIIORestart2CoProcessor: public CoProcessor
    };
 
 public:
-   MPIIORestart2CoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm);
-   virtual ~MPIIORestart2CoProcessor();
+   MPIIOMigrationCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm);
+   virtual ~MPIIOMigrationCoProcessor();
    //! Each timestep writes the grid into the files
    void process(double step);
    //! Reads the grid from the files before grid reconstruction
@@ -153,8 +162,6 @@ public:
    void readDataSet(int step);
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
    void readBoundaryConds(int step);
-   //! The function sets number of ranks that read simultaneously 
-   void setChunk(int val);
    //! The function sets LBMKernel
    void setLBMKernel(std::shared_ptr<LBMKernel> kernel);
    //!The function sets BCProcessor
@@ -168,14 +175,11 @@ protected:
    bool mpiTypeFreeFlag;
 
 private:
-	MPI_Datatype gridParamType, blockParamType, block3dType, dataSetType, dataSetDoubleType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
-   BlockParam blockParamStr;
-   int chunk;
+	MPI_Datatype gridParamType, block3dType, dataSetParamType, dataSetType, dataSetDoubleType, boundCondParamType, boundCondType, boundCondTypeAdd, bcindexmatrixType;
+   dataSetParam dataSetParamStr;
+   boundCondParam boundCondParamStr;
    std::shared_ptr<LBMKernel> lbmKernel;
    std::shared_ptr<BCProcessor> bcProcessor;
-
-   DataSet* dataSetArrayTest;
-
 };
 
 #endif 

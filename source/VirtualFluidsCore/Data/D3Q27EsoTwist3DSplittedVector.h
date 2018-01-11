@@ -5,8 +5,6 @@
 #include "D3Q27System.h"
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/base_object.hpp>
 
 class D3Q27EsoTwist3DSplittedVector : public EsoTwist3D
 {
@@ -63,24 +61,9 @@ protected:
    CbArray3D<LBMReal,IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
    size_t NX1, NX2, NX3;
 
-   friend class MPIIORestart1CoProcessor;
-   friend class MPIIORestart2CoProcessor;
-   friend class MPIIORestart11CoProcessor;
-   friend class MPIIORestart21CoProcessor;
+   friend class MPIIORestartCoProcessor;
+   friend class MPIIOMigrationCoProcessor;
 
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object< EsoTwist3D >(*this);
-      ar & NX1; 
-      ar & NX2; 
-      ar & NX3;
-      ar &  localDistributions;
-      ar &  nonLocalDistributions;
-      ar &  zeroDistributions;
-   }
 };
 
 #endif

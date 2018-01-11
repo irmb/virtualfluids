@@ -11,6 +11,7 @@
 #include "LBMKernel.h"
 #include "BCArray3D.h"
 #include "EsoTwist3D.h"
+#include "DistributionArray3D.h"
 
 CalculateForcesCoProcessor::CalculateForcesCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
                                                     const std::string &path,
@@ -183,7 +184,7 @@ void CalculateForcesCoProcessor::calculateForces()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3, DistributionArray3DPtr distributions, BoundaryConditionsPtr bc)
+UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3,  std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc)
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
    

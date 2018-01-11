@@ -13,9 +13,6 @@
 #include <set>
 #include <memory>
 
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/set.hpp>
-
 #include "UbException.h"
 #include "UbTuple.h"
 #include "GbPoint3D.h"
@@ -90,14 +87,6 @@ protected:
    double rayX2[D3Q27System::FENDDIR+1];
    double rayX3[D3Q27System::FENDDIR+1];
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<Interactor3D>(*this);
-      ar & bcNodeIndicesMap;
-      ar & bcAdapters;
-   }
 };
 
 

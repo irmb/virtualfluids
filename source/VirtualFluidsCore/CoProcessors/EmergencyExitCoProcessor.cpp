@@ -4,12 +4,12 @@
 #include "UbLogger.h"
 #include "UbScheduler.h"
 #include "Communicator.h"
-#include "RestartCoProcessor.h"
+#include "MPIIORestartCoProcessor.h"
 #include "Grid3D.h"
 
 EmergencyExitCoProcessor::EmergencyExitCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
                                                         const std::string& path, 
-                                                        RestartCoProcessorPtr rp, CommunicatorPtr comm) :
+                                                        MPIIORestartCoProcessorPtr rp, CommunicatorPtr comm) :
                                                         CoProcessor(grid, s),
                                                         path(path),
                                                         rp(rp),
@@ -42,7 +42,7 @@ void EmergencyExitCoProcessor::collectData( double step )
 {
    if(readMetafile())
    {
-      rp->doCheckPoint((int)step);
+      rp->process((int)step);
       if(comm->getProcessID() == comm->getRoot()) UBLOG(logINFO,"EmergencyExitCoProcessor save step: " << step);
       comm->barrier();
       exit(EXIT_SUCCESS);

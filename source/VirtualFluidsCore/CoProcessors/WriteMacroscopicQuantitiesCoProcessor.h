@@ -17,7 +17,7 @@ class WbWriter;
 class Block3D;
 
 class WriteMacroscopicQuantitiesCoProcessor;
-typedef std::shared_ptr<WriteMacroscopicQuantitiesCoProcessor> MacroscopicQuantitiesCoProcessorPtr;
+typedef std::shared_ptr<WriteMacroscopicQuantitiesCoProcessor> WriteMacroscopicQuantitiesCoProcessorPtr;
 
 class WriteMacroscopicQuantitiesCoProcessor : public CoProcessor 
 {
@@ -54,20 +54,6 @@ private:
 
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
-
-   //friend class boost::serialization::access;
-   //template<class Archive>
-   //void serialize(Archive & ar, const unsigned int version)
-   //{
-   //   ar & boost::serialization::base_object<CoProcessor>(*this);
-   //   ar & path;
-   //   ar & conv;
-   //   ar & blockVector;
-   //   ar & minInitLevel;
-   //   ar & maxInitLevel;
-   //   ar & gridRank;
-   //   ar & writer;
-   //}
 };
 
 #endif

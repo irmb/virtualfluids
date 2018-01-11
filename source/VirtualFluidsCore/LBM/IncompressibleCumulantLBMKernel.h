@@ -6,7 +6,6 @@
 #include "LBMKernel.h"
 #include "BCProcessor.h"
 #include "D3Q27System.h"
-#include <boost/serialization/export.hpp>
 #include "basics/utilities/UbTiming.h"
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
@@ -36,15 +35,6 @@ public:
    double getCalculationTime();
 
 protected:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<LBMKernel>(*this);
-      ar & OxyyMxzz; 
-      ar & parameter;
-   }
-
    virtual void collideAll();  
    virtual void init();
    LBMReal f[D3Q27System::ENDF+1];

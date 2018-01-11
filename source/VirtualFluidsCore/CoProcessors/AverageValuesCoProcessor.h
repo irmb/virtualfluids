@@ -73,25 +73,5 @@ private:
 
    typedef void (*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/,LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<CoProcessor>(*this);
-      ar & path;
-      ar & blockVector;
-      ar & minInitLevel;
-      ar & maxInitLevel;
-      ar & gridRank;
-      ar & writer;
-      ar & resetStepRMS;
-      ar & resetStepMeans;
-      ar & averageInterval;
-      ar & averageScheduler;  
-      ar & resetSchedulerRMS; 
-      ar & resetSchedulerMeans;
-      ar & compressible;
-   }
 };
 #endif

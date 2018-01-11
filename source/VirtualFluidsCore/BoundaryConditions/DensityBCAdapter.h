@@ -69,13 +69,7 @@ private:
    std::vector<BCFunction> densBCs;
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<BCAdapter>(*this);
-      ar & densBCs;
-   }
+
 };
 
 #endif 

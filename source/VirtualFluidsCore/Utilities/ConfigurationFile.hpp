@@ -2,6 +2,7 @@
 #define Configuration_h__
 
 #include <map>
+#include <sstream>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -47,14 +48,8 @@ public:
    // check if value associated with given key exists
    bool contains(const std::string& key) const;
 
-   // get value associated with given key
-   
-   int    getInt(const std::string& key) const;
-   long   getLong(const std::string& key) const;
-   float  getFloat(const std::string& key) const;
-   double getDouble(const std::string& key) const;
-   bool   getBool(const std::string& key) const;
    std::string  getString(const std::string& key) const;
+
    template<class T>
    std::vector<T> getVector(const std::string& key) const;
 
@@ -148,41 +143,6 @@ std::string ConfigurationFile::getString(const std::string& key) const
    }
 }
 //////////////////////////////////////////////////////////////////////////
-int ConfigurationFile::getInt(const std::string& key) const
-{
-   std::string str = getString(key);
-   int value = std::atoi(str.c_str());
-   return value;
-}
-//////////////////////////////////////////////////////////////////////////
-long ConfigurationFile::getLong(const std::string& key) const
-{
-   std::string str = getString(key);
-   long value = std::atol(str.c_str());
-   return value;
-}
-//////////////////////////////////////////////////////////////////////////
-float ConfigurationFile::getFloat(const std::string& key) const
-{
-   std::string str = getString(key);
-   float value = (float)std::atof(str.c_str());
-   return value;
-}
-//////////////////////////////////////////////////////////////////////////
-double ConfigurationFile::getDouble(const std::string& key) const
-{
-   std::string str = getString(key);
-   double value = std::atof(str.c_str());
-   return value;
-}
-//////////////////////////////////////////////////////////////////////////
-bool ConfigurationFile::getBool(const std::string& key) const
-{
-   std::string str = getString(key);
-   bool value = (str == "true");
-   return value;
-}
-//////////////////////////////////////////////////////////////////////////
 std::string ConfigurationFile::trim(const std::string& str)
 {
    size_t first = str.find_first_not_of(" \t\n\r");
@@ -204,8 +164,7 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
 {
    std::string str = getString(key);
    std::vector<T> v;
-   std::vector<std::string> strings;
-   boost::algorithm::split(strings, str, boost::algorithm::is_any_of("\t\n\r;, "));
+   std::vector<std::string> strings = split(str, ' ');
    for(std::string s : strings)
    {
       if (s != "")
@@ -214,6 +173,17 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
       }
    }
    return v;
+}
+//////////////////////////////////////////////////////////////////////////
+std::vector<std::string> split(const std::string &s, char delim)
+{
+   std::vector<std::string> result;
+   std::stringstream ss(s);
+   std::string item;
+   while (getline(ss, item, delim)) {
+      result.push_back(item);
+   }
+   return result;
 }
 //////////////////////////////////////////////////////////////////////////
 template<class T>

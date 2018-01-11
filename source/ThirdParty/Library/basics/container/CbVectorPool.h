@@ -91,7 +91,7 @@ public:
       {
          CbVector< value_type >& vec = *it->second;
          CbVectorAllocatorPool< value_type >& allocator = dynamic_cast< CbVectorAllocatorPool< value_type >& >(*vec.getAllocator() );
-         if(allocator.ptrVectorPool != this) UB_THROW( UbException(UB_EXARGS,"CbVectorAllocator is part of different Pool") );
+         //if(allocator.ptrVectorPool != this) UB_THROW( UbException(UB_EXARGS,"CbVectorAllocator is part of different Pool") );
 
          //allocator daten reseten
          allocator.ptrVectorPool    = NULL;

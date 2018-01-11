@@ -1,7 +1,6 @@
 #if defined VF_ZOLTAN && defined VF_MPI
 
 #include "ZoltanPartitioner.h"
-#include "StringUtil.hpp"
 #include <iostream>
 #include <stdlib.h>
 
@@ -45,7 +44,7 @@ void ZoltanPartitioner::partition()
    Zoltan_Set_Param(zz, "NUM_GID_ENTRIES", "1"); 
    Zoltan_Set_Param(zz, "NUM_LID_ENTRIES", "1");
    Zoltan_Set_Param(zz, "RETURN_LISTS", "ALL");
-   string nparts(StringUtil::toString<int>(numberOfLocalParts));
+   string nparts(UbSystem::toString<int>(numberOfLocalParts));
    Zoltan_Set_Param(zz, "NUM_LOCAL_PARTS", nparts.c_str());
 
    /* Query functions - defined in simpleQueries.h */

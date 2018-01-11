@@ -7,9 +7,6 @@
 #ifndef D3Q27BCFUNCTION_H
 #define D3Q27BCFUNCTION_H
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/split_member.hpp>
-
 #include <basics/utilities/UbInfinity.h>
 
 #include <MuParser/include/muParser.h>
@@ -83,35 +80,7 @@ protected:
    double endtime;
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void save(Archive & ar, const unsigned int version) const
-   {
-      mu::string_type expr = function.GetExpr();
-      mu::valmap_type constants = function.GetConst();
-      ar & expr;
-      ar & constants;
 
-      ar & starttime;
-      ar & endtime;
-   }
-   template<class Archive>
-   void load(Archive & ar, const unsigned int version)
-   {
-      mu::string_type expr;
-      mu::valmap_type constants;
-      ar & expr;
-      ar & constants;
-      function.SetExpr(expr);
-      for (mu::valmap_type::iterator pos = constants.begin(); pos!=constants.end(); ++pos)
-         function.DefineConst(pos->first, pos->second);
-
-      function.InitConst();
-
-      ar & starttime;
-      ar & endtime;
-   }
-   BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 #endif //D3Q27BCFUNCTION_H

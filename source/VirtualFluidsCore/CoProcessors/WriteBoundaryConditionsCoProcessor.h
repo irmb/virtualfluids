@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "CoProcessor.h"
+#include "UbTuple.h"
 
 class Communicator;
 class Grid3D;
@@ -47,20 +48,5 @@ private:
    int maxInitLevel;
    int gridRank;
    std::shared_ptr<Communicator> comm;
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<CoProcessor>(*this);
-      ar & path;
-      ar & conv;
-      ar & bcInformation;
-      ar & blockVector;
-      ar & minInitLevel;
-      ar & maxInitLevel;
-      ar & gridRank;
-      ar & writer;
-   }
 };
 #endif

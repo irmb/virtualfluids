@@ -6,7 +6,6 @@
 
 #include <typeinfo>
 
-#include <boost/serialization/serialization.hpp>
 #include <memory>
 
 class BCArray3D;
@@ -100,19 +99,9 @@ private:
    //////////////////////////////////////////////////////////////////////////
    void deleteBC(std::size_t x1, std::size_t x2, std::size_t x3);
 
-   friend class MPIIORestart1CoProcessor;
-   friend class MPIIORestart2CoProcessor;
-   friend class MPIIORestart11CoProcessor;
-   friend class MPIIORestart21CoProcessor;
+   friend class MPIIORestartCoProcessor;
+   friend class MPIIOMigrationCoProcessor;
 
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & bcindexmatrix;
-      ar & bcvector;
-      ar & indexContainer;
-   }
 protected:
    //////////////////////////////////////////////////////////////////////////
    //-1 solid // -2 fluid -...

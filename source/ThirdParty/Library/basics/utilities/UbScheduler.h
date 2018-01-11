@@ -22,9 +22,6 @@
 #include <basics/utilities/UbFileOutput.h>
 #include <basics/utilities/UbFileInput.h>
 
-#include <boost/serialization/serialization.hpp>
-
-
 /*=========================================================================*/
 /*  UbScheduler                                                            */
 /*                                                                         */
@@ -88,18 +85,7 @@ public:
          end   = in->readDouble();
          step  = in->readDouble();
       }
-      //------------- implements boost serialization ----- end
-
-   private:
-      friend class boost::serialization::access;
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & begin; 
-         ar & end; 
-         ar & step;
-      }
-   
+  
 
    private:
       double step, begin, end;
@@ -323,19 +309,6 @@ public:
          schedule.read(in);
          this->addSchedule(schedule);
       }
-   }
-   //------------- implements boost serialization ----- end
-
-private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & lastUsedT;
-      ar & lastDueTime; 
-      ar & nextDueTime; 
-      ar & maxT; 
-      ar & schedules;
    }
 
 protected:

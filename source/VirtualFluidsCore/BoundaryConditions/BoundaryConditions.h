@@ -17,8 +17,6 @@
 #include <basics/utilities/UbTuple.h>
 #include "D3Q27System.h"
 
-#include <boost/serialization/serialization.hpp>
-
 class BoundaryConditions;
 typedef std::shared_ptr<BoundaryConditions> BoundaryConditionsPtr;
 
@@ -266,40 +264,8 @@ protected:
 private:
    friend class MPIIORestart1CoProcessor;
    friend class MPIIORestart2CoProcessor;
-   friend class MPIIORestart11CoProcessor;
-   friend class MPIIORestart21CoProcessor;
-
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & q; 
-
-      ar & noslipBoundaryFlags;		
-      ar & slipBoundaryFlags;		
-      ar & velocityBoundaryFlags;		
-      ar & densityBoundaryFlags;		
-
-      ar & bcVelocityX1;
-      ar & bcVelocityX2;
-      ar & bcVelocityX3;
-      ar & bcDensity;
-
-      ar & bcLodiDensity;
-      ar & bcLodiVelocityX1;
-      ar & bcLodiVelocityX2;
-      ar & bcLodiVelocityX3;
-      ar & bcLodiLentgh;
-
-      ar & wallModelBoundaryFlags;
-
-      ar & nx1;
-      ar & nx2;
-      ar & nx3;
-
-      ar & algorithmType;
-   }
+   friend class MPIIORestartCoProcessor;
+   friend class MPIIOMigrationCoProcessor;
 
 };
 

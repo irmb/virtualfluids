@@ -4,16 +4,9 @@
 // | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )
 // |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/
 //
-#ifndef D3Q27BOUNDARYCONDITIONADAPTER_H
-#define D3Q27BOUNDARYCONDITIONADAPTER_H
+#ifndef BCAdapter_H
+#define BCAdapter_H
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif
-
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/base_object.hpp>
-#include <boost/serialization/export.hpp>
 #include <memory>
 
 class BCAdapter;
@@ -88,12 +81,7 @@ protected:
    static const char   TIMEPERIODIC  = 1<<1;//'2';
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & secondaryBcOption;
-   }
+
 };
 
 

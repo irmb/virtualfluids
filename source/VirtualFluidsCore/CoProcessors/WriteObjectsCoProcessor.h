@@ -7,7 +7,7 @@
 
 #include <memory>
 #include <string>
-#include <memory>
+#include <vector>
 
 #include "CoProcessor.h"
 
@@ -32,14 +32,6 @@ public:
 private:
     std::string path;
     std::shared_ptr<Communicator> comm;
-
     std::vector<std::shared_ptr<GbSphere3D> > objects;
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-
-   }
 };
 #endif

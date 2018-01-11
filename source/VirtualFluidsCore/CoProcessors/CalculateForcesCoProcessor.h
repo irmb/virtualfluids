@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "CoProcessor.h"
+#include "UbTuple.h"
 
 class ForceCalculator;
 class Communicator;
@@ -28,8 +29,7 @@ public:
    //! Constructor
    //! \param v - velocity of fluid in LB units
    //! \param a - area of object in LB units
-   CalculateForcesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
-                            const std::string &path,
+   CalculateForcesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string &path,
        std::shared_ptr<Communicator> comm, double v, double a);
 	virtual ~CalculateForcesCoProcessor();             
 	void process(double step); 
@@ -52,17 +52,6 @@ private:
    double C1;
    double C2;
    double C3;
-
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<CoProcessor>(*this);
-      ar & path;
-      ar & v;
-      ar & a;
-      ar & interactors;
-   }
 };
 
 

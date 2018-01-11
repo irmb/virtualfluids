@@ -3,8 +3,6 @@
 
 #include "DistributionArray3D.h"
 #include <LBMSystem.h>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/base_object.hpp>
 
 class EsoTwist3D;
 typedef std::shared_ptr<EsoTwist3D> EsoTwist3DPtr;
@@ -50,12 +48,6 @@ public:
    virtual size_t getNX3() const = 0;
    //////////////////////////////////////////////////////////////////////////
   
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object< DistributionArray3D >(*this);
-   }
 };
 
 #endif

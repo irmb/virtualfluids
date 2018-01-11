@@ -10,6 +10,7 @@
 #include "UbScheduler.h"
 #include "BCArray3D.h"
 #include "InterpolationProcessor.h"
+#include "Grid3D.h"
 
 ShearStressCoProcessor::ShearStressCoProcessor(Grid3DPtr grid, const std::string& path, 
                                                              WbWriter* const writer,

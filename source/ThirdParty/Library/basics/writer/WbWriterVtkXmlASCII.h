@@ -5,8 +5,6 @@
 
 #include <basics/writer/WbWriter.h>
 
-#include <boost/serialization/base_object.hpp>
-
 class WbWriterVtkXmlASCII  : public WbWriter
 {
 public:
@@ -88,12 +86,7 @@ public:
    std::string writeOctsWithNodeData(const std::string& filename,std::vector< UbTupleFloat3 >& nodes, std::vector< UbTupleInt8 >& cells, std::vector< std::string >& datanames, std::vector< std::vector< double > >& nodedata);
 
 private:
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object<WbWriter>(*this);
-   }
+
 };
 
 UB_AUTO_RUN_NAMED(ObFactory<WbWriter>::getInstance()->addObCreator(ObSingletonCreatorImpl<WbWriterVtkXmlASCII ,WbWriter>::getInstance()), CAB_WbWriterVtkXmlASCII);

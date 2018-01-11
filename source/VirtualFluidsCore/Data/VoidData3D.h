@@ -2,7 +2,6 @@
 #define VoidData3D_H
 
 #include "EsoTwist3D.h"
-#include <boost/serialization/serialization.hpp>
 
 class VoidData3D;
 typedef std::shared_ptr<VoidData3D> VoidData3DPtr;
@@ -35,12 +34,6 @@ public:
 protected:
 private:
    size_t NX1, NX2, NX3;
-   friend class boost::serialization::access;
-   template<class Archive>
-   void serialize(Archive & ar, const unsigned int version)
-   {
-      ar & boost::serialization::base_object< EsoTwist3D >(*this);
-   }
 };
 
 #endif
