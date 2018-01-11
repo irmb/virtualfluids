@@ -11,6 +11,8 @@
 #include <iostream>
 #include <string>
 
+#include <VirtualFluidsDefinitions.h>
+
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbFileInput.h>
 
@@ -28,7 +30,7 @@
 usage: ...
 */
 
-class UbFileInputASCII : public UbFileInput
+class VF_PUBLIC UbFileInputASCII : public UbFileInput
 {                               
 public:
    UbFileInputASCII() : UbFileInput() { }
@@ -42,6 +44,8 @@ public:
    void        readLine();		 
    std::string readStringLine();				
 	int		   readInteger();				   // Liest einen Int-Wert ein
+    long long   readLongLong();                       // Liest einen long-Wert ein
+
    std::size_t readSize_t();
    double	   readDouble();				   // Liest einen double-Wert ein
 	float 	   readFloat();				   // Liest einen float-Wert ein
@@ -50,6 +54,7 @@ public:
    std::string	readString();				   // Liest ein Wort ein
 	std::string	readLineTill(char stop);	// Liest gesamte Zeile ein bis zu einem bestimmten Zeichen
 	std::string	parseString();	
+
 
    bool        containsString(const std::string& var);
    void        setPosAfterLineWithString(const std::string& var);

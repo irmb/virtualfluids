@@ -591,6 +591,7 @@ typedef UbTuple<int,int,int,int>                           UbTupleInt4;
 typedef UbTuple<int,int,int,int,int>                       UbTupleInt5;
 typedef UbTuple<int,int,int,int,int,int>                   UbTupleInt6;
 typedef UbTuple<int,int,int,int,int,int,int,int>           UbTupleInt8;
+typedef UbTuple<unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, unsigned>  UbTupleUInt8;
 typedef UbTuple<double,double>                             UbTupleDouble2;
 typedef UbTuple<double,double,double>                      UbTupleDouble3;
 typedef UbTuple<double,double,double,double>               UbTupleDouble4;

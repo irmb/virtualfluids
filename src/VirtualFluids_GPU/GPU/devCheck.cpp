@@ -23,7 +23,7 @@ int devCheck(int gpudevice)
 
    // cudaGetDeviceProperties() is also  demonstrated in the deviceQuery/ example
    // of the sdk projects directory 
-   cudaGetDeviceProperties(&deviceProp,  gpudevice); 
+   cudaGetDeviceProperties(&deviceProp, gpudevice); 
     printf("[deviceProp.major.deviceProp.minor] = [%d.%d]\n", 
       deviceProp.major, deviceProp.minor); 
 

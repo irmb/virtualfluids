@@ -9,11 +9,10 @@
 #include "LBM/LB.h"
 #include "LBM/D3Q27.h"
 #include "Parameter/Parameter.h"
-#include "basics/utilities/UbSystem.h"
-#include "Utilities/StringUtil.hpp"
-#include <basics/writer/WbWriterVtkXmlBinary.h>
-#include <basics/writer/WbWriterVtkXmlASCII.h>
-
+#include "VirtualFluidsBasics/basics/utilities/UbSystem.h"
+#include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h>
+#include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlASCII.h>
+#include <VirtualFluidsBasics/basics/utilities/UbTuple.h>
 
 using namespace std;
 

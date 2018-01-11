@@ -1193,7 +1193,8 @@ string WbWriterVtkXmlBinary::writeOctsWithCellData(const string& filename,vector
    return vtkfilename;
 }
 /*===============================================================================*/
-string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
+
+string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector<UbTupleFloat3 >& nodes, vector<UbTupleUInt8 >& cells, vector<string >& datanames, vector<vector<double > >& nodedata)
 {
    string vtkfilename = filename+getFileExtension();
    UBLOG(logDEBUG1,"WbWriterVtkXmlBinary::writeOctsWithNodeData to "<<vtkfilename<<" - start");

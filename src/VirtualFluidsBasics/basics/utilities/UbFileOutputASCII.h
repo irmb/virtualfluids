@@ -11,6 +11,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <VirtualFluidsDefinitions.h>
+
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbFileOutput.h>
 
@@ -28,7 +30,7 @@
 usage: ...
 */
 
-class UbFileOutputASCII : public UbFileOutput
+class VF_PUBLIC UbFileOutputASCII : public UbFileOutput
 {
 public:
    UbFileOutputASCII() : UbFileOutput() {}

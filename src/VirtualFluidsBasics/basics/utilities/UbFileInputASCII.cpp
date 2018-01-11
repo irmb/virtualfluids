@@ -31,6 +31,13 @@ int UbFileInputASCII::readInteger()
 	return dummy;
 }
 /*==========================================================*/
+long long UbFileInputASCII::readLongLong()
+{
+    long long dummy;
+    infile >> dummy;
+    return dummy;
+}
+/*==========================================================*/
 string UbFileInputASCII::getFileName()
 {
 	return this->filename;
