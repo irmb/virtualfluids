@@ -62,6 +62,8 @@ void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, con
 void GridVTKWriter::openFile(std::string name, std::string mode)
 {
     file = fopen(name.c_str(), mode.c_str());
+    if(file==NULL)
+        *logging::out << logging::Logger::HIGH << "  cannot open file ...\n";
 }
 
 void GridVTKWriter::closeFile()

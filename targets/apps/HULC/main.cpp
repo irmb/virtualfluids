@@ -17,6 +17,9 @@
 #include "VirtualFluidsBasics/utilities/StringUtil/StringUtil.h"
 #include "grid/GridBuilder/GridBuilderImp.h"
 #include "utilities/transformator/TransformatorImp.h"
+#include "io/GridVTKWriter/GridVTKWriter.h"
+#include "grid/GridWrapper/GridWrapper.h"
+#include "io/SimulationFileWriter/SimulationFileWriter.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -146,7 +149,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setEndXHotWall(StringUtil::toDouble(input->getValue("endXHotWall")));
     //////////////////////////////////////////////////////////////////////////
     //for Multi GPU
-    if (para->getNumprocs()>1)
+    if (para->getNumprocs() > 1)
     {
         ////////////////////////////////////////////////////////////////////////////
         ////1D domain decomposition
@@ -163,7 +166,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
         //3D domain decomposition
         std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
         std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
-        for (int i = 0; i<para->getNumprocs(); i++)
+        for (int i = 0; i < para->getNumprocs(); i++)
         {
             sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
             sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
@@ -217,7 +220,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDistY(StringUtil::toVector(input->getValue("DistY")));                      //DistY = StringUtil::toVector<int>(input->getValue( "DistY" ));
     para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                      //DistZ = StringUtil::toVector<int>(input->getValue( "DistZ" )); 
                                                                                           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //para->setNeedInterface(StringUtil::toVector<bool>(input->getValue("NeedInterface")));
+    para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
 
 void simulate(const std::string& configPath)
@@ -240,6 +243,10 @@ void simulate(const std::string& configPath)
 
     SPtr<Transformator> trans(new TransformatorImp());
     builder->addGrid(para->getGridX()[0], para->getGridY()[0], para->getGridZ()[0], 1.0, "D3Q27", trans);
+    builder->getKernel(0, 0)->copyDataFromGPU();
+
+    GridVTKWriter::writeSparseGridToVTK(builder->getKernel(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
+    SimulationFileWriter::writeSimulationFiles("D:/GRIDGENERATION/couplingVF/periodicTaylor/simuFiles/", builder, false, trans);
 
     Simulation sim;
     sim.init(para, gridGenerator);

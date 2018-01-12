@@ -52,7 +52,7 @@ void deserialize(GeometryMemento &memento, const std::string &filename)
     ia >> memento;
 }
 
-#define GEOFLUID 1
+#define GEOFLUID 19
 #define GEOSOLID 16
 
 GridBuilderImp::GridBuilderImp()
@@ -339,7 +339,7 @@ void GridBuilderImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
     neighborX[0] = 0;
     neighborY[0] = 0;
     neighborZ[0] = 0;
-    geo[0] = 16;
+    geo[0] = GEOSOLID;
 
     Grid grid = this->gridKernels[level][0]->grid;
 
@@ -354,7 +354,7 @@ void GridBuilderImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
         neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[grid.matrixIndex[i]] + 1);
         neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[grid.matrixIndex[i]] + 1);
         neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[grid.matrixIndex[i]] + 1);
-        geo[i + 1] = (unsigned int)grid.field[grid.matrixIndex[i]] == SOLID ? 16 : 1;
+        geo[i + 1] = (unsigned int)grid.field[grid.matrixIndex[i]] == SOLID ? GEOSOLID : GEOFLUID;
     }
 }
 
