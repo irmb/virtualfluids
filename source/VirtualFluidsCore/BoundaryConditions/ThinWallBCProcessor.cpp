@@ -9,7 +9,7 @@ ThinWallBCProcessor::ThinWallBCProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-ThinWallBCProcessor::ThinWallBCProcessor(LBMKernelPtr kernel) : BCProcessor(kernel)
+ThinWallBCProcessor::ThinWallBCProcessor(SPtr<LBMKernel> kernel) : BCProcessor(kernel)
 {
 
 }
@@ -19,9 +19,9 @@ ThinWallBCProcessor::~ThinWallBCProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCProcessorPtr ThinWallBCProcessor::clone(LBMKernelPtr kernel)
+SPtr<BCProcessor> ThinWallBCProcessor::clone(SPtr<LBMKernel> kernel)
 {
-   BCProcessorPtr bcProcessor(new ThinWallBCProcessor(kernel));
+   SPtr<BCProcessor> bcProcessor(new ThinWallBCProcessor(kernel));
    return bcProcessor;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -29,13 +29,13 @@ void ThinWallBCProcessor::applyPostCollisionBC()
 {
    BCProcessor::applyPostCollisionBC();
 
-   for(BCAlgorithmPtr bc : postBC)
+   for(SPtr<BCAlgorithm> bc : postBC)
    {
       if (bc->getType() == BCAlgorithm::ThinWallNoSlipBCAlgorithm)
       {
-         std::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(2); 
+         dynamicPointerCast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(2); 
          bc->applyBC();
-         std::dynamic_pointer_cast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(1);
+         dynamicPointerCast<ThinWallNoSlipBCAlgorithm>(bc)->setPass(1);
       }
    }
 }

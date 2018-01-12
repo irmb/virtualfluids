@@ -20,10 +20,7 @@
 #include <basics/utilities/UbFileInput.h>
 #include <basics/utilities/UbFileOutput.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class CoordinateTransformation3D;
-typedef std::shared_ptr<CoordinateTransformation3D> CoordinateTransformation3DPtr;
-
+#include <PointerDefinitions.h>
 
 //description:     x1/x2/x3 = alt, x1*/x2*/x3* = neu
 //   x2      

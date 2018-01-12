@@ -18,10 +18,10 @@ WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+WriteMacroscopicQuantitiesCoProcessor::WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                                                                  const std::string& path, WbWriter* const writer, 
-                                                                                 LBMUnitConverterPtr conv, 
-                                                                                 CommunicatorPtr comm)
+                                                                                 SPtr<LBMUnitConverter> conv, 
+                                                                                 SPtr<Communicator> comm)
                                                                                  : CoProcessor(grid, s),
                                                                                  path(path),
                                                                                  writer(writer),
@@ -59,7 +59,7 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
@@ -82,7 +82,7 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
    piece = subfolder + "/" + piece;
 
    std::vector<std::string> cellDataNames;
-   CommunicatorPtr comm = Communicator::getInstance();
+   SPtr<Communicator> comm = Communicator::getInstance();
    std::vector<std::string> pieces = comm->gather(piece);
    if (comm->getProcessID() == comm->getRoot())
    {
@@ -114,7 +114,7 @@ void WriteMacroscopicQuantitiesCoProcessor::clearData()
    data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
+void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(SPtr<Block3D> block)
 {
    double level = (double)block->getLevel();
    double blockID = (double)block->getGlobalID();
@@ -133,9 +133,9 @@ void WriteMacroscopicQuantitiesCoProcessor::addDataMQ(Block3DPtr block)
 
    data.resize(datanames.size());
 
-   ILBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
+   SPtr<ILBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+   SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal vx1,vx2,vx3,rho;
 

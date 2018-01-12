@@ -18,7 +18,7 @@
 class RemoteBlock3DConnector : public Block3DConnector
 {
 public:
-   RemoteBlock3DConnector(Block3DPtr block
+   RemoteBlock3DConnector(SPtr<Block3D> block
       , VectorTransmitterPtr sender
       , VectorTransmitterPtr receiver
       , int sendDir);

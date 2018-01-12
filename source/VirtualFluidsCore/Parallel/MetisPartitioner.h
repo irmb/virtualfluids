@@ -13,12 +13,9 @@
 #include "metis.h"
 #include <vector>
 #include <string>
-#include <memory>
+#include <PointerDefinitions.h>
 #include "basics/utilities/UbLogger.h"
 #include "basics/utilities/UbSystem.h"
-
-class MetisPartitioner;
-typedef std::shared_ptr<MetisPartitioner> MetisPartitionerPtr;
 
 class MetisPartitioner
 {

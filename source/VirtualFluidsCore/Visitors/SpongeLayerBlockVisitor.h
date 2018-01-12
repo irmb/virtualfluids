@@ -14,13 +14,13 @@ class GbCuboid3D;
 class SpongeLayerBlockVisitor : public Block3DVisitor
 {
 public:
-   SpongeLayerBlockVisitor(std::shared_ptr<GbCuboid3D> boundingBox, LBMReal collFactor);
+   SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, LBMReal collFactor);
    virtual ~SpongeLayerBlockVisitor();
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
-    std::shared_ptr<GbCuboid3D> boundingBox;
+    SPtr<GbCuboid3D> boundingBox;
     LBMReal collFactor;
 };
 

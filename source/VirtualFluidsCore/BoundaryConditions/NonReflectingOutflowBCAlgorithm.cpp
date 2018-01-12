@@ -16,13 +16,13 @@ NonReflectingOutflowBCAlgorithm::~NonReflectingOutflowBCAlgorithm()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr NonReflectingOutflowBCAlgorithm::clone()
+SPtr<BCAlgorithm> NonReflectingOutflowBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new NonReflectingOutflowBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new NonReflectingOutflowBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonReflectingOutflowBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void NonReflectingOutflowBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

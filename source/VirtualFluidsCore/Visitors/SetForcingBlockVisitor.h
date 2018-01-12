@@ -21,7 +21,7 @@ public:
 
    virtual ~SetForcingBlockVisitor() {}
 
-   virtual void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
    int ftype;

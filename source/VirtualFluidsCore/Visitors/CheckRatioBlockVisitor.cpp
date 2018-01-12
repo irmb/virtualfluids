@@ -11,7 +11,7 @@ CheckRatioBlockVisitor::CheckRatioBlockVisitor(int levelDepth/*shut be maxGridLe
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void CheckRatioBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void CheckRatioBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    int ix1, ix2, ix3, level;
    ix1 = block->getX1();
@@ -21,7 +21,7 @@ void CheckRatioBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
    int nix1, nix2, nix3, nlev;
    int neighix1, neighix2, neighix3, neighlev;
-   std::vector<Block3DPtr> neighbors;
+   std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2, ix3, level, this->levelDepth, neighbors);
    bool hasAdded = false;
    for (size_t i = 0; i<neighbors.size(); i++)

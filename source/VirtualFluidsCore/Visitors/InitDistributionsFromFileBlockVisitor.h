@@ -15,7 +15,7 @@ public:
    InitDistributionsFromFileBlockVisitor(LBMReal nu, LBMReal rho, std::string file);
    ~InitDistributionsFromFileBlockVisitor();
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
    CbArray4D<LBMReal, IndexerX4X3X2X1> matrix;

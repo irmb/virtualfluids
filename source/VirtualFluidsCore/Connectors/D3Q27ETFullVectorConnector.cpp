@@ -3,7 +3,7 @@
 #include "LBMKernel.h"
 #include "DataSet3D.h"
 //////////////////////////////////////////////////////////////////////////
-D3Q27ETFullVectorConnector::D3Q27ETFullVectorConnector(Block3DPtr block
+D3Q27ETFullVectorConnector::D3Q27ETFullVectorConnector(SPtr<Block3D> block
    , VectorTransmitterPtr sender
    , VectorTransmitterPtr receiver
    , int sendDir)
@@ -20,7 +20,7 @@ void D3Q27ETFullVectorConnector::init()
    maxX2 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX2() - 1;
    maxX3 = (int)block.lock()->getKernel()->getDataSet()->getFdistributions()->getNX3() - 1;
 
-   fDis = std::dynamic_pointer_cast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
+   fDis = dynamicPointerCast<EsoTwist3D>(block.lock()->getKernel()->getDataSet()->getFdistributions());
 
    int anz = 27;
    switch (sendDir)
@@ -63,9 +63,9 @@ void D3Q27ETFullVectorConnector::init()
 //////////////////////////////////////////////////////////////////////////
 void D3Q27ETFullVectorConnector::fillSendVectors()
 {
-   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
-   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
-   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getZeroDistributions();
+   localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
+   nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
+   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getZeroDistributions();
 
    vector_type& sdata = sender->getData();
 
@@ -250,9 +250,9 @@ void D3Q27ETFullVectorConnector::distributeReceiveVectors()
 {
    /*e.g. connector sendet nach EAST --> empfaengt daten aus WEST ;-)*/
 
-   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
-   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
-   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getZeroDistributions();
+   localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getLocalDistributions();
+   nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getNonLocalDistributions();
+   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(this->fDis)->getZeroDistributions();
 
    vector_type& rdata = receiver->getData();
 

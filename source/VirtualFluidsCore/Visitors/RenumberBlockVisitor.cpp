@@ -12,7 +12,7 @@ Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
 
 }
 //////////////////////////////////////////////////////////////////////////
-void RenumberBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void RenumberBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    block->setGlobalID(counter);
    Grid3D::BlockIDMap blockIdMap = grid->getBlockIDs();

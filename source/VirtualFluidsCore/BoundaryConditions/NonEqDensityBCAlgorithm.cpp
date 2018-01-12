@@ -13,13 +13,13 @@ NonEqDensityBCAlgorithm::~NonEqDensityBCAlgorithm()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr NonEqDensityBCAlgorithm::clone()
+SPtr<BCAlgorithm> NonEqDensityBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new NonEqDensityBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new NonEqDensityBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NonEqDensityBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void NonEqDensityBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

@@ -7,7 +7,7 @@
 #ifndef PQUEUEPARTITIONINGPATCHVISITOR_H 
 #define PQUEUEPARTITIONINGPATCHVISITOR_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Grid3DVisitor.h"
 
@@ -18,7 +18,7 @@ class PQueuePartitioningGridVisitor : public Grid3DVisitor
 public:
    PQueuePartitioningGridVisitor(int numOfParts);
 
-   void visit(std::shared_ptr<Grid3D> grid) override;
+   void visit(SPtr<Grid3D> grid) override;
 
 private:
    int numOfParts;

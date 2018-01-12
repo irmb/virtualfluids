@@ -17,10 +17,7 @@
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
 #endif //CAB_RCF
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbTriangle3D;
-typedef VFSharedPtr<GbTriangle3D> GbTriangle3DPtr;
-
+#include <PointerDefinitions.h>
 
 class GbCuboid3D;
 class GbPolygon3D;

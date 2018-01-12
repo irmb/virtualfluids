@@ -1,7 +1,7 @@
 #ifndef InitDistributionsBlockVisitor_H
 #define InitDistributionsBlockVisitor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
@@ -70,7 +70,7 @@ public:
    void setRho( LBMReal rho );
    void setNu( LBMReal nu );
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 protected:
    void checkFunction(mu::Parser fct);

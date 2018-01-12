@@ -5,7 +5,7 @@
 #ifndef WriteObjectsCoProcessor_H
 #define WriteObjectsCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 #include <vector>
 
@@ -16,22 +16,19 @@ class Communicator;
 class Grid3D;
 class UbScheduler;
 
-class WriteObjectsCoProcessor;
-typedef std::shared_ptr<WriteObjectsCoProcessor> WriteObjectsCoProcessorPtr;
-
 class WriteObjectsCoProcessor : public  CoProcessor
 {
 public:
     WriteObjectsCoProcessor();
-    WriteObjectsCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm);
+    WriteObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
    ~WriteObjectsCoProcessor() {}
    void process(double step) override;
 
-   void addGbObject(std::shared_ptr<GbSphere3D> sphere);
+   void addGbObject(SPtr<GbSphere3D> sphere);
 
 private:
     std::string path;
-    std::shared_ptr<Communicator> comm;
-    std::vector<std::shared_ptr<GbSphere3D> > objects;
+    SPtr<Communicator> comm;
+    std::vector<SPtr<GbSphere3D> > objects;
 };
 #endif

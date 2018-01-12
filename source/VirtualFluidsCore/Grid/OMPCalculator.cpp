@@ -147,7 +147,7 @@ void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calcSt
 #pragma omp parallel
 #endif
    {
-      Block3DPtr blockTemp;
+      SPtr<Block3D> blockTemp;
       try
       {
          //startLevel bis maxInitLevel
@@ -214,7 +214,7 @@ void OMPCalculator::swapDistributions(int startLevel, int maxInitLevel)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsPrepareLocal(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsPrepareLocal(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
@@ -227,7 +227,7 @@ void OMPCalculator::connectorsPrepareLocal(std::vector< Block3DConnectorPtr >& c
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsSendLocal(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsSendLocal(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
@@ -240,7 +240,7 @@ void OMPCalculator::connectorsSendLocal(std::vector< Block3DConnectorPtr >& conn
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsReceiveLocal(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsReceiveLocal(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
@@ -252,7 +252,7 @@ void OMPCalculator::connectorsReceiveLocal(std::vector< Block3DConnectorPtr >& c
       connectors[i]->distributeReceiveVectors();
    }
 }
-void OMPCalculator::connectorsPrepareRemote(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsPrepareRemote(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
    for (int i =0; i<size; i++)
@@ -262,7 +262,7 @@ void OMPCalculator::connectorsPrepareRemote(std::vector< Block3DConnectorPtr >& 
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsSendRemote(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsSendRemote(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
    for (int i =0; i<size; i++)
@@ -272,7 +272,7 @@ void OMPCalculator::connectorsSendRemote(std::vector< Block3DConnectorPtr >& con
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void OMPCalculator::connectorsReceiveRemote(std::vector< Block3DConnectorPtr >& connectors)
+void OMPCalculator::connectorsReceiveRemote(std::vector< SPtr<Block3DConnector> >& connectors)
 {
    int size = (int)connectors.size();
    for (int i =0; i<size; i++)

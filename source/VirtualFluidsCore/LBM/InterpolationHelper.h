@@ -4,7 +4,7 @@
 #include "InterpolationProcessor.h"
 
 class InterpolationHelper;
-typedef std::shared_ptr<InterpolationHelper> InterpolationHelperPtr;
+typedef SPtr<InterpolationHelper> InterpolationHelperPtr;
 
 class InterpolationHelper
 {

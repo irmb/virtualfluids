@@ -8,7 +8,7 @@
 #ifndef D3Q27PRESSUREDIFFERENCECoProcessor_H
 #define D3Q27PRESSUREDIFFERENCECoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 
 #include "CoProcessor.h"
@@ -22,20 +22,20 @@ class IntegrateValuesHelper;
 
 class PressureDifferenceCoProcessor: public CoProcessor {
 public:
-	PressureDifferenceCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path,
-        std::shared_ptr<IntegrateValuesHelper> h1, std::shared_ptr<IntegrateValuesHelper> h2,
+	PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path,
+        SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2,
                                    LBMReal rhoReal, LBMReal uReal, LBMReal uLB,
-                                   /*const LBMUnitConverterPtr conv,*/ std::shared_ptr<Communicator> comm);
+                                   /*const SPtr<LBMUnitConverter> conv,*/ SPtr<Communicator> comm);
 	virtual ~PressureDifferenceCoProcessor();
 
 	void process(double step) override;
 
 protected:
-    std::shared_ptr<IntegrateValuesHelper> h1, h2;
+    SPtr<IntegrateValuesHelper> h1, h2;
    std::string path;
-   std::shared_ptr<LBMUnitConverter> conv;
+   SPtr<LBMUnitConverter> conv;
 	void collectData(double step);
-    std::shared_ptr<Communicator> comm;
+    SPtr<Communicator> comm;
    LBMReal factor1; //= (1/3)*rhoReal*(uReal/uLB)^2 for calculation pReal = rhoLB * (1/3)*rhoReal*(uReal/uLB)^2, rhoReal and uReal in SI
    LBMReal factor2; //= rhoReal*(uReal/uLB)^2       for calculation pReal = press * rhoReal*(uReal/uLB)^2,       rhoReal and uReal in SI
 };

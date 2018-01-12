@@ -165,7 +165,7 @@ public:
       }
 
       
-      //CommunicatorPtr comm = MPICommunicator::getInstance();
+      //SPtr<Communicator> comm = MPICommunicator::getInstance();
       //int myid = comm->getProcessID();
 
 //      // Get the name of the processor

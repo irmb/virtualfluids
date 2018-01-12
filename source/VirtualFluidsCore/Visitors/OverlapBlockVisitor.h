@@ -2,7 +2,7 @@
 #define OverlapBlockVisitor_H
 
 #include <string>
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 
@@ -20,7 +20,7 @@ public:
 
    std::string getSpecificDescription();
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 
 private:

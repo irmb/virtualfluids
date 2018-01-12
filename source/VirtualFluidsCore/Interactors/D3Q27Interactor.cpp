@@ -29,14 +29,14 @@ D3Q27Interactor::D3Q27Interactor() : Interactor3D()
    this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type)
+D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type)
 : Interactor3D(geoObject3D, grid, type), relevantForForces(false)
 {
    this->reinitWithStoredQsFlag = false;
    this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAdapterPtr bcAdapter,  int type)
+D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter,  int type)
    :   Interactor3D(geoObject3D, grid, type), relevantForForces(false)
 {
    this->reinitWithStoredQsFlag = false;
@@ -44,7 +44,7 @@ D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAd
    this->initRayVectors();
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27Interactor::D3Q27Interactor(GbObject3DPtr geoObject3D, Grid3DPtr grid, BCAdapterPtr bcAdapter,  int type, Interactor3D::Accuracy a)
+D3Q27Interactor::D3Q27Interactor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter,  int type, Interactor3D::Accuracy a)
    :   Interactor3D(geoObject3D, grid, type, a), relevantForForces(false)
 {
    this->reinitWithStoredQsFlag = false;
@@ -163,15 +163,15 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
    
    for(BcNodeIndicesMap::value_type t : bcNodeIndicesMap)
    {
-      Block3DPtr block = t.first;
+      SPtr<Block3D> block = t.first;
       std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
       //UBLOG(logINFO, "transNodeIndicesSet = "<<transNodeIndicesSet.size());
 
       if(block->isNotActive() || !block) continue;
 
-      ILBMKernelPtr kernel = block->getKernel();
-      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<ILBMKernel> kernel = block->getKernel();
+      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
       set< std::vector<int> >::iterator setPos;
 
@@ -185,7 +185,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
          double worldX2 = coords[1];
          double worldX3 = coords[2];
 
-         BoundaryConditionsPtr bc = bcArray->getBC(x1,x2,x3);
+         SPtr<BoundaryConditions> bc = bcArray->getBC(x1,x2,x3);
          if(bc) //kann sein, dass die BC durch das solid setzen eines andern interactors geloescht wurde
          {
             for(size_t i=0; i<bcAdapters.size(); i++)
@@ -203,7 +203,7 @@ void D3Q27Interactor::updateInteractor(const double& timestep)
 // nicht im normierten !
 //x1,x2,x3 sind die Koordinaten unten links vom "System"
 //extendedBoundingGeoOfGeoObject MUSS bereits um delta_x_level in jede richtung vergroesert worden sein fuer SOLID
-bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep*/)
+bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep*/)
 {
    if(!block) return false;
 
@@ -218,10 +218,10 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
    double timestep = 0;
    bool oneEntryGotBC = false; //ob ueberhaupt ein eintrag ein BC zugewiesen wurde
    bool gotQs         = false; //true, wenn "difference" gesetzt wurde
-   BoundaryConditionsPtr bc;
+   SPtr<BoundaryConditions> bc;
 
-   ILBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+   SPtr<ILBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
 
@@ -343,7 +343,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                            if(!bc)
                            {
                               //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
-                              bc = BoundaryConditionsPtr(new BoundaryConditions);
+                              bc = SPtr<BoundaryConditions>(new BoundaryConditions);
                               bcArray->setBC(ix1,ix2,ix3,bc);
                            }
                      //TODO: man muss ueberlegen, wie kann man, dass die Geschwindigkeit auf 0.0 gesetzt werden, vermeiden
@@ -503,7 +503,7 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
                               if(!bc)
                               {
                                  //bc = bvd->createD3Q27BoundaryCondition(); //= new D3Q27BoundaryCondition();
-                                 bc = BoundaryConditionsPtr(new BoundaryConditions);
+                                 bc = SPtr<BoundaryConditions>(new BoundaryConditions);
                                  bcArray->setBC(ix1,ix2,ix3,bc);
                               }
                               for(int index=(int)bcAdapters.size()-1; index>=0; --index)
@@ -544,17 +544,17 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const Block3DPtr block/*,const 
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vector<UbTupleInt2 >& lines)
 {
-      for(Block3DPtr block : bcBlocks)
+      for(SPtr<Block3D> block : bcBlocks)
       {
          if(!block) continue;
 
          double         dx       = grid.lock()->getDeltaX(block);
          UbTupleDouble3 orgDelta = grid.lock()->getNodeOffset(block);
 
-         ILBMKernelPtr kernel = block->getKernel();
-         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+         SPtr<ILBMKernel> kernel = block->getKernel();
+         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
-         map<Block3DPtr, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
+         map<SPtr<Block3D>, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
          if(pos==bcNodeIndicesMap.end()) 
          {
             UB_THROW( UbException(UB_EXARGS,"block nicht in indizes map!!!") );
@@ -575,7 +575,7 @@ void D3Q27Interactor::addQsLineSet(std::vector<UbTupleFloat3 >& nodes, std::vect
             if(bcArray->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                if( !bcArray->hasBC(ix1,ix2,ix3) ) continue;
-               BoundaryConditionsPtr bc = bcArray->getBC(ix1,ix2,ix3);
+               SPtr<BoundaryConditions> bc = bcArray->getBC(ix1,ix2,ix3);
 
                double x1a = val<1>(blockOrg) - val<1>(orgDelta) + ix1 * dx;
                double x2a = val<2>(blockOrg) - val<2>(orgDelta) + ix2 * dx;
@@ -642,10 +642,10 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
    int blocknx3 = val<3>(blocknx);
    //   vector<double> deltaT = grid->getD3Q27Calculator()->getDeltaT();
 
-   for(Block3DPtr block : bcBlocks)
+   for(SPtr<Block3D> block : bcBlocks)
    {
-       ILBMKernelPtr kernel = block->getKernel();
-      BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+       SPtr<ILBMKernel> kernel = block->getKernel();
+      SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
       UbTupleDouble3 nodeOffset   = grid.lock()->getNodeOffset(block);
 
       //double collFactor = ((LbD3Q27Calculator*)grid->getCalculator())->getCollisionsFactors()[block->getLevel()];
@@ -668,7 +668,7 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
 
       //      double dT = deltaT[block->getLevel()];
 
-      map<Block3DPtr, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
+      map<SPtr<Block3D>, set< std::vector<int> > >::iterator pos = bcNodeIndicesMap.find(block);
       if(pos==bcNodeIndicesMap.end()) throw UbException(UB_EXARGS,"block nicht in indizes map!!!"+block->toString());
       set< std::vector<int> >& transNodeIndicesSet = pos->second;
       set< std::vector<int> >::iterator setPos;
@@ -695,7 +695,7 @@ vector< pair<GbPoint3D,GbPoint3D> >  D3Q27Interactor::getQsLineSet()
             if(bcMatrix->isFluid(ix1,ix2,ix3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
                if( !bcMatrix->hasBC(ix1,ix2,ix3) ) continue;
-               BoundaryConditionsPtr bc = bcMatrix->getBC(ix1,ix2,ix3);
+               SPtr<BoundaryConditions> bc = bcMatrix->getBC(ix1,ix2,ix3);
                double x1a = x1-val<1>(nodeOffset)+dx * ix1;
                double x2a = x2-val<2>(nodeOffset)+dx * ix2;
                double x3a = x3-val<3>(nodeOffset)+dx * ix3;

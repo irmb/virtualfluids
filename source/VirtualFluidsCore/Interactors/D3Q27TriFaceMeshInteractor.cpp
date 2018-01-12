@@ -36,18 +36,18 @@ D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor()
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(Grid3DPtr grid, std::string name)
+D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<Grid3D> grid, std::string name)
 {
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type)
+D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type)
 : D3Q27Interactor(triFaceMesh, grid, bcAdapter, type), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
 {
    this->stressMode = STRESSNORMAL;
 }
 //////////////////////////////////////////////////////////////////////////
-D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, Grid3DPtr grid, BCAdapterPtr bcAdapter, int type, Interactor3D::Accuracy a)
+D3Q27TriFaceMeshInteractor::D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy a)
    : D3Q27Interactor(triFaceMesh, grid, bcAdapter, type, a), forceshift(0.0), velocityshift(0.0), forceshiftpolicy(false), velocityshiftpolicy(false), useHalfSpace(true), regardPIOTest(true)
 {
    this->stressMode = STRESSNORMAL;
@@ -64,7 +64,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor(const double& timeStep)
    setQs(timeStep);
 }
 //////////////////////////////////////////////////////////////////////////
-bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep*/)
+bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep*/)
 {
    if(!block) return false;
 
@@ -76,10 +76,10 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const Block3DPtr blo
 
    bool oneEntryGotBC = false; //ob ueberhaupt ein eintrag ein BC zugewiesen wurde
    bool gotQs         = false; //true, wenn "difference" gesetzt wurde
-   BoundaryConditionsPtr bc;
+   SPtr<BoundaryConditions> bc;
 
-   ILBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+   SPtr<ILBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
    double internX1,internX2,internX3;
   
@@ -172,7 +172,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    int blocknx3 = val<3>(blocknx); //gilt fuer alle Level
 
    //grobe Blocklaengen
-   CoordinateTransformation3DPtr trafo = grid.lock()->getCoordinateTransformator();
+   SPtr<CoordinateTransformation3D> trafo = grid.lock()->getCoordinateTransformator();
    double cblockDeltaX1,cblockDeltaX2,cblockDeltaX3, delta ;
    cblockDeltaX1 = cblockDeltaX2 = cblockDeltaX3 = delta = 1.0/(double)(1<<coarsestInitLevel);
    if(trafo)
@@ -244,7 +244,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
    unsigned counterTriBoxOverlap=0, counterAABBTriFace=0, counterHalfspace=0, counterBilligOBB=0;
    std::vector<GbTriFaceMesh3D::TriFace>& triangles = *mesh->getTriangles();
    std::vector<GbTriFaceMesh3D::Vertex>&  nodes     = *mesh->getNodes();
-   std::map< Block3DPtr, std::set< UbTupleInt3 > > tmpSolidNodesFromOtherInteractors;
+   std::map< SPtr<Block3D>, std::set< UbTupleInt3 > > tmpSolidNodesFromOtherInteractors;
 
    int onePercent = UbMath::integerRounding(triangles.size()*0.01);
    if(onePercent==0) onePercent=1;
@@ -289,7 +289,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
       //////////////////////////////////////////////////////////////////////////
       double e1x1,e1x2,e1x3,e2x1,e2x2,e2x3,px1,px2,px3,a,f,sx1,sx2,sx3,u,qx1,qx2,qx3,v;
       bool gotQs = false;
-      BoundaryConditionsPtr bc;
+      SPtr<BoundaryConditions> bc;
 
       for(int level=coarsestInitLevel; level<=finestInitLevel; level++)
       {
@@ -303,7 +303,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
          GbCuboid3D boundingCubeTriangle(  boundCubeTriangleMinX1, boundCubeTriangleMinX2, boundCubeTriangleMinX3
             , boundCubeTriangleMaxX1, boundCubeTriangleMaxX2, boundCubeTriangleMaxX3 );
 
-         std::vector<Block3DPtr> triBlocks;
+         std::vector<SPtr<Block3D>> triBlocks;
          grid.lock()->getBlocksByCuboid(level, boundCubeTriangleMinX1, boundCubeTriangleMinX2, boundCubeTriangleMinX3
             , boundCubeTriangleMaxX1, boundCubeTriangleMaxX2, boundCubeTriangleMaxX3, triBlocks );
 
@@ -312,7 +312,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
          //////////////////////////////////////////////////////////////////////////
          for(std::size_t b=0; b<triBlocks.size(); b++)
          {
-            Block3DPtr block = triBlocks[b];
+            SPtr<Block3D> block = triBlocks[b];
 
             ////////////////////////////////////////////////////////////////////////////
             //// Block Dreieck-/test
@@ -348,8 +348,8 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            ILBMKernelPtr kernel = block->getKernel();
-            BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+            SPtr<ILBMKernel> kernel = block->getKernel();
+            SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
             int indexMinX2 = 0;
@@ -423,7 +423,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                      //Raytracingfür diskrete Boltzmannrichtungen
                      /////////////////////////////////////////////////////////////////////////////
                      gotQs = false;
-                     bc    = BoundaryConditionsPtr();
+                     bc    = SPtr<BoundaryConditions>();
 
                      //RAYTRACING - diskrete LB-dir zu Dreick
                      //e1 = v1 - v0
@@ -504,7 +504,7 @@ void D3Q27TriFaceMeshInteractor::setQs(const double& timeStep)
                            //SG 26.08.2010 if(!bc && !bcMatrix->isSolid())
                            if(!bc)
                            {
-                              bc = BoundaryConditionsPtr(new BoundaryConditions);;
+                              bc = SPtr<BoundaryConditions>(new BoundaryConditions);;
                               bcMatrix->setBC(ix1,ix2,ix3,bc);
                            }
                            else if( UbMath::less( bc->getQ(fdir), q ) )  //schon ein kuerzeres q voehanden?
@@ -614,7 +614,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    int blocknx3 = val<3>(blocknx); //gilt fuer alle Level
 
    //grobe Blocklaengen
-   CoordinateTransformation3DPtr trafo = grid.lock()->getCoordinateTransformator();
+   SPtr<CoordinateTransformation3D> trafo = grid.lock()->getCoordinateTransformator();
    double cblockDeltaX1,cblockDeltaX2,cblockDeltaX3, delta ;
    cblockDeltaX1 = cblockDeltaX2 = cblockDeltaX3 = delta = 1.0/(double)(1<<coarsestInitLevel);
    if(trafo)
@@ -674,14 +674,14 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    }
    else throw UbException(UB_EXARGS,"only TYPE==SOLID is implemented" );
 
-   std::map<Block3DPtr,SolidCheckMethod> blocksForSolidCheck;
+   std::map<SPtr<Block3D>,SolidCheckMethod> blocksForSolidCheck;
 
    for(int level = coarsestInitLevel; level<=finestInitLevel; level++)
    {
       if(this->isSolid() || this->isMoveable())
       {
          //bloecke fuer "bounding cube gesamt"
-         std::vector<Block3DPtr> tmpblocks;
+         std::vector<SPtr<Block3D>> tmpblocks;
          grid.lock()->getBlocksByCuboid(level,geoMinX1-deltaMinX1[level], geoMinX2-deltaMinX2[level], geoMinX3-deltaMinX3[level],
             geoMaxX1+deltaMaxX1[level], geoMaxX2+deltaMaxX2[level], geoMaxX3+deltaMaxX3[level],tmpblocks );
 
@@ -712,7 +712,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    unsigned counterTriBoxOverlap=0, counterAABBTriFace=0, counterHalfspace=0, counterBilligOBB=0;
    std::vector<GbTriFaceMesh3D::TriFace>& triangles = *mesh->getTriangles();
    std::vector<GbTriFaceMesh3D::Vertex>&  nodes     = *mesh->getNodes();
-   std::map< Block3DPtr, std::set< std::vector<int> > > tmpSolidNodesFromOtherInteractors;
+   std::map< SPtr<Block3D>, std::set< std::vector<int> > > tmpSolidNodesFromOtherInteractors;
 
    int onePercent = UbMath::integerRounding(triangles.size()*0.01);
    if(onePercent==0) onePercent=1;
@@ -765,7 +765,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
       //////////////////////////////////////////////////////////////////////////
       double e1x1,e1x2,e1x3,e2x1,e2x2,e2x3,px1,px2,px3,a,f,sx1,sx2,sx3,u,qx1,qx2,qx3,v;
       bool gotQs = false;
-      BoundaryConditionsPtr bc;
+      SPtr<BoundaryConditions> bc;
 
       for(int level=coarsestInitLevel; level<=finestInitLevel; level++)
       {
@@ -779,7 +779,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
          GbCuboid3D boundingCubeTriangle(  boundCubeTriangleMinX1, boundCubeTriangleMinX2, boundCubeTriangleMinX3
             , boundCubeTriangleMaxX1, boundCubeTriangleMaxX2, boundCubeTriangleMaxX3 );
 
-         std::vector<Block3DPtr> triBlocks;
+         std::vector<SPtr<Block3D>> triBlocks;
          grid.lock()->getBlocksByCuboid(level, boundCubeTriangleMinX1, boundCubeTriangleMinX2, boundCubeTriangleMinX3
             , boundCubeTriangleMaxX1, boundCubeTriangleMaxX2, boundCubeTriangleMaxX3, triBlocks );
 
@@ -788,7 +788,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
          //////////////////////////////////////////////////////////////////////////
          for(std::size_t b=0; b<triBlocks.size(); b++)
          {
-            Block3DPtr block = triBlocks[b];
+            SPtr<Block3D> block = triBlocks[b];
 
             ////////////////////////////////////////////////////////////////////////////
             //// Block Dreieck-/test
@@ -824,8 +824,8 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             //////////////////////////////////////////////////////////////////////////
             bool blockGotBCs = false;
 
-            ILBMKernelPtr kernel = block->getKernel();
-            BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+            SPtr<ILBMKernel> kernel = block->getKernel();
+            SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             int indexMinX1 = 0;
             int indexMinX2 = 0;
@@ -931,7 +931,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                      //Raytracingfür diskrete Boltzmannrichtungen
                      /////////////////////////////////////////////////////////////////////////////
                      gotQs = false;
-                     bc    = BoundaryConditionsPtr();
+                     bc    = SPtr<BoundaryConditions>();
 
                      //RAYTRACING - diskrete LB-dir zu Dreick
                      //e1 = v1 - v0
@@ -1006,7 +1006,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
                               //SG 26.08.2010 if(!bc && !bcMatrix->isSolid())
                               if(!bc)
                               {
-                                 bc = BoundaryConditionsPtr(new BoundaryConditions);;
+                                 bc = SPtr<BoundaryConditions>(new BoundaryConditions);;
                                  bcMatrix->setBC(ix1,ix2,ix3,bc);
                               }
                               else if( UbMath::less( bc->getQ(fdir), q ) )  //schon ein kuerzeres q voehanden?
@@ -1071,7 +1071,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    UBLOG(logDEBUG1,"       * rejected nodes  with halfspace      test : " << counterHalfspace);
    UBLOG(logDEBUG1,"       * rejected nodes  with OBB            test : " << counterBilligOBB);
 
-   typedef std::map<Block3DPtr,SolidCheckMethod>::iterator BlockSolidCheckMethodIterator;
+   typedef std::map<SPtr<Block3D>,SolidCheckMethod>::iterator BlockSolidCheckMethodIterator;
 
    //////////////////////////////////////////////////////////////////////////
    // SOLID checks
@@ -1096,7 +1096,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
 
       for(BlockSolidCheckMethodIterator pos=blocksForSolidCheck.begin(); pos!=blocksForSolidCheck.end(); ++pos)
       {
-         Block3DPtr const& block = pos->first;
+         SPtr<Block3D> const& block = pos->first;
          int level = block->getLevel();
 
          UbTupleDouble3 coords = grid.lock()->getBlockWorldCoordinates(block);
@@ -1120,9 +1120,9 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
             scanlineCounter++;
             scanLineTimer.start();
 
-            ILBMKernelPtr kernel = block->getKernel();
+            SPtr<ILBMKernel> kernel = block->getKernel();
             if(!kernel) throw UbException(UB_EXARGS,"na sowas kein kernel bzw. kernel=NULL (2)");
-            BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+            SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
 
             //            bvd->getTimer().start();
             int indexMinX1 = 0;
@@ -1232,7 +1232,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    //if( this->isRelevantForForces() )
    //{
    //   int level = -1;     
-   //   for( std::vector<Block3DPtr>::const_iterator pos = this->transBlocks.begin(); pos!=this->transBlocks.end(); ++pos)
+   //   for( std::vector<SPtr<Block3D>>::const_iterator pos = this->transBlocks.begin(); pos!=this->transBlocks.end(); ++pos)
    //      if( (*pos)->isActive() )
    //      {
    //         level = (*pos)->getLevel();
@@ -1240,7 +1240,7 @@ void D3Q27TriFaceMeshInteractor::initInteractor2(const double& timeStep)
    //      }
 
    //      bool check = false;
-   //      for( std::vector<Block3DPtr>::const_iterator pos = this->transBlocks.begin(); pos!=this->transBlocks.end(); ++pos)
+   //      for( std::vector<SPtr<Block3D>>::const_iterator pos = this->transBlocks.begin(); pos!=this->transBlocks.end(); ++pos)
    //         if( (*pos)->isActive() && (*pos)->getLevel()!=level)
    //         {
    //            (*pos)->setRank(1000);
@@ -1276,7 +1276,7 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startD
    if( UbMath::less(stopDistance,0.0) )
       throw UbException(UB_EXARGS,"stopDistance<0.0  not supported by this interactor");
 
-   Grid3DPtr  bgrid = this->grid.lock();
+   SPtr<Grid3D>  bgrid = this->grid.lock();
    GbTriFaceMesh3D& mesh  = dynamic_cast<GbTriFaceMesh3D&>(*this->geoObject3D.get());
 
    int coarsestLevel = bgrid->getCoarsestInitializedLevel();
@@ -1340,13 +1340,13 @@ void D3Q27TriFaceMeshInteractor::refineBlockGridToLevel(int level, double startD
       //und bearbeiten
       for(int l=coarsestLevel; l<level; l++)
       {
-         std::vector<Block3DPtr> consideredBlocks;
+         std::vector<SPtr<Block3D>> consideredBlocks;
          bgrid->getBlocksByCuboid(l,minX1, minX2, minX3, maxX1, maxX2, maxX3, consideredBlocks);
          double x1a,x2a,x3a,x1b,x2b,x3b;
 
          for(size_t b=0; b<consideredBlocks.size(); b++)
          {
-            Block3DPtr block = consideredBlocks[b];
+            SPtr<Block3D> block = consideredBlocks[b];
             if(block->getLevel()>=level) continue;
 
             //start coordinaten des blocks ermitteln
@@ -1747,20 +1747,20 @@ string D3Q27TriFaceMeshInteractor::toString()
 void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
 {
    //alle solid Bloecke wieder solid setzen
-   std::vector<Block3DPtr>& solidBlocks = this->getSolidBlockSet();
+   std::vector<SPtr<Block3D>>& solidBlocks = this->getSolidBlockSet();
    for(size_t i=0; i<solidBlocks.size(); i++)
    {
       solidBlocks[i]->setActive(false); //<- quick n dirty
    }
 
    //alle solid-nodes wieder solid setzen (solids die quasi in den TransBloecken liegen)
-   std::map<Block3DPtr, std::set< UbTupleInt3 > >::iterator it1;
+   std::map<SPtr<Block3D>, std::set< UbTupleInt3 > >::iterator it1;
    for( it1=this->solidNodeIndicesMap.begin(); it1!=this->solidNodeIndicesMap.end(); ++it1 )
    {
-      Block3DPtr block = it1->first;
+      SPtr<Block3D> block = it1->first;
 
-      ILBMKernelPtr kernel = block->getKernel();
-      BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+      SPtr<ILBMKernel> kernel = block->getKernel();
+      SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
       std::set< UbTupleInt3 >&  indicesSet = it1->second;
 
       for( std::set< UbTupleInt3 >::iterator setIt=indicesSet.begin(); setIt!=indicesSet.end(); ++setIt )
@@ -1770,12 +1770,12 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
    }
 
    //BCS WIEDERHERSTELLEN
-   std::map<Block3DPtr, std::map< UbTupleInt3, std::vector<float> > >::iterator it;
+   std::map<SPtr<Block3D>, std::map< UbTupleInt3, std::vector<float> > >::iterator it;
    for( it=bcNodeIndicesAndQsMap.begin(); it!=bcNodeIndicesAndQsMap.end(); ++it )
    {   
-      Block3DPtr  block    = it->first;
-      ILBMKernelPtr kernel = block->getKernel();
-      BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+      SPtr<Block3D>  block    = it->first;
+      SPtr<ILBMKernel> kernel = block->getKernel();
+      SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
 
       std::map< UbTupleInt3, std::vector<float> >::iterator it2;
       for( it2=it->second.begin(); it2!=it->second.end(); ++it2 )
@@ -1786,10 +1786,10 @@ void D3Q27TriFaceMeshInteractor::reinitWithStoredQs( const double& timeStep )
          //SG_27.08.2010 
          if(bcMatrix->isSolid(val<1>(pos), val<2>(pos), val<3>(pos))) continue;
 
-         BoundaryConditionsPtr   bc = bcMatrix->getBC( val<1>(pos), val<2>(pos), val<3>(pos) );
+         SPtr<BoundaryConditions>   bc = bcMatrix->getBC( val<1>(pos), val<2>(pos), val<3>(pos) );
          if(!bc)
          {
-            bc = BoundaryConditionsPtr(new BoundaryConditions);
+            bc = SPtr<BoundaryConditions>(new BoundaryConditions);
             bcMatrix->setBC( val<1>(pos), val<2>(pos), val<3>(pos), bc );
          }
 

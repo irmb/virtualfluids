@@ -4,21 +4,18 @@
 #include "Communicator.h"
 #include "Grid3D.h"
 
-#include <memory>
-
-class BlocksDistributor;
-typedef std::shared_ptr<BlocksDistributor> BlocksDistributorPtr;
+#include <PointerDefinitions.h>
 
 class BlocksDistributor
 {
 public:
-   BlocksDistributor(Grid3DPtr grid, CommunicatorPtr comm);
+   BlocksDistributor(SPtr<Grid3D> grid, SPtr<Communicator> comm);
    ~BlocksDistributor();
 
 protected:
 private:
-   Grid3DPtr grid;
-   CommunicatorPtr comm;
+   SPtr<Grid3D> grid;
+   SPtr<Communicator> comm;
 };
 
 #endif

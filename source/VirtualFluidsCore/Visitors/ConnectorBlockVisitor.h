@@ -1,7 +1,7 @@
 #ifndef ConnectorBlockVisitor_H
 #define ConnectorBlockVisitor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
@@ -15,26 +15,26 @@ class ConnectorFactory;
 class ConnectorBlockVisitor : public Block3DVisitor
 {
 public:
-   ConnectorBlockVisitor(CommunicatorPtr comm, LBMReal nu, std::shared_ptr<InterpolationProcessor> iProcessor, std::shared_ptr<ConnectorFactory> cFactory);
+   ConnectorBlockVisitor(SPtr<Communicator> comm, LBMReal nu, SPtr<InterpolationProcessor> iProcessor, SPtr<ConnectorFactory> cFactory);
    virtual ~ConnectorBlockVisitor();
-      void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+      void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
    //////////////////////////////////////////////////////////////////////////
 protected:
-   void setSameLevelConnectors(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block);
-   void setRemoteConnectors(std::shared_ptr<Block3D> sblock, std::shared_ptr<Block3D> tblock, int dir);
-   void setInterpolationConnectors(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block);
-   void setInterpolationConnectors(std::shared_ptr<Block3D> fBlockSW, std::shared_ptr<Block3D> fBlockSE, std::shared_ptr<Block3D> fBlockNW, std::shared_ptr<Block3D> fBlockNE, std::shared_ptr<Block3D> cBlock, int dir);
-   void createTransmitters(std::shared_ptr<Block3D> cBlock, std::shared_ptr<Block3D> fBlock, int dir,
+   void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
+   void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir);
+   void setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
+   void setInterpolationConnectors(SPtr<Block3D> fBlockSW, SPtr<Block3D> fBlockSE, SPtr<Block3D> fBlockNW, SPtr<Block3D> fBlockNE, SPtr<Block3D> cBlock, int dir);
+   void createTransmitters(SPtr<Block3D> cBlock, SPtr<Block3D> fBlock, int dir,
       CreateTransmittersHelper::IBlock ib,
       CreateTransmittersHelper::TransmitterPtr& senderCF,
       CreateTransmittersHelper::TransmitterPtr& receiverCF,
       CreateTransmittersHelper::TransmitterPtr& senderFC,
       CreateTransmittersHelper::TransmitterPtr& receiverFC);
-   CommunicatorPtr comm;
+   SPtr<Communicator> comm;
    int gridRank;
    LBMReal nu;
-   std::shared_ptr<InterpolationProcessor> iProcessor;
-   std::shared_ptr<ConnectorFactory> cFactory;
+   SPtr<InterpolationProcessor> iProcessor;
+   SPtr<ConnectorFactory> cFactory;
 };
 
 #endif //ConnectorBlockVisitor_H

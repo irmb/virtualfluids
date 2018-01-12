@@ -11,9 +11,9 @@
 #include "BCArray3D.h"
 
 
-QCriterionCoProcessor::QCriterionCoProcessor(Grid3DPtr grid, const std::string& path, 
+QCriterionCoProcessor::QCriterionCoProcessor(SPtr<Grid3D> grid, const std::string& path, 
 	WbWriter* const writer,
-	UbSchedulerPtr s, CommunicatorPtr comm)
+	SPtr<UbScheduler> s, SPtr<Communicator> comm)
 	: CoProcessor(grid, s),
 	path(path),
 	comm(comm),
@@ -50,7 +50,7 @@ void QCriterionCoProcessor::collectData(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		for(Block3DPtr block : blockVector[level])
+		for(SPtr<Block3D> block : blockVector[level])
 		{
 			if (block)
 			{
@@ -98,7 +98,7 @@ void QCriterionCoProcessor::clearData()
 	data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void QCriterionCoProcessor::addData(const Block3DPtr block)
+void QCriterionCoProcessor::addData(const SPtr<Block3D> block)
 {
 	UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
 	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
@@ -112,9 +112,9 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 	data.resize(datanames.size());
 
 
-	ILBMKernelPtr kernel = block->getKernel();
-	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();  
+	SPtr<ILBMKernel> kernel = block->getKernel();
+	SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+	SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();  
 
 	int SWB,SEB,NEB,NWB,SWT,SET,NET,NWT;
 
@@ -216,11 +216,11 @@ void QCriterionCoProcessor::addData(const Block3DPtr block)
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3, const Block3DPtr block, LBMReal* vE, LBMReal* vW)
+void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, int ix1, int ix2, int ix3, const SPtr<Block3D> block, LBMReal* vE, LBMReal* vW)
 {
-	ILBMKernelPtr kernel = block->getKernel();
-	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();   
+	SPtr<ILBMKernel> kernel = block->getKernel();
+	SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+	SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();   
 
    bool compressible = block->getKernel()->getCompressible();
 
@@ -237,7 +237,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 	maxX3 -= 2;
 	bool checkInterpolation=true;
 	bool neighNodeIsBC=false;
-	BoundaryConditionsPtr bcPtr;
+	SPtr<BoundaryConditions> bcPtr;
 
 	int rankSelf= block->getRank(); 
 	if (!(offx+offy+offz)==1) throw UbException(UB_EXARGS,"getNeighborVelocities called for diagonal directions!");
@@ -252,7 +252,7 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
 		int currentLevel = block->getLevel();
 		UbTupleInt3 blockIndexes = grid->getBlockIndexes(xp000,yp000, zp000,currentLevel);
-		Block3DPtr blockNeighW;
+		SPtr<Block3D> blockNeighW;
 
 		if ((val<1>(blockIndexes)!=0 && offx==1) || (val<2>(blockIndexes)!=0 && offy==1) || (val<3>(blockIndexes)!=0 && offz==1))
 		{
@@ -298,9 +298,9 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 
 		if (checkInterpolation==false || neighNodeIsBC)
 		{
-			ILBMKernelPtr kernelW = blockNeighW->getKernel();
-			BCArray3DPtr bcArrayW = kernelW->getBCProcessor()->getBCArray();          
-			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
+			SPtr<ILBMKernel> kernelW = blockNeighW->getKernel();
+			SPtr<BCArray3D> bcArrayW = kernelW->getBCProcessor()->getBCArray();          
+			SPtr<DistributionArray3D> distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW2[27];
 			LBMReal fW[27];
 			LBMReal f0[27];
@@ -328,9 +328,9 @@ void QCriterionCoProcessor::getNeighborVelocities(int offx, int offy, int offz, 
 		}
 		else
 		{
-			ILBMKernelPtr kernelW = blockNeighW->getKernel();
-			BCArray3DPtr bcArrayW = kernelW->getBCProcessor()->getBCArray();          
-			DistributionArray3DPtr distributionsW = kernelW->getDataSet()->getFdistributions();
+			SPtr<ILBMKernel> kernelW = blockNeighW->getKernel();
+			SPtr<BCArray3D> bcArrayW = kernelW->getBCProcessor()->getBCArray();          
+			SPtr<DistributionArray3D> distributionsW = kernelW->getDataSet()->getFdistributions();
 			LBMReal fW[27];
 
 			if (offx==1)

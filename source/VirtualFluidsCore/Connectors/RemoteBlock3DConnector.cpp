@@ -1,7 +1,7 @@
 #include "RemoteBlock3DConnector.h"
 
 //////////////////////////////////////////////////////////////////////////
-RemoteBlock3DConnector::RemoteBlock3DConnector(Block3DPtr block
+RemoteBlock3DConnector::RemoteBlock3DConnector(SPtr<Block3D> block
    , VectorTransmitterPtr sender
    , VectorTransmitterPtr receiver
    , int sendDir)

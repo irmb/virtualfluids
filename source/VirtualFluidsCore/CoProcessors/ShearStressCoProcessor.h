@@ -1,16 +1,13 @@
 #ifndef D3Q27ShearStressCoProcessor_H
 #define D3Q27ShearStressCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <vector>
 #include <string>
 
 #include <basics/utilities/UbTuple.h>
 
 #include "CoProcessor.h"
-
-class ShearStressCoProcessor;
-typedef std::shared_ptr<ShearStressCoProcessor> ShearStressCoProcessorPtr;
 
 class Block3D;
 class Grid3D;
@@ -30,13 +27,13 @@ public:
    //! Default constructor
    ShearStressCoProcessor(){}
    //! Constructor
-   ShearStressCoProcessor(std::shared_ptr<Grid3D> grid, const std::string& path, WbWriter* const writer,
-       std::shared_ptr<UbScheduler> s, std::shared_ptr<UbScheduler> rs);
+   ShearStressCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
+       SPtr<UbScheduler> s, SPtr<UbScheduler> rs);
    virtual ~ShearStressCoProcessor(); 
     
    void process(double step) override; 
 
-   void addInteractor(std::shared_ptr<D3Q27Interactor> interactor);
+   void addInteractor(SPtr<D3Q27Interactor> interactor);
 protected:
    //! Computes average and shear stress values of macroscopic quantities 
    void calculateShearStress(double timeStep);
@@ -48,8 +45,8 @@ protected:
    void addData();
    void clearData();
    void reset(double step);
-   void findPlane(int ix1,int ix2,int ix3, std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block,double &A,double &B,double &C,double &D,double &ii);
-   bool checkUndefindedNodes(std::shared_ptr<BCArray3D> bcArray,int ix1,int ix2,int ix3);
+   void findPlane(int ix1,int ix2,int ix3, SPtr<Grid3D> grid, SPtr<Block3D> block,double &A,double &B,double &C,double &D,double &ii);
+   bool checkUndefindedNodes(SPtr<BCArray3D> bcArray,int ix1,int ix2,int ix3);
    void initDistance();
 
 private:
@@ -57,14 +54,14 @@ private:
    std::vector<std::string> datanames;
    std::vector<std::vector<double> > data;
    std::string path;
-   std::vector<std::shared_ptr<D3Q27Interactor> > interactors;
+   std::vector<SPtr<D3Q27Interactor> > interactors;
    std::vector<double> normals;
    int gridRank;
    WbWriter* writer;
-   std::shared_ptr<UbScheduler> Resetscheduler;  //additional scheduler to restart averaging after a given interval
+   SPtr<UbScheduler> Resetscheduler;  //additional scheduler to restart averaging after a given interval
    int minInitLevel; //min init level
    int maxInitLevel;
-   std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
+   std::vector<std::vector<SPtr<Block3D> > > blockVector;
    enum Values{AvVx = 0, AvVy = 1, AvVz = 2, AvSxx = 3, AvSyy = 4, AvSzz = 5, AvSxy = 6, AvSyz = 7, AvSxz = 8, normalX1 = 9, normalX2 = 10, normalX3 = 11, normalq = 12,numberOfPoint=13}; 
 };
 

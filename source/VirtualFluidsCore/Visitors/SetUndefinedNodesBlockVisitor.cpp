@@ -16,11 +16,11 @@ SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor() :
 
 }
 //////////////////////////////////////////////////////////////////////////
-void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    if(!block->hasInterpolationFlag()) return;
 
-   ILBMKernelPtr kernel = block->getKernel();
+   SPtr<ILBMKernel> kernel = block->getKernel();
 
    if(!kernel && (block->getRank() != grid->getRank())) return;
 
@@ -28,7 +28,7 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    //int gl = kernel->getGhostLayerWidth();
    int gl = 0;
    
-   BCArray3DPtr bcMatrix = kernel->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcMatrix = kernel->getBCProcessor()->getBCArray();
 
    int minX1 = gl;
    int minX2 = gl;
@@ -667,7 +667,7 @@ void SetUndefinedNodesBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
 }
 //////////////////////////////////////////////////////////////////////////
-void SetUndefinedNodesBlockVisitor::setNodesUndefined( int startix1, int endix1, int startix2, int endix2, int startix3, int endix3, BCArray3DPtr bcMatrix )
+void SetUndefinedNodesBlockVisitor::setNodesUndefined( int startix1, int endix1, int startix2, int endix2, int startix3, int endix3, SPtr<BCArray3D> bcMatrix )
 {
    for (int ix3=startix3; ix3<=endix3; ix3++)
       for (int ix2=startix2; ix2<=endix2; ix2++)

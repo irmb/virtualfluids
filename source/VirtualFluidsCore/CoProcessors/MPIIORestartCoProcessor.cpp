@@ -21,9 +21,9 @@
 //! structures BoundaryCondition are being written in blocks containing each of them BLOCK_SIZE structures
 #define BLOCK_SIZE 1024
 
-MPIIORestartCoProcessor::MPIIORestartCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path,
-   CommunicatorPtr comm) :
+   SPtr<Communicator> comm) :
    CoProcessor(grid, s),
    path(path),
    comm(comm),
@@ -202,7 +202,7 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();
 
-   std::vector<Block3DPtr> blocksVector[25]; // max 25 levels
+   std::vector<SPtr<Block3D>> blocksVector[25]; // max 25 levels
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
       //grid->getBlocks(level, rank, blockVector[level]);
@@ -268,7 +268,7 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
    int ic = 0;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      for(Block3DPtr block : blocksVector[level])  //	all the blocks of the current level
+      for(SPtr<Block3D> block : blocksVector[level])  //	all the blocks of the current level
       {
          // save data describing the block
          block3dArray[ic].x1 = block->getX1();
@@ -347,7 +347,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
 
    int blocksCount = 0; // quantity of blocks in the grid, max 2147483648 blocks!
 
-   std::vector<Block3DPtr> blocksVector[25];
+   std::vector<SPtr<Block3D>> blocksVector[25];
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();
    for (int level = minInitLevel; level<=maxInitLevel; level++)
@@ -369,7 +369,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
    int ic = 0;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      for(Block3DPtr block : blocksVector[level])  //	blocks of the current level
+      for(SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
       {
          dataSetArray[ic].x1 = block->getX1();     // coordinates of the block needed to find it while regenerating the grid
          dataSetArray[ic].x2 = block->getX2();
@@ -405,7 +405,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
 
          if (firstBlock /*&& block->getKernel()*/) // when first (any) valid block...
          {
-            std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDencity();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDencity();
             if (averageDensityArray)
             {
                dataSetParamStr.nx[0][0] = static_cast<int>(averageDensityArray->getNX1());
@@ -414,7 +414,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr.nx[0][3] = static_cast<int>(averageDensityArray->getNX4());
             }
 
-            std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
             if (AverageVelocityArray3DPtr)
             {
                dataSetParamStr.nx[1][0] = static_cast<int>(AverageVelocityArray3DPtr->getNX1());
@@ -423,7 +423,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr.nx[1][3] = static_cast<int>(AverageVelocityArray3DPtr->getNX4());
             }
 
-            std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
             if (AverageFluctArray3DPtr)
             {
                dataSetParamStr.nx[2][0] = static_cast<int>(AverageFluctArray3DPtr->getNX1());
@@ -432,7 +432,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr.nx[2][3] = static_cast<int>(AverageFluctArray3DPtr->getNX4());
             }
 
-            std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
             if (AverageTripleArray3DPtr)
             {
                dataSetParamStr.nx[3][0] = static_cast<int>(AverageTripleArray3DPtr->getNX1());
@@ -441,7 +441,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr.nx[3][3] = static_cast<int>(AverageTripleArray3DPtr->getNX4());
             }
 
-            std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
             if (ShearStressValArray3DPtr)
             {
                dataSetParamStr.nx[4][0] = static_cast<int>(ShearStressValArray3DPtr->getNX1());
@@ -450,7 +450,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr.nx[4][3] = static_cast<int>(ShearStressValArray3DPtr->getNX4());
             }
 
-            std::shared_ptr< CbArray3D<LBMReal, IndexerX3X2X1> > relaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
+            SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > relaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
             if (relaxationFactor3DPtr)
             {
                dataSetParamStr.nx[5][0] = static_cast<int>(relaxationFactor3DPtr->getNX1());
@@ -459,7 +459,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr.nx[5][3] = 1;
             }
 
-            std::shared_ptr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
+            SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
             CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
             if (localDistributions)
             {
@@ -510,31 +510,31 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
          }
          //std::cout << ",doubleCountInBlock="<<dataSetParamStr.doubleCountInBlock<< "," << dataSetParamStr.nx1 << "," << dataSetParamStr.nx2 << "," << dataSetParamStr.nx3 << std::endl;
 
-         std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageValuesArray3DPtr = block->getKernel()->getDataSet()->getAverageDencity();
-         if (AverageValuesArray3DPtr&&(dataSetParamStr.nx[0][0]>0)&&(dataSetParamStr.nx[0][1]>0)&&(dataSetParamStr.nx[0][2]>0)&&(dataSetParamStr.nx[0][3]>0))
-            doubleValuesArray.insert(doubleValuesArray.end(), AverageValuesArray3DPtr->getDataVector().begin(), AverageValuesArray3DPtr->getDataVector().end());
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageValuesArray3D = block->getKernel()->getDataSet()->getAverageDencity();
+         if (averageValuesArray3D &&(dataSetParamStr.nx[0][0]>0)&&(dataSetParamStr.nx[0][1]>0)&&(dataSetParamStr.nx[0][2]>0)&&(dataSetParamStr.nx[0][3]>0))
+            doubleValuesArray.insert(doubleValuesArray.end(), averageValuesArray3D->getDataVector().begin(), averageValuesArray3D->getDataVector().end());
 
-         std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageVelocityArray3DPtr = block->getKernel()->getDataSet()->getAverageVelocity();
          if (AverageVelocityArray3DPtr&&(dataSetParamStr.nx[1][0]>0)&&(dataSetParamStr.nx[1][1]>0)&&(dataSetParamStr.nx[1][2]>0)&&(dataSetParamStr.nx[1][3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), AverageVelocityArray3DPtr->getDataVector().begin(), AverageVelocityArray3DPtr->getDataVector().end());
 
-         std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageFluctArray3DPtr = block->getKernel()->getDataSet()->getAverageFluctuations();
          if (AverageFluctArray3DPtr&&(dataSetParamStr.nx[2][0]>0)&&(dataSetParamStr.nx[2][1]>0)&&(dataSetParamStr.nx[2][2]>0)&&(dataSetParamStr.nx[2][3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), AverageFluctArray3DPtr->getDataVector().begin(), AverageFluctArray3DPtr->getDataVector().end());
 
-         std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > AverageTripleArray3DPtr = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
          if (AverageTripleArray3DPtr&&(dataSetParamStr.nx[3][0]>0)&&(dataSetParamStr.nx[3][1]>0)&&(dataSetParamStr.nx[3][2]>0)&&(dataSetParamStr.nx[3][3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), AverageTripleArray3DPtr->getDataVector().begin(), AverageTripleArray3DPtr->getDataVector().end());
 
-         std::shared_ptr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > ShearStressValArray3DPtr = block->getKernel()->getDataSet()->getShearStressValues();
          if (ShearStressValArray3DPtr&&(dataSetParamStr.nx[4][0]>0)&&(dataSetParamStr.nx[4][1]>0)&&(dataSetParamStr.nx[4][2]>0)&&(dataSetParamStr.nx[4][3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), ShearStressValArray3DPtr->getDataVector().begin(), ShearStressValArray3DPtr->getDataVector().end());
 
-         std::shared_ptr< CbArray3D<LBMReal, IndexerX3X2X1> > RelaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
+         SPtr< CbArray3D<LBMReal, IndexerX3X2X1> > RelaxationFactor3DPtr = block->getKernel()->getDataSet()->getRelaxationFactor();
          if (RelaxationFactor3DPtr&&(dataSetParamStr.nx[5][0]>0)&&(dataSetParamStr.nx[5][1]>0)&&(dataSetParamStr.nx[5][2]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), RelaxationFactor3DPtr->getDataVector().begin(), RelaxationFactor3DPtr->getDataVector().end());
 
-         std::shared_ptr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
+         SPtr< D3Q27EsoTwist3DSplittedVector > D3Q27EsoTwist3DSplittedVectorPtr = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(block->getKernel()->getDataSet()->getFdistributions());
          CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = D3Q27EsoTwist3DSplittedVectorPtr->getLocalDistributions();
          if (localDistributions&&(dataSetParamStr.nx[6][0]>0)&&(dataSetParamStr.nx[6][1]>0)&&(dataSetParamStr.nx[6][2]>0)&&(dataSetParamStr.nx[6][3]>0))
             doubleValuesArray.insert(doubleValuesArray.end(), localDistributions->getDataVector().begin(), localDistributions->getDataVector().end());
@@ -647,7 +647,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
    int count_indexContainer = 0;	// how many indexContainer-values in all blocks
    size_t byteCount = 0;			// how many bytes writes this process in the file 
 
-   std::vector<Block3DPtr> blocksVector[25];
+   std::vector<SPtr<Block3D>> blocksVector[25];
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();
    for (int level = minInitLevel; level<=maxInitLevel; level++)
@@ -665,9 +665,9 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
    int ic = 0;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      for(Block3DPtr block : blocksVector[level])  // all the blocks of the current level
+      for(SPtr<Block3D> block : blocksVector[level])  // all the blocks of the current level
       {
-         BCArray3DPtr bcArr = block->getKernel()->getBCProcessor()->getBCArray();
+         SPtr<BCArray3D> bcArr = block->getKernel()->getBCProcessor()->getBCArray();
 
          bcAddArray[ic].x1 = block->getX1(); // coordinates of the block needed to find it while regenerating the grid
          bcAddArray[ic].x2 = block->getX2();
@@ -905,17 +905,17 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    }
 
    // clear the grid
-   std::vector<Block3DPtr> blocksVector;
+   std::vector<SPtr<Block3D>> blocksVector;
    grid->getBlocks(0, blocksVector);
    int del = 0;
-   for(Block3DPtr block : blocksVector)
+   for(SPtr<Block3D> block : blocksVector)
    {
       grid->deleteBlock(block);
       del++;
    }
 
    // restore the grid
-   CoordinateTransformation3DPtr trafo(new CoordinateTransformation3D());
+   SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());
    trafo->Tx1 = gridParameters->trafoParams[0];
    trafo->Tx2 = gridParameters->trafoParams[1];
    trafo->Tx3 = gridParameters->trafoParams[2];
@@ -969,7 +969,7 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    // regenerate blocks
    for (int n = 0; n<blocksCount; n++)
    {
-      Block3DPtr block(new Block3D(block3dArray[n].x1, block3dArray[n].x2, block3dArray[n].x3, block3dArray[n].level));
+      SPtr<Block3D> block(new Block3D(block3dArray[n].x1, block3dArray[n].x2, block3dArray[n].x3, block3dArray[n].level));
       block->setActive(block3dArray[n].active);
       block->setBundle(block3dArray[n].bundle);
       block->setRank(block3dArray[n].rank);
@@ -1127,54 +1127,54 @@ void MPIIORestartCoProcessor::readDataSet(int step)
       }
 
       // fill dataSet arrays
-      AverageValuesArray3DPtr mAverageDensity;
+      SPtr<AverageValuesArray3D> mAverageDensity;
       if ((dataSetParamStr.nx[0][0]==0)&&(dataSetParamStr.nx[0][1]==0)&&(dataSetParamStr.nx[0][2]==0)&&(dataSetParamStr.nx[0][3]==0))
          mAverageDensity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
       else
          mAverageDensity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[0], dataSetParamStr.nx[0][0], dataSetParamStr.nx[0][1], dataSetParamStr.nx[0][2], dataSetParamStr.nx[0][3]));
 
-      AverageValuesArray3DPtr mAverageVelocity;
+      SPtr<AverageValuesArray3D> mAverageVelocity;
       if ((dataSetParamStr.nx[1][0]==0)&&(dataSetParamStr.nx[1][1]==0)&&(dataSetParamStr.nx[1][2]==0)&&(dataSetParamStr.nx[1][3]==0))
          mAverageVelocity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
       else
          mAverageVelocity = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[1], dataSetParamStr.nx[1][0], dataSetParamStr.nx[1][1], dataSetParamStr.nx[1][2], dataSetParamStr.nx[1][3]));
 
-      AverageValuesArray3DPtr mAverageFluktuations;
+      SPtr<AverageValuesArray3D> mAverageFluktuations;
       if ((dataSetParamStr.nx[2][0]==0)&&(dataSetParamStr.nx[2][1]==0)&&(dataSetParamStr.nx[2][2]==0)&&(dataSetParamStr.nx[2][3]==0))
          mAverageFluktuations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
       else
          mAverageFluktuations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[2], dataSetParamStr.nx[2][0], dataSetParamStr.nx[2][1], dataSetParamStr.nx[2][2], dataSetParamStr.nx[2][3]));
 
-      AverageValuesArray3DPtr mAverageTriplecorrelations;
+      SPtr<AverageValuesArray3D> mAverageTriplecorrelations;
       if ((dataSetParamStr.nx[3][0]==0)&&(dataSetParamStr.nx[3][1]==0)&&(dataSetParamStr.nx[3][2]==0)&&(dataSetParamStr.nx[3][3]==0))
          mAverageTriplecorrelations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
       else
          mAverageTriplecorrelations = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[3], dataSetParamStr.nx[3][0], dataSetParamStr.nx[3][1], dataSetParamStr.nx[3][2], dataSetParamStr.nx[3][3]));
 
-      ShearStressValuesArray3DPtr mShearStressValues;
+      SPtr<ShearStressValuesArray3D> mShearStressValues;
       if ((dataSetParamStr.nx[4][0]==0)&&(dataSetParamStr.nx[4][1]==0)&&(dataSetParamStr.nx[4][2]==0)&&(dataSetParamStr.nx[4][3]==0))
          mShearStressValues = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr();
       else
          mShearStressValues = CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[4], dataSetParamStr.nx[4][0], dataSetParamStr.nx[4][1], dataSetParamStr.nx[4][2], dataSetParamStr.nx[4][3]));
 
-      RelaxationFactorArray3DPtr mRelaxationFactor;
+      SPtr<RelaxationFactorArray3D> mRelaxationFactor;
       if ((dataSetParamStr.nx[5][0]==0)&&(dataSetParamStr.nx[5][1]==0)&&(dataSetParamStr.nx[5][2]==0))
          mRelaxationFactor = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr();
       else
          mRelaxationFactor = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues[5], dataSetParamStr.nx[5][0], dataSetParamStr.nx[5][1], dataSetParamStr.nx[5][2]));
 
-      //DistributionArray3DPtr mFdistributions(new D3Q27EsoTwist3DSplittedVector(dataSetParamStr.nx1, dataSetParamStr.nx2, dataSetParamStr.nx3, -999.0));
-      DistributionArray3DPtr mFdistributions(new D3Q27EsoTwist3DSplittedVector());
+      //SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector(dataSetParamStr.nx1, dataSetParamStr.nx2, dataSetParamStr.nx3, -999.0));
+      SPtr<DistributionArray3D> mFdistributions(new D3Q27EsoTwist3DSplittedVector());
 
-      std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[6], dataSetParamStr.nx[6][0], dataSetParamStr.nx[6][1], dataSetParamStr.nx[6][2], dataSetParamStr.nx[6][3])));
-      std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[7], dataSetParamStr.nx[7][0], dataSetParamStr.nx[7][1], dataSetParamStr.nx[7][2], dataSetParamStr.nx[7][3])));
-      std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues[8], dataSetParamStr.nx[8][0], dataSetParamStr.nx[8][1], dataSetParamStr.nx[8][2])));
+      dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[6], dataSetParamStr.nx[6][0], dataSetParamStr.nx[6][1], dataSetParamStr.nx[6][2], dataSetParamStr.nx[6][3])));
+      dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNonLocalDistributions(CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr(new CbArray4D<LBMReal, IndexerX4X3X2X1>(vectorsOfValues[7], dataSetParamStr.nx[7][0], dataSetParamStr.nx[7][1], dataSetParamStr.nx[7][2], dataSetParamStr.nx[7][3])));
+      dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setZeroDistributions(CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(vectorsOfValues[8], dataSetParamStr.nx[8][0], dataSetParamStr.nx[8][1], dataSetParamStr.nx[8][2])));
 
-      std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX1(dataSetParamStr.nx1);
-      std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX2(dataSetParamStr.nx2);
-      std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX3(dataSetParamStr.nx3);
+      dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX1(dataSetParamStr.nx1);
+      dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX2(dataSetParamStr.nx2);
+      dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(mFdistributions)->setNX3(dataSetParamStr.nx3);
 
-      DataSet3DPtr dataSetPtr = DataSet3DPtr(new DataSet3D());
+      SPtr<DataSet3D> dataSetPtr = SPtr<DataSet3D>(new DataSet3D());
       dataSetPtr->setAverageDencity(mAverageDensity);
       dataSetPtr->setAverageVelocity(mAverageVelocity);
       dataSetPtr->setAverageFluctuations(mAverageFluktuations);
@@ -1184,10 +1184,10 @@ void MPIIORestartCoProcessor::readDataSet(int step)
       dataSetPtr->setFdistributions(mFdistributions);
 
       // find the nesessary block and fill it
-      Block3DPtr block = grid->getBlock(dataSetArray[n].x1, dataSetArray[n].x2, dataSetArray[n].x3, dataSetArray[n].level);
-      //LBMKernelPtr kernel(new CompressibleCumulantLBMKernel());
-      //LBMKernelPtr kernel(new IncompressibleCumulantLBMKernel());
-      LBMKernelPtr kernel = this->lbmKernel->clone();
+      SPtr<Block3D> block = grid->getBlock(dataSetArray[n].x1, dataSetArray[n].x2, dataSetArray[n].x3, dataSetArray[n].level);
+      //SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
+      //SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel());
+      SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);
       kernel->setDeltaT(dataSetArray[n].deltaT);
@@ -1295,7 +1295,7 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
    }
 
    int index = 0, index1 = 0, index2 = 0;
-   std::vector<BoundaryConditionsPtr> bcVector;
+   std::vector<SPtr<BoundaryConditions>> bcVector;
    std::vector<int> bcindexmatrixV;
    std::vector<int> indexContainerV;
 
@@ -1307,12 +1307,12 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
 
       for (size_t ibc = 0; ibc<bcAddArray[n].boundCond_count; ibc++)
       {
-         BoundaryConditionsPtr bc;
+         SPtr<BoundaryConditions> bc;
          if (memcmp(&bcArray[index], nullBouCond, sizeof(BoundaryCondition))==0)
-            bc = BoundaryConditionsPtr();
+            bc = SPtr<BoundaryConditions>();
          else
          {
-            bc = BoundaryConditionsPtr(new BoundaryConditions);
+            bc = SPtr<BoundaryConditions>(new BoundaryConditions);
             bc->noslipBoundaryFlags = bcArray[index].noslipBoundaryFlags;
             bc->slipBoundaryFlags = bcArray[index].slipBoundaryFlags;
             bc->densityBoundaryFlags = bcArray[index].densityBoundaryFlags;
@@ -1346,7 +1346,7 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
             //for (int iq = 0; iq<26; iq++)
             //   if (bcVectorGW[index].q[iq] != bc->q[iq])
             //   std::cout << "readBoundaryConds q !!!!===" /*<< bcVectorGW[index].q << " ---- " << bc->q*/ << std::endl;
-            //std::cout << "readBoundaryConds BoundaryConditionsPtr !!!!===" <<std::endl;
+            //std::cout << "readBoundaryConds SPtr<BoundaryConditions> !!!!===" <<std::endl;
 
          }
 
@@ -1369,11 +1369,11 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
 
       CbArray3D<int, IndexerX3X2X1> bcim(bcindexmatrixV, boundCondParamStr.nx1, boundCondParamStr.nx2, boundCondParamStr.nx3);
 
-      Block3DPtr block = grid->getBlock(bcAddArray[n].x1, bcAddArray[n].x2, bcAddArray[n].x3, bcAddArray[n].level);
+      SPtr<Block3D> block = grid->getBlock(bcAddArray[n].x1, bcAddArray[n].x2, bcAddArray[n].x3, bcAddArray[n].level);
       //if(!block) std::cout << "readBoundaryConds can't find the block!!!" << std::endl;
-      BCProcessorPtr bcProc = bcProcessor->clone(block->getKernel());
+      SPtr<BCProcessor> bcProc = bcProcessor->clone(block->getKernel());
       //if(!bcProc) std::cout << "readBoundaryConds can't find the bcProc!!!" << std::endl;
-      BCArray3DPtr bcArr(new BCArray3D());
+      SPtr<BCArray3D> bcArr(new BCArray3D());
       bcArr->bcindexmatrix = bcim;
       bcArr->bcvector = bcVector;
       bcArr->indexContainer = indexContainerV;
@@ -1397,12 +1397,12 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartCoProcessor::setLBMKernel(LBMKernelPtr kernel)
+void MPIIORestartCoProcessor::setLBMKernel(SPtr<LBMKernel> kernel)
 {
    this->lbmKernel = kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void MPIIORestartCoProcessor::setBCProcessor(BCProcessorPtr bcProcessor)
+void MPIIORestartCoProcessor::setBCProcessor(SPtr<BCProcessor> bcProcessor)
 {
    this->bcProcessor = bcProcessor;
 }

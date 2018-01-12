@@ -30,9 +30,9 @@ SetForcingBlockVisitor::SetForcingBlockVisitor(const std::string& sForcingX1, co
    ftype = 2;
 }
 //////////////////////////////////////////////////////////////////////////
-void SetForcingBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void SetForcingBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
-    LBMKernelPtr kernel = std::dynamic_pointer_cast<LBMKernel>(block->getKernel());
+    SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
     if (!kernel)
         throw std::runtime_error("SetForcingBlockVisitor: Kernel is not a LBMKernel");
 

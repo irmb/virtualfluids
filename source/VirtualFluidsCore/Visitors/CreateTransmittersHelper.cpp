@@ -18,8 +18,8 @@ CreateTransmittersHelper::CreateTransmittersHelper()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CreateTransmittersHelper::createTransmitters(Block3DPtr sblock, Block3DPtr tblock, int dir, IBlock ib,
-                                                        TransmitterPtr& sender, TransmitterPtr& receiver, CommunicatorPtr comm, TransmitterType tType)
+void CreateTransmittersHelper::createTransmitters(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir, IBlock ib,
+                                                        TransmitterPtr& sender, TransmitterPtr& receiver, SPtr<Communicator> comm, TransmitterType tType)
 {
    //SourceBlock
    int srcLevel = sblock->getLevel();

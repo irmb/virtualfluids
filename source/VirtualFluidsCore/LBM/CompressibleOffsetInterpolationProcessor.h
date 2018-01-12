@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 class CompressibleOffsetInterpolationProcessor;
-typedef std::shared_ptr<CompressibleOffsetInterpolationProcessor> CompressibleOffsetInterpolationProcessorPtr;
+typedef SPtr<CompressibleOffsetInterpolationProcessor> CompressibleOffsetInterpolationProcessorPtr;
 
 class CompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {

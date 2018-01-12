@@ -18,7 +18,7 @@ Calculator::~Calculator()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::setGrid(std::shared_ptr<Grid3D> grid)
+void Calculator::setGrid(SPtr<Grid3D> grid)
 {
    this->grid = grid;
    startTimeStep = int(grid->getTimeStep())+1;
@@ -38,9 +38,9 @@ void Calculator::setGrid(std::shared_ptr<Grid3D> grid)
 
    for (int level = minLevel; level <= maxLevel; level++)
    {
-      std::vector<Block3DPtr> blockVector;
+      std::vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(level, gridRank, true, blockVector);
-      for (Block3DPtr const block : blockVector)
+      for (SPtr<Block3D> const block : blockVector)
          if (block)
             blocks[block->getLevel()].push_back(block);
    }
@@ -54,19 +54,19 @@ void Calculator::setLastTimeStep(int t)
    this->lastTimeStep = t;
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::setVisScheduler(std::shared_ptr<UbScheduler> s)
+void Calculator::setVisScheduler(SPtr<UbScheduler> s)
 {
    visScheduler = s;
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::addCoProcessor(std::shared_ptr<CoProcessor> coProcessor)
+void Calculator::addCoProcessor(SPtr<CoProcessor> coProcessor)
 {
    coProcessors.push_back(coProcessor);
 }
 //////////////////////////////////////////////////////////////////////////
 void Calculator::coProcess(double step)
 {
-   for (CoProcessorPtr cp : coProcessors)
+   for (SPtr<CoProcessor> cp : coProcessors)
    {
       cp->process(step);
    }
@@ -78,7 +78,7 @@ void Calculator::initLocalConnectors()
 
    for (int l = minLevel; l <= maxLevel; l++)
    {
-      for(Block3DPtr block : blocks[l])
+      for(SPtr<Block3D> block : blocks[l])
       {     
          block->pushBackLocalSameLevelConnectors(localConns[l]);
 
@@ -87,7 +87,7 @@ void Calculator::initLocalConnectors()
       }
       if (l != maxLevel)
       {
-         for(Block3DPtr block : blocks[l+1])
+         for(SPtr<Block3D> block : blocks[l+1])
          {     
             block->pushBackLocalInterpolationConnectorsFC(localInterConns[l]);
          }
@@ -107,17 +107,17 @@ void Calculator::initLocalConnectors()
 //////////////////////////////////////////////////////////////////////////
 void Calculator::initRemoteConnectors()
 {
-   std::vector< std::vector< Block3DConnectorPtr > > remoteInterConnsCF;
-   std::vector< std::vector< Block3DConnectorPtr > > remoteInterConnsFC;
+   std::vector< std::vector< SPtr<Block3DConnector> > > remoteInterConnsCF;
+   std::vector< std::vector< SPtr<Block3DConnector> > > remoteInterConnsFC;
    remoteInterConnsCF.resize(maxLevel+1);
    remoteInterConnsFC.resize(maxLevel+1);
 
    for(int l = minLevel; l<=maxLevel;l++)
    {
-      std::vector<Block3DPtr> blockVector;
+      std::vector<SPtr<Block3D>> blockVector;
       //grid->getBlocks(level, gridRank, true, blockVector);
       grid->getBlocks(l, blockVector);
-      for(Block3DPtr block : blockVector)
+      for(SPtr<Block3D> block : blockVector)
       {
          int l = block->getLevel();
          block->pushBackRemoteSameLevelConnectors(remoteConns[l]);
@@ -146,7 +146,7 @@ void Calculator::initRemoteConnectors()
       if (l != maxLevel)
       {
          UBLOG(logDEBUG5, "Calculator::initRemoteConnectors()-initConnectors(remoteInterConns["<<l<<"])");
-         for(Block3DConnectorPtr c : remoteInterConns[l] ) c->init();
+         for(SPtr<Block3DConnector> c : remoteInterConns[l] ) c->init();
       }
    }
    //UBLOG(logDEBUG5, "Calculator::initConnectors() - connectoren initialisieren - end");
@@ -158,7 +158,7 @@ void Calculator::initRemoteConnectors()
       if (l != maxLevel)
       {
          UBLOG(logDEBUG5, "Calculator::initRemoteConnectors()-sendTransmitterDataSize(remoteInterConns["<<l<<"])");
-         for(Block3DConnectorPtr c : remoteInterConns[l] ) c->sendTransmitterDataSize();
+         for(SPtr<Block3DConnector> c : remoteInterConns[l] ) c->sendTransmitterDataSize();
       }
    }
    //UBLOG(logDEBUG5, "Calculator::initConnectors() - sendTransmitterDataSize - end");
@@ -171,14 +171,14 @@ void Calculator::initRemoteConnectors()
       if (l != maxLevel)
       {
          UBLOG(logDEBUG5, "Calculator::initRemoteConnectors()-receiveTransmitterDataSize(remoteInterConns["<<l<<"])");
-         for(Block3DConnectorPtr c : remoteInterConns[l] ) c->receiveTransmitterDataSize();
+         for(SPtr<Block3DConnector> c : remoteInterConns[l] ) c->receiveTransmitterDataSize();
       }
    }
    //UBLOG(logDEBUG5, "Calculator::initConnectors() - receiveTransmitterDataSize - end");
    //////////////////////////////////////////////////////////////////////////
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::initConnectors(std::vector<Block3DConnectorPtr>& connectors)
+void Calculator::initConnectors(std::vector<SPtr<Block3DConnector>>& connectors)
 {
    UBLOG(logDEBUG1, "Calculator::initConnectors() - start");
 
@@ -186,18 +186,18 @@ void Calculator::initConnectors(std::vector<Block3DConnectorPtr>& connectors)
    //////////////////////////////////////////////////////////////////////////
    //initialize connectors
    UBLOG(logDEBUG5, "Calculator::initConnectors() - connectoren initialisieren - start");
-   for(Block3DConnectorPtr c : connectors ) c->init();
+   for(SPtr<Block3DConnector> c : connectors ) c->init();
    UBLOG(logDEBUG5, "Calculator::initConnectors() - connectoren initialisieren - end");
    //////////////////////////////////////////////////////////////////////////
    //sendTransmitterDataSize
    UBLOG(logDEBUG5, "Calculator::initConnectors() - sendTransmitterDataSize - start");
-   for(Block3DConnectorPtr c : connectors ) c->sendTransmitterDataSize();
+   for(SPtr<Block3DConnector> c : connectors ) c->sendTransmitterDataSize();
    UBLOG(logDEBUG5, "Calculator::initConnectors() - sendTransmitterDataSize - end");
    //////////////////////////////////////////////////////////////////////////
    //receiveTransmitterDataSize
    //wenn er hier bei verteilten berechnungen stopped, dann ist vermutlich auf einer seite ein nicht aktiver block!!!
    UBLOG(logDEBUG5, "Calculator::initConnectors() - receiveTransmitterDataSize - start");
-   for(Block3DConnectorPtr c : connectors ) c->receiveTransmitterDataSize();
+   for(SPtr<Block3DConnector> c : connectors ) c->receiveTransmitterDataSize();
    UBLOG(logDEBUG5, "Calculator::initConnectors() - receiveTransmitterDataSize - end");
 
    UBLOG(logDEBUG1, "Calculator::initConnectors() - end");
@@ -205,7 +205,7 @@ void Calculator::initConnectors(std::vector<Block3DConnectorPtr>& connectors)
 //////////////////////////////////////////////////////////////////////////
 void Calculator::deleteBlocks()
 {
-   for(std::vector< Block3DPtr > &bs : blocks)
+   for(std::vector< SPtr<Block3D> > &bs : blocks)
       bs.resize(0);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -218,9 +218,9 @@ void Calculator::deleteConnectors()
    deleteConnectors(remoteInterConns);
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::deleteConnectors(std::vector< std::vector< Block3DConnectorPtr > >& conns)
+void Calculator::deleteConnectors(std::vector< std::vector< SPtr<Block3DConnector> > >& conns)
 {
-   for(std::vector< Block3DConnectorPtr > &c : conns)
+   for(std::vector< SPtr<Block3DConnector> > &c : conns)
       c.resize(0);
 }
 //////////////////////////////////////////////////////////////////////////

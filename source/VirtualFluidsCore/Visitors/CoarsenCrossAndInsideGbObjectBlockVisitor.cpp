@@ -8,7 +8,7 @@ CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVis
 {
 }
 //////////////////////////////////////////////////////////////////////////
-CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor(GbObject3DPtr geoObject, int fineLevel, int coarseLevel)
+CoarsenCrossAndInsideGbObjectBlockVisitor::CoarsenCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int fineLevel, int coarseLevel)
    : Block3DVisitor(fineLevel, fineLevel), geoObject(geoObject), notActive(true), coarseLevel(coarseLevel)
 {
 
@@ -18,7 +18,7 @@ CoarsenCrossAndInsideGbObjectBlockVisitor::~CoarsenCrossAndInsideGbObjectBlockVi
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void CoarsenCrossAndInsideGbObjectBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block)
+void CoarsenCrossAndInsideGbObjectBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    int fineLevel = block->getLevel();
    if (notActive && block->isNotActive()) return;

@@ -20,7 +20,7 @@ InSituCatalystCoProcessor::InSituCatalystCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-InSituCatalystCoProcessor::InSituCatalystCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, std::string script) : CoProcessor(grid, s)
+InSituCatalystCoProcessor::InSituCatalystCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::string script) : CoProcessor(grid, s)
 {
    gridRank = Communicator::getInstance()->getProcessID();
    minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -71,7 +71,7 @@ void InSituCatalystCoProcessor::collectData(double step)
 
       for (int level = minInitLevel; level <= maxInitLevel; level++)
       {
-         for(Block3DPtr block : blockVector[level])
+         for(SPtr<Block3D> block : blockVector[level])
          {
             if (block)
             {
@@ -99,16 +99,16 @@ void InSituCatalystCoProcessor::collectData(double step)
    UBLOG(logINFO, "InSituCatalystCoProcessor step: " << istep);
 }
 //////////////////////////////////////////////////////////////////////////
-void InSituCatalystCoProcessor::addData(Block3DPtr block)
+void InSituCatalystCoProcessor::addData(SPtr<Block3D> block)
 {
    UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
    UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
    double         dx = grid->getDeltaX(block);
 
-   LBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+   SPtr<LBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+   SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
    LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
 
@@ -194,7 +194,7 @@ void InSituCatalystCoProcessor::buildVTKGrid()
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
@@ -215,16 +215,16 @@ void InSituCatalystCoProcessor::buildVTKGrid()
    vx3Array.resize(numOfPoints);
 }
 //////////////////////////////////////////////////////////////////////////
-void InSituCatalystCoProcessor::addVTKGridData(Block3DPtr block)
+void InSituCatalystCoProcessor::addVTKGridData(SPtr<Block3D> block)
 {
    UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
    UbTupleDouble3 nodeOffset = grid->getNodeOffset(block);
    double         dx = grid->getDeltaX(block);
 
-   LBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+   SPtr<LBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+   SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
    LBMReal f[D3Q27System::ENDF + 1];
    LBMReal vx1, vx2, vx3, rho;
 
@@ -259,7 +259,7 @@ void InSituCatalystCoProcessor::addVTKGridData(Block3DPtr block)
    maxX2 -= 2;
    maxX3 -= 2;
 
-   BoundaryConditionsPtr bcPtr;
+   SPtr<BoundaryConditions> bcPtr;
    int nr = points->GetNumberOfPoints();
 
    double x[3];

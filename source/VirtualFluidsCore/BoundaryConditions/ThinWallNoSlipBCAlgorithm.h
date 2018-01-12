@@ -2,24 +2,22 @@
 #define ThinWallNoSlipBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
+#include <PointerDefinitions.h>
 
 class DistributionArray3D;
-
-class ThinWallNoSlipBCAlgorithm;
-typedef std::shared_ptr<ThinWallNoSlipBCAlgorithm> ThinWallNoSlipBCAlgorithmPtr;
 
 class ThinWallNoSlipBCAlgorithm : public BCAlgorithm
 {
 public:
    ThinWallNoSlipBCAlgorithm();
    virtual ~ThinWallNoSlipBCAlgorithm();
-   BCAlgorithmPtr clone();
-   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone();
+   void addDistributions(SPtr<DistributionArray3D> distributions);
    void setPass(int pass);
    void applyBC() override;
 
 protected:
-   std::shared_ptr<DistributionArray3D> distributionsTemp;
+   SPtr<DistributionArray3D> distributionsTemp;
 private:
    int pass;
    LBMReal fTemp[D3Q27System::ENDF + 1];

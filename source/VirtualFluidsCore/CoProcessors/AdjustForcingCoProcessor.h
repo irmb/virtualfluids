@@ -1,7 +1,7 @@
 #ifndef D3Q27ADJUSTFORCINGCoProcessor_H
 #define D3Q27ADJUSTFORCINGCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 
 #include "CoProcessor.h"
@@ -12,9 +12,6 @@ class UbScheduler;
 class Grid3D;
 class IntegrateValuesHelper;
 
-class AdjustForcingCoProcessor;
-typedef std::shared_ptr<AdjustForcingCoProcessor> AdjustForcingCoProcessorPtr;
-
 //! \brief   Computes forcing such that a given velocity (vx1Targed) is reached inside an averaging domain (h1). 
 //! \details Algorithm based on PID controller (proportional–integral–derivative controller). The parameters of PID controller estimation based on Ziegler–Nichols method. 
 //!          Integrate values helper, scheduler must be set in test case.
@@ -22,19 +19,19 @@ typedef std::shared_ptr<AdjustForcingCoProcessor> AdjustForcingCoProcessorPtr;
 
 class AdjustForcingCoProcessor: public CoProcessor {
 public:
-	AdjustForcingCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
+	AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                    const std::string& path,
-                                   std::shared_ptr<IntegrateValuesHelper> integrateValues,
-                                   double vTarged, std::shared_ptr<Communicator> comm);
+                                   SPtr<IntegrateValuesHelper> integrateValues,
+                                   double vTarged, SPtr<Communicator> comm);
 	virtual ~AdjustForcingCoProcessor();
 	 //!< calls collect PostprocessData
    void process(double step) override;
 protected:
    //!< object that can compute spacial average values in 3D-subdomain.
-    std::shared_ptr<IntegrateValuesHelper> integrateValues;
+    SPtr<IntegrateValuesHelper> integrateValues;
    //!< compares velocity in integrateValues with target velocity and adjusts forcing accordingly.
 	void collectData(double step);  
-    std::shared_ptr<Communicator> comm;
+    SPtr<Communicator> comm;
 private:
    double vx1Targed; //!< target velocity.
    double forcing; //!< forcing at previous update step. 

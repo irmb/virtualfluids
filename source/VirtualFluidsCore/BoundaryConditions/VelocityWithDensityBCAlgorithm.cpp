@@ -13,13 +13,13 @@ VelocityWithDensityBCAlgorithm::~VelocityWithDensityBCAlgorithm()
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr VelocityWithDensityBCAlgorithm::clone()
+SPtr<BCAlgorithm> VelocityWithDensityBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new VelocityWithDensityBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new VelocityWithDensityBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityWithDensityBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void VelocityWithDensityBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

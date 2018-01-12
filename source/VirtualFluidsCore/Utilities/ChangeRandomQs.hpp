@@ -9,17 +9,17 @@
 
 namespace Utilities
 {
-   void ChangeRandomQs(IntegrateValuesHelperPtr integrateValues)
+   void ChangeRandomQs(SPtr<IntegrateValuesHelper> integrateValues)
    {
       std::vector<IntegrateValuesHelper::CalcNodes> cnodes = integrateValues->getCNodes();
       
       for(IntegrateValuesHelper::CalcNodes cn : cnodes)
       {
-         ILBMKernelPtr kernel = cn.block->getKernel();
-         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+         SPtr<ILBMKernel> kernel = cn.block->getKernel();
+         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
          for(UbTupleInt3 node : cn.nodes)
          {
-            BoundaryConditionsPtr bc = bcArray->getBC(val<1>(node), val<2>(node), val<3>(node));
+            SPtr<BoundaryConditions> bc = bcArray->getBC(val<1>(node), val<2>(node), val<3>(node));
             if (bc)
             {
 	            for (int fdir=D3Q27System::FSTARTDIR; fdir<=D3Q27System::FENDDIR; fdir++)

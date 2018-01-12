@@ -24,8 +24,8 @@ CompressibleOffsetInterpolationProcessor::~CompressibleOffsetInterpolationProces
 InterpolationProcessorPtr CompressibleOffsetInterpolationProcessor::clone()
 {
    InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetInterpolationProcessor(this->omegaC, this->omegaF));
-   //std::dynamic_pointer_cast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingC = forcingC;
-   //std::dynamic_pointer_cast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingF = forcingF;
+   //dynamicPointerCast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingC = forcingC;
+   //dynamicPointerCast<D3Q27IncompressibleOffsetInterpolationProcessor>(iproc)->forcingF = forcingF;
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////

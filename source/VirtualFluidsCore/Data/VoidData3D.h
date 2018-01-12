@@ -3,8 +3,6 @@
 
 #include "EsoTwist3D.h"
 
-class VoidData3D;
-typedef std::shared_ptr<VoidData3D> VoidData3DPtr;
 
 class VoidData3D : public EsoTwist3D
 {

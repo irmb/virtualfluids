@@ -21,25 +21,25 @@ BoundaryConditionsBlockVisitor::~BoundaryConditionsBlockVisitor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void BoundaryConditionsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    if (block->getRank() == grid->getRank())
    {
-      ILBMKernelPtr kernel = block->getKernel();
+      SPtr<ILBMKernel> kernel = block->getKernel();
 
       if (!kernel)
       {
          throw UbException(UB_EXARGS, "LBMKernel in " + block->toString() + "is not exist!");
       }
 
-      BCProcessorPtr bcProcessor = kernel->getBCProcessor();
+      SPtr<BCProcessor> bcProcessor = kernel->getBCProcessor();
 
       if (!bcProcessor)
       {
          throw UbException(UB_EXARGS,"Boundary Conditions Processor is not exist!" );
       }
 
-      BCArray3DPtr bcArray = bcProcessor->getBCArray();
+      SPtr<BCArray3D> bcArray = bcProcessor->getBCArray();
 
       bool compressible = kernel->getCompressible();
       double collFactor = kernel->getCollisionFactor();
@@ -51,11 +51,11 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       int maxX1 = (int)bcArray->getNX1();
       int maxX2 = (int)bcArray->getNX2();
       int maxX3 = (int)bcArray->getNX3();
-      BoundaryConditionsPtr bcPtr;
+      SPtr<BoundaryConditions> bcPtr;
 
       bcProcessor->clearBC();
 
-      DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+      SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
       for (int x3 = minX3; x3 < maxX3; x3++)
       {
@@ -68,7 +68,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
                   if ((bcPtr = bcArray->getBC(x1, x2, x3)) != NULL)
                   {
                      char alg = bcPtr->getBcAlgorithmType();
-                     BCAlgorithmPtr bca = bcMap[alg];
+                     SPtr<BCAlgorithm> bca = bcMap[alg];
                      
                      if (bca)
                      {
@@ -89,7 +89,7 @@ void BoundaryConditionsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void BoundaryConditionsBlockVisitor::addBC(BCAdapterPtr bc)
+void BoundaryConditionsBlockVisitor::addBC(SPtr<BCAdapter> bc)
 {
    bcMap.insert(std::make_pair(bc->getBcAlgorithmType(), bc->getAlgorithm()));
 }

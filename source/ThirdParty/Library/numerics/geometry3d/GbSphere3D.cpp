@@ -74,7 +74,7 @@ void GbSphere3D::finalize()
    if(this->midPoint) this->midPoint->removeObserver(this);
 }
 /*=====================================================*/
-bool GbSphere3D::intersects(GbSphere3DPtr sphere)
+bool GbSphere3D::intersects(SPtr<GbSphere3D> sphere)
 {
     return this->getDistance(sphere->midPoint) < radius + sphere->radius;
 }

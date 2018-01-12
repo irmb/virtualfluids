@@ -5,7 +5,7 @@
 
 using namespace std;
 
-ZoltanPartitioningGridVisitor::ZoltanPartitioningGridVisitor(CommunicatorPtr comm, int numOfDirs, int numOfLocalParts) :
+ZoltanPartitioningGridVisitor::ZoltanPartitioningGridVisitor(SPtr<Communicator> comm, int numOfDirs, int numOfLocalParts) :
 comm(comm), 
 numOfDirs(numOfDirs), 
 numOfLocalParts(numOfLocalParts)
@@ -17,7 +17,7 @@ ZoltanPartitioningGridVisitor::~ZoltanPartitioningGridVisitor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ZoltanPartitioningGridVisitor::visit(Grid3DPtr grid)
+void ZoltanPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 {
    UBLOG(logDEBUG5, "ZoltanPartitioningPatchVisitor::visit() - start");
 
@@ -36,7 +36,7 @@ void ZoltanPartitioningGridVisitor::visit(Grid3DPtr grid)
    UBLOG(logDEBUG5, "ZoltanPartitioningPatchVisitor::visit() - end");
 }
 //////////////////////////////////////////////////////////////////////////
-void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
+void ZoltanPartitioningGridVisitor::collectData(SPtr<Grid3D> grid)
 {
    int myRank = comm->getProcessID();
    int numOfProc = comm->getNumberOfProcesses();
@@ -56,7 +56,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
       graph = zp.getGraphData();
 
       int n = 0;
-      vector<Block3DPtr> blockVector;
+      vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(l, blockVector);
 
       if (blockVector.size() == 0)
@@ -66,7 +66,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
 
       //Verteilung von Ranks
       int rank = 0;
-      for(Block3DPtr block : blockVector)
+      for(SPtr<Block3D> block : blockVector)
       {
          block->setRank(rank);
          block->setPart(rank);
@@ -77,7 +77,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
 
       int vertices = 0;
 
-      for(Block3DPtr block : blockVector)
+      for(SPtr<Block3D> block : blockVector)
       {
          if (block->getRank() == myRank)
          {
@@ -88,7 +88,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
             int edges = 0;
             for (int dir = 0; dir <= numOfDirs; dir++)
             {
-               Block3DPtr neighBlock = (grid->getNeighborBlock(dir,
+               SPtr<Block3D> neighBlock = (grid->getNeighborBlock(dir,
                   block->getX1(), block->getX2(), block->getX3(), l));
 
                if (neighBlock)
@@ -112,7 +112,7 @@ void ZoltanPartitioningGridVisitor::collectData(Grid3DPtr grid)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void ZoltanPartitioningGridVisitor::repartGrid(Grid3DPtr grid, ZoltanPartitioner& zp)
+void ZoltanPartitioningGridVisitor::repartGrid(SPtr<Grid3D> grid, ZoltanPartitioner& zp)
 {
    if (zp.areChanges())
    {
@@ -130,7 +130,7 @@ void ZoltanPartitioningGridVisitor::repartGrid(Grid3DPtr grid, ZoltanPartitioner
       {
          if (rExportGlobalGids[i] != -1)
          {
-            Block3DPtr block = grid->getBlock(rExportGlobalGids[i]);
+            SPtr<Block3D> block = grid->getBlock(rExportGlobalGids[i]);
             if(block)
             {
                block->setRank(rExportProcs[i]);

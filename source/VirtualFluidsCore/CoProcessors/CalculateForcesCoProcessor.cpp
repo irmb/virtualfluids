@@ -13,9 +13,9 @@
 #include "EsoTwist3D.h"
 #include "DistributionArray3D.h"
 
-CalculateForcesCoProcessor::CalculateForcesCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
+CalculateForcesCoProcessor::CalculateForcesCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, 
                                                     const std::string &path,
-                                                    CommunicatorPtr comm ,
+                                                    SPtr<Communicator> comm ,
                                                     double v, double a) : 
                                                     CoProcessor(grid, s),
                                                     path(path), comm(comm),
@@ -105,7 +105,7 @@ void CalculateForcesCoProcessor::calculateForces()
    forceX2global = 0.0;
    forceX3global = 0.0;
 
-   for(D3Q27InteractorPtr interactor : interactors)
+   for(SPtr<D3Q27Interactor> interactor : interactors)
    {
       for(BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
@@ -113,12 +113,12 @@ void CalculateForcesCoProcessor::calculateForces()
          double forceX2 = 0.0;
          double forceX3 = 0.0;
 
-         Block3DPtr block = t.first;
+         SPtr<Block3D> block = t.first;
          std::set< std::vector<int> >& transNodeIndicesSet = t.second;
 
-         ILBMKernelPtr kernel = block->getKernel();
-         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
+         SPtr<ILBMKernel> kernel = block->getKernel();
+         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
          distributions->swap();
 
          int ghostLayerWidth = kernel->getGhostLayerWidth();
@@ -140,7 +140,7 @@ void CalculateForcesCoProcessor::calculateForces()
 
             if(bcArray->isFluid(x1,x2,x3)) //es kann sein, dass der node von einem anderen interactor z.B. als solid gemarkt wurde!!!
             {
-               BoundaryConditionsPtr bc = bcArray->getBC(x1,x2,x3);
+               SPtr<BoundaryConditions> bc = bcArray->getBC(x1,x2,x3);
                UbTupleDouble3 forceVec = getForces(x1,x2,x3,distributions,bc);
                forceX1 += val<1>(forceVec);
                forceX2 += val<2>(forceVec);
@@ -184,7 +184,7 @@ void CalculateForcesCoProcessor::calculateForces()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3,  std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc)
+UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3,  SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc)
 {
    UbTupleDouble3 force(0.0,0.0,0.0);
    
@@ -201,8 +201,8 @@ UbTupleDouble3 CalculateForcesCoProcessor::getForces(int x1, int x2, int x3,  st
          if(bc->hasNoSlipBoundaryFlag(fdir))
          {
             const int invDir = D3Q27System::INVDIR[fdir];
-            f = std::dynamic_pointer_cast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1, x2, x3, invDir);
-            fnbr = std::dynamic_pointer_cast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
+            f = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1, x2, x3, invDir);
+            fnbr = dynamicPointerCast<EsoTwist3D>(distributions)->getDistributionInvForDirection(x1+D3Q27System::DX1[invDir], x2+D3Q27System::DX2[invDir], x3+D3Q27System::DX3[invDir], fdir);
 
             forceX1 += (f + fnbr)*D3Q27System::DX1[invDir];
             forceX2 += (f + fnbr)*D3Q27System::DX2[invDir];
@@ -226,7 +226,7 @@ void CalculateForcesCoProcessor::calculateCoefficients()
    C3 = 2.0*F3/(v*v*a);
 }
 //////////////////////////////////////////////////////////////////////////
-void CalculateForcesCoProcessor::addInteractor( D3Q27InteractorPtr interactor )
+void CalculateForcesCoProcessor::addInteractor( SPtr<D3Q27Interactor> interactor )
 {
    interactors.push_back(interactor);
 }

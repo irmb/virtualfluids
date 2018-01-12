@@ -113,8 +113,8 @@ public:
    void init(const D3Q27Interactor* const& interactor, const double& time=0);
    void update(const D3Q27Interactor* const& interactor, const double& time=0);
 
-   void adaptBCForDirection( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time=0 );
-   void adaptBC( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time=0 );
+   void adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time=0 );
+   void adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time=0 );
 
    //------------- implements D3Q27BoundaryConditionAdapter ----- end
 
@@ -130,7 +130,7 @@ protected:
    void unsetTimeDependent() { (this->type &=  ~TIMEDEPENDENT); }
 
    void clear() { vx1BCs.clear(); vx2BCs.clear();  vx3BCs.clear(); this->init(); }
-   void setNodeVelocity(const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep);
+   void setNodeVelocity(const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep);
 
 private:
    mutable mu::value_type x1, x2, x3;

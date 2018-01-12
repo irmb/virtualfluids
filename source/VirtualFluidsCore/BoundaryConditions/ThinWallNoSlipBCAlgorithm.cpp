@@ -15,9 +15,9 @@ ThinWallNoSlipBCAlgorithm::~ThinWallNoSlipBCAlgorithm()
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr ThinWallNoSlipBCAlgorithm::clone()
+SPtr<BCAlgorithm> ThinWallNoSlipBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new ThinWallNoSlipBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new ThinWallNoSlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ void ThinWallNoSlipBCAlgorithm::applyBC()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void ThinWallNoSlipBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void ThinWallNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

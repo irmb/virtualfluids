@@ -2,19 +2,17 @@
 #define VelocityBoundaryCondition_h__
 
 #include "BCAlgorithm.h"
+#include <PointerDefinitions.h>
 
 class DistributionArray3D;
-
-class VelocityBCAlgorithm;
-typedef std::shared_ptr<VelocityBCAlgorithm> VelocityBCAlgorithmPtr;
 
 class VelocityBCAlgorithm : public BCAlgorithm
 {
 public:
    VelocityBCAlgorithm();
    ~VelocityBCAlgorithm();
-   BCAlgorithmPtr clone();
-   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone();
+   void addDistributions(SPtr<DistributionArray3D> distributions);
 
    void applyBC() override;
 private:

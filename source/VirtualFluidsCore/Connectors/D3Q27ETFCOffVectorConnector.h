@@ -18,7 +18,7 @@
 #include "LBMKernel.h"
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "BCProcessor.h"
 #include "DataSet3D.h"
@@ -39,9 +39,9 @@ public:
 
 protected:
 	typedef typename VectorTransmitter::value_type  vector_type;
-	typedef std::shared_ptr< VectorTransmitter > VectorTransmitterPtr;
+	typedef SPtr< VectorTransmitter > VectorTransmitterPtr;
 public:
-   D3Q27ETFCOffVectorConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, 
+   D3Q27ETFCOffVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, 
       InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
 	bool isLocalConnector();
@@ -95,9 +95,9 @@ protected:
 	void getLocalMinMax(int& minX1, int& minX2, int& minX3, int& maxX1, int& maxX2, int& maxX3);
    void getLocalMinMax(int& minX1, int& minX2, int& minX3, int& maxX1, int& maxX2, int& maxX3, CFconnectorType connType);
 	void getLocalMinMaxCF(int gMax, int& lMin, int& lMax);
-	void fillSendVector(DistributionArray3DPtr fFrom, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index);
+	void fillSendVector(SPtr<DistributionArray3D> fFrom, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index);
 
-	void distributeReceiveVector(DistributionArray3DPtr fTo, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index);
+	void distributeReceiveVector(SPtr<DistributionArray3D> fTo, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index);
 	void readICellFfromData(vector_type& data, int& index, D3Q27ICell& icellF);
 	void readNodeFromVector(vector_type& data, int& index, LBMReal* inode);
 	void getLocalOffsets(const int& gMax, int& oMin);
@@ -107,7 +107,7 @@ protected:
 };
 ////////////////////////////////////////////////////////////////////////////
 template< typename VectorTransmitter >
-D3Q27ETFCOffVectorConnector<VectorTransmitter>::D3Q27ETFCOffVectorConnector(Block3DPtr block, VectorTransmitterPtr sender, 
+D3Q27ETFCOffVectorConnector<VectorTransmitter>::D3Q27ETFCOffVectorConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, 
 																			VectorTransmitterPtr receiver, int sendDir, 
 																			InterpolationProcessorPtr iprocessor,
                                                          CFconnectorType connType)
@@ -222,7 +222,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVectors()
 { 
 	using namespace D3Q27System;
 
-	DistributionArray3DPtr  fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
+	SPtr<DistributionArray3D>  fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
 	int maxX1 = (int)fFrom->getNX1();
 	int maxX2 = (int)fFrom->getNX2();
 	int maxX3 = (int)fFrom->getNX3();
@@ -728,11 +728,11 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVectors()
 }
 //////////////////////////////////////////////////////////////////////////
 template<  typename VectorTransmitter  > 
-void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVector(DistributionArray3DPtr fFrom, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index)
+void D3Q27ETFCOffVectorConnector< VectorTransmitter>::fillSendVector(SPtr<DistributionArray3D> fFrom, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index)
 {
 	int ix1, ix2, ix3;
 	LBMReal xoff, yoff, zoff;
-	BCArray3DPtr bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
+	SPtr<BCArray3D> bcArray = block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
 	for (ix3=lMinX3; ix3<lMaxX3; ix3+=2)
 	{
@@ -799,7 +799,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::distributeReceiveVectors()
 {
 	using namespace D3Q27System;
 
-	DistributionArray3DPtr  fTo = block.lock()->getKernel()->getDataSet()->getFdistributions();
+	SPtr<DistributionArray3D>  fTo = block.lock()->getKernel()->getDataSet()->getFdistributions();
 	int maxX1 = (int)fTo->getNX1();
 	int maxX2 = (int)fTo->getNX2();
 	int maxX3 = (int)fTo->getNX3();
@@ -1062,7 +1062,7 @@ void D3Q27ETFCOffVectorConnector< VectorTransmitter>::distributeReceiveVectors()
 }
 //////////////////////////////////////////////////////////////////////////
 template<  typename VectorTransmitter  > 
-void D3Q27ETFCOffVectorConnector< VectorTransmitter>::distributeReceiveVector(DistributionArray3DPtr fTo, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index)
+void D3Q27ETFCOffVectorConnector< VectorTransmitter>::distributeReceiveVector(SPtr<DistributionArray3D> fTo, const int& lMinX1, const int& lMinX2, const int& lMinX3, const int& lMaxX1, const int& lMaxX2, const int& lMaxX3, vector_type& data, int& index)
 {
 	if(data.size() == 0) return; 
 

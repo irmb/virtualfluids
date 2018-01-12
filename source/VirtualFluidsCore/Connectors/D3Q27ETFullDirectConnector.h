@@ -22,7 +22,7 @@
 class D3Q27ETFullDirectConnector : public LocalBlock3DConnector
 {
 public:
-   D3Q27ETFullDirectConnector(Block3DPtr from, Block3DPtr to, int sendDir);
+   D3Q27ETFullDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
    void init();
    void sendVectors();
 
@@ -41,8 +41,8 @@ private:
    CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributionsTo;
    CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributionsTo;
 
-   EsoTwist3DPtr  fFrom;
-   EsoTwist3DPtr  fTo;
+   SPtr<EsoTwist3D>  fFrom;
+   SPtr<EsoTwist3D>  fTo;
 };
 
 

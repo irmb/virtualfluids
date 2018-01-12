@@ -11,7 +11,7 @@
 #include "BCArray3D.h"
 
 //////////////////////////////////////////////////////////////////////////
-IntegrateValuesHelper::IntegrateValuesHelper(Grid3DPtr grid, CommunicatorPtr comm,
+IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, SPtr<Communicator> comm,
    double minX1, double minX2,
    double minX3, double maxX1,
    double maxX2, double maxX3) :
@@ -26,7 +26,7 @@ IntegrateValuesHelper::IntegrateValuesHelper(Grid3DPtr grid, CommunicatorPtr com
    init(-1);
 }
 //////////////////////////////////////////////////////////////////////////
-IntegrateValuesHelper::IntegrateValuesHelper(Grid3DPtr grid, CommunicatorPtr comm,
+IntegrateValuesHelper::IntegrateValuesHelper(SPtr<Grid3D> grid, SPtr<Communicator> comm,
    double minX1, double minX2,
    double minX3, double maxX1,
    double maxX2, double maxX3,
@@ -68,9 +68,9 @@ void IntegrateValuesHelper::init(int level)
    double numFluids = 0.0;
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      std::vector<Block3DPtr> blockVector;
+      std::vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(level, gridRank, blockVector);
-      for(Block3DPtr block : blockVector)
+      for(SPtr<Block3D> block : blockVector)
       {
          CalcNodes cn;
          cn.block = block;
@@ -81,10 +81,10 @@ void IntegrateValuesHelper::init(int level)
          orgX2 = val<2>(org);
          orgX3 = val<3>(org);
 
-         LBMKernelPtr kernel = std::dynamic_pointer_cast<LBMKernel>(block->getKernel());
-         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+         SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
+         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
          int ghostLayerWitdh = kernel->getGhostLayerWidth();
-         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
          double internX1, internX2, internX3;
 
          double         dx = grid->getDeltaX(block);
@@ -164,9 +164,9 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
    double numFluids = 0.0;
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      std::vector<Block3DPtr> blockVector;
+      std::vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(level, gridRank, blockVector);
-      for(Block3DPtr block : blockVector)
+      for(SPtr<Block3D> block : blockVector)
       {
          Node cn;
          cn.block = block;
@@ -177,10 +177,10 @@ void IntegrateValuesHelper::prepare2DMatrix(int level)
          orgX2 = val<2>(org);
          orgX3 = val<3>(org);
 
-         ILBMKernelPtr kernel = block->getKernel();
-         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+         SPtr<ILBMKernel> kernel = block->getKernel();
+         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
          int ghostLayerWitdh = kernel->getGhostLayerWidth();
-         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
          double internX1, internX2, internX3;
 
          double         dx = grid->getDeltaX(block);
@@ -243,8 +243,8 @@ void IntegrateValuesHelper::calculateAV()
 
    for(CalcNodes cn : cnodes)
    {
-      ILBMKernelPtr kernel = cn.block->getKernel();
-      AverageValuesArray3DPtr averagedValues = kernel->getDataSet()->getAverageValues();
+      SPtr<ILBMKernel> kernel = cn.block->getKernel();
+      SPtr<AverageValuesArray3D> averagedValues = kernel->getDataSet()->getAverageValues();
 
       for(UbTupleInt3 node : cn.nodes)
       {
@@ -346,10 +346,10 @@ void IntegrateValuesHelper::calculateAV2()
 
    for(CalcNodes cn : cnodes)
    {
-      ILBMKernelPtr kernel = cn.block->getKernel();
-      AverageValuesArray3DPtr averagedVelocity = kernel->getDataSet()->getAverageVelocity();
-      AverageValuesArray3DPtr averagedFluctuations = kernel->getDataSet()->getAverageFluctuations();
-      AverageValuesArray3DPtr averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
+      SPtr<ILBMKernel> kernel = cn.block->getKernel();
+      SPtr<AverageValuesArray3D> averagedVelocity = kernel->getDataSet()->getAverageVelocity();
+      SPtr<AverageValuesArray3D> averagedFluctuations = kernel->getDataSet()->getAverageFluctuations();
+      SPtr<AverageValuesArray3D> averagedTriplecorrelations = kernel->getDataSet()->getAverageTriplecorrelations();
 
       for(UbTupleInt3 node : cn.nodes)
       {
@@ -468,7 +468,7 @@ void IntegrateValuesHelper::calculateMQ()
 
    for(CalcNodes cn : cnodes)
    {
-      ILBMKernelPtr kernel = cn.block->getKernel();
+      SPtr<ILBMKernel> kernel = cn.block->getKernel();
       LBMReal dx = 1.0 / (LBMReal)(1 << cn.block->getLevel());
       LBMReal cellVolume = dx*dx*dx;
 
@@ -481,8 +481,8 @@ void IntegrateValuesHelper::calculateMQ()
          calcMacros = &D3Q27System::calcIncompMacroscopicValues;
       }
 
-      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-      DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
       for(UbTupleInt3 node : cn.nodes)
       {
          distributions->getDistribution(f, val<1>(node), val<2>(node), val<3>(node));

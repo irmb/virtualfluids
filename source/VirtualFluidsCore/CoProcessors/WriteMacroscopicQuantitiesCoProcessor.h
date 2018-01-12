@@ -1,7 +1,7 @@
 #ifndef D3Q27MACROSCOPICQUANTITIESCoProcessor_H
 #define D3Q27MACROSCOPICQUANTITIESCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 #include <vector>
 
@@ -16,24 +16,21 @@ class LBMUnitConverter;
 class WbWriter;
 class Block3D;
 
-class WriteMacroscopicQuantitiesCoProcessor;
-typedef std::shared_ptr<WriteMacroscopicQuantitiesCoProcessor> WriteMacroscopicQuantitiesCoProcessorPtr;
-
 class WriteMacroscopicQuantitiesCoProcessor : public CoProcessor 
 {
 public:
    WriteMacroscopicQuantitiesCoProcessor();
-   WriteMacroscopicQuantitiesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
+   WriteMacroscopicQuantitiesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
                                            const std::string& path, WbWriter* const writer, 
-                                           std::shared_ptr<LBMUnitConverter> conv, std::shared_ptr<Communicator> comm);
+                                           SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
    ~WriteMacroscopicQuantitiesCoProcessor(){}
 
    void process(double step) override;
 
 protected:
    void collectData(double step);
-   void addDataMQ(std::shared_ptr<Block3D> block);
-   void addDataGeo(std::shared_ptr<Block3D> block);
+   void addDataMQ(SPtr<Block3D> block);
+   void addDataGeo(SPtr<Block3D> block);
    void clearData();
 
 private:
@@ -44,13 +41,13 @@ private:
    std::vector<std::vector<double> > data; 
    std::string path;
    WbWriter* writer;
-   std::shared_ptr<LBMUnitConverter> conv;
+   SPtr<LBMUnitConverter> conv;
    bool bcInformation;
-   std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
+   std::vector<std::vector<SPtr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
-   std::shared_ptr<Communicator> comm;
+   SPtr<Communicator> comm;
 
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;

@@ -32,9 +32,7 @@ class GbObject3DCreator;
 #include <ctl.h>
 #endif
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbObject3D;
-typedef VFSharedPtr<GbObject3D> GbObject3DPtr;
+#include <PointerDefinitions.h>
 
 
 /*=========================================================================*/

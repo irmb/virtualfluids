@@ -1,7 +1,7 @@
 #ifndef PressureCoefficientCoProcessor_h__
 #define PressureCoefficientCoProcessor_h__
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 #include <vector>
 
@@ -18,13 +18,13 @@ class UbScheduler;
 class PressureCoefficientCoProcessor: public CoProcessor
 {
 public:
-   PressureCoefficientCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
-       std::shared_ptr<GbCuboid3D> plane, const std::string& path, std::shared_ptr<Communicator> comm);
+   PressureCoefficientCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
+       SPtr<GbCuboid3D> plane, const std::string& path, SPtr<Communicator> comm);
    ~PressureCoefficientCoProcessor();
 
    void process(double step) override;
 
-   void addInteractor(std::shared_ptr<D3Q27Interactor> interactor);
+   void addInteractor(SPtr<D3Q27Interactor> interactor);
    void readValues(int step);
 
 protected:
@@ -33,10 +33,10 @@ protected:
    void writeValues(int step);
 
 private:
-    std::shared_ptr<GbCuboid3D> plane;
+    SPtr<GbCuboid3D> plane;
    std::string path;
-   std::shared_ptr<Communicator> comm;
-   std::vector<std::shared_ptr<D3Q27Interactor> > interactors;
+   SPtr<Communicator> comm;
+   std::vector<SPtr<D3Q27Interactor> > interactors;
    int numberOfSteps;
    double maxStep;
 

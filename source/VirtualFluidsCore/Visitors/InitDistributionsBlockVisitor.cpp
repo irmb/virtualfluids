@@ -108,7 +108,7 @@ void InitDistributionsBlockVisitor::setRho( LBMReal rho )
    this->checkFunction(muRho); 
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block) 
+void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block) 
 {
    using namespace D3Q27System;
 
@@ -138,7 +138,7 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
    if (blockRank == gridRank && block->isActive())
    {
-       ILBMKernelPtr kernel = block->getKernel();
+       SPtr<ILBMKernel> kernel = block->getKernel();
       if (!kernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
@@ -149,8 +149,8 @@ void InitDistributionsBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block
 
       //UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-      EsoTwist3DPtr distributions = std::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
+      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<EsoTwist3D> distributions = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
 
       LBMReal f[D3Q27System::ENDF+1];
 

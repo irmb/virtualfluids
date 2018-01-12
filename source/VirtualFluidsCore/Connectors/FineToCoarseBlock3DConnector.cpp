@@ -1,7 +1,7 @@
 #include "FineToCoarseBlock3DConnector.h"
 
 ////////////////////////////////////////////////////////////////////////////
-FineToCoarseBlock3DConnector::FineToCoarseBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender,
+FineToCoarseBlock3DConnector::FineToCoarseBlock3DConnector(SPtr<Block3D> block, VectorTransmitterPtr sender,
    VectorTransmitterPtr receiver, int sendDir,
    InterpolationProcessorPtr iprocessor,
    CFconnectorType connType)

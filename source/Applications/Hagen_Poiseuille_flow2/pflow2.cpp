@@ -29,13 +29,13 @@ void pflowdp(string configname)
       double          deltax = config.getDouble("deltax");
 
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       LBMReal rhoLB = 0.0;
       double rhoLBinflow = dpLB*3.0;
 
-      LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       const int baseLevel = 0;
 
@@ -56,14 +56,14 @@ void pflowdp(string configname)
       double Re = (4 * h*Umax) / (3 * nuLB);
 
       //bc
-      BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(NoSlipBCAlgorithmPtr(new NoSlipBCAlgorithm()));
+      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+      noSlipBCAdapter->setBcAlgorithm(NoSlipSPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
-      denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
+      SPtr<BCAdapter> denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
+      denBCAdapterInflow->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
-      denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
+      SPtr<BCAdapter> denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
+      denBCAdapterOutflow->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
@@ -71,40 +71,40 @@ void pflowdp(string configname)
       bcVisitor.addBC(denBCAdapterInflow);
       bcVisitor.addBC(denBCAdapterOutflow);
 
-      Grid3DPtr grid(new Grid3D(comm));
+      SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setPeriodicX1(false);
       grid->setPeriodicX2(false);
       grid->setPeriodicX3(true);
       grid->setDeltaX(deltax);
       grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
-      GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
       double k1 = 4;
       double k2 = 8;
 
-      GbObject3DPtr refineCube1_1(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2 / k1 - 1.0, g_maxX3));
+      SPtr<GbObject3D> refineCube1_1(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2 / k1 - 1.0, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(refineCube1_1.get(), pathname + "/geo/refineCube1_1", WbWriterVtkXmlBinary::getInstance());
 
-      GbObject3DPtr refineCube1_2(new GbCuboid3D(g_minX1, g_maxX2 - g_maxX2 / k1 + 1.0, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<GbObject3D> refineCube1_2(new GbCuboid3D(g_minX1, g_maxX2 - g_maxX2 / k1 + 1.0, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(refineCube1_2.get(), pathname + "/geo/refineCube1_2", WbWriterVtkXmlBinary::getInstance());
 
-      GbObject3DPtr refineCube2_1(new GbCuboid3D(g_minX1 + 2 * blockLength + 2 * deltax, g_minX2, g_minX3, g_maxX1 - 2 * blockLength - 2 * deltax, g_maxX2 / k2 - 1.0, g_maxX3));
+      SPtr<GbObject3D> refineCube2_1(new GbCuboid3D(g_minX1 + 2 * blockLength + 2 * deltax, g_minX2, g_minX3, g_maxX1 - 2 * blockLength - 2 * deltax, g_maxX2 / k2 - 1.0, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(refineCube2_1.get(), pathname + "/geo/refineCube2_1", WbWriterVtkXmlBinary::getInstance());
 
-      GbObject3DPtr refineCube2_2(new GbCuboid3D(g_minX1 + 2 * blockLength + 2 * deltax, g_maxX2 - g_maxX2 / k2 + 1.0, g_minX3, g_maxX1 - 2 * blockLength - 2 * deltax, g_maxX2, g_maxX3));
+      SPtr<GbObject3D> refineCube2_2(new GbCuboid3D(g_minX1 + 2 * blockLength + 2 * deltax, g_maxX2 - g_maxX2 / k2 + 1.0, g_minX3, g_maxX1 - 2 * blockLength - 2 * deltax, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(refineCube2_2.get(), pathname + "/geo/refineCube2_2", WbWriterVtkXmlBinary::getInstance());
 
-      GbObject3DPtr refineCube2_3(new GbCuboid3D(g_minX1 + blockLength + 2 * deltax, g_minX2 + blockLength + 2 * deltax, g_minX3 + blockLength + 2 * deltax, g_maxX1 - blockLength - 2 * deltax, g_maxX2 - blockLength - 2 * deltax, g_maxX3 - blockLength - 2 * deltax));
+      SPtr<GbObject3D> refineCube2_3(new GbCuboid3D(g_minX1 + blockLength + 2 * deltax, g_minX2 + blockLength + 2 * deltax, g_minX3 + blockLength + 2 * deltax, g_maxX1 - blockLength - 2 * deltax, g_maxX2 - blockLength - 2 * deltax, g_maxX3 - blockLength - 2 * deltax));
       if (myid == 0) GbSystem3D::writeGeoObject(refineCube2_3.get(), pathname + "/geo/refineCube2_3", WbWriterVtkXmlBinary::getInstance());
 
-      GbObject3DPtr refineCube3(new GbCuboid3D(g_minX1 + 2.0*(g_maxX1/3.0), g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<GbObject3D> refineCube3(new GbCuboid3D(g_minX1 + 2.0*(g_maxX1/3.0), g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(refineCube3.get(), pathname + "/geo/refineCube3", WbWriterVtkXmlBinary::getInstance());
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      UbSchedulerPtr rSch(new UbScheduler(restartStep));
+      SPtr<UbScheduler> rSch(new UbScheduler(restartStep));
       RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
@@ -152,7 +152,7 @@ void pflowdp(string configname)
          //GbCuboid3DPtr geoOutflow (new GbCuboid3D(g_minX1-4.0*blockLength, g_minX2-4.0*blockLength, g_maxX3, g_maxX1+4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3+4.0*blockLength));
          //if(myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          if (refineLevel > 0)
          {
@@ -170,17 +170,17 @@ void pflowdp(string configname)
          }
 
          //walls
-         D3Q27InteractorPtr addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter,Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter,Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter,Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter,Interactor3D::SOLID));
 
-         D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
 
          //outflow
-         D3Q27InteractorPtr outflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, denBCAdapterOutflow, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapterOutflow, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
-         Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          ////////////////////////////////////////////
          /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
@@ -231,11 +231,11 @@ void pflowdp(string configname)
          }
 
          int kernelType = 2;
-         LBMKernelPtr kernel;
-         kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         SPtr<LBMKernel> kernel;
+         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
          //}
 
-         BCProcessorPtr bcProc(new BCProcessor());
+         SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
@@ -267,8 +267,8 @@ void pflowdp(string configname)
          grid->accept(initVisitor);
 
          //Postrozess
-         UbSchedulerPtr geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessorPtr ppgeo(
+         SPtr<UbScheduler> geoSch(new UbScheduler(1));
+         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
             new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
          ppgeo->process(0);
          ppgeo.reset();
@@ -286,15 +286,15 @@ void pflowdp(string configname)
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
-      UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      UbSchedulerPtr stepSch(new UbScheduler(outTime));
+      SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
       WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
 
-      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();

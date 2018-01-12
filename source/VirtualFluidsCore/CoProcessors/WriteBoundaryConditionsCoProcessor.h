@@ -1,7 +1,7 @@
 #ifndef WriteBoundaryConditionsCoProcessor_H
 #define WriteBoundaryConditionsCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 #include <vector>
 
@@ -15,23 +15,20 @@ class WbWriter;
 class Block3D;
 class LBMUnitConverter;
 
-class WriteBoundaryConditionsCoProcessor;
-typedef std::shared_ptr<WriteBoundaryConditionsCoProcessor> WriteBoundaryConditionsCoProcessorPtr;
-
 class WriteBoundaryConditionsCoProcessor : public  CoProcessor
 {
 public:
    WriteBoundaryConditionsCoProcessor();
-   WriteBoundaryConditionsCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s,
+   WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
       const std::string& path, WbWriter* const writer,
-       std::shared_ptr<LBMUnitConverter> conv, std::shared_ptr<Communicator> comm);
+       SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
    ~WriteBoundaryConditionsCoProcessor() {}
 
    void process(double step) override;
 
 protected:
    void collectData(double step);
-   void addDataGeo(std::shared_ptr<Block3D> block);
+   void addDataGeo(SPtr<Block3D> block);
    void clearData();
 
 private:
@@ -41,12 +38,12 @@ private:
    std::vector<std::vector<double> > data;
    std::string path;
    WbWriter* writer;
-   std::shared_ptr<LBMUnitConverter> conv;
+   SPtr<LBMUnitConverter> conv;
    bool bcInformation;
-   std::vector<std::vector<std::shared_ptr<Block3D> > > blockVector;
+   std::vector<std::vector<SPtr<Block3D> > > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;
-   std::shared_ptr<Communicator> comm;
+   SPtr<Communicator> comm;
 };
 #endif

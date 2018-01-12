@@ -1,11 +1,8 @@
 #ifndef BC_PROCESSSOR_H
 #define BC_PROCESSSOR_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <vector>
-
-class BCProcessor;
-typedef std::shared_ptr<BCProcessor> BCProcessorPtr;
 
 class BCArray3D;
 class BCAlgorithm;
@@ -15,20 +12,20 @@ class BCProcessor
 {
 public:
    BCProcessor();
-   BCProcessor(std::shared_ptr<ILBMKernel> kernel);
+   BCProcessor(SPtr<ILBMKernel> kernel);
    virtual ~BCProcessor();
-   virtual std::shared_ptr<BCArray3D> getBCArray();
-   virtual void setBCArray(std::shared_ptr<BCArray3D> bcarray);
-   virtual BCProcessorPtr clone(std::shared_ptr<ILBMKernel> kernel);
+   virtual SPtr<BCArray3D> getBCArray();
+   virtual void setBCArray(SPtr<BCArray3D> bcarray);
+   virtual SPtr<BCProcessor> clone(SPtr<ILBMKernel> kernel);
 
-   void addBC(std::shared_ptr<BCAlgorithm> bc);
+   void addBC(SPtr<BCAlgorithm> bc);
    void applyPreCollisionBC();
    void applyPostCollisionBC();
    void clearBC();
 protected:
-   std::vector<std::shared_ptr<BCAlgorithm> > preBC;
-   std::vector<std::shared_ptr<BCAlgorithm> > postBC;
-   std::shared_ptr<BCArray3D> bcArray;
+   std::vector<SPtr<BCAlgorithm> > preBC;
+   std::vector<SPtr<BCAlgorithm> > postBC;
+   SPtr<BCArray3D> bcArray;
 
 private:
 

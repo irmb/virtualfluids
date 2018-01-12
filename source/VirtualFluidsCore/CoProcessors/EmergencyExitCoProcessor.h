@@ -8,7 +8,7 @@
 #ifndef EmergencyExitCoProcessor_H
 #define EmergencyExitCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 
 #include "CoProcessor.h"
@@ -18,13 +18,10 @@ class Communicator;
 class Grid3D;
 class UbScheduler;
 
-class EmergencyExitCoProcessor;
-typedef std::shared_ptr<EmergencyExitCoProcessor> EmergencyExitCoProcessorPtr;
-
 class EmergencyExitCoProcessor : public CoProcessor
 {
 public:
-    EmergencyExitCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<MPIIORestartCoProcessor> rp, std::shared_ptr<Communicator> comm);
+    EmergencyExitCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm);
     virtual ~EmergencyExitCoProcessor();
 
     void process(double step) override;
@@ -37,8 +34,8 @@ protected:
 
 private:
     std::string path;
-    std::shared_ptr<Communicator> comm;
-    std::shared_ptr<MPIIORestartCoProcessor> rp;
+    SPtr<Communicator> comm;
+    SPtr<MPIIORestartCoProcessor> rp;
     std::string metafile;
 };
 

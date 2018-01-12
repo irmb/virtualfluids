@@ -9,7 +9,7 @@
 #include "basics/container/CbArray3D.h"
 
 class IncompressibleCumulantWithSpongeLayerLBMKernel;
-typedef std::shared_ptr<IncompressibleCumulantWithSpongeLayerLBMKernel> LBMKernelETD3Q27CCLBWithSpongeLayerPtr;
+typedef SPtr<IncompressibleCumulantWithSpongeLayerLBMKernel> LBMKernelETD3Q27CCLBWithSpongeLayerPtr;
 
 //! \brief   Cascaded Cumulant LBM kernel. 
 //! \details CFD solver with sponge layer that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model <br>
@@ -36,7 +36,7 @@ public:
    //! \param p   set relaxation parameter: NORMAL is OxyyMxzz = 1.0 and MAGIC is OxyyMxzz = 2.0 +(-collFactor)
    IncompressibleCumulantWithSpongeLayerLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~IncompressibleCumulantWithSpongeLayerLBMKernel(void);
-   LBMKernelPtr clone();
+   SPtr<LBMKernel> clone();
    void calculate();
    void initRelaxFactor(int vdir, double vL1, double vdx, double vSP);
    //! \param vdir where the sponge layer is placed

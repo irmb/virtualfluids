@@ -11,7 +11,7 @@ SetInterpolationDirsBlockVisitor::SetInterpolationDirsBlockVisitor(std::vector<i
 
 }
 //////////////////////////////////////////////////////////////////////////
-void SetInterpolationDirsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void SetInterpolationDirsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    int ix1, ix2, ix3, level;
    ix1 = block->getX1();
@@ -21,15 +21,15 @@ void SetInterpolationDirsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    using namespace D3Q27System;
    if(level==0) return;
 
-   Block3DPtr parentblock = grid->getSuperBlock(ix1,ix2,ix3,level);
+   SPtr<Block3D> parentblock = grid->getSuperBlock(ix1,ix2,ix3,level);
    if(!parentblock) return;
 
    for(int dir : dirs)
    {
-      Block3DPtr nblock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
+      SPtr<Block3D> nblock = grid->getNeighborBlock(dir, ix1, ix2, ix3, level);
       if(!nblock)
       {
-         Block3DPtr p_nblock = grid->getNeighborBlock(dir, parentblock);
+         SPtr<Block3D> p_nblock = grid->getNeighborBlock(dir, parentblock);
 
          if (p_nblock)
          {
@@ -125,24 +125,24 @@ void SetInterpolationDirsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-//void SetInterpolationDirsBlockVisitor::checkFlagDir(Grid3DPtr grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level)
+//void SetInterpolationDirsBlockVisitor::checkFlagDir(SPtr<Grid3D> grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level)
 //{
-//   Block3DPtr block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
-//   Block3DPtr block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
+//   SPtr<Block3D> block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
+//   SPtr<Block3D> block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
 //   if (!((block1 && block2)  ||  (!block1 && !block2)))
 //      flagDirection = false;
 //   else
 //      flagDirection = true;
 //}
 
-void SetInterpolationDirsBlockVisitor::checkFlagDir(Grid3DPtr grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level)
+void SetInterpolationDirsBlockVisitor::checkFlagDir(SPtr<Grid3D> grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level)
 {
-   Block3DPtr block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
-   Block3DPtr block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
+   SPtr<Block3D> block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
+   SPtr<Block3D> block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
 
-   Block3DPtr pblock = grid->getSuperBlock(ix1,ix2,ix3,level);
-   Block3DPtr pblock1 = grid->getNeighborBlock(dir1, pblock);
-   Block3DPtr pblock2 = grid->getNeighborBlock(dir2, pblock);
+   SPtr<Block3D> pblock = grid->getSuperBlock(ix1,ix2,ix3,level);
+   SPtr<Block3D> pblock1 = grid->getNeighborBlock(dir1, pblock);
+   SPtr<Block3D> pblock2 = grid->getNeighborBlock(dir2, pblock);
 
    if (!((block1 && block2)||(!block1 && !block2)) || !((pblock1 && pblock2)||(!pblock1 && !pblock2)))
       flagDirection = false;
@@ -150,11 +150,11 @@ void SetInterpolationDirsBlockVisitor::checkFlagDir(Grid3DPtr grid, int dir1, in
       flagDirection = true;
 }
 //////////////////////////////////////////////////////////////////////////
-void SetInterpolationDirsBlockVisitor::checkFlagDir(Grid3DPtr grid, int dir1, int dir2, int dir3, bool &flagDirection, int ix1, int ix2, int ix3, int level)
+void SetInterpolationDirsBlockVisitor::checkFlagDir(SPtr<Grid3D> grid, int dir1, int dir2, int dir3, bool &flagDirection, int ix1, int ix2, int ix3, int level)
 {
-   Block3DPtr block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
-   Block3DPtr block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
-   Block3DPtr block3 = grid->getNeighborBlock(dir3, ix1, ix2, ix3, level);
+   SPtr<Block3D> block1 = grid->getNeighborBlock(dir1, ix1, ix2, ix3, level);
+   SPtr<Block3D> block2 = grid->getNeighborBlock(dir2, ix1, ix2, ix3, level);
+   SPtr<Block3D> block3 = grid->getNeighborBlock(dir3, ix1, ix2, ix3, level);
    if (!((block1 && block2 && block3)  ||  (!block1 && !block2 && !block3)))
       flagDirection=false;
    else 

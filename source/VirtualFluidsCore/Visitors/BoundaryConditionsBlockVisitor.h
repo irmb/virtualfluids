@@ -2,7 +2,7 @@
 #define BoundaryConditionBlockVisitor_h__
 
 #include <map>
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 
@@ -18,10 +18,10 @@ public:
    BoundaryConditionsBlockVisitor();
    virtual ~BoundaryConditionsBlockVisitor();
    
-      void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
-   void addBC(std::shared_ptr<BCAdapter> bc);
+      void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
+   void addBC(SPtr<BCAdapter> bc);
 protected:
 private:
-   std::map<char, std::shared_ptr<BCAlgorithm> > bcMap;
+   std::map<char, SPtr<BCAlgorithm> > bcMap;
 };
 #endif // BoundaryConditionBlockVisitor_h__

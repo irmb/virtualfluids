@@ -15,7 +15,7 @@
 
 using namespace std;
 
-InitDistributionsWithInterpolationGridVisitor::InitDistributionsWithInterpolationGridVisitor(Grid3DPtr oldGrid, InterpolationProcessorPtr iProcessor, LBMReal nu)
+InitDistributionsWithInterpolationGridVisitor::InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, InterpolationProcessorPtr iProcessor, LBMReal nu)
    : oldGrid(oldGrid), iProcessor(iProcessor), nu(nu)
 {
 
@@ -25,7 +25,7 @@ InitDistributionsWithInterpolationGridVisitor::~InitDistributionsWithInterpolati
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::visit(Grid3DPtr grid)
+void InitDistributionsWithInterpolationGridVisitor::visit(SPtr<Grid3D> grid)
 {
    newGrid = grid;
    int minInitLevel = newGrid->getCoarsestInitializedLevel();
@@ -35,11 +35,11 @@ void InitDistributionsWithInterpolationGridVisitor::visit(Grid3DPtr grid)
    for (int l = minInitLevel; l<=maxInitLevel; l++)
    {
       int n = 0;
-      vector<Block3DPtr> blockVector;
+      vector<SPtr<Block3D>> blockVector;
       newGrid->getBlocks(l, blockVector);
-      vector<Block3DPtr> tBlockID;
+      vector<SPtr<Block3D>> tBlockID;
 
-      for(Block3DPtr newBlock : blockVector)
+      for(SPtr<Block3D> newBlock : blockVector)
       {
          if (!newBlock)
             UB_THROW(UbException(UB_EXARGS, "block is not exist"));
@@ -47,7 +47,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(Grid3DPtr grid)
          int newBlockRank = newBlock->getRank();
          int newBlockLevel = newBlock->getLevel();
 
-         Block3DPtr oldBlock = oldGrid->getBlock(newBlock->getX1(), newBlock->getX2(), newBlock->getX3(), newBlock->getLevel());
+         SPtr<Block3D> oldBlock = oldGrid->getBlock(newBlock->getX1(), newBlock->getX2(), newBlock->getX3(), newBlock->getLevel());
          if (oldBlock)
          {
             int oldBlockRank = oldBlock->getRank();
@@ -66,7 +66,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(Grid3DPtr grid)
             Vector3D coords = newGrid->getNodeCoordinates(newBlock, 1, 1, 1);
 
             UbTupleInt3 oldGridBlockIndexes = oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel-1);
-            Block3DPtr oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel-1);
+            SPtr<Block3D> oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel-1);
 
             if (oldBlock)
             {
@@ -85,7 +85,7 @@ void InitDistributionsWithInterpolationGridVisitor::visit(Grid3DPtr grid)
             else
             {
                UbTupleInt3 oldGridBlockIndexes = oldGrid->getBlockIndexes(coords[0], coords[1], coords[2], newlevel+1);
-               Block3DPtr oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel+1);
+               SPtr<Block3D> oldBlock = oldGrid->getBlock(val<1>(oldGridBlockIndexes), val<2>(oldGridBlockIndexes), val<3>(oldGridBlockIndexes), newlevel+1);
                if (oldBlock)
                {
                   int oldBlockRank = oldBlock->getRank();
@@ -106,20 +106,20 @@ void InitDistributionsWithInterpolationGridVisitor::visit(Grid3DPtr grid)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::copyLocalBlock(Block3DPtr oldBlock, Block3DPtr newBlock)
+void InitDistributionsWithInterpolationGridVisitor::copyLocalBlock(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock)
 {
-   ILBMKernelPtr oldKernel = oldBlock->getKernel();
+   SPtr<ILBMKernel> oldKernel = oldBlock->getKernel();
    if (!oldKernel)
       throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+oldBlock->toString());
-   EsoTwist3DPtr oldDistributions = std::dynamic_pointer_cast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
+   SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-   ILBMKernelPtr kernel = newBlock->getKernel();
+   SPtr<ILBMKernel> kernel = newBlock->getKernel();
    if (!kernel)
       throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: "+newBlock->toString());
    kernel->getDataSet()->setFdistributions(oldDistributions);
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(Block3DPtr oldBlock, Block3DPtr newBlock)
+void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock)
 {
    int newGridRank = newGrid->getRank();
    int oldBlockRank = oldBlock->getRank();
@@ -127,14 +127,14 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(Block3DPtr o
 
    if (oldBlockRank == newGridRank && oldBlock->isActive())
    {
-       ILBMKernelPtr oldKernel = oldBlock->getKernel();
+       SPtr<ILBMKernel> oldKernel = oldBlock->getKernel();
       if (!oldKernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+oldBlock->toString());
-      EsoTwist3DPtr oldDistributions = std::dynamic_pointer_cast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
+      SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
       MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
       MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
@@ -142,15 +142,15 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(Block3DPtr o
    }
    else if (newBlockRank == newGridRank && newBlock->isActive())
    {
-       ILBMKernelPtr newKernel = newBlock->getKernel();
+       SPtr<ILBMKernel> newKernel = newBlock->getKernel();
       if (!newKernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: "+newBlock->toString()+UbSystem::toString(newGridRank));
 
-      EsoTwist3DPtr newDistributions = std::dynamic_pointer_cast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
+      SPtr<EsoTwist3D> newDistributions = dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getLocalDistributions();
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getNonLocalDistributions();
-      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getZeroDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getLocalDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getNonLocalDistributions();
+      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(newDistributions)->getZeroDistributions();
 
       MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -158,7 +158,7 @@ void InitDistributionsWithInterpolationGridVisitor::copyRemoteBlock(Block3DPtr o
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseToFine(Block3DPtr oldBlock, Block3DPtr newBlock)
+void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseToFine(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock)
 {
    D3Q27ICell icellC;
    D3Q27ICell icellF;
@@ -169,19 +169,19 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
 
    iProcessor->setOmegas(omegaC, omegaF);
 
-   ILBMKernelPtr oldKernel = oldBlock->getKernel();
+   SPtr<ILBMKernel> oldKernel = oldBlock->getKernel();
    if (!oldKernel)
       throw UbException(UB_EXARGS, "The LBM kernel isn't exist in old block: "+oldBlock->toString());
 
-   EsoTwist3DPtr oldDistributions = std::dynamic_pointer_cast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
+   SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-   BCArray3DPtr bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
 
-   ILBMKernelPtr newKernel = newBlock->getKernel();
+   SPtr<ILBMKernel> newKernel = newBlock->getKernel();
    if (!newKernel)
       throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: "+newBlock->toString());
 
-   EsoTwist3DPtr newDistributions = std::dynamic_pointer_cast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
+   SPtr<EsoTwist3D> newDistributions = dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
    int minX1 = 0;
    int minX2 = 0;
@@ -253,7 +253,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockCoarseT
          }
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarseToFine(Block3DPtr oldBlock, Block3DPtr newBlock)
+void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarseToFine(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock)
 {
    int newGridRank = newGrid->getRank();
    int oldBlockRank = oldBlock->getRank();
@@ -261,20 +261,20 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 
    if (oldBlockRank == newGridRank)
    {
-       ILBMKernelPtr oldKernel = oldBlock->getKernel();
+       SPtr<ILBMKernel> oldKernel = oldBlock->getKernel();
       if (!oldKernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+oldBlock->toString());
-      EsoTwist3DPtr oldDistributions = std::dynamic_pointer_cast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
+      SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
       MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
       MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
       MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0), (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
-      BCArray3DPtr bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+      SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
       std::vector< int >& bcDataVector = bcArrayOldBlock->getBcindexmatrixDataVector();
       MPI_Send(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, newBlockRank, 0, MPI_COMM_WORLD);
    }
@@ -289,11 +289,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
 
       iProcessor->setOmegas(omegaC, omegaF);
 
-      ILBMKernelPtr newKernel = newBlock->getKernel();
+      SPtr<ILBMKernel> newKernel = newBlock->getKernel();
       if (!newKernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: "+newBlock->toString());
 
-      EsoTwist3DPtr newDistributions = std::dynamic_pointer_cast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
+      SPtr<EsoTwist3D> newDistributions = dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
       int minX1 = 0;
       int minX2 = 0;
@@ -307,17 +307,17 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
       int bMaxX2 = (int)newDistributions->getNX2();
       int bMaxX3 = (int)newDistributions->getNX3();
 
-      EsoTwist3DPtr oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
+      SPtr<EsoTwist3D> oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
 
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
       MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0), (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-      BCArray3DPtr bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
+      SPtr<BCArray3D> bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
       std::vector< int >& bcDataVector = bcArrayOldBlock->getBcindexmatrixDataVector();
       MPI_Recv(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -383,7 +383,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockCoarse
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToCoarse(Block3DPtr oldBlock, Block3DPtr newBlock)
+void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToCoarse(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock)
 {
    LBMReal icellC[27];
    D3Q27ICell icellF;
@@ -394,19 +394,19 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
 
    iProcessor->setOmegas(omegaC, omegaF);
 
-   ILBMKernelPtr oldKernel = oldBlock->getKernel();
+   SPtr<ILBMKernel> oldKernel = oldBlock->getKernel();
    if (!oldKernel)
       throw UbException(UB_EXARGS, "The LBM kernel isn't exist in old block: "+oldBlock->toString());
 
-   EsoTwist3DPtr oldDistributions = std::dynamic_pointer_cast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
+   SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-   BCArray3DPtr bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
 
-   ILBMKernelPtr newKernel = newBlock->getKernel();
+   SPtr<ILBMKernel> newKernel = newBlock->getKernel();
    if (!newKernel)
       throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: "+newBlock->toString());
 
-   EsoTwist3DPtr newDistributions = std::dynamic_pointer_cast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
+   SPtr<EsoTwist3D> newDistributions = dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
    int minX1 = 0;
    int minX2 = 0;
@@ -479,7 +479,7 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateLocalBlockFineToC
          }
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineToCoarse(Block3DPtr oldBlock, Block3DPtr newBlock)
+void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineToCoarse(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock)
 {
    int newGridRank = newGrid->getRank();
    int oldBlockRank = oldBlock->getRank();
@@ -487,20 +487,20 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
 
    if (oldBlockRank == newGridRank)
    {
-       ILBMKernelPtr oldKernel = oldBlock->getKernel();
+       SPtr<ILBMKernel> oldKernel = oldBlock->getKernel();
       if (!oldKernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+oldBlock->toString());
-      EsoTwist3DPtr oldDistributions = std::dynamic_pointer_cast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
+      SPtr<EsoTwist3D> oldDistributions = dynamicPointerCast<EsoTwist3D>(oldKernel->getDataSet()->getFdistributions());
 
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
       MPI_Send(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)localDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
       MPI_Send(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
       MPI_Send(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0), (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, newBlockRank, 0, MPI_COMM_WORLD);
 
-      BCArray3DPtr bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
+      SPtr<BCArray3D> bcArrayOldBlock = oldBlock->getKernel()->getBCProcessor()->getBCArray();
       std::vector< int >& bcDataVector = bcArrayOldBlock->getBcindexmatrixDataVector();
       MPI_Send(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, newBlockRank, 0, MPI_COMM_WORLD);
    }
@@ -515,11 +515,11 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
 
       iProcessor->setOmegas(omegaC, omegaF);
 
-      ILBMKernelPtr newKernel = newBlock->getKernel();
+      SPtr<ILBMKernel> newKernel = newBlock->getKernel();
       if (!newKernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in new block: "+newBlock->toString());
 
-      EsoTwist3DPtr newDistributions = std::dynamic_pointer_cast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
+      SPtr<EsoTwist3D> newDistributions = dynamicPointerCast<EsoTwist3D>(newKernel->getDataSet()->getFdistributions());
 
       int minX1 = 0;
       int minX2 = 0;
@@ -533,17 +533,17 @@ void InitDistributionsWithInterpolationGridVisitor::interpolateRemoteBlockFineTo
       int bMaxX2 = (int)newDistributions->getNX2();
       int bMaxX3 = (int)newDistributions->getNX3();
 
-      EsoTwist3DPtr oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
+      SPtr<EsoTwist3D> oldDistributions(new D3Q27EsoTwist3DSplittedVector(bMaxX1, bMaxX2, bMaxX3, 0));
 
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
-      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
-      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getLocalDistributions();
+      CbArray4D<LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getNonLocalDistributions();
+      CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(oldDistributions)->getZeroDistributions();
 
       MPI_Recv(localDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)localDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(nonLocalDistributions->getStartAdressOfSortedArray(0, 0, 0, 0), (int)nonLocalDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(zeroDistributions->getStartAdressOfSortedArray(0, 0, 0), (int)zeroDistributions->getDataVector().size(), MPI_DOUBLE, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-      BCArray3DPtr bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
+      SPtr<BCArray3D> bcArrayOldBlock(new BCArray3D(bMaxX1, bMaxX2, bMaxX3, BCArray3D::FLUID));
       std::vector< int >& bcDataVector = bcArrayOldBlock->getBcindexmatrixDataVector();
       MPI_Recv(&bcDataVector[0], (int)bcDataVector.size(), MPI_INT, oldBlockRank, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 

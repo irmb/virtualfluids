@@ -29,13 +29,13 @@ Interactor3D::Interactor3D()
 
 }
 //////////////////////////////////////////////////////////////////////////
-Interactor3D::Interactor3D(Grid3DPtr grid, int type)
+Interactor3D::Interactor3D(SPtr<Grid3D> grid, int type)
    :   type(type)
      , grid(grid)
 {
 }
 //////////////////////////////////////////////////////////////////////////
-Interactor3D::Interactor3D(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type)
+Interactor3D::Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type)
    :   geoObject3D(geoObject3D)
      , grid(grid)
      , type(type)
@@ -43,7 +43,7 @@ Interactor3D::Interactor3D(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type)
 {
 }
 //////////////////////////////////////////////////////////////////////////
-Interactor3D::Interactor3D(GbObject3DPtr geoObject3D, Grid3DPtr grid, int type, Interactor3D::Accuracy a)
+Interactor3D::Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type, Interactor3D::Accuracy a)
    :   geoObject3D(geoObject3D)
    , grid(grid)
    , type(type)
@@ -208,7 +208,7 @@ bool Interactor3D::isBlockCuttingGeoObject(double minX1, double minX2, double mi
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::setSolidBlock(Block3DPtr block)
+void Interactor3D::setSolidBlock(SPtr<Block3D> block)
 {
    double minX1,minX2,minX3,maxX1,maxX2,maxX3;
 
@@ -243,7 +243,7 @@ void Interactor3D::setSolidBlock(Block3DPtr block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Interactor3D::setBCBlock(Block3DPtr block)
+void Interactor3D::setBCBlock(SPtr<Block3D> block)
 {
    double minX1,minX2,minX3,maxX1,maxX2,maxX3;
 
@@ -274,7 +274,7 @@ void Interactor3D::initInteractor(const double& timeStep)
 {
    //UBLOG(logINFO, "transBlocks.size = "<<transBlocks.size());
 
-   for(Block3DPtr block : bcBlocks)
+   for(SPtr<Block3D> block : bcBlocks)
    {
       this->setDifferencesToGbObject3D(block);
    }

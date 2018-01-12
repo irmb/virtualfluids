@@ -13,13 +13,13 @@ NoSlipBCAlgorithm::~NoSlipBCAlgorithm()
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr NoSlipBCAlgorithm::clone()
+SPtr<BCAlgorithm> NoSlipBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new NoSlipBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new NoSlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void NoSlipBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void NoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

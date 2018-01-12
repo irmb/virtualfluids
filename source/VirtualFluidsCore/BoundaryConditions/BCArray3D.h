@@ -6,10 +6,8 @@
 
 #include <typeinfo>
 
-#include <memory>
+#include <PointerDefinitions.h>
 
-class BCArray3D;
-typedef std::shared_ptr<BCArray3D> BCArray3DPtr;
 
 class BCArray3D
 {
@@ -37,13 +35,13 @@ public:
    //////////////////////////////////////////////////////////////////////////
    inline bool hasBC(std::size_t x1, std::size_t x2, std::size_t x3)  const;
    //////////////////////////////////////////////////////////////////////////
-   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, BoundaryConditionsPtr const& bc);
+   void setBC(std::size_t x1, std::size_t x2, std::size_t x3, SPtr<BoundaryConditions> const& bc);
    //////////////////////////////////////////////////////////////////////////
    inline int getBCVectorIndex(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline const BoundaryConditionsPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
+   inline const SPtr<BoundaryConditions> getBC(std::size_t x1, std::size_t x2, std::size_t x3) const;
    //////////////////////////////////////////////////////////////////////////
-   inline BoundaryConditionsPtr getBC(std::size_t x1, std::size_t x2, std::size_t x3);
+   inline SPtr<BoundaryConditions> getBC(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
    void setSolid(std::size_t x1, std::size_t x2, std::size_t x3);
    //////////////////////////////////////////////////////////////////////////
@@ -106,7 +104,7 @@ protected:
    //////////////////////////////////////////////////////////////////////////
    //-1 solid // -2 fluid -...
    CbArray3D<int, IndexerX3X2X1> bcindexmatrix;
-   std::vector<BoundaryConditionsPtr> bcvector;
+   std::vector<SPtr<BoundaryConditions>> bcvector;
    std::vector<int> indexContainer;
 };
 
@@ -128,18 +126,18 @@ inline int BCArray3D::getBCVectorIndex(std::size_t x1, std::size_t x2, std::size
    return bcindexmatrix(x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-inline const BoundaryConditionsPtr  BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
+inline const SPtr<BoundaryConditions>  BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3) const
 {
    int index = bcindexmatrix(x1, x2, x3);
-   if (index < 0) return BoundaryConditionsPtr(); //=> NULL Pointer
+   if (index < 0) return SPtr<BoundaryConditions>(); //=> NULL Pointer
 
    return bcvector[index];
 }
 //////////////////////////////////////////////////////////////////////////
-inline BoundaryConditionsPtr BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
+inline SPtr<BoundaryConditions> BCArray3D::getBC(std::size_t x1, std::size_t x2, std::size_t x3)
 {
    int index = bcindexmatrix(x1, x2, x3);
-   if (index < 0) return BoundaryConditionsPtr(); //=> NULL Pointer
+   if (index < 0) return SPtr<BoundaryConditions>(); //=> NULL Pointer
 
    return bcvector[index];
 }

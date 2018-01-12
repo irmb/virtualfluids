@@ -12,7 +12,7 @@ InterpolationProcessor::~InterpolationProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::readICell(DistributionArray3DPtr f, D3Q27ICell& icell, int x1, int x2, int x3) 
+void InterpolationProcessor::readICell(SPtr<DistributionArray3D> f, D3Q27ICell& icell, int x1, int x2, int x3) 
 {
    f->getDistribution(icell.BSW, x1, x2, x3);
    f->getDistribution(icell.BSE, x1+1, x2, x3);
@@ -24,7 +24,7 @@ void InterpolationProcessor::readICell(DistributionArray3DPtr f, D3Q27ICell& ice
    f->getDistribution(icell.TNE, x1+1, x2+1, x3+1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeICell(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3)
+void InterpolationProcessor::writeICell(SPtr<DistributionArray3D> f, const D3Q27ICell& icell, int x1, int x2, int x3)
 {
    f->setDistribution(icell.BSW, x1, x2, x3);
    f->setDistribution(icell.BSE, x1+1, x2, x3);
@@ -36,7 +36,7 @@ void InterpolationProcessor::writeICell(DistributionArray3DPtr f, const D3Q27ICe
    f->setDistribution(icell.TNE, x1+1, x2+1, x3+1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeICellInv(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3) 
+void InterpolationProcessor::writeICellInv(SPtr<DistributionArray3D> f, const D3Q27ICell& icell, int x1, int x2, int x3) 
 {
    f->setDistributionInv(icell.BSW, x1, x2, x3);
    f->setDistributionInv(icell.BSE, x1+1, x2, x3);
@@ -48,17 +48,17 @@ void InterpolationProcessor::writeICellInv(DistributionArray3DPtr f, const D3Q27
    f->setDistributionInv(icell.TNE, x1+1, x2+1, x3+1);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeINode(DistributionArray3DPtr f, const LBMReal* const inode, int x1, int x2, int x3)
+void InterpolationProcessor::writeINode(SPtr<DistributionArray3D> f, const LBMReal* const inode, int x1, int x2, int x3)
 {
    f->setDistribution(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-void InterpolationProcessor::writeINodeInv(DistributionArray3DPtr f, const LBMReal* const inode, int x1, int x2, int x3) 
+void InterpolationProcessor::writeINodeInv(SPtr<DistributionArray3D> f, const LBMReal* const inode, int x1, int x2, int x3) 
 {
    f->setDistributionInv(inode, x1, x2, x3);
 }
 //////////////////////////////////////////////////////////////////////////
-bool InterpolationProcessor::iCellHasSolid(const BCArray3DPtr bcArray, int x1, int x2, int x3) 
+bool InterpolationProcessor::iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3) 
 {
    for (int ix3 = x3; ix3 <= x3 + 1; ix3++)
       for(int ix2 = x2; ix2 <= x2 + 1; ix2++)
@@ -70,7 +70,7 @@ bool InterpolationProcessor::iCellHasSolid(const BCArray3DPtr bcArray, int x1, i
    return false;  
 }
 //////////////////////////////////////////////////////////////////////////
-bool InterpolationProcessor::findNeighborICell(const BCArray3DPtr bcArray, DistributionArray3DPtr f, 
+bool InterpolationProcessor::findNeighborICell(const SPtr<BCArray3D> bcArray, SPtr<DistributionArray3D> f, 
                                                     D3Q27ICell& icell, int maxX1, int maxX2, int maxX3, 
                                                     int x1, int x2, int x3, LBMReal& xoff, LBMReal& yoff, LBMReal& zoff) 
 {
@@ -299,7 +299,7 @@ bool InterpolationProcessor::findNeighborICell(const BCArray3DPtr bcArray, Distr
    return 1;
 }
 //////////////////////////////////////////////////////////////////////////
-int InterpolationProcessor::iCellHowManySolids( const BCArray3DPtr bcArray, int x1, int x2, int x3 )
+int InterpolationProcessor::iCellHowManySolids( const SPtr<BCArray3D> bcArray, int x1, int x2, int x3 )
 {
    int count = 0;
    for (int ix3 = x3; ix3 <= x3 + 1; ix3++)

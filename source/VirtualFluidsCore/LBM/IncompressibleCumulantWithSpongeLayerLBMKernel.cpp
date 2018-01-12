@@ -26,8 +26,8 @@ IncompressibleCumulantWithSpongeLayerLBMKernel::~IncompressibleCumulantWithSpong
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantWithSpongeLayerLBMKernel::init()
 {
-   //DistributionArray3DPtr d(new D3Q27EsoTwist3DSplittedVector(nx1+ghostLayerWitdh*2, nx2+ghostLayerWitdh*2, nx3+ghostLayerWitdh*2, -999.0));
-   DistributionArray3DPtr d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, -999.0));
+   //SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+ghostLayerWitdh*2, nx2+ghostLayerWitdh*2, nx3+ghostLayerWitdh*2, -999.0));
+   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, -999.0));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
 
    LBMReal spongeFactor;
 
-   BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
 
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();
@@ -65,7 +65,7 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
    int maxX2 = bcArrayMaxX2 - ghostLayerWidth - 1;
    int maxX3 = bcArrayMaxX3 - ghostLayerWidth - 1;
 
-   RelaxationFactorArray3DPtr relaxationFactorPtr = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3));
+   SPtr<RelaxationFactorArray3D> relaxationFactorPtr = CbArray3D<LBMReal, IndexerX3X2X1>::CbArray3DPtr(new CbArray3D<LBMReal, IndexerX3X2X1>(maxX1, maxX2, maxX3));
    dataSet->setRelaxationFactor(relaxationFactorPtr);
 
    for (int x3 = minX3; x3 < maxX3; x3++)
@@ -121,10 +121,10 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
 }
 
 //////////////////////////////////////////////////////////////////////////
-LBMKernelPtr IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
+SPtr<LBMKernel> IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
 {
-   LBMKernelPtr kernel(new IncompressibleCumulantWithSpongeLayerLBMKernel(nx1, nx2, nx3, parameter));
-   std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->init();
+   SPtr<LBMKernel> kernel(new IncompressibleCumulantWithSpongeLayerLBMKernel(nx1, nx2, nx3, parameter));
+   dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -136,16 +136,16 @@ LBMKernelPtr IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 1.0;
+      dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 1.0;
       break;
    case MAGIC:
-      std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
       break;
    }
 
    kernel->setWithSpongeLayer(withSpongeLayer);
    if(withSpongeLayer) kernel->setSpongeLayer(muSpongeLayer);
-   std::dynamic_pointer_cast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->initRelaxFactor(direction, L1, dx, SP);
+   dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->initRelaxFactor(direction, L1, dx, SP);
    return kernel;
 }  
 //////////////////////////////////////////////////////////////////////////
@@ -197,12 +197,12 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
    //}
    /////////////////////////////////////
 
-   localDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
-   nonLocalDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
-   zeroDistributions = std::dynamic_pointer_cast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
+   localDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getLocalDistributions();
+   nonLocalDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getNonLocalDistributions();
+   zeroDistributions = dynamicPointerCast<D3Q27EsoTwist3DSplittedVector>(dataSet->getFdistributions())->getZeroDistributions();
 
-   BCArray3DPtr bcArray = this->getBCProcessor()->getBCArray();
-   RelaxationFactorArray3DPtr relaxationFactorPtr = dataSet->getRelaxationFactor();
+   SPtr<BCArray3D> bcArray = this->getBCProcessor()->getBCArray();
+   SPtr<RelaxationFactorArray3D> relaxationFactorPtr = dataSet->getRelaxationFactor();
 
    const int bcArrayMaxX1 = (int)bcArray->getNX1();
    const int bcArrayMaxX2 = (int)bcArray->getNX2();

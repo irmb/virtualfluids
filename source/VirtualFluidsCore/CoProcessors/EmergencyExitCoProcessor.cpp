@@ -7,9 +7,9 @@
 #include "MPIIORestartCoProcessor.h"
 #include "Grid3D.h"
 
-EmergencyExitCoProcessor::EmergencyExitCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, 
+EmergencyExitCoProcessor::EmergencyExitCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, 
                                                         const std::string& path, 
-                                                        MPIIORestartCoProcessorPtr rp, CommunicatorPtr comm) :
+                                                        SPtr<MPIIORestartCoProcessor> rp, SPtr<Communicator> comm) :
                                                         CoProcessor(grid, s),
                                                         path(path),
                                                         rp(rp),

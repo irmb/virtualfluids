@@ -1,7 +1,7 @@
 #ifndef InitDistributionsWithCoarseGridBlockVisitor_h__
 #define InitDistributionsWithCoarseGridBlockVisitor_h__
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 #include "LBMSystem.h"
@@ -13,22 +13,22 @@ class InterpolationProcessor;
 class InitDistributionsWithInterpolationGridVisitor : public Block3DVisitor
 {
 public:
-   InitDistributionsWithInterpolationGridVisitor(std::shared_ptr<Grid3D> oldGrid, std::shared_ptr<InterpolationProcessor> iProcessor, LBMReal nu);
+   InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, SPtr<InterpolationProcessor> iProcessor, LBMReal nu);
    ~InitDistributionsWithInterpolationGridVisitor();
-   void visit(std::shared_ptr<Grid3D> grid);
+   void visit(SPtr<Grid3D> grid);
 private:
-   void copyLocalBlock(std::shared_ptr<Block3D> oldBlock, std::shared_ptr<Block3D> newBlock);
-   void copyRemoteBlock(std::shared_ptr<Block3D> oldBlock, std::shared_ptr<Block3D> newBlock);
-   void interpolateLocalBlockCoarseToFine(std::shared_ptr<Block3D> oldBlock, std::shared_ptr<Block3D> newBlock);
-   void interpolateRemoteBlockCoarseToFine(std::shared_ptr<Block3D> oldBlock, std::shared_ptr<Block3D> newBlock);
-   void interpolateLocalBlockFineToCoarse(std::shared_ptr<Block3D> oldBlock, std::shared_ptr<Block3D> newBlock);
-   void interpolateRemoteBlockFineToCoarse(std::shared_ptr<Block3D> oldBlock, std::shared_ptr<Block3D> newBlock);
+   void copyLocalBlock(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
+   void copyRemoteBlock(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
+   void interpolateLocalBlockCoarseToFine(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
+   void interpolateRemoteBlockCoarseToFine(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
+   void interpolateLocalBlockFineToCoarse(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
+   void interpolateRemoteBlockFineToCoarse(SPtr<Block3D> oldBlock, SPtr<Block3D> newBlock);
 
-   std::shared_ptr<Grid3D> newGrid;
-   std::shared_ptr<Grid3D> oldGrid;
+   SPtr<Grid3D> newGrid;
+   SPtr<Grid3D> oldGrid;
    LBMReal nu;
 
-   std::shared_ptr<InterpolationProcessor> iProcessor;
+   SPtr<InterpolationProcessor> iProcessor;
 };
 
 #endif // InitDistributionsWithVelocityProfileBlockVisitor_h__

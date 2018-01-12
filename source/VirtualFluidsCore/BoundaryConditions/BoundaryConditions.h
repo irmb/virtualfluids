@@ -16,9 +16,7 @@
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbTuple.h>
 #include "D3Q27System.h"
-
-class BoundaryConditions;
-typedef std::shared_ptr<BoundaryConditions> BoundaryConditionsPtr;
+#include <PointerDefinitions.h>
 
 class BoundaryConditions 
 {

@@ -12,13 +12,13 @@ HighViscosityNoSlipBCAlgorithm::~HighViscosityNoSlipBCAlgorithm()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr HighViscosityNoSlipBCAlgorithm::clone()
+SPtr<BCAlgorithm> HighViscosityNoSlipBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new HighViscosityNoSlipBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new HighViscosityNoSlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void HighViscosityNoSlipBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void HighViscosityNoSlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

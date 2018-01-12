@@ -1,7 +1,7 @@
 #ifndef ChangeBoundaryDensityBlockVisitor_h__
 #define ChangeBoundaryDensityBlockVisitor_h__
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 
@@ -15,10 +15,10 @@ public:
    ChangeBoundaryDensityBlockVisitor(float oldBoundaryDensity, float newBoundaryDensity);
    virtual ~ChangeBoundaryDensityBlockVisitor();
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 private:
    float oldBoundaryDensity; 
    float newBoundaryDensity;
-   std::shared_ptr<BoundaryConditions> bcPtr;
+   SPtr<BoundaryConditions> bcPtr;
 };
 #endif // ChangeBoundaryDensityBlockVisitor_h__

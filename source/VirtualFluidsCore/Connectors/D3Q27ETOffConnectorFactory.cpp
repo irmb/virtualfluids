@@ -13,26 +13,26 @@
 //{
 //}
 ////////////////////////////////////////////////////////////////////////////
-//Block3DConnectorPtr D3Q27ETOffConnectorFactory::createCoarseToFineConnector(Block3DPtr block,
+//SPtr<Block3DConnector> D3Q27ETOffConnectorFactory::createCoarseToFineConnector(SPtr<Block3D> block,
 //   VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
 //   VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
 //   VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
 //   VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
 //   int sendDir, D3Q27InterpolationProcessorPtr iprocessor)
 //{
-//   return Block3DConnectorPtr(new D3Q27ETCFOffVectorConnector<VectorTransmitter>(block,
+//   return SPtr<Block3DConnector>(new D3Q27ETCFOffVectorConnector<VectorTransmitter>(block,
 //      sender00, receiver00, sender01, receiver01,
 //      sender10, receiver10, sender11, receiver11,
 //      sendDir, iprocessor));
 //}
 ////////////////////////////////////////////////////////////////////////////
-//Block3DConnectorPtr D3Q27ETOffConnectorFactory::createFineToCoarseConnector(Block3DPtr block,
+//SPtr<Block3DConnector> D3Q27ETOffConnectorFactory::createFineToCoarseConnector(SPtr<Block3D> block,
 //   VectorTransmitterPtr sender,
 //   VectorTransmitterPtr receiver,
 //   int sendDir,
 //   D3Q27InterpolationProcessorPtr iprocessor,
 //   FineToCoarseBlock3DConnector::CFconnectorType connType)
 //{
-//   return  Block3DConnectorPtr(new D3Q27ETFCOffVectorConnector<VectorTransmitter>(block,
+//   return  SPtr<Block3DConnector>(new D3Q27ETFCOffVectorConnector<VectorTransmitter>(block,
 //      sender, receiver, sendDir, iprocessor, connType));
 //}

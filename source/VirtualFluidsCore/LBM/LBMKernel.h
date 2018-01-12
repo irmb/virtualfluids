@@ -1,7 +1,7 @@
 #ifndef LBMKERNEL_H
 #define LBMKERNEL_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "LBMSystem.h"
 
@@ -9,14 +9,11 @@
 
 #include "ILBMKernel.h"
 
-class LBMKernel;
-typedef std::shared_ptr<LBMKernel> LBMKernelPtr;
-
 class BCProcessor;
 class DataSet3D;
 class Block3D;
 
-class LBMKernel : public ILBMKernel, public std::enable_shared_from_this<LBMKernel>
+class LBMKernel : public ILBMKernel, public enableSharedFromThis<LBMKernel>
 {
 public:
     typedef std::numeric_limits<LBMReal> LBMRealLim;
@@ -24,13 +21,13 @@ public:
     LBMKernel();
     virtual ~LBMKernel();
 
-    virtual LBMKernelPtr clone() = 0;
+    virtual SPtr<LBMKernel> clone() = 0;
 
     virtual void calculate() = 0;
     virtual double getCalculationTime() = 0;
 
-    void setBCProcessor(std::shared_ptr<BCProcessor> bcp);
-    std::shared_ptr<BCProcessor> getBCProcessor() const;
+    void setBCProcessor(SPtr<BCProcessor> bcp);
+    SPtr<BCProcessor> getBCProcessor() const;
 
     void setCollisionFactor(double collFactor);
     double getCollisionFactor() const;
@@ -38,8 +35,8 @@ public:
     void setGhostLayerWidth(int witdh);
     int  getGhostLayerWidth() const;
 
-    void setDataSet(std::shared_ptr<DataSet3D> dataSet);
-    std::shared_ptr<DataSet3D> getDataSet() const;
+    void setDataSet(SPtr<DataSet3D> dataSet);
+    SPtr<DataSet3D> getDataSet() const;
 
     void setForcingX1(LBMReal forcingX1);
     void setForcingX2(LBMReal forcingX2);
@@ -70,8 +67,8 @@ public:
     void setSpongeLayer(const mu::Parser& parser);
     void setSpongeLayer(const std::string& muParserString);
 
-    void setBlock(std::shared_ptr<Block3D> block);
-    std::shared_ptr<Block3D> getBlock() const;
+    void setBlock(SPtr<Block3D> block);
+    SPtr<Block3D> getBlock() const;
 
     bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const;
 
@@ -79,8 +76,8 @@ public:
     void swapDistributions();
 
 protected:
-    std::shared_ptr<DataSet3D> dataSet;
-    std::shared_ptr<BCProcessor> bcProcessor;
+    SPtr<DataSet3D> dataSet;
+    SPtr<BCProcessor> bcProcessor;
     LBMReal collFactor;
     int ghostLayerWidth;
     bool compressible;

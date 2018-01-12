@@ -19,8 +19,8 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-   UbSchedulerPtr s, CommunicatorPtr comm, int options)
+TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
+   SPtr<UbScheduler> s, SPtr<Communicator> comm, int options)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
@@ -32,8 +32,8 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
    timeAveraging = true;
 }
 //////////////////////////////////////////////////////////////////////////
-TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, const std::string& path, WbWriter* const writer,
-   UbSchedulerPtr s, CommunicatorPtr comm, int options,
+TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
+   SPtr<UbScheduler> s, SPtr<Communicator> comm, int options,
    std::vector<int> levels, std::vector<double>& levelCoords, std::vector<double>& bounds, bool timeAveraging)
    : CoProcessor(grid, s),
    path(path),
@@ -49,7 +49,7 @@ TimeAveragedValuesCoProcessor::TimeAveragedValuesCoProcessor(Grid3DPtr grid, con
    planarAveraging = true;
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
+void TimeAveragedValuesCoProcessor::init(SPtr<UbScheduler> s)
 {
    root = comm->isRoot();
    gridRank = grid->getRank();
@@ -70,31 +70,31 @@ void TimeAveragedValuesCoProcessor::init(UbSchedulerPtr s)
 
       if (gridTimeStep == begin || gridTimeStep == 0)
       {
-         for(Block3DPtr block : blockVector[level])
+         for(SPtr<Block3D> block : blockVector[level])
          {
             UbTupleInt3 nx = grid->getBlockNX();
             
             if ((options&Density) == Density)
             {
-               AverageValuesArray3DPtr ar = AverageValuesArray3DPtr(new AverageValuesArray3D(1, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               SPtr<AverageValuesArray3D> ar = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(1, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageDencity(ar);
             }
 
             if ((options&Velocity) == Velocity)
             {
-               AverageValuesArray3DPtr av = AverageValuesArray3DPtr(new AverageValuesArray3D(3, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               SPtr<AverageValuesArray3D> av = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(3, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageVelocity(av);
             }
 
             if ((options&Fluctuations) == Fluctuations)
             {
-               AverageValuesArray3DPtr af = AverageValuesArray3DPtr(new AverageValuesArray3D(6, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               SPtr<AverageValuesArray3D> af = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(6, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageFluctuations(af);
             }
 
             if ((options&Triplecorrelations) == Triplecorrelations)
             {
-               AverageValuesArray3DPtr at = AverageValuesArray3DPtr(new AverageValuesArray3D(10, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               SPtr<AverageValuesArray3D> at = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(10, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageTriplecorrelations(at);
             }
          }
@@ -163,7 +163,7 @@ void TimeAveragedValuesCoProcessor::collectData(double step)
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
@@ -201,7 +201,7 @@ void TimeAveragedValuesCoProcessor::clearData()
    data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
+void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
 {
    UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
@@ -258,13 +258,13 @@ void TimeAveragedValuesCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   ILBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-   AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
-   AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
-   AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
-   AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
+   SPtr<ILBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+   SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
+   SPtr<AverageValuesArray3D> ar = kernel->getDataSet()->getAverageDencity();
+   SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageVelocity();
+   SPtr<AverageValuesArray3D> af = kernel->getDataSet()->getAverageFluctuations();
+   SPtr<AverageValuesArray3D> at = kernel->getDataSet()->getAverageTriplecorrelations();
    //int ghostLayerWidth = kernel->getGhostLayerWidth();
 
    //knotennummerierung faengt immer bei 0 an!
@@ -390,19 +390,19 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
       //#ifdef _OPENMP
       //   #pragma omp parallel for 
       //#endif
-            //for(Block3DPtr block : blockVector[level])
+            //for(SPtr<Block3D> block : blockVector[level])
       for (i = 0; i < blockVector[level].size(); i++)
       {
-         Block3DPtr block = blockVector[level][i];
+         SPtr<Block3D> block = blockVector[level][i];
          if (block)
          {
-            ILBMKernelPtr kernel = block->getKernel();
-            BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-            DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-            AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
-            AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
-            AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
-            AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
+            SPtr<ILBMKernel> kernel = block->getKernel();
+            SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+            SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
+            SPtr<AverageValuesArray3D> ar = kernel->getDataSet()->getAverageDencity();
+            SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageVelocity();
+            SPtr<AverageValuesArray3D> af = kernel->getDataSet()->getAverageFluctuations();
+            SPtr<AverageValuesArray3D> at = kernel->getDataSet()->getAverageTriplecorrelations();
 
             int minX1 = iMinC;
             int minX2 = iMinC;
@@ -513,19 +513,19 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
 #ifdef _OPENMP
 #pragma omp for schedule(dynamic)
 #endif
-            //for(Block3DPtr block : blockVector[level])
+            //for(SPtr<Block3D> block : blockVector[level])
             for (i = 0; i < blockVector[level].size(); i++)
             {
-               Block3DPtr block = blockVector[level][i];
+               SPtr<Block3D> block = blockVector[level][i];
                if (block)
                {
-                  ILBMKernelPtr kernel = block->getKernel();
-                  BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-                  DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
-                  AverageValuesArray3DPtr ar = kernel->getDataSet()->getAverageDencity();
-                  AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageVelocity();
-                  AverageValuesArray3DPtr af = kernel->getDataSet()->getAverageFluctuations();
-                  AverageValuesArray3DPtr at = kernel->getDataSet()->getAverageTriplecorrelations();
+                  SPtr<ILBMKernel> kernel = block->getKernel();
+                  SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+                  SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
+                  SPtr<AverageValuesArray3D> ar = kernel->getDataSet()->getAverageDencity();
+                  SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageVelocity();
+                  SPtr<AverageValuesArray3D> af = kernel->getDataSet()->getAverageFluctuations();
+                  SPtr<AverageValuesArray3D> at = kernel->getDataSet()->getAverageTriplecorrelations();
 
                   int minX1 = iMinC;
                   int minX2 = iMinC;
@@ -724,29 +724,29 @@ void TimeAveragedValuesCoProcessor::reset()
 {
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
-            AverageValuesArray3DPtr arho = block->getKernel()->getDataSet()->getAverageDencity();
+            SPtr<AverageValuesArray3D> arho = block->getKernel()->getDataSet()->getAverageDencity();
             if (arho)
             {
                arho->reset(0.0);
             }
 
-            AverageValuesArray3DPtr avel = block->getKernel()->getDataSet()->getAverageVelocity();
+            SPtr<AverageValuesArray3D> avel = block->getKernel()->getDataSet()->getAverageVelocity();
             if (avel)
             {
                avel->reset(0.0);
             }
 
-            AverageValuesArray3DPtr afl = block->getKernel()->getDataSet()->getAverageFluctuations();
+            SPtr<AverageValuesArray3D> afl = block->getKernel()->getDataSet()->getAverageFluctuations();
             if (afl)
             {
                afl->reset(0.0);
             }
 
-            AverageValuesArray3DPtr atrp = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
+            SPtr<AverageValuesArray3D> atrp = block->getKernel()->getDataSet()->getAverageTriplecorrelations();
             if (atrp)
             {
                atrp->reset(0.0);

@@ -4,7 +4,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 
-CoarseToFineBlock3DConnector::CoarseToFineBlock3DConnector(Block3DPtr block,
+CoarseToFineBlock3DConnector::CoarseToFineBlock3DConnector(SPtr<Block3D> block,
    VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
    VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
    VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,

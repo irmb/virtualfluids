@@ -20,8 +20,8 @@ AverageValuesCoProcessor::AverageValuesCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-AverageValuesCoProcessor::AverageValuesCoProcessor(Grid3DPtr grid, const std::string& path,	WbWriter* const writer, 
-   UbSchedulerPtr s, UbSchedulerPtr Avs, UbSchedulerPtr rsMeans, UbSchedulerPtr rsRMS, bool restart)
+AverageValuesCoProcessor::AverageValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path,	WbWriter* const writer, 
+   SPtr<UbScheduler> s, SPtr<UbScheduler> Avs, SPtr<UbScheduler> rsMeans, SPtr<UbScheduler> rsRMS, bool restart)
 	                                                   : CoProcessor(grid, s),
 	                                                   averageScheduler(Avs),
 	                                                   resetSchedulerMeans(rsMeans),
@@ -48,10 +48,10 @@ AverageValuesCoProcessor::AverageValuesCoProcessor(Grid3DPtr grid, const std::st
 
       if (!restart)
       {
-         for(Block3DPtr block : blockVector[level])
+         for(SPtr<Block3D> block : blockVector[level])
          {
             UbTupleInt3 nx = grid->getBlockNX();
-            AverageValuesArray3DPtr averageValues = AverageValuesArray3DPtr(new AverageValuesArray3D(11, val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 0.0));
+            SPtr<AverageValuesArray3D> averageValues = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(11, val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 0.0));
             block->getKernel()->getDataSet()->setAverageValues(averageValues);
          }
       }
@@ -91,14 +91,14 @@ void AverageValuesCoProcessor::resetDataRMS(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		for(Block3DPtr block : blockVector[level])
+		for(SPtr<Block3D> block : blockVector[level])
 		{
 			if (block)
 			{
-				ILBMKernelPtr kernel = block->getKernel();
-				BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
-				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
+				SPtr<ILBMKernel> kernel = block->getKernel();
+				SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+				SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
+				SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageValues();
 
 				int minX1 = 0;
 				int minX2 = 0;
@@ -142,14 +142,14 @@ void AverageValuesCoProcessor::resetDataMeans(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		for(Block3DPtr block : blockVector[level])
+		for(SPtr<Block3D> block : blockVector[level])
 		{
 			if (block)
 			{
-				ILBMKernelPtr kernel = block->getKernel();
-				BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
-				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
+				SPtr<ILBMKernel> kernel = block->getKernel();
+				SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+				SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
+				SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageValues();
 
 				int minX1 = 0;
 				int minX2 = 0;
@@ -190,7 +190,7 @@ void AverageValuesCoProcessor::collectData(double step)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		for(Block3DPtr block : blockVector[level])
+		for(SPtr<Block3D> block : blockVector[level])
 		{
 			if (block)
 			{
@@ -211,7 +211,7 @@ void AverageValuesCoProcessor::collectData(double step)
    piece = subfolder + "/" + piece;
 
    vector<string> cellDataNames;
-   CommunicatorPtr comm = Communicator::getInstance();
+   SPtr<Communicator> comm = Communicator::getInstance();
    vector<string> pieces = comm->gather(piece);
    if (comm->getProcessID() == comm->getRoot())
    {
@@ -243,7 +243,7 @@ void AverageValuesCoProcessor::clearData()
 	data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void AverageValuesCoProcessor::addData(const Block3DPtr block)
+void AverageValuesCoProcessor::addData(const SPtr<Block3D> block)
 {
 	UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
 	UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
@@ -267,10 +267,10 @@ void AverageValuesCoProcessor::addData(const Block3DPtr block)
 
 	data.resize(datanames.size());
 
-	ILBMKernelPtr kernel = block->getKernel();
-	BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-	DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
-	AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
+	SPtr<ILBMKernel> kernel = block->getKernel();
+	SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+	SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
+	SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageValues();
 	//int ghostLayerWidth = kernel->getGhostLayerWidth();
 
 	//knotennummerierung faengt immer bei 0 an!
@@ -390,14 +390,14 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 
 	for(int level = minInitLevel; level<=maxInitLevel;level++)
 	{
-		for(Block3DPtr block : blockVector[level])
+		for(SPtr<Block3D> block : blockVector[level])
 		{
 			if (block)
 			{
-				ILBMKernelPtr kernel = block->getKernel();
-				BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-				DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
-				AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
+				SPtr<ILBMKernel> kernel = block->getKernel();
+				SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+				SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
+				SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageValues();
 
 				int minX1 = 0;
 				int minX2 = 0;
@@ -475,7 +475,7 @@ void AverageValuesCoProcessor::calculateAverageValues(double timeStep)
 ////////////////////////////////////////////////////////////////////////////
 //void AverageValuesCoProcessor::initPlotData(double step)
 //{
-//   CommunicatorPtr comm = Communicator::getInstance();
+//   SPtr<Communicator> comm = Communicator::getInstance();
 //	if (comm->getProcessID() == comm->getRoot())
 //	{
 //		std::ofstream ostr;

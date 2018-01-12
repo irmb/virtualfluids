@@ -4,16 +4,13 @@
 #if defined VF_METIS && defined VF_MPI
 
 #include <vector>
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Grid3DVisitor.h"
 #include "MetisPartitioner.h"
 
 
 class Communicator;
-
-class MetisPartitioningGridVisitor;
-typedef std::shared_ptr<MetisPartitioningGridVisitor> PartitionMetisGridVisitorPtr;
 
 ////////////////////////////////////////////////////////////////////////
 //! \brief The class implements domain decomposition with METIS library
@@ -36,24 +33,24 @@ public:
    //! \param numOfDirs - maximum number of neighbors for each process
    //! \param threads - on/off decomposition for threads
    //! \param numberOfThreads - number of threads
-   MetisPartitioningGridVisitor(std::shared_ptr<Communicator> comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType = MetisPartitioner::KWAY, bool threads = false, int numberOfThreads = 0);
+   MetisPartitioningGridVisitor(SPtr<Communicator> comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType = MetisPartitioner::KWAY, bool threads = false, int numberOfThreads = 0);
    virtual ~MetisPartitioningGridVisitor();
-   void visit(std::shared_ptr<Grid3D> grid) override;
+   void visit(SPtr<Grid3D> grid) override;
    void setNumberOfProcesses(int np);
 
 protected:
    enum PartLevel {BUNDLE, PROCESS, THREAD};
-   void collectData(std::shared_ptr<Grid3D> grid, int nofSegments, PartLevel level);
-   void buildMetisGraphLevelIntersected(std::shared_ptr<Grid3D> grid, int nofSegments, PartLevel level);
-   void buildMetisGraphLevelBased(std::shared_ptr<Grid3D> grid, int nofSegments, PartLevel level);
-   bool getPartitionCondition(std::shared_ptr<Block3D> block, PartLevel level);
-   void distributePartitionData(std::shared_ptr<Grid3D> grid, PartLevel level);
+   void collectData(SPtr<Grid3D> grid, int nofSegments, PartLevel level);
+   void buildMetisGraphLevelIntersected(SPtr<Grid3D> grid, int nofSegments, PartLevel level);
+   void buildMetisGraphLevelBased(SPtr<Grid3D> grid, int nofSegments, PartLevel level);
+   bool getPartitionCondition(SPtr<Block3D> block, PartLevel level);
+   void distributePartitionData(SPtr<Grid3D> grid, PartLevel level);
    void clear();
    int  nofSegments;
    int numOfDirs;
    std::vector<int> blockID;
    std::vector<idx_t> parts;
-   std::shared_ptr<Communicator> comm;
+   SPtr<Communicator> comm;
    int bundleRoot;
    int processRoot;
    int bundleID;

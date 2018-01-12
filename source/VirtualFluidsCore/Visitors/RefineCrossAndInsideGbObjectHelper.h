@@ -2,7 +2,7 @@
 #define RefineCrossAndInsideGbObjectHelper_H
 
 #include <vector>
-#include <memory>
+#include <PointerDefinitions.h>
 
 class Communicator;
 class Grid3D;
@@ -17,20 +17,20 @@ public:
    //! Constructor
    //! \param grid a smart pointer to the grid object
    //! \param maxRefineLevel an integer for maximal refinement level
-   RefineCrossAndInsideGbObjectHelper(std::shared_ptr<Grid3D> grid, int maxRefineLevel, std::shared_ptr<Communicator> comm);
+   RefineCrossAndInsideGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<Communicator> comm);
    virtual ~RefineCrossAndInsideGbObjectHelper();
    //! add geometric object
    //! \param object a smart pointer to bounding box
    //! \param refineLevel a value of refinement level for corresponding bounding box
-   void addGbObject(std::shared_ptr<GbObject3D> object, int refineLevel);
+   void addGbObject(SPtr<GbObject3D> object, int refineLevel);
    //! start refinement
    void refine();
 private:
-    std::shared_ptr<Grid3D> grid;
-   std::vector<std::shared_ptr<GbObject3D> > objects;
+    SPtr<Grid3D> grid;
+   std::vector<SPtr<GbObject3D> > objects;
    std::vector<int> levels;
    int maxRefineLevel;
-   std::shared_ptr<Communicator> comm;
+   SPtr<Communicator> comm;
 };
 
 #endif 

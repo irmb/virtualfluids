@@ -10,7 +10,7 @@ VoidLBMKernel::VoidLBMKernel()
 
 VoidLBMKernel::VoidLBMKernel(int nx1, int nx2, int nx3) : nx1(nx1), nx2(nx2), nx3(nx3)
 {
-   DistributionArray3DPtr d(new VoidData3D(nx1+2, nx2+2, nx3+2, -999.0));
+   SPtr<DistributionArray3D> d(new VoidData3D(nx1+2, nx2+2, nx3+2, -999.0));
    dataSet->setFdistributions(d);
 }
 
@@ -19,9 +19,9 @@ VoidLBMKernel::~VoidLBMKernel()
 
 }
 
-LBMKernelPtr VoidLBMKernel::clone()
+SPtr<LBMKernel> VoidLBMKernel::clone()
 {
-   LBMKernelPtr kernel(new VoidLBMKernel(nx1, nx2, nx3));
+   SPtr<LBMKernel> kernel(new VoidLBMKernel(nx1, nx2, nx3));
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);

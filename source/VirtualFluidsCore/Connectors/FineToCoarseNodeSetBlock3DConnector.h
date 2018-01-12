@@ -15,7 +15,7 @@
 #include "LBMKernel.h"
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
-#include <memory>
+#include <PointerDefinitions.h>
 
 
 class Block3D;
@@ -28,7 +28,7 @@ class Block3D;
 class FineToCoarseNodeSetBlock3DConnector : public FineToCoarseBlock3DConnector
 {
 public:
-   FineToCoarseNodeSetBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
+   FineToCoarseNodeSetBlock3DConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
    void init();
    void fillSendVectors();
    void distributeReceiveVectors();

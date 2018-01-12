@@ -35,10 +35,10 @@ MPICommunicator::~MPICommunicator()
    }
  }
 //////////////////////////////////////////////////////////////////////////
-CommunicatorPtr MPICommunicator::getInstance()
+SPtr<Communicator> MPICommunicator::getInstance()
 {
    if( !Communicator::instance )
-      Communicator::instance = CommunicatorPtr(new MPICommunicator());
+      Communicator::instance = SPtr<Communicator>(new MPICommunicator());
    return Communicator::instance;
 }
 //////////////////////////////////////////////////////////////////////////

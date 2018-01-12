@@ -10,21 +10,21 @@ RefineInterGbObjectsBlockVisitor::RefineInterGbObjectsBlockVisitor()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-RefineInterGbObjectsBlockVisitor::RefineInterGbObjectsBlockVisitor(GbObject3DPtr includeGbObject3D, GbObject3DPtr excludeGbObject3D, int startlevel, int stoplevel)
+RefineInterGbObjectsBlockVisitor::RefineInterGbObjectsBlockVisitor(SPtr<GbObject3D> includeGbObject3D, SPtr<GbObject3D> excludeGbObject3D, int startlevel, int stoplevel)
    : Block3DVisitor(startlevel, stoplevel)
 {
    this->includeGbObjects3D.push_back(includeGbObject3D);
    this->excludeGbObjects3D.push_back(excludeGbObject3D);
 }
 //////////////////////////////////////////////////////////////////////////
-RefineInterGbObjectsBlockVisitor::RefineInterGbObjectsBlockVisitor(std::vector<GbObject3DPtr> includeGbObjects3D, std::vector<GbObject3DPtr> excludeGbObjects3D, int startlevel, int stoplevel)
+RefineInterGbObjectsBlockVisitor::RefineInterGbObjectsBlockVisitor(std::vector<SPtr<GbObject3D>> includeGbObjects3D, std::vector<SPtr<GbObject3D>> excludeGbObjects3D, int startlevel, int stoplevel)
    : Block3DVisitor(startlevel, stoplevel)
 {
    this->includeGbObjects3D = includeGbObjects3D;
    this->excludeGbObjects3D = excludeGbObjects3D;
 }
 //////////////////////////////////////////////////////////////////////////
-void RefineInterGbObjectsBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void RefineInterGbObjectsBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    UbTupleDouble3 coords = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 delta  = grid->getBlockLengths(block);

@@ -4,21 +4,16 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "D3Q27Interactor.h"
 #include "CbArray3D.h"
-
-class D3Q27TriFaceMeshInteractor;
-typedef std::shared_ptr<D3Q27TriFaceMeshInteractor> D3Q27TriFaceMeshInteractorPtr;
-
 
 class GbObject3D;
 class Grid3D;
 class BCAdapter;
 class GbTriFaceMesh3D;
 class Block3D;
-
 
 class D3Q27TriFaceMeshInteractor : public D3Q27Interactor 
 {
@@ -27,11 +22,11 @@ public:
    static const int STRESSALTERNATIV=1;
 
    D3Q27TriFaceMeshInteractor();
-   D3Q27TriFaceMeshInteractor(std::shared_ptr<Grid3D> grid, std::string name="D3Q27TriFaceMeshInteractor");
-   D3Q27TriFaceMeshInteractor(std::shared_ptr<GbObject3D> geoObject3D, std::shared_ptr<Grid3D> grid, int type);
-   D3Q27TriFaceMeshInteractor(std::shared_ptr<GbTriFaceMesh3D> triFaceMesh, std::shared_ptr<Grid3D> grid, std::shared_ptr<BCAdapter> bcAdapter, int type);
-   D3Q27TriFaceMeshInteractor(std::shared_ptr<GbTriFaceMesh3D> triFaceMesh, std::shared_ptr<Grid3D> grid, std::shared_ptr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy a);
-   //D3Q27TriFaceMeshInteractor(GbTriFaceMesh3DPtr triFaceMesh, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, std::string name="D3Q27TriFaceMeshInteractor");
+   D3Q27TriFaceMeshInteractor(SPtr<Grid3D> grid, std::string name="D3Q27TriFaceMeshInteractor");
+   D3Q27TriFaceMeshInteractor(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type);
+   D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type);
+   D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, SPtr<Grid3D> grid, SPtr<BCAdapter> bcAdapter, int type, Interactor3D::Accuracy a);
+   //D3Q27TriFaceMeshInteractor(SPtr<GbTriFaceMesh3D> triFaceMesh, D3Q27BoundaryConditionAdapterPtr bcAdapter, int type, std::string name="D3Q27TriFaceMeshInteractor");
 
    ~D3Q27TriFaceMeshInteractor();
 
@@ -44,7 +39,7 @@ public:
    void setQs(const double& timeStep);
    void refineBlockGridToLevel(int level, double startDistance, double stopDistance);
 
-   bool setDifferencesToGbObject3D(const std::shared_ptr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/);
+   bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*,const double& orgX1,const double& orgX2,const double& orgX3,const double& blockLengthX1,const double& blockLengthX2,const double& blockLengthX3, const double& timestep=0*/);
 
    void setRegardPointInObjectTest( bool opt ) { this->regardPIOTest = opt; }
 
@@ -95,7 +90,7 @@ protected:
 
    void reinitWithStoredQs(const double& timeStep);
    //   bool reinitWithStoredQsFlag;
-   std::map< std::shared_ptr<Block3D>, std::map < UbTupleInt3, std::vector< float > > > bcNodeIndicesAndQsMap;    //!!! es kann sein, dass in diesem interactor
+   std::map< SPtr<Block3D>, std::map < UbTupleInt3, std::vector< float > > > bcNodeIndicesAndQsMap;    //!!! es kann sein, dass in diesem interactor
    //an eine rpos eine BC gesetzt wurde, aber derselbe node in
    //in einem anderen in einen anderen Typ (z.B. Solid) geaendert
    //wurde --> es ist keine BC mehr an der stelle!

@@ -13,12 +13,12 @@ PQueuePartitioningGridVisitor::PQueuePartitioningGridVisitor(int numOfParts) : n
 
 }
 //////////////////////////////////////////////////////////////////////////
-void PQueuePartitioningGridVisitor::visit(Grid3DPtr grid)
+void PQueuePartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 {
    UBLOG(logDEBUG5, "PQueuePartitioningGridVisitor::visit() - start");
-   std::vector<Block3DPtr> blocks;
+   std::vector<SPtr<Block3D>> blocks;
    std::vector<int> weights;
-   std::vector< std::vector <Block3DPtr> > parts;
+   std::vector< std::vector <SPtr<Block3D>> > parts;
    int gridRank = grid->getRank();
 
    int minInitLevel = grid->getCoarsestInitializedLevel();
@@ -26,9 +26,9 @@ void PQueuePartitioningGridVisitor::visit(Grid3DPtr grid)
 
    for(int level = minInitLevel; level<=maxInitLevel; level++)
    {
-       std::vector<Block3DPtr> blockVector;
+       std::vector<SPtr<Block3D>> blockVector;
       grid->getBlocks(level, gridRank, true, blockVector);
-      for(Block3DPtr block : blockVector)
+      for(SPtr<Block3D> block : blockVector)
       {
          if (block)
          {
@@ -37,13 +37,13 @@ void PQueuePartitioningGridVisitor::visit(Grid3DPtr grid)
          }
       }
    }
-   PriorityQueueDecompositor <Block3DPtr> dec = PriorityQueueDecompositor <Block3DPtr> (blocks, weights, numOfParts);
+   PriorityQueueDecompositor <SPtr<Block3D>> dec = PriorityQueueDecompositor <SPtr<Block3D>> (blocks, weights, numOfParts);
    dec.getDecomposition(parts);
 
    int i = 0;
-   for(std::vector<Block3DPtr> p : parts)
+   for(std::vector<SPtr<Block3D>> p : parts)
    {
-      for(Block3DPtr block : p)
+      for(SPtr<Block3D> block : p)
       {
          block->setPart(i);
       }

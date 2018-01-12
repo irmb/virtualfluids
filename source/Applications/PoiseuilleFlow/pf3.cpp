@@ -6,7 +6,7 @@
 ////two plates flow with forcing
 //void pf3()
 //{
-//   CommunicatorPtr comm = MPICommunicator::getInstance();
+//   SPtr<Communicator> comm = MPICommunicator::getInstance();
 //   int myid = comm->getProcessID();
 //
 //   //parameters
@@ -31,7 +31,7 @@
 //   double g_maxX2 = 5;
 //   double g_maxX3 = 5;
 //
-//   GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+//   SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
 //   if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 //
 //   //walls
@@ -50,7 +50,7 @@
 //   }
 //
 //   //Grid definition
-//   Grid3DPtr grid(new Grid3D(comm));
+//   SPtr<Grid3D> grid(new Grid3D(comm));
 //   grid->setDeltaX(deltax);
 //   grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 //   grid->setPeriodicX1(true);
@@ -66,8 +66,8 @@
 //   //boundary conditions definition 
 //   //boundary conditions adapters
 //   //////////////////////////////////////////////////////////////////////////////
-//   BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
-//   noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NoSlipBCAlgorithm()));
+//   SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+//   noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 //
 //   //boundary conditions visitor
 //   BoundaryConditionsBlockVisitor bcVisitor;
@@ -76,17 +76,17 @@
 //
 //   //set boundary conditions for blocks and create process decomposition for MPI
 //   //walls
-//   D3Q27InteractorPtr addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-//   D3Q27InteractorPtr addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+//   SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+//   SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 //
-//   Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+//   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
 //   InteractorsHelper intHelper(grid, metisVisitor);
 //   intHelper.addInteractor(addWallYminInt);
 //   intHelper.addInteractor(addWallYmaxInt);
 //   intHelper.selectBlocks();
 //
 //   //write data for visualization of block grid
-//   WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+//   WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 //   ppblocks->process(0);
 //   ppblocks.reset();
 //
@@ -116,9 +116,9 @@
 //   }
 //
 //   //LBM kernel definition
-//   LBMKernelPtr kernel;
-//   kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
-//   BCProcessorPtr bcProc(new BCProcessor());
+//   SPtr<LBMKernel> kernel;
+//   kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+//   SPtr<BCProcessor> bcProc(new BCProcessor());
 //   kernel->setBCProcessor(bcProc);
 //
 //   //set forcing
@@ -150,20 +150,20 @@
 //   grid->accept(pqPartVisitor);
 //
 //   //write data for visualization of boundary conditions
-//   UbSchedulerPtr geoSch(new UbScheduler(1));
-//   WriteBoundaryConditionsCoProcessorPtr ppgeo(
-//      new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), LBMUnitConverterPtr(new LBMUnitConverter()), comm));
+//   SPtr<UbScheduler> geoSch(new UbScheduler(1));
+//   WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
+//      new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 //   ppgeo->process(0);
 //   ppgeo.reset();
 //
 //   if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 //
 //   //write data for visualization of macroscopic quantities
-//   UbSchedulerPtr visSch(new UbScheduler(outTime));
-//   WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), LBMUnitConverterPtr(new LBMUnitConverter()), comm);
+//   SPtr<UbScheduler> visSch(new UbScheduler(outTime));
+//   WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
 //
 //   //performance control
-//   UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+//   SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
 //   NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 //   
 //   //start solver

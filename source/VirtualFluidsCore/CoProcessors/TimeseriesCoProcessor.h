@@ -8,7 +8,7 @@
 #ifndef TimeseriesCoProcessor_H
 #define TimeseriesCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 
 #include "CoProcessor.h"
@@ -18,9 +18,6 @@ class Grid3D;
 class UbScheduler;
 class IntegrateValuesHelper;
 
-class TimeseriesCoProcessor;
-typedef std::shared_ptr<TimeseriesCoProcessor> TimeseriesCoProcessorPtr;
-
 //! \brief     Writes timeseries of density and velocity to a file.
 //! \details   Uses Integrate values helper, scheduler must be set in testcase.
 //! \author    Sonja Uphoff
@@ -29,7 +26,7 @@ typedef std::shared_ptr<TimeseriesCoProcessor> TimeseriesCoProcessorPtr;
 class TimeseriesCoProcessor : public CoProcessor
 {
 public:
-    TimeseriesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, std::shared_ptr<IntegrateValuesHelper> h1, const std::string& path, std::shared_ptr<Communicator> comm);
+    TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<IntegrateValuesHelper> h1, const std::string& path, SPtr<Communicator> comm);
     virtual ~TimeseriesCoProcessor();
 
     //! calls collectData.
@@ -39,8 +36,8 @@ protected:
     void collectData(double step);
 
     //! object that can compute spacial average values in 3D-subdomain.
-    std::shared_ptr<IntegrateValuesHelper> h1;
-    std::shared_ptr<Communicator> comm;
+    SPtr<IntegrateValuesHelper> h1;
+    SPtr<Communicator> comm;
 
 private:
     std::string path; //! output filename, e.g.  pathname + "/steps/timeseries"

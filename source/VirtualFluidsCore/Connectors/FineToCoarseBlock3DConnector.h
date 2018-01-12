@@ -13,7 +13,7 @@
 #include "LBMKernel.h"
 #include "InterpolationProcessor.h"
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 
 class Block3D;
@@ -45,7 +45,7 @@ class FineToCoarseBlock3DConnector : public Block3DConnector
 public:
    enum CFconnectorType { Type00, Type10, Type01, Type11 };
 public:
-   FineToCoarseBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
+   FineToCoarseBlock3DConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver, int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType);
 
    bool isLocalConnector();
    bool isRemoteConnector();

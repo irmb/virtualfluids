@@ -1,7 +1,7 @@
 #ifndef SET_SOLID_OR_TRANS_BLOCK_VISITOR_H
 #define SET_SOLID_OR_TRANS_BLOCK_VISITOR_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 
@@ -14,13 +14,13 @@ enum class BlockType { SOLID, BC };
 class SetSolidBlockVisitor : public Block3DVisitor
 {
 public:
-   SetSolidBlockVisitor(std::shared_ptr<Interactor3D> interactor, BlockType type);
+   SetSolidBlockVisitor(SPtr<Interactor3D> interactor, BlockType type);
    virtual ~SetSolidBlockVisitor() {}
 
-   virtual void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block);
+   virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
 
 private:
-    std::shared_ptr<Interactor3D> interactor;
+    SPtr<Interactor3D> interactor;
    BlockType type;
 };
 

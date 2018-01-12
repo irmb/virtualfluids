@@ -25,10 +25,7 @@
 
 #include <numerics/geometry3d/GbPoint3D.h> 
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbTriFaceMesh3D;
-typedef VFSharedPtr<GbTriFaceMesh3D> GbTriFaceMesh3DPtr;
-
+#include <PointerDefinitions.h>
 
 namespace Kd 
 { 

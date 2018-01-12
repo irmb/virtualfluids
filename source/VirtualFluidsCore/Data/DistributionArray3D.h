@@ -3,9 +3,6 @@
 
 #include <LBMSystem.h>
 
-class DistributionArray3D;
-typedef std::shared_ptr<DistributionArray3D> DistributionArray3DPtr;
-
 class DistributionArray3D
 {
 public:

@@ -12,10 +12,8 @@
 
 #include <basics/utilities/UbTuple.h>
 
-#include <memory>
+#include <PointerDefinitions.h>
 
-class Block3DConnector;
-typedef std::shared_ptr<Block3DConnector> Block3DConnectorPtr;
 
 class Block3DConnector
 {

@@ -22,11 +22,11 @@ public:
    enum TransmitterType {MPI, BOND, MPI2BOND};
 public:
    typedef CbVector <LBMReal> DataType;
-   typedef std::shared_ptr< TbTransmitter< DataType > > TransmitterPtr;
+   typedef SPtr< TbTransmitter< DataType > > TransmitterPtr;
 public:
    CreateTransmittersHelper();
-   void createTransmitters(const Block3DPtr sblock, const Block3DPtr tblock, int dir, IBlock ib,
-                                 TransmitterPtr& sender, TransmitterPtr& receiver, CommunicatorPtr comm, TransmitterType tType);
+   void createTransmitters(const SPtr<Block3D> sblock, const SPtr<Block3D> tblock, int dir, IBlock ib,
+                                 TransmitterPtr& sender, TransmitterPtr& receiver, SPtr<Communicator> comm, TransmitterType tType);
 protected:
 private:
    std::string generatePoolKey(int srcRank, int srcLevel, int tgtRank, int tgtLevel);

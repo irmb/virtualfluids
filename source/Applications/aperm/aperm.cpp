@@ -59,7 +59,7 @@ void run(string configname)
       double          cpStepStart = config.getDouble("cpStepStart");
       bool            newStart = config.getValue<bool>("newStart");
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -97,28 +97,28 @@ void run(string configname)
       LBMReal rhoLB = 0.0;
       double rhoLBinflow = dpLB*3.0;
 
-      LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       const int baseLevel = 0;
 
       double coord[6];
       //double deltax;
 
-      Grid3DPtr grid(new Grid3D(comm));
+      SPtr<Grid3D> grid(new Grid3D(comm));
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      //UbSchedulerPtr rSch(new UbScheduler(cpStep, cpStepStart));
+      //SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStepStart));
       //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
       
-      UbSchedulerPtr rSch2(new UbScheduler(cpStep, cpStepStart));
+      SPtr<UbScheduler> rSch2(new UbScheduler(cpStep, cpStepStart));
       MPIIORestart11CoProcessor rcp(grid, rSch2, pathname, comm);
 
-      LBMKernelPtr kernel;
-      kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+      SPtr<LBMKernel> kernel;
+      kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
 
-      //BCProcessorPtr bcProc(new BCProcessor());
-      BCProcessorPtr bcProc = BCProcessorPtr(new ThinWallBCProcessor());
+      //SPtr<BCProcessor> bcProc(new BCProcessor());
+      SPtr<BCProcessor> bcProc = SPtr<BCProcessor>(new ThinWallBCProcessor());
       kernel->setBCProcessor(bcProc);
 
       rcp.setLBMKernel(kernel);
@@ -128,15 +128,15 @@ void run(string configname)
 
       //BC Adapter
       //////////////////////////////////////////////////////////////////////////////
-      BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new ThinWallNoSlipBCAlgorithm()));
-      //noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NoSlipBCAlgorithm()));
+      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new ThinWallNoSlipBCAlgorithm()));
+      //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
-      denBCAdapterInflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
+      SPtr<BCAdapter> denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
+      denBCAdapterInflow->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
-      denBCAdapterOutflow->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
+      SPtr<BCAdapter> denBCAdapterOutflow(new DensityBCAdapter(rhoLB));
+      denBCAdapterOutflow->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
       //////////////////////////////////////////////////////////////////////////////////
       //BS visitor
       BoundaryConditionsBlockVisitor bcVisitor;
@@ -232,7 +232,7 @@ void run(string configname)
          grid->setDeltaX(deltax);
          grid->setBlockNX(blocknx1, blocknx2, blocknx3);
 
-         GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+         SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
          if (myid==0) GbSystem3D::writeGeoObject(gridCube.get(), pathname+"/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
          GenBlocksGridVisitor genBlocks(gridCube);
@@ -272,23 +272,23 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          
          //PM interactor
-         D3Q27InteractorPtr sampleInt(new D3Q27Interactor(sample, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> sampleInt(new D3Q27Interactor(sample, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          //wall interactors
-         D3Q27InteractorPtr addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
 
-         D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
 
          //outflow
-         D3Q27InteractorPtr outflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, denBCAdapterOutflow, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapterOutflow, Interactor3D::SOLID));
 
 
          //UBLOG(logINFO, "PID = "<<myid<<" Hostname: "<<machinename);
@@ -299,10 +299,10 @@ void run(string configname)
 
          ////////////////////////////////////////////
          //METIS
-         Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
          ////////////////////////////////////////////
          //Zoltan
-         //Grid3DVisitorPtr zoltanVisitor(new ZoltanPartitioningGridVisitor(comm, D3Q27System::BSW, 1));
+         //SPtr<Grid3DVisitor> zoltanVisitor(new ZoltanPartitioningGridVisitor(comm, D3Q27System::BSW, 1));
          //grid->accept(zoltanVisitor);
 
          /////delete solid blocks
@@ -357,11 +357,11 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         //LBMKernelPtr kernel;
-         //kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+         //SPtr<LBMKernel> kernel;
+         //kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
 
-         ////BCProcessorPtr bcProc(new BCProcessor());
-         //BCProcessorPtr bcProc = BCProcessorPtr(new ThinWallBCProcessor());
+         ////SPtr<BCProcessor> bcProc(new BCProcessor());
+         //SPtr<BCProcessor> bcProc = SPtr<BCProcessor>(new ThinWallBCProcessor());
          kernel->setBCProcessor(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nu_LB, availMem, needMem);
@@ -386,8 +386,8 @@ void run(string configname)
          grid->accept(initVisitor);
 
          //Postrozess
-         UbSchedulerPtr geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessorPtr ppgeo(
+         SPtr<UbScheduler> geoSch(new UbScheduler(1));
+         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
             new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
          ppgeo->process(0);
          ppgeo.reset();
@@ -450,10 +450,10 @@ void run(string configname)
          {
             Grid3D::Interactor3DSet interactors = grid->getInteractors();
             interactors[0]->setGrid3D(grid);
-            std::dynamic_pointer_cast<D3Q27Interactor>(interactors[0])->deleteBCAdapter();
-            BCAdapterPtr denBCAdapterFront(new DensityBCAdapter(rhoLBinflow));
-            denBCAdapterFront->setBcAlgorithm(BCAlgorithmPtr(new EqDensityBCAlgorithm()));
-            std::dynamic_pointer_cast<D3Q27Interactor>(interactors[0])->addBCAdapter(denBCAdapterFront);
+            dynamicPointerCast<D3Q27Interactor>(interactors[0])->deleteBCAdapter();
+            SPtr<BCAdapter> denBCAdapterFront(new DensityBCAdapter(rhoLBinflow));
+            denBCAdapterFront->setBcAlgorithm(SPtr<BCAlgorithm>(new EqDensityBCAlgorithm()));
+            dynamicPointerCast<D3Q27Interactor>(interactors[0])->addBCAdapter(denBCAdapterFront);
             interactors[0]->updateInteractor();
          }
 
@@ -478,42 +478,42 @@ void run(string configname)
          //BS visitor
          grid->accept(bcVisitor);
 
-         UbSchedulerPtr geoSch(new UbScheduler(1));
+         SPtr<UbScheduler> geoSch(new UbScheduler(1));
          WriteBoundaryConditionsCoProcessor ppgeo = WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
          ppgeo.process(1);
 
 
          if (myid==0) UBLOG(logINFO, "Restart - end");
       }
-      UbSchedulerPtr nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       //nupsSch->addSchedule(nupsStep[0], nupsStep[1], nupsStep[2]);
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      UbSchedulerPtr stepSch(new UbScheduler(outTimeStep,outTimeStart));
+      SPtr<UbScheduler> stepSch(new UbScheduler(outTimeStep,outTimeStart));
 
       WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
       deltax = grid->getDeltaX(baseLevel);
       double dxd2 = deltax/2.0;
 
-      IntegrateValuesHelperPtr ih1(new IntegrateValuesHelper(grid, comm, coord[0]-dxd2*10.0, coord[1]-dxd2, coord[2]-dxd2,
+      SPtr<IntegrateValuesHelper> ih1(new IntegrateValuesHelper(grid, comm, coord[0]-dxd2*10.0, coord[1]-dxd2, coord[2]-dxd2,
          coord[0]-dxd2*10.0-2.0*dxd2, coord[4]+dxd2, coord[5]+dxd2));
 
-      //D3Q27IntegrateValuesHelperPtr ih2(new D3Q27IntegrateValuesHelper(grid, comm, coord[3]/2.0, coord[1] - dxd2, coord[2] - dxd2,
+      //D3Q27SPtr<IntegrateValuesHelper> ih2(new D3Q27IntegrateValuesHelper(grid, comm, coord[3]/2.0, coord[1] - dxd2, coord[2] - dxd2,
       //   coord[3]/2.0 + 2.0*dxd2, coord[4] + dxd2, coord[5] + dxd2));
-      IntegrateValuesHelperPtr ih2(new IntegrateValuesHelper(grid, comm, coord[0], coord[1], coord[2], coord[3], coord[4], coord[5]));
+      SPtr<IntegrateValuesHelper> ih2(new IntegrateValuesHelper(grid, comm, coord[0], coord[1], coord[2], coord[3], coord[4], coord[5]));
 
-      IntegrateValuesHelperPtr ih3(new IntegrateValuesHelper(grid, comm, coord[3]+dxd2*10.0, coord[1]-dxd2, coord[2]-dxd2,
+      SPtr<IntegrateValuesHelper> ih3(new IntegrateValuesHelper(grid, comm, coord[3]+dxd2*10.0, coord[1]-dxd2, coord[2]-dxd2,
          coord[3]+dxd2*10.0+2.0*dxd2, coord[4]+dxd2, coord[5]+dxd2));
 
-      //D3Q27IntegrateValuesHelperPtr ih1(new D3Q27IntegrateValuesHelper(grid, comm, coord[0], coord[1], coord[2], coord[3], coord[4], coord[5]));
+      //D3Q27SPtr<IntegrateValuesHelper> ih1(new D3Q27IntegrateValuesHelper(grid, comm, coord[0], coord[1], coord[2], coord[3], coord[4], coord[5]));
       if (myid==0) GbSystem3D::writeGeoObject(ih1->getBoundingBox().get(), pathname+"/geo/ih1", WbWriterVtkXmlBinary::getInstance());
       if (myid==0) GbSystem3D::writeGeoObject(ih2->getBoundingBox().get(), pathname+"/geo/ih2", WbWriterVtkXmlBinary::getInstance());
       if (myid==0) GbSystem3D::writeGeoObject(ih3->getBoundingBox().get(), pathname+"/geo/ih3", WbWriterVtkXmlBinary::getInstance());
 
       double factorp = 1; // dp_real / dp_LB;
       double factorv = 1;// dx / dt;
-      UbSchedulerPtr stepMV(new UbScheduler(timeSeriesOutTime));
+      SPtr<UbScheduler> stepMV(new UbScheduler(timeSeriesOutTime));
 
       TimeseriesCoProcessor tsp1(grid, stepMV, ih1, pathname+timeSeriesFile+"_1", comm);
       TimeseriesCoProcessor tsp2(grid, stepMV, ih2, pathname+timeSeriesFile+"_2", comm);
@@ -526,7 +526,7 @@ void run(string configname)
          UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe());
       }
 
-      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();
@@ -536,7 +536,7 @@ void run(string configname)
       //grid->deleteBlockIDs();
       //RenumberBlockVisitor renumber;
       //grid->accept(renumber);
-      //UbSchedulerPtr iiSch(new UbScheduler(1));
+      //SPtr<UbScheduler> iiSch(new UbScheduler(1));
       //MPIIORestart2CoProcessor rcpInit(grid, iiSch, pathname, comm);
       //rcpInit.process(300);
    }

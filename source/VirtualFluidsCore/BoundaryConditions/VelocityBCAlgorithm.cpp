@@ -12,13 +12,13 @@ VelocityBCAlgorithm::~VelocityBCAlgorithm()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr VelocityBCAlgorithm::clone()
+SPtr<BCAlgorithm> VelocityBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new VelocityBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new VelocityBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void VelocityBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void VelocityBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

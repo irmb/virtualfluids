@@ -8,7 +8,7 @@
 #ifndef D3Q27ForcesCoProcessor_H
 #define D3Q27ForcesCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 #include <vector>
 
@@ -29,21 +29,21 @@ public:
    //! Constructor
    //! \param v - velocity of fluid in LB units
    //! \param a - area of object in LB units
-   CalculateForcesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string &path,
-       std::shared_ptr<Communicator> comm, double v, double a);
+   CalculateForcesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string &path,
+       SPtr<Communicator> comm, double v, double a);
 	virtual ~CalculateForcesCoProcessor();             
 	void process(double step); 
-   void addInteractor(std::shared_ptr<D3Q27Interactor> interactor);
+   void addInteractor(SPtr<D3Q27Interactor> interactor);
 protected:
 	void collectData(double step);
    void calculateForces();
-   UbTupleDouble3 getForces(int x1, int x2, int x3, std::shared_ptr<DistributionArray3D> distributions, std::shared_ptr<BoundaryConditions> bc);
+   UbTupleDouble3 getForces(int x1, int x2, int x3, SPtr<DistributionArray3D> distributions, SPtr<BoundaryConditions> bc);
    void calculateCoefficients();
    void write(std::ofstream *fileObject, double value, char *separator);
 private:
    std::string path;
-   std::shared_ptr<Communicator> comm;
-   std::vector<std::shared_ptr<D3Q27Interactor> > interactors;
+   SPtr<Communicator> comm;
+   std::vector<SPtr<D3Q27Interactor> > interactors;
    double forceX1global;
    double forceX2global;
    double forceX3global;

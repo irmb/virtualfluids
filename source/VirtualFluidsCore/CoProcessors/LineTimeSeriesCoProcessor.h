@@ -1,7 +1,7 @@
 #ifndef LineTimeSeriesCoProcessor_h__
 #define LineTimeSeriesCoProcessor_h__
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 
 #include <mpi.h>
@@ -25,7 +25,7 @@ class LineTimeSeriesCoProcessor : public CoProcessor
 public:
 enum Direction {X1, X2, X3};
 public:
-   LineTimeSeriesCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<GbLine3D> line, int level,std::shared_ptr<Communicator> comm);
+   LineTimeSeriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<GbLine3D> line, int level,SPtr<Communicator> comm);
    ~LineTimeSeriesCoProcessor(){}
 
    void process(double step) override;
@@ -37,7 +37,7 @@ private:
    std::string path;
    std::string fname;
    bool root;
-   std::shared_ptr<GbLine3D> line;
+   SPtr<GbLine3D> line;
    //function pointer
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;

@@ -16,9 +16,9 @@
 #include "Grid3D.h"
 
 
-TimeseriesCoProcessor::TimeseriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-                                                             IntegrateValuesHelperPtr h1,
-                                                             const std::string& path, CommunicatorPtr comm)
+TimeseriesCoProcessor::TimeseriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
+                                                             SPtr<IntegrateValuesHelper> h1,
+                                                             const std::string& path, SPtr<Communicator> comm)
                                                              : CoProcessor(grid, s),                                                
                                                                h1(h1),
                                                                path(path),

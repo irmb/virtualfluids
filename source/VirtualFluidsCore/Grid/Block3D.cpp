@@ -75,19 +75,19 @@ bool Block3D::isNotActive() const
    return(!this->active); 
 }
 //////////////////////////////////////////////////////////////////////////
-void  Block3D::setKernel(LBMKernelPtr kernel) 
+void  Block3D::setKernel(SPtr<LBMKernel> kernel) 
 {  
    this->kernel = kernel; 
 }
 //////////////////////////////////////////////////////////////////////////
-ILBMKernelPtr Block3D::getKernel() const              
+SPtr<ILBMKernel> Block3D::getKernel() const              
 {  
    return this->kernel; 
 }
 //////////////////////////////////////////////////////////////////////////
 void Block3D::deleteKernel()             
 {  
-   this->kernel = LBMKernelPtr(); 
+   this->kernel = SPtr<LBMKernel>(); 
 }
 //////////////////////////////////////////////////////////////////////////
 int  Block3D::getBundle() const          
@@ -160,19 +160,19 @@ void Block3D::setLevel(int level)
    this->level = level; 
 }
 //////////////////////////////////////////////////////////////////////////
-Block3DConnectorPtr Block3D::getConnector(int dir) const
+SPtr<Block3DConnector> Block3D::getConnector(int dir) const
 { 
-   for(Block3DConnectorPtr c : connectors)
+   for(SPtr<Block3DConnector> c : connectors)
    {
       if( c ) 
       {
             if(c->getSendDir() == dir) return c;
       }
    }
-  return Block3DConnectorPtr();     
+  return SPtr<Block3DConnector>();     
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::setConnector(Block3DConnectorPtr connector)
+void Block3D::setConnector(SPtr<Block3DConnector> connector)
 {
    connectors.push_back(connector);
 }
@@ -184,18 +184,18 @@ void Block3D::deleteConnectors()
 //////////////////////////////////////////////////////////////////////////
 bool Block3D::hasConnectors()
 {
-   for(Block3DConnectorPtr c : connectors)
+   for(SPtr<Block3DConnector> c : connectors)
       if( c ) return true;
    
    return false;
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackSameLevelConnectors(  std::vector<Block3DConnectorPtr>& localSameLevelConnectors
-                                            , std::vector<Block3DConnectorPtr>& remoteSameLevelConnectors )
+void Block3D::pushBackSameLevelConnectors(  std::vector<SPtr<Block3DConnector>>& localSameLevelConnectors
+                                            , std::vector<SPtr<Block3DConnector>>& remoteSameLevelConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isLocalConnector() && !connector->isInterpolationConnectorCF() && !connector->isInterpolationConnectorFC() ) 
@@ -206,11 +206,11 @@ void Block3D::pushBackSameLevelConnectors(  std::vector<Block3DConnectorPtr>& lo
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackLocalSameLevelConnectors( std::vector<Block3DConnectorPtr>& localSameLevelConnectors )
+void Block3D::pushBackLocalSameLevelConnectors( std::vector<SPtr<Block3DConnector>>& localSameLevelConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isLocalConnector() && !connector->isInterpolationConnectorCF() && !connector->isInterpolationConnectorFC() ) 
@@ -219,9 +219,9 @@ void Block3D::pushBackLocalSameLevelConnectors( std::vector<Block3DConnectorPtr>
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackLocalSameLevelConnectors( std::vector<Block3DConnectorPtr>& localSameLevelConnectors, const int& dir)
+void Block3D::pushBackLocalSameLevelConnectors( std::vector<SPtr<Block3DConnector>>& localSameLevelConnectors, const int& dir)
 {
-   Block3DConnectorPtr connector = this->connectors[dir];
+   SPtr<Block3DConnector> connector = this->connectors[dir];
    if( this->connectors[dir] )
    {
       if( connector->isLocalConnector() && !connector->isInterpolationConnectorCF() && !connector->isInterpolationConnectorFC() ) 
@@ -229,11 +229,11 @@ void Block3D::pushBackLocalSameLevelConnectors( std::vector<Block3DConnectorPtr>
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackRemoteSameLevelConnectors( std::vector<Block3DConnectorPtr>& remoteSameLevelConnectors )
+void Block3D::pushBackRemoteSameLevelConnectors( std::vector<SPtr<Block3DConnector>>& remoteSameLevelConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isRemoteConnector() && !connector->isInterpolationConnectorCF() && !connector->isInterpolationConnectorFC() ) 
@@ -242,9 +242,9 @@ void Block3D::pushBackRemoteSameLevelConnectors( std::vector<Block3DConnectorPtr
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackRemoteSameLevelConnectors( std::vector<Block3DConnectorPtr>& remoteSameLevelConnectors, const int& dir )
+void Block3D::pushBackRemoteSameLevelConnectors( std::vector<SPtr<Block3DConnector>>& remoteSameLevelConnectors, const int& dir )
 {
-   Block3DConnectorPtr connector = this->connectors[dir];
+   SPtr<Block3DConnector> connector = this->connectors[dir];
    if( this->connectors[dir] )
    {
       if( connector->isRemoteConnector() && !connector->isInterpolationConnectorCF() && !connector->isInterpolationConnectorFC() ) 
@@ -252,11 +252,11 @@ void Block3D::pushBackRemoteSameLevelConnectors( std::vector<Block3DConnectorPtr
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackLocalInterpolationConnectorsCF( std::vector<Block3DConnectorPtr>& localInterpolationConnectors )
+void Block3D::pushBackLocalInterpolationConnectorsCF( std::vector<SPtr<Block3DConnector>>& localInterpolationConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isLocalConnector() && connector->isInterpolationConnectorCF() )
@@ -265,11 +265,11 @@ void Block3D::pushBackLocalInterpolationConnectorsCF( std::vector<Block3DConnect
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackRemoteInterpolationConnectorsCF( std::vector<Block3DConnectorPtr>& remoteInterpolationConnectors )
+void Block3D::pushBackRemoteInterpolationConnectorsCF( std::vector<SPtr<Block3DConnector>>& remoteInterpolationConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isRemoteConnector() && connector->isInterpolationConnectorCF() )
@@ -278,11 +278,11 @@ void Block3D::pushBackRemoteInterpolationConnectorsCF( std::vector<Block3DConnec
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackLocalInterpolationConnectorsFC( std::vector<Block3DConnectorPtr>& localInterpolationConnectors )
+void Block3D::pushBackLocalInterpolationConnectorsFC( std::vector<SPtr<Block3DConnector>>& localInterpolationConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isLocalConnector() && connector->isInterpolationConnectorFC() )
@@ -291,11 +291,11 @@ void Block3D::pushBackLocalInterpolationConnectorsFC( std::vector<Block3DConnect
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void Block3D::pushBackRemoteInterpolationConnectorsFC( std::vector<Block3DConnectorPtr>& remoteInterpolationConnectors )
+void Block3D::pushBackRemoteInterpolationConnectorsFC( std::vector<SPtr<Block3DConnector>>& remoteInterpolationConnectors )
 {
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isRemoteConnector() && connector->isInterpolationConnectorFC() )
@@ -309,7 +309,7 @@ int Block3D::getNumberOfLocalConnectors()
    int count = 0;
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isLocalConnector() ) count++;
@@ -323,7 +323,7 @@ int Block3D::getNumberOfRemoteConnectors()
    int count = 0;
    for(int i=0; i<(int)connectors.size(); i++)
    {
-      Block3DConnectorPtr connector = this->connectors[i];
+      SPtr<Block3DConnector> connector = this->connectors[i];
       if( this->connectors[i] )
       {
          if( connector->isRemoteConnector() ) count++;
@@ -341,7 +341,7 @@ int Block3D::getNumberOfLocalConnectorsForSurfaces()
 
    for(int dir=0; dir<=5; dir++) //Hard coding. It works if you have 0...5 for E, N ... B 
    {
-      Block3DConnectorPtr connector = this->connectors[dir];
+      SPtr<Block3DConnector> connector = this->connectors[dir];
       if( this->connectors[dir] )
       {
          if( connector->isLocalConnector() ) count++;
@@ -355,7 +355,7 @@ int Block3D::getNumberOfRemoteConnectorsForSurfaces()
    int count = 0;
    for(int dir=0; dir<=5; dir++) //Hard coding. It works if you have 0...5 for E, N ... B 
    {
-      Block3DConnectorPtr connector = this->connectors[dir];
+      SPtr<Block3DConnector> connector = this->connectors[dir];
       if( this->connectors[dir] )
       {
          if( connector->isRemoteConnector() ) count++;

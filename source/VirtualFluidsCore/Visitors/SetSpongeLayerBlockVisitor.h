@@ -1,7 +1,7 @@
 #ifndef SetSpongeLayerBlockVisitor_h__
 #define SetSpongeLayerBlockVisitor_h__
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include <MuParser/include/muParser.h>
 
@@ -19,7 +19,7 @@ public:
    SetSpongeLayerBlockVisitor(const mu::Parser& spongeLayer);
    virtual ~SetSpongeLayerBlockVisitor();
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 protected:
 private:
    mu::Parser spongeLayer;

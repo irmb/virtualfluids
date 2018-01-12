@@ -21,9 +21,9 @@ WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path, WbWriter* const writer,
-   LBMUnitConverterPtr conv, CommunicatorPtr comm)
+   SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
@@ -56,7 +56,7 @@ void WriteBoundaryConditionsCoProcessor::collectData(double step)
 
    for (int level = minInitLevel; level<=maxInitLevel; level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
@@ -110,7 +110,7 @@ void WriteBoundaryConditionsCoProcessor::clearData()
    data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
+void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
 {
    UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
@@ -128,8 +128,8 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(Block3DPtr block)
 
    data.resize(datanames.size());
 
-   ILBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
+   SPtr<ILBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
 
    //knotennummerierung faengt immer bei 0 an!
    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;

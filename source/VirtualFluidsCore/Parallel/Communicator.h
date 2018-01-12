@@ -4,15 +4,13 @@
 #include <vector>
 #include <string>
 
-#include <memory>
-class Communicator;
-typedef std::shared_ptr<Communicator> CommunicatorPtr;
+#include <PointerDefinitions.h>
 
 class Communicator
 {
 public:
    virtual ~Communicator(){}
-   static CommunicatorPtr getInstance();
+   static SPtr<Communicator> getInstance();
    virtual int getBundleID() = 0;
    virtual int getNumberOfBundles() = 0;
    virtual int getProcessID() = 0;
@@ -48,7 +46,7 @@ public:
    virtual void broadcast(std::vector<double>& values) = 0;
 protected:
    Communicator(){}
-   static CommunicatorPtr instance;
+   static SPtr<Communicator> instance;
 private:
 };
 

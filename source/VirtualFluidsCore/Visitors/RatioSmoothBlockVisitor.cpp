@@ -12,7 +12,7 @@ RatioSmoothBlockVisitor::RatioSmoothBlockVisitor(int levelDepth, bool includeNot
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void RatioSmoothBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void RatioSmoothBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    int ix1, ix2, ix3, level;
    ix1 = block->getX1();
@@ -40,9 +40,9 @@ void RatioSmoothBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool RatioSmoothBlockVisitor::lookForExpand(Grid3DPtr grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
+bool RatioSmoothBlockVisitor::lookForExpand(SPtr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
 {
-   std::vector<Block3DPtr> neighbors;
+   std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2, ix3, level, this->levelDepth, neighbors);
    int nix1, nix2,nix3, nlev;
    for(size_t i=0; i<neighbors.size(); i++)
@@ -55,7 +55,7 @@ bool RatioSmoothBlockVisitor::lookForExpand(Grid3DPtr grid, const int& ix1, cons
          nix3 = (neighbors)[i]->getX3();
          nlev = (neighbors)[i]->getLevel();
 
-         std::vector<Block3DPtr> neighbors1;
+         std::vector<SPtr<Block3D>> neighbors1;
          grid->getAllNeighbors(nix1, nix2, nix3, nlev, nlev+1, neighbors1);
          for(size_t j=0; j<neighbors1.size(); j++)
          {
@@ -70,9 +70,9 @@ bool RatioSmoothBlockVisitor::lookForExpand(Grid3DPtr grid, const int& ix1, cons
    return false;
 }
 //////////////////////////////////////////////////////////////////////////
-bool RatioSmoothBlockVisitor::lookForCollapse(Grid3DPtr grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
+bool RatioSmoothBlockVisitor::lookForCollapse(SPtr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
 {
-   std::vector<Block3DPtr> neighbors;
+   std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2,ix3, level, this->levelDepth, neighbors);
    for(size_t i=0; i<neighbors.size(); i++)
    {     

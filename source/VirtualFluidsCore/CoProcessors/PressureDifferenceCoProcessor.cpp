@@ -16,10 +16,10 @@
 #include "Grid3D.h"
 
 
-PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path,
-                                                                 IntegrateValuesHelperPtr h1, IntegrateValuesHelperPtr h2, 
+PressureDifferenceCoProcessor::PressureDifferenceCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path,
+                                                                 SPtr<IntegrateValuesHelper> h1, SPtr<IntegrateValuesHelper> h2, 
                                                                  LBMReal rhoReal, LBMReal uReal, LBMReal uLB,
-                                                                 CommunicatorPtr comm)
+                                                                 SPtr<Communicator> comm)
 
                                                 : CoProcessor(grid, s)
                                                 , path(path)

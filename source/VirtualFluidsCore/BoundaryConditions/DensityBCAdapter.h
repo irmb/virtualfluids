@@ -42,8 +42,8 @@ public:
    void init(const D3Q27Interactor* const& interactor, const double& time=0);
    void update(const D3Q27Interactor* const& interactor, const double& time=0);
 
-   void adaptBCForDirection( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time=0 );
-   void adaptBC( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time=0 );
+   void adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time=0 );
+   void adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time=0 );
 
    double getDensity(const double& x1, const double& x2, const double& x3, const double& timeStep);
 
@@ -58,7 +58,7 @@ protected:
    void unsetTimeDependent() { (this->type &=  ~TIMEDEPENDENT);}
    
    void clear() { densBCs.clear(); }
-   void setNodeDensity(const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep);
+   void setNodeDensity(const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep);
 
 private:
    mu::value_type x1, x2, x3; //brauch man nicht serialisieren!

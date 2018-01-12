@@ -17,10 +17,7 @@
 
 #include <numerics/geometry3d/GbObject3D.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbPoint3D;
-typedef VFSharedPtr<GbPoint3D> GbPoint3DPtr;
-
+#include <PointerDefinitions.h>
 
 class GbTriangle3D;
 class GbObject3DCreator;

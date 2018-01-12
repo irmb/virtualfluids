@@ -6,13 +6,13 @@
 
 #include <numerics/geometry3d/GbObject3D.h>
 
-GenBlocksGridVisitor::GenBlocksGridVisitor(GbObject3DPtr boundingBox) :
+GenBlocksGridVisitor::GenBlocksGridVisitor(SPtr<GbObject3D> boundingBox) :
    boundingBox(boundingBox)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void GenBlocksGridVisitor::visit(const Grid3DPtr grid)
+void GenBlocksGridVisitor::visit(const SPtr<Grid3D> grid)
 {
     double orgX1 = boundingBox->getX1Minimum();
     double orgX2 = boundingBox->getX2Minimum();
@@ -26,13 +26,13 @@ void GenBlocksGridVisitor::visit(const Grid3DPtr grid)
     double blockLentghX2 = (double)val<2>(blockNX)*dx;
     double blockLentghX3 = (double)val<3>(blockNX)*dx;
 
-    CoordinateTransformation3DPtr trafo(new CoordinateTransformation3D(orgX1, orgX2, orgX3, blockLentghX1, blockLentghX2, blockLentghX3));
+    SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D(orgX1, orgX2, orgX3, blockLentghX1, blockLentghX2, blockLentghX3));
     grid->setCoordinateTransformator(trafo);
 
     genBlocks(grid);
 }
 //////////////////////////////////////////////////////////////////////////
-void GenBlocksGridVisitor::fillExtentWithBlocks( Grid3DPtr grid )
+void GenBlocksGridVisitor::fillExtentWithBlocks( SPtr<Grid3D> grid )
 {
    for(int x3 =  val<3>(minInd); x3 <  val<3>(maxInd); x3++)
    {
@@ -40,14 +40,14 @@ void GenBlocksGridVisitor::fillExtentWithBlocks( Grid3DPtr grid )
       {
          for(int x1 =  val<1>(minInd); x1 <  val<1>(maxInd); x1++)
          {
-            Block3DPtr block( new Block3D(x1,x2,x3,0) );
+            SPtr<Block3D> block( new Block3D(x1,x2,x3,0) );
             grid->addBlock(block);
          }
       }
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void GenBlocksGridVisitor::genBlocks(Grid3DPtr grid)
+void GenBlocksGridVisitor::genBlocks(SPtr<Grid3D> grid)
 {
     minInd = grid->getBlockIndexes(boundingBox->getX1Minimum(), boundingBox->getX2Minimum(), boundingBox->getX3Minimum());
     double geoMaxX1 = boundingBox->getX1Maximum();

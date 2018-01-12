@@ -12,12 +12,11 @@
 #include "UbScheduler.h"
 #include "Grid3D.h"
 
-
-AdjustForcingCoProcessor::AdjustForcingCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+AdjustForcingCoProcessor::AdjustForcingCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path,
-   IntegrateValuesHelperPtr integrateValues,
+   SPtr<IntegrateValuesHelper> integrateValues,
    double vTarged,
-   CommunicatorPtr comm)
+   SPtr<Communicator> comm)
 
    : CoProcessor(grid, s),
    path(path),

@@ -11,7 +11,7 @@ Block3DVisitor(0, Grid3DSystem::MAXLEVEL), nu(nu)
 
 }
 //////////////////////////////////////////////////////////////////////////
-void ViscosityBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void ViscosityBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    if (block->getRank() == grid->getRank())
    {

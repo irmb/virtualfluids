@@ -2,19 +2,17 @@
 #define NonEqDensityBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
+#include <PointerDefinitions.h>
 
 class DistributionArray3D;
-
-class NonEqDensityBCAlgorithm;
-typedef std::shared_ptr<NonEqDensityBCAlgorithm> NonEqDensityBCAlgorithmPtr;
 
 class NonEqDensityBCAlgorithm : public BCAlgorithm
 {
 public:
    NonEqDensityBCAlgorithm();
    ~NonEqDensityBCAlgorithm();
-   BCAlgorithmPtr clone();
-   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone();
+   void addDistributions(SPtr<DistributionArray3D> distributions);
    void applyBC() override;
 private:
    //friend class boost::serialization::access;

@@ -23,7 +23,7 @@ SpongeLayerBlockVisitor::~SpongeLayerBlockVisitor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void SpongeLayerBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    if (block->getRank() == grid->getRank())
    {
@@ -39,7 +39,7 @@ void SpongeLayerBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
       if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3))
       {
-         ILBMKernelPtr kernel = block->getKernel();
+         SPtr<ILBMKernel> kernel = block->getKernel();
          double oldCollFactor = kernel->getCollisionFactor();
 
          int ibX1 = block->getX1();

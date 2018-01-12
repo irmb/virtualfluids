@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm> //for std::swap
 #include <typeinfo>  //for typeid
-#include <memory>    //for memcopy
+#include <PointerDefinitions.h>    //for memcopy
 
 #include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbEqual.h>

@@ -4,9 +4,6 @@
 #include "DistributionArray3D.h"
 #include <LBMSystem.h>
 
-class EsoTwist3D;
-typedef std::shared_ptr<EsoTwist3D> EsoTwist3DPtr;
-
 class EsoTwistD3Q27UnrollArray{};
 class EsoTwistPlusD3Q27UnrollArray{};
 class EsoTwistPlusD3Q19UnrollArray{};

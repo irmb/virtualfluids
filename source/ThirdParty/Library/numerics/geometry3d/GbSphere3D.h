@@ -22,10 +22,7 @@
 #include <numerics/geometry3d/GbObject3D.h>
 #include <numerics/geometry3d/GbPoint3D.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbSphere3D;
-typedef VFSharedPtr<GbSphere3D> GbSphere3DPtr;
-
+#include <PointerDefinitions.h>
 
 class GbLine3D;
 class GbTriangle3D;
@@ -49,7 +46,7 @@ public:
    void finalize();
 
 
-   bool intersects(GbSphere3DPtr sphere);
+   bool intersects(SPtr<GbSphere3D> sphere);
 
    double getRadius() const	{	return this->radius;	}
 

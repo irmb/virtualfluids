@@ -2,7 +2,7 @@
 #define _MPIIORestart11CoProcessor_H_
 
 #include <mpi.h>
-#include <memory>
+#include <PointerDefinitions.h>
 #include <string>
 
 #include "CoProcessor.h"
@@ -12,9 +12,6 @@ class UbScheduler;
 class Communicator;
 class BCProcessor;
 class LBMKernel;
-
-class MPIIORestartCoProcessor;
-typedef std::shared_ptr<MPIIORestartCoProcessor> MPIIORestartCoProcessorPtr;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
@@ -146,7 +143,7 @@ class MPIIORestartCoProcessor: public CoProcessor
    };
 
 public:
-   MPIIORestartCoProcessor(std::shared_ptr<Grid3D> grid, std::shared_ptr<UbScheduler> s, const std::string& path, std::shared_ptr<Communicator> comm);
+   MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
    virtual ~MPIIORestartCoProcessor();
    //! Each timestep writes the grid into the files
    void process(double step);
@@ -165,23 +162,23 @@ public:
    //! Reads the boundary conditions of the blocks from the file outputBoundCond.bin
    void readBoundaryConds(int step);
    //! The function sets LBMKernel
-   void setLBMKernel(std::shared_ptr<LBMKernel> kernel);
+   void setLBMKernel(SPtr<LBMKernel> kernel);
    //!The function sets BCProcessor
-   void setBCProcessor(std::shared_ptr<BCProcessor> bcProcessor);
+   void setBCProcessor(SPtr<BCProcessor> bcProcessor);
    //!The function truncates the data files
    void clearAllFiles(int step);
 
 protected:
    std::string path;
-   std::shared_ptr<Communicator> comm;
+   SPtr<Communicator> comm;
    bool mpiTypeFreeFlag;
 
 private:
 	MPI_Datatype gridParamType, block3dType, dataSetParamType, dataSetType, dataSetDoubleType, boundCondParamType, boundCondType, boundCondType1000, boundCondTypeAdd, bcindexmatrixType;
    dataSetParam dataSetParamStr;
    boundCondParam boundCondParamStr;
-   std::shared_ptr<LBMKernel> lbmKernel;
-   std::shared_ptr<BCProcessor> bcProcessor;
+   SPtr<LBMKernel> lbmKernel;
+   SPtr<BCProcessor> bcProcessor;
 };
 
 #endif 

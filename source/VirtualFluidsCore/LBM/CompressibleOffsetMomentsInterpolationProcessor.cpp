@@ -29,13 +29,13 @@ InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone
    InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetMomentsInterpolationProcessor(this->omegaC, this->omegaF));
    if (bulkOmegaToOmega)
    {
-      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = omegaC;
-      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = omegaF;
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = omegaC;
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = omegaF;
    }
    else
    {
-      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = one;
-      std::dynamic_pointer_cast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = one;
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = one;
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = one;
    }
    return iproc;
 }

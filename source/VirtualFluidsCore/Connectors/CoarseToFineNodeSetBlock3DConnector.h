@@ -21,7 +21,7 @@
 #include "InterpolationProcessor.h"
 #include "MathUtil.hpp"
 #include "Grid3D.h"
-#include <memory>
+#include <PointerDefinitions.h>
 
 
 class Block3D;
@@ -43,7 +43,7 @@ class Block3D;
 class CoarseToFineNodeSetBlock3DConnector : public CoarseToFineBlock3DConnector
 {
 public:
-   CoarseToFineNodeSetBlock3DConnector(Block3DPtr block,
+   CoarseToFineNodeSetBlock3DConnector(SPtr<Block3D> block,
       VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
       VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
       VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,

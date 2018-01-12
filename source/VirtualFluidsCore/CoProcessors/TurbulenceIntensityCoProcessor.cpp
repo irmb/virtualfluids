@@ -12,9 +12,9 @@
 #include "UbScheduler.h"
 #include "BCArray3D.h"
 
-TurbulenceIntensityCoProcessor::TurbulenceIntensityCoProcessor(Grid3DPtr grid, const std::string& path, 
+TurbulenceIntensityCoProcessor::TurbulenceIntensityCoProcessor(SPtr<Grid3D> grid, const std::string& path, 
                                                                                        WbWriter* const writer,
-                                                                                       UbSchedulerPtr s, CommunicatorPtr comm)
+                                                                                       SPtr<UbScheduler> s, SPtr<Communicator> comm)
                                                                                      : CoProcessor(grid, s),
                                                                                        path(path),
                                                                                        comm(comm),
@@ -35,10 +35,10 @@ void TurbulenceIntensityCoProcessor::init()
    {
       grid->getBlocks(level, gridRank, true, blockVector[level]);
 
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          UbTupleInt3 nx = grid->getBlockNX();
-         AverageValuesArray3DPtr averageValues = AverageValuesArray3DPtr(new AverageValuesArray3D(val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 4, 0.0));
+         SPtr<AverageValuesArray3D> averageValues = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(val<1>(nx)+1, val<2>(nx)+1, val<3>(nx)+1, 4, 0.0));
          block->getKernel()->getDataSet()->setAverageValues(averageValues);
       }
    }
@@ -60,7 +60,7 @@ void TurbulenceIntensityCoProcessor::collectData(double step)
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
@@ -104,7 +104,7 @@ void TurbulenceIntensityCoProcessor::clearData()
    data.clear();
 }
 //////////////////////////////////////////////////////////////////////////
-void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
+void TurbulenceIntensityCoProcessor::addData(const SPtr<Block3D> block)
 {
    UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
@@ -117,10 +117,10 @@ void TurbulenceIntensityCoProcessor::addData(const Block3DPtr block)
 
    data.resize(datanames.size());
 
-   ILBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
-   AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
+   SPtr<ILBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+   SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
+   SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageValues();
    //int ghostLayerWidth = kernel->getGhostLayerWidth();
 
    //knotennummerierung faengt immer bei 0 an!
@@ -202,14 +202,14 @@ void TurbulenceIntensityCoProcessor::calculateAverageValues(double timeStep)
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
-            ILBMKernelPtr kernel = block->getKernel();
-            BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-            DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions(); 
-            AverageValuesArray3DPtr av = kernel->getDataSet()->getAverageValues();
+            SPtr<ILBMKernel> kernel = block->getKernel();
+            SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+            SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions(); 
+            SPtr<AverageValuesArray3D> av = kernel->getDataSet()->getAverageValues();
 
             int minX1 = 0;
             int minX2 = 0;

@@ -12,7 +12,7 @@
 #include "Communicator.h"
 #include "CompressibleCumulantLBMKernel.h"
 
-LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& path, GbLine3DPtr line, int level, CommunicatorPtr comm) :
+LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<GbLine3D> line, int level, SPtr<Communicator> comm) :
    CoProcessor(grid, s),
    path(path),
    length(0),
@@ -31,7 +31,7 @@ LineTimeSeriesCoProcessor::LineTimeSeriesCoProcessor(Grid3DPtr grid, UbScheduler
 
    double dx = CoProcessor::grid->getDeltaX(level);
 
-   CoordinateTransformation3DPtr trafo = grid->getCoordinateTransformator();
+   SPtr<CoordinateTransformation3D> trafo = grid->getCoordinateTransformator();
    double orgX1 = trafo->getX1CoordinateOffset();
    double orgX2 = trafo->getX2CoordinateOffset();
    double orgX3 = trafo->getX3CoordinateOffset();
@@ -123,12 +123,12 @@ void LineTimeSeriesCoProcessor::collectData()
          blockix3 = x/blocknx;
       }
 
-      Block3DPtr block = CoProcessor::grid->getBlock(blockix1, blockix2, blockix3, level);
+      SPtr<Block3D> block = CoProcessor::grid->getBlock(blockix1, blockix2, blockix3, level);
       if (block)
       {
          if (block->getRank()==gridRank)
          {
-             ILBMKernelPtr kernel = block->getKernel();
+             SPtr<ILBMKernel> kernel = block->getKernel();
             calcMacros = NULL;
             if (kernel->getCompressible())
             {
@@ -138,7 +138,7 @@ void LineTimeSeriesCoProcessor::collectData()
             {
                calcMacros = &D3Q27System::calcIncompMacroscopicValues;
             }
-            DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+            SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
             for (int ix = 1; ix<=blocknx; ix++)
             {

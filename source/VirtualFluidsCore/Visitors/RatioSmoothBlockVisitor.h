@@ -32,11 +32,11 @@ public:
 
    std::string getSpecificDescription();
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 protected:
-   bool lookForExpand(std::shared_ptr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
-   bool lookForCollapse(std::shared_ptr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
+   bool lookForExpand(SPtr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
+   bool lookForCollapse(SPtr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level);
 
 private:
    int  maxLevelRatio;

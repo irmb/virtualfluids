@@ -1,7 +1,7 @@
 #ifndef RefineAroundGbObjectHelper_H
 #define RefineAroundGbObjectHelper_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 class Grid3D;
 class Communicator;
@@ -19,16 +19,16 @@ public:
    //! \param objectIter a D3Q27TriFaceMeshInteractor object - represent geometry which should be refinement
    //! \param startDistance start distance from geometry for refinement
    //! \param stopDistance stop distance from geometry for refinement
-   RefineAroundGbObjectHelper(std::shared_ptr<Grid3D> grid, int maxRefineLevel, std::shared_ptr<D3Q27TriFaceMeshInteractor> objectIter, double startDistance, double stopDistance, std::shared_ptr<Communicator> comm);
+   RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<D3Q27TriFaceMeshInteractor> objectIter, double startDistance, double stopDistance, SPtr<Communicator> comm);
    virtual ~RefineAroundGbObjectHelper(void);
    //! start refinement
    void refine();
 private:
-    std::shared_ptr<Grid3D> grid;
-    std::shared_ptr<D3Q27TriFaceMeshInteractor> objectIter;
+    SPtr<Grid3D> grid;
+    SPtr<D3Q27TriFaceMeshInteractor> objectIter;
    int refineLevel;
    double startDistance, stopDistance;
-   std::shared_ptr<Communicator> comm;
+   SPtr<Communicator> comm;
 };
 
 #endif 

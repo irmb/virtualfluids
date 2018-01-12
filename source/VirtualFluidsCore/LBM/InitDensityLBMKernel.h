@@ -14,7 +14,7 @@ public:
    ~InitDensityLBMKernel();
    InitDensityLBMKernel(int nx1, int nx2, int nx3);
    void calculate();
-   LBMKernelPtr clone();
+   SPtr<LBMKernel> clone();
    void setVelocity(int x1, int x2, int x3, LBMReal vvx, LBMReal vvy, LBMReal vvz);
    double getCalculationTime();
 protected:

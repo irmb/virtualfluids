@@ -8,9 +8,6 @@
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 
-class CompressibleCumulantLBMKernel;
-typedef std::shared_ptr<CompressibleCumulantLBMKernel> CompressibleCumulantLBMKernelPtr;
-
 //! \brief   compressible cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  K. Kutscher, M. Geier
@@ -29,7 +26,7 @@ public:
    CompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~CompressibleCumulantLBMKernel(void);
    virtual void calculate();
-   virtual LBMKernelPtr clone();
+   virtual SPtr<LBMKernel> clone();
    double getCalculationTime();
    void setBulkOmegaToOmega(bool value);
 protected:

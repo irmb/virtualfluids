@@ -10,7 +10,7 @@ OverlapBlockVisitor::OverlapBlockVisitor(int levelDepth/*shut be maxGridLevel*/,
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void OverlapBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void OverlapBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    int ix1, ix2, ix3, level;
    ix1 = block->getX1();
@@ -20,7 +20,7 @@ void OverlapBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
    int nix1, nix2,nix3, nlev;
    int neighix1, neighix2, neighix3, neighlev;
-   std::vector<Block3DPtr> neighbors;
+   std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2, ix3, level, this->levelDepth, neighbors);
    bool hasAdded = false;
    for(size_t i=0; i<neighbors.size(); i++)
@@ -42,10 +42,10 @@ void OverlapBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
             throw UbException(UB_EXARGS, "OverlapBlockVisitor::adaptBlock - leveldifferenz passt nicht, block: " + block->toString());
          }
 
-         Block3DPtr newBlock = grid->getBlock(nix1,nix2,nix3,nlev);
+         SPtr<Block3D> newBlock = grid->getBlock(nix1,nix2,nix3,nlev);
          if(!newBlock)
          {
-            newBlock = Block3DPtr(new Block3D(nix1,nix2,nix3,nlev));
+            newBlock = SPtr<Block3D>(new Block3D(nix1,nix2,nix3,nlev));
             grid->addBlock(newBlock);
             hasAdded=true;
          }

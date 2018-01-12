@@ -21,7 +21,7 @@ struct D3Q27ICell
 };
 
 class InterpolationProcessor;
-typedef std::shared_ptr<InterpolationProcessor> InterpolationProcessorPtr;
+typedef SPtr<InterpolationProcessor> InterpolationProcessorPtr;
 
 #include "InterpolationHelper.h"
 
@@ -37,15 +37,15 @@ public:
    virtual void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC) = 0; 
    virtual void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff) = 0; 
 
-   static void readICell(DistributionArray3DPtr f, D3Q27ICell& icell, int x1, int x2, int x3);
-   static void writeICell(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3);
-   static void writeICellInv(DistributionArray3DPtr f, const D3Q27ICell& icell, int x1, int x2, int x3);
-   static void writeINode(DistributionArray3DPtr f, const LBMReal* const inode, int x1, int x2, int x3);
-   static void writeINodeInv(DistributionArray3DPtr f, const LBMReal* const inode, int x1, int x2, int x3);
-   static bool iCellHasSolid(const BCArray3DPtr bcArray, int x1, int x2, int x3);
-   static int  iCellHowManySolids(const BCArray3DPtr bcArray, int x1, int x2, int x3);
+   static void readICell(SPtr<DistributionArray3D> f, D3Q27ICell& icell, int x1, int x2, int x3);
+   static void writeICell(SPtr<DistributionArray3D> f, const D3Q27ICell& icell, int x1, int x2, int x3);
+   static void writeICellInv(SPtr<DistributionArray3D> f, const D3Q27ICell& icell, int x1, int x2, int x3);
+   static void writeINode(SPtr<DistributionArray3D> f, const LBMReal* const inode, int x1, int x2, int x3);
+   static void writeINodeInv(SPtr<DistributionArray3D> f, const LBMReal* const inode, int x1, int x2, int x3);
+   static bool iCellHasSolid(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3);
+   static int  iCellHowManySolids(const SPtr<BCArray3D> bcArray, int x1, int x2, int x3);
 
-   bool findNeighborICell(const BCArray3DPtr bcArray, DistributionArray3DPtr f, 
+   bool findNeighborICell(const SPtr<BCArray3D> bcArray, SPtr<DistributionArray3D> f, 
                           D3Q27ICell& icell, int maxX1, int maxX2, int maxX3, 
                           int x1, int x2, int x3, LBMReal& xoff, LBMReal& yoff, LBMReal& zoff);
 

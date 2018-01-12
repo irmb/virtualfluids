@@ -3,10 +3,7 @@
 
 #include "Communicator.h"
 
-#include <memory>
-
-class NullCommunicator;
-typedef std::shared_ptr<NullCommunicator> NullCommunicatorPtr;
+#include <PointerDefinitions.h>
 
 class NullCommunicator : public Communicator
 {

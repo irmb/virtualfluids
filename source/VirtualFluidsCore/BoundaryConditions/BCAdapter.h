@@ -7,10 +7,7 @@
 #ifndef BCAdapter_H
 #define BCAdapter_H
 
-#include <memory>
-
-class BCAdapter;
-typedef std::shared_ptr<BCAdapter> BCAdapterPtr;
+#include <PointerDefinitions.h>
 
 #include "BoundaryConditions.h"
 #include "basics/objects/ObObject.h"
@@ -62,11 +59,11 @@ public:
    virtual void init(const D3Q27Interactor* const& interactor, const double& time=0) = 0;
    virtual void update(const D3Q27Interactor* const& interactor, const double& time=0) = 0;
 
-   virtual void adaptBC( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time=0 ) = 0;
-   virtual void adaptBCForDirection( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time=0 ) = 0;
+   virtual void adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time=0 ) = 0;
+   virtual void adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time=0 ) = 0;
 
-   void setBcAlgorithm(BCAlgorithmPtr alg) {algorithmType = alg->getType(); algorithm = alg;}
-   BCAlgorithmPtr getAlgorithm() {return algorithm;} 
+   void setBcAlgorithm(SPtr<BCAlgorithm> alg) {algorithmType = alg->getType(); algorithm = alg;}
+   SPtr<BCAlgorithm> getAlgorithm() {return algorithm;} 
    char getBcAlgorithmType() {return algorithmType;}
 
 protected:
@@ -74,7 +71,7 @@ protected:
 
    char  type;
 
-   BCAlgorithmPtr algorithm;
+   SPtr<BCAlgorithm> algorithm;
    char algorithmType;
 
    static const char   TIMEDEPENDENT = 1<<0;//'1';

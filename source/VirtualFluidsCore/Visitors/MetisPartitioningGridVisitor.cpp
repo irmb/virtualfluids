@@ -8,7 +8,7 @@
 
 using namespace std;
 
-MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(CommunicatorPtr comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType, bool threads, int numberOfThreads)
+MetisPartitioningGridVisitor::MetisPartitioningGridVisitor(SPtr<Communicator> comm, GraphType graphType, int numOfDirs, MetisPartitioner::PartType partType, bool threads, int numberOfThreads)
     :  Grid3DVisitor(),
        numberOfThreads(numberOfThreads),
        numOfDirs(numOfDirs),
@@ -25,7 +25,7 @@ MetisPartitioningGridVisitor::~MetisPartitioningGridVisitor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void MetisPartitioningGridVisitor::visit(Grid3DPtr grid)
+void MetisPartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 {
     UBLOG(logDEBUG1, "MetisPartitioningGridVisitor::visit() - start");
 
@@ -78,7 +78,7 @@ void MetisPartitioningGridVisitor::visit(Grid3DPtr grid)
     UBLOG(logDEBUG1, "MetisPartitioningGridVisitor::visit() - end");
 }
 //////////////////////////////////////////////////////////////////////////
-void MetisPartitioningGridVisitor::collectData(Grid3DPtr grid, int nofSegments, PartLevel level)
+void MetisPartitioningGridVisitor::collectData(SPtr<Grid3D> grid, int nofSegments, PartLevel level)
 {
     clear();
 
@@ -93,9 +93,9 @@ void MetisPartitioningGridVisitor::collectData(Grid3DPtr grid, int nofSegments, 
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void MetisPartitioningGridVisitor::distributePartitionData(Grid3DPtr grid, PartLevel level)
+void MetisPartitioningGridVisitor::distributePartitionData(SPtr<Grid3D> grid, PartLevel level)
 {
-    Block3DPtr block;
+    SPtr<Block3D> block;
 
     for(size_t p=0; p<parts.size(); p++)
     {
@@ -126,7 +126,7 @@ void MetisPartitioningGridVisitor::distributePartitionData(Grid3DPtr grid, PartL
     }
 }
 //////////////////////////////////////////////////////////////////////////
-void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr grid, int nofSegments, PartLevel level)
+void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(SPtr<Grid3D> grid, int nofSegments, PartLevel level)
 {
     int edges = 0;
     const int edgeWeight= 1;
@@ -135,7 +135,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
 
     for(Grid3D::BlockIDMap::value_type b :  grid->getBlockIDs())
     { 
-        Block3DPtr block = b.second;
+        SPtr<Block3D> block = b.second;
         if (this->getPartitionCondition(block, level))
         {
             block->setLocalID(n);
@@ -148,7 +148,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
 
     for(Grid3D::BlockIDMap::value_type b :  grid->getBlockIDs())
     { 
-        const Block3DPtr block = b.second;
+        const SPtr<Block3D> block = b.second;
         if (this->getPartitionCondition(block, level))
         {
            metis.xadj.push_back(edges);
@@ -157,7 +157,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
 
             for( int dir = 0; dir <= numOfDirs; dir++)
             {
-                Block3DPtr neighBlock = grid->getNeighborBlock(dir, block);
+                SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
                 if(neighBlock)
                 {
                     if (this->getPartitionCondition(neighBlock, level))
@@ -168,9 +168,9 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
                     }
                 }
             }
-            vector<Block3DPtr> subBlocks;
+            vector<SPtr<Block3D>> subBlocks;
             grid->getSubBlocks(block, 1, subBlocks);
-            for(Block3DPtr subBlock : subBlocks)
+            for(SPtr<Block3D> subBlock : subBlocks)
             {
                 if (subBlock)
                 {
@@ -194,7 +194,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelIntersected(Grid3DPtr gri
     parts = metis.part;
 }
 //////////////////////////////////////////////////////////////////////////
-void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int nofSegments, PartLevel level)
+void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, int nofSegments, PartLevel level)
 {
     int minInitLevel = grid->getCoarsestInitializedLevel();
     int maxInitLevel = grid->getFinestInitializedLevel();
@@ -202,11 +202,11 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int
     for(int l = minInitLevel; l<=maxInitLevel;l++)
     {
         int n = 0;
-        vector<Block3DPtr> blockVector;
+        vector<SPtr<Block3D>> blockVector;
         grid->getBlocks(l, blockVector);
-        vector<Block3DPtr> tBlockID;
+        vector<SPtr<Block3D>> tBlockID;
 
-        for(Block3DPtr block : blockVector)
+        for(SPtr<Block3D> block : blockVector)
         { 
             if (this->getPartitionCondition(block, level))
             {
@@ -228,14 +228,14 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int
         int edges = 0;
         const int edgeWeight= 1;
 
-        for(Block3DPtr block : tBlockID)
+        for(SPtr<Block3D> block : tBlockID)
         {
             metis.xadj.push_back(edges);
             metis.vwgt.push_back(vertexWeight);
 
             for( int dir = 0; dir <= numOfDirs; dir++)
             {
-                Block3DPtr neighBlock = grid->getNeighborBlock(dir, block);
+                SPtr<Block3D> neighBlock = grid->getNeighborBlock(dir, block);
                 if(neighBlock)
                 {
                     if (this->getPartitionCondition(neighBlock, level))
@@ -266,7 +266,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(Grid3DPtr grid, int
     }
 }
 //////////////////////////////////////////////////////////////////////////
-bool MetisPartitioningGridVisitor::getPartitionCondition(Block3DPtr block, PartLevel level)
+bool MetisPartitioningGridVisitor::getPartitionCondition(SPtr<Block3D> block, PartLevel level)
 {
     if (level == BUNDLE)
     {

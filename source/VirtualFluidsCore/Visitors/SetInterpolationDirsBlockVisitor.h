@@ -2,7 +2,7 @@
 #define SetInterpolationDirsBlockVisitor_h
 
 #include <vector>
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 
@@ -16,12 +16,12 @@ public:
 
    virtual ~SetInterpolationDirsBlockVisitor() {}
 
-   void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+   void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
 private:
    std::vector<int> dirs;
-   void checkFlagDir(std::shared_ptr<Grid3D> grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level);
-   void checkFlagDir(std::shared_ptr<Grid3D> grid, int dir1, int dir2, int dir3, bool &flagDirection, int ix1, int ix2, int ix3, int level);
+   void checkFlagDir(SPtr<Grid3D> grid, int dir1, int dir2, bool &flagDirection, int ix1, int ix2, int ix3, int level);
+   void checkFlagDir(SPtr<Grid3D> grid, int dir1, int dir2, int dir3, bool &flagDirection, int ix1, int ix2, int ix3, int level);
 };
 
 #endif

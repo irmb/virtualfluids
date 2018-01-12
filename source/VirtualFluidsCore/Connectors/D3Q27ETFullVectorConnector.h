@@ -20,7 +20,7 @@
 class D3Q27ETFullVectorConnector : public RemoteBlock3DConnector
 {
 public:
-   D3Q27ETFullVectorConnector(Block3DPtr block
+   D3Q27ETFullVectorConnector(SPtr<Block3D> block
       , VectorTransmitterPtr sender
       , VectorTransmitterPtr receiver
       , int sendDir);
@@ -42,7 +42,7 @@ private:
    CbArray4D <LBMReal, IndexerX4X3X2X1>::CbArray4DPtr nonLocalDistributions;
    CbArray3D <LBMReal, IndexerX3X2X1>::CbArray3DPtr   zeroDistributions;
 
-   EsoTwist3DPtr  fDis;
+   SPtr<EsoTwist3D>  fDis;
 
 };
 

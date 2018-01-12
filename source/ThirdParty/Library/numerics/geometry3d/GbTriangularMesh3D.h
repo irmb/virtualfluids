@@ -22,11 +22,7 @@
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
 #endif //CAB_RCF
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbTriangularMesh3D;
-typedef VFSharedPtr<GbTriangularMesh3D> GbTriangularMesh3DPtr;
-
-
+#include <PointerDefinitions.h>
 
 /*=========================================================================*/
 /* GbTriangularMesh3D                                                                  */

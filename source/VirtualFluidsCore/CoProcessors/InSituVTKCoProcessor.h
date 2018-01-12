@@ -20,19 +20,19 @@ class InSituVTKCoProcessor : public CoProcessor
 {
 public:
    InSituVTKCoProcessor();
-   InSituVTKCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, const std::string& configFile, LBMUnitConverterPtr conv);
+   InSituVTKCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& configFile, SPtr<LBMUnitConverter> conv);
    virtual ~InSituVTKCoProcessor(); 
    void process(double step);
 protected:
    void collectData(double step);
-   void addData(Block3DPtr block);
+   void addData(SPtr<Block3D> block);
    void readConfigFile(const std::string& configFile);
 
    //void clearData();
 private:
    std::string path;
-   LBMUnitConverterPtr conv;
-   std::vector<std::vector<Block3DPtr> > blockVector;
+   SPtr<LBMUnitConverter> conv;
+   std::vector<std::vector<SPtr<Block3D>> > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;

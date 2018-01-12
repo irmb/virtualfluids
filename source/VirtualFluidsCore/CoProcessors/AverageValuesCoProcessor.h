@@ -1,16 +1,13 @@
 #ifndef AverageValuesCoProcessor_H
 #define AverageValuesCoProcessor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 #include <vector>
 #include <string>
 
 #include "CoProcessor.h"
 #include "LBMSystem.h"
 #include "UbTuple.h"
-
-class AverageValuesCoProcessor;
-typedef std::shared_ptr<AverageValuesCoProcessor> AverageValuesCoProcessorPtr;
 
 class UbScheduler;
 class WbWriter;
@@ -27,8 +24,8 @@ class AverageValuesCoProcessor : public CoProcessor
 {
 public:
    AverageValuesCoProcessor();
-   AverageValuesCoProcessor(std::shared_ptr<Grid3D> grid, const std::string& path, WbWriter* const writer,
-       std::shared_ptr<UbScheduler> s, std::shared_ptr<UbScheduler> Avs, std::shared_ptr<UbScheduler> rsMeans, std::shared_ptr<UbScheduler> rsRMS, bool restart);
+   AverageValuesCoProcessor(SPtr<Grid3D> grid, const std::string& path, WbWriter* const writer,
+       SPtr<UbScheduler> s, SPtr<UbScheduler> Avs, SPtr<UbScheduler> rsMeans, SPtr<UbScheduler> rsRMS, bool restart);
 	//! Make update
 	void process(double step); 
 	//! Resets averaged velocity and RMS-values according to ResetSceduler
@@ -40,7 +37,7 @@ protected:
 	void resetDataRMS(double step);
 	void resetDataMeans(double step);
 	//! prepare data
-	void addData(const std::shared_ptr<Block3D> block);
+	void addData(const SPtr<Block3D> block);
 	void clearData();
 	//! Computes average and RMS values of macroscopic quantities 
 	void calculateAverageValues(double timeStep);
@@ -54,7 +51,7 @@ private:
 	std::vector<UbTupleInt8> cells;
 	std::vector<std::string> datanames;
 	std::vector<std::vector<double> > data; 
-	std::vector<std::vector<std::shared_ptr<Block3D>> > blockVector;
+	std::vector<std::vector<SPtr<Block3D>> > blockVector;
 	int minInitLevel; //min init level
 	int maxInitLevel;
 	int gridRank;
@@ -64,9 +61,9 @@ private:
 	std::string path;
 	WbWriter* writer;
    bool restart, compressible;
-   std::shared_ptr<UbScheduler> averageScheduler;  //additional scheduler to averaging after a given interval
-   std::shared_ptr<UbScheduler> resetSchedulerRMS;  //additional scheduler to restart averaging after a given interval
-   std::shared_ptr<UbScheduler> resetSchedulerMeans;  //additional scheduler to restart averaging after a given interval
+   SPtr<UbScheduler> averageScheduler;  //additional scheduler to averaging after a given interval
+   SPtr<UbScheduler> resetSchedulerRMS;  //additional scheduler to restart averaging after a given interval
+   SPtr<UbScheduler> resetSchedulerMeans;  //additional scheduler to restart averaging after a given interval
 	//labels for the different components, e.g. AvVxx for time averaged RMS: 1/n SUM((U-Umean)^2)
    //you need to calculate a square root before plotting RMS
 	enum Values{AvVx = 0, AvVy = 1, AvVz = 2, AvVxx = 3, AvVyy = 4, AvVzz = 5, AvVxy = 6, AvVxz = 7, AvVyz = 8, AvP = 9, AvPrms = 10}; 

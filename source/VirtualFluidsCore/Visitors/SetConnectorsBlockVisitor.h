@@ -1,7 +1,7 @@
 #ifndef SETCONNECTORSBLOCKVISITOR_H
 #define SETCONNECTORSBLOCKVISITOR_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 #include "D3Q27System.h"
@@ -16,27 +16,27 @@ class InterpolationProcessor;
 class SetConnectorsBlockVisitor : public Block3DVisitor
 {
 public:
-	SetConnectorsBlockVisitor(std::shared_ptr<Communicator> comm, bool fullConnector, int dirs, LBMReal nue, std::shared_ptr<InterpolationProcessor> iProcessor);
+	SetConnectorsBlockVisitor(SPtr<Communicator> comm, bool fullConnector, int dirs, LBMReal nue, SPtr<InterpolationProcessor> iProcessor);
 	virtual ~SetConnectorsBlockVisitor();
-	void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+	void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 	//////////////////////////////////////////////////////////////////////////
 protected:
-	void setSameLevelConnectors(std::shared_ptr<Grid3D> grid, Block3DPtr block);
-	void setRemoteConnectors(Block3DPtr sblock, Block3DPtr tblock, int dir, bool fullConnector);
-	void setInterpolationConnectors(std::shared_ptr<Grid3D> grid, Block3DPtr block);
-	void setInterpolationConnectors(Block3DPtr fBlockSW, Block3DPtr fBlockSE, Block3DPtr fBlockNW, Block3DPtr fBlockNE, Block3DPtr cBlock, int dir);
-	void createTransmitters(Block3DPtr cBlock, Block3DPtr fBlock, int dir,
+	void setSameLevelConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
+	void setRemoteConnectors(SPtr<Block3D> sblock, SPtr<Block3D> tblock, int dir, bool fullConnector);
+	void setInterpolationConnectors(SPtr<Grid3D> grid, SPtr<Block3D> block);
+	void setInterpolationConnectors(SPtr<Block3D> fBlockSW, SPtr<Block3D> fBlockSE, SPtr<Block3D> fBlockNW, SPtr<Block3D> fBlockNE, SPtr<Block3D> cBlock, int dir);
+	void createTransmitters(SPtr<Block3D> cBlock, SPtr<Block3D> fBlock, int dir,
       CreateTransmittersHelper::IBlock ib,
 		CreateTransmittersHelper::TransmitterPtr& senderCF, 
 		CreateTransmittersHelper::TransmitterPtr& receiverCF, 
 		CreateTransmittersHelper::TransmitterPtr& senderFC, 
 		CreateTransmittersHelper::TransmitterPtr& receiverFC);
-    std::shared_ptr<Communicator> comm;
+    SPtr<Communicator> comm;
 	bool fullConnector;
 	int dirs;
 	int gridRank;
 	LBMReal nue;
-    std::shared_ptr<InterpolationProcessor> iProcessor;
+    SPtr<InterpolationProcessor> iProcessor;
 };
 
 #endif //D3Q27SETCONNECTORSVISITOR_H

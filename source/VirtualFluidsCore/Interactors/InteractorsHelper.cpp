@@ -8,7 +8,7 @@
 #include "Communicator.h"
 
 
-InteractorsHelper::InteractorsHelper(Grid3DPtr grid, Grid3DVisitorPtr visitor) :
+InteractorsHelper::InteractorsHelper(SPtr<Grid3D> grid, SPtr<Grid3DVisitor> visitor) :
                                      grid(grid), visitor(visitor)
 {
 
@@ -19,14 +19,14 @@ InteractorsHelper::~InteractorsHelper()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void InteractorsHelper::addInteractor( Interactor3DPtr interactor )
+void InteractorsHelper::addInteractor( SPtr<Interactor3D> interactor )
 {
    interactors.push_back(interactor);
 }
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::setBC()
 {
-    for(Interactor3DPtr i : interactors)
+    for(SPtr<Interactor3D> i : interactors)
         i->initInteractor();
 }
 
@@ -47,11 +47,11 @@ void InteractorsHelper::selectBlocks()
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::deleteSolidBlocks()
 {
-    for(Interactor3DPtr interactor : interactors)
+    for(SPtr<Interactor3D> interactor : interactors)
     {
         setBlocks(interactor, BlockType::SOLID);
 
-        std::vector<Block3DPtr>& sb = interactor->getSolidBlockSet();
+        std::vector<SPtr<Block3D>>& sb = interactor->getSolidBlockSet();
         solidBlocks.insert(solidBlocks.end(), sb.begin(), sb.end());
         interactor->removeSolidBlocks();
     }
@@ -59,7 +59,7 @@ void InteractorsHelper::deleteSolidBlocks()
     updateGrid();
 }
 //////////////////////////////////////////////////////////////////////////
-void InteractorsHelper::setBlocks(const Interactor3DPtr interactor, BlockType type) const
+void InteractorsHelper::setBlocks(const SPtr<Interactor3D> interactor, BlockType type) const
 {
     SetSolidBlockVisitor v(interactor, type);
     grid->accept(v);
@@ -67,7 +67,7 @@ void InteractorsHelper::setBlocks(const Interactor3DPtr interactor, BlockType ty
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::setBcBlocks()
 {
-    for(const Interactor3DPtr interactor : interactors)
+    for(const SPtr<Interactor3D> interactor : interactors)
         setBlocks(interactor, BlockType::BC);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ void InteractorsHelper::updateGrid()
 {
     std::vector<int> ids;
 
-    for(const Block3DPtr block : solidBlocks)
+    for(const SPtr<Block3D> block : solidBlocks)
         ids.push_back(block->getGlobalID());
 
     std::vector<int> rids;

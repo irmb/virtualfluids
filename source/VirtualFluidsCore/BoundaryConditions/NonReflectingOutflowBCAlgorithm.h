@@ -2,19 +2,17 @@
 #define NonReflectingOutflowBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
+#include <PointerDefinitions.h>
 
 class DistributionArray3D;
-
-class NonReflectingOutflowBCAlgorithm;
-typedef std::shared_ptr<NonReflectingOutflowBCAlgorithm> NonReflectingOutflowBCAlgorithmPtr;
 
 class NonReflectingOutflowBCAlgorithm : public BCAlgorithm
 {
 public:
    NonReflectingOutflowBCAlgorithm();
    ~NonReflectingOutflowBCAlgorithm();
-   BCAlgorithmPtr clone();
-   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone();
+   void addDistributions(SPtr<DistributionArray3D> distributions);
    void applyBC() override;
 private:
    int step;

@@ -7,9 +7,9 @@
 #include "Communicator.h"
 #include "Grid3D.h"
 
-WriteBlocksCoProcessor::WriteBlocksCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, 
+WriteBlocksCoProcessor::WriteBlocksCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, 
                                          const std::string& path, WbWriter* const writer, 
-                                         CommunicatorPtr comm) :
+                                         SPtr<Communicator> comm) :
                                          CoProcessor(grid, s),
                                          path(path),
                                          writer(writer),
@@ -58,9 +58,9 @@ void WriteBlocksCoProcessor::collectData(double step)
 
       for(int level = minInitLevel; level<=maxInitLevel;level++)
       {
-         std::vector<Block3DPtr> blockVector;
+         std::vector<SPtr<Block3D>> blockVector;
          grid->getBlocks(level, blockVector);
-         for(Block3DPtr block : blockVector)
+         for(SPtr<Block3D> block : blockVector)
          {
             UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
             UbTupleDouble3 blockLength = grid->getBlockLengths(block);
@@ -85,7 +85,7 @@ void WriteBlocksCoProcessor::collectData(double step)
             celldata[5].push_back((double)block->getLevel());
 
             //bool flag = false;
-            //std::vector<Block3DConnectorPtr> connectors;
+            //std::vector<SPtr<Block3DConnector>> connectors;
 
             //block->pushBackLocalInterpolationConnectorsCF(connectors);
             //for (std::size_t i = 0; i<connectors.size(); i++)

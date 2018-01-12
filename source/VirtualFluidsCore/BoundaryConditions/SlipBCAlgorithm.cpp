@@ -13,13 +13,13 @@ SlipBCAlgorithm::~SlipBCAlgorithm()
 
 }
 //////////////////////////////////////////////////////////////////////////
-BCAlgorithmPtr SlipBCAlgorithm::clone()
+SPtr<BCAlgorithm> SlipBCAlgorithm::clone()
 {
-   BCAlgorithmPtr bc(new SlipBCAlgorithm());
+   SPtr<BCAlgorithm> bc(new SlipBCAlgorithm());
    return bc;
 }
 //////////////////////////////////////////////////////////////////////////
-void SlipBCAlgorithm::addDistributions(DistributionArray3DPtr distributions)
+void SlipBCAlgorithm::addDistributions(SPtr<DistributionArray3D> distributions)
 {
    this->distributions = distributions;
 }

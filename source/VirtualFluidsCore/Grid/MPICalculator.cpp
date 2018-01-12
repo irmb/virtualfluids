@@ -139,7 +139,7 @@ void MPICalculator::calculate()
 //////////////////////////////////////////////////////////////////////////
 void MPICalculator::calculateBlocks(int startLevel, int maxInitLevel, int calcStep)
 {
-   Block3DPtr blockTemp;
+   SPtr<Block3D> blockTemp;
    try
    {
       //startLevel bis maxInitLevel
@@ -147,7 +147,7 @@ void MPICalculator::calculateBlocks(int startLevel, int maxInitLevel, int calcSt
       {
          //timer.resetAndStart();
          //call LBM kernel
-         for (Block3DPtr block : blocks[level])
+         for (SPtr<Block3D> block : blocks[level])
          {
             blockTemp = block;
             block->getKernel()->calculate();
@@ -185,34 +185,34 @@ void MPICalculator::swapDistributions(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      for (Block3DPtr block : blocks[level])
+      for (SPtr<Block3D> block : blocks[level])
       {
          block->getKernel()->swapDistributions();
       }
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void MPICalculator::connectorsPrepare(std::vector< Block3DConnectorPtr >& connectors)
+void MPICalculator::connectorsPrepare(std::vector< SPtr<Block3DConnector> >& connectors)
 {
-   for (Block3DConnectorPtr c : connectors)
+   for (SPtr<Block3DConnector> c : connectors)
    {
       c->prepareForReceive();
       c->prepareForSend();
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void MPICalculator::connectorsSend(std::vector< Block3DConnectorPtr >& connectors)
+void MPICalculator::connectorsSend(std::vector< SPtr<Block3DConnector> >& connectors)
 {
-   for (Block3DConnectorPtr c : connectors)
+   for (SPtr<Block3DConnector> c : connectors)
    {
       c->fillSendVectors();
       c->sendVectors();
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void MPICalculator::connectorsReceive(std::vector< Block3DConnectorPtr >& connectors)
+void MPICalculator::connectorsReceive(std::vector< SPtr<Block3DConnector> >& connectors)
 {
-   for (Block3DConnectorPtr c : connectors)
+   for (SPtr<Block3DConnector> c : connectors)
    {
       c->receiveVectors();
       c->distributeReceiveVectors();
@@ -247,7 +247,7 @@ void MPICalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      for (Block3DPtr block : blocks[level])
+      for (SPtr<Block3D> block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPreCollisionBC();
       }
@@ -259,7 +259,7 @@ void MPICalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
-      for (Block3DPtr block : blocks[level])
+      for (SPtr<Block3D> block : blocks[level])
       {
          block->getKernel()->getBCProcessor()->applyPostCollisionBC();
       }

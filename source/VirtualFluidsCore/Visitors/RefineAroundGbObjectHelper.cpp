@@ -8,7 +8,7 @@
 #include <D3Q27TriFaceMeshInteractor.h>
 #include "Communicator.h"
 
-RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(Grid3DPtr grid, int refineLevel, D3Q27TriFaceMeshInteractorPtr objectIter, double startDistance, double stopDistance, CommunicatorPtr comm) :
+RefineAroundGbObjectHelper::RefineAroundGbObjectHelper(SPtr<Grid3D> grid, int refineLevel, SPtr<D3Q27TriFaceMeshInteractor> objectIter, double startDistance, double stopDistance, SPtr<Communicator> comm) :
    grid(grid),
    refineLevel(refineLevel),
    objectIter(objectIter),

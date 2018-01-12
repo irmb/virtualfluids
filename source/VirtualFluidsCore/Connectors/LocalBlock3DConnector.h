@@ -1,15 +1,13 @@
 #ifndef LocalBlock3DConnector_H
 #define LocalBlock3DConnector_H
 
-
-
 #include "Block3DConnector.h"
 #include "Block3D.h"
 
 class LocalBlock3DConnector : public Block3DConnector
 {
 public:
-   LocalBlock3DConnector(Block3DPtr from, Block3DPtr to, int sendDir)
+   LocalBlock3DConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir)
       : Block3DConnector(sendDir)
       , from(from)
       , to(to)

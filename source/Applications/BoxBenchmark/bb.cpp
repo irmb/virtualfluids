@@ -34,7 +34,7 @@ void run(string configname)
 
       //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG3");
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
 
       if (logToFile)
@@ -59,7 +59,7 @@ void run(string configname)
       LBMReal rhoLB = 0.0;
       LBMReal nuLB = (uLB*dLB) / Re;
 
-      LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       const int baseLevel = 0;
 
@@ -73,18 +73,18 @@ void run(string configname)
       double g_maxX3 = length[2];
 
       //geometry
-      GbObject3DPtr box(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<GbObject3D> box(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       //if (myid == 0) GbSystem3D::writeGeoObject(box.get(), pathname + "/geo/box", WbWriterVtkXmlBinary::getInstance());
 
-      GbObject3DPtr gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
       //if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
 
       double blockLength = blocknx[0] * dx;
 
-      Grid3DPtr grid(new Grid3D(comm));
+      SPtr<Grid3D> grid(new Grid3D(comm));
 
-      UbSchedulerPtr rSch2(new UbScheduler(cpStep, cpStepStart));
+      SPtr<UbScheduler> rSch2(new UbScheduler(cpStep, cpStepStart));
       MPIIORestartCoProcessor rcp(grid, rSch2, pathname, comm);
       rcp.setChunk(chunk);
 
@@ -113,13 +113,13 @@ void run(string configname)
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
-         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          //int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
          //D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption));
-         //D3Q27InteractorPtr boxInt(new D3Q27Interactor(box, grid, bcObst, Interactor3D::INVERSESOLID));
+         //SPtr<D3Q27Interactor> boxInt(new D3Q27Interactor(box, grid, bcObst, Interactor3D::INVERSESOLID));
 
-         Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          InteractorsHelper intHelper(grid, metisVisitor);
          //intHelper.addInteractor(boxInt);
          intHelper.selectBlocks();
@@ -130,7 +130,7 @@ void run(string configname)
          //set connectors
          InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         //ConnectorFactoryPtr factory(new Block3DConnectorFactory());
+         //SPtr<ConnectorFactory> factory(new Block3DConnectorFactory());
          //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
          UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:start");
          grid->accept(setConnsVisitor);
@@ -166,9 +166,9 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         LBMKernelPtr kernel;
-         kernel = LBMKernelPtr(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
-         BCProcessorPtr bcProc(new BCProcessor());
+         SPtr<LBMKernel> kernel;
+         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
@@ -215,13 +215,13 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      UbSchedulerPtr visSch(new UbScheduler(outTime));
+      SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm);
 
-      UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculation->calculate();

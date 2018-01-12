@@ -15,8 +15,8 @@ WriteObjectsCoProcessor::WriteObjectsCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteObjectsCoProcessor::WriteObjectsCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
-   const std::string& path, CommunicatorPtr comm)
+WriteObjectsCoProcessor::WriteObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
+   const std::string& path, SPtr<Communicator> comm)
    : CoProcessor(grid, s),
    path(path),
    comm(comm)
@@ -25,7 +25,7 @@ WriteObjectsCoProcessor::WriteObjectsCoProcessor(Grid3DPtr grid, UbSchedulerPtr 
 }
 
 
-void WriteObjectsCoProcessor::addGbObject(GbSphere3DPtr sphere)
+void WriteObjectsCoProcessor::addGbObject(SPtr<GbSphere3D> sphere)
 {
     objects.push_back(sphere);
 }

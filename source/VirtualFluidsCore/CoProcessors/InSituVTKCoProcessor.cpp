@@ -20,7 +20,7 @@ InSituVTKCoProcessor::InSituVTKCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-InSituVTKCoProcessor::InSituVTKCoProcessor( Grid3DPtr grid, UbSchedulerPtr s, const std::string& configFile, LBMUnitConverterPtr conv ) : CoProcessor(grid, s), conv(conv)
+InSituVTKCoProcessor::InSituVTKCoProcessor( SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& configFile, SPtr<LBMUnitConverter> conv ) : CoProcessor(grid, s), conv(conv)
 {
    gridRank  = Communicator::getInstance()->getProcessID(); 
    minInitLevel = this->grid->getCoarsestInitializedLevel();
@@ -88,7 +88,7 @@ void InSituVTKCoProcessor::collectData( double step )
 
    for(int level = minInitLevel; level<=maxInitLevel;level++)
    {
-      for(Block3DPtr block : blockVector[level])
+      for(SPtr<Block3D> block : blockVector[level])
       {
          if (block)
          {
@@ -125,16 +125,16 @@ void InSituVTKCoProcessor::collectData( double step )
    UBLOG(logINFO,"InSituVTKCoProcessor step: " << istep);
 }
 //////////////////////////////////////////////////////////////////////////
-void InSituVTKCoProcessor::addData( Block3DPtr block )
+void InSituVTKCoProcessor::addData( SPtr<Block3D> block )
 {
    UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
    UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
    UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
    double         dx           = grid->getDeltaX(block);
 
-   LBMKernelPtr kernel = block->getKernel();
-   BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();          
-   DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();     
+   SPtr<LBMKernel> kernel = block->getKernel();
+   SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
+   SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];
    LBMReal vx1,vx2,vx3,rho;
 
@@ -177,7 +177,7 @@ void InSituVTKCoProcessor::addData( Block3DPtr block )
    maxX2 -= 2;
    maxX3 -= 2;
 
-   BoundaryConditionsPtr bcPtr;
+   SPtr<BoundaryConditions> bcPtr;
    int nr = points->GetNumberOfPoints();
 
    double x[3];

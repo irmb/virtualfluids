@@ -12,9 +12,9 @@
 #include "D3Q27Interactor.h"
 #include "BCArray3D.h"
 
-PressureCoefficientCoProcessor::PressureCoefficientCoProcessor(Grid3DPtr grid, UbSchedulerPtr s,
+PressureCoefficientCoProcessor::PressureCoefficientCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    GbCuboid3DPtr plane,
-   const std::string& path, CommunicatorPtr comm)
+   const std::string& path, SPtr<Communicator> comm)
    : CoProcessor(grid, s),
    plane(plane),
    path(path),
@@ -54,17 +54,17 @@ void PressureCoefficientCoProcessor::calculateRho()
    std::vector<double> values;
    std::vector<double> rvalues;
 
-   for(D3Q27InteractorPtr interactor : interactors)
+   for(SPtr<D3Q27Interactor> interactor : interactors)
    {
-      typedef std::map<Block3DPtr, std::set< std::vector<int> > > TransNodeIndicesMap;
+      typedef std::map<SPtr<Block3D>, std::set< std::vector<int> > > TransNodeIndicesMap;
       for(TransNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
       {
-         Block3DPtr block = t.first;
+         SPtr<Block3D> block = t.first;
          std::set< std::vector<int> >& bcNodeIndicesSet = t.second;
 
-         ILBMKernelPtr kernel = block->getKernel();
-         BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-         DistributionArray3DPtr distributions = kernel->getDataSet()->getFdistributions();
+         SPtr<ILBMKernel> kernel = block->getKernel();
+         SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+         SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
 
          UbTupleDouble3 org          = grid->getBlockWorldCoordinates(block);
          UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
@@ -217,7 +217,7 @@ void PressureCoefficientCoProcessor::readValues(int step)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void PressureCoefficientCoProcessor::addInteractor(D3Q27InteractorPtr interactor)
+void PressureCoefficientCoProcessor::addInteractor(SPtr<D3Q27Interactor> interactor)
 {
    interactors.push_back(interactor);
 }

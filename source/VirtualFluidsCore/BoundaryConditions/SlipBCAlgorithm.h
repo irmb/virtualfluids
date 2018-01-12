@@ -2,19 +2,17 @@
 #define SlipBCAlgorithm_h__
 
 #include "BCAlgorithm.h"
+#include <PointerDefinitions.h>
 
 class DistributionArray3D;
-
-class SlipBCAlgorithm;
-typedef std::shared_ptr<SlipBCAlgorithm> SlipBCAlgorithmPtr;
 
 class SlipBCAlgorithm : public BCAlgorithm
 {
 public:
    SlipBCAlgorithm();
    virtual ~SlipBCAlgorithm();
-   BCAlgorithmPtr clone();
-   void addDistributions(std::shared_ptr<DistributionArray3D> distributions);
+   SPtr<BCAlgorithm> clone();
+   void addDistributions(SPtr<DistributionArray3D> distributions);
    void applyBC() override;
 private:
    //friend class boost::serialization::access;

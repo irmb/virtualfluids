@@ -4,7 +4,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-FineToCoarseNodeSetBlock3DConnector::FineToCoarseNodeSetBlock3DConnector(Block3DPtr block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
+FineToCoarseNodeSetBlock3DConnector::FineToCoarseNodeSetBlock3DConnector(SPtr<Block3D> block, VectorTransmitterPtr sender, VectorTransmitterPtr receiver,
    int sendDir, InterpolationProcessorPtr iprocessor, CFconnectorType connType) : FineToCoarseBlock3DConnector(block, sender, receiver, sendDir, iprocessor, connType)
 {
 
@@ -102,8 +102,8 @@ void FineToCoarseNodeSetBlock3DConnector::findFCCells(int lMinX1, int lMinX2, in
    int ix1, ix2, ix3;
    LBMReal x1off, x2off, x3off;
 
-   DistributionArray3DPtr  fFrom = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getDataSet()->getFdistributions();
-   BCArray3DPtr bcArray = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getBCProcessor()->getBCArray();
+   SPtr<DistributionArray3D>  fFrom = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getDataSet()->getFdistributions();
+   SPtr<BCArray3D> bcArray = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getBCProcessor()->getBCArray();
 
    for (ix3 = lMinX3; ix3<=lMaxX3; ix3 += 2)
    {
@@ -692,7 +692,7 @@ void FineToCoarseNodeSetBlock3DConnector::fillSendVectors()
 {
    using namespace D3Q27System;
 
-   DistributionArray3DPtr  fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
+   SPtr<DistributionArray3D>  fFrom = block.lock()->getKernel()->getDataSet()->getFdistributions();
 
    int index = 0;
 
@@ -1118,7 +1118,7 @@ void FineToCoarseNodeSetBlock3DConnector::distributeReceiveVectors()
 {
    using namespace D3Q27System;
 
-   DistributionArray3DPtr  fTo = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getDataSet()->getFdistributions();
+   SPtr<DistributionArray3D>  fTo = FineToCoarseBlock3DConnector::block.lock()->getKernel()->getDataSet()->getFdistributions();
 
    int index = 0;
 

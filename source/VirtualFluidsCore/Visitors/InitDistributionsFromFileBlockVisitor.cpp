@@ -44,7 +44,7 @@ InitDistributionsFromFileBlockVisitor::~InitDistributionsFromFileBlockVisitor()
 {
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DPtr block)
+void InitDistributionsFromFileBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    using namespace D3Q27System;
 
@@ -67,7 +67,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
    if (blockRank==gridRank && block->isActive())
    {
-      ILBMKernelPtr kernel = block->getKernel();
+      SPtr<ILBMKernel> kernel = block->getKernel();
       if (!kernel)
          throw UbException(UB_EXARGS, "The LBM kernel isn't exist in block: "+block->toString());
 
@@ -78,8 +78,8 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
       UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
-      BCArray3DPtr bcArray = kernel->getBCProcessor()->getBCArray();
-      EsoTwist3DPtr distributions = std::dynamic_pointer_cast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
+      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<EsoTwist3D> distributions = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());
 
       LBMReal f[D3Q27System::ENDF+1];
 
@@ -250,7 +250,7 @@ void InitDistributionsFromFileBlockVisitor::visit(const Grid3DPtr grid, Block3DP
 
                distributions->setDistribution(f, ix1, ix2, ix3);
                distributions->setDistributionInv(f, ix1, ix2, ix3);
-               std::dynamic_pointer_cast<InitDensityLBMKernel>(kernel)->setVelocity(ix1, ix2, ix3, vx1, vx2, vx3);
+               dynamicPointerCast<InitDensityLBMKernel>(kernel)->setVelocity(ix1, ix2, ix3, vx1, vx2, vx3);
             }
       
    }

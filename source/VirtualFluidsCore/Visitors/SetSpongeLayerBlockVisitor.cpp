@@ -16,11 +16,11 @@ SetSpongeLayerBlockVisitor::~SetSpongeLayerBlockVisitor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void SetSpongeLayerBlockVisitor::visit( Grid3DPtr grid, Block3DPtr block )
+void SetSpongeLayerBlockVisitor::visit( SPtr<Grid3D> grid, SPtr<Block3D> block )
 {
    if(block->getRank() == grid->getRank())
    {
-       LBMKernelPtr kernel = std::dynamic_pointer_cast<LBMKernel>(block->getKernel());
+       SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
        if (!kernel)
            throw std::runtime_error("SetSpongeLayerBlockVisitor: Kernel is not a LBMKernel");
       kernel->setWithSpongeLayer(true);

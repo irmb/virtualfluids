@@ -13,7 +13,7 @@ RatioBlockVisitor::RatioBlockVisitor(int levelDepth, bool includeNotActiveBlocks
 
 }
 //////////////////////////////////////////////////////////////////////////
-void RatioBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void RatioBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    int ix1, ix2, ix3, level;
    ix1 = block->getX1();
@@ -40,9 +40,9 @@ void RatioBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-bool RatioBlockVisitor::lookForExpand(Grid3DPtr grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
+bool RatioBlockVisitor::lookForExpand(SPtr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
 {
-   std::vector<Block3DPtr> neighbors;
+   std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2, ix3, level, this->levelDepth, neighbors);
    for(size_t i=0; i<neighbors.size(); i++)
    {
@@ -56,9 +56,9 @@ bool RatioBlockVisitor::lookForExpand(Grid3DPtr grid, const int& ix1, const int&
    return false;
 }
 //////////////////////////////////////////////////////////////////////////
-bool RatioBlockVisitor::lookForCollapse(Grid3DPtr grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
+bool RatioBlockVisitor::lookForCollapse(SPtr<Grid3D> grid, const int& ix1, const int& ix2, const int& ix3, const int& level)
 {
-   std::vector<Block3DPtr> neighbors;
+   std::vector<SPtr<Block3D>> neighbors;
    grid->getAllNeighbors(ix1, ix2,ix3, level, this->levelDepth, neighbors);
    for(size_t i=0; i<neighbors.size(); i++)
    {     

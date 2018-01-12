@@ -4,7 +4,7 @@
 #include "UbScheduler.h"
 #include "Grid3D.h"
 
-NUPSCounterCoProcessor::NUPSCounterCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, int numOfThreads, CommunicatorPtr comm)
+NUPSCounterCoProcessor::NUPSCounterCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, int numOfThreads, SPtr<Communicator> comm)
                                                    : CoProcessor(grid, s),
                                                      numOfThreads(numOfThreads),
                                                      comm(comm),

@@ -1,6 +1,6 @@
 #include "BlocksDistributor.h"
 
-BlocksDistributor::BlocksDistributor(Grid3DPtr grid, CommunicatorPtr comm) : grid(grid), comm(comm)
+BlocksDistributor::BlocksDistributor(SPtr<Grid3D> grid, SPtr<Communicator> comm) : grid(grid), comm(comm)
 {
 
 }

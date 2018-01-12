@@ -11,7 +11,7 @@
 #include "basics/container/CbArray3D.h"
 
 class IncompressibleCumulantLBMKernel;
-typedef std::shared_ptr<IncompressibleCumulantLBMKernel> LBMKernelETD3Q27CCLBPtr;
+typedef SPtr<IncompressibleCumulantLBMKernel> LBMKernelETD3Q27CCLBPtr;
 
 //! \brief   Cascaded Cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
@@ -31,7 +31,7 @@ public:
    IncompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~IncompressibleCumulantLBMKernel(void);
    virtual void calculate();
-   virtual LBMKernelPtr clone();
+   virtual SPtr<LBMKernel> clone();
    double getCalculationTime();
 
 protected:

@@ -96,7 +96,7 @@ template<typename T, typename IndexClass = IndexerX4X3X2X1>
 class CbArray4D
 {
 public:
-   typedef std::shared_ptr< CbArray4D <T,IndexClass> > CbArray4DPtr;
+   typedef SPtr< CbArray4D <T,IndexClass> > CbArray4DPtr;
 
    typedef T                                                   value_type;
    typedef IndexClass                                          indexer_type;

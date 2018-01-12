@@ -3,9 +3,7 @@
 
 #include "ConnectorFactory.h"
 
-#include <memory>
-class Block3DConnectorFactory;
-typedef std::shared_ptr<Block3DConnectorFactory> Block3DConnectorFactoryPtr;
+#include <PointerDefinitions.h>
 
 class Block3DConnectorFactory : public ConnectorFactory
 {
@@ -13,21 +11,21 @@ public:
    Block3DConnectorFactory();
    virtual ~Block3DConnectorFactory();
 
-   virtual Block3DConnectorPtr createSameLevelDirectConnector(Block3DPtr from, Block3DPtr to, int sendDir);
+   virtual SPtr<Block3DConnector> createSameLevelDirectConnector(SPtr<Block3D> from, SPtr<Block3D> to, int sendDir);
 
-   virtual Block3DConnectorPtr createSameLevelVectorConnector(Block3DPtr block,
+   virtual SPtr<Block3DConnector> createSameLevelVectorConnector(SPtr<Block3D> block,
       VectorTransmitterPtr sender,
       VectorTransmitterPtr receiver,
       int sendDir);
 
-   virtual Block3DConnectorPtr createCoarseToFineConnector(Block3DPtr block,
+   virtual SPtr<Block3DConnector> createCoarseToFineConnector(SPtr<Block3D> block,
       VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
       VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
       VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,
       VectorTransmitterPtr sender11, VectorTransmitterPtr receiver11,
       int sendDir, InterpolationProcessorPtr iprocessor);
 
-   virtual Block3DConnectorPtr createFineToCoarseConnector(Block3DPtr block,
+   virtual SPtr<Block3DConnector> createFineToCoarseConnector(SPtr<Block3D> block,
       VectorTransmitterPtr sender,
       VectorTransmitterPtr receiver,
       int sendDir,

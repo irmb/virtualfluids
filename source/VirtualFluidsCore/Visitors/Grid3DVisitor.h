@@ -1,10 +1,8 @@
 #ifndef Grid3DVisitor_h
 #define Grid3DVisitor_h
 
-#include <memory>
+#include <PointerDefinitions.h>
 
-class Grid3DVisitor;
-typedef std::shared_ptr<Grid3DVisitor> Grid3DVisitorPtr;
 
 class Grid3D;
 
@@ -14,7 +12,7 @@ public:
    Grid3DVisitor() {}
    virtual ~Grid3DVisitor() {}
 
-   virtual void visit(std::shared_ptr<Grid3D> grid) = 0;
+   virtual void visit(SPtr<Grid3D> grid) = 0;
 };
 
 #endif 

@@ -13,7 +13,7 @@ LBMKernel::LBMKernel() : ghostLayerWidth(1),
    this->setForcingX1(0.0);
    this->setForcingX2(0.0);
    this->setForcingX3(0.0);
-   dataSet = DataSet3DPtr(new DataSet3D());
+   dataSet = SPtr<DataSet3D>(new DataSet3D());
 }
 //////////////////////////////////////////////////////////////////////////
 LBMKernel::~LBMKernel()
@@ -21,12 +21,12 @@ LBMKernel::~LBMKernel()
 
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setBCProcessor(BCProcessorPtr bcp)
+void LBMKernel::setBCProcessor(SPtr<BCProcessor> bcp)
 {
    bcProcessor = bcp;
 }
 //////////////////////////////////////////////////////////////////////////
-BCProcessorPtr LBMKernel::getBCProcessor() const
+SPtr<BCProcessor> LBMKernel::getBCProcessor() const
 {
    return bcProcessor;
 }
@@ -131,7 +131,7 @@ void LBMKernel::setIndex( int x1, int x2, int x3 )
    this->ix3 = x3;
 }
 //////////////////////////////////////////////////////////////////////////
-DataSet3DPtr LBMKernel::getDataSet() const
+SPtr<DataSet3D> LBMKernel::getDataSet() const
 {
    return this->dataSet;
 }
@@ -166,12 +166,12 @@ void LBMKernel::setWithForcing( bool val )
    withForcing = val;
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setBlock( Block3DPtr block )
+void LBMKernel::setBlock( SPtr<Block3D> block )
 {
    this->block = block;
 }
 //////////////////////////////////////////////////////////////////////////
-Block3DPtr LBMKernel::getBlock() const
+SPtr<Block3D> LBMKernel::getBlock() const
 {
    return block.lock();
 }
@@ -198,7 +198,7 @@ void LBMKernel::setSpongeLayer( const std::string& muParserString )
    this->checkFunction(muSpongeLayer); 
 }
 //////////////////////////////////////////////////////////////////////////
-void LBMKernel::setDataSet(DataSet3DPtr dataSet)
+void LBMKernel::setDataSet(SPtr<DataSet3D> dataSet)
 {
    this->dataSet = dataSet;
 }
@@ -210,6 +210,6 @@ void LBMKernel::swapDistributions()
 //////////////////////////////////////////////////////////////////////////
 bool LBMKernel::isInsideOfDomain(const int& x1, const int& x2, const int& x3) const
 {
-    const BCArray3DPtr bcArray = this->bcProcessor->getBCArray();
+    const SPtr<BCArray3D> bcArray = this->bcProcessor->getBCArray();
     return bcArray->isInsideOfDomain(x1, x2, x3, ghostLayerWidth);
 }

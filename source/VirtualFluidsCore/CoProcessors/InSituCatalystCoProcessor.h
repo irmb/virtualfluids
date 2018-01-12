@@ -23,16 +23,16 @@ class InSituCatalystCoProcessor : public CoProcessor
 {
 public:
    InSituCatalystCoProcessor();
-   InSituCatalystCoProcessor(Grid3DPtr grid, UbSchedulerPtr s, std::string script);
+   InSituCatalystCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, std::string script);
    virtual ~InSituCatalystCoProcessor(); 
    void process(double step);
 protected:
    void collectData(double step);
-   void addData(Block3DPtr block);
+   void addData(SPtr<Block3D> block);
    void buildVTKGrid();
-   void addVTKGridData(Block3DPtr block);
+   void addVTKGridData(SPtr<Block3D> block);
 private:
-   std::vector<std::vector<Block3DPtr> > blockVector;
+   std::vector<std::vector<SPtr<Block3D>> > blockVector;
    int minInitLevel;
    int maxInitLevel;
    int gridRank;

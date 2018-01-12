@@ -9,7 +9,7 @@ public:
    VoidLBMKernel();
    VoidLBMKernel(int nx1, int nx2, int nx3);
    ~VoidLBMKernel();
-   LBMKernelPtr clone();
+   SPtr<LBMKernel> clone();
    void calculate();
    void swapDistributions();
    double getCalculationTime();

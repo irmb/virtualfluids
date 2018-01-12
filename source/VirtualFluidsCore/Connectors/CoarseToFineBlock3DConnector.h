@@ -11,7 +11,7 @@
 #include "D3Q27System.h"
 #include "Block3D.h"
 #include "InterpolationProcessor.h"
-#include <memory>
+#include <PointerDefinitions.h>
 
 
 class Block3D;
@@ -42,7 +42,7 @@ class Block3D;
 class CoarseToFineBlock3DConnector : public Block3DConnector
 {
 public:
-   CoarseToFineBlock3DConnector(Block3DPtr block,
+   CoarseToFineBlock3DConnector(SPtr<Block3D> block,
       VectorTransmitterPtr sender00, VectorTransmitterPtr receiver00,
       VectorTransmitterPtr sender01, VectorTransmitterPtr receiver01,
       VectorTransmitterPtr sender10, VectorTransmitterPtr receiver10,

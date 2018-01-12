@@ -2,7 +2,7 @@
 #define INTERACTOR3D_H
 
 #include <vector>
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "UbSystem.h"
 #include "UbTuple.h"
@@ -14,26 +14,24 @@ class UbFileOutput;
 class GbObject3D;
 class Block3D;
 
-class Interactor3D;
-typedef std::shared_ptr<Interactor3D> Interactor3DPtr;
 
-class Interactor3D : public std::enable_shared_from_this<Interactor3D>
+class Interactor3D : public enableSharedFromThis<Interactor3D>
 {
 public:
    enum Accuracy{SIMPLE, EDGES, FACES, POINTS};
    Interactor3D();
-   Interactor3D(std::shared_ptr<Grid3D> grid, int type=Interactor3D::SOLID);
-   Interactor3D(std::shared_ptr<GbObject3D> geoObject3D, std::shared_ptr<Grid3D> grid, int type);
+   Interactor3D(SPtr<Grid3D> grid, int type=Interactor3D::SOLID);
+   Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type);
    //! constructor
    //! \param a set accuracy for arePointsInObject() and arePointsNotInObject()
-   Interactor3D(std::shared_ptr<GbObject3D> geoObject3D, std::shared_ptr<Grid3D> grid, int type, Interactor3D::Accuracy a);
+   Interactor3D(SPtr<GbObject3D> geoObject3D, SPtr<Grid3D> grid, int type, Interactor3D::Accuracy a);
    
    virtual ~Interactor3D();
    virtual void initInteractor(const double& timestep=0); 
    virtual void updateInteractor(const double& timestep=0)=0;
 
-   void setSolidBlock(std::shared_ptr<Block3D> block);
-   void setBCBlock(std::shared_ptr<Block3D> block);
+   void setSolidBlock(SPtr<Block3D> block);
+   void setBCBlock(SPtr<Block3D> block);
 
     virtual UbTupleDouble3 getForces();
 
@@ -45,17 +43,17 @@ public:
    bool isTimeDependent() { return UbSystem::bitCheck(this->type, TIMEDEPENDENT); }
    bool isMoveable()      { return UbSystem::bitCheck(this->type, MOVEABLE     ); }
    
-   std::shared_ptr<Grid3D> getGrid3D()  const { return grid.lock();   }
-   void setGrid3D(std::shared_ptr<Grid3D> grid) { this->grid = grid; }
-   virtual std::shared_ptr<GbObject3D>  getGbObject3D() const { return geoObject3D; }
-   virtual bool setDifferencesToGbObject3D(const std::shared_ptr<Block3D> block/*, const double& x1, const double& x2, const double& x3, const double& blockLengthX1, const double& blockLengthX2, const double& blockLengthX3, const double& timestep=0*/)
+   SPtr<Grid3D> getGrid3D()  const { return grid.lock();   }
+   void setGrid3D(SPtr<Grid3D> grid) { this->grid = grid; }
+   virtual SPtr<GbObject3D>  getGbObject3D() const { return geoObject3D; }
+   virtual bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*, const double& x1, const double& x2, const double& x3, const double& blockLengthX1, const double& blockLengthX2, const double& blockLengthX3, const double& timestep=0*/)
    {
       return false;  
    }
 
-   virtual std::vector<std::shared_ptr<Block3D> >& getBcBlocks() { return this->bcBlocks; }
+   virtual std::vector<SPtr<Block3D> >& getBcBlocks() { return this->bcBlocks; }
    virtual void removeBcBlocks() { this->bcBlocks.clear(); }
-   virtual std::vector<std::shared_ptr<Block3D> >& getSolidBlockSet() { return this->solidBlocks; }
+   virtual std::vector<SPtr<Block3D> >& getSolidBlockSet() { return this->solidBlocks; }
    virtual void removeSolidBlocks() { this->solidBlocks.clear(); }
 
 protected:
@@ -84,10 +82,10 @@ protected:
    int type;
    
    std::weak_ptr<Grid3D> grid;
-   std::shared_ptr<GbObject3D> geoObject3D;
+   SPtr<GbObject3D> geoObject3D;
 
-   std::vector<std::shared_ptr<Block3D> > bcBlocks;
-   std::vector<std::shared_ptr<Block3D> > solidBlocks;
+   std::vector<SPtr<Block3D> > bcBlocks;
+   std::vector<SPtr<Block3D> > solidBlocks;
    int accuracy;
 
 public:

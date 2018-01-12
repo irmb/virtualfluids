@@ -1,7 +1,7 @@
 #ifndef CoarsenCrossAndInsideGbObjectBlockVisitor_H
 #define CoarsenCrossAndInsideGbObjectBlockVisitor_H
 
-#include <memory>
+#include <PointerDefinitions.h>
 
 #include "Block3DVisitor.h"
 
@@ -20,12 +20,12 @@ public:
    //! A constructor
    //! \param geoObject a smart pointer to bounding box
    //! \param refineLevel an integer for refine on this level
-   CoarsenCrossAndInsideGbObjectBlockVisitor(std::shared_ptr<GbObject3D> geoObject, int fineLevel, int coarseLevel);
+   CoarsenCrossAndInsideGbObjectBlockVisitor(SPtr<GbObject3D> geoObject, int fineLevel, int coarseLevel);
    virtual ~CoarsenCrossAndInsideGbObjectBlockVisitor();
-      void visit(std::shared_ptr<Grid3D> grid, std::shared_ptr<Block3D> block) override;
+      void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
    //////////////////////////////////////////////////////////////////////////
 protected:
-    std::shared_ptr<GbObject3D> geoObject;
+    SPtr<GbObject3D> geoObject;
    bool notActive;
    int coarseLevel;
 };

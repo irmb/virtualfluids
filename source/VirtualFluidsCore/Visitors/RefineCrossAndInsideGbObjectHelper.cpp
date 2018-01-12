@@ -11,7 +11,7 @@
 #include <GbObject3D.h>
 
 
-RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(Grid3DPtr grid, int maxRefineLevel, CommunicatorPtr comm) :
+RefineCrossAndInsideGbObjectHelper::RefineCrossAndInsideGbObjectHelper(SPtr<Grid3D> grid, int maxRefineLevel, SPtr<Communicator> comm) :
                                     grid(grid),
                                     maxRefineLevel(maxRefineLevel),
                                     comm(comm)
@@ -71,7 +71,7 @@ void RefineCrossAndInsideGbObjectHelper::refine()
    UBLOG(logDEBUG5,"RefineCrossAndInsideGbObjectHelper: refine - end");	
 }
 //////////////////////////////////////////////////////////////////////////
-void RefineCrossAndInsideGbObjectHelper::addGbObject( GbObject3DPtr object, int refineLevel )
+void RefineCrossAndInsideGbObjectHelper::addGbObject( SPtr<GbObject3D> object, int refineLevel )
 {
    objects.push_back(object);
    levels.push_back(refineLevel);

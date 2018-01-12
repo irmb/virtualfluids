@@ -17,7 +17,7 @@ void BCAlgorithm::setNodeIndex(int x1, int x2, int x3)
     this->x3 = x3;
 }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setBcPointer(BoundaryConditionsPtr bcPtr)
+void BCAlgorithm::setBcPointer(SPtr<BoundaryConditions> bcPtr)
 {
     this->bcPtr = bcPtr;
 }
@@ -58,12 +58,12 @@ bool BCAlgorithm::isPreCollision()
    return preCollision;
 }
 //////////////////////////////////////////////////////////////////////////
-BCArray3DPtr BCAlgorithm::getBcArray()
+SPtr<BCArray3D> BCAlgorithm::getBcArray()
 {
    return bcArray;
 }
 //////////////////////////////////////////////////////////////////////////
-void BCAlgorithm::setBcArray(BCArray3DPtr bcarray)
+void BCAlgorithm::setBcArray(SPtr<BCArray3D> bcarray)
 {
    bcArray = bcarray;
 }

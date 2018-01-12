@@ -7,7 +7,7 @@ CoProcessor::CoProcessor()
 {
 }
 
-CoProcessor::CoProcessor(std::shared_ptr<Grid3D> grid, UbSchedulerPtr s): grid(grid), scheduler(s)
+CoProcessor::CoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s): grid(grid), scheduler(s)
 {
 
 }

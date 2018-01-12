@@ -233,19 +233,19 @@ void VelocityBCAdapter::update( const D3Q27Interactor* const& interactor, const 
    this->init(interactor,time);
 }
 /*==========================================================*/
-void VelocityBCAdapter::adaptBCForDirection( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time )
+void VelocityBCAdapter::adaptBCForDirection( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& q, const int& fdirection, const double& time )
 {
    bc->setVelocityBoundaryFlag(D3Q27System::INVDIR[fdirection],secondaryBcOption);
    bc->setQ((float)q,fdirection);
 }
 /*==========================================================*/
-void VelocityBCAdapter::adaptBC( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time ) 
+void VelocityBCAdapter::adaptBC( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& time ) 
 {
    this->setNodeVelocity(interactor,bc,worldX1,worldX2,worldX3,time);
    bc->setBcAlgorithmType(algorithmType);
 }
 /*==========================================================*/
-void VelocityBCAdapter::setNodeVelocity( const D3Q27Interactor& interactor, BoundaryConditionsPtr bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
+void VelocityBCAdapter::setNodeVelocity( const D3Q27Interactor& interactor, SPtr<BoundaryConditions> bc, const double& worldX1, const double& worldX2, const double& worldX3, const double& timestep) 
 {
    //Geschwindigkeiten setzen
    try

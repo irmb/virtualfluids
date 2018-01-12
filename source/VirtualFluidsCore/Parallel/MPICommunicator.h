@@ -6,13 +6,11 @@
 #include <mpi.h>
 #include <vector>
 #include <string>
-#include <memory>
+#include <PointerDefinitions.h>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbLogger.h>
 #include "Communicator.h"
 
-class MPICommunicator;
-typedef std::shared_ptr<MPICommunicator> MPICommunicatorPtr;
 
 //! \brief A class uses MPI library to communication.
 //! \details Support MPI communication. Implements singleton pattern.
@@ -24,7 +22,7 @@ private:
    MPICommunicator();
 public:
    ~MPICommunicator();
-   static CommunicatorPtr getInstance();
+   static SPtr<Communicator> getInstance();
    int getBundleID();
    int getNumberOfBundles();
    int getProcessID();

@@ -14,7 +14,7 @@ void run(string configname)
 
       string machine = QUOTEME(CAB_MACHINE);
 
-      CommunicatorPtr comm = MPICommunicator::getInstance();
+      SPtr<Communicator> comm = MPICommunicator::getInstance();
 
       int myid = comm->getProcessID();
       int mybundle = comm->getBundleID();
@@ -44,24 +44,24 @@ void run(string configname)
       double dp_LB = 1e-6;
       double rhoLBinflow = dp_LB*3.0;
 
-      BCAdapterPtr noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NoSlipBCAlgorithm()));
+      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
       mu::Parser fct;
       fct.SetExpr("U");
       fct.DefineConst("U", uLB);
-      BCAdapterPtr velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-      velBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new VelocityBCAlgorithm()));
+      SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
+      velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
 
-      BCAdapterPtr denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(BCAlgorithmPtr(new NonEqDensityBCAlgorithm()));
+      SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
+      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
       bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(denBCAdapter);
 
-      LBMUnitConverterPtr conv = LBMUnitConverterPtr(new LBMUnitConverter());
+      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       double dx = 1;
 
@@ -69,13 +69,13 @@ void run(string configname)
       const int blocknx2 = blockNx[1];
       const int blocknx3 = blockNx[2];
 
-      Grid3DPtr grid(new Grid3D(comm));
+      SPtr<Grid3D> grid(new Grid3D(comm));
       grid->setDeltaX(dx);
       grid->setBlockNX(blocknx1, blocknx2, blocknx3);
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      UbSchedulerPtr restartSch(new UbScheduler(100000, 100000, 100000));
+      SPtr<UbScheduler> restartSch(new UbScheduler(100000, 100000, 100000));
       RestartCoProcessor rp(grid, restartSch, comm, pathname, RestartCoProcessor::BINARY);
       //////////////////////////////////////////////////////////////////////////
 
@@ -108,28 +108,28 @@ void run(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
-         GbObject3DPtr gridCube(new GbCuboid3D(d_minX1, d_minX2, d_minX3, d_maxX1, d_maxX2, d_maxX3));
+         SPtr<GbObject3D> gridCube(new GbCuboid3D(d_minX1, d_minX2, d_minX3, d_maxX1, d_maxX2, d_maxX3));
          if (myid==0) GbSystem3D::writeGeoObject(gridCube.get(), pathname+"/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
-         //CoordinateTransformation3DPtr trafo = grid->getCoordinateTransformator();
+         //SPtr<CoordinateTransformation3D> trafo = grid->getCoordinateTransformator();
          //trafo->setRotationX2Angle(4);
 
          //sphere
-         //GbObject3DPtr sphereRef(new GbSphere3D(L1/4.0, L2*0.5, L3*0.5, radius+1.0));
+         //SPtr<GbObject3D> sphereRef(new GbSphere3D(L1/4.0, L2*0.5, L3*0.5, radius+1.0));
          //GbSystem3D::writeGeoObject(sphereRef.get(),pathname + "/geo/sphereRef", WbWriterVtkXmlBinary::getInstance());
 
 
          //sphere
-         GbObject3DPtr sphere(new GbSphere3D(d_maxX1*0.5, d_maxX2*0.5, d_maxX3*0.5, radius));
-         //GbObject3DPtr sphere(new GbSphere3D(L1/2.0-4.0, L2*0.5+4.0, L3*0.5+4.0, radius));
-         //GbObject3DPtr sphere(new GbCuboid3D(L1/4.0-radius, L2/2.0-radius, L3/2.0-radius, L1/4.0+radius, L2/2.0+radius, L3/2.0+radius));
+         SPtr<GbObject3D> sphere(new GbSphere3D(d_maxX1*0.5, d_maxX2*0.5, d_maxX3*0.5, radius));
+         //SPtr<GbObject3D> sphere(new GbSphere3D(L1/2.0-4.0, L2*0.5+4.0, L3*0.5+4.0, radius));
+         //SPtr<GbObject3D> sphere(new GbCuboid3D(L1/4.0-radius, L2/2.0-radius, L3/2.0-radius, L1/4.0+radius, L2/2.0+radius, L3/2.0+radius));
          GbSystem3D::writeGeoObject(sphere.get(), pathname+"/geo/sphere", WbWriterVtkXmlBinary::getInstance());
 
          double off = 0.0;
-         GbObject3DPtr refCube(new GbCuboid3D(sphere->getX1Minimum()-off, sphere->getX2Minimum()-off, sphere->getX3Minimum(),
+         SPtr<GbObject3D> refCube(new GbCuboid3D(sphere->getX1Minimum()-off, sphere->getX2Minimum()-off, sphere->getX3Minimum(),
             sphere->getX1Maximum()+off, sphere->getX2Maximum()+off, sphere->getX3Maximum()));
          if (myid==0) GbSystem3D::writeGeoObject(refCube.get(), pathname+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
 
@@ -164,34 +164,34 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(d_maxX1, d_minX2-4.0*blockLength, d_minX3-4.0*blockLength, d_maxX1+4.0*blockLength, d_maxX2+4.0*blockLength, d_maxX3+4.0*blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksCoProcessorPtr ppblocks(new WriteBlocksCoProcessor(grid, UbSchedulerPtr(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
 
 
          //sphere
-         D3Q27InteractorPtr sphereInt = D3Q27InteractorPtr(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> sphereInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(sphere, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          //walls
-         D3Q27InteractorPtr addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
-         D3Q27InteractorPtr addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          mu::Parser fct;
          fct.SetExpr("U");
          fct.DefineConst("U", uLB);
 
          //inflow
-         D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 
          //D3Q27BoundaryConditionAdapterPtr denBCAdapterInflow(new D3Q27DensityBCAdapter(rhoLBinflow));
          //denBCAdapterInflow->setSecondaryBcOption(0);
-         //D3Q27InteractorPtr inflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
+         //SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, denBCAdapterInflow, Interactor3D::SOLID));
 
          //outflow
-         D3Q27InteractorPtr outflowInt = D3Q27InteractorPtr(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
 
-         Grid3DVisitorPtr metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          InteractorsHelper intHelper(grid, metisVisitor);
          //intHelper.addInteractor(sphereInt);
          intHelper.addInteractor(addWallYminInt);
@@ -212,7 +212,7 @@ void run(string configname)
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
-         //Block3DConnectorFactoryPtr factory(new Block3DConnectorFactory());
+         //Block3DSPtr<ConnectorFactory> factory(new Block3DConnectorFactory());
          //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
          //grid->accept(setConnsVisitor);
 
@@ -244,9 +244,9 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         LBMKernelPtr kernel(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
+         SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, IncompressibleCumulantLBMKernel::NORMAL));
 
-         BCProcessorPtr bcProcessor(new BCProcessor());
+         SPtr<BCProcessor> bcProcessor(new BCProcessor());
 
 
          kernel->setBCProcessor(bcProcessor);
@@ -277,8 +277,8 @@ void run(string configname)
          grid->accept(initVisitor);
 
          //Postrozess
-         UbSchedulerPtr geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessorPtr ppgeo(
+         SPtr<UbScheduler> geoSch(new UbScheduler(1));
+         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
             new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
          ppgeo->process(0);
          ppgeo.reset();;
@@ -292,21 +292,21 @@ void run(string configname)
          //set connectors
          InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
          //D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         ConnectorFactoryPtr cFactory(new Block3DConnectorFactory());
+         SPtr<ConnectorFactory> cFactory(new Block3DConnectorFactory());
          ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, cFactory);
          grid->accept(setConnsVisitor);
 
          UBLOG(logINFO, "SetConnectors - end, id="<<myid);
       }
 
-      UbSchedulerPtr stepSch(new UbScheduler(outstep));
+      SPtr<UbScheduler> stepSch(new UbScheduler(outstep));
       //stepSch->addSchedule(10000, 0, 1000000);
       WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
 
-      UbSchedulerPtr nupsSch(new UbScheduler(10, 30, 100));
+      SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
 
-      const std::shared_ptr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
+      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
       CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endstep, calculatorFactory, CalculatorType::HYBRID));
 
       if (myid==0)

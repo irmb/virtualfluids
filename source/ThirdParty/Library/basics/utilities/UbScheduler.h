@@ -44,9 +44,6 @@ usage: ...
 // this class is not thread save
 //
 
-class UbScheduler;
-typedef std::shared_ptr<UbScheduler> UbSchedulerPtr;
-
 class UbScheduler
 {
 public:

@@ -14,9 +14,7 @@
 #include <numerics/geometry3d/GbObject3D.h>                
 #include <basics/utilities/UbException.h>  
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbQuadFaceMesh3D;
-typedef VFSharedPtr<GbQuadFaceMesh3D> GbQuadFaceMesh3DPtr;
+#include <PointerDefinitions.h>
 
 class UbFileOutput;
 class UbFileInput;

@@ -17,14 +17,14 @@
 class ZoltanPartitioningGridVisitor : public Grid3DVisitor
 {
 public:
-   ZoltanPartitioningGridVisitor(CommunicatorPtr comm, int numOfDirs, int numOfLocalParts = 1);
+   ZoltanPartitioningGridVisitor(SPtr<Communicator> comm, int numOfDirs, int numOfLocalParts = 1);
    ~ZoltanPartitioningGridVisitor();
-   void visit(Grid3DPtr grid);
+   void visit(SPtr<Grid3D> grid);
 protected:
-   void collectData(Grid3DPtr grid);
-   void repartGrid(Grid3DPtr grid, ZoltanPartitioner& zp);
+   void collectData(SPtr<Grid3D> grid);
+   void repartGrid(SPtr<Grid3D> grid, ZoltanPartitioner& zp);
 private:
-   CommunicatorPtr comm;
+   SPtr<Communicator> comm;
    int numOfDirs;
    int numOfLocalParts;
    ZoltanGraph *graph;

@@ -22,7 +22,7 @@
 //   }
 //}
 //////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernelPtr kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
                                              Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue), action(action), dataSetFlag(true)
 {
    if (needMem > availMem)
@@ -31,7 +31,7 @@ SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernelPtr kernel, LBMReal nue, d
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
+void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
    if(kernel && (block->getRank() == grid->getRank()))
    {
@@ -40,7 +40,7 @@ void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
       kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
       kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
       kernel->setBlock(block);
-      LBMKernelPtr newKernel = kernel->clone();
+      SPtr<LBMKernel> newKernel = kernel->clone();
 
       switch (action)
       {
@@ -49,7 +49,7 @@ void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
          break;
       case SetKernelBlockVisitor::ChangeKernel:
       {
-         DataSet3DPtr dataSet = block->getKernel()->getDataSet();
+         SPtr<DataSet3D> dataSet = block->getKernel()->getDataSet();
          if (!dataSet)
          {
             UB_THROW(UbException(UB_EXARGS, "It is not possible to change a DataSet in kernel! Old DataSet is not exist!"));
@@ -57,7 +57,7 @@ void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
          newKernel->setDataSet(dataSet);
          
-         BCProcessorPtr bcProc = block->getKernel()->getBCProcessor();
+         SPtr<BCProcessor> bcProc = block->getKernel()->getBCProcessor();
          if (!bcProc)
          {
             UB_THROW(UbException(UB_EXARGS, "It is not possible to change a BCProcessor in kernel! Old BCProcessor is not exist!"));
@@ -69,7 +69,7 @@ void SetKernelBlockVisitor::visit(Grid3DPtr grid, Block3DPtr block)
 
       case SetKernelBlockVisitor::ChangeKernelWithData:
       {
-         BCProcessorPtr bcProc = block->getKernel()->getBCProcessor();
+         SPtr<BCProcessor> bcProc = block->getKernel()->getBCProcessor();
          if (!bcProc)
          {
             UB_THROW(UbException(UB_EXARGS, "It is not possible to change a BCProcessor in kernel! Old BCProcessor is not exist!"));
