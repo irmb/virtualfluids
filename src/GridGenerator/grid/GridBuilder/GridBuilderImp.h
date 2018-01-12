@@ -23,6 +23,8 @@ class BoundingBox;
 class GridBuilderImp : public GridBuilder
 {
 public:
+
+    VF_PUBLIC GridBuilderImp(GenerationDevice device);
     VF_PUBLIC static std::shared_ptr<GridBuilder> make(std::string);
 
     VF_PUBLIC virtual ~GridBuilderImp();
@@ -37,7 +39,7 @@ public:
 	VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
 	VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
 
-	VF_PUBLIC virtual std::shared_ptr<GridWrapper> getKernel(int level, int box);
+	VF_PUBLIC virtual std::shared_ptr<GridWrapper> getGridWrapper(int level, int box);
 
     VF_PUBLIC virtual void createBoundaryConditions();
 
@@ -58,7 +60,7 @@ public:
     VF_PUBLIC void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
 
 protected:
-    GridBuilderImp();
+    GenerationDevice device;
 
     std::vector<std::vector<std::shared_ptr<GridWrapper> > >gridKernels;
     std::vector<std::shared_ptr<Transformator>> transformators;
@@ -73,7 +75,7 @@ protected:
     void checkLevel(int level);
 
 protected:
-    virtual void createGridKernels(std::string distribution) = 0;
+    virtual void createGridKernels(std::string distribution);
 
     void setNumberOfNodes(real length, real width, real high, real delta);
     void printMasterInformation(int nx, int ny, int nz);

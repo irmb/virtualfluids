@@ -20,6 +20,7 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "grid/GridWrapper/GridWrapper.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
+#include "VirtualFluidsBasics/numerics/geometry3d/GbCuboid3D.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -223,10 +224,39 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
 
+
+
+void multipleLevel(const std::string& configPath)
+{
+
+    SPtr<GbCuboid3D> level0(new GbCuboid3D(0.0, 0.0, 0.0, 64.0, 12.0, 96.0));
+    SPtr<GbCuboid3D> level1(new GbCuboid3D(20.0, 4.0, 40.0, 40.0, 8.0, 60.0));
+
+    SPtr<GridBuilder> builder(new GridBuilderImp(GridBuilder::CPU));
+    builder->addGrid(level0, "D3Q27");
+    builder->addGrid(level1, "D3Q27");
+
+
+    SPtr<Parameter> para = Parameter::make();
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
+
+    std::ifstream stream;
+    stream.open(configPath.c_str(), std::ios::in);
+    if (stream.fail())
+        throw "can not open config file!\n";
+
+    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
+
+    setParameters(para, input);
+
+    Simulation sim;
+    sim.init(para, gridGenerator);
+    sim.run();
+}
+
 void simulate(const std::string& configPath)
 {
     SPtr<GridBuilder> builder = GridBuilderImp::make("gpu");
-
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
@@ -243,9 +273,14 @@ void simulate(const std::string& configPath)
 
     SPtr<Transformator> trans(new TransformatorImp());
     builder->addGrid(para->getGridX()[0], para->getGridY()[0], para->getGridZ()[0], 1.0, "D3Q27", trans);
-    builder->getKernel(0, 0)->copyDataFromGPU();
 
-    GridVTKWriter::writeSparseGridToVTK(builder->getKernel(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
+    SPtr<Transformator> transRefine1(new TransformatorImp(para->getDistX()[1], para->getDistY()[1], para->getDistZ()[1], 0.5));
+    builder->addGrid(para->getGridX()[1], para->getGridY()[1], para->getGridZ()[1], 1.0, "D3Q27", transRefine1);
+
+    builder->getGridWrapper(0, 0)->copyDataFromGPU();
+    builder->getGridWrapper(1, 0)->copyDataFromGPU();
+
+    GridVTKWriter::writeSparseGridToVTK(builder->getGridWrapper(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
     SimulationFileWriter::writeSimulationFiles("D:/GRIDGENERATION/couplingVF/periodicTaylor/simuFiles/", builder, false, trans);
 
     Simulation sim;

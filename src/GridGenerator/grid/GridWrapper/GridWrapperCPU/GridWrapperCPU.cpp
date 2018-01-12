@@ -165,7 +165,6 @@ void GridWrapperCPU::findInvalidNodes()
     }
 }
 
-
 void GridWrapperCPU::findNeighborIndices()
 {
     for (int index = 0; index < grid.reducedSize; index++) 

@@ -55,7 +55,8 @@ void deserialize(GeometryMemento &memento, const std::string &filename)
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-GridBuilderImp::GridBuilderImp()
+
+GridBuilderImp::GridBuilderImp(GenerationDevice device) : device(device)
 {
     this->Qs.resize(QFILES);
     this->channelBoundaryConditions.resize(6);
@@ -67,13 +68,6 @@ GridBuilderImp::GridBuilderImp()
     channelBoundaryConditions[5] = "periodic";
 }
 
-std::shared_ptr<GridBuilder> GridBuilderImp::make(std::string type)
-{
-    if (type == "cpu")
-        return std::shared_ptr<GridBuilder>(new GridCpuBuilder());
-    else
-        return std::shared_ptr<GridBuilder>(new GridGpuBuilder());
-}
 
 GridBuilderImp::~GridBuilderImp()
 {
@@ -191,7 +185,7 @@ void GridBuilderImp::writeSimulationFiles(std::string output, BoundingBox<int> &
     //SimulationFileWriter::writeSimulationFiles(output, coords, qs, writeFilesBinary, this->gridKernels[level]->grid, this->transformators[level]);
 }
 
-std::shared_ptr<GridWrapper> GridBuilderImp::getKernel(int level, int box)
+std::shared_ptr<GridWrapper> GridBuilderImp::getGridWrapper(int level, int box)
 {
     return this->gridKernels[level][box];
 }
@@ -220,6 +214,26 @@ void GridBuilderImp::addGrid(real length, real width, real high, real delta, std
 
     this->createGridKernels(distribution);
 }
+
+void GridBuilderImp::createGridKernels(std::string distribution)
+{
+    for (int i = 0; i < rankTasks.size(); i += 2)
+    {
+        int level = rankTasks[i];
+        int index = rankTasks[i + 1];
+
+        switch (this->device)
+        {
+        case GenerationDevice::CPU:
+            this->gridKernels[level][index] = std::shared_ptr<GridWrapperCPU>(new GridWrapperCPU(this->boxes[level][index], distribution));
+            break;
+        case GenerationDevice::GPU:
+            this->gridKernels[level][index] = std::shared_ptr<GridWrapperGPU>(new GridWrapperGPU(this->boxes[level][index], distribution));
+            break;
+        }
+    }
+}
+
 
 void GridBuilderImp::setNumberOfNodes(real length, real width, real high, real delta)
 {
@@ -354,7 +368,7 @@ void GridBuilderImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
         neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[grid.matrixIndex[i]] + 1);
         neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[grid.matrixIndex[i]] + 1);
         neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[grid.matrixIndex[i]] + 1);
-        geo[i + 1] = (unsigned int)grid.field[grid.matrixIndex[i]] == SOLID ? GEOSOLID : GEOFLUID;
+        geo[i + 1] = (unsigned int)grid.isSolid(grid.matrixIndex[i]) ? GEOSOLID : GEOFLUID;
     }
 }
 

@@ -9,6 +9,7 @@
 #define GLOBAL __global__
 #define CONSTANT __constant__
 
+
 #define HOSTDEVICE HOST DEVICE
 
 

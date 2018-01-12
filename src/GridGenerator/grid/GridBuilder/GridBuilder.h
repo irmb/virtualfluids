@@ -32,6 +32,11 @@ class BoundingBox;
 class GridBuilder
 {
 public:
+    enum class GenerationDevice
+    {
+        CPU, GPU
+    };
+
     virtual VF_PUBLIC ~GridBuilder() {};
 
     virtual void addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans) = 0;
@@ -45,7 +50,7 @@ public:
     virtual void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const = 0;
 
 
-	virtual std::shared_ptr<GridWrapper> getKernel(int level, int box) = 0;
+	virtual std::shared_ptr<GridWrapper> getGridWrapper(int level, int box) = 0;
 
     virtual void createBoundaryConditions() = 0;
 

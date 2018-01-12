@@ -121,7 +121,7 @@ void SimulationFileWriter::writeLevelAndLevelSize(int sizeCoords, std::vector<st
 
 void SimulationFileWriter::writeCoordsNeighborsGeo(const int& i, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
 {
-    Grid grid = builder->getKernel(0, 0)->grid;
+    Grid grid = builder->getGridWrapper(0, 0)->grid;
     int index = grid.matrixIndex[i];
 
     int type = grid.field[index] == SOLID ? 16 : 1;
