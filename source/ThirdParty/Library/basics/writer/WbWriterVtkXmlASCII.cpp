@@ -1,6 +1,7 @@
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/utilities/UbLogger.h>
 #include <cstring>
+#include <limits>
 
 using namespace std;
 

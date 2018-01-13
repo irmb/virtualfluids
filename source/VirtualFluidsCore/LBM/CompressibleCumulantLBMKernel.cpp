@@ -86,6 +86,7 @@ void CompressibleCumulantLBMKernel::calculate()
 void CompressibleCumulantLBMKernel::collideAll()
 {
    using namespace D3Q27System;
+   using namespace std;
 
    //initializing of forcing stuff 
    if (withForcing)

@@ -92,7 +92,7 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   std::weak_ptr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
+   WPtr<Block3D> block; //dieser nvd sendet daten und die empfangenen werden diesem nvd zugeordnet
    VectorTransmitterPtr senderEvenEvenSW, receiverEvenEvenSW,
       senderEvenOddNW, receiverEvenOddNW,
       senderOddEvenSE, receiverOddEvenSE,

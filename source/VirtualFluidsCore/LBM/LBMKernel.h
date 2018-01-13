@@ -94,7 +94,7 @@ protected:
     bool withSpongeLayer;
     mu::Parser muSpongeLayer;
 
-    std::weak_ptr<Block3D> block;
+    WPtr<Block3D> block;
 
     int nx1, nx2, nx3;
 

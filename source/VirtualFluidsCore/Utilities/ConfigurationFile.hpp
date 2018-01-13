@@ -2,6 +2,7 @@
 #define Configuration_h__
 
 #include <map>
+#include <vector>
 #include <sstream>
 #include <string>
 #include <fstream>
@@ -65,6 +66,8 @@ private:
 
    template<class T>
    T fromString(const std::string& str) const;
+
+   std::vector<std::string> split(const std::string &s, char delim) const;
 };
 
 
@@ -175,7 +178,7 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
    return v;
 }
 //////////////////////////////////////////////////////////////////////////
-std::vector<std::string> split(const std::string &s, char delim)
+std::vector<std::string> ConfigurationFile::split(const std::string &s, char delim) const
 {
    std::vector<std::string> result;
    std::stringstream ss(s);

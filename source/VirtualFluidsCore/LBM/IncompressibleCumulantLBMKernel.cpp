@@ -74,6 +74,7 @@ void IncompressibleCumulantLBMKernel::calculate()
 void IncompressibleCumulantLBMKernel::collideAll()
 {
    using namespace D3Q27System;
+   using namespace std;
 
    //initializing of forcing stuff 
    if (withForcing)

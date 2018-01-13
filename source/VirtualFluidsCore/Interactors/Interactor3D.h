@@ -81,7 +81,7 @@ protected:
 
    int type;
    
-   std::weak_ptr<Grid3D> grid;
+   WPtr<Grid3D> grid;
    SPtr<GbObject3D> geoObject3D;
 
    std::vector<SPtr<Block3D> > bcBlocks;

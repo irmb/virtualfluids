@@ -83,7 +83,7 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   std::weak_ptr<Block3D> block; 
+   WPtr<Block3D> block; 
    VectorTransmitterPtr sender, receiver;
    InterpolationProcessorPtr iprocessor;
    CFconnectorType connType;

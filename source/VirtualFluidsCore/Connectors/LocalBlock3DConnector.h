@@ -3,6 +3,7 @@
 
 #include "Block3DConnector.h"
 #include "Block3D.h"
+#include "PointerDefinitions.h"
 
 class LocalBlock3DConnector : public Block3DConnector
 {
@@ -50,8 +51,8 @@ public:
    void receiveVectorsX3() {}
 
 protected:
-   std::weak_ptr<Block3D> from;
-   std::weak_ptr<Block3D> to;
+   WPtr<Block3D> from;
+   WPtr<Block3D> to;
 };
 
 #endif //LocalBlock3DConnector_H

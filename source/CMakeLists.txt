@@ -29,9 +29,10 @@ SET(USE_METIS ON CACHE BOOL "include METIS library support")
 SET(USE_MPI ON CACHE BOOL "include MPI library support")
 SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
-SET(USE_PYTHON OFF CACHE BOOL "include Python scripting support")
+SET(USE_BOOST OFF CACHE BOOL "include Paraview Catalyst support")
+#SET(USE_PYTHON OFF CACHE BOOL "include Python scripting support")
 #SET(USE_FETOL OFF CACHE BOOL "include FETOL library support")
-#SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
+SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
 #SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
 
 #CAB
@@ -55,6 +56,10 @@ FIND_PACKAGE(MPI REQUIRED)
 #ELSE(${USE_PYTHON})
 #    FIND_PACKAGE(Boost ${BOOST_VERSION} COMPONENTS system date_time thread serialization chrono regex)
 #ENDIF()
+
+IF(${USE_BOOST})
+  FIND_PACKAGE(Boost ${BOOST_VERSION})
+ENDIF()
 
 ##################################################################################
 #  Java
@@ -103,6 +108,15 @@ ENDIF()
 IF(${USE_CATALYST})
   LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_CATALYST)
 ENDIF()
+
+IF(${USE_BOOST})
+  LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_BOOST)
+ENDIF()
+
+IF(${USE_INTEL})
+   SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -parallel)
+ENDIF()
+
 # IF(${USE_PYTHON})
   # FIND_PACKAGE(PythonLibs)
   # INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIR})

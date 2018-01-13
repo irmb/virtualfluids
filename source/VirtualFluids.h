@@ -182,7 +182,7 @@
 #include <LBM/LBMKernel.h>
 #include <LBM/IncompressibleCumulantLBMKernel.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
-#include <LBM/CompressibleCumulant2LBMKernel.h>
+#include <LBM/CompressibleCumulantViscosity4thLBMKernel.h>
 #include <LBM/InitDensityLBMKernel.h>
 #include <LBM/VoidLBMKernel.h>
 #include <LBM/LBMSystem.h>

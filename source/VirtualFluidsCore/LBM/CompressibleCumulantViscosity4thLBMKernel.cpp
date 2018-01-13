@@ -1,16 +1,15 @@
-#include "CompressibleCumulant2LBMKernel.h"
+#include "CompressibleCumulantViscosity4thLBMKernel.h"
 #include "D3Q27System.h"
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
-#include <omp.h>
 #include "DataSet3D.h"
 #include "LBMKernel.h"
 
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
-CompressibleCumulant2LBMKernel::CompressibleCumulant2LBMKernel()
+CompressibleCumulantViscosity4thLBMKernel::CompressibleCumulantViscosity4thLBMKernel()
 {
    this->nx1 = 0;
    this->nx2 = 0;
@@ -22,7 +21,7 @@ CompressibleCumulant2LBMKernel::CompressibleCumulant2LBMKernel()
    this->OxxPyyPzz = 1.0;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleCumulant2LBMKernel::CompressibleCumulant2LBMKernel(int nx1, int nx2, int nx3, Parameter p)
+CompressibleCumulantViscosity4thLBMKernel::CompressibleCumulantViscosity4thLBMKernel(int nx1, int nx2, int nx3, Parameter p)
 {
    this->nx1 = nx1;
    this->nx2 = nx2;
@@ -34,21 +33,21 @@ CompressibleCumulant2LBMKernel::CompressibleCumulant2LBMKernel(int nx1, int nx2,
    this->OxxPyyPzz = 1.0;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleCumulant2LBMKernel::~CompressibleCumulant2LBMKernel(void)
+CompressibleCumulantViscosity4thLBMKernel::~CompressibleCumulantViscosity4thLBMKernel(void)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant2LBMKernel::init()
+void CompressibleCumulantViscosity4thLBMKernel::init()
 {
-   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, -999.0));
+   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, 0.0));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<LBMKernel> CompressibleCumulant2LBMKernel::clone()
+SPtr<LBMKernel> CompressibleCumulantViscosity4thLBMKernel::clone()
 {
-   SPtr<LBMKernel> kernel(new CompressibleCumulant2LBMKernel(nx1, nx2, nx3, parameter));
-   dynamicPointerCast<CompressibleCumulant2LBMKernel>(kernel)->init();
+   SPtr<LBMKernel> kernel(new CompressibleCumulantViscosity4thLBMKernel(nx1, nx2, nx3, parameter));
+   dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->init();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -60,34 +59,35 @@ SPtr<LBMKernel> CompressibleCumulant2LBMKernel::clone()
    switch (parameter)
    {
    case NORMAL:
-      dynamicPointerCast<CompressibleCumulant2LBMKernel>(kernel)->OxyyMxzz = 1.0;
+      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxyyMxzz = 1.0;
       break;
    case MAGIC:
-      dynamicPointerCast<CompressibleCumulant2LBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
+      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
       break;
    }
 
    if (bulkOmegaToOmega)
    {
-      dynamicPointerCast<CompressibleCumulant2LBMKernel>(kernel)->OxxPyyPzz = collFactor;
+      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxxPyyPzz = collFactor;
    }
    else
    {
-      dynamicPointerCast<CompressibleCumulant2LBMKernel>(kernel)->OxxPyyPzz = one;
+      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxxPyyPzz = one;
    }
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant2LBMKernel::calculate()
+void CompressibleCumulantViscosity4thLBMKernel::calculate()
 {
    timer.resetAndStart();
    collideAll();
    timer.stop();
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant2LBMKernel::collideAll()
+void CompressibleCumulantViscosity4thLBMKernel::collideAll()
 {
    using namespace D3Q27System;
+   using namespace std;
 
    //initializing of forcing stuff 
    if (withForcing)
@@ -1066,13 +1066,13 @@ void CompressibleCumulant2LBMKernel::collideAll()
    }
 }
 //////////////////////////////////////////////////////////////////////////
-double CompressibleCumulant2LBMKernel::getCalculationTime()
+double CompressibleCumulantViscosity4thLBMKernel::getCalculationTime()
 {
    //return timer.getDuration();
    return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant2LBMKernel::setBulkOmegaToOmega(bool value)
+void CompressibleCumulantViscosity4thLBMKernel::setBulkOmegaToOmega(bool value)
 {
    bulkOmegaToOmega = value;
 }
