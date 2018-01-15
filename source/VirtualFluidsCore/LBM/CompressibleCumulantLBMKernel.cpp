@@ -665,29 +665,29 @@ void CompressibleCumulantLBMKernel::collideAll()
                   //relax
                   //////////////////////////////////////////////////////////////////////////
                   //das ist der limiter
-                  wadjust = Oxyz+(one-Oxyz)*abs(mfbbb)/(abs(mfbbb)+qudricLimitD);
-                  mfbbb += wadjust * (-mfbbb);
-                  wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxyPyzz)/(abs(mxxyPyzz)+qudricLimitP);
-                  mxxyPyzz += wadjust * (-mxxyPyzz);
-                  wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxyMyzz)/(abs(mxxyMyzz)+qudricLimitM);
-                  mxxyMyzz += wadjust * (-mxxyMyzz);
-                  wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxzPyyz)/(abs(mxxzPyyz)+qudricLimitP);
-                  mxxzPyyz += wadjust * (-mxxzPyyz);
-                  wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxzMyyz)/(abs(mxxzMyyz)+qudricLimitM);
-                  mxxzMyyz += wadjust * (-mxxzMyyz);
-                  wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxyyPxzz)/(abs(mxyyPxzz)+qudricLimitP);
-                  mxyyPxzz += wadjust * (-mxyyPxzz);
-                  wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxyyMxzz)/(abs(mxyyMxzz)+qudricLimitM);
-                  mxyyMxzz += wadjust * (-mxyyMxzz);
+                  //wadjust = Oxyz+(one-Oxyz)*abs(mfbbb)/(abs(mfbbb)+qudricLimitD);
+                  //mfbbb += wadjust * (-mfbbb);
+                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxyPyzz)/(abs(mxxyPyzz)+qudricLimitP);
+                  //mxxyPyzz += wadjust * (-mxxyPyzz);
+                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxyMyzz)/(abs(mxxyMyzz)+qudricLimitM);
+                  //mxxyMyzz += wadjust * (-mxxyMyzz);
+                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxzPyyz)/(abs(mxxzPyyz)+qudricLimitP);
+                  //mxxzPyyz += wadjust * (-mxxzPyyz);
+                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxzMyyz)/(abs(mxxzMyyz)+qudricLimitM);
+                  //mxxzMyyz += wadjust * (-mxxzMyyz);
+                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxyyPxzz)/(abs(mxyyPxzz)+qudricLimitP);
+                  //mxyyPxzz += wadjust * (-mxyyPxzz);
+                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxyyMxzz)/(abs(mxyyMxzz)+qudricLimitM);
+                  //mxyyMxzz += wadjust * (-mxyyMxzz);
                   //////////////////////////////////////////////////////////////////////////
                   //ohne limiter
-                  //mfbbb     += OxyyMxzz * (-mfbbb);
-                  //mxxyPyzz  += OxyyPxzz * (-mxxyPyzz);
-                  //mxxyMyzz  += OxyyMxzz * (-mxxyMyzz);
-                  //mxxzPyyz  += OxyyPxzz * (-mxxzPyyz);
-                  //mxxzMyyz  += OxyyMxzz * (-mxxzMyyz);
-                  //mxyyPxzz  += OxyyPxzz * (-mxyyPxzz);
-                  //mxyyMxzz  += OxyyMxzz * (-mxyyMxzz);
+                  mfbbb     += OxyyMxzz * (-mfbbb);
+                  mxxyPyzz  += OxyyPxzz * (-mxxyPyzz);
+                  mxxyMyzz  += OxyyMxzz * (-mxxyMyzz);
+                  mxxzPyyz  += OxyyPxzz * (-mxxzPyyz);
+                  mxxzMyyz  += OxyyMxzz * (-mxxzMyyz);
+                  mxyyPxzz  += OxyyPxzz * (-mxyyPxzz);
+                  mxyyMxzz  += OxyyMxzz * (-mxyyMxzz);
                   //////////////////////////////////////////////////////////////////////////
 
                   //// linear combinations back

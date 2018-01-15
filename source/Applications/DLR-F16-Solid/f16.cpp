@@ -152,6 +152,7 @@ void run(string configname)
       bcVisitor.addBC(outflowBCAdapter);
 
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantViscosity4thLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantViscosity4thLBMKernel::NORMAL));
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       kernel->setBCProcessor(bcProc);
@@ -475,7 +476,7 @@ void run(string configname)
             UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
          }
 
-         //Postrozess
+         //Post process
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
             WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
@@ -554,8 +555,8 @@ void run(string configname)
       SPtr<UbScheduler> stepMV(new UbScheduler(1));
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
-      //omp_set_num_threads(2);
-      SPtr<Calculator> calculator(new MPICalculator());
+      omp_set_num_threads(numOfThreads);
+      SPtr<Calculator> calculator(new OMPCalculator());
       calculator->setGrid(grid);
       calculator->setLastTimeStep(endTime);
       calculator->setVisScheduler(stepSch);
@@ -662,7 +663,8 @@ void test_run()
       calculator->setLastTimeStep(2);
       calculator->setVisScheduler(stepSch);
       calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->setVisScheduler(stepSch);
+      calculator->setVisScheduler(stepSch);
+
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

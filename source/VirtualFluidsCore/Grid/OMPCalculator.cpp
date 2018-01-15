@@ -12,8 +12,10 @@
 #include <UbException.h>
 
 #ifdef _OPENMP
-#include <omp.h>
+   #include <omp.h>
 #endif
+#define OMP_SCHEDULE dynamic
+
 //#define TIMING
 
 #include "Block3DConnector.h"
@@ -157,7 +159,7 @@ void OMPCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calcSt
             //call LBM kernel
             int size = (int)blocks[level].size();
 #ifdef _OPENMP
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(OMP_SCHEDULE)
 #endif
             for (int i =0; i<size; i++)
             {
@@ -204,7 +206,7 @@ void OMPCalculator::swapDistributions(int startLevel, int maxInitLevel)
       {
          int size = (int)blocks[level].size();
 #ifdef _OPENMP
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(OMP_SCHEDULE)
 #endif
          for (int i =0; i<size; i++)
          {
@@ -218,7 +220,7 @@ void OMPCalculator::connectorsPrepareLocal(std::vector< SPtr<Block3DConnector> >
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
    for (int i =0; i<size; i++)
    {
@@ -231,7 +233,7 @@ void OMPCalculator::connectorsSendLocal(std::vector< SPtr<Block3DConnector> >& c
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
    for (int i =0; i<size; i++)
    {
@@ -244,7 +246,7 @@ void OMPCalculator::connectorsReceiveLocal(std::vector< SPtr<Block3DConnector> >
 {
    int size = (int)connectors.size();
 #ifdef _OPENMP
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
    for (int i =0; i<size; i++)
    {
@@ -310,7 +312,7 @@ void OMPCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
    {
       int size = (int)blocks[level].size();
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
       for (int i =0; i<size; i++)
       {
@@ -326,7 +328,7 @@ void OMPCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    {
       int size = (int)blocks[level].size();
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for schedule(OMP_SCHEDULE)
 #endif
       for (int i =0; i<size; i++)
       {
