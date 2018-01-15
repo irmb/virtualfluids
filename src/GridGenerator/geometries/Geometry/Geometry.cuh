@@ -22,6 +22,7 @@ struct Geometry
 public:
 	VF_PUBLIC Geometry();
 	VF_PUBLIC Geometry(const Geometry& geo);
+    VF_PUBLIC Geometry(const std::string& inputPath);
 	VF_PUBLIC Geometry(const std::string& inputPath, const BoundingBox<int> &box, const Transformator *trafo);
 	VF_PUBLIC ~Geometry();
 	VF_PUBLIC Transformator* getTransformator();

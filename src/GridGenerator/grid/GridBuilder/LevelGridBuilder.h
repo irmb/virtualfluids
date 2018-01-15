@@ -63,27 +63,12 @@ protected:
     GenerationDevice device;
 
     std::vector<std::shared_ptr<GridWrapper> > gridWrapper;
-    std::vector<std::shared_ptr<Transformator>> transformators;
-    std::vector<std::vector<BoundingBox<int>> > boxes;
-    std::vector<int> rankTasks;
-    std::vector<std::vector<int> > gridDimensions;
 
 
     std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
 
     void checkLevel(int level);
-
-protected:
-    virtual void createGridKernels(std::string distribution);
-
-    void setNumberOfNodes(real length, real width, real high, real delta);
-    void printMasterInformation(int nx, int ny, int nz);
-    void setCudaDevice(int rank);
-    void rebuildBoxes();
-    void sendTasks();
-    void receiveTasks();
-    void writeBoxes(std::string name);
 
 protected:
     void createBCVectors();

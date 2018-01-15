@@ -7,6 +7,7 @@
 
 #include <memory>
 
+
 template <class T>
 using SPtr = std::shared_ptr<T>;
 

@@ -6,13 +6,39 @@
 #include <string>
 #include <stdio.h>
 
-#include <GridGenerator/utilities/Transformator/Transformator.h>
+#include <GridGenerator/utilities/Transformator/TransformatorImp.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
 #include <utilities/logger/Logger.h>
+
+
+std::vector<Triangle> STLReader::readSTL(const std::string& name)
+{
+    TransformatorImp trans;
+    std::ifstream file(name.c_str());
+    if (file.is_open()) {
+        std::string line;
+        std::getline(file, line);
+        line[strcspn(line.c_str(), "\r\n")] = 0;
+        if (strcmp(line.c_str(), "solid ascii") == 0) {
+            file.close();
+            *logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
+            return readASCIISTL(name, trans);
+        }
+        else {
+            file.close();
+            *logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
+            return readBinarySTL(name, trans);
+        }
+    }
+    else {
+        *logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + "\n";
+        exit(1);
+    }
+}
 
 std::vector<Triangle> STLReader::readSTL(const std::string& name, const Transformator& trans)
 {

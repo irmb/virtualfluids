@@ -19,6 +19,15 @@ Geometry::Geometry(const std::string& input, const BoundingBox<int>& box, const 
 	this->findNeighbors();
 }
 
+Geometry::Geometry(const std::string& inputPath)
+{
+    this->transformator = new TransformatorImp();
+
+    this->triangleVec = STLReader::readSTL(inputPath);
+    initalizeDataFromTriangles();
+    this->findNeighbors();
+}
+
 Geometry::Geometry(const Geometry& geo)
 {
 	this->transformator = new TransformatorImp();

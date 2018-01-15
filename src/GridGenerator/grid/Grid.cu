@@ -16,6 +16,30 @@
 
 __constant__ int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
+HOSTDEVICE Grid::Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution &d) : sX(startX), sY(startY), sZ(startZ), eX(endX), eY(endY), eZ(endZ), delta(delta), d(d)
+{
+    real length = endX - startX;
+    real width = endY - startY;
+    real height = endZ - startZ;
+
+    nx = (int)((length + delta) / delta);
+    ny = (int)((width  + delta) / delta);
+    nz = (int)((height + delta) / delta);
+
+    this->size = nx * ny * nz;
+    this->reducedSize = size;
+
+    const unsigned long distributionSize = size * (d.dir_end + 1);
+    this->d.f = new real[distributionSize](); // automatic initialized with zeros
+    this->field = new char[this->size];
+
+    this->neighborIndexX = new int[this->size];
+    this->neighborIndexY = new int[this->size];
+    this->neighborIndexZ = new int[this->size];
+
+    this->matrixIndex = new uint[this->size];
+}
+
 HOSTDEVICE Grid::Grid(){};
 HOSTDEVICE Grid::Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d)
     : field(field), startX(startX), startY(startY), startZ(startZ), nx(nx), ny(ny), nz(nz), d(d)
@@ -64,31 +88,39 @@ HOSTDEVICE char Grid::getFieldEntry(const Vertex &v) const
     return this->field[transCoordToIndex(v)];
 }
 
-HOSTDEVICE int Grid::transCoordToIndex(const int &x, const int &y, const int &z) const
+HOSTDEVICE int Grid::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
-	return transCoordToIndex(Vertex((real)x, (real)y, (real)z));
+	return transCoordToIndex(Vertex(x,y,z));
 }
 
 HOSTDEVICE int Grid::transCoordToIndex(const Vertex &v) const
 {
-#ifdef DEBUG
-	if (isOutOfRange(v))
-	{ printf("Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");/* exit(1);*/ };
-#endif
-	return (int)(v.x + nx * (v.y + ny * v.z));
+//#ifdef DEBUG
+//	if (isOutOfRange(v))
+//	{ printf("Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");/* exit(1);*/ };
+//#endif
+    int x = (int)((v.x - sX) / delta);
+    int y = (int)((v.y - sY) / delta);
+    int z = (int)((v.z - sZ) / delta);
+
+	return x + nx * (y + ny * z);
 }
 
-HOSTDEVICE void Grid::transIndexToCoords(const int index, unsigned int &x, unsigned int &y, unsigned int &z) const
+HOSTDEVICE void Grid::transIndexToCoords(const int index, real &x, real &y, real &z) const
 {
-#ifdef DEBUG
-	if (index < 0 || index >= (int)size)
-	{
-        printf("Function: transIndexToCoords. Grid Index: %d, size: %d. Exit Program!\n", index, size); /*exit(1);*/ 
-    };
-#endif
+//#ifdef DEBUG
+//	if (index < 0 || index >= (int)size)
+//	{
+//        printf("Function: transIndexToCoords. Grid Index: %d, size: %d. Exit Program!\n", index, size); /*exit(1);*/ 
+//    };
+//#endif
     x = index % nx;
     y = (index / nx) % ny;
     z = ((index / nx) / ny) % nz;
+
+    x = (x + sX) * delta;
+    y = (y + sY) * delta;
+    z = (z + sZ) * delta;
 }
 
 char* Grid::toString(const char* name) const
@@ -121,6 +153,26 @@ HOSTDEVICE bool Grid::isOutOfRange(const Vertex &v) const
 	return (gridX < 0 || gridY < 0 || gridZ < 0 || gridX >= (int)nx || gridY >= (int)ny || gridZ >= (int)nz);
 }
 
+
+HOSTDEVICE void Grid::meshTriangleExact(const Triangle &triangle)
+{
+    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, delta);
+
+    for (real x = box.minX; x <= box.maxX; x += delta) {
+        for (real y = box.minY; y <= box.maxY; y += delta) {
+            for (real z = box.minZ; z <= box.maxZ; z += delta) {
+                Vertex point(x, y, z);
+                //if (isOutOfRange(point))
+                //    continue;
+                const int value = triangle.isUnderFace(point);
+                setDebugPoint(point, value);
+
+                //if (value == Q)
+                //    calculateQs(point, triangle);
+            }
+        }
+    }
+}
 
 HOSTDEVICE void Grid::meshTriangle(const Triangle &triangle)
 {
@@ -170,10 +222,10 @@ HOSTDEVICE void Grid::calculateQs(const Vertex &point, const Triangle &triangle)
 
 HOSTDEVICE void Grid::setNeighborIndices(const int &index)
 {
-    unsigned int x, y, z;
+    real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-	unsigned int neighborX, neighborY, neighborZ;
+    real neighborX, neighborY, neighborZ;
     this->getNeighborCoords(neighborX, neighborY, neighborZ, x, y, z);
 
 	neighborIndexX[index] = (unsigned int) transCoordToIndex(neighborX, y, z);
@@ -207,18 +259,18 @@ HOSTDEVICE bool Grid::isNeighborInvalid(const int &index)
 
 HOSTDEVICE void Grid::findNeighborIndex(int index)
 {
-    unsigned int x, y, z;
+    real x, y, z;
     int nodeIndex = this->matrixIndex[index];
     this->transIndexToCoords(this->matrixIndex[index], x, y, z);
 
-    unsigned int neighborXCoord, neighborYCoord, neighborZCoord;
+    real neighborXCoord, neighborYCoord, neighborZCoord;
     getNeighborCoords(neighborXCoord, neighborYCoord, neighborZCoord, x, y, z);
     this->neighborIndexX[nodeIndex] = getNeighborIndex(index, this->neighborIndexX[nodeIndex], neighborXCoord, y, z);
     this->neighborIndexY[nodeIndex] = getNeighborIndex(index, this->neighborIndexY[nodeIndex], x, neighborYCoord, z);
     this->neighborIndexZ[nodeIndex] = getNeighborIndex(index, this->neighborIndexZ[nodeIndex], x, y, neighborZCoord);
 }
 
-HOSTDEVICE int Grid::getNeighborIndex(const int &nodeIndex, int &neighborIndex, const int &expectedX, const int &expectedY, const int &expectedZ)
+HOSTDEVICE int Grid::getNeighborIndex(const int &nodeIndex, int &neighborIndex, const real &expectedX, const real &expectedY, const real &expectedZ)
 {
     while (neighborIndex >= (int)this->reducedSize)
     {
@@ -226,7 +278,7 @@ HOSTDEVICE int Grid::getNeighborIndex(const int &nodeIndex, int &neighborIndex, 
         //printf("here\n");
     }
     if (neighborIndex >= 0) {
-        unsigned int neighborX, neighborY, neighborZ;
+        real neighborX, neighborY, neighborZ;
         this->transIndexToCoords(this->matrixIndex[neighborIndex], neighborX, neighborY, neighborZ);
         while (!(neighborX == expectedX && neighborY == expectedY && neighborZ == expectedZ)) {
             neighborIndex--;
@@ -270,11 +322,11 @@ HOST void Grid::removeInvalidNodes()
     this->matrixIndex = indices_reduced;
 }
 
-HOSTDEVICE void Grid::getNeighborCoords(unsigned int &neighborX, unsigned int &neighborY, unsigned int &neighborZ, const unsigned int x, const unsigned int y, const unsigned int z) const
+HOSTDEVICE void Grid::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const
 {
-	neighborX = x + 1 < nx ? x + 1 : 0;
-	neighborY = y + 1 < ny ? y + 1 : 0;
-	neighborZ = z + 1 < nz ? z + 1 : 0;
+	neighborX = x + delta < nx ? x + delta : startX;
+	neighborY = y + delta < ny ? y + delta : startY;
+	neighborZ = z + delta < nz ? z + delta : startZ;
 }
 
 
@@ -285,13 +337,12 @@ HOSTDEVICE bool Grid::isStopper(int index) const
 
 HOSTDEVICE bool Grid::previousCellHasFluid(int index) const
 {
-    unsigned int ux, uy, uz;
-    this->transIndexToCoords(index, ux, uy, uz);
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
 
-    int x(ux), y(uy), z(uz);
-    int previousX = x - 1 >= 0 ? x - 1 : this->nx - 1;
-    int previousY = y - 1 >= 0 ? y - 1 : this->ny - 1;
-    int previousZ = z - 1 >= 0 ? z - 1 : this->nz - 1;
+    real previousX = x - delta >= 0 ? x - delta : this->eX;
+    real previousY = y - delta >= 0 ? y - delta : this->eY;
+    real previousZ = z - delta >= 0 ? z - delta : this->eZ;
 
     int indexpreviousX   = this->transCoordToIndex(previousX, y, z);
     int indexpreviousY   = this->transCoordToIndex(x, previousY, z);

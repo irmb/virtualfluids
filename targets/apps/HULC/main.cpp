@@ -15,14 +15,14 @@
 #include "DataStructureInitializer/GridProvider.h"
 #include "VirtualFluidsBasics/utilities/input/Input.h"
 #include "VirtualFluidsBasics/utilities/StringUtil/StringUtil.h"
-#include "grid/GridBuilder/GridBuilderImp.h"
+#include "grid/GridBuilder/LevelGridBuilder.h"
 #include "utilities/transformator/TransformatorImp.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include "grid/GridWrapper/GridWrapper.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
-#include "VirtualFluidsBasics/numerics/geometry3d/GbCuboid3D.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
-
+#include "grid/GridBuilder/ParallelGridBuilder.h"
+#include "geometries/Geometry/Geometry.cuh"
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -229,32 +229,48 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
+    Grid grid(35, 3, -5, 70, 40, 25, 0.5, Distribution());
 
-    SPtr<GridBuilder> builder(new LevelGridBuilder(GridBuilder::GenerationDevice::CPU));
-    builder->addGrid(0.0, 0.0, 0.0, 64.0, 12.0, 96.0, "D3Q27");
-    builder->addGrid(20.0, 4.0, 40.0, 40.0, 8.0, 60.0, "D3Q27");
+    for (unsigned int index = 0; index < grid.size; index++)
+    {
+        grid.setNeighborIndices(index);
+        grid.matrixIndex[index] = index;
+        grid.setFieldEntryToFluid(index);
+    }
+
+    //grid.field[grid.transCoordToIndex(30, 10, 20)] = 11;
+    //real x, y, z;
+    //grid.transIndexToCoords(grid.transCoordToIndex(30, 10, 20), x, y, z);
+
+    Geometry* geometry = new Geometry("D:/GRIDGENERATION/STL/circleBinaer.stl");
+    for (int i = 0; i < geometry->size; i++)
+        grid.meshTriangleExact(geometry->triangles[i]);
+    delete geometry;
 
 
-    SPtr<Parameter> para = Parameter::make();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
+    GridVTKWriter::writeGridToVTK(grid, "D:/GRIDGENERATION/gridTest");
 
-    std::ifstream stream;
-    stream.open(configPath.c_str(), std::ios::in);
-    if (stream.fail())
-        throw "can not open config file!\n";
+    //SPtr<Parameter> para = Parameter::make();
+    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
 
-    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
+    //std::ifstream stream;
+    //stream.open(configPath.c_str(), std::ios::in);
+    //if (stream.fail())
+    //    throw "can not open config file!\n";
 
-    setParameters(para, input);
+    //UPtr<input::Input> input = input::Input::makeInput(stream, "config");
 
-    Simulation sim;
-    sim.init(para, gridGenerator);
-    sim.run();
+    //setParameters(para, input);
+
+    //Simulation sim;
+    //sim.init(para, gridGenerator);
+    //sim.run();
 }
 
 void simulate(const std::string& configPath)
 {
-    SPtr<GridBuilder> builder = GridBuilderImp::make("gpu");
+    SPtr<ParallelGridBuilder> builder(new ParallelGridBuilder(GridBuilder::GenerationDevice::CPU));
+
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
@@ -298,7 +314,7 @@ int main( int argc, char* argv[])
          str2 = static_cast<std::string>(argv[1]);
          try
          {
-             simulate(str2);
+             multipleLevel(str2);
          }
          catch (std::string e)
          {

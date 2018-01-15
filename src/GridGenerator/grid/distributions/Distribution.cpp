@@ -357,9 +357,9 @@ std::vector<std::vector<real> > DistributionHelper::getAllQsOnFluidNodes(const G
 int DistributionHelper::getNeighborNodeIndexInGivenDirection(const Distribution &d, const Grid &grid, const int node, const int dir_index)
 {
     Vertex dir = Vertex((real)d.dirs[dir_index * DIMENSION + 0], (real)d.dirs[dir_index * DIMENSION + 1], (real)d.dirs[dir_index * DIMENSION + 2]);
-    unsigned int x, y, z;
+    real x, y, z;
     grid.transIndexToCoords(node, x, y, z);
-    Vertex solid_node = Vertex((real)x, (real)y,(real)z);
+    Vertex solid_node = Vertex(x,y,z);
     Vertex fluid_node = Vertex(solid_node.x - dir.x, solid_node.y - dir.y, solid_node.z - dir.z);
     return grid.transCoordToIndex(fluid_node);
 }

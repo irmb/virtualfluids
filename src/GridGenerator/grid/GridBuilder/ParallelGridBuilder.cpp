@@ -358,12 +358,12 @@ void ParallelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoo
 
     for (int i = 0; i < grid.reducedSize; i++)
     {
-        unsigned int x, y, z;
+        real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
 
-        xCoords[i + 1] = (real)x;
-        yCoords[i + 1] = (real)y;
-        zCoords[i + 1] = (real)z;
+        xCoords[i + 1] = x;
+        yCoords[i + 1] = y;
+        zCoords[i + 1] = z;
         neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[grid.matrixIndex[i]] + 1);
         neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[grid.matrixIndex[i]] + 1);
         neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[grid.matrixIndex[i]] + 1);
@@ -416,7 +416,7 @@ void ParallelGridBuilder::createBCVectors()
     Grid grid = this->gridKernels[0][0]->grid;
     for (int i = 0; i < grid.reducedSize; i++)
     {
-        unsigned int x, y, z;
+        real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
 
         if (grid.field[grid.matrixIndex[i]] == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
@@ -528,7 +528,7 @@ void ParallelGridBuilder::writeArrow(const int i, const int qi, const Vertex& st
 
 Vertex ParallelGridBuilder::getVertex(int matrixIndex) const
 {
-    unsigned int x, y, z;
+    real x, y, z;
     this->gridKernels[0][0]->grid.transIndexToCoords(matrixIndex, x, y, z);
     return Vertex((real)x, (real)y, (real)z);
 }

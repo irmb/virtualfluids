@@ -39,7 +39,6 @@ public:
 
     virtual VF_PUBLIC ~GridBuilder() {};
 
-    virtual void addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans) = 0;
     virtual void meshGeometry(std::string input, int level) = 0;
     virtual void deleteSolidNodes() = 0;
 

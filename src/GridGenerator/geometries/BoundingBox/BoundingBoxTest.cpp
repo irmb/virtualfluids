@@ -134,3 +134,19 @@ TEST(BoundingBoxTest, isInside_false)
     EXPECT_FALSE(box.isInside(t));
 }
 
+TEST(BoundingBoxTest, createNodeBoxWithFloastingPointValues)
+{
+    Triangle t = Triangle(Vertex(1.34, -2.01, 1.8), Vertex(2, 2, 1.9), Vertex(3.99, 2.1, 1.51), Vertex(0.0, 0.0, 0.0));
+    real delta = 0.5;
+
+    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(t, delta);
+
+    EXPECT_THAT(box.minX, DoubleEq(1.0));
+    EXPECT_THAT(box.minY, DoubleEq(-2.5));
+    EXPECT_THAT(box.minZ, DoubleEq(1.5));
+
+    EXPECT_THAT(box.maxX, DoubleEq(4));
+    EXPECT_THAT(box.maxY, DoubleEq(2.5));
+    EXPECT_THAT(box.maxZ, DoubleEq(2.0));
+}
+

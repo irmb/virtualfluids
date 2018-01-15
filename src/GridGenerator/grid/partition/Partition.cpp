@@ -52,7 +52,7 @@ void Partition::partitionGridMesh(const Grid &grid)
     // Adjacent vertices in consecutive index order
     idx_t *eind = new idx_t[nNodes];
 
-	unsigned int x, y, z, newX, newY, newZ;
+    real x, y, z, newX, newY, newZ;
     int nIndex;
     int numberNode = 0;
     for (unsigned int index = 0; index < grid.size; index++) {
@@ -155,7 +155,7 @@ void Partition::partitionGrid(const Grid &grid) {
     idx_t* adjncy = new idx_t[nEdges];
 
     xadj[0] = 0;
-	unsigned int x, y, z, newX, newY, newZ;
+	real x, y, z, newX, newY, newZ;
     int nIndex;
     int numberOfNeighbors = 0;
     int counter = 0;

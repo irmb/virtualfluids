@@ -55,7 +55,22 @@ template <typename T>
  }
 
 
- template <typename T>
+ HOSTDEVICE BoundingBox<real> BoundingBox<real>::makeRealNodeBox(const Triangle& t, const real& delta)
+{
+    BoundingBox<real> box;
+
+    real minX, maxX, minY, maxY, minZ, maxZ;
+    t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
+
+    calculateMinMaxOnNodes(box.minX, box.maxX, minX, maxX, delta);
+    calculateMinMaxOnNodes(box.minY, box.maxY, minY, maxY, delta);
+    calculateMinMaxOnNodes(box.minZ, box.maxZ, minZ, maxZ, delta);
+
+    return box;
+}
+
+
+template <typename T>
  HOST BoundingBox<T> BoundingBox<T>::makeInvalidMinMaxBox()
  {
      BoundingBox<T> box = BoundingBox<T>(std::numeric_limits<T>::max(),
@@ -78,6 +93,19 @@ template <typename T>
 	 calculateMinMaxOnNodes(box.minY, box.maxY, minY, maxY);
 	 calculateMinMaxOnNodes(box.minZ, box.maxZ, minZ, maxZ);
 	 return box;
+ }
+
+ template <>
+ HOSTDEVICE void BoundingBox<real>::calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& delta)
+ {
+     minNode = ceil(minExact - 1.0);
+     maxNode = floor(maxExact + 1.0);
+     if (minNode + 0.5 < minExact)
+         minNode += 0.5;
+
+
+     if (maxNode - 0.5 > maxExact)
+         maxNode -= 0.5;
  }
 
  template <>

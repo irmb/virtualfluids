@@ -31,12 +31,12 @@ TEST(GridTest, transIndexToCoordsAndCoordToIndex)
 	Grid grid(nullptr, 0, 0, 0, 10, 10, 10, Distribution());
 
 	int index = 756;
-	unsigned int x, y, z;
+	real x, y, z;
 	grid.transIndexToCoords(index, x, y, z);
 
-	unsigned int expectedX = 6;
-	unsigned int expectedY = 5;
-	unsigned int expectedZ = 7;
+	real expectedX = 6;
+	real expectedY = 5;
+	real expectedZ = 7;
 
 	EXPECT_THAT(x, expectedX);
 	EXPECT_THAT(y, expectedY);
@@ -203,4 +203,19 @@ TEST_F(GridStopperTest, testIfNodeIsStopper_IfMinusXZisFluid_ItShouldBeAStopperN
     grid.field[grid.transCoordToIndex(0, 1, 0)] = FLUID; // -xz
 
     ASSERT_TRUE(grid.isStopper(grid.transCoordToIndex(1, 1, 1)));
+}
+
+TEST(GridTest, transRealCoordsToIndex)
+{
+    Grid grid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 0.5, Distribution());
+
+    Vertex v(1.5, 0.0, 0.0);
+
+    unsigned int index = grid.transCoordToIndex(v);
+
+    EXPECT_THAT(index, testing::Eq(3));
+
+    real x, y, z;
+    grid.transIndexToCoords(index, x,y,z );
+
 }

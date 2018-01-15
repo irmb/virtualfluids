@@ -19,6 +19,7 @@ struct Geometry;
 class VF_PUBLIC STLReader
 {
 public:
+    static std::vector<Triangle> readSTL(const std::string& name);
 	static std::vector<Triangle> readSTL(const std::string& name, const Transformator& trans);
 	static std::vector<Triangle> readSTL(const BoundingBox<int> &box, const std::string name, const Transformator& trans);
 

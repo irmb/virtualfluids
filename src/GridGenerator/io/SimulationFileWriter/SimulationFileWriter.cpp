@@ -125,10 +125,10 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(const int& i, bool binaer, st
     int index = grid.matrixIndex[i];
 
     int type = grid.field[index] == SOLID ? 16 : 1;
-	unsigned int x, y, z;
+    real x, y, z;
     grid.transIndexToCoords(index, x, y, z);
 
-    Vertex v = Vertex((real)x, (real)y, (real)z);
+    Vertex v = Vertex(x, y, z);
     trans->transformGridToWorld(v);
     double xWorld = v.x;
     double yWorld = v.y;

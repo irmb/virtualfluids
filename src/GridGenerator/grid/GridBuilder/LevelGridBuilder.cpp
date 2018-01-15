@@ -55,15 +55,24 @@ void LevelGridBuilder::addGrid(uint minX, uint minY, uint minZ, uint maxX, uint 
 {
     uint level = gridWrapper.size();
 
+    Grid grid(3, 3, 3, 12, 12, 12, 0.5, Distribution());
+
+    for (unsigned int index = 0; index < grid.size; index++)
+    {
+        grid.setNeighborIndices(index);
+        grid.matrixIndex[index] = index;
+        grid.setFieldEntryToFluid(index);
+    }
+
 
 
     switch (this->device)
     {
     case GenerationDevice::CPU:
-        this->gridWrapper.push_back(std::shared_ptr<GridWrapperCPU>(new GridWrapperCPU( , distribution)));
+        this->gridWrapper.push_back(std::shared_ptr<GridWrapperCPU>(new GridWrapperCPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
         break;
     case GenerationDevice::GPU:
-        this->gridWrapper.push_back(std::shared_ptr<GridWrapperGPU>(new GridWrapperGPU( , distribution)));
+        this->gridWrapper.push_back(std::shared_ptr<GridWrapperGPU>(new GridWrapperGPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
         break;
     }
 }
@@ -74,14 +83,12 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 {
     checkLevel(level);
 
-            Geometry* geometry = new Geometry(input, transformators[level].get());
+            //Geometry* geometry = new Geometry(input, transformators[level].get());
 
-            if (geometry->size > 0)
-                this->gridWrapper[level]->meshGrid(*geometry);
-            //this->gridKernels[level][index]->copyDataFromGPU();
-            delete geometry;
-        }
-    }
+            //if (geometry->size > 0)
+            //    this->gridWrapper[level]->meshGrid(*geometry);
+            ////this->gridKernels[level][index]->copyDataFromGPU();
+            //delete geometry;
 }
 
 void LevelGridBuilder::deleteSolidNodes()
@@ -125,7 +132,7 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
 void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
-   GridVTKWriter::writeGridToVTK(this->gridWrapper[level]->grid, output, this->transformators[level], true);
+   GridVTKWriter::writeGridToVTK(this->gridWrapper[level]->grid, output);
 }
 
 
@@ -142,25 +149,12 @@ void LevelGridBuilder::writeSimulationFiles(std::string output, BoundingBox<int>
 
 std::shared_ptr<GridWrapper> LevelGridBuilder::getGridWrapper(int level, int box)
 {
-    return this->gridWrapper[level][box];
+    return this->gridWrapper[level];
 }
 
 void LevelGridBuilder::checkLevel(int level)
 {
-    if (level >= boxes.size()) { std::cout << "wrong level input... return to caller\n"; return; }
-}
-
-
-
-void LevelGridBuilder::setNumberOfNodes(real length, real width, real high, real delta)
-{
-    int nx = (int)(length / delta);
-    int ny = (int)(width / delta);
-    int nz = (int)(high / delta);
-
-    std::vector<int> dim = { nx,ny,nz };
-    this->gridDimensions.push_back(dim);
-
+    if (level >= gridWrapper.size()) { std::cout << "wrong level input... return to caller\n"; return; }
 }
 
 
@@ -185,12 +179,12 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
 
     for (int i = 0; i < grid.reducedSize; i++)
     {
-        unsigned int x, y, z;
+        real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
 
-        xCoords[i + 1] = (real)x;
-        yCoords[i + 1] = (real)y;
-        zCoords[i + 1] = (real)z;
+        xCoords[i + 1] = x;
+        yCoords[i + 1] = y;
+        zCoords[i + 1] = z;
         neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[grid.matrixIndex[i]] + 1);
         neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[grid.matrixIndex[i]] + 1);
         neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[grid.matrixIndex[i]] + 1);
@@ -243,7 +237,7 @@ void LevelGridBuilder::createBCVectors()
     Grid grid = this->gridWrapper[0]->grid;
     for (int i = 0; i < grid.reducedSize; i++)
     {
-        unsigned int x, y, z;
+        real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
 
         if (grid.field[grid.matrixIndex[i]] == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
@@ -355,9 +349,9 @@ void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& start
 
 Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 {
-    unsigned int x, y, z;
+    real x, y, z;
     this->gridWrapper[0]->grid.transIndexToCoords(matrixIndex, x, y, z);
-    return Vertex((real)x, (real)y, (real)z);
+    return Vertex(x,y,z);
 }
 
 int LevelGridBuilder::getMatrixIndex(int i) const

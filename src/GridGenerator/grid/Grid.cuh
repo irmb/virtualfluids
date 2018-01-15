@@ -18,6 +18,10 @@ extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 struct VF_PUBLIC Grid 
 {
+    real sX = 0.0, sY = 0.0, sZ = 0.0;
+    real eX, eY, eZ;
+    real delta = 1.0;
+
 	char *field;
 	int startX, startY, startZ;
 	unsigned int nx, ny, nz;
@@ -28,6 +32,7 @@ struct VF_PUBLIC Grid
     unsigned int *matrixIndex;
     int reducedSize;
 
+    HOSTDEVICE Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution &d);
 	HOSTDEVICE Grid();
 	HOSTDEVICE Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d);
 
@@ -39,15 +44,16 @@ struct VF_PUBLIC Grid
 	HOSTDEVICE void setFieldEntryToSolid(unsigned int index);
 	HOSTDEVICE void setFieldEntry(const Vertex &v, char val);
 	HOSTDEVICE char getFieldEntry(const Vertex &v) const;
-	HOSTDEVICE int transCoordToIndex(const int &x, const int &y, const int &z) const;
+	HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const;
 	HOSTDEVICE int transCoordToIndex(const Vertex &v) const;
-	HOSTDEVICE void transIndexToCoords(const int index, unsigned int &x, unsigned int &y, unsigned int &z) const;
+	HOSTDEVICE void transIndexToCoords(const int index, real &x, real &y, real &z) const;
 	HOSTDEVICE void print() const;
 	HOSTDEVICE void setDebugPoint(const Vertex &actualPoint, const int pointValue);
 	HOSTDEVICE bool isOutOfRange(const Vertex &actualPoint) const;
 
 	/*---------------------------------------------------------------------------------*/
 	HOSTDEVICE void meshTriangle(const Triangle &actualTriangle);
+    HOSTDEVICE void meshTriangleExact(const Triangle &triangle);
 
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle);
 
@@ -55,9 +61,9 @@ struct VF_PUBLIC Grid
 
     /*---------------------------------------------------------------------------------*/
     HOSTDEVICE void setNeighborIndices(const int &index);
-	HOSTDEVICE void getNeighborCoords(unsigned int &neighborX, unsigned int &neighborY, unsigned int &neighborZ, const unsigned int x, const unsigned int y, const unsigned int z) const;
+	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const;
     HOSTDEVICE void findNeighborIndex(int index);
-    HOSTDEVICE int getNeighborIndex(const int &nodeIndex, int &nIndex, const int &x, const int &y, const int &z);
+    HOSTDEVICE int getNeighborIndex(const int &nodeIndex, int &neighborIndex, const real &expectedX, const real &expectedY, const real &expectedZ);
 
     HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
     HOSTDEVICE bool isNeighborInvalid(const int &index);

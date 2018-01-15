@@ -4,6 +4,9 @@
 #include <string>
 #include <memory>
 
+#include <GridGenerator/utilities/Transformator/TransformatorImp.h>
+
+
 #include <VirtualFluidsDefinitions.h>
 
 class Transformator;
@@ -12,8 +15,8 @@ struct Grid;
 class VF_PUBLIC GridVTKWriter
 {
 public:
-    static void writeGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer = true);
-    static void writeSparseGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer = false);
+    static void writeGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans = std::make_shared<TransformatorImp>(), bool binaer = true);
+    static void writeSparseGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans = std::make_shared<TransformatorImp>(), bool binaer = false);
 
 private:
     GridVTKWriter();
