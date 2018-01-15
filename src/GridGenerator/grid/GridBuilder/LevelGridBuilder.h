@@ -1,5 +1,5 @@
-#ifndef GridBuilderImp_H
-#define GridBuilderImp_H
+#ifndef LEVEL_GRID_BUILDER_H
+#define LEVEL_GRID_BUILDER_H
 
 #include "GridGenerator/global.h"
 
@@ -20,16 +20,16 @@ template <typename T>
 class BoundingBox;
 
 
-class GridBuilderImp : public GridBuilder
+class LevelGridBuilder : public GridBuilder
 {
 public:
 
-    VF_PUBLIC GridBuilderImp(GenerationDevice device);
+    VF_PUBLIC LevelGridBuilder(GenerationDevice device);
     VF_PUBLIC static std::shared_ptr<GridBuilder> make(std::string);
 
-    VF_PUBLIC virtual ~GridBuilderImp();
+    VF_PUBLIC virtual ~LevelGridBuilder();
 
-    VF_PUBLIC virtual void addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans);
+    VF_PUBLIC virtual void addGrid(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string distribution);
 
 	VF_PUBLIC virtual void meshGeometry(std::string input, int level);
     VF_PUBLIC virtual void deleteSolidNodes();
@@ -62,7 +62,7 @@ public:
 protected:
     GenerationDevice device;
 
-    std::vector<std::vector<std::shared_ptr<GridWrapper> > >gridKernels;
+    std::vector<std::shared_ptr<GridWrapper> > gridWrapper;
     std::vector<std::shared_ptr<Transformator>> transformators;
     std::vector<std::vector<BoundingBox<int>> > boxes;
     std::vector<int> rankTasks;

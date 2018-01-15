@@ -32,6 +32,21 @@ GridWrapperCPU::GridWrapperCPU(BoundingBox<int> &box, std::string direction)
 	*logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
 }
 
+GridWrapperCPU::GridWrapperCPU(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string d3Qxx)
+{
+    int nx = maxX - minX;
+    int ny = maxY - minY;
+    int nz = maxZ - minZ;
+    this->grid = Grid(NULL, minX, minY, minZ, nx, ny, nz, DistributionHelper::getDistribution(d3Qxx));
+    this->allocDistribution();
+    this->allocField();
+
+    float time = this->initalUniformGrid3d();
+
+    *logging::out << logging::Logger::INTERMEDIATE << "Time CPU initial field: " + SSTR(time / 1000) + "sec\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
+}
+
 GridWrapperCPU::~GridWrapperCPU() 
 {
     delete[] this->grid.field;

@@ -19,6 +19,8 @@ class VF_PUBLIC GridWrapperCPU : public GridWrapper
 public:
     GridWrapperCPU(){};
     GridWrapperCPU(BoundingBox<int> &channel, std::string d3Qxx);
+    GridWrapperCPU(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string d3Qxx);
+
 	virtual ~GridWrapperCPU();
 
     virtual void meshGrid(Geometry &geom);

@@ -13,4 +13,6 @@ typedef double real;
 typedef float  real;
 #endif
 
+typedef unsigned int uint;
+
 #endif

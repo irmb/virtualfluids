@@ -21,6 +21,10 @@ GridWrapperGPU::GridWrapperGPU(BoundingBox<int> &channel, std::string d3Qxx)
     initalField(channel, d3Qxx);
 }
 
+GridWrapperGPU::GridWrapperGPU(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string d3Qxx)
+{
+}
+
 GridWrapperGPU::~GridWrapperGPU()
 {
     delete[] this->grid.field;

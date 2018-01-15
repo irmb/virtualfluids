@@ -21,6 +21,7 @@
 #include "grid/GridWrapper/GridWrapper.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 #include "VirtualFluidsBasics/numerics/geometry3d/GbCuboid3D.h"
+#include "grid/GridBuilder/LevelGridBuilder.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -229,12 +230,9 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
 
-    SPtr<GbCuboid3D> level0(new GbCuboid3D(0.0, 0.0, 0.0, 64.0, 12.0, 96.0));
-    SPtr<GbCuboid3D> level1(new GbCuboid3D(20.0, 4.0, 40.0, 40.0, 8.0, 60.0));
-
-    SPtr<GridBuilder> builder(new GridBuilderImp(GridBuilder::CPU));
-    builder->addGrid(level0, "D3Q27");
-    builder->addGrid(level1, "D3Q27");
+    SPtr<GridBuilder> builder(new LevelGridBuilder(GridBuilder::GenerationDevice::CPU));
+    builder->addGrid(0.0, 0.0, 0.0, 64.0, 12.0, 96.0, "D3Q27");
+    builder->addGrid(20.0, 4.0, 40.0, 40.0, 8.0, 60.0, "D3Q27");
 
 
     SPtr<Parameter> para = Parameter::make();

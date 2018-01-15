@@ -1,4 +1,5 @@
-#include "GridBuilderImp.h"
+#include "ParallelGridBuilder.h"
+
 #include "mpi.h"
 
 #include <stdio.h>
@@ -26,8 +27,6 @@
 
 #include <utilities/logger/Logger.h>
 
-#include <GridGenerator/grid/GridBuilder/GridCpuBuilder/GridCpuBuilder.h>
-#include <GridGenerator/grid/GridBuilder/GridGpuBuilder/GridGpuBuilder.h>
 
 #include <utilities/StringUtil/StringUtil.h>
 
@@ -56,7 +55,7 @@ void deserialize(GeometryMemento &memento, const std::string &filename)
 #define GEOSOLID 16
 
 
-GridBuilderImp::GridBuilderImp(GenerationDevice device) : device(device)
+ParallelGridBuilder::ParallelGridBuilder(GenerationDevice device) : device(device)
 {
     this->Qs.resize(QFILES);
     this->channelBoundaryConditions.resize(6);
@@ -69,12 +68,12 @@ GridBuilderImp::GridBuilderImp(GenerationDevice device) : device(device)
 }
 
 
-GridBuilderImp::~GridBuilderImp()
+ParallelGridBuilder::~ParallelGridBuilder()
 {
 
 }
 
-void GridBuilderImp::meshGeometry(std::string input, int level)
+void ParallelGridBuilder::meshGeometry(std::string input, int level)
 {
     checkLevel(level);
 
@@ -116,45 +115,45 @@ void GridBuilderImp::meshGeometry(std::string input, int level)
     }
 }
 
-void GridBuilderImp::deleteSolidNodes()
+void ParallelGridBuilder::deleteSolidNodes()
 {
     this->gridKernels[0][0]->deleteSolidNodes();
     this->gridKernels[0][0]->copyDataFromGPU();
 }
 
-void GridBuilderImp::flood(Vertex &startFlood, int level)
+void ParallelGridBuilder::flood(Vertex &startFlood, int level)
 {
     checkLevel(level);
     this->gridKernels[level][0]->floodFill(startFlood);
 }
 
-void GridBuilderImp::createBoundaryConditions()
+void ParallelGridBuilder::createBoundaryConditions()
 {
     this->createBCVectors();
 }
 
 
-unsigned int GridBuilderImp::getNumberOfNodes(unsigned int level) const
+unsigned int ParallelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
     return (unsigned int) this->gridKernels[level][0]->grid.reducedSize;
 }
 
-std::vector<std::vector<std::vector<real> > > GridBuilderImp::getQsValues() const
+std::vector<std::vector<std::vector<real> > > ParallelGridBuilder::getQsValues() const
 {
     return this->Qs;
 }
 
-int GridBuilderImp::getBoundaryConditionSize(int rb) const
+int ParallelGridBuilder::getBoundaryConditionSize(int rb) const
 {
     return (int)Qs[rb].size();
 }
 
-std::vector<std::string> GridBuilderImp::getTypeOfBoundaryConditions() const
+std::vector<std::string> ParallelGridBuilder::getTypeOfBoundaryConditions() const
 {
     return this->channelBoundaryConditions;
 }
 
-void GridBuilderImp::writeGridToVTK(std::string output, int level)
+void ParallelGridBuilder::writeGridToVTK(std::string output, int level)
 {
     checkLevel(level);
     int rank;
@@ -174,10 +173,10 @@ void GridBuilderImp::writeGridToVTK(std::string output, int level)
 }
 
 
-void GridBuilderImp::writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level)
+void ParallelGridBuilder::writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level)
 {
     //checkLevel(level);
-    //UnstructuredGridBuilderImp builder;
+    //UnstructuredParallelGridBuilder builder;
     //builder.buildUnstructuredGrid(this->gridKernels[level]->grid, nodesDelete);
 
     //std::vector<Node> coords = builder.getCoordsVec();
@@ -185,18 +184,18 @@ void GridBuilderImp::writeSimulationFiles(std::string output, BoundingBox<int> &
     //SimulationFileWriter::writeSimulationFiles(output, coords, qs, writeFilesBinary, this->gridKernels[level]->grid, this->transformators[level]);
 }
 
-std::shared_ptr<GridWrapper> GridBuilderImp::getGridWrapper(int level, int box)
+std::shared_ptr<GridWrapper> ParallelGridBuilder::getGridWrapper(int level, int box)
 {
     return this->gridKernels[level][box];
 }
 
-void GridBuilderImp::checkLevel(int level)
+void ParallelGridBuilder::checkLevel(int level)
 {
     if (level >= boxes.size()) { std::cout << "wrong level input... return to caller\n"; return; }
 }
 
 
-void GridBuilderImp::addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans)
+void ParallelGridBuilder::addGrid(real length, real width, real high, real delta, std::string distribution, std::shared_ptr<Transformator> trans)
 {
     this->transformators.push_back(trans);
 
@@ -215,7 +214,7 @@ void GridBuilderImp::addGrid(real length, real width, real high, real delta, std
     this->createGridKernels(distribution);
 }
 
-void GridBuilderImp::createGridKernels(std::string distribution)
+void ParallelGridBuilder::createGridKernels(std::string distribution)
 {
     for (int i = 0; i < rankTasks.size(); i += 2)
     {
@@ -235,7 +234,7 @@ void GridBuilderImp::createGridKernels(std::string distribution)
 }
 
 
-void GridBuilderImp::setNumberOfNodes(real length, real width, real high, real delta)
+void ParallelGridBuilder::setNumberOfNodes(real length, real width, real high, real delta)
 {
     int nx = (int)(length / delta);
     int ny = (int)(width / delta);
@@ -247,14 +246,14 @@ void GridBuilderImp::setNumberOfNodes(real length, real width, real high, real d
     this->printMasterInformation(nx, ny, nz);
 }
 
-void GridBuilderImp::printMasterInformation(int nx, int ny, int nz)
+void ParallelGridBuilder::printMasterInformation(int nx, int ny, int nz)
 {
     *logging::out << "global field dimension : " << SSTR(nx) << ", " << SSTR(ny) << ", " << SSTR(nz) << "\n";
     *logging::out << "global field size : " << SSTR(nx * ny * nz) << "\n";
     *logging::out << "------------------------------------------- \n";
 }
 
-void GridBuilderImp::setCudaDevice(int rank)
+void ParallelGridBuilder::setCudaDevice(int rank)
 {
     int countDevices;
     cudaGetDeviceCount(&countDevices);
@@ -272,7 +271,7 @@ void GridBuilderImp::setCudaDevice(int rank)
 #endif
 }
 
-void GridBuilderImp::rebuildBoxes()
+void ParallelGridBuilder::rebuildBoxes()
 {
     int numProcess;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcess);
@@ -287,7 +286,7 @@ void GridBuilderImp::rebuildBoxes()
     }
 }
 
-void GridBuilderImp::sendTasks()
+void ParallelGridBuilder::sendTasks()
 {
     int numProcess;
     MPI_Comm_size(MPI_COMM_WORLD, &numProcess);
@@ -305,7 +304,7 @@ void GridBuilderImp::sendTasks()
     }
 }
 
-void GridBuilderImp::receiveTasks()
+void ParallelGridBuilder::receiveTasks()
 {
     int numOfBoxes;
     MPI_Status status;
@@ -321,7 +320,7 @@ void GridBuilderImp::receiveTasks()
     delete[] boxNumbers;
 }
 
-void GridBuilderImp::writeBoxes(std::string name)
+void ParallelGridBuilder::writeBoxes(std::string name)
 {
     //int rank;
     //MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -338,14 +337,14 @@ void GridBuilderImp::writeBoxes(std::string name)
 }
 
 
-void GridBuilderImp::getDimensions(int &nx, int &ny, int &nz, const int level) const
+void ParallelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level) const
 {
     nx = this->gridKernels[level][0]->grid.nx;
     ny = this->gridKernels[level][0]->grid.ny;
     nz = this->gridKernels[level][0]->grid.nz;
 }
 
-void GridBuilderImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
+void ParallelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
 {
     xCoords[0] = 0;
     yCoords[0] = 0;
@@ -372,7 +371,7 @@ void GridBuilderImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
     }
 }
 
-void GridBuilderImp::setQs(real** q27, int* k, int channelSide, unsigned int level) const
+void ParallelGridBuilder::setQs(real** q27, int* k, int channelSide, unsigned int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         k[index] = (int)Qs[channelSide][index][0];
@@ -383,7 +382,7 @@ void GridBuilderImp::setQs(real** q27, int* k, int channelSide, unsigned int lev
     }
 }
 
-void GridBuilderImp::setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const
+void ParallelGridBuilder::setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         RhoBC[index] = 0.0;
@@ -391,7 +390,7 @@ void GridBuilderImp::setOutflowValues(real* RhoBC, int* kN, int channelSide, int
     }
 }
 
-void GridBuilderImp::setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const
+void ParallelGridBuilder::setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         vx[index] = 0.0;
@@ -400,7 +399,7 @@ void GridBuilderImp::setVelocityValues(real* vx, real* vy, real* vz, int channel
     }
 }
 
-void GridBuilderImp::setPressValues(real* RhoBC, int* kN, int channelSide, int level) const
+void ParallelGridBuilder::setPressValues(real* RhoBC, int* kN, int channelSide, int level) const
 {
     for (int index = 0; index < Qs[channelSide].size(); index++) {
         RhoBC[index] = 0.0;
@@ -412,7 +411,7 @@ void GridBuilderImp::setPressValues(real* RhoBC, int* kN, int channelSide, int l
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/
 /*---------------------------------------------------------------------------------*/
-void GridBuilderImp::createBCVectors()
+void ParallelGridBuilder::createBCVectors()
 {
     Grid grid = this->gridKernels[0][0]->grid;
     for (int i = 0; i < grid.reducedSize; i++)
@@ -432,7 +431,7 @@ void GridBuilderImp::createBCVectors()
     }
 }
 
-void GridBuilderImp::addShortQsToVector(int index)
+void ParallelGridBuilder::addShortQsToVector(int index)
 {
     uint32_t qKey = 0;
     std::vector<real> qNode;
@@ -457,7 +456,7 @@ void GridBuilderImp::addShortQsToVector(int index)
     qNode.clear();
 }
 
-void GridBuilderImp::addQsToVector(int index)
+void ParallelGridBuilder::addQsToVector(int index)
 {
     std::vector<real> qNode;
     qNode.push_back((real)index);
@@ -476,7 +475,7 @@ void GridBuilderImp::addQsToVector(int index)
     qNode.clear();
 }
 
-void GridBuilderImp::fillRBForNode(int x, int y, int z, int index, int direction, int directionSign, int rb)
+void ParallelGridBuilder::fillRBForNode(int x, int y, int z, int index, int direction, int directionSign, int rb)
 {
     uint32_t qKey = 0;
     std::vector<real> qNode;
@@ -499,7 +498,7 @@ void GridBuilderImp::fillRBForNode(int x, int y, int z, int index, int direction
     qNode.clear();
 }
 
-void GridBuilderImp::writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const
+void ParallelGridBuilder::writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const
 {
     Grid grid = this->gridKernels[0][0]->grid;
     //std::shared_ptr<PolyDataWriterWrapper> writer = std::shared_ptr<PolyDataWriterWrapper>(new PolyDataWriterWrapper());
@@ -512,7 +511,7 @@ void GridBuilderImp::writeArrows(std::string fileName, std::shared_ptr<ArrowTran
     //writer->writePolyDataToFile(fileName);
 }
 
-void GridBuilderImp::writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const
+void ParallelGridBuilder::writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const
 {
     Grid grid = this->gridKernels[0][0]->grid;
     real qval = Qs[GEOMQS][i][qi + 1];
@@ -527,14 +526,14 @@ void GridBuilderImp::writeArrow(const int i, const int qi, const Vertex& startNo
     }
 }
 
-Vertex GridBuilderImp::getVertex(int matrixIndex) const
+Vertex ParallelGridBuilder::getVertex(int matrixIndex) const
 {
     unsigned int x, y, z;
     this->gridKernels[0][0]->grid.transIndexToCoords(matrixIndex, x, y, z);
     return Vertex((real)x, (real)y, (real)z);
 }
 
-int GridBuilderImp::getMatrixIndex(int i) const
+int ParallelGridBuilder::getMatrixIndex(int i) const
 {
     int index = (int)Qs[GEOMQS][i][0];
     return this->gridKernels[0][0]->grid.matrixIndex[index];

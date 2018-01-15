@@ -15,6 +15,7 @@ class VF_PUBLIC GridWrapperGPU : public GridWrapper
 public:
     GridWrapperGPU(){};
     GridWrapperGPU(BoundingBox<int> &box, std::string d3Qxx);
+    GridWrapperGPU(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string d3Qxx);
     virtual ~GridWrapperGPU();
 
     virtual void meshGrid(Geometry &geom);
