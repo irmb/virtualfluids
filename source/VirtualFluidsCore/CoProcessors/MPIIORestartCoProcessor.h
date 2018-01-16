@@ -15,6 +15,7 @@ class LBMKernel;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
+//! \author  Alena Karanchuk
 class MPIIORestartCoProcessor: public CoProcessor
 {
    //! \struct GridParam
@@ -64,7 +65,7 @@ class MPIIORestartCoProcessor: public CoProcessor
    //! \details The structure used to store some parameters needed to restore dataSet arrays
    struct dataSetParam
    {
-      int nx1;   //	to find the right block
+      int nx1;   
       int nx2;
       int nx3;
       int nx[9][4]; // 9 arrays x (nx1, nx2, nx3, nx4)
@@ -78,7 +79,7 @@ class MPIIORestartCoProcessor: public CoProcessor
 	{
       double collFactor;
       double deltaT;
-      int x1;  
+      int x1;           //	to find the right block
 		int x2;  
 		int x3;  
 		int level;

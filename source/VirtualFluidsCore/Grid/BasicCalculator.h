@@ -1,15 +1,19 @@
-#ifndef OMPCALCULATOR_H
-#define OMPCALCULATOR_H
+#ifndef BasicCalculator_h__
+#define BasicCalculator_h__
 
 #include "Calculator.h"
 
 class Block3DConnector;
 
-class OMPCalculator : public Calculator
+//! \class BasicCalculator 
+//! \brief Class implements basic functionality with MPI + OpenMP parallelization for main calculation loop  
+//! \author  Konstantin Kutscher 
+
+class BasicCalculator : public Calculator
 {
 public:
-   OMPCalculator();
-   virtual ~OMPCalculator();
+   BasicCalculator();
+   virtual ~BasicCalculator();
    virtual void calculate();
 
 protected:
@@ -28,5 +32,7 @@ protected:
 private:
 };
 
-#endif
+#endif // BasicCalculator_h__
+
+
 

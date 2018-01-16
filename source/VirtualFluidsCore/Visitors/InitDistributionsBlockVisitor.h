@@ -42,14 +42,6 @@ public:
 
 public:
    InitDistributionsBlockVisitor();
-   //D3Q27ETInitDistributionsBlockVisitor(LBMReal rho, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
-   //! Constructor
-   //! \param nu - viscosity
-   //! \param rho - density
-   //! \param vx1 - velocity in x
-   //! \param vx2 - velocity in y
-   //! \param vx3 - velocity in z
-   InitDistributionsBlockVisitor( LBMReal nu, LBMReal rho, LBMReal vx1=0.0, LBMReal vx2=0.0, LBMReal vx3=0.0);
    //////////////////////////////////////////////////////////////////////////
    //automatic vars are: x1,x2, x3
    //ussage example: setVx1("x1*0.01+x2*0.003")
@@ -68,7 +60,6 @@ public:
    void setVx2( LBMReal vx2 );
    void setVx3( LBMReal vx3 );
    void setRho( LBMReal rho );
-   void setNu( LBMReal nu );
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
@@ -80,7 +71,6 @@ private:
    mu::Parser muVx2;
    mu::Parser muVx3;
    mu::Parser muRho;
-   LBMReal nu;
 };
 
 #endif //D3Q27INITDISTRIBUTIONSPATCHVISITOR_H

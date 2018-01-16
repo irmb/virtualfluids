@@ -10,6 +10,10 @@ class Block3D;
 class Block3DConnector;
 class CoProcessor;
 
+//! \class Calculator 
+//! \brief Abstract class for main calculation loop  
+//! \author  Konstantin Kutscher 
+
 class Calculator 
 {
 public:

@@ -2,12 +2,10 @@
 #define LBMKERNEL_H
 
 #include <PointerDefinitions.h>
-
 #include "LBMSystem.h"
-
-#include <MuParser/include/muParser.h>
-
 #include "ILBMKernel.h"
+#include <array>
+#include <MuParser/include/muParser.h>
 
 class BCProcessor;
 class DataSet3D;
@@ -72,8 +70,10 @@ public:
 
     bool isInsideOfDomain(const int &x1, const int &x2, const int &x3) const;
 
-
     void swapDistributions();
+
+    void setNX(std::array<int, 3> nx);
+    std::array<int, 3> getNX();
 
 protected:
     SPtr<DataSet3D> dataSet;
@@ -96,7 +96,7 @@ protected:
 
     WPtr<Block3D> block;
 
-    int nx1, nx2, nx3;
+    std::array<int, 3> nx;
 
 private:
     void checkFunction(mu::Parser fct);

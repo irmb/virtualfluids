@@ -6,29 +6,26 @@
 
 InitDensityLBMKernel::InitDensityLBMKernel()
 {
+   this->compressible = false;
 }
 
 InitDensityLBMKernel::~InitDensityLBMKernel()
 {
 }
 
-InitDensityLBMKernel::InitDensityLBMKernel(int nx1, int nx2, int nx3)
+void InitDensityLBMKernel::initDataSet()
 {
-   this->nx1 = nx1;
-   this->nx2 = nx2;
-   this->nx3 = nx3;
-   this->compressible = false;
-}
+   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
+   dataSet->setFdistributions(d);
+   v.resize(3, nx[0]+2, nx[1]+2, nx[2]+2);
 
-void InitDensityLBMKernel::calculate()
-{
-   collideAll();
 }
 
 SPtr<LBMKernel> InitDensityLBMKernel::clone()
 {
-   SPtr<LBMKernel> kernel(new InitDensityLBMKernel(nx1, nx2, nx3));
-   dynamicPointerCast<InitDensityLBMKernel>(kernel)->init();
+   SPtr<LBMKernel> kernel(new InitDensityLBMKernel());
+   kernel->setNX(nx);
+   dynamicPointerCast<InitDensityLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -852,16 +849,10 @@ double InitDensityLBMKernel::getCalculationTime()
 //
 //}
 
-void InitDensityLBMKernel::init()
-{
-   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, -999.0));
-   dataSet->setFdistributions(d);
-   v.resize(3, nx1+2, nx2+2, nx3+2);
-
-}
 
 
-void InitDensityLBMKernel::collideAll()
+
+void InitDensityLBMKernel::calculate()
 {
    using namespace D3Q27System;
 

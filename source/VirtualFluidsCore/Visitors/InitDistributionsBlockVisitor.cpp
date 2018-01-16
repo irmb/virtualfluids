@@ -17,25 +17,6 @@ InitDistributionsBlockVisitor::InitDistributionsBlockVisitor()
    this->setRho(0.0);
 }
 //////////////////////////////////////////////////////////////////////////
-//D3Q27ETInitDistributionsBlockVisitor::D3Q27ETInitDistributionsBlockVisitor(LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3)
-//   : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
-//{
-//   this->setVx1(vx1);
-//   this->setVx2(vx2);
-//   this->setVx3(vx3);
-//   this->setRho(rho);
-//}
-//////////////////////////////////////////////////////////////////////////
-InitDistributionsBlockVisitor::InitDistributionsBlockVisitor( LBMReal nu, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3)
-   : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
-{
-   this->setVx1(vx1);
-   this->setVx2(vx2);
-   this->setVx3(vx3);
-   this->setRho(rho);
-   this->setNu(nu);
-}
-//////////////////////////////////////////////////////////////////////////
 void InitDistributionsBlockVisitor::setVx1( const mu::Parser& parser)  
 { 
    this->checkFunction(parser); 
@@ -117,8 +98,6 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
    //UbTupleDouble3 blockLengths = grid->getBlockLengths(block);
    //UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
    double dx = grid->getDeltaX(block);
-   LBMReal o  = LBMSystem::calcCollisionFactor(nu, block->getLevel());
-   
 
    //define vars for functions
    mu::value_type x1,x2,x3;
@@ -150,7 +129,9 @@ void InitDistributionsBlockVisitor::visit(const SPtr<Grid3D> grid, SPtr<Block3D>
       //UbTupleDouble3 org = grid->getBlockWorldCoordinates(block);
 
       SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
-      SPtr<EsoTwist3D> distributions = dynamicPointerCast<EsoTwist3D>(kernel->getDataSet()->getFdistributions());     
+      SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();  
+
+      LBMReal o  = kernel->getCollisionFactor();
 
       LBMReal f[D3Q27System::ENDF+1];
 
@@ -309,8 +290,6 @@ void InitDistributionsBlockVisitor::checkFunction(mu::Parser fct)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void InitDistributionsBlockVisitor::setNu( LBMReal nu )
-{
-   this->nu = nu;
-}
+
+
 

@@ -2,14 +2,6 @@
 #define IncompressibleCumulantWithSpongeLayerLBMKernel_H
 
 #include "IncompressibleCumulantLBMKernel.h"
-#include "BCProcessor.h"
-#include "D3Q27System.h"
-#include "basics/utilities/UbTiming.h"
-#include "basics/container/CbArray4D.h"
-#include "basics/container/CbArray3D.h"
-
-class IncompressibleCumulantWithSpongeLayerLBMKernel;
-typedef SPtr<IncompressibleCumulantWithSpongeLayerLBMKernel> LBMKernelETD3Q27CCLBWithSpongeLayerPtr;
 
 //! \brief   Cascaded Cumulant LBM kernel. 
 //! \details CFD solver with sponge layer that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model <br>
@@ -29,12 +21,6 @@ class IncompressibleCumulantWithSpongeLayerLBMKernel :  public IncompressibleCum
 {
 public:
    IncompressibleCumulantWithSpongeLayerLBMKernel();
-   //! Constructor
-   //! \param nx1 number of nodes in x dimension
-   //! \param nx2 number of nodes in y dimension
-   //! \param nx3 number of nodes in z dimension
-   //! \param p   set relaxation parameter: NORMAL is OxyyMxzz = 1.0 and MAGIC is OxyyMxzz = 2.0 +(-collFactor)
-   IncompressibleCumulantWithSpongeLayerLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~IncompressibleCumulantWithSpongeLayerLBMKernel(void);
    SPtr<LBMKernel> clone();
    void calculate();
@@ -45,14 +31,12 @@ public:
    //! \param vSP length of sponge layer
    void setRelaxFactorParam(int vdir, double vL1, double vdx, double vSP);
 protected:
-   void init();
+  void initDataSet();
   LBMReal OxyyMxzz;
   int direction;
   double L1;
   double dx;
   double SP;
-
-   void collideAll();  
 };
 
 #endif

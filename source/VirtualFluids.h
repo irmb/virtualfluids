@@ -129,8 +129,7 @@
 
 #include <Grid/Block3D.h>
 #include <Grid/Calculator.h>
-#include <Grid/OMPCalculator.h>
-#include <Grid/MPICalculator.h>
+#include <Grid/BasicCalculator.h>
 #include <Grid/Grid3D.h>
 #include <Grid/Grid3DSystem.h>
 
@@ -182,7 +181,7 @@
 #include <LBM/LBMKernel.h>
 #include <LBM/IncompressibleCumulantLBMKernel.h>
 #include <LBM/CompressibleCumulantLBMKernel.h>
-#include <LBM/CompressibleCumulantViscosity4thLBMKernel.h>
+#include <LBM/CompressibleCumulant4thOrderViscosityLBMKernel.h>
 #include <LBM/InitDensityLBMKernel.h>
 #include <LBM/VoidLBMKernel.h>
 #include <LBM/LBMSystem.h>

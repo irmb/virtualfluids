@@ -14,6 +14,9 @@ LBMKernel::LBMKernel() : ghostLayerWidth(1),
    this->setForcingX2(0.0);
    this->setForcingX3(0.0);
    dataSet = SPtr<DataSet3D>(new DataSet3D());
+   this->nx[0] = 0;
+   this->nx[1] = 0;
+   this->nx[2] = 0;
 }
 //////////////////////////////////////////////////////////////////////////
 LBMKernel::~LBMKernel()
@@ -206,6 +209,16 @@ void LBMKernel::setDataSet(SPtr<DataSet3D> dataSet)
 void LBMKernel::swapDistributions()
 {
    dataSet->getFdistributions()->swap();
+}
+//////////////////////////////////////////////////////////////////////////
+void LBMKernel::setNX(std::array<int, 3> nx)
+{
+   this->nx = nx;
+}
+//////////////////////////////////////////////////////////////////////////
+std::array<int, 3> LBMKernel::getNX()
+{
+   return nx;
 }
 //////////////////////////////////////////////////////////////////////////
 bool LBMKernel::isInsideOfDomain(const int& x1, const int& x2, const int& x3) const

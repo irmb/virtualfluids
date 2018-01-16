@@ -3,29 +3,14 @@
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
-//#include <omp.h>
 #include "DataSet3D.h"
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel()
 {
-   this->nx1 = 0;
-   this->nx2 = 0;
-   this->nx3 = 0;
-   this->parameter = NORMAL;
-   this->OxyyMxzz = 1.0;
    this->compressible = true;
-   this->bulkOmegaToOmega = false;
-   this->OxxPyyPzz = 1.0;
-}
-//////////////////////////////////////////////////////////////////////////
-CompressibleCumulantLBMKernel::CompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p) 
-{
-   this->nx1 = nx1;
-   this->nx2 = nx2;
-   this->nx3 = nx3;
-   this->parameter = p;
+   this->parameter = NORMAL;
    this->OxyyMxzz = 1.0;
    this->compressible = true;
    this->bulkOmegaToOmega = false;
@@ -37,16 +22,17 @@ CompressibleCumulantLBMKernel::~CompressibleCumulantLBMKernel(void)
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantLBMKernel::init()
+void CompressibleCumulantLBMKernel::initDataSet()
 {
-   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, -999.0));
+   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> CompressibleCumulantLBMKernel::clone()
 {
-   SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel(nx1, nx2, nx3, parameter));
-   dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->init();
+   SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
+   kernel->setNX(nx);
+   dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -71,22 +57,17 @@ SPtr<LBMKernel> CompressibleCumulantLBMKernel::clone()
    }
    else
    {
-       dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->OxxPyyPzz = one;
+      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->OxxPyyPzz = one;
    }
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleCumulantLBMKernel::calculate()
 {
-   timer.resetAndStart();
-   collideAll();
-   timer.stop();
-}
-//////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantLBMKernel::collideAll()
-{
    using namespace D3Q27System;
    using namespace std;
+
+   //timer.resetAndStart();
 
    //initializing of forcing stuff 
    if (withForcing)
@@ -247,10 +228,10 @@ void CompressibleCumulantLBMKernel::collideAll()
                   vy2 = vvy*vvy;
                   vz2 = vvz*vvz;
                   ////////////////////////////////////////////////////////////////////////////////////
-                  LBMReal wadjust;
-                  LBMReal qudricLimitP = 0.01f;// * 0.0001f;
-                  LBMReal qudricLimitM = 0.01f;// * 0.0001f;
-                  LBMReal qudricLimitD = 0.01f;// * 0.001f;
+                  //LBMReal wadjust;
+                  //LBMReal qudricLimitP = 0.01f;// * 0.0001f;
+                  //LBMReal qudricLimitM = 0.01f;// * 0.0001f;
+                  //LBMReal qudricLimitD = 0.01f;// * 0.001f;
                   //LBMReal s9 = minusomega;
                   //test
                   //s9 = 0.;
@@ -579,16 +560,16 @@ void CompressibleCumulantLBMKernel::collideAll()
                   //limiter-Scheise Teil 1
                   //LBMReal oxxyy,oxxzz,oxy,oxz,oyz;
                   //LBMReal smag=0.001;
-                  //oxxyy    = omega+(one-omega)*abs(mxxMyy)/(abs(mxxMyy)+smag);
-                  //oxxzz    = omega+(one-omega)*abs(mxxMzz)/(abs(mxxMzz)+smag);
-                  //oxy      = omega+(one-omega)*abs(mfbba)/(abs(mfbba)+smag);
-                  //oxz      = omega+(one-omega)*abs(mfbab)/(abs(mfbab)+smag);
-                  //oyz      = omega+(one-omega)*abs(mfabb)/(abs(mfabb)+smag);
+                  //oxxyy    = omega+(one-omega)*fabs(mxxMyy)/(fabs(mxxMyy)+smag);
+                  //oxxzz    = omega+(one-omega)*fabs(mxxMzz)/(fabs(mxxMzz)+smag);
+                  //oxy      = omega+(one-omega)*fabs(mfbba)/(fabs(mfbba)+smag);
+                  //oxz      = omega+(one-omega)*fabs(mfbab)/(fabs(mfbab)+smag);
+                  //oyz      = omega+(one-omega)*fabs(mfabb)/(fabs(mfabb)+smag);
 
                   ////////////////////////////////////////////////////////////////////////////
                   ////Teil 1b
                   //LBMReal constante = 1000.0;
-                  //LBMReal nuEddi = constante * abs(mxxPyyPzz);
+                  //LBMReal nuEddi = constante * fabs(mxxPyyPzz);
                   //LBMReal omegaLimit = one / (one / omega + three * nuEddi);
 
                   //{
@@ -665,19 +646,19 @@ void CompressibleCumulantLBMKernel::collideAll()
                   //relax
                   //////////////////////////////////////////////////////////////////////////
                   //das ist der limiter
-                  //wadjust = Oxyz+(one-Oxyz)*abs(mfbbb)/(abs(mfbbb)+qudricLimitD);
+                  //wadjust = Oxyz+(one-Oxyz)*fabs(mfbbb)/(fabs(mfbbb)+qudricLimitD);
                   //mfbbb += wadjust * (-mfbbb);
-                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxyPyzz)/(abs(mxxyPyzz)+qudricLimitP);
+                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*fabs(mxxyPyzz)/(fabs(mxxyPyzz)+qudricLimitP);
                   //mxxyPyzz += wadjust * (-mxxyPyzz);
-                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxyMyzz)/(abs(mxxyMyzz)+qudricLimitM);
+                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*fabs(mxxyMyzz)/(fabs(mxxyMyzz)+qudricLimitM);
                   //mxxyMyzz += wadjust * (-mxxyMyzz);
-                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxzPyyz)/(abs(mxxzPyyz)+qudricLimitP);
+                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*fabs(mxxzPyyz)/(fabs(mxxzPyyz)+qudricLimitP);
                   //mxxzPyyz += wadjust * (-mxxzPyyz);
-                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxzMyyz)/(abs(mxxzMyyz)+qudricLimitM);
+                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*fabs(mxxzMyyz)/(fabs(mxxzMyyz)+qudricLimitM);
                   //mxxzMyyz += wadjust * (-mxxzMyyz);
-                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxyyPxzz)/(abs(mxyyPxzz)+qudricLimitP);
+                  //wadjust = OxyyPxzz+(one-OxyyPxzz)*fabs(mxyyPxzz)/(fabs(mxyyPxzz)+qudricLimitP);
                   //mxyyPxzz += wadjust * (-mxyyPxzz);
-                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxyyMxzz)/(abs(mxyyMxzz)+qudricLimitM);
+                  //wadjust = OxyyMxzz+(one-OxyyMxzz)*fabs(mxyyMxzz)/(fabs(mxyyMxzz)+qudricLimitM);
                   //mxyyMxzz += wadjust * (-mxyyMxzz);
                   //////////////////////////////////////////////////////////////////////////
                   //ohne limiter
@@ -701,18 +682,18 @@ void CompressibleCumulantLBMKernel::collideAll()
                   //4.
                   //////////////////////////////////////////////////////////////////////////
                   //mit limiter
-               //	wadjust    = O4+(one-O4)*abs(CUMacc)/(abs(CUMacc)+qudricLimit);
+               //	wadjust    = O4+(one-O4)*fabs(CUMacc)/(fabs(CUMacc)+qudricLimit);
                   //CUMacc    += wadjust * (-CUMacc);
-               //	wadjust    = O4+(one-O4)*abs(CUMcac)/(abs(CUMcac)+qudricLimit);
+               //	wadjust    = O4+(one-O4)*fabs(CUMcac)/(fabs(CUMcac)+qudricLimit);
                   //CUMcac    += wadjust * (-CUMcac); 
-               //	wadjust    = O4+(one-O4)*abs(CUMcca)/(abs(CUMcca)+qudricLimit);
+               //	wadjust    = O4+(one-O4)*fabs(CUMcca)/(fabs(CUMcca)+qudricLimit);
                   //CUMcca    += wadjust * (-CUMcca); 
 
-               //	wadjust    = O4+(one-O4)*abs(CUMbbc)/(abs(CUMbbc)+qudricLimit);
+               //	wadjust    = O4+(one-O4)*fabs(CUMbbc)/(fabs(CUMbbc)+qudricLimit);
                   //CUMbbc    += wadjust * (-CUMbbc); 
-               //	wadjust    = O4+(one-O4)*abs(CUMbcb)/(abs(CUMbcb)+qudricLimit);
+               //	wadjust    = O4+(one-O4)*fabs(CUMbcb)/(fabs(CUMbcb)+qudricLimit);
                   //CUMbcb    += wadjust * (-CUMbcb); 
-               //	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
+               //	wadjust    = O4+(one-O4)*fabs(CUMcbb)/(fabs(CUMcbb)+qudricLimit);
                   //CUMcbb    += wadjust * (-CUMcbb); 
                   //////////////////////////////////////////////////////////////////////////
                   //ohne limiter
@@ -1044,6 +1025,8 @@ void CompressibleCumulantLBMKernel::collideAll()
       }
 
    }
+
+   //timer.stop();
 }
 //////////////////////////////////////////////////////////////////////////
 double CompressibleCumulantLBMKernel::getCalculationTime()
@@ -1055,4 +1038,9 @@ double CompressibleCumulantLBMKernel::getCalculationTime()
 void CompressibleCumulantLBMKernel::setBulkOmegaToOmega(bool value)
 {
    bulkOmegaToOmega = value;
+}
+//////////////////////////////////////////////////////////////////////////
+void CompressibleCumulantLBMKernel::setRelaxationParameter(Parameter p)
+{
+   parameter = p;
 }

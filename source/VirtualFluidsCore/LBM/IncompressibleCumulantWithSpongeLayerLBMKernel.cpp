@@ -13,21 +13,14 @@ IncompressibleCumulantWithSpongeLayerLBMKernel::IncompressibleCumulantWithSponge
 
 }
 //////////////////////////////////////////////////////////////////////////
-IncompressibleCumulantWithSpongeLayerLBMKernel::IncompressibleCumulantWithSpongeLayerLBMKernel(int nx1, int nx2, int nx3, Parameter p) 
-   : IncompressibleCumulantLBMKernel(nx1, nx2, nx3, p)
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
 IncompressibleCumulantWithSpongeLayerLBMKernel::~IncompressibleCumulantWithSpongeLayerLBMKernel(void)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantWithSpongeLayerLBMKernel::init()
+void IncompressibleCumulantWithSpongeLayerLBMKernel::initDataSet()
 {
-   //SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+ghostLayerWitdh*2, nx2+ghostLayerWitdh*2, nx3+ghostLayerWitdh*2, -999.0));
-   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, -999.0));
+   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
@@ -123,8 +116,9 @@ void IncompressibleCumulantWithSpongeLayerLBMKernel::initRelaxFactor(int vdir, d
 //////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
 {
-   SPtr<LBMKernel> kernel(new IncompressibleCumulantWithSpongeLayerLBMKernel(nx1, nx2, nx3, parameter));
-   dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->init();
+   SPtr<LBMKernel> kernel(new IncompressibleCumulantWithSpongeLayerLBMKernel());
+   kernel->setNX(nx);
+   dynamicPointerCast<IncompressibleCumulantWithSpongeLayerLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -151,14 +145,8 @@ SPtr<LBMKernel> IncompressibleCumulantWithSpongeLayerLBMKernel::clone()
 //////////////////////////////////////////////////////////////////////////
 void IncompressibleCumulantWithSpongeLayerLBMKernel::calculate()
 {
-   timer.resetAndStart();
-   collideAll();
-   timer.stop();
-}
-//////////////////////////////////////////////////////////////////////////
-void IncompressibleCumulantWithSpongeLayerLBMKernel::collideAll()
-{
    using namespace D3Q27System;
+   using namespace std;
 
    if(!withSpongeLayer)
    {

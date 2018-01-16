@@ -6,6 +6,8 @@
 #include "Block3D.h"
 #include "ILBMKernel.h"
 
+#include "CompressibleCumulant4thOrderViscosityLBMKernel.h"
+
 #include <numerics/geometry3d/GbCuboid3D.h>
 
 using namespace std;
@@ -39,8 +41,31 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
       if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3))
       {
-         SPtr<ILBMKernel> kernel = block->getKernel();
-         double oldCollFactor = kernel->getCollisionFactor();
+         LBMReal collFactor = LBMSystem::calcCollisionFactor(viscosity, block->getLevel());
+         kernel->setCollisionFactor(collFactor);
+         kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
+         kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
+         kernel->setBlock(block);
+         SPtr<LBMKernel> newKernel = kernel->clone();
+
+         SPtr<DataSet3D> dataSet = block->getKernel()->getDataSet();
+         if (!dataSet)
+         {
+            UB_THROW(UbException(UB_EXARGS, "It is not possible to change a DataSet in kernel! Old DataSet is not exist!"));
+         }
+
+         newKernel->setDataSet(dataSet);
+
+         SPtr<BCProcessor> bcProc = block->getKernel()->getBCProcessor();
+         if (!bcProc)
+         {
+            UB_THROW(UbException(UB_EXARGS, "It is not possible to change a BCProcessor in kernel! Old BCProcessor is not exist!"));
+         }
+         newKernel->setBCProcessor(bcProc);
+         block->setKernel(newKernel);
+
+         //SPtr<ILBMKernel> kernel = block->getKernel();
+         double oldCollFactor = newKernel->getCollisionFactor();
 
          int ibX1 = block->getX1();
 
@@ -50,11 +75,21 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
          int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
          double index = ibX1-val<1>(ixMin)+1;
 
-         double newCollFactor = oldCollFactor - (oldCollFactor-1.5)/ibMax*index;
+         double newCollFactor = oldCollFactor - (oldCollFactor-1.0)/ibMax*index;
 
-         kernel->setCollisionFactor(newCollFactor);
+         newKernel->setCollisionFactor(newCollFactor);
+         block->setKernel(newKernel);
       }
    }
 }
-
+//////////////////////////////////////////////////////////////////////////
+void SpongeLayerBlockVisitor::setKernel(SPtr<LBMKernel> k)
+{
+   kernel = k;
+}
+//////////////////////////////////////////////////////////////////////////
+void SpongeLayerBlockVisitor::setViscosity(LBMReal v)
+{
+   viscosity = v;
+}
 

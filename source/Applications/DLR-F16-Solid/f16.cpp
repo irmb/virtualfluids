@@ -16,7 +16,6 @@ void run(string configname)
       string          pathOut = config.getValue<string>("pathOut");
       string          pathGeo = config.getValue<string>("pathGeo");
       string          fngFileWhole = config.getValue<string>("fngFileWhole");
-      string          zigZagTape = config.getValue<string>("zigZagTape");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blockNx = config.getVector<int>("blockNx");
       vector<double>  boundingBox = config.getVector<double>("boundingBox");
@@ -146,13 +145,17 @@ void run(string configname)
       SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
       outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
 
-      BoundaryConditionsBlockVisitor bcVisitor;
+      BoundaryConditionsBlockVisitor bcVisitor; 
       bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(outflowBCAdapter);
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantViscosity4thLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantViscosity4thLBMKernel::NORMAL));
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantLBMKernel::NORMAL));
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+      //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
+      
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+
+      kernel->setNX(std::array<int,3>{{blockNx[0], blockNx[1], blockNx[2]}});
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       kernel->setBCProcessor(bcProc);
@@ -453,7 +456,7 @@ void run(string configname)
          }
 
          //initialization of distributions
-         InitDistributionsBlockVisitor initVisitor1(nuLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor1;
          initVisitor1.setVx1(fct);
          grid->accept(initVisitor1);
 
@@ -492,10 +495,14 @@ void run(string configname)
          ////sponge layer
          ////////////////////////////////////////////////////////////////////////////
 
-         //GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         //SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
-         //grid->accept(slVisitorX1max);
+         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         SPtr<LBMKernel> spKernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+         dynamicPointerCast<CompressibleCumulantLBMKernel>(spKernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
+         spKernel->setBCProcessor(bcProc);
+         slVisitorX1max.setKernel(spKernel);
+         grid->accept(slVisitorX1max);
 
          //GbCuboid3DPtr spongeLayerX1min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1+75, g_maxX2+blockLength, g_maxX3+blockLength));
          //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1min.get(), pathOut+"/geo/spongeLayerX1min", WbWriterVtkXmlASCII::getInstance());
@@ -556,7 +563,7 @@ void run(string configname)
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
       omp_set_num_threads(numOfThreads);
-      SPtr<Calculator> calculator(new OMPCalculator());
+      SPtr<Calculator> calculator(new BasicCalculator());
       calculator->setGrid(grid);
       calculator->setLastTimeStep(endTime);
       calculator->setVisScheduler(stepSch);
@@ -614,7 +621,7 @@ void test_run()
       double g_maxX2 = 5;
       double g_maxX3 = 5;
 
-      double blockNx[3] ={ 5, 5, 5 };
+      int blockNx[3] ={ 5, 5, 5 };
 
       string pathOut = "d:/temp/DLR-F16-Solid-test";
 
@@ -641,7 +648,8 @@ void test_run()
       WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
       ppblocks.process(0);
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantViscosity4thLBMKernel(blockNx[0], blockNx[1], blockNx[2], CompressibleCumulantViscosity4thLBMKernel::NORMAL));
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      kernel->setNX(std::array<int,3>{{blockNx[0], blockNx[1], blockNx[2]}});
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       kernel->setBCProcessor(bcProc);
@@ -650,7 +658,7 @@ void test_run()
       grid->accept(kernelVisitor);
 
       //initialization of distributions
-      InitDistributionsBlockVisitor initVisitor1(nuLB, rhoLB);
+      InitDistributionsBlockVisitor initVisitor1;
       initVisitor1.setVx1(0.001);
       grid->accept(initVisitor1);
 
@@ -658,7 +666,7 @@ void test_run()
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       //omp_set_num_threads(numOfThreads);
-      SPtr<Calculator> calculator(new MPICalculator());
+      SPtr<Calculator> calculator(new BasicCalculator());
       calculator->setGrid(grid);
       calculator->setLastTimeStep(2);
       calculator->setVisScheduler(stepSch);

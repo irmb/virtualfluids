@@ -18,20 +18,14 @@ public:
    enum Parameter{NORMAL, MAGIC};
 public:
    CompressibleCumulantLBMKernel();
-   //! Constructor
-   //! \param nx1 number of nodes in x dimension
-   //! \param nx2 number of nodes in y dimension
-   //! \param nx3 number of nodes in z dimension
-   //! \param p   set relaxation parameter: NORMAL is OxyyMxzz = 1.0 and MAGIC is OxyyMxzz = 2.0 +(-collFactor)
-   CompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~CompressibleCumulantLBMKernel(void);
    virtual void calculate();
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime();
    void setBulkOmegaToOmega(bool value);
+   void setRelaxationParameter(Parameter p);
 protected:
-   virtual void collideAll();  
-   virtual void init();
+   virtual void initDataSet();
    LBMReal f[D3Q27System::ENDF+1];
 
    UbTimer timer;

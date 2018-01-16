@@ -7,21 +7,23 @@ VoidLBMKernel::VoidLBMKernel()
 {
 
 }
-
-VoidLBMKernel::VoidLBMKernel(int nx1, int nx2, int nx3) : nx1(nx1), nx2(nx2), nx3(nx3)
-{
-   SPtr<DistributionArray3D> d(new VoidData3D(nx1+2, nx2+2, nx3+2, -999.0));
-   dataSet->setFdistributions(d);
-}
-
+//////////////////////////////////////////////////////////////////////////
 VoidLBMKernel::~VoidLBMKernel()
 {
 
 }
-
+//////////////////////////////////////////////////////////////////////////
+void VoidLBMKernel::initDataSet()
+{
+   SPtr<DistributionArray3D> d(new VoidData3D(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
+   dataSet->setFdistributions(d);
+}
+//////////////////////////////////////////////////////////////////////////
 SPtr<LBMKernel> VoidLBMKernel::clone()
 {
-   SPtr<LBMKernel> kernel(new VoidLBMKernel(nx1, nx2, nx3));
+   SPtr<LBMKernel> kernel(new VoidLBMKernel());
+   kernel->setNX(nx);
+   dynamicPointerCast<VoidLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -32,17 +34,12 @@ SPtr<LBMKernel> VoidLBMKernel::clone()
    kernel->setDeltaT(deltaT);
    return kernel;
 }
-
+//////////////////////////////////////////////////////////////////////////
 void VoidLBMKernel::calculate()
 {
 
 }
-
-void VoidLBMKernel::swapDistributions()
-{
-
-}
-
+//////////////////////////////////////////////////////////////////////////
 double VoidLBMKernel::getCalculationTime()
 {
    return 0.0;

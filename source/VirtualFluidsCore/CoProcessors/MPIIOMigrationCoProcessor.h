@@ -15,6 +15,7 @@ class LBMKernel;
 
 //! \class MPIWriteBlocksCoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
+//! \author  Alena Karanchuk 
 class MPIIOMigrationCoProcessor: public CoProcessor
 {
    //! \struct GridParam

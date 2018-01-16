@@ -10,9 +10,6 @@
 #include "basics/container/CbArray4D.h"
 #include "basics/container/CbArray3D.h"
 
-class IncompressibleCumulantLBMKernel;
-typedef SPtr<IncompressibleCumulantLBMKernel> LBMKernelETD3Q27CCLBPtr;
-
 //! \brief   Cascaded Cumulant LBM kernel. 
 //! \details CFD solver that use Cascaded Cumulant Lattice Boltzmann method for D3Q27 model
 //! \author  K. Kutscher, M. Geier
@@ -23,20 +20,13 @@ public:
    enum Parameter{NORMAL, MAGIC};
 public:
    IncompressibleCumulantLBMKernel();
-   //! Constructor
-   //! \param nx1 number of nodes in x dimension
-   //! \param nx2 number of nodes in y dimension
-   //! \param nx3 number of nodes in z dimension
-   //! \param p   set relaxation parameter: NORMAL is OxyyMxzz = 1.0 and MAGIC is OxyyMxzz = 2.0 +(-collFactor)
-   IncompressibleCumulantLBMKernel(int nx1, int nx2, int nx3, Parameter p);
    virtual ~IncompressibleCumulantLBMKernel(void);
    virtual void calculate();
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime();
-
+   void setRelaxationParameter(Parameter p);
 protected:
-   virtual void collideAll();  
-   virtual void init();
+   virtual void initDataSet();
    LBMReal f[D3Q27System::ENDF+1];
 
    UbTimer timer;

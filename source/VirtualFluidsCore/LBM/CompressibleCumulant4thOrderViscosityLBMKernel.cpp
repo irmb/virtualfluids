@@ -1,4 +1,4 @@
-#include "CompressibleCumulantViscosity4thLBMKernel.h"
+#include "CompressibleCumulant4thOrderViscosityLBMKernel.h"
 #include "D3Q27System.h"
 #include "InterpolationProcessor.h"
 #include "D3Q27EsoTwist3DSplittedVector.h"
@@ -9,45 +9,27 @@
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
-CompressibleCumulantViscosity4thLBMKernel::CompressibleCumulantViscosity4thLBMKernel()
+CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderViscosityLBMKernel()
 {
-   this->nx1 = 0;
-   this->nx2 = 0;
-   this->nx3 = 0;
-   this->parameter = NORMAL;
-   this->OxyyMxzz = 1.0;
    this->compressible = true;
-   this->bulkOmegaToOmega = false;
-   this->OxxPyyPzz = 1.0;
 }
 //////////////////////////////////////////////////////////////////////////
-CompressibleCumulantViscosity4thLBMKernel::CompressibleCumulantViscosity4thLBMKernel(int nx1, int nx2, int nx3, Parameter p)
-{
-   this->nx1 = nx1;
-   this->nx2 = nx2;
-   this->nx3 = nx3;
-   this->parameter = p;
-   this->OxyyMxzz = 1.0;
-   this->compressible = true;
-   this->bulkOmegaToOmega = false;
-   this->OxxPyyPzz = 1.0;
-}
-//////////////////////////////////////////////////////////////////////////
-CompressibleCumulantViscosity4thLBMKernel::~CompressibleCumulantViscosity4thLBMKernel(void)
+CompressibleCumulant4thOrderViscosityLBMKernel::~CompressibleCumulant4thOrderViscosityLBMKernel(void)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantViscosity4thLBMKernel::init()
+void CompressibleCumulant4thOrderViscosityLBMKernel::initDataSet()
 {
-   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx1+2, nx2+2, nx3+2, 0.0));
+   SPtr<DistributionArray3D> d(new D3Q27EsoTwist3DSplittedVector(nx[0]+2, nx[1]+2, nx[2]+2, -999.9));
    dataSet->setFdistributions(d);
 }
 //////////////////////////////////////////////////////////////////////////
-SPtr<LBMKernel> CompressibleCumulantViscosity4thLBMKernel::clone()
+SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
 {
-   SPtr<LBMKernel> kernel(new CompressibleCumulantViscosity4thLBMKernel(nx1, nx2, nx3, parameter));
-   dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->init();
+   SPtr<LBMKernel> kernel(new CompressibleCumulant4thOrderViscosityLBMKernel());
+   kernel->setNX(nx);
+   dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->initDataSet();
    kernel->setCollisionFactor(this->collFactor);
    kernel->setBCProcessor(bcProcessor->clone(kernel));
    kernel->setWithForcing(withForcing);
@@ -56,39 +38,26 @@ SPtr<LBMKernel> CompressibleCumulantViscosity4thLBMKernel::clone()
    kernel->setForcingX3(muForcingX3);
    kernel->setIndex(ix1, ix2, ix3);
    kernel->setDeltaT(deltaT);
-   switch (parameter)
-   {
-   case NORMAL:
-      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxyyMxzz = 1.0;
-      break;
-   case MAGIC:
-      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxyyMxzz = 2.0 +(-collFactor);
-      break;
-   }
 
    if (bulkOmegaToOmega)
    {
-      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxxPyyPzz = collFactor;
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->OxxPyyPzz = collFactor;
    }
    else
    {
-      dynamicPointerCast<CompressibleCumulantViscosity4thLBMKernel>(kernel)->OxxPyyPzz = one;
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->OxxPyyPzz = one;
    }
+
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantViscosity4thLBMKernel::calculate()
-{
-   timer.resetAndStart();
-   collideAll();
-   timer.stop();
-}
-//////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantViscosity4thLBMKernel::collideAll()
+void CompressibleCumulant4thOrderViscosityLBMKernel::calculate()
 {
    using namespace D3Q27System;
    using namespace std;
-
+   
+   //timer.resetAndStart();
+   
    //initializing of forcing stuff 
    if (withForcing)
    {
@@ -583,16 +552,16 @@ void CompressibleCumulantViscosity4thLBMKernel::collideAll()
                //limiter-Scheise Teil 1
                //LBMReal oxxyy,oxxzz,oxy,oxz,oyz;
                //LBMReal smag=0.001;
-               //oxxyy    = omega+(one-omega)*abs(mxxMyy)/(abs(mxxMyy)+smag);
-               //oxxzz    = omega+(one-omega)*abs(mxxMzz)/(abs(mxxMzz)+smag);
-               //oxy      = omega+(one-omega)*abs(mfbba)/(abs(mfbba)+smag);
-               //oxz      = omega+(one-omega)*abs(mfbab)/(abs(mfbab)+smag);
-               //oyz      = omega+(one-omega)*abs(mfabb)/(abs(mfabb)+smag);
+               //oxxyy    = omega+(one-omega)*fabs(mxxMyy)/(fabs(mxxMyy)+smag);
+               //oxxzz    = omega+(one-omega)*fabs(mxxMzz)/(fabs(mxxMzz)+smag);
+               //oxy      = omega+(one-omega)*fabs(mfbba)/(fabs(mfbba)+smag);
+               //oxz      = omega+(one-omega)*fabs(mfbab)/(fabs(mfbab)+smag);
+               //oyz      = omega+(one-omega)*fabs(mfabb)/(fabs(mfabb)+smag);
 
                ////////////////////////////////////////////////////////////////////////////
                ////Teil 1b
                //LBMReal constante = 1000.0;
-               //LBMReal nuEddi = constante * abs(mxxPyyPzz);
+               //LBMReal nuEddi = constante * fabs(mxxPyyPzz);
                //LBMReal omegaLimit = one / (one / omega + three * nuEddi);
 
                //{
@@ -675,19 +644,19 @@ void CompressibleCumulantViscosity4thLBMKernel::collideAll()
                //relax
                //////////////////////////////////////////////////////////////////////////
                //das ist der limiter
-               wadjust = Oxyz+(one-Oxyz)*abs(mfbbb)/(abs(mfbbb)+qudricLimitD);
+               wadjust = Oxyz+(one-Oxyz)*fabs(mfbbb)/(fabs(mfbbb)+qudricLimitD);
                mfbbb += wadjust * (-mfbbb);
-               wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxyPyzz)/(abs(mxxyPyzz)+qudricLimitP);
+               wadjust = OxyyPxzz+(one-OxyyPxzz)*fabs(mxxyPyzz)/(fabs(mxxyPyzz)+qudricLimitP);
                mxxyPyzz += wadjust * (-mxxyPyzz);
-               wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxyMyzz)/(abs(mxxyMyzz)+qudricLimitM);
+               wadjust = OxyyMxzz+(one-OxyyMxzz)*fabs(mxxyMyzz)/(fabs(mxxyMyzz)+qudricLimitM);
                mxxyMyzz += wadjust * (-mxxyMyzz);
-               wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxxzPyyz)/(abs(mxxzPyyz)+qudricLimitP);
+               wadjust = OxyyPxzz+(one-OxyyPxzz)*fabs(mxxzPyyz)/(fabs(mxxzPyyz)+qudricLimitP);
                mxxzPyyz += wadjust * (-mxxzPyyz);
-               wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxxzMyyz)/(abs(mxxzMyyz)+qudricLimitM);
+               wadjust = OxyyMxzz+(one-OxyyMxzz)*fabs(mxxzMyyz)/(fabs(mxxzMyyz)+qudricLimitM);
                mxxzMyyz += wadjust * (-mxxzMyyz);
-               wadjust = OxyyPxzz+(one-OxyyPxzz)*abs(mxyyPxzz)/(abs(mxyyPxzz)+qudricLimitP);
+               wadjust = OxyyPxzz+(one-OxyyPxzz)*fabs(mxyyPxzz)/(fabs(mxyyPxzz)+qudricLimitP);
                mxyyPxzz += wadjust * (-mxyyPxzz);
-               wadjust = OxyyMxzz+(one-OxyyMxzz)*abs(mxyyMxzz)/(abs(mxyyMxzz)+qudricLimitM);
+               wadjust = OxyyMxzz+(one-OxyyMxzz)*fabs(mxyyMxzz)/(fabs(mxyyMxzz)+qudricLimitM);
                mxyyMxzz += wadjust * (-mxyyMxzz);
                //////////////////////////////////////////////////////////////////////////
                //ohne limiter
@@ -711,18 +680,18 @@ void CompressibleCumulantViscosity4thLBMKernel::collideAll()
                //4.
                //////////////////////////////////////////////////////////////////////////
                //mit limiter
-            //	wadjust    = O4+(one-O4)*abs(CUMacc)/(abs(CUMacc)+qudricLimit);
+            //	wadjust    = O4+(one-O4)*fabs(CUMacc)/(fabs(CUMacc)+qudricLimit);
                //CUMacc    += wadjust * (-CUMacc);
-            //	wadjust    = O4+(one-O4)*abs(CUMcac)/(abs(CUMcac)+qudricLimit);
+            //	wadjust    = O4+(one-O4)*fabs(CUMcac)/(fabs(CUMcac)+qudricLimit);
                //CUMcac    += wadjust * (-CUMcac); 
-            //	wadjust    = O4+(one-O4)*abs(CUMcca)/(abs(CUMcca)+qudricLimit);
+            //	wadjust    = O4+(one-O4)*fabs(CUMcca)/(fabs(CUMcca)+qudricLimit);
                //CUMcca    += wadjust * (-CUMcca); 
 
-            //	wadjust    = O4+(one-O4)*abs(CUMbbc)/(abs(CUMbbc)+qudricLimit);
+            //	wadjust    = O4+(one-O4)*fabs(CUMbbc)/(fabs(CUMbbc)+qudricLimit);
                //CUMbbc    += wadjust * (-CUMbbc); 
-            //	wadjust    = O4+(one-O4)*abs(CUMbcb)/(abs(CUMbcb)+qudricLimit);
+            //	wadjust    = O4+(one-O4)*fabs(CUMbcb)/(fabs(CUMbcb)+qudricLimit);
                //CUMbcb    += wadjust * (-CUMbcb); 
-            //	wadjust    = O4+(one-O4)*abs(CUMcbb)/(abs(CUMcbb)+qudricLimit);
+            //	wadjust    = O4+(one-O4)*fabs(CUMcbb)/(fabs(CUMcbb)+qudricLimit);
                //CUMcbb    += wadjust * (-CUMcbb); 
                //////////////////////////////////////////////////////////////////////////
                //////////////////////////////////////////////////////////////////////////
@@ -1064,15 +1033,21 @@ void CompressibleCumulantViscosity4thLBMKernel::collideAll()
          }
       }
    }
+   //timer.stop();
 }
 //////////////////////////////////////////////////////////////////////////
-double CompressibleCumulantViscosity4thLBMKernel::getCalculationTime()
+double CompressibleCumulant4thOrderViscosityLBMKernel::getCalculationTime()
 {
    //return timer.getDuration();
    return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantViscosity4thLBMKernel::setBulkOmegaToOmega(bool value)
+void CompressibleCumulant4thOrderViscosityLBMKernel::setBulkOmegaToOmega(bool value)
 {
    bulkOmegaToOmega = value;
 }
+
+//void CompressibleCumulant4thOrderViscosityLBMKernel::setViscosityFlag(bool vf)
+//{
+//   viscosityFlag = vf;
+//}

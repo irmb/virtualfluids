@@ -7,14 +7,12 @@ class VoidLBMKernel : public LBMKernel
 {
 public:
    VoidLBMKernel();
-   VoidLBMKernel(int nx1, int nx2, int nx3);
    ~VoidLBMKernel();
    SPtr<LBMKernel> clone();
    void calculate();
-   void swapDistributions();
    double getCalculationTime();
+   void initDataSet();
 protected:
-private:
-   int nx1, nx2, nx3;
+
 };
 #endif // VoidLBMKernel_h__
