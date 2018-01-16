@@ -5,6 +5,7 @@
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include "GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 
 
 std::vector<Vertex> getPointsInBoundingBox(Triangle t, real delta)
@@ -207,15 +208,35 @@ TEST_F(GridStopperTest, testIfNodeIsStopper_IfMinusXZisFluid_ItShouldBeAStopperN
 
 TEST(GridTest, transRealCoordsToIndex)
 {
-    Grid grid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 0.5, Distribution());
+    SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
+
+    SPtr<Grid> grid = Grid::getNewInstance(0, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
+
 
     Vertex v(1.5, 0.0, 0.0);
 
-    unsigned int index = grid.transCoordToIndex(v);
+    unsigned int index = grid->transCoordToIndex(v);
 
     EXPECT_THAT(index, testing::Eq(3));
 
     real x, y, z;
-    grid.transIndexToCoords(index, x,y,z );
+    grid->transIndexToCoords(index, x,y,z );
+
+}
+
+TEST(GridTest, transNegativeCoordToIndex)
+{
+    SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
+
+    SPtr<Grid> grid = Grid::getNewInstance(-1, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
+
+    Vertex v(0.0, 0.0, 0.0);
+
+    unsigned int index = grid->transCoordToIndex(v);
+
+    EXPECT_THAT(index, testing::Eq(2));
+
+    real x, y, z;
+    grid->transIndexToCoords(index, x, y, z);
 
 }

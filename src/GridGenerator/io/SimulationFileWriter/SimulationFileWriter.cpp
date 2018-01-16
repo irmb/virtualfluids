@@ -13,7 +13,6 @@
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
-#include <GridGenerator/grid/GridWrapper/GridWrapper.h>
 
 
 /*#################################################################################*/
@@ -121,7 +120,7 @@ void SimulationFileWriter::writeLevelAndLevelSize(int sizeCoords, std::vector<st
 
 void SimulationFileWriter::writeCoordsNeighborsGeo(const int& i, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
 {
-    Grid grid = builder->getGridWrapper(0, 0)->grid;
+    Grid grid = *builder->getGrid(0, 0).get();
     int index = grid.matrixIndex[i];
 
     int type = grid.field[index] == SOLID ? 16 : 1;

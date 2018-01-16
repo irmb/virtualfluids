@@ -4,20 +4,19 @@
 #include "GridGenerator/global.h"
 
 
-#include <stdio.h>
-#include <sstream>
-#include "cuda.h"
-#include "cuda_runtime.h"
-
 #include <GridGenerator/grid/distributions/Distribution.h>
 
+struct Geometry;
 struct Vertex;
 struct Triangle;
+class GridStrategy;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-struct VF_PUBLIC Grid 
+struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 {
+    SPtr<GridStrategy> gridStrategy;
+
     real sX = 0.0, sY = 0.0, sZ = 0.0;
     real eX, eY, eZ;
     real delta = 1.0;
@@ -32,9 +31,13 @@ struct VF_PUBLIC Grid
     unsigned int *matrixIndex;
     int reducedSize;
 
-    HOSTDEVICE Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution &d);
-	HOSTDEVICE Grid();
-	HOSTDEVICE Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d);
+    HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution &d);
+    HOST Grid();
+    HOST Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d);
+    static HOST SPtr<Grid> getNewInstance(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d);
+
+    HOST void mesh(Geometry &geometry);
+    HOST void freeMemory();
 
 	HOSTDEVICE bool isFluid(int index) const;
 	HOSTDEVICE bool isSolid(int index) const;

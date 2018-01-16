@@ -2,6 +2,8 @@
 
 #include "GridGenerator/global.h"
 #include <stdio.h>
+#include <time.h>
+
 #include <sstream>
 #include <algorithm>
 
@@ -14,9 +16,14 @@
 #include <GridGenerator/grid/NodeValues.h>
 #include <GridGenerator/grid/distributions/Distribution.h>
 
+#include <GridGenerator/grid/GridStrategy/GridStrategy.h>
+#include <utilities/logger/Logger.h>
+
+
 __constant__ int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-HOSTDEVICE Grid::Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, Distribution &d) : sX(startX), sY(startY), sZ(startZ), eX(endX), eY(endY), eZ(endZ), delta(delta), d(d)
+HOST Grid::Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d) 
+: sX(startX), sY(startY), sZ(startZ), eX(endX), eY(endY), eZ(endZ), delta(delta), gridStrategy(gridStrategy), d(d)
 {
     real length = endX - startX;
     real width = endY - startY;
@@ -28,24 +35,56 @@ HOSTDEVICE Grid::Grid(real startX, real startY, real startZ, real endX, real end
 
     this->size = nx * ny * nz;
     this->reducedSize = size;
-
-    const unsigned long distributionSize = size * (d.dir_end + 1);
-    this->d.f = new real[distributionSize](); // automatic initialized with zeros
-    this->field = new char[this->size];
-
-    this->neighborIndexX = new int[this->size];
-    this->neighborIndexY = new int[this->size];
-    this->neighborIndexZ = new int[this->size];
-
-    this->matrixIndex = new uint[this->size];
 }
 
-HOSTDEVICE Grid::Grid(){};
-HOSTDEVICE Grid::Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d)
-    : field(field), startX(startX), startY(startY), startZ(startZ), nx(nx), ny(ny), nz(nz), d(d)
+HOST SPtr<Grid> Grid::getNewInstance(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d)
 {
-    this->size = nx * ny * nz;
+    SPtr<Grid> grid(new Grid(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
+
+    gridStrategy->allocateGridMemory(grid);
+
+    *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
+    *logging::out << logging::Logger::LOW << "Initial field with fluid. \n";
+    *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
+
+    time_t begin = clock();
+
+    gridStrategy->initalNodes(grid);
+
+    time_t end = clock();
+    real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
+    *logging::out << logging::Logger::INTERMEDIATE << "Time initial field: " + SSTR(time / 1000) + "sec\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
+
+    return grid;
+}
+
+HOST Grid::Grid(){};
+HOST Grid::Grid(char *field, int startX, int startY, int startZ, int eX, int eY, int eZ, Distribution &d)
+    : field(field), sX(startX), sY(startY), sZ(startZ), eX(eX), eY(eY), eZ(eZ), d(d)
+{
+    nx = eX;
+    ny = eY;
+    nz = eZ;
+    this->size = eX * eY * eZ;
     this->reducedSize = size;
+}
+
+HOST void Grid::mesh(Geometry &geometry)
+{
+    clock_t begin = clock();
+
+    gridStrategy->mesh(shared_from_this(), geometry);
+
+    clock_t end = clock();
+    float time = (real)(real(end - begin) / CLOCKS_PER_SEC);
+
+    *logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " + SSTR(time) + "s\n";
+}
+
+HOST void Grid::freeMemory()
+{
+    gridStrategy->freeMemory(shared_from_this());
 }
 
 HOSTDEVICE bool Grid::isFluid(int index) const
@@ -95,10 +134,10 @@ HOSTDEVICE int Grid::transCoordToIndex(const real &x, const real &y, const real 
 
 HOSTDEVICE int Grid::transCoordToIndex(const Vertex &v) const
 {
-//#ifdef DEBUG
-//	if (isOutOfRange(v))
-//	{ printf("Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");/* exit(1);*/ };
-//#endif
+#ifdef DEBUG
+	if (isOutOfRange(v))
+	{ printf("Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");/* exit(1);*/ };
+#endif
     int x = (int)((v.x - sX) / delta);
     int y = (int)((v.y - sY) / delta);
     int z = (int)((v.z - sZ) / delta);
@@ -108,19 +147,19 @@ HOSTDEVICE int Grid::transCoordToIndex(const Vertex &v) const
 
 HOSTDEVICE void Grid::transIndexToCoords(const int index, real &x, real &y, real &z) const
 {
-//#ifdef DEBUG
-//	if (index < 0 || index >= (int)size)
-//	{
-//        printf("Function: transIndexToCoords. Grid Index: %d, size: %d. Exit Program!\n", index, size); /*exit(1);*/ 
-//    };
-//#endif
+#ifdef DEBUG
+	if (index < 0 || index >= (int)size)
+	{
+        printf("Function: transIndexToCoords. Grid Index: %d, size: %d. Exit Program!\n", index, size); /*exit(1);*/ 
+    };
+#endif
     x = index % nx;
     y = (index / nx) % ny;
     z = ((index / nx) / ny) % nz;
 
-    x = (x + sX) * delta;
-    y = (y + sY) * delta;
-    z = (z + sZ) * delta;
+    x = (x * delta) + sX;
+    y = (y * delta) + sY;
+    z = (z * delta) + sZ;
 }
 
 char* Grid::toString(const char* name) const
@@ -130,10 +169,9 @@ char* Grid::toString(const char* name) const
     return strdup(ss.str().c_str());
 }
 
-
 HOSTDEVICE void Grid::print() const
 {
-    printf("Dimension: (%d, %d, %d), size: %d, offset: (%d, %d, %d)\n", nx, ny, nz, size, startX, startY, startZ);
+    printf("min: (%d, %d, %d), max: (%d, %d, %d), size: %d, delta: %d\n", sX, sY, sZ, eX, eY, eZ, size, delta);
 }
 
 HOSTDEVICE void Grid::setDebugPoint(const Vertex &point, const int pointValue)
@@ -147,12 +185,8 @@ HOSTDEVICE void Grid::setDebugPoint(const Vertex &point, const int pointValue)
 
 HOSTDEVICE bool Grid::isOutOfRange(const Vertex &v) const
 {
-	int gridX = (int)v.x - startX;
-	int gridY = (int)v.y - startY;
-	int gridZ = (int)v.z - startZ;
-	return (gridX < 0 || gridY < 0 || gridZ < 0 || gridX >= (int)nx || gridY >= (int)ny || gridZ >= (int)nz);
+	return v.x < sX || v.y < sY || v.z < sZ || v.x > eX || v.y > eY || v.z > eZ;
 }
-
 
 HOSTDEVICE void Grid::meshTriangleExact(const Triangle &triangle)
 {
@@ -162,13 +196,13 @@ HOSTDEVICE void Grid::meshTriangleExact(const Triangle &triangle)
         for (real y = box.minY; y <= box.maxY; y += delta) {
             for (real z = box.minZ; z <= box.maxZ; z += delta) {
                 Vertex point(x, y, z);
-                //if (isOutOfRange(point))
-                //    continue;
+                if (isOutOfRange(point))
+                    continue;
                 const int value = triangle.isUnderFace(point);
                 setDebugPoint(point, value);
 
-                //if (value == Q)
-                //    calculateQs(point, triangle);
+                if (value == Q)
+                    calculateQs(point, triangle);
             }
         }
     }
@@ -199,22 +233,22 @@ HOSTDEVICE void Grid::meshTriangle(const Triangle &triangle)
 
 HOSTDEVICE void Grid::calculateQs(const Vertex &point, const Triangle &triangle)
 {
-	Vertex pointOnTriangle, dir;
+	Vertex pointOnTriangle, direction;
 	//VertexInteger solid_node;
-	real qVal;
-	int err;
+	real subdistance;
+	int error;
 	for (int i = d.dir_start; i <= d.dir_end; i++) {
 	#if defined(__CUDA_ARCH__)
-		dir = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
+        direction = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
 	#else
-		dir = Vertex((real)d.dirs[i * DIMENSION + 0], (real)d.dirs[i * DIMENSION + 1], (real)d.dirs[i * DIMENSION + 2]);
+        direction = Vertex((real)d.dirs[i * DIMENSION + 0], (real)d.dirs[i * DIMENSION + 1], (real)d.dirs[i * DIMENSION + 2]);
 	#endif
 
-		err = triangle.getTriangleIntersection(point, dir, pointOnTriangle, qVal);
+        error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
-		if (err != 0 && qVal <= 1.0f) {
-			//solid_node = VertexInteger(actualPoint.x + dir.x, actualPoint.y + dir.y, actualPoint.z + dir.z);
-			d.f[i*size + transCoordToIndex(point)] = qVal;
+		if (error != 0 && subdistance <= 1.0f) {
+			//solid_node = VertexInteger(actualPoint.x + direction.x, actualPoint.y + direction.y, actualPoint.z + direction.z);
+			d.f[i*size + transCoordToIndex(point)] = subdistance;
 			//printf("Q%d %d: %2.8f \n", i, grid.transCoordToIndex(actualPoint), grid.d.f[index]);
 		}
 	}
@@ -277,7 +311,8 @@ HOSTDEVICE int Grid::getNeighborIndex(const int &nodeIndex, int &neighborIndex, 
         neighborIndex--;
         //printf("here\n");
     }
-    if (neighborIndex >= 0) {
+    if (neighborIndex >= 0)
+    {
         real neighborX, neighborY, neighborZ;
         this->transIndexToCoords(this->matrixIndex[neighborIndex], neighborX, neighborY, neighborZ);
         while (!(neighborX == expectedX && neighborY == expectedY && neighborZ == expectedZ)) {
@@ -292,9 +327,7 @@ HOSTDEVICE int Grid::getNeighborIndex(const int &nodeIndex, int &neighborIndex, 
         }
         return neighborIndex;
     }
-    else {
-        return -1;
-    }
+    return -1;
 }
 
 
@@ -324,11 +357,10 @@ HOST void Grid::removeInvalidNodes()
 
 HOSTDEVICE void Grid::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const
 {
-	neighborX = x + delta < nx ? x + delta : startX;
-	neighborY = y + delta < ny ? y + delta : startY;
-	neighborZ = z + delta < nz ? z + delta : startZ;
+	neighborX = x + delta < sX ? x + delta : sX;
+    neighborY = y + delta < sY ? y + delta : sY;
+    neighborZ = z + delta < sZ ? z + delta : sZ;
 }
-
 
 HOSTDEVICE bool Grid::isStopper(int index) const
 {

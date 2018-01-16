@@ -11,7 +11,7 @@
 #include "GridBuilder.h"
 
 struct Vertex;
-class GridWrapper;
+struct Grid;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
@@ -39,7 +39,7 @@ public:
 	VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
 	VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
 
-	VF_PUBLIC virtual std::shared_ptr<GridWrapper> getGridWrapper(int level, int box);
+	VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
     VF_PUBLIC virtual void createBoundaryConditions();
 
@@ -62,7 +62,7 @@ public:
 protected:
     GenerationDevice device;
 
-    std::vector<std::shared_ptr<GridWrapper> > gridWrapper;
+    std::vector<std::shared_ptr<Grid> > grids;
 
 
     std::vector<std::vector<std::vector<real> > > Qs;

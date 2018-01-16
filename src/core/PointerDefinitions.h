@@ -20,4 +20,7 @@ using UPtr = std::unique_ptr<T>;
 template <class T>
 using RPtr = T*;
 
+template <class T>
+using enableSharedFromThis = std::enable_shared_from_this<T>;
+
 #endif

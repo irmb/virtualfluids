@@ -18,7 +18,8 @@
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "utilities/transformator/TransformatorImp.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
-#include "grid/GridWrapper/GridWrapper.h"
+#include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
+#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridBuilder/ParallelGridBuilder.h"
@@ -229,26 +230,17 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    Grid grid(35, 3, -5, 70, 40, 25, 0.5, Distribution());
+    SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
 
-    for (unsigned int index = 0; index < grid.size; index++)
-    {
-        grid.setNeighborIndices(index);
-        grid.matrixIndex[index] = index;
-        grid.setFieldEntryToFluid(index);
-    }
-
-    //grid.field[grid.transCoordToIndex(30, 10, 20)] = 11;
-    //real x, y, z;
-    //grid.transIndexToCoords(grid.transCoordToIndex(30, 10, 20), x, y, z);
-
-    Geometry* geometry = new Geometry("D:/GRIDGENERATION/STL/circleBinaer.stl");
-    for (int i = 0; i < geometry->size; i++)
-        grid.meshTriangleExact(geometry->triangles[i]);
-    delete geometry;
+    SPtr<Grid> grid = Grid::getNewInstance(35, 3, -5, 70, 40, 25, 0.25, gridStrategy, DistributionHelper::getDistribution27());
 
 
-    GridVTKWriter::writeGridToVTK(grid, "D:/GRIDGENERATION/gridTest");
+    Geometry geometry = Geometry("D:/GRIDGENERATION/STL/circleBinaer.stl");
+    grid->mesh(geometry);
+
+    GridVTKWriter::writeGridToVTK(*grid.get(), "D:/GRIDGENERATION/gridTest");
+
+    grid->freeMemory();
 
     //SPtr<Parameter> para = Parameter::make();
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
@@ -269,7 +261,7 @@ void multipleLevel(const std::string& configPath)
 
 void simulate(const std::string& configPath)
 {
-    SPtr<ParallelGridBuilder> builder(new ParallelGridBuilder(GridBuilder::GenerationDevice::CPU));
+    SPtr<LevelGridBuilder> builder(new LevelGridBuilder(GridBuilder::GenerationDevice::CPU));
 
 
     SPtr<Parameter> para = Parameter::make();
@@ -286,15 +278,15 @@ void simulate(const std::string& configPath)
     setParameters(para, input);
 
     SPtr<Transformator> trans(new TransformatorImp());
-    builder->addGrid(para->getGridX()[0], para->getGridY()[0], para->getGridZ()[0], 1.0, "D3Q27", trans);
+    //builder->addGrid(para->getGridX()[0], para->getGridY()[0], para->getGridZ()[0], 1.0, "D3Q27", trans);
 
     SPtr<Transformator> transRefine1(new TransformatorImp(para->getDistX()[1], para->getDistY()[1], para->getDistZ()[1], 0.5));
-    builder->addGrid(para->getGridX()[1], para->getGridY()[1], para->getGridZ()[1], 1.0, "D3Q27", transRefine1);
+    //builder->addGrid(para->getGridX()[1], para->getGridY()[1], para->getGridZ()[1], 1.0, "D3Q27", transRefine1);
 
-    builder->getGridWrapper(0, 0)->copyDataFromGPU();
-    builder->getGridWrapper(1, 0)->copyDataFromGPU();
+    //builder->getGridWrapper(0, 0)->copyDataFromGPU();
+    //builder->getGridWrapper(1, 0)->copyDataFromGPU();
 
-    GridVTKWriter::writeSparseGridToVTK(builder->getGridWrapper(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
+    //GridVTKWriter::writeSparseGridToVTK(builder->getGridWrapper(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
     SimulationFileWriter::writeSimulationFiles("D:/GRIDGENERATION/couplingVF/periodicTaylor/simuFiles/", builder, false, trans);
 
     Simulation sim;

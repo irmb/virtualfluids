@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <GridGenerator/grid/Grid.cuh>
-#include <GridGenerator/grid/GridWrapper/GridWrapperCPU/GridWrapperCPU.h>
-#include <GridGenerator/grid/GridWrapper/GridWrapperGPU/GridWrapperGPU.h>
+#include <GridGenerator/grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h>
+#include <GridGenerator/grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h>
 #include <GridGenerator/grid/partition/Partition.h>
 
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
@@ -53,28 +53,28 @@ LevelGridBuilder::~LevelGridBuilder()
 
 void LevelGridBuilder::addGrid(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string distribution)
 {
-    uint level = gridWrapper.size();
+    uint level = grids.size();
 
-    Grid grid(3, 3, 3, 12, 12, 12, 0.5, Distribution());
+    //Grid grid(3, 3, 3, 12, 12, 12, 0.5, Distribution());
 
-    for (unsigned int index = 0; index < grid.size; index++)
-    {
-        grid.setNeighborIndices(index);
-        grid.matrixIndex[index] = index;
-        grid.setFieldEntryToFluid(index);
-    }
+    //for (unsigned int index = 0; index < grid.size; index++)
+    //{
+    //    grid.setNeighborIndices(index);
+    //    grid.matrixIndex[index] = index;
+    //    grid.setFieldEntryToFluid(index);
+    //}
 
 
 
-    switch (this->device)
-    {
-    case GenerationDevice::CPU:
-        this->gridWrapper.push_back(std::shared_ptr<GridWrapperCPU>(new GridWrapperCPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
-        break;
-    case GenerationDevice::GPU:
-        this->gridWrapper.push_back(std::shared_ptr<GridWrapperGPU>(new GridWrapperGPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
-        break;
-    }
+    //switch (this->device)
+    //{
+    //case GenerationDevice::CPU:
+    //    this->gridWrapper.push_back(std::shared_ptr<GridWrapperCPU>(new GridWrapperCPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
+    //    break;
+    //case GenerationDevice::GPU:
+    //    this->gridWrapper.push_back(std::shared_ptr<GridWrapperGPU>(new GridWrapperGPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
+    //    break;
+    //}
 }
 
 
@@ -93,14 +93,14 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 
 void LevelGridBuilder::deleteSolidNodes()
 {
-    this->gridWrapper[0]->deleteSolidNodes();
-    this->gridWrapper[0]->copyDataFromGPU();
+    //this->gridWrapper[0]->deleteSolidNodes();
+    //this->gridWrapper[0]->copyDataFromGPU();
 }
 
 void LevelGridBuilder::flood(Vertex &startFlood, int level)
 {
     checkLevel(level);
-    this->gridWrapper[level]->floodFill(startFlood);
+    //this->gridWrapper[level]->floodFill(startFlood);
 }
 
 void LevelGridBuilder::createBoundaryConditions()
@@ -111,7 +111,7 @@ void LevelGridBuilder::createBoundaryConditions()
 
 unsigned int LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
-    return (unsigned int) this->gridWrapper[level]->grid.reducedSize;
+    return (unsigned int) grids[level]->reducedSize;
 }
 
 std::vector<std::vector<std::vector<real> > > LevelGridBuilder::getQsValues() const
@@ -132,7 +132,7 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
 void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
-   GridVTKWriter::writeGridToVTK(this->gridWrapper[level]->grid, output);
+   GridVTKWriter::writeGridToVTK(*grids[level].get(), output);
 }
 
 
@@ -147,22 +147,22 @@ void LevelGridBuilder::writeSimulationFiles(std::string output, BoundingBox<int>
     //SimulationFileWriter::writeSimulationFiles(output, coords, qs, writeFilesBinary, this->gridKernels[level]->grid, this->transformators[level]);
 }
 
-std::shared_ptr<GridWrapper> LevelGridBuilder::getGridWrapper(int level, int box)
+std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
-    return this->gridWrapper[level];
+    return this->grids[level];
 }
 
 void LevelGridBuilder::checkLevel(int level)
 {
-    if (level >= gridWrapper.size()) { std::cout << "wrong level input... return to caller\n"; return; }
+    if (level >= grids.size()) { std::cout << "wrong level input... return to caller\n"; return; }
 }
 
 
 void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level) const
 {
-    nx = this->gridWrapper[level]->grid.nx;
-    ny = this->gridWrapper[level]->grid.ny;
-    nz = this->gridWrapper[level]->grid.nz;
+    nx = grids[level]->nx;
+    ny = grids[level]->ny;
+    nz = grids[level]->nz;
 }
 
 void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
@@ -175,7 +175,7 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
     neighborZ[0] = 0;
     geo[0] = GEOSOLID;
 
-    Grid grid = this->gridWrapper[level]->grid;
+    Grid grid = *grids[level].get();
 
     for (int i = 0; i < grid.reducedSize; i++)
     {
@@ -234,7 +234,7 @@ void LevelGridBuilder::setPressValues(real* RhoBC, int* kN, int channelSide, int
 /*---------------------------------------------------------------------------------*/
 void LevelGridBuilder::createBCVectors()
 {
-    Grid grid = this->gridWrapper[0]->grid;
+    Grid grid = *grids[0].get();
     for (int i = 0; i < grid.reducedSize; i++)
     {
         real x, y, z;
@@ -257,7 +257,8 @@ void LevelGridBuilder::addShortQsToVector(int index)
     uint32_t qKey = 0;
     std::vector<real> qNode;
 
-    Grid grid = this->gridWrapper[0]->grid;
+    Grid grid = *grids[0].get();
+
     for (int i = grid.d.dir_end; i >= 0; i--)
     {
         int qIndex = i * grid.size + grid.matrixIndex[index];
@@ -282,7 +283,8 @@ void LevelGridBuilder::addQsToVector(int index)
     std::vector<real> qNode;
     qNode.push_back((real)index);
 
-    Grid grid = this->gridWrapper[0]->grid;
+    Grid grid = *grids[0].get();
+
     for (int i = grid.d.dir_end; i >= 0; i--)
     {
         int qIndex = i * grid.size + grid.matrixIndex[index];
@@ -301,7 +303,8 @@ void LevelGridBuilder::fillRBForNode(int x, int y, int z, int index, int directi
     uint32_t qKey = 0;
     std::vector<real> qNode;
 
-    Grid grid = this->gridWrapper[0]->grid;
+    Grid grid = *grids[0].get();
+
     for (int i = grid.d.dir_end; i >= 0; i--)
     {
         if (grid.d.dirs[i * DIMENSION + direction] != directionSign)
@@ -321,7 +324,8 @@ void LevelGridBuilder::fillRBForNode(int x, int y, int z, int index, int directi
 
 void LevelGridBuilder::writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const
 {
-    Grid grid = this->gridWrapper[0]->grid;
+    Grid grid = *grids[0].get();
+
     //std::shared_ptr<PolyDataWriterWrapper> writer = std::shared_ptr<PolyDataWriterWrapper>(new PolyDataWriterWrapper());
     for (int index = 0; index < Qs[GEOMQS].size(); index++)
     {
@@ -334,7 +338,8 @@ void LevelGridBuilder::writeArrows(std::string fileName, std::shared_ptr<ArrowTr
 
 void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const
 {
-    Grid grid = this->gridWrapper[0]->grid;
+    Grid grid = *grids[0].get();
+
     real qval = Qs[GEOMQS][i][qi + 1];
     if (qval > 0.0f)
     {
@@ -350,13 +355,13 @@ void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& start
 Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 {
     real x, y, z;
-    this->gridWrapper[0]->grid.transIndexToCoords(matrixIndex, x, y, z);
+    this->grids[0]->transIndexToCoords(matrixIndex, x, y, z);
     return Vertex(x,y,z);
 }
 
 int LevelGridBuilder::getMatrixIndex(int i) const
 {
     int index = (int)Qs[GEOMQS][i][0];
-    return this->gridWrapper[0]->grid.matrixIndex[index];
+    return this->grids[0]->matrixIndex[index];
 }
 

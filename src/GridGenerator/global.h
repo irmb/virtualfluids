@@ -29,5 +29,6 @@
 
 #include <GridGenerator/utilities/cuda/cudaDefines.h>
 #include "VirtualFluidsDefinitions.h"
+#include "core/PointerDefinitions.h"
 
 #endif // !global_h
