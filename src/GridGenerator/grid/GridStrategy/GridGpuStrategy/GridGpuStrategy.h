@@ -24,7 +24,6 @@ public:
 
     void deleteSolidNodes(SPtr<Grid> grid) override;
 
-
     virtual void copyDataFromGPU(SPtr<Grid> grid);
 
 	//void markNodesToDeleteOutsideOfGeometry();
@@ -48,6 +47,7 @@ private:
 
     void copyAndFreeNeighborsToCPU(SPtr<Grid> grid);
     void copyAndFreeMatrixIndicesFromGPU(SPtr<Grid> grid, int size);
+
 };
 
 #endif

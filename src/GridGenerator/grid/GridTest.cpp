@@ -210,7 +210,7 @@ TEST(GridTest, transRealCoordsToIndex)
 {
     SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
 
-    SPtr<Grid> grid = Grid::getNewInstance(0, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
+    SPtr<Grid> grid = Grid::makeShared(0, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
 
 
     Vertex v(1.5, 0.0, 0.0);
@@ -228,7 +228,7 @@ TEST(GridTest, transNegativeCoordToIndex)
 {
     SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
 
-    SPtr<Grid> grid = Grid::getNewInstance(-1, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
+    SPtr<Grid> grid = Grid::makeShared(-1, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
 
     Vertex v(0.0, 0.0, 0.0);
 

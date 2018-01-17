@@ -29,6 +29,8 @@
 
 #include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
 
+#include <GridGenerator/grid/GridFactory.h>
+
 
 #define GEOFLUID 19
 #define GEOSOLID 16
@@ -51,30 +53,13 @@ LevelGridBuilder::~LevelGridBuilder()
 
 }
 
-void LevelGridBuilder::addGrid(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string distribution)
+void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution)
 {
     uint level = grids.size();
 
-    //Grid grid(3, 3, 3, 12, 12, 12, 0.5, Distribution());
-
-    //for (unsigned int index = 0; index < grid.size; index++)
-    //{
-    //    grid.setNeighborIndices(index);
-    //    grid.matrixIndex[index] = index;
-    //    grid.setFieldEntryToFluid(index);
-    //}
+    grids.push_back(GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution));
 
 
-
-    //switch (this->device)
-    //{
-    //case GenerationDevice::CPU:
-    //    this->gridWrapper.push_back(std::shared_ptr<GridWrapperCPU>(new GridWrapperCPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
-    //    break;
-    //case GenerationDevice::GPU:
-    //    this->gridWrapper.push_back(std::shared_ptr<GridWrapperGPU>(new GridWrapperGPU(minX, minY, minZ, maxX, maxY, maxZ, distribution)));
-    //    break;
-    //}
 }
 
 
@@ -83,12 +68,11 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 {
     checkLevel(level);
 
-            //Geometry* geometry = new Geometry(input, transformators[level].get());
+    Geometry geometry(input);
 
-            //if (geometry->size > 0)
-            //    this->gridWrapper[level]->meshGrid(*geometry);
-            ////this->gridKernels[level][index]->copyDataFromGPU();
-            //delete geometry;
+    if (geometry.size > 0)
+        this->grids[level]->mesh(geometry);
+
 }
 
 void LevelGridBuilder::deleteSolidNodes()

@@ -42,6 +42,8 @@ void GridGpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
     *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
 
     freeTrianglesFromGPU(geom);
+
+    copyDataFromGPU(grid);
 }
 
 void GridGpuStrategy::deleteSolidNodes(SPtr<Grid> grid)

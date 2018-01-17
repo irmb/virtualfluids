@@ -18,12 +18,13 @@
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "utilities/transformator/TransformatorImp.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
-#include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
-#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
+
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridBuilder/ParallelGridBuilder.h"
 #include "geometries/Geometry/Geometry.cuh"
+
+#include "grid/GridFactory.h"
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -230,10 +231,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
-
-    SPtr<Grid> grid = Grid::getNewInstance(35, 3, -5, 70, 40, 25, 0.25, gridStrategy, DistributionHelper::getDistribution27());
-
+    SPtr<Grid> grid = GridFactory::makeGrid(35.25, 3.25, -5.25, 70, 40, 25, 0.25, "gpu", "D3Q27");
 
     Geometry geometry = Geometry("D:/GRIDGENERATION/STL/circleBinaer.stl");
     grid->mesh(geometry);

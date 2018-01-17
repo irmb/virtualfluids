@@ -29,7 +29,7 @@ public:
 
     VF_PUBLIC virtual ~LevelGridBuilder();
 
-    VF_PUBLIC virtual void addGrid(uint minX, uint minY, uint minZ, uint maxX, uint maxY, uint maxZ, std::string distribution);
+    VF_PUBLIC virtual void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution);
 
 	VF_PUBLIC virtual void meshGeometry(std::string input, int level);
     VF_PUBLIC virtual void deleteSolidNodes();

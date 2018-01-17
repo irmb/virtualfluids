@@ -21,10 +21,6 @@ public:
 
     virtual void freeMemory(SPtr<Grid> grid) = 0;
 
-
-    virtual void copyDataFromGPU() = 0;
-
-
 };
 
 #endif

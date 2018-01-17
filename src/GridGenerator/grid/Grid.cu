@@ -37,7 +37,7 @@ HOST Grid::Grid(real startX, real startY, real startZ, real endX, real endY, rea
     this->reducedSize = size;
 }
 
-HOST SPtr<Grid> Grid::getNewInstance(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d)
+HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d)
 {
     SPtr<Grid> grid(new Grid(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
 
@@ -60,6 +60,8 @@ HOST SPtr<Grid> Grid::getNewInstance(real startX, real startY, real startZ, real
 }
 
 HOST Grid::Grid(){};
+
+
 HOST Grid::Grid(char *field, int startX, int startY, int startZ, int eX, int eY, int eZ, Distribution &d)
     : field(field), sX(startX), sY(startY), sZ(startZ), eX(eX), eY(eY), eZ(eZ), d(d)
 {
