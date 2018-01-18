@@ -67,7 +67,7 @@ private:
    template<class T>
    T fromString(const std::string& str) const;
 
-   std::vector<std::string> split(const std::string &s, char delim) const;
+   void split(std::vector<std::string>& lst, const std::string& input, const std::string& separators, bool remove_empty = true) const;
 };
 
 
@@ -167,26 +167,34 @@ std::vector<T> ConfigurationFile::getVector(const std::string& key) const
 {
    std::string str = getString(key);
    std::vector<T> v;
-   std::vector<std::string> strings = split(str, ' ');
-   for(std::string s : strings)
+   std::vector<std::string> strings;
+   split(strings, str, "\t\n\r;, ");
+   for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it)
    {
-      if (s != "")
+      if (*it != "")
       {
-         v.push_back(fromString<T>(s));
+         v.push_back(fromString<T>(*it));
       }
    }
    return v;
 }
 //////////////////////////////////////////////////////////////////////////
-std::vector<std::string> ConfigurationFile::split(const std::string &s, char delim) const
+void ConfigurationFile::split(std::vector<std::string>& lst, const std::string& input, const std::string& separators, bool remove_empty) const
 {
-   std::vector<std::string> result;
-   std::stringstream ss(s);
-   std::string item;
-   while (getline(ss, item, delim)) {
-      result.push_back(item);
+   std::ostringstream word;
+   for (size_t n = 0; n < input.size(); ++n)
+   {
+      if (std::string::npos == separators.find(input[n]))
+         word << input[n];
+      else
+      {
+         if (!word.str().empty() || !remove_empty)
+            lst.push_back(word.str());
+         word.str("");
+      }
    }
-   return result;
+   if (!word.str().empty() || !remove_empty)
+      lst.push_back(word.str());
 }
 //////////////////////////////////////////////////////////////////////////
 template<class T>

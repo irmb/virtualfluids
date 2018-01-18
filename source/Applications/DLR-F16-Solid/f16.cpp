@@ -497,7 +497,8 @@ void run(string configname)
 
          GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
+         SpongeLayerBlockVisitor slVisitorX1max;
+         slVisitorX1max.setBoundingBox(spongeLayerX1max);
          SPtr<LBMKernel> spKernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
          dynamicPointerCast<CompressibleCumulantLBMKernel>(spKernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
          spKernel->setBCProcessor(bcProc);
@@ -533,10 +534,18 @@ void run(string configname)
 
          grid->accept(bcVisitor);
 
-         //GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-5.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         //if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         //SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, 1.0);
-         //grid->accept(slVisitorX1max);
+         ////sponge layer
+         ////////////////////////////////////////////////////////////////////////////
+
+         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-8.0*blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX1max;
+         slVisitorX1max.setBoundingBox(spongeLayerX1max);
+         SPtr<LBMKernel> spKernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+         dynamicPointerCast<CompressibleCumulantLBMKernel>(spKernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
+         spKernel->setBCProcessor(bcProc);
+         slVisitorX1max.setKernel(spKernel);
+         grid->accept(slVisitorX1max);
       }
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));

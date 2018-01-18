@@ -135,6 +135,8 @@ void BasicCalculator::calculate()
    {
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
+      //throw;
+      exit(EXIT_FAILURE);
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -167,9 +169,9 @@ void BasicCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calc
       }
       catch (std::exception& e)
       {
-         //error = boost::current_exception();
          UBLOG(logERROR, e.what());
          UBLOG(logERROR, blockTemp->toString()<<" step = "<<calcStep);
+         //throw;
          exit(EXIT_FAILURE);
       }
    }

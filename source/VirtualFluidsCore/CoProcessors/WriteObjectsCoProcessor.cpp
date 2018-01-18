@@ -9,6 +9,7 @@
 #include "Communicator.h"
 #include "UbScheduler.h"
 #include "Grid3D.h"
+#include "UbSystem.h"
 
 WriteObjectsCoProcessor::WriteObjectsCoProcessor()
 {
@@ -44,7 +45,7 @@ void WriteObjectsCoProcessor::process(double step)
 
        }
        int stepInt = (int)step;
-       std::string outFilename = WbWriterVtkXmlBinary::getInstance()->writeTriangles(path + std::to_string(stepInt), nodes, triangles);
+       std::string outFilename = WbWriterVtkXmlBinary::getInstance()->writeTriangles(path + UbSystem::toString(stepInt), nodes, triangles);
 
    }
      
