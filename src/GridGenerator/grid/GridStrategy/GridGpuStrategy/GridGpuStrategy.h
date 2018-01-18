@@ -2,6 +2,7 @@
 #define GRID_GPU_STRATEGY_H
 
 #include <VirtualFluidsDefinitions.h>
+#include "global.h"
 
 #include "../GridStrategy.h"
 
@@ -18,6 +19,7 @@ public:
 
     void initalNodes(SPtr<Grid> grid) override;
     void mesh(SPtr<Grid> grid, Geometry &geom) override;
+    void removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid) override;
 
     void freeMemory(SPtr<Grid> grid) override;
 
@@ -38,9 +40,9 @@ private:
     void freeTrianglesFromGPU(const Geometry &geom);
 
 
-    void allocAndCopyMatrixIndicesToGPU(SPtr<Grid> grid);
+    void allocAndCopyMatrixIndicesToGPU(SPtr<Grid> grid, const uint& size);
 
-    void allocAndCopyFieldToGPU(SPtr<Grid> grid);
+    void allocAndCopyFieldToGPU(SPtr<Grid> grid, const uint& size);
 
     void copyAndFreeFieldFromGPU(SPtr<Grid> grid);
     void copyAndFreeDistributiondFromGPU(SPtr<Grid> grid);

@@ -17,6 +17,8 @@ public:
     virtual void initalNodes(SPtr<Grid> grid) = 0;
     virtual void mesh(SPtr<Grid> grid, Geometry &geom) = 0;
 
+    virtual void removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid) = 0;
+
     virtual void deleteSolidNodes(SPtr<Grid> grid) = 0;
 
     virtual void freeMemory(SPtr<Grid> grid) = 0;

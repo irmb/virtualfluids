@@ -86,37 +86,19 @@ void GridVTKWriter::writeHeader()
 void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid, const unsigned int &size)
 {
     fprintf(file, "POINTS %d float\n", size);
-    int counter = 0;
-    for (real x = grid.sX; x <= grid.eX; x += grid.delta) {
-        for (real y = grid.sY; y <= grid.eY; y += grid.delta) {
-            for (real z = grid.sZ; z <= grid.eZ; z += grid.delta) {
-                counter++;
-                Vertex v(x,y,z);
-                trans->transformGridToWorld(v);
-                if (binaer) {
-                    write_float((float)v.x);
-                    write_float((float)v.y);
-                    write_float((float)v.z);
-                }
-                else
-                    fprintf(file, "%f %f %f\n", v.x, v.y, v.z);
-            }
+    real x, y, z;
+    for (unsigned int i = 0; i < size; i++) {
+        grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
+        Vertex v(x,y,z);
+        trans->transformGridToWorld(v);
+        if (binaer) {
+            write_float((float)v.x);
+            write_float((float)v.y);
+            write_float((float)v.z);
         }
+        else
+            fprintf(file, "%f %f %f\n", v.x, v.y, v.z);
     }
-
-    //unsigned int x, y, z;
-    //for (unsigned int i = 0; i < size; i++) {
-    //    grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
-    //    Vertex v((real)x, (real)y, (real)z);
-    //    trans->transformGridToWorld(v);
-    //    if (binaer) {
-    //        write_float((float)v.x);
-    //        write_float((float)v.y);
-    //        write_float((float)v.z);
-    //    }
-    //    else
-    //        fprintf(file, "%f %f %f\n", v.x, v.y, v.z);
-    //}
 }
 
 void GridVTKWriter::writeCells(const unsigned int &size)
@@ -153,16 +135,11 @@ void GridVTKWriter::writeTypeHeader(const unsigned int &size)
 
 void GridVTKWriter::writeTypes(const Grid &grid, const unsigned int &size)
 {
-
-    for (real x = grid.sX; x <= grid.eX; x += grid.delta) {
-        for (real y = grid.sY; y <= grid.eY; y += grid.delta) {
-            for (real z = grid.sZ; z <= grid.eZ; z += grid.delta) {
-                if (binaer)
-                    write_int(grid.field[grid.transCoordToIndex(x,y,z)]);
-                else
-                    fprintf(file, "%d ", grid.field[grid.transCoordToIndex(x, y, z)]);
-            }
-        }
+    for (unsigned int i = 0; i < size; i++) {
+        if (binaer)
+            write_int(grid.field[grid.matrixIndex[i]]);
+        else
+            fprintf(file, "%d ", grid.field[grid.matrixIndex[i]]);
     }
 }
 

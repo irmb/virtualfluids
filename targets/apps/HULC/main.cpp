@@ -231,14 +231,17 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    SPtr<Grid> grid = GridFactory::makeGrid(35.25, 3.25, -5.25, 70, 40, 25, 0.25, "gpu", "D3Q27");
+    
 
-    Geometry geometry = Geometry("D:/GRIDGENERATION/STL/circleBinaer.stl");
-    grid->mesh(geometry);
+    SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
+    gridBuilder->addGrid(20, 0, -10, 80, 60, 50, 1.0, "cpu", "D3Q27");
+    gridBuilder->addGrid(35.25, 3.25, -5.25, 70.25, 40.25, 25.25, 0.5, "cpu", "D3Q27");
 
-    GridVTKWriter::writeGridToVTK(*grid.get(), "D:/GRIDGENERATION/gridTest");
 
-    grid->freeMemory();
+    gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
+    gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest3", 1);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest2", 0);
 
     //SPtr<Parameter> para = Parameter::make();
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
@@ -259,7 +262,7 @@ void multipleLevel(const std::string& configPath)
 
 void simulate(const std::string& configPath)
 {
-    SPtr<LevelGridBuilder> builder(new LevelGridBuilder(GridBuilder::GenerationDevice::CPU));
+    SPtr<LevelGridBuilder> builder(new LevelGridBuilder());
 
 
     SPtr<Parameter> para = Parameter::make();

@@ -72,7 +72,7 @@ HOSTDEVICE bool Triangle::isQNode(const Vertex &point, const real &s, const real
 
 HOSTDEVICE bool Triangle::isStopper(const Vertex &point) const
 {
-    return (CudaMath::lessEqual(normal.x, 0.0f) && CudaMath::lessEqual(normal.y, 0.0f) && CudaMath::lessEqual(normal.z, 0.0f));
+    return (CudaMath::lessEqual(normal.x, 0.0f) || CudaMath::lessEqual(normal.y, 0.0f) || CudaMath::lessEqual(normal.z, 0.0f));
     //return (sVector.x < 0.0f && sVector.y < 0.0f && sVector.z < 0.0f);
 }
 

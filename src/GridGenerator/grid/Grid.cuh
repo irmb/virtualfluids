@@ -11,37 +11,48 @@ struct Vertex;
 struct Triangle;
 class GridStrategy;
 
+
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 {
-    real sX = 0.0, sY = 0.0, sZ = 0.0;
-    real eX, eY, eZ;
+    real startX = 0.0, startY = 0.0, startZ = 0.0;
+    real endX, endY, endZ;
     real delta = 1.0;
 
 	char *field;
-	unsigned int nx, ny, nz;
-	unsigned int size;
+	uint nx, ny, nz;
+	uint size;
 	Distribution d;
 
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
-    unsigned int *matrixIndex;
-    int reducedSize;
+
+    uint *matrixIndex;
+    uint reducedSize;
 
     HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution &d);
     HOST Grid();
     HOST Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d);
+    
     static HOST SPtr<Grid> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d);
 
     HOST void mesh(Geometry &geometry);
     HOST void freeMemory();
 
-	HOSTDEVICE bool isFluid(int index) const;
-	HOSTDEVICE bool isSolid(int index) const;
-	HOSTDEVICE bool isQ(int index) const;
-	HOSTDEVICE bool isRb(int index) const;
-	HOSTDEVICE void setFieldEntryToFluid(unsigned int index);
-	HOSTDEVICE void setFieldEntryToSolid(unsigned int index);
+    HOST void removeOverlapNodes(SPtr<Grid> grid);
+    HOSTDEVICE void setOverlapNodeToInvalid(uint index, const Grid& finerGrid);
+    HOSTDEVICE bool isOverlapStopper(uint index) const;
+    HOSTDEVICE bool isInside(uint index, const Grid& grid);
+    HOSTDEVICE void findCF(uint index, const Grid& grid);
+
+	HOSTDEVICE bool isFluid(uint index) const;
+	HOSTDEVICE bool isSolid(uint index) const;
+	HOSTDEVICE bool isQ(uint index) const;
+    HOSTDEVICE bool isRb(uint index) const;
+    HOSTDEVICE bool isInvalid(uint index) const;
+	HOSTDEVICE void setFieldEntryToFluid(uint index);
+	HOSTDEVICE void setFieldEntryToSolid(uint index);
+    HOSTDEVICE void setFieldEntryToInvalid(uint index);
 	HOSTDEVICE void setFieldEntry(const Vertex &v, char val);
 	HOSTDEVICE char getFieldEntry(const Vertex &v) const;
 	HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const;
@@ -73,6 +84,8 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
     HOSTDEVICE bool isStopper(int index) const;
 private:
     HOSTDEVICE bool previousCellHasFluid(int index) const;
+
+    HOSTDEVICE bool nodeInNextCellIsInvalid(int index) const;
 
     SPtr<GridStrategy> gridStrategy;
 

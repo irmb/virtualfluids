@@ -21,6 +21,8 @@ public:
     void initalNodes(SPtr<Grid> grid) override;
     void mesh(SPtr<Grid> grid, Geometry &geom) override;
 
+    void removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid) override;
+
     void freeMemory(SPtr<Grid> grid) override;
 
 
@@ -29,8 +31,9 @@ public:
     virtual void copyDataFromGPU() {};
 
 protected:
-    void findInvalidNodes(SPtr<Grid> grid);
-    void findNeighborIndices(SPtr<Grid> grid);
+    static void findInvalidNodes(SPtr<Grid> grid);
+    static void findNeighborIndices(SPtr<Grid> grid);
+    static void setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid);
 
 };
 

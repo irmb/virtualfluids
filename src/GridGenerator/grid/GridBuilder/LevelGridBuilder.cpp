@@ -35,7 +35,7 @@
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-LevelGridBuilder::LevelGridBuilder(GenerationDevice device) : device(device)
+LevelGridBuilder::LevelGridBuilder()
 {
     this->Qs.resize(QFILES);
     this->channelBoundaryConditions.resize(6);
@@ -50,18 +50,24 @@ LevelGridBuilder::LevelGridBuilder(GenerationDevice device) : device(device)
 
 LevelGridBuilder::~LevelGridBuilder()
 {
-
+    for (auto grid : grids)
+        grid->freeMemory();
 }
 
 void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution)
 {
-    uint level = grids.size();
-
-    grids.push_back(GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution));
-
-
+    const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution);
+    grid->print();
+    grids.push_back(grid);
+    this->removeOverlapNodes();
 }
 
+
+void LevelGridBuilder::removeOverlapNodes()
+{
+    for (int level = 0; level < grids.size() - 1; level++)
+        grids[level]->removeOverlapNodes(grids[level + 1]);
+}
 
 
 void LevelGridBuilder::meshGeometry(std::string input, int level)
@@ -116,7 +122,7 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
 void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
-   GridVTKWriter::writeGridToVTK(*grids[level].get(), output);
+   GridVTKWriter::writeSparseGridToVTK(*grids[level].get(), output);
 }
 
 
@@ -161,7 +167,7 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
 
     Grid grid = *grids[level].get();
 
-    for (int i = 0; i < grid.reducedSize; i++)
+    for (uint i = 0; i < grid.reducedSize; i++)
     {
         real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
@@ -213,13 +219,14 @@ void LevelGridBuilder::setPressValues(real* RhoBC, int* kN, int channelSide, int
 }
 
 
+
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/
 /*---------------------------------------------------------------------------------*/
 void LevelGridBuilder::createBCVectors()
 {
     Grid grid = *grids[0].get();
-    for (int i = 0; i < grid.reducedSize; i++)
+    for (uint i = 0; i < grid.reducedSize; i++)
     {
         real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);

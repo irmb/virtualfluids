@@ -11,6 +11,7 @@
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
 #include <utilities/logger/Logger.h>
+#include "grid/NodeValues.h"
 
 void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
 {
@@ -20,7 +21,7 @@ void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
     grid->neighborIndexY = new int[grid->size];
     grid->neighborIndexZ = new int[grid->size];
         
-    grid->matrixIndex = new unsigned int[grid->size];
+    grid->matrixIndex = new uint[grid->size];
 
 
     unsigned long distributionSize = grid->size * (grid->d.dir_end + 1);
@@ -34,7 +35,7 @@ void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
 void GridCpuStrategy::initalNodes(SPtr<Grid> grid)
 {
 #pragma omp parallel for
-    for (unsigned int index = 0; index < grid->size; index++)
+    for (uint index = 0; index < grid->size; index++)
     {
         grid->setNeighborIndices(index);
         grid->matrixIndex[index] = index;
@@ -49,6 +50,28 @@ void GridCpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
         grid->meshTriangleExact(geom.triangles[i]);
 }
 
+void GridCpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
+{
+
+
+    setOverlapNodesToInvalid(grid, finerGrid);
+    grid->removeInvalidNodes();
+    findNeighborIndices(grid);
+}
+
+void GridCpuStrategy::setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid)
+{
+    for (uint index = 0; index < grid->size; index++)
+        grid->setOverlapNodeToInvalid(index, *finerGrid.get());
+}
+
+void GridCpuStrategy::findNeighborIndices(SPtr<Grid> grid)
+{
+    for (uint index = 0; index < grid->reducedSize; index++)
+        grid->findNeighborIndex(index);
+}
+
+
 void GridCpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
 {
     clock_t begin = clock();
@@ -58,7 +81,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
     findNeighborIndices(grid);
 
     clock_t end = clock();
-    float time = (real)(real(end - begin) / CLOCKS_PER_SEC);
+    real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
     *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR(time / 1000) + "sec\n";
 }
 
@@ -68,16 +91,12 @@ void GridCpuStrategy::findInvalidNodes(SPtr<Grid> grid)
     while (foundInvalidNode)
     {
         foundInvalidNode = false;
-        for (int index = 0; index < grid->size; index++)
+        for (uint index = 0; index < grid->size; index++)
             grid->setInvalidNode(index, foundInvalidNode);
     }
 }
 
-void GridCpuStrategy::findNeighborIndices(SPtr<Grid> grid)
-{
-    for (int index = 0; index < grid->reducedSize; index++) 
-        grid->findNeighborIndex(index);
-}
+
 
 void GridCpuStrategy::freeMemory(SPtr<Grid> grid)
 {

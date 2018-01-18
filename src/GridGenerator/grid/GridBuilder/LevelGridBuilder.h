@@ -24,22 +24,22 @@ class LevelGridBuilder : public GridBuilder
 {
 public:
 
-    VF_PUBLIC LevelGridBuilder(GenerationDevice device);
+    VF_PUBLIC LevelGridBuilder();
     VF_PUBLIC static std::shared_ptr<GridBuilder> make(std::string);
 
     VF_PUBLIC virtual ~LevelGridBuilder();
 
     VF_PUBLIC virtual void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution);
 
-	VF_PUBLIC virtual void meshGeometry(std::string input, int level);
+    VF_PUBLIC virtual void meshGeometry(std::string input, int level);
     VF_PUBLIC virtual void deleteSolidNodes();
 
-	VF_PUBLIC virtual void flood(Vertex &startFlood, int level);
+    VF_PUBLIC virtual void flood(Vertex &startFlood, int level);
 
-	VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
-	VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
+    VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
+    VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
 
-	VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
+    VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
     VF_PUBLIC virtual void createBoundaryConditions();
 
@@ -60,7 +60,6 @@ public:
     VF_PUBLIC void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
 
 protected:
-    GenerationDevice device;
 
     std::vector<std::shared_ptr<Grid> > grids;
 
@@ -71,6 +70,8 @@ protected:
     void checkLevel(int level);
 
 protected:
+    void removeOverlapNodes();
+
     void createBCVectors();
     void addShortQsToVector(int index);
     void addQsToVector(int index);

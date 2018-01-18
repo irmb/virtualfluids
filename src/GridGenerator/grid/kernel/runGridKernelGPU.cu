@@ -12,6 +12,7 @@ GLOBAL void runMeshing(Grid grid, const Geometry geom);
 GLOBAL void runKernelTomarkNodesToDeleteOutsideOfGeometry(Grid grid);
 GLOBAL void markNodesToDeleteOutsideOfGeometry(Grid grid);
 GLOBAL void findNeighborIndicesKernel(Grid grid);
+GLOBAL void setOverlapNodesToInvalid(Grid grid, Grid finderGrid);
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -73,6 +74,22 @@ GLOBAL void markNodesToDeleteOutsideOfGeometry(Grid grid)
     }
 
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+
+float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, Grid &grid, Grid &finerGrid)
+{
+    return runKernel(setOverlapNodesToInvalid, para, grid, finerGrid);
+}
+
+GLOBAL void setOverlapNodesToInvalid(Grid grid, Grid finerGrid)
+{
+    const uint index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.size)
+        grid.setOverlapNodeToInvalid(index, finerGrid);
+}
+
 
 
 /*#################################################################################*/

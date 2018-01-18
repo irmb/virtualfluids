@@ -42,7 +42,7 @@ void SimulationFileWriter::writeSimulationFiles(std::string folder, std::shared_
 /*---------------------------------------------------------------------------------*/
 void SimulationFileWriter::writeCoordFiles(bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
 {
-    for (int i = 0; i < builder->getNumberOfNodes(0); i++) {
+    for (uint i = 0; i < builder->getNumberOfNodes(0); i++) {
         writeCoordsNeighborsGeo(i, binaer, builder, trans);
     }
 }
