@@ -167,18 +167,21 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
 
     Grid grid = *grids[level].get();
 
-    for (uint i = 0; i < grid.reducedSize; i++)
+    for (uint i = 0; i < grid.size; i++)
     {
+        if (grid.matrixIndex[i] == -1)
+            continue;
+
         real x, y, z;
-        grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
+        grid.transIndexToCoords(i, x, y, z);
 
         xCoords[i + 1] = x;
         yCoords[i + 1] = y;
         zCoords[i + 1] = z;
-        neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[grid.matrixIndex[i]] + 1);
-        neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[grid.matrixIndex[i]] + 1);
-        neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[grid.matrixIndex[i]] + 1);
-        geo[i + 1] = (unsigned int)grid.isSolid(grid.matrixIndex[i]) ? GEOSOLID : GEOFLUID;
+        neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[i] + 1);
+        neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[i] + 1);
+        neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[i] + 1);
+        geo[i + 1] = (unsigned int)grid.isSolid(i) ? GEOSOLID : GEOFLUID;
     }
 }
 

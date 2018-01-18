@@ -5,6 +5,7 @@
 
 
 #include <GridGenerator/grid/distributions/Distribution.h>
+#include "GridInterface.cuh"
 
 struct Geometry;
 struct Vertex;
@@ -25,9 +26,11 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 	uint size;
 	Distribution d;
 
+    GridInterface gridInterface;
+
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
 
-    uint *matrixIndex;
+    int *matrixIndex;
     uint reducedSize;
 
     HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution &d);
@@ -43,7 +46,6 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
     HOSTDEVICE void setOverlapNodeToInvalid(uint index, const Grid& finerGrid);
     HOSTDEVICE bool isOverlapStopper(uint index) const;
     HOSTDEVICE bool isInside(uint index, const Grid& grid);
-    HOSTDEVICE void findCF(uint index, const Grid& grid);
 
 	HOSTDEVICE bool isFluid(uint index) const;
 	HOSTDEVICE bool isSolid(uint index) const;
@@ -74,7 +76,7 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
     HOSTDEVICE void setNeighborIndices(const int &index);
 	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const;
     HOSTDEVICE void findNeighborIndex(int index);
-    HOSTDEVICE int getNeighborIndex(const int &nodeIndex, int &neighborIndex, const real &expectedX, const real &expectedY, const real &expectedZ);
+    HOSTDEVICE int getNeighborIndex(/*const int &nodeIndex, const int &neighborIndex, */const real &expectedX, const real &expectedY, const real &expectedZ);
 
     HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
     HOSTDEVICE bool isNeighborInvalid(const int &index);

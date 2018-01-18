@@ -135,7 +135,7 @@ void Partition::partitionGridMesh(const Grid &grid)
         grid.field[part_i] = partMeshNodes[part_i];
     }
 
-    GridVTKWriter::writeGridToVTK(grid, "../../../../metisGridMesh.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
+    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
 
     delete[] partMeshNodes;
     delete[] partMeshElements;
@@ -254,7 +254,7 @@ void Partition::partitionGrid(const Grid &grid) {
         grid.field[part_i] = part[part_i];
     }
 
-    GridVTKWriter::writeGridToVTK(grid, "../../../../metisGridFineFourParts.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
+    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
 }
 
 std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector<BoundingBox<int>> > boxes, int processes, std::vector< std::shared_ptr<Transformator> > transformators)

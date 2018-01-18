@@ -59,9 +59,9 @@ void GridGpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
     grid->removeInvalidNodes();
 
     allocAndCopyFieldToGPU(grid, grid->size);
-    allocAndCopyMatrixIndicesToGPU(grid, grid->reducedSize);
+    allocAndCopyMatrixIndicesToGPU(grid, grid->size);
 
-    //float time = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->reducedSize, 256), *grid.get());
+    float time = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
     //*logging::out << logging::Logger::INTERMEDIATE << "time find indices: " + SSTR(time / 1000) + "sec\n";
 }
 
@@ -75,9 +75,9 @@ void GridGpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
     grid->removeInvalidNodes();
 
     allocAndCopyFieldToGPU(grid, grid->size);
-    allocAndCopyMatrixIndicesToGPU(grid, grid->reducedSize);
+    allocAndCopyMatrixIndicesToGPU(grid, grid->size);
 
-    float time2 = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->reducedSize, 256), *grid.get());
+    float time2 = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
     *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR((time1 + time2) / 1000) + "sec\n";
 }
 
@@ -99,7 +99,7 @@ void GridGpuStrategy::copyDataFromGPU(SPtr<Grid> grid)
 {
     copyAndFreeFieldFromGPU(grid);
     copyAndFreeNeighborsToCPU(grid);
-    copyAndFreeMatrixIndicesFromGPU(grid, grid->reducedSize);
+    copyAndFreeMatrixIndicesFromGPU(grid, grid->size);
     copyAndFreeDistributiondFromGPU(grid);
 }
 //
@@ -156,8 +156,8 @@ void GridGpuStrategy::allocNeighborsIndices(SPtr<Grid> grid)
 
 void GridGpuStrategy::allocMatrixIndicesOnGPU(SPtr<Grid> grid)
 {
-    int size_in_bytes_nodes_reduced = grid->size * sizeof(unsigned int);
-    unsigned int* indices_reduced_d;
+    int size_in_bytes_nodes_reduced = grid->size * sizeof(int);
+    int* indices_reduced_d;
     CudaSafeCall(cudaMalloc(&indices_reduced_d, size_in_bytes_nodes_reduced));
     grid->matrixIndex = indices_reduced_d;
     CudaCheckError();
@@ -192,8 +192,8 @@ void GridGpuStrategy::freeTrianglesFromGPU(const Geometry &geom)
 
 void GridGpuStrategy::allocAndCopyMatrixIndicesToGPU(SPtr<Grid> grid, const uint& size)
 {
-    int size_in_bytes_nodes_reduced = size * sizeof(unsigned int);
-    unsigned int* indices_reduced_d;
+    int size_in_bytes_nodes_reduced = size * sizeof(int);
+    int* indices_reduced_d;
     CudaSafeCall(cudaMalloc(&indices_reduced_d, size_in_bytes_nodes_reduced));
     CudaSafeCall(cudaMemcpy(indices_reduced_d, grid->matrixIndex, size_in_bytes_nodes_reduced, cudaMemcpyHostToDevice));
     delete[] grid->matrixIndex;
@@ -256,8 +256,8 @@ void GridGpuStrategy::copyAndFreeNeighborsToCPU(SPtr<Grid> grid)
 
 void GridGpuStrategy::copyAndFreeMatrixIndicesFromGPU(SPtr<Grid> grid, int size)
 {
-    int size_in_bytes_nodes_reduced = size * sizeof(unsigned int);
-    unsigned int *indices_reduced_h = new unsigned int[size];
+    int size_in_bytes_nodes_reduced = size * sizeof(int);
+    int *indices_reduced_h = new int[size];
     CudaSafeCall(cudaMemcpy(indices_reduced_h, grid->matrixIndex, size_in_bytes_nodes_reduced, cudaMemcpyDeviceToHost));
     CudaSafeCall(cudaFree(grid->matrixIndex));
     grid->matrixIndex = indices_reduced_h;

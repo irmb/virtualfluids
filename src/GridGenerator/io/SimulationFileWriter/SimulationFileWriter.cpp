@@ -118,10 +118,11 @@ void SimulationFileWriter::writeLevelAndLevelSize(int sizeCoords, std::vector<st
     }
 }
 
-void SimulationFileWriter::writeCoordsNeighborsGeo(const int& i, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
+void SimulationFileWriter::writeCoordsNeighborsGeo(const int& index, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
 {
     Grid grid = *builder->getGrid(0, 0).get();
-    int index = grid.matrixIndex[i];
+    if (grid.matrixIndex[index] == -1)
+        return;
 
     int type = grid.field[index] == SOLID ? 16 : 1;
     real x, y, z;

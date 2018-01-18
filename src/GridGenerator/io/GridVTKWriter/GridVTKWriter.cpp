@@ -16,16 +16,10 @@ bool GridVTKWriter::binaer = true;
 GridVTKWriter::GridVTKWriter(){}
 GridVTKWriter::~GridVTKWriter(){}
 
-void GridVTKWriter::writeGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer)
-{
-    initalVtkWriter(binaer, name);
-    writeVtkFile(trans, grid, grid.size);
-}
-
 void GridVTKWriter::writeSparseGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer)
 {
     initalVtkWriter(binaer, name);
-    writeVtkFile(trans, grid, grid.reducedSize);
+    writeVtkFile(trans, grid);
 }
 
 
@@ -47,13 +41,13 @@ void GridVTKWriter::initalVtkWriter(bool binaer, std::string name)
     *logging::out << logging::Logger::INTERMEDIATE << "  Output file opened ...\n";
 }
 
-void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, const Grid & grid, const unsigned int &size)
+void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, const Grid & grid)
 {
     GridVTKWriter::writeHeader();
-    GridVTKWriter::writePoints(trans, grid, size);
-    GridVTKWriter::writeCells(size);
-    GridVTKWriter::writeTypeHeader(size);
-    GridVTKWriter::writeTypes(grid, size);
+    GridVTKWriter::writePoints(trans, grid);
+    GridVTKWriter::writeCells(grid.reducedSize);
+    GridVTKWriter::writeTypeHeader(grid.reducedSize);
+    GridVTKWriter::writeTypes(grid);
     GridVTKWriter::closeFile();
 
     *logging::out << logging::Logger::INTERMEDIATE << "Output file closed\n";
@@ -83,12 +77,16 @@ void GridVTKWriter::writeHeader()
 	fprintf(file, "DATASET UNSTRUCTURED_GRID\n");
 }
 
-void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid, const unsigned int &size)
+void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid)
 {
-    fprintf(file, "POINTS %d float\n", size);
+    fprintf(file, "POINTS %d float\n", grid.reducedSize);
     real x, y, z;
-    for (unsigned int i = 0; i < size; i++) {
-        grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
+    for (unsigned int i = 0; i < grid.size; i++) {
+
+        if (grid.matrixIndex[i] == -1)
+            continue;
+
+        grid.transIndexToCoords(i, x, y, z);
         Vertex v(x,y,z);
         trans->transformGridToWorld(v);
         if (binaer) {
@@ -133,13 +131,17 @@ void GridVTKWriter::writeTypeHeader(const unsigned int &size)
 	fprintf(file, "LOOKUP_TABLE default\n");
 }
 
-void GridVTKWriter::writeTypes(const Grid &grid, const unsigned int &size)
+void GridVTKWriter::writeTypes(const Grid &grid)
 {
-    for (unsigned int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < grid.size; i++) 
+    {
+        if (grid.matrixIndex[i] == -1)
+            continue;
+
         if (binaer)
-            write_int(grid.field[grid.matrixIndex[i]]);
+            write_int(grid.field[i]);
         else
-            fprintf(file, "%d ", grid.field[grid.matrixIndex[i]]);
+            fprintf(file, "%d ", grid.field[i]);
     }
 }
 

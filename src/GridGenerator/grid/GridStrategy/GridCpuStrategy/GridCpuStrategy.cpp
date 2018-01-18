@@ -13,6 +13,8 @@
 #include <utilities/logger/Logger.h>
 #include "grid/NodeValues.h"
 
+#include "grid/GridInterface.cuh"
+
 void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
 {
     grid->field = new char[grid->size];
@@ -21,7 +23,7 @@ void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
     grid->neighborIndexY = new int[grid->size];
     grid->neighborIndexZ = new int[grid->size];
         
-    grid->matrixIndex = new uint[grid->size];
+    grid->matrixIndex = new int[grid->size];
 
 
     unsigned long distributionSize = grid->size * (grid->d.dir_end + 1);
@@ -52,7 +54,8 @@ void GridCpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
 
 void GridCpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
 {
-
+    GridInterface gridInterface(finerGrid.get());
+    grid->gridInterface = gridInterface;
 
     setOverlapNodesToInvalid(grid, finerGrid);
     grid->removeInvalidNodes();
@@ -67,7 +70,8 @@ void GridCpuStrategy::setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finer
 
 void GridCpuStrategy::findNeighborIndices(SPtr<Grid> grid)
 {
-    for (uint index = 0; index < grid->reducedSize; index++)
+#pragma omp parallel for
+    for (uint index = 0; index < grid->size; index++)
         grid->findNeighborIndex(index);
 }
 

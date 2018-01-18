@@ -108,37 +108,12 @@ HOSTDEVICE bool Grid::isInside(uint index, const Grid& finerGrid)
     const real overlapWithStopper = 3 * this->delta;
     const real overlap = 2 * this->delta;
 
-    findCF(index, finerGrid);
+    gridInterface.findCF(index, this, &finerGrid);
 
     return 
         (x > finerGrid.startX + overlapWithStopper && x < finerGrid.endX - overlap) &&
         (y > finerGrid.startY + overlapWithStopper && y < finerGrid.endY - overlap) &&
         (z > finerGrid.startZ + overlapWithStopper && z < finerGrid.endZ - overlap);
-}
-
-HOSTDEVICE void Grid::findCF(uint index, const Grid & finerGrid)
-{
-    uint sizeCF = finerGrid.nx * finerGrid.ny + finerGrid.ny * finerGrid.nz + finerGrid.nx * finerGrid.nz;
-    cfc = new uint[sizeCF];
-    cff = new uint[sizeCF];
-
-    const real startCFCx = finerGrid.startX - finerGrid.delta * 0.5;
-    const real startCFCy = finerGrid.startY - finerGrid.delta * 0.5;
-    const real startCFCz = finerGrid.startZ - finerGrid.delta * 0.5;
-
-    const real endCFCx = finerGrid.endX - finerGrid.delta * 1.5;
-    const real endCFCy = finerGrid.endY - finerGrid.delta * 1.5;
-    const real endCFCz = finerGrid.endZ - finerGrid.delta * 1.5;
-
-    //xy
-    for (real x = startCFCx; x <= endCFCx; x += delta)
-    {
-        for (real y = startCFCy; y <= endCFCy; y += delta)
-        {
-            cfc[] = index
-        }
-    }
-        
 }
 
 HOSTDEVICE bool Grid::isFluid(uint index) const
@@ -357,24 +332,31 @@ HOSTDEVICE bool Grid::isNeighborInvalid(const int &index)
 
 HOSTDEVICE void Grid::findNeighborIndex(int index)
 {
-    real x, y, z;
-    const uint nodeIndex = this->matrixIndex[index];
-    this->transIndexToCoords(this->matrixIndex[index], x, y, z);
-
-    if(this->isOverlapStopper(nodeIndex))
+    if (this->matrixIndex[index] == -1)
     {
-        this->setFieldEntryToSolid(nodeIndex);
-        this->neighborIndexX[nodeIndex] = -1;
-        this->neighborIndexY[nodeIndex] = -1;
-        this->neighborIndexZ[nodeIndex] = -1;
+        this->neighborIndexX[index] = -1;
+        this->neighborIndexY[index] = -1;
+        this->neighborIndexZ[index] = -1;
+        return;
+    }
+
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    if(this->isOverlapStopper(index))
+    {
+        this->setFieldEntryToSolid(index);
+        this->neighborIndexX[index] = -1;
+        this->neighborIndexY[index] = -1;
+        this->neighborIndexZ[index] = -1;
         return;
     }
 
     real neighborXCoord, neighborYCoord, neighborZCoord;
     getNeighborCoords(neighborXCoord, neighborYCoord, neighborZCoord, x, y, z);
-    this->neighborIndexX[nodeIndex] = getNeighborIndex(index, this->neighborIndexX[nodeIndex], neighborXCoord, y, z);
-    this->neighborIndexY[nodeIndex] = getNeighborIndex(index, this->neighborIndexY[nodeIndex], x, neighborYCoord, z);
-    this->neighborIndexZ[nodeIndex] = getNeighborIndex(index, this->neighborIndexZ[nodeIndex], x, y, neighborZCoord);
+    this->neighborIndexX[index] = getNeighborIndex(/*index, this->neighborIndexX[nodeIndex],*/ neighborXCoord, y, z);
+    this->neighborIndexY[index] = getNeighborIndex(/*index, this->neighborIndexY[nodeIndex],*/ x, neighborYCoord, z);
+    this->neighborIndexZ[index] = getNeighborIndex(/*index, this->neighborIndexZ[nodeIndex],*/ x, y, neighborZCoord);
 }
 
 HOSTDEVICE bool Grid::isOverlapStopper(uint index) const
@@ -383,69 +365,103 @@ HOSTDEVICE bool Grid::isOverlapStopper(uint index) const
 }
 
 
-
 HOSTDEVICE bool Grid::nodeInNextCellIsInvalid(int index) const
 {
-    const bool isInvalidNeighborX = this->isInvalid(neighborIndexX[index]);
-    const bool isInvalidNeighborY = this->isInvalid(neighborIndexY[index]);
-    const bool isInvalidNeighborXY = this->isInvalid(neighborIndexY[neighborIndexX[index]]);
-    const bool isInvalidNeighborZ = this->isInvalid(neighborIndexZ[index]);
-    const bool isInvalidNeighborYZ = this->isInvalid(neighborIndexZ[neighborIndexY[index]]);
-    const bool isInvalidNeighborXZ = this->isInvalid(neighborIndexZ[neighborIndexX[index]]);
-    const bool isInvalidNeighborXYZ = this->isInvalid(neighborIndexZ[neighborIndexY[neighborIndexX[index]]]);
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    real neighborX, neighborY, neighborZ;
+    this->getNeighborCoords(neighborX, neighborY, neighborZ, x, y, z);
+
+    const uint indexX = (uint)transCoordToIndex(neighborX, y, z);
+    const uint indexY = (uint)transCoordToIndex(x, neighborY, z);
+    const uint indexZ = (uint)transCoordToIndex(x, y, neighborZ);
+     
+    const uint indexXY = (uint)transCoordToIndex(neighborX, neighborY, z);
+    const uint indexYZ = (uint)transCoordToIndex(x, neighborY, neighborZ);
+    const uint indexXZ = (uint)transCoordToIndex(neighborX, y, neighborZ);
+     
+    const uint indexXYZ = (uint)transCoordToIndex(neighborX, neighborY, neighborZ);
+
+    const bool isInvalidNeighborX = this->isInvalid(indexX);
+    const bool isInvalidNeighborY = this->isInvalid(indexY);
+    const bool isInvalidNeighborXY  = this->isInvalid(indexXY);
+    const bool isInvalidNeighborZ   = this->isInvalid(indexZ);
+    const bool isInvalidNeighborYZ  = this->isInvalid(indexYZ);
+    const bool isInvalidNeighborXZ  = this->isInvalid(indexXZ);
+    const bool isInvalidNeighborXYZ = this->isInvalid(indexXYZ);
 
     return isInvalidNeighborX || isInvalidNeighborY || isInvalidNeighborXY || isInvalidNeighborZ || isInvalidNeighborYZ || isInvalidNeighborXZ || isInvalidNeighborXYZ;
 }
 
-HOSTDEVICE int Grid::getNeighborIndex(const int &nodeIndex, int &neighborIndex, const real &expectedX, const real &expectedY, const real &expectedZ)
+HOSTDEVICE int Grid::getNeighborIndex(/*const int &nodeIndex, const int &neighborIndex, */const real &expectedX, const real &expectedY, const real &expectedZ)
 {
-    while (neighborIndex >= (int)this->reducedSize)
-    {
-        neighborIndex--;
-        //printf("here\n");
-    }
-    if (neighborIndex >= 0)
-    {
-        real neighborX, neighborY, neighborZ;
-        this->transIndexToCoords(this->matrixIndex[neighborIndex], neighborX, neighborY, neighborZ);
-        while (!(neighborX == expectedX && neighborY == expectedY && neighborZ == expectedZ)) {
-            neighborIndex--;
-            //printf("expectedNeighborCoords:(%d, %d, %d), actualNeighborCoords:(%d,%d,%d), neighborIndex: %d\n", expectedX, expectedY, expectedZ,neighborX ,neighborY ,neighborZ, neighborIndex);
-            this->transIndexToCoords(this->matrixIndex[neighborIndex], neighborX, neighborY, neighborZ);
 
-            if (neighborIndex == nodeIndex) {
-                neighborIndex = -1;
-                break;
-            }
-        }
-        return neighborIndex;
-    }
-    return -1;
+    int neighborIndex = transCoordToIndex(expectedX, expectedY, expectedZ);
+    return matrixIndex[neighborIndex];
+
+    //int newNeighborIndex = neighborIndex;
+    //while (newNeighborIndex >= (int)this->reducedSize)
+    //    newNeighborIndex--;
+
+    //if (newNeighborIndex >= 0)
+    //{
+    //    real neighborX, neighborY, neighborZ;
+    //    this->transIndexToCoords(this->matrixIndex[newNeighborIndex], neighborX, neighborY, neighborZ);
+    //    while (!(neighborX == expectedX && neighborY == expectedY && neighborZ == expectedZ)) {
+    //        newNeighborIndex--;
+    //        //printf("expectedNeighborCoords:(%d, %d, %d), actualNeighborCoords:(%d,%d,%d), neighborIndex: %d\n", expectedX, expectedY, expectedZ,neighborX ,neighborY ,neighborZ, neighborIndex);
+    //        this->transIndexToCoords(this->matrixIndex[newNeighborIndex], neighborX, neighborY, neighborZ);
+
+    //        if (newNeighborIndex == nodeIndex)
+    //            return -1;
+    //    }
+    //    return newNeighborIndex;
+    //}
+    //return -1;
 }
 
 
 HOST void Grid::removeInvalidNodes()
 {
-    std::vector<uint> stl_vector(size);
-    stl_vector.assign(this->matrixIndex, this->matrixIndex + this->size);
-
-    int oldsize = (int)stl_vector.size();
-    printf("size coords: %d \n", oldsize);
-    std::vector<uint>::iterator end_vaild = std::remove_if(stl_vector.begin(), stl_vector.end(), [this](const uint &index)
+    int removedNodes = 0;
+    int newIndex = 0;
+    for (uint index = 0; index < size; index++)
     {
-        return this->field[index] == INVALID_NODE;
-    });
+        if (this->isInvalid(index))
+        {
+            matrixIndex[index] = -1;
+            removedNodes++;
+        } else
+        {
+            matrixIndex[index] = newIndex;
+            newIndex++;
+        }
+    }
+    reducedSize = size - removedNodes;
+    printf("new size coords: %zd , delete nodes: %zd\n", reducedSize, removedNodes);
 
-    stl_vector.erase(end_vaild, stl_vector.end());
-    printf("new size coords: %zd , delete nodes: %zd\n", stl_vector.size(), oldsize - stl_vector.size());
 
-    uint *indices_reduced = new uint[stl_vector.size()];
-    for (size_t i = 0; i < stl_vector.size(); i++)
-        indices_reduced[i] = stl_vector[i];
-    
-    this->reducedSize = (int)stl_vector.size();
-    delete[]this->matrixIndex;
-    this->matrixIndex = indices_reduced;
+    //std::vector<uint> stl_vector(size);
+    //stl_vector.assign(this->matrixIndex, this->matrixIndex + this->size);
+
+    //int oldsize = (int)stl_vector.size();
+    //printf("size coords: %d \n", oldsize);
+    //std::vector<uint>::iterator end_vaild = std::remove_if(stl_vector.begin(), stl_vector.end(), [this](const uint &index)
+    //{
+    //    return this->field[index] == INVALID_NODE;
+    //});
+
+    //stl_vector.erase(end_vaild, stl_vector.end());
+    //printf("new size coords: %zd , delete nodes: %zd\n", stl_vector.size(), oldsize - stl_vector.size());
+
+    //uint *indices_reduced = new uint[stl_vector.size()];
+    //for (size_t i = 0; i < stl_vector.size(); i++)
+    //    indices_reduced[i] = stl_vector[i];
+    //
+    //this->reducedSize = (int)stl_vector.size();
+    //delete[]this->matrixIndex;
+    //this->matrixIndex = indices_reduced;
 }
 
 HOSTDEVICE void Grid::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const
