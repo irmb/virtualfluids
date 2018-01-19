@@ -19,6 +19,7 @@
 
 #include <GridGenerator/grid/GridStrategy/GridStrategy.h>
 #include <utilities/logger/Logger.h>
+#include "GridInterface.cuh"
 
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
@@ -108,8 +109,8 @@ HOSTDEVICE bool Grid::isInside(uint index, const Grid& finerGrid)
     const real overlapWithStopper = 3 * this->delta;
     const real overlap = 2 * this->delta;
 
-    gridInterface.findCF(index, this, &finerGrid);
-    gridInterface.findFC(index, this, &finerGrid);
+    gridInterface->findCF(index, this, &finerGrid);
+    gridInterface->findFC(index, this, &finerGrid);
 
     return 
         (x > finerGrid.startX + overlapWithStopper && x < finerGrid.endX - overlap) &&

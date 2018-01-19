@@ -7,118 +7,101 @@
 GridInterface::GridInterface(const Grid* fineGrid)
 {
     uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
-    cfc = new uint[sizeCF];
-    cff = new uint[sizeCF];
 
-    fcf = new uint[sizeCF];
-    fcc = new uint[sizeCF];
+    cf.coarse = new uint[sizeCF];
+    cf.fine = new uint[sizeCF];
 
-    startCFCx = fineGrid->startX - fineGrid->delta * 0.5;
-    startCFCy = fineGrid->startY - fineGrid->delta * 0.5;
-    startCFCz = fineGrid->startZ - fineGrid->delta * 0.5;
+    cf.startCoarseX = fineGrid->startX - fineGrid->delta * 0.5;
+    cf.startCoarseY = fineGrid->startY - fineGrid->delta * 0.5;
+    cf.startCoarseZ = fineGrid->startZ - fineGrid->delta * 0.5;
 
-    endCFCx = fineGrid->endX - fineGrid->delta * 1.5;
-    endCFCy = fineGrid->endY - fineGrid->delta * 1.5;
-    endCFCz = fineGrid->endZ - fineGrid->delta * 1.5;
-}
+    cf.endCoarseX = fineGrid->endX - fineGrid->delta * 1.5;
+    cf.endCoarseY = fineGrid->endY - fineGrid->delta * 1.5;
+    cf.endCoarseZ = fineGrid->endZ - fineGrid->delta * 1.5;
 
-GridInterface::GridInterface()
-{
-    startCFCx = 0.0;
-    startCFCy = 0.0;
-    startCFCz = 0.0;
+    cf.coarseEntry = CFC;
+    cf.fineEntry = CFF;
 
-    endCFCx = 0.0;
-    endCFCy = 0.0;
-    endCFCz = 0.0;
-}
+    fc.coarse = new uint[sizeCF];
+    fc.fine = new uint[sizeCF];
 
-void GridInterface::findCF(const uint index, const Grid* coarseGrid, const Grid* fineGrid)
-{
-    real x, y, z;
-    coarseGrid->transIndexToCoords(index, x, y, z);
-
-    const bool isOnXYPlanes = 
-        (CudaMath::equal(z, startCFCz) || CudaMath::equal(z, endCFCz)) &&
-        CudaMath::lessEqual(x, endCFCx) &&
-        CudaMath::greaterEqual(x, startCFCx) &&
-        CudaMath::lessEqual(y, endCFCy) &&
-        CudaMath::greaterEqual(y, startCFCy);
-
-    const bool isOnXZPlanes =
-        (CudaMath::equal(y, startCFCy) || CudaMath::equal(y, endCFCy)) &&
-        CudaMath::lessEqual(x, endCFCx) &&
-        CudaMath::greaterEqual(x, startCFCx) &&
-        CudaMath::lessEqual(z, endCFCz) &&
-        CudaMath::greaterEqual(z, startCFCz);
-
-    const bool isOnYZPlanes =
-        (CudaMath::equal(x, startCFCx) || CudaMath::equal(x, endCFCx)) &&
-        CudaMath::lessEqual(z, endCFCz) &&
-        CudaMath::greaterEqual(z, startCFCz) &&
-        CudaMath::lessEqual(y, endCFCy) &&
-        CudaMath::greaterEqual(y, startCFCy);
-
-    const bool isCF = isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
-    if (isCF)
-    {
-        const real xFine = x + fineGrid->delta * 0.5;
-        const real yFine = y + fineGrid->delta * 0.5;
-        const real zFine = z + fineGrid->delta * 0.5;
-        const uint indexFinerGrid = fineGrid->transCoordToIndex(xFine, yFine, zFine);
-        cfc[numberOfEntriesInCF++] = index;
-        cff[numberOfEntriesInCF++] = indexFinerGrid;
-
-        coarseGrid->field[index] = CFC;
-        fineGrid->field[indexFinerGrid] = CFF;
-    }
-}
-
-void GridInterface::findFC(uint index, const Grid* coarseGrid, const Grid* fineGrid)
-{
-    real x, y, z;
-    coarseGrid->transIndexToCoords(index, x, y, z);
-
-    const real startFCCx = this->startCFCx + 2 * coarseGrid->delta;
-    const real startFCCy = this->startCFCy + 2 * coarseGrid->delta;
-    const real startFCCz = this->startCFCz + 2 * coarseGrid->delta;
+    fc.startCoarseX = cf.startCoarseX + 4 * fineGrid->delta;
+    fc.startCoarseY = cf.startCoarseY + 4 * fineGrid->delta;
+    fc.startCoarseZ = cf.startCoarseZ + 4 * fineGrid->delta;
     
-    const real endFCCx = this->endCFCx - 2 * coarseGrid->delta;
-    const real endFCCy = this->endCFCy - 2 * coarseGrid->delta;
-    const real endFCCz = this->endCFCz - 2 * coarseGrid->delta;
+    fc.endCoarseX = cf.endCoarseX - 2 * fineGrid->delta;
+    fc.endCoarseY = cf.endCoarseY - 2 * fineGrid->delta;
+    fc.endCoarseZ = cf.endCoarseZ - 2 * fineGrid->delta;
 
-    const bool isOnXYPlanes =
-        (CudaMath::equal(z, startFCCz) || CudaMath::equal(z, endFCCz)) &&
-        CudaMath::lessEqual(x, endFCCx) &&
-        CudaMath::greaterEqual(x, startFCCx) &&
-        CudaMath::lessEqual(y, endFCCy) &&
-        CudaMath::greaterEqual(y, startFCCy);
+    fc.coarseEntry = FCC;
+    fc.fineEntry = FCF;
 
-    const bool isOnXZPlanes =
-        (CudaMath::equal(y, startFCCy) || CudaMath::equal(y, endFCCy)) &&
-        CudaMath::lessEqual(x, endFCCx) &&
-        CudaMath::greaterEqual(x, startFCCx) &&
-        CudaMath::lessEqual(z, endFCCz) &&
-        CudaMath::greaterEqual(z, startFCCz);
+}
 
-    const bool isOnYZPlanes =
-        (CudaMath::equal(x, startFCCx) || CudaMath::equal(x, endFCCx)) &&
-        CudaMath::lessEqual(z, endFCCz) &&
-        CudaMath::greaterEqual(z, startFCCz) &&
-        CudaMath::lessEqual(y, endFCCy) &&
-        CudaMath::greaterEqual(y, startFCCy);
+GridInterface::~GridInterface()
+{
+    delete[] cf.coarse;
+    delete[] cf.fine;
 
-    const bool isCF = isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
-    if (isCF)
+    delete[] fc.coarse;
+    delete[] fc.fine;
+}
+
+
+void GridInterface::findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
+{
+    findInterface(cf, 1, index, coarseGrid, fineGrid);
+}
+
+void GridInterface::findFC(const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
+{
+    findInterface(fc, -1, index, coarseGrid, fineGrid);
+}
+
+
+void GridInterface::findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid) const
+{
+    real x, y, z;
+    coarseGrid->transIndexToCoords(index, x, y, z);
+
+    if (isOnInterface(interface, x, y, z))
     {
-        const real xFine = x - fineGrid->delta * 0.5;
-        const real yFine = y - fineGrid->delta * 0.5;
-        const real zFine = z - fineGrid->delta * 0.5;
-        const uint indexFinerGrid = fineGrid->transCoordToIndex(xFine, yFine, zFine);
-        fcc[numberOfEntriesInFC++] = index;
-        fcf[numberOfEntriesInFC++] = indexFinerGrid;
+        const uint indexFinerGrid = getIndexOnFinerGrid(factor, fineGrid, x, y, z);
 
-        coarseGrid->field[index] = FCC;
-        fineGrid->field[indexFinerGrid] = FCF;
+        interface.coarse[interface.numberOfEntries] = index;
+        interface.fine[interface.numberOfEntries] = indexFinerGrid;
+
+        interface.numberOfEntries++;
+
+        coarseGrid->field[index] = interface.coarseEntry;
+        fineGrid->field[indexFinerGrid] = interface.fineEntry;
     }
+}
+
+bool isOn(const real coord, const real plane1, const real plane2)
+{
+    return  CudaMath::equal(coord, plane1) || CudaMath::equal(coord, plane2);
+}
+
+bool isBetween(const real coord, const real start, const real end)
+{
+    return  CudaMath::greaterEqual(coord, start) && CudaMath::lessEqual(coord, end);
+}
+
+bool GridInterface::isOnInterface(Interface& interface, const real& x, const real& y, const real& z)
+{
+    const bool isOnXYPlanes = isOn(z, interface.startCoarseZ, interface.endCoarseZ) && isBetween(y, interface.startCoarseY, interface.endCoarseY) && isBetween(x, interface.startCoarseX, interface.endCoarseX);
+    const bool isOnXZPlanes = isOn(y, interface.startCoarseY, interface.endCoarseY) && isBetween(x, interface.startCoarseX, interface.endCoarseX) && isBetween(z, interface.startCoarseZ, interface.endCoarseZ);
+    const bool isOnYZPlanes = isOn(x, interface.startCoarseX, interface.endCoarseX) && isBetween(y, interface.startCoarseY, interface.endCoarseY) && isBetween(z, interface.startCoarseZ, interface.endCoarseZ);
+
+    return isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
+}
+
+uint GridInterface::getIndexOnFinerGrid(const int& factor, const Grid* fineGrid, const real& x, const real& y, const real& z) const
+{
+    const real xFine = x + factor * (fineGrid->delta * 0.5);
+    const real yFine = y + factor * (fineGrid->delta * 0.5);
+    const real zFine = z + factor * (fineGrid->delta * 0.5);
+
+    return fineGrid->transCoordToIndex(xFine, yFine, zFine);
 }

@@ -1,13 +1,14 @@
 #ifndef GRID_STRATEGY_H
 #define GRID_STRATEGY_H
 
+#include <VirtualFluidsDefinitions.h>
 #include "core/PointerDefinitions.h"
 
 struct Vertex;
 struct Geometry;
 struct Grid;
 
-class GridStrategy
+class VF_PUBLIC GridStrategy
 {
 public:
     virtual ~GridStrategy() {};

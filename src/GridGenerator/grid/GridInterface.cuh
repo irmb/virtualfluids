@@ -6,27 +6,33 @@
 
 struct Grid;
 
-struct GridInterface
+class GridInterface
 {
+public:
     VF_PUBLIC GridInterface(const Grid* finerGrid);
-    VF_PUBLIC GridInterface();
-    void VF_PUBLIC findCF(uint index, const Grid* coarseGrid, const Grid* fineGrid);
-    void VF_PUBLIC findFC(uint index, const Grid* coarseGrid, const Grid* fineGrid);
+    VF_PUBLIC ~GridInterface();
+    void VF_PUBLIC findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
+    void VF_PUBLIC findFC(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
 
 private:
-    real startCFCx;
-    real startCFCy;
-    real startCFCz;
+    struct Interface
+    {
+        uint *fine, *coarse;
+        uint numberOfEntries = 0;
+        real startCoarseX;
+        real startCoarseY;
+        real startCoarseZ;
 
-    real endCFCx;
-    real endCFCy;
-    real endCFCz;
+        real endCoarseX;
+        real endCoarseY;
+        real endCoarseZ;
 
+        char coarseEntry, fineEntry;
+    } fc, cf;
 
-    uint *cfc, *cff, *fcf, *fcc;
-
-    int numberOfEntriesInCF = 0;
-    int numberOfEntriesInFC = 0;
+    void findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid) const;
+    static bool isOnInterface(Interface& interface, const real& x, const real& y, const real& z);
+    uint getIndexOnFinerGrid(const int& factor, const Grid* fineGrid, const real& x, const real& y, const  real& z) const;
 };
 
 

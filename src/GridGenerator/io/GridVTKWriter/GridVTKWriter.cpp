@@ -47,9 +47,9 @@ void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, 
         {
             for (real z = grid.startZ; z <= grid.endZ; z += grid.delta)
             {
-                const int xTranslate = (x - grid.startX) / grid.delta;
-                const int yTranslate = (y - grid.startY) / grid.delta;
-                const int zTranslate = (z - grid.startZ) / grid.delta;
+                const int xTranslate = int((x - grid.startX) / grid.delta);
+                const int yTranslate = int((y - grid.startY) / grid.delta);
+                const int zTranslate = int((z - grid.startZ) / grid.delta);
                 nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
                 nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
 
@@ -65,9 +65,9 @@ void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, 
         {
             for (real z = grid.startZ; z <= grid.endZ - grid.delta; z += grid.delta)
             {
-                const int xTranslate = (x - grid.startX) / grid.delta;
-                const int yTranslate = (y - grid.startY) / grid.delta;
-                const int zTranslate = (z - grid.startZ) / grid.delta;
+                const int xTranslate = int((x - grid.startX) / grid.delta);
+                const int yTranslate = int((y - grid.startY) / grid.delta);
+                const int zTranslate = int((z - grid.startZ) / grid.delta);
 
                 if ((SWB = nodeNumbers(xTranslate, yTranslate, zTranslate)) >= 0
                     && (SEB = nodeNumbers(xTranslate + 1, yTranslate, zTranslate)) >= 0

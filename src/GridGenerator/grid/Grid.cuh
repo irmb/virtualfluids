@@ -5,13 +5,12 @@
 
 
 #include <GridGenerator/grid/distributions/Distribution.h>
-#include "GridInterface.cuh"
 
 struct Geometry;
 struct Vertex;
 struct Triangle;
 class GridStrategy;
-
+class GridInterface;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -26,7 +25,7 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 	uint size;
 	Distribution d;
 
-    GridInterface gridInterface;
+    GridInterface* gridInterface;
 
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
 

@@ -13,9 +13,9 @@
 #define INVALID_NODE 99
 
 #define CFC 66
-#define CFF 77
+#define CFF 67
 
-#define FCC 67
+#define FCC 77
 #define FCF 78
 
 #define RB_INLET PRESSURE
