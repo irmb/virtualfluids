@@ -11,6 +11,7 @@ struct GridInterface
     VF_PUBLIC GridInterface(const Grid* finerGrid);
     VF_PUBLIC GridInterface();
     void VF_PUBLIC findCF(uint index, const Grid* coarseGrid, const Grid* fineGrid);
+    void VF_PUBLIC findFC(uint index, const Grid* coarseGrid, const Grid* fineGrid);
 
 private:
     real startCFCx;
@@ -21,9 +22,11 @@ private:
     real endCFCy;
     real endCFCz;
 
+
     uint *cfc, *cff, *fcf, *fcc;
 
     int numberOfEntriesInCF = 0;
+    int numberOfEntriesInFC = 0;
 };
 
 

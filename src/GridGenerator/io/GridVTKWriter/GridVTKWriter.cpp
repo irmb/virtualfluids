@@ -9,6 +9,9 @@
 #include <utilities/logger/Logger.h>
 #include <GridGenerator/grid/Grid.cuh>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include "basics/writer/WbWriterVtkXmlBinary.h"
+#include "basics/container/CbArray3D.h"
+
 
 FILE* GridVTKWriter::file = 0;
 bool GridVTKWriter::binaer = true;
@@ -20,6 +23,70 @@ void GridVTKWriter::writeSparseGridToVTK(const Grid &grid, std::string name, std
 {
     initalVtkWriter(binaer, name);
     writeVtkFile(trans, grid);
+}
+
+void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, bool binaer)
+{
+    std::vector<UbTupleFloat3> nodes;
+    std::vector<UbTupleUInt8> cells;
+    std::vector<std::string> nodedatanames;
+    std::vector< std::vector<double> > nodedata;
+
+    nodedatanames.push_back("cfc");
+    nodedatanames.push_back("cff");
+    nodedatanames.push_back("stopper");
+
+    nodedata.resize(nodedatanames.size());
+
+    CbArray3D<int> nodeNumbers(grid.nx, grid.ny, grid.nz, -1);
+    int nr = 0;
+
+    for (real x = grid.startX; x <= grid.endX; x += grid.delta)
+    {
+        for (real y = grid.startY; y <= grid.endY; y += grid.delta)
+        {
+            for (real z = grid.startZ; z <= grid.endZ; z += grid.delta)
+            {
+                const int xTranslate = (x - grid.startX) / grid.delta;
+                const int yTranslate = (y - grid.startY) / grid.delta;
+                const int zTranslate = (z - grid.startZ) / grid.delta;
+                nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
+                nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
+
+                nodedata[0].push_back(grid.field[grid.transCoordToIndex(x, y, z)]);
+            }
+        }
+    }
+
+    uint SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+    for (real x = grid.startX; x <= grid.endX - grid.delta; x += grid.delta)
+    {
+        for (real y = grid.startY; y <= grid.endY - grid.delta; y += grid.delta)
+        {
+            for (real z = grid.startZ; z <= grid.endZ - grid.delta; z += grid.delta)
+            {
+                const int xTranslate = (x - grid.startX) / grid.delta;
+                const int yTranslate = (y - grid.startY) / grid.delta;
+                const int zTranslate = (z - grid.startZ) / grid.delta;
+
+                if ((SWB = nodeNumbers(xTranslate, yTranslate, zTranslate)) >= 0
+                    && (SEB = nodeNumbers(xTranslate + 1, yTranslate, zTranslate)) >= 0
+                    && (NEB = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate)) >= 0
+                    && (NWB = nodeNumbers(xTranslate, yTranslate + 1, zTranslate)) >= 0
+                    && (SWT = nodeNumbers(xTranslate, yTranslate, zTranslate + 1)) >= 0
+                    && (SET = nodeNumbers(xTranslate + 1, yTranslate, zTranslate + 1)) >= 0
+                    && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
+                    && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
+                {
+                    cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+                }
+            }
+        }
+    }
+
+
+    WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name, nodes, cells, nodedatanames, nodedata);
+
 }
 
 

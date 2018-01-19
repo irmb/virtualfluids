@@ -7,6 +7,7 @@
 #include <sstream>
 #include <algorithm>
 
+
 #include <GridGenerator/utilities/math/CudaMath.cuh>
 
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
@@ -20,18 +21,18 @@
 #include <utilities/logger/Logger.h>
 
 
-__constant__ int DIRECTIONS[DIR_END_MAX][DIMENSION];
+CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 HOST Grid::Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d) 
 : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), d(d)
 {
-    real length = endX - startX;
-    real width = endY - startY;
-    real height = endZ - startZ;
+    const real length = endX - startX;
+    const real width = endY - startY;
+    const real height = endZ - startZ;
 
-    nx = (int)((length + delta) / delta);
-    ny = (int)((width  + delta) / delta);
-    nz = (int)((height + delta) / delta);
+    nx = int((length + delta) / delta);
+    ny = int((width  + delta) / delta);
+    nz = int((height + delta) / delta);
 
     this->size = nx * ny * nz;
     this->reducedSize = size;
@@ -42,13 +43,12 @@ HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real end
     SPtr<Grid> grid(new Grid(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
 
     gridStrategy->allocateGridMemory(grid);
-
     *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
     *logging::out << logging::Logger::LOW << "Initial field with fluid. \n";
     *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
-
+    printf("here");
+    printf("here");
     time_t begin = clock();
-
     gridStrategy->initalNodes(grid);
 
     time_t end = clock();
@@ -109,6 +109,7 @@ HOSTDEVICE bool Grid::isInside(uint index, const Grid& finerGrid)
     const real overlap = 2 * this->delta;
 
     gridInterface.findCF(index, this, &finerGrid);
+    gridInterface.findFC(index, this, &finerGrid);
 
     return 
         (x > finerGrid.startX + overlapWithStopper && x < finerGrid.endX - overlap) &&

@@ -16,7 +16,7 @@ class VF_PUBLIC GridVTKWriter
 {
 public:
     static void writeSparseGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans = std::make_shared<TransformatorImp>(), bool binaer = false);
-
+    static void writeGridToVTKXML(const Grid &grid, std::string name, bool binaer = false);
 private:
     GridVTKWriter();
     ~GridVTKWriter();

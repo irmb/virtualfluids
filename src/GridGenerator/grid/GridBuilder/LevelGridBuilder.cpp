@@ -123,6 +123,8 @@ void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
    GridVTKWriter::writeSparseGridToVTK(*grids[level].get(), output);
+
+
 }
 
 
