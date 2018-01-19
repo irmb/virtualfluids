@@ -4,10 +4,25 @@
 #include "NodeValues.h"
 #include "utilities/math/CudaMath.cuh"
 
+
 GridInterface::GridInterface(const Grid* fineGrid)
 {
-    uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
+    const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
+    initalCoarseToFine(sizeCF, fineGrid);
+    initalFineToCoarse(sizeCF, fineGrid);
+}
 
+GridInterface::~GridInterface()
+{
+    delete[] cf.coarse;
+    delete[] cf.fine;
+
+    delete[] fc.coarse;
+    delete[] fc.fine;
+}
+
+void GridInterface::initalCoarseToFine(const uint sizeCF, const Grid* fineGrid)
+{
     cf.coarse = new uint[sizeCF];
     cf.fine = new uint[sizeCF];
 
@@ -21,32 +36,24 @@ GridInterface::GridInterface(const Grid* fineGrid)
 
     cf.coarseEntry = CFC;
     cf.fineEntry = CFF;
+}
 
+void GridInterface::initalFineToCoarse(const uint sizeCF, const Grid* fineGrid)
+{
     fc.coarse = new uint[sizeCF];
     fc.fine = new uint[sizeCF];
 
     fc.startCoarseX = cf.startCoarseX + 4 * fineGrid->delta;
     fc.startCoarseY = cf.startCoarseY + 4 * fineGrid->delta;
     fc.startCoarseZ = cf.startCoarseZ + 4 * fineGrid->delta;
-    
+
     fc.endCoarseX = cf.endCoarseX - 2 * fineGrid->delta;
     fc.endCoarseY = cf.endCoarseY - 2 * fineGrid->delta;
     fc.endCoarseZ = cf.endCoarseZ - 2 * fineGrid->delta;
 
     fc.coarseEntry = FCC;
     fc.fineEntry = FCF;
-
 }
-
-GridInterface::~GridInterface()
-{
-    delete[] cf.coarse;
-    delete[] cf.fine;
-
-    delete[] fc.coarse;
-    delete[] fc.fine;
-}
-
 
 void GridInterface::findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
 {
@@ -58,8 +65,7 @@ void GridInterface::findFC(const uint& index, const Grid* coarseGrid, const Grid
     findInterface(fc, -1, index, coarseGrid, fineGrid);
 }
 
-
-void GridInterface::findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid) const
+void GridInterface::findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(index, x, y, z);
@@ -97,7 +103,7 @@ bool GridInterface::isOnInterface(Interface& interface, const real& x, const rea
     return isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
 }
 
-uint GridInterface::getIndexOnFinerGrid(const int& factor, const Grid* fineGrid, const real& x, const real& y, const real& z) const
+uint GridInterface::getIndexOnFinerGrid(const int& factor, const Grid* fineGrid, const real& x, const real& y, const real& z)
 {
     const real xFine = x + factor * (fineGrid->delta * 0.5);
     const real yFine = y + factor * (fineGrid->delta * 0.5);
