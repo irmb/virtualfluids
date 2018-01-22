@@ -23,9 +23,24 @@ void GridGenerator::setUnstructuredGridBuilder(std::shared_ptr<GridBuilder> buil
 	this->builder = builder;
 }
 
+void GridGenerator::initalGridInformations()
+{
+    std::vector<int> gridX, gridY, gridZ;
+    std::vector<int> distX, distY, distZ;
+    const int numberOfGridLevels = builder->getNumberOfGridLevels();
+    builder->getGridInformations(gridX, gridY, gridZ, distX, distY, distZ);
+    para->setMaxLevel(numberOfGridLevels);
+    para->setGridX(gridX);
+    para->setGridY(gridY);
+    para->setGridZ(gridZ);
+    para->setDistX(distX);
+    para->setDistY(distY);
+    para->setDistZ(distZ);
+}
+
 void GridGenerator::allocArrays_CoordNeighborGeo()
 {
-	int numberOfLevels = 0;//coordX.getLevel();
+    int numberOfLevels = para->getMaxLevel();
 	std::cout << "Number of Level: " << numberOfLevels + 1 << std::endl;
 	int numberOfNodesGlobal = 0;
 	std::cout << "Number of Nodes: " << std::endl;
@@ -76,7 +91,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 void GridGenerator::setPressureValues(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
 		int sizePerLevel = builder->getBoundaryConditionSize(channelSide);
 		if (sizePerLevel > 1)
@@ -102,7 +117,7 @@ void GridGenerator::setPressRhoBC(int sizePerLevel, int level, int channelSide) 
 
 void GridGenerator::setVelocityValues(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
         int sizePerLevel = builder->getBoundaryConditionSize(channelSide);
         if (sizePerLevel > 1)
@@ -135,7 +150,7 @@ void GridGenerator::setVelocity(int level, int sizePerLevel, int channelSide) co
 
 void GridGenerator::setOutflowValues(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level < para->getMaxLevel(); level++)
 	{
 		int sizePerLevel = builder->getBoundaryConditionSize(channelSide);
 		if (sizePerLevel > 1)
@@ -183,6 +198,61 @@ void GridGenerator::allocArrays_BoundaryQs()
 
 void GridGenerator::allocArrays_OffsetScale()
 {
+    int maxLevel = para->getMaxLevel();
+
+    int numberOfNodesCF = 0;
+    int numberOfNodesFC = 0;
+
+    for (int level = 0; level < maxLevel; level++) {
+        const uint numberOfNodesPerLevelCF = builder->getNumberOfNodesCF(level);
+        const uint numberOfNodesPerLevelFC = builder->getNumberOfNodesFC(level);
+
+        cout << "number of nodes CFlLevel " << level << " : " << numberOfNodesPerLevelCF << endl;
+        cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << endl;
+
+        numberOfNodesCF += numberOfNodesPerLevelCF;
+        numberOfNodesFC += numberOfNodesPerLevelFC;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //size + memsize CF
+        para->getParH(level)->K_CF = numberOfNodesPerLevelCF;
+        para->getParD(level)->K_CF = para->getParH(level)->K_CF;
+        para->getParH(level)->intCF.kCF = para->getParH(level)->K_CF;
+        para->getParD(level)->intCF.kCF = para->getParH(level)->K_CF;
+        para->getParH(level)->mem_size_kCF = sizeof(unsigned int)* para->getParH(level)->K_CF;
+        para->getParD(level)->mem_size_kCF = sizeof(unsigned int)* para->getParD(level)->K_CF;
+        para->getParH(level)->mem_size_kCF_off = sizeof(real)* para->getParH(level)->K_CF;
+        para->getParD(level)->mem_size_kCF_off = sizeof(real)* para->getParD(level)->K_CF;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //size + memsize FC
+        para->getParH(level)->K_FC = numberOfNodesPerLevelFC;
+        para->getParD(level)->K_FC = para->getParH(level)->K_FC;
+        para->getParH(level)->intFC.kFC = para->getParH(level)->K_FC;
+        para->getParD(level)->intFC.kFC = para->getParH(level)->K_FC;
+        para->getParH(level)->mem_size_kFC = sizeof(unsigned int)* para->getParH(level)->K_FC;
+        para->getParD(level)->mem_size_kFC = sizeof(unsigned int)* para->getParD(level)->K_FC;
+        para->getParH(level)->mem_size_kFC_off = sizeof(real)* para->getParH(level)->K_FC;
+        para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //alloc
+        para->cudaAllocInterfaceCF(level);
+        para->cudaAllocInterfaceFC(level);
+        para->cudaAllocInterfaceOffCF(level);
+        para->cudaAllocInterfaceOffFC(level);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //init
+        builder->setCFC(para->getParH(level)->intCF.ICellCFC, level);
+        builder->setCFF(para->getParH(level)->intCF.ICellCFF, level);
+        builder->setFCC(para->getParH(level)->intFC.ICellFCC, level);
+        builder->setFCF(para->getParH(level)->intFC.ICellFCF, level);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //copy
+        para->cudaCopyInterfaceCF(level);
+        para->cudaCopyInterfaceFC(level);
+        para->cudaCopyInterfaceOffCF(level);
+        para->cudaCopyInterfaceOffFC(level);
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 }
 
 
@@ -191,7 +261,7 @@ void GridGenerator::allocArrays_OffsetScale()
 /*------------------------------------------------------------------------------------------------*/
 void GridGenerator::setPressQs(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
 		if (hasQs(channelSide, level))
 		{
@@ -204,7 +274,7 @@ void GridGenerator::setPressQs(int channelSide) const
 
 void GridGenerator::setVelocityQs(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
 		if (hasQs(channelSide, level))
 		{
@@ -217,7 +287,7 @@ void GridGenerator::setVelocityQs(int channelSide) const
 
 void GridGenerator::setOutflowQs(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
 		if (hasQs(channelSide, level))
 		{
@@ -230,7 +300,7 @@ void GridGenerator::setOutflowQs(int channelSide) const
 
 void GridGenerator::setNoSlipQs(int channelSide) const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
 		if (hasQs(channelSide, level))
 		{
@@ -244,7 +314,7 @@ void GridGenerator::setNoSlipQs(int channelSide) const
 
 void GridGenerator::setGeoQs() const
 {
-	for (unsigned int level = 0; level <= 0; level++)
+	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
 		if (hasQs(GEOMQS, level))
 		{
@@ -282,6 +352,7 @@ bool GridGenerator::hasQs(int channelSide, unsigned int level) const
 {
 	return builder->getBoundaryConditionSize(channelSide) > 0;
 }
+
 
 void GridGenerator::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
@@ -339,15 +410,15 @@ void GridGenerator::printQSize(std::string bc,int channelSide, unsigned int leve
 
 void GridGenerator::setDimensions()
 {
-	std::vector<int> localGridNX(1);
-	std::vector<int> localGridNY(1);
-	std::vector<int> localGridNZ(1);
+	//std::vector<int> localGridNX(1);
+	//std::vector<int> localGridNY(1);
+	//std::vector<int> localGridNZ(1);
 
-	builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
+	//builder->getDimensions(localGridNX[0], localGridNY[0], localGridNZ[0], 0);
 
-	para->setGridX(localGridNX);
-	para->setGridY(localGridNY);
-	para->setGridZ(localGridNZ);
+	//para->setGridX(localGridNX);
+	//para->setGridY(localGridNY);
+	//para->setGridZ(localGridNZ);
 }
 
 void GridGenerator::setBoundingBox()

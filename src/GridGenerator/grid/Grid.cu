@@ -47,8 +47,6 @@ HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real end
     *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
     *logging::out << logging::Logger::LOW << "Initial field with fluid. \n";
     *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
-    printf("here");
-    printf("here");
     time_t begin = clock();
     gridStrategy->initalNodes(grid);
 

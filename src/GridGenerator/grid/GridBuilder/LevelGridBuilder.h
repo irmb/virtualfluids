@@ -81,6 +81,17 @@ protected:
     Vertex getVertex(const int matrixIndex) const;
     void writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const;
 
+public:
+    VF_PUBLIC void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
+        std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
+        std::vector<int>& distZ) override;
+    VF_PUBLIC int getNumberOfGridLevels() override;
+    VF_PUBLIC uint getNumberOfNodesCF(int level) override;
+    VF_PUBLIC uint getNumberOfNodesFC(int level) override;
+    VF_PUBLIC void setCFC(uint* iCellCfc, int level) override;
+    VF_PUBLIC void setCFF(uint* iCellCff, int level) override;
+    VF_PUBLIC void setFCC(uint* iCellFcc, int level) override;
+    VF_PUBLIC void setFCF(uint* iCellFcf, int level) override;
 };
 
 #endif

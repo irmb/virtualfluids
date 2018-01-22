@@ -29,7 +29,8 @@ public:
     virtual void freeMemoryOnHost();
     virtual void cudaCopyDataToHost(int level);
 
-	virtual ~GridProvider() {};
+	virtual ~GridProvider() {}
+    virtual void initalGridInformations() = 0;
 
 protected:
 	void setNumberOfNodes(const int numberOfNodes, const int level) const;

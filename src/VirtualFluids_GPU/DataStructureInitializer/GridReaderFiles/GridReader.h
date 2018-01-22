@@ -70,6 +70,8 @@ private:
 	void setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
+public:
+    void initalGridInformations() override;
 };
 
 #endif

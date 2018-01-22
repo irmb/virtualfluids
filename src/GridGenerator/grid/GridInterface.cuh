@@ -16,7 +16,6 @@ public:
     void VF_PUBLIC findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
     void VF_PUBLIC findFC(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
 
-private:
     struct Interface
     {
         uint *fine, *coarse;
@@ -32,6 +31,7 @@ private:
         char coarseEntry, fineEntry;
     } fc, cf;
 
+private:
     void initalCoarseToFine(uint sizeCF, const Grid* fineGrid);
     void initalFineToCoarse(uint sizeCF, const Grid* fineGrid);
 

@@ -61,6 +61,8 @@ private:
 	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(int channelSide, unsigned int level) const;
 
+public:
+    void initalGridInformations() override;
 };
 
 #endif

@@ -54,8 +54,7 @@ void GridCpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
 
 void GridCpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
 {
-    GridInterface* gridInterface = new GridInterface(finerGrid.get());
-    grid->gridInterface = gridInterface;
+    grid->gridInterface = new GridInterface(finerGrid.get());;
 
     setOverlapNodesToInvalid(grid, finerGrid);
     grid->removeInvalidNodes();
@@ -104,6 +103,9 @@ void GridCpuStrategy::findInvalidNodes(SPtr<Grid> grid)
 
 void GridCpuStrategy::freeMemory(SPtr<Grid> grid)
 {
+    //if(grid->gridInterface)
+        //delete grid->gridInterface;
+
     delete[] grid->field;
 
     delete[] grid->neighborIndexX;

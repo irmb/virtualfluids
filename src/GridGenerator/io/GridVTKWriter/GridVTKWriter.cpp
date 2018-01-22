@@ -32,9 +32,8 @@ void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, 
     std::vector<std::string> nodedatanames;
     std::vector< std::vector<double> > nodedata;
 
-    nodedatanames.push_back("cfc");
-    nodedatanames.push_back("cff");
-    nodedatanames.push_back("stopper");
+    nodedatanames.push_back("types");
+
 
     nodedata.resize(nodedatanames.size());
 
@@ -47,13 +46,16 @@ void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, 
         {
             for (real z = grid.startZ; z <= grid.endZ; z += grid.delta)
             {
+                char type = grid.field[grid.transCoordToIndex(x, y, z)];
+                if (type == -1)
+                    continue;
                 const int xTranslate = int((x - grid.startX) / grid.delta);
                 const int yTranslate = int((y - grid.startY) / grid.delta);
                 const int zTranslate = int((z - grid.startZ) / grid.delta);
                 nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
                 nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
 
-                nodedata[0].push_back(grid.field[grid.transCoordToIndex(x, y, z)]);
+                nodedata[0].push_back(type);
             }
         }
     }

@@ -30,6 +30,7 @@
 #include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
 
 #include <GridGenerator/grid/GridFactory.h>
+#include "grid/GridInterface.cuh"
 
 
 #define GEOFLUID 19
@@ -50,7 +51,7 @@ LevelGridBuilder::LevelGridBuilder()
 
 LevelGridBuilder::~LevelGridBuilder()
 {
-    for (auto grid : grids)
+    for (const auto grid : grids)
         grid->freeMemory();
 }
 
@@ -60,6 +61,61 @@ void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real 
     grid->print();
     grids.push_back(grid);
     this->removeOverlapNodes();
+}
+
+void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
+    std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
+    std::vector<int>& distZ)
+{
+    for (const auto grid : grids)
+    {
+        gridX.push_back(int(grid->nx));
+        gridY.push_back(int(grid->ny));
+        gridZ.push_back(int(grid->nz));
+
+        distX.push_back(int(grid->startX));
+        distY.push_back(int(grid->startY));
+        distZ.push_back(int(grid->startZ));
+    }
+}
+
+int LevelGridBuilder::getNumberOfGridLevels()
+{
+    return grids.size();
+}
+
+uint LevelGridBuilder::getNumberOfNodesCF(int level)
+{
+    return this->grids[level]->gridInterface->cf.numberOfEntries;
+}
+
+uint LevelGridBuilder::getNumberOfNodesFC(int level)
+{
+    return this->grids[level]->gridInterface->fc.numberOfEntries;
+}
+
+void LevelGridBuilder::setCFC(uint* iCellCfc, int level)
+{
+    for (int i = 0; i < this->grids[level]->gridInterface->cf.numberOfEntries; i++)
+        iCellCfc[i] = this->grids[level]->gridInterface->cf.coarse[i];
+}
+
+void LevelGridBuilder::setCFF(uint* iCellCff, int level)
+{
+    for (int i = 0; i < this->grids[level]->gridInterface->cf.numberOfEntries; i++)
+        iCellCff[i] = this->grids[level]->gridInterface->cf.fine[i];
+}
+
+void LevelGridBuilder::setFCC(uint* iCellFcc, int level)
+{
+    for (int i = 0; i < this->grids[level]->gridInterface->fc.numberOfEntries; i++)
+        iCellFcc[i] = this->grids[level]->gridInterface->fc.coarse[i];
+}
+
+void LevelGridBuilder::setFCF(uint* iCellFcf, int level)
+{
+    for (int i = 0; i < this->grids[level]->gridInterface->fc.numberOfEntries; i++)
+        iCellFcf[i] = this->grids[level]->gridInterface->fc.fine[i];
 }
 
 
@@ -122,7 +178,7 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
 void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
-   GridVTKWriter::writeSparseGridToVTK(*grids[level].get(), output);
+   GridVTKWriter::writeGridToVTKXML(*grids[level].get(), output);
 
 
 }
@@ -169,6 +225,7 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
 
     Grid grid = *grids[level].get();
 
+    int nodeNumber = 0;
     for (uint i = 0; i < grid.size; i++)
     {
         if (grid.matrixIndex[i] == -1)
@@ -177,13 +234,14 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
         real x, y, z;
         grid.transIndexToCoords(i, x, y, z);
 
-        xCoords[i + 1] = x;
-        yCoords[i + 1] = y;
-        zCoords[i + 1] = z;
-        neighborX[i + 1] = (unsigned int)(grid.neighborIndexX[i] + 1);
-        neighborY[i + 1] = (unsigned int)(grid.neighborIndexY[i] + 1);
-        neighborZ[i + 1] = (unsigned int)(grid.neighborIndexZ[i] + 1);
-        geo[i + 1] = (unsigned int)grid.isSolid(i) ? GEOSOLID : GEOFLUID;
+        xCoords[nodeNumber + 1] = x;
+        yCoords[nodeNumber + 1] = y;
+        zCoords[nodeNumber + 1] = z;
+        neighborX[nodeNumber + 1] = (unsigned int)(grid.neighborIndexX[i] + 1);
+        neighborY[nodeNumber + 1] = (unsigned int)(grid.neighborIndexY[i] + 1);
+        neighborZ[nodeNumber + 1] = (unsigned int)(grid.neighborIndexZ[i] + 1);
+        geo[nodeNumber + 1] = (unsigned int)grid.isSolid(i) ? GEOSOLID : GEOFLUID;
+        nodeNumber++;
     }
 }
 
@@ -347,6 +405,8 @@ void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& start
         //writer->addVectorArrow(arrow);
     }
 }
+
+
 
 Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 {

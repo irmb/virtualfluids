@@ -67,6 +67,7 @@ Simulation::~Simulation()
 void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
 {
    this->gridProvider = gridProvider;
+   gridProvider->initalGridInformations();
    comm = SPtr<Communicator>(Communicator::getInstanz());
    this->para = para;
 

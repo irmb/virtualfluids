@@ -15,6 +15,7 @@
 
 #include <utilities/logger/Logger.h>
 #include <helper_cuda.h>
+#include "grid/GridInterface.cuh"
 
 
 void GridGpuStrategy::allocateGridMemory(SPtr<Grid> grid)
@@ -84,6 +85,8 @@ void GridGpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
 
 void GridGpuStrategy::freeMemory(SPtr<Grid> grid)
 {
+    delete grid->gridInterface;
+    
     delete[] grid->field;
 
     delete[] grid->neighborIndexX;

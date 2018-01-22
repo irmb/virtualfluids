@@ -58,7 +58,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
     para->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
     para->setD3Qxx(StringUtil::toInt(input->getValue("D3Qxx")));
-    para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
+    //para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
     para->setTEnd(StringUtil::toInt(input->getValue("TimeEnd")));
     para->setTOut(StringUtil::toInt(input->getValue("TimeOut")));
     para->setTStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
@@ -217,12 +217,12 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDoCheckPoint(StringUtil::toBool(input->getValue("DoCheckPoint")));
     para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    para->setGridX(StringUtil::toVector(input->getValue("GridX")));                      //GridX = StringUtil::toVector<int>(input->getValue( "GridX" ));          
-    para->setGridY(StringUtil::toVector(input->getValue("GridY")));                      //GridY = StringUtil::toVector<int>(input->getValue( "GridY" ));          
-    para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                      //GridZ = StringUtil::toVector<int>(input->getValue( "GridZ" ));
-    para->setDistX(StringUtil::toVector(input->getValue("DistX")));                      //DistX = StringUtil::toVector<int>(input->getValue( "DistX" ));
-    para->setDistY(StringUtil::toVector(input->getValue("DistY")));                      //DistY = StringUtil::toVector<int>(input->getValue( "DistY" ));
-    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                      //DistZ = StringUtil::toVector<int>(input->getValue( "DistZ" )); 
+    //para->setGridX(StringUtil::toVector(input->getValue("GridX")));                      //GridX = StringUtil::toVector<int>(input->getValue( "GridX" ));          
+    //para->setGridY(StringUtil::toVector(input->getValue("GridY")));                      //GridY = StringUtil::toVector<int>(input->getValue( "GridY" ));          
+    //para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                      //GridZ = StringUtil::toVector<int>(input->getValue( "GridZ" ));
+    //para->setDistX(StringUtil::toVector(input->getValue("DistX")));                      //DistX = StringUtil::toVector<int>(input->getValue( "DistX" ));
+    //para->setDistY(StringUtil::toVector(input->getValue("DistY")));                      //DistY = StringUtil::toVector<int>(input->getValue( "DistY" ));
+    //para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                      //DistZ = StringUtil::toVector<int>(input->getValue( "DistZ" )); 
                                                                                           ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
@@ -237,26 +237,26 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addGrid(35.25, 3.25, -4.75, 70.75, 40.75, 25.75, 0.5, "cpu", "D3Q27");
 
 
-    gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
-    gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
+    //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
+    //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
+    // gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
 
-    //SPtr<Parameter> para = Parameter::make();
-    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
+    SPtr<Parameter> para = Parameter::make();
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
 
-    //std::ifstream stream;
-    //stream.open(configPath.c_str(), std::ios::in);
-    //if (stream.fail())
-    //    throw "can not open config file!\n";
+    std::ifstream stream;
+    stream.open(configPath.c_str(), std::ios::in);
+    if (stream.fail())
+        throw "can not open config file!\n";
 
-    //UPtr<input::Input> input = input::Input::makeInput(stream, "config");
+    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
 
-    //setParameters(para, input);
+    setParameters(para, input);
 
-    //Simulation sim;
-    //sim.init(para, gridGenerator);
-    //sim.run();
+    Simulation sim;
+    sim.init(para, gridGenerator);
+    sim.run();
 }
 
 void simulate(const std::string& configPath)

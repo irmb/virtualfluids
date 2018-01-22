@@ -602,6 +602,11 @@ bool GridReader::hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level
 	return boundaryQ->getSize(level) > 0;
 }
 
+void GridReader::initalGridInformations()
+{
+    throw "not implemented yet:  GridReader::initalGridInformations";
+}
+
 void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const
 {
 	Q.q27[dirE] = &QQ[dirE   *sizeQ];

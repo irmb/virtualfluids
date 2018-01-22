@@ -38,7 +38,9 @@ public:
         CPU, GPU
     };
 
-    virtual VF_PUBLIC ~GridBuilder() {};
+    virtual VF_PUBLIC ~GridBuilder() {}
+    virtual void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY, std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY, std::vector<int>& distZ) = 0;
+    virtual int getNumberOfGridLevels() = 0;
 
     virtual void meshGeometry(std::string input, int level) = 0;
     virtual void deleteSolidNodes() = 0;
@@ -62,7 +64,12 @@ public:
     virtual void setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const = 0;
     virtual void setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const = 0;
     virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const = 0;
-
+    virtual uint getNumberOfNodesCF(int level) = 0;
+    virtual uint getNumberOfNodesFC(int level) = 0;
+    virtual void setCFC(uint* iCellCfc, int level) = 0;
+    virtual void setCFF(uint* iCellCff, int level) = 0;
+    virtual void setFCC(uint* iCellFcc, int level) = 0;
+    virtual void setFCF(uint* iCellFcf, int level) = 0;
 };
 
 #endif
