@@ -125,6 +125,8 @@ namespace InterfaceDebugWriter
 				double x1Neighbor = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
 				double x2Neighbor = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
 				double x3Neighbor = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+                if (x1Neighbor == 0 && x2Neighbor == 0 && x3Neighbor == 0)
+                    continue;
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1Neighbor),(float)(x2Neighbor),(float)(x3Neighbor) ) );
@@ -163,6 +165,8 @@ namespace InterfaceDebugWriter
 				double x1Neighbor = para->getParH(level+1)->coordX_SP[para->getParH(level+1)->neighborX_SP[pos]];
 				double x2Neighbor = para->getParH(level+1)->coordY_SP[para->getParH(level+1)->neighborY_SP[pos]];
 				double x3Neighbor = para->getParH(level+1)->coordZ_SP[para->getParH(level+1)->neighborZ_SP[pos]];
+                if (x1Neighbor == 0 && x2Neighbor == 0 && x3Neighbor == 0)
+                    continue;
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1Neighbor),(float)(x2Neighbor),(float)(x3Neighbor) ) );
@@ -201,6 +205,8 @@ namespace InterfaceDebugWriter
 				double x1Neighbor = para->getParH(level)->coordX_SP[para->getParH(level)->neighborX_SP[pos]];
 				double x2Neighbor = para->getParH(level)->coordY_SP[para->getParH(level)->neighborY_SP[pos]];
 				double x3Neighbor = para->getParH(level)->coordZ_SP[para->getParH(level)->neighborZ_SP[pos]];
+                if (x1Neighbor == 0 && x2Neighbor == 0 && x3Neighbor == 0)
+                    continue;
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1Neighbor),(float)(x2Neighbor),(float)(x3Neighbor) ) );
@@ -239,6 +245,8 @@ namespace InterfaceDebugWriter
 				double x1Neighbor = para->getParH(level+1)->coordX_SP[para->getParH(level+1)->neighborX_SP[pos]];
 				double x2Neighbor = para->getParH(level+1)->coordY_SP[para->getParH(level+1)->neighborY_SP[pos]];
 				double x3Neighbor = para->getParH(level+1)->coordZ_SP[para->getParH(level+1)->neighborZ_SP[pos]];
+                if (x1Neighbor == 0 && x2Neighbor == 0 && x3Neighbor == 0)
+                    continue;
 
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
 				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1Neighbor),(float)(x2Neighbor),(float)(x3Neighbor) ) );

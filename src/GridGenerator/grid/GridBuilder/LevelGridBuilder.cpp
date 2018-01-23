@@ -79,46 +79,6 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
     }
 }
 
-int LevelGridBuilder::getNumberOfGridLevels()
-{
-    return grids.size();
-}
-
-uint LevelGridBuilder::getNumberOfNodesCF(int level)
-{
-    return this->grids[level]->gridInterface->cf.numberOfEntries;
-}
-
-uint LevelGridBuilder::getNumberOfNodesFC(int level)
-{
-    return this->grids[level]->gridInterface->fc.numberOfEntries;
-}
-
-void LevelGridBuilder::setCFC(uint* iCellCfc, int level)
-{
-    for (int i = 0; i < this->grids[level]->gridInterface->cf.numberOfEntries; i++)
-        iCellCfc[i] = this->grids[level]->gridInterface->cf.coarse[i];
-}
-
-void LevelGridBuilder::setCFF(uint* iCellCff, int level)
-{
-    for (int i = 0; i < this->grids[level]->gridInterface->cf.numberOfEntries; i++)
-        iCellCff[i] = this->grids[level]->gridInterface->cf.fine[i];
-}
-
-void LevelGridBuilder::setFCC(uint* iCellFcc, int level)
-{
-    for (int i = 0; i < this->grids[level]->gridInterface->fc.numberOfEntries; i++)
-        iCellFcc[i] = this->grids[level]->gridInterface->fc.coarse[i];
-}
-
-void LevelGridBuilder::setFCF(uint* iCellFcf, int level)
-{
-    for (int i = 0; i < this->grids[level]->gridInterface->fc.numberOfEntries; i++)
-        iCellFcf[i] = this->grids[level]->gridInterface->fc.fine[i];
-}
-
-
 void LevelGridBuilder::removeOverlapNodes()
 {
     for (int level = 0; level < grids.size() - 1; level++)
@@ -137,27 +97,74 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 
 }
 
+
+uint LevelGridBuilder::getNumberOfGridLevels()
+{
+    return grids.size();
+}
+
+uint LevelGridBuilder::getNumberOfNodesCF(int level)
+{
+    return this->grids[level]->getNumberOfNodesCF();
+}
+
+uint LevelGridBuilder::getNumberOfNodesFC(int level)
+{
+    return this->grids[level]->getNumberOfNodesFC();
+}
+
+void LevelGridBuilder::setCFC(uint* iCellCfc, int level)
+{
+    this->grids[level]->setCFC(iCellCfc);
+}
+
+void LevelGridBuilder::setCFF(uint* iCellCff, int level)
+{
+    this->grids[level]->setCFF(iCellCff);
+}
+
+void LevelGridBuilder::setFCC(uint* iCellFcc, int level)
+{
+    this->grids[level]->setFCC(iCellFcc);
+}
+
+void LevelGridBuilder::setFCF(uint* iCellFcf, int level)
+{
+    this->grids[level]->setFCF(iCellFcf);
+}
+
+void LevelGridBuilder::setOffsetFC(real * xOffCf, real * yOffCf, real * zOffCf, int level)
+{
+    for (uint i = 0; i < getNumberOfNodesFC(level); i++)
+    {
+        xOffCf[i] = 0.0;
+        yOffCf[i] = 0.0;
+        zOffCf[i] = 0.0;
+    }
+}
+
+void LevelGridBuilder::setOffsetCF(real * xOffFc, real * yOffFc, real * zOffFc, int level)
+{
+    for (uint i = 0; i < getNumberOfNodesCF(level); i++)
+    {
+        xOffFc[i] = 0.0;
+        yOffFc[i] = 0.0;
+        zOffFc[i] = 0.0;
+    }
+}
+
+
 void LevelGridBuilder::deleteSolidNodes()
 {
     //this->gridWrapper[0]->deleteSolidNodes();
     //this->gridWrapper[0]->copyDataFromGPU();
 }
 
-void LevelGridBuilder::flood(Vertex &startFlood, int level)
-{
-    checkLevel(level);
-    //this->gridWrapper[level]->floodFill(startFlood);
-}
-
-void LevelGridBuilder::createBoundaryConditions()
-{
-    this->createBCVectors();
-}
 
 
-unsigned int LevelGridBuilder::getNumberOfNodes(unsigned int level) const
+uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
-    return (unsigned int) grids[level]->reducedSize;
+    return grids[level]->getNumberOfNodes();
 }
 
 std::vector<std::vector<std::vector<real> > > LevelGridBuilder::getQsValues() const
@@ -179,8 +186,7 @@ void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
    GridVTKWriter::writeGridToVTKXML(*grids[level].get(), output);
-
-
+   GridVTKWriter::writeSparseGridToVTK(*grids[level].get(), output);
 }
 
 
@@ -282,6 +288,10 @@ void LevelGridBuilder::setPressValues(real* RhoBC, int* kN, int channelSide, int
 }
 
 
+void LevelGridBuilder::createBoundaryConditions()
+{
+    this->createBCVectors();
+}
 
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/
@@ -313,10 +323,10 @@ void LevelGridBuilder::addShortQsToVector(int index)
 
     Grid grid = *grids[0].get();
 
-    for (int i = grid.d.dir_end; i >= 0; i--)
+    for (int i = grid.distribution.dir_end; i >= 0; i--)
     {
         int qIndex = i * grid.size + grid.matrixIndex[index];
-        real q = grid.d.f[qIndex];
+        real q = grid.distribution.f[qIndex];
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
             qKey += (uint32_t)pow(2, 26 - i);
@@ -339,10 +349,10 @@ void LevelGridBuilder::addQsToVector(int index)
 
     Grid grid = *grids[0].get();
 
-    for (int i = grid.d.dir_end; i >= 0; i--)
+    for (int i = grid.distribution.dir_end; i >= 0; i--)
     {
         int qIndex = i * grid.size + grid.matrixIndex[index];
-        real q = grid.d.f[qIndex];
+        real q = grid.distribution.f[qIndex];
         if (q > 0)
             qNode.push_back(q);
         else
@@ -359,9 +369,9 @@ void LevelGridBuilder::fillRBForNode(int x, int y, int z, int index, int directi
 
     Grid grid = *grids[0].get();
 
-    for (int i = grid.d.dir_end; i >= 0; i--)
+    for (int i = grid.distribution.dir_end; i >= 0; i--)
     {
-        if (grid.d.dirs[i * DIMENSION + direction] != directionSign)
+        if (grid.distribution.dirs[i * DIMENSION + direction] != directionSign)
             continue;
 
         qKey += (uint32_t)pow(2, 26 - i);
@@ -397,8 +407,8 @@ void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& start
     real qval = Qs[GEOMQS][i][qi + 1];
     if (qval > 0.0f)
     {
-        int qReverse = grid.d.dir_end - qi;
-        Vertex dir((real)grid.d.dirs[qReverse * DIMENSION + 0], (real)grid.d.dirs[qReverse* DIMENSION + 1], (real)grid.d.dirs[qReverse * DIMENSION + 2]);
+        int qReverse = grid.distribution.dir_end - qi;
+        Vertex dir((real)grid.distribution.dirs[qReverse * DIMENSION + 0], (real)grid.distribution.dirs[qReverse* DIMENSION + 1], (real)grid.distribution.dirs[qReverse * DIMENSION + 2]);
         Vertex nodeOnGeometry(startNode + (dir * qval));
         std::shared_ptr<Arrow> arrow = ArrowImp::make(startNode, nodeOnGeometry);
         trans->transformGridToWorld(arrow);

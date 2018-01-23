@@ -2,9 +2,9 @@
 #define GRID_H
 
 #include "GridGenerator/global.h"
+#include "distributions/Distribution.h"
 
-
-#include <GridGenerator/grid/distributions/Distribution.h>
+#define DIR_END_MAX 27
 
 struct Geometry;
 struct Vertex;
@@ -16,6 +16,14 @@ extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 {
+private:
+    HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+    HOST Grid();
+
+public:
+    HOST ~Grid();
+    static HOST SPtr<Grid> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution d);
+
     real startX = 0.0, startY = 0.0, startZ = 0.0;
     real endX, endY, endZ;
     real delta = 1.0;
@@ -23,20 +31,13 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 	char *field;
 	uint nx, ny, nz;
 	uint size;
-	Distribution d;
-
-    GridInterface* gridInterface;
 
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
 
     int *matrixIndex;
     uint reducedSize;
+    Distribution distribution;
 
-    HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution &d);
-    HOST Grid();
-    HOST Grid(char *field, int startX, int startY, int startZ, int nx, int ny, int nz, Distribution &d);
-    
-    static HOST SPtr<Grid> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution &d);
 
     HOST void mesh(Geometry &geometry);
     HOST void freeMemory();
@@ -64,32 +65,50 @@ struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
 	HOSTDEVICE bool isOutOfRange(const Vertex &actualPoint) const;
 
 	/*---------------------------------------------------------------------------------*/
-	HOSTDEVICE void meshTriangle(const Triangle &actualTriangle);
-    HOSTDEVICE void meshTriangleExact(const Triangle &triangle);
-
+    HOSTDEVICE void meshTriangle(const Triangle &triangle);
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle);
-
-	char* toString(const char* name) const;
-
     /*---------------------------------------------------------------------------------*/
     HOSTDEVICE void setNeighborIndices(const int &index);
 	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const;
     HOSTDEVICE void findNeighborIndex(int index);
-    HOSTDEVICE int getNeighborIndex(/*const int &nodeIndex, const int &neighborIndex, */const real &expectedX, const real &expectedY, const real &expectedZ);
+    HOST void findForGridInterfaceNewIndexCF(uint index);
+    HOST void findForGridInterfaceNewIndexFC(uint index);
+
+    HOSTDEVICE int getNeighborIndex(/*const int &nodeIndex, const int &neighborIndex, */const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
     HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
     HOSTDEVICE bool isNeighborInvalid(const int &index);
 
     HOST void removeInvalidNodes();
 
-    HOSTDEVICE bool isStopper(int index) const;
+    //HOSTDEVICE bool isStopper(int index) const;
+    HOST bool isEndOfGridStopper(uint index) const;
+
+
+    HOST uint getNumberOfNodes() const;
+
+    HOST uint getNumberOfNodesCF() const;
+    HOST uint getNumberOfNodesFC() const;
+
+    HOST void setCFC(uint* iCellCfc) const;
+    HOST void setCFF(uint* iCellCff) const;
+    HOST void setFCC(uint* iCellFcc) const;
+    HOST void setFCF(uint* iCellFcf) const;
+
 private:
-    HOSTDEVICE bool previousCellHasFluid(int index) const;
+    static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
+
+private:
+    //HOSTDEVICE bool previousCellHasFluid(int index) const;
 
     HOSTDEVICE bool nodeInNextCellIsInvalid(int index) const;
 
     SPtr<GridStrategy> gridStrategy;
 
+    GridInterface* gridInterface;
+
+    friend class GridGpuStrategy;
+    friend class GridCpuStrategy;
 
 };
 

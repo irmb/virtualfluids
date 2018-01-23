@@ -10,7 +10,7 @@
 #define CONSTANT __constant__
 
 
-#define HOSTDEVICE HOST DEVICE
+#define HOSTDEVICE HOST DEVICE 
 
 static void printCudaInformation(int i) {
     cudaDeviceProp prop;

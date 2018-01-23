@@ -40,12 +40,10 @@ public:
 
     virtual VF_PUBLIC ~GridBuilder() {}
     virtual void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY, std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY, std::vector<int>& distZ) = 0;
-    virtual int getNumberOfGridLevels() = 0;
+    virtual VF_PUBLIC uint getNumberOfGridLevels() = 0;
 
     virtual void meshGeometry(std::string input, int level) = 0;
     virtual void deleteSolidNodes() = 0;
-
-	virtual void flood(Vertex &startFlood, int level) = 0;
 
 	virtual void writeGridToVTK(std::string output, int level) = 0;
     virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level) = 0;
@@ -70,6 +68,8 @@ public:
     virtual void setCFF(uint* iCellCff, int level) = 0;
     virtual void setFCC(uint* iCellFcc, int level) = 0;
     virtual void setFCF(uint* iCellFcf, int level) = 0;
+    virtual void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
+    virtual void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
 };
 
 #endif

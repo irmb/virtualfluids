@@ -18,11 +18,6 @@ GridGenerator::~GridGenerator()
 
 }
 
-void GridGenerator::setUnstructuredGridBuilder(std::shared_ptr<GridBuilder> builder)
-{
-	this->builder = builder;
-}
-
 void GridGenerator::initalGridInformations()
 {
     std::vector<int> gridX, gridY, gridZ;
@@ -200,18 +195,13 @@ void GridGenerator::allocArrays_OffsetScale()
 {
     int maxLevel = para->getMaxLevel();
 
-    int numberOfNodesCF = 0;
-    int numberOfNodesFC = 0;
-
-    for (int level = 0; level < maxLevel; level++) {
+    for (int level = 0; level < maxLevel; level++) 
+    {
         const uint numberOfNodesPerLevelCF = builder->getNumberOfNodesCF(level);
         const uint numberOfNodesPerLevelFC = builder->getNumberOfNodesFC(level);
 
-        cout << "number of nodes CFlLevel " << level << " : " << numberOfNodesPerLevelCF << endl;
+        cout << "number of nodes CF Level " << level << " : " << numberOfNodesPerLevelCF << endl;
         cout << "number of nodes FC level " << level << " : " << numberOfNodesPerLevelFC << endl;
-
-        numberOfNodesCF += numberOfNodesPerLevelCF;
-        numberOfNodesFC += numberOfNodesPerLevelFC;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //size + memsize CF
@@ -219,8 +209,8 @@ void GridGenerator::allocArrays_OffsetScale()
         para->getParD(level)->K_CF = para->getParH(level)->K_CF;
         para->getParH(level)->intCF.kCF = para->getParH(level)->K_CF;
         para->getParD(level)->intCF.kCF = para->getParH(level)->K_CF;
-        para->getParH(level)->mem_size_kCF = sizeof(unsigned int)* para->getParH(level)->K_CF;
-        para->getParD(level)->mem_size_kCF = sizeof(unsigned int)* para->getParD(level)->K_CF;
+        para->getParH(level)->mem_size_kCF = sizeof(uint)* para->getParH(level)->K_CF;
+        para->getParD(level)->mem_size_kCF = sizeof(uint)* para->getParD(level)->K_CF;
         para->getParH(level)->mem_size_kCF_off = sizeof(real)* para->getParH(level)->K_CF;
         para->getParD(level)->mem_size_kCF_off = sizeof(real)* para->getParD(level)->K_CF;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,8 +219,8 @@ void GridGenerator::allocArrays_OffsetScale()
         para->getParD(level)->K_FC = para->getParH(level)->K_FC;
         para->getParH(level)->intFC.kFC = para->getParH(level)->K_FC;
         para->getParD(level)->intFC.kFC = para->getParH(level)->K_FC;
-        para->getParH(level)->mem_size_kFC = sizeof(unsigned int)* para->getParH(level)->K_FC;
-        para->getParD(level)->mem_size_kFC = sizeof(unsigned int)* para->getParD(level)->K_FC;
+        para->getParH(level)->mem_size_kFC = sizeof(uint)* para->getParH(level)->K_FC;
+        para->getParD(level)->mem_size_kFC = sizeof(uint)* para->getParD(level)->K_FC;
         para->getParH(level)->mem_size_kFC_off = sizeof(real)* para->getParH(level)->K_FC;
         para->getParD(level)->mem_size_kFC_off = sizeof(real)* para->getParD(level)->K_FC;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,10 +231,26 @@ void GridGenerator::allocArrays_OffsetScale()
         para->cudaAllocInterfaceOffFC(level);
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //init
+        builder->setOffsetCF(para->getParH(level)->offCF.xOffCF, para->getParH(level)->offCF.yOffCF, para->getParH(level)->offCF.zOffCF, level);
+        builder->setOffsetFC(para->getParH(level)->offFC.xOffFC, para->getParH(level)->offFC.yOffFC, para->getParH(level)->offFC.zOffFC, level);
         builder->setCFC(para->getParH(level)->intCF.ICellCFC, level);
         builder->setCFF(para->getParH(level)->intCF.ICellCFF, level);
         builder->setFCC(para->getParH(level)->intFC.ICellFCC, level);
         builder->setFCF(para->getParH(level)->intFC.ICellFCF, level);
+
+        printf("%d\n", para->getParH(level)->intCF.ICellCFC[para->getParH(level)->intCF.kCF - 1]);
+        printf("%d\n", para->getParH(level)->intCF.ICellCFF[para->getParH(level)->intCF.kCF - 1]);
+        printf("%d\n", para->getParH(level)->intFC.ICellFCC[para->getParH(level)->intFC.kFC - 1]);
+        printf("%d\n", para->getParH(level)->intFC.ICellFCF[para->getParH(level)->intFC.kFC - 1]);
+
+        printf("%f\n", para->getParH(level)->offFC.xOffFC[para->getParH(level)->intFC.kFC - 1]);
+        printf("%f\n", para->getParH(level)->offFC.yOffFC[para->getParH(level)->intFC.kFC - 1]);
+        printf("%f\n", para->getParH(level)->offFC.zOffFC[para->getParH(level)->intFC.kFC - 1]);
+        printf("%f\n", para->getParH(level)->offCF.xOffCF[para->getParH(level)->intCF.kCF - 1]);
+        printf("%f\n", para->getParH(level)->offCF.yOffCF[para->getParH(level)->intCF.kCF - 1]);
+        printf("%f\n", para->getParH(level)->offCF.zOffCF[para->getParH(level)->intCF.kCF - 1]);
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //copy
         para->cudaCopyInterfaceCF(level);

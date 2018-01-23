@@ -12,6 +12,7 @@
 #include <GridGenerator/grid/kernel/runGridKernelGPU.cuh>
 #include <GridGenerator/grid/Grid.cuh>
 
+#include <grid/distributions/Distribution.h>
 
 #include <utilities/logger/Logger.h>
 #include <helper_cuda.h>
@@ -94,7 +95,7 @@ void GridGpuStrategy::freeMemory(SPtr<Grid> grid)
     delete[] grid->neighborIndexZ;
     delete[] grid->matrixIndex;
 
-    delete[] grid->d.f;
+    delete[] grid->distribution.f;
 }
 
 
@@ -132,15 +133,15 @@ void GridGpuStrategy::allocField(SPtr<Grid> grid)
 
 void GridGpuStrategy::allocDistribution(SPtr<Grid> grid)
 {
-    CudaSafeCall(cudaMemcpyToSymbol(DIRECTIONS, grid->d.dirs, grid->d.dir_end * DIMENSION * sizeof(int)));
+    CudaSafeCall(cudaMemcpyToSymbol(DIRECTIONS, grid->distribution.dirs, grid->distribution.dir_end * DIMENSION * sizeof(int)));
     CudaCheckError();
 
-    unsigned long long distributionSize = grid->size * (grid->d.dir_end + 1);
+    unsigned long long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     unsigned long long size_in_bytes = distributionSize * sizeof(real);
     real sizeInMB = size_in_bytes / (1024.f*1024.f);
     *logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] device memory for distributions.\n\n";
 
-    checkCudaErrors(cudaMalloc(&grid->d.f, size_in_bytes));
+    checkCudaErrors(cudaMalloc(&grid->distribution.f, size_in_bytes));
     CudaCheckError();
 }
 
@@ -226,12 +227,12 @@ void GridGpuStrategy::copyAndFreeFieldFromGPU(SPtr<Grid> grid)
 
 void GridGpuStrategy::copyAndFreeDistributiondFromGPU(SPtr<Grid> grid)
 {
-    unsigned long long distributionSize = grid->size * (grid->d.dir_end + 1);
+    unsigned long long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     real *f_host = new real[distributionSize];
-    CudaSafeCall(cudaMemcpy(f_host, grid->d.f, distributionSize * sizeof(real), cudaMemcpyDeviceToHost));
-    CudaSafeCall(cudaFree(grid->d.f));
+    CudaSafeCall(cudaMemcpy(f_host, grid->distribution.f, distributionSize * sizeof(real), cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaFree(grid->distribution.f));
     CudaCheckError();
-    grid->d.f = f_host;
+    grid->distribution.f = f_host;
 }
 
 

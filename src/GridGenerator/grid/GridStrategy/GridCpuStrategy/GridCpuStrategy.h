@@ -32,7 +32,9 @@ public:
 
 protected:
     static void findInvalidNodes(SPtr<Grid> grid);
-    static void findNeighborIndices(SPtr<Grid> grid);
+    static void findForNeighborsNewIndices(SPtr<Grid> grid);
+    static void findForGridInterfaceNewIndices(SPtr<Grid> grid);
+
     static void setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid);
 
 };

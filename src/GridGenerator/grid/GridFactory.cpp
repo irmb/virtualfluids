@@ -2,6 +2,7 @@
 
 #include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 #include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
+#include "distributions/Distribution.h"
 
 
 SPtr<Grid> GridFactory::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,

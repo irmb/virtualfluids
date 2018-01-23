@@ -75,10 +75,6 @@ void writeInit(SPtr<Parameter> para)
 		} 
 		else
 		{
-
-
-			
-
 			if (para->getUseWale())
 			{
 				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para.get(), lev, fname);
@@ -93,9 +89,12 @@ void writeInit(SPtr<Parameter> para)
 			}
 
 			//Debug
-			//InterfaceDebugWriter::writeInterfaceLinesDebugCF(para);
-			//InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para);
-			//InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para);
+			InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+			InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugFCCneighbor(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugFCFneighbor(para.get());
 			//InterfaceDebugWriter::writeNeighborXLinesDebug(para);
 			//InterfaceDebugWriter::writeNeighborYLinesDebug(para);
 			//InterfaceDebugWriter::writeNeighborZLinesDebug(para);

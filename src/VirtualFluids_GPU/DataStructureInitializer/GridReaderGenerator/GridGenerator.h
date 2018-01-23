@@ -25,11 +25,9 @@ public:
     VF_PUBLIC GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
 	VF_PUBLIC virtual ~GridGenerator();
 
-	void setUnstructuredGridBuilder(std::shared_ptr<GridBuilder> builder);
-
-	virtual void allocArrays_CoordNeighborGeo()override;
-	virtual void allocArrays_BoundaryValues()override;
-	virtual void allocArrays_BoundaryQs()override;
+	void allocArrays_CoordNeighborGeo() override;
+	void allocArrays_BoundaryValues() override;
+	void allocArrays_BoundaryQs() override;
     void allocArrays_OffsetScale() override;
 
 	virtual void setDimensions();

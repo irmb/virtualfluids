@@ -231,7 +231,6 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    
     SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
     gridBuilder->addGrid(20, 0, -10, 80, 60, 50, 1.0, "cpu", "D3Q27");
     gridBuilder->addGrid(35.25, 3.25, -4.75, 70.75, 40.75, 25.75, 0.5, "cpu", "D3Q27");
@@ -239,7 +238,7 @@ void multipleLevel(const std::string& configPath)
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
-    // gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
 
     SPtr<Parameter> para = Parameter::make();

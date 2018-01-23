@@ -43,7 +43,7 @@ GLOBAL void runMeshing(Grid grid, const Geometry geom)
 {
 	unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
 	if (i < geom.size)
-		grid.meshTriangleExact(geom.triangles[i]);
+		grid.meshTriangle(geom.triangles[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////

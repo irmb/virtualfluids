@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "GridBuilder.h"
+#include "grid/GridInterface.cuh"
 
 struct Vertex;
 struct Grid;
@@ -33,8 +34,6 @@ public:
 
     VF_PUBLIC virtual void meshGeometry(std::string input, int level);
     VF_PUBLIC virtual void deleteSolidNodes();
-
-    VF_PUBLIC virtual void flood(Vertex &startFlood, int level);
 
     VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
     VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
@@ -85,13 +84,18 @@ public:
     VF_PUBLIC void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
         std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
         std::vector<int>& distZ) override;
-    VF_PUBLIC int getNumberOfGridLevels() override;
+    VF_PUBLIC uint getNumberOfGridLevels() override;
+
     VF_PUBLIC uint getNumberOfNodesCF(int level) override;
     VF_PUBLIC uint getNumberOfNodesFC(int level) override;
+
     VF_PUBLIC void setCFC(uint* iCellCfc, int level) override;
     VF_PUBLIC void setCFF(uint* iCellCff, int level) override;
     VF_PUBLIC void setFCC(uint* iCellFcc, int level) override;
     VF_PUBLIC void setFCF(uint* iCellFcf, int level) override;
+
+    VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
+    VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 };
 
 #endif

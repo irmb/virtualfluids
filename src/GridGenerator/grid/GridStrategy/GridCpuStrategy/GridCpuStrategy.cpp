@@ -26,12 +26,12 @@ void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
     grid->matrixIndex = new int[grid->size];
 
 
-    unsigned long distributionSize = grid->size * (grid->d.dir_end + 1);
+    unsigned long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     real sizeInMB = distributionSize * sizeof(real) / (1024.f*1024.f);
 
     *logging::out << logging::Logger::LOW << "Allocating " + SSTR(sizeInMB) + " [MB] host memory for distributions.\n";
 
-    grid->d.f = new real[distributionSize](); // automatic initialized with zeros
+    grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
 }
 
 void GridCpuStrategy::initalNodes(SPtr<Grid> grid)
@@ -39,9 +39,20 @@ void GridCpuStrategy::initalNodes(SPtr<Grid> grid)
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
     {
-        grid->setNeighborIndices(index);
         grid->matrixIndex[index] = index;
-        grid->setFieldEntryToFluid(index);
+        if(grid->isEndOfGridStopper(index))
+        {
+            grid->setFieldEntryToSolid(index);
+            grid->neighborIndexX[index] = -1;
+            grid->neighborIndexY[index] = -1;
+            grid->neighborIndexZ[index] = -1;
+        } 
+        else
+        {
+            grid->setFieldEntryToFluid(index);
+            grid->setNeighborIndices(index);
+        }
+            
     }
 }
 
@@ -49,7 +60,7 @@ void GridCpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
 {
 #pragma omp parallel for
     for (int i = 0; i < geom.size; i++)
-        grid->meshTriangleExact(geom.triangles[i]);
+        grid->meshTriangle(geom.triangles[i]);
 }
 
 void GridCpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
@@ -58,7 +69,8 @@ void GridCpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
 
     setOverlapNodesToInvalid(grid, finerGrid);
     grid->removeInvalidNodes();
-    findNeighborIndices(grid);
+    findForNeighborsNewIndices(grid);
+    findForGridInterfaceNewIndices(grid);
 }
 
 void GridCpuStrategy::setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid)
@@ -67,11 +79,22 @@ void GridCpuStrategy::setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finer
         grid->setOverlapNodeToInvalid(index, *finerGrid.get());
 }
 
-void GridCpuStrategy::findNeighborIndices(SPtr<Grid> grid)
+void GridCpuStrategy::findForNeighborsNewIndices(SPtr<Grid> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
         grid->findNeighborIndex(index);
+}
+
+void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<Grid> grid)
+{
+#pragma omp parallel for
+    for (uint index = 0; index < grid->gridInterface->cf.numberOfEntries; index++)
+        grid->findForGridInterfaceNewIndexCF(index);
+
+#pragma omp parallel for
+    for (uint index = 0; index < grid->gridInterface->fc.numberOfEntries; index++)
+        grid->findForGridInterfaceNewIndexFC(index);
 }
 
 
@@ -81,7 +104,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
 
     findInvalidNodes(grid);
     grid->removeInvalidNodes();
-    findNeighborIndices(grid);
+    findForNeighborsNewIndices(grid);
 
     clock_t end = clock();
     real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
@@ -113,6 +136,6 @@ void GridCpuStrategy::freeMemory(SPtr<Grid> grid)
     delete[] grid->neighborIndexZ;
     delete[] grid->matrixIndex;
 
-    delete[] grid->d.f;
+    delete[] grid->distribution.f;
 }
 
