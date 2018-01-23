@@ -22,7 +22,8 @@ public:
    virtual void calculate();
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime() override;
-   void setBulkOmegaToOmega(bool value);
+   void setBulkViscosity(LBMReal value);
+   //void setBulkOmegaToOmega(bool value);
    //void setViscosityFlag(bool vf);
 protected:
    virtual void initDataSet();
@@ -42,8 +43,9 @@ protected:
    LBMReal forcingX3;
    
    // bulk viscosity
-   bool bulkOmegaToOmega;
-   LBMReal OxxPyyPzz; 
+   //bool bulkOmegaToOmega;
+   LBMReal OxxPyyPzz; //omega2 (bulk viscosity)
+   LBMReal bulkViscosity;
 
    //bool viscosityFlag;
    //LBMReal OxyyPxzz;

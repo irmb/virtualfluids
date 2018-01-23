@@ -12,6 +12,7 @@
 CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderViscosityLBMKernel()
 {
    this->compressible = true;
+   bulkViscosity = 0;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulant4thOrderViscosityLBMKernel::~CompressibleCumulant4thOrderViscosityLBMKernel(void)
@@ -39,14 +40,15 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
    kernel->setIndex(ix1, ix2, ix3);
    kernel->setDeltaT(deltaT);
 
-   if (bulkOmegaToOmega)
+   if (bulkViscosity != 0)
    {
-      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->OxxPyyPzz = collFactor;
-   }
+      OxxPyyPzz = 1.0/(3.0*bulkViscosity/deltaT+0.5);
+   } 
    else
    {
-      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->OxxPyyPzz = one;
+      OxxPyyPzz = one;
    }
+   dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->OxxPyyPzz = this->OxxPyyPzz;
 
    return kernel;
 }
@@ -101,10 +103,18 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate()
    int maxX3 = bcArrayMaxX3-ghostLayerWidth;
 
    LBMReal omega = collFactor;
-   LBMReal OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
-   LBMReal OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
-   LBMReal Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);
+   //LBMReal OxyyPxzz  = eight*(-two+omega)*(one+two*omega)/(-eight-fourteen*omega+seven*omega*omega);//one;
+   //LBMReal OxyyMxzz  = eight*(-two+omega)*(-seven+four*omega)/(fiftysix-fifty*omega+nine*omega*omega);//one;
+   //LBMReal Oxyz      = twentyfour*(-two+omega)*(-two-seven*omega+three*omega*omega)/(fourtyeight+c152*omega-c130*omega*omega+twentynine*omega*omega*omega);
+   LBMReal OxyyPxzz  = 8.0*(omega-2.0)*(OxxPyyPzz*(3.0*omega-1.0)-5.0*omega)/(8.0*(5.0-2.0*omega)*omega+OxxPyyPzz*(8.0+omega*(9.0*omega-26.0)));
+   LBMReal OxyyMxzz  = 8.0*(omega-2.0)*(omega+OxxPyyPzz*(3.0*omega-7.0))/(OxxPyyPzz*(56.0-42.0*omega+9.0*omega*omega)-8.0*omega);
+   LBMReal Oxyz      = 24.0*(omega-2.0)*(4.0*omega*omega+omega*OxxPyyPzz*(18.0-13.0*omega)+OxxPyyPzz*OxxPyyPzz*(2.0+omega*(6.0*omega-11.0)))/(16.0*omega*omega*(omega-6.0)-2.0*omega*OxxPyyPzz*(216.0+5.0*omega*(9.0*omega-46.0))+OxxPyyPzz*OxxPyyPzz*(omega*(3.0*omega-10.0)*(15.0*omega-28.0)-48.0));
 
+   //LBMReal A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
+   //LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
+
+   LBMReal A = (4.0*omega*omega+2.0*omega*OxxPyyPzz*(omega-6.0)+OxxPyyPzz*OxxPyyPzz*(omega*(10.0-3.0*omega)-4.0))/((omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
+   LBMReal B = (4.0*omega*OxxPyyPzz*(9.0*omega-16.0)-4.0*omega*omega-2.0*OxxPyyPzz*OxxPyyPzz*(2.0+9.0*omega*(omega-2.0)))/(3.0*(omega-OxxPyyPzz)*(OxxPyyPzz*(2.0+3.0*omega)-8.0*omega));
 
    for (int x3 = minX3; x3 < maxX3; x3++)
    {
@@ -695,8 +705,7 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate()
                //CUMcbb    += wadjust * (-CUMcbb); 
                //////////////////////////////////////////////////////////////////////////
                //////////////////////////////////////////////////////////////////////////
-               LBMReal A = (four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega);
-               LBMReal B = (four + twentyeight*omega - fourteen*omega*omega) / (six - twentyone*omega + fiveteen*omega*omega);
+
                //////////////////////////////////////////////////////////////////////////
 
 
@@ -1042,10 +1051,16 @@ double CompressibleCumulant4thOrderViscosityLBMKernel::getCalculationTime()
    return timer.getTotalTime();
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant4thOrderViscosityLBMKernel::setBulkOmegaToOmega(bool value)
+void CompressibleCumulant4thOrderViscosityLBMKernel::setBulkViscosity(LBMReal value)
 {
-   bulkOmegaToOmega = value;
+   bulkViscosity = value;
 }
+
+//////////////////////////////////////////////////////////////////////////
+//void CompressibleCumulant4thOrderViscosityLBMKernel::setBulkOmegaToOmega(bool value)
+//{
+//   bulkOmegaToOmega = value;
+//}
 
 //void CompressibleCumulant4thOrderViscosityLBMKernel::setViscosityFlag(bool vf)
 //{

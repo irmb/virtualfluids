@@ -154,6 +154,7 @@ void run(string configname)
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
       
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(nuLB*1.0e4);
 
       kernel->setNX(std::array<int,3>{{blockNx[0], blockNx[1], blockNx[2]}});
       SPtr<BCProcessor> bcProc;
@@ -251,7 +252,8 @@ void run(string configname)
             RefineCrossAndInsideGbObjectBlockVisitor refVisitorCylinderL2(refCylinderL2, level);
             grid->accept(refVisitorCylinderL2);
 
-            SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.015, 0.0, -0.04, 1.100, 0.1, 0.04));
+            //SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.015, 0.0, -0.04, 1.100, 0.1, 0.04));
+            SPtr<GbObject3D> refBoxL2(new GbCuboid3D(0.015, 0.0, -0.04, 0.5, 0.1, 0.04));
             if (myid==0) GbSystem3D::writeGeoObject(refBoxL2.get(), pathOut+"/geo/refBoxL2", WbWriterVtkXmlASCII::getInstance());
             RefineCrossAndInsideGbObjectBlockVisitor refVisitorBoxL2(refBoxL2, level);
             grid->accept(refVisitorBoxL2);
