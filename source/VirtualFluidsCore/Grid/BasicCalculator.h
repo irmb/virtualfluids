@@ -12,7 +12,7 @@ class Block3DConnector;
 class BasicCalculator : public Calculator
 {
 public:
-   BasicCalculator();
+   BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps);
    virtual ~BasicCalculator();
    virtual void calculate();
 

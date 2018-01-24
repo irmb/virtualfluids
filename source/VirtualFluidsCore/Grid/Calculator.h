@@ -17,11 +17,9 @@ class CoProcessor;
 class Calculator 
 {
 public:
-   Calculator();
+   Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps);
    virtual ~Calculator();
-   void setGrid(SPtr<Grid3D> grid);
-   void setLastTimeStep(int t);
-   void setVisScheduler(SPtr<UbScheduler> s);
+   //! control of coProcessors
    void addCoProcessor(SPtr<CoProcessor> coProcessor);
    void coProcess(double step);
 
@@ -36,13 +34,13 @@ protected:
 
    int minLevel, maxLevel;
    int startTimeStep;
-   int lastTimeStep;
+   int numberOfTimeSteps;
    std::vector< std::vector< SPtr<Block3DConnector> > > localConns;
    std::vector< std::vector< SPtr<Block3DConnector> > > remoteConns;
 
    bool refinement;
    SPtr<Grid3D> grid;
-   SPtr<UbScheduler> visScheduler;
+   SPtr<UbScheduler> additionalGhostLayerUpdateScheduler;
    std::vector< std::vector<SPtr<Block3D> > > blocks;
 
    //localInterConns and remoteInterConns save interpolation connectors 

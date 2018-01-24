@@ -574,10 +574,7 @@ void run(string configname)
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
       omp_set_num_threads(numOfThreads);
-      SPtr<Calculator> calculator(new BasicCalculator());
-      calculator->setGrid(grid);
-      calculator->setLastTimeStep(endTime);
-      calculator->setVisScheduler(stepSch);
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepSch, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
@@ -677,13 +674,9 @@ void test_run()
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       //omp_set_num_threads(numOfThreads);
-      SPtr<Calculator> calculator(new BasicCalculator());
-      calculator->setGrid(grid);
-      calculator->setLastTimeStep(2);
-      calculator->setVisScheduler(stepSch);
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepSch, 2));
       calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->setVisScheduler(stepSch);
-
+   
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

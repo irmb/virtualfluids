@@ -8,17 +8,10 @@
 
 #include <basics/utilities/UbException.h>
 
-Calculator::Calculator()
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
-Calculator::~Calculator()
-{
-
-}
-//////////////////////////////////////////////////////////////////////////
-void Calculator::setGrid(SPtr<Grid3D> grid)
+Calculator::Calculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps) :
+   grid(grid),
+   additionalGhostLayerUpdateScheduler(additionalGhostLayerUpdateScheduler),
+   numberOfTimeSteps(numberOfTimeSteps)
 {
    this->grid = grid;
    startTimeStep = int(grid->getTimeStep())+1;
@@ -49,14 +42,9 @@ void Calculator::setGrid(SPtr<Grid3D> grid)
    initRemoteConnectors();
 }
 //////////////////////////////////////////////////////////////////////////
-void Calculator::setLastTimeStep(int t)
+Calculator::~Calculator()
 {
-   this->lastTimeStep = t;
-}
-//////////////////////////////////////////////////////////////////////////
-void Calculator::setVisScheduler(SPtr<UbScheduler> s)
-{
-   visScheduler = s;
+
 }
 //////////////////////////////////////////////////////////////////////////
 void Calculator::addCoProcessor(SPtr<CoProcessor> coProcessor)

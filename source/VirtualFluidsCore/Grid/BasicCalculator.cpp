@@ -15,7 +15,8 @@
 //#define TIMING
 //#include "UbTiming.h"
 
-BasicCalculator::BasicCalculator()
+BasicCalculator::BasicCalculator(SPtr<Grid3D> grid, SPtr<UbScheduler> additionalGhostLayerUpdateScheduler, int numberOfTimeSteps) : 
+   Calculator(grid, additionalGhostLayerUpdateScheduler, numberOfTimeSteps)
 {
 
 }
@@ -43,7 +44,7 @@ void BasicCalculator::calculate()
       double time[6];
 #endif
 
-      for (calcStep = startTimeStep; calcStep<=lastTimeStep+1; calcStep++)
+      for (calcStep = startTimeStep; calcStep<=numberOfTimeSteps+1; calcStep++)
       {
          coProcess((double)(calcStep-1));
 
@@ -123,7 +124,7 @@ void BasicCalculator::calculate()
             }
          }
          //exchange data between blocks for visualization
-         if ((int)visScheduler->getNextDueTime()==calcStep)
+         if ((int)additionalGhostLayerUpdateScheduler->getNextDueTime()==calcStep)
          {
             exchangeBlockData(straightStartLevel, maxInitLevel);
          }
