@@ -4421,7 +4421,7 @@ real Parameter::TrafoXtoMGsWorld(int CoordX, int level)
 	{
 		temp += (parH[i]->XdistKn + 0.25f) * 2.f * parH[i]->dx;
 	}
-	temp += (real)((CoordX - STARTOFFX) * parH[level]->dx);
+	temp += (real)((CoordX ) * parH[level]->dx);
 	return temp;
 }
 real Parameter::TrafoYtoMGsWorld(int CoordY, int level)
@@ -4431,7 +4431,7 @@ real Parameter::TrafoYtoMGsWorld(int CoordY, int level)
 	{
 		temp += (parH[i]->YdistKn + 0.25f) * 2.f * parH[i]->dx;
 	}
-	temp += (real)((CoordY - STARTOFFY) * parH[level]->dx);
+	temp += (real)((CoordY ) * parH[level]->dx);
 	return temp;
 }
 real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
@@ -4441,7 +4441,7 @@ real Parameter::TrafoZtoMGsWorld(int CoordZ, int level)
 	{
 		temp += (parH[i]->ZdistKn + 0.25f) * 2.f * parH[i]->dx;
 	}
-	temp += (real)((CoordZ - STARTOFFZ) * parH[level]->dx);
+	temp += (real)((CoordZ) * parH[level]->dx);
 	return temp;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

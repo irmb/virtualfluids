@@ -61,6 +61,13 @@ private:
 
 public:
     void initalGridInformations() override;
+
+
+private:
+    std::string verifyNeighborIndices(int level) const;
+    std::string verifyNeighborIndex(int level, int index, int &invalidNodes, int &stopperNodes, int &wrongNeighbors) const;
+    std::string checkNeighbor(int level, real x, real y, real z, int index, int& numberOfWrongNeihgbors, int neighborIndex, real neighborX, real neighborY, real neighborZ, std::string direction) const;
+
 };
 
 #endif

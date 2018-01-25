@@ -233,8 +233,9 @@ void multipleLevel(const std::string& configPath)
 {
     SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
     gridBuilder->addGrid(20, 0, -10, 80, 60, 50, 1.0, "cpu", "D3Q27");
-    gridBuilder->addGrid(35.25, 3.25, -4.75, 70.75, 40.75, 25.75, 0.5, "cpu", "D3Q27");
+    gridBuilder->addGrid(40.25, 20.25, 10.25, 59.75, 39.75, 29.75, 0.5, "cpu", "D3Q27");
 
+    //SimulationFileWriter::writeSimulationFiles("D:/GRIDGENERATION/couplingVF/periodicTaylorRefinement/simu/", gridBuilder, false, std::make_shared<TransformatorImp>());
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);

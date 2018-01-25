@@ -38,6 +38,8 @@ public:
     uint reducedSize;
     Distribution distribution;
 
+    bool periodicityX = true, periodicityY = true, periodicityZ = true;
+
 
     HOST void mesh(Geometry &geometry);
     HOST void freeMemory();
@@ -47,6 +49,7 @@ public:
     HOSTDEVICE bool isOverlapStopper(uint index) const;
     HOSTDEVICE bool isInside(uint index, const Grid& grid);
 
+    HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ);
 	HOSTDEVICE bool isFluid(uint index) const;
 	HOSTDEVICE bool isSolid(uint index) const;
 	HOSTDEVICE bool isQ(uint index) const;
@@ -69,7 +72,9 @@ public:
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle);
     /*---------------------------------------------------------------------------------*/
     HOSTDEVICE void setNeighborIndices(const int &index);
-	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y, const real z) const;
+	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
+    HOSTDEVICE real getNeighhborCoord(bool periodicity, real actualCoord, real startCoord, real  endCoord) const;
+    HOSTDEVICE void setStopperNeighborCoords(int index);
     HOSTDEVICE void findNeighborIndex(int index);
     HOST void findForGridInterfaceNewIndexCF(uint index);
     HOST void findForGridInterfaceNewIndexFC(uint index);
@@ -95,10 +100,12 @@ public:
     HOST void setFCC(uint* iCellFcc) const;
     HOST void setFCF(uint* iCellFcf) const;
 
+    HOST std::string toString() const;
+
 private:
     static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
-private:
+
     //HOSTDEVICE bool previousCellHasFluid(int index) const;
 
     HOSTDEVICE bool nodeInNextCellIsInvalid(int index) const;

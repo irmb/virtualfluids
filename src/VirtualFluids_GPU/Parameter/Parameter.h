@@ -979,10 +979,11 @@ private:
 	real TrafoXtoWorld(int CoordX, int level);
 	real TrafoYtoWorld(int CoordY, int level);
 	real TrafoZtoWorld(int CoordZ, int level);
+public:
 	real TrafoXtoMGsWorld(int CoordX, int level);
 	real TrafoYtoMGsWorld(int CoordY, int level);
 	real TrafoZtoMGsWorld(int CoordZ, int level);
-
+private:
 	//Multi GPGPU///////////////
 	//1D domain decomposition
 	std::vector<std::string> possNeighborFilesSend;

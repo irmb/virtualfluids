@@ -63,14 +63,14 @@ HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real end
 
 HOST Grid::Grid()
 {
-    printf("Constructor\n");
-    this->print();
+    //printf("Constructor\n");
+    //this->print();
 };
 
 HOST Grid::~Grid()
 {
-    printf("Destructor\n");
-    this->print();
+    //printf("Destructor\n");
+    //this->print();
 };
 
 HOST void Grid::mesh(Geometry &geometry)
@@ -116,6 +116,13 @@ HOSTDEVICE bool Grid::isInside(uint index, const Grid& finerGrid)
         (x > finerGrid.startX + overlapWithStopper && x < finerGrid.endX - overlap) &&
         (y > finerGrid.startY + overlapWithStopper && y < finerGrid.endY - overlap) &&
         (z > finerGrid.startZ + overlapWithStopper && z < finerGrid.endZ - overlap);
+}
+
+HOST void Grid::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
+{
+    this->periodicityX = periodicityX;
+    this->periodicityY = periodicityY;
+    this->periodicityZ = periodicityZ;
 }
 
 HOSTDEVICE bool Grid::isFluid(uint index) const
@@ -208,11 +215,6 @@ HOSTDEVICE void Grid::transIndexToCoords(const int index, real &x, real &y, real
     z = (z * delta) + startZ;
 }
 
-HOSTDEVICE void Grid::print() const
-{
-    printf("min: (%2.2f, (%2.2f, %2.2f), max: (%2.2f, %2.2f, %2.2f), size: %d, delta: %2.2f\n", startX, startY, startZ,
-           endX, endY, endZ, size, delta);
-}
 
 HOSTDEVICE void Grid::setDebugPoint(const Vertex &point, const int pointValue)
 {
@@ -328,9 +330,7 @@ HOSTDEVICE void Grid::findNeighborIndex(int index)
     if(this->isOverlapStopper(index) || isEndOfGridStopper(index))
     {
         this->setFieldEntryToSolid(index);
-        this->neighborIndexX[index] = -1;
-        this->neighborIndexY[index] = -1;
-        this->neighborIndexZ[index] = -1;
+        this->setStopperNeighborCoords(index);
         return;
     }
 
@@ -427,14 +427,37 @@ HOST void Grid::removeInvalidNodes()
     printf("new size coords: %d , delete nodes: %d\n", reducedSize, removedNodes);
 }
 
-HOSTDEVICE void Grid::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, const real x, const real y,
-                                       const real z) const
+HOSTDEVICE void Grid::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const
 {
-    neighborX = CudaMath::lessEqual(x + delta, endX) ? x + delta : startX;
-    neighborY = CudaMath::lessEqual(y + delta, endY) ? y + delta : startY;
-    neighborZ = CudaMath::lessEqual(z + delta, endZ) ? z + delta : startZ;
+    neighborX = getNeighhborCoord(periodicityX, x, startX, endX);
+    neighborY = getNeighhborCoord(periodicityY, y, startY, endY);
+    neighborZ = getNeighhborCoord(periodicityZ, z, startZ, endZ);
 }
 
+HOSTDEVICE real Grid::getNeighhborCoord(bool periodicity, real actualCoord, real startCoord, real endCoord) const
+{
+    if (periodicity)
+        return CudaMath::lessEqual(actualCoord + delta, endCoord) ? actualCoord + delta : startCoord;
+    else
+        return actualCoord + delta;
+}
+
+void Grid::setStopperNeighborCoords(int index)
+{
+
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    if (CudaMath::lessEqual(x + delta, endX + delta))
+        neighborIndexX[index] = getNeighborIndex(x + delta, y, z);
+
+    if (CudaMath::lessEqual(y + delta, endY + delta))
+        neighborIndexY[index] = getNeighborIndex(x, y + delta, z);
+
+    if (CudaMath::lessEqual(z + delta, endZ + delta))
+        neighborIndexZ[index] = getNeighborIndex(x, y, z + delta);
+
+}
 
 
 HOST bool Grid::isEndOfGridStopper(uint index) const
@@ -508,10 +531,28 @@ void Grid::setFCF(uint* iCellFcf) const
     setGridInterface(iCellFcf, this->gridInterface->fc.fine, this->gridInterface->fc.numberOfEntries);
 }
 
-
 void Grid::setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size)
 {
     for (uint i = 0; i < size; i++)
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1;
 }
+
+
+
+HOSTDEVICE void Grid::print() const
+{
+    printf("min: (%2.2f, %2.2f, %2.2f), max: (%2.2f, %2.2f, %2.2f), size: %d, delta: %2.2f\n", startX, startY, startZ,
+           endX, endY, endZ, size, delta);
+}
+
+std::string Grid::toString() const
+{
+    std::ostringstream oss;
+    oss << 
+        "min: (" << startX << ", " << startY << ", " << startZ << 
+        "), max: " << endX << ", " << endY << ", " << endZ <<
+        "), size: " << reducedSize << ", delta: " << delta << "\n";
+    return oss.str();
+}
+
 

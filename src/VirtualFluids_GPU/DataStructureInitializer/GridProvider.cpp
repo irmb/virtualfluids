@@ -32,26 +32,27 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
 {
     //Taylor Green Vortex uniform
-    real PI = 3.141592653589793238462643383279f;
-    real gridX = para->getParH(level)->gridNX - 1;
-    real gridY = para->getParH(level)->gridNY - 1;
-    real gridZ = para->getParH(level)->gridNZ - 1;
+    const real PI = 3.141592653589793238462643383279f;
+
+    const real gridX = (para->getParH(0)->gridNX - 1) ;
+    const real gridY = (para->getParH(0)->gridNY - 1) ;
+    const real gridZ = (para->getParH(0)->gridNZ - 1) ;
+
     //like MG
     //real uAdvect = real (1. / 250.); //32 nodes -> 250; 40 nodes -> 200; 64 nodes -> 500; 128 nodes -> 1000; 256 nodes -> 2000; 512 nodes -> 4000
-    real uAdvect = real(0.0016); //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
+    const real uAdvect = 0.0016; //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
 
-    for (int j = 0; j <= numberOfNodes; j++)
+    for (int j = 1; j <= numberOfNodes; j++)
     {
-        para->getParH(level)->rho_SP[j] =
-            (real)((para->getVelocity()*para->getVelocity())*3.0 / 4.0*(cos(para->getParH(level)->coordX_SP[j] * 4.0*PI /
-            (real)gridX) + cos(para->getParH(level)->coordZ_SP[j] * 4.0*PI /
-                (real)gridZ)))*(real)(gridZ) / (real)(gridX);
+        const real coordX = para->getParH(level)->coordX_SP[j];
+        const real coordZ = para->getParH(level)->coordZ_SP[j];
+        const real velocity = para->getVelocity();
 
-        para->getParH(level)->vy_SP[j] = (real)0.0;
-        para->getParH(level)->vx_SP[j] =
-            (real)(para->getVelocity()*sin((para->getParH(level)->coordX_SP[j] * 2.0*PI / (real)gridX))*cos(para->getParH(level)->coordZ_SP[j] * 2.0*PI / (real)gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
-        para->getParH(level)->vz_SP[j] =
-            (real)(-para->getVelocity()*cos((para->getParH(level)->coordX_SP[j] * 2.0*PI / (real)gridX))*sin(para->getParH(level)->coordZ_SP[j] * 2.0*PI / (real)gridZ));// *(real)(gridZ) / (real)(gridX);
+        para->getParH(level)->rho_SP[j] = real((velocity * velocity) * 3.0 / 4.0 * (cos(coordX * 4.0*PI / gridX) + cos(coordZ * 4.0*PI / gridZ))) * gridZ / gridX;
+
+        para->getParH(level)->vy_SP[j] = real(0.0);
+        para->getParH(level)->vx_SP[j] = real( velocity * sin(coordX * 2.0*PI / gridX) * cos(coordZ * 2.0*PI / gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
+        para->getParH(level)->vz_SP[j] = real(-velocity * cos(coordX * 2.0*PI / gridX) * sin(coordZ * 2.0*PI / gridZ)); // *(real)(gridZ) / (real)(gridX);
 
        //para->getParH(level)->vx_SP[j] = para->getVelocity();//0.0f;//0.035f;
        //para->getParH(level)->vy_SP[j] = 0.0f;//para->getVelocity();//0.0f;

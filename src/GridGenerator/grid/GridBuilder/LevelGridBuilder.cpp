@@ -55,11 +55,24 @@ LevelGridBuilder::~LevelGridBuilder()
         grid->freeMemory();
 }
 
+void LevelGridBuilder::verifyGridNeighbors()
+{
+    //for (const auto grid : grids)
+    //    std::cout << grid->verifyNeighborIndices();
+}
+
 void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution)
 {
     const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution);
-    grid->print();
     grids.push_back(grid);
+
+    if(this->getNumberOfGridLevels() == 1)
+        grid->setPeriodicity(true, true, true);
+    else
+        grid->setPeriodicity(false, false, false);
+
+    grid->print();
+
     this->removeOverlapNodes();
 }
 

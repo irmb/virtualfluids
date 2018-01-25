@@ -5,6 +5,7 @@
 #include <GPU/CudaMemoryManager.h>
 
 #include <iostream>
+#include "utilities/math/CudaMath.cuh"
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
 {
@@ -65,6 +66,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
+
+        //std::cout << verifyNeighborIndices(level);
 	}
 	std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
 	std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
@@ -78,9 +81,9 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 	for (int i = 0; i < channelBoundaryConditions.size(); i++)
 	{
-		if (this->channelBoundaryConditions[i] == "velocity") { setVelocityValues(i); }
-		else if (this->channelBoundaryConditions[i] == "pressure") { setPressureValues(i); }
-		else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowValues(i); }
+        setVelocityValues(i);
+        setPressureValues(i); 
+        setOutflowValues(i); 
 	}
 }
 
@@ -88,12 +91,16 @@ void GridGenerator::setPressureValues(int channelSide) const
 {
 	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
-		int sizePerLevel = builder->getBoundaryConditionSize(channelSide);
-		if (sizePerLevel > 1)
-		{
-			std::cout << "size pressure level " << level << " : " << sizePerLevel << std::endl;
+
+        int sizePerLevel = 0;
+        if ((this->channelBoundaryConditions[channelSide] == "pressure"))
+		    sizePerLevel = builder->getBoundaryConditionSize(channelSide);
 
 			setPressSizePerLevel(level, sizePerLevel);
+            if (sizePerLevel > 0)
+            {
+             std::cout << "size pressure level " << level << " : " << sizePerLevel << std::endl;
+
             cudaMemoryManager->cudaAllocPress(level);
 
 			setPressRhoBC(sizePerLevel, level, channelSide);
@@ -114,12 +121,16 @@ void GridGenerator::setVelocityValues(int channelSide) const
 {
 	for (unsigned int level = 0; level <= para->getMaxLevel(); level++)
 	{
-        int sizePerLevel = builder->getBoundaryConditionSize(channelSide);
-        if (sizePerLevel > 1)
-		{
-			std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
+        int sizePerLevel = 0;
+        if ((this->channelBoundaryConditions[channelSide] == "velocity"))
+            sizePerLevel = builder->getBoundaryConditionSize(channelSide);
 
-			setVelocitySizePerLevel(level, sizePerLevel);
+		setVelocitySizePerLevel(level, sizePerLevel);
+
+        if (sizePerLevel > 0)
+        {
+            std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
+
             cudaMemoryManager->cudaAllocVeloBC(level);
 
 			setVelocity(level,  sizePerLevel, channelSide);
@@ -147,12 +158,16 @@ void GridGenerator::setOutflowValues(int channelSide) const
 {
 	for (unsigned int level = 0; level < para->getMaxLevel(); level++)
 	{
-		int sizePerLevel = builder->getBoundaryConditionSize(channelSide);
-		if (sizePerLevel > 1)
-		{
-			std::cout << "size outflow level " << level << " : " << sizePerLevel << std::endl;
+        int sizePerLevel = 0;
+        if ((this->channelBoundaryConditions[channelSide] == "outflow"))
+            sizePerLevel = builder->getBoundaryConditionSize(channelSide);
+
 
 			setOutflowSizePerLevel(level, sizePerLevel);
+            if (sizePerLevel > 0)
+            {
+                std::cout << "size outflow level " << level << " : " << sizePerLevel << std::endl;
+
             cudaMemoryManager->cudaAllocOutflowBC(level);
 
 			setOutflow(level, sizePerLevel, channelSide);
@@ -238,17 +253,17 @@ void GridGenerator::allocArrays_OffsetScale()
         builder->setFCC(para->getParH(level)->intFC.ICellFCC, level);
         builder->setFCF(para->getParH(level)->intFC.ICellFCF, level);
 
-        printf("%d\n", para->getParH(level)->intCF.ICellCFC[para->getParH(level)->intCF.kCF - 1]);
-        printf("%d\n", para->getParH(level)->intCF.ICellCFF[para->getParH(level)->intCF.kCF - 1]);
-        printf("%d\n", para->getParH(level)->intFC.ICellFCC[para->getParH(level)->intFC.kFC - 1]);
-        printf("%d\n", para->getParH(level)->intFC.ICellFCF[para->getParH(level)->intFC.kFC - 1]);
+        //printf("%d\n", para->getParH(level)->intCF.ICellCFC[para->getParH(level)->intCF.kCF - 1]);
+        //printf("%d\n", para->getParH(level)->intCF.ICellCFF[para->getParH(level)->intCF.kCF - 1]);
+        //printf("%d\n", para->getParH(level)->intFC.ICellFCC[para->getParH(level)->intFC.kFC - 1]);
+        //printf("%d\n", para->getParH(level)->intFC.ICellFCF[para->getParH(level)->intFC.kFC - 1]);
 
-        printf("%f\n", para->getParH(level)->offFC.xOffFC[para->getParH(level)->intFC.kFC - 1]);
-        printf("%f\n", para->getParH(level)->offFC.yOffFC[para->getParH(level)->intFC.kFC - 1]);
-        printf("%f\n", para->getParH(level)->offFC.zOffFC[para->getParH(level)->intFC.kFC - 1]);
-        printf("%f\n", para->getParH(level)->offCF.xOffCF[para->getParH(level)->intCF.kCF - 1]);
-        printf("%f\n", para->getParH(level)->offCF.yOffCF[para->getParH(level)->intCF.kCF - 1]);
-        printf("%f\n", para->getParH(level)->offCF.zOffCF[para->getParH(level)->intCF.kCF - 1]);
+        //printf("%f\n", para->getParH(level)->offFC.xOffFC[para->getParH(level)->intFC.kFC - 1]);
+        //printf("%f\n", para->getParH(level)->offFC.yOffFC[para->getParH(level)->intFC.kFC - 1]);
+        //printf("%f\n", para->getParH(level)->offFC.zOffFC[para->getParH(level)->intFC.kFC - 1]);
+        //printf("%f\n", para->getParH(level)->offCF.xOffCF[para->getParH(level)->intCF.kCF - 1]);
+        //printf("%f\n", para->getParH(level)->offCF.yOffCF[para->getParH(level)->intCF.kCF - 1]);
+        //printf("%f\n", para->getParH(level)->offCF.zOffCF[para->getParH(level)->intCF.kCF - 1]);
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -456,3 +471,95 @@ void GridGenerator::initPeriodicNeigh(std::vector<std::vector<std::vector<unsign
 
 }
 
+
+
+
+
+std::string GridGenerator::verifyNeighborIndices(int level) const
+{
+    std::ostringstream oss;
+    oss << "---------report start---------\n";
+    oss << "Checking neighbor indices in grid \n";
+
+    int invalidNodes = 0;
+    int wrongNeighbors = 0;
+    int stopperNodes = 0;
+
+    for (uint index = 0; index < para->getParH(level)->size_Mat_SP; index++)
+        oss << verifyNeighborIndex(level, index, invalidNodes, stopperNodes, wrongNeighbors);
+
+
+    oss << "invalid nodes found: " << invalidNodes << "\n";
+    oss << "wrong neighbors found: " << wrongNeighbors << "\n";
+    oss << "stopper nodes found : " << stopperNodes << "\n";
+    oss << "---------report end---------\n";
+    return oss.str();
+}
+
+std::string GridGenerator::verifyNeighborIndex(int level, int index , int &invalidNodes, int &stopperNodes, int &wrongNeighbors) const
+{
+    std::ostringstream oss;
+
+    const int geo = para->getParH(level)->geoSP[index];
+    if (geo == 16)
+    {
+        stopperNodes++;
+        return "";
+    }
+
+    real x = para->getParH(level)->coordX_SP[index];
+    real y = para->getParH(level)->coordY_SP[index];
+    real z = para->getParH(level)->coordZ_SP[index];
+
+    real delta = para->getParH(level)->coordX_SP[2] - para->getParH(level)->coordX_SP[1];
+
+    //std::cout << para->getParH(level)->coordX_SP[1] << ", " << para->getParH(level)->coordY_SP[1] << ", " << para->getParH(level)->coordZ_SP[1] << std::endl;
+    //std::cout << para->getParH(level)->coordX_SP[para->getParH(level)->size_Mat_SP - 1] << ", " << para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP - 1] << ", " << para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP - 1] << std::endl;
+    
+    real maxX = para->getParH(level)->coordX_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
+    real maxY = para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
+    real maxZ = para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
+    real realNeighborX = CudaMath::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordX_SP[1];
+    real realNeighborY = CudaMath::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordY_SP[1];
+    real realNeighborZ = CudaMath::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordZ_SP[1];
+
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborX_SP[index], realNeighborX, y, z, "X");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY_SP[index], x, realNeighborY, z, "Y");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[index], x, y, realNeighborZ, "Z");
+
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY_SP[this->para->getParH(level)->neighborX_SP[index]], realNeighborX, realNeighborY, z, "XY");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[this->para->getParH(level)->neighborX_SP[index]], realNeighborX, y, realNeighborZ, "XZ");
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[this->para->getParH(level)->neighborY_SP[index]], x, realNeighborY, realNeighborZ, "YZ");
+
+    oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborZ_SP[this->para->getParH(level)->neighborY_SP[this->para->getParH(level)->neighborX_SP[index]]], realNeighborX, realNeighborY, realNeighborZ, "XYZ");
+
+    return oss.str();
+}
+
+std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int index, int& numberOfWrongNeihgbors, int neighborIndex, real neighborX, real neighborY, real neighborZ, std::string direction) const
+{
+    std::ostringstream oss("");
+    //if (neighborIndex == -1 || neighborIndex >= size)
+    //{
+    //    oss << "index broken... \n";
+    //    oss << "NeighborX invalid from: (" << x << ", " << y << ", " << z << "), new index: " << newIndex << ", "
+    //        << direction << " neighborIndex: " << neighborIndex << "\n";
+    //    numberOfWrongNeihgbors++;
+    //    return oss.str();
+    //}
+
+    real neighborCoordX = para->getParH(level)->coordX_SP[neighborIndex];
+    real neighborCoordY = para->getParH(level)->coordY_SP[neighborIndex];
+    real neighborCoordZ = para->getParH(level)->coordZ_SP[neighborIndex];
+
+    const bool neighborValid = CudaMath::equal(neighborX, neighborCoordX) && CudaMath::equal(neighborY, neighborCoordY) && CudaMath::equal(neighborZ, neighborCoordZ);
+
+    if (!neighborValid) {
+        oss << "NeighborX invalid from: (" << x << ", " << y << ", " << z << "), index: " << index << ", "
+            << direction << " neighborIndex: " << neighborIndex << 
+            ", actual neighborCoords : (" << neighborCoordX << ", " << neighborCoordY << ", " << neighborCoordZ << 
+            "), expected neighborCoords : (" << neighborX << ", " << neighborY << ", " << neighborZ << ")\n";
+        numberOfWrongNeihgbors++;
+    }
+    return oss.str();
+}
