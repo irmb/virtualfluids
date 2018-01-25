@@ -156,7 +156,7 @@ void run(string configname)
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(nuLB*1.0e4);
 
-      kernel->setNX(std::array<int,3>{{blockNx[0], blockNx[1], blockNx[2]}});
+      //kernel->setNX(std::array<int,3>{{blockNx[0], blockNx[1], blockNx[2]}});
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       kernel->setBCProcessor(bcProc);

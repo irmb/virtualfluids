@@ -40,6 +40,8 @@ void SetKernelBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
       kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
       kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));
       kernel->setBlock(block);
+      UbTupleInt3 blockNX = grid->getBlockNX();
+      kernel->setNX(std::array<int,3>{{val<1>(blockNX), val<2>(blockNX), val<3>(blockNX)}});
       SPtr<LBMKernel> newKernel = kernel->clone();
 
       switch (action)

@@ -1185,8 +1185,8 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetArray[n].x1, dataSetArray[n].x2, dataSetArray[n].x3, dataSetArray[n].level);
-      //SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
-      //SPtr<LBMKernel> kernel(new IncompressibleCumulantLBMKernel());
+      UbTupleInt3 blockNX = grid->getBlockNX();
+      this->lbmKernel->setNX(std::array<int, 3>{ {val<1>(blockNX), val<2>(blockNX), val<3>(blockNX)}});
       SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);

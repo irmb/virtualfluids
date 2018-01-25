@@ -1,5 +1,5 @@
-#ifndef CompressibleCumulant2LBMKernel_h__
-#define CompressibleCumulant2LBMKernel_h__
+#ifndef CompressibleCumulant4thOrderViscosityLBMKernel_h__
+#define CompressibleCumulant4thOrderViscosityLBMKernel_h__
 
 #include "LBMKernel.h"
 #include "BCProcessor.h"
@@ -23,8 +23,6 @@ public:
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime() override;
    void setBulkViscosity(LBMReal value);
-   //void setBulkOmegaToOmega(bool value);
-   //void setViscosityFlag(bool vf);
 protected:
    virtual void initDataSet();
    LBMReal f[D3Q27System::ENDF+1];
@@ -43,15 +41,10 @@ protected:
    LBMReal forcingX3;
    
    // bulk viscosity
-   //bool bulkOmegaToOmega;
    LBMReal OxxPyyPzz; //omega2 (bulk viscosity)
    LBMReal bulkViscosity;
 
-   //bool viscosityFlag;
-   //LBMReal OxyyPxzz;
-   //LBMReal OxyyMxzz;
-   //LBMReal Oxyz;
 };
-#endif // CompressibleCumulantLBMKernel_h__
+#endif // CompressibleCumulant4thOrderViscosityLBMKernel_h__
 
 

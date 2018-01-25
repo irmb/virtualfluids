@@ -16,6 +16,8 @@
 #include "LBMKernel.h"
 #include "BCProcessor.h"
 #include "RenumberBlockVisitor.h"
+#include "MetisPartitioningGridVisitor.h"
+#include "PointerDefinitions.h"
 
 MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path,
@@ -758,6 +760,10 @@ void MPIIOMigrationCoProcessor::restart(int step)
    if (comm->isRoot()) UBLOG(logINFO, "MPIIOMigrationCoProcessor restart step: "<<step);
    if (comm->isRoot()) UBLOG(logINFO, "Load check point - start");
    readBlocks(step);
+
+   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+   grid->accept(metisVisitor);
+
    readDataSet(step);
    readBoundaryConds(step);
    if (comm->isRoot()) UBLOG(logINFO, "Load check point - end");
@@ -1039,7 +1045,8 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetArray[n].globalID);
-      //SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel(0, 0, 0, CompressibleCumulantLBMKernel::NORMAL));
+      UbTupleInt3 blockNX = grid->getBlockNX();
+      this->lbmKernel->setNX(std::array<int, 3>{ {val<1>(blockNX), val<2>(blockNX), val<3>(blockNX)}});
       SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);
