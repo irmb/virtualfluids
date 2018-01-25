@@ -24,9 +24,9 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
     para->getParH(level)->size_Mat_SP = numberOfNodes;
     para->getParD(level)->size_Mat_SP = numberOfNodes;
     para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->size_Mat_SP;
-    para->getParH(level)->mem_size_int_SP = sizeof(unsigned int) * para->getParH(level)->size_Mat_SP;
+    para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->size_Mat_SP;
     para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
-    para->getParD(level)->mem_size_int_SP = sizeof(unsigned int) * para->getParD(level)->size_Mat_SP;
+    para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
 }
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
@@ -40,7 +40,7 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 
     //like MG
     //real uAdvect = real (1. / 250.); //32 nodes -> 250; 40 nodes -> 200; 64 nodes -> 500; 128 nodes -> 1000; 256 nodes -> 2000; 512 nodes -> 4000
-    const real uAdvect = 0.0016; //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
+    const real uAdvect = -0.0016; //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
 
     for (int j = 1; j <= numberOfNodes; j++)
     {
@@ -54,11 +54,11 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
         para->getParH(level)->vx_SP[j] = real( velocity * sin(coordX * 2.0*PI / gridX) * cos(coordZ * 2.0*PI / gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
         para->getParH(level)->vz_SP[j] = real(-velocity * cos(coordX * 2.0*PI / gridX) * sin(coordZ * 2.0*PI / gridZ)); // *(real)(gridZ) / (real)(gridX);
 
-       //para->getParH(level)->vx_SP[j] = para->getVelocity();//0.0f;//0.035f;
-       //para->getParH(level)->vy_SP[j] = 0.0f;//para->getVelocity();//0.0f;
-       //para->getParH(level)->vz_SP[j] = 0.0f;
-       //para->getParH(level)->rho_SP[j] = 0.0f;
-       //para->getParH(level)->press_SP[j] = 0.0f;
+       //para->getParH(level)->vx_SP[j] = 0.001;
+       //para->getParH(level)->vy_SP[j] = 0.0;
+       //para->getParH(level)->vz_SP[j] = 0.001;
+       //para->getParH(level)->rho_SP[j] = 0.0;
+       //para->getParH(level)->press_SP[j] = 0.0;
     }
 
 

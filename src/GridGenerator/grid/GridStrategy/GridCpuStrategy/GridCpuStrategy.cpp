@@ -76,7 +76,7 @@ void GridCpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
 void GridCpuStrategy::setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid)
 {
     for (uint index = 0; index < grid->size; index++)
-        grid->setOverlapNodeToInvalid(index, *finerGrid.get());
+        grid->createGridInterface(index, *finerGrid.get());
 }
 
 void GridCpuStrategy::findForNeighborsNewIndices(SPtr<Grid> grid)

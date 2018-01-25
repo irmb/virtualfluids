@@ -79,7 +79,7 @@ protected:
     void createBCVectors();
     void addShortQsToVector(int index);
     void addQsToVector(int index);
-    void fillRBForNode(int x, int y, int z, int index, int direction, int directionSign, int rb);
+    void fillRBForNode(int index, int direction, int directionSign, int rb);
 
     int getMatrixIndex(const int i) const;
     Vertex getVertex(const int matrixIndex) const;
@@ -96,10 +96,7 @@ public:
     VF_PUBLIC uint getNumberOfNodesCF(int level) override;
     VF_PUBLIC uint getNumberOfNodesFC(int level) override;
 
-    VF_PUBLIC void setCFC(uint* iCellCfc, int level) override;
-    VF_PUBLIC void setCFF(uint* iCellCff, int level) override;
-    VF_PUBLIC void setFCC(uint* iCellFcc, int level) override;
-    VF_PUBLIC void setFCF(uint* iCellFcf, int level) override;
+    VF_PUBLIC void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const;
 
     VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;

@@ -24,7 +24,7 @@ float runKernelInitalUniformGrid3d(const LaunchParameter& para, Grid &grid)
 GLOBAL void initalField(Grid grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.size)
+    if (index < grid.getSize())
     {
         grid.setNeighborIndices(index);
         grid.matrixIndex[index] = index;
@@ -86,8 +86,8 @@ float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, Grid &grid,
 GLOBAL void setOverlapNodesToInvalid(Grid grid, Grid finerGrid)
 {
     const uint index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.size)
-        grid.setOverlapNodeToInvalid(index, finerGrid);
+    if (index < grid.getSize())
+        grid.createGridInterface(index, finerGrid);
 }
 
 
@@ -141,7 +141,7 @@ float runKernelSetToInvalid(const LaunchParameter& para, Grid &grid)
 GLOBAL void setInvalidNodes(Grid grid, bool *foundInvalidNode)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.size)
+    if (index < grid.getSize())
         grid.setInvalidNode(index, *foundInvalidNode);
 }
 
@@ -156,6 +156,6 @@ float runKernelFindIndices(const LaunchParameter& para, Grid &grid)
 GLOBAL void findNeighborIndicesKernel(Grid grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.reducedSize)
+    if (index < grid.getSize())
         grid.findNeighborIndex(index);
 }

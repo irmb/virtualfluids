@@ -25,7 +25,7 @@ int Partition::calcEdgesFromGraph(const Grid &grid)
     int corner = 8;
     int outsiteEdges = grid.nx * 4 + grid.ny * 4 + grid.nz * 4 - 24;
     int outsideArea = 2 * grid.nx*grid.ny + 2 * grid.nx*grid.nz + 2 * grid.ny*grid.nz - 8 * grid.nx - 8 * grid.ny - 8 * grid.nz + 24;
-    int inside = grid.size - corner - outsiteEdges - outsideArea;
+    int inside = grid.getSize() - corner - outsiteEdges - outsideArea;
     return inside * insideNeighbors + outsideArea * ousiteAreaNeighbors + outsiteEdges * outsideEdgesNeighbors + corner * cornerNeighbors;
 }
 
@@ -55,7 +55,7 @@ void Partition::partitionGridMesh(const Grid &grid)
     real x, y, z, newX, newY, newZ;
     int nIndex;
     int numberNode = 0;
-    for (unsigned int index = 0; index < grid.size; index++) {
+    for (unsigned int index = 0; index < grid.getSize(); index++) {
         grid.transIndexToCoords(index, x, y, z);
 
         newX = x + 1;
@@ -131,7 +131,7 @@ void Partition::partitionGridMesh(const Grid &grid)
     }
 
 
-    for (unsigned int part_i = 0; part_i < grid.size; part_i++){
+    for (unsigned int part_i = 0; part_i < grid.getSize(); part_i++){
         grid.field[part_i] = partMeshNodes[part_i];
     }
 
@@ -144,7 +144,7 @@ void Partition::partitionGridMesh(const Grid &grid)
 }
 
 void Partition::partitionGrid(const Grid &grid) {
-    idx_t nVertices = grid.size;
+    idx_t nVertices = grid.getSize();
     idx_t nEdges = calcEdgesFromGraph(grid);
     idx_t nWeights = 1;
     idx_t nParts = 4;

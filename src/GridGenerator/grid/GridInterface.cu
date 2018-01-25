@@ -84,12 +84,12 @@ void GridInterface::findInterface(Interface& interface, const int& factor, const
     }
 }
 
-bool isOn(const real coord, const real plane1, const real plane2)
+HOSTDEVICE bool isOn(const real coord, const real plane1, const real plane2)
 {
     return  CudaMath::equal(coord, plane1) || CudaMath::equal(coord, plane2);
 }
 
-bool isBetween(const real coord, const real start, const real end)
+HOSTDEVICE bool isBetween(const real coord, const real start, const real end)
 {
     return  CudaMath::greaterEqual(coord, start) && CudaMath::lessEqual(coord, end);
 }

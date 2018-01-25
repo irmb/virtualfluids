@@ -39,6 +39,7 @@ HOST Grid::Grid(real startX, real startY, real startZ, real endX, real endY, rea
 
     this->size = nx * ny * nz;
     this->reducedSize = size;
+    distribution.setSize(size);
 }
 
 HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
@@ -47,10 +48,12 @@ HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real end
     SPtr<Grid> grid(new Grid(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
 
     gridStrategy->allocateGridMemory(grid);
+
     *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
     *logging::out << logging::Logger::LOW << "Initial field with fluid. \n";
     *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
     time_t begin = clock();
+
     gridStrategy->initalNodes(grid);
 
     time_t end = clock();
@@ -72,6 +75,16 @@ HOST Grid::~Grid()
     //printf("Destructor\n");
     //this->print();
 };
+
+HOSTDEVICE uint Grid::getSize() const
+{
+    return this->size;
+}
+
+HOSTDEVICE uint Grid::getReducedSize() const
+{
+    return this->reducedSize;
+}
 
 HOST void Grid::mesh(Geometry &geometry)
 {
@@ -95,16 +108,25 @@ HOST void Grid::removeOverlapNodes(SPtr<Grid> finerGrid)
     gridStrategy->removeOverlapNodes(shared_from_this(), finerGrid);
 }
 
-HOSTDEVICE void Grid::setOverlapNodeToInvalid(uint index, const Grid& finerGrid)
+HOSTDEVICE void Grid::createGridInterface(uint index, const Grid& finerGrid)
+{
+    this->findGridInterface(index, finerGrid);
+    this->setOverlapNodeToInvalid(index, finerGrid);
+}
+
+HOSTDEVICE void Grid::findGridInterface(uint index, const Grid& finerGrid)
 {
     gridInterface->findCF(index, this, &finerGrid);
     gridInterface->findFC(index, this, &finerGrid);
+}
 
+HOSTDEVICE void Grid::setOverlapNodeToInvalid(uint index, const Grid& finerGrid)
+{
     if (this->isInside(index, finerGrid))
         this->setFieldEntryToInvalid(index);
 }
 
-HOSTDEVICE bool Grid::isInside(uint index, const Grid& finerGrid)
+HOSTDEVICE bool Grid::isInside(uint index, const Grid& finerGrid) const
 {
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -187,7 +209,7 @@ HOSTDEVICE int Grid::transCoordToIndex(const Vertex &v) const
     const int z = int((v.z - startZ) / delta);
 
 #ifdef DEBUG
-    if (x < 0 || y < 0 || z < 0 || x >= nx || y >= ny || z >= nz)
+    if (x < 0 || y < 0 || z < 0 || uint(x) >= nx || uint(y) >= ny || uint(z) >= nz)
     {
         printf(
             "Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");
@@ -442,9 +464,8 @@ HOSTDEVICE real Grid::getNeighhborCoord(bool periodicity, real actualCoord, real
         return actualCoord + delta;
 }
 
-void Grid::setStopperNeighborCoords(int index)
+HOSTDEVICE void Grid::setStopperNeighborCoords(int index)
 {
-
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
@@ -456,50 +477,16 @@ void Grid::setStopperNeighborCoords(int index)
 
     if (CudaMath::lessEqual(z + delta, endZ + delta))
         neighborIndexZ[index] = getNeighborIndex(x, y, z + delta);
-
 }
 
 
-HOST bool Grid::isEndOfGridStopper(uint index) const
+HOSTDEVICE bool Grid::isEndOfGridStopper(uint index) const
 {
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
     return (x > this->endX || y > this->endY || z > this->endZ);
 }
 
-
-//HOSTDEVICE  bool Grid::isStopper(int index) const
-//{
-//    return isSolid(index) && previousCellHasFluid(index);
-//}
-//
-//HOSTDEVICE  bool Grid::previousCellHasFluid(int index) const
-//{
-//    real x, y, z;
-//    this->transIndexToCoords(index, x, y, z);
-//
-//    real previousX = x - delta >= 0 ? x - delta : this->endX;
-//    real previousY = y - delta >= 0 ? y - delta : this->endY;
-//    real previousZ = z - delta >= 0 ? z - delta : this->endZ;
-//
-//    int indexpreviousX   = this->transCoordToIndex(previousX, y, z);
-//    int indexpreviousY   = this->transCoordToIndex(x, previousY, z);
-//    int indexpreviousXY  = this->transCoordToIndex(previousX, previousY, z);
-//    int indexpreviousZ   = this->transCoordToIndex(x, y, previousZ);
-//    int indexpreviousZX  = this->transCoordToIndex(previousX, y, previousZ);
-//    int indexpreviousZY  = this->transCoordToIndex(x, previousY, previousZ);
-//    int indexpreviousZYX = this->transCoordToIndex(previousX, previousY, previousZ);
-//
-//    return (!this->isSolid(indexpreviousX) || !this->isSolid(indexpreviousY) || !this->isSolid(indexpreviousZ)
-//        || !this->isSolid(indexpreviousZYX) || !this->isSolid(indexpreviousXY) || !this->isSolid(indexpreviousZY) || !
-//        this->isSolid(indexpreviousZX));
-//}
-
-
-uint Grid::getNumberOfNodes() const
-{
-    return this->reducedSize;
-}
 
 uint Grid::getNumberOfNodesCF() const
 {
@@ -511,23 +498,11 @@ uint Grid::getNumberOfNodesFC() const
     return this->gridInterface->fc.numberOfEntries;
 }
 
-void Grid::setCFC(uint* iCellCfc) const
+void Grid::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const
 {
     setGridInterface(iCellCfc, this->gridInterface->cf.coarse, this->gridInterface->cf.numberOfEntries);
-}
-
-void Grid::setCFF(uint* iCellCff) const
-{
     setGridInterface(iCellCff, this->gridInterface->cf.fine, this->gridInterface->cf.numberOfEntries);
-}
-
-void Grid::setFCC(uint* iCellFcc) const
-{
     setGridInterface(iCellFcc, this->gridInterface->fc.coarse, this->gridInterface->fc.numberOfEntries);
-}
-
-void Grid::setFCF(uint* iCellFcf) const
-{
     setGridInterface(iCellFcf, this->gridInterface->fc.fine, this->gridInterface->fc.numberOfEntries);
 }
 

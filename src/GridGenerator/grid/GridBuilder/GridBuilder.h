@@ -64,10 +64,8 @@ public:
     virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const = 0;
     virtual uint getNumberOfNodesCF(int level) = 0;
     virtual uint getNumberOfNodesFC(int level) = 0;
-    virtual void setCFC(uint* iCellCfc, int level) = 0;
-    virtual void setCFF(uint* iCellCff, int level) = 0;
-    virtual void setFCC(uint* iCellFcc, int level) = 0;
-    virtual void setFCF(uint* iCellFcf, int level) = 0;
+    virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const = 0;
+
     virtual void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
     virtual void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
 };

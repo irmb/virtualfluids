@@ -113,7 +113,7 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 
 uint LevelGridBuilder::getNumberOfGridLevels()
 {
-    return grids.size();
+    return uint(grids.size());
 }
 
 uint LevelGridBuilder::getNumberOfNodesCF(int level)
@@ -126,24 +126,9 @@ uint LevelGridBuilder::getNumberOfNodesFC(int level)
     return this->grids[level]->getNumberOfNodesFC();
 }
 
-void LevelGridBuilder::setCFC(uint* iCellCfc, int level)
+void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const
 {
-    this->grids[level]->setCFC(iCellCfc);
-}
-
-void LevelGridBuilder::setCFF(uint* iCellCff, int level)
-{
-    this->grids[level]->setCFF(iCellCff);
-}
-
-void LevelGridBuilder::setFCC(uint* iCellFcc, int level)
-{
-    this->grids[level]->setFCC(iCellFcc);
-}
-
-void LevelGridBuilder::setFCF(uint* iCellFcf, int level)
-{
-    this->grids[level]->setFCF(iCellFcf);
+    this->grids[level]->getGridInterfaceIndices(iCellCfc, iCellCff, iCellFcc, iCellFcf);
 }
 
 void LevelGridBuilder::setOffsetFC(real * xOffCf, real * yOffCf, real * zOffCf, int level)
@@ -177,7 +162,7 @@ void LevelGridBuilder::deleteSolidNodes()
 
 uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
-    return grids[level]->getNumberOfNodes();
+    return grids[level]->getReducedSize();
 }
 
 std::vector<std::vector<std::vector<real> > > LevelGridBuilder::getQsValues() const
@@ -245,7 +230,7 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
     Grid grid = *grids[level].get();
 
     int nodeNumber = 0;
-    for (uint i = 0; i < grid.size; i++)
+    for (uint i = 0; i < grid.getSize(); i++)
     {
         if (grid.matrixIndex[i] == -1)
             continue;
@@ -312,20 +297,20 @@ void LevelGridBuilder::createBoundaryConditions()
 void LevelGridBuilder::createBCVectors()
 {
     Grid grid = *grids[0].get();
-    for (uint i = 0; i < grid.reducedSize; i++)
+    for (uint i = 0; i < grid.getSize(); i++)
     {
         real x, y, z;
         grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
 
         if (grid.field[grid.matrixIndex[i]] == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
-        if (x == 0 && y < grid.ny - 1 && z < grid.nz - 1) fillRBForNode(x, y, z, i, 0, -1, INLETQS);
-        if (x == grid.nx - 2 && y < grid.ny - 1 && z < grid.nz - 1) fillRBForNode(x, y, z, i, 0, 1, OUTLETQS);
+        if (x == 0 && y < grid.ny - 1 && z < grid.nz - 1) fillRBForNode(i, 0, -1, INLETQS);
+        if (x == grid.nx - 2 && y < grid.ny - 1 && z < grid.nz - 1) fillRBForNode(i, 0, 1, OUTLETQS);
 
-        if (z == grid.nz - 2 && x < grid.nx - 1 && y < grid.ny - 1) fillRBForNode(x, y, z, i, 2, 1, TOPQS);
-        if (z == 0 && x < grid.nx - 1 && y < grid.ny - 1) fillRBForNode(x, y, z, i, 2, -1, BOTTOMQS);
+        if (z == grid.nz - 2 && x < grid.nx - 1 && y < grid.ny - 1) fillRBForNode(i, 2, 1, TOPQS);
+        if (z == 0 && x < grid.nx - 1 && y < grid.ny - 1) fillRBForNode(i, 2, -1, BOTTOMQS);
 
-        if (y == 0 && x < grid.nx - 1 && z < grid.nz - 1) fillRBForNode(x, y, z, i, 1, -1, FRONTQS);
-        if (y == grid.ny - 2 && x < grid.nx - 1 && z < grid.nz - 1) fillRBForNode(x, y, z, i, 1, 1, BACKQS);
+        if (y == 0 && x < grid.nx - 1 && z < grid.nz - 1) fillRBForNode(i, 1, -1, FRONTQS);
+        if (y == grid.ny - 2 && x < grid.nx - 1 && z < grid.nz - 1) fillRBForNode(i, 1, 1, BACKQS);
     }
 }
 
@@ -338,7 +323,7 @@ void LevelGridBuilder::addShortQsToVector(int index)
 
     for (int i = grid.distribution.dir_end; i >= 0; i--)
     {
-        int qIndex = i * grid.size + grid.matrixIndex[index];
+        int qIndex = i * grid.getSize() + grid.matrixIndex[index];
         real q = grid.distribution.f[qIndex];
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
@@ -364,7 +349,7 @@ void LevelGridBuilder::addQsToVector(int index)
 
     for (int i = grid.distribution.dir_end; i >= 0; i--)
     {
-        int qIndex = i * grid.size + grid.matrixIndex[index];
+        int qIndex = i * grid.getSize() + grid.matrixIndex[index];
         real q = grid.distribution.f[qIndex];
         if (q > 0)
             qNode.push_back(q);
@@ -375,7 +360,7 @@ void LevelGridBuilder::addQsToVector(int index)
     qNode.clear();
 }
 
-void LevelGridBuilder::fillRBForNode(int x, int y, int z, int index, int direction, int directionSign, int rb)
+void LevelGridBuilder::fillRBForNode(int index, int direction, int directionSign, int rb)
 {
     uint32_t qKey = 0;
     std::vector<real> qNode;

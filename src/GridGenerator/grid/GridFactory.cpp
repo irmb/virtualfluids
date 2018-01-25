@@ -1,5 +1,7 @@
 #include "GridFactory.h"
 
+#include <iostream>
+
 #include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 #include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
 #include "distributions/Distribution.h"
@@ -15,7 +17,7 @@ SPtr<Grid> GridFactory::makeGrid(real startX, real startY, real startZ, real end
         gridStrategy = SPtr<GridStrategy>(new GridCpuStrategy());
     else
     {
-        printf("Cannot indentive device: %s, cpu is choosen!\n", device);
+        std::cout << "Cannot identify device: " << device << ". cpu is chosen!\n";
         gridStrategy = SPtr<GridStrategy>(new GridGpuStrategy());
     }
 

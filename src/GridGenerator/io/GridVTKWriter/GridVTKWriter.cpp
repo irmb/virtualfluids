@@ -114,8 +114,8 @@ void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, con
 {
     GridVTKWriter::writeHeader();
     GridVTKWriter::writePoints(trans, grid);
-    GridVTKWriter::writeCells(grid.reducedSize);
-    GridVTKWriter::writeTypeHeader(grid.reducedSize);
+    GridVTKWriter::writeCells(grid.getReducedSize());
+    GridVTKWriter::writeTypeHeader(grid.getReducedSize());
     GridVTKWriter::writeTypes(grid);
     GridVTKWriter::closeFile();
 
@@ -148,9 +148,9 @@ void GridVTKWriter::writeHeader()
 
 void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid)
 {
-    fprintf(file, "POINTS %d float\n", grid.reducedSize);
+    fprintf(file, "POINTS %d float\n", grid.getReducedSize());
     real x, y, z;
-    for (unsigned int i = 0; i < grid.size; i++) {
+    for (unsigned int i = 0; i < grid.getSize(); i++) {
 
         if (grid.matrixIndex[i] == -1)
             continue;
@@ -202,7 +202,7 @@ void GridVTKWriter::writeTypeHeader(const unsigned int &size)
 
 void GridVTKWriter::writeTypes(const Grid &grid)
 {
-    for (unsigned int i = 0; i < grid.size; i++) 
+    for (unsigned int i = 0; i < grid.getSize(); i++) 
     {
         if (grid.matrixIndex[i] == -1)
             continue;

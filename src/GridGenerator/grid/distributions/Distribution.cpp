@@ -340,11 +340,11 @@ std::vector<std::vector<real> > DistributionHelper::getQsWithoutRowsWithOnlyZero
 
 std::vector<std::vector<real> > DistributionHelper::getAllQsOnFluidNodes(const Grid &grid, const Distribution &d)
 {
-    std::vector<std::vector<real> > qs(grid.size, std::vector<real>(d.dir_end + 1, 0));
-    for (unsigned int node = 0; node < grid.size; node++) {
+    std::vector<std::vector<real> > qs(grid.getSize(), std::vector<real>(d.dir_end + 1, 0));
+    for (unsigned int node = 0; node < grid.getSize(); node++) {
         qs[node][0] = (real)node;
         for (int i = d.dir_start; i < d.dir_end; i++) {
-            real qVal = (d.f)[i * grid.size + node];
+            real qVal = (d.f)[i * grid.getSize() + node];
             if (qVal == 0.0f)
                 continue;
             int index_fluidNode = getNeighborNodeIndexInGivenDirection(d, grid, node, i);

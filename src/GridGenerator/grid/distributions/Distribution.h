@@ -17,6 +17,11 @@ struct Distribution
     int dir_start;
     int dir_end;
     const char* name;
+    unsigned long fSize;
+
+    void setSize(uint size) {
+        fSize = size * (dir_end + 1);
+    }
 };
 
 struct Grid;
