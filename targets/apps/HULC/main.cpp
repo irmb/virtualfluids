@@ -217,13 +217,13 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDoCheckPoint(StringUtil::toBool(input->getValue("DoCheckPoint")));
     para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
+/*    para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
     para->setGridX(StringUtil::toVector(input->getValue("GridX")));                           
     para->setGridY(StringUtil::toVector(input->getValue("GridY")));                           
     para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                  
     para->setDistX(StringUtil::toVector(input->getValue("DistX")));                  
     para->setDistY(StringUtil::toVector(input->getValue("DistY")));                  
-    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                  
+    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));         */         
 
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
@@ -232,12 +232,14 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    //SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
-    //gridBuilder->addGrid(1.5, 1.5, 1.5, 60.5, 60.5, 60.5, 1.0, "cpu", "D3Q27");
-    //gridBuilder->addGrid(19.75, 19.75, 19.75, 42.25, 42.25, 42.25, 0.5, "cpu", "D3Q27");
+    SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
+    gridBuilder->addGrid(0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 1.0, "cpu", "D3Q27");
+    gridBuilder->addGrid(10.25, 10.25, 10.25, 90.75, 90.75, 90.75, 0.5, "cpu", "D3Q27");
+    gridBuilder->addGrid(25.375, 25.375, 25.375, 75.625, 75.625, 75.625, 0.25, "cpu", "D3Q27");
+    //gridBuilder->addGrid(40.4375, 40.4375, 40.4375, 60.5625, 60.5625, 60.5625, 0.125, "cpu", "D3Q27");
 
 
-    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorRefinementCompareToOpenFoam/simu/", gridBuilder, FILEFORMAT::ASCII);
+    SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
@@ -245,8 +247,8 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
 
     SPtr<Parameter> para = Parameter::makeShared();
-    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
+    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
 
     std::ifstream stream;
     stream.open(configPath.c_str(), std::ios::in);

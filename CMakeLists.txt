@@ -75,7 +75,7 @@ option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
 option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
 option(HULC.BUILD_TESTS "Build shared libraries" OFF)
 
-option(VF_DOUBLE_ACCURACY "Build shared libraries" ON)
+option(VF_DOUBLE_ACCURACY "Build shared libraries" OFF)
 
 if(HULC.BUILD_GPU_CODE)
   #SET(CMAKE_CUDA_COMPILER $ENV{CUDA_PATH_V9_0}/bin/nvcc.exe)

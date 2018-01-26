@@ -94,8 +94,9 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
 
 void LevelGridBuilder::removeOverlapNodes()
 {
-    for (int level = 0; level < grids.size() - 1; level++)
-        grids[level]->removeOverlapNodes(grids[level + 1]);
+    const uint numberOfLevels = getNumberOfGridLevels();
+    if(numberOfLevels > 1)
+        grids[numberOfLevels - 2]->removeOverlapNodes(grids[numberOfLevels - 1]);
 }
 
 

@@ -89,12 +89,12 @@ void writeInit(SPtr<Parameter> para)
 			}
 
 			//Debug
-            InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-            InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
-            InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para.get());
-            InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para.get());
-            InterfaceDebugWriter::writeInterfaceLinesDebugFCCneighbor(para.get());
-            InterfaceDebugWriter::writeInterfaceLinesDebugFCFneighbor(para.get());
+            //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+            //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+            //InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para.get());
+            //InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para.get());
+            //InterfaceDebugWriter::writeInterfaceLinesDebugFCCneighbor(para.get());
+            //InterfaceDebugWriter::writeInterfaceLinesDebugFCFneighbor(para.get());
 			//InterfaceDebugWriter::writeNeighborXLinesDebug(para);
 			//InterfaceDebugWriter::writeNeighborYLinesDebug(para);
 			//InterfaceDebugWriter::writeNeighborZLinesDebug(para);
