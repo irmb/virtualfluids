@@ -39,6 +39,17 @@ bool GridReader::getBinaer()
 	return binaer;
 }
 
+void rearrangeGeometry(Parameter* para, int lev)
+{
+    for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
+    {
+        if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
+        {
+            para->getParH(lev)->geoSP[index] = GEO_FLUID;
+        }
+    }
+}
+
 void GridReader::allocArrays_CoordNeighborGeo()
 {
 	std::cout << "-----Config Arrays Coord, Neighbor, Geo------" << std::endl;
@@ -74,7 +85,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
 		neighY->initalNeighbors(para->getParH(level)->neighborY_SP, level);
 		neighZ->initalNeighbors(para->getParH(level)->neighborZ_SP, level);
 		geoV.initalNeighbors(para->getParH(level)->geoSP, level);
-
+        rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopySP(level);
@@ -92,12 +103,12 @@ void GridReader::allocArrays_BoundaryValues()
 	this->setChannelBoundaryCondition();
 	int level = BC_Values[0]->getLevel();
 
-	for (int i = 0; i < channelBoundaryConditions.size(); i++)
-	{
-		if (this->channelBoundaryConditions[i] == "velocity") { setVelocityValues(i); }
-		else if (this->channelBoundaryConditions[i] == "pressure") { setPressureValues(i); }
-		else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowValues(i); }
-	}
+    for (int i = 0; i < channelBoundaryConditions.size(); i++)
+    {
+        setVelocityValues(i);
+        setPressureValues(i);
+        setOutflowValues(i);
+    }
 
 	initalValuesDomainDecompostion(level);
 }
@@ -186,11 +197,12 @@ void GridReader::setPressureValues(int channelSide) const
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
 		int sizePerLevel = BC_Values[channelSide]->getSize(level);
-		if (sizePerLevel > 1)
+        setPressSizePerLevel(level, sizePerLevel);
+
+		if (sizePerLevel > 0)
 		{
 			std::cout << "size pressure level " << level << " : " << sizePerLevel << std::endl;
 
-			setPressSizePerLevel(level, sizePerLevel);
             cudaMemoryManager->cudaAllocPress(level);
 
 			setPressRhoBC(sizePerLevel, level, channelSide);
@@ -212,11 +224,12 @@ void GridReader::setVelocityValues(int channelSide) const
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
 		int sizePerLevel = BC_Values[channelSide]->getSize(level);
+        setVelocitySizePerLevel(level, sizePerLevel);
+
 		if (sizePerLevel > 1)
 		{
 			std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
 
-			setVelocitySizePerLevel(level, sizePerLevel);
             cudaMemoryManager->cudaAllocVeloBC(level);
 
 			setVelocity(level, sizePerLevel, channelSide);
@@ -246,11 +259,12 @@ void GridReader::setOutflowValues(int channelSide) const
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
 		int sizePerLevel = BC_Values[channelSide]->getSize(level);
+        setOutflowSizePerLevel(level, sizePerLevel);
+
 		if (sizePerLevel > 1)
 		{
 			std::cout << "size outflow level " << level << " : " << sizePerLevel << std::endl;
 
-			setOutflowSizePerLevel(level, sizePerLevel);
             cudaMemoryManager->cudaAllocOutflowBC(level);
 
 			setOutflow(level, sizePerLevel, channelSide);
@@ -604,7 +618,7 @@ bool GridReader::hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level
 
 void GridReader::initalGridInformations()
 {
-    throw "not implemented yet:  GridReader::initalGridInformations";
+
 }
 
 void GridReader::setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const

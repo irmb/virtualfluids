@@ -5,7 +5,6 @@
 #include <time.h>
 
 #include <sstream>
-#include <algorithm>
 
 
 #include <GridGenerator/utilities/math/CudaMath.cuh>
@@ -313,12 +312,6 @@ HOSTDEVICE void Grid::setNeighborIndices(const int &index)
     neighborIndexX[index] = uint(transCoordToIndex(neighborX, y, z));
     neighborIndexY[index] = uint(transCoordToIndex(x, neighborY, z));
     neighborIndexZ[index] = uint(transCoordToIndex(x, y, neighborZ));
-
-    //if (grid.isRB(index)) {
-    //if (neighborX == 0) neighborIndexX[index] = 0;
-    //if (neighborY == 0) neighborIndexY[index] = 0;
-    //if (neighborZ == 0) neighborIndexZ[index] = 0;
-    //}
 }
 
 HOSTDEVICE void Grid::setInvalidNode(const int &index, bool &invalidNodeFound)
@@ -490,12 +483,36 @@ HOSTDEVICE bool Grid::isEndOfGridStopper(uint index) const
 
 uint Grid::getNumberOfNodesCF() const
 {
-    return this->gridInterface->cf.numberOfEntries;
+    if(this->gridInterface)
+        return this->gridInterface->cf.numberOfEntries;
+    return 0;
 }
 
 uint Grid::getNumberOfNodesFC() const
 {
-    return this->gridInterface->fc.numberOfEntries;
+    if (this->gridInterface)
+     return this->gridInterface->fc.numberOfEntries;
+    return 0;
+}
+
+uint* Grid::getCF_coarse() const
+{
+    return this->gridInterface->cf.coarse;
+}
+
+uint* Grid::getCF_fine() const
+{
+    return this->gridInterface->cf.fine;
+}
+
+uint* Grid::getFC_coarse() const
+{
+    return this->gridInterface->fc.coarse;
+}
+
+uint* Grid::getFC_fine() const
+{
+    return this->gridInterface->fc.fine;
 }
 
 void Grid::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const

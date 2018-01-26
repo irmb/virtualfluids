@@ -10,8 +10,7 @@ class OffsetScale :
 	public CoordNeighborGeoV
 {
 private:
-	std::vector<real>vec1D_dataOffset; //das Feld mit Werten, temporär zum Füllen von vec2D
-    std::vector<std::vector<real> >vec2D_dataOffset; //alle Felder mit Werten gegliedert nach Level
+    std::vector<std::vector<real> >offset; 
     std::vector<std::vector<unsigned int> > scale;
 public:
 	OffsetScale(std::string ad, bool off);

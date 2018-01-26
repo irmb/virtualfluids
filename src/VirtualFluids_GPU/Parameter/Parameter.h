@@ -273,7 +273,7 @@ public:
 	////really ugly...should be in private...
 	//Parameter();
 	////////////////////////////////////////////////////////////////////////////
-    static SPtr<Parameter> make();
+    static SPtr<Parameter> makeShared();
 
 
 	static Parameter* getInstanz();

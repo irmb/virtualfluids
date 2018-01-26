@@ -97,8 +97,11 @@ public:
 
     HOST uint getNumberOfNodesCF() const;
     HOST uint getNumberOfNodesFC() const;
-
     HOST void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const;
+    HOST uint* getCF_coarse() const;
+    HOST uint* getCF_fine() const;
+    HOST uint* getFC_coarse() const;
+    HOST uint* getFC_fine() const;
 
     HOST std::string toString() const;
 

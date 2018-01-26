@@ -110,7 +110,6 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 
 }
 
-
 uint LevelGridBuilder::getNumberOfGridLevels()
 {
     return uint(grids.size());
@@ -124,6 +123,26 @@ uint LevelGridBuilder::getNumberOfNodesCF(int level)
 uint LevelGridBuilder::getNumberOfNodesFC(int level)
 {
     return this->grids[level]->getNumberOfNodesFC();
+}
+
+uint* LevelGridBuilder::getCF_coarse(uint level) const
+{
+    return this->grids[level]->getCF_coarse();
+}
+
+uint* LevelGridBuilder::getCF_fine(uint level) const
+{
+    return this->grids[level]->getCF_fine();
+}
+
+uint* LevelGridBuilder::getFC_coarse(uint level) const
+{
+    return this->grids[level]->getFC_coarse();
+}
+
+uint* LevelGridBuilder::getFC_fine(uint level) const
+{
+    return this->grids[level]->getFC_fine();
 }
 
 void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const

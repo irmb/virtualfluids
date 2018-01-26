@@ -68,6 +68,11 @@ public:
 
     virtual void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
     virtual void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
+
+    virtual uint* getCF_coarse(uint level) const = 0;
+    virtual uint* getCF_fine(uint level) const = 0;
+    virtual uint* getFC_coarse(uint level) const = 0;
+    virtual uint* getFC_fine(uint level) const = 0;
 };
 
 #endif

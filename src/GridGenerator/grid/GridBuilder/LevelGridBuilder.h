@@ -98,6 +98,11 @@ public:
 
     VF_PUBLIC void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const;
 
+    VF_PUBLIC uint* getCF_coarse(uint level) const override;
+    VF_PUBLIC uint* getCF_fine(uint level) const override;
+    VF_PUBLIC uint* getFC_coarse(uint level) const override;
+    VF_PUBLIC uint* getFC_fine(uint level) const override;
+
     VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 };

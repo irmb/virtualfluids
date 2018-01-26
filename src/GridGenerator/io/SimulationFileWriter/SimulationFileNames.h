@@ -14,6 +14,14 @@ struct VF_PUBLIC simulationFileNames
 	static const std::string neighborY;
 	static const std::string neighborZ;
 	static const std::string geoVec;
+
+    static const std::string scaleCFC;
+    static const std::string scaleCFF;
+    static const std::string scaleFCC;
+    static const std::string scaleFCF;
+
+    static const std::string offsetVecCF;
+    static const std::string offsetVecFC;
 	
 	static const std::string geomBoundaryQ;
 	static const std::string geomBoundaryValues;
