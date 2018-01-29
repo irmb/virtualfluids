@@ -233,18 +233,21 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
     SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
-    gridBuilder->addGrid(0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 1.0, "cpu", "D3Q27");
-    gridBuilder->addGrid(10.25, 10.25, 10.25, 90.75, 90.75, 90.75, 0.5, "cpu", "D3Q27");
-    gridBuilder->addGrid(25.375, 25.375, 25.375, 75.625, 75.625, 75.625, 0.25, "cpu", "D3Q27");
+    //gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 14.5625, 14.5625, 14.5625, 0.125, "cpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "cpu", "D3Q27", false, false, false);
+    gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "cpu", "D3Q27", false, false, false);
+    gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "cpu", "D3Q27", true, true, true);
+
     //gridBuilder->addGrid(40.4375, 40.4375, 40.4375, 60.5625, 60.5625, 60.5625, 0.125, "cpu", "D3Q27");
 
 
-    SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
+    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
     SPtr<Parameter> para = Parameter::makeShared();
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);

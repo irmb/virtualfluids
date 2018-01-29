@@ -17,6 +17,8 @@ public:
     HOSTDEVICE void VF_PUBLIC findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
     HOSTDEVICE void VF_PUBLIC findFC(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
 
+    HOSTDEVICE void VF_PUBLIC print() const;
+
     struct Interface
     {
         uint *fine, *coarse;
@@ -38,7 +40,7 @@ private:
 
     HOSTDEVICE static void findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
     HOSTDEVICE static bool isOnInterface(Interface& interface, const real& x, const real& y, const real& z);
-    HOSTDEVICE static uint getIndexOnFinerGrid(const int& factor, const Grid* fineGrid, const real& x, const real& y, const real& z);
+    HOSTDEVICE static uint getIndexOnFinerGrid(const real& factor, const Grid* fineGrid, const real& x, const real& y, const real& z);
 };
 
 

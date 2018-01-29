@@ -61,17 +61,13 @@ void LevelGridBuilder::verifyGridNeighbors()
     //    std::cout << grid->verifyNeighborIndices();
 }
 
-void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution)
+VF_PUBLIC void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
 {
     const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution);
-    grids.push_back(grid);
+    grids.insert(grids.begin(), grid);
 
-    if(this->getNumberOfGridLevels() == 1)
-        grid->setPeriodicity(true, true, true);
-    else
-        grid->setPeriodicity(false, false, false);
+    grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
 
-    grid->print();
 
     this->removeOverlapNodes();
 }
@@ -96,7 +92,12 @@ void LevelGridBuilder::removeOverlapNodes()
 {
     const uint numberOfLevels = getNumberOfGridLevels();
     if(numberOfLevels > 1)
-        grids[numberOfLevels - 2]->removeOverlapNodes(grids[numberOfLevels - 1]);
+    {
+        grids[0]->removeOverlapNodes(grids[1]);
+        grids[0]->print();
+
+    }
+       
 }
 
 
@@ -261,10 +262,10 @@ void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords
         xCoords[nodeNumber + 1] = x;
         yCoords[nodeNumber + 1] = y;
         zCoords[nodeNumber + 1] = z;
-        neighborX[nodeNumber + 1] = (unsigned int)(grid.neighborIndexX[i] + 1);
-        neighborY[nodeNumber + 1] = (unsigned int)(grid.neighborIndexY[i] + 1);
-        neighborZ[nodeNumber + 1] = (unsigned int)(grid.neighborIndexZ[i] + 1);
-        geo[nodeNumber + 1] = (unsigned int)grid.isSolid(i) ? GEOSOLID : GEOFLUID;
+        neighborX[nodeNumber + 1] = uint(grid.neighborIndexX[i] + 1);
+        neighborY[nodeNumber + 1] = uint(grid.neighborIndexY[i] + 1);
+        neighborZ[nodeNumber + 1] = uint(grid.neighborIndexZ[i] + 1);
+        geo[nodeNumber + 1] = uint(grid.isSolid(i) ? GEOSOLID : GEOFLUID);
         nodeNumber++;
     }
 }

@@ -57,8 +57,8 @@ HOST SPtr<Grid> Grid::makeShared(real startX, real startY, real startZ, real end
 
     time_t end = clock();
     real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
-    *logging::out << logging::Logger::INTERMEDIATE << "Time initial field: " + SSTR(time / 1000) + "sec\n";
-    *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
+    *logging::out << logging::Logger::LOW << "Time initial field: " + SSTR(time / 1000) + "sec\n";
+    *logging::out << logging::Logger::LOW << "-------------------------------------------\n";
 
     return grid;
 }
@@ -533,8 +533,10 @@ void Grid::setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfac
 
 HOSTDEVICE void Grid::print() const
 {
-    printf("min: (%2.2f, %2.2f, %2.2f), max: (%2.2f, %2.2f, %2.2f), size: %d, delta: %2.2f\n", startX, startY, startZ,
+    printf("min: (%2.4f, %2.4f, %2.4f), max: (%2.4f, %2.4f, %2.4f), size: %d, delta: %2.4f\n", startX, startY, startZ,
            endX, endY, endZ, size, delta);
+    if(this->gridInterface)
+        this->gridInterface->print();
 }
 
 std::string Grid::toString() const

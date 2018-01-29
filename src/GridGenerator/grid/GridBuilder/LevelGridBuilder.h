@@ -32,7 +32,7 @@ public:
     VF_PUBLIC void verifyGridNeighbors();
 
     VF_PUBLIC virtual void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta,
-                                   const std::string& device, const std::string& distribution);
+                                   const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ);
 
 
     VF_PUBLIC virtual void meshGeometry(std::string input, int level);

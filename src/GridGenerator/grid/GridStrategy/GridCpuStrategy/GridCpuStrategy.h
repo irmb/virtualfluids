@@ -35,7 +35,7 @@ protected:
     static void findForNeighborsNewIndices(SPtr<Grid> grid);
     static void findForGridInterfaceNewIndices(SPtr<Grid> grid);
 
-    static void setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid);
+    static void createGridInterface(SPtr<Grid> grid, SPtr<Grid> finerGrid);
 
 };
 
