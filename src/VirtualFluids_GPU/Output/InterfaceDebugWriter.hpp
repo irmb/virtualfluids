@@ -18,85 +18,51 @@ using namespace std;
 
 namespace InterfaceDebugWriter
 {
-	void writeInterfaceLinesDebugCF(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt2 > cellsVec;
-		int nodeNumberVec = 0;
 
-		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
-		{
-			nodeNumberVec += (int)para->getParH(level)->K_CF;
-		}
-		nodesVec.resize(nodeNumberVec*8);
-		int nodeCount = 0;
+    void writeGridInterfaceLines(Parameter* para, int level, const uint* coarse, const uint* fine, uint numberOfNodes, const std::string& name)
+    {
+        vector<UbTupleFloat3> nodes(numberOfNodes * 2);
+        vector<UbTupleInt2> cells(numberOfNodes);
+
+        int actualNodeNumber = 0;
+        for (uint u = 0; u < numberOfNodes; u++)
+        {
+            const int posCoarse = coarse[u];
+            const double x1Coarse = para->getParH(level)->coordX_SP[posCoarse];
+            const double x2Coarse = para->getParH(level)->coordY_SP[posCoarse];
+            const double x3Coarse = para->getParH(level)->coordZ_SP[posCoarse];
+
+            const int posFine = fine[u];
+            const double x1Fine = para->getParH(level + 1)->coordX_SP[posFine];
+            const double x2Fine = para->getParH(level + 1)->coordY_SP[posFine];
+            const double x3Fine = para->getParH(level + 1)->coordZ_SP[posFine];
+
+            nodes[actualNodeNumber++] = makeUbTuple(float(x1Coarse), float(x2Coarse), float(x3Coarse));
+            nodes[actualNodeNumber++] = makeUbTuple(float(x1Fine), float(x2Fine), float(x3Fine));
+
+            cells[u] = makeUbTuple(actualNodeNumber - 2, actualNodeNumber - 1);
+        }
+        WbWriterVtkXmlBinary::getInstance()->writeLines(name, nodes, cells);
+    }
+
+
+    void writeInterfaceLinesDebugCF(Parameter* para)
+    {
 		for (int level = 0; level < para->getMaxLevel(); level++)
 		{
-			double nodeDeltaLevel = para->getParH(level)->dx;
-			double nodeDeltaLevelFine = para->getParH(level+1)->dx;
-			double halfNodeDeltaLevel = 0.5*nodeDeltaLevel;
-			double halfNodeDeltaLevelFine = 0.5*nodeDeltaLevelFine;
-
-			for(unsigned int u=0;u<para->getParH(level)->K_CF;u++)
-			{
-				int pos = para->getParH(level)->intCF.ICellCFC[u];
-				int posFine = para->getParH(level)->intCF.ICellCFF[u];
-
-				double x1 = para->getParH(level)->coordX_SP[pos];
-				double x2 = para->getParH(level)->coordY_SP[pos];
-				double x3 = para->getParH(level)->coordZ_SP[pos];
-
-				double x1Fine = para->getParH(level+1)->coordX_SP[posFine];
-				double x2Fine = para->getParH(level+1)->coordY_SP[posFine];
-				double x3Fine = para->getParH(level+1)->coordZ_SP[posFine];
-
-				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
-				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1Fine),(float)(x2Fine),(float)(x3Fine) ) );
-
-				cellsVec.push_back( makeUbTuple(nodeCount-2,nodeCount-1) );
-
-			}
-			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_OffDebugCF.vtk";
-			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
+            const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugCF.vtk";
+            writeGridInterfaceLines(para, level, para->getParH(level)->intCF.ICellCFC, para->getParH(level)->intCF.ICellCFF, para->getParH(level)->K_CF, fileName);
 		}
 	}
 
 
-	//////////////////////////////////////////////////////////////////////////
-	void writeInterfaceLinesDebugFC(Parameter* para){
-		vector< UbTupleFloat3 > nodesVec;
-		vector< UbTupleInt2 > cellsVec;
-		int nodeNumberVec = 0;
-
-		for (int level = 0; level < para->getMaxLevel(); level++) //evtl. Maxlevel + 1
-		{
-			nodeNumberVec += (int)para->getParH(level)->K_FC;
-		}
-		nodesVec.resize(nodeNumberVec*8);
-		int nodeCount = 0;
-		for (int level = 0; level < para->getMaxLevel(); level++)
-		{
-			for(unsigned int u=0;u<para->getParH(level)->K_FC;u++)
-			{
-				int pos = para->getParH(level)->intFC.ICellFCC[u];
-				int posFine = para->getParH(level)->intFC.ICellFCF[u];
-
-				double x1 = para->getParH(level)->coordX_SP[pos];
-				double x2 = para->getParH(level)->coordY_SP[pos];
-				double x3 = para->getParH(level)->coordZ_SP[pos];
-
-				double x1Fine = para->getParH(level+1)->coordX_SP[posFine];
-				double x2Fine = para->getParH(level+1)->coordY_SP[posFine];
-				double x3Fine = para->getParH(level+1)->coordZ_SP[posFine];
-
-				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1),(float)(x2),(float)(x3) ) );
-				nodesVec[nodeCount++]=( makeUbTuple( (float)(x1Fine),(float)(x2Fine),(float)(x3Fine) ) );
-
-				cellsVec.push_back( makeUbTuple(nodeCount-2,nodeCount-1) );
-
-			}
-			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_OffDebugFC.vtk";
-			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
-		}
+	void writeInterfaceLinesDebugFC(Parameter* para)
+    {
+        for (int level = 0; level < para->getMaxLevel(); level++)
+        {
+            const std::string fileName = para->getFName() + "_" + StringUtil::toString<int>(level) + "_OffDebugFC.vtk";
+            writeGridInterfaceLines(para, level, para->getParH(level)->intFC.ICellFCC, para->getParH(level)->intFC.ICellFCF, para->getParH(level)->K_FC, fileName);
+        }
 	}
 
 
@@ -136,6 +102,8 @@ namespace InterfaceDebugWriter
 			}
 			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_CFCneighbor.vtk";
 			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
+            cellsVec.clear();
+            nodesVec.clear();
 		}
 	}
 
@@ -176,6 +144,8 @@ namespace InterfaceDebugWriter
 			}
 			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_CFFneighbor.vtk";
 			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
+            cellsVec.clear();
+            nodesVec.clear();
 		}
 	}
 
@@ -216,6 +186,8 @@ namespace InterfaceDebugWriter
 			}
 			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_FCCneighbor.vtk";
 			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
+            cellsVec.clear();
+            nodesVec.clear();
 		}
 	}
 
@@ -256,6 +228,8 @@ namespace InterfaceDebugWriter
 			}
 			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_FCFneighbor.vtk";
 			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
+            cellsVec.clear();
+            nodesVec.clear();
 		}
 	}
 
@@ -303,6 +277,8 @@ namespace InterfaceDebugWriter
 			}
 			std::string filenameVec = para->getFName()+"_"+StringUtil::toString<int>(level)+"_OffDebugCF_Offs.vtk";
 			WbWriterVtkXmlBinary::getInstance()->writeLines(filenameVec,nodesVec,cellsVec);
+            cellsVec.clear();
+            nodesVec.clear();
 		}
 	}
 
