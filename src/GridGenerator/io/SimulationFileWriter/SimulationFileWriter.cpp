@@ -173,7 +173,7 @@ void SimulationFileWriter::writeCoordFiles(SPtr<GridBuilder> builder, uint level
 
 void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, int index, uint level, FILEFORMAT format)
 {
-    SPtr<Grid> grid = builder->getGrid(level, 0);
+    SPtr<Grid> grid = builder->getGrid(level);
     if (grid->matrixIndex[index] == -1)
         return;
 

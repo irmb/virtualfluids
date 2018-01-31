@@ -36,7 +36,7 @@
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-LevelGridBuilder::LevelGridBuilder()
+LevelGridBuilder::LevelGridBuilder(const std::string& device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
 {
     this->Qs.resize(QFILES);
     this->channelBoundaryConditions.resize(6);
@@ -46,6 +46,11 @@ LevelGridBuilder::LevelGridBuilder()
     channelBoundaryConditions[3] = "periodic";
     channelBoundaryConditions[4] = "periodic";
     channelBoundaryConditions[5] = "periodic";
+}
+
+std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(const std::string& device, const std::string& d3qxx)
+{
+    return SPtr<LevelGridBuilder>(new LevelGridBuilder(device, d3qxx));
 }
 
 
@@ -72,16 +77,35 @@ void LevelGridBuilder::verifyGridNeighbors()
     //    std::cout << grid->verifyNeighborIndices();
 }
 
-VF_PUBLIC void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
+void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ)
+{
+    const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, -1.0, device, d3qxx);
+    grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
+
+    grids.insert(grids.begin(), grid);
+}
+
+SPtr<Grid> LevelGridBuilder::getGrid(uint level)
+{
+    return grids[level];
+}
+
+void LevelGridBuilder::generateGrids()
+{
+
+}
+
+
+void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
 {
     const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution);
     grids.insert(grids.begin(), grid);
 
     grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
 
-
     this->removeOverlapNodes();
 }
+
 
 void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
     std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,

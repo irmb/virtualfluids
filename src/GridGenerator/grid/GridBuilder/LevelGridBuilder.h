@@ -23,10 +23,14 @@ class BoundingBox;
 
 class LevelGridBuilder : public GridBuilder
 {
-public:
+private:
+    VF_PUBLIC LevelGridBuilder(const std::string& device, const std::string& d3qxx);
 
-    VF_PUBLIC LevelGridBuilder();
-    VF_PUBLIC static std::shared_ptr<GridBuilder> make(std::string);
+public:
+    VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(const std::string& device, const std::string& d3qxx);
+
+    VF_PUBLIC void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ);
+    VF_PUBLIC SPtr<Grid> getGrid(uint level) override;
 
     VF_PUBLIC void copyDataFromGpu();
     VF_PUBLIC virtual ~LevelGridBuilder();
@@ -34,7 +38,7 @@ public:
 
     VF_PUBLIC virtual void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta,
                                    const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ);
-
+    VF_PUBLIC virtual void generateGrids();
 
     VF_PUBLIC virtual void meshGeometry(std::string input, int level);
     VF_PUBLIC virtual void deleteSolidNodes();
@@ -88,6 +92,11 @@ protected:
                     std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/)
     const;
 
+private:
+
+    std::string device;
+    std::string d3qxx;
+
 public:
     VF_PUBLIC void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
                                        std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
@@ -106,6 +115,7 @@ public:
 
     VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
+    
 };
 
 #endif

@@ -70,13 +70,13 @@ TEST(TriangleTest, getClosestPointsOnEdgesFromTriangle)
     EXPECT_TRUE(isP3OnEdge);
 }
 
-TEST(TriangleTest, PointIsNotWithinTriangle)
-{
-    Triangle t = Triangle(Vertex(0, 0, 0), Vertex(10, 0, 0), Vertex(0, 10, 0), Vertex(0, 0, 1));
-    Vertex P4 = Vertex(1, 1, -2);
-
-    EXPECT_FALSE(t.isNotNextToFace(P4));
-}
+//TEST(TriangleTest, PointIsNotWithinTriangle)
+//{
+//    Triangle t = Triangle(Vertex(0, 0, 0), Vertex(10, 0, 0), Vertex(0, 10, 0), Vertex(0, 0, 1));
+//    Vertex P4 = Vertex(1, 1, -2);
+//
+//    EXPECT_FALSE(t.isNotNextToFace(P4));
+//}
 
 TEST(TriangleTest, calculatePerpendicularPoint)
 {

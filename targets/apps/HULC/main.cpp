@@ -223,7 +223,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                  
     para->setDistX(StringUtil::toVector(input->getValue("DistX")));                  
     para->setDistY(StringUtil::toVector(input->getValue("DistY")));                  
-    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));         */         
+    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));      */            
 
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
@@ -232,15 +232,17 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
-    //gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 14.5625, 14.5625, 14.5625, 0.125, "cpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "cpu", "D3Q27", false, false, false);
-    gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "cpu", "D3Q27", false, false, false);
-    gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "cpu", "D3Q27", true, true, true);
+    auto gridBuilder = LevelGridBuilder::makeShared("cpu", "D3Q27");
+    //gridBuilder->addGrid(14.4921875, 14.4921875, 14.4921875, 16.5078125, 16.5078125, 16.5078125, 0.015625, "cpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(13.984375, 13.984375, 13.984375, 17.015625, 17.015625, 17.015625, 0.03125, "cpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(13.46875, 13.46875, 13.46875, 17.53125, 17.53125, 17.53125, 0.0625, "cpu", "D3Q27", false, false, false);
+    gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 18.5625, 18.5625, 18.5625, 0.125, "gpu", "D3Q27", false, false, false);
+    gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "gpu", "D3Q27", false, false, false);
+    gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "gpu", "D3Q27", false, false, false);
+    gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "gpu", "D3Q27", true, true, true);
 
-    //gridBuilder->addGrid(40.4375, 40.4375, 40.4375, 60.5625, 60.5625, 60.5625, 0.125, "cpu", "D3Q27");
 
-
+    gridBuilder->copyDataFromGpu();
     //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
@@ -267,40 +269,6 @@ void multipleLevel(const std::string& configPath)
     sim.run();
 }
 
-void simulate(const std::string& configPath)
-{
-    SPtr<LevelGridBuilder> builder(new LevelGridBuilder());
-
-
-    SPtr<Parameter> para = Parameter::makeShared();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
-    //std::shared_ptr<GridProvider> reader = GridProvider::makeGridReader(true, para);
-
-    std::ifstream stream;
-    stream.open(configPath.c_str(), std::ios::in);
-    if (stream.fail())
-        throw "can not open config file!\n";
-
-    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
-
-    setParameters(para, input);
-
-    SPtr<Transformator> trans(new TransformatorImp());
-    //builder->addGrid(para->getGridX()[0], para->getGridY()[0], para->getGridZ()[0], 1.0, "D3Q27", trans);
-
-    SPtr<Transformator> transRefine1(new TransformatorImp(para->getDistX()[1], para->getDistY()[1], para->getDistZ()[1], 0.5));
-    //builder->addGrid(para->getGridX()[1], para->getGridY()[1], para->getGridZ()[1], 1.0, "D3Q27", transRefine1);
-
-    //builder->getGridWrapper(0, 0)->copyDataFromGPU();
-    //builder->getGridWrapper(1, 0)->copyDataFromGPU();
-
-    //GridVTKWriter::writeSparseGridToVTK(builder->getGridWrapper(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
-    SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylor/simuFiles/", builder, FILEFORMAT::ASCII);
-
-    Simulation sim;
-    sim.init(para, gridGenerator);
-    sim.run();
-}
 
 int main( int argc, char* argv[])
 {
