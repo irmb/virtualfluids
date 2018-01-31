@@ -154,9 +154,9 @@ void run(string configname)
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
       
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(nuLB*1.0e4);
+      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(nuLB*2.0e3);
 
-      //kernel->setNX(std::array<int,3>{{blockNx[0], blockNx[1], blockNx[2]}});
+
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
       kernel->setBCProcessor(bcProc);
@@ -574,10 +574,11 @@ void run(string configname)
       //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
 
       omp_set_num_threads(numOfThreads);
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepSch, endTime));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, tavSch, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
+      calculator->addCoProcessor(tav);
       
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");

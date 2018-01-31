@@ -88,7 +88,7 @@ void TimeAveragedValuesCoProcessor::init(SPtr<UbScheduler> s)
 
             if ((options&Fluctuations) == Fluctuations)
             {
-               SPtr<AverageValuesArray3D> af = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(6, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               SPtr<AverageValuesArray3D> af = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(7, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageFluctuations(af);
             }
 
@@ -235,6 +235,8 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
       datanames.push_back("taVxy");
       datanames.push_back("taVxz");
       datanames.push_back("taVyz");
+      datanames.push_back("taVyz");
+      datanames.push_back("taRhoF");
    }
 
    if ((options&Triplecorrelations) == Triplecorrelations)
@@ -335,6 +337,7 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
                   data[index++].push_back((*af)(Vxy, ix1, ix2, ix3));
                   data[index++].push_back((*af)(Vxz, ix1, ix2, ix3));
                   data[index++].push_back((*af)(Vyz, ix1, ix2, ix3));
+                  data[index++].push_back((*af)(Rho, ix1, ix2, ix3));
                }
 
                if ((options&Triplecorrelations) == Triplecorrelations)
@@ -416,7 +419,7 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
             maxX2 -= 2;
             maxX3 -= 2;
 
-            LBMReal rho, ux, uy, uz, uxx, uzz, uyy, uxy, uxz, uyz;
+            LBMReal rho, ux, uy, uz, uxx, uzz, uyy, uxy, uxz, uyz, rhof;
 
             for (int ix3 = minX3; ix3 <= maxX3; ix3++)
             {
@@ -434,7 +437,6 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                         if ((options&Density) == Density)
                         {
                            rho = (*ar)(0, ix1, ix2, ix3) / timeSteps;
-                           
                            (*ar)(0, ix1, ix2, ix3) = rho; 
                         }
 
@@ -459,6 +461,10 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                            uxy = (*af)(Vxy, ix1, ix2, ix3) / timeSteps;
                            uxz = (*af)(Vxz, ix1, ix2, ix3) / timeSteps;
                            uyz = (*af)(Vyz, ix1, ix2, ix3) / timeSteps;
+                           if ((options&Density) == Density)
+                           {
+                              rhof = (*af)(Rho, ix1, ix2, ix3) / timeSteps;
+                           }
 
                            (*af)(Vxx, ix1, ix2, ix3) = uxx - ux*ux;
                            (*af)(Vyy, ix1, ix2, ix3) = uyy - uy*uy;
@@ -466,6 +472,10 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                            (*af)(Vxy, ix1, ix2, ix3) = uxy - ux*uy;
                            (*af)(Vxz, ix1, ix2, ix3) = uxz - ux*uz;
                            (*af)(Vyz, ix1, ix2, ix3) = uyz - uy*uz;
+                           if ((options&Density) == Density)
+                           {
+                              (*af)(Rho, ix1, ix2, ix3) = rhof - rho*rho;
+                           }
                         }
 
                         if ((options&Triplecorrelations) == Triplecorrelations)
@@ -585,6 +595,11 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                                  (*af)(Vxy, ix1, ix2, ix3) = (*af)(Vxy, ix1, ix2, ix3) + vx*vy;
                                  (*af)(Vxz, ix1, ix2, ix3) = (*af)(Vxz, ix1, ix2, ix3) + vx*vz;
                                  (*af)(Vyz, ix1, ix2, ix3) = (*af)(Vyz, ix1, ix2, ix3) + vy*vz;
+                                 
+                                 if ((options&Density) == Density)
+                                 {
+                                    (*af)(Vyz, ix1, ix2, ix3) = (*af)(Rho, ix1, ix2, ix3) + rho*rho;
+                                 }
                               }
 
                               //triple-correlations

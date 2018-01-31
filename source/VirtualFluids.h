@@ -8,7 +8,10 @@
 #include <JM.h>
 #endif
 
- 
+#ifdef _OPENMP
+#include <omp.h>
+#endif 
+
 #include <MuParser/include/muParser.h>
 #include <MuParser/include/muParserBase.h>
 #include <MuParser/include/muParserBytecode.h>

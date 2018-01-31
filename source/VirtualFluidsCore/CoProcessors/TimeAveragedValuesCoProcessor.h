@@ -86,7 +86,7 @@ private:
    //labels for the different components, e.g. AvVxx for time averaged RMS: 1/n SUM((U-Umean)^2)
    //you need to calculate a square root before plotting RMS
    enum Velocity { Vx, Vy, Vz };
-   enum Fluctuations { Vxx, Vyy, Vzz, Vxy, Vxz, Vyz };
+   enum Fluctuations { Vxx, Vyy, Vzz, Vxy, Vxz, Vyz, Rho };
    enum Triplecorrelations { Vxxx, Vxxy, Vxxz, Vyyy, Vyyx, Vyyz, Vzzz, Vzzx, Vzzy, Vxyz };
    //enum Pressure { P, Prms };
 
@@ -116,24 +116,5 @@ private:
 
    bool withGhostLayer;
 
-   //friend class boost::serialization::access;
-   //template<class Archive>
-   //void serialize(Archive & ar, const unsigned int version)
-   //{
-   //   ar & boost::serialization::base_object<CoProcessor>(*this);
-   //   ar & path;
-   //   ar & blockVector;
-   //   ar & minInitLevel;
-   //   ar & maxInitLevel;
-   //   ar & gridRank;
-   //   ar & writer;
-   //   ar & resetStepRMS;
-   //   ar & resetStepMeans;
-   //   ar & AverageInterval;
-   //   ar & averageScheduler;
-   //   ar & resetSchedulerRMS;
-   //   ar & resetSchedulerMeans;
-   //   ar & compressible;
-   //}
 };
 #endif

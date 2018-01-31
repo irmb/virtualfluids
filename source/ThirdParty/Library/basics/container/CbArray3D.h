@@ -35,6 +35,7 @@
 #include <basics/utilities/UbEqual.h>
 #include <algorithm>
 #include <typeinfo>
+#include "PointerDefinitions.h"
 
 #ifdef CAB_RCF
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
