@@ -42,12 +42,13 @@ public:
 
     int *matrixIndex;
     Distribution distribution;
+    SPtr<GridStrategy> gridStrategy;
 
 
     HOSTDEVICE uint getSize() const;
     HOSTDEVICE uint getReducedSize() const;
 
-
+    HOSTDEVICE void initalNodes(uint index);
     HOST void mesh(Geometry &geometry);
     HOST void freeMemory();
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ);
@@ -81,8 +82,8 @@ public:
 	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     HOSTDEVICE real getNeighhborCoord(bool periodicity, real actualCoord, real startCoord, real  endCoord) const;
     HOSTDEVICE void findNeighborIndex(int index);
-    HOST void findForGridInterfaceNewIndexCF(uint index);
-    HOST void findForGridInterfaceNewIndexFC(uint index);
+    HOSTDEVICE void findForGridInterfaceNewIndexCF(uint index);
+    HOSTDEVICE void findForGridInterfaceNewIndexFC(uint index);
 
 
     HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
@@ -95,8 +96,8 @@ public:
 
 
 
-    HOST uint getNumberOfNodesCF() const;
-    HOST uint getNumberOfNodesFC() const;
+    HOSTDEVICE uint getNumberOfNodesCF() const;
+    HOSTDEVICE uint getNumberOfNodesFC() const;
     HOST void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const;
     HOST uint* getCF_coarse() const;
     HOST uint* getCF_fine() const;
@@ -116,7 +117,6 @@ private:
     HOSTDEVICE int getNeighborIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
     HOSTDEVICE void setStopperNeighborCoords(int index);
 
-    SPtr<GridStrategy> gridStrategy;
 
     GridInterface* gridInterface;
 

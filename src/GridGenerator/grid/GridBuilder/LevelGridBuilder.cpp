@@ -49,6 +49,17 @@ LevelGridBuilder::LevelGridBuilder()
 }
 
 
+void LevelGridBuilder::copyDataFromGpu()
+{
+    for (const auto grid : grids)
+    {
+        auto gridGpuStrategy = std::dynamic_pointer_cast<GridGpuStrategy>(grid->gridStrategy);
+        if(gridGpuStrategy)
+            gridGpuStrategy->copyDataFromGPU(grid);
+    }
+        
+}
+
 LevelGridBuilder::~LevelGridBuilder()
 {
     for (const auto grid : grids)
@@ -95,9 +106,7 @@ void LevelGridBuilder::removeOverlapNodes()
     {
         grids[0]->removeOverlapNodes(grids[1]);
         grids[0]->print();
-
-    }
-       
+    }   
 }
 
 

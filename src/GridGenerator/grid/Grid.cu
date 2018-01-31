@@ -85,6 +85,24 @@ HOSTDEVICE uint Grid::getReducedSize() const
     return this->reducedSize;
 }
 
+HOSTDEVICE void Grid::initalNodes(uint index)
+{
+    this->matrixIndex[index] = index;
+    if (this->isEndOfGridStopper(index))
+    {
+        this->setFieldEntryToSolid(index);
+        this->neighborIndexX[index] = -1;
+        this->neighborIndexY[index] = -1;
+        this->neighborIndexZ[index] = -1;
+    }
+    else
+    {
+        this->setFieldEntryToFluid(index);
+        this->setNeighborIndices(index);
+    }
+}
+
+
 HOST void Grid::mesh(Geometry &geometry)
 {
     clock_t begin = clock();
@@ -104,7 +122,7 @@ HOST void Grid::freeMemory()
 
 HOST void Grid::removeOverlapNodes(SPtr<Grid> finerGrid)
 {
-    gridStrategy->removeOverlapNodes(shared_from_this(), finerGrid);
+    gridStrategy->createGridInterface(shared_from_this(), finerGrid);
 }
 
 HOSTDEVICE void Grid::createGridInterface(uint index, const Grid& finerGrid)
@@ -407,14 +425,14 @@ HOSTDEVICE int Grid::getNeighborIndex(const real &expectedX, const real &expecte
 //    interface.coarse[interfaceIndex] = newIndex;
 //}
 
-HOST void Grid::findForGridInterfaceNewIndexCF(uint index)
+HOSTDEVICE void Grid::findForGridInterfaceNewIndexCF(uint index)
 {
     const uint oldIndex = gridInterface->cf.coarse[index];
     const uint newIndex = matrixIndex[oldIndex];
     gridInterface->cf.coarse[index] = newIndex;
 }
 
-HOST void Grid::findForGridInterfaceNewIndexFC(uint index)
+HOSTDEVICE void Grid::findForGridInterfaceNewIndexFC(uint index)
 {
     const uint oldIndex = gridInterface->fc.coarse[index];
     const uint newIndex = matrixIndex[oldIndex];

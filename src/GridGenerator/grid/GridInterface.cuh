@@ -5,14 +5,33 @@
 #include "VirtualFluidsDefinitions.h"
 #include "utilities/cuda/cudaDefines.h"
 
+class Managed
+{
+    void *operator new(size_t length)
+    {
+        void *ptr;
+        cudaMallocManaged(&ptr, length);
+        cudaDeviceSynchronize();
+        return ptr;
+    }
+
+    void operator delete(void *ptr)
+    {
+        cudaDeviceSynchronize();
+        cudaFree(ptr);
+    }
+};
+
+
 struct Grid;
 
 class GridInterface
 {
 public:
-    HOSTDEVICE VF_PUBLIC GridInterface(const Grid* finerGrid);
-
+    HOSTDEVICE VF_PUBLIC GridInterface();
     HOSTDEVICE VF_PUBLIC ~GridInterface();
+
+    HOSTDEVICE void initalGridInterface(const Grid* fineGrid);
 
     HOSTDEVICE void VF_PUBLIC findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
     HOSTDEVICE void VF_PUBLIC findFC(const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
@@ -35,8 +54,8 @@ public:
     } fc, cf;
 
 private:
-    HOSTDEVICE void initalCoarseToFine(uint sizeCF, const Grid* fineGrid);
-    HOSTDEVICE void initalFineToCoarse(uint sizeCF, const Grid* fineGrid);
+    HOSTDEVICE void initalCoarseToFine(const Grid* fineGrid);
+    HOSTDEVICE void initalFineToCoarse(const Grid* fineGrid);
 
     HOSTDEVICE static void findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid);
     HOSTDEVICE static bool isOnInterface(Interface& interface, const real& x, const real& y, const real& z);

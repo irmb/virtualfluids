@@ -5,27 +5,23 @@
 #include "utilities/math/CudaMath.cuh"
 
 
-GridInterface::GridInterface(const Grid* fineGrid)
+GridInterface::GridInterface()
 {
-    const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
-    initalCoarseToFine(sizeCF, fineGrid);
-    initalFineToCoarse(sizeCF, fineGrid);
 }
 
 GridInterface::~GridInterface()
 {
-    delete[] cf.coarse;
-    delete[] cf.fine;
 
-    delete[] fc.coarse;
-    delete[] fc.fine;
 }
 
-void GridInterface::initalCoarseToFine(const uint sizeCF, const Grid* fineGrid)
+void GridInterface::initalGridInterface(const Grid* fineGrid)
 {
-    cf.coarse = new uint[sizeCF];
-    cf.fine = new uint[sizeCF];
+    initalCoarseToFine(fineGrid);
+    initalFineToCoarse(fineGrid);
+}
 
+void GridInterface::initalCoarseToFine(const Grid* fineGrid)
+{
     cf.startCoarseX = fineGrid->startX - fineGrid->delta * 0.5;
     cf.startCoarseY = fineGrid->startY - fineGrid->delta * 0.5;
     cf.startCoarseZ = fineGrid->startZ - fineGrid->delta * 0.5;
@@ -38,11 +34,8 @@ void GridInterface::initalCoarseToFine(const uint sizeCF, const Grid* fineGrid)
     cf.fineEntry = CFF;
 }
 
-void GridInterface::initalFineToCoarse(const uint sizeCF, const Grid* fineGrid)
+void GridInterface::initalFineToCoarse(const Grid* fineGrid)
 {
-    fc.coarse = new uint[sizeCF];
-    fc.fine = new uint[sizeCF];
-
     fc.startCoarseX = cf.startCoarseX + 4 * fineGrid->delta;
     fc.startCoarseY = cf.startCoarseY + 4 * fineGrid->delta;
     fc.startCoarseZ = cf.startCoarseZ + 4 * fineGrid->delta;
@@ -114,5 +107,6 @@ HOSTDEVICE  uint GridInterface::getIndexOnFinerGrid(const real& factor, const Gr
 
 void GridInterface::print() const
 {
+    printf("start cf: (%2.2f, %2.2f, %2.2f); end cf: (%2.2f, %2.2f, %2.2f); ", cf.startCoarseX, cf.startCoarseY, cf.startCoarseZ, cf.endCoarseX, cf.endCoarseY, cf.endCoarseZ);
     printf("Grid Interface - CF nodes: %d, FC nodes: %d\n", cf.numberOfEntries, fc.numberOfEntries);
 }

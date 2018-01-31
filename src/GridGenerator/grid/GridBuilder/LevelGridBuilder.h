@@ -28,6 +28,7 @@ public:
     VF_PUBLIC LevelGridBuilder();
     VF_PUBLIC static std::shared_ptr<GridBuilder> make(std::string);
 
+    VF_PUBLIC void copyDataFromGpu();
     VF_PUBLIC virtual ~LevelGridBuilder();
     VF_PUBLIC void verifyGridNeighbors();
 

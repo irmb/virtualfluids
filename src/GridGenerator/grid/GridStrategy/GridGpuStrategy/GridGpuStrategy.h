@@ -19,13 +19,14 @@ public:
 
     void initalNodes(SPtr<Grid> grid) override;
     void mesh(SPtr<Grid> grid, Geometry &geom) override;
-    void removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid) override;
+    void createGridInterface(SPtr<Grid> grid, SPtr<Grid> fineGrid) override;
 
     void freeMemory(SPtr<Grid> grid) override;
 
 
     void deleteSolidNodes(SPtr<Grid> grid) override;
 
+    void copyAndFreeGridInterfaceFromGPU(SPtr<Grid> grid);
     virtual void copyDataFromGPU(SPtr<Grid> grid);
 
 	//void markNodesToDeleteOutsideOfGeometry();

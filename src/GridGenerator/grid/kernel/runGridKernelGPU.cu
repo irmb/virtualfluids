@@ -9,6 +9,8 @@
 
 GLOBAL void initalField(Grid grid);
 GLOBAL void runMeshing(Grid grid, const Geometry geom);
+
+GLOBAL void findGridInterface(Grid grid, Grid finerGrid);
 GLOBAL void runKernelTomarkNodesToDeleteOutsideOfGeometry(Grid grid);
 GLOBAL void markNodesToDeleteOutsideOfGeometry(Grid grid);
 GLOBAL void findNeighborIndicesKernel(Grid grid);
@@ -23,13 +25,9 @@ float runKernelInitalUniformGrid3d(const LaunchParameter& para, Grid &grid)
 
 GLOBAL void initalField(Grid grid)
 {
-    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-    {
-        grid.setNeighborIndices(index);
-        grid.matrixIndex[index] = index;
-        grid.setFieldEntryToFluid(index);
-    }
+        grid.initalNodes(index);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -158,4 +156,57 @@ GLOBAL void findNeighborIndicesKernel(Grid grid)
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
         grid.findNeighborIndex(index);
+}
+
+
+/*#################################################################################*/
+
+float runKernelToFindGridInterface(const LaunchParameter& para, Grid &grid, Grid &finerGrid)
+{
+    return runKernel(findGridInterface, para, grid, finerGrid);
+}
+
+GLOBAL void findGridInterface(Grid grid, Grid finerGrid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getSize())
+        grid.createGridInterface(index, finerGrid);
+}
+/*#################################################################################*/
+
+GLOBAL void findNeighborsNewIndices(Grid grid);
+float runKernelToFindNeighborsNewIndices(const LaunchParameter& para, Grid &grid)
+{
+    return runKernel(findNeighborsNewIndices, para, grid);
+}
+
+GLOBAL void findNeighborsNewIndices(Grid grid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getSize())
+        grid.findNeighborIndex(index);
+}
+/*#################################################################################*/
+
+GLOBAL void findGridInterfaceNewIndicesFC(Grid grid);
+GLOBAL void findGridInterfaceNewIndicesCF(Grid grid);
+float runKernelToFindGridInterfaceNewIndices(const LaunchParameter& para, Grid &grid)
+{
+    runKernel(findGridInterfaceNewIndicesCF, para, grid);
+    return runKernel(findGridInterfaceNewIndicesFC, para, grid);
+}
+
+
+GLOBAL void findGridInterfaceNewIndicesCF(Grid grid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getNumberOfNodesCF())
+        grid.findForGridInterfaceNewIndexCF(index);
+}
+
+GLOBAL void findGridInterfaceNewIndicesFC(Grid grid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getNumberOfNodesFC())
+        grid.findForGridInterfaceNewIndexFC(index);
 }
