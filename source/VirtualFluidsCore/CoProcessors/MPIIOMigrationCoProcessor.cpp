@@ -530,10 +530,11 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
    if (comm->isRoot()) start = MPI_Wtime();
 
    MPI_Info info = MPI_INFO_NULL;
-   //MPI_Info_create (&info);
-   //MPI_Info_set(info,"romio_cb_write","enable");
-   //MPI_Info_set(info,"cb_buffer_size","4194304");
-   //MPI_Info_set(info,"striping_unit","4194304");
+#ifdef HLRN_LUSTRE
+   MPI_Info_create(&info);
+   MPI_Info_set(info, "striping_factor", "40");
+   MPI_Info_set(info, "striping_unit", "4M");
+#endif
 
    // write to the file
    MPI_File file_handler;

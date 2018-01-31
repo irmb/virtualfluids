@@ -38,6 +38,7 @@ SET(USE_BOOST OFF CACHE BOOL "include Paraview Catalyst support")
 #SET(USE_FETOL OFF CACHE BOOL "include FETOL library support")
 SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
 #SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
+SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 
 #CAB
 INCLUDE("CMake/CMakeCABMacros.txt")
@@ -119,6 +120,10 @@ ENDIF()
 
 IF(${USE_INTEL})
    SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -parallel)
+ENDIF()
+
+IF(${USE_HLRN_LUSTRE})
+   SET(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DHLRN_LUSTRE)
 ENDIF()
 
 # IF(${USE_PYTHON})

@@ -788,7 +788,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
 
    MPI_Info info = MPI_INFO_NULL;
 
-#ifdef HLRN
+#ifdef HLRN_LUSTRE
    MPI_Info_create(&info);
    MPI_Info_set(info, "striping_factor", "40");
    MPI_Info_set(info, "striping_unit", "4M");
