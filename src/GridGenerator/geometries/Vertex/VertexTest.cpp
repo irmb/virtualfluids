@@ -70,7 +70,7 @@ TEST_F(VertexTest, getMagnitudeFromVector)
     v.y = 3.0;
     v.z = -1.0;
 
-    real expected = real(std::sqrt(16.0 + 9.0 + 1.0));
+    const real expected = real(std::sqrt(16.0 + 9.0 + 1.0));
     ASSERT_THAT(v.getMagnitude(), RealEq(expected));
 }
 
