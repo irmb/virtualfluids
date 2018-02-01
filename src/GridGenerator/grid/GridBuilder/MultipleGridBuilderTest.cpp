@@ -63,23 +63,11 @@ TEST(MultipleGridBuilderTest, getInvalidLevel_shouldThrowException)
     ASSERT_THROW(gridBuilder->getDelta(0), InvalidLevelException);
 }
 
-TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
+
+
+
+void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridDummy> > gridBuilder, const uint level)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 1.0);
-
-    const real givenStartX = 0.0;
-    const real givenStartY = 0.0;
-    const real givenStartZ = 0.0;
-
-    const real givenEndX = 10.0;
-    const real givenEndY = 10.0;
-    const real givenEndZ = 10.0;
-    gridBuilder->addGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ);
-
-    const uint level = 1;
-    const real staggeredOffset = 0.5 * gridBuilder->getDelta(level);
-
     const real expectedStartX = givenStartX + staggeredOffset;
     const real expectedStartY = givenStartY + staggeredOffset;
     const real expectedStartZ = givenStartZ + staggeredOffset;
@@ -91,8 +79,10 @@ TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
     EXPECT_THAT(actualStartX, RealEq(expectedStartX));
     EXPECT_THAT(actualStartY, RealEq(expectedStartY));
     EXPECT_THAT(actualStartZ, RealEq(expectedStartZ));
+}
 
-
+void expectEndCoordinatesAreStaggered(const real givenEndX, const real givenEndY, const real givenEndZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridDummy> > gridBuilder, const uint level)
+{
     const real expectedEndX = givenEndX - staggeredOffset;
     const real expectedEndY = givenEndY - staggeredOffset;
     const real expectedEndZ = givenEndZ - staggeredOffset;
@@ -105,6 +95,26 @@ TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
     EXPECT_THAT(actualEndX, RealEq(expectedEndX));
     EXPECT_THAT(actualEndY, RealEq(expectedEndY));
     EXPECT_THAT(actualEndZ, RealEq(expectedEndZ));
+}
+
+TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
+{
+    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
+
+    const real givenStartX = 0.0;
+    const real givenStartY = 1.0;
+    const real givenStartZ = 2.0;
+
+    const real givenEndX = 10.0;
+    const real givenEndY = 11.0;
+    const real givenEndZ = 12.0;
+    gridBuilder->addGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ);
+
+    const uint level = 1;
+    const real staggeredOffset = 0.5 * gridBuilder->getDelta(level);
+    expectStartCoordinatesAreStaggered(givenStartX,  givenStartY, givenStartZ, staggeredOffset, gridBuilder, level);
+    expectEndCoordinatesAreStaggered(givenEndX, givenEndY, givenEndZ, staggeredOffset, gridBuilder, level);
 }
 
 //TEST(MultipleGridBuilderTest, addsFineGridWithLevel_shouldCreateGridsBetween)

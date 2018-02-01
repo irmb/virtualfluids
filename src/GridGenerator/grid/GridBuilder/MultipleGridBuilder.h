@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <array>
 #include <exception>
 #include "grid/GridMocks.h"
 
@@ -72,12 +73,18 @@ public:
 
 private:
     bool isInsideOfGrids(SPtr<Grid> grid) const;
-    real calculateDelta();
+    real calculateDelta() const;
     void checkIfCoarseGridIsMissing() const;
     void checkIfGridIsInCoarseGrid(SPtr<Grid> grid) const;
+    SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ) const;
+    real getStaggered(real value, real offset) const;
+    std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
 
     std::vector<SPtr<Grid> > grids;
 };
 
 #endif
+
+
+
 

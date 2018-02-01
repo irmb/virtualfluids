@@ -16,7 +16,7 @@ SPtr<MultipleGridBuilder<Grid> > MultipleGridBuilder<Grid>::makeShared()
 template <typename Grid>
 void MultipleGridBuilder<Grid>::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
-    auto grid = GridDummy::makeShared(startX, startY, startZ, endX, endY, endZ, delta);
+    auto grid = Grid::makeShared(startX, startY, startZ, endX, endY, endZ, delta);
     grids.push_back(grid);
 }
 
@@ -26,8 +26,7 @@ void MultipleGridBuilder<Grid>::addGrid(real startX, real startY, real startZ, r
 {
     checkIfCoarseGridIsMissing();
 
-    const real delta = calculateDelta();
-    auto grid = GridDummy::makeShared(startX, startY, startZ, endX, endY, endZ, delta);
+    auto grid = makeGrid(startX, startY, startZ, endX, endY, endZ);
 
     checkIfGridIsInCoarseGrid(grid);
 
@@ -42,11 +41,44 @@ void MultipleGridBuilder<Grid>::checkIfCoarseGridIsMissing() const
 }
 
 template <typename Grid>
-real MultipleGridBuilder<Grid>::calculateDelta()
+SPtr<Grid> MultipleGridBuilder<Grid>::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ) const
+{
+    const real delta = calculateDelta();
+
+    auto staggeredCoordinates = getStaggeredCoordinates(startX, startY, startZ, endX, endY, endZ, delta);
+
+    return Grid::makeShared(staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
+}
+
+template <typename Grid>
+real MultipleGridBuilder<Grid>::calculateDelta() const
 {
     const real delta = grids[grids.size() - 1]->getDelta() / 2.0;
     return delta;
 }
+
+template <typename Grid>
+std::array<real, 6> MultipleGridBuilder<Grid>::getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
+{
+    const real offset = delta * 0.5;
+
+    const real startXStaggered = getStaggered(startX, offset);
+    const real startYStaggered = getStaggered(startY, offset);
+    const real startZStaggered = getStaggered(startZ, offset);
+    
+    const real endXStaggered = getStaggered(endX, -offset);
+    const real endYStaggered = getStaggered(endY, -offset);
+    const real endZStaggered = getStaggered(endZ, -offset);
+
+    return std::array<real, 6>{startXStaggered, startYStaggered, startZStaggered, endXStaggered, endYStaggered, endZStaggered};
+}
+
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getStaggered(real value, real offset) const
+{
+    return value + offset;
+}
+
 
 template <typename Grid>
 void MultipleGridBuilder<Grid>::checkIfGridIsInCoarseGrid(SPtr<Grid> grid) const
@@ -84,37 +116,37 @@ real MultipleGridBuilder<Grid>::getDelta(int level) const
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getStartX(uint level) const
 {
-    return 0.0;
+    return grids[level]->startX;
 }
 
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getStartY(uint level) const
 {
-    return 0.0;
+    return grids[level]->startY;
 }
 
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getStartZ(uint level) const
 {
-    return 0.0;
+    return grids[level]->startZ;
 }
 
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getEndX(uint level) const
 {
-    return 0.0;
+    return grids[level]->endX;
 }
 
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getEndY(uint level) const
 {
-    return 0.0;
+    return grids[level]->endY;
 }
 
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getEndZ(uint level) const
 {
-    return 0.0;
+    return grids[level]->endZ;
 }
 
 
