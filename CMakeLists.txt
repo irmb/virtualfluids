@@ -85,6 +85,11 @@ sharedLibs()
 
 include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FindCompiler.cmake)
 configure_file(src/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
+if(MSVC)
+  SET( CMAKE_CXX_FLAGS "/FI${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
+ELSE(MSVC)
+  SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
+ENDIF(MSVC)
 
 #############################################################
 ###                  Virtual Fluids                       ###

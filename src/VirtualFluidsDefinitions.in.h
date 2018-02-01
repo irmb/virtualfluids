@@ -5,6 +5,7 @@
 
 // disable warnings 
 #pragma warning(disable: 4251)// occurs normally while exporting standard library: "needs to have dll-interface to be"
+#pragma warning(disable: 4275) // on dll-interface class <classname> used as base for dll-interface class <classname>
 
 
 // double or single precision
