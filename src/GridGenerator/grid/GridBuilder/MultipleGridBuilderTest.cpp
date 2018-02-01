@@ -64,8 +64,6 @@ TEST(MultipleGridBuilderTest, getInvalidLevel_shouldThrowException)
 }
 
 
-
-
 void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridDummy> > gridBuilder, const uint level)
 {
     const real expectedStartX = givenStartX + staggeredOffset;
@@ -105,7 +103,6 @@ TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
     const real givenStartX = 0.0;
     const real givenStartY = 1.0;
     const real givenStartZ = 2.0;
-
     const real givenEndX = 10.0;
     const real givenEndY = 11.0;
     const real givenEndZ = 12.0;
