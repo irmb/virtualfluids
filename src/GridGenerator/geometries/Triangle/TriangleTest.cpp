@@ -123,7 +123,7 @@ TEST(TriangleTest, getHalfAngleBetweenTwoEqualTriangles_ExpectNullAngle)
     Triangle t2 = Triangle(Vertex(0, 0, 0), Vertex(10, 0, 0), Vertex(0, 10, 0), Vertex(0, 0, 1));
 
 	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, DoubleEq(0.0));
+    ASSERT_THAT(alpha, RealEq(0.0));
 }
 
 TEST(TriangleTest, checkSTLwith90degreeOutpointingNormal) 
@@ -132,7 +132,7 @@ TEST(TriangleTest, checkSTLwith90degreeOutpointingNormal)
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
 	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, DoubleEq(90.0 / 2.0));
+    ASSERT_THAT(alpha, RealEq(90.0 / 2.0));
 }
 
 TEST(TriangleTest, checkSTLwith90degreeInpointingNormal) 
@@ -141,7 +141,7 @@ TEST(TriangleTest, checkSTLwith90degreeInpointingNormal)
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
 	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, DoubleEq(270.0 / 2.0));
+    ASSERT_THAT(alpha, RealEq(270.0 / 2.0));
 }
 
 TEST(TriangleTest, checkSTLwith180degreeOutpointingNormal)
@@ -150,7 +150,7 @@ TEST(TriangleTest, checkSTLwith180degreeOutpointingNormal)
 	Triangle t2 = Triangle(Vertex(60.0f, 20.0f, 20.0f), Vertex(40.0f, 40.0f, 20.0f), Vertex(40.0f, 20.0f, 20.0f));
 
 	real alpha = t1.getHalfAngleBetweenToAdjacentTriangle(t2);
-    ASSERT_THAT(alpha, DoubleEq(180.0 / 2.0));
+    ASSERT_THAT(alpha, RealEq(180.0 / 2.0));
 }
 
 TEST(TriangleTest, checkSTLwithSmallDegreeOutpointingNormal) 

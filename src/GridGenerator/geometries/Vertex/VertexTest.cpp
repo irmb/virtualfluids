@@ -24,9 +24,9 @@ TEST_F(VertexTest, overloadMinusOperator)
     vec3.z = vec2.z - vec1.z;
 
     Vertex v4 = vec2 - vec1;
-    ASSERT_THAT((double)v4.x, DoubleEq(vec3.x));
-    ASSERT_THAT((double)v4.y, DoubleEq(vec3.y));
-    ASSERT_THAT((double)v4.z, DoubleEq(vec3.z));
+    ASSERT_THAT(v4.x, RealEq(vec3.x));
+    ASSERT_THAT(v4.y, RealEq(vec3.y));
+    ASSERT_THAT(v4.z, RealEq(vec3.z));
 }
 
 TEST_F(VertexTest, overloadPlusOperator)
@@ -37,15 +37,15 @@ TEST_F(VertexTest, overloadPlusOperator)
     vec3.z = vec2.z + vec1.z;
 
     Vertex v4 = vec2 + vec1;
-    ASSERT_THAT((double)v4.x, DoubleEq(vec3.x));
-    ASSERT_THAT((double)v4.y, DoubleEq(vec3.y));
-    ASSERT_THAT((double)v4.z, DoubleEq(vec3.z));
+    ASSERT_THAT(v4.x, RealEq(vec3.x));
+    ASSERT_THAT(v4.y, RealEq(vec3.y));
+    ASSERT_THAT(v4.z, RealEq(vec3.z));
 }
 
 TEST_F(VertexTest, overloadTimesOperatorWithSkalarProduct)
 {
     real skalar = vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
-    ASSERT_THAT((double)(vec1 * vec2), DoubleEq(skalar));
+    ASSERT_THAT((vec1 * vec2), RealEq(skalar));
 }
 
 TEST_F(VertexTest, overloadTimesOperatorWithSkalarMultiplication)
@@ -58,9 +58,9 @@ TEST_F(VertexTest, overloadTimesOperatorWithSkalarMultiplication)
 
     Vertex v4 = vec1 * skalar;
 
-    ASSERT_THAT((double)v4.x, DoubleEq(vec3.x));
-    ASSERT_THAT((double)v4.y, DoubleEq(vec3.y));
-    ASSERT_THAT((double)v4.z, DoubleEq(vec3.z));
+    ASSERT_THAT(v4.x, RealEq(vec3.x));
+    ASSERT_THAT(v4.y, RealEq(vec3.y));
+    ASSERT_THAT(v4.z, RealEq(vec3.z));
 }
 
 TEST_F(VertexTest, getMagnitudeFromVector)
@@ -70,8 +70,8 @@ TEST_F(VertexTest, getMagnitudeFromVector)
     v.y = 3.0;
     v.z = -1.0;
 
-    float expected = (float)(std::sqrt(16.0 + 9.0 + 1.0));
-    ASSERT_FLOAT_EQ(v.getMagnitude(), expected);
+    real expected = real(std::sqrt(16.0 + 9.0 + 1.0));
+    ASSERT_THAT(v.getMagnitude(), RealEq(expected));
 }
 
 TEST_F(VertexTest, compareTwoVectors)
@@ -95,7 +95,7 @@ TEST_F(VertexTest, checkEuclideanDistanceWithNullVector_ExpectNull)
     Vertex v1 = Vertex(0.0, 0.0, 0.0);
     Vertex v2 = Vertex(0.0, 0.0, 0.0);
 
-    ASSERT_THAT((double)v1.getEuclideanDistanceTo(v2), DoubleEq(0.0));
+    ASSERT_THAT(v1.getEuclideanDistanceTo(v2), RealEq(0.0));
 }
 
 TEST(VertexAngleTest, checkInnerAngleBetweenToVectors_ExpectRightAngle)
@@ -148,7 +148,7 @@ TEST_F(VertexTest, crossProductBetweenTwoVectors)
     Vertex crossProd = Vertex(-50.0, 50.0, 25.0);
     Vertex testCrossProduct = v1.crossProduct(v2);
 
-    EXPECT_THAT((double)testCrossProduct.x, DoubleEq(crossProd.x));
-    EXPECT_THAT((double)testCrossProduct.y, DoubleEq(crossProd.y));
-    EXPECT_THAT((double)testCrossProduct.z, DoubleEq(crossProd.z));
+    EXPECT_THAT(testCrossProduct.x, RealEq(crossProd.x));
+    EXPECT_THAT(testCrossProduct.y, RealEq(crossProd.y));
+    EXPECT_THAT(testCrossProduct.z, RealEq(crossProd.z));
 }

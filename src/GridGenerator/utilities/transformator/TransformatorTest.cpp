@@ -30,9 +30,9 @@ public:
 
 void expectEqual(const Vertex& actual, const Vertex& expected)
 {
-	EXPECT_THAT(actual.x, DoubleEq(expected.x));
-	EXPECT_THAT(actual.y, DoubleEq(expected.y));
-	EXPECT_THAT(actual.z, DoubleEq(expected.z));
+	EXPECT_THAT(actual.x, RealEq(expected.x));
+	EXPECT_THAT(actual.y, RealEq(expected.y));
+	EXPECT_THAT(actual.z, RealEq(expected.z));
 }
 
 TEST(TransformatorCopyConstructorTest, copyTransformatorShouldCreateSameTransformator)
@@ -138,13 +138,13 @@ TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToView)
 
 	sut->transformWorldToGrid(box);
 
-	EXPECT_THAT(box.minX, Eq(translater.x * (1.0f / delta)));
-	EXPECT_THAT(box.minY, Eq(translater.y * (1.0f / delta)));
-	EXPECT_THAT(box.minZ, Eq(translater.z * (1.0f / delta)));
+	EXPECT_THAT(box.minX, RealEq(translater.x * (1.0f / delta)));
+	EXPECT_THAT(box.minY, RealEq(translater.y * (1.0f / delta)));
+	EXPECT_THAT(box.minZ, RealEq(translater.z * (1.0f / delta)));
 
-	EXPECT_THAT(box.maxX, Eq(translater.x * (1.0f / delta)));
-	EXPECT_THAT(box.maxY, Eq(translater.y * (1.0f / delta)));
-	EXPECT_THAT(box.maxZ, Eq(translater.z * (1.0f / delta)));
+	EXPECT_THAT(box.maxX, RealEq(translater.x * (1.0f / delta)));
+	EXPECT_THAT(box.maxY, RealEq(translater.y * (1.0f / delta)));
+	EXPECT_THAT(box.maxZ, RealEq(translater.z * (1.0f / delta)));
 }
 
 TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToWorld)
@@ -157,13 +157,13 @@ TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToWorld)
 
 	sut->transformGridToWorld(box);
 
-	EXPECT_THAT(box.minX, Eq(-1.0f * translater.x));
-	EXPECT_THAT(box.minY, Eq(-1.0f * translater.y));
-	EXPECT_THAT(box.minZ, Eq(-1.0f * translater.z));
+	EXPECT_THAT(box.minX, RealEq(-1.0f * translater.x));
+	EXPECT_THAT(box.minY, RealEq(-1.0f * translater.y));
+	EXPECT_THAT(box.minZ, RealEq(-1.0f * translater.z));
 												  
-	EXPECT_THAT(box.maxX, Eq(-1.0f * translater.x));
-	EXPECT_THAT(box.maxY, Eq(-1.0f * translater.y));
-	EXPECT_THAT(box.maxZ, Eq(-1.0f * translater.z));
+	EXPECT_THAT(box.maxX, RealEq(-1.0f * translater.x));
+	EXPECT_THAT(box.maxY, RealEq(-1.0f * translater.y));
+	EXPECT_THAT(box.maxZ, RealEq(-1.0f * translater.z));
 }
 
 TEST_F(TransformatorTest, transformArrowToWorld)
@@ -185,11 +185,11 @@ TEST_F(TransformatorTest, transformArrowToWorld)
 
 	sut->transformGridToWorld(arrow);
 
-	EXPECT_THAT(arrow->getStart()->x, DoubleEq(x1 * delta - translater.x));
-	EXPECT_THAT(arrow->getStart()->y, DoubleEq(y1 * delta - translater.y));
-	EXPECT_THAT(arrow->getStart()->z, DoubleEq(z1 * delta - translater.z));
+	EXPECT_THAT(arrow->getStart()->x, RealEq(x1 * delta - translater.x));
+	EXPECT_THAT(arrow->getStart()->y, RealEq(y1 * delta - translater.y));
+	EXPECT_THAT(arrow->getStart()->z, RealEq(z1 * delta - translater.z));
 
-	EXPECT_THAT(arrow->getEnd()->x, DoubleEq(x2 * delta - translater.x));
-	EXPECT_THAT(arrow->getEnd()->y, DoubleEq(y2 * delta - translater.y));
-	EXPECT_THAT(arrow->getEnd()->z, DoubleEq(z2 * delta - translater.z));
+	EXPECT_THAT(arrow->getEnd()->x, RealEq(x2 * delta - translater.x));
+	EXPECT_THAT(arrow->getEnd()->y, RealEq(y2 * delta - translater.y));
+	EXPECT_THAT(arrow->getEnd()->z, RealEq(z2 * delta - translater.z));
 }
