@@ -47,6 +47,17 @@ public:
     }
 };
 
+class NoIntermediateGridPossibleException : public MultipleGridBuilderException
+{
+public:
+    const char* what() const noexcept override
+    {
+        std::ostringstream getNr;
+        getNr << "fine grid is added. Not enough space between coarse and fine grid to create intermediate grids.";
+        return getNr.str().c_str();
+    }
+};
+
 template<typename Grid>
 class MultipleGridBuilder
 {
@@ -58,9 +69,10 @@ public:
 
     VF_PUBLIC void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
+    VF_PUBLIC void addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level);
 
     VF_PUBLIC uint getNumberOfLevels() const;
-    VF_PUBLIC real getDelta(int level) const;
+    VF_PUBLIC real getDelta(uint level) const;
 
     VF_PUBLIC real getStartX(uint level) const;
     VF_PUBLIC real getStartY(uint level) const;

@@ -31,6 +31,38 @@ void MultipleGridBuilder<Grid>::addGrid(real startX, real startY, real startZ, r
 }
 
 template <typename Grid>
+void MultipleGridBuilder<Grid>::addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level)
+{
+    const uint actualLevelSize = grids.size();
+    real delta = getDelta(uint(actualLevelSize - 1)) * 0.5;
+    real offsetFineGrid =  delta * 0.5;
+    addGridToList(Grid::makeShared(startX + offsetFineGrid, startY + offsetFineGrid, startZ + offsetFineGrid, endX - offsetFineGrid, endY - offsetFineGrid, endZ - offsetFineGrid, delta));
+
+    for (uint i = grids.size(); i <= level; i++)
+    {
+        delta *= 0.5;
+        offsetFineGrid += delta * 0.5;
+        addGridToList(Grid::makeShared(startX + offsetFineGrid, startY + offsetFineGrid, startZ + offsetFineGrid, endX - offsetFineGrid, endY - offsetFineGrid, endZ - offsetFineGrid, delta));
+    }
+
+    for (auto i = level - 1; i >= actualLevelSize; i--)
+    {
+        real spaceBetweenInterface = 7 * getDelta(i);
+        real staggeredToFine = getDelta(i + 1) * 0.5;
+
+        grids[i]->startX = grids[i + 1]->startX - staggeredToFine - spaceBetweenInterface;
+        grids[i]->startY = grids[i + 1]->startY - staggeredToFine - spaceBetweenInterface;
+        grids[i]->startZ = grids[i + 1]->startZ - staggeredToFine - spaceBetweenInterface;
+
+        grids[i]->endX = grids[i + 1]->endX + staggeredToFine + spaceBetweenInterface;
+        grids[i]->endY = grids[i + 1]->endY + staggeredToFine + spaceBetweenInterface;
+        grids[i]->endZ = grids[i + 1]->endZ + staggeredToFine + spaceBetweenInterface;
+
+        checkIfGridIsInCoarseGrid(grids[i]);
+    }
+}
+
+template <typename Grid>
 void MultipleGridBuilder<Grid>::checkIfCoarseGridIsMissing() const
 {
     if (grids.empty())
@@ -102,9 +134,9 @@ uint MultipleGridBuilder<Grid>::getNumberOfLevels() const
 }
 
 template <typename Grid>
-real MultipleGridBuilder<Grid>::getDelta(int level) const
+real MultipleGridBuilder<Grid>::getDelta(uint level) const
 {
-    if (grids.empty())
+    if (grids.size() <= level)
         throw InvalidLevelException();
     return grids[level]->getDelta();
 }
