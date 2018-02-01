@@ -71,7 +71,7 @@ TEST_F(TransformatorTest, transformVectorToViewWithSmallDelta_ExpectVectorScales
 TEST_F(TransformatorTest, transformVectorWithNullDelta_ExpectExcpetion) 
 {
     real invalidDeltaValue = 0.0f;
-    ASSERT_THROW(TransformatorImp trafo(invalidDeltaValue, Vertex(0, 0, 0)), invalidDelta);
+    ASSERT_THROW(TransformatorImp(invalidDeltaValue, Vertex(0, 0, 0)), invalidDelta);
 }
 
 TEST_F(TransformatorTest, transformVectorWithNegativeDelta_ExpectExcpetion)

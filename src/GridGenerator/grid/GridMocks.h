@@ -5,7 +5,24 @@
 
 class GridDummy
 {
-    
+private:
+    GridDummy(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
+
+public:
+    static SPtr<GridDummy> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
+    {
+        return SPtr<GridDummy>(new GridDummy(startX, startY, startZ, endX, endY, endZ, delta));
+    }
+
+    real getDelta() const
+    {
+        return delta;
+    }
+
+    real startX = 0.0, startY = 0.0, startZ = 0.0;
+    real endX = 0.0, endY = 0.0, endZ = 0.0;
+
+    real delta;
 };
 
 #endif
