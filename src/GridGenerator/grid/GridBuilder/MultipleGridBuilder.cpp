@@ -76,12 +76,46 @@ uint MultipleGridBuilder<Grid>::getNumberOfLevels() const
 template <typename Grid>
 real MultipleGridBuilder<Grid>::getDelta(int level) const
 {
+    if (grids.empty())
+        throw InvalidLevelException();
     return grids[level]->getDelta();
 }
 
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getStartX(uint level) const
+{
+    return 0.0;
+}
 
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getStartY(uint level) const
+{
+    return 0.0;
+}
 
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getStartZ(uint level) const
+{
+    return 0.0;
+}
 
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getEndX(uint level) const
+{
+    return 0.0;
+}
+
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getEndY(uint level) const
+{
+    return 0.0;
+}
+
+template <typename Grid>
+real MultipleGridBuilder<Grid>::getEndZ(uint level) const
+{
+    return 0.0;
+}
 
 
 template class MultipleGridBuilder<GridDummy>;

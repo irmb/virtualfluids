@@ -37,6 +37,17 @@ public:
     }
 };
 
+class InvalidLevelException : public MultipleGridBuilderException
+{
+public:
+    const char* what() const noexcept override
+    {
+        std::ostringstream getNr;
+        getNr << "level is invalid.";
+        return getNr.str().c_str();
+    }
+};
+
 template<typename Grid>
 class MultipleGridBuilder
 {
@@ -50,6 +61,14 @@ public:
     VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
     VF_PUBLIC uint getNumberOfLevels() const;
     VF_PUBLIC real getDelta(int level) const;
+
+    VF_PUBLIC real getStartX(uint level) const;
+    VF_PUBLIC real getStartY(uint level) const;
+    VF_PUBLIC real getStartZ(uint level) const;
+
+    VF_PUBLIC real getEndX(uint level) const;
+    VF_PUBLIC real getEndY(uint level) const;
+    VF_PUBLIC real getEndZ(uint level) const;
 
 private:
     bool isInsideOfGrids(SPtr<Grid> grid) const;
