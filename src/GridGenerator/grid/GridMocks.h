@@ -2,14 +2,17 @@
 #define GRID_MOCKS_H
 
 #include "GridGenerator/global.h"
+#include "GridStrategy/GridStrategyMocks.h"
+#include "distributions/Distribution.h"
 
-class GridDummy
+
+struct GridDummy
 {
 private:
     GridDummy(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
 
 public:
-    static SPtr<GridDummy> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
+    static SPtr<GridDummy> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
         return SPtr<GridDummy>(new GridDummy(startX, startY, startZ, endX, endY, endZ, delta));
     }

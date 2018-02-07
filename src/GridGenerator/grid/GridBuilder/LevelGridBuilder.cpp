@@ -31,12 +31,13 @@
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.cuh"
+#include "grid/GridMocks.h"
 
 
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-LevelGridBuilder::LevelGridBuilder(const std::string& device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
+LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
 {
     this->Qs.resize(QFILES);
     this->channelBoundaryConditions.resize(6);
@@ -48,7 +49,25 @@ LevelGridBuilder::LevelGridBuilder(const std::string& device, const std::string&
     channelBoundaryConditions[5] = "periodic";
 }
 
-std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(const std::string& device, const std::string& d3qxx)
+void LevelGridBuilder::setGrids(std::vector<SPtr<GridDummy> > grids)
+{
+    auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
+    gridFactory->setGridStrategy(device);
+
+    for (int i = int(grids.size()) - 1; i >= 0; i--)
+    {
+        const auto grid = gridFactory->makeGrid(grids[i]->startX, grids[i]->startY, grids[i]->startZ, grids[i]->endX, grids[i]->endY, grids[i]->endZ, grids[i]->delta, d3qxx);
+        this->grids.insert(this->grids.begin(), grid);
+        if(i==0)
+            this->grids[0]->setPeriodicity(true, true, true);
+        else
+            grid->setPeriodicity(false, false, false);
+        this->removeOverlapNodes();
+        this->grids[0]->print();
+    }
+}
+
+std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
 {
     return SPtr<LevelGridBuilder>(new LevelGridBuilder(device, d3qxx));
 }
@@ -79,7 +98,10 @@ void LevelGridBuilder::verifyGridNeighbors()
 
 void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ)
 {
-    const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, -1.0, device, d3qxx);
+    auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
+    gridFactory->setGridStrategy(device);
+
+    const auto grid = gridFactory->makeGrid(minX, minY, minZ, maxX, maxY, maxZ, -1.0, d3qxx);
     grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
 
     grids.insert(grids.begin(), grid);
@@ -96,9 +118,12 @@ void LevelGridBuilder::generateGrids()
 }
 
 
-void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
+void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, Device device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
 {
-    const auto grid = GridFactory::makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, device, distribution);
+    auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
+    gridFactory->setGridStrategy(device);
+
+    const auto grid = gridFactory->makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, distribution);
     grids.insert(grids.begin(), grid);
 
     grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
@@ -129,7 +154,6 @@ void LevelGridBuilder::removeOverlapNodes()
     if(numberOfLevels > 1)
     {
         grids[0]->removeOverlapNodes(grids[1]);
-        grids[0]->print();
     }   
 }
 

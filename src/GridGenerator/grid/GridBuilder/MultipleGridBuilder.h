@@ -8,6 +8,9 @@
 #include <array>
 #include <exception>
 
+template<typename Grid>
+class GridFactory;
+
 class MultipleGridBuilderException : public std::exception 
 {
 public:
@@ -62,10 +65,10 @@ template<typename Grid>
 class MultipleGridBuilder
 {
 private:
-    VF_PUBLIC MultipleGridBuilder();
+    VF_PUBLIC MultipleGridBuilder(SPtr<GridFactory<Grid> > gridFactory);
 
 public:
-    VF_PUBLIC static SPtr<MultipleGridBuilder> makeShared();
+    VF_PUBLIC static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory<Grid> > gridFactory);
 
     VF_PUBLIC void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
@@ -82,17 +85,23 @@ public:
     VF_PUBLIC real getEndY(uint level) const;
     VF_PUBLIC real getEndZ(uint level) const;
 
+    VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
+
 private:
     void addGridToList(SPtr<Grid> grid);
-    bool isInsideOfGrids(SPtr<Grid> grid) const;
-    real calculateDelta() const;
-    void checkIfCoarseGridIsMissing() const;
-    void checkIfGridIsInCoarseGrid(SPtr<Grid> grid) const;
-    SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ) const;
-    static std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
-    static real getStaggeredCoordinate(real value, real offset);
+    real calculateDelta(uint level) const;
+    bool coarseGridExists() const;
+    bool isGridInCoarseGrid(SPtr<Grid> grid) const;
+    SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level) const;
+    std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
+    SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
+
+    static void emitNoCoarseGridExistsWarning();
+    static void emitGridIsNotInCoarseGridWarning();
 
     std::vector<SPtr<Grid> > grids;
+    SPtr<GridFactory<Grid> > gridFactory;
+ 
 };
 
 #endif

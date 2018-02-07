@@ -19,15 +19,18 @@ class PolyDataWriterWrapper;
 
 template <typename T>
 class BoundingBox;
-
+struct GridDummy;
+enum class Device;
 
 class LevelGridBuilder : public GridBuilder
 {
 private:
-    VF_PUBLIC LevelGridBuilder(const std::string& device, const std::string& d3qxx);
+    VF_PUBLIC LevelGridBuilder(Device device, const std::string& d3qxx);
 
 public:
-    VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(const std::string& device, const std::string& d3qxx);
+    VF_PUBLIC void setGrids(std::vector<SPtr<GridDummy> > grids);
+
+    VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(Device device, const std::string& d3qxx);
 
     VF_PUBLIC void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ);
     VF_PUBLIC SPtr<Grid> getGrid(uint level) override;
@@ -37,7 +40,7 @@ public:
     VF_PUBLIC void verifyGridNeighbors();
 
     VF_PUBLIC virtual void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta,
-                                   const std::string& device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ);
+        Device device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ);
     VF_PUBLIC virtual void generateGrids();
 
     VF_PUBLIC virtual void meshGeometry(std::string input, int level);
@@ -94,7 +97,7 @@ protected:
 
 private:
 
-    std::string device;
+    Device device;
     std::string d3qxx;
 
 public:

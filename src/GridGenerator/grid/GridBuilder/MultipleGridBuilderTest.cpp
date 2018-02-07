@@ -2,46 +2,58 @@
 
 #include "MultipleGridBuilder.h"
 #include "../GridMocks.h"
+#include "../GridStrategy/GridStrategyMocks.h"
+#include "../GridFactory.h"
 
-TEST(MultipleGridBuilderTest, addOneGrid_numberOfLevelsShouldBeOne)
+class MultipleGridBuilderAddGridTest : public testing::Test
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
+    virtual void SetUp() override
+    {
+        gridFactory = SPtr<GridFactory<GridDummy> >(new GridFactory<GridDummy>());
+        gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
 
+        gridBuilder = MultipleGridBuilder<GridDummy>::makeShared(gridFactory);
+    }
+public:
+    SPtr<MultipleGridBuilder <GridDummy> > gridBuilder;
+
+private:
+    SPtr<GridFactory<GridDummy> > gridFactory;
+};
+
+TEST_F(MultipleGridBuilderAddGridTest, addOneGrid_numberOfLevelsShouldBeOne)
+{
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 1.0);
 
     ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(1));
 }
 
-TEST(MultipleGridBuilderTest, addTwoGrids_secondGridMustBeInsideOfFirstGrid)
+TEST_F(MultipleGridBuilderAddGridTest, addTwoGridsWhereSecondGridIsBigger_GridShouldNotAdded)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
-
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 1.0);
-
-    ASSERT_THROW(gridBuilder->addGrid(0.0, 0.0, 0.0, 20.0, 20.0, 20.0), FinerGridBiggerThanCoarsestGridException);
+    gridBuilder->addGrid(0.0, 0.0, 0.0, 20.0, 20.0, 20.0);
+    ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(1));
 }
 
-TEST(MultipleGridBuilderTest, givenCoarseGrid_addAdditionalGrid_shouldCalculateDelta)
+TEST_F(MultipleGridBuilderAddGridTest, givenCoarseGrid_addAdditionalGrid_shouldCalculateDelta)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
     const real delta = 2.0;
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, delta);
 
     gridBuilder->addGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0);
 
-    ASSERT_THAT(gridBuilder->getDelta(1), RealEq(delta / 2.0));
+    ASSERT_THAT(gridBuilder->getDelta(1), RealEq(delta * 0.5));
 }
 
-TEST(MultipleGridBuilderTest, firstGridMustBeCoarse)
+TEST_F(MultipleGridBuilderAddGridTest, addGridWithoutCoarseGrid_shouldNotbeAdded)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
+    gridBuilder->addGrid(0.0, 0.0, 0.0, 20.0, 20.0, 20.0);
 
-    ASSERT_THROW(gridBuilder->addGrid(0.0, 0.0, 0.0, 20.0, 20.0, 20.0), FirstGridMustBeCoarseException);
+    ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(0));
 }
 
-TEST(MultipleGridBuilderTest, addMultipleGrids_deltaShouldBeTheHalfOfTheLastAdded)
+TEST_F(MultipleGridBuilderAddGridTest, addMultipleGrids_deltaShouldBeTheHalfOfTheLastAdded)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
     const real delta = 2.0;
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, delta);
 
@@ -56,13 +68,17 @@ TEST(MultipleGridBuilderTest, addMultipleGrids_deltaShouldBeTheHalfOfTheLastAdde
     EXPECT_THAT(gridBuilder->getDelta(4), RealEq(delta / 16.0));
 }
 
-TEST(MultipleGridBuilderTest, getInvalidLevel_shouldThrowException)
+TEST_F(MultipleGridBuilderAddGridTest, getInvalidLevel_shouldThrowException)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
-
-    ASSERT_THROW(gridBuilder->getDelta(0), InvalidLevelException);
+    ASSERT_THROW(gridBuilder->getDelta(0), std::exception);
 }
 
+TEST_F(MultipleGridBuilderAddGridTest, addFineGridWithoutCoarseGrid_ShouldNotAddingAGrid)
+{
+    gridBuilder->addFineGrid(0, 0, 0, 0, 0, 0, 0);
+
+    ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(0));
+}
 
 void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridDummy> > gridBuilder, const uint level)
 {
@@ -95,9 +111,8 @@ void expectEndCoordinatesAreStaggered(const real givenEndX, const real givenEndY
     EXPECT_THAT(actualEndZ, RealEq(expectedEndZ));
 }
 
-TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
+TEST_F(MultipleGridBuilderAddGridTest, addedsecondGrid_shouldBeStaggered)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
 
     const real givenStartX = 0.0;
@@ -114,9 +129,58 @@ TEST(MultipleGridBuilderTest, addedsecondGrid_shouldBeStaggered)
     expectEndCoordinatesAreStaggered(givenEndX, givenEndY, givenEndZ, staggeredOffset, gridBuilder, level);
 }
 
-TEST(MultipleGridBuilderTest, addsFineGridWithLevel_shouldCreateGridsBetween)
+TEST_F(MultipleGridBuilderAddGridTest, addGridAfterCoarseGridWithFloatingStartPoint)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
+    gridBuilder->addCoarseGrid(1.2, 1.2, 1.2, 15.2, 15.2, 15.2, 1.0);
+
+    const real givenStartX = 2.0;
+    const real givenStartY = 3.0;
+    const real givenStartZ = 4.0;
+    const real givenEndX = 10.0;
+    const real givenEndY = 11.0;
+    const real givenEndZ = 12.0;
+    gridBuilder->addGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ);
+
+    const uint level = 1;
+
+    //0.25 offset to start point
+    EXPECT_THAT(gridBuilder->getStartX(level), RealEq(2.45));
+    EXPECT_THAT(gridBuilder->getStartY(level), RealEq(3.45));
+    EXPECT_THAT(gridBuilder->getStartZ(level), RealEq(4.45));
+
+    //-0.25 offset to start point
+    EXPECT_THAT(gridBuilder->getEndX(level), RealEq(9.55));
+    EXPECT_THAT(gridBuilder->getEndY(level), RealEq(10.55));
+    EXPECT_THAT(gridBuilder->getEndZ(level), RealEq(11.55));
+}
+
+TEST_F(MultipleGridBuilderAddGridTest, addedthirdGrid_shouldBeStaggered)
+{
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
+
+    const real givenStartX = 0.0;
+    const real givenStartY = 1.0;
+    const real givenStartZ = 2.0;
+    const real givenEndX = 10.0;
+    const real givenEndY = 11.0;
+    const real givenEndZ = 12.0;
+
+    gridBuilder->addGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ);
+    gridBuilder->addGrid(3.0, 4.0, 5.0, 5.0, 6.0, 7.0);
+
+    EXPECT_THAT(gridBuilder->getStartX(2), RealEq(3.375));
+    EXPECT_THAT(gridBuilder->getStartY(2), RealEq(4.375));
+    EXPECT_THAT(gridBuilder->getStartZ(2), RealEq(5.375));
+
+    EXPECT_THAT(gridBuilder->getEndX(2), RealEq(4.625));
+    EXPECT_THAT(gridBuilder->getEndY(2), RealEq(5.625));
+    EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(6.625));
+}
+
+
+
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevel_shouldCreateGridsBetween)
+{
     gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 100.0, 100.0, 100.0, 1.0);
 
     const uint level = 5;
@@ -125,10 +189,8 @@ TEST(MultipleGridBuilderTest, addsFineGridWithLevel_shouldCreateGridsBetween)
     ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(level + 1));
 }
 
-TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCalculateDeltaForLevels)
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelThree_shouldCalculateDeltaForLevels)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
-
     const real startDelta = 1.0;
     gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 100.0, 100.0, 100.0, 1.0);
 
@@ -147,10 +209,8 @@ TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCalculateDeltaFor
     ASSERT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel1));
 }
 
-TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCreateStaggeredStartAndEndPointFineGrid)
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelThree_shouldCreateStaggeredStartAndEndPointFineGrid)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
-
     const real startDelta = 1.0;
     gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 100.0, 100.0, 100.0, 1.0);
 
@@ -166,14 +226,12 @@ TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCreateStaggeredSt
     EXPECT_THAT(gridBuilder->getEndZ(level), RealEq(9.5625));
 }
 
-TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCreateStaggeredStartAndEndPointIntermediateGrid)
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelThree_shouldCreateStaggeredStartAndEndPointIntermediateGrid)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
-
     const real startDelta = 1.0;
     gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 100.0, 100.0, 100.0, startDelta);
 
-    uint level = 3;
+    const uint level = 3;
     const real givenStartX = 4.0;
     const real givenStartY = 5.0;
     const real givenStartZ = 6.0;
@@ -183,13 +241,13 @@ TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCreateStaggeredSt
     gridBuilder->addFineGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ, level);
 
 
-    const real expectedStartXLevel2 = givenStartX + 0.375 - 7.0 * gridBuilder->getDelta(2);
-    const real expectedStartYLevel2 = givenStartY + 0.375 - 7.0 * gridBuilder->getDelta(2);
-    const real expectedStartZLevel2 = givenStartZ + 0.375 - 7.0 * gridBuilder->getDelta(2);
+    const real expectedStartXLevel2 = givenStartX + 0.375 - 8.0 * gridBuilder->getDelta(2);
+    const real expectedStartYLevel2 = givenStartY + 0.375 - 8.0 * gridBuilder->getDelta(2);
+    const real expectedStartZLevel2 = givenStartZ + 0.375 - 8.0 * gridBuilder->getDelta(2);
 
-    const real expectedEndXLevel2 = givenEndX - 0.375 + 7.0 * gridBuilder->getDelta(2);
-    const real expectedEndYLevel2 = givenEndY - 0.375 + 7.0 * gridBuilder->getDelta(2);
-    const real expectedEndZLevel2 = givenEndZ - 0.375 + 7.0 * gridBuilder->getDelta(2);
+    const real expectedEndXLevel2 = givenEndX - 0.375 + 8.0 * gridBuilder->getDelta(2);
+    const real expectedEndYLevel2 = givenEndY - 0.375 + 8.0 * gridBuilder->getDelta(2);
+    const real expectedEndZLevel2 = givenEndZ - 0.375 + 8.0 * gridBuilder->getDelta(2);
     EXPECT_THAT(gridBuilder->getStartX(2), RealEq(expectedStartXLevel2));
     EXPECT_THAT(gridBuilder->getStartY(2), RealEq(expectedStartYLevel2));
     EXPECT_THAT(gridBuilder->getStartZ(2), RealEq(expectedStartZLevel2));
@@ -199,25 +257,110 @@ TEST(MultipleGridBuilderTest, addsFineGridWithLevelThree_shouldCreateStaggeredSt
     EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(expectedEndZLevel2));
 }
 
-
-TEST(MultipleGridBuilderTest, addsFineGridWithLevelTwoWithCoarseGridSize_shouldThrow)
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelTwoWithCoarseGridSize_gridsShouldNotBeAdded)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 1.0);
 
-    const uint level = 2;
+    gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 2);
 
-    ASSERT_THROW(gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level), FinerGridBiggerThanCoarsestGridException);
+    ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(1));
 }
 
-
-TEST(MultipleGridBuilderTest, addGridAndAddFinestGrid)
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelOne_shouldCreateStaggeredStartAndEndPointFineGrid)
 {
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared();
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 1.0);
 
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 1.0);
-    gridBuilder->addGrid(10.0, 10.0, 10.0, 90.0, 90.0, 90.0);
+    const uint level = 1;
+    gridBuilder->addFineGrid(5.0, 5.0, 5.0, 7.0, 7.0, 7.0, level);
 
-    gridBuilder->addFineGrid(20, 20, 20, 40, 40, 40, 3);
+    EXPECT_THAT(gridBuilder->getStartX(1), RealEq(5.25));
+    EXPECT_THAT(gridBuilder->getStartY(1), RealEq(5.25));
+    EXPECT_THAT(gridBuilder->getStartZ(1), RealEq(5.25));
 
+    EXPECT_THAT(gridBuilder->getEndX(1), RealEq(6.75));
+    EXPECT_THAT(gridBuilder->getEndY(1), RealEq(6.75));
+    EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(6.75));
+}
+
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelTwo_shouldCreateStaggeredStartAndEndPointFineGrid)
+{
+    gridBuilder->addCoarseGrid(-5.0, -5.0, -5.0, 12.0, 12.0, 12.0, 1.0);
+
+    const uint level = 2;
+    gridBuilder->addFineGrid(5.0, 5.0, 5.0, 7.0, 7.0, 7.0, level);
+
+
+    EXPECT_THAT(gridBuilder->getStartX(2), RealEq(5.375));
+    EXPECT_THAT(gridBuilder->getStartY(2), RealEq(5.375));
+    EXPECT_THAT(gridBuilder->getStartZ(2), RealEq(5.375));
+
+    EXPECT_THAT(gridBuilder->getEndX(2), RealEq(6.625));
+    EXPECT_THAT(gridBuilder->getEndY(2), RealEq(6.625));
+    EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(6.625));
+}
+
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelTwoAndTwoGridsBefore_shouldCreateStaggeredStartAndEndPointFineGrid)
+{
+    gridBuilder->addCoarseGrid(1.0, 4.0, 2.0, 30.0, 30.0, 30.0, 1.0);
+    gridBuilder->addGrid(5.0, 5.0, 5.0, 20.0, 20.0, 20.0);
+
+    const uint level = 2;
+    gridBuilder->addFineGrid(10.0, 10.0, 10.0, 12.0, 12.0, 12.0, level);
+
+    EXPECT_THAT(gridBuilder->getStartX(1), RealEq(5.25));
+    EXPECT_THAT(gridBuilder->getStartY(1), RealEq(5.25));
+    EXPECT_THAT(gridBuilder->getStartZ(1), RealEq(5.25));
+
+    EXPECT_THAT(gridBuilder->getEndX(1), RealEq(19.75));
+    EXPECT_THAT(gridBuilder->getEndY(1), RealEq(19.75));
+    EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(19.75));
+
+    EXPECT_THAT(gridBuilder->getStartX(2), RealEq(10.375));
+    EXPECT_THAT(gridBuilder->getStartY(2), RealEq(10.375));
+    EXPECT_THAT(gridBuilder->getStartZ(2), RealEq(10.375));
+
+    EXPECT_THAT(gridBuilder->getEndX(2), RealEq(11.625));
+    EXPECT_THAT(gridBuilder->getEndY(2), RealEq(11.625));
+    EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(11.625));
+}
+
+TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelTwoAndTwoGridsBeforeAndFloatingStartingPoints_shouldCreateStaggeredStartAndEndPointFineGrid)
+{
+    gridBuilder->addCoarseGrid(1.2, 4.0, 2.0, 30.0, 30.0, 30.0, 1.0);
+    gridBuilder->addGrid(5.0, 5.0, 5.0, 20.0, 20.0, 20.0);
+
+    const uint level = 2;
+    gridBuilder->addFineGrid(10.0, 10.0, 10.0, 12.0, 12.0, 12.0, level);
+
+
+    EXPECT_THAT(gridBuilder->getStartX(2), RealEq(10.575));
+    EXPECT_THAT(gridBuilder->getStartY(2), RealEq(10.375));
+    EXPECT_THAT(gridBuilder->getStartZ(2), RealEq(10.375));
+
+    EXPECT_THAT(gridBuilder->getEndX(2), RealEq(11.425));
+    EXPECT_THAT(gridBuilder->getEndY(2), RealEq(11.625));
+    EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(11.625));
+}
+
+TEST_F(MultipleGridBuilderAddGridTest, asas)
+{
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
+
+    const real givenStartX = 0.0;
+    const real givenStartY = 1.0;
+    const real givenStartZ = 2.0;
+    const real givenEndX = 10.0;
+    const real givenEndY = 11.0;
+    const real givenEndZ = 12.0;
+
+    //gridBuilder->addGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ);
+    gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 2);
+
+    EXPECT_THAT(gridBuilder->getStartX(1), RealEq(3.25));
+    EXPECT_THAT(gridBuilder->getStartY(1), RealEq(3.25));
+    EXPECT_THAT(gridBuilder->getStartZ(1), RealEq(3.25));
+
+    EXPECT_THAT(gridBuilder->getEndX(1), RealEq(13.75));
+    EXPECT_THAT(gridBuilder->getEndY(1), RealEq(13.75));
+    EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(13.75));
 }

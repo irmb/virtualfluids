@@ -1,53 +1,72 @@
 #include "MultipleGridBuilder.h"
 #include "utilities/math/CudaMath.cuh"
 #include "../GridMocks.h"
+#include "../GridFactory.h"
+
+#include <VirtualFluidsBasics/utilities/logger/Logger.h>
 
 template<typename Grid>
-MultipleGridBuilder<Grid>::MultipleGridBuilder()
+MultipleGridBuilder<Grid>::MultipleGridBuilder(SPtr<GridFactory<Grid> > gridFactory) : gridFactory(gridFactory)
 {
 
 }
 
 template<typename Grid>
-SPtr<MultipleGridBuilder<Grid> > MultipleGridBuilder<Grid>::makeShared()
+SPtr<MultipleGridBuilder<Grid> > MultipleGridBuilder<Grid>::makeShared(SPtr<GridFactory<Grid> > gridFactory)
 {
-    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder<Grid>());
+    return SPtr<MultipleGridBuilder>(new MultipleGridBuilder<Grid>(gridFactory));
 }
 
 template <typename Grid>
 void MultipleGridBuilder<Grid>::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
-    auto grid = Grid::makeShared(startX, startY, startZ, endX, endY, endZ, delta);
+    auto grid = this->makeGrid(startX, startY, startZ, endX, endY, endZ, delta);
     addGridToList(grid);
 }
 
 template <typename Grid>
 void MultipleGridBuilder<Grid>::addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ)
 {
-    checkIfCoarseGridIsMissing();
-    auto grid = makeGrid(startX, startY, startZ, endX, endY, endZ);
-    checkIfGridIsInCoarseGrid(grid);
+    if (!coarseGridExists())
+        return emitNoCoarseGridExistsWarning();
+
+    auto grid = makeGrid(startX, startY, startZ, endX, endY, endZ, getNumberOfLevels());
+
+    if (!isGridInCoarseGrid(grid))
+        return emitGridIsNotInCoarseGridWarning();
+
     addGridToList(grid);
 }
 
 template <typename Grid>
 void MultipleGridBuilder<Grid>::addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level)
 {
-    const uint actualLevelSize = grids.size();
-    real delta = getDelta(uint(actualLevelSize - 1)) * 0.5;
-    real offsetFineGrid =  delta * 0.5;
-    addGridToList(Grid::makeShared(startX + offsetFineGrid, startY + offsetFineGrid, startZ + offsetFineGrid, endX - offsetFineGrid, endY - offsetFineGrid, endZ - offsetFineGrid, delta));
+    if (!coarseGridExists())
+        return emitNoCoarseGridExistsWarning();
 
-    for (uint i = grids.size(); i <= level; i++)
+    const uint nodesBetweenGrids = 8;
+
+    const uint actualLevelSize = getNumberOfLevels();
+
+    real offsetX = getStartX(0) - int(getStartX(0));
+    real offsetY = getStartY(0) - int(getStartY(0));
+    real offsetZ = getStartZ(0) - int(getStartZ(0));
+
+
+    for (uint i = 1; i <= level; i++)
     {
-        delta *= 0.5;
-        offsetFineGrid += delta * 0.5;
-        addGridToList(Grid::makeShared(startX + offsetFineGrid, startY + offsetFineGrid, startZ + offsetFineGrid, endX - offsetFineGrid, endY - offsetFineGrid, endZ - offsetFineGrid, delta));
+        const real delta = calculateDelta(i);
+        offsetX += delta * 0.5;
+        offsetY += delta * 0.5;
+        offsetZ += delta * 0.5;
+
+        if (i >= actualLevelSize)
+            addGridToList(this->makeGrid(startX + offsetX, startY + offsetY, startZ + offsetZ, endX - offsetX, endY - offsetY, endZ - offsetZ, delta));
     }
 
     for (auto i = level - 1; i >= actualLevelSize; i--)
     {
-        real spaceBetweenInterface = 7 * getDelta(i);
+        real spaceBetweenInterface = nodesBetweenGrids * getDelta(i);
         real staggeredToFine = getDelta(i + 1) * 0.5;
 
         grids[i]->startX = grids[i + 1]->startX - staggeredToFine - spaceBetweenInterface;
@@ -58,65 +77,69 @@ void MultipleGridBuilder<Grid>::addFineGrid(real startX, real startY, real start
         grids[i]->endY = grids[i + 1]->endY + staggeredToFine + spaceBetweenInterface;
         grids[i]->endZ = grids[i + 1]->endZ + staggeredToFine + spaceBetweenInterface;
 
-        checkIfGridIsInCoarseGrid(grids[i]);
+        if (!isGridInCoarseGrid(grids[i]))
+        {
+            grids.erase(grids.begin() + actualLevelSize, grids.end());
+            return emitGridIsNotInCoarseGridWarning();
+        }
     }
 }
 
 template <typename Grid>
-void MultipleGridBuilder<Grid>::checkIfCoarseGridIsMissing() const
+SPtr<Grid> MultipleGridBuilder<Grid>::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
 {
-    if (grids.empty())
-        throw FirstGridMustBeCoarseException();
+    return this->gridFactory->makeGrid(startX, startY, startZ, endX, endY, endZ, delta);
 }
 
 template <typename Grid>
-SPtr<Grid> MultipleGridBuilder<Grid>::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ) const
+bool MultipleGridBuilder<Grid>::coarseGridExists() const
 {
-    const real delta = calculateDelta();
+    return !grids.empty();
+}
+
+
+
+template <typename Grid>
+SPtr<Grid> MultipleGridBuilder<Grid>::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level) const
+{
+    const real delta = calculateDelta(level);
 
     auto staggeredCoordinates = getStaggeredCoordinates(startX, startY, startZ, endX, endY, endZ, delta);
 
-    return Grid::makeShared(staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
+    return this->makeGrid(staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
 }
 
 template <typename Grid>
-real MultipleGridBuilder<Grid>::calculateDelta() const
+real MultipleGridBuilder<Grid>::calculateDelta(uint level) const
 {
-    const real delta = grids[grids.size() - 1]->getDelta() / 2.0;
+    real delta = this->getDelta(0);
+    for (uint i = 0; i < level; i++)
+        delta *= 0.5;
     return delta;
 }
 
 template <typename Grid>
-std::array<real, 6> MultipleGridBuilder<Grid>::getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
+std::array<real, 6> MultipleGridBuilder<Grid>::getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
 {
-    const real offset = delta * 0.5;
+    const uint levelIndexCoarseGrid = getNumberOfLevels() - 1;
+    const real offsetToNullStart = delta * 0.5;
+    const real offsetX = getStartX(levelIndexCoarseGrid) - int(getStartX(levelIndexCoarseGrid)) + offsetToNullStart;
+    const real offsetY = getStartY(levelIndexCoarseGrid) - int(getStartY(levelIndexCoarseGrid)) + offsetToNullStart;
+    const real offsetZ = getStartZ(levelIndexCoarseGrid) - int(getStartZ(levelIndexCoarseGrid)) + offsetToNullStart;
 
-    const real startXStaggered = getStaggeredCoordinate(startX, offset);
-    const real startYStaggered = getStaggeredCoordinate(startY, offset);
-    const real startZStaggered = getStaggeredCoordinate(startZ, offset);
-    
-    const real endXStaggered = getStaggeredCoordinate(endX, -offset);
-    const real endYStaggered = getStaggeredCoordinate(endY, -offset);
-    const real endZStaggered = getStaggeredCoordinate(endZ, -offset);
+    const real startXStaggered = startX + offsetX;
+    const real startYStaggered = startY + offsetY;
+    const real startZStaggered = startZ + offsetZ;
+
+    const real endXStaggered = endX - offsetX;
+    const real endYStaggered = endY - offsetY;
+    const real endZStaggered = endZ - offsetZ;
 
     return std::array<real, 6>{startXStaggered, startYStaggered, startZStaggered, endXStaggered, endYStaggered, endZStaggered};
 }
 
 template <typename Grid>
-real MultipleGridBuilder<Grid>::getStaggeredCoordinate(real value, real offset)
-{
-    return value + offset;
-}
-
-template <typename Grid>
-void MultipleGridBuilder<Grid>::checkIfGridIsInCoarseGrid(SPtr<Grid> grid) const
-{
-    if (!isInsideOfGrids(grid))
-        throw FinerGridBiggerThanCoarsestGridException();
-}
-
-template <typename Grid>
-bool MultipleGridBuilder<Grid>::isInsideOfGrids(SPtr<Grid> grid) const
+bool MultipleGridBuilder<Grid>::isGridInCoarseGrid(SPtr<Grid> grid) const
 {
     return
         CudaMath::greaterEqual(grid->startX, grids[0]->startX) &&
@@ -126,6 +149,7 @@ bool MultipleGridBuilder<Grid>::isInsideOfGrids(SPtr<Grid> grid) const
         CudaMath::lessEqual(grid->endY, grids[0]->endY) &&
         CudaMath::lessEqual(grid->endZ, grids[0]->endZ);
 }
+
 
 template <typename Grid>
 uint MultipleGridBuilder<Grid>::getNumberOfLevels() const
@@ -137,7 +161,7 @@ template <typename Grid>
 real MultipleGridBuilder<Grid>::getDelta(uint level) const
 {
     if (grids.size() <= level)
-        throw InvalidLevelException();
+        throw std::exception("delta from invalid level was required.");
     return grids[level]->getDelta();
 }
 
@@ -182,5 +206,24 @@ void MultipleGridBuilder<Grid>::addGridToList(SPtr<Grid> grid)
 {
     grids.push_back(grid);
 }
+
+template <typename Grid>
+std::vector<SPtr<Grid> > MultipleGridBuilder<Grid>::getGrids() const
+{
+    return this->grids;
+}
+
+template <typename Grid>
+void MultipleGridBuilder<Grid>::emitNoCoarseGridExistsWarning()
+{
+    *logging::out << logging::Logger::WARNING << "No Coarse grid was added before. Actual Grid is not added, please create coarse grid before.\n";
+}
+
+template <typename Grid>
+void MultipleGridBuilder<Grid>::emitGridIsNotInCoarseGridWarning()
+{
+    *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
+}
+
 
 template class MultipleGridBuilder<GridDummy>;
