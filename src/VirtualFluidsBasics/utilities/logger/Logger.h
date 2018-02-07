@@ -6,14 +6,15 @@
 #include <string>
 #include <memory>
 #include <ostream>
-
+#include <vector>
+#include "../../../core/PointerDefinitions.h"
 
 namespace logging 
 {
     class __declspec(dllexport) Logger
     {
     protected:
-        Logger(std::ostream &stream);
+        Logger(std::ostream* stream);
 
     public:
         virtual ~Logger();
@@ -22,10 +23,15 @@ namespace logging
         {
             HIGH = 3,
             INTERMEDIATE = 2,
-            LOW = 1
+            LOW = 1,
+            WARNING = 0,
+            ERROR = -1
         };
 
-        static void setStream(std::ostream &stream);
+        static void setStream(std::ostream* stream);
+        static void addStream(std::ostream* stream);
+        static void resetStreams();
+
         static void setDebugLevel(const Level &level = Level::HIGH);
         static void enablePrintedRankNumbers(bool printRankNumbers);
 
@@ -36,7 +42,11 @@ namespace logging
         virtual Logger& operator<<(const double &log) = 0;
 
     protected:
-        std::ostream &stream;
+        void addStreamToList(std::ostream* stream);
+        void resetStreamList();
+
+        std::vector<std::ostream*> streams;
+
         static Level globalLogLevel;
         static Level localLogLevel;
         static bool printRankNumber;

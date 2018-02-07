@@ -25,6 +25,11 @@
 #include "geometries/Geometry/Geometry.cuh"
 
 #include "grid/GridFactory.h"
+#include "grid/GridBuilder/MultipleGridBuilder.h"
+#include <grid/GridMocks.h>
+#include "grid/GridStrategy/GridStrategyMocks.h"
+#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -232,17 +237,34 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    auto gridBuilder = LevelGridBuilder::makeShared("cpu", "D3Q27");
+    logging::Logger::setStream(&std::cout);
+    logging::Logger::setDebugLevel(logging::Logger::HIGH);
+
+    auto gridFactory = SPtr<GridFactory<GridDummy> >(new GridFactory<GridDummy>());
+    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
+    auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
+    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared(gridFactory);
+    gridBuilder->addCoarseGrid(-10.0, -10.0, -10.0, 30.0, 30.0, 30.0, 1.0);
+
+
+
+    gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 4);
+
+    //const uint level = 2;
+    //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
+    gridBuilderlevel->setGrids(gridBuilder->getGrids());
+
+
     //gridBuilder->addGrid(14.4921875, 14.4921875, 14.4921875, 16.5078125, 16.5078125, 16.5078125, 0.015625, "cpu", "D3Q27", false, false, false);
     //gridBuilder->addGrid(13.984375, 13.984375, 13.984375, 17.015625, 17.015625, 17.015625, 0.03125, "cpu", "D3Q27", false, false, false);
     //gridBuilder->addGrid(13.46875, 13.46875, 13.46875, 17.53125, 17.53125, 17.53125, 0.0625, "cpu", "D3Q27", false, false, false);
-    gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 18.5625, 18.5625, 18.5625, 0.125, "gpu", "D3Q27", false, false, false);
-    gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "gpu", "D3Q27", false, false, false);
-    gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "gpu", "D3Q27", false, false, false);
-    gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "gpu", "D3Q27", true, true, true);
+    //gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 18.5625, 18.5625, 18.5625, 0.125, "gpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "gpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "gpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "gpu", "D3Q27", true, true, true);
 
 
-    gridBuilder->copyDataFromGpu();
+    //gridBuilder->copyDataFromGpu();
     //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
@@ -252,7 +274,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
     SPtr<Parameter> para = Parameter::makeShared();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilderlevel, para);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
 
     std::ifstream stream;
@@ -284,9 +306,9 @@ int main( int argc, char* argv[])
          {
              multipleLevel(str2);
          }
-         catch (std::string e)
+         catch (std::exception e)
          {
-             std::cout << e << std::flush;
+             std::cout << e.what() << std::flush;
              //MPI_Abort(MPI_COMM_WORLD, -1);
          }
       }

@@ -5,7 +5,7 @@
 #include <memory>
 #include <iostream>
 
-logging::LoggerImp::LoggerImp(std::ostream &stream) : logging::Logger(stream)
+logging::LoggerImp::LoggerImp(std::ostream* stream) : logging::Logger(stream)
 {
 
 }
@@ -21,7 +21,7 @@ logging::Logger& logging::LoggerImp::operator<<(const Level &level)
     return *this;
 }
 
-bool logging::LoggerImp::isLocalLogLevelHighEnough()
+bool logging::LoggerImp::isLocalLogLevel_greateEqual_GlobalLevel()
 {
     return localLogLevel >= globalLogLevel;
 }
@@ -46,15 +46,15 @@ logging::Logger& logging::LoggerImp::operator<<(const double &message)
     return this->log(std::to_string(message));
 }
 
-
 logging::Logger& logging::LoggerImp::log(const std::string &message)
 {
-    if (isLocalLogLevelHighEnough())
-        stream << getRankString() + message;
+    if (isLocalLogLevel_greateEqual_GlobalLevel())
+    {
+        for(auto stream : streams)
+            *stream << message;
+    }
     return *this;
 }
-
-
 
 
 std::string logging::LoggerImp::getRankString()
