@@ -23,7 +23,7 @@ class Managed
 };
 
 
-struct Grid;
+class Grid;
 
 class GridInterface
 {

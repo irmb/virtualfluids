@@ -7,7 +7,7 @@
 #include "GridStrategy.h"
 
 struct Geometry;
-struct Grid;
+class Grid;
 
 class VF_PUBLIC GridStrategyDummy : public GridStrategy
 {

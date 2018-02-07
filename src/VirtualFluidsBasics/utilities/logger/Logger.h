@@ -7,11 +7,10 @@
 #include <memory>
 #include <ostream>
 #include <vector>
-#include "../../../core/PointerDefinitions.h"
 
 namespace logging 
 {
-    class __declspec(dllexport) Logger
+    class VF_PUBLIC Logger
     {
     protected:
         Logger(std::ostream* stream);
@@ -52,8 +51,7 @@ namespace logging
         static bool printRankNumber;
 
     };
-
-    extern __declspec(dllimport) std::shared_ptr<Logger> out;
+    extern VF_SHARED_LIB_IMPORT std::shared_ptr<Logger> out;
 }
 
 

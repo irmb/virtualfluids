@@ -9,16 +9,16 @@ class MultipleGridBuilderAddGridTest : public testing::Test
 {
     virtual void SetUp() override
     {
-        gridFactory = SPtr<GridFactory<GridDummy> >(new GridFactory<GridDummy>());
+        gridFactory = SPtr<GridFactory<GridStub> >(new GridFactory<GridStub>());
         gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
 
-        gridBuilder = MultipleGridBuilder<GridDummy>::makeShared(gridFactory);
+        gridBuilder = MultipleGridBuilder<GridStub>::makeShared(gridFactory);
     }
 public:
-    SPtr<MultipleGridBuilder <GridDummy> > gridBuilder;
+    SPtr<MultipleGridBuilder <GridStub> > gridBuilder;
 
 private:
-    SPtr<GridFactory<GridDummy> > gridFactory;
+    SPtr<GridFactory<GridStub> > gridFactory;
 };
 
 TEST_F(MultipleGridBuilderAddGridTest, addOneGrid_numberOfLevelsShouldBeOne)
@@ -80,7 +80,7 @@ TEST_F(MultipleGridBuilderAddGridTest, addFineGridWithoutCoarseGrid_ShouldNotAdd
     ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(0));
 }
 
-void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridDummy> > gridBuilder, const uint level)
+void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridStub> > gridBuilder, const uint level)
 {
     const real expectedStartX = givenStartX + staggeredOffset;
     const real expectedStartY = givenStartY + staggeredOffset;
@@ -95,7 +95,7 @@ void expectStartCoordinatesAreStaggered(const real givenStartX, const real given
     EXPECT_THAT(actualStartZ, RealEq(expectedStartZ));
 }
 
-void expectEndCoordinatesAreStaggered(const real givenEndX, const real givenEndY, const real givenEndZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridDummy> > gridBuilder, const uint level)
+void expectEndCoordinatesAreStaggered(const real givenEndX, const real givenEndY, const real givenEndZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridStub> > gridBuilder, const uint level)
 {
     const real expectedEndX = givenEndX - staggeredOffset;
     const real expectedEndY = givenEndY - staggeredOffset;

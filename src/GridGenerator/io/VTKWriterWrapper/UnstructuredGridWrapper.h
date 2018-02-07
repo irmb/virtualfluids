@@ -11,7 +11,7 @@
 //template <class T>
 //class BoundingBox;
 //struct Vertex;
-//struct Grid;
+//class Grid;
 //
 //class VF_PUBLIC UnstructuredGridWrapper
 //{

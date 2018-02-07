@@ -10,7 +10,7 @@
 #include <VirtualFluidsDefinitions.h>
 
 class Transformator;
-struct Grid;
+class Grid;
 
 class VF_PUBLIC GridVTKWriter
 {
@@ -31,7 +31,7 @@ private:
     static void closeFile();
 
     static void writeHeader();
-    static void writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid);
+    static void writePoints(std::shared_ptr<const Transformator> trans, const Grid &grid);
     static void writeCells(const  unsigned  int &size);
     static void writeTypeHeader(const unsigned int &size);
     static void writeTypes(const Grid &grid);

@@ -14,7 +14,7 @@ class GridInterface;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-struct VF_PUBLIC Grid : enableSharedFromThis<Grid>
+class VF_PUBLIC Grid : public enableSharedFromThis<Grid>
 {
 private:
     HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);

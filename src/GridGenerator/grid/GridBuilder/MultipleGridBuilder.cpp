@@ -226,4 +226,4 @@ void MultipleGridBuilder<Grid>::emitGridIsNotInCoarseGridWarning()
 }
 
 
-template class MultipleGridBuilder<GridDummy>;
+template class MultipleGridBuilder<GridStub>;

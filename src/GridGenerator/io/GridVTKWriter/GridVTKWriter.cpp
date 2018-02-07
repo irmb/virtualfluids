@@ -146,7 +146,7 @@ void GridVTKWriter::writeHeader()
 	fprintf(file, "DATASET UNSTRUCTURED_GRID\n");
 }
 
-void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid)
+void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const Grid &grid)
 {
     fprintf(file, "POINTS %d float\n", grid.getReducedSize());
     real x, y, z;

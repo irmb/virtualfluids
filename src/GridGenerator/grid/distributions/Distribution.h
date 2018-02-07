@@ -24,7 +24,7 @@ struct Distribution
     }
 };
 
-struct Grid;
+class Grid;
 
 class VF_PUBLIC DistributionHelper
 {

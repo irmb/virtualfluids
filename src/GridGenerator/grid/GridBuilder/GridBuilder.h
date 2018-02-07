@@ -28,7 +28,7 @@ class PolyDataWriterWrapper;
 template <typename T>
 class BoundingBox;
 
-struct Grid;
+class Grid;
 
 class GridBuilder
 {

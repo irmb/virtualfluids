@@ -2,8 +2,6 @@
 
 #include "mpi.h"
 
-#include <memory>
-#include <iostream>
 
 logging::LoggerImp::LoggerImp(std::ostream* stream) : logging::Logger(stream)
 {

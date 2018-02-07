@@ -49,7 +49,7 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     channelBoundaryConditions[5] = "periodic";
 }
 
-void LevelGridBuilder::setGrids(std::vector<SPtr<GridDummy> > grids)
+void LevelGridBuilder::setGrids(std::vector<SPtr<GridStub> > grids)
 {
     auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
     gridFactory->setGridStrategy(device);

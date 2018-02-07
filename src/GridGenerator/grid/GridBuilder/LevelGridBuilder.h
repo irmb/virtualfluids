@@ -12,14 +12,14 @@
 #include "grid/GridInterface.cuh"
 
 struct Vertex;
-struct Grid;
+class  Grid;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
 
 template <typename T>
 class BoundingBox;
-struct GridDummy;
+class GridStub;
 enum class Device;
 
 class LevelGridBuilder : public GridBuilder
@@ -28,7 +28,7 @@ private:
     VF_PUBLIC LevelGridBuilder(Device device, const std::string& d3qxx);
 
 public:
-    VF_PUBLIC void setGrids(std::vector<SPtr<GridDummy> > grids);
+    VF_PUBLIC void setGrids(std::vector<SPtr<GridStub> > grids);
 
     VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(Device device, const std::string& d3qxx);
 

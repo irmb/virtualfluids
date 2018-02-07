@@ -8,7 +8,7 @@
 #include "core/PointerDefinitions.h"
 
 
-struct Grid;
+class Grid;
 struct Geometry;
 
 class VF_PUBLIC GridCpuStrategy : public GridStrategy

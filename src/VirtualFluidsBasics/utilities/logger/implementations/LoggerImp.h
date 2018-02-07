@@ -4,17 +4,14 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-
 #include <string>
-#include <memory>
-#include <ostream>
 
 #include "../Logger.h"
 
 namespace logging
 {
 
-    class __declspec(dllexport) LoggerImp : public Logger
+    class VF_PUBLIC LoggerImp : public Logger
     {
     public:
         LoggerImp(std::ostream* stream);

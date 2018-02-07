@@ -240,10 +240,10 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::HIGH);
 
-    auto gridFactory = SPtr<GridFactory<GridDummy> >(new GridFactory<GridDummy>());
+    auto gridFactory = SPtr<GridFactory<GridStub> >(new GridFactory<GridStub>());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
     auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
-    auto gridBuilder = MultipleGridBuilder<GridDummy>::makeShared(gridFactory);
+    auto gridBuilder = MultipleGridBuilder<GridStub>::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(-10.0, -10.0, -10.0, 30.0, 30.0, 30.0, 1.0);
 
 

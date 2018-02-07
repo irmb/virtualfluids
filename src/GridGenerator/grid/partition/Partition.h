@@ -12,7 +12,7 @@ template <class T>
 class BoundingBox;
 struct Triangle;
 struct Vertex;
-struct Grid;
+class Grid;
 class Transformator;
 
 class VF_PUBLIC Partition

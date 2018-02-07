@@ -2,7 +2,7 @@
 #define runGridKernelGPU_H
 
 
-struct Grid;
+class Grid;
 struct Geometry;
 class LaunchParameter;
 
