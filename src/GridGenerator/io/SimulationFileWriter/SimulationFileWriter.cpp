@@ -9,7 +9,7 @@
 #include "SimulationFileNames.h"
 
 #include <GridGenerator/grid/NodeValues.h>
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/Grid.h>
 
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
@@ -174,10 +174,10 @@ void SimulationFileWriter::writeCoordFiles(SPtr<GridBuilder> builder, uint level
 void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, int index, uint level, FILEFORMAT format)
 {
     SPtr<Grid> grid = builder->getGrid(level);
-    if (grid->matrixIndex[index] == -1)
+    if (grid->getIndex(index) == -1)
         return;
 
-    int type = grid->field[index] == SOLID ? 16 : 19;
+    int type = grid->getFieldEntry(index) == SOLID ? 16 : 19;
     real x, y, z;
     grid->transIndexToCoords(index, x, y, z);
 
@@ -187,9 +187,9 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
         yCoordFile.write((char*)&y, sizeof(double));
         zCoordFile.write((char*)&z, sizeof(double));
 
-        xNeighborFile.write((char*)(&grid->neighborIndexX[index] + 1), sizeof(unsigned int));
-        yNeighborFile.write((char*)(&grid->neighborIndexY[index] + 1), sizeof(unsigned int));
-        zNeighborFile.write((char*)(&grid->neighborIndexZ[index] + 1), sizeof(unsigned int));
+        xNeighborFile.write((char*)(&grid->getNeighborsX()[index] + 1), sizeof(unsigned int));
+        yNeighborFile.write((char*)(&grid->getNeighborsY()[index] + 1), sizeof(unsigned int));
+        zNeighborFile.write((char*)(&grid->getNeighborsZ()[index] + 1), sizeof(unsigned int));
 
         geoVecFile.write((char*)&type, sizeof(unsigned int));
     }
@@ -199,9 +199,9 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
         yCoordFile << y << " ";
         zCoordFile << z << " ";
 
-        xNeighborFile << (grid->neighborIndexX[index] + 1) << " ";
-        yNeighborFile << (grid->neighborIndexY[index] + 1) << " ";
-        zNeighborFile << (grid->neighborIndexZ[index] + 1) << " ";
+        xNeighborFile << (grid->getNeighborsX()[index] + 1) << " ";
+        yNeighborFile << (grid->getNeighborsY()[index] + 1) << " ";
+        zNeighborFile << (grid->getNeighborsZ()[index] + 1) << " ";
 
         geoVecFile << type << " ";
     }

@@ -15,41 +15,41 @@ class VF_PUBLIC GridGpuStrategy : public GridStrategy
 public:
     virtual ~GridGpuStrategy() {};
 
-    void allocateGridMemory(SPtr<Grid> grid) override;
+    void allocateGridMemory(SPtr<GridImp> grid) override;
 
-    void initalNodes(SPtr<Grid> grid) override;
-    void mesh(SPtr<Grid> grid, Geometry &geom) override;
-    void createGridInterface(SPtr<Grid> grid, SPtr<Grid> fineGrid) override;
+    void initalNodes(SPtr<GridImp> grid) override;
+    void mesh(SPtr<GridImp> grid, Geometry &geom) override;
+    void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 
-    void freeMemory(SPtr<Grid> grid) override;
+    void freeMemory(SPtr<GridImp> grid) override;
 
 
-    void deleteSolidNodes(SPtr<Grid> grid) override;
+    void deleteSolidNodes(SPtr<GridImp> grid) override;
 
-    void copyAndFreeGridInterfaceFromGPU(SPtr<Grid> grid);
-    virtual void copyDataFromGPU(SPtr<Grid> grid);
+    void copyAndFreeGridInterfaceFromGPU(SPtr<GridImp> grid);
+    virtual void copyDataFromGPU(SPtr<GridImp> grid);
 
 	//void markNodesToDeleteOutsideOfGeometry();
 
 private:
-    void allocField(SPtr<Grid> grid);
-    void allocDistribution(SPtr<Grid> grid);
-    void allocNeighborsIndices(SPtr<Grid> grid);
-    void allocMatrixIndicesOnGPU(SPtr<Grid> grid);
+    void allocField(SPtr<GridImp> grid);
+    void allocDistribution(SPtr<GridImp> grid);
+    void allocNeighborsIndices(SPtr<GridImp> grid);
+    void allocMatrixIndicesOnGPU(SPtr<GridImp> grid);
 
     void allocAndCopyTrianglesToGPU(Geometry &geom);
     void freeTrianglesFromGPU(const Geometry &geom);
 
 
-    void allocAndCopyMatrixIndicesToGPU(SPtr<Grid> grid, const uint& size);
+    void allocAndCopyMatrixIndicesToGPU(SPtr<GridImp> grid, const uint& size);
 
-    void allocAndCopyFieldToGPU(SPtr<Grid> grid, const uint& size);
+    void allocAndCopyFieldToGPU(SPtr<GridImp> grid, const uint& size);
 
-    void copyAndFreeFieldFromGPU(SPtr<Grid> grid);
-    void copyAndFreeDistributiondFromGPU(SPtr<Grid> grid);
+    void copyAndFreeFieldFromGPU(SPtr<GridImp> grid);
+    void copyAndFreeDistributiondFromGPU(SPtr<GridImp> grid);
 
-    void copyAndFreeNeighborsToCPU(SPtr<Grid> grid);
-    void copyAndFreeMatrixIndicesFromGPU(SPtr<Grid> grid, int size);
+    void copyAndFreeNeighborsToCPU(SPtr<GridImp> grid);
+    void copyAndFreeMatrixIndicesFromGPU(SPtr<GridImp> grid, int size);
 
 };
 

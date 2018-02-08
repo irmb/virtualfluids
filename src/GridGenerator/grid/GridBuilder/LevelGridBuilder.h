@@ -19,16 +19,16 @@ class PolyDataWriterWrapper;
 
 template <typename T>
 class BoundingBox;
-class GridStub;
+//class GridStub;
 enum class Device;
 
 class LevelGridBuilder : public GridBuilder
 {
-private:
+protected:
     VF_PUBLIC LevelGridBuilder(Device device, const std::string& d3qxx);
 
 public:
-    VF_PUBLIC void setGrids(std::vector<SPtr<GridStub> > grids);
+    //VF_PUBLIC void setGrids(std::vector<SPtr<GridStub> > grids);
 
     VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(Device device, const std::string& d3qxx);
 

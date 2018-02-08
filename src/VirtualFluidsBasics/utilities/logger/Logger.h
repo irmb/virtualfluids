@@ -31,7 +31,7 @@ namespace logging
         static void addStream(std::ostream* stream);
         static void resetStreams();
 
-        static void setDebugLevel(const Level &level = Level::HIGH);
+        static void setDebugLevel(const Level &level = Level::ERROR);
         static void enablePrintedRankNumbers(bool printRankNumbers);
 
         virtual Logger& operator<<(const Level &level) = 0;

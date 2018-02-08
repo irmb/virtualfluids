@@ -238,21 +238,29 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
     logging::Logger::setStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::HIGH);
+    logging::Logger::setDebugLevel(logging::Logger::ERROR);
 
-    auto gridFactory = SPtr<GridFactory<GridStub> >(new GridFactory<GridStub>());
-    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
-    auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
-    auto gridBuilder = MultipleGridBuilder<GridStub>::makeShared(gridFactory);
-    gridBuilder->addCoarseGrid(-10.0, -10.0, -10.0, 30.0, 30.0, 30.0, 1.0);
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
+    gridFactory->setGrid("grid");
+    //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 35.0, 35.0, 35.0, 1.0);
+
+    gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 4);
+
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
+
+    gridBuilder->allocateGridMemory();
+    gridBuilder->createGridInterfaces();
 
 
-
-    gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 4);
 
     //const uint level = 2;
     //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
-    gridBuilderlevel->setGrids(gridBuilder->getGrids());
+    //gridBuilderlevel->setGrids(gridBuilder->getGrids());
 
 
     //gridBuilder->addGrid(14.4921875, 14.4921875, 14.4921875, 16.5078125, 16.5078125, 16.5078125, 0.015625, "cpu", "D3Q27", false, false, false);
@@ -274,7 +282,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
     SPtr<Parameter> para = Parameter::makeShared();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilderlevel, para);
+    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
 
     std::ifstream stream;

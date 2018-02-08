@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../Logger.h"
+#include <map>
 
 namespace logging
 {
@@ -28,9 +29,10 @@ namespace logging
         std::string getRankString();
         static bool isLocalLogLevel_greateEqual_GlobalLevel();
 
+        void addDebugInformation(std::string& message);
         logging::Logger& log(const std::string &message);
 
-
+        std::map<Logger::Level, std::string> levelString;
     };
 
 }

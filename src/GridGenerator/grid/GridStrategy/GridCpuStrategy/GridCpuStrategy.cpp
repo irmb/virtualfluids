@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <GridGenerator/grid/distributions/Distribution.h>
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/GridImp.cuh>
       
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
@@ -15,7 +15,7 @@
 
 #include "grid/GridInterface.cuh"
 
-void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
+void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
     grid->field = new char[grid->size];
         
@@ -34,21 +34,21 @@ void GridCpuStrategy::allocateGridMemory(SPtr<Grid> grid)
     grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
 }
 
-void GridCpuStrategy::initalNodes(SPtr<Grid> grid)
+void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
         grid->initalNodes(index);
 }
 
-void GridCpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
+void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
 {
 #pragma omp parallel for
     for (int i = 0; i < geom.size; i++)
         grid->meshTriangle(geom.triangles[i]);
 }
 
-void GridCpuStrategy::createGridInterface(SPtr<Grid> grid, SPtr<Grid> fineGrid)
+void GridCpuStrategy::createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
     grid->gridInterface = new GridInterface();
     const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
@@ -64,20 +64,20 @@ void GridCpuStrategy::createGridInterface(SPtr<Grid> grid, SPtr<Grid> fineGrid)
     findForGridInterfaceNewIndices(grid);
 }
 
-void GridCpuStrategy::findGridInterface(SPtr<Grid> grid, SPtr<Grid> finerGrid)
+void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid)
 {
     for (uint index = 0; index < grid->getSize(); index++)
         grid->createGridInterface(index, *finerGrid.get());
 }
 
-void GridCpuStrategy::findForNeighborsNewIndices(SPtr<Grid> grid)
+void GridCpuStrategy::findForNeighborsNewIndices(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findNeighborIndex(index);
 }
 
-void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<Grid> grid)
+void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->getNumberOfNodesCF(); index++)
@@ -89,7 +89,7 @@ void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<Grid> grid)
 }
 
 
-void GridCpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
+void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 {
     clock_t begin = clock();
 
@@ -102,7 +102,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
     *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR(time / 1000) + "sec\n";
 }
 
-void GridCpuStrategy::findInvalidNodes(SPtr<Grid> grid)
+void GridCpuStrategy::findInvalidNodes(SPtr<GridImp> grid)
 {
     bool foundInvalidNode = true;
     while (foundInvalidNode)
@@ -115,7 +115,7 @@ void GridCpuStrategy::findInvalidNodes(SPtr<Grid> grid)
 
 
 
-void GridCpuStrategy::freeMemory(SPtr<Grid> grid)
+void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
 {
     //if(grid->gridInterface)
         //delete grid->gridInterface;

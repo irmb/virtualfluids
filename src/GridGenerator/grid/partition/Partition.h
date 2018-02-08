@@ -18,8 +18,8 @@ class Transformator;
 class VF_PUBLIC Partition
 {
 public:
-    static void partitionGridMesh(const Grid &grid);
-    static void partitionGrid(const Grid &grid);
+    static void partitionGridMesh(SPtr<Grid> grid);
+    static void partitionGrid(SPtr<Grid> grid);
 
 	static std::vector<BoundingBox<int> > getProcessBoxes(const int numberOfProcesses, const int globalNx, const int globalNy, const int globalNz);
     static std::vector<std::vector<int> > partitionBoxes(std::vector<std::vector<BoundingBox<int>> >, int processes, std::vector< std::shared_ptr<Transformator> > transformators);
@@ -32,7 +32,7 @@ private:
     Partition(){};
     ~Partition(){};
 
-    static int calcEdgesFromGraph(const Grid &grid);
+    static int calcEdgesFromGraph(SPtr<Grid> grid);
 
     static void splitAllBoxesInThreePieces(std::vector<BoundingBox<int>> &boxes, bool splitX, bool splitY, bool splitZ);
     static void splitAllBoxesInTwoPieces(std::vector<BoundingBox<int>> &boxes, bool splitX, bool splitY, bool splitZ);

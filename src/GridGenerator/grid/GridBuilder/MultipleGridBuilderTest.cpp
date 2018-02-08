@@ -9,16 +9,16 @@ class MultipleGridBuilderAddGridTest : public testing::Test
 {
     virtual void SetUp() override
     {
-        gridFactory = SPtr<GridFactory<GridStub> >(new GridFactory<GridStub>());
+        gridFactory = SPtr<GridFactory>(new GridFactory());
         gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
-
-        gridBuilder = MultipleGridBuilder<GridStub>::makeShared(gridFactory);
+        gridFactory->setGrid("stub");
+        gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     }
 public:
-    SPtr<MultipleGridBuilder <GridStub> > gridBuilder;
+    SPtr<MultipleGridBuilder> gridBuilder;
 
 private:
-    SPtr<GridFactory<GridStub> > gridFactory;
+    SPtr<GridFactory> gridFactory;
 };
 
 TEST_F(MultipleGridBuilderAddGridTest, addOneGrid_numberOfLevelsShouldBeOne)
@@ -80,7 +80,7 @@ TEST_F(MultipleGridBuilderAddGridTest, addFineGridWithoutCoarseGrid_ShouldNotAdd
     ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(0));
 }
 
-void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridStub> > gridBuilder, const uint level)
+void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder> gridBuilder, const uint level)
 {
     const real expectedStartX = givenStartX + staggeredOffset;
     const real expectedStartY = givenStartY + staggeredOffset;
@@ -95,7 +95,7 @@ void expectStartCoordinatesAreStaggered(const real givenStartX, const real given
     EXPECT_THAT(actualStartZ, RealEq(expectedStartZ));
 }
 
-void expectEndCoordinatesAreStaggered(const real givenEndX, const real givenEndY, const real givenEndZ, const real staggeredOffset, SPtr<MultipleGridBuilder<GridStub> > gridBuilder, const uint level)
+void expectEndCoordinatesAreStaggered(const real givenEndX, const real givenEndY, const real givenEndZ, const real staggeredOffset, SPtr<MultipleGridBuilder> gridBuilder, const uint level)
 {
     const real expectedEndX = givenEndX - staggeredOffset;
     const real expectedEndY = givenEndY - staggeredOffset;
@@ -363,4 +363,41 @@ TEST_F(MultipleGridBuilderAddGridTest, asas)
     EXPECT_THAT(gridBuilder->getEndX(1), RealEq(13.75));
     EXPECT_THAT(gridBuilder->getEndY(1), RealEq(13.75));
     EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(13.75));
+}
+
+
+TEST(MultipleGridBuilderTest, everyExceptTheFinestGrid_shouldHaveAGridInterface)
+{
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
+    gridFactory->setGrid("spy");
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
+    gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 2);
+
+    gridBuilder->createGridInterfaces();
+
+    auto grid0 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(0));
+    auto grid1 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(1));
+    EXPECT_TRUE(grid0->hasGridInterface());
+    EXPECT_TRUE(grid1->hasGridInterface());
+}
+
+
+TEST(MultipleGridBuilderTest, afterCreatingGridInterface_FineGridsShouldNotBeHavePeriodicBoundarys)
+{
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
+    gridFactory->setGrid("spy");
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
+    gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 2);
+
+    gridBuilder->createGridInterfaces();
+
+    auto grid1 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(1));
+    auto grid2 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(2));
+
+    EXPECT_TRUE(grid1->hasNoPeriodicityBoundaries());
+    EXPECT_TRUE(grid2->hasNoPeriodicityBoundaries());
 }

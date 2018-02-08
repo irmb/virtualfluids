@@ -7,6 +7,8 @@
 #include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 #include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
 #include "distributions/Distribution.h"
+#include "GridImp.cuh"
+#include "GridMocks.h"
 
 enum class Device
 {
@@ -14,8 +16,6 @@ enum class Device
 };
 
 
-
-template <typename Grid>
 class VF_PUBLIC GridFactory
 {
 public:
@@ -25,7 +25,13 @@ public:
             throw "GridStrategy has to be set before make Grid!";
 
         Distribution distribution = DistributionHelper::getDistribution(d3Qxx);
-        return Grid::makeShared(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        if(this->grid == "stub")
+            return GridStub::makeShared(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        else if(this->grid == "spy")
+            return GridSpy::makeShared(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+
+
+        return GridImp::makeShared(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
     }
 
     void setGridStrategy(Device device)
@@ -44,8 +50,14 @@ public:
         this->gridStrategy = gridStrategy;
     }
 
+    void setGrid(const std::string& grid)
+    {
+        this->grid = grid;
+    }
+
 private:
     SPtr<GridStrategy> gridStrategy;
+    std::string grid;
 };
 
 

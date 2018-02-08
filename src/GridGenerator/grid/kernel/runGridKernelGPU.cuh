@@ -3,20 +3,21 @@
 
 
 class Grid;
+class GridImp;
 struct Geometry;
 class LaunchParameter;
 
-float runKernelInitalUniformGrid3d(const LaunchParameter& para, Grid &grid);
-float runKernelToMesh(const LaunchParameter& para, Grid &grid, const Geometry &geom);
-float runKernelToMarkNodesToDeleteOutsideOfGeometry(const LaunchParameter& para, Grid &grid);
+float runKernelInitalUniformGrid3d(const LaunchParameter& para, GridImp &grid);
+float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const Geometry &geom);
+float runKernelToMarkNodesToDeleteOutsideOfGeometry(const LaunchParameter& para, GridImp &grid);
 
-float runKernelToFindGridInterface(const LaunchParameter& para, Grid &grid, Grid &finerGrid);
-float runKernelToFindNeighborsNewIndices(const LaunchParameter& para, Grid &grid);
-float runKernelToFindGridInterfaceNewIndices(const LaunchParameter& para, Grid &grid);
+float runKernelToFindGridInterface(const LaunchParameter& para, GridImp &grid, GridImp &finerGrid);
+float runKernelToFindNeighborsNewIndices(const LaunchParameter& para, GridImp &grid);
+float runKernelToFindGridInterfaceNewIndices(const LaunchParameter& para, GridImp &grid);
 
 
-float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, Grid &grid, Grid &finerGrid);
-float runKernelSetToInvalid(const LaunchParameter& para, Grid &grid);
-float runKernelFindIndices(const LaunchParameter& para, Grid &grid);
+float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, GridImp &grid, GridImp &finerGrid);
+float runKernelSetToInvalid(const LaunchParameter& para, GridImp &grid);
+float runKernelFindIndices(const LaunchParameter& para, GridImp &grid);
 
 #endif

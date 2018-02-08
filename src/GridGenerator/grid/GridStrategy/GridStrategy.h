@@ -6,23 +6,23 @@
 
 struct Vertex;
 struct Geometry;
-class Grid;
+class GridImp;
 
 class VF_PUBLIC GridStrategy
 {
 public:
     virtual ~GridStrategy() {};
 
-    virtual void allocateGridMemory(SPtr<Grid> grid) = 0;
+    virtual void allocateGridMemory(SPtr<GridImp> grid) = 0;
 
-    virtual void initalNodes(SPtr<Grid> grid) = 0;
-    virtual void mesh(SPtr<Grid> grid, Geometry &geom) = 0;
+    virtual void initalNodes(SPtr<GridImp> grid) = 0;
+    virtual void mesh(SPtr<GridImp> grid, Geometry &geom) = 0;
 
-    virtual void createGridInterface(SPtr<Grid> grid, SPtr<Grid> finerGrid) = 0;
+    virtual void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) = 0;
 
-    virtual void deleteSolidNodes(SPtr<Grid> grid) = 0;
+    virtual void deleteSolidNodes(SPtr<GridImp> grid) = 0;
 
-    virtual void freeMemory(SPtr<Grid> grid) = 0;
+    virtual void freeMemory(SPtr<GridImp> grid) = 0;
 
 };
 

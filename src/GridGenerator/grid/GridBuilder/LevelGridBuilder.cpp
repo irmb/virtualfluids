@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <GridGenerator/grid/Grid.cuh>
 #include <GridGenerator/grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h>
 #include <GridGenerator/grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h>
 #include <GridGenerator/grid/partition/Partition.h>
@@ -11,7 +10,6 @@
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
-#include <GridGenerator/utilities/Transformator/Transformator.h>
 
 #include <GridGenerator/io/GridVTKWriter/GridVTKWriter.h>
 #include <GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h>
@@ -25,14 +23,13 @@
 
 #include <utilities/logger/Logger.h>
 
-#include <utilities/StringUtil/StringUtil.h>
 
 #include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.cuh"
-#include "grid/GridMocks.h"
-
+//#include "grid/GridMocks.h"
+#include "grid/Grid.h"
 
 #define GEOFLUID 19
 #define GEOSOLID 16
@@ -48,24 +45,24 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     channelBoundaryConditions[4] = "periodic";
     channelBoundaryConditions[5] = "periodic";
 }
-
-void LevelGridBuilder::setGrids(std::vector<SPtr<GridStub> > grids)
-{
-    auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
-    gridFactory->setGridStrategy(device);
-
-    for (int i = int(grids.size()) - 1; i >= 0; i--)
-    {
-        const auto grid = gridFactory->makeGrid(grids[i]->startX, grids[i]->startY, grids[i]->startZ, grids[i]->endX, grids[i]->endY, grids[i]->endZ, grids[i]->delta, d3qxx);
-        this->grids.insert(this->grids.begin(), grid);
-        if(i==0)
-            this->grids[0]->setPeriodicity(true, true, true);
-        else
-            grid->setPeriodicity(false, false, false);
-        this->removeOverlapNodes();
-        this->grids[0]->print();
-    }
-}
+//
+//void LevelGridBuilder::setGrids(std::vector<SPtr<GridStub> > grids)
+//{
+//    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+//    gridFactory->setGridStrategy(device);
+//
+//    for (int i = int(grids.size()) - 1; i >= 0; i--)
+//    {
+//        const auto grid = gridFactory->makeGrid(grids[i]->startX, grids[i]->startY, grids[i]->startZ, grids[i]->endX, grids[i]->endY, grids[i]->endZ, grids[i]->delta, d3qxx);
+//        this->grids.insert(this->grids.begin(), grid);
+//        if(i==0)
+//            this->grids[0]->setPeriodicity(true, true, true);
+//        else
+//            grid->setPeriodicity(false, false, false);
+//        this->removeOverlapNodes();
+//        this->grids[0]->print();
+//    }
+//}
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
 {
@@ -77,9 +74,9 @@ void LevelGridBuilder::copyDataFromGpu()
 {
     for (const auto grid : grids)
     {
-        auto gridGpuStrategy = std::dynamic_pointer_cast<GridGpuStrategy>(grid->gridStrategy);
+        auto gridGpuStrategy = std::dynamic_pointer_cast<GridGpuStrategy>(grid->getGridStrategy());
         if(gridGpuStrategy)
-            gridGpuStrategy->copyDataFromGPU(grid);
+            gridGpuStrategy->copyDataFromGPU(std::static_pointer_cast<GridImp>(grid));
     }
         
 }
@@ -98,7 +95,7 @@ void LevelGridBuilder::verifyGridNeighbors()
 
 void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ)
 {
-    auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(device);
 
     const auto grid = gridFactory->makeGrid(minX, minY, minZ, maxX, maxY, maxZ, -1.0, d3qxx);
@@ -120,7 +117,7 @@ void LevelGridBuilder::generateGrids()
 
 void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, Device device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
 {
-    auto gridFactory = SPtr<GridFactory<Grid> >(new GridFactory<Grid>());
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(device);
 
     const auto grid = gridFactory->makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, distribution);
@@ -138,13 +135,13 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
 {
     for (const auto grid : grids)
     {
-        gridX.push_back(int(grid->nx));
-        gridY.push_back(int(grid->ny));
-        gridZ.push_back(int(grid->nz));
+        gridX.push_back(int(grid->getNumberOfNodesX()));
+        gridY.push_back(int(grid->getNumberOfNodesY()));
+        gridZ.push_back(int(grid->getNumberOfNodesZ()));
 
-        distX.push_back(int(grid->startX));
-        distY.push_back(int(grid->startY));
-        distZ.push_back(int(grid->startZ));
+        distX.push_back(int(grid->getStartX()));
+        distY.push_back(int(grid->getStartY()));
+        distZ.push_back(int(grid->getStartZ()));
     }
 }
 
@@ -261,8 +258,8 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
 void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 {
    checkLevel(level);
-   GridVTKWriter::writeGridToVTKXML(*grids[level].get(), output);
-   GridVTKWriter::writeSparseGridToVTK(*grids[level].get(), output);
+   GridVTKWriter::writeGridToVTKXML(grids[level], output);
+   GridVTKWriter::writeSparseGridToVTK(grids[level], output);
 }
 
 
@@ -290,41 +287,14 @@ void LevelGridBuilder::checkLevel(int level)
 
 void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level) const
 {
-    nx = grids[level]->nx;
-    ny = grids[level]->ny;
-    nz = grids[level]->nz;
+    nx = grids[level]->getNumberOfNodesX();
+    ny = grids[level]->getNumberOfNodesY();
+    nz = grids[level]->getNumberOfNodesZ();
 }
 
 void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
 {
-    xCoords[0] = 0;
-    yCoords[0] = 0;
-    zCoords[0] = 0;
-    neighborX[0] = 0;
-    neighborY[0] = 0;
-    neighborZ[0] = 0;
-    geo[0] = GEOSOLID;
-
-    Grid grid = *grids[level].get();
-
-    int nodeNumber = 0;
-    for (uint i = 0; i < grid.getSize(); i++)
-    {
-        if (grid.matrixIndex[i] == -1)
-            continue;
-
-        real x, y, z;
-        grid.transIndexToCoords(i, x, y, z);
-
-        xCoords[nodeNumber + 1] = x;
-        yCoords[nodeNumber + 1] = y;
-        zCoords[nodeNumber + 1] = z;
-        neighborX[nodeNumber + 1] = uint(grid.neighborIndexX[i] + 1);
-        neighborY[nodeNumber + 1] = uint(grid.neighborIndexY[i] + 1);
-        neighborZ[nodeNumber + 1] = uint(grid.neighborIndexZ[i] + 1);
-        geo[nodeNumber + 1] = uint(grid.isSolid(i) ? GEOSOLID : GEOFLUID);
-        nodeNumber++;
-    }
+    grids[level]->setNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, geo);
 }
 
 void LevelGridBuilder::setQs(real** q27, int* k, int channelSide, unsigned int level) const
@@ -374,21 +344,21 @@ void LevelGridBuilder::createBoundaryConditions()
 /*---------------------------------------------------------------------------------*/
 void LevelGridBuilder::createBCVectors()
 {
-    Grid grid = *grids[0].get();
-    for (uint i = 0; i < grid.getSize(); i++)
+    Grid* grid = grids[0].get();
+    for (uint i = 0; i < grid->getSize(); i++)
     {
         real x, y, z;
-        grid.transIndexToCoords(grid.matrixIndex[i], x, y, z);
+        grid->transIndexToCoords(grid->getIndex(i), x, y, z);
 
-        if (grid.field[grid.matrixIndex[i]] == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
-        if (x == 0 && y < grid.ny - 1 && z < grid.nz - 1) fillRBForNode(i, 0, -1, INLETQS);
-        if (x == grid.nx - 2 && y < grid.ny - 1 && z < grid.nz - 1) fillRBForNode(i, 0, 1, OUTLETQS);
+        if (grid->getFieldEntry(grid->getIndex(i)) == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
+        if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS);
+        if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS);
 
-        if (z == grid.nz - 2 && x < grid.nx - 1 && y < grid.ny - 1) fillRBForNode(i, 2, 1, TOPQS);
-        if (z == 0 && x < grid.nx - 1 && y < grid.ny - 1) fillRBForNode(i, 2, -1, BOTTOMQS);
+        if (z == grid->getNumberOfNodesZ() - 2 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, 1, TOPQS);
+        if (z == 0 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, -1, BOTTOMQS);
 
-        if (y == 0 && x < grid.nx - 1 && z < grid.nz - 1) fillRBForNode(i, 1, -1, FRONTQS);
-        if (y == grid.ny - 2 && x < grid.nx - 1 && z < grid.nz - 1) fillRBForNode(i, 1, 1, BACKQS);
+        if (y == 0 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, -1, FRONTQS);
+        if (y == grid->getNumberOfNodesY() - 2 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, 1, BACKQS);
     }
 }
 
@@ -397,12 +367,12 @@ void LevelGridBuilder::addShortQsToVector(int index)
     uint32_t qKey = 0;
     std::vector<real> qNode;
 
-    Grid grid = *grids[0].get();
+    Grid* grid = grids[0].get();
 
-    for (int i = grid.distribution.dir_end; i >= 0; i--)
+    for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        int qIndex = i * grid.getSize() + grid.matrixIndex[index];
-        real q = grid.distribution.f[qIndex];
+        int qIndex = i * grid->getSize() + grid->getIndex(index);
+        real q = grid->getDistribution()[qIndex];
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
             qKey += (uint32_t)pow(2, 26 - i);
@@ -423,12 +393,12 @@ void LevelGridBuilder::addQsToVector(int index)
     std::vector<real> qNode;
     qNode.push_back((real)index);
 
-    Grid grid = *grids[0].get();
+    Grid* grid = grids[0].get();
 
-    for (int i = grid.distribution.dir_end; i >= 0; i--)
+    for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        int qIndex = i * grid.getSize() + grid.matrixIndex[index];
-        real q = grid.distribution.f[qIndex];
+        int qIndex = i * grid->getSize() + grid->getIndex(index);
+        real q = grid->getDistribution()[qIndex];
         if (q > 0)
             qNode.push_back(q);
         else
@@ -443,11 +413,11 @@ void LevelGridBuilder::fillRBForNode(int index, int direction, int directionSign
     uint32_t qKey = 0;
     std::vector<real> qNode;
 
-    Grid grid = *grids[0].get();
+    Grid* grid = grids[0].get();
 
-    for (int i = grid.distribution.dir_end; i >= 0; i--)
+    for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        if (grid.distribution.dirs[i * DIMENSION + direction] != directionSign)
+        if (grid->getDirection()[i * DIMENSION + direction] != directionSign)
             continue;
 
         qKey += (uint32_t)pow(2, 26 - i);
@@ -464,7 +434,7 @@ void LevelGridBuilder::fillRBForNode(int index, int direction, int directionSign
 
 void LevelGridBuilder::writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const
 {
-    Grid grid = *grids[0].get();
+    Grid* grid = grids[0].get();
 
     //std::shared_ptr<PolyDataWriterWrapper> writer = std::shared_ptr<PolyDataWriterWrapper>(new PolyDataWriterWrapper());
     for (int index = 0; index < Qs[GEOMQS].size(); index++)
@@ -478,13 +448,13 @@ void LevelGridBuilder::writeArrows(std::string fileName, std::shared_ptr<ArrowTr
 
 void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const
 {
-    Grid grid = *grids[0].get();
+    Grid* grid = grids[0].get();
 
     real qval = Qs[GEOMQS][i][qi + 1];
     if (qval > 0.0f)
     {
-        int qReverse = grid.distribution.dir_end - qi;
-        Vertex dir((real)grid.distribution.dirs[qReverse * DIMENSION + 0], (real)grid.distribution.dirs[qReverse* DIMENSION + 1], (real)grid.distribution.dirs[qReverse * DIMENSION + 2]);
+        int qReverse = grid->getEndDirection() - qi;
+        Vertex dir((real)grid->getDirection()[qReverse * DIMENSION + 0], (real)grid->getDirection()[qReverse* DIMENSION + 1], (real)grid->getDirection()[qReverse * DIMENSION + 2]);
         Vertex nodeOnGeometry(startNode + (dir * qval));
         std::shared_ptr<Arrow> arrow = ArrowImp::make(startNode, nodeOnGeometry);
         trans->transformGridToWorld(arrow);
@@ -504,6 +474,6 @@ Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 int LevelGridBuilder::getMatrixIndex(int i) const
 {
     int index = (int)Qs[GEOMQS][i][0];
-    return this->grids[0]->matrixIndex[index];
+    return this->grids[0]->getIndex(index);
 }
 

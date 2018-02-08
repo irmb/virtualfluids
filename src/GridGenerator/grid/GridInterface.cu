@@ -1,6 +1,6 @@
 #include "GridInterface.cuh"
 
-#include "Grid.cuh"
+#include "GridImp.cuh"
 #include "NodeValues.h"
 #include "utilities/math/CudaMath.cuh"
 
@@ -14,13 +14,13 @@ GridInterface::~GridInterface()
 
 }
 
-void GridInterface::initalGridInterface(const Grid* fineGrid)
+void GridInterface::initalGridInterface(const GridImp* fineGrid)
 {
     initalCoarseToFine(fineGrid);
     initalFineToCoarse(fineGrid);
 }
 
-void GridInterface::initalCoarseToFine(const Grid* fineGrid)
+void GridInterface::initalCoarseToFine(const GridImp* fineGrid)
 {
     cf.startCoarseX = fineGrid->startX - fineGrid->delta * 0.5;
     cf.startCoarseY = fineGrid->startY - fineGrid->delta * 0.5;
@@ -34,7 +34,7 @@ void GridInterface::initalCoarseToFine(const Grid* fineGrid)
     cf.fineEntry = CFF;
 }
 
-void GridInterface::initalFineToCoarse(const Grid* fineGrid)
+void GridInterface::initalFineToCoarse(const GridImp* fineGrid)
 {
     fc.startCoarseX = cf.startCoarseX + 4 * fineGrid->delta;
     fc.startCoarseY = cf.startCoarseY + 4 * fineGrid->delta;
@@ -48,17 +48,17 @@ void GridInterface::initalFineToCoarse(const Grid* fineGrid)
     fc.fineEntry = FCF;
 }
 
-void GridInterface::findCF(const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
+void GridInterface::findCF(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
     findInterface(cf, 1, index, coarseGrid, fineGrid);
 }
 
-void GridInterface::findFC(const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
+void GridInterface::findFC(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
     findInterface(fc, -1, index, coarseGrid, fineGrid);
 }
 
-void GridInterface::findInterface(Interface& interface, const int& factor, const uint& index, const Grid* coarseGrid, const Grid* fineGrid)
+void GridInterface::findInterface(Interface& interface, const int& factor, const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(index, x, y, z);
@@ -96,7 +96,7 @@ bool GridInterface::isOnInterface(Interface& interface, const real& x, const rea
     return isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
 }
 
-HOSTDEVICE  uint GridInterface::getIndexOnFinerGrid(const real& factor, const Grid* fineGrid, const real& x, const real& y, const real& z)
+HOSTDEVICE  uint GridInterface::getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x, const real& y, const real& z)
 {
     const real xFine = x + factor * (fineGrid->delta * 0.5);
     const real yFine = y + factor * (fineGrid->delta * 0.5);

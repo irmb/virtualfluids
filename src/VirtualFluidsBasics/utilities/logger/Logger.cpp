@@ -11,8 +11,8 @@ namespace logging {
 
     std::shared_ptr<Logger> out = nullptr;
 
-    logging::Logger::Level logging::Logger::globalLogLevel = logging::Logger::INTERMEDIATE;
-    logging::Logger::Level logging::Logger::localLogLevel = logging::Logger::INTERMEDIATE;
+    logging::Logger::Level logging::Logger::globalLogLevel = logging::Logger::ERROR;
+    logging::Logger::Level logging::Logger::localLogLevel = logging::Logger::HIGH;
     bool logging::Logger::printRankNumber = false;
    
 

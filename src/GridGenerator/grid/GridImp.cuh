@@ -1,8 +1,10 @@
-#ifndef GRID_H
-#define GRID_H
+#ifndef GRID_IMP_H
+#define GRID_IMP_H
 
 #include "GridGenerator/global.h"
 #include "distributions/Distribution.h"
+
+#include "Grid.h"
 
 #define DIR_END_MAX 27
 
@@ -14,15 +16,17 @@ class GridInterface;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-class VF_PUBLIC Grid : public enableSharedFromThis<Grid>
+class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
-    HOST Grid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
-    HOST Grid();
+    HOST GridImp(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+    HOST GridImp();
+
+    void initalNumberOfNodesAndSize();
 
 public:
-    HOST ~Grid();
-    static HOST SPtr<Grid> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution d);
+    virtual HOSTDEVICE ~GridImp();
+    static HOST SPtr<GridImp> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution d);
 
     real startX = 0.0, startY = 0.0, startZ = 0.0;
     real endX, endY, endZ;
@@ -44,17 +48,19 @@ public:
     Distribution distribution;
     SPtr<GridStrategy> gridStrategy;
 
-
+    HOSTDEVICE real getDelta() const;
     HOSTDEVICE uint getSize() const;
     HOSTDEVICE uint getReducedSize() const;
 
     HOSTDEVICE void initalNodes(uint index);
     HOST void mesh(Geometry &geometry);
+
     HOST void freeMemory();
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ);
 
     HOST void removeOverlapNodes(SPtr<Grid> grid);
-    HOSTDEVICE void createGridInterface(uint index, const Grid& finerGrid);
+
+    HOSTDEVICE void createGridInterface(uint index, const GridImp& finerGrid);
 
 
 	HOSTDEVICE bool isFluid(uint index) const;
@@ -69,7 +75,7 @@ public:
 	HOSTDEVICE char getFieldEntry(const Vertex &v) const;
 	HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const;
 	HOSTDEVICE int transCoordToIndex(const Vertex &v) const;
-	HOSTDEVICE void transIndexToCoords(const int index, real &x, real &y, real &z) const;
+	HOSTDEVICE void transIndexToCoords(int index, real &x, real &y, real &z) const;
 	HOSTDEVICE void print() const;
 	HOSTDEVICE void setDebugPoint(const Vertex &actualPoint, const int pointValue);
 	HOSTDEVICE bool isOutOfRange(const Vertex &actualPoint) const;
@@ -94,7 +100,16 @@ public:
     //HOSTDEVICE bool isStopper(int index) const;
     HOSTDEVICE bool isEndOfGridStopper(uint index) const;
 
+    HOSTDEVICE int getIndex(uint matrixIndex) const;
+    HOSTDEVICE char getFieldEntry(uint index) const;
 
+    HOST real* getDistribution() const;
+    HOST int* getDirection() const;
+    HOST int getStartDirection() const;
+    HOST int getEndDirection() const;
+
+
+    HOST void setNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const;
 
     HOSTDEVICE uint getNumberOfNodesCF() const;
     HOSTDEVICE uint getNumberOfNodesFC() const;
@@ -109,15 +124,39 @@ public:
 private:
     static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
-    HOSTDEVICE void findGridInterface(uint index, const Grid& finerGrid);
-    HOSTDEVICE void setOverlapNodeToInvalid(uint index, const Grid& finerGrid);
-    HOSTDEVICE bool isInside(uint index, const Grid& grid) const;
+    HOSTDEVICE void findGridInterface(uint index, const GridImp& finerGrid);
+    HOSTDEVICE void setOverlapNodeToInvalid(uint index, const GridImp& finerGrid);
+    HOSTDEVICE bool isInside(uint index, const GridImp& grid) const;
     HOSTDEVICE bool isOverlapStopper(uint index) const;
     HOSTDEVICE bool nodeInNextCellIsInvalid(int index) const;
     HOSTDEVICE int getNeighborIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
     HOSTDEVICE void setStopperNeighborCoords(int index);
 
 
+public:
+    HOSTDEVICE real getStartX() const override;
+    HOSTDEVICE real getStartY() const override;
+    HOSTDEVICE real getStartZ() const override;
+    HOSTDEVICE real getEndX() const override;
+    HOSTDEVICE real getEndY() const override;
+    HOSTDEVICE real getEndZ() const override;
+    HOSTDEVICE uint getNumberOfNodesX() const override;
+    HOSTDEVICE uint getNumberOfNodesY() const override;
+    HOSTDEVICE uint getNumberOfNodesZ() const override;
+    SPtr<GridStrategy> getGridStrategy() const override;
+    void setStartX(real startX) override;
+    void setStartY(real startY) override;
+    void setStartZ(real startZ) override;
+    void setEndX(real endX) override;
+    void setEndY(real endY) override;
+    void setEndZ(real endZ) override;
+
+    int* getNeighborsX() const override;
+    int* getNeighborsY() const override;
+    int* getNeighborsZ() const override;
+    void setFieldEntry(uint index, char entry) override;
+    void allocateGridMemory() override;
+private:
     GridInterface* gridInterface;
 
     friend class GridGpuStrategy;
