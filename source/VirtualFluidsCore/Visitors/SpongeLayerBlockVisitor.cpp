@@ -4,16 +4,18 @@
 
 #include "Grid3D.h"
 #include "Block3D.h"
-#include "ILBMKernel.h"
+#include "LBMKernel.h"
 #include "UbException.h"
-
-#include "CompressibleCumulant4thOrderViscosityLBMKernel.h"
-
+#include "D3Q27System.h"
 #include <numerics/geometry3d/GbCuboid3D.h>
 
 using namespace std;
 
-SpongeLayerBlockVisitor::SpongeLayerBlockVisitor() : Block3DVisitor(0, Grid3DSystem::MAXLEVEL)
+SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, int dir) : 
+   Block3DVisitor(0, Grid3DSystem::MAXLEVEL),
+   boundingBox(boundingBox),
+   kernel(kernel),
+   dir(dir)
 {
    
 }
@@ -71,15 +73,41 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
          double oldCollFactor = newKernel->getCollisionFactor();
 
-         int ibX1 = block->getX1();
-
+ 
          UbTupleInt3 ixMin = grid->getBlockIndexes(boundingBox->getX1Minimum(),boundingBox->getX2Minimum(),boundingBox->getX3Minimum());
          UbTupleInt3 ixMax = grid->getBlockIndexes(boundingBox->getX1Maximum(),boundingBox->getX2Maximum(),boundingBox->getX3Maximum());
 
-         int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
-         double index = (double)(ibX1-val<1>(ixMin)+1);
+         double newCollFactor;
 
-         double newCollFactor = oldCollFactor - (oldCollFactor-1.0)/(double)(ibMax)*index;
+         if (dir == D3Q27System::E)
+         {
+            int ibX1 = block->getX1();
+            int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
+            double index = (double)(ibX1-val<1>(ixMin)+1);
+            newCollFactor = oldCollFactor - (oldCollFactor-1.0)/(double)(ibMax)*index;
+         } 
+         else if (dir == D3Q27System::W)
+         {
+            int ibX1 = block->getX1();
+            int ibMax = val<1>(ixMax)-val<1>(ixMin)+1;
+            double index = (double)(ibX1-val<1>(ixMin)+1);
+            newCollFactor = (oldCollFactor-1.0)/(double)(ibMax)*index;
+         }
+         else if (dir == D3Q27System::T)
+         {
+            int ibX3 = block->getX3();
+            int ibMax = val<3>(ixMax)-val<3>(ixMin)+1;
+            double index = (double)(ibX3-val<3>(ixMin)+1);
+            newCollFactor = oldCollFactor - (oldCollFactor-1.0)/(double)(ibMax)*index;
+         }
+         else if (dir == D3Q27System::B)
+         {
+            int ibX3 = block->getX3();
+            int ibMax = val<3>(ixMax)-val<3>(ixMin)+1;
+            double index = (double)(ibX3-val<3>(ixMin)+1);
+            newCollFactor = (oldCollFactor-1.0)/(double)(ibMax)*index;
+         }
+
 
          newKernel->setCollisionFactor(newCollFactor);
          block->setKernel(newKernel);
@@ -87,14 +115,6 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void SpongeLayerBlockVisitor::setBoundingBox(SPtr<GbCuboid3D> bb)
-{
-   boundingBox = bb;
-}
-//////////////////////////////////////////////////////////////////////////
-void SpongeLayerBlockVisitor::setKernel(SPtr<LBMKernel> k)
-{
-   kernel = k;
-}
+
 
 

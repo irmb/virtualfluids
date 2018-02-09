@@ -55,12 +55,20 @@ void GenBlocksGridVisitor::genBlocks(SPtr<Grid3D> grid)
     double geoMaxX3 = boundingBox->getX3Maximum();
     maxInd = grid->getBlockIndexes(geoMaxX1, geoMaxX2, geoMaxX3);
     UbTupleDouble3 blockCoord = grid->getBlockWorldCoordinates(static_cast<int>(val<1>(maxInd)), static_cast<int>(val<2>(maxInd)), static_cast<int>(val<3>(maxInd)), 0);
-    if (geoMaxX1 > val<1>(blockCoord))
-        val<1>(maxInd) += 1;
-    if (geoMaxX2 > val<2>(blockCoord))
-        val<2>(maxInd) += 1;
-    if (geoMaxX3 > val<3>(blockCoord))
-        val<3>(maxInd) += 1;
+    //if (geoMaxX1 > val<1>(blockCoord))
+    //    val<1>(maxInd) += 1;
+    //if (geoMaxX2 > val<2>(blockCoord))
+    //    val<2>(maxInd) += 1;
+    //if (geoMaxX3 > val<3>(blockCoord))
+    //    val<3>(maxInd) += 1;
+
+    double dx = grid->getDeltaX(0);
+    if (fabs(geoMaxX1-val<1>(blockCoord)) > dx)
+       val<1>(maxInd) += 1;
+    if (fabs(geoMaxX2-val<2>(blockCoord)) > dx)
+       val<2>(maxInd) += 1;
+    if (fabs(geoMaxX3-val<3>(blockCoord)) > dx)
+       val<3>(maxInd) += 1;
 
     this->fillExtentWithBlocks(grid);
 

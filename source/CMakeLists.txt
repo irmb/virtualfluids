@@ -33,11 +33,11 @@ SET(USE_METIS ON CACHE BOOL "include METIS library support")
 SET(USE_MPI ON CACHE BOOL "include MPI library support")
 SET(USE_VTK OFF CACHE BOOL "include VTK library support")
 SET(USE_CATALYST OFF CACHE BOOL "include Paraview Catalyst support")
-SET(USE_BOOST OFF CACHE BOOL "include Paraview Catalyst support")
+SET(USE_BOOST OFF CACHE BOOL "include Boost support")
 #SET(USE_PYTHON OFF CACHE BOOL "include Python scripting support")
 #SET(USE_FETOL OFF CACHE BOOL "include FETOL library support")
 SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
-#SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
+SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
 
 #CAB
@@ -118,13 +118,18 @@ IF(${USE_BOOST})
   LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DVF_BOOST)
 ENDIF()
 
+IF(${USE_HLRN_LUSTRE})
+   LIST(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DHLRN_LUSTRE)
+ENDIF()
+
 IF(${USE_INTEL})
    SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -parallel)
 ENDIF()
 
-IF(${USE_HLRN_LUSTRE})
-   SET(APPEND CAB_ADDTIONAL_COMPILER_FLAGS -DHLRN_LUSTRE)
+IF(${USE_GCC})
+   SET(CAB_ADDITIONAL_LINK_FLAGS ${CAB_ADDITIONAL_LINK_FLAGS} -lgomp)
 ENDIF()
+
 
 # IF(${USE_PYTHON})
   # FIND_PACKAGE(PythonLibs)

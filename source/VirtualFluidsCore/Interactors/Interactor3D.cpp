@@ -218,12 +218,12 @@ void Interactor3D::setSolidBlock(SPtr<Block3D> block)
    UbTupleDouble3 nodeOffset = grid.lock()->getNodeOffset(block);
 
    //coordinates of block without ghost layer
-   minX1 = val<1>(org) - val<1>(nodeOffset);
-   minX2 = val<2>(org) - val<2>(nodeOffset);
-   minX3 = val<3>(org) - val<3>(nodeOffset);
-   maxX1 = val<1>(org) + val<1>(blockLengths) + val<1>(nodeOffset);
-   maxX2 = val<2>(org) + val<2>(blockLengths) + val<2>(nodeOffset);
-   maxX3 = val<3>(org) + val<3>(blockLengths) + val<3>(nodeOffset);
+   minX1 = val<1>(org) + val<1>(nodeOffset);
+   minX2 = val<2>(org) + val<2>(nodeOffset);
+   minX3 = val<3>(org) + val<3>(nodeOffset);
+   maxX1 = val<1>(org) + val<1>(blockLengths) - val<1>(nodeOffset);
+   maxX2 = val<2>(org) + val<2>(blockLengths) - val<2>(nodeOffset);
+   maxX3 = val<3>(org) + val<3>(blockLengths) - val<3>(nodeOffset);
 
    if(this->isInverseSolid())
    {

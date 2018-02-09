@@ -1,5 +1,5 @@
-#ifndef D3Q27MACROSCOPICQUANTITIESCoProcessor_H
-#define D3Q27MACROSCOPICQUANTITIESCoProcessor_H
+#ifndef WriteMacroscopicQuantitiesCoProcessor_H
+#define WriteMacroscopicQuantitiesCoProcessor_H
 
 #include <PointerDefinitions.h>
 #include <string>
@@ -30,7 +30,6 @@ public:
 protected:
    void collectData(double step);
    void addDataMQ(SPtr<Block3D> block);
-   void addDataGeo(SPtr<Block3D> block);
    void clearData();
 
 private:

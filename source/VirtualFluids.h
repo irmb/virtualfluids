@@ -145,6 +145,7 @@
 #include <CoProcessors/AdjustForcingCoProcessor.h>
 #include <CoProcessors/CalculateForcesCoProcessor.h>
 #include <CoProcessors/WriteMacroscopicQuantitiesCoProcessor.h>
+#include <CoProcessors/WriteMQFromSelectionCoProcessor.h>
 #include <CoProcessors/WriteBoundaryConditionsCoProcessor.h>
 //#include <CoProcessors/PathLineCoProcessor.h>
 //#include <CoProcessors/PathLineCoProcessorMcpart.h>

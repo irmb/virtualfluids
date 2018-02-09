@@ -15,18 +15,15 @@ class LBMKernel;
 class SpongeLayerBlockVisitor : public Block3DVisitor
 {
 public:
-   SpongeLayerBlockVisitor();
+   SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, int dir);
    virtual ~SpongeLayerBlockVisitor();
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
 
-   void setBoundingBox(SPtr<GbCuboid3D> boundingBox);
-   void setKernel(SPtr<LBMKernel> k);
-
 private:
     SPtr<GbCuboid3D> boundingBox;
     SPtr<LBMKernel> kernel;
-    LBMReal viscosity;
+    int dir;
 };
 
 #endif // SetSpongeLayerBlockVisitor_h__
