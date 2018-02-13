@@ -15,7 +15,7 @@ class LBMKernel;
 class SpongeLayerBlockVisitor : public Block3DVisitor
 {
 public:
-   SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, int dir);
+   SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, double nue, int dir);
    virtual ~SpongeLayerBlockVisitor();
 
    void visit(SPtr<Grid3D> grid, SPtr<Block3D> block) override;
@@ -23,6 +23,7 @@ public:
 private:
     SPtr<GbCuboid3D> boundingBox;
     SPtr<LBMKernel> kernel;
+    double nue;
     int dir;
 };
 

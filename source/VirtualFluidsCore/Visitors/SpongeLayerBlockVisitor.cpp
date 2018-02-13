@@ -11,10 +11,11 @@
 
 using namespace std;
 
-SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, int dir) : 
+SpongeLayerBlockVisitor::SpongeLayerBlockVisitor(SPtr<GbCuboid3D> boundingBox, SPtr<LBMKernel> kernel, double nue, int dir) : 
    Block3DVisitor(0, Grid3DSystem::MAXLEVEL),
    boundingBox(boundingBox),
    kernel(kernel),
+   nue(nue),
    dir(dir)
 {
    
@@ -49,7 +50,7 @@ void SpongeLayerBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 
       if (boundingBox->isCellInsideGbObject3D(minX1, minX2, minX3, maxX1, maxX2, maxX3))
       {
-         LBMReal collFactor = block->getKernel()->getCollisionFactor();
+         LBMReal collFactor = LBMSystem::calcCollisionFactor(nue, block->getLevel());
          kernel->setCollisionFactor(collFactor);
          kernel->setIndex(block->getX1(), block->getX2(), block->getX3());
          kernel->setDeltaT(LBMSystem::getDeltaT(block->getLevel()));

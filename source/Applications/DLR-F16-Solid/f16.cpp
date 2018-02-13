@@ -547,22 +547,22 @@ void run(string configname)
 
          GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-0.7, g_minX2-blockLength, g_minX3-blockLength, g_maxX1, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, spKernel, D3Q27System::E);
+         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, spKernel, nuLB, D3Q27System::E);
          grid->accept(slVisitorX1max);
 
          GbCuboid3DPtr spongeLayerX1min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1+0.25, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1min.get(), pathOut+"/geo/spongeLayerX1min", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX1min(spongeLayerX1min, spKernel,D3Q27System::W);
+         SpongeLayerBlockVisitor slVisitorX1min(spongeLayerX1min, spKernel, nuLB, D3Q27System::W);
          grid->accept(slVisitorX1min);
 
          GbCuboid3DPtr spongeLayerX3min(new GbCuboid3D(g_minX1+0.25, g_minX2-blockLength, g_minX3-blockLength, g_maxX1-0.7, g_maxX2+blockLength, g_minX3+0.25));
          if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX3min.get(), pathOut+"/geo/spongeLayerX3min", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX3min(spongeLayerX3min, spKernel, D3Q27System::B);
+         SpongeLayerBlockVisitor slVisitorX3min(spongeLayerX3min, spKernel, nuLB, D3Q27System::B);
          grid->accept(slVisitorX3min);
 
          GbCuboid3DPtr spongeLayerX3max(new GbCuboid3D(g_minX1+0.25, g_minX2-blockLength, g_maxX3-0.25, g_maxX1-0.7, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX3max.get(), pathOut+"/geo/spongeLayerX3max", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX3max(spongeLayerX3max, spKernel, D3Q27System::T);
+         SpongeLayerBlockVisitor slVisitorX3max(spongeLayerX3max, spKernel, nuLB, D3Q27System::T);
          grid->accept(slVisitorX3max);
 
          /////////////////////////////////////////////////////////////////////////////
@@ -582,10 +582,25 @@ void run(string configname)
          ////sponge layer
          ////////////////////////////////////////////////////////////////////////////
 
-         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-0.7, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+         GbCuboid3DPtr spongeLayerX1max(new GbCuboid3D(g_maxX1-0.7, g_minX2-blockLength, g_minX3-blockLength, g_maxX1, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1max.get(), pathOut+"/geo/spongeLayerX1max", WbWriterVtkXmlASCII::getInstance());
-         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, spKernel, D3Q27System::E);
+         SpongeLayerBlockVisitor slVisitorX1max(spongeLayerX1max, spKernel, nuLB, D3Q27System::E);
          grid->accept(slVisitorX1max);
+
+         GbCuboid3DPtr spongeLayerX1min(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1+0.25, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX1min.get(), pathOut+"/geo/spongeLayerX1min", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX1min(spongeLayerX1min, spKernel, nuLB, D3Q27System::W);
+         grid->accept(slVisitorX1min);
+
+         GbCuboid3DPtr spongeLayerX3min(new GbCuboid3D(g_minX1+0.25, g_minX2-blockLength, g_minX3-blockLength, g_maxX1-0.7, g_maxX2+blockLength, g_minX3+0.25));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX3min.get(), pathOut+"/geo/spongeLayerX3min", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX3min(spongeLayerX3min, spKernel, nuLB, D3Q27System::B);
+         grid->accept(slVisitorX3min);
+
+         GbCuboid3DPtr spongeLayerX3max(new GbCuboid3D(g_minX1+0.25, g_minX2-blockLength, g_maxX3-0.25, g_maxX1-0.7, g_maxX2+blockLength, g_maxX3+blockLength));
+         if (myid==0) GbSystem3D::writeGeoObject(spongeLayerX3max.get(), pathOut+"/geo/spongeLayerX3max", WbWriterVtkXmlASCII::getInstance());
+         SpongeLayerBlockVisitor slVisitorX3max(spongeLayerX3max, spKernel, nuLB, D3Q27System::T);
+         grid->accept(slVisitorX3max);
       }
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
@@ -605,10 +620,10 @@ void run(string configname)
       if (myid==0) GbSystem3D::writeGeoObject(bbBox.get(), pathOut+"/geo/bbBox", WbWriterVtkXmlASCII::getInstance());
       SPtr<WriteMQFromSelectionCoProcessor> writeMQSelectCoProcessor(new WriteMQFromSelectionCoProcessor(grid, stepSch, bbBox, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-         TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
-      tav->setWithGhostLayer(true);
+      //SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      //SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+      //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      //tav->setWithGhostLayer(true);
 
       SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, 300-deltaXcoarse, 35, -600-deltaXcoarse, 300, 65, -600));
       if (myid==0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(), pathOut+"/geo/mic1", WbWriterVtkXmlBinary::getInstance());
