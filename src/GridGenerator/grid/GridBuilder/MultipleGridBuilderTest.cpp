@@ -80,6 +80,41 @@ TEST_F(MultipleGridBuilderAddGridTest, addFineGridWithoutCoarseGrid_ShouldNotAdd
     ASSERT_THAT(gridBuilder->getNumberOfLevels(), testing::Eq(0));
 }
 
+
+TEST_F(MultipleGridBuilderAddGridTest, addGridWithFloatingStartPoints_ShouldCreatedStaggeredCoordinatesToCoarseGrid)
+{
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1);
+
+    gridBuilder->addGrid(0.1212, 0.1212, 0.221, 10.867, 10.45454, 10.12121);
+
+
+    EXPECT_THAT(gridBuilder->getStartX(1), RealEq(0.25));
+    EXPECT_THAT(gridBuilder->getStartY(1), RealEq(0.25));
+    EXPECT_THAT(gridBuilder->getStartZ(1), RealEq(0.25));
+
+    EXPECT_THAT(gridBuilder->getEndX(1), RealEq(9.75));
+    EXPECT_THAT(gridBuilder->getEndY(1), RealEq(9.75));
+    EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(9.75));
+}
+
+TEST_F(MultipleGridBuilderAddGridTest, addGridWitNegativStartPoints_ShouldCreatedStaggeredCoordinatesToCoarseGrid)
+{
+    gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 15.0, 15.0, 15.0, 1);
+
+    gridBuilder->addGrid(-20.0, -20.0, -20.0, -5.0, -5.0, -5.0);
+
+    gridBuilder->addGrid(-15.0, -15.0, -15.0, -10.0, -10.0, -10.0);
+
+    EXPECT_THAT(gridBuilder->getStartX(2), RealEq(-15.625));
+    EXPECT_THAT(gridBuilder->getStartY(2), RealEq(-15.625));
+    EXPECT_THAT(gridBuilder->getStartZ(2), RealEq(-15.625));
+
+    EXPECT_THAT(gridBuilder->getEndX(2), RealEq(-9.375));
+    EXPECT_THAT(gridBuilder->getEndY(2), RealEq(-9.375));
+    EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(-9.375));
+}
+
+
 void expectStartCoordinatesAreStaggered(const real givenStartX, const real givenStartY, const real givenStartZ, const real staggeredOffset, SPtr<MultipleGridBuilder> gridBuilder, const uint level)
 {
     const real expectedStartX = givenStartX + staggeredOffset;
@@ -198,46 +233,45 @@ TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelThree_shouldCalculat
     gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
 
     const real expectedDeltaLevel3 = startDelta / std::pow(2, level);
-    ASSERT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel3));
+    EXPECT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel3));
 
     level--;
     const real expectedDeltaLevel2 = startDelta / std::pow(2, level);
-    ASSERT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel2));
+    EXPECT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel2));
 
     level--;
     const real expectedDeltaLevel1 = startDelta / std::pow(2, level);
-    ASSERT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel1));
+    EXPECT_THAT(gridBuilder->getDelta(level), RealEq(expectedDeltaLevel1));
 }
 
 TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelThree_shouldCreateStaggeredStartAndEndPointFineGrid)
 {
-    const real startDelta = 1.0;
-    gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 100.0, 100.0, 100.0, 1.0);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 100.0, 100.0, 100.0, 1.0);
 
     uint level = 3;
-    gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
+    gridBuilder->addFineGrid(20.0, 20.0, 20.0, 40.0, 40.0, 40.0, level);
 
-    EXPECT_THAT(gridBuilder->getStartX(level), RealEq(0.4375));
-    EXPECT_THAT(gridBuilder->getStartY(level), RealEq(0.4375));
-    EXPECT_THAT(gridBuilder->getStartZ(level), RealEq(0.4375));
+    EXPECT_THAT(gridBuilder->getStartX(level), RealEq(20.4375));
+    EXPECT_THAT(gridBuilder->getStartY(level), RealEq(20.4375));
+    EXPECT_THAT(gridBuilder->getStartZ(level), RealEq(20.4375));
 
-    EXPECT_THAT(gridBuilder->getEndX(level), RealEq(9.5625));
-    EXPECT_THAT(gridBuilder->getEndY(level), RealEq(9.5625));
-    EXPECT_THAT(gridBuilder->getEndZ(level), RealEq(9.5625));
+    EXPECT_THAT(gridBuilder->getEndX(level), RealEq(39.5625));
+    EXPECT_THAT(gridBuilder->getEndY(level), RealEq(39.5625));
+    EXPECT_THAT(gridBuilder->getEndZ(level), RealEq(39.5625));
 }
 
 TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelThree_shouldCreateStaggeredStartAndEndPointIntermediateGrid)
 {
     const real startDelta = 1.0;
-    gridBuilder->addCoarseGrid(-100.0, -100.0, -100.0, 100.0, 100.0, 100.0, startDelta);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 100.0, 100.0, 100.0, startDelta);
 
     const uint level = 3;
-    const real givenStartX = 4.0;
-    const real givenStartY = 5.0;
-    const real givenStartZ = 6.0;
-    const real givenEndX = 10.0;
-    const real givenEndY = 11.0;
-    const real givenEndZ = 12.0;
+    const real givenStartX = 20.0;
+    const real givenStartY = 21.0;
+    const real givenStartZ = 22.0;
+    const real givenEndX = 40.0;
+    const real givenEndY = 41.0;
+    const real givenEndZ = 42.0;
     gridBuilder->addFineGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ, level);
 
 
@@ -341,30 +375,6 @@ TEST_F(MultipleGridBuilderAddGridTest, addsFineGridWithLevelTwoAndTwoGridsBefore
     EXPECT_THAT(gridBuilder->getEndY(2), RealEq(11.625));
     EXPECT_THAT(gridBuilder->getEndZ(2), RealEq(11.625));
 }
-
-TEST_F(MultipleGridBuilderAddGridTest, asas)
-{
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
-
-    const real givenStartX = 0.0;
-    const real givenStartY = 1.0;
-    const real givenStartZ = 2.0;
-    const real givenEndX = 10.0;
-    const real givenEndY = 11.0;
-    const real givenEndZ = 12.0;
-
-    //gridBuilder->addGrid(givenStartX, givenStartY, givenStartZ, givenEndX, givenEndY, givenEndZ);
-    gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 2);
-
-    EXPECT_THAT(gridBuilder->getStartX(1), RealEq(3.25));
-    EXPECT_THAT(gridBuilder->getStartY(1), RealEq(3.25));
-    EXPECT_THAT(gridBuilder->getStartZ(1), RealEq(3.25));
-
-    EXPECT_THAT(gridBuilder->getEndX(1), RealEq(13.75));
-    EXPECT_THAT(gridBuilder->getEndY(1), RealEq(13.75));
-    EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(13.75));
-}
-
 
 TEST(MultipleGridBuilderTest, everyExceptTheFinestGrid_shouldHaveAGridInterface)
 {

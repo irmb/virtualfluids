@@ -248,6 +248,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 35.0, 35.0, 35.0, 1.0);
 
     gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 4);
+    //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);

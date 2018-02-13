@@ -24,6 +24,13 @@ public:
     VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
     VF_PUBLIC void addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level);
 
+    void getFineGrid( uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZFine);
+
+   void getIntermediateGrids(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine);
+    void addGridsToListIfValid(uint oldSize);
+
+    void addGridToListIfValid(SPtr<Grid> grid);
+
     VF_PUBLIC uint getNumberOfLevels() const;
     VF_PUBLIC real getDelta(uint level) const;
 
@@ -46,6 +53,9 @@ private:
     bool isGridInCoarseGrid(SPtr<Grid> grid) const;
     SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level) const;
     std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
+    std::array<real, 3> getOffset(real delta) const;
+    std::vector<uint> getSpacingFactors(uint levelDifference) const;
+
     SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
 
     static void emitNoCoarseGridExistsWarning();

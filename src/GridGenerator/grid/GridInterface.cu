@@ -96,7 +96,7 @@ bool GridInterface::isOnInterface(Interface& interface, const real& x, const rea
     return isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
 }
 
-HOSTDEVICE  uint GridInterface::getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x, const real& y, const real& z)
+HOSTDEVICE uint GridInterface::getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x, const real& y, const real& z)
 {
     const real xFine = x + factor * (fineGrid->delta * 0.5);
     const real yFine = y + factor * (fineGrid->delta * 0.5);
