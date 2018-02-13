@@ -6,14 +6,14 @@
 #include <string>
 #include <memory>
 #include <ostream>
-
+#include <vector>
 
 namespace logging 
 {
-    class __declspec(dllexport) Logger
+    class VF_PUBLIC Logger
     {
     protected:
-        Logger(std::ostream &stream);
+        Logger(std::ostream* stream);
 
     public:
         virtual ~Logger();
@@ -22,11 +22,16 @@ namespace logging
         {
             HIGH = 3,
             INTERMEDIATE = 2,
-            LOW = 1
+            LOW = 1,
+            WARNING = 0,
+            ERROR = -1
         };
 
-        static void setStream(std::ostream &stream);
-        static void setDebugLevel(const Level &level = Level::HIGH);
+        static void setStream(std::ostream* stream);
+        static void addStream(std::ostream* stream);
+        static void resetStreams();
+
+        static void setDebugLevel(const Level &level = Level::ERROR);
         static void enablePrintedRankNumbers(bool printRankNumbers);
 
         virtual Logger& operator<<(const Level &level) = 0;
@@ -36,14 +41,17 @@ namespace logging
         virtual Logger& operator<<(const double &log) = 0;
 
     protected:
-        std::ostream &stream;
+        void addStreamToList(std::ostream* stream);
+        void resetStreamList();
+
+        std::vector<std::ostream*> streams;
+
         static Level globalLogLevel;
         static Level localLogLevel;
         static bool printRankNumber;
 
     };
-
-    extern __declspec(dllimport) std::shared_ptr<Logger> out;
+    extern VF_SHARED_LIB_IMPORT std::shared_ptr<Logger> out;
 }
 
 

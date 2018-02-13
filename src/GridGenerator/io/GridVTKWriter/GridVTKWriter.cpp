@@ -7,7 +7,7 @@
 
 #include <GridGenerator/utilities/Transformator/Transformator.h>
 #include <utilities/logger/Logger.h>
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "basics/container/CbArray3D.h"
@@ -19,13 +19,13 @@ bool GridVTKWriter::binaer = true;
 GridVTKWriter::GridVTKWriter(){}
 GridVTKWriter::~GridVTKWriter(){}
 
-void GridVTKWriter::writeSparseGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer)
+void GridVTKWriter::writeSparseGridToVTK(SPtr<Grid> grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer)
 {
     initalVtkWriter(binaer, name);
     writeVtkFile(trans, grid);
 }
 
-void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, bool binaer)
+void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, bool binaer)
 {
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
@@ -37,21 +37,21 @@ void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, 
 
     nodedata.resize(nodedatanames.size());
 
-    CbArray3D<int> nodeNumbers(grid.nx, grid.ny, grid.nz, -1);
+    CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
     int nr = 0;
 
-    for (real x = grid.startX; x <= grid.endX; x += grid.delta)
+    for (real x = grid->getStartX(); x <= grid->getEndX(); x += grid->getDelta())
     {
-        for (real y = grid.startY; y <= grid.endY; y += grid.delta)
+        for (real y = grid->getStartY(); y <= grid->getEndY(); y += grid->getDelta())
         {
-            for (real z = grid.startZ; z <= grid.endZ; z += grid.delta)
+            for (real z = grid->getStartZ(); z <= grid->getEndZ(); z += grid->getDelta())
             {
-                char type = grid.field[grid.transCoordToIndex(x, y, z)];
+                char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
                 if (type == -1)
                     continue;
-                const int xTranslate = int((x - grid.startX) / grid.delta);
-                const int yTranslate = int((y - grid.startY) / grid.delta);
-                const int zTranslate = int((z - grid.startZ) / grid.delta);
+                const int xTranslate = int((x - grid->getStartX()) / grid->getDelta());
+                const int yTranslate = int((y - grid->getStartY()) / grid->getDelta());
+                const int zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
                 nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
                 nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
 
@@ -61,15 +61,15 @@ void GridVTKWriter::writeGridToVTKXML(const Grid& grid, const std::string name, 
     }
 
     uint SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-    for (real x = grid.startX; x <= grid.endX - grid.delta; x += grid.delta)
+    for (real x = grid->getStartX(); x <= grid->getEndX() - grid->getDelta(); x += grid->getDelta())
     {
-        for (real y = grid.startY; y <= grid.endY - grid.delta; y += grid.delta)
+        for (real y = grid->getStartY(); y <= grid->getEndY() - grid->getDelta(); y += grid->getDelta())
         {
-            for (real z = grid.startZ; z <= grid.endZ - grid.delta; z += grid.delta)
+            for (real z = grid->getStartZ(); z <= grid->getEndZ() - grid->getDelta(); z += grid->getDelta())
             {
-                const int xTranslate = int((x - grid.startX) / grid.delta);
-                const int yTranslate = int((y - grid.startY) / grid.delta);
-                const int zTranslate = int((z - grid.startZ) / grid.delta);
+                const int xTranslate = int((x - grid->getStartX()) / grid->getDelta());
+                const int yTranslate = int((y - grid->getStartY()) / grid->getDelta());
+                const int zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
 
                 if ((SWB = nodeNumbers(xTranslate, yTranslate, zTranslate)) >= 0
                     && (SEB = nodeNumbers(xTranslate + 1, yTranslate, zTranslate)) >= 0
@@ -110,12 +110,12 @@ void GridVTKWriter::initalVtkWriter(bool binaer, std::string name)
     *logging::out << logging::Logger::INTERMEDIATE << "  Output file opened ...\n";
 }
 
-void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, const Grid & grid)
+void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid)
 {
     GridVTKWriter::writeHeader();
     GridVTKWriter::writePoints(trans, grid);
-    GridVTKWriter::writeCells(grid.getReducedSize());
-    GridVTKWriter::writeTypeHeader(grid.getReducedSize());
+    GridVTKWriter::writeCells(grid->getReducedSize());
+    GridVTKWriter::writeTypeHeader(grid->getReducedSize());
     GridVTKWriter::writeTypes(grid);
     GridVTKWriter::closeFile();
 
@@ -146,16 +146,16 @@ void GridVTKWriter::writeHeader()
 	fprintf(file, "DATASET UNSTRUCTURED_GRID\n");
 }
 
-void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid)
+void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid)
 {
-    fprintf(file, "POINTS %d float\n", grid.getReducedSize());
+    fprintf(file, "POINTS %d float\n", grid->getReducedSize());
     real x, y, z;
-    for (unsigned int i = 0; i < grid.getSize(); i++) {
+    for (unsigned int i = 0; i < grid->getSize(); i++) {
 
-        if (grid.matrixIndex[i] == -1)
+        if (grid->getIndex(i) == -1)
             continue;
 
-        grid.transIndexToCoords(i, x, y, z);
+        grid->transIndexToCoords(i, x, y, z);
         Vertex v(x,y,z);
         trans->transformGridToWorld(v);
         if (binaer) {
@@ -200,17 +200,17 @@ void GridVTKWriter::writeTypeHeader(const unsigned int &size)
 	fprintf(file, "LOOKUP_TABLE default\n");
 }
 
-void GridVTKWriter::writeTypes(const Grid &grid)
+void GridVTKWriter::writeTypes(SPtr<Grid> grid)
 {
-    for (unsigned int i = 0; i < grid.getSize(); i++) 
+    for (unsigned int i = 0; i < grid->getSize(); i++) 
     {
-        if (grid.matrixIndex[i] == -1)
+        if (grid->getIndex(i) == -1)
             continue;
 
         if (binaer)
-            write_int(grid.field[i]);
+            write_int(grid->getFieldEntry(i));
         else
-            fprintf(file, "%d ", grid.field[i]);
+            fprintf(file, "%d ", grid->getFieldEntry(i));
     }
 }
 

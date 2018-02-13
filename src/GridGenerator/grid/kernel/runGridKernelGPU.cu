@@ -4,56 +4,55 @@
 #include <GridGenerator/utilities/cuda/cudaKernelCall.h>
 #include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
 
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/GridImp.cuh>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include "grid/GridImp.cuh"
 
-GLOBAL void initalField(Grid grid);
-GLOBAL void runMeshing(Grid grid, const Geometry geom);
-GLOBAL void runKernelTomarkNodesToDeleteOutsideOfGeometry(Grid grid);
-GLOBAL void markNodesToDeleteOutsideOfGeometry(Grid grid);
-GLOBAL void findNeighborIndicesKernel(Grid grid);
-GLOBAL void setOverlapNodesToInvalid(Grid grid, Grid finderGrid);
+GLOBAL void initalField(GridImp grid);
+GLOBAL void runMeshing(GridImp grid, const Geometry geom);
+
+GLOBAL void findGridInterface(GridImp grid, GridImp finerGrid);
+GLOBAL void runKernelTomarkNodesToDeleteOutsideOfGeometry(GridImp grid);
+GLOBAL void markNodesToDeleteOutsideOfGeometry(GridImp grid);
+GLOBAL void findNeighborIndicesKernel(GridImp grid);
+GLOBAL void setOverlapNodesToInvalid(GridImp grid, GridImp finderGrid);
 
 //////////////////////////////////////////////////////////////////////////
 
-float runKernelInitalUniformGrid3d(const LaunchParameter& para, Grid &grid)
+float runKernelInitalUniformGrid3d(const LaunchParameter& para, GridImp &grid)
 {
-	return runKernel(initalField, para, grid);
+    return runKernel(initalField, para, grid);
 }
 
-GLOBAL void initalField(Grid grid)
+GLOBAL void initalField(GridImp grid)
 {
-    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-    {
-        grid.setNeighborIndices(index);
-        grid.matrixIndex[index] = index;
-        grid.setFieldEntryToFluid(index);
-    }
+        grid.initalNodes(index);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-float runKernelToMesh(const LaunchParameter& para, Grid &grid, const Geometry &geom)
+float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const Geometry &geom)
 {
-	return runKernel(runMeshing, para, grid, geom);
+    return runKernel(runMeshing, para, grid, geom);
 }
 
-GLOBAL void runMeshing(Grid grid, const Geometry geom)
+GLOBAL void runMeshing(GridImp grid, const Geometry geom)
 {
-	unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
-	if (i < geom.size)
-		grid.meshTriangle(geom.triangles[i]);
+    unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
+    if (i < geom.size)
+        grid.meshTriangle(geom.triangles[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-float runKernelToMarkNodesToDeleteOutsideOfGeometry(const LaunchParameter& para, Grid &grid)
+float runKernelToMarkNodesToDeleteOutsideOfGeometry(const LaunchParameter& para, GridImp &grid)
 {
-	return runKernel(markNodesToDeleteOutsideOfGeometry, para, grid);
+    return runKernel(markNodesToDeleteOutsideOfGeometry, para, grid);
 }
 
-GLOBAL void markNodesToDeleteOutsideOfGeometry(Grid grid)
+GLOBAL void markNodesToDeleteOutsideOfGeometry(GridImp grid)
 {
     int numberOfEdgeNodes = grid.ny * grid.nz;
     unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
@@ -78,12 +77,12 @@ GLOBAL void markNodesToDeleteOutsideOfGeometry(Grid grid)
 
 //////////////////////////////////////////////////////////////////////////
 
-float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, Grid &grid, Grid &finerGrid)
+float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, GridImp &grid, GridImp &finerGrid)
 {
     return runKernel(setOverlapNodesToInvalid, para, grid, finerGrid);
 }
 
-GLOBAL void setOverlapNodesToInvalid(Grid grid, Grid finerGrid)
+GLOBAL void setOverlapNodesToInvalid(GridImp grid, GridImp finerGrid)
 {
     const uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
@@ -95,10 +94,10 @@ GLOBAL void setOverlapNodesToInvalid(Grid grid, Grid finerGrid)
 /*#################################################################################*/
 /*---------------------------------find invalid nodes------------------------------*/
 /*---------------------------------------------------------------------------------*/
-GLOBAL void setInvalidNodes(Grid grid, bool *foundInvalidNode);
+GLOBAL void setInvalidNodes(GridImp grid, bool *foundInvalidNode);
 /*---------------------------------------------------------------------------------*/
 
-float runKernelSetToInvalid(const LaunchParameter& para, Grid &grid)
+float runKernelSetToInvalid(const LaunchParameter& para, GridImp &grid)
 {
     bool* foundInvalidNode_d;
     bool* foundInvalidNode_h = new bool();
@@ -138,7 +137,7 @@ float runKernelSetToInvalid(const LaunchParameter& para, Grid &grid)
 }
 
 
-GLOBAL void setInvalidNodes(Grid grid, bool *foundInvalidNode)
+GLOBAL void setInvalidNodes(GridImp grid, bool *foundInvalidNode)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
@@ -148,14 +147,67 @@ GLOBAL void setInvalidNodes(Grid grid, bool *foundInvalidNode)
 
 /*#################################################################################*/
 
-float runKernelFindIndices(const LaunchParameter& para, Grid &grid)
+float runKernelFindIndices(const LaunchParameter& para, GridImp &grid)
 {
     return runKernel(findNeighborIndicesKernel, para, grid);
 }
 
-GLOBAL void findNeighborIndicesKernel(Grid grid)
+GLOBAL void findNeighborIndicesKernel(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
         grid.findNeighborIndex(index);
+}
+
+
+/*#################################################################################*/
+
+float runKernelToFindGridInterface(const LaunchParameter& para, GridImp &grid, GridImp &finerGrid)
+{
+    return runKernel(findGridInterface, para, grid, finerGrid);
+}
+
+GLOBAL void findGridInterface(GridImp grid, GridImp finerGrid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getSize())
+        grid.createGridInterface(index, finerGrid);
+}
+/*#################################################################################*/
+
+GLOBAL void findNeighborsNewIndices(GridImp grid);
+float runKernelToFindNeighborsNewIndices(const LaunchParameter& para, GridImp &grid)
+{
+    return runKernel(findNeighborsNewIndices, para, grid);
+}
+
+GLOBAL void findNeighborsNewIndices(GridImp grid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getSize())
+        grid.findNeighborIndex(index);
+}
+/*#################################################################################*/
+
+GLOBAL void findGridInterfaceNewIndicesFC(GridImp grid);
+GLOBAL void findGridInterfaceNewIndicesCF(GridImp grid);
+float runKernelToFindGridInterfaceNewIndices(const LaunchParameter& para, GridImp &grid)
+{
+    runKernel(findGridInterfaceNewIndicesCF, para, grid);
+    return runKernel(findGridInterfaceNewIndicesFC, para, grid);
+}
+
+
+GLOBAL void findGridInterfaceNewIndicesCF(GridImp grid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getNumberOfNodesCF())
+        grid.findForGridInterfaceNewIndexCF(index);
+}
+
+GLOBAL void findGridInterfaceNewIndicesFC(GridImp grid)
+{
+    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    if (index < grid.getNumberOfNodesFC())
+        grid.findForGridInterfaceNewIndexFC(index);
 }

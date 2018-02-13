@@ -12,7 +12,7 @@
 //#endif
 //lib for windows Ws2_32.lib
 
-SPtr<Parameter> Parameter::make()
+SPtr<Parameter> Parameter::makeShared()
 {
     return SPtr<Parameter>(new Parameter());
 }

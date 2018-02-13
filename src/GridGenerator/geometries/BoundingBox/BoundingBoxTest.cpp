@@ -91,13 +91,13 @@ TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
 
 	box.setMinMax(t);
 
-	EXPECT_THAT(box.minX, DoubleEq(minX));
-	EXPECT_THAT(box.minY, DoubleEq(minY));
-	EXPECT_THAT(box.minZ, DoubleEq(minZ));
+	EXPECT_THAT(box.minX, RealEq(minX));
+	EXPECT_THAT(box.minY, RealEq(minY));
+	EXPECT_THAT(box.minZ, RealEq(minZ));
 	
-	EXPECT_THAT(box.maxX, DoubleEq(maxX));
-	EXPECT_THAT(box.maxY, DoubleEq(maxY));
-	EXPECT_THAT(box.maxZ, DoubleEq(maxZ));
+	EXPECT_THAT(box.maxX, RealEq(maxX));
+	EXPECT_THAT(box.maxY, RealEq(maxY));
+	EXPECT_THAT(box.maxZ, RealEq(maxZ));
 }
 
 TEST(BoundingBoxTest, isInside_true)
@@ -141,12 +141,12 @@ TEST(BoundingBoxTest, createNodeBoxWithFloastingPointValues)
 
     BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(t, delta);
 
-    EXPECT_THAT(box.minX, DoubleEq(1.0));
-    EXPECT_THAT(box.minY, DoubleEq(-2.5));
-    EXPECT_THAT(box.minZ, DoubleEq(1.5));
+    EXPECT_THAT(box.minX, RealEq(1.0));
+    EXPECT_THAT(box.minY, RealEq(-2.5));
+    EXPECT_THAT(box.minZ, RealEq(1.5));
 
-    EXPECT_THAT(box.maxX, DoubleEq(4));
-    EXPECT_THAT(box.maxY, DoubleEq(2.5));
-    EXPECT_THAT(box.maxZ, DoubleEq(2.0));
+    EXPECT_THAT(box.maxX, RealEq(4));
+    EXPECT_THAT(box.maxY, RealEq(2.5));
+    EXPECT_THAT(box.maxZ, RealEq(2.0));
 }
 

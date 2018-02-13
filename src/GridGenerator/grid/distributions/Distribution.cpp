@@ -6,7 +6,7 @@
 #include "D3Q27.h"
 #include <stdio.h>
 
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/Grid.h>
 
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 

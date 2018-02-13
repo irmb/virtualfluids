@@ -10,7 +10,7 @@
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
 #include <GridGenerator/grid/kernel/runGridKernelGPU.cuh>
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/GridImp.cuh>
 
 #include <grid/distributions/Distribution.h>
 
@@ -19,10 +19,10 @@
 #include "grid/GridInterface.cuh"
 
 
-void GridGpuStrategy::allocateGridMemory(SPtr<Grid> grid)
+void GridGpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
-    printCudaInformation(1);
-    cudaSetDevice(1);
+    //printCudaInformation(0);
+    cudaSetDevice(0);
 
     this->allocDistribution(grid);
     this->allocField(grid);
@@ -30,12 +30,12 @@ void GridGpuStrategy::allocateGridMemory(SPtr<Grid> grid)
     this->allocNeighborsIndices(grid);
 }
 
-void GridGpuStrategy::initalNodes(SPtr<Grid> grid)
+void GridGpuStrategy::initalNodes(SPtr<GridImp> grid)
 {
     float time = runKernelInitalUniformGrid3d(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
 }
 
-void GridGpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
+void GridGpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
 {
     *logging::out << logging::Logger::INTERMEDIATE << "start meshing on GPU...\n";
     allocAndCopyTrianglesToGPU(geom);
@@ -48,26 +48,70 @@ void GridGpuStrategy::mesh(SPtr<Grid> grid, Geometry &geom)
 
     freeTrianglesFromGPU(geom);
 
-    copyDataFromGPU(grid);
 }
 
-void GridGpuStrategy::removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid)
+void GridGpuStrategy::createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
-    float time1 = runKernelSetOverlapNodesToInvalid(LaunchParameter::make_2D1D_launchParameter(grid->size, 512), *grid.get(), *finerGrid.get());
-
     copyAndFreeFieldFromGPU(grid);
+    copyAndFreeFieldFromGPU(fineGrid);
     copyAndFreeMatrixIndicesFromGPU(grid, grid->size);
+    copyAndFreeMatrixIndicesFromGPU(fineGrid, fineGrid->getSize());
+
+    grid->gridInterface = new GridInterface();
+    const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
+    grid->gridInterface->cf.coarse = new uint[sizeCF];
+    grid->gridInterface->cf.fine = new uint[sizeCF];
+    grid->gridInterface->fc.coarse = new uint[sizeCF];
+    grid->gridInterface->fc.fine = new uint[sizeCF];
+    grid->gridInterface->initalGridInterface(fineGrid.get());
+
+    for (uint index = 0; index < grid->getSize(); index++)
+        grid->createGridInterface(index, *fineGrid.get());
+
+    uint *cfc;
+    uint *cff;
+    uint *fcc;
+    uint *fcf;
+
+    CudaSafeCall(cudaMalloc(&cfc, sizeCF * sizeof(uint)));
+    CudaSafeCall(cudaMalloc(&cff, sizeCF * sizeof(uint)));
+    CudaSafeCall(cudaMalloc(&fcc, sizeCF * sizeof(uint)));
+    CudaSafeCall(cudaMalloc(&fcf, sizeCF * sizeof(uint)));
+
+    CudaSafeCall(cudaMemcpy(cfc, grid->gridInterface->cf.coarse, grid->gridInterface->cf.numberOfEntries * sizeof(uint), cudaMemcpyHostToDevice));
+    CudaSafeCall(cudaMemcpy(cff, grid->gridInterface->cf.fine, grid->gridInterface->cf.numberOfEntries * sizeof(uint), cudaMemcpyHostToDevice));
+    CudaSafeCall(cudaMemcpy(fcc, grid->gridInterface->fc.coarse, grid->gridInterface->fc.numberOfEntries * sizeof(uint), cudaMemcpyHostToDevice));
+    CudaSafeCall(cudaMemcpy(fcf, grid->gridInterface->fc.fine, grid->gridInterface->fc.numberOfEntries * sizeof(uint), cudaMemcpyHostToDevice));
+
+    grid->gridInterface->cf.coarse = cfc;
+    grid->gridInterface->cf.fine = cff;
+    grid->gridInterface->fc.coarse = fcc;
+    grid->gridInterface->fc.fine = fcf;
+
+    GridInterface *gridInterface_d;
+    CudaSafeCall(cudaMalloc(&gridInterface_d, sizeof(GridInterface)));
+    CudaSafeCall(cudaMemcpy(gridInterface_d, grid->gridInterface, sizeof(GridInterface), cudaMemcpyHostToDevice));
+    grid->gridInterface = gridInterface_d;
+    CudaCheckError();
+
 
     grid->removeInvalidNodes();
 
     allocAndCopyFieldToGPU(grid, grid->size);
+    allocAndCopyFieldToGPU(fineGrid, fineGrid->size);
     allocAndCopyMatrixIndicesToGPU(grid, grid->size);
+    allocAndCopyMatrixIndicesToGPU(fineGrid, fineGrid->size);
 
-    float time = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
+    float time = runKernelToFindNeighborsNewIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
+    float time2 = runKernelToFindGridInterfaceNewIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
+
+    copyAndFreeGridInterfaceFromGPU(grid);
+
+
     //*logging::out << logging::Logger::INTERMEDIATE << "time find indices: " + SSTR(time / 1000) + "sec\n";
 }
 
-void GridGpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
+void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 {
     float time1 = runKernelSetToInvalid(LaunchParameter::make_2D1D_launchParameter(grid->size, 512), *grid.get());
 
@@ -84,9 +128,16 @@ void GridGpuStrategy::deleteSolidNodes(SPtr<Grid> grid)
 }
 
 
-void GridGpuStrategy::freeMemory(SPtr<Grid> grid)
+
+void GridGpuStrategy::freeMemory(SPtr<GridImp> grid)
 {
-    delete grid->gridInterface;
+    //delete[] grid->gridInterface->cf.coarse;
+    //delete[] grid->gridInterface->cf.fine;
+
+    //delete[] grid->gridInterface->fc.coarse;
+    //delete[] grid->gridInterface->fc.fine;
+
+    //delete grid->gridInterface;
     
     delete[] grid->field;
 
@@ -99,13 +150,15 @@ void GridGpuStrategy::freeMemory(SPtr<Grid> grid)
 }
 
 
-void GridGpuStrategy::copyDataFromGPU(SPtr<Grid> grid)
+void GridGpuStrategy::copyDataFromGPU(SPtr<GridImp> grid)
 {
     copyAndFreeFieldFromGPU(grid);
     copyAndFreeNeighborsToCPU(grid);
     copyAndFreeMatrixIndicesFromGPU(grid, grid->size);
     copyAndFreeDistributiondFromGPU(grid);
 }
+
+
 //
 //void GridWrapperGPU::markNodesToDeleteOutsideOfGeometry()
 //{
@@ -122,7 +175,7 @@ void GridGpuStrategy::copyDataFromGPU(SPtr<Grid> grid)
 /*#################################################################################*/
 /*--------------------------------private methods----------------------------------*/
 /*---------------------------------------------------------------------------------*/
-void GridGpuStrategy::allocField(SPtr<Grid> grid)
+void GridGpuStrategy::allocField(SPtr<GridImp> grid)
 {
     *logging::out << logging::Logger::INTERMEDIATE << "alloc on device for grid field: " + SSTR(grid->size * sizeof(char) / 1000 / 1000) + " MB\n";
 
@@ -131,7 +184,7 @@ void GridGpuStrategy::allocField(SPtr<Grid> grid)
     grid->field = field_d;
 }
 
-void GridGpuStrategy::allocDistribution(SPtr<Grid> grid)
+void GridGpuStrategy::allocDistribution(SPtr<GridImp> grid)
 {
     CudaSafeCall(cudaMemcpyToSymbol(DIRECTIONS, grid->distribution.dirs, grid->distribution.dir_end * DIMENSION * sizeof(int)));
     CudaCheckError();
@@ -145,7 +198,7 @@ void GridGpuStrategy::allocDistribution(SPtr<Grid> grid)
     CudaCheckError();
 }
 
-void GridGpuStrategy::allocNeighborsIndices(SPtr<Grid> grid)
+void GridGpuStrategy::allocNeighborsIndices(SPtr<GridImp> grid)
 {
     int size_in_bytes_neighbors = grid->size * sizeof(int);
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
@@ -158,7 +211,7 @@ void GridGpuStrategy::allocNeighborsIndices(SPtr<Grid> grid)
     CudaCheckError();
 }
 
-void GridGpuStrategy::allocMatrixIndicesOnGPU(SPtr<Grid> grid)
+void GridGpuStrategy::allocMatrixIndicesOnGPU(SPtr<GridImp> grid)
 {
     int size_in_bytes_nodes_reduced = grid->size * sizeof(int);
     int* indices_reduced_d;
@@ -194,7 +247,7 @@ void GridGpuStrategy::freeTrianglesFromGPU(const Geometry &geom)
     CudaCheckError();
 }
 
-void GridGpuStrategy::allocAndCopyMatrixIndicesToGPU(SPtr<Grid> grid, const uint& size)
+void GridGpuStrategy::allocAndCopyMatrixIndicesToGPU(SPtr<GridImp> grid, const uint& size)
 {
     int size_in_bytes_nodes_reduced = size * sizeof(int);
     int* indices_reduced_d;
@@ -205,7 +258,7 @@ void GridGpuStrategy::allocAndCopyMatrixIndicesToGPU(SPtr<Grid> grid, const uint
     CudaCheckError();
 }
 
-void GridGpuStrategy::allocAndCopyFieldToGPU(SPtr<Grid> grid, const uint& size)
+void GridGpuStrategy::allocAndCopyFieldToGPU(SPtr<GridImp> grid, const uint& size)
 {
     int size_in_bytes_grid = size * sizeof(char);
     char* field_d;
@@ -216,7 +269,7 @@ void GridGpuStrategy::allocAndCopyFieldToGPU(SPtr<Grid> grid, const uint& size)
     CudaCheckError();
 }
 
-void GridGpuStrategy::copyAndFreeFieldFromGPU(SPtr<Grid> grid)
+void GridGpuStrategy::copyAndFreeFieldFromGPU(SPtr<GridImp> grid)
 {
     char *field_h = new char[grid->size];
     CudaSafeCall(cudaMemcpy(field_h, grid->field, grid->size * sizeof(char), cudaMemcpyDeviceToHost));
@@ -225,7 +278,7 @@ void GridGpuStrategy::copyAndFreeFieldFromGPU(SPtr<Grid> grid)
     grid->field = field_h;
 }
 
-void GridGpuStrategy::copyAndFreeDistributiondFromGPU(SPtr<Grid> grid)
+void GridGpuStrategy::copyAndFreeDistributiondFromGPU(SPtr<GridImp> grid)
 {
     unsigned long long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     real *f_host = new real[distributionSize];
@@ -237,7 +290,7 @@ void GridGpuStrategy::copyAndFreeDistributiondFromGPU(SPtr<Grid> grid)
 
 
 
-void GridGpuStrategy::copyAndFreeNeighborsToCPU(SPtr<Grid> grid)
+void GridGpuStrategy::copyAndFreeNeighborsToCPU(SPtr<GridImp> grid)
 {
     int size_in_bytes_neighbors = grid->size * sizeof(int);
     int *neighborIndexX_h, *neighborIndexY_h, *neighborIndexZ_h;
@@ -258,7 +311,7 @@ void GridGpuStrategy::copyAndFreeNeighborsToCPU(SPtr<Grid> grid)
     CudaCheckError();
 }
 
-void GridGpuStrategy::copyAndFreeMatrixIndicesFromGPU(SPtr<Grid> grid, int size)
+void GridGpuStrategy::copyAndFreeMatrixIndicesFromGPU(SPtr<GridImp> grid, int size)
 {
     int size_in_bytes_nodes_reduced = size * sizeof(int);
     int *indices_reduced_h = new int[size];
@@ -268,5 +321,31 @@ void GridGpuStrategy::copyAndFreeMatrixIndicesFromGPU(SPtr<Grid> grid, int size)
     CudaCheckError();
 }
 
+void GridGpuStrategy::copyAndFreeGridInterfaceFromGPU(SPtr<GridImp> grid)
+{
+    GridInterface *gridInterface = new GridInterface();
+    CudaSafeCall(cudaMemcpy(gridInterface, grid->gridInterface, sizeof(GridInterface), cudaMemcpyDeviceToHost));
+
+    uint *cfc = new uint[gridInterface->cf.numberOfEntries];
+    uint *cff = new uint[gridInterface->cf.numberOfEntries];
+    uint *fcc = new uint[gridInterface->fc.numberOfEntries];
+    uint *fcf = new uint[gridInterface->fc.numberOfEntries];
 
 
+    CudaSafeCall(cudaMemcpy(cfc, gridInterface->cf.coarse, gridInterface->cf.numberOfEntries * sizeof(uint), cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(cff, gridInterface->cf.fine, gridInterface->cf.numberOfEntries * sizeof(uint), cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(fcc, gridInterface->fc.coarse, gridInterface->fc.numberOfEntries * sizeof(uint), cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(fcf, gridInterface->fc.fine, gridInterface->fc.numberOfEntries * sizeof(uint), cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaFree(gridInterface->cf.coarse));
+    CudaSafeCall(cudaFree(gridInterface->cf.fine));
+    CudaSafeCall(cudaFree(gridInterface->fc.coarse));
+    CudaSafeCall(cudaFree(gridInterface->fc.fine));
+    CudaSafeCall(cudaFree(grid->gridInterface));
+
+    grid->gridInterface = gridInterface;
+    grid->gridInterface->cf.coarse = cfc;
+    grid->gridInterface->cf.fine = cff;
+    grid->gridInterface->fc.coarse = fcc;
+    grid->gridInterface->fc.fine = fcf;
+    CudaCheckError();
+}

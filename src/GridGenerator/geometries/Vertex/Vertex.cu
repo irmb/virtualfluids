@@ -18,7 +18,7 @@ HOSTDEVICE Vertex::Vertex(const Vertex& v)
 
 HOSTDEVICE  real Vertex::getEuclideanDistanceTo(const Vertex &w) const
 {
-    return CudaMath::sqrt((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
+    return CudaMath::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
 }
 
 HOSTDEVICE Vertex Vertex::operator-(const Vertex &v) const
@@ -53,7 +53,7 @@ HOSTDEVICE struct Vertex Vertex::crossProduct(const Vertex &w) const
 
 HOSTDEVICE real Vertex::length() const 
 {
-    return CudaMath::sqrt(x * x + y * y + z * z);
+    return CudaMath::sqrtReal(x * x + y * y + z * z);
 }
 
 HOSTDEVICE void Vertex::normalize()
@@ -72,7 +72,7 @@ HOSTDEVICE void Vertex::normalize()
 HOSTDEVICE real Vertex::getMagnitude() const
 {
     real temp = x*x + y*y + z*z;
-    return CudaMath::sqrt(temp);
+    return CudaMath::sqrtReal(temp);
 }
 
 HOSTDEVICE int Vertex::isEqual(const Vertex &w) const
@@ -91,7 +91,7 @@ HOSTDEVICE real Vertex::getInnerAngle(const Vertex &w) const
     real skal = *this * w;
     if (mag - fabs(skal) < 0.0001)
         return 0.0f;
-    return  CudaMath::acos(skal / mag) * 180.0f / CudaMath::acos(-1.0f); // acos(-1.0f) = PI 
+    return  CudaMath::acosReal(skal / mag) * 180.0f / CudaMath::acosReal(-1.0f); // acos(-1.0f) = PI 
 }
 
 HOSTDEVICE void Vertex::print() const

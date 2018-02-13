@@ -612,19 +612,19 @@ void Simulation::run()
 		} 
 		else
 		{
-			//KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
-			//					 para->getParD(0)->omega,			
-			//					 para->getParD(0)->geoSP, 
-			//					 para->getParD(0)->neighborX_SP, 
-			//					 para->getParD(0)->neighborY_SP, 
-			//					 para->getParD(0)->neighborZ_SP,
-			//					 para->getParD(0)->d0SP.f[0],    
-			//					 para->getParD(0)->size_Mat_SP,
-			//					 para->getParD(0)->size_Array_SP,
-			//					 0,
-			//					 para->getForcesDev(),
-			//					 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelCasSPKum27 execution failed");
+			KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
+								 para->getParD(0)->omega,			
+								 para->getParD(0)->geoSP, 
+								 para->getParD(0)->neighborX_SP, 
+								 para->getParD(0)->neighborY_SP, 
+								 para->getParD(0)->neighborZ_SP,
+								 para->getParD(0)->d0SP.f[0],    
+								 para->getParD(0)->size_Mat_SP,
+								 para->getParD(0)->size_Array_SP,
+								 0,
+								 para->getForcesDev(),
+								 para->getParD(0)->evenOrOdd); 
+			getLastCudaError("KernelCasSPKum27 execution failed");
 
 			//KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
 			//					 para->getParD(0)->omega, 
@@ -639,18 +639,18 @@ void Simulation::run()
 			//					 para->getParD(0)->evenOrOdd); 
 			//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
 
-			KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
-									 para->getParD(0)->omega, 
-									 para->getParD(0)->geoSP, 
-									 para->getParD(0)->neighborX_SP, 
-									 para->getParD(0)->neighborY_SP, 
-									 para->getParD(0)->neighborZ_SP,
-									 para->getParD(0)->d0SP.f[0],    
-									 para->getParD(0)->size_Mat_SP,
-									 0,
-									 para->getForcesDev(),
-									 para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelCumulantD3Q27All4 execution failed");
+			//KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
+			//						 para->getParD(0)->omega, 
+			//						 para->getParD(0)->geoSP, 
+			//						 para->getParD(0)->neighborX_SP, 
+			//						 para->getParD(0)->neighborY_SP, 
+			//						 para->getParD(0)->neighborZ_SP,
+			//						 para->getParD(0)->d0SP.f[0],    
+			//						 para->getParD(0)->size_Mat_SP,
+			//						 0,
+			//						 para->getForcesDev(),
+			//						 para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelCumulantD3Q27All4 execution failed");
 		}
 		//////////////////////////////////////////////////////////////////////////
 
@@ -1661,16 +1661,16 @@ void Simulation::run()
 
             //////////////////////////////////////////////////////////////////////////
 			//fine to coarse interpolation
-            ScaleFC_0817_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0], 
-							     para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP, 
-							     para->getParD(1)->neighborX_SP,   para->getParD(1)->neighborY_SP,    para->getParD(1)->neighborZ_SP, 
-							     para->getParD(0)->size_Mat_SP,    para->getParD(1)->size_Mat_SP,     para->getParD(0)->evenOrOdd,
-							     para->getParD(0)->intFC.ICellFCC, para->getParD(0)->intFC.ICellFCF, 
-							     para->getParD(0)->K_FC,           para->getParD(0)->omega,           para->getParD(1)->omega, 
-							     para->getParD(0)->vis,            para->getParD(0)->nx,              para->getParD(0)->ny, 
-							     para->getParD(1)->nx,             para->getParD(1)->ny,              para->getParD(0)->numberofthreads,
-							     para->getParD(0)->offFC);
-            getLastCudaError("ScaleFC_0817_comp_27 execution failed");
+            //ScaleFC_0817_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0], 
+							     //para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP, 
+							     //para->getParD(1)->neighborX_SP,   para->getParD(1)->neighborY_SP,    para->getParD(1)->neighborZ_SP, 
+							     //para->getParD(0)->size_Mat_SP,    para->getParD(1)->size_Mat_SP,     para->getParD(0)->evenOrOdd,
+							     //para->getParD(0)->intFC.ICellFCC, para->getParD(0)->intFC.ICellFCF, 
+							     //para->getParD(0)->K_FC,           para->getParD(0)->omega,           para->getParD(1)->omega, 
+							     //para->getParD(0)->vis,            para->getParD(0)->nx,              para->getParD(0)->ny, 
+							     //para->getParD(1)->nx,             para->getParD(1)->ny,              para->getParD(0)->numberofthreads,
+							     //para->getParD(0)->offFC);
+            //getLastCudaError("ScaleFC_0817_comp_27 execution failed");
             ////////////////////////////////////////////////////////////////////////////
            // ScaleFC_Fix_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0], 
 							    //para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP, 
@@ -1683,16 +1683,16 @@ void Simulation::run()
 							    //para->getParD(0)->offFC);
            // getLastCudaError("ScaleFC_Fix_comp_27 execution failed");
             ////////////////////////////////////////////////////////////////////////////
-            //ScaleFC_RhoSq_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0], 
-							     // para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP, 
-							     // para->getParD(1)->neighborX_SP,   para->getParD(1)->neighborY_SP,    para->getParD(1)->neighborZ_SP, 
-							     // para->getParD(0)->size_Mat_SP,    para->getParD(1)->size_Mat_SP,     para->getParD(0)->evenOrOdd,
-							     // para->getParD(0)->intFC.ICellFCC, para->getParD(0)->intFC.ICellFCF, 
-							     // para->getParD(0)->K_FC,           para->getParD(0)->omega,           para->getParD(1)->omega, 
-							     // para->getParD(0)->vis,            para->getParD(0)->nx,              para->getParD(0)->ny, 
-							     // para->getParD(1)->nx,             para->getParD(1)->ny,              para->getParD(0)->numberofthreads,
-							     // para->getParD(0)->offFC);
-            //getLastCudaError("ScaleFC_RhoSq_comp_27 execution failed");
+            ScaleFC_RhoSq_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0], 
+							      para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP, 
+							      para->getParD(1)->neighborX_SP,   para->getParD(1)->neighborY_SP,    para->getParD(1)->neighborZ_SP, 
+							      para->getParD(0)->size_Mat_SP,    para->getParD(1)->size_Mat_SP,     para->getParD(0)->evenOrOdd,
+							      para->getParD(0)->intFC.ICellFCC, para->getParD(0)->intFC.ICellFCF, 
+							      para->getParD(0)->K_FC,           para->getParD(0)->omega,           para->getParD(1)->omega, 
+							      para->getParD(0)->vis,            para->getParD(0)->nx,              para->getParD(0)->ny, 
+							      para->getParD(1)->nx,             para->getParD(1)->ny,              para->getParD(0)->numberofthreads,
+							      para->getParD(0)->offFC);
+            getLastCudaError("ScaleFC_RhoSq_comp_27 execution failed");
 		    //////////////////////////////////////////////////////////////////////////
            // ScaleFC_RhoSq_3rdMom_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0], 
 										 //para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP, 
@@ -1742,16 +1742,16 @@ void Simulation::run()
 			 }
 		    //////////////////////////////////////////////////////////////////////////
 		    //coarse to fine interpolation
-            ScaleCF_0817_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0],                
-							     para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP,
-							     para->getParD(1)->neighborX_SP,   para->getParD(1)->neighborY_SP,    para->getParD(1)->neighborZ_SP,
-							     para->getParD(0)->size_Mat_SP,    para->getParD(1)->size_Mat_SP,     para->getParD(0)->evenOrOdd,
-							     para->getParD(0)->intCF.ICellCFC, para->getParD(0)->intCF.ICellCFF, 
-							     para->getParD(0)->K_CF,           para->getParD(0)->omega,           para->getParD(1)->omega, 
-							     para->getParD(0)->vis,            para->getParD(0)->nx,              para->getParD(0)->ny, 
-							     para->getParD(1)->nx,             para->getParD(1)->ny,              para->getParD(0)->numberofthreads,
-							     para->getParD(0)->offCF);
-            getLastCudaError("ScaleCF_0817_comp_27 execution failed");
+             //ScaleCF_0817_comp_27(para->getParD(0)->d0SP.f[0], para->getParD(1)->d0SP.f[0],
+             //    para->getParD(0)->neighborX_SP, para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+             //    para->getParD(1)->neighborX_SP, para->getParD(1)->neighborY_SP, para->getParD(1)->neighborZ_SP,
+             //    para->getParD(0)->size_Mat_SP, para->getParD(1)->size_Mat_SP, para->getParD(0)->evenOrOdd,
+             //    para->getParD(0)->intCF.ICellCFC, para->getParD(0)->intCF.ICellCFF,
+             //    para->getParD(0)->K_CF, para->getParD(0)->omega, para->getParD(1)->omega,
+             //    para->getParD(0)->vis, para->getParD(0)->nx, para->getParD(0)->ny,
+             //    para->getParD(1)->nx, para->getParD(1)->ny, para->getParD(0)->numberofthreads,
+             //    para->getParD(0)->offCF);
+             //getLastCudaError("ScaleCF_0817_comp_27 execution failed");
 		    ////////////////////////////////////////////////////////////////////////
            // ScaleCF_Fix_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0],                
 							    //para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP,
@@ -1764,16 +1764,16 @@ void Simulation::run()
 							    //para->getParD(0)->offCF);
            // getLastCudaError("ScaleCF_Fix_comp_27 execution failed");
 		    ////////////////////////////////////////////////////////////////////////
-			//ScaleCF_RhoSq_comp_27(para->getParD(0)->d0SP.f[0], para->getParD(1)->d0SP.f[0],
-			//				      para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP,
-			//				      para->getParD(1)->neighborX_SP,   para->getParD(1)->neighborY_SP,    para->getParD(1)->neighborZ_SP,
-			//				      para->getParD(0)->size_Mat_SP,    para->getParD(1)->size_Mat_SP,     para->getParD(0)->evenOrOdd,
-			//				      para->getParD(0)->intCF.ICellCFC, para->getParD(0)->intCF.ICellCFF, 
-			//				      para->getParD(0)->K_CF,           para->getParD(0)->omega,           para->getParD(1)->omega, 
-			//				      para->getParD(0)->vis,            para->getParD(0)->nx,              para->getParD(0)->ny, 
-			//				      para->getParD(1)->nx,             para->getParD(1)->ny,              para->getParD(0)->numberofthreads,
-			//				      para->getParD(0)->offCF);
-   //         getLastCudaError("ScaleCF_RhoSq_comp_27 execution failed");
+             ScaleCF_RhoSq_comp_27(para->getParD(0)->d0SP.f[0], para->getParD(1)->d0SP.f[0],
+                 para->getParD(0)->neighborX_SP, para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+                 para->getParD(1)->neighborX_SP, para->getParD(1)->neighborY_SP, para->getParD(1)->neighborZ_SP,
+                 para->getParD(0)->size_Mat_SP, para->getParD(1)->size_Mat_SP, para->getParD(0)->evenOrOdd,
+                 para->getParD(0)->intCF.ICellCFC, para->getParD(0)->intCF.ICellCFF,
+                 para->getParD(0)->K_CF, para->getParD(0)->omega, para->getParD(1)->omega,
+                 para->getParD(0)->vis, para->getParD(0)->nx, para->getParD(0)->ny,
+                 para->getParD(1)->nx, para->getParD(1)->ny, para->getParD(0)->numberofthreads,
+                 para->getParD(0)->offCF);
+             getLastCudaError("ScaleCF_RhoSq_comp_27 execution failed");
 			//////////////////////////////////////////////////////////////////////////
            // ScaleCF_RhoSq_3rdMom_comp_27(para->getParD(0)->d0SP.f[0],      para->getParD(1)->d0SP.f[0],                
 										 //para->getParD(0)->neighborX_SP,   para->getParD(0)->neighborY_SP,    para->getParD(0)->neighborZ_SP,

@@ -4,36 +4,35 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-
 #include <string>
-#include <memory>
-#include <ostream>
 
 #include "../Logger.h"
+#include <map>
 
 namespace logging
 {
 
-    class __declspec(dllexport) LoggerImp : public Logger
+    class VF_PUBLIC LoggerImp : public Logger
     {
     public:
-        LoggerImp(std::ostream &stream);
+        LoggerImp(std::ostream* stream);
         virtual ~LoggerImp();
 
-        Logger& operator<<(const Level &level);
-        Logger& operator<<(const std::string &message);
-        Logger& operator<<(const int &message);
-        Logger& operator<<(const float &message);
-        Logger& operator<<(const double &message);
+        Logger& operator<<(const Level &level) override;
+        Logger& operator<<(const std::string &message) override;
+        Logger& operator<<(const int &message) override;
+        Logger& operator<<(const float &message) override;
+        Logger& operator<<(const double &message) override;
 
 
     private:
         std::string getRankString();
-        bool isLocalLogLevelHighEnough();
+        static bool isLocalLogLevel_greateEqual_GlobalLevel();
 
+        void addDebugInformation(std::string& message);
         logging::Logger& log(const std::string &message);
 
-
+        std::map<Logger::Level, std::string> levelString;
     };
 
 }

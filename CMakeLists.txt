@@ -73,7 +73,7 @@ option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
 option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
 option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
 option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
-option(HULC.BUILD_TESTS "Build shared libraries" OFF)
+option(HULC.BUILD_TESTS "Build shared libraries" ON)
 
 option(VF_DOUBLE_ACCURACY "Build shared libraries" ON)
 
@@ -85,6 +85,11 @@ sharedLibs()
 
 include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FindCompiler.cmake)
 configure_file(src/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
+if(MSVC)
+  SET( CMAKE_CXX_FLAGS "/FI${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
+ELSE(MSVC)
+  SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
+ENDIF(MSVC)
 
 #############################################################
 ###                  Virtual Fluids                       ###
@@ -150,6 +155,12 @@ endif()
 
 
 if(HULC.BUILD_TESTS)
+  if(VF_DOUBLE_ACCURACY)
+    add_definitions("-DRealEq=testing::DoubleEq")
+  else()
+    add_definitions("-DRealEq=testing::FloatEq")
+  endif()
+
   add_subdirectory(3rdParty/googletest)
   if (HULC.BUILD_GPU_CODE)
     add_subdirectory(targets/tests/GridGeneratorTest)

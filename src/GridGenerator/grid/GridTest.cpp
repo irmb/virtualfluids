@@ -1,12 +1,12 @@
 #include "gmock/gmock.h"
-#include "Grid.cuh"
+#include "GridImp.cuh"
 
 #include <vector>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
 #include "GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
-
+#include "GridStrategy/GridStrategyMocks.h"
 //
 //std::vector<Vertex> getPointsInBoundingBox(Triangle t, real delta)
 //{
@@ -210,7 +210,7 @@ TEST(GridTest, transRealCoordsToIndex)
 {
     SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
 
-    SPtr<Grid> grid = Grid::makeShared(0, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
+    SPtr<Grid> grid = GridImp::makeShared(0, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
 
 
     Vertex v(1.5, 0.0, 0.0);
@@ -228,7 +228,7 @@ TEST(GridTest, transNegativeCoordToIndex)
 {
     SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
 
-    SPtr<Grid> grid = Grid::makeShared(-1, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
+    SPtr<Grid> grid = GridImp::makeShared(-1, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
 
     Vertex v(0.0, 0.0, 0.0);
 
@@ -240,3 +240,18 @@ TEST(GridTest, transNegativeCoordToIndex)
     grid->transIndexToCoords(index, x, y, z);
 
 }
+
+
+TEST(GridTest, changeStartingPoint_expectUpdatedNumberOfNodesAndSize)
+{
+    SPtr<GridStrategy> gridStrategy(new GridStrategyDummy());
+    SPtr<Grid> grid = GridImp::makeShared(0, 0, 0, 4, 4, 4, 1, gridStrategy, DistributionHelper::getDistribution27());
+    int expectedNumberOfNodesX = 6; // 0 - 4 + StopperNode
+    EXPECT_THAT(grid->getNumberOfNodesX(), testing::Eq(expectedNumberOfNodesX));
+
+    grid->setEndX(9);
+
+    expectedNumberOfNodesX = 11; // 0 - 9 + StopperNode
+    EXPECT_THAT(grid->getNumberOfNodesX(), testing::Eq(expectedNumberOfNodesX));
+}
+

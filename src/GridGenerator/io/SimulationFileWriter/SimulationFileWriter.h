@@ -1,47 +1,60 @@
 #ifndef SimulationFileWriter_H
 #define SimulationFileWriter_H
 
-
-
 #include <string>
 #include <vector>
 #include <fstream>
 #include <memory>
 
 #include <GridGenerator/global.h>
-#include <GridGenerator/grid/Grid.cuh>
+#include <core/NonCreatable.h>
 
-class Transformator;
 class UnstructuredGridBuilder;
 class GridBuilder;
 
-class SimulationFileWriter
+enum class FILEFORMAT
+{
+    BINARY, ASCII
+};
+
+class SimulationFileWriter : private NonCreatable
 {
 public:
-	VF_PUBLIC static void writeSimulationFiles(std::string folder, std::shared_ptr<GridBuilder> builder, bool binaer, std::shared_ptr<Transformator> trans);
+    VF_PUBLIC static void write(std::string folder, SPtr<GridBuilder> builder, FILEFORMAT format);
 
 private:
-    SimulationFileWriter() {};
-    ~SimulationFileWriter() {};
-    static void writeCoordFiles(bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans);
-    static void writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles);
-
+    static void write(SPtr<GridBuilder> builder, FILEFORMAT format);
     static void openFiles();
-    static void writeLevelAndLevelSize(int sizeCoords, std::vector<std::vector<std::vector<real> > > qFiles);
-    static void writeCoordsNeighborsGeo(const int& index, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans);
+    static void writeLevel(uint numberOfLevels);
+    static void writeLevelSize(uint numberOfNodes, std::vector<std::vector<std::vector<real> > > qFiles);
+    static void writeCoordFiles(SPtr<GridBuilder> builder, uint level, FILEFORMAT format);
+    static void writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, int index, uint level, FILEFORMAT format);
+    static void writeLevelSizeGridInterface(uint sizeCF, uint sizeFC);
+    static void writeGridInterfaceToFile(SPtr<GridBuilder> builder, uint level);
+    static void writeGridInterfaceToFile(uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine, std::ofstream& offsetFile);
+    static void writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles);
     static void writeBoundary(std::vector<real> boundary, int rb);
     static void closeFiles();
 
-	static std::ofstream xCoordFile;
-	static std::ofstream yCoordFile;
-	static std::ofstream zCoordFile;
-	static std::ofstream xNeighborFile;
-	static std::ofstream yNeighborFile;
-	static std::ofstream zNeighborFile;
-	static std::ofstream geoVecFile;
 
-    static std::vector<std::shared_ptr<std::ofstream> > qStreams;
-    static std::vector<std::shared_ptr<std::ofstream> > valueStreams;
+    static std::ofstream xCoordFile;
+    static std::ofstream yCoordFile;
+    static std::ofstream zCoordFile;
+    static std::ofstream xNeighborFile;
+    static std::ofstream yNeighborFile;
+    static std::ofstream zNeighborFile;
+    static std::ofstream geoVecFile;
+
+    static std::ofstream scaleCF_coarse_File;
+    static std::ofstream scaleCF_fine_File;
+    static std::ofstream scaleFC_coarse_File;
+    static std::ofstream scaleFC_fine_File;
+
+    static std::ofstream offsetVecCF_File;
+    static std::ofstream offsetVecFC_File;
+
+    static std::vector<SPtr<std::ofstream> > qStreams;
+    static std::vector<SPtr<std::ofstream> > valueStreams;
 
     static std::vector<std::ofstream> qFiles;
     static std::vector<std::ofstream> valueFiles;

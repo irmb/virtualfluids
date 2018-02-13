@@ -25,6 +25,11 @@
 #include "geometries/Geometry/Geometry.cuh"
 
 #include "grid/GridFactory.h"
+#include "grid/GridBuilder/MultipleGridBuilder.h"
+#include <grid/GridMocks.h>
+#include "grid/GridStrategy/GridStrategyMocks.h"
+#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -39,6 +44,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     std::string _path = input->getValue("Path");
     std::string _prefix = input->getValue("Prefix");
     std::string _gridpath = input->getValue("GridPath");
+    para->setNumprocs(1);
     std::string gridPath = getGridPath(para, _gridpath);
     para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
     para->setDevices(StringUtil::toVector(input->getValue("Devices")));
@@ -58,7 +64,6 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
     para->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
     para->setD3Qxx(StringUtil::toInt(input->getValue("D3Qxx")));
-    //para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
     para->setTEnd(StringUtil::toInt(input->getValue("TimeEnd")));
     para->setTOut(StringUtil::toInt(input->getValue("TimeOut")));
     para->setTStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
@@ -217,13 +222,14 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDoCheckPoint(StringUtil::toBool(input->getValue("DoCheckPoint")));
     para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //para->setGridX(StringUtil::toVector(input->getValue("GridX")));                      //GridX = StringUtil::toVector<int>(input->getValue( "GridX" ));          
-    //para->setGridY(StringUtil::toVector(input->getValue("GridY")));                      //GridY = StringUtil::toVector<int>(input->getValue( "GridY" ));          
-    //para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                      //GridZ = StringUtil::toVector<int>(input->getValue( "GridZ" ));
-    //para->setDistX(StringUtil::toVector(input->getValue("DistX")));                      //DistX = StringUtil::toVector<int>(input->getValue( "DistX" ));
-    //para->setDistY(StringUtil::toVector(input->getValue("DistY")));                      //DistY = StringUtil::toVector<int>(input->getValue( "DistY" ));
-    //para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                      //DistZ = StringUtil::toVector<int>(input->getValue( "DistZ" )); 
-                                                                                          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*    para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
+    para->setGridX(StringUtil::toVector(input->getValue("GridX")));                           
+    para->setGridY(StringUtil::toVector(input->getValue("GridY")));                           
+    para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                  
+    para->setDistX(StringUtil::toVector(input->getValue("DistX")));                  
+    para->setDistY(StringUtil::toVector(input->getValue("DistY")));                  
+    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));      */            
+
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
 
@@ -231,19 +237,54 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    SPtr<LevelGridBuilder> gridBuilder(new LevelGridBuilder());
-    gridBuilder->addGrid(20, 0, -10, 80, 60, 50, 1.0, "cpu", "D3Q27");
-    gridBuilder->addGrid(40.25, 20.25, 10.25, 59.75, 39.75, 29.75, 0.5, "cpu", "D3Q27");
+    logging::Logger::setStream(&std::cout);
+    logging::Logger::setDebugLevel(logging::Logger::ERROR);
 
-    //SimulationFileWriter::writeSimulationFiles("D:/GRIDGENERATION/couplingVF/periodicTaylorRefinement/simu/", gridBuilder, false, std::make_shared<TransformatorImp>());
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
+    gridFactory->setGrid("grid");
+    //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 35.0, 35.0, 35.0, 1.0);
+
+    gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 4);
+    //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
+
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
+
+    gridBuilder->allocateGridMemory();
+    gridBuilder->createGridInterfaces();
+
+
+
+    //const uint level = 2;
+    //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
+    //gridBuilderlevel->setGrids(gridBuilder->getGrids());
+
+
+    //gridBuilder->addGrid(14.4921875, 14.4921875, 14.4921875, 16.5078125, 16.5078125, 16.5078125, 0.015625, "cpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(13.984375, 13.984375, 13.984375, 17.015625, 17.015625, 17.015625, 0.03125, "cpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(13.46875, 13.46875, 13.46875, 17.53125, 17.53125, 17.53125, 0.0625, "cpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 18.5625, 18.5625, 18.5625, 0.125, "gpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "gpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "gpu", "D3Q27", false, false, false);
+    //gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "gpu", "D3Q27", true, true, true);
+
+
+    //gridBuilder->copyDataFromGpu();
+    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
-    SPtr<Parameter> para = Parameter::make();
+    SPtr<Parameter> para = Parameter::makeShared();
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
+    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
 
     std::ifstream stream;
     stream.open(configPath.c_str(), std::ios::in);
@@ -259,40 +300,6 @@ void multipleLevel(const std::string& configPath)
     sim.run();
 }
 
-void simulate(const std::string& configPath)
-{
-    SPtr<LevelGridBuilder> builder(new LevelGridBuilder());
-
-
-    SPtr<Parameter> para = Parameter::make();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(builder, para);
-    //std::shared_ptr<GridProvider> reader = GridProvider::makeGridReader(true, para);
-
-    std::ifstream stream;
-    stream.open(configPath.c_str(), std::ios::in);
-    if (stream.fail())
-        throw "can not open config file!\n";
-
-    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
-
-    setParameters(para, input);
-
-    SPtr<Transformator> trans(new TransformatorImp());
-    //builder->addGrid(para->getGridX()[0], para->getGridY()[0], para->getGridZ()[0], 1.0, "D3Q27", trans);
-
-    SPtr<Transformator> transRefine1(new TransformatorImp(para->getDistX()[1], para->getDistY()[1], para->getDistZ()[1], 0.5));
-    //builder->addGrid(para->getGridX()[1], para->getGridY()[1], para->getGridZ()[1], 1.0, "D3Q27", transRefine1);
-
-    //builder->getGridWrapper(0, 0)->copyDataFromGPU();
-    //builder->getGridWrapper(1, 0)->copyDataFromGPU();
-
-    //GridVTKWriter::writeSparseGridToVTK(builder->getGridWrapper(0, 0)->grid, "D:/GRIDGENERATION/couplingVF/periodicTaylor/testFile", trans);
-    SimulationFileWriter::writeSimulationFiles("D:/GRIDGENERATION/couplingVF/periodicTaylor/simuFiles/", builder, false, trans);
-
-    Simulation sim;
-    sim.init(para, gridGenerator);
-    sim.run();
-}
 
 int main( int argc, char* argv[])
 {
@@ -308,9 +315,9 @@ int main( int argc, char* argv[])
          {
              multipleLevel(str2);
          }
-         catch (std::string e)
+         catch (std::exception e)
          {
-             std::cout << e << std::flush;
+             std::cout << e.what() << std::flush;
              //MPI_Abort(MPI_COMM_WORLD, -1);
          }
       }

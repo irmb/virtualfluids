@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include <GridGenerator/global.h>
-#include <GridGenerator/grid/Grid.cuh>
+#include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
@@ -15,7 +15,7 @@
 
 #include <utilities/logger/Logger.h>
 
-int Partition::calcEdgesFromGraph(const Grid &grid) 
+int Partition::calcEdgesFromGraph(SPtr<Grid> grid) 
 {
     int insideNeighbors = 6;
     int cornerNeighbors = 3;
@@ -23,17 +23,17 @@ int Partition::calcEdgesFromGraph(const Grid &grid)
     int ousiteAreaNeighbors = 5;
 
     int corner = 8;
-    int outsiteEdges = grid.nx * 4 + grid.ny * 4 + grid.nz * 4 - 24;
-    int outsideArea = 2 * grid.nx*grid.ny + 2 * grid.nx*grid.nz + 2 * grid.ny*grid.nz - 8 * grid.nx - 8 * grid.ny - 8 * grid.nz + 24;
-    int inside = grid.getSize() - corner - outsiteEdges - outsideArea;
+    int outsiteEdges = grid->getNumberOfNodesX() * 4 + grid->getNumberOfNodesY() * 4 + grid->getNumberOfNodesZ() * 4 - 24;
+    int outsideArea = 2 * grid->getNumberOfNodesX()*grid->getNumberOfNodesY() + 2 * grid->getNumberOfNodesX()*grid->getNumberOfNodesZ() + 2 * grid->getNumberOfNodesY()*grid->getNumberOfNodesZ() - 8 * grid->getNumberOfNodesX() - 8 * grid->getNumberOfNodesY() - 8 * grid->getNumberOfNodesZ() + 24;
+    int inside = grid->getSize() - corner - outsiteEdges - outsideArea;
     return inside * insideNeighbors + outsideArea * ousiteAreaNeighbors + outsiteEdges * outsideEdgesNeighbors + corner * cornerNeighbors;
 }
 
-void Partition::partitionGridMesh(const Grid &grid) 
+void Partition::partitionGridMesh(SPtr<Grid> grid) 
 {
     printf("MESH\n");
 
-    idx_t nelements = (grid.nx - 1) * (grid.ny - 1) * (grid.nz - 1);
+    idx_t nelements = (grid->getNumberOfNodesX() - 1) * (grid->getNumberOfNodesY() - 1) * (grid->getNumberOfNodesZ() - 1);
     idx_t nNodes = nelements * 8;
     idx_t nWeightsMesh = 1;
     idx_t nPartsMesh = 2;
@@ -55,13 +55,13 @@ void Partition::partitionGridMesh(const Grid &grid)
     real x, y, z, newX, newY, newZ;
     int nIndex;
     int numberNode = 0;
-    for (unsigned int index = 0; index < grid.getSize(); index++) {
-        grid.transIndexToCoords(index, x, y, z);
+    for (unsigned int index = 0; index < grid->getSize(); index++) {
+        grid->transIndexToCoords(index, x, y, z);
 
         newX = x + 1;
         newY = y + 1;
         newZ = z + 1;
-        if (newX >= grid.nx || newY >= grid.ny || newZ >= grid.nz)
+        if (newX >= grid->getNumberOfNodesX() || newY >= grid->getNumberOfNodesY() || newZ >= grid->getNumberOfNodesZ())
             continue;
 
         // self
@@ -69,37 +69,37 @@ void Partition::partitionGridMesh(const Grid &grid)
         numberNode++;
 
         //+x
-        nIndex = grid.transCoordToIndex(newX, y, z);
+        nIndex = grid->transCoordToIndex(newX, y, z);
         eind[numberNode] = nIndex;
         numberNode++;
 
         //x//+y
-        nIndex = grid.transCoordToIndex(newX, newY, z);
+        nIndex = grid->transCoordToIndex(newX, newY, z);
         eind[numberNode] = nIndex;
         numberNode++;
 
         //+y
-        nIndex = grid.transCoordToIndex(x, newY, z);
+        nIndex = grid->transCoordToIndex(x, newY, z);
         eind[numberNode] = nIndex;
         numberNode++;
 
         //+z
-        nIndex = grid.transCoordToIndex(x, y, newZ);
+        nIndex = grid->transCoordToIndex(x, y, newZ);
         eind[numberNode] = nIndex;
         numberNode++;
 
         //+z//+x
-        nIndex = grid.transCoordToIndex(newX, y, newZ);
+        nIndex = grid->transCoordToIndex(newX, y, newZ);
         eind[numberNode] = nIndex;
         numberNode++;
 
         //+z//+x//+y
-        nIndex = grid.transCoordToIndex(newX, newY, newZ);
+        nIndex = grid->transCoordToIndex(newX, newY, newZ);
         eind[numberNode] = nIndex;
         numberNode++;
 
         //+z//+y
-        nIndex = grid.transCoordToIndex(x, newY, newZ);
+        nIndex = grid->transCoordToIndex(x, newY, newZ);
         eind[numberNode] = nIndex;
         numberNode++;
 
@@ -131,8 +131,8 @@ void Partition::partitionGridMesh(const Grid &grid)
     }
 
 
-    for (unsigned int part_i = 0; part_i < grid.getSize(); part_i++){
-        grid.field[part_i] = partMeshNodes[part_i];
+    for (unsigned int part_i = 0; part_i < grid->getSize(); part_i++){
+        grid->setFieldEntry(part_i, partMeshNodes[part_i]);
     }
 
     GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
@@ -143,8 +143,8 @@ void Partition::partitionGridMesh(const Grid &grid)
     delete[] eind;
 }
 
-void Partition::partitionGrid(const Grid &grid) {
-    idx_t nVertices = grid.getSize();
+void Partition::partitionGrid(SPtr<Grid> grid) {
+    idx_t nVertices = grid->getSize();
     idx_t nEdges = calcEdgesFromGraph(grid);
     idx_t nWeights = 1;
     idx_t nParts = 4;
@@ -160,50 +160,50 @@ void Partition::partitionGrid(const Grid &grid) {
     int numberOfNeighbors = 0;
     int counter = 0;
     for (int index = 0; index < nVertices; index++) {
-        grid.transIndexToCoords(index, x, y, z);
+        grid->transIndexToCoords(index, x, y, z);
         //+x 
         newX = x + 1;
-        if (newX >= 0 && newX < grid.nx) {
-            nIndex = grid.transCoordToIndex(newX, y, z);
+        if (newX >= 0 && newX < grid->getNumberOfNodesX()) {
+            nIndex = grid->transCoordToIndex(newX, y, z);
             adjncy[numberOfNeighbors] = nIndex;
             numberOfNeighbors++;
         }
         //-x
         newX = x - 1;
-        if (newX >= 0 && newX < grid.nx) {
-            nIndex = grid.transCoordToIndex(newX, y, z);
+        if (newX >= 0 && newX < grid->getNumberOfNodesX()) {
+            nIndex = grid->transCoordToIndex(newX, y, z);
             adjncy[numberOfNeighbors] = nIndex;
             numberOfNeighbors++;
         }
 
         //+y
         newY = y + 1;
-        if (newY >= 0 && newY < grid.ny) {
-            nIndex = grid.transCoordToIndex(x, newY, z);
+        if (newY >= 0 && newY < grid->getNumberOfNodesY()) {
+            nIndex = grid->transCoordToIndex(x, newY, z);
             adjncy[numberOfNeighbors] = nIndex;
             numberOfNeighbors++;
         }
 
         //-y
         newY = y - 1;
-        if (newY >= 0 && newY < grid.ny) {
-            nIndex = grid.transCoordToIndex(x, newY, z);
+        if (newY >= 0 && newY < grid->getNumberOfNodesY()) {
+            nIndex = grid->transCoordToIndex(x, newY, z);
             adjncy[numberOfNeighbors] = nIndex;
             numberOfNeighbors++;
         }
 
         //+z
         newZ = z + 1;
-        if (newZ >= 0 && newZ < grid.nz) {
-            nIndex = grid.transCoordToIndex(x, y, newZ);
+        if (newZ >= 0 && newZ < grid->getNumberOfNodesZ()) {
+            nIndex = grid->transCoordToIndex(x, y, newZ);
             adjncy[numberOfNeighbors] = nIndex;
             numberOfNeighbors++;
         }
 
         //-z
         newZ = z - 1;
-        if (newZ >= 0 && newZ < grid.nz) {
-            nIndex = grid.transCoordToIndex(x, y, newZ);
+        if (newZ >= 0 && newZ < grid->getNumberOfNodesZ()) {
+            nIndex = grid->transCoordToIndex(x, y, newZ);
             adjncy[numberOfNeighbors] = nIndex;
             numberOfNeighbors++;
         }
@@ -251,7 +251,7 @@ void Partition::partitionGrid(const Grid &grid) {
     //}
 
     for (int part_i = 0; part_i < nVertices; part_i++){
-        grid.field[part_i] = part[part_i];
+        grid->setFieldEntry(part_i, part[part_i]);
     }
 
     GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);

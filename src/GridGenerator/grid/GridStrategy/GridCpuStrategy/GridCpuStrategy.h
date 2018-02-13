@@ -8,7 +8,7 @@
 #include "core/PointerDefinitions.h"
 
 
-struct Grid;
+class GridImp;
 struct Geometry;
 
 class VF_PUBLIC GridCpuStrategy : public GridStrategy
@@ -16,26 +16,26 @@ class VF_PUBLIC GridCpuStrategy : public GridStrategy
 public:
 	virtual ~GridCpuStrategy() {};
 
-    void allocateGridMemory(SPtr<Grid> grid) override;
+    void allocateGridMemory(SPtr<GridImp> grid) override;
 
-    void initalNodes(SPtr<Grid> grid) override;
-    void mesh(SPtr<Grid> grid, Geometry &geom) override;
+    void initalNodes(SPtr<GridImp> grid) override;
+    void mesh(SPtr<GridImp> grid, Geometry &geom) override;
 
-    void removeOverlapNodes(SPtr<Grid> grid, SPtr<Grid> finerGrid) override;
+    void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override;
 
-    void freeMemory(SPtr<Grid> grid) override;
+    void freeMemory(SPtr<GridImp> grid) override;
 
 
-    void deleteSolidNodes(SPtr<Grid> grid) override;
+    void deleteSolidNodes(SPtr<GridImp> grid) override;
 
     virtual void copyDataFromGPU() {};
 
 protected:
-    static void findInvalidNodes(SPtr<Grid> grid);
-    static void findForNeighborsNewIndices(SPtr<Grid> grid);
-    static void findForGridInterfaceNewIndices(SPtr<Grid> grid);
+    static void findInvalidNodes(SPtr<GridImp> grid);
+    static void findForNeighborsNewIndices(SPtr<GridImp> grid);
+    static void findForGridInterfaceNewIndices(SPtr<GridImp> grid);
 
-    static void setOverlapNodesToInvalid(SPtr<Grid> grid, SPtr<Grid> finerGrid);
+    static void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid);
 
 };
 

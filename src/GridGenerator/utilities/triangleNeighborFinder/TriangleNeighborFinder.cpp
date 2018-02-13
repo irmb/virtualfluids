@@ -2,7 +2,6 @@
 #include <omp.h>
 
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/grid/Grid.cuh>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
 struct IDS {

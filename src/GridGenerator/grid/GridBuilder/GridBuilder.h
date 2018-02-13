@@ -28,7 +28,7 @@ class PolyDataWriterWrapper;
 template <typename T>
 class BoundingBox;
 
-struct Grid;
+class Grid;
 
 class GridBuilder
 {
@@ -49,7 +49,7 @@ public:
     virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level) = 0;
     virtual void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const = 0;
 
-	virtual std::shared_ptr<Grid> getGrid(int level, int box) = 0;
+	virtual SPtr<Grid> getGrid(uint level) = 0;
 
     virtual void createBoundaryConditions() = 0;
     virtual std::vector<std::vector<std::vector<real> > > getQsValues() const = 0;
@@ -68,6 +68,11 @@ public:
 
     virtual void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
     virtual void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
+
+    virtual uint* getCF_coarse(uint level) const = 0;
+    virtual uint* getCF_fine(uint level) const = 0;
+    virtual uint* getFC_coarse(uint level) const = 0;
+    virtual uint* getFC_fine(uint level) const = 0;
 };
 
 #endif

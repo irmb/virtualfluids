@@ -6,11 +6,10 @@
 #include <omp.h>
 #include "stdint.h"
 
-#include <GridGenerator/utilities/Transformator/Transformator.h>
 #include "SimulationFileNames.h"
 
 #include <GridGenerator/grid/NodeValues.h>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/grid/Grid.h>
 
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
@@ -18,17 +17,14 @@
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/
 /*---------------------------------------------------------------------------------*/
-void SimulationFileWriter::writeSimulationFiles(std::string folder, std::shared_ptr<GridBuilder> builder, bool binaer, std::shared_ptr<Transformator> trans)
+void SimulationFileWriter::write(std::string folder, SPtr<GridBuilder> builder, FILEFORMAT format)
 {
-    std::cout << "Write Simulation Files ... \n";
     SimulationFileWriter::folder = folder;
+
+    std::cout << "Write Simulation Files ... \n";
     clock_t  begin = clock();
 
-    openFiles();
-    writeLevelAndLevelSize((int)builder->getNumberOfNodes(0), builder->getQsValues());
-    writeCoordFiles(binaer, builder, trans);
-    writeBoundaryQsFile(builder->getQsValues());
-    closeFiles();
+    write(builder, format);
 
     clock_t  end = clock();
     real time = real(end - begin) / CLOCKS_PER_SEC;
@@ -40,20 +36,24 @@ void SimulationFileWriter::writeSimulationFiles(std::string folder, std::shared_
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/
 /*---------------------------------------------------------------------------------*/
-void SimulationFileWriter::writeCoordFiles(bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
+void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
 {
-    for (uint i = 0; i < builder->getNumberOfNodes(0); i++) {
-        writeCoordsNeighborsGeo(i, binaer, builder, trans);
-    }
-}
+    const uint numberOfLevel = builder->getNumberOfGridLevels();
+    openFiles();
+    writeLevel(numberOfLevel);
+    for (uint level = 0; level < numberOfLevel; level++)
+    {
+        writeLevelSize(builder->getNumberOfNodes(level), builder->getQsValues());
+        writeCoordFiles(builder, level, format);
 
-void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles)
-{
-    for (int rb = 0; rb < QFILES; rb++) {
-        for (int index = 0; index < qFiles[rb].size(); index++) {
-            writeBoundary(qFiles[rb][index], rb);
+        if (level < numberOfLevel - 1)
+        {
+            writeLevelSizeGridInterface(builder->getNumberOfNodesCF(level), builder->getNumberOfNodesFC(level));
+            writeGridInterfaceToFile(builder, level);
         }
+        writeBoundaryQsFile(builder->getQsValues());
     }
+    closeFiles();
 }
 
 void SimulationFileWriter::openFiles()
@@ -66,6 +66,15 @@ void SimulationFileWriter::openFiles()
     yNeighborFile.open((path + simulationFileNames::neighborY).c_str(), std::ios::out | std::ios::binary);
     zNeighborFile.open((path + simulationFileNames::neighborZ).c_str(), std::ios::out | std::ios::binary);
     geoVecFile.open((path + simulationFileNames::geoVec).c_str(), std::ios::out | std::ios::binary);
+
+    scaleCF_coarse_File.open((path + simulationFileNames::scaleCFC).c_str(), std::ios::out | std::ios::binary);
+    scaleCF_fine_File.open((path + simulationFileNames::scaleCFF).c_str(), std::ios::out | std::ios::binary);
+    scaleFC_coarse_File.open((path + simulationFileNames::scaleFCC).c_str(), std::ios::out | std::ios::binary);
+    scaleFC_fine_File.open((path + simulationFileNames::scaleFCF).c_str(), std::ios::out | std::ios::binary);
+
+    offsetVecCF_File.open((path + simulationFileNames::offsetVecCF).c_str(), std::ios::out | std::ios::binary);
+    offsetVecFC_File.open((path + simulationFileNames::offsetVecFC).c_str(), std::ios::out | std::ios::binary);
+
 
     std::vector<std::string> qNames;
     qNames.push_back(path + simulationFileNames::inletBoundaryQ);
@@ -86,77 +95,158 @@ void SimulationFileWriter::openFiles()
 	valueNames.push_back(path + simulationFileNames::geomBoundaryValues);
 
     for (int i = 0; i < QFILES; i++){
-        std::shared_ptr<std::ofstream> outQ(new std::ofstream);
+        SPtr<std::ofstream> outQ(new std::ofstream);
         outQ->open(qNames[i].c_str(), std::ios::out | std::ios::binary);
         qStreams.push_back(outQ);
 
-        std::shared_ptr<std::ofstream> outV(new std::ofstream);
+        SPtr<std::ofstream> outV(new std::ofstream);
         outV->open(valueNames[i].c_str(), std::ios::out | std::ios::binary);
         valueStreams.push_back(outV);
     }
 }
 
-void SimulationFileWriter::writeLevelAndLevelSize(int sizeCoords, std::vector<std::vector<std::vector<real> > > qFiles)
+void SimulationFileWriter::writeLevel(uint numberOfLevels)
 {
-    std::string zeroIndex = "0 ";
-    std::string zeroGeo = "16 ";
-    std::string level = "0";
+    const std::string level = std::to_string(numberOfLevels - 1);
     
-    xCoordFile << level << "\n" << sizeCoords << "\n" << zeroIndex;
-    yCoordFile << level << "\n" << sizeCoords << "\n" << zeroIndex;
-    zCoordFile << level << "\n" << sizeCoords << "\n" << zeroIndex;
-    xNeighborFile << level << "\n" << sizeCoords << "\n" << zeroIndex;
-    yNeighborFile << level << "\n" << sizeCoords << "\n" << zeroIndex;
-    zNeighborFile << level << "\n" << sizeCoords << "\n" << zeroIndex;
-    geoVecFile << level << "\n" << sizeCoords << "\n" << zeroGeo;
+    xCoordFile << level << "\n";
+    yCoordFile << level << "\n";
+    zCoordFile << level << "\n";
+    xNeighborFile << level << "\n";
+    yNeighborFile << level << "\n";
+    zNeighborFile << level << "\n";
+    geoVecFile << level << "\n";
 
-    std::string geoRB = "noSlip\n";
+    scaleCF_coarse_File << level << "\n";
+    scaleCF_fine_File << level << "\n";
+    scaleFC_coarse_File << level << "\n";
+    scaleFC_fine_File << level << "\n";
+
+    offsetVecCF_File << level << "\n";
+    offsetVecFC_File << level << "\n";
+
+    const std::string geoRB = "noSlip\n";
 
     for (int rb = 0; rb < QFILES; rb++) {
-        *qStreams[rb] << level << "\n" << qFiles[rb].size() << "\n";
-        *valueStreams[rb] << geoRB << level << "\n" << qFiles[rb].size() << "\n";
+        *qStreams[rb] << level << "\n";
+        *valueStreams[rb] << geoRB << level << "\n";
     }
 }
 
-void SimulationFileWriter::writeCoordsNeighborsGeo(const int& index, bool binaer, std::shared_ptr<GridBuilder> builder, std::shared_ptr<Transformator> trans)
+void SimulationFileWriter::writeLevelSize(uint numberOfNodes, std::vector<std::vector<std::vector<real> > > qFiles)
 {
-    Grid grid = *builder->getGrid(0, 0).get();
-    if (grid.matrixIndex[index] == -1)
+    const std::string zeroIndex = "0 ";
+    const std::string zeroGeo = "16 ";
+
+    xCoordFile << numberOfNodes << "\n" << zeroIndex;
+    yCoordFile << numberOfNodes << "\n" << zeroIndex;
+    zCoordFile << numberOfNodes << "\n" << zeroIndex;
+    xNeighborFile << numberOfNodes << "\n" << zeroIndex;
+    yNeighborFile << numberOfNodes << "\n" << zeroIndex;
+    zNeighborFile << numberOfNodes << "\n" << zeroIndex;
+    geoVecFile << numberOfNodes << "\n" << zeroGeo;
+
+    const std::string geoRB = "noSlip\n";
+
+    for (int rb = 0; rb < QFILES; rb++) {
+        *qStreams[rb] << qFiles[rb].size() << "\n";
+        *valueStreams[rb] << geoRB << qFiles[rb].size() << "\n";
+    }
+}
+
+void SimulationFileWriter::writeLevelSizeGridInterface(uint sizeCF, uint sizeFC)
+{
+    scaleCF_coarse_File << sizeCF << "\n";
+    scaleCF_fine_File << sizeCF << "\n";
+    scaleFC_coarse_File << sizeFC << "\n";
+    scaleFC_fine_File << sizeFC << "\n";
+
+    offsetVecCF_File << sizeCF << "\n";
+    offsetVecFC_File << sizeFC << "\n";
+}
+
+void SimulationFileWriter::writeCoordFiles(SPtr<GridBuilder> builder, uint level, FILEFORMAT format)
+{
+    for (uint index = 0; index < builder->getNumberOfNodes(level); index++)
+        writeCoordsNeighborsGeo(builder, index, level, format);
+}
+
+void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, int index, uint level, FILEFORMAT format)
+{
+    SPtr<Grid> grid = builder->getGrid(level);
+    if (grid->getIndex(index) == -1)
         return;
 
-    int type = grid.field[index] == SOLID ? 16 : 1;
+    int type = grid->getFieldEntry(index) == SOLID ? 16 : 19;
     real x, y, z;
-    grid.transIndexToCoords(index, x, y, z);
+    grid->transIndexToCoords(index, x, y, z);
 
-    Vertex v = Vertex(x, y, z);
-    trans->transformGridToWorld(v);
-    double xWorld = v.x;
-    double yWorld = v.y;
-    double zWorld = v.z;
-
-    if (binaer) 
+    if (format == FILEFORMAT::BINARY)
 	{
-        xCoordFile.write((char*)&xWorld, sizeof(double));
-        yCoordFile.write((char*)&yWorld, sizeof(double));
-        zCoordFile.write((char*)&zWorld, sizeof(double));
+        xCoordFile.write((char*)&x, sizeof(double));
+        yCoordFile.write((char*)&y, sizeof(double));
+        zCoordFile.write((char*)&z, sizeof(double));
 
-        xNeighborFile.write((char*)(&grid.neighborIndexX[index] + 1), sizeof(unsigned int));
-        yNeighborFile.write((char*)(&grid.neighborIndexY[index] + 1), sizeof(unsigned int));
-        zNeighborFile.write((char*)(&grid.neighborIndexZ[index] + 1), sizeof(unsigned int));
+        xNeighborFile.write((char*)(&grid->getNeighborsX()[index] + 1), sizeof(unsigned int));
+        yNeighborFile.write((char*)(&grid->getNeighborsY()[index] + 1), sizeof(unsigned int));
+        zNeighborFile.write((char*)(&grid->getNeighborsZ()[index] + 1), sizeof(unsigned int));
 
         geoVecFile.write((char*)&type, sizeof(unsigned int));
     }
     else 
 	{
-        xCoordFile << xWorld << " ";
-        yCoordFile << yWorld << " ";
-        zCoordFile << zWorld << " ";
+        xCoordFile << x << " ";
+        yCoordFile << y << " ";
+        zCoordFile << z << " ";
 
-        xNeighborFile << (grid.neighborIndexX[index] + 1) << " ";
-        yNeighborFile << (grid.neighborIndexY[index] + 1) << " ";
-        zNeighborFile << (grid.neighborIndexZ[index] + 1) << " ";
+        xNeighborFile << (grid->getNeighborsX()[index] + 1) << " ";
+        yNeighborFile << (grid->getNeighborsY()[index] + 1) << " ";
+        zNeighborFile << (grid->getNeighborsZ()[index] + 1) << " ";
 
         geoVecFile << type << " ";
+    }
+}
+
+void SimulationFileWriter::writeGridInterfaceToFile(SPtr<GridBuilder> builder, uint level)
+{
+    const uint numberOfNodesCF = builder->getNumberOfNodesCF(level);
+    if(numberOfNodesCF > 0)
+    {
+        uint* cf_coarse = builder->getCF_coarse(level);
+        uint* cf_fine = builder->getCF_fine(level);
+
+        writeGridInterfaceToFile(numberOfNodesCF, scaleCF_coarse_File, cf_coarse, scaleCF_fine_File, cf_fine, offsetVecCF_File);
+    }
+
+    const uint numberOfNodesFC = builder->getNumberOfNodesFC(level);
+    if (numberOfNodesFC > 0)
+    {
+        uint* fc_coarse = builder->getFC_coarse(level);
+        uint* fc_fine = builder->getFC_fine(level);
+
+        writeGridInterfaceToFile(numberOfNodesFC, scaleFC_coarse_File, fc_coarse, scaleFC_fine_File, fc_fine, offsetVecFC_File);
+    }
+}
+
+void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine, std::ofstream& offsetFile)
+{
+    for (uint index = 0; index < numberOfNodes; index++)
+    {
+        coarseFile << coarse[index] + 1 << " ";
+        fineFile << fine[index] + 1 << " ";
+        offsetFile << 0 << " " << 0 << " " << 0 << " ";
+    }
+    coarseFile << "\n";
+    fineFile << "\n";
+    offsetFile << "\n";
+}
+
+void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles)
+{
+    for (int rb = 0; rb < QFILES; rb++) {
+        for (int index = 0; index < qFiles[rb].size(); index++) {
+            writeBoundary(qFiles[rb][index], rb);
+        }
     }
 }
 
@@ -186,6 +276,14 @@ void SimulationFileWriter::closeFiles()
     zNeighborFile.close();
     geoVecFile.close();
 
+    scaleCF_coarse_File.close();
+    scaleCF_fine_File.close();
+    scaleFC_coarse_File.close();
+    scaleFC_fine_File.close();
+
+    offsetVecCF_File.close();
+    offsetVecFC_File.close();
+
     for (int rb = 0; rb < QFILES; rb++) {
         qStreams[rb]->close();
         valueStreams[rb]->close();
@@ -196,8 +294,8 @@ void SimulationFileWriter::closeFiles()
 /*#################################################################################*/
 /*-------------------------------static attributes---------------------------------*/
 /*---------------------------------------------------------------------------------*/
-std::vector<std::tr1::shared_ptr<std::ofstream> > SimulationFileWriter::qStreams;
-std::vector<std::tr1::shared_ptr<std::ofstream> > SimulationFileWriter::valueStreams;
+std::vector<SPtr<std::ofstream> > SimulationFileWriter::qStreams;
+std::vector<SPtr<std::ofstream> > SimulationFileWriter::valueStreams;
 
 std::ofstream SimulationFileWriter::xCoordFile;
 std::ofstream SimulationFileWriter::yCoordFile;
@@ -207,3 +305,11 @@ std::ofstream SimulationFileWriter::yNeighborFile;
 std::ofstream SimulationFileWriter::zNeighborFile;
 std::ofstream SimulationFileWriter::geoVecFile;
 std::string SimulationFileWriter::folder;
+
+std::ofstream SimulationFileWriter::scaleCF_coarse_File;
+std::ofstream SimulationFileWriter::scaleCF_fine_File;
+std::ofstream SimulationFileWriter::scaleFC_coarse_File;
+std::ofstream SimulationFileWriter::scaleFC_fine_File;
+
+std::ofstream SimulationFileWriter::offsetVecCF_File;
+std::ofstream SimulationFileWriter::offsetVecFC_File;

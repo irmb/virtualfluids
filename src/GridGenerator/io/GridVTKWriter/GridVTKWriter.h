@@ -10,13 +10,13 @@
 #include <VirtualFluidsDefinitions.h>
 
 class Transformator;
-struct Grid;
+class Grid;
 
 class VF_PUBLIC GridVTKWriter
 {
 public:
-    static void writeSparseGridToVTK(const Grid &grid, std::string name, std::shared_ptr<const Transformator> trans = std::make_shared<TransformatorImp>(), bool binaer = false);
-    static void writeGridToVTKXML(const Grid &grid, std::string name, bool binaer = false);
+    static void writeSparseGridToVTK(SPtr<Grid> grid, std::string name, std::shared_ptr<const Transformator> trans = std::make_shared<TransformatorImp>(), bool binaer = false);
+    static void writeGridToVTKXML(SPtr<Grid> grid, std::string name, bool binaer = false);
 private:
     GridVTKWriter();
     ~GridVTKWriter();
@@ -25,16 +25,16 @@ private:
     static bool binaer;
 
     static void initalVtkWriter(bool binaer, std::string name);
-    static void writeVtkFile(std::shared_ptr<const Transformator> trans, const Grid & grid);
+    static void writeVtkFile(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid);
 
     static void openFile(std::string name, std::string mode);
     static void closeFile();
 
     static void writeHeader();
-    static void writePoints(std::shared_ptr<const Transformator> trans, const struct Grid &grid);
+    static void writePoints(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid);
     static void writeCells(const  unsigned  int &size);
     static void writeTypeHeader(const unsigned int &size);
-    static void writeTypes(const Grid &grid);
+    static void writeTypes(SPtr<Grid> grid);
 
     static void end_line();
     static void force_big_endian(unsigned char *bytes);
