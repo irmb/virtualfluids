@@ -26,23 +26,19 @@ public:
     {
         uint *fine, *coarse;
         uint numberOfEntries = 0;
-        real startCoarseX;
-        real startCoarseY;
-        real startCoarseZ;
 
-        real endCoarseX;
-        real endCoarseY;
-        real endCoarseZ;
+        real startOffset;
+        real endOffset;
 
         char coarseEntry, fineEntry;
     } fc, cf;
+
 
 private:
     HOSTDEVICE void initalCoarseToFine(const GridImp* fineGrid);
     HOSTDEVICE void initalFineToCoarse(const GridImp* fineGrid);
 
     HOSTDEVICE static void findInterface(Interface& interface, const int& factor, const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid);
-    HOSTDEVICE static bool isOnInterface(Interface& interface, const real& x, const real& y, const real& z);
     HOSTDEVICE static uint getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x, const real& y, const real& z);
 };
 

@@ -13,6 +13,7 @@ struct Vertex;
 struct Triangle;
 class GridStrategy;
 class GridInterface;
+class Object;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -21,11 +22,14 @@ class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 private:
     HOST GridImp(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
     HOST GridImp();
+    HOST GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
     void initalNumberOfNodesAndSize();
 
 public:
     virtual HOSTDEVICE ~GridImp();
+    static HOST SPtr<GridImp> makeShared(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+
     static HOST SPtr<GridImp> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution d);
 
     real startX = 0.0, startY = 0.0, startZ = 0.0;
@@ -40,6 +44,7 @@ private:
     uint reducedSize;
     bool periodicityX = true, periodicityY = true, periodicityZ = true;
 
+    Object* object;
 
 public:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
@@ -47,7 +52,9 @@ public:
     int *matrixIndex;
     Distribution distribution;
     SPtr<GridStrategy> gridStrategy;
-
+    HOSTDEVICE bool isInside(const real& x1, const real& x2, const real& x3, const real& minOffset, const real& maxOffset) const;
+    HOSTDEVICE bool isOnInterface(const real& x1, const real& x2, const real& x3, const real& minOffset, const real& maxOffset) const;
+    
     HOSTDEVICE real getDelta() const;
     HOSTDEVICE uint getSize() const;
     HOSTDEVICE uint getReducedSize() const;
@@ -122,6 +129,8 @@ public:
     HOST std::string toString() const;
 
 private:
+    HOST void initalBoundingBoXStartValues();
+
     static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
     HOSTDEVICE void findGridInterface(uint index, const GridImp& finerGrid);

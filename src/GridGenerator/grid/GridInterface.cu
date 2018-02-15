@@ -22,30 +22,20 @@ void GridInterface::initalGridInterface(const GridImp* fineGrid)
 
 void GridInterface::initalCoarseToFine(const GridImp* fineGrid)
 {
-    cf.startCoarseX = fineGrid->startX - fineGrid->delta * 0.5;
-    cf.startCoarseY = fineGrid->startY - fineGrid->delta * 0.5;
-    cf.startCoarseZ = fineGrid->startZ - fineGrid->delta * 0.5;
-
-    cf.endCoarseX = fineGrid->endX - fineGrid->delta * 1.5;
-    cf.endCoarseY = fineGrid->endY - fineGrid->delta * 1.5;
-    cf.endCoarseZ = fineGrid->endZ - fineGrid->delta * 1.5;
-
     cf.coarseEntry = CFC;
     cf.fineEntry = CFF;
+
+    cf.startOffset = -0.5 * fineGrid->delta;
+    cf.endOffset = -1.5 * fineGrid->delta;
 }
 
 void GridInterface::initalFineToCoarse(const GridImp* fineGrid)
 {
-    fc.startCoarseX = cf.startCoarseX + 4 * fineGrid->delta;
-    fc.startCoarseY = cf.startCoarseY + 4 * fineGrid->delta;
-    fc.startCoarseZ = cf.startCoarseZ + 4 * fineGrid->delta;
-
-    fc.endCoarseX = cf.endCoarseX - 2 * fineGrid->delta;
-    fc.endCoarseY = cf.endCoarseY - 2 * fineGrid->delta;
-    fc.endCoarseZ = cf.endCoarseZ - 2 * fineGrid->delta;
-
     fc.coarseEntry = FCC;
     fc.fineEntry = FCF;
+
+    fc.startOffset = cf.startOffset + 4 * fineGrid->delta;
+    fc.endOffset   = cf.endOffset - 2 * fineGrid->delta;
 }
 
 void GridInterface::findCF(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid)
@@ -63,7 +53,7 @@ void GridInterface::findInterface(Interface& interface, const int& factor, const
     real x, y, z;
     coarseGrid->transIndexToCoords(index, x, y, z);
 
-    if (isOnInterface(interface, x, y, z))
+    if (fineGrid->isOnInterface(x, y, z, interface.startOffset, interface.endOffset))
     {
         const uint indexFinerGrid = getIndexOnFinerGrid(factor, fineGrid, x, y, z);
 
@@ -77,25 +67,6 @@ void GridInterface::findInterface(Interface& interface, const int& factor, const
     }
 }
 
-HOSTDEVICE bool isOn(const real coord, const real plane1, const real plane2)
-{
-    return  CudaMath::equal(coord, plane1) || CudaMath::equal(coord, plane2);
-}
-
-HOSTDEVICE bool isBetween(const real coord, const real start, const real end)
-{
-    return  CudaMath::greaterEqual(coord, start) && CudaMath::lessEqual(coord, end);
-}
-
-bool GridInterface::isOnInterface(Interface& interface, const real& x, const real& y, const real& z)
-{
-    const bool isOnXYPlanes = isOn(z, interface.startCoarseZ, interface.endCoarseZ) && isBetween(y, interface.startCoarseY, interface.endCoarseY) && isBetween(x, interface.startCoarseX, interface.endCoarseX);
-    const bool isOnXZPlanes = isOn(y, interface.startCoarseY, interface.endCoarseY) && isBetween(x, interface.startCoarseX, interface.endCoarseX) && isBetween(z, interface.startCoarseZ, interface.endCoarseZ);
-    const bool isOnYZPlanes = isOn(x, interface.startCoarseX, interface.endCoarseX) && isBetween(y, interface.startCoarseY, interface.endCoarseY) && isBetween(z, interface.startCoarseZ, interface.endCoarseZ);
-
-    return isOnXYPlanes || isOnXZPlanes || isOnYZPlanes;
-}
-
 HOSTDEVICE uint GridInterface::getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x, const real& y, const real& z)
 {
     const real xFine = x + factor * (fineGrid->delta * 0.5);
@@ -107,6 +78,6 @@ HOSTDEVICE uint GridInterface::getIndexOnFinerGrid(const real& factor, const Gri
 
 void GridInterface::print() const
 {
-    printf("start cf: (%2.2f, %2.2f, %2.2f); end cf: (%2.2f, %2.2f, %2.2f); ", cf.startCoarseX, cf.startCoarseY, cf.startCoarseZ, cf.endCoarseX, cf.endCoarseY, cf.endCoarseZ);
+    printf("offset cf: (%2.2f, %2.2f); offset fc: (%2.2f, %2.2f); ", cf.startOffset, cf.endOffset, cf.startOffset, cf.endOffset);
     printf("Grid Interface - CF nodes: %d, FC nodes: %d\n", cf.numberOfEntries, fc.numberOfEntries);
 }

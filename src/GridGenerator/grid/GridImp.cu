@@ -21,14 +21,34 @@
 #include <utilities/logger/Logger.h>
 #include "GridInterface.cuh"
 
+#include "geometries/Object.h"
+
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
-HOST GridImp::GridImp(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution distribution)
+HOST GridImp::GridImp(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution)
     : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), field(nullptr), distribution(distribution),
     gridInterface(nullptr), neighborIndexX(nullptr), neighborIndexY(nullptr), neighborIndexZ(nullptr), matrixIndex(nullptr), gridStrategy(gridStrategy)
 {
     initalNumberOfNodesAndSize();
+}
+
+HOST GridImp::GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution) : object(object), delta(delta), gridStrategy(gridStrategy), distribution(distribution)
+{
+
+    initalBoundingBoXStartValues();
+    initalNumberOfNodesAndSize();
+}
+
+HOST void GridImp::initalBoundingBoXStartValues()
+{
+    startX = object->getX1Minimum();
+    startY = object->getX2Minimum();
+    startZ = object->getX3Minimum();
+
+    endX = object->getX1Maximum();
+    endY = object->getX2Maximum();
+    endZ = object->getX3Maximum();
 }
 
 
@@ -47,8 +67,14 @@ void GridImp::initalNumberOfNodesAndSize()
     distribution.setSize(size);
 }
 
-HOST SPtr<GridImp> GridImp::makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta,
-                                 std::shared_ptr<GridStrategy> gridStrategy, Distribution d)
+HOST SPtr<GridImp> GridImp::makeShared(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+{
+    SPtr<GridImp> grid(new GridImp(object, delta, gridStrategy, d));
+    return grid;
+}
+
+HOST SPtr<GridImp> GridImp::makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, 
+                                        SPtr<GridStrategy> gridStrategy, Distribution d)
 {
     SPtr<GridImp> grid(new GridImp(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
     return grid;
@@ -154,11 +180,19 @@ HOSTDEVICE bool GridImp::isInside(uint index, const GridImp& finerGrid) const
     const real overlapWithStopper = 3 * this->delta;
     const real overlap = 2 * this->delta;
 
-    return 
-        (x > finerGrid.startX + overlapWithStopper && x < finerGrid.endX - overlap) &&
-        (y > finerGrid.startY + overlapWithStopper && y < finerGrid.endY - overlap) &&
-        (z > finerGrid.startZ + overlapWithStopper && z < finerGrid.endZ - overlap);
+    return finerGrid.isInside(x, y, z, overlapWithStopper, overlap);
 }
+
+HOSTDEVICE bool GridImp::isInside(const real& x, const real& y, const real& z, const real& minOffset, const real& maxOffset) const
+{
+    return this->object->isPointInObject(x, y, z, minOffset, maxOffset);
+}
+
+HOSTDEVICE bool GridImp::isOnInterface(const real& x, const real& y, const real& z, const real& minOffset, const real& maxOffset) const
+{
+    return this->object->isOnBoundary(x, y, z, minOffset, maxOffset);
+}
+
 
 HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
 {

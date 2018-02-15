@@ -9,6 +9,7 @@
 #include "distributions/Distribution.h"
 #include "GridImp.cuh"
 #include "GridMocks.h"
+#include "geometries/Cuboid/Cuboid.h"
 
 enum class Device
 {
@@ -31,7 +32,7 @@ public:
             return GridSpy::makeShared(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
 
 
-        return GridImp::makeShared(startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        return GridImp::makeShared(new Cuboid(startX, startY, startZ, endX, endY, endZ), delta, gridStrategy, distribution);
     }
 
     void setGridStrategy(Device device)
