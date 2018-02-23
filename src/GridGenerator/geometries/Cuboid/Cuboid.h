@@ -21,14 +21,14 @@ public:
     Object* clone() const;
 
     double getX1Centroid() override;
-    double getX1Minimum() override;
-    double getX1Maximum() override;
+    double getX1Minimum();
+    double getX1Maximum();
     double getX2Centroid() override;
-    double getX2Minimum() override;
-    double getX2Maximum() override;
+    double getX2Minimum();
+    double getX2Maximum();
     double getX3Centroid() override;
-    double getX3Minimum() override;
-    double getX3Maximum() override;
+    double getX3Minimum();
+    double getX3Maximum();
 
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
     bool isOnBoundary(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;

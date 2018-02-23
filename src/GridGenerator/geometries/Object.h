@@ -15,17 +15,25 @@ public:
     virtual ~Object() = default;
 
     virtual double getX1Centroid() = 0;
-    virtual double getX1Minimum() = 0;
-    virtual double getX1Maximum() = 0;
-
+     double getX1Minimum() { return x1min; }
+     double getX1Maximum() { return x1max; }
 
     virtual double getX2Centroid() = 0;
-    virtual double getX2Minimum() = 0;
-    virtual double getX2Maximum() = 0;
+     double getX2Minimum() { return x2min; }
+     double getX2Maximum() { return x2max; }
 
     virtual double getX3Centroid() = 0;
-    virtual double getX3Minimum() = 0;
-    virtual double getX3Maximum() = 0;
+     double getX3Minimum() { return x3min; }
+     double getX3Maximum() { return x3max; }
+
+    virtual void setX1Minimum(double value) { this->x1min = value; }
+    virtual void setX1Maximum(double value) { this->x1max = value; }
+    
+    virtual void setX2Minimum(double value) { this->x2min = value; }
+    virtual void setX2Maximum(double value) { this->x2max = value; }
+    
+    virtual void setX3Minimum(double value) { this->x3min = value; }
+    virtual void setX3Maximum(double value) { this->x3max = value; }
 
     ///*=======================================================*/
     //double getLengthX1() { return (getX1Maximum() - getX1Minimum()); }
@@ -57,6 +65,9 @@ public:
     //virtual double getCellVolumeInsideGbObject3D(const double& x1a, const double& x2a, const double& x3a, const double& x1b, const double& x2b, const double& x3b) { return -1.0; };
 
     //virtual bool isInsideCell(const double& minX1, const double& minX2, const double& minX3, const double& maxX1, const double& maxX2, const double& maxX3);
+
+protected:
+    double x1min, x2min, x3min, x1max, x2max, x3max;
 
 };
 

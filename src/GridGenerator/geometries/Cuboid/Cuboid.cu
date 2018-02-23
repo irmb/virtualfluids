@@ -5,7 +5,13 @@
 Cuboid::Cuboid(const double& x1a,const double& x2a, const double& x3a, const double& x1b,const double& x2b, const double& x3b)
     : minX1(x1a), minX2(x2a), minX3(x3a), maxX1(x1b), maxX2(x2b), maxX3(x3b)
 {
+    x1min = getX1Minimum();
+    x2min = getX2Minimum();
+    x3min = getX3Minimum();
 
+    x1max = getX1Maximum();
+    x2max = getX2Maximum();
+    x3max = getX3Maximum();
 }
 
 Cuboid::~Cuboid()

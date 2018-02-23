@@ -159,8 +159,9 @@ HOST void GridImp::removeOverlapNodes(SPtr<Grid> finerGrid)
 
 HOSTDEVICE void GridImp::createGridInterface(uint index, const GridImp& finerGrid)
 {
-    this->findGridInterface(index, finerGrid);
-    this->setOverlapNodeToInvalid(index, finerGrid);
+    gridInterface->findInterface(index, this, &finerGrid);
+    //this->findGridInterface(index, finerGrid);
+    //this->setOverlapNodeToInvalid(index, finerGrid);
 }
 
 HOSTDEVICE void GridImp::findGridInterface(uint index, const GridImp& finerGrid)
@@ -188,7 +189,11 @@ HOSTDEVICE bool GridImp::isInside(uint index, const GridImp& finerGrid) const
 
 HOSTDEVICE bool GridImp::isInside(const real& x, const real& y, const real& z, const real& minOffset, const real& maxOffset) const
 {
-    return this->object->isPointInObject(x, y, z, minOffset, maxOffset);
+    uint index1 = transCoordToIndex(x - minOffset, y - minOffset, z - minOffset);
+    uint index2 = transCoordToIndex(x + minOffset, y + minOffset, z + maxOffset);
+    return isFluid(index1) && isFluid(index2);
+
+    //return this->object->isPointInObject(x, y, z, minOffset, maxOffset);
 }
 
 HOSTDEVICE bool GridImp::isOnInterface(const real& x, const real& y, const real& z, const real& minOffset, const real& maxOffset) const
@@ -283,9 +288,9 @@ HOSTDEVICE int GridImp::transCoordToIndex(const Vertex &v) const
 #ifdef DEBUG
     if (x < 0 || y < 0 || z < 0 || uint(x) > nx || uint(y) > ny || uint(z) > nz)
     {
-        printf(
-            "Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");
+        //printf( "Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");
         /* exit(1);*/
+        return -1;
     }
 #endif
 

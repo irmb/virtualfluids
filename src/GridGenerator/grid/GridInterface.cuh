@@ -17,10 +17,13 @@ public:
 
     HOSTDEVICE void initalGridInterface(const GridImp* fineGrid);
 
+    HOSTDEVICE void VF_PUBLIC findInterface(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
+
     HOSTDEVICE void VF_PUBLIC findCF(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid);
     HOSTDEVICE void VF_PUBLIC findFC(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid);
+    HOSTDEVICE int getIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
 
-    HOSTDEVICE void VF_PUBLIC print() const;
+    HOSTDEVICE    void VF_PUBLIC print() const;
 
     struct Interface
     {
@@ -37,9 +40,12 @@ public:
 private:
     HOSTDEVICE void initalCoarseToFine(const GridImp* fineGrid);
     HOSTDEVICE void initalFineToCoarse(const GridImp* fineGrid);
+               
+    //HOSTDEVICE static void findInterface(Interface& gridInterface, const int& factor, const uint& index,
+    //                                     const GridImp* coarseGrid, const GridImp* fineGrid);
 
-    HOSTDEVICE static void findInterface(Interface& interface, const int& factor, const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid);
-    HOSTDEVICE static uint getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x, const real& y, const real& z);
+    //HOSTDEVICE static uint getIndexOnFinerGrid(const real& factor, const GridImp* fineGrid, const real& x,
+    //                                              const real& y, const real& z);
 };
 
 

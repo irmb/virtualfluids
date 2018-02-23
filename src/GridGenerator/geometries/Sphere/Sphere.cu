@@ -4,6 +4,13 @@
 Sphere::Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius)
     : centerX(centerX), centerY(centerY), centerZ(centerZ), radius(radius)
 {
+    this->x1min = getX1Minimum();
+    this->x2min = getX2Minimum();
+    this->x3min = getX3Minimum();
+
+    this->x1max = getX1Maximum();
+    this->x2max = getX2Maximum();
+    this->x3max = getX3Maximum();
 }
 
 Sphere::~Sphere()

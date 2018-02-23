@@ -129,7 +129,15 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level) const
 {
     const real delta = calculateDelta(level);
 
-    //auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
+    auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
+    
+    gridShape->setX1Minimum(staggeredCoordinates[0]);
+    gridShape->setX2Minimum(staggeredCoordinates[1]);
+    gridShape->setX3Minimum(staggeredCoordinates[2]);
+
+    gridShape->setX1Maximum(staggeredCoordinates[3]);
+    gridShape->setX2Maximum(staggeredCoordinates[4]);
+    gridShape->setX3Maximum(staggeredCoordinates[5]);
 
     return gridFactory->makeGrid(gridShape, delta);
 }
