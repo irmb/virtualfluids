@@ -35,7 +35,6 @@ HOST GridImp::GridImp(real startX, real startY, real startZ, real endX, real end
 
 HOST GridImp::GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution) : object(object), delta(delta), gridStrategy(gridStrategy), distribution(distribution)
 {
-
     initalBoundingBoXStartValues();
     initalNumberOfNodesAndSize();
 }
@@ -114,23 +113,27 @@ HOSTDEVICE uint GridImp::getReducedSize() const
     return this->reducedSize;
 }
 
-HOSTDEVICE void GridImp::initalNodes(uint index)
+HOSTDEVICE void GridImp::findInnerNode(uint index)
 {
     this->matrixIndex[index] = index;
-    if (this->isEndOfGridStopper(index))
-    {
-        this->setFieldEntryToSolid(index);
-        this->neighborIndexX[index] = -1;
-        this->neighborIndexY[index] = -1;
-        this->neighborIndexZ[index] = -1;
-    }
-    else
+
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    if(object->isPointInObject(x, y, z, 0, 0))
     {
         this->setFieldEntryToFluid(index);
         this->setNeighborIndices(index);
-    }
+    } else
+        this->setFieldEntryToOutOfGrid(index);
 }
 
+
+HOSTDEVICE void GridImp::findStopperNode(uint index)
+{
+    if(isEndOfGridStopper(index))
+        this->setFieldEntryToSolid(index);
+}
 
 HOST void GridImp::mesh(Geometry &geometry)
 {
@@ -201,6 +204,11 @@ HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool per
     this->periodicityZ = periodicityZ;
 }
 
+HOSTDEVICE bool GridImp::is(uint index, char type) const
+{
+    return field[index] == type;
+}
+
 HOSTDEVICE bool GridImp::isFluid(uint index) const
 {
     return field[index] == FLUID;
@@ -209,6 +217,11 @@ HOSTDEVICE bool GridImp::isFluid(uint index) const
 HOSTDEVICE bool GridImp::isSolid(uint index) const
 {
     return field[index] == SOLID;
+}
+
+HOSTDEVICE bool GridImp::isOutOfGrid(uint index) const
+{
+    return field[index] == OUT_OF_GRID;
 }
 
 HOSTDEVICE bool GridImp::isInvalid(uint index) const
@@ -236,9 +249,14 @@ HOSTDEVICE void GridImp::setFieldEntryToSolid(uint index)
     this->field[index] = SOLID;
 }
 
-HOST void GridImp::setFieldEntryToInvalid(uint index)
+HOSTDEVICE void GridImp::setFieldEntryToInvalid(uint index)
 {
     this->field[index] = INVALID_NODE;
+}
+
+HOSTDEVICE void GridImp::setFieldEntryToOutOfGrid(uint index)
+{
+    this->field[index] = OUT_OF_GRID;
 }
 
 HOSTDEVICE void GridImp::setFieldEntry(const Vertex &v, char val)
@@ -419,18 +437,18 @@ HOSTDEVICE bool GridImp::isNeighborInvalid(const int &index)
 
 HOSTDEVICE void GridImp::findNeighborIndex(int index)
 {
+    if (this->isOverlapStopper(index) || isEndOfGridStopper(index))
+    {
+        this->setFieldEntryToSolid(index);
+        this->setStopperNeighborCoords(index);
+        return;
+    }
+
     if (this->matrixIndex[index] == -1)
     {
         this->neighborIndexX[index] = -1;
         this->neighborIndexY[index] = -1;
         this->neighborIndexZ[index] = -1;
-        return;
-    }
-
-    if(this->isOverlapStopper(index) || isEndOfGridStopper(index))
-    {
-        this->setFieldEntryToSolid(index);
-        this->setStopperNeighborCoords(index);
         return;
     }
 
@@ -443,13 +461,25 @@ HOSTDEVICE void GridImp::findNeighborIndex(int index)
     this->neighborIndexZ[index] = getNeighborIndex(x, y, neighborZCoord);
 }
 
-HOSTDEVICE bool GridImp::isOverlapStopper(uint index) const
+HOSTDEVICE bool GridImp::isEndOfGridStopper(uint index) const
 {
-    return this->isFluid(index) && nodeInNextCellIsInvalid(index);
+    return this->isFluid(index) && nodeInNextCellIs(index, OUT_OF_GRID);
 }
 
+//bool GridImp::isEndOfGridStopper(uint index) const
+//{
+//    real x, y, z;
+//    this->transIndexToCoords(index, x, y, z);
+//    return (x > this->endX || y > this->endY || z > this->endZ);
+//}
 
-HOSTDEVICE bool GridImp::nodeInNextCellIsInvalid(int index) const
+
+HOSTDEVICE bool GridImp::isOverlapStopper(uint index) const
+{
+    return this->isFluid(index) && nodeInNextCellIs(index, INVALID_NODE);
+}
+
+HOSTDEVICE bool GridImp::nodeInNextCellIs(int index, char type) const
 {
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -457,23 +487,23 @@ HOSTDEVICE bool GridImp::nodeInNextCellIsInvalid(int index) const
     real neighborX, neighborY, neighborZ;
     this->getNeighborCoords(neighborX, neighborY, neighborZ, x, y, z);
 
-    const uint indexX = (uint)transCoordToIndex(neighborX, y, z);
-    const uint indexY = (uint)transCoordToIndex(x, neighborY, z);
-    const uint indexZ = (uint)transCoordToIndex(x, y, neighborZ);
+    const uint indexX = transCoordToIndex(neighborX, y, z);
+    const uint indexY = transCoordToIndex(x, neighborY, z);
+    const uint indexZ = transCoordToIndex(x, y, neighborZ);
      
-    const uint indexXY = (uint)transCoordToIndex(neighborX, neighborY, z);
-    const uint indexYZ = (uint)transCoordToIndex(x, neighborY, neighborZ);
-    const uint indexXZ = (uint)transCoordToIndex(neighborX, y, neighborZ);
+    const uint indexXY = transCoordToIndex(neighborX, neighborY, z);
+    const uint indexYZ = transCoordToIndex(x, neighborY, neighborZ);
+    const uint indexXZ = transCoordToIndex(neighborX, y, neighborZ);
      
-    const uint indexXYZ = (uint)transCoordToIndex(neighborX, neighborY, neighborZ);
+    const uint indexXYZ = transCoordToIndex(neighborX, neighborY, neighborZ);
 
-    const bool isInvalidNeighborX = this->isInvalid(indexX);
-    const bool isInvalidNeighborY = this->isInvalid(indexY);
-    const bool isInvalidNeighborXY  = this->isInvalid(indexXY);
-    const bool isInvalidNeighborZ   = this->isInvalid(indexZ);
-    const bool isInvalidNeighborYZ  = this->isInvalid(indexYZ);
-    const bool isInvalidNeighborXZ  = this->isInvalid(indexXZ);
-    const bool isInvalidNeighborXYZ = this->isInvalid(indexXYZ);
+    const bool isInvalidNeighborX = this->is(indexX, type);
+    const bool isInvalidNeighborY = this->is(indexY, type);
+    const bool isInvalidNeighborXY  = this->is(indexXY, type);
+    const bool isInvalidNeighborZ   = this->is(indexZ, type);
+    const bool isInvalidNeighborYZ = this->is(indexYZ, type);
+    const bool isInvalidNeighborXZ = this->is(indexXZ, type);
+    const bool isInvalidNeighborXYZ = this->is(indexXYZ, type);
 
     return isInvalidNeighborX || isInvalidNeighborY || isInvalidNeighborXY || isInvalidNeighborZ || isInvalidNeighborYZ
         || isInvalidNeighborXZ || isInvalidNeighborXYZ;
@@ -513,7 +543,7 @@ HOST void GridImp::removeInvalidNodes()
     int newIndex = 0;
     for (uint index = 0; index < size; index++)
     {
-        if (this->isInvalid(index))
+        if (this->isInvalid(index) || this->isOutOfGrid(index))
         {
             matrixIndex[index] = -1;
             removedNodes++;
@@ -618,7 +648,6 @@ void GridImp::setStartY(real startY)
 {
     this->startY = startY;
     initalNumberOfNodesAndSize();
-
 }
 
 void GridImp::setStartZ(real startZ)
@@ -666,13 +695,6 @@ void GridImp::setFieldEntry(uint index, char entry)
 }
 
 
-
-bool GridImp::isEndOfGridStopper(uint index) const
-{
-    real x, y, z;
-    this->transIndexToCoords(index, x, y, z);
-    return (x > this->endX || y > this->endY || z > this->endZ);
-}
 
 
 uint GridImp::getNumberOfNodesCF() const

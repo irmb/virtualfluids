@@ -28,7 +28,7 @@ GLOBAL void initalField(GridImp grid)
 {
     uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-        grid.initalNodes(index);
+        grid.findInnerNode(index);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -22,6 +22,16 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
     addGridToList(grid);
 }
 
+void MultipleGridBuilder::addGrid(Object* gridShape)
+{
+    if (!coarseGridExists())
+        return emitNoCoarseGridExistsWarning();
+
+    const auto grid = makeGrid(gridShape, getNumberOfLevels());
+
+    addGridToListIfValid(grid);
+}
+
 void MultipleGridBuilder::addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ)
 {
     if (!coarseGridExists())
@@ -41,18 +51,18 @@ void MultipleGridBuilder::addFineGrid(real startXfine, real startYfine, real sta
     const uint levelDifference = levelFine - getNumberOfLevels();
     const uint oldGridSize = this->getNumberOfLevels();
 
-    getIntermediateGrids(levelDifference, levelFine, nodesBetweenGrids, startXfine, startYfine, startZfine, endXfine, endYfine, endZfine);
-    getFineGrid(levelFine, startXfine, startYfine, startZfine, endXfine, endYfine, endZfine);
+    addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, startXfine, startYfine, startZfine, endXfine, endYfine, endZfine);
+    addFineGridToList(levelFine, startXfine, startYfine, startZfine, endXfine, endYfine, endZfine);
 
     addGridsToListIfValid(oldGridSize);
 }
 
-void MultipleGridBuilder::getFineGrid(uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine)
+void MultipleGridBuilder::addFineGridToList(uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine)
 {
     grids.push_back(makeGrid(startXfine, startYfine, startZfine, endXfine, endYfine, endZfine, level));
 }
 
-void MultipleGridBuilder::getIntermediateGrids(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine)
+void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine)
 {
     if (levelDifference > 0) 
     {
@@ -104,14 +114,24 @@ void MultipleGridBuilder::addGridToListIfValid(SPtr<Grid> grid)
     addGridToList(grid);
 }
 
+
 SPtr<Grid> MultipleGridBuilder::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
 {
-    return gridFactory->makeGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    return gridFactory->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), delta);
 }
 
 bool MultipleGridBuilder::coarseGridExists() const
 {
     return !grids.empty();
+}
+
+SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level) const
+{
+    const real delta = calculateDelta(level);
+
+    //auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
+
+    return gridFactory->makeGrid(gridShape, delta);
 }
 
 SPtr<Grid> MultipleGridBuilder::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level) const
@@ -219,8 +239,11 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
     return this->grids;
 }
 
-void MultipleGridBuilder::createGridInterfaces()
+void MultipleGridBuilder::buildGrids()
 {
+    for (auto grid : grids)
+        grid->allocateGridMemory();
+
     for (size_t i = 1; i < grids.size(); i++)
         grids[i]->setPeriodicity(false, false, false);
 
@@ -228,11 +251,6 @@ void MultipleGridBuilder::createGridInterfaces()
         grids[i - 1]->removeOverlapNodes(grids[i]);
 }
 
-void MultipleGridBuilder::allocateGridMemory()
-{
-    for (auto grid : grids)
-        grid->allocateGridMemory();
-}
 
 void MultipleGridBuilder::emitNoCoarseGridExistsWarning()
 {

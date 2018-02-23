@@ -385,7 +385,7 @@ TEST(MultipleGridBuilderTest, everyExceptTheFinestGrid_shouldHaveAGridInterface)
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
     gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 2);
 
-    gridBuilder->createGridInterfaces();
+    gridBuilder->buildGrids();
 
     auto grid0 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(0));
     auto grid1 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(1));
@@ -403,11 +403,30 @@ TEST(MultipleGridBuilderTest, afterCreatingGridInterface_FineGridsShouldNotBeHav
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
     gridBuilder->addFineGrid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0, 2);
 
-    gridBuilder->createGridInterfaces();
+    gridBuilder->buildGrids();
 
     auto grid1 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(1));
     auto grid2 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(2));
 
     EXPECT_TRUE(grid1->hasNoPeriodicityBoundaries());
     EXPECT_TRUE(grid2->hasNoPeriodicityBoundaries());
+}
+
+TEST(MultipleGridBuilderDifferentShapesTest, addSphereGridShouldSetMinimaMaximaToGrid)
+{
+    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
+    gridFactory->setGrid("spy");
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
+
+    gridBuilder->addGrid(new Sphere(7.5, 7.5, 7.5, 2.5));
+
+    EXPECT_THAT(gridBuilder->getStartX(1), RealEq(5.25));
+    EXPECT_THAT(gridBuilder->getStartY(1), RealEq(5.25));
+    EXPECT_THAT(gridBuilder->getStartZ(1), RealEq(5.25));
+
+    EXPECT_THAT(gridBuilder->getEndX(1), RealEq(9.75));
+    EXPECT_THAT(gridBuilder->getEndY(1), RealEq(9.75));
+    EXPECT_THAT(gridBuilder->getEndZ(1), RealEq(9.75));
 }

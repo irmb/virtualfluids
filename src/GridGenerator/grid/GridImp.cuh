@@ -59,7 +59,8 @@ public:
     HOSTDEVICE uint getSize() const;
     HOSTDEVICE uint getReducedSize() const;
 
-    HOSTDEVICE void initalNodes(uint index);
+    HOSTDEVICE void findInnerNode(uint index);
+    HOSTDEVICE void findStopperNode(uint index);
     HOST void mesh(Geometry &geometry);
 
     HOST void freeMemory();
@@ -75,9 +76,12 @@ public:
 	HOSTDEVICE bool isQ(uint index) const;
     HOSTDEVICE bool isRb(uint index) const;
     HOSTDEVICE bool isInvalid(uint index) const;
+    HOSTDEVICE bool isOutOfGrid(uint index) const;
+    HOSTDEVICE bool is(uint index, char type) const;
 	HOSTDEVICE void setFieldEntryToFluid(uint index);
 	HOSTDEVICE void setFieldEntryToSolid(uint index);
     HOSTDEVICE void setFieldEntryToInvalid(uint index);
+    HOSTDEVICE void setFieldEntryToOutOfGrid(uint index);
 	HOSTDEVICE void setFieldEntry(const Vertex &v, char val);
 	HOSTDEVICE char getFieldEntry(const Vertex &v) const;
 	HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const;
@@ -137,7 +141,7 @@ private:
     HOSTDEVICE void setOverlapNodeToInvalid(uint index, const GridImp& finerGrid);
     HOSTDEVICE bool isInside(uint index, const GridImp& grid) const;
     HOSTDEVICE bool isOverlapStopper(uint index) const;
-    HOSTDEVICE bool nodeInNextCellIsInvalid(int index) const;
+    HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
     HOSTDEVICE int getNeighborIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
     HOSTDEVICE void setStopperNeighborCoords(int index);
 

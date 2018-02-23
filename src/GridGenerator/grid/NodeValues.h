@@ -2,6 +2,7 @@
 #define NodeValues_H
 
 
+
 #define FLUID 0
 #define SOLID 1
 #define Q 6
@@ -9,6 +10,8 @@
 #define NOSLIP 2
 #define PRESSURE 3
 #define VELOCITY 4
+
+#define OUT_OF_GRID 98
 
 #define INVALID_NODE 99
 

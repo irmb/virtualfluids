@@ -98,7 +98,7 @@ void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(device);
 
-    const auto grid = gridFactory->makeGrid(minX, minY, minZ, maxX, maxY, maxZ, -1.0, d3qxx);
+    const auto grid = gridFactory->makeGrid(new Cuboid(minX, minY, minZ, maxX, maxY, maxZ), -1.0, d3qxx);
     grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
 
     grids.insert(grids.begin(), grid);
@@ -120,7 +120,7 @@ void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(device);
 
-    const auto grid = gridFactory->makeGrid(minX, minY, minZ, maxX, maxY, maxZ, delta, distribution);
+    const auto grid = gridFactory->makeGrid(new Cuboid(minX, minY, minZ, maxX, maxY, maxZ), delta, distribution);
     grids.insert(grids.begin(), grid);
 
     grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);

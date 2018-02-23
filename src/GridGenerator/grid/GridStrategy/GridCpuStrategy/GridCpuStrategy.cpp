@@ -38,7 +38,14 @@ void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
-        grid->initalNodes(index);
+        grid->findInnerNode(index);
+
+//#pragma omp parallel for
+//    for (uint index = 0; index < grid->size; index++)
+//        grid->findStopperNode(index);
+
+    grid->removeInvalidNodes();
+    findForNeighborsNewIndices(grid);
 }
 
 void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)

@@ -6,6 +6,7 @@
 #include "distributions/Distribution.h"
 
 #include "Grid.h"
+#include "geometries/Object.h"
 
 class GridDummy : public Grid
 {
@@ -73,12 +74,13 @@ public:
 class GridStub : public GridDummy
 {
 protected:
-    GridStub(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
+    GridStub(Object* gridShape, real delta) : startX(gridShape->getX1Minimum()), startY(gridShape->getX2Minimum()), startZ(gridShape->getX3Minimum()),
+                                        endX(gridShape->getX1Maximum()), endY(gridShape->getX2Maximum()), endZ(gridShape->getX3Maximum()), delta(delta) {}
 
 public:
-    static SPtr<GridStub> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridStub> makeShared(Object* gridShape, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
-        return SPtr<GridStub>(new GridStub(startX, startY, startZ, endX, endY, endZ, delta));
+        return SPtr<GridStub>(new GridStub(gridShape, delta));
     }
 
     virtual real getDelta() const override { return delta; }
@@ -107,13 +109,13 @@ private:
 
 class GridSpy : public GridStub
 {
-private:
-    GridSpy(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : GridStub(startX, startY, startZ, endX, endY, endZ, delta) {}
+protected:
+    GridSpy(Object* gridShape, real delta) : GridStub(gridShape, delta) {}
 
 public:
-    static SPtr<GridSpy> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridSpy> makeShared(Object* gridShape, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
-        return SPtr<GridSpy>(new GridSpy(startX, startY, startZ, endX, endY, endZ, delta));
+        return SPtr<GridSpy>(new GridSpy(gridShape, delta));
     }
 
     bool hasGridInterface() const

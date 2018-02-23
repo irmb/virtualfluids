@@ -47,8 +47,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
             for (real z = grid->getStartZ(); z <= grid->getEndZ(); z += grid->getDelta())
             {
                 char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
-                if (type == -1)
-                    continue;
+
                 const int xTranslate = int((x - grid->getStartX()) / grid->getDelta());
                 const int yTranslate = int((y - grid->getStartY()) / grid->getDelta());
                 const int zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
@@ -80,6 +79,8 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
                     && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
                     && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
                 {
+                    if(grid->getIndex(grid->transCoordToIndex(x, y, z)) == -1)
+                        continue;
                     cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
                 }
             }

@@ -11,6 +11,8 @@
 
 #include "../GridFactory.h"
 
+class Object;
+
 
 class MultipleGridBuilder : public LevelGridBuilder
 {
@@ -21,12 +23,13 @@ public:
     VF_PUBLIC static SPtr<MultipleGridBuilder> makeShared(SPtr<GridFactory> gridFactory);
 
     VF_PUBLIC void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
+    VF_PUBLIC void addGrid(Object* gridShape);
     VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
     VF_PUBLIC void addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level);
 
-    void getFineGrid( uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZFine);
+    void addFineGridToList( uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZFine);
 
-   void getIntermediateGrids(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine);
+   void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine);
     void addGridsToListIfValid(uint oldSize);
 
     void addGridToListIfValid(SPtr<Grid> grid);
@@ -43,8 +46,7 @@ public:
     VF_PUBLIC real getEndZ(uint level) const;
 
     VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
-    VF_PUBLIC void createGridInterfaces();
-    VF_PUBLIC void allocateGridMemory();
+    VF_PUBLIC void buildGrids();
 
 private:
     void addGridToList(SPtr<Grid> grid);
@@ -56,6 +58,7 @@ private:
     std::array<real, 3> getOffset(real delta) const;
     std::vector<uint> getSpacingFactors(uint levelDifference) const;
 
+    SPtr<Grid> makeGrid(Object* gridShape, uint level) const;
     SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
 
     static void emitNoCoarseGridExistsWarning();

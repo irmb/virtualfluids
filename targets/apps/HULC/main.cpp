@@ -246,17 +246,17 @@ void multipleLevel(const std::string& configPath)
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 35.0, 35.0, 35.0, 1.0);
-
-    gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
+    gridBuilder->addGrid(new Sphere(15, 15, 15, 4));
+    //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
+
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
-    gridBuilder->allocateGridMemory();
-    gridBuilder->createGridInterfaces();
+    gridBuilder->buildGrids();
 
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0", 0);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
 
 
     //const uint level = 2;
