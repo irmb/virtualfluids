@@ -86,7 +86,7 @@ GLOBAL void setOverlapNodesToInvalid(GridImp grid, GridImp finerGrid)
 {
     const uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-        grid.createGridInterface(index, finerGrid);
+        grid.findGridInterfaceCF(index, finerGrid);
 }
 
 
@@ -171,7 +171,7 @@ GLOBAL void findGridInterface(GridImp grid, GridImp finerGrid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-        grid.createGridInterface(index, finerGrid);
+        grid.findGridInterfaceCF(index, finerGrid);
 }
 /*#################################################################################*/
 

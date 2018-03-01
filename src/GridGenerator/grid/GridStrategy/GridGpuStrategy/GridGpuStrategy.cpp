@@ -50,7 +50,7 @@ void GridGpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
 
 }
 
-void GridGpuStrategy::createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
+void GridGpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
     copyAndFreeFieldFromGPU(grid);
     copyAndFreeFieldFromGPU(fineGrid);
@@ -66,7 +66,7 @@ void GridGpuStrategy::createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fine
     grid->gridInterface->initalGridInterface(fineGrid.get());
 
     for (uint index = 0; index < grid->getSize(); index++)
-        grid->createGridInterface(index, *fineGrid.get());
+        grid->findGridInterface(index, *fineGrid.get());
 
     uint *cfc;
     uint *cff;

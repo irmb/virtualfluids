@@ -71,7 +71,7 @@ public:
 
     HOST virtual void allocateGridMemory() = 0;
 
-    HOST virtual void removeOverlapNodes(SPtr<Grid> grid) = 0;
+    HOST virtual void findGridInterface(SPtr<Grid> grid) = 0;
     HOST virtual void mesh(Geometry& geometry) = 0;
 
 

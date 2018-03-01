@@ -21,7 +21,7 @@ public:
     void initalNodes(SPtr<GridImp> grid) override;
     void mesh(SPtr<GridImp> grid, Geometry &geom) override;
 
-    void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override;
+    void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 
     void freeMemory(SPtr<GridImp> grid) override;
 
@@ -35,7 +35,6 @@ protected:
     static void findForNeighborsNewIndices(SPtr<GridImp> grid);
     static void findForGridInterfaceNewIndices(SPtr<GridImp> grid);
 
-    static void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid);
 
 };
 

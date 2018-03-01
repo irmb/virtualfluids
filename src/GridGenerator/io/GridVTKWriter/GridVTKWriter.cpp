@@ -79,7 +79,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
                     && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
                     && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
                 {
-                    if(grid->getIndex(grid->transCoordToIndex(x, y, z)) == -1)
+                    if(grid->getIndex(grid->transCoordToIndex(x, y, z)) == -1 || grid->getFieldEntry(grid->transCoordToIndex(x, y, z)) == 2)
                         continue;
                     cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
                 }
@@ -115,8 +115,8 @@ void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, SPt
 {
     GridVTKWriter::writeHeader();
     GridVTKWriter::writePoints(trans, grid);
-    GridVTKWriter::writeCells(grid->getReducedSize());
-    GridVTKWriter::writeTypeHeader(grid->getReducedSize());
+    GridVTKWriter::writeCells(grid->getSize());
+    GridVTKWriter::writeTypeHeader(grid->getSize());
     GridVTKWriter::writeTypes(grid);
     GridVTKWriter::closeFile();
 
@@ -149,12 +149,12 @@ void GridVTKWriter::writeHeader()
 
 void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid)
 {
-    fprintf(file, "POINTS %d float\n", grid->getReducedSize());
+    fprintf(file, "POINTS %d float\n", grid->getSize());
     real x, y, z;
     for (unsigned int i = 0; i < grid->getSize(); i++) {
 
-        if (grid->getIndex(i) == -1)
-            continue;
+        /*if (grid->getIndex(i) == -1)
+            continue;*/
 
         grid->transIndexToCoords(i, x, y, z);
         Vertex v(x,y,z);
@@ -205,8 +205,8 @@ void GridVTKWriter::writeTypes(SPtr<Grid> grid)
 {
     for (unsigned int i = 0; i < grid->getSize(); i++) 
     {
-        if (grid->getIndex(i) == -1)
-            continue;
+        /*if (grid->getIndex(i) == -1)
+            continue;*/
 
         if (binaer)
             write_int(grid->getFieldEntry(i));

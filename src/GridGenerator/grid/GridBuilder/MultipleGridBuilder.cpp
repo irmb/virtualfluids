@@ -256,7 +256,12 @@ void MultipleGridBuilder::buildGrids()
         grids[i]->setPeriodicity(false, false, false);
 
     for(size_t i = grids.size() - 1; i > 0; i--)
-        grids[i - 1]->removeOverlapNodes(grids[i]);
+        grids[i - 1]->findGridInterface(grids[i]);
+
+    //for (int i=0; i< grids[0]->getSize(); i++)
+    //{
+    //    printf("type: %d\n", grids[0]->getFieldEntry(i));
+    //}
 }
 
 

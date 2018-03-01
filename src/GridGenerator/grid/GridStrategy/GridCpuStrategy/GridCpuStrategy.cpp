@@ -40,9 +40,9 @@ void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
     for (uint index = 0; index < grid->size; index++)
         grid->findInnerNode(index);
 
-//#pragma omp parallel for
-//    for (uint index = 0; index < grid->size; index++)
-//        grid->findStopperNode(index);
+#pragma omp parallel for
+    for (uint index = 0; index < grid->size; index++)
+        grid->findStopperNode(index);
 
     grid->removeInvalidNodes();
     findForNeighborsNewIndices(grid);
@@ -55,7 +55,7 @@ void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
         grid->meshTriangle(geom.triangles[i]);
 }
 
-void GridCpuStrategy::createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
+void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
     grid->gridInterface = new GridInterface();
     const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
@@ -65,17 +65,18 @@ void GridCpuStrategy::createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fine
     grid->gridInterface->fc.fine = new uint[sizeCF];
     grid->gridInterface->initalGridInterface(fineGrid.get());
 
-    findGridInterface(grid, fineGrid);
+    for (uint index = 0; index < grid->getSize(); index++)
+        grid->findGridInterfaceCF(index, *fineGrid);
+
+    for (uint index = 0; index < grid->getSize(); index++)
+        grid->findGridInterfaceFC(index, *fineGrid);
+
     grid->removeInvalidNodes();
     findForNeighborsNewIndices(grid);
     findForGridInterfaceNewIndices(grid);
 }
 
-void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid)
-{
-    for (uint index = 0; index < grid->getSize(); index++)
-        grid->createGridInterface(index, *finerGrid.get());
-}
+
 
 void GridCpuStrategy::findForNeighborsNewIndices(SPtr<GridImp> grid)
 {

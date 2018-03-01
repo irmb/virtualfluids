@@ -19,7 +19,7 @@ public:
     virtual void initalNodes(SPtr<GridImp> grid) override {};
     virtual void mesh(SPtr<GridImp> grid, Geometry &geom) override {};
 
-    virtual void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {};
+    virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {};
 
     virtual void deleteSolidNodes(SPtr<GridImp> grid) override {};
 

@@ -60,7 +60,7 @@ public:
     virtual void setEndX(real endX) override {}
     virtual void setEndY(real endY) override {}
     virtual void setEndZ(real endZ) override {}
-    virtual void removeOverlapNodes(SPtr<Grid> grid) override {}
+    virtual void findGridInterface(SPtr<Grid> grid) override {}
     virtual void mesh(Geometry& geometry) override {}
     virtual int transCoordToIndex(const Vertex& v) const override { return 0; }
     virtual int transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
@@ -135,7 +135,7 @@ public:
         this->periodicityZ = periodicityZ;
     }
 
-    virtual void removeOverlapNodes(SPtr<Grid> grid) override
+    virtual void findGridInterface(SPtr<Grid> grid) override
     {
         _hasGridInterface = true;
     }

@@ -66,16 +66,21 @@ public:
     HOST void freeMemory();
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ);
 
-    HOST void removeOverlapNodes(SPtr<Grid> grid);
+    HOST void findGridInterface(SPtr<Grid> grid);
 
-    HOSTDEVICE void createGridInterface(uint index, const GridImp& finerGrid);
+    HOSTDEVICE void findGridInterfaceCF(uint index, const GridImp& finerGrid);
+    HOSTDEVICE void findGridInterfaceFC(uint index, const GridImp& finerGrid);
 
-
+    HOSTDEVICE bool isCoarseToFineNode(uint index) const;
 	HOSTDEVICE bool isFluid(uint index) const;
 	HOSTDEVICE bool isSolid(uint index) const;
 	HOSTDEVICE bool isQ(uint index) const;
     HOSTDEVICE bool isRb(uint index) const;
     HOSTDEVICE bool isInvalid(uint index) const;
+    HOSTDEVICE void setFieldEntryToStopperEndOfGrid(uint index);
+    HOSTDEVICE void setFieldEntryToStopperOverlapGrid(uint index);
+    HOSTDEVICE bool isStopperEndOfGrid(uint index) const;
+    HOSTDEVICE bool isStopperOverlapGrid(uint index) const;
     HOSTDEVICE bool isOutOfGrid(uint index) const;
     HOSTDEVICE bool is(uint index, char type) const;
 	HOSTDEVICE void setFieldEntryToFluid(uint index);
@@ -97,7 +102,6 @@ public:
     /*---------------------------------------------------------------------------------*/
     HOSTDEVICE void setNeighborIndices(const int &index);
 	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
-    HOSTDEVICE real getNeighhborCoord(bool periodicity, real actualCoord, real startCoord, real  endCoord) const;
     HOSTDEVICE void findNeighborIndex(int index);
     HOSTDEVICE void findForGridInterfaceNewIndexCF(uint index);
     HOSTDEVICE void findForGridInterfaceNewIndexFC(uint index);
@@ -142,9 +146,12 @@ private:
     HOSTDEVICE bool isInside(uint index, const GridImp& grid) const;
     HOSTDEVICE bool isOverlapStopper(uint index) const;
     HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
+    HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
     HOSTDEVICE int getNeighborIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
     HOSTDEVICE void setStopperNeighborCoords(int index);
 
+    HOSTDEVICE real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
+    HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
 
 public:
     HOSTDEVICE real getStartX() const override;

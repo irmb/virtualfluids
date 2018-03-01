@@ -321,7 +321,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
    writeInit(para);
-   if (para->getCalcParticle()) copyAndPrintParticles(para.get(), 0, true);
+   if (para->getCalcParticle()) 
+       copyAndPrintParticles(para.get(), 0, true);
    output << "done.\n";
 
    //////////////////////////////////////////////////////////////////////////

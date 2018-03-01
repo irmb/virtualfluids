@@ -59,7 +59,7 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
 //            this->grids[0]->setPeriodicity(true, true, true);
 //        else
 //            grid->setPeriodicity(false, false, false);
-//        this->removeOverlapNodes();
+//        this->findGridInterface();
 //        this->grids[0]->print();
 //    }
 //}
@@ -150,7 +150,7 @@ void LevelGridBuilder::removeOverlapNodes()
     const uint numberOfLevels = getNumberOfGridLevels();
     if(numberOfLevels > 1)
     {
-        grids[0]->removeOverlapNodes(grids[1]);
+        grids[0]->findGridInterface(grids[1]);
     }   
 }
 
