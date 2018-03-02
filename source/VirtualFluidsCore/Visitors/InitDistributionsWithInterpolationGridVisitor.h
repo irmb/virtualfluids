@@ -3,14 +3,14 @@
 
 #include <PointerDefinitions.h>
 
-#include "Block3DVisitor.h"
+#include "Grid3DVisitor.h"
 #include "LBMSystem.h"
 
 class Grid3D;
 class Block3D;
 class InterpolationProcessor;
 
-class InitDistributionsWithInterpolationGridVisitor : public Block3DVisitor
+class InitDistributionsWithInterpolationGridVisitor : public Grid3DVisitor
 {
 public:
    InitDistributionsWithInterpolationGridVisitor(SPtr<Grid3D> oldGrid, SPtr<InterpolationProcessor> iProcessor, LBMReal nu);

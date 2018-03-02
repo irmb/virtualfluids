@@ -93,7 +93,7 @@ MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbS
    //-----------------------------------------------------------------------
 
    MPI_Datatype typesBC[3] = { MPI_LONG_LONG_INT, MPI_FLOAT, MPI_CHAR };
-   int blocksBC[3] = { 5, 39, 1 };
+   int blocksBC[3] = { 5, 38, 1 };
    MPI_Aint offsetsBC[3], lbBC, extentBC;
 
    offsetsBC[0] = 0;
@@ -229,9 +229,11 @@ void MPIIOMigrationCoProcessor::writeBlocks(int step)
    //MPI_Comm_size(MPI_COMM_WORLD, &size);
    size = 1;
 
-   grid->deleteBlockIDs();
-   RenumberBlockVisitor renumber;
-   grid->accept(renumber);
+   grid->renumberBlockIDs();
+
+   //grid->deleteBlockIDs();
+   //RenumberBlockVisitor renumber;
+   //grid->accept(renumber);
 
    if (comm->isRoot())
    {
@@ -2513,7 +2515,6 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
 
          delete bcArray;
          delete intArray1;
-         delete intArray2;
 
          ic++;
       }

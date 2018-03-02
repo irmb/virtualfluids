@@ -14,19 +14,19 @@ void pflowdp(string configname)
       config.load(configname);
 
       string          pathname = config.getString("pathname");
-      int             numOfThreads = config.getInt("numOfThreads");
+      int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       vector<double>  gridnx = config.getVector<double>("gridnx");
-      double          nuLB = config.getDouble("nuLB");
-      double          endTime = config.getDouble("endTime");
-      double          outTime = config.getDouble("outTime");
-      double          availMem = config.getDouble("availMem");
-      int             refineLevel = config.getInt("refineLevel");
-      bool            logToFile = config.getBool("logToFile");
-      double          restartStep = config.getDouble("restartStep");
-      double          dpLB = config.getDouble("dpLB");
-      bool            thinWall = config.getBool("thinWall");
-      double          deltax = config.getDouble("deltax");
+      double          nuLB = config.getValue<double>("nuLB");
+      double          endTime = config.getValue<double>("endTime");
+      double          outTime = config.getValue<double>("outTime");
+      double          availMem = config.getValue<double>("availMem");
+      int             refineLevel = config.getValue<int>("refineLevel");
+      bool            logToFile = config.getValue<bool>("logToFile");
+      double          restartStep = config.getValue<double>("restartStep");
+      double          dpLB = config.getValue<double>("dpLB");
+      bool            thinWall = config.getValue<bool>("thinWall");
+      double          deltax = config.getValue<double>("deltax");
 
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
@@ -57,7 +57,7 @@ void pflowdp(string configname)
 
       //bc
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(NoSlipSPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> denBCAdapterInflow(new DensityBCAdapter(rhoLBinflow));
       denBCAdapterInflow->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
@@ -104,8 +104,8 @@ void pflowdp(string configname)
 
       //////////////////////////////////////////////////////////////////////////
       //restart
-      SPtr<UbScheduler> rSch(new UbScheduler(restartStep));
-      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      //SPtr<UbScheduler> rSch(new UbScheduler(restartStep));
+      //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
       //////////////////////////////////////////////////////////////////////////
 
       if (grid->getTimeStep() == 0)
@@ -152,7 +152,7 @@ void pflowdp(string configname)
          //GbCuboid3DPtr geoOutflow (new GbCuboid3D(g_minX1-4.0*blockLength, g_minX2-4.0*blockLength, g_maxX3, g_maxX1+4.0*blockLength, g_maxX2+4.0*blockLength, g_maxX3+4.0*blockLength));
          //if(myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          if (refineLevel > 0)
          {
@@ -232,7 +232,7 @@ void pflowdp(string configname)
 
          int kernelType = 2;
          SPtr<LBMKernel> kernel;
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
          //}
 
          SPtr<BCProcessor> bcProc(new BCProcessor());
@@ -260,7 +260,7 @@ void pflowdp(string configname)
          fct.DefineConst("h", h);
          fct.DefineConst("nu", nuLB);
 
-         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor;
          //initVisitor.setVx1(fct);
          initVisitor.setVx1(0.0);
          //initVisitor.setVx3(fct);
@@ -268,7 +268,7 @@ void pflowdp(string configname)
 
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
+         SPtr<CoProcessor> ppgeo(
             new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
          ppgeo->process(0);
          ppgeo.reset();
@@ -287,17 +287,20 @@ void pflowdp(string configname)
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
+      omp_set_num_threads(numOfThreads);
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepSch, endTime));
+      calculator->addCoProcessor(npr);
+      calculator->addCoProcessor(writeMQCoProcessor);
+
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
+      calculator->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

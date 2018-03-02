@@ -1949,7 +1949,7 @@ void Grid3D::renumberBlockIDs()
       {
          block->setGlobalID(counter);
          blockIdMap.insert(std::make_pair(counter, block));
-         Block3D::setMaxGlobalID(counter);
+         //Block3D::setMaxGlobalID(counter);
          counter++;
       }
    }
