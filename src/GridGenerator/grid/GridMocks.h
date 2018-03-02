@@ -68,7 +68,7 @@ public:
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
-    virtual void allocateGridMemory() override {}
+    virtual void inital() override {}
 };
 
 class GridStub : public GridDummy

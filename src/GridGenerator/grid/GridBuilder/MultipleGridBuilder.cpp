@@ -249,19 +249,14 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
 
 void MultipleGridBuilder::buildGrids()
 {
-    for (auto grid : grids)
-        grid->allocateGridMemory();
-
     for (size_t i = 1; i < grids.size(); i++)
         grids[i]->setPeriodicity(false, false, false);
 
+    for (auto grid : grids)
+        grid->inital();
+
     for(size_t i = grids.size() - 1; i > 0; i--)
         grids[i - 1]->findGridInterface(grids[i]);
-
-    //for (int i=0; i< grids[0]->getSize(); i++)
-    //{
-    //    printf("type: %d\n", grids[0]->getFieldEntry(i));
-    //}
 }
 
 

@@ -31,6 +31,7 @@ public:
     double getX3Maximum();
 
     bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
+
     bool isOnBoundary(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
 private:

@@ -17,8 +17,9 @@ public:
 
     HOSTDEVICE void initalGridInterface(const GridImp* fineGrid);
 
-    HOSTDEVICE void VF_PUBLIC findInterfaceCF(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
-    HOSTDEVICE void VF_PUBLIC findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, const GridImp* fineGrid);
+    HOSTDEVICE void VF_PUBLIC findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    HOSTDEVICE void VF_PUBLIC findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    HOSTDEVICE void VF_PUBLIC findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
 
     HOSTDEVICE void VF_PUBLIC findCF(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid);
     HOSTDEVICE void VF_PUBLIC findFC(const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid);
@@ -43,10 +44,10 @@ private:
              
     HOSTDEVICE int getCoarseToFineIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
     HOSTDEVICE bool isNeighborFineFluid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
-    HOSTDEVICE void markCellTo(const GridImp* coarseGrid, uint index, char type);
 
     HOSTDEVICE int getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
     HOSTDEVICE bool belongsNeighborToCoarseToFineInterpolationCell(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
+    HOSTDEVICE bool belongsNeighborToFineToCoarseInterpolationCell(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
     //HOSTDEVICE static void findInterface(Interface& gridInterface, const int& factor, const uint& index,
     //                                     const GridImp* coarseGrid, const GridImp* fineGrid);
 

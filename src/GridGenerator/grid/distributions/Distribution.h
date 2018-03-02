@@ -1,19 +1,48 @@
 #ifndef Distribution_H
 #define Distribution_H
 
-#define DIR_END_MAX 27
-
 #include "GridGenerator/global.h"
-
 
 #include <vector>
 #include <string>
 
+#define DIR_END_MAX 27
+
+
+struct Direction
+{
+    Direction()
+    {
+        dir[0] = 0;
+        dir[1] = 0;
+        dir[2] = 0;
+    }
+
+    Direction(int dx, int dy, int dz)
+    {
+        dir[0] = dx;
+        dir[1] = dy;
+        dir[2] = dz;
+    }
+
+    int operator[](uint dir) const
+    {
+        if (dir < 3)
+            return this->dir[dir];
+        throw "direction must between 0 and 2";
+    }
+private:
+    int dir[3];
+};
 
 struct Distribution
 {
+    typedef Direction* iterator;
+    typedef const Direction* const_iterator;
+
     real* f;
     int *dirs;
+    Direction* directions;
     int dir_start;
     int dir_end;
     const char* name;
@@ -22,6 +51,11 @@ struct Distribution
     void setSize(uint size) {
         fSize = size * (dir_end + 1);
     }
+
+    iterator begin() { return &directions[0]; }
+    const_iterator begin() const { return &directions[0]; }
+    iterator end() { return &directions[dir_end + 1]; }
+    const_iterator end() const { return &directions[dir_end + 1]; }
 };
 
 class Grid;

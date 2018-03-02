@@ -11,7 +11,7 @@
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "basics/container/CbArray3D.h"
-
+#include "grid/NodeValues.h"
 
 FILE* GridVTKWriter::file = 0;
 bool GridVTKWriter::binaer = true;
@@ -40,11 +40,11 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
     CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
     int nr = 0;
 
-    for (real x = grid->getStartX(); x <= grid->getEndX(); x += grid->getDelta())
+    for (real x = grid->getStartX(); x <= grid->getEndX() + grid->getDelta(); x += grid->getDelta())
     {
-        for (real y = grid->getStartY(); y <= grid->getEndY(); y += grid->getDelta())
+        for (real y = grid->getStartY(); y <= grid->getEndY() + grid->getDelta(); y += grid->getDelta())
         {
-            for (real z = grid->getStartZ(); z <= grid->getEndZ(); z += grid->getDelta())
+            for (real z = grid->getStartZ(); z <= grid->getEndZ() + grid->getDelta(); z += grid->getDelta())
             {
                 char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
 
@@ -60,11 +60,11 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
     }
 
     uint SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-    for (real x = grid->getStartX(); x <= grid->getEndX() - grid->getDelta(); x += grid->getDelta())
+    for (real x = grid->getStartX(); x <= grid->getEndX(); x += grid->getDelta())
     {
-        for (real y = grid->getStartY(); y <= grid->getEndY() - grid->getDelta(); y += grid->getDelta())
+        for (real y = grid->getStartY(); y <= grid->getEndY() ; y += grid->getDelta())
         {
-            for (real z = grid->getStartZ(); z <= grid->getEndZ() - grid->getDelta(); z += grid->getDelta())
+            for (real z = grid->getStartZ(); z <= grid->getEndZ() ; z += grid->getDelta())
             {
                 const int xTranslate = int((x - grid->getStartX()) / grid->getDelta());
                 const int yTranslate = int((y - grid->getStartY()) / grid->getDelta());
@@ -79,7 +79,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
                     && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
                     && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
                 {
-                    if(grid->getIndex(grid->transCoordToIndex(x, y, z)) == -1 || grid->getFieldEntry(grid->transCoordToIndex(x, y, z)) == 2)
+                    if(grid->getIndex(grid->transCoordToIndex(x, y, z)) == -1 || grid->getFieldEntry(grid->transCoordToIndex(x, y, z)) == STOPPER_END_OF_GRID || grid->getFieldEntry(grid->transCoordToIndex(x, y, z)) == STOPPER_OVERLAP_GRID)
                         continue;
                     cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
                 }

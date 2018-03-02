@@ -69,7 +69,7 @@ public:
     HOSTDEVICE virtual int transCoordToIndex(const Vertex &v) const = 0;
     HOSTDEVICE virtual int transCoordToIndex(const real &x, const real &y, const real &z) const = 0;
 
-    HOST virtual void allocateGridMemory() = 0;
+    HOST virtual void inital() = 0;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid) = 0;
     HOST virtual void mesh(Geometry& geometry) = 0;

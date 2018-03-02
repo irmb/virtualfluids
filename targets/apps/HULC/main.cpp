@@ -246,8 +246,12 @@ void multipleLevel(const std::string& configPath)
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 40.0, 40.0, 40.0, 1.0);
-    //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    gridBuilder->addGrid(new Cuboid(15,15,15,25,25,25));
+
+
+    gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
+    //gridBuilder->addGrid(new Cuboid(15,15,15,25,25,25));
+
+
     //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
@@ -259,7 +263,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0", 0);
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
 
-    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/TGV_float/simu/", gridBuilder, FILEFORMAT::ASCII);
+    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/primitive_sphere/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //const uint level = 2;
     //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);

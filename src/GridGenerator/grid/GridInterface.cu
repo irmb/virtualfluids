@@ -73,35 +73,8 @@ bool GridInterface::isNeighborFineFluid(real x, real y, real z, const GridImp* c
     return fineGrid->isFluid(indexOnFineGrid);
 }
 
-void GridInterface::markCellTo(const GridImp* coarseGrid, uint index, char type)
-{
-    coarseGrid->field[index] = type;
 
-    real x, y, z;
-    coarseGrid->transIndexToCoords(index, x, y, z);
-
-    const int neighborX = coarseGrid->transCoordToIndex(x + coarseGrid->getDelta(), y, z);
-    const int neighborY = coarseGrid->transCoordToIndex(x, y + coarseGrid->getDelta(), z);
-    const int neighborZ = coarseGrid->transCoordToIndex(x , y, z + coarseGrid->getDelta());
-
-    coarseGrid->field[neighborX] = type;
-    coarseGrid->field[neighborY] = type;
-    coarseGrid->field[neighborZ] = type;
-
-    const int neighborYZ = coarseGrid->transCoordToIndex(x, y + coarseGrid->getDelta(), z + coarseGrid->getDelta());
-    const int neighborXZ = coarseGrid->transCoordToIndex(x + coarseGrid->getDelta(), y , z + coarseGrid->getDelta());
-    const int neighborXY = coarseGrid->transCoordToIndex(x + coarseGrid->getDelta(), y + coarseGrid->getDelta(), z);
-
-    coarseGrid->field[neighborYZ] = type;
-    coarseGrid->field[neighborXZ] = type;
-    coarseGrid->field[neighborXY] = type;
-
-    const int neighborXYZ = coarseGrid->transCoordToIndex(x + coarseGrid->getDelta(), y + coarseGrid->getDelta(), z + coarseGrid->getDelta());
-
-    coarseGrid->field[neighborXYZ] = type;
-}
-
-void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid)
+void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->isFluid(indexOnCoarseGrid);
     if (!nodeOnCoarseGridIsFluid)
@@ -118,7 +91,25 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, const GridImp
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
-    const bool fineGridNodeIsFluidX = isNeighborFineFluid(x + coarseGrid->delta, y, z, coarseGrid, fineGrid);
+    int dirX, dirY, dirZ;
+
+    for(const auto dir : coarseGrid->distribution)
+    {
+        const bool isFineGridNeighborFluid = isNeighborFineFluid(x + dir[0] * coarseGrid->delta, y + dir[1] * coarseGrid->delta, z + dir[2] * coarseGrid->delta, coarseGrid, fineGrid);
+        if(!isFineGridNeighborFluid)
+        {
+            cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
+            cf.fine[cf.numberOfEntries] = fineGrid->getIndex(indexOnFineGridCF);
+
+            cf.numberOfEntries++;
+
+            coarseGrid->setCellTo(indexOnCoarseGrid, FLUID_CFC);
+            fineGrid->setCellTo(indexOnFineGridCF, FLUID_CFF);
+            break;
+        }
+    }
+
+ /*   const bool fineGridNodeIsFluidX = isNeighborFineFluid(x + coarseGrid->delta, y, z, coarseGrid, fineGrid);
     const bool fineGridNodeIsFluidX2 = isNeighborFineFluid(x - coarseGrid->delta, y, z, coarseGrid, fineGrid);
     const bool fineGridNodeIsFluidY = isNeighborFineFluid(x, y + coarseGrid->delta, z, coarseGrid, fineGrid);
     const bool fineGridNodeIsFluidY2 = isNeighborFineFluid(x, y - coarseGrid->delta, z, coarseGrid, fineGrid);
@@ -131,13 +122,12 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, const GridImp
 
         cf.numberOfEntries++;
 
-        this->markCellTo(coarseGrid, indexOnCoarseGrid, cf.coarseEntry);
-
-        //fineGrid->field[indexOnFineGridCF] = cf.fineEntry;
-    }
+        coarseGrid->setCellTo(indexOnCoarseGrid, FLUID_CFC);
+        fineGrid->setCellTo(indexOnFineGridCF, FLUID_CFF);
+    }*/
 }
 
-HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, const GridImp* fineGrid)
+HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->isFluid(indexOnCoarseGrid);
     const bool nodeOnCoarseGridIsCoarseToFine = coarseGrid->isCoarseToFineNode(indexOnCoarseGrid);
@@ -155,33 +145,50 @@ HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, Gr
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
-    const bool neighborBelongsToCoarseToFineInterpolationCellX  = belongsNeighborToCoarseToFineInterpolationCell(x + coarseGrid->delta, y, z, coarseGrid, fineGrid);
-    const bool neighborBelongsToCoarseToFineInterpolationCellX2 = belongsNeighborToCoarseToFineInterpolationCell(x - coarseGrid->delta, y, z, coarseGrid, fineGrid);
-    const bool neighborBelongsToCoarseToFineInterpolationCellY  = belongsNeighborToCoarseToFineInterpolationCell(x, y + coarseGrid->delta, z, coarseGrid, fineGrid);
-    const bool neighborBelongsToCoarseToFineInterpolationCellY2 = belongsNeighborToCoarseToFineInterpolationCell(x, y - coarseGrid->delta, z, coarseGrid, fineGrid);
-    const bool neighborBelongsToCoarseToFineInterpolationCellZ  = belongsNeighborToCoarseToFineInterpolationCell(x, y, z + coarseGrid->delta, coarseGrid, fineGrid);
-    const bool neighborBelongsToCoarseToFineInterpolationCellZ2 = belongsNeighborToCoarseToFineInterpolationCell(x, y, z - coarseGrid->delta, coarseGrid, fineGrid);
-
-    const bool secondNeighborBelongsToCoarseToFineInterpolationCellX2 = belongsNeighborToCoarseToFineInterpolationCell(x - 2 * coarseGrid->delta, y, z, coarseGrid, fineGrid);
-    const bool secondNeighborBelongsToCoarseToFineInterpolationCellY2 = belongsNeighborToCoarseToFineInterpolationCell(x, y - 2 * coarseGrid->delta, z, coarseGrid, fineGrid);
-    const bool secondNeighborBelongsToCoarseToFineInterpolationCellZ2 = belongsNeighborToCoarseToFineInterpolationCell(x, y, z - 2 * coarseGrid->delta, coarseGrid, fineGrid);
-
-    if (neighborBelongsToCoarseToFineInterpolationCellX ||
-        neighborBelongsToCoarseToFineInterpolationCellX2 ||
-        neighborBelongsToCoarseToFineInterpolationCellY ||
-        neighborBelongsToCoarseToFineInterpolationCellY2 ||
-        neighborBelongsToCoarseToFineInterpolationCellZ ||
-        neighborBelongsToCoarseToFineInterpolationCellZ2) 
+    for (const auto dir : coarseGrid->distribution)
     {
-        fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
-        fc.fine[fc.numberOfEntries] = indexOnFineGridFC;
+        const bool neighborBelongsToCoarseToFineInterpolationCell = belongsNeighborToCoarseToFineInterpolationCell(x + dir[0] * coarseGrid->delta, y + dir[1] * coarseGrid->delta, z + dir[2] * coarseGrid->delta, coarseGrid, fineGrid);
+        if (neighborBelongsToCoarseToFineInterpolationCell)
+        {
+            fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
+            fc.fine[fc.numberOfEntries] = fineGrid->getIndex(indexOnFineGridFC);
 
-        fc.numberOfEntries++;
+            fc.numberOfEntries++;
 
-        //this->markCellTo(coarseGrid, indexOnCoarseGrid, cf.coarseEntry);
+            fineGrid->setCellTo(indexOnFineGridFC, FLUID_FCF);
+            coarseGrid->setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
+            break;
+        }
 
-        //fineGrid->field[indexOnFineGridCF] = cf.fineEntry;
-    } else if( // isStopper
+    }
+
+    //const bool neighborBelongsToCoarseToFineInterpolationCellX  = belongsNeighborToCoarseToFineInterpolationCell(x + coarseGrid->delta, y, z, coarseGrid, fineGrid);
+    //const bool neighborBelongsToCoarseToFineInterpolationCellX2 = belongsNeighborToCoarseToFineInterpolationCell(x - coarseGrid->delta, y, z, coarseGrid, fineGrid);
+    //const bool neighborBelongsToCoarseToFineInterpolationCellY  = belongsNeighborToCoarseToFineInterpolationCell(x, y + coarseGrid->delta, z, coarseGrid, fineGrid);
+    //const bool neighborBelongsToCoarseToFineInterpolationCellY2 = belongsNeighborToCoarseToFineInterpolationCell(x, y - coarseGrid->delta, z, coarseGrid, fineGrid);
+    //const bool neighborBelongsToCoarseToFineInterpolationCellZ  = belongsNeighborToCoarseToFineInterpolationCell(x, y, z + coarseGrid->delta, coarseGrid, fineGrid);
+    //const bool neighborBelongsToCoarseToFineInterpolationCellZ2 = belongsNeighborToCoarseToFineInterpolationCell(x, y, z - coarseGrid->delta, coarseGrid, fineGrid);
+
+    //const bool secondNeighborBelongsToCoarseToFineInterpolationCellX2 = belongsNeighborToCoarseToFineInterpolationCell(x - 2 * coarseGrid->delta, y, z, coarseGrid, fineGrid);
+    //const bool secondNeighborBelongsToCoarseToFineInterpolationCellY2 = belongsNeighborToCoarseToFineInterpolationCell(x, y - 2 * coarseGrid->delta, z, coarseGrid, fineGrid);
+    //const bool secondNeighborBelongsToCoarseToFineInterpolationCellZ2 = belongsNeighborToCoarseToFineInterpolationCell(x, y, z - 2 * coarseGrid->delta, coarseGrid, fineGrid);
+
+    /*   if (neighborBelongsToCoarseToFineInterpolationCellX ||
+           neighborBelongsToCoarseToFineInterpolationCellX2 ||
+           neighborBelongsToCoarseToFineInterpolationCellY ||
+           neighborBelongsToCoarseToFineInterpolationCellY2 ||
+           neighborBelongsToCoarseToFineInterpolationCellZ ||
+           neighborBelongsToCoarseToFineInterpolationCellZ2)
+       {
+           fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
+           fc.fine[fc.numberOfEntries] = indexOnFineGridFC;
+
+           fc.numberOfEntries++;
+
+           fineGrid->setCellTo(indexOnFineGridFC, FLUID_FCF);
+           coarseGrid->setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
+
+       } else if ( // isStopper
         secondNeighborBelongsToCoarseToFineInterpolationCellX2 ||
         secondNeighborBelongsToCoarseToFineInterpolationCellY2 ||
         secondNeighborBelongsToCoarseToFineInterpolationCellZ2)
@@ -192,7 +199,46 @@ HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, Gr
     {
         coarseGrid->setFieldEntryToInvalid(indexOnCoarseGrid);
     }
+    */
 }
+
+void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+{
+    const bool nodeOnCoarseGridIsFluid = coarseGrid->isFluid(indexOnCoarseGrid);
+    const bool nodeOnCoarseGridIsCoarseToFine = coarseGrid->isCoarseToFineNode(indexOnCoarseGrid);
+    const bool nodeOnCoarseGridIsFineToCoarse = coarseGrid->isFineToCoarseNode(indexOnCoarseGrid);
+    if (!nodeOnCoarseGridIsFluid || nodeOnCoarseGridIsCoarseToFine || nodeOnCoarseGridIsFineToCoarse)
+        return;
+
+    const int indexOnFineGridFC = getFineToCoarseIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
+    if (indexOnFineGridFC == -1)
+        return;
+
+    const bool fineGridNodeIsFluid = fineGrid->isFluid(indexOnFineGridFC);
+    if (!fineGridNodeIsFluid)
+        return;
+
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    bool neighborBelongsToFineToCoarseInterpolationCell = false;
+    for (const auto dir : coarseGrid->distribution)
+    {
+        if (dir[0] > 0 || dir[1] > 0 || dir[2] > 0)
+            continue;
+
+        neighborBelongsToFineToCoarseInterpolationCell = belongsNeighborToFineToCoarseInterpolationCell(x + dir[0] * coarseGrid->delta, y + dir[1] * coarseGrid->delta, z + dir[2] * coarseGrid->delta, coarseGrid, fineGrid);
+        if (neighborBelongsToFineToCoarseInterpolationCell)
+        {
+            coarseGrid->setFieldEntryToStopperOverlapGrid(indexOnCoarseGrid);
+            break;
+        }
+
+    }
+    if(!neighborBelongsToFineToCoarseInterpolationCell) //should be inside of fine grid and can be deleted
+        coarseGrid->setFieldEntryToInvalid(indexOnCoarseGrid);
+}
+
 
 int GridInterface::getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
@@ -209,6 +255,12 @@ bool GridInterface::belongsNeighborToCoarseToFineInterpolationCell(real x, real 
 {
     const int neighborIndex = coarseGrid->transCoordToIndex(x, y, z);
     return coarseGrid->isCoarseToFineNode(neighborIndex);
+}
+
+bool GridInterface::belongsNeighborToFineToCoarseInterpolationCell(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid)
+{
+    const int neighborIndex = coarseGrid->transCoordToIndex(x, y, z);
+    return coarseGrid->isFineToCoarseNode(neighborIndex);
 }
 
 //void GridInterface::findInterface(Interface& gridInterface, const int& factor, const uint& index, const GridImp* coarseGrid, const GridImp* fineGrid)

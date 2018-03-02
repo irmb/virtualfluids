@@ -62,6 +62,38 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 			para->getParH(level)->geoSP,
 			level);
 
+        if (level == 1) {
+            real delta = para->getParH(level)->coordX_SP[2] - para->getParH(level)->coordX_SP[1];
+            for (uint i = 0; i < numberOfNodesPerLevel; i++)
+            {
+                const real coordX = para->getParH(level)->coordX_SP[i];
+                const real coordY = para->getParH(level)->coordY_SP[i];
+                const real coordZ = para->getParH(level)->coordZ_SP[i];
+
+                const uint neighborX = para->getParH(level)->neighborX_SP[i];
+                const uint neighborY = para->getParH(level)->neighborY_SP[i];
+                const uint neighborZ = para->getParH(level)->neighborZ_SP[i];
+
+                const uint type = para->getParH(level)->geoSP[i];
+
+                const real expectedXNeighborX = coordX + delta;
+                const real expectedXNeighborY = coordY;
+                const real expectedXNeighborZ = coordZ;
+
+                const real actualXNeighborX = para->getParH(level)->coordX_SP[neighborX];
+                const real actualXNeighborY = para->getParH(level)->coordY_SP[neighborX];
+                const real actualXNeighborZ = para->getParH(level)->coordZ_SP[neighborX];
+
+                bool equal = (expectedXNeighborX == actualXNeighborX) && (expectedXNeighborY == actualXNeighborY) && (expectedXNeighborZ == actualXNeighborZ);
+                if(!equal)
+                {
+                    printf("coordinate: %2.2f, %2.2f, %2.2f   expectedX neighbor: %2.2f, %2.2f, %2.2f    actual X neighbor: %2.2f, %2.2f, %2.2f;   type: %d\n", coordX, coordY, coordZ, expectedXNeighborX, expectedXNeighborY, expectedXNeighborZ, actualXNeighborX, actualXNeighborY, actualXNeighborZ, type);
+                }
+            }
+        }
+
+
+
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
         cudaMemoryManager->cudaCopySP(level);

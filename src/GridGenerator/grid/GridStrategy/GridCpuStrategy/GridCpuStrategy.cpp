@@ -71,6 +71,9 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);
 
+    for (uint index = 0; index < grid->getSize(); index++)
+        grid->findOverlapStopper(index, *fineGrid);
+
     grid->removeInvalidNodes();
     findForNeighborsNewIndices(grid);
     findForGridInterfaceNewIndices(grid);

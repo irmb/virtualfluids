@@ -4,20 +4,21 @@
 
 
 #define FLUID 0
-#define SOLID 1
-#define STOPPER_OVERLAP_GRID 2
-#define STOPPER_END_OF_GRID 3
 
+#define FLUID_CFC 1
+#define FLUID_CFF 2
 
-#define OUT_OF_GRID 98
+#define FLUID_FCC 3
+#define FLUID_FCF 4
 
-#define INVALID_NODE 99
+#define SOLID 5
+#define STOPPER_OVERLAP_GRID 6
+#define STOPPER_END_OF_GRID 7
 
-#define FLUID_CFC 66
-#define FLUID_CFF 67
+#define OUT_OF_GRID 8
 
-#define FLUID_FCC 77
-#define FLUID_FCF 78
+#define INVALID_NODE 9
+
 
 
 #define Q 6

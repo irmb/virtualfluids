@@ -5,6 +5,7 @@
 #include "distributions/Distribution.h"
 
 #include "Grid.h"
+#include "Cell.h"
 
 #define DIR_END_MAX 27
 
@@ -46,6 +47,7 @@ private:
 
     Object* object;
 
+    HOSTDEVICE Cell GridImp::getEvenCellFromIndex(uint index);
 public:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
 
@@ -68,10 +70,12 @@ public:
 
     HOST void findGridInterface(SPtr<Grid> grid);
 
-    HOSTDEVICE void findGridInterfaceCF(uint index, const GridImp& finerGrid);
-    HOSTDEVICE void findGridInterfaceFC(uint index, const GridImp& finerGrid);
+    HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
 
     HOSTDEVICE bool isCoarseToFineNode(uint index) const;
+    HOSTDEVICE bool isFineToCoarseNode(uint index) const;
 	HOSTDEVICE bool isFluid(uint index) const;
 	HOSTDEVICE bool isSolid(uint index) const;
 	HOSTDEVICE bool isQ(uint index) const;
@@ -135,8 +139,15 @@ public:
     HOST uint* getFC_fine() const;
 
     HOST std::string toString() const;
+    HOSTDEVICE void setCellTo(uint index, char type);
 
 private:
+
+    HOSTDEVICE void setEvenCellTo(real x, real y, real z, char type);
+    HOSTDEVICE uint getXIndex(real x) const;
+    HOSTDEVICE uint getYIndex(real y) const;
+    HOSTDEVICE uint getZIndex(real z) const;
+
     HOST void initalBoundingBoXStartValues();
 
     static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
@@ -175,7 +186,7 @@ public:
     int* getNeighborsY() const override;
     int* getNeighborsZ() const override;
     void setFieldEntry(uint index, char entry) override;
-    void allocateGridMemory() override;
+    void inital() override;
 private:
     GridInterface* gridInterface;
 

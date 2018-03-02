@@ -8,6 +8,8 @@
 #define OBJECT_H
 
 #include <VirtualFluidsDefinitions.h>
+#include "grid/Cell.h"
+
 
 class VF_PUBLIC Object
 {
@@ -54,6 +56,17 @@ public:
 
 
     virtual bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) = 0;
+
+    virtual bool isCellInObject(const Cell& cell) {
+        for (const auto point : cell)
+        {
+            const bool isInObject = isPointInObject(point.x, point.y, point.z, 0.0, 0.0);
+            if (!isInObject)
+                return false;
+        }
+        return true;
+    }
+
     virtual bool isOnBoundary(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) = 0;
 
     //virtual bool isPointInObject(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary) = 0;

@@ -79,7 +79,7 @@ HOST SPtr<GridImp> GridImp::makeShared(real startX, real startY, real startZ, re
     return grid;
 }
 
-void GridImp::allocateGridMemory()
+void GridImp::inital()
 {
     gridStrategy->allocateGridMemory(shared_from_this());
     gridStrategy->initalNodes(shared_from_this());
@@ -120,14 +120,62 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if(object->isPointInObject(x, y, z, 0, 0))
+    Cell cell = getEvenCellFromIndex(index);
+    if (object->isCellInObject(cell))
     {
         this->setFieldEntryToFluid(index);
-        //this->setNeighborIndices(index);
-    } else
+    }
+    else
         this->setFieldEntryToOutOfGrid(index);
 }
 
+// *--*--*--*
+// |  |  |  |
+// *--*--*--*
+//  0  1  2
+HOSTDEVICE Cell GridImp::getEvenCellFromIndex(uint index)
+{
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    const uint xIndex = getXIndex(x);
+    const uint yIndex = getYIndex(y);
+    const uint zIndex = getZIndex(z);
+
+    const real xCellStart = xIndex % 2 == 0 ? x : x - this->delta;
+    const real yCellStart = yIndex % 2 == 0 ? y : y - this->delta;
+    const real zCellStart = zIndex % 2 == 0 ? z : z - this->delta;
+    return Cell(xCellStart, yCellStart, zCellStart, delta);
+}
+
+
+void GridImp::setEvenCellTo(real x, real y, real z, char type)
+{
+    const uint xIndex = getXIndex(x);
+    const uint yIndex = getYIndex(y);
+    const uint zIndex = getZIndex(z);
+
+    const real xCellStart = xIndex % 2 == 0 ? x : x - this->delta;
+    const real yCellStart = yIndex % 2 == 0 ? y : y - this->delta;
+    const real zCellStart = zIndex % 2 == 0 ? z : z - this->delta;
+    const int newindex = transCoordToIndex(xCellStart, yCellStart, zCellStart);
+    this->setCellTo(newindex, type);
+}
+
+uint GridImp::getXIndex(real x) const
+{
+   return uint((x - startX) / delta);
+}
+
+uint GridImp::getYIndex(real y) const
+{
+   return uint((y - startY) / delta);
+}
+
+uint GridImp::getZIndex(real z) const
+{
+    return uint((z - startZ) / delta);
+}
 
 HOSTDEVICE void GridImp::findStopperNode(uint index)
 {
@@ -157,14 +205,19 @@ HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid)
     gridStrategy->findGridInterface(shared_from_this(), std::static_pointer_cast<GridImp>(finerGrid));
 }
 
-HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, const GridImp& finerGrid)
+HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid)
 {
     gridInterface->findInterfaceCF(index, this, &finerGrid);
 }
 
-HOSTDEVICE void GridImp::findGridInterfaceFC(uint index, const GridImp& finerGrid)
+HOSTDEVICE void GridImp::findGridInterfaceFC(uint index, GridImp& finerGrid)
 {
     gridInterface->findInterfaceFC(index, this, &finerGrid);
+}
+
+HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
+{
+    gridInterface->findOverlapStopper(index, this, &finerGrid);
 }
 
 HOSTDEVICE void GridImp::findGridInterface(uint index, const GridImp& finerGrid)
@@ -222,10 +275,15 @@ HOSTDEVICE bool GridImp::isCoarseToFineNode(uint index) const
     return field[index] == FLUID_CFC;
 }
 
+HOSTDEVICE bool GridImp::isFineToCoarseNode(uint index) const
+{
+    return field[index] == FLUID_FCC;
+}
 
 HOSTDEVICE bool GridImp::isFluid(uint index) const
 {
-    return field[index] == FLUID || field[index] == FLUID_CFC;
+    const char type = field[index];
+    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF;
 }
 
 HOSTDEVICE bool GridImp::isSolid(uint index) const
@@ -502,13 +560,13 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(int index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (CudaMath::lessEqual(x + delta, endX + delta))
+    if (CudaMath::lessEqual(x + delta, endX + delta) && this->isEndOfGridStopper(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getNeighborIndex(x + delta, y, z);
 
-    if (CudaMath::lessEqual(y + delta, endY + delta))
+    if (CudaMath::lessEqual(y + delta, endY + delta) && this->isEndOfGridStopper(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getNeighborIndex(x, y + delta, z);
 
-    if (CudaMath::lessEqual(z + delta, endZ + delta))
+    if (CudaMath::lessEqual(z + delta, endZ + delta) && this->isEndOfGridStopper(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getNeighborIndex(x, y, z + delta);
 }
 
@@ -552,7 +610,7 @@ HOSTDEVICE real GridImp::getFirstFluidNode(real coords[3], int direction, real s
 
 HOSTDEVICE bool GridImp::isEndOfGridStopper(uint index) const
 {
-    return this->is(index, OUT_OF_GRID) && nodeInPreviousCellIs(index, FLUID);
+    return this->is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
     //return this->isFluid(index) && nodeInNextCellIs(index, OUT_OF_GRID);
 }
 
@@ -672,6 +730,33 @@ HOST void GridImp::removeInvalidNodes()
 }
 
 
+void GridImp::setCellTo(uint index, char type)
+{
+    this->field[index] = type;
+
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    const int neighborX = this->transCoordToIndex(x + this->delta, y, z);
+    const int neighborY = this->transCoordToIndex(x, y + this->delta, z);
+    const int neighborZ = this->transCoordToIndex(x, y, z + this->delta);
+
+    this->field[neighborX] = type;
+    this->field[neighborY] = type;
+    this->field[neighborZ] = type;
+
+    const int neighborYZ = this->transCoordToIndex(x, y + this->delta, z + this->delta);
+    const int neighborXZ = this->transCoordToIndex(x + this->delta, y, z + this->delta);
+    const int neighborXY = this->transCoordToIndex(x + this->delta, y + this->delta, z);
+
+    this->field[neighborYZ] = type;
+    this->field[neighborXZ] = type;
+    this->field[neighborXY] = type;
+
+    const int neighborXYZ = this->transCoordToIndex(x + this->delta, y + this->delta, z + this->delta);
+
+    this->field[neighborXYZ] = type;
+}
 
 
 
