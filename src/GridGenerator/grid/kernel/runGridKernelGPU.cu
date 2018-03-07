@@ -4,9 +4,8 @@
 #include <GridGenerator/utilities/cuda/cudaKernelCall.h>
 #include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
 
-#include <GridGenerator/grid/GridImp.cuh>
+#include <GridGenerator/grid/GridImp.h>
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
-#include "grid/GridImp.cuh"
 
 GLOBAL void initalField(GridImp grid);
 GLOBAL void runMeshing(GridImp grid, const Geometry geom);
@@ -54,23 +53,23 @@ float runKernelToMarkNodesToDeleteOutsideOfGeometry(const LaunchParameter& para,
 
 GLOBAL void markNodesToDeleteOutsideOfGeometry(GridImp grid)
 {
-    int numberOfEdgeNodes = grid.ny * grid.nz;
-    unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
+    //int numberOfEdgeNodes = grid.ny * grid.nz;
+    //unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
 
-    if (i < numberOfEdgeNodes)
-    {
-        int x = 0;
-        int y = i % grid.ny;
-        int z = i / grid.ny;
+    //if (i < numberOfEdgeNodes)
+    //{
+    //    int x = 0;
+    //    int y = i % grid.ny;
+    //    int z = i / grid.ny;
 
-        grid.setFieldEntryToSolid(grid.transCoordToIndex(x, y, z));
+    //    grid.setFieldEntryToSolid(grid.transCoordToIndex(x, y, z));
 
-        while (grid.isFluid(i) && x < grid.nx - 1)
-        {
-            x += 1;
-            grid.setFieldEntryToSolid(grid.transCoordToIndex(x, y, z));
-        }
-    }
+    //    while (grid.isFluid(i) && x < grid.nx - 1)
+    //    {
+    //        x += 1;
+    //        grid.setFieldEntryToSolid(grid.transCoordToIndex(x, y, z));
+    //    }
+    //}
 
 }
 

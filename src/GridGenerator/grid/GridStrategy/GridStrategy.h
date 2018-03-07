@@ -3,6 +3,7 @@
 
 #include <VirtualFluidsDefinitions.h>
 #include "core/PointerDefinitions.h"
+#include "grid/Field.h"
 
 struct Vertex;
 struct Geometry;
@@ -11,7 +12,9 @@ class GridImp;
 class VF_PUBLIC GridStrategy
 {
 public:
-    virtual ~GridStrategy() {};
+    virtual ~GridStrategy() {}
+    virtual void allocateFieldMemory(Field* field) = 0;
+    virtual void freeFieldMemory(Field* field) = 0;
 
     virtual void allocateGridMemory(SPtr<GridImp> grid) = 0;
 

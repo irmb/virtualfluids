@@ -7,7 +7,7 @@
 #include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 #include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
 #include "distributions/Distribution.h"
-#include "GridImp.cuh"
+#include "GridImp.h"
 #include "GridMocks.h"
 #include "geometries/Cuboid/Cuboid.h"
 #include "geometries/Sphere/Sphere.h"

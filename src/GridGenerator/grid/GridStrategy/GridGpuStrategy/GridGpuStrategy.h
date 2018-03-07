@@ -43,14 +43,17 @@ private:
 
     void allocAndCopyMatrixIndicesToGPU(SPtr<GridImp> grid, const uint& size);
 
-    void allocAndCopyFieldToGPU(SPtr<GridImp> grid, const uint& size);
+    void allocAndCopyFieldToGPU(Field& field);
+    void copyAndFreeFieldFromGPU(Field& field);
 
-    void copyAndFreeFieldFromGPU(SPtr<GridImp> grid);
     void copyAndFreeDistributiondFromGPU(SPtr<GridImp> grid);
 
     void copyAndFreeNeighborsToCPU(SPtr<GridImp> grid);
     void copyAndFreeMatrixIndicesFromGPU(SPtr<GridImp> grid, int size);
 
+public:
+    void allocateFieldMemory(Field* field) override;
+    void freeFieldMemory(Field* field) override;
 };
 
 #endif

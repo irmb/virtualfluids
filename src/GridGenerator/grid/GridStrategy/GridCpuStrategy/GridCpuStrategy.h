@@ -36,6 +36,9 @@ protected:
     static void findForGridInterfaceNewIndices(SPtr<GridImp> grid);
 
 
+public:
+    void allocateFieldMemory(Field* field) override;
+    void freeFieldMemory(Field* field) override;
 };
 
 #endif

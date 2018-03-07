@@ -27,7 +27,7 @@
 #include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
 
 #include <GridGenerator/grid/GridFactory.h>
-#include "grid/GridInterface.cuh"
+#include "grid/GridInterface.h"
 //#include "grid/GridMocks.h"
 #include "grid/Grid.h"
 
@@ -237,7 +237,7 @@ void LevelGridBuilder::deleteSolidNodes()
 
 uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
-    return grids[level]->getReducedSize();
+    return grids[level]->getSparseSize();
 }
 
 std::vector<std::vector<std::vector<real> > > LevelGridBuilder::getQsValues() const
@@ -348,9 +348,9 @@ void LevelGridBuilder::createBCVectors()
     for (uint i = 0; i < grid->getSize(); i++)
     {
         real x, y, z;
-        grid->transIndexToCoords(grid->getIndex(i), x, y, z);
+        grid->transIndexToCoords(grid->getSparseIndex(i), x, y, z);
 
-        if (grid->getFieldEntry(grid->getIndex(i)) == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
+        if (grid->getFieldEntry(grid->getSparseIndex(i)) == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
         if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS);
         if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS);
 
@@ -371,7 +371,7 @@ void LevelGridBuilder::addShortQsToVector(int index)
 
     for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        int qIndex = i * grid->getSize() + grid->getIndex(index);
+        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
         real q = grid->getDistribution()[qIndex];
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
@@ -397,7 +397,7 @@ void LevelGridBuilder::addQsToVector(int index)
 
     for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        int qIndex = i * grid->getSize() + grid->getIndex(index);
+        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
         real q = grid->getDistribution()[qIndex];
         if (q > 0)
             qNode.push_back(q);
@@ -474,6 +474,6 @@ Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 int LevelGridBuilder::getMatrixIndex(int i) const
 {
     int index = (int)Qs[GEOMQS][i][0];
-    return this->grids[0]->getIndex(index);
+    return this->grids[0]->getSparseIndex(index);
 }
 

@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "GridBuilder.h"
-#include "grid/GridInterface.cuh"
+#include "grid/GridInterface.h"
 
 struct Vertex;
 class  Grid;

@@ -1,4 +1,4 @@
-#include "GridImp.cuh"
+#include "GridImp.h"
 
 #include "GridGenerator/global.h"
 #include <stdio.h>
@@ -19,27 +19,28 @@
 
 #include <GridGenerator/grid/GridStrategy/GridStrategy.h>
 #include <utilities/logger/Logger.h>
-#include "GridInterface.cuh"
+#include "GridInterface.h"
 
 #include "geometries/Object.h"
+
 
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 HOST GridImp::GridImp(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution)
-    : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), field(nullptr), distribution(distribution),
-    gridInterface(nullptr), neighborIndexX(nullptr), neighborIndexY(nullptr), neighborIndexZ(nullptr), matrixIndex(nullptr), gridStrategy(gridStrategy)
+    : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), distribution(distribution),
+    gridInterface(nullptr), neighborIndexX(nullptr), neighborIndexY(nullptr), neighborIndexZ(nullptr), sparseIndices(nullptr), gridStrategy(gridStrategy)
 {
     initalNumberOfNodesAndSize();
 }
 
 HOST GridImp::GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution) : object(object), delta(delta), gridStrategy(gridStrategy), distribution(distribution)
 {
-    initalBoundingBoXStartValues();
+    initalBoundingBoxStartValues();
     initalNumberOfNodesAndSize();
 }
 
-HOST void GridImp::initalBoundingBoXStartValues()
+HOST void GridImp::initalBoundingBoxStartValues()
 {
     startX = object->getX1Minimum();
     startY = object->getX2Minimum();
@@ -50,19 +51,26 @@ HOST void GridImp::initalBoundingBoXStartValues()
     endZ = object->getX3Maximum();
 }
 
-
 void GridImp::initalNumberOfNodesAndSize()
 {
+    startX -= delta; // +1 stopper node
+    startY -= delta; // +1 stopper node
+    startZ -= delta; // +1 stopper node
+
+    endX += delta; // +1 stopper node
+    endY += delta; // +1 stopper node
+    endZ += delta; // +1 stopper node
+
     const real length = endX - startX;
     const real width = endY - startY;
     const real height = endZ - startZ;
 
-    nx = int((length + delta) / delta) + 1; // +1 stopper node
-    ny = int((width + delta) / delta) + 1; // +1 stopper node
-    nz = int((height + delta) / delta) + 1; // +1 stopper node
+    nx = int((length + delta) / delta);
+    ny = int((width + delta) / delta);
+    nz = int((height + delta) / delta);
 
     this->size = nx * ny * nz;
-    this->reducedSize = size;
+    this->sparseSize = size;
     distribution.setSize(size);
 }
 
@@ -79,12 +87,13 @@ HOST SPtr<GridImp> GridImp::makeShared(real startX, real startY, real startZ, re
     return grid;
 }
 
-void GridImp::inital()
+HOST void GridImp::inital()
 {
+    field = Field(gridStrategy, size);
+    field.allocateMemory();
     gridStrategy->allocateGridMemory(shared_from_this());
     gridStrategy->initalNodes(shared_from_this());
 }
-
 
 HOST GridImp::GridImp()
 {
@@ -108,32 +117,34 @@ HOSTDEVICE uint GridImp::getSize() const
     return this->size;
 }
 
-HOSTDEVICE uint GridImp::getReducedSize() const
+HOSTDEVICE uint GridImp::getSparseSize() const
 {
-    return this->reducedSize;
+    return this->sparseSize;
 }
+
+HOSTDEVICE Field GridImp::getField() const
+{
+    return this->field;
+}
+
 
 HOSTDEVICE void GridImp::findInnerNode(uint index)
 {
-    this->matrixIndex[index] = index;
+    this->sparseIndices[index] = index;
 
-    real x, y, z;
-    this->transIndexToCoords(index, x, y, z);
-
-    Cell cell = getEvenCellFromIndex(index);
+    const Cell cell = getOddCellFromIndex(index);
     if (object->isCellInObject(cell))
-    {
-        this->setFieldEntryToFluid(index);
-    }
+        this->field.setFieldEntryToFluid(index);
     else
-        this->setFieldEntryToOutOfGrid(index);
+        this->field.setFieldEntryToOutOfGrid(index);
 }
 
+//TODO: check where the fine grid starts (0.25 or 0.75) and if even or odd-cell is needed
 // *--*--*--*
 // |  |  |  |
 // *--*--*--*
 //  0  1  2
-HOSTDEVICE Cell GridImp::getEvenCellFromIndex(uint index)
+HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
 {
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -142,25 +153,12 @@ HOSTDEVICE Cell GridImp::getEvenCellFromIndex(uint index)
     const uint yIndex = getYIndex(y);
     const uint zIndex = getZIndex(z);
 
-    const real xCellStart = xIndex % 2 == 0 ? x : x - this->delta;
-    const real yCellStart = yIndex % 2 == 0 ? y : y - this->delta;
-    const real zCellStart = zIndex % 2 == 0 ? z : z - this->delta;
+    const real xCellStart = xIndex % 2 != 0 ? x : x - this->delta;
+    const real yCellStart = yIndex % 2 != 0 ? y : y - this->delta;
+    const real zCellStart = zIndex % 2 != 0 ? z : z - this->delta;
     return Cell(xCellStart, yCellStart, zCellStart, delta);
 }
 
-
-void GridImp::setEvenCellTo(real x, real y, real z, char type)
-{
-    const uint xIndex = getXIndex(x);
-    const uint yIndex = getYIndex(y);
-    const uint zIndex = getZIndex(z);
-
-    const real xCellStart = xIndex % 2 == 0 ? x : x - this->delta;
-    const real yCellStart = yIndex % 2 == 0 ? y : y - this->delta;
-    const real zCellStart = zIndex % 2 == 0 ? z : z - this->delta;
-    const int newindex = transCoordToIndex(xCellStart, yCellStart, zCellStart);
-    this->setCellTo(newindex, type);
-}
 
 uint GridImp::getXIndex(real x) const
 {
@@ -179,8 +177,11 @@ uint GridImp::getZIndex(real z) const
 
 HOSTDEVICE void GridImp::findStopperNode(uint index)
 {
-    if(isEndOfGridStopper(index))
-        this->setFieldEntryToStopperEndOfGrid(index);
+    if(isValidEndOfGridStopper(index))
+        this->field.setFieldEntryToStopperEndOfGrid(index);
+
+    if (isValidStartOfGridStopper(index))
+        this->field.setFieldEntryToStopperEndOfGrid(index);
 }
 
 HOST void GridImp::mesh(Geometry &geometry)
@@ -220,43 +221,6 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
     gridInterface->findOverlapStopper(index, this, &finerGrid);
 }
 
-HOSTDEVICE void GridImp::findGridInterface(uint index, const GridImp& finerGrid)
-{
-    gridInterface->findCF(index, this, &finerGrid);
-    gridInterface->findFC(index, this, &finerGrid);
-}
-
-HOSTDEVICE void GridImp::setOverlapNodeToInvalid(uint index, const GridImp& finerGrid)
-{
-    if (this->isInside(index, finerGrid))
-        this->setFieldEntryToInvalid(index);
-}
-
-HOSTDEVICE bool GridImp::isInside(uint index, const GridImp& finerGrid) const
-{
-    real x, y, z;
-    this->transIndexToCoords(index, x, y, z);
-
-    const real overlapWithStopper = 3 * this->delta;
-    const real overlap = 2 * this->delta;
-
-    return finerGrid.isInside(x, y, z, overlapWithStopper, overlap);
-}
-
-HOSTDEVICE bool GridImp::isInside(const real& x, const real& y, const real& z, const real& minOffset, const real& maxOffset) const
-{
-    uint index1 = transCoordToIndex(x - minOffset, y - minOffset, z - minOffset);
-    uint index2 = transCoordToIndex(x + minOffset, y + minOffset, z + maxOffset);
-    return isFluid(index1) && isFluid(index2);
-
-    //return this->object->isPointInObject(x, y, z, minOffset, maxOffset);
-}
-
-HOSTDEVICE bool GridImp::isOnInterface(const real& x, const real& y, const real& z, const real& minOffset, const real& maxOffset) const
-{
-    return this->object->isOnBoundary(x, y, z, minOffset, maxOffset);
-}
-
 
 HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
 {
@@ -265,100 +229,18 @@ HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool per
     this->periodicityZ = periodicityZ;
 }
 
-HOSTDEVICE bool GridImp::is(uint index, char type) const
-{
-    return field[index] == type;
-}
 
-HOSTDEVICE bool GridImp::isCoarseToFineNode(uint index) const
-{
-    return field[index] == FLUID_CFC;
-}
-
-HOSTDEVICE bool GridImp::isFineToCoarseNode(uint index) const
-{
-    return field[index] == FLUID_FCC;
-}
-
-HOSTDEVICE bool GridImp::isFluid(uint index) const
-{
-    const char type = field[index];
-    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF;
-}
-
-HOSTDEVICE bool GridImp::isSolid(uint index) const
-{
-    return field[index] == SOLID;
-}
-
-HOSTDEVICE bool GridImp::isOutOfGrid(uint index) const
-{
-    return field[index] == OUT_OF_GRID;
-}
-
-HOSTDEVICE bool GridImp::isInvalid(uint index) const
-{
-    return field[index] == INVALID_NODE;
-}
-
-HOSTDEVICE bool GridImp::isStopperEndOfGrid(uint index) const
-{
-    return field[index] == STOPPER_END_OF_GRID;
-}
-
-HOSTDEVICE bool GridImp::isStopperOverlapGrid(uint index) const
-{
-    return field[index] == STOPPER_OVERLAP_GRID;
-}
-
-HOSTDEVICE bool GridImp::isQ(uint index) const
-{
-    return field[index] == Q;
-}
-
-HOSTDEVICE bool GridImp::isRb(uint index) const
-{
-    return field[index] == VELOCITY || field[index] == PRESSURE || field[index] == NOSLIP || field[index] == SOLID;
-}
-
-HOSTDEVICE void GridImp::setFieldEntryToFluid(uint index)
-{
-    this->field[index] = FLUID;
-}
-
-HOSTDEVICE void GridImp::setFieldEntryToSolid(uint index)
-{
-    this->field[index] = SOLID;
-}
-
-HOSTDEVICE void GridImp::setFieldEntryToStopperEndOfGrid(uint index)
-{
-    this->field[index] = STOPPER_END_OF_GRID;
-}
-
-HOSTDEVICE void GridImp::setFieldEntryToStopperOverlapGrid(uint index)
-{
-    this->field[index] = STOPPER_OVERLAP_GRID;
-}
-
-HOSTDEVICE void GridImp::setFieldEntryToInvalid(uint index)
-{
-    this->field[index] = INVALID_NODE;
-}
-
-HOSTDEVICE void GridImp::setFieldEntryToOutOfGrid(uint index)
-{
-    this->field[index] = OUT_OF_GRID;
-}
 
 HOSTDEVICE void GridImp::setFieldEntry(const Vertex &v, char val)
 {
-    this->field[transCoordToIndex(v)] = val;
+    const uint index = transCoordToIndex(v);
+    this->field.setFieldEntry(index, val);
 }
 
 HOSTDEVICE char GridImp::getFieldEntry(const Vertex &v) const
 {
-    return this->field[transCoordToIndex(v)];
+    const uint index = transCoordToIndex(v);
+    return this->field.getFieldEntry(index);
 }
 
 HOSTDEVICE int GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
@@ -373,7 +255,7 @@ HOSTDEVICE int GridImp::transCoordToIndex(const Vertex &v) const
     const int z = int((v.z - startZ) / delta);
 
 #ifdef DEBUG
-    if (x < 0 || y < 0 || z < 0 || uint(x) >= nx || uint(y) >= ny || uint(z) >= nz)
+    if (x < 0 || y < 0 || z < 0 || uint(x) > nx || uint(y) > ny || uint(z) > nz)
     {
         //printf( "Function: transCoordToIndex. Coordinates are out of range and cannot calculate the index. Exit Program!\n");
         /* exit(1);*/
@@ -402,14 +284,9 @@ HOSTDEVICE void GridImp::transIndexToCoords(int index, real &x, real &y, real &z
 }
 
 
-HOSTDEVICE int GridImp::getIndex(uint matrixIndex) const
+HOSTDEVICE int GridImp::getSparseIndex(uint matrixIndex) const
 {
-    return this->matrixIndex[matrixIndex];
-}
-
-HOSTDEVICE char GridImp::getFieldEntry(uint index) const
-{
-    return this->field[index];
+    return this->sparseIndices[matrixIndex];
 }
 
 HOST real* GridImp::getDistribution() const
@@ -511,20 +388,19 @@ HOSTDEVICE void GridImp::setNeighborIndices(const int &index)
 
 HOSTDEVICE void GridImp::setInvalidNode(const int &index, bool &invalidNodeFound)
 {
-    if (isSolid(index))
+    if (field.isSolid(index))
         return;
 
-    if (field[index] != INVALID_NODE && isNeighborInvalid(index))
+    if (!field.isInvalid(index) && isNeighborInvalid(index))
     {
-        field[index] = INVALID_NODE;
+        field.setFieldEntryToInvalid(index);
         invalidNodeFound = true;
     }
 }
 
-HOSTDEVICE bool GridImp::isNeighborInvalid(const int &index)
+HOSTDEVICE bool GridImp::isNeighborInvalid(const int &index) const
 {
-    return (field[neighborIndexX[index]] == INVALID_NODE || field[neighborIndexY[index]] == INVALID_NODE || field[
-        neighborIndexZ[index]] == INVALID_NODE);
+    return (field.isInvalid(neighborIndexX[index]) || field.isInvalid(neighborIndexY[index]) || field.isInvalid(neighborIndexZ[index]));
 }
 
 HOSTDEVICE void GridImp::findNeighborIndex(int index)
@@ -533,13 +409,13 @@ HOSTDEVICE void GridImp::findNeighborIndex(int index)
     neighborIndexY[index] = -1;
     neighborIndexZ[index] = -1;
 
-    if (this->isStopperEndOfGrid(index) || this->isStopperOverlapGrid(index))
+    if (this->field.isStopperEndOfGrid(index) || this->field.isStopperOverlapGrid(index))
     {
         this->setStopperNeighborCoords(index);
         return;
     }
 
-    if (this->matrixIndex[index] == -1)
+    if (this->sparseIndices[index] == -1)
         return;
 
     real x, y, z;
@@ -560,13 +436,13 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(int index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (CudaMath::lessEqual(x + delta, endX + delta) && this->isEndOfGridStopper(this->transCoordToIndex(x + delta, y, z)))
+    if (CudaMath::lessEqual(x + delta, endX) && (this->field.isStopperEndOfGrid(this->transCoordToIndex(x + delta, y, z)) || this->field.isFluid(this->transCoordToIndex(x + delta, y, z))))
         neighborIndexX[index] = getNeighborIndex(x + delta, y, z);
 
-    if (CudaMath::lessEqual(y + delta, endY + delta) && this->isEndOfGridStopper(this->transCoordToIndex(x, y + delta, z)))
+    if (CudaMath::lessEqual(y + delta, endY) && (this->field.isStopperEndOfGrid(this->transCoordToIndex(x, y + delta, z)) || this->field.isFluid(this->transCoordToIndex(x, y + delta, z))))
         neighborIndexY[index] = getNeighborIndex(x, y + delta, z);
 
-    if (CudaMath::lessEqual(z + delta, endZ + delta) && this->isEndOfGridStopper(this->transCoordToIndex(x, y, z + delta)))
+    if (CudaMath::lessEqual(z + delta, endZ) && (this->field.isStopperEndOfGrid(this->transCoordToIndex(x, y, z + delta)) || this->field.isFluid(this->transCoordToIndex(x, y, z + delta))))
         neighborIndexZ[index] = getNeighborIndex(x, y, z + delta);
 }
 
@@ -585,7 +461,7 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
         real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
         neighborCoords[direction] = neighborCoords[direction] + delta;
         const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
-        if(!isStopperEndOfGrid(neighborIndex))
+        if(!field.isStopperEndOfGrid(neighborIndex))
             return coords[direction] + delta;
 
         return getFirstFluidNode(coords, direction, startCoord);
@@ -599,7 +475,7 @@ HOSTDEVICE real GridImp::getFirstFluidNode(real coords[3], int direction, real s
 {
     coords[direction] = startCoord;
     int index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
-    while (isOutOfGrid(index))
+    while (field.isOutOfGrid(index))
     {
         coords[direction] += delta;
         index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
@@ -607,17 +483,20 @@ HOSTDEVICE real GridImp::getFirstFluidNode(real coords[3], int direction, real s
     return coords[direction];
 }
 
-
-HOSTDEVICE bool GridImp::isEndOfGridStopper(uint index) const
+HOSTDEVICE bool GridImp::isValidStartOfGridStopper(uint index) const
 {
-    return this->is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
-    //return this->isFluid(index) && nodeInNextCellIs(index, OUT_OF_GRID);
+    return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF));
 }
 
 
+HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
+{
+    return this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
 HOSTDEVICE bool GridImp::isOverlapStopper(uint index) const
 {
-    return this->isFluid(index) && nodeInNextCellIs(index, INVALID_NODE);
+    return this->field.isFluid(index) && nodeInNextCellIs(index, INVALID_NODE);
 }
 
 HOSTDEVICE bool GridImp::nodeInNextCellIs(int index, char type) const
@@ -625,8 +504,9 @@ HOSTDEVICE bool GridImp::nodeInNextCellIs(int index, char type) const
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    real neighborX, neighborY, neighborZ;
-    this->getNeighborCoords(neighborX, neighborY, neighborZ, x, y, z);
+    const real neighborX = x + this->delta > endX ? endX : x + this->delta;
+    const real neighborY = y + this->delta > endY ? endY : y + this->delta;
+    const real neighborZ = z + this->delta > endZ ? endZ : z + this->delta;
 
     const uint indexX = transCoordToIndex(neighborX, y, z);
     const uint indexY = transCoordToIndex(x, neighborY, z);
@@ -638,13 +518,13 @@ HOSTDEVICE bool GridImp::nodeInNextCellIs(int index, char type) const
      
     const uint indexXYZ = transCoordToIndex(neighborX, neighborY, neighborZ);
 
-    const bool isInvalidNeighborX = this->is(indexX, type);
-    const bool isInvalidNeighborY = this->is(indexY, type);
-    const bool isInvalidNeighborXY  = this->is(indexXY, type);
-    const bool isInvalidNeighborZ   = this->is(indexZ, type);
-    const bool isInvalidNeighborYZ = this->is(indexYZ, type);
-    const bool isInvalidNeighborXZ = this->is(indexXZ, type);
-    const bool isInvalidNeighborXYZ = this->is(indexXYZ, type);
+    const bool isInvalidNeighborX = this->field.is(indexX, type);
+    const bool isInvalidNeighborY = this->field.is(indexY, type);
+    const bool isInvalidNeighborXY  = this->field.is(indexXY, type);
+    const bool isInvalidNeighborZ   = this->field.is(indexZ, type);
+    const bool isInvalidNeighborYZ = this->field.is(indexYZ, type);
+    const bool isInvalidNeighborXZ = this->field.is(indexXZ, type);
+    const bool isInvalidNeighborXYZ = this->field.is(indexXYZ, type);
 
     return isInvalidNeighborX || isInvalidNeighborY || isInvalidNeighborXY || isInvalidNeighborZ || isInvalidNeighborYZ
         || isInvalidNeighborXZ || isInvalidNeighborXYZ;
@@ -669,13 +549,13 @@ HOSTDEVICE bool GridImp::nodeInPreviousCellIs(int index, char type) const
 
     const uint indexXYZ = transCoordToIndex(neighborX, neighborY, neighborZ);
 
-    const bool isInvalidNeighborX = this->is(indexX, type);
-    const bool isInvalidNeighborY = this->is(indexY, type);
-    const bool isInvalidNeighborXY = this->is(indexXY, type);
-    const bool isInvalidNeighborZ = this->is(indexZ, type);
-    const bool isInvalidNeighborYZ = this->is(indexYZ, type);
-    const bool isInvalidNeighborXZ = this->is(indexXZ, type);
-    const bool isInvalidNeighborXYZ = this->is(indexXYZ, type);
+    const bool isInvalidNeighborX = this->field.is(indexX, type);
+    const bool isInvalidNeighborY = this->field.is(indexY, type);
+    const bool isInvalidNeighborXY = this->field.is(indexXY, type);
+    const bool isInvalidNeighborZ = this->field.is(indexZ, type);
+    const bool isInvalidNeighborYZ = this->field.is(indexYZ, type);
+    const bool isInvalidNeighborXZ = this->field.is(indexXZ, type);
+    const bool isInvalidNeighborXYZ = this->field.is(indexXYZ, type);
 
     return isInvalidNeighborX || isInvalidNeighborY || isInvalidNeighborXY || isInvalidNeighborZ || isInvalidNeighborYZ
         || isInvalidNeighborXZ || isInvalidNeighborXYZ;
@@ -684,7 +564,7 @@ HOSTDEVICE bool GridImp::nodeInPreviousCellIs(int index, char type) const
 HOSTDEVICE int GridImp::getNeighborIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const
 {
     const int neighborIndex = transCoordToIndex(expectedX, expectedY, expectedZ);
-    return matrixIndex[neighborIndex];
+    return sparseIndices[neighborIndex];
 }
 
 //void findForGridInterfaceNewIndex(GridInterface::Interface interface, uint interfaceIndex, int* indices)
@@ -697,14 +577,14 @@ HOSTDEVICE int GridImp::getNeighborIndex(const real &expectedX, const real &expe
 HOSTDEVICE void GridImp::findForGridInterfaceNewIndexCF(uint index)
 {
     const uint oldIndex = gridInterface->cf.coarse[index];
-    const uint newIndex = matrixIndex[oldIndex];
+    const uint newIndex = sparseIndices[oldIndex];
     gridInterface->cf.coarse[index] = newIndex;
 }
 
 HOSTDEVICE void GridImp::findForGridInterfaceNewIndexFC(uint index)
 {
     const uint oldIndex = gridInterface->fc.coarse[index];
-    const uint newIndex = matrixIndex[oldIndex];
+    const uint newIndex = sparseIndices[oldIndex];
     gridInterface->fc.coarse[index] = newIndex;
 }
 
@@ -715,24 +595,24 @@ HOST void GridImp::removeInvalidNodes()
     int newIndex = 0;
     for (uint index = 0; index < size; index++)
     {
-        if (this->isInvalid(index) || this->isOutOfGrid(index))
+        if (this->field.isInvalid(index) || this->field.isOutOfGrid(index))
         {
-            matrixIndex[index] = -1;
+            sparseIndices[index] = -1;
             removedNodes++;
         } else
         {
-            matrixIndex[index] = newIndex;
+            sparseIndices[index] = newIndex;
             newIndex++;
         }
     }
-    reducedSize = size - removedNodes;
-    printf("new size nodes: %d , delete nodes: %d\n", reducedSize, removedNodes);
+    sparseSize = size - removedNodes;
+    printf("new size nodes: %d , delete nodes: %d\n", sparseSize, removedNodes);
 }
 
 
 void GridImp::setCellTo(uint index, char type)
 {
-    this->field[index] = type;
+    this->field.setFieldEntry(index, type);
 
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -741,24 +621,27 @@ void GridImp::setCellTo(uint index, char type)
     const int neighborY = this->transCoordToIndex(x, y + this->delta, z);
     const int neighborZ = this->transCoordToIndex(x, y, z + this->delta);
 
-    this->field[neighborX] = type;
-    this->field[neighborY] = type;
-    this->field[neighborZ] = type;
+    this->field.setFieldEntry(neighborX, type);
+    this->field.setFieldEntry(neighborY, type);
+    this->field.setFieldEntry(neighborZ, type);
 
     const int neighborYZ = this->transCoordToIndex(x, y + this->delta, z + this->delta);
     const int neighborXZ = this->transCoordToIndex(x + this->delta, y, z + this->delta);
     const int neighborXY = this->transCoordToIndex(x + this->delta, y + this->delta, z);
 
-    this->field[neighborYZ] = type;
-    this->field[neighborXZ] = type;
-    this->field[neighborXY] = type;
+    this->field.setFieldEntry(neighborYZ, type);
+    this->field.setFieldEntry(neighborXZ, type);
+    this->field.setFieldEntry(neighborXY, type);
 
     const int neighborXYZ = this->transCoordToIndex(x + this->delta, y + this->delta, z + this->delta);
 
-    this->field[neighborXYZ] = type;
+    this->field.setFieldEntry(neighborXYZ, type);
 }
 
-
+char GridImp::getFieldEntry(uint index) const
+{
+    return this->field.getFieldEntry(index);
+}
 
 real GridImp::getStartX() const
 {
@@ -862,13 +745,6 @@ int* GridImp::getNeighborsZ() const
     return this->neighborIndexZ;
 }
 
-void GridImp::setFieldEntry(uint index, char entry)
-{
-    this->field[index] = entry;
-}
-
-
-
 
 uint GridImp::getNumberOfNodesCF() const
 {
@@ -921,8 +797,7 @@ void GridImp::setGridInterface(uint* gridInterfaceList, const uint* oldGridInter
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-HOST void GridImp::setNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX,
-                                 unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const
+HOST void GridImp::setNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *geo) const
 {
     xCoords[0] = 0;
     yCoords[0] = 0;
@@ -935,7 +810,7 @@ HOST void GridImp::setNodeValues(real *xCoords, real *yCoords, real *zCoords, un
     int nodeNumber = 0;
     for (uint i = 0; i < this->getSize(); i++)
     {
-        if (this->matrixIndex[i] == -1)
+        if (this->sparseIndices[i] == -1)
             continue;
 
         real x, y, z;
@@ -947,7 +822,7 @@ HOST void GridImp::setNodeValues(real *xCoords, real *yCoords, real *zCoords, un
         neighborX[nodeNumber + 1] = uint(this->neighborIndexX[i] + 1);
         neighborY[nodeNumber + 1] = uint(this->neighborIndexY[i] + 1);
         neighborZ[nodeNumber + 1] = uint(this->neighborIndexZ[i] + 1);
-        geo[nodeNumber + 1] = uint(this->isFluid(i) ? GEOFLUID : GEOSOLID);
+        geo[nodeNumber + 1] = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
         nodeNumber++;
     }
 }
@@ -966,7 +841,7 @@ std::string GridImp::toString() const
     oss << 
         "min: (" << startX << ", " << startY << ", " << startZ << 
         "), max: " << endX << ", " << endY << ", " << endZ <<
-        "), size: " << reducedSize << ", delta: " << delta << "\n";
+        "), size: " << sparseSize << ", delta: " << delta << "\n";
     return oss.str();
 }
 

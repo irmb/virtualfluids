@@ -16,7 +16,7 @@ public:
     HOSTDEVICE virtual ~Grid() {}
 
     HOSTDEVICE virtual real getDelta() const = 0;
-    HOSTDEVICE virtual uint getReducedSize() const = 0;
+    HOSTDEVICE virtual uint getSparseSize() const = 0;
     HOSTDEVICE virtual uint getSize() const = 0;
 
     HOSTDEVICE virtual real getStartX() const = 0;
@@ -42,9 +42,8 @@ public:
     HOSTDEVICE virtual uint getNumberOfNodesCF() const = 0;
     HOSTDEVICE virtual uint getNumberOfNodesFC() const = 0;
 
-    HOSTDEVICE virtual int getIndex(uint matrixIndex) const = 0;
+    HOSTDEVICE virtual int getSparseIndex(uint matrixIndex) const = 0;
     HOSTDEVICE virtual char getFieldEntry(uint matrixIndex) const = 0;
-    virtual void setFieldEntry(uint index, char entry) = 0;
 
     HOST virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
 

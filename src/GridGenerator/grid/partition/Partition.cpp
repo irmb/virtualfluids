@@ -132,7 +132,7 @@ void Partition::partitionGridMesh(SPtr<Grid> grid)
 
 
     for (unsigned int part_i = 0; part_i < grid->getSize(); part_i++){
-        grid->setFieldEntry(part_i, partMeshNodes[part_i]);
+        //grid->setFieldEntry(part_i, partMeshNodes[part_i]);
     }
 
     GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
@@ -251,7 +251,7 @@ void Partition::partitionGrid(SPtr<Grid> grid) {
     //}
 
     for (int part_i = 0; part_i < nVertices; part_i++){
-        grid->setFieldEntry(part_i, part[part_i]);
+        //grid->setFieldEntry(part_i, part[part_i]);
     }
 
     GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);

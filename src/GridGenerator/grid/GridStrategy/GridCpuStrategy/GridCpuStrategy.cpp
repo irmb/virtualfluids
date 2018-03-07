@@ -6,24 +6,23 @@
 #include <vector>
 
 #include <GridGenerator/grid/distributions/Distribution.h>
-#include <GridGenerator/grid/GridImp.cuh>
+#include <GridGenerator/grid/GridImp.h>
       
 #include <GridGenerator/geometries/Geometry/Geometry.cuh>
 
 #include <utilities/logger/Logger.h>
 #include "grid/NodeValues.h"
 
-#include "grid/GridInterface.cuh"
+#include "grid/GridInterface.h"
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
-    grid->field = new char[grid->size];
         
     grid->neighborIndexX = new int[grid->size];
     grid->neighborIndexY = new int[grid->size];
     grid->neighborIndexZ = new int[grid->size];
         
-    grid->matrixIndex = new int[grid->size];
+    grid->sparseIndices = new int[grid->size];
 
 
     unsigned long distributionSize = grid->size * (grid->distribution.dir_end + 1);
@@ -33,6 +32,12 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 
     grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
 }
+
+void GridCpuStrategy::allocateFieldMemory(Field* field)
+{
+    field->field = new char[field->size];
+}
+
 
 void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
 {
@@ -63,13 +68,14 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     grid->gridInterface->cf.fine = new uint[sizeCF];
     grid->gridInterface->fc.coarse = new uint[sizeCF];
     grid->gridInterface->fc.fine = new uint[sizeCF];
-    grid->gridInterface->initalGridInterface(fineGrid.get());
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid);
 
+
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);
+
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findOverlapStopper(index, *fineGrid);
@@ -100,6 +106,9 @@ void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<GridImp> grid)
 }
 
 
+
+
+
 void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 {
     clock_t begin = clock();
@@ -124,19 +133,20 @@ void GridCpuStrategy::findInvalidNodes(SPtr<GridImp> grid)
     }
 }
 
-
+void GridCpuStrategy::freeFieldMemory(Field* field)
+{
+    delete[] field->field;
+}
 
 void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
 {
     //if(grid->gridInterface)
         //delete grid->gridInterface;
 
-    delete[] grid->field;
-
     delete[] grid->neighborIndexX;
     delete[] grid->neighborIndexY;
     delete[] grid->neighborIndexZ;
-    delete[] grid->matrixIndex;
+    delete[] grid->sparseIndices;
 
     delete[] grid->distribution.f;
 }

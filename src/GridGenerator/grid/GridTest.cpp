@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "GridImp.cuh"
+#include "GridImp.h"
 
 #include <vector>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>

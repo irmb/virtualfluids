@@ -23,7 +23,7 @@ public:
         return 0.0;
     }
 
-    virtual uint getReducedSize() const override { return 0; }
+    virtual uint getSparseSize() const override { return 0; }
     virtual uint getSize() const override { return 0; }
     virtual real getStartX() const override { return 0.0; }
     virtual real getStartY() const override { return 0.0; }
@@ -36,7 +36,7 @@ public:
     virtual uint getNumberOfNodesZ() const override { return 0; }
     virtual uint getNumberOfNodesCF() const override { return 0; }
     virtual uint getNumberOfNodesFC() const override { return 0; }
-    virtual int getIndex(uint matrixIndex) const override { return 0; }
+    virtual int getSparseIndex(uint matrixIndex) const override { return 0; }
     virtual char getFieldEntry(uint matrixIndex) const override { return 0; }
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override {}
     virtual uint* getCF_coarse() const override { return 0; }
@@ -64,7 +64,6 @@ public:
     virtual void mesh(Geometry& geometry) override {}
     virtual int transCoordToIndex(const Vertex& v) const override { return 0; }
     virtual int transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
-    virtual void setFieldEntry(uint index, char entry) override {}
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }

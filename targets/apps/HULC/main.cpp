@@ -248,8 +248,8 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 40.0, 40.0, 40.0, 1.0);
 
 
-    gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    //gridBuilder->addGrid(new Cuboid(15,15,15,25,25,25));
+    //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
+    gridBuilder->addGrid(new Cuboid(15,15,15,25,25,25));
 
 
     //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
@@ -262,6 +262,9 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0", 0);
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
+
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/primitive_sphere/simu/", gridBuilder, FILEFORMAT::ASCII);
 

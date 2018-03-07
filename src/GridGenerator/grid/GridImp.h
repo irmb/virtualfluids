@@ -6,6 +6,7 @@
 
 #include "Grid.h"
 #include "Cell.h"
+#include "Field.h"
 
 #define DIR_END_MAX 27
 
@@ -25,41 +26,44 @@ private:
     HOST GridImp();
     HOST GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
-    void initalNumberOfNodesAndSize();
+    HOST void initalNumberOfNodesAndSize();
+    HOST void initalBoundingBoxStartValues();
 
 public:
     virtual HOSTDEVICE ~GridImp();
     static HOST SPtr<GridImp> makeShared(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
-    static HOST SPtr<GridImp> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, std::shared_ptr<GridStrategy> gridStrategy, Distribution d);
+    static HOST SPtr<GridImp> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
     real startX = 0.0, startY = 0.0, startZ = 0.0;
     real endX, endY, endZ;
     real delta = 1.0;
 
-	char *field;
 	uint nx, ny, nz;
 
 private:
 	uint size;
-    uint reducedSize;
+    uint sparseSize;
     bool periodicityX = true, periodicityY = true, periodicityZ = true;
 
+    Field field;
     Object* object;
 
-    HOSTDEVICE Cell GridImp::getEvenCellFromIndex(uint index);
+    HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
 public:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
 
-    int *matrixIndex;
+    int *sparseIndices;
     Distribution distribution;
     SPtr<GridStrategy> gridStrategy;
-    HOSTDEVICE bool isInside(const real& x1, const real& x2, const real& x3, const real& minOffset, const real& maxOffset) const;
-    HOSTDEVICE bool isOnInterface(const real& x1, const real& x2, const real& x3, const real& minOffset, const real& maxOffset) const;
-    
+
     HOSTDEVICE real getDelta() const;
     HOSTDEVICE uint getSize() const;
-    HOSTDEVICE uint getReducedSize() const;
+    HOSTDEVICE Field getField() const;
+    HOSTDEVICE uint getSparseSize() const;
+
+    HOSTDEVICE void setFieldEntry(const Vertex &v, char val);
+    HOSTDEVICE char getFieldEntry(const Vertex &v) const;
 
     HOSTDEVICE void findInnerNode(uint index);
     HOSTDEVICE void findStopperNode(uint index);
@@ -74,25 +78,6 @@ public:
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
     HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
 
-    HOSTDEVICE bool isCoarseToFineNode(uint index) const;
-    HOSTDEVICE bool isFineToCoarseNode(uint index) const;
-	HOSTDEVICE bool isFluid(uint index) const;
-	HOSTDEVICE bool isSolid(uint index) const;
-	HOSTDEVICE bool isQ(uint index) const;
-    HOSTDEVICE bool isRb(uint index) const;
-    HOSTDEVICE bool isInvalid(uint index) const;
-    HOSTDEVICE void setFieldEntryToStopperEndOfGrid(uint index);
-    HOSTDEVICE void setFieldEntryToStopperOverlapGrid(uint index);
-    HOSTDEVICE bool isStopperEndOfGrid(uint index) const;
-    HOSTDEVICE bool isStopperOverlapGrid(uint index) const;
-    HOSTDEVICE bool isOutOfGrid(uint index) const;
-    HOSTDEVICE bool is(uint index, char type) const;
-	HOSTDEVICE void setFieldEntryToFluid(uint index);
-	HOSTDEVICE void setFieldEntryToSolid(uint index);
-    HOSTDEVICE void setFieldEntryToInvalid(uint index);
-    HOSTDEVICE void setFieldEntryToOutOfGrid(uint index);
-	HOSTDEVICE void setFieldEntry(const Vertex &v, char val);
-	HOSTDEVICE char getFieldEntry(const Vertex &v) const;
 	HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const;
 	HOSTDEVICE int transCoordToIndex(const Vertex &v) const;
 	HOSTDEVICE void transIndexToCoords(int index, real &x, real &y, real &z) const;
@@ -112,23 +97,22 @@ public:
 
 
     HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
-    HOSTDEVICE bool isNeighborInvalid(const int &index);
+    HOSTDEVICE bool isNeighborInvalid(const int &index) const;
 
     HOST void removeInvalidNodes();
 
     //HOSTDEVICE bool isStopper(int index) const;
-    HOSTDEVICE bool isEndOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidStartOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
 
-    HOSTDEVICE int getIndex(uint matrixIndex) const;
-    HOSTDEVICE char getFieldEntry(uint index) const;
+    HOSTDEVICE int getSparseIndex(uint matrixIndex) const;
 
     HOST real* getDistribution() const;
     HOST int* getDirection() const;
     HOST int getStartDirection() const;
     HOST int getEndDirection() const;
 
-
-    HOST void setNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const;
+    HOST void setNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *geo) const;
 
     HOSTDEVICE uint getNumberOfNodesCF() const;
     HOSTDEVICE uint getNumberOfNodesFC() const;
@@ -142,19 +126,13 @@ public:
     HOSTDEVICE void setCellTo(uint index, char type);
 
 private:
-
-    HOSTDEVICE void setEvenCellTo(real x, real y, real z, char type);
     HOSTDEVICE uint getXIndex(real x) const;
     HOSTDEVICE uint getYIndex(real y) const;
     HOSTDEVICE uint getZIndex(real z) const;
 
-    HOST void initalBoundingBoXStartValues();
 
     static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
-    HOSTDEVICE void findGridInterface(uint index, const GridImp& finerGrid);
-    HOSTDEVICE void setOverlapNodeToInvalid(uint index, const GridImp& finerGrid);
-    HOSTDEVICE bool isInside(uint index, const GridImp& grid) const;
     HOSTDEVICE bool isOverlapStopper(uint index) const;
     HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
     HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
@@ -185,8 +163,8 @@ public:
     int* getNeighborsX() const override;
     int* getNeighborsY() const override;
     int* getNeighborsZ() const override;
-    void setFieldEntry(uint index, char entry) override;
     void inital() override;
+    HOSTDEVICE char getFieldEntry(uint index) const override;
 private:
     GridInterface* gridInterface;
 
