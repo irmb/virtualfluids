@@ -49,7 +49,7 @@ void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
     for (uint index = 0; index < grid->size; index++)
         grid->findStopperNode(index);
 
-    grid->removeInvalidNodes();
+    grid->updateSparseIndices();
     findForNeighborsNewIndices(grid);
 }
 
@@ -80,7 +80,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findOverlapStopper(index, *fineGrid);
 
-    grid->removeInvalidNodes();
+    grid->updateSparseIndices();
     findForNeighborsNewIndices(grid);
     findForGridInterfaceNewIndices(grid);
 }
@@ -91,18 +91,18 @@ void GridCpuStrategy::findForNeighborsNewIndices(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->getSize(); index++)
-        grid->findNeighborIndex(index);
+        grid->setNeighborIndices(index);
 }
 
 void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->getNumberOfNodesCF(); index++)
-        grid->findForGridInterfaceNewIndexCF(index);
+        grid->findForGridInterfaceSparseIndexCF(index);
 
 #pragma omp parallel for
     for (uint index = 0; index < grid->getNumberOfNodesFC(); index++)
-        grid->findForGridInterfaceNewIndexFC(index);
+        grid->findForGridInterfaceSparseIndexFC(index);
 }
 
 
@@ -114,7 +114,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
     clock_t begin = clock();
 
     findInvalidNodes(grid);
-    grid->removeInvalidNodes();
+    grid->updateSparseIndices();
     findForNeighborsNewIndices(grid);
 
     clock_t end = clock();

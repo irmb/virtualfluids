@@ -12,6 +12,7 @@
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "basics/container/CbArray3D.h"
 #include "grid/NodeValues.h"
+#include "grid/Cell.h"
 
 FILE* GridVTKWriter::file = 0;
 bool GridVTKWriter::binaer = true;
@@ -78,8 +79,10 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
                     && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
                     && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
                 {
-                    if(grid->getSparseIndex(grid->transCoordToIndex(x, y, z)) == -1)
+                    Cell cell(x, y, z, grid->getDelta());
+                    if(grid->nodeInCellIs(cell, OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_NODE))
                         continue;
+
                     cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
                 }
             }

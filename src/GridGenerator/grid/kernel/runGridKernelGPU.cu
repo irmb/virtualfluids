@@ -155,7 +155,7 @@ GLOBAL void findNeighborIndicesKernel(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-        grid.findNeighborIndex(index);
+        grid.setNeighborIndices(index);
 }
 
 
@@ -184,7 +184,7 @@ GLOBAL void findNeighborsNewIndices(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-        grid.findNeighborIndex(index);
+        grid.setNeighborIndices(index);
 }
 /*#################################################################################*/
 
@@ -201,12 +201,12 @@ GLOBAL void findGridInterfaceNewIndicesCF(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getNumberOfNodesCF())
-        grid.findForGridInterfaceNewIndexCF(index);
+        grid.findForGridInterfaceSparseIndexCF(index);
 }
 
 GLOBAL void findGridInterfaceNewIndicesFC(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getNumberOfNodesFC())
-        grid.findForGridInterfaceNewIndexFC(index);
+        grid.findForGridInterfaceSparseIndexFC(index);
 }

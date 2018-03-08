@@ -400,7 +400,7 @@ int DistributionHelper::getNeighborNodeIndexInGivenDirection(const Distribution 
     grid.transIndexToCoords(node, x, y, z);
     Vertex solid_node = Vertex(x,y,z);
     Vertex fluid_node = Vertex(solid_node.x - dir.x, solid_node.y - dir.y, solid_node.z - dir.z);
-    return grid.transCoordToIndex(fluid_node);
+    return grid.transCoordToIndex(fluid_node.x, fluid_node.y, fluid_node.z);
 }
 
 std::vector<std::vector<real> > DistributionHelper::getVectorWithoutRowsWithOnlyZeroValues(std::vector<std::vector<real> > qs)

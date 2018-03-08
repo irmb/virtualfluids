@@ -94,7 +94,7 @@ void GridGpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     CudaCheckError();
 
 
-    grid->removeInvalidNodes();
+    grid->updateSparseIndices();
 
     allocAndCopyFieldToGPU(grid->getField());
     allocAndCopyFieldToGPU(fineGrid->getField());
@@ -117,7 +117,7 @@ void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
     copyAndFreeFieldFromGPU(grid->getField());
     copyAndFreeMatrixIndicesFromGPU(grid, grid->size);
 
-    grid->removeInvalidNodes();
+    grid->updateSparseIndices();
 
     allocAndCopyFieldToGPU(grid->getField());
     allocAndCopyMatrixIndicesToGPU(grid, grid->size);

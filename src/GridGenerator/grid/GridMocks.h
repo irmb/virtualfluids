@@ -54,20 +54,14 @@ public:
     virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override {}
     virtual void freeMemory() override {}
 
-    virtual void setStartX(real startX) override {}
-    virtual void setStartY(real startY) override {}
-    virtual void setStartZ(real startZ) override {}
-    virtual void setEndX(real endX) override {}
-    virtual void setEndY(real endY) override {}
-    virtual void setEndZ(real endZ) override {}
     virtual void findGridInterface(SPtr<Grid> grid) override {}
     virtual void mesh(Geometry& geometry) override {}
-    virtual int transCoordToIndex(const Vertex& v) const override { return 0; }
     virtual int transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
     virtual void inital() override {}
+    virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
 };
 
 class GridStub : public GridDummy
@@ -91,12 +85,6 @@ public:
     virtual real getEndY() const override { return endY; }
     virtual real getEndZ() const override { return endZ; }
 
-    virtual void setStartX(real startX) override { this->startX = startX; }
-    virtual void setStartY(real startY) override { this->startY = startY; }
-    virtual void setStartZ(real startZ) override { this->startZ = startZ; }
-    virtual void setEndX(real endX) override { this->endX = endX; }
-    virtual void setEndY(real endY) override { this->endY = endY; }
-    virtual void setEndZ(real endZ) override { this->endZ = endZ; }
 
 private:
     real startX, startY, startZ;

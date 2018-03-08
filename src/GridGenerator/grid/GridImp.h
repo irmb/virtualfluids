@@ -22,7 +22,6 @@ extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
-    HOST GridImp(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
     HOST GridImp();
     HOST GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
@@ -62,12 +61,9 @@ public:
     HOSTDEVICE Field getField() const;
     HOSTDEVICE uint getSparseSize() const;
 
-    HOSTDEVICE void setFieldEntry(const Vertex &v, char val);
-    HOSTDEVICE char getFieldEntry(const Vertex &v) const;
 
     HOSTDEVICE void findInnerNode(uint index);
     HOSTDEVICE void findStopperNode(uint index);
-    HOST void mesh(Geometry &geometry);
 
     HOST void freeMemory();
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ);
@@ -79,27 +75,25 @@ public:
     HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
 
 	HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const;
-	HOSTDEVICE int transCoordToIndex(const Vertex &v) const;
 	HOSTDEVICE void transIndexToCoords(int index, real &x, real &y, real &z) const;
 	HOSTDEVICE void print() const;
-	HOSTDEVICE void setDebugPoint(const Vertex &actualPoint, const int pointValue);
-	HOSTDEVICE bool isOutOfRange(const Vertex &actualPoint) const;
 
 	/*---------------------------------------------------------------------------------*/
+    HOST void mesh(Geometry &geometry) override;
     HOSTDEVICE void meshTriangle(const Triangle &triangle);
-	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle);
+    HOSTDEVICE void setDebugPoint(uint index, const int pointValue);
+	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle) const;
     /*---------------------------------------------------------------------------------*/
-    HOSTDEVICE void setNeighborIndices(const int &index);
 	HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
-    HOSTDEVICE void findNeighborIndex(int index);
-    HOSTDEVICE void findForGridInterfaceNewIndexCF(uint index);
-    HOSTDEVICE void findForGridInterfaceNewIndexFC(uint index);
+    HOSTDEVICE void setNeighborIndices(int index);
+    HOSTDEVICE void findForGridInterfaceSparseIndexCF(uint index);
+    HOSTDEVICE void findForGridInterfaceSparseIndexFC(uint index);
 
 
     HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
     HOSTDEVICE bool isNeighborInvalid(const int &index) const;
 
-    HOST void removeInvalidNodes();
+    HOST void updateSparseIndices();
 
     //HOSTDEVICE bool isStopper(int index) const;
     HOSTDEVICE bool isValidStartOfGridStopper(uint index) const;
@@ -126,17 +120,17 @@ public:
     HOSTDEVICE void setCellTo(uint index, char type);
 
 private:
-    HOSTDEVICE uint getXIndex(real x) const;
-    HOSTDEVICE uint getYIndex(real y) const;
-    HOSTDEVICE uint getZIndex(real z) const;
+    HOSTDEVICE int getXIndex(real x) const;
+    HOSTDEVICE int getYIndex(real y) const;
+    HOSTDEVICE int getZIndex(real z) const;
 
 
     static void setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size);
 
-    HOSTDEVICE bool isOverlapStopper(uint index) const;
     HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
     HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
-    HOSTDEVICE int getNeighborIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
+    HOSTDEVICE bool nodeInCellIs(Cell& cell, char type) const override;
+    HOSTDEVICE int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
     HOSTDEVICE void setStopperNeighborCoords(int index);
 
     HOSTDEVICE real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
@@ -153,12 +147,6 @@ public:
     HOSTDEVICE uint getNumberOfNodesY() const override;
     HOSTDEVICE uint getNumberOfNodesZ() const override;
     SPtr<GridStrategy> getGridStrategy() const override;
-    void setStartX(real startX) override;
-    void setStartY(real startY) override;
-    void setStartZ(real startZ) override;
-    void setEndX(real endX) override;
-    void setEndY(real endY) override;
-    void setEndZ(real endZ) override;
 
     int* getNeighborsX() const override;
     int* getNeighborsY() const override;
