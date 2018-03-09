@@ -257,7 +257,7 @@ HOSTDEVICE int GridImp::transCoordToIndex(const real &x, const real &y, const re
     const int yIndex = getYIndex(y);
     const int zIndex = getZIndex(z);
 
-    if (xIndex < 0 || yIndex < 0 || zIndex < 0 || uint(xIndex) > nx || uint(yIndex) > ny || uint(zIndex) > nz)
+    if (xIndex < 0 || yIndex < 0 || zIndex < 0 || uint(xIndex) >= nx || uint(yIndex) >= ny || uint(zIndex) >= nz)
         return -1;
 
     return xIndex + nx * (yIndex + ny * zIndex);
