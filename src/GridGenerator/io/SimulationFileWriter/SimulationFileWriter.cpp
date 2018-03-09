@@ -177,7 +177,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
     if (grid->getSparseIndex(index) == -1)
         return;
 
-    int type = grid->getFieldEntry(index) == SOLID ? 16 : 19;
+    int type = grid->getFieldEntry(index) == FLUID ? 19 : 16;
     real x, y, z;
     grid->transIndexToCoords(index, x, y, z);
 

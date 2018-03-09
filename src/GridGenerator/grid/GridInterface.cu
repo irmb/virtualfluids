@@ -32,7 +32,6 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
-
     for(const auto dir : coarseGrid->distribution)
     {
         const bool isFineGridNeighborFluid = isNeighborFineFluid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);

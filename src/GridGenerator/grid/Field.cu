@@ -91,6 +91,11 @@ HOSTDEVICE bool Field::isStopperOverlapGrid(uint index) const
     return field[index] == STOPPER_OVERLAP_GRID;
 }
 
+HOSTDEVICE bool Field::isStopper(uint index) const
+{
+    return isStopperEndOfGrid(index) || isStopperOverlapGrid(index);
+}
+
 HOSTDEVICE bool Field::isQ(uint index) const
 {
     return field[index] == Q;

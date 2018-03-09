@@ -266,7 +266,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);
 
-    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/primitive_sphere/simu/", gridBuilder, FILEFORMAT::ASCII);
+    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/test/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //const uint level = 2;
     //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);

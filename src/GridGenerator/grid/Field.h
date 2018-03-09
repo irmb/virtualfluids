@@ -28,6 +28,7 @@ public:
     HOSTDEVICE bool isInvalid(uint index) const;
     HOSTDEVICE bool isStopperEndOfGrid(uint index) const;
     HOSTDEVICE bool isStopperOverlapGrid(uint index) const;
+    HOSTDEVICE bool isStopper(uint index) const;
     HOSTDEVICE bool isOutOfGrid(uint index) const;
 
     HOSTDEVICE void setFieldEntry(uint index, char val);

@@ -309,7 +309,7 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
     neighborIndexY[index] = -1;
     neighborIndexZ[index] = -1;
 
-    if (this->field.isStopperEndOfGrid(index) || this->field.isStopperOverlapGrid(index))
+    if (this->field.isStopper(index))
     {
         this->setStopperNeighborCoords(index);
         return;
@@ -336,13 +336,13 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (CudaMath::lessEqual(x + delta, endX) && (this->field.isStopperEndOfGrid(this->transCoordToIndex(x + delta, y, z)) || this->field.isFluid(this->transCoordToIndex(x + delta, y, z))))
+    if (CudaMath::lessEqual(x + delta, endX) && (this->field.isStopper(this->transCoordToIndex(x + delta, y, z)) || this->field.isFluid(this->transCoordToIndex(x + delta, y, z))))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (CudaMath::lessEqual(y + delta, endY) && (this->field.isStopperEndOfGrid(this->transCoordToIndex(x, y + delta, z)) || this->field.isFluid(this->transCoordToIndex(x, y + delta, z))))
+    if (CudaMath::lessEqual(y + delta, endY) && (this->field.isStopper(this->transCoordToIndex(x, y + delta, z)) || this->field.isFluid(this->transCoordToIndex(x, y + delta, z))))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (CudaMath::lessEqual(z + delta, endZ) && (this->field.isStopperEndOfGrid(this->transCoordToIndex(x, y, z + delta)) || this->field.isFluid(this->transCoordToIndex(x, y, z + delta))))
+    if (CudaMath::lessEqual(z + delta, endZ) && (this->field.isStopper(this->transCoordToIndex(x, y, z + delta)) || this->field.isFluid(this->transCoordToIndex(x, y, z + delta))))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 }
 
@@ -374,7 +374,7 @@ HOSTDEVICE real GridImp::getFirstFluidNode(real coords[3], int direction, real s
 {
     coords[direction] = startCoord;
     int index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
-    while (field.isOutOfGrid(index))
+    while (!field.isFluid(index))
     {
         coords[direction] += delta;
         index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
