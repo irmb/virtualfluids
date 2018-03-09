@@ -303,7 +303,7 @@ HOST void GridImp::updateSparseIndices()
     printf("new size nodes: %d , delete nodes: %d\n", sparseSize, removedNodes);
 }
 
-HOSTDEVICE void GridImp::setNeighborIndices(int index)
+HOSTDEVICE void GridImp::setNeighborIndices(uint index)
 {
     neighborIndexX[index] = -1;
     neighborIndexY[index] = -1;
@@ -331,7 +331,7 @@ HOSTDEVICE void GridImp::setNeighborIndices(int index)
     this->neighborIndexZ[index] = neighborZ;
 }
 
-HOSTDEVICE void GridImp::setStopperNeighborCoords(int index)
+HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
 {
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -441,7 +441,7 @@ HOST void GridImp::mesh(Geometry &geometry)
     *logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " + SSTR(time) + "s\n";
 }
 
-HOSTDEVICE void GridImp::meshTriangle(const Triangle &triangle)
+HOSTDEVICE void GridImp::mesh(const Triangle &triangle)
 {
     BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, delta);
 
@@ -466,7 +466,7 @@ HOSTDEVICE void GridImp::meshTriangle(const Triangle &triangle)
     }
 }
 
-HOSTDEVICE void GridImp::setDebugPoint(uint index, const int pointValue)
+HOSTDEVICE void GridImp::setDebugPoint(uint index, int pointValue)
 {
     if (field.isInvalid(index) && pointValue == SOLID)
         field.setFieldEntry(index, pointValue);
@@ -692,13 +692,13 @@ uint* GridImp::getFC_fine() const
 
 void GridImp::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const
 {
-    setGridInterface(iCellCfc, this->gridInterface->cf.coarse, this->gridInterface->cf.numberOfEntries);
-    setGridInterface(iCellCff, this->gridInterface->cf.fine, this->gridInterface->cf.numberOfEntries);
-    setGridInterface(iCellFcc, this->gridInterface->fc.coarse, this->gridInterface->fc.numberOfEntries);
-    setGridInterface(iCellFcf, this->gridInterface->fc.fine, this->gridInterface->fc.numberOfEntries);
+    getGridInterface(iCellCfc, this->gridInterface->cf.coarse, this->gridInterface->cf.numberOfEntries);
+    getGridInterface(iCellCff, this->gridInterface->cf.fine, this->gridInterface->cf.numberOfEntries);
+    getGridInterface(iCellFcc, this->gridInterface->fc.coarse, this->gridInterface->fc.numberOfEntries);
+    getGridInterface(iCellFcf, this->gridInterface->fc.fine, this->gridInterface->fc.numberOfEntries);
 }
 
-void GridImp::setGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size)
+void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size)
 {
     for (uint i = 0; i < size; i++)
         gridInterfaceList[i] = oldGridInterfaceList[i] + 1;
@@ -707,7 +707,7 @@ void GridImp::setGridInterface(uint* gridInterfaceList, const uint* oldGridInter
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-HOST void GridImp::setNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *geo) const
+HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *geo) const
 {
     xCoords[0] = 0;
     yCoords[0] = 0;
@@ -744,15 +744,3 @@ void GridImp::print() const
     if(this->gridInterface)
         this->gridInterface->print();
 }
-
-std::string GridImp::toString() const
-{
-    std::ostringstream oss;
-    oss << 
-        "min: (" << startX << ", " << startY << ", " << startZ << 
-        "), max: " << endX << ", " << endY << ", " << endZ <<
-        "), size: " << sparseSize << ", delta: " << delta << "\n";
-    return oss.str();
-}
-
-

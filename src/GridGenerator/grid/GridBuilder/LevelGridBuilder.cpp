@@ -294,7 +294,7 @@ void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level)
 
 void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
 {
-    grids[level]->setNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, geo);
+    grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, geo);
 }
 
 void LevelGridBuilder::setQs(real** q27, int* k, int channelSide, unsigned int level) const

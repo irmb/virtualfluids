@@ -16,12 +16,12 @@
 class VF_PUBLIC Sphere : public Object
 {
 public:
-    Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);
-    virtual ~Sphere();
+    HOSTDEVICE Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius);
+    HOSTDEVICE virtual ~Sphere();
 
     static SPtr<Sphere> makeShared(double centerX, double centerY, double centerZ, double radius);
 
-    Object* clone() const;
+    HOSTDEVICE Object* clone() const;
 
     double getX1Centroid() override;
     double getX1Minimum();
@@ -33,7 +33,7 @@ public:
     double getX3Minimum();
     double getX3Maximum();
 
-    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
+    HOSTDEVICE bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
     bool isOnBoundary(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
 

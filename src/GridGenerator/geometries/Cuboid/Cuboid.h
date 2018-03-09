@@ -15,10 +15,10 @@
 class VF_PUBLIC Cuboid : public Object
 {
 public:              
-    Cuboid(const double& minX1, const double& minX2, const double& minX3, const double& maxX1,const double& maxX2, const double& maxX3);
-    virtual ~Cuboid();
+    HOSTDEVICE Cuboid(const double& minX1, const double& minX2, const double& minX3, const double& maxX1,const double& maxX2, const double& maxX3);
+    HOSTDEVICE virtual ~Cuboid();
 
-    Object* clone() const;
+    HOSTDEVICE Object* clone() const;
 
     double getX1Centroid() override;
     double getX1Minimum();
@@ -30,7 +30,7 @@ public:
     double getX3Minimum();
     double getX3Maximum();
 
-    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
+    HOSTDEVICE bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
     bool isOnBoundary(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 

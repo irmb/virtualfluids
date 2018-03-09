@@ -32,11 +32,10 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
-    int dirX, dirY, dirZ;
 
     for(const auto dir : coarseGrid->distribution)
     {
-        const bool isFineGridNeighborFluid = isNeighborFineFluid(x + dir[0] * coarseGrid->delta, y + dir[1] * coarseGrid->delta, z + dir[2] * coarseGrid->delta, coarseGrid, fineGrid);
+        const bool isFineGridNeighborFluid = isNeighborFineFluid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);
         if(!isFineGridNeighborFluid)
         {
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
@@ -73,7 +72,7 @@ HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, Gr
 
     for (const auto dir : coarseGrid->distribution)
     {
-        const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->delta, y + dir[1] * coarseGrid->delta, z + dir[2] * coarseGrid->delta);
+        const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
         const bool neighborBelongsToCoarseToFineInterpolationCell = coarseGrid->getField().isCoarseToFineNode(neighborIndex);
         if (neighborBelongsToCoarseToFineInterpolationCell)
         {
@@ -114,7 +113,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
         //if (dir[0] > 0 || dir[1] > 0 || dir[2] > 0)
         //    continue;
 
-        const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->delta, y + dir[1] * coarseGrid->delta, z + dir[2] * coarseGrid->delta);
+        const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
         neighborBelongsToFineToCoarseInterpolationCell = coarseGrid->getField().isFineToCoarseNode(neighborIndex);
         if (neighborBelongsToFineToCoarseInterpolationCell)
         {
@@ -140,9 +139,9 @@ int GridInterface::getCoarseToFineIndexOnFineGrid(const uint& indexOnCoarseGrid,
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
-    const real xFine = x + (fineGrid->delta * 0.5);
-    const real yFine = y + (fineGrid->delta * 0.5);
-    const real zFine = z + (fineGrid->delta * 0.5);
+    const real xFine = x + (fineGrid->getDelta() * 0.5);
+    const real yFine = y + (fineGrid->getDelta() * 0.5);
+    const real zFine = z + (fineGrid->getDelta() * 0.5);
 
     return fineGrid->transCoordToIndex(xFine, yFine, zFine);
 }
@@ -151,9 +150,9 @@ int GridInterface::getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid,
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
-    const real xFine = x - (fineGrid->delta * 0.5);
-    const real yFine = y - (fineGrid->delta * 0.5);
-    const real zFine = z - (fineGrid->delta * 0.5);
+    const real xFine = x - (fineGrid->getDelta() * 0.5);
+    const real yFine = y - (fineGrid->getDelta() * 0.5);
+    const real zFine = z - (fineGrid->getDelta() * 0.5);
 
     return fineGrid->transCoordToIndex(xFine, yFine, zFine);
 }

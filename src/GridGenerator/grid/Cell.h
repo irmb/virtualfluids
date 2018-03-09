@@ -3,12 +3,12 @@
 
 
 #include "core/DataTypes.h"
-
+#include "GridGenerator/global.h"
 
 struct Point
 {
-    Point() : x(0.0), y(0.0), z(0.0) {}
-    Point(real x, real y, real z) : x(x), y(y), z(z) {}
+    HOSTDEVICE Point() : x(0.0), y(0.0), z(0.0) {}
+    HOSTDEVICE Point(real x, real y, real z) : x(x), y(y), z(z) {}
     real x, y, z;
 };
 
@@ -18,7 +18,7 @@ public:
     typedef Point* iterator;
     typedef const Point* const_iterator;
 
-    Cell(real startX, real startY, real startZ, real delta)
+    HOSTDEVICE Cell(real startX, real startY, real startZ, real delta)
     {
         points = new Point[size];
         points[0] = Point(startX, startY, startZ); // 0,0,0
@@ -32,15 +32,15 @@ public:
         points[7] = Point(startX + delta, startY + delta, startZ + delta); // 1,1,1
     }
 
-    ~Cell()
+    HOSTDEVICE ~Cell()
     {
         delete[] points;
     }
 
-    iterator begin() { return &points[0]; }
-    const_iterator begin() const { return &points[0]; }
-    iterator end() { return &points[size]; }
-    const_iterator end() const { return &points[size]; }
+    HOSTDEVICE iterator begin() { return &points[0]; }
+    HOSTDEVICE const_iterator begin() const { return &points[0]; }
+    HOSTDEVICE iterator end() { return &points[size]; }
+    HOSTDEVICE const_iterator end() const { return &points[size]; }
 
 private:
     Point* points;

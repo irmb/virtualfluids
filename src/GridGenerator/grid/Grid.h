@@ -54,7 +54,7 @@ public:
     HOST virtual int getStartDirection() const = 0;
     HOST virtual int getEndDirection() const = 0;
 
-    HOST virtual void setNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const = 0;
+    HOST virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const = 0;
 
     HOST virtual SPtr<GridStrategy> getGridStrategy() const = 0;
     HOSTDEVICE virtual void transIndexToCoords(int index, real &x, real &y, real &z) const = 0;

@@ -41,7 +41,7 @@ GLOBAL void runMeshing(GridImp grid, const Geometry geom)
 {
     unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
     if (i < geom.size)
-        grid.meshTriangle(geom.triangles[i]);
+        grid.mesh(geom.triangles[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ float runKernelSetToInvalid(const LaunchParameter& para, GridImp &grid)
 
 GLOBAL void setInvalidNodes(GridImp grid, bool *foundInvalidNode)
 {
-    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
         grid.setInvalidNode(index, *foundInvalidNode);
 }
@@ -153,7 +153,7 @@ float runKernelFindIndices(const LaunchParameter& para, GridImp &grid)
 
 GLOBAL void findNeighborIndicesKernel(GridImp grid)
 {
-    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
         grid.setNeighborIndices(index);
 }
@@ -168,7 +168,7 @@ float runKernelToFindGridInterface(const LaunchParameter& para, GridImp &grid, G
 
 GLOBAL void findGridInterface(GridImp grid, GridImp finerGrid)
 {
-    unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
+    uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
         grid.findGridInterfaceCF(index, finerGrid);
 }

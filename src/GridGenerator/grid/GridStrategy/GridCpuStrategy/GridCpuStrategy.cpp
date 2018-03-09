@@ -57,7 +57,7 @@ void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
 {
 #pragma omp parallel for
     for (int i = 0; i < geom.size; i++)
-        grid->meshTriangle(geom.triangles[i]);
+        grid->mesh(geom.triangles[i]);
 }
 
 void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)

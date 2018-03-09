@@ -11,25 +11,25 @@
 
 struct Direction
 {
-    Direction()
+    HOSTDEVICE Direction()
     {
         dir[0] = 0;
         dir[1] = 0;
         dir[2] = 0;
     }
 
-    Direction(int dx, int dy, int dz)
+    HOSTDEVICE Direction(int dx, int dy, int dz)
     {
         dir[0] = dx;
         dir[1] = dy;
         dir[2] = dz;
     }
 
-    int operator[](uint dir) const
+    HOSTDEVICE int operator[](uint dir) const
     {
         if (dir < 3)
             return this->dir[dir];
-        throw "direction must between 0 and 2";
+        return -99;
     }
 private:
     int dir[3];
@@ -52,10 +52,10 @@ struct Distribution
         fSize = size * (dir_end + 1);
     }
 
-    iterator begin() { return &directions[0]; }
-    const_iterator begin() const { return &directions[0]; }
-    iterator end() { return &directions[dir_end + 1]; }
-    const_iterator end() const { return &directions[dir_end + 1]; }
+    HOSTDEVICE iterator begin() { return &directions[0]; }
+    HOSTDEVICE const_iterator begin() const { return &directions[0]; }
+    HOSTDEVICE iterator end() { return &directions[dir_end + 1]; }
+    HOSTDEVICE const_iterator end() const { return &directions[dir_end + 1]; }
 };
 
 class Grid;

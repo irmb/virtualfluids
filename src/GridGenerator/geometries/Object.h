@@ -9,12 +9,13 @@
 
 #include <VirtualFluidsDefinitions.h>
 #include "grid/Cell.h"
+#include "global.h"
 
 
 class VF_PUBLIC Object
 {
 public:
-    virtual ~Object() = default;
+    HOSTDEVICE virtual ~Object() {};
 
     virtual double getX1Centroid() = 0;
      double getX1Minimum() { return x1min; }
@@ -55,9 +56,9 @@ public:
     //virtual void scale(const double& sx1, const double& sx2, const double& sx3) { throw UbException(UB_EXARGS, "not implemented for " + (std::string)typeid(*this).name()); }
 
 
-    virtual bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) = 0;
+    HOSTDEVICE virtual bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) = 0;
 
-    virtual bool isCellInObject(const Cell& cell) {
+    HOSTDEVICE virtual bool isCellInObject(const Cell& cell) {
         for (const auto point : cell)
         {
             const bool isInObject = isPointInObject(point.x, point.y, point.z, 0.0, 0.0);

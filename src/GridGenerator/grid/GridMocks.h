@@ -47,7 +47,7 @@ public:
     virtual int* getDirection() const override { return nullptr; }
     virtual int getStartDirection() const override { return 0; }
     virtual int getEndDirection() const override { return 0; }
-    virtual void setNodeValues(real* xCoords, real* yCoords, real* zCoords, unsigned* neighborX, unsigned* neighborY,
+    virtual void getNodeValues(real* xCoords, real* yCoords, real* zCoords, unsigned* neighborX, unsigned* neighborY,
         unsigned* neighborZ, unsigned* geo) const override {}
     virtual SPtr<GridStrategy> getGridStrategy() const override { return nullptr; }
     virtual void transIndexToCoords(int index, real& x, real& y, real& z) const override {}

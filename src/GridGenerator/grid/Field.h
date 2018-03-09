@@ -10,8 +10,8 @@ class VF_PUBLIC Field : public enableSharedFromThis<Field>
 {
 public:
     HOST Field(SPtr<GridStrategy> gridStrategy, uint size);
-    Field();
-    ~Field();
+    HOSTDEVICE Field();
+    HOSTDEVICE ~Field();
     HOST void allocateMemory();
     HOST void freeMemory();
 
