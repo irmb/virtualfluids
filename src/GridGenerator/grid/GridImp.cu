@@ -305,6 +305,9 @@ HOST void GridImp::updateSparseIndices()
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
 {
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
     neighborIndexX[index] = -1;
     neighborIndexY[index] = -1;
     neighborIndexZ[index] = -1;
@@ -318,8 +321,7 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
     if (this->sparseIndices[index] == -1)
         return;
 
-    real x, y, z;
-    this->transIndexToCoords(index, x, y, z);
+
     real neighborXCoord, neighborYCoord, neighborZCoord;
     this->getNeighborCoords(neighborXCoord, neighborYCoord, neighborZCoord, x, y, z);
     const int neighborX = getSparseIndex(neighborXCoord, y, z);
@@ -336,13 +338,16 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (CudaMath::lessEqual(x + delta, endX) && (this->field.isStopper(this->transCoordToIndex(x + delta, y, z)) || this->field.isFluid(this->transCoordToIndex(x + delta, y, z))))
+    //if (CudaMath::lessEqual(x + delta, endX) && (this->field.isStopper(this->transCoordToIndex(x + delta, y, z)) || this->field.isFluid(this->transCoordToIndex(x + delta, y, z))))
+    if (CudaMath::lessEqual(x + delta, endX) && !this->field.isOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (CudaMath::lessEqual(y + delta, endY) && (this->field.isStopper(this->transCoordToIndex(x, y + delta, z)) || this->field.isFluid(this->transCoordToIndex(x, y + delta, z))))
+    //if (CudaMath::lessEqual(y + delta, endY) && (this->field.isStopper(this->transCoordToIndex(x, y + delta, z)) || this->field.isFluid(this->transCoordToIndex(x, y + delta, z))))
+    if (CudaMath::lessEqual(y + delta, endY) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (CudaMath::lessEqual(z + delta, endZ) && (this->field.isStopper(this->transCoordToIndex(x, y, z + delta)) || this->field.isFluid(this->transCoordToIndex(x, y, z + delta))))
+    //if (CudaMath::lessEqual(z + delta, endZ) && (this->field.isStopper(this->transCoordToIndex(x, y, z + delta)) || this->field.isFluid(this->transCoordToIndex(x, y, z + delta))))
+    if (CudaMath::lessEqual(z + delta, endZ) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 }
 
@@ -726,13 +731,22 @@ HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, ui
         real x, y, z;
         this->transIndexToCoords(i, x, y, z);
 
+        const uint neighborXIndex = uint(this->neighborIndexX[i] + 1);
+        const uint neighborYIndex = uint(this->neighborIndexY[i] + 1);
+        const uint neighborZIndex = uint(this->neighborIndexZ[i] + 1);
+
+        const char type2 = this->field.getFieldEntry(i);
+
+        const uint type = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
+
         xCoords[nodeNumber + 1] = x;
         yCoords[nodeNumber + 1] = y;
         zCoords[nodeNumber + 1] = z;
-        neighborX[nodeNumber + 1] = uint(this->neighborIndexX[i] + 1);
-        neighborY[nodeNumber + 1] = uint(this->neighborIndexY[i] + 1);
-        neighborZ[nodeNumber + 1] = uint(this->neighborIndexZ[i] + 1);
-        geo[nodeNumber + 1] = uint(this->field.isFluid(i) ? GEOFLUID : GEOSOLID);
+
+        neighborX[nodeNumber + 1] = neighborXIndex;
+        neighborY[nodeNumber + 1] = neighborYIndex;
+        neighborZ[nodeNumber + 1] = neighborZIndex;
+        geo[nodeNumber + 1] = type;
         nodeNumber++;
     }
 }
