@@ -37,7 +37,7 @@ private:
 
     HOSTDEVICE int getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
 
-
+    HOSTDEVICE static void findSparseIndex(uint* indices, GridImp* grid, uint index);
 };
 
 

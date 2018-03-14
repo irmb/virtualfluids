@@ -17,28 +17,6 @@ GridInterface::~GridInterface()
 
 
 
-void GridInterface::findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index)
-{
-    const uint matrixIndexCoarse = this->cf.coarse[index];
-    const uint sparseIndexCoarse = coarseGrid->getSparseIndex(matrixIndexCoarse);
-    this->cf.coarse[index] = sparseIndexCoarse;
-
-    const uint matrixIndexFine = this->cf.fine[index];
-    const uint sparseIndexFine = fineGrid->getSparseIndex(matrixIndexFine);
-    this->cf.fine[index] = sparseIndexFine;
-}
-
-void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index)
-{
-    const uint matrixIndexCoarse = this->fc.coarse[index];
-    const uint sparseIndexCoarse = coarseGrid->getSparseIndex(matrixIndexCoarse);
-    this->fc.coarse[index] = sparseIndexCoarse;
-
-    const uint matrixIndexFine = this->fc.fine[index];
-    const uint sparseIndexFine = fineGrid->getSparseIndex(matrixIndexFine);
-    this->fc.fine[index] = sparseIndexFine;
-}
-
 void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
@@ -179,6 +157,27 @@ int GridInterface::getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid,
 
     return fineGrid->transCoordToIndex(xFine, yFine, zFine);
 }
+
+
+void GridInterface::findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index)
+{
+    findSparseIndex(cf.coarse, coarseGrid, index);
+    findSparseIndex(cf.fine, fineGrid, index);
+}
+
+void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index)
+{
+    findSparseIndex(fc.coarse, coarseGrid, index);
+    findSparseIndex(fc.fine, fineGrid, index);
+}
+
+void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
+{
+    const uint matrixIndex = indices[index];
+    const uint sparseIndex = grid->getSparseIndex(matrixIndex);
+    indices[index] = sparseIndex;
+}
+
 
 void GridInterface::print() const
 {

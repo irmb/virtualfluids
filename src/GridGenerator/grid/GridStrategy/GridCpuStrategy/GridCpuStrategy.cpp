@@ -49,9 +49,6 @@ void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
     for (uint index = 0; index < grid->size; index++)
         grid->findStopperNode(index);
 
-    //grid->updateSparseIndices();
-    //findForNeighborsNewIndices(grid);
-
     *logging::out << logging::Logger::INTERMEDIATE
         << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
         << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
@@ -69,7 +66,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     const auto coarseLevel = grid->getLevel(1.0);
     const auto fineLevel = fineGrid->getLevel(1.0);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel << "\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel;
     const uint oldGridSize = grid->getSparseSize();
 
 
@@ -92,7 +89,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
         grid->findOverlapStopper(index, *fineGrid);
 
     const uint newGridSize = grid->getSparseSize();
-    *logging::out << logging::Logger::INTERMEDIATE << "... done. \n";
+    *logging::out << logging::Logger::INTERMEDIATE << "  ... done. \n";
 }
 
 void GridCpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)

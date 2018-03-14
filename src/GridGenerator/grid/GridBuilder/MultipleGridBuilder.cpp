@@ -18,7 +18,7 @@ SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> grid
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
-    const auto grid = this->makeGrid(startX, startY, startZ, endX, endY, endZ, delta);
+    const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta);
     addGridToList(grid);
 }
 
@@ -40,7 +40,6 @@ void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
     const uint nodesBetweenGrids = 8;
     const uint levelDifference = levelFine - getNumberOfLevels();
     const uint oldGridSize = this->getNumberOfLevels();
-
 
     addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, gridShape);
     addFineGridToList(levelFine, gridShape->clone());
@@ -103,9 +102,9 @@ void MultipleGridBuilder::addGridToListIfValid(SPtr<Grid> grid)
 }
 
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
+SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
 {
-    return gridFactory->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta);
+    return gridFactory->makeGrid(gridShape, startX, startY, startZ, endX, endY, endZ, delta);
 }
 
 bool MultipleGridBuilder::coarseGridExists() const
@@ -119,7 +118,7 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level) const
 
     auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
 
-    return gridFactory->makeGrid(gridShape, staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
+    return this->makeGrid(gridShape, staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
 }
 
 real MultipleGridBuilder::calculateDelta(uint level) const
@@ -231,7 +230,6 @@ void MultipleGridBuilder::buildGrids()
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);
-
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findSparseIndices(grids[i + 1]);
