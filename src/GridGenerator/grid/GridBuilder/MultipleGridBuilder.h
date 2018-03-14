@@ -24,20 +24,7 @@ public:
 
     VF_PUBLIC void addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta);
     VF_PUBLIC void addGrid(Object* gridShape);
-    VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
-    VF_PUBLIC void addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level);
-    VF_PUBLIC void addFineGrid(Object* gridShape, uint level);
-
-    
-    void addFineGridToList(uint level, Object* gridShape);
-    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, Object* gridShape);
-
-    void addFineGridToList( uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZFine);
-
-    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine);
-    void eraseGridsFromListIfInvalid(uint oldSize);
-
-    void addGridToListIfValid(SPtr<Grid> grid);
+    VF_PUBLIC void addGrid(Object* gridShape, uint levelFine);
 
     VF_PUBLIC uint getNumberOfLevels() const;
     VF_PUBLIC real getDelta(uint level) const;
@@ -58,7 +45,12 @@ private:
     real calculateDelta(uint level) const;
     bool coarseGridExists() const;
     bool isGridInCoarseGrid(SPtr<Grid> grid) const;
-    SPtr<Grid> makeGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level) const;
+
+    void addFineGridToList(uint level, Object* gridShape);
+    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, Object* gridShape);
+    void eraseGridsFromListIfInvalid(uint oldSize);
+    void addGridToListIfValid(SPtr<Grid> grid);
+
     std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
     std::array<real, 3> getOffset(real delta) const;
     std::vector<uint> getSpacingFactors(uint levelDifference) const;

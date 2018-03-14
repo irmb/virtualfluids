@@ -249,10 +249,10 @@ void multipleLevel(const std::string& configPath)
 
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    //gridBuilder->addFineGrid(new Sphere(20, 20, 20, 8), 2);
+    gridBuilder->addGrid(new Sphere(20, 20, 20, 4), 3);
 
     //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
-    gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
+    //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
 
 
     //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);

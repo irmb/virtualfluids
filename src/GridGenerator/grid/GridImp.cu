@@ -43,13 +43,13 @@ HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY,
 
 void GridImp::initalNumberOfNodesAndSize()
 {
-    startX -= delta; // +1 stopper node
-    startY -= delta; // +1 stopper node
-    startZ -= delta; // +1 stopper node
+    //startX -= delta; // +1 stopper node
+    //startY -= delta; // +1 stopper node
+    //startZ -= delta; // +1 stopper node
 
-    endX += delta; // +1 stopper node
-    endY += delta; // +1 stopper node
-    endZ += delta; // +1 stopper node
+    //endX += delta; // +1 stopper node
+    //endY += delta; // +1 stopper node
+    //endZ += delta; // +1 stopper node
 
     const real length = endX - startX;
     const real width = endY - startY;
