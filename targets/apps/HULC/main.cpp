@@ -238,7 +238,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
     logging::Logger::setStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::ERROR);
+    logging::Logger::setDebugLevel(logging::Logger::LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());

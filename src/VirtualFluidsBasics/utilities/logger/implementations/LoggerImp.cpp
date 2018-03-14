@@ -54,7 +54,7 @@ logging::Logger& logging::LoggerImp::operator<<(const double &message)
 
 logging::Logger& logging::LoggerImp::log(const std::string &message)
 {
-    if (isLocalLogLevel_greateEqual_GlobalLevel())
+    if (shouldBeLogged())
     {
         std::string modifiedMessage = message;
         addDebugInformation(modifiedMessage);
@@ -70,16 +70,16 @@ logging::Logger& logging::LoggerImp::log(const std::string &message)
     return *this;
 }
 
-bool logging::LoggerImp::isLocalLogLevel_greateEqual_GlobalLevel()
+bool logging::LoggerImp::shouldBeLogged()
 {
-    return localLogLevel >= globalLogLevel;
+    return localLogLevel <= globalLogLevel;
 }
 
 void logging::LoggerImp::addDebugInformation(std::string& message)
 {
     if (newLoggingLine) {
         std::stringstream os;
-        os << levelString[localLogLevel] << getTimeStamp() << "\t"  << message;
+        os << levelString[localLogLevel] << getTimeStamp() << " "  << message;
         message = os.str();
     }
 }
