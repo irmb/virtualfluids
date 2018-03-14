@@ -26,11 +26,16 @@ public:
     VF_PUBLIC void addGrid(Object* gridShape);
     VF_PUBLIC void addGrid(real startX, real startY, real startZ, real endX, real endY, real endZ);
     VF_PUBLIC void addFineGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, uint level);
+    VF_PUBLIC void addFineGrid(Object* gridShape, uint level);
+
+    
+    void addFineGridToList(uint level, Object* gridShape);
+    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, Object* gridShape);
 
     void addFineGridToList( uint level, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZFine);
 
-   void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine);
-    void addGridsToListIfValid(uint oldSize);
+    void addIntermediateGridsToList(uint levelDifference, uint levelFine, uint nodesBetweenGrids, real startXfine, real startYfine, real startZfine, real endXfine, real endYfine, real endZfine);
+    void eraseGridsFromListIfInvalid(uint oldSize);
 
     void addGridToListIfValid(SPtr<Grid> grid);
 

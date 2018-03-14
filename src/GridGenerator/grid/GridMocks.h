@@ -62,6 +62,7 @@ public:
     virtual int* getNeighborsZ() const override { return nullptr; }
     virtual void inital() override {}
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
+    virtual void findSparseIndices(SPtr<Grid> fineGrid) override {};
 };
 
 class GridStub : public GridDummy

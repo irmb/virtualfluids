@@ -200,13 +200,13 @@ float runKernelToFindGridInterfaceNewIndices(const LaunchParameter& para, GridIm
 GLOBAL void findGridInterfaceNewIndicesCF(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.getNumberOfNodesCF())
-        grid.findForGridInterfaceSparseIndexCF(index);
+    //if (index < grid.getNumberOfNodesCF())
+        //grid.findForGridInterfaceSparseIndexCF(index);
 }
 
 GLOBAL void findGridInterfaceNewIndicesFC(GridImp grid)
 {
     unsigned int index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.getNumberOfNodesFC())
-        grid.findForGridInterfaceSparseIndexFC(index);
+    //if (index < grid.getNumberOfNodesFC())
+    //    grid.findForGridInterfaceSparseIndexFCcoarse(index);
 }

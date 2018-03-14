@@ -27,6 +27,7 @@ public:
     virtual void allocateFieldMemory(Field* field) override {}
     virtual void freeFieldMemory(Field* field) override {}
 
+    virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override {}
 };
 
 #endif

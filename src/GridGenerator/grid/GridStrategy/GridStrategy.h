@@ -23,6 +23,8 @@ public:
 
     virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) = 0;
 
+    virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) = 0;
+
     virtual void deleteSolidNodes(SPtr<GridImp> grid) = 0;
 
     virtual void freeMemory(SPtr<GridImp> grid) = 0;

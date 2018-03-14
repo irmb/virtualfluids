@@ -28,7 +28,7 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
     unsigned long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     real sizeInMB = distributionSize * sizeof(real) / (1024.f*1024.f);
 
-    *logging::out << logging::Logger::LOW << "Allocating " + SSTR(sizeInMB) + " [MB] host memory for distributions.\n";
+    //*logging::out << logging::Logger::LOW << "Allocating " + SSTR(sizeInMB) + " [MB] host memory for distributions.\n";
 
     grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
 }
@@ -49,8 +49,12 @@ void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
     for (uint index = 0; index < grid->size; index++)
         grid->findStopperNode(index);
 
-    grid->updateSparseIndices();
-    findForNeighborsNewIndices(grid);
+    //grid->updateSparseIndices();
+    //findForNeighborsNewIndices(grid);
+
+    *logging::out << logging::Logger::INTERMEDIATE
+        << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
+        << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
 }
 
 void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
@@ -62,12 +66,19 @@ void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
 
 void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
+    const auto coarseLevel = grid->getLevel(1.0);
+    const auto fineLevel = fineGrid->getLevel(1.0);
+
+    *logging::out << logging::Logger::INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel << "\n";
+    const uint oldGridSize = grid->getSparseSize();
+
+
     grid->gridInterface = new GridInterface();
     const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
     grid->gridInterface->cf.coarse = new uint[sizeCF];
-    grid->gridInterface->cf.fine = new uint[sizeCF];
+    grid->gridInterface->cf.fine   = new uint[sizeCF];
     grid->gridInterface->fc.coarse = new uint[sizeCF];
-    grid->gridInterface->fc.fine = new uint[sizeCF];
+    grid->gridInterface->fc.fine   = new uint[sizeCF];
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid);
@@ -80,11 +91,25 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findOverlapStopper(index, *fineGrid);
 
-    grid->updateSparseIndices();
-    findForNeighborsNewIndices(grid);
-    findForGridInterfaceNewIndices(grid);
+    const uint newGridSize = grid->getSparseSize();
+    *logging::out << logging::Logger::INTERMEDIATE << "... done. \n";
 }
 
+void GridCpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
+{
+    *logging::out << logging::Logger::INTERMEDIATE << "Find sparse indices...";
+
+    coarseGrid->updateSparseIndices();
+    findForNeighborsNewIndices(coarseGrid);
+    if(fineGrid)
+    {
+        fineGrid->updateSparseIndices();
+        findForGridInterfaceNewIndices(coarseGrid, fineGrid);
+    }
+
+    const uint newGridSize = coarseGrid->getSparseSize();
+    *logging::out << logging::Logger::INTERMEDIATE << "... done. new size: " << newGridSize << ", delete nodes:" << coarseGrid->getSize() - newGridSize << "\n";
+}
 
 
 void GridCpuStrategy::findForNeighborsNewIndices(SPtr<GridImp> grid)
@@ -94,18 +119,16 @@ void GridCpuStrategy::findForNeighborsNewIndices(SPtr<GridImp> grid)
         grid->setNeighborIndices(index);
 }
 
-void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<GridImp> grid)
+void GridCpuStrategy::findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->getNumberOfNodesCF(); index++)
-        grid->findForGridInterfaceSparseIndexCF(index);
+        grid->gridInterface->findForGridInterfaceSparseIndexCF(grid.get(), fineGrid.get(), index);
 
 #pragma omp parallel for
     for (uint index = 0; index < grid->getNumberOfNodesFC(); index++)
-        grid->findForGridInterfaceSparseIndexFC(index);
+        grid->gridInterface->findForGridInterfaceSparseIndexFC(grid.get(), fineGrid.get(), index);
 }
-
-
 
 
 
@@ -137,6 +160,8 @@ void GridCpuStrategy::freeFieldMemory(Field* field)
 {
     delete[] field->field;
 }
+
+
 
 void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
 {

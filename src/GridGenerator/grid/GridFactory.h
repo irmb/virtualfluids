@@ -21,7 +21,7 @@ enum class Device
 class VF_PUBLIC GridFactory
 {
 public:
-    SPtr<Grid> makeGrid(Object* gridShape, real delta, const std::string& d3Qxx = "D3Q27")
+    SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, const std::string& d3Qxx = "D3Q27")
     {
         if (!gridStrategy)
             throw "GridStrategy has to be set before make Grid!";
@@ -32,7 +32,7 @@ public:
         else if(this->grid == "spy")
             return GridSpy::makeShared(gridShape, delta, gridStrategy, distribution);
 
-        return GridImp::makeShared(gridShape, delta, gridStrategy, distribution);
+        return GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
     }
 
 

@@ -72,6 +72,8 @@ public:
 
     HOSTDEVICE virtual bool nodeInCellIs(Cell& cell, char type) const = 0;
 
+    HOST virtual void findSparseIndices(SPtr<Grid> fineGrid) = 0;
+
 
 };
 

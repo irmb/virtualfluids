@@ -175,6 +175,11 @@ void GridGpuStrategy::allocateFieldMemory(Field* field)
 void GridGpuStrategy::freeFieldMemory(Field* field)
 {
 }
+
+void GridGpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
+{
+}
+
 //
 //void GridWrapperGPU::markNodesToDeleteOutsideOfGeometry()
 //{

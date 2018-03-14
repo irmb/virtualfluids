@@ -15,6 +15,30 @@ GridInterface::~GridInterface()
 
 }
 
+
+
+void GridInterface::findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index)
+{
+    const uint matrixIndexCoarse = this->cf.coarse[index];
+    const uint sparseIndexCoarse = coarseGrid->getSparseIndex(matrixIndexCoarse);
+    this->cf.coarse[index] = sparseIndexCoarse;
+
+    const uint matrixIndexFine = this->cf.fine[index];
+    const uint sparseIndexFine = fineGrid->getSparseIndex(matrixIndexFine);
+    this->cf.fine[index] = sparseIndexFine;
+}
+
+void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index)
+{
+    const uint matrixIndexCoarse = this->fc.coarse[index];
+    const uint sparseIndexCoarse = coarseGrid->getSparseIndex(matrixIndexCoarse);
+    this->fc.coarse[index] = sparseIndexCoarse;
+
+    const uint matrixIndexFine = this->fc.fine[index];
+    const uint sparseIndexFine = fineGrid->getSparseIndex(matrixIndexFine);
+    this->fc.fine[index] = sparseIndexFine;
+}
+
 void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
@@ -38,7 +62,7 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
         if(!isFineGridNeighborFluid)
         {
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
-            cf.fine[cf.numberOfEntries] = fineGrid->getSparseIndex(indexOnFineGridCF);
+            cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
 
             cf.numberOfEntries++;
 
@@ -76,7 +100,7 @@ HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, Gr
         if (neighborBelongsToCoarseToFineInterpolationCell)
         {
             fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
-            fc.fine[fc.numberOfEntries] = fineGrid->getSparseIndex(indexOnFineGridFC);
+            fc.fine[fc.numberOfEntries] = indexOnFineGridFC;
 
             fc.numberOfEntries++;
 

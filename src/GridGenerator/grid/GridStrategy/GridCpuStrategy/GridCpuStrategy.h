@@ -33,12 +33,14 @@ public:
 protected:
     static void findInvalidNodes(SPtr<GridImp> grid);
     static void findForNeighborsNewIndices(SPtr<GridImp> grid);
-    static void findForGridInterfaceNewIndices(SPtr<GridImp> grid);
+    static void findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid);
 
 
 public:
     void allocateFieldMemory(Field* field) override;
     void freeFieldMemory(Field* field) override;
+    void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override;
+
 };
 
 #endif

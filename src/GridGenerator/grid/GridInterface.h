@@ -19,6 +19,9 @@ public:
     HOSTDEVICE void VF_PUBLIC findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     HOSTDEVICE void VF_PUBLIC findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
 
+    HOSTDEVICE void VF_PUBLIC findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index);
+    HOSTDEVICE void VF_PUBLIC findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index);
+
     HOSTDEVICE void VF_PUBLIC print() const;
 
     struct Interface

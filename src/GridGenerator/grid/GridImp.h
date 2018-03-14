@@ -22,11 +22,11 @@ class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
     HOST GridImp();
-    HOST GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+    HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
 public:
     virtual HOSTDEVICE ~GridImp();
-    static HOST SPtr<GridImp> makeShared(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+    static HOST SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
 
 private:
     HOST void initalNumberOfNodesAndSize();
@@ -74,7 +74,7 @@ public:
     HOST void findGridInterface(SPtr<Grid> grid) override;
     HOST void freeMemory() override;
 
-
+    HOST uint getLevel(real levelNull) const;
 public:
     Distribution distribution;
 
@@ -129,11 +129,11 @@ public:
 
 
 public:
+    HOST virtual void findSparseIndices(SPtr<Grid> fineGrid);
+
     HOST void updateSparseIndices();
     HOSTDEVICE void setNeighborIndices(uint index);
 
-    HOSTDEVICE void findForGridInterfaceSparseIndexCF(uint index);
-    HOSTDEVICE void findForGridInterfaceSparseIndexFC(uint index);
 private:
     HOSTDEVICE void setStopperNeighborCoords(uint index);
     HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;

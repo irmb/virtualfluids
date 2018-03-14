@@ -28,28 +28,18 @@
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 
-HOST GridImp::GridImp(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution) : object(object), delta(delta), gridStrategy(gridStrategy), distribution(distribution)
+HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution) 
+: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution)
 {
-    initalBoundingBoxStartValues();
     initalNumberOfNodesAndSize();
 }
 
-HOST SPtr<GridImp> GridImp::makeShared(Object* object, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
 {
-    SPtr<GridImp> grid(new GridImp(object, delta, gridStrategy, d));
+    SPtr<GridImp> grid(new GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
     return grid;
 }
 
-HOST void GridImp::initalBoundingBoxStartValues()
-{
-    startX = object->getX1Minimum();
-    startY = object->getX2Minimum();
-    startZ = object->getX3Minimum();
-
-    endX = object->getX1Maximum();
-    endY = object->getX2Maximum();
-    endZ = object->getX3Maximum();
-}
 
 void GridImp::initalNumberOfNodesAndSize()
 {
@@ -277,10 +267,28 @@ HOSTDEVICE void GridImp::transIndexToCoords(int index, real &x, real &y, real &z
     z = (z * delta) + startZ;
 }
 
+HOST uint GridImp::getLevel(real startDelta) const
+{
+    uint level = 0;
+    real delta = this->delta;
+    while(!CudaMath::equal(delta, startDelta))
+    {
+        delta *= 2;
+        level++;
+    }
+    return level;
+}
+
 
 // --------------------------------------------------------- //
 //                  Set Sparse Indices                       //
 // --------------------------------------------------------- //
+
+HOST void GridImp::findSparseIndices(SPtr<Grid> fineGrid)
+{
+    this->gridStrategy->findSparseIndices(shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid));
+}
+
 
 HOST void GridImp::updateSparseIndices()
 {
@@ -300,7 +308,6 @@ HOST void GridImp::updateSparseIndices()
         }
     }
     sparseSize = size - removedNodes;
-    printf("new size nodes: %d , delete nodes: %d\n", sparseSize, removedNodes);
 }
 
 HOSTDEVICE void GridImp::setNeighborIndices(uint index)
@@ -338,15 +345,12 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    //if (CudaMath::lessEqual(x + delta, endX) && (this->field.isStopper(this->transCoordToIndex(x + delta, y, z)) || this->field.isFluid(this->transCoordToIndex(x + delta, y, z))))
     if (CudaMath::lessEqual(x + delta, endX) && !this->field.isOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    //if (CudaMath::lessEqual(y + delta, endY) && (this->field.isStopper(this->transCoordToIndex(x, y + delta, z)) || this->field.isFluid(this->transCoordToIndex(x, y + delta, z))))
     if (CudaMath::lessEqual(y + delta, endY) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    //if (CudaMath::lessEqual(z + delta, endZ) && (this->field.isStopper(this->transCoordToIndex(x, y, z + delta)) || this->field.isFluid(this->transCoordToIndex(x, y, z + delta))))
     if (CudaMath::lessEqual(z + delta, endZ) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 }
@@ -394,19 +398,6 @@ HOSTDEVICE int GridImp::getSparseIndex(const real &x, const real &y, const real 
     return sparseIndices[matrixIndex];
 }
 
-HOSTDEVICE void GridImp::findForGridInterfaceSparseIndexCF(uint index)
-{
-    const uint matrixIndex = gridInterface->cf.coarse[index];
-    const uint sparseIndex = sparseIndices[matrixIndex];
-    gridInterface->cf.coarse[index] = sparseIndex;
-}
-
-HOSTDEVICE void GridImp::findForGridInterfaceSparseIndexFC(uint index)
-{
-    const uint matrixIndex = gridInterface->fc.coarse[index];
-    const uint sparseIndex = sparseIndices[matrixIndex];
-    gridInterface->fc.coarse[index] = sparseIndex;
-}
 
 // --------------------------------------------------------- //
 //                    Find Interface                         //

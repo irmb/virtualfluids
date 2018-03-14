@@ -54,6 +54,7 @@ private:
 public:
     void allocateFieldMemory(Field* field) override;
     void freeFieldMemory(Field* field) override;
+    void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override;
 };
 
 #endif

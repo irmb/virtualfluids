@@ -35,6 +35,11 @@ logging::Logger& logging::LoggerImp::operator<<(const int &message)
     return this->log(std::to_string(message));
 }
 
+logging::Logger& logging::LoggerImp::operator<<(const unsigned int &message)
+{
+    return this->log(std::to_string(message));
+}
+
 logging::Logger& logging::LoggerImp::operator<<(const float &message)
 {
     return this->log(std::to_string(message));
@@ -54,6 +59,12 @@ logging::Logger& logging::LoggerImp::log(const std::string &message)
         for(auto stream : streams)
             *stream << modifiedMessage;
     }
+    std::size_t found = message.find(std::string("\n"));
+    if (found != std::string::npos)
+        newLoggingLine = true;
+    else
+        newLoggingLine = false;
+
     return *this;
 }
 
@@ -64,9 +75,11 @@ bool logging::LoggerImp::isLocalLogLevel_greateEqual_GlobalLevel()
 
 void logging::LoggerImp::addDebugInformation(std::string& message)
 {
-    std::stringstream os;
-    os << levelString[this->localLogLevel] << "\t" << message;
-    message = os.str();
+    if (newLoggingLine) {
+        std::stringstream os;
+        os << levelString[localLogLevel] << "\t" << message;
+        message = os.str();
+    }
 }
 
 std::string logging::LoggerImp::getRankString()

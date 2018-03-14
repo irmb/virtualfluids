@@ -40,3 +40,13 @@ TEST(LoggerTest, addTwoStreams_shouldWriteToBoth)
     EXPECT_THAT(stream1.str(), "[LOW]\tHello World\n");
     EXPECT_THAT(stream2.str(), "[LOW]\tHello World\n");
 }
+
+TEST(LoggerTest, splittetOutputShouldHaveDebugInformationOnce)
+{
+    std::ostringstream stream;
+    logging::Logger::setStream(&stream);
+
+    *logging::out << logging::Logger::LOW << "Hello" << " World\n";
+
+    EXPECT_THAT(stream.str(), "[LOW]\tHello World\n");
+}
