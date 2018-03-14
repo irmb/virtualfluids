@@ -30,6 +30,7 @@ namespace logging
         std::string getRankString();
         static bool isLocalLogLevel_greateEqual_GlobalLevel();
 
+        static std::string getTimeStamp();
         void addDebugInformation(std::string& message);
         logging::Logger& log(const std::string &message);
 

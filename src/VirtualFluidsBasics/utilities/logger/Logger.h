@@ -27,9 +27,17 @@ namespace logging
             ERROR = -1
         };
 
+        enum TimeStamp
+        {
+            ENABLE,
+            DISABLE
+        };
+
         static void setStream(std::ostream* stream);
         static void addStream(std::ostream* stream);
         static void resetStreams();
+
+        static void timeStamp(TimeStamp timeStamp);
 
         static void setDebugLevel(const Level &level = Level::ERROR);
         static void enablePrintedRankNumbers(bool printRankNumbers);
@@ -50,6 +58,7 @@ namespace logging
         static Level globalLogLevel;
         static Level localLogLevel;
         static bool printRankNumber;
+        static bool timeStampEnabled;
 
     };
     extern VF_SHARED_LIB_IMPORT std::shared_ptr<Logger> out;

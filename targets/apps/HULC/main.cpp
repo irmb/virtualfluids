@@ -239,6 +239,7 @@ void multipleLevel(const std::string& configPath)
 {
     logging::Logger::setStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::ERROR);
+    logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));

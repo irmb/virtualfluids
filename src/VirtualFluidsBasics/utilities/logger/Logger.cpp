@@ -14,6 +14,7 @@ namespace logging {
     logging::Logger::Level logging::Logger::globalLogLevel = logging::Logger::ERROR;
     logging::Logger::Level logging::Logger::localLogLevel = logging::Logger::HIGH;
     bool logging::Logger::printRankNumber = false;
+    bool logging::Logger::timeStampEnabled = false;
    
 
     logging::Logger::Logger(std::ostream* stream)
@@ -58,6 +59,20 @@ namespace logging {
         else
             out->addStreamToList(stream);
     }
+
+    void logging::Logger::timeStamp(TimeStamp timeStamp)
+    {
+        switch(timeStamp)
+        {
+        case ENABLE:
+            timeStampEnabled = true;
+            break;
+        case DISABLE:
+            timeStampEnabled = false;
+            break;
+        }
+    }
+
 
 
     void logging::Logger::setDebugLevel(const Level &level)

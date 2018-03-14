@@ -2,6 +2,8 @@
 
 #include "mpi.h"
 #include <sstream>
+#include <iostream>
+#include <chrono>
 
 
 logging::LoggerImp::LoggerImp(std::ostream* stream) : logging::Logger(stream)
@@ -77,10 +79,27 @@ void logging::LoggerImp::addDebugInformation(std::string& message)
 {
     if (newLoggingLine) {
         std::stringstream os;
-        os << levelString[localLogLevel] << "\t" << message;
+        os << levelString[localLogLevel] << getTimeStamp() << "\t"  << message;
         message = os.str();
     }
 }
+
+
+std::string logging::LoggerImp::getTimeStamp()
+{
+    if (!timeStampEnabled)
+        return "";
+
+    const auto now = std::chrono::system_clock::now();
+    time_t tt = std::chrono::system_clock::to_time_t(now);
+    //const tm utc_tm = *gmtime(&tt);
+    const tm local_tm = *localtime(&tt);
+
+    std::stringstream os;
+    os << " [" << local_tm.tm_hour << ":" << local_tm.tm_min << ":" << local_tm.tm_sec << "]";
+    return os.str();
+}
+
 
 std::string logging::LoggerImp::getRankString()
 {

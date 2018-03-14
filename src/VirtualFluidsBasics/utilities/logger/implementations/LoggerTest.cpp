@@ -50,3 +50,15 @@ TEST(LoggerTest, splittetOutputShouldHaveDebugInformationOnce)
 
     EXPECT_THAT(stream.str(), "[LOW]\tHello World\n");
 }
+
+TEST(LoggerTest, enableTimeStampInOutput)
+{
+    std::ostringstream stream;
+    logging::Logger::setStream(&stream);
+    logging::Logger::timeStamp(logging::Logger::TimeStamp::ENABLE);
+
+    *logging::out << logging::Logger::LOW << "Hello" << " World\n";
+    
+    EXPECT_THAT(stream.str(), testing::StrNe("[LOW]\tHello World\n"));
+}
+
