@@ -79,6 +79,9 @@ public:
     Distribution distribution;
 
     HOSTDEVICE void findInnerNode(uint index);
+
+    bool isInside(const Cell cell) const;
+
     HOSTDEVICE void findStopperNode(uint index);
 
     HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid);

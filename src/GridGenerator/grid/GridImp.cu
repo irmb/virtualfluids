@@ -96,10 +96,15 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
     this->sparseIndices[index] = index;
 
     const Cell cell = getOddCellFromIndex(index);
-    if (object->isCellInObject(cell))
+    if (isInside(cell))
         this->field.setFieldEntryToFluid(index);
     else
         this->field.setFieldEntryToOutOfGrid(index);
+}
+
+bool GridImp::isInside(const Cell cell) const
+{
+    return object->isCellInObject(cell);
 }
 
 //TODO: check where the fine grid starts (0.25 or 0.75) and if even or odd-cell is needed
