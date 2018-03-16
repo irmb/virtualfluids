@@ -281,7 +281,11 @@ std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 
 void LevelGridBuilder::checkLevel(int level)
 {
-    if (level >= grids.size()) { std::cout << "wrong level input... return to caller\n"; return; }
+    if (level >= grids.size())
+    { 
+        std::cout << "wrong level input... return to caller\n";
+        return; 
+    }
 }
 
 

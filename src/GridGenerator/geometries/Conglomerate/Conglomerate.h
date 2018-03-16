@@ -12,6 +12,7 @@
 #include <VirtualFluidsDefinitions.h>
 #include <core/DataTypes.h>
 #include "global.h"
+#include "geometries/ObjectMocks.h"
 
 #define MAX_NUMBER_OF_OBJECTS 20
 
@@ -21,9 +22,13 @@ public:
     HOSTDEVICE Conglomerate();
     HOSTDEVICE virtual ~Conglomerate();
 
-    HOST void add(Object* object);
+    HOST static SPtr<Conglomerate> makeShared();
 
-    HOSTDEVICE Object* clone() const override;
+    HOSTDEVICE void add(Object* object);
+    HOSTDEVICE void subtract(Object* objectStub);
+
+
+    HOSTDEVICE    Object* clone() const override;
 
     double getX1Centroid() override;
     double getX1Minimum() override;
@@ -37,11 +42,17 @@ public:
 
     void scale(double delta) override;
 
-    HOSTDEVICE bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
+    HOSTDEVICE    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
 protected:
-    Object** objects;
-    uint numberOfObjects = 0;
+    static double getMinimum(double val1, double val2);
+    static double getMaximum(double val1, double val2);
+
+
+    Object** addObjects;
+    Object** subtractObjects;
+    uint numberOfAddObjects = 0;
+    uint numberOfSubtractObjects = 0;
 };
 
 

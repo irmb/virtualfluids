@@ -29,6 +29,7 @@
 #include <grid/GridMocks.h>
 #include "grid/GridStrategy/GridStrategyMocks.h"
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
+#include "geometries/Conglomerate/Conglomerate.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -248,9 +249,12 @@ void multipleLevel(const std::string& configPath)
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 40.0, 40.0, 40.0, 1.0);
 
+    Conglomerate* conglomerate = new Conglomerate();
+    conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
+    conglomerate->subtract(new Sphere(30, 20, 20, 6));
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    gridBuilder->addGrid(new Sphere(20, 20, 20, 4), 3);
+    gridBuilder->addGrid(conglomerate, 2);
 
     //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
     //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);

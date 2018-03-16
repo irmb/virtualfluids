@@ -30,14 +30,6 @@ public:
     virtual double getX3Minimum()  = 0;
     virtual double getX3Maximum()  = 0;
 
-    //virtual void setX1Minimum(double value) { this->xMinOnNodes = value; }
-    //virtual void setX1Maximum(double value) { this->x1max = value; }
-    //
-    //virtual void setX2Minimum(double value) { this->x2min = value; }
-    //virtual void setX2Maximum(double value) { this->x2max = value; }
-    //
-    //virtual void setX3Minimum(double value) { this->x3min = value; }
-    //virtual void setX3Maximum(double value) { this->x3max = value; }
 
     virtual void scale(double delta) = 0;
 

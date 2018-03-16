@@ -30,7 +30,6 @@ public:
 
 private:
     HOST void initalNumberOfNodesAndSize();
-    HOST void initalBoundingBoxStartValues();
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
     HOSTDEVICE bool isValidStartOfGridStopper(uint index) const;
     HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
@@ -80,7 +79,7 @@ public:
 
     HOSTDEVICE void findInnerNode(uint index);
 
-    bool isInside(const Cell cell) const;
+    bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void findStopperNode(uint index);
 

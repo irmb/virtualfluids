@@ -102,7 +102,7 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
         this->field.setFieldEntryToOutOfGrid(index);
 }
 
-bool GridImp::isInside(const Cell cell) const
+bool GridImp::isInside(const Cell& cell) const
 {
     return object->isCellInObject(cell);
 }
