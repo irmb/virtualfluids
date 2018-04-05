@@ -16,7 +16,9 @@ public:
 
     virtual void allocateGridMemory(SPtr<GridImp> grid) override {}
 
-    virtual void initalNodes(SPtr<GridImp> grid) override {}
+    virtual void findInnerNodes(SPtr<GridImp> grid) override {}
+    virtual void findStopperNodes(SPtr<GridImp> grid) override {}
+
     virtual void mesh(SPtr<GridImp> grid, Geometry &geom) override {}
 
     virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {}
@@ -28,6 +30,7 @@ public:
     virtual void freeFieldMemory(Field* field) override {}
 
     virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override {}
+    
 };
 
 #endif

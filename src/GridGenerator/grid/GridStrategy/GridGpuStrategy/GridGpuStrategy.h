@@ -17,7 +17,9 @@ public:
 
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
-    void initalNodes(SPtr<GridImp> grid) override;
+    void findInnerNodes(SPtr<GridImp> grid) override;
+    void findStopperNodes(SPtr<GridImp> grid) override;
+
     void mesh(SPtr<GridImp> grid, Geometry &geom) override;
     void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 

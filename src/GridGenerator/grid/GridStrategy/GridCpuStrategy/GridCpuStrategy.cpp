@@ -39,19 +39,22 @@ void GridCpuStrategy::allocateFieldMemory(Field* field)
 }
 
 
-void GridCpuStrategy::initalNodes(SPtr<GridImp> grid)
+void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
         grid->findInnerNode(index);
 
-#pragma omp parallel for
-    for (uint index = 0; index < grid->size; index++)
-        grid->findStopperNode(index);
-
     *logging::out << logging::Logger::INTERMEDIATE
         << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
         << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
+}
+
+void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+    for (uint index = 0; index < grid->size; index++)
+        grid->findStopperNode(index);
 }
 
 void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)

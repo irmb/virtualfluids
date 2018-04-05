@@ -70,7 +70,9 @@ HOST void GridImp::inital()
     field = Field(gridStrategy, size);
     field.allocateMemory();
     gridStrategy->allocateGridMemory(shared_from_this());
-    gridStrategy->initalNodes(shared_from_this());
+
+    gridStrategy->findInnerNodes(shared_from_this());
+    gridStrategy->findStopperNodes(shared_from_this());
 }
 
 HOST void GridImp::freeMemory()
@@ -107,7 +109,7 @@ bool GridImp::isInside(const Cell& cell) const
     return object->isCellInObject(cell);
 }
 
-//TODO: check where the fine grid starts (0.25 or 0.75) and if even or odd-cell is needed
+////TODO: check where the fine grid starts (0.25 or 0.75) and if even or odd-cell is needed
 // *--*--*--*
 // |  |  |  |
 // *--*--*--*

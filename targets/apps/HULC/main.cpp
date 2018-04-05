@@ -251,7 +251,7 @@ void multipleLevel(const std::string& configPath)
 
     Conglomerate* conglomerate = new Conglomerate();
     conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
-    conglomerate->subtract(new Sphere(30, 20, 20, 6));
+    conglomerate->subtract(new Sphere(30, 20, 20, 4));
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
     gridBuilder->addGrid(conglomerate, 2);
