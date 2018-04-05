@@ -1,4 +1,4 @@
-#include "Geometry.cuh"
+#include "TriangularMesh.h"
 
 #include <GridGenerator/io/STLReaderWriter/STLReader.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
@@ -10,7 +10,7 @@
 #include "Serialization/GeometryMemento.h"
 #include <GridGenerator/geometries/Triangle/Serialization/TriangleMemento.h>
 
-Geometry::Geometry(const std::string& input, const BoundingBox<int>& box, const Transformator* trafo)
+TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox<int>& box, const Transformator* trafo)
 {
 	this->transformator = new TransformatorImp(*(TransformatorImp*)(trafo));
 
@@ -19,7 +19,7 @@ Geometry::Geometry(const std::string& input, const BoundingBox<int>& box, const 
 	this->findNeighbors();
 }
 
-Geometry::Geometry(const std::string& inputPath)
+TriangularMesh::TriangularMesh(const std::string& inputPath)
 {
     this->transformator = new TransformatorImp();
 
@@ -28,7 +28,7 @@ Geometry::Geometry(const std::string& inputPath)
     this->findNeighbors();
 }
 
-Geometry::Geometry(const Geometry& geo)
+TriangularMesh::TriangularMesh(const TriangularMesh& geo)
 {
 	this->transformator = new TransformatorImp();
 	*this->transformator = *geo.transformator;
@@ -38,17 +38,17 @@ Geometry::Geometry(const Geometry& geo)
 	this->minmax = BoundingBox<real>(geo.minmax);
 }
 
-Geometry::Geometry()
+TriangularMesh::TriangularMesh()
 {
 	this->transformator = new TransformatorImp();
 }
 
-Geometry::~Geometry()
+TriangularMesh::~TriangularMesh()
 {
 	delete this->transformator;
 }
 
-void Geometry::transformChannelGeometry(const real resolution)
+void TriangularMesh::transformChannelGeometry(const real resolution)
 {
 	delete this->transformator;
 	this->transformator = new TransformatorImp(resolution, -minmax.minX, -minmax.minY, -minmax.minZ);
@@ -59,7 +59,7 @@ void Geometry::transformChannelGeometry(const real resolution)
 	findNeighbors();
 }
 
-void Geometry::findNeighbors()
+void TriangularMesh::findNeighbors()
 {
 	*logging::out << logging::Logger::INTERMEDIATE << "start finding neighbors ...\n";
 
@@ -72,29 +72,29 @@ void Geometry::findNeighbors()
 	*logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << SSTR(time) << "s\n";
 }
 
-Transformator* Geometry::getTransformator()
+Transformator* TriangularMesh::getTransformator()
 {
 	return transformator;
 }
 
-void Geometry::setTriangles(std::vector<Triangle> triangles)
+void TriangularMesh::setTriangles(std::vector<Triangle> triangles)
 {
 	this->triangleVec = triangles;
 	initalizeDataFromTriangles();
 }
 
-void Geometry::setMinMax(BoundingBox<real> minmax)
+void TriangularMesh::setMinMax(BoundingBox<real> minmax)
 {
 	this->minmax = minmax;
 }
 
-void Geometry::initalizeDataFromTriangles()
+void TriangularMesh::initalizeDataFromTriangles()
 {
 	this->triangles = triangleVec.data();
 	this->size = (int)triangleVec.size();
 }
 
-HOST bool Geometry::operator==(const Geometry &geometry) const
+HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 {
     if (!(minmax == geometry.minmax))
         return false;
@@ -109,7 +109,7 @@ HOST bool Geometry::operator==(const Geometry &geometry) const
 }
 
 
-HOST GeometryMemento Geometry::getState() const
+HOST GeometryMemento TriangularMesh::getState() const
 {
     GeometryMemento memento;
     for (int i = 0; i < size ; i++)
@@ -118,7 +118,7 @@ HOST GeometryMemento Geometry::getState() const
     return memento;
 }
 
-HOST void Geometry::setState(const GeometryMemento &memento)
+HOST void TriangularMesh::setState(const GeometryMemento &memento)
 {
     this->size = memento.triangles.size();
     this->triangleVec.resize(size);

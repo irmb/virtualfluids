@@ -8,7 +8,7 @@
 
 template <class T>
 class BoundingBox;
-struct Geometry;
+struct TriangularMesh;
 
 class VF_PUBLIC GridGpuStrategy : public GridStrategy
 {
@@ -20,7 +20,7 @@ public:
     void findInnerNodes(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
 
-    void mesh(SPtr<GridImp> grid, Geometry &geom) override;
+    void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
     void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 
     void freeMemory(SPtr<GridImp> grid) override;
@@ -39,8 +39,8 @@ private:
     void allocNeighborsIndices(SPtr<GridImp> grid);
     void allocMatrixIndicesOnGPU(SPtr<GridImp> grid);
 
-    void allocAndCopyTrianglesToGPU(Geometry &geom);
-    void freeTrianglesFromGPU(const Geometry &geom);
+    void allocAndCopyTrianglesToGPU(TriangularMesh &geom);
+    void freeTrianglesFromGPU(const TriangularMesh &geom);
 
 
     void allocAndCopyMatrixIndicesToGPU(SPtr<GridImp> grid, const uint& size);

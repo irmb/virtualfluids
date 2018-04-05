@@ -17,14 +17,14 @@
 
 class GeometryMemento;
 
-struct Geometry
+struct TriangularMesh
 {
 public:
-	VF_PUBLIC Geometry();
-	VF_PUBLIC Geometry(const Geometry& geo);
-    VF_PUBLIC Geometry(const std::string& inputPath);
-	VF_PUBLIC Geometry(const std::string& inputPath, const BoundingBox<int> &box, const Transformator *trafo);
-	VF_PUBLIC ~Geometry();
+	VF_PUBLIC TriangularMesh();
+	VF_PUBLIC TriangularMesh(const TriangularMesh& geo);
+    VF_PUBLIC TriangularMesh(const std::string& inputPath);
+	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox<int> &box, const Transformator *trafo);
+	VF_PUBLIC ~TriangularMesh();
 	VF_PUBLIC Transformator* getTransformator();
 
 	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
@@ -36,7 +36,7 @@ public:
 	int size;
 	BoundingBox<real> minmax;
 
-    HOST VF_PUBLIC bool operator==(const Geometry &geometry) const;
+    HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
 
     HOST VF_PUBLIC GeometryMemento getState() const;
     HOST VF_PUBLIC void setState(const GeometryMemento &memento);

@@ -11,7 +11,7 @@
 #include <geometries/Vertex/Vertex.cuh>
 #include <geometries/Triangle/Triangle.cuh>
 #include <geometries/BoundingBox/BoundingBox.cuh>
-#include <geometries/Geometry/Geometry.cuh>
+#include <geometries/TriangularMesh/TriangularMesh.h>
 
 class TransformatorStub : public Transformator
 {
@@ -20,7 +20,7 @@ public:
 	virtual ~TransformatorStub() {};
 
 	virtual void transformWorldToView(Triangle &value) const override{}
-	virtual void transformWorldToView(Geometry &geom) const override {}
+	virtual void transformWorldToView(TriangularMesh &geom) const override {}
 	virtual void transformWorldToView(Vertex &value) const override {}
 	
 	virtual void transformViewToWorld(BoundingBox<real> &box) const override {}

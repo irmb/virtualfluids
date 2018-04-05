@@ -6,7 +6,7 @@
 
 #include "GridStrategy.h"
 
-struct Geometry;
+struct TriangularMesh;
 class GridImp;
 
 class VF_PUBLIC GridStrategyDummy : public GridStrategy
@@ -19,7 +19,7 @@ public:
     virtual void findInnerNodes(SPtr<GridImp> grid) override {}
     virtual void findStopperNodes(SPtr<GridImp> grid) override {}
 
-    virtual void mesh(SPtr<GridImp> grid, Geometry &geom) override {}
+    virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override {}
 
     virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {}
 

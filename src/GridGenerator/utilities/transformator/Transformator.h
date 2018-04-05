@@ -8,7 +8,7 @@
 template<typename T>
 class BoundingBox;
 struct Triangle;
-struct Geometry;
+struct TriangularMesh;
 struct Vertex;
 
 
@@ -23,7 +23,7 @@ protected:
 
 public:
 	virtual void transformWorldToGrid(Triangle &value) const = 0;
-	virtual void transformWorldToGrid(Geometry &geom) const = 0;
+	virtual void transformWorldToGrid(TriangularMesh &geom) const = 0;
 	virtual void transformWorldToGrid(Vertex &value) const = 0;
 
     virtual void transformGridToWorld(Triangle &t) const = 0;

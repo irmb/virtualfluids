@@ -10,7 +10,7 @@
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <utilities/logger/Logger.h>
 
@@ -64,7 +64,7 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name, const Transfor
     }
 }
 
-Geometry STLReader::getGeometry(const std::string& name, const Transformator& trans)
+TriangularMesh STLReader::getGeometry(const std::string& name, const Transformator& trans)
 {
 	std::ifstream file(name.c_str());
 	if (file.is_open()) {
@@ -88,7 +88,7 @@ Geometry STLReader::getGeometry(const std::string& name, const Transformator& tr
 	}
 }
 
-Geometry STLReader::getGeometryFromBinarySTL(const std::string& name, const Transformator& trans)
+TriangularMesh STLReader::getGeometryFromBinarySTL(const std::string& name, const Transformator& trans)
 {
 	FILE *file;
 	std::string mode = "rb";
@@ -107,7 +107,7 @@ Geometry STLReader::getGeometryFromBinarySTL(const std::string& name, const Tran
 	std::vector<Triangle> triangles;
 
 	char facet[50];
-	Geometry geometry;
+	TriangularMesh geometry;
 	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
 	for (unsigned int i = 0; i < nTriLong; i++) {
@@ -134,7 +134,7 @@ Geometry STLReader::getGeometryFromBinarySTL(const std::string& name, const Tran
 	return geometry;
 }
 
-Geometry STLReader::getGeometryFromASCIISTL(const std::string& name, const Transformator& trans)
+TriangularMesh STLReader::getGeometryFromASCIISTL(const std::string& name, const Transformator& trans)
 {
 	int lines = countLinesInFile(name);
 	int nTriangles = (lines) / 7; // seven lines per triangle
@@ -147,7 +147,7 @@ Geometry STLReader::getGeometryFromASCIISTL(const std::string& name, const Trans
 	file.open(name.c_str(), std::ifstream::in);
 	std::getline(file, line); // solid ascii
 
-	Geometry geometry;
+	TriangularMesh geometry;
 	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
 	for (int t = 0; t < nTriangles; t++) {

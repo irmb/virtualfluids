@@ -11,7 +11,7 @@
 template<typename T>
 class BoundingBox;
 struct Triangle;
-struct Geometry;
+struct TriangularMesh;
 struct Vertex;
 
 
@@ -35,7 +35,7 @@ public:
 	VF_PUBLIC virtual ~TransformatorImp();
 	
 	VF_PUBLIC void transformWorldToGrid(Triangle &value) const;
-	VF_PUBLIC void transformWorldToGrid(Geometry &geom) const;
+	VF_PUBLIC void transformWorldToGrid(TriangularMesh &geom) const;
 	VF_PUBLIC void transformWorldToGrid(Vertex &value) const;
 
     VF_PUBLIC void transformGridToWorld(Triangle &t) const;

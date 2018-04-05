@@ -7,7 +7,7 @@
 #include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
 
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <GridGenerator/grid/kernel/runGridKernelGPU.cuh>
 #include <GridGenerator/grid/GridImp.h>
@@ -41,7 +41,7 @@ void GridGpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 
 }
 
-void GridGpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
+void GridGpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 {
     *logging::out << logging::Logger::INTERMEDIATE << "start meshing on GPU...\n";
     allocAndCopyTrianglesToGPU(geom);
@@ -240,7 +240,7 @@ void GridGpuStrategy::allocMatrixIndicesOnGPU(SPtr<GridImp> grid)
 }
 
 
-void GridGpuStrategy::allocAndCopyTrianglesToGPU(Geometry &geom)
+void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
 {
     *logging::out << logging::Logger::INTERMEDIATE << "start copying triangles ...\n";
     clock_t begin = clock();
@@ -260,7 +260,7 @@ void GridGpuStrategy::allocAndCopyTrianglesToGPU(Geometry &geom)
     *logging::out << logging::Logger::INTERMEDIATE << "...copying triangles finish!\n\n";
 }
 
-void GridGpuStrategy::freeTrianglesFromGPU(const Geometry &geom)
+void GridGpuStrategy::freeTrianglesFromGPU(const TriangularMesh &geom)
 {
     CudaSafeCall(cudaFree(geom.triangles));
     CudaCheckError();

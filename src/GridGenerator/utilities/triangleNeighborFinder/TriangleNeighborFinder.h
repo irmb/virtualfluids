@@ -8,7 +8,7 @@
 
 struct Triangle;
 struct Vertex;
-struct Geometry;
+struct TriangularMesh;
 
 struct IntegerPtr2D {
     int *ptr;
@@ -23,7 +23,7 @@ public:
     VF_PUBLIC ~TriangleNeighborFinder();
     
     void VF_PUBLIC fillWithNeighborIndices(IntegerPtr2D *indices, Triangle *triangles);
-	void VF_PUBLIC fillWithNeighborAngles(Geometry *geom) const;
+	void VF_PUBLIC fillWithNeighborAngles(TriangularMesh *geom) const;
 
 private:
     void initalSortedInSpaceWithCoords(Triangle *triangles_ptr, int size);

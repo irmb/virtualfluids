@@ -55,7 +55,7 @@ public:
     virtual void freeMemory() override {}
 
     virtual void findGridInterface(SPtr<Grid> grid) override {}
-    virtual void mesh(Geometry& geometry) override {}
+    virtual void mesh(TriangularMesh& geometry) override {}
     virtual int transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }

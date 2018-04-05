@@ -8,7 +8,7 @@
 #include <GridGenerator/grid/distributions/Distribution.h>
 #include <GridGenerator/grid/GridImp.h>
       
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <utilities/logger/Logger.h>
 #include "grid/NodeValues.h"
@@ -57,7 +57,7 @@ void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)
         grid->findStopperNode(index);
 }
 
-void GridCpuStrategy::mesh(SPtr<GridImp> grid, Geometry &geom)
+void GridCpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 {
 #pragma omp parallel for
     for (int i = 0; i < geom.size; i++)

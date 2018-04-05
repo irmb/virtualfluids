@@ -4,7 +4,7 @@
 #include "GridGenerator/global.h"
 #include "Cell.h"
 
-struct Geometry;
+struct TriangularMesh;
 struct Vertex;
 struct Triangle;
 class GridStrategy;
@@ -63,7 +63,7 @@ public:
     HOST virtual void inital() = 0;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid) = 0;
-    HOST virtual void mesh(Geometry& geometry) = 0;
+    HOST virtual void mesh(TriangularMesh& geometry) = 0;
 
 
     HOST virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) = 0;

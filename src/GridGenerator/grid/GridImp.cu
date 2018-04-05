@@ -432,7 +432,7 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
-HOST void GridImp::mesh(Geometry &geometry)
+HOST void GridImp::mesh(TriangularMesh &geometry)
 {
     const clock_t begin = clock();
 

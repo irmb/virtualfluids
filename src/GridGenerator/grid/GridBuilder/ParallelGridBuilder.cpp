@@ -11,7 +11,7 @@
 //
 //#include <GridGenerator/geometries/Triangle/Triangle.cuh>
 //#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-//#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+//#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 //
 //#include <GridGenerator/utilities/Transformator/Transformator.h>
 //

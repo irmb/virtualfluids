@@ -6,7 +6,7 @@
 #include "grid/Field.h"
 
 struct Vertex;
-struct Geometry;
+struct TriangularMesh;
 class GridImp;
 
 class VF_PUBLIC GridStrategy
@@ -21,7 +21,7 @@ public:
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
     virtual void findStopperNodes(SPtr<GridImp> grid) = 0;
 
-    virtual void mesh(SPtr<GridImp> grid, Geometry &geom) = 0;
+    virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
 
     virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) = 0;
 

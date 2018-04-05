@@ -9,7 +9,7 @@
 #include "Field.h"
 
 
-struct Geometry;
+struct TriangularMesh;
 struct Vertex;
 struct Triangle;
 class GridStrategy;
@@ -145,7 +145,7 @@ private:
 
 
 public:
-    HOST void mesh(Geometry &geometry) override;
+    HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(const Triangle &triangle);
 
 private:

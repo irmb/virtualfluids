@@ -22,7 +22,7 @@
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridBuilder/ParallelGridBuilder.h"
-#include "geometries/Geometry/Geometry.cuh"
+#include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "grid/GridFactory.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"

@@ -9,7 +9,7 @@
 
 
 class GridImp;
-struct Geometry;
+struct TriangularMesh;
 
 class VF_PUBLIC GridCpuStrategy : public GridStrategy
 {
@@ -21,7 +21,7 @@ public:
     void findInnerNodes(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
 
-    void mesh(SPtr<GridImp> grid, Geometry &geom) override;
+    void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
 
     void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 

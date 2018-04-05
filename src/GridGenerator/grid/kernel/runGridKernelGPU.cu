@@ -5,10 +5,10 @@
 #include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
 
 #include <GridGenerator/grid/GridImp.h>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 GLOBAL void initalField(GridImp grid);
-GLOBAL void runMeshing(GridImp grid, const Geometry geom);
+GLOBAL void runMeshing(GridImp grid, const TriangularMesh geom);
 
 GLOBAL void findGridInterface(GridImp grid, GridImp finerGrid);
 GLOBAL void runKernelTomarkNodesToDeleteOutsideOfGeometry(GridImp grid);
@@ -32,12 +32,12 @@ GLOBAL void initalField(GridImp grid)
 
 //////////////////////////////////////////////////////////////////////////
 
-float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const Geometry &geom)
+float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const TriangularMesh &geom)
 {
     return runKernel(runMeshing, para, grid, geom);
 }
 
-GLOBAL void runMeshing(GridImp grid, const Geometry geom)
+GLOBAL void runMeshing(GridImp grid, const TriangularMesh geom)
 {
     unsigned int i = LaunchParameter::getGlobalIdx_1D_1D();
     if (i < geom.size)

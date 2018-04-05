@@ -2,7 +2,7 @@
 #include <memory>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Arrow/Arrow.h>
 
@@ -36,7 +36,7 @@ TransformatorImp::~TransformatorImp()
 
 }
 
-void TransformatorImp::transformWorldToGrid(Geometry &geom) const
+void TransformatorImp::transformWorldToGrid(TriangularMesh &geom) const
 {
 	for (int i = 0; i < geom.size; i++)
 		transformWorldToGrid(geom.triangleVec[i]);

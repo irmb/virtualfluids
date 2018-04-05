@@ -3,8 +3,8 @@
 #include <memory>
 #include <fstream>
 
-#include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/Serialization/GeometryMemento.h>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
@@ -39,7 +39,7 @@ TEST(GeometryMementoTest, serializeAndDeserializeGeoemtry)
     t2.alphaAngles[1] = 50;
     t2.alphaAngles[2] = 60;
 
-    Geometry geo;
+    TriangularMesh geo;
     geo.triangleVec = { t1, t2 };
     geo.size = 2;
 
@@ -48,7 +48,7 @@ TEST(GeometryMementoTest, serializeAndDeserializeGeoemtry)
 
     GeometryMemento newSut;
     deserialize(newSut, fileName);
-    Geometry geoNew;
+    TriangularMesh geoNew;
     geoNew.setState(newSut);
 
     EXPECT_TRUE(geo == geoNew);

@@ -14,7 +14,7 @@ struct Triangle;
 struct Vertex;
 template<class T>
 class BoundingBox;
-struct Geometry;
+struct TriangularMesh;
 
 class VF_PUBLIC STLReader
 {
@@ -23,9 +23,9 @@ public:
 	static std::vector<Triangle> readSTL(const std::string& name, const Transformator& trans);
 	static std::vector<Triangle> readSTL(const BoundingBox<int> &box, const std::string name, const Transformator& trans);
 
-	static Geometry getGeometry(const std::string& name, const Transformator& trans);
-	static Geometry getGeometryFromBinarySTL(const std::string& name, const Transformator& trans);
-	static Geometry getGeometryFromASCIISTL(const std::string& name, const Transformator& trans);
+	static TriangularMesh getGeometry(const std::string& name, const Transformator& trans);
+	static TriangularMesh getGeometryFromBinarySTL(const std::string& name, const Transformator& trans);
+	static TriangularMesh getGeometryFromASCIISTL(const std::string& name, const Transformator& trans);
 
     static std::vector<Triangle> readBinarySTL(const std::string& name, const Transformator& trans);
     static std::vector<Triangle> readASCIISTL(const std::string& name, const Transformator& trans);

@@ -6,7 +6,7 @@ using namespace testing;
 
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <GridGenerator/geometries/Arrow/ArrowMocks.h>
 
@@ -16,7 +16,7 @@ class TransformatorTest : public Test
 public:
 	std::shared_ptr<Transformator> sut;
 	Vertex v;
-
+    
 	real delta;
 	Vertex translater;
 
@@ -116,7 +116,7 @@ TEST_F(TransformatorTest, transformTriangleToView)
 TEST_F(TransformatorTest, transformGeometryToView)
 {
 	sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
-	Geometry g;
+    TriangularMesh g;
 	g.triangleVec.push_back(Triangle(v,v,v));
 	g.size = 1;
 	Vertex expected = Vertex((v + translater) * (1.0f / delta));

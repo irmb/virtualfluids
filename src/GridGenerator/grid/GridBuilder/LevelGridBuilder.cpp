@@ -8,7 +8,7 @@
 
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 
 #include <GridGenerator/io/GridVTKWriter/GridVTKWriter.h>
@@ -24,7 +24,7 @@
 #include <utilities/logger/Logger.h>
 
 
-#include <GridGenerator/geometries/Geometry/Serialization/GeometryMemento.h>
+#include <GridGenerator/geometries/TriangularMesh/Serialization/GeometryMemento.h>
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.h"
@@ -159,7 +159,7 @@ void LevelGridBuilder::meshGeometry(std::string input, int level)
 {
     checkLevel(level);
 
-    Geometry geometry(input);
+    TriangularMesh geometry(input);
 
     if (geometry.size > 0)
         this->grids[level]->mesh(geometry);

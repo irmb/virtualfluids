@@ -2,7 +2,7 @@
 #include <omp.h>
 
 #include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 struct IDS {
     enum IDs{ vertexID = 0, firstVertexID = 1, coordinateID = 2, uniqueCoordID = 3, x = 3, y = 4, z = 5 };
@@ -238,7 +238,7 @@ void TriangleNeighborFinder::fillWithNeighborIndices(IntegerPtr2D *neighborIndic
 }
 
 
-void TriangleNeighborFinder::fillWithNeighborAngles(Geometry *geom) const
+void TriangleNeighborFinder::fillWithNeighborAngles(TriangularMesh *geom) const
 {
     int j, row, index, indexNeighbor;
     #pragma omp parallel for private(j, row, index, indexNeighbor) shared(neighborAngles->ptr)
