@@ -354,7 +354,7 @@ Vertex STLReader::parseLineToCoordinates(std::ifstream& file, std::string format
     std::string line;
     getline(file, line);
     const char* buffer = line.c_str();
-    real x, y, z;
+    float x, y, z;
     sscanf(buffer, format.c_str(), &x, &y, &z);
     return Vertex(x, y, z);
 }
