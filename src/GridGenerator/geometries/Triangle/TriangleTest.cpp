@@ -2,7 +2,7 @@
 #include <GridGenerator/utilities/Transformator/Transformator.h>
 #include "TriangleException.h"
 
-#include "Triangle.cuh"
+#include "Triangle.h"
 
 
 using namespace testing;

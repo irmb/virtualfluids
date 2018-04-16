@@ -1,80 +1,46 @@
 #include "gmock/gmock.h"
 
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 
 
 using namespace testing;
 
 
-TEST(BoundingBoxTest, initWithTriangle_whenTheValueIsIntegerBoxHasToPLUS_or_MINUS_ONE) 
+TEST(BoundingBoxTest, initBBWithTriangleOnNodes_minimumBorder)
 {
-    real minX = 1.0f;
-    real minY = 23.0f;
-    real minZ = 1.1222f;
+    Vertex v = Vertex(0.1, 0.3, 0.8);
+    Triangle t = Triangle(v, v, v, Vertex(0.0f, 0.0f, 0.0f));
 
-    real maxX = 110.0f;
-    real maxY = 50.0f;
-    real maxZ = 12122.23f;
-	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f)));
-    EXPECT_THAT(box.minX, Eq(minX - 1));
-    EXPECT_THAT(box.minY, Eq(minY - 1));
-    EXPECT_THAT(box.minZ, Eq((int)minZ));
+    const real startX = 0.2;
+    const real startY = 0.2;
+    const real startZ = 0.2;
+    const real delta = 0.5;
+    const auto sut =  BoundingBox<real>::makeRealNodeBox(t, startX, startY, startZ, delta);
 
-    EXPECT_THAT(box.maxX, Eq(maxX + 1));
-    EXPECT_THAT(box.maxY, Eq(maxY + 1));
-    EXPECT_THAT(box.maxZ, Eq((int)maxZ + 1));
-}
-
-TEST(BoundingBoxTest, initWithTriangle2)
-{
-	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(20.0f, 1.0f, 1.0f), Vertex(1.0f, 1.0f, 1 + 1e-006f), Vertex(20.0f, 20.0f, 1.0f), Vertex(1.0f, 0.0f, 0.0f)));
-
-    EXPECT_THAT(box.minX, Eq(0));
-    EXPECT_THAT(box.minY, Eq(0));
-    EXPECT_THAT(box.minZ, Eq(0));
-
-    EXPECT_THAT(box.maxX, Eq(21));
-    EXPECT_THAT(box.maxY, Eq(21));
-    EXPECT_THAT(box.maxZ, Eq(2));
+    EXPECT_THAT(sut.minX, RealEq(-0.3));
+    EXPECT_THAT(sut.minY, RealEq(0.2));
+    EXPECT_THAT(sut.minZ, RealEq(0.7));
 }
 
 
-TEST(BoundingBoxTest, initWithTriangle3) 
+TEST(BoundingBoxTest, initBBWithTriangleOnNodes_maximumBorder)
 {
-	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(20.0f, 20.0f, 20.0f), Vertex(1.0f, 20.0f, 20.0f), Vertex(20.0f, 1.0f, 20.0f), Vertex(1.0f, 0.0f, 0.0f)));
+    Vertex v = Vertex(0.1, 0.3, 0.8);
+    Triangle t = Triangle(v, v, v, Vertex(0.0f, 0.0f, 0.0f));
 
-    EXPECT_THAT(box.minX, Eq(0));
-    EXPECT_THAT(box.minY, Eq(0));
-    EXPECT_THAT(box.minZ, Eq(19));
+    const real startX = 0.2;
+    const real startY = 0.2;
+    const real startZ = 0.2;
+    const real delta = 0.5;
+    const auto sut = BoundingBox<real>::makeRealNodeBox(t, startX, startY, startZ, delta);
 
-    EXPECT_THAT(box.maxX, Eq(21));
-    EXPECT_THAT(box.maxY, Eq(21));
-    EXPECT_THAT(box.maxZ, Eq(21));
+    EXPECT_THAT(sut.maxX, RealEq(0.2));
+    EXPECT_THAT(sut.maxY, RealEq(0.7));
+    EXPECT_THAT(sut.maxZ, RealEq(1.2));
 }
 
-TEST(BoundingBoxTest, whenAllValueAreFloat_BoxHasToCEIL_OR_FLOOR) 
-{
-    real minX = 1.5f;
-    real minY = 23.2f;
-    real minZ = 1.1222f;
-
-    real maxX = 110.4f;
-    real maxY = 50.5f;
-    real maxZ = 12122.23f;
-
-	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(Triangle(Vertex(maxX, maxY - 10, minZ + 2), Vertex(minX, maxY, maxZ), Vertex(minX + 3, minY, minZ), Vertex(0.0f, 0.0f, 0.0f)));
-
-    EXPECT_THAT(box.minX, Eq((int)minX));
-    EXPECT_THAT(box.minY, Eq((int)minY));
-    EXPECT_THAT(box.minZ, Eq((int)minZ));
-
-    EXPECT_THAT(box.maxX, Eq((int)maxX + 1));
-    EXPECT_THAT(box.maxY, Eq((int)maxY + 1));
-    EXPECT_THAT(box.maxZ, Eq((int)maxZ + 1));
-
-}
 
 TEST(BoundingBoxExactTest, findMinMaxFromTriangle)
 {
@@ -134,19 +100,4 @@ TEST(BoundingBoxTest, isInside_false)
     EXPECT_FALSE(box.isInside(t));
 }
 
-TEST(BoundingBoxTest, createNodeBoxWithFloastingPointValues)
-{
-    Triangle t = Triangle(Vertex(1.34, -2.01, 1.8), Vertex(2, 2, 1.9), Vertex(3.99, 2.1, 1.51), Vertex(0.0, 0.0, 0.0));
-    real delta = 0.5;
-
-    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(t, delta);
-
-    EXPECT_THAT(box.minX, RealEq(1.0));
-    EXPECT_THAT(box.minY, RealEq(-2.5));
-    EXPECT_THAT(box.minZ, RealEq(1.5));
-
-    EXPECT_THAT(box.maxX, RealEq(4));
-    EXPECT_THAT(box.maxY, RealEq(2.5));
-    EXPECT_THAT(box.maxZ, RealEq(2.0));
-}
 

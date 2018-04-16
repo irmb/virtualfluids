@@ -1,8 +1,10 @@
-#include "Triangle.cuh"
+#include "Triangle.h"
 #include <GridGenerator/utilities/math/CudaMath.cuh>
 #include "TriangleException.h"
 
 #include "Serialization/TriangleMemento.h"
+
+#include "grid/NodeValues.h"
 
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal) {}
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3) { calcNormal(); }
@@ -24,33 +26,39 @@ HOSTDEVICE void Triangle::calcNormal()
     normal.normalize();
 }
 
+HOSTDEVICE void Triangle::initalLayerThickness(real delta)
+{
+    this->layerThickness = delta*(abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z));
+}
+
+
 HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
 {
-    real s, delta;
-    delta = abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z); //TODO: muss eigentlich nicht fuer jeden Punkt neu berechnet werden
+    real s;
 
-    if (this->isUnterExtendedFace(point, s, delta))
+    if (this->isUnterExtendedFace(point, s))
         if (this->isNotNextToFace(point))
             if (this->isUnderAngleToNeighbors(point))
-                if (this->isStopper(point))
-                    return 1;
+                if (this->isNegativeDirectionBorder(point))
+                    return NEGATIVE_DIRECTION_BORDER;
                 else
-                    return 99; //solid
+                    return INSIDE;
             else 
                 return 4;
         else
             return 3;
-    else if (this->isQNode(point, s, delta))
-        return 6;
-    else
-        return 2;
+
+
+    if (this->isQNode(point, s))
+        return Q;
     
+    return FLUID;
 }
 
-HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex &point, real &s, real &delta) const
+HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex & point, real &s) const
 {
     s = this->getPerpedicularDistanceFrom(point);
-    return ((CudaMath::greaterEqual(s, 0.0f)) && s < delta);
+    return ((CudaMath::greaterEqual(s, 0.0f)) && s < this->layerThickness);
 }
 
 HOSTDEVICE real Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
@@ -64,15 +72,15 @@ HOSTDEVICE Vertex Triangle::getPerpedicularPointFrom(const Vertex &P) const
     return P + normal * getPerpedicularDistanceFrom(P);
 }
 
-HOSTDEVICE bool Triangle::isQNode(const Vertex &point, const real &s, const real &delta) const
+HOSTDEVICE bool Triangle::isQNode(const Vertex & point, const real &s) const
 {
-    return (s < 0 && CudaMath::lessEqual(-s, delta));
+    return (s < 0 && CudaMath::lessEqual(-s, this->layerThickness));
     //calculateQs(actualPoint, actualTriangle);
 }
 
-HOSTDEVICE bool Triangle::isStopper(const Vertex &point) const
+HOSTDEVICE bool Triangle::isNegativeDirectionBorder(const Vertex &point) const
 {
-    return (CudaMath::lessEqual(normal.x, 0.0f) || CudaMath::lessEqual(normal.y, 0.0f) || CudaMath::lessEqual(normal.z, 0.0f));
+    return normal.x < 0.0f || normal.y < 0.0f || normal.z < 0.0f;
     //return (sVector.x < 0.0f && sVector.y < 0.0f && sVector.z < 0.0f);
 }
 

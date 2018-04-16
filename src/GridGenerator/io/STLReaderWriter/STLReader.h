@@ -23,9 +23,9 @@ public:
 	static std::vector<Triangle> readSTL(const std::string& name, const Transformator& trans);
 	static std::vector<Triangle> readSTL(const BoundingBox<int> &box, const std::string name, const Transformator& trans);
 
-	static TriangularMesh getGeometry(const std::string& name, const Transformator& trans);
-	static TriangularMesh getGeometryFromBinarySTL(const std::string& name, const Transformator& trans);
-	static TriangularMesh getGeometryFromASCIISTL(const std::string& name, const Transformator& trans);
+	static TriangularMesh* makeTriangularMesh(const std::string& name);
+	static TriangularMesh* getGeometryFromBinarySTL(const std::string& name);
+	static TriangularMesh* getGeometryFromASCIISTL(const std::string& name);
 
     static std::vector<Triangle> readBinarySTL(const std::string& name, const Transformator& trans);
     static std::vector<Triangle> readASCIISTL(const std::string& name, const Transformator& trans);

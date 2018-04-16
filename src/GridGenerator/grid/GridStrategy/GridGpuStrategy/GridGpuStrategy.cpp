@@ -6,7 +6,7 @@
 #include <GridGenerator/utilities/cuda/CudaErrorCheck.cu>
 #include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
 
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <GridGenerator/grid/kernel/runGridKernelGPU.cuh>
@@ -28,6 +28,16 @@ void GridGpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
     this->allocField(grid);
     this->allocMatrixIndicesOnGPU(grid);
     this->allocNeighborsIndices(grid);
+}
+
+void GridGpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
+{
+
+}
+
+void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
+{
+
 }
 
 

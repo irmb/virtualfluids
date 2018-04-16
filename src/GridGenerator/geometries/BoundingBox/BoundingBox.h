@@ -30,8 +30,7 @@ public:
 
 public:
     HOST static BoundingBox<real> makeExactBox(const Triangle &t);
-    HOSTDEVICE static BoundingBox<real> makeRealNodeBox(const Triangle &t, const real& delta);
-	HOSTDEVICE static BoundingBox<int> makeNodeBox(const Triangle &t);
+    HOSTDEVICE static BoundingBox<real> makeRealNodeBox(const Triangle &t, const real& startX, const real& startY, const real& startZ, const real& delta);
     HOST static BoundingBox<T> makeInvalidMinMaxBox();
 
     void setMinMax(const Triangle& t);
@@ -51,8 +50,9 @@ public:
     
 
 private:
-    HOSTDEVICE static void calculateMinMaxOnNodes(int &minNode, int &maxNode, const real &minExact, const real &maxExact);
-    HOSTDEVICE static void calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& delta);
+    HOSTDEVICE static void calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& start, const real& delta);
+    HOSTDEVICE static real getMinimum(const real& minExact, const real& decimalStart, const real& delta);
+    HOSTDEVICE static real getMaximum(const real& maxExact, const real& decimalStart, const real& delta);
 
 	bool isInside(const Vertex &v) const;
 	void getPoints(Vertex v[8]) const;
@@ -60,3 +60,4 @@ private:
 };
 
 #endif
+

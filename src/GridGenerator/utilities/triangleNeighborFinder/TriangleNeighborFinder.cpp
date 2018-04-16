@@ -1,7 +1,7 @@
 #include "TriangleNeighborFinder.h"
 #include <omp.h>
 
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 struct IDS {

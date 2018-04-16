@@ -5,7 +5,7 @@
 using namespace testing;
 
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <GridGenerator/geometries/Arrow/ArrowMocks.h>

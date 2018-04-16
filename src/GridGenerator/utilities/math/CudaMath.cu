@@ -46,3 +46,4 @@ HOSTDEVICE real CudaMath::acosReal(const real& val)
 #endif
 }
 
+

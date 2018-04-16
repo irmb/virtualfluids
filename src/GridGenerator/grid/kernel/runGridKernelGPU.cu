@@ -140,7 +140,7 @@ GLOBAL void setInvalidNodes(GridImp grid, bool *foundInvalidNode)
 {
     uint index = LaunchParameter::getGlobalIdx_2D_1D();
     if (index < grid.getSize())
-        grid.setInvalidNode(index, *foundInvalidNode);
+        grid.setInsideNode(index, *foundInvalidNode);
 }
 
 

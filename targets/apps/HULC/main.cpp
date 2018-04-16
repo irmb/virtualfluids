@@ -30,6 +30,7 @@
 #include "grid/GridStrategy/GridStrategyMocks.h"
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
 #include "geometries/Conglomerate/Conglomerate.h"
+#include "io/STLReaderWriter/STLReader.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -247,14 +248,17 @@ void multipleLevel(const std::string& configPath)
     gridFactory->setGrid("grid");
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 40.0, 40.0, 40.0, 1.0);
+    gridBuilder->addCoarseGrid(-5.0, -5.0, -5.0, 40.0, 40.0, 40.0, 1.0);
 
-    Conglomerate* conglomerate = new Conglomerate();
-    conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
-    conglomerate->subtract(new Sphere(30, 20, 20, 4));
+    //Conglomerate* conglomerate = new Conglomerate();
+    //conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
+    //conglomerate->subtract(new Sphere(30, 20, 20, 4));
+    //gridBuilder->addGrid(conglomerate, 2);
+
+    TriangularMesh* triangularMesh = STLReader::makeTriangularMesh("D:/GRIDGENERATION/STL/quadarBinaer.stl");
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    gridBuilder->addGrid(conglomerate, 2);
+    gridBuilder->addGrid(triangularMesh);
 
     //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
     //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
@@ -270,7 +274,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0", 0);
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
 
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);

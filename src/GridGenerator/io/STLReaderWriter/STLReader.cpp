@@ -8,8 +8,8 @@
 
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <utilities/logger/Logger.h>
@@ -64,7 +64,7 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name, const Transfor
     }
 }
 
-TriangularMesh STLReader::getGeometry(const std::string& name, const Transformator& trans)
+TriangularMesh* STLReader::makeTriangularMesh(const std::string& name)
 {
 	std::ifstream file(name.c_str());
 	if (file.is_open()) {
@@ -74,12 +74,12 @@ TriangularMesh STLReader::getGeometry(const std::string& name, const Transformat
 		if (strcmp(line.c_str(), "solid ascii") == 0) {
 			file.close();
 			*logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
-			return getGeometryFromASCIISTL(name, trans);
+			return getGeometryFromASCIISTL(name);
 		}
 		else {
 			file.close();
 			*logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
-			return getGeometryFromBinarySTL(name, trans);
+			return getGeometryFromBinarySTL(name);
 		}
 	}
 	else {
@@ -88,7 +88,7 @@ TriangularMesh STLReader::getGeometry(const std::string& name, const Transformat
 	}
 }
 
-TriangularMesh STLReader::getGeometryFromBinarySTL(const std::string& name, const Transformator& trans)
+TriangularMesh* STLReader::getGeometryFromBinarySTL(const std::string& name)
 {
 	FILE *file;
 	std::string mode = "rb";
@@ -107,7 +107,7 @@ TriangularMesh STLReader::getGeometryFromBinarySTL(const std::string& name, cons
 	std::vector<Triangle> triangles;
 
 	char facet[50];
-	TriangularMesh geometry;
+	TriangularMesh* geometry = new TriangularMesh();
 	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
 	for (unsigned int i = 0; i < nTriLong; i++) {
@@ -119,22 +119,19 @@ TriangularMesh STLReader::getGeometryFromBinarySTL(const std::string& name, cons
 		Vertex p2 = getVertexFromChar(facet + 24);
 		Vertex p3 = getVertexFromChar(facet + 36);
 
-		trans.transformWorldToGrid(p1);
-		trans.transformWorldToGrid(p2);
-		trans.transformWorldToGrid(p3);
-
         Triangle t(p1, p2, p3, normal);
 
 		box.setMinMax(t);
 		triangles.push_back(t);
 	}
-	geometry.setTriangles(triangles);
-	geometry.setMinMax(box);
+	geometry->setTriangles(triangles);
+	geometry->setMinMax(box);
+    geometry->findNeighbors();
 	fclose(file);
 	return geometry;
 }
 
-TriangularMesh STLReader::getGeometryFromASCIISTL(const std::string& name, const Transformator& trans)
+TriangularMesh* STLReader::getGeometryFromASCIISTL(const std::string& name)
 {
 	int lines = countLinesInFile(name);
 	int nTriangles = (lines) / 7; // seven lines per triangle
@@ -147,7 +144,7 @@ TriangularMesh STLReader::getGeometryFromASCIISTL(const std::string& name, const
 	file.open(name.c_str(), std::ifstream::in);
 	std::getline(file, line); // solid ascii
 
-	TriangularMesh geometry;
+	TriangularMesh* geometry = new TriangularMesh();
 	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
 
 	for (int t = 0; t < nTriangles; t++) {
@@ -158,17 +155,16 @@ TriangularMesh STLReader::getGeometryFromASCIISTL(const std::string& name, const
 		Vertex p3 = parseLineToCoordinates(file, "%*s %f %f %f");
 		getline(file, line); //endloop
 		getline(file, line); //endfacet
-		trans.transformWorldToGrid(p1);
-		trans.transformWorldToGrid(p2);
-		trans.transformWorldToGrid(p3);
+
 		Triangle tri = Triangle(p1, p2, p3, normal);
 		tri.calcNormal();
 		triangles.push_back(tri);
 
 		box.setMinMax(tri);
 	}
-	geometry.setTriangles(triangles);
-	geometry.setMinMax(box);
+	geometry->setTriangles(triangles);
+	geometry->setMinMax(box);
+    geometry->findNeighbors();
 
 	file.close();
 	return geometry;

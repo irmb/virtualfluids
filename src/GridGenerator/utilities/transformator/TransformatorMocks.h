@@ -9,8 +9,8 @@
 #include "Transformator.h"
 
 #include <geometries/Vertex/Vertex.cuh>
-#include <geometries/Triangle/Triangle.cuh>
-#include <geometries/BoundingBox/BoundingBox.cuh>
+#include <geometries/Triangle/Triangle.h>
+#include <geometries/BoundingBox/BoundingBox.h>
 #include <geometries/TriangularMesh/TriangularMesh.h>
 
 class TransformatorStub : public Transformator

@@ -3,7 +3,6 @@
 
 #include "GridGenerator/global.h"
 
-
 #include "../Vertex/Vertex.cuh"
 
 #include <memory>
@@ -15,6 +14,7 @@ struct VF_PUBLIC Triangle
 {
     Vertex v1, v2, v3, normal;
     real alphaAngles[3];
+    real layerThickness;
     
 	HOSTDEVICE Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal);
 	HOSTDEVICE Triangle(Vertex &v1, Vertex &v2, Vertex &v3);
@@ -22,6 +22,8 @@ struct VF_PUBLIC Triangle
 
 	HOSTDEVICE void set(const Vertex &v1, const Vertex &v2, const Vertex &v3);
 	HOSTDEVICE void calcNormal();
+
+    HOSTDEVICE void initalLayerThickness(real delta);
 
 
 	Vertex getCenterOfMass() const;
@@ -37,14 +39,14 @@ struct VF_PUBLIC Triangle
 
     HOSTDEVICE char isUnderFace(const Vertex &point) const;
 
-    HOSTDEVICE bool isUnterExtendedFace(const Vertex & point, real &s, real &delta) const;
+    HOSTDEVICE bool isUnterExtendedFace(const Vertex & point, real &s) const;
     HOSTDEVICE bool isNotNextToFace(const Vertex &point) const;
     HOSTDEVICE bool isUnderAngleToNeighbors(const Vertex &point) const;
     HOSTDEVICE void getClosestPointsOnEdges(Vertex arr[], const Vertex &P) const;
     HOSTDEVICE real getPerpedicularDistanceFrom(const Vertex &P) const;
     HOSTDEVICE Vertex getPerpedicularPointFrom(const Vertex &P) const;
-    HOSTDEVICE bool isQNode(const Vertex & point, const real &s, const real &delta) const;
-    HOSTDEVICE bool isStopper(const Vertex & point) const;
+    HOSTDEVICE bool isQNode(const Vertex & point, const real &s) const;
+    HOSTDEVICE bool isNegativeDirectionBorder(const Vertex & point) const;
 
     HOST bool operator==(const Triangle &t) const;
 

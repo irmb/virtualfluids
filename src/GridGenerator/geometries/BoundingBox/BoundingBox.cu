@@ -1,6 +1,6 @@
-#include "BoundingBox.cuh"
+#include "BoundingBox.h"
 
-#include "../Triangle/Triangle.cuh"
+#include "../Triangle/Triangle.h"
 #include "../Vertex/Vertex.cuh"
 #include <GridGenerator/utilities/math/CudaMath.cuh>
 
@@ -55,19 +55,51 @@ template <typename T>
  }
 
 
- HOSTDEVICE BoundingBox<real> BoundingBox<real>::makeRealNodeBox(const Triangle& t, const real& delta)
+ HOSTDEVICE BoundingBox<real> BoundingBox<real>::makeRealNodeBox(const Triangle& t, const real& startX, const real& startY, const real& startZ, const real& delta)
 {
     BoundingBox<real> box;
 
     real minX, maxX, minY, maxY, minZ, maxZ;
     t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
 
-    calculateMinMaxOnNodes(box.minX, box.maxX, minX, maxX, delta);
-    calculateMinMaxOnNodes(box.minY, box.maxY, minY, maxY, delta);
-    calculateMinMaxOnNodes(box.minZ, box.maxZ, minZ, maxZ, delta);
+    calculateMinMaxOnNodes(box.minX, box.maxX, minX, maxX, startX, delta);
+    calculateMinMaxOnNodes(box.minY, box.maxY, minY, maxY, startY, delta);
+    calculateMinMaxOnNodes(box.minZ, box.maxZ, minZ, maxZ, startZ, delta);
 
     return box;
 }
+
+ template <>
+ HOSTDEVICE void BoundingBox<real>::calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& start, const real& delta)
+ {
+    const real decimalStart = CudaMath::getDecimalPart(start);
+    minNode = getMinimum(minExact, decimalStart, delta);
+    maxNode = getMaximum(maxExact, decimalStart, delta);
+ }
+
+ template <>
+ HOSTDEVICE real BoundingBox<real>::getMinimum(const real& minExact, const real& decimalStart, const real& delta)
+ {
+     real minNode = ceil(minExact - 1.0);
+     minNode += decimalStart;
+     while (minNode > minExact)
+         minNode -= delta;
+
+     while (minNode + delta < minExact)
+         minNode += delta;
+     return minNode;
+ }
+
+ template <>
+ HOSTDEVICE real BoundingBox<real>::getMaximum(const real& maxExact, const real& decimalStart, const real& delta)
+ {
+     real maxNode = ceil(maxExact - 1.0);
+     maxNode += decimalStart;
+
+     while (maxNode < maxExact)
+         maxNode += delta;
+     return maxNode;
+ }
 
 
 template <typename T>
@@ -82,42 +114,26 @@ template <typename T>
      return box;
  }
 
- HOSTDEVICE BoundingBox<int> BoundingBox<int>::makeNodeBox(const Triangle &t)
- {
-	 BoundingBox<int> box;
-
-     real minX, maxX, minY, maxY, minZ, maxZ;
-     t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
-
-	 calculateMinMaxOnNodes(box.minX, box.maxX, minX, maxX);
-	 calculateMinMaxOnNodes(box.minY, box.maxY, minY, maxY);
-	 calculateMinMaxOnNodes(box.minZ, box.maxZ, minZ, maxZ);
-	 return box;
- }
-
- template <>
- HOSTDEVICE void BoundingBox<real>::calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& delta)
- {
-     minNode = ceil(minExact - 1.0);
-     maxNode = floor(maxExact + 1.0);
-     if (minNode + 0.5 < minExact)
-         minNode += 0.5;
 
 
-     if (maxNode - 0.5 > maxExact)
-         maxNode -= 0.5;
- }
-
- template <>
- HOSTDEVICE void BoundingBox<int>::calculateMinMaxOnNodes(int &minNode, int &maxNode, const real &minExact, const real &maxExact)
- {
-     minNode = ceil(minExact - 1.0);
-     maxNode = floor(maxExact + 1.0);
- }
 
  void BoundingBox<real>::setMinMax(const Triangle& t)
  {
+     real minX, maxX, minY, maxY, minZ, maxZ;
      t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
+     if(minX < this->minX)
+         this->minX = minX;
+     if (minY < this->minY)
+         this->minY = minY;
+     if (minZ < this->minZ)
+         this->minZ = minZ;
+
+     if (maxX > this->maxX)
+         this->maxX = maxX;
+     if (maxY > this->maxY)
+         this->maxY = maxY;
+     if (maxZ > this->maxZ)
+         this->maxZ = maxZ;
  }
 
  template <typename T>

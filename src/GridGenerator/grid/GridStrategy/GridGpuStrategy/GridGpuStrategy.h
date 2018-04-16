@@ -17,6 +17,8 @@ public:
 
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
+    void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
+    void findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh) override;
     void findInnerNodes(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
 
@@ -57,6 +59,7 @@ public:
     void allocateFieldMemory(Field* field) override;
     void freeFieldMemory(Field* field) override;
     void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override;
+    
 };
 
 #endif

@@ -11,8 +11,9 @@
 #include "distributions/Distribution.h"
 
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 
 #include <GridGenerator/grid/NodeValues.h>
 #include <GridGenerator/grid/distributions/Distribution.h>
@@ -22,6 +23,9 @@
 #include "GridInterface.h"
 
 #include "geometries/Object.h"
+#include "Field.h"
+
+#include "io/GridVTKWriter/GridVTKWriter.h"
 
 
 
@@ -71,8 +75,67 @@ HOST void GridImp::inital()
     field.allocateMemory();
     gridStrategy->allocateGridMemory(shared_from_this());
 
-    gridStrategy->findInnerNodes(shared_from_this());
+    gridStrategy->initalNodesToOutOfGrid(shared_from_this());
+
+    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    if(triangularMesh)
+    {
+        gridStrategy->findInnerNodes(shared_from_this(), triangularMesh);
+    }
+    else
+        gridStrategy->findInnerNodes(shared_from_this());
+
     gridStrategy->findStopperNodes(shared_from_this());
+}
+
+HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
+{
+    this->field.setFieldEntryToOutOfGrid(index);
+}
+
+
+HOSTDEVICE void GridImp::meshReverse(Triangle &triangle)
+{
+    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, startX, startY, startZ, delta);
+    triangle.initalLayerThickness(getDelta());
+
+    for (real x = box.minX; x <= box.maxX; x += delta)
+    {
+        for (real y = box.minY; y <= box.maxY; y += delta)
+        {
+            for (real z = box.minZ; z <= box.maxZ; z += delta)
+            {
+                const uint index = this->transCoordToIndex(x, y, z);
+
+                const Vertex point(x, y, z);
+
+                const char pointValue = triangle.isUnderFace(point);
+
+                if (pointValue == NEGATIVE_DIRECTION_BORDER)
+                    field.setFieldEntry(index, NEGATIVE_DIRECTION_BORDER);
+                else if (pointValue == INSIDE)
+                    field.setFieldEntryToFluid(index);
+            }
+        }
+    }
+}
+
+HOSTDEVICE void GridImp::setInsideNode(const int &index, bool &insideNodeFound)
+{
+    if (field.is(index, NEGATIVE_DIRECTION_BORDER))
+        return;
+
+    if (!field.isFluid(index) && this->nodeInNextCellIs(index, FLUID))
+    {
+        field.setFieldEntryToFluid(index);
+        insideNodeFound = true;
+    }
+}
+
+HOSTDEVICE void GridImp::setNegativeDirBorder_toFluid(const uint &index)
+{
+    if (field.is(index, NEGATIVE_DIRECTION_BORDER))
+        field.setFieldEntryToFluid(index);
 }
 
 HOST void GridImp::freeMemory()
@@ -100,8 +163,6 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
     const Cell cell = getOddCellFromIndex(index);
     if (isInside(cell))
         this->field.setFieldEntryToFluid(index);
-    else
-        this->field.setFieldEntryToOutOfGrid(index);
 }
 
 bool GridImp::isInside(const Cell& cell) const
@@ -432,11 +493,11 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
-HOST void GridImp::mesh(TriangularMesh &geometry)
+HOST void GridImp::mesh(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();
 
-    gridStrategy->mesh(shared_from_this(), geometry);
+    gridStrategy->mesh(shared_from_this(), triangularMesh);
 
     const clock_t end = clock();
     const real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
@@ -444,9 +505,10 @@ HOST void GridImp::mesh(TriangularMesh &geometry)
     *logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " + SSTR(time) + "s\n";
 }
 
-HOSTDEVICE void GridImp::mesh(const Triangle &triangle)
+HOSTDEVICE void GridImp::mesh(Triangle &triangle)
 {
-    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, delta);
+    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, startX, startY, startZ, delta);
+    triangle.initalLayerThickness(getDelta());
 
     for (real x = box.minX; x <= box.maxX; x += delta)
     {
@@ -506,24 +568,25 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
 
 
 // --------------------------------------------------------- //
-//               find inner Solid Nodes                      //
+//                  find inner nodes                         //
 // --------------------------------------------------------- //
-HOSTDEVICE void GridImp::setInvalidNode(const int &index, bool &invalidNodeFound)
-{
-    if (field.isSolid(index))
-        return;
+//HOSTDEVICE void GridImp::setInvalidNode(const int &index, bool &insideNodeFound)
+//{
+//    if (field.isNegativeDirectionBorder(index))
+//        return;
+//
+//    if (!field.isInside(index) && this->nodeInNextCellIs(index, INSIDE))
+//    {
+//        field.setFieldEntryToInvalid(index);
+//        insideNodeFound = true;
+//    }
+//}
 
-    if (!field.isInvalid(index) && this->isNeighborInvalid(index))
-    {
-        field.setFieldEntryToInvalid(index);
-        invalidNodeFound = true;
-    }
-}
+//HOSTDEVICE bool GridImp::isNeighborInside(const int &index) const
+//{
+//    return (field.isInside(neighborIndexX[index]) || field.isInside(neighborIndexY[index]) || field.isInside(neighborIndexZ[index]));
+//}
 
-HOSTDEVICE bool GridImp::isNeighborInvalid(const int &index) const
-{
-    return (field.isInvalid(neighborIndexX[index]) || field.isInvalid(neighborIndexY[index]) || field.isInvalid(neighborIndexZ[index]));
-}
 // --------------------------------------------------------- //
 //                        Getter                             //
 // --------------------------------------------------------- //

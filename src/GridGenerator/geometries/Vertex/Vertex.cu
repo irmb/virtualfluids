@@ -157,18 +157,30 @@ HOSTDEVICE void Vertex::setMinMax(real & minX, real & maxX, real & minY, real & 
 }
 
 
+HOSTDEVICE real getMinimum(const real &value1, const real &value2)
+{
+    return value1 < value2 ? value1 : value2;
+}
+
+HOSTDEVICE real getMaximum(const real &value1, const real &value2)
+{
+    return value1 > value2 ? value1 : value2;
+}
+
+
 HOSTDEVICE void Vertex::calculateMinMax(const real &value1, const real &value2, const real &value3, real &min, real &max)
 {
-    min = value1;
-    max = value2;
-    if (value1 > value2) {
-        min = value2;
-        max = value1;
-    }
-    if (min > value3) {
-        min = value3;
-    }
-    if (max < value3) {
-        max = value3;
-    }
+    
+    real newMinimum = value1;
+    newMinimum = getMinimum(value2, newMinimum);
+    newMinimum = getMinimum(value3, newMinimum);
+
+    real newMaximum = value1;
+    newMaximum = getMaximum(value2, newMaximum);
+    newMaximum = getMaximum(value3, newMaximum);
+
+    min = newMinimum;
+    max = newMaximum;
 }
+
+

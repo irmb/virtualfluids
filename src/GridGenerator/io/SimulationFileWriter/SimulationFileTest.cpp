@@ -1,8 +1,8 @@
 //#include "gmock/gmock.h"
 //
 //#include <GridGenerator/geometries/Vertex/Vertex.cuh>
-//#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-//#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+//#include <GridGenerator/geometries/Triangle/Triangle.h>
+//#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 //#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 //
 //#include <GridGenerator/grid/kernel/GridKernelCPU.h>

@@ -9,8 +9,8 @@
 //#include <GridGenerator/grid/GridWrapper/GridWrapperGPU/GridWrapperGPU.h>
 //#include <GridGenerator/grid/partition/Partition.h>
 //
-//#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-//#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+//#include <GridGenerator/geometries/Triangle/Triangle.h>
+//#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 //#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 //
 //#include <GridGenerator/utilities/Transformator/Transformator.h>

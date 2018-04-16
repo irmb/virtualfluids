@@ -20,6 +20,10 @@
 #define INVALID_NODE 9
 
 
+#define INSIDE 10
+#define NEGATIVE_DIRECTION_BORDER 11
+
+
 
 #define Q 6
 #define NOSLIP 2

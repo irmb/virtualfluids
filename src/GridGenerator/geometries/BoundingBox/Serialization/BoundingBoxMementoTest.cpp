@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include <GridGenerator/geometries/BoundingBox/Serialization/BoundingBoxMemento.h>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>

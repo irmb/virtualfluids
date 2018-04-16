@@ -77,6 +77,8 @@ public:
 public:
     Distribution distribution;
 
+    HOSTDEVICE void initalNodeToOutOfGrid(uint index);
+
     HOSTDEVICE void findInnerNode(uint index);
 
     bool isInside(const Cell& cell) const;
@@ -146,7 +148,10 @@ private:
 
 public:
     HOST void mesh(TriangularMesh &geometry) override;
-    HOSTDEVICE void mesh(const Triangle &triangle);
+    HOSTDEVICE void mesh(Triangle &triangle);
+    HOSTDEVICE void meshReverse(Triangle &triangle);
+    HOSTDEVICE void setInsideNode(const int &index, bool &invalidNodeFound);
+    HOSTDEVICE void setNegativeDirBorder_toFluid(const uint &index);
 
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);
@@ -154,9 +159,8 @@ private:
 
 
 public:
-    HOSTDEVICE void setInvalidNode(const int &index, bool &invalidNodeFound);
 private:
-    HOSTDEVICE bool isNeighborInvalid(const int &index) const;
+    //HOSTDEVICE bool isNeighborInside(const int &index) const;
 
 
 private:

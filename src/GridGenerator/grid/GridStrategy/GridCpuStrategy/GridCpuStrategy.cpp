@@ -14,6 +14,7 @@
 #include "grid/NodeValues.h"
 
 #include "grid/GridInterface.h"
+#include "io/GridVTKWriter/GridVTKWriter.h"
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
@@ -33,6 +34,13 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
     grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
 }
 
+void GridCpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+    for (uint index = 0; index < grid->size; index++)
+        grid->initalNodeToOutOfGrid(index);
+}
+
 void GridCpuStrategy::allocateFieldMemory(Field* field)
 {
     field->field = new char[field->size];
@@ -44,6 +52,25 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
         grid->findInnerNode(index);
+
+    *logging::out << logging::Logger::INTERMEDIATE
+        << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
+        << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
+}
+
+void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
+{
+#pragma omp parallel for
+    for (int i = 0; i < triangularMesh->size; i++)
+        grid->meshReverse(triangularMesh->triangles[i]);
+
+    GridVTKWriter::writeSparseGridToVTK(grid, "D:/GRIDGENERATION/gridBeforeStopper");
+
+    findInsideNodes(grid);
+
+#pragma omp parallel for
+    for (int i = 0; i < grid->size; i++)
+        grid->setNegativeDirBorder_toFluid(i);
 
     *logging::out << logging::Logger::INTERMEDIATE
         << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
@@ -136,7 +163,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 {
     clock_t begin = clock();
 
-    findInvalidNodes(grid);
+    findInsideNodes(grid);
     grid->updateSparseIndices();
     findForNeighborsNewIndices(grid);
 
@@ -145,14 +172,14 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
     *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR(time / 1000) + "sec\n";
 }
 
-void GridCpuStrategy::findInvalidNodes(SPtr<GridImp> grid)
+void GridCpuStrategy::findInsideNodes(SPtr<GridImp> grid)
 {
-    bool foundInvalidNode = true;
-    while (foundInvalidNode)
+    bool foundInsideNode = true; 
+    while (foundInsideNode)
     {
-        foundInvalidNode = false;
+        foundInsideNode = false;
         for (uint index = 0; index < grid->size; index++)
-            grid->setInvalidNode(index, foundInvalidNode);
+            grid->setInsideNode(index, foundInsideNode);
     }
 }
 

@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 #include "TriangleNeighborFinder.h"
 #include <GridGenerator/utilities/Transformator/Transformator.h>
 

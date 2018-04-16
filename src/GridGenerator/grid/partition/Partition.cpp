@@ -6,9 +6,9 @@
 
 #include <GridGenerator/global.h>
 #include <GridGenerator/grid/Grid.h>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/io/GridVTKWriter/GridVTKWriter.h>
 #include <GridGenerator/io/VTKWriterWrapper/UnstructuredGridWrapper.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>

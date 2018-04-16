@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include <GridGenerator/geometries/Triangle/Serialization/TriangleMemento.h>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>

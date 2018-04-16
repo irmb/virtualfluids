@@ -10,6 +10,10 @@ public:
 	}
 };
 
+TEST_F(CudaMathTest, getDecimalPart) {
+    ASSERT_THAT(CudaMath::getDecimalPart(2.23232), RealEq(0.23232));
+}
+
 TEST_F(CudaMathTest, compareBigValues) {
 	ASSERT_TRUE(CudaMath::equal(10000000.0f, 10000001.0f));
 	ASSERT_TRUE(CudaMath::equal(10000001.0f, 10000000.0f));

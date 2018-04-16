@@ -18,7 +18,10 @@ public:
 
     virtual void allocateGridMemory(SPtr<GridImp> grid) = 0;
 
+    virtual void initalNodesToOutOfGrid(SPtr<GridImp> grid) = 0;
+
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
+    virtual void findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh) = 0;
     virtual void findStopperNodes(SPtr<GridImp> grid) = 0;
 
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) = 0;

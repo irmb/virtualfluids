@@ -4,8 +4,8 @@
 //
 //#include <string>
 //
-//#include <stl/Triangle.cuh>
-//#include <stl/BoundingBox.cuh>
+//#include <stl/Triangle.h>
+//#include <stl/BoundingBox.h>
 //
 //#include <grid/kernel/runGridKernelGPU.cuh>
 //#include <grid/distributions/D3Q7.h>

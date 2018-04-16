@@ -8,7 +8,7 @@
 
 #include <GridGenerator/utilities/Transformator/Transformator.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 
 #include <utilities/logger/Logger.h>
 

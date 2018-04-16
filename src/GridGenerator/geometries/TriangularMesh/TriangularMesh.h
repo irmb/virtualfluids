@@ -10,21 +10,22 @@
 #include <string>
 #include <memory>
 
-#include "../Triangle/Triangle.cuh"
+#include "../Triangle/Triangle.h"
 #include <GridGenerator/utilities/Transformator/Transformator.h>
-#include "../BoundingBox/BoundingBox.cuh"
+#include "../BoundingBox/BoundingBox.h"
 
+#include "../Object.h"
 
 class GeometryMemento;
 
-struct TriangularMesh
+struct TriangularMesh : public Object
 {
 public:
 	VF_PUBLIC TriangularMesh();
 	VF_PUBLIC TriangularMesh(const TriangularMesh& geo);
     VF_PUBLIC TriangularMesh(const std::string& inputPath);
 	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox<int> &box, const Transformator *trafo);
-	VF_PUBLIC ~TriangularMesh();
+	HOSTDEVICE VF_PUBLIC ~TriangularMesh();
 	VF_PUBLIC Transformator* getTransformator();
 
 	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
@@ -40,15 +41,31 @@ public:
 
     HOST VF_PUBLIC GeometryMemento getState() const;
     HOST VF_PUBLIC void setState(const GeometryMemento &memento);
+    VF_PUBLIC void findNeighbors();
 
 
 
 private:
 	
 	Transformator* transformator;
-	void findNeighbors();
 	void initalizeDataFromTriangles();
 
+public:
+    HOSTDEVICE Object* clone() const override { return new TriangularMesh(); }
+    double getX1Centroid() override { throw "Not implemented in TriangularMesh"; }
+    double getX1Minimum() override { return minmax.minX; }
+    double getX1Maximum() override { return minmax.maxX; }
+    double getX2Centroid() override { throw "Not implemented in TriangularMesh"; }
+    double getX2Minimum() override { return minmax.minY; }
+    double getX2Maximum() override { return minmax.maxY; }
+    double getX3Centroid() override { throw "Not implemented in TriangularMesh"; }
+    double getX3Minimum() override { return minmax.minZ; }
+    double getX3Maximum() override { return minmax.maxZ; }
+    void scale(double delta) override { throw "Not implemented in TriangularMesh"; }
+    HOSTDEVICE bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
+        const double& maxOffset) override {
+        return false;
+    }
 };
 
 
