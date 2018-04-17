@@ -1,23 +1,20 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "STLReader.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <stdio.h>
 
-#include <GridGenerator/utilities/Transformator/TransformatorImp.h>
 #include <GridGenerator/geometries/Vertex/Vertex.cuh>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <utilities/logger/Logger.h>
 
 
 std::vector<Triangle> STLReader::readSTL(const std::string& name)
 {
-    TransformatorImp trans;
     std::ifstream file(name.c_str());
     if (file.is_open()) {
         std::string line;
@@ -26,156 +23,26 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name)
         if (strcmp(line.c_str(), "solid ascii") == 0) {
             file.close();
             *logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
-            return readASCIISTL(name, trans);
+            return readASCIISTL(name);
         }
         else {
             file.close();
             *logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
-            return readBinarySTL(name, trans);
+            return readBinarySTL(name);
         }
     }
-    else {
-        *logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + "\n";
-        exit(1);
-    }
+
+     *logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + " ... exit program! \n";
+     exit(1);
 }
 
-std::vector<Triangle> STLReader::readSTL(const std::string& name, const Transformator& trans)
+
+std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
 {
-    std::ifstream file(name.c_str());
-    if (file.is_open()) {
-        std::string line;
-        std::getline(file, line);
-        line[strcspn(line.c_str(), "\r\n")] = 0;
-        if (strcmp(line.c_str(), "solid ascii") == 0) {
-            file.close();
-            *logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
-            return readASCIISTL(name, trans);
-        }
-        else {
-            file.close();
-            *logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
-            return readBinarySTL(name, trans);
-        }
-    }
-    else {
-        *logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + "\n";
-        exit(1);
-    }
-}
+    const int lines = countLinesInFile(name);
+    const int nTriangles = (lines) / 7; // seven lines per triangle
 
-TriangularMesh* STLReader::makeTriangularMesh(const std::string& name)
-{
-	std::ifstream file(name.c_str());
-	if (file.is_open()) {
-		std::string line;
-		std::getline(file, line);
-		line[strcspn(line.c_str(), "\r\n")] = 0;
-		if (strcmp(line.c_str(), "solid ascii") == 0) {
-			file.close();
-			*logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
-			return getGeometryFromASCIISTL(name);
-		}
-		else {
-			file.close();
-			*logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
-			return getGeometryFromBinarySTL(name);
-		}
-	}
-	else {
-		*logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + "\n";
-		exit(1);
-	}
-}
-
-TriangularMesh* STLReader::getGeometryFromBinarySTL(const std::string& name)
-{
-	FILE *file;
-	std::string mode = "rb";
-	file = fopen(name.c_str(), mode.c_str());
-
-	char header_info[80] = "";
-	char nTri[4];
-	unsigned long nTriLong;
-
-	fread(header_info, sizeof(char), 80, file);
-
-
-	fread(nTri, sizeof(char), 4, file);
-	nTriLong = *((unsigned long*)nTri);
-	*logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " + SSTR(nTriLong) + "\n";
-	std::vector<Triangle> triangles;
-
-	char facet[50];
-	TriangularMesh* geometry = new TriangularMesh();
-	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
-
-	for (unsigned int i = 0; i < nTriLong; i++) {
-		fread(facet, sizeof(char), 50, file);
-
-		Vertex normal = getVertexFromChar(facet);
-
-		Vertex p1 = getVertexFromChar(facet + 12);
-		Vertex p2 = getVertexFromChar(facet + 24);
-		Vertex p3 = getVertexFromChar(facet + 36);
-
-        Triangle t(p1, p2, p3, normal);
-
-		box.setMinMax(t);
-		triangles.push_back(t);
-	}
-	geometry->setTriangles(triangles);
-	geometry->setMinMax(box);
-    geometry->findNeighbors();
-	fclose(file);
-	return geometry;
-}
-
-TriangularMesh* STLReader::getGeometryFromASCIISTL(const std::string& name)
-{
-	int lines = countLinesInFile(name);
-	int nTriangles = (lines) / 7; // seven lines per triangle
-
-	*logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " + SSTR(nTriangles) + "\n";
-	std::vector<Triangle> triangles;
-
-	std::string line;
-	std::ifstream file;
-	file.open(name.c_str(), std::ifstream::in);
-	std::getline(file, line); // solid ascii
-
-	TriangularMesh* geometry = new TriangularMesh();
-	BoundingBox<real> box = BoundingBox<real>::makeInvalidMinMaxBox();
-
-	for (int t = 0; t < nTriangles; t++) {
-		Vertex normal = parseLineToCoordinates(file, "%*s %*s %f %f %f");
-		getline(file, line); // outer loop
-		Vertex p1 = parseLineToCoordinates(file, "%*s %f %f %f");
-		Vertex p2 = parseLineToCoordinates(file, "%*s %f %f %f");
-		Vertex p3 = parseLineToCoordinates(file, "%*s %f %f %f");
-		getline(file, line); //endloop
-		getline(file, line); //endfacet
-
-		Triangle tri = Triangle(p1, p2, p3, normal);
-		tri.calcNormal();
-		triangles.push_back(tri);
-
-		box.setMinMax(tri);
-	}
-	geometry->setTriangles(triangles);
-	geometry->setMinMax(box);
-    geometry->findNeighbors();
-
-	file.close();
-	return geometry;
-}
-
-std::vector<Triangle> STLReader::readASCIISTL(const std::string& name, const Transformator& trans)
-{
-    int lines = countLinesInFile(name);
-    int nTriangles = (lines) / 7; // seven lines per triangle
-
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " + SSTR(nTriangles) + "\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " << nTriangles << "\n";
     std::vector<Triangle> triangles;
 
     std::string line;
@@ -191,9 +58,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name, const Tra
         Vertex p3 = parseLineToCoordinates(file, "%*s %f %f %f");
         getline(file, line); //endloop
         getline(file, line); //endfacet
-        trans.transformWorldToGrid(p1);
-        trans.transformWorldToGrid(p2);
-        trans.transformWorldToGrid(p3);
+
         Triangle tri = Triangle(p1, p2, p3, normal);
         tri.calcNormal();
         triangles.push_back(tri);
@@ -202,22 +67,18 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name, const Tra
     return triangles;
 }
 
-std::vector<Triangle> STLReader::readBinarySTL(const std::string& name, const Transformator& trans)
+std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
 {
-    FILE *file;
-    std::string mode = "rb";
-    file = fopen(name.c_str(), mode.c_str());
+    const std::string mode = "rb";
+    FILE *file = fopen(name.c_str(), mode.c_str());
 
     char header_info[80] = "";
-    char nTri[4];
-    unsigned long nTriLong;
-
     fread(header_info, sizeof(char), 80, file);
 
-
+    char nTri[4];
     fread(nTri, sizeof(char), 4, file);
-    nTriLong = *((unsigned long*)nTri);
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " + SSTR(nTriLong) + "\n";
+    unsigned long nTriLong = *((unsigned long*)nTri);
+    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " << nTriLong << "\n";
     std::vector<Triangle> triangles;
 
     char facet[50];
@@ -230,10 +91,6 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name, const Tr
         Vertex p2 = getVertexFromChar(facet + 24);
         Vertex p3 = getVertexFromChar(facet + 36);
 
-        trans.transformWorldToGrid(p1);
-        trans.transformWorldToGrid(p2);
-        trans.transformWorldToGrid(p3);
-
         triangles.push_back(Triangle(p1, p2, p3, normal));
     }
 	fclose(file);
@@ -241,7 +98,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name, const Tr
     return triangles;
 }
 
-std::vector<Triangle> STLReader::readSTL(const BoundingBox<int> &box, const std::string name, const Transformator& trans)
+std::vector<Triangle> STLReader::readSTL(const BoundingBox<int> &box, const std::string& name)
 {
 	std::ifstream file(name.c_str());
 	if (file.is_open()) {
@@ -251,12 +108,12 @@ std::vector<Triangle> STLReader::readSTL(const BoundingBox<int> &box, const std:
 		if (strcmp(line.c_str(), "solid ascii") == 0) {
 			file.close();
 			*logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
-			return readASCIISTL(box, name, trans);
+			return readASCIISTL(box, name);
 		}
 		else {
 			file.close();
 			*logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
-			std::vector<Triangle> triangles = readBinarySTL(box, name, trans);
+			std::vector<Triangle> triangles = readBinarySTL(box, name);
 			return triangles;
 		}
 	}
@@ -266,7 +123,7 @@ std::vector<Triangle> STLReader::readSTL(const BoundingBox<int> &box, const std:
 	}
 }
 
-std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox<int> &box, const std::string name, const Transformator& trans)
+std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox<int> &box, const std::string& name)
 {
     int lines = countLinesInFile(name);
     int nTriangles = (lines) / 7; // seven lines per triangle
@@ -286,9 +143,6 @@ std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox<int> &box, const
         Vertex p3 = parseLineToCoordinates(file, "%*s %f %f %f");
         getline(file, line); //endloop
         getline(file, line); //endfacet
-        trans.transformWorldToGrid(p1);
-        trans.transformWorldToGrid(p2);
-        trans.transformWorldToGrid(p3);
 
         Triangle t(p1, p2, p3, normal);
         t.calcNormal();
@@ -300,7 +154,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox<int> &box, const
 }
 
 
-std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox<int> &box, const std::string name, const Transformator& trans)
+std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox<int> &box, const std::string& name)
 {
     FILE *file;
     std::string mode = "rb";
@@ -328,10 +182,6 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox<int> &box, cons
         Vertex p1 = getVertexFromChar(facet + 12);
         Vertex p2 = getVertexFromChar(facet + 24);
         Vertex p3 = getVertexFromChar(facet + 36);
-
-        trans.transformWorldToGrid(p1);
-        trans.transformWorldToGrid(p2);
-        trans.transformWorldToGrid(p3);
 
         Triangle t(p1, p2, p3, normal);
         if (box.isInside(t) || box.intersect(t))

@@ -13,7 +13,7 @@
 #include <utilities/logger/Logger.h>
 
 
-void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, std::shared_ptr<const Transformator> trans, bool writeBinary)
+void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary)
 {
     *logging::out << logging::Logger::INTERMEDIATE << "Write " + SSTR(vec.size()) + " Triangles to STL : " + name + "\n";
 
@@ -29,22 +29,21 @@ void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, st
     }
 
     if (writeBinary)
-        writeBinarySTL(ofstream, vec, trans);
+        writeBinarySTL(ofstream, vec);
     else
-        writeAsciiSTL(ofstream, vec, trans);
+        writeAsciiSTL(ofstream, vec);
 
     ofstream.close();
     *logging::out << logging::Logger::INTERMEDIATE << "Output file closed\n";
 }
 
 
-void STLWriter::writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &vec, std::shared_ptr<const Transformator> trans)
+void STLWriter::writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &vec)
 {
     ofstream << "solid ascii\n";
     for (size_t i = 0; i < vec.size(); i++) 
     {
         Triangle t = vec[i];
-        trans->transformGridToWorld(t);
 
         ofstream << "facet normal ";
         t.normal.printFormatted(ofstream);
@@ -68,7 +67,7 @@ void STLWriter::writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &ve
     ofstream << "endsolid\n";
 }
 
-void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &vec, std::shared_ptr<const Transformator> trans)
+void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &vec)
 {
     char header_info[80] = "GridGeneration-File iRMB";
     unsigned long nTriLong = (unsigned long)vec.size();
@@ -78,7 +77,6 @@ void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &v
     for (size_t i = 0; i < vec.size(); i++)
     {
         Triangle t = vec[i];
-        trans->transformGridToWorld(t);
 
         t.normal.print(ofstream);
 
