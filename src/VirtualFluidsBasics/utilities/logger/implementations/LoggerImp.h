@@ -22,6 +22,7 @@ namespace logging
         Logger& operator<<(const std::string &message) override;
         Logger& operator<<(const int &message) override;
         Logger& operator<<(const unsigned int &message) override;
+        Logger& operator<<(const unsigned long& log) override;
         Logger& operator<<(const float &message) override;
         Logger& operator<<(const double &message) override;
 
@@ -34,6 +35,7 @@ namespace logging
         void addDebugInformation(std::string& message);
         logging::Logger& log(const std::string &message);
 
+    private:
         std::map<Logger::Level, std::string> levelString;
         bool newLoggingLine = true;
     };

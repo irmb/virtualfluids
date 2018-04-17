@@ -42,6 +42,11 @@ logging::Logger& logging::LoggerImp::operator<<(const unsigned int &message)
     return this->log(std::to_string(message));
 }
 
+logging::Logger& logging::LoggerImp::operator<<(const unsigned long &message)
+{
+    return this->log(std::to_string(message));
+}
+
 logging::Logger& logging::LoggerImp::operator<<(const float &message)
 {
     return this->log(std::to_string(message));
