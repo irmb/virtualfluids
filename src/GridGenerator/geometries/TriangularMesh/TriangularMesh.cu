@@ -9,6 +9,7 @@
 
 #include "Serialization/GeometryMemento.h"
 #include <GridGenerator/geometries/Triangle/Serialization/TriangleMemento.h>
+#include "Timer/Timer.h"
 
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName)
@@ -58,14 +59,17 @@ void TriangularMesh::findNeighbors()
 	*logging::out << logging::Logger::INTERMEDIATE << "start finding neighbors ...\n";
 
 	const clock_t begin = clock();
+    Timer t = Timer::begin();
 
 	TriangleNeighborFinder finder(triangles, size);
 	finder.fillWithNeighborAngles(this);
 
 	const clock_t end = clock();
+    t.end();
 
 	const real time = real(end - begin) / CLOCKS_PER_SEC;
-	*logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << time << "s\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << time << "s\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << t.getTimeInSeconds() << "s\n";
 }
 
 void TriangularMesh::setTriangles(std::vector<Triangle> triangles)
