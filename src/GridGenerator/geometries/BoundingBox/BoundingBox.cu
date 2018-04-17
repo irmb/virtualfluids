@@ -1,8 +1,8 @@
 #include "BoundingBox.h"
 
 #include "../Triangle/Triangle.h"
-#include "../Vertex/Vertex.cuh"
-#include <GridGenerator/utilities/math/CudaMath.cuh>
+#include "../Vertex/Vertex.h"
+#include <GridGenerator/utilities/math/Math.h>
 
 #include <limits>
 
@@ -72,7 +72,7 @@ template <typename T>
  template <>
  HOSTDEVICE void BoundingBox<real>::calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& start, const real& delta)
  {
-    const real decimalStart = CudaMath::getDecimalPart(start);
+    const real decimalStart = vf::Math::getDecimalPart(start);
     minNode = getMinimum(minExact, decimalStart, delta);
     maxNode = getMaximum(maxExact, decimalStart, delta);
  }
@@ -245,12 +245,12 @@ template <typename T>
 
  HOST bool BoundingBox<real>::operator==(const BoundingBox<real> &box) const
  {
-     return CudaMath::equal(minX, box.minX)
-         && CudaMath::equal(maxX, box.maxX)
-         && CudaMath::equal(minY, box.minY)
-         && CudaMath::equal(maxY, box.maxY)
-         && CudaMath::equal(minZ, box.minZ)
-         && CudaMath::equal(maxZ, box.maxZ);
+     return vf::Math::equal(minX, box.minX)
+         && vf::Math::equal(maxX, box.maxX)
+         && vf::Math::equal(minY, box.minY)
+         && vf::Math::equal(maxY, box.maxY)
+         && vf::Math::equal(minZ, box.minZ)
+         && vf::Math::equal(maxZ, box.maxZ);
  }
 
 

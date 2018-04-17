@@ -4,7 +4,7 @@
 #include <memory>
 using namespace testing;
 
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 

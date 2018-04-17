@@ -7,10 +7,10 @@
 #include <sstream>
 
 
-#include <GridGenerator/utilities/math/CudaMath.cuh>
+#include <GridGenerator/utilities/math/Math.h>
 #include "distributions/Distribution.h"
 
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
@@ -117,6 +117,17 @@ HOSTDEVICE void GridImp::meshReverse(Triangle &triangle)
                     field.setFieldEntryToFluid(index);
             }
         }
+    }
+}
+
+HOSTDEVICE void GridImp::findInsideNodes()
+{
+    bool foundInsideNode = true;
+    while (foundInsideNode)
+    {
+        foundInsideNode = false;
+        for (uint index = 0; index < this->size; index++)
+            this->setInsideNode(index, foundInsideNode);
     }
 }
 
@@ -339,7 +350,7 @@ HOST uint GridImp::getLevel(real startDelta) const
 {
     uint level = 0;
     real delta = this->delta;
-    while(!CudaMath::equal(delta, startDelta))
+    while(!vf::Math::equal(delta, startDelta))
     {
         delta *= 2;
         level++;
@@ -413,13 +424,13 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (CudaMath::lessEqual(x + delta, endX) && !this->field.isOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
+    if (vf::Math::lessEqual(x + delta, endX) && !this->field.isOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (CudaMath::lessEqual(y + delta, endY) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
+    if (vf::Math::lessEqual(y + delta, endY) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (CudaMath::lessEqual(z + delta, endZ) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
+    if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 }
 

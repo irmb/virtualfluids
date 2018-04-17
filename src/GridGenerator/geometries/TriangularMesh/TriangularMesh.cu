@@ -10,19 +10,25 @@
 #include "Serialization/GeometryMemento.h"
 #include <GridGenerator/geometries/Triangle/Serialization/TriangleMemento.h>
 
-TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox<int>& box, const Transformator* trafo)
-{
-	this->transformator = new TransformatorImp(*(TransformatorImp*)(trafo));
 
-	this->triangleVec = STLReader::readSTL(box, input, *trafo);
+TriangularMesh* TriangularMesh::make(const std::string& fileName)
+{
+    TriangularMesh* triangularMesh = new TriangularMesh(fileName);
+    for (uint i = 0; i < triangularMesh->triangleVec.size(); i++) {
+        triangularMesh->minmax.setMinMax(triangularMesh->triangleVec[i]);
+    }
+    return triangularMesh;
+}
+
+TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox<int>& box)
+{
+	this->triangleVec = STLReader::readSTL(box, input);
 	initalizeDataFromTriangles();
 	this->findNeighbors();
 }
 
 TriangularMesh::TriangularMesh(const std::string& inputPath)
 {
-    this->transformator = new TransformatorImp();
-
     this->triangleVec = STLReader::readSTL(inputPath);
     initalizeDataFromTriangles();
     this->findNeighbors();
@@ -30,8 +36,6 @@ TriangularMesh::TriangularMesh(const std::string& inputPath)
 
 TriangularMesh::TriangularMesh(const TriangularMesh& geo)
 {
-	this->transformator = new TransformatorImp();
-	*this->transformator = *geo.transformator;
 	this->triangleVec = geo.triangleVec;
     this->triangles = geo.triangles;
     this->size = geo.size;
@@ -40,41 +44,28 @@ TriangularMesh::TriangularMesh(const TriangularMesh& geo)
 
 TriangularMesh::TriangularMesh()
 {
-	this->transformator = new TransformatorImp();
+
 }
 
 TriangularMesh::~TriangularMesh()
 {
-	delete this->transformator;
+
 }
 
-void TriangularMesh::transformChannelGeometry(const real resolution)
-{
-	delete this->transformator;
-	this->transformator = new TransformatorImp(resolution, -minmax.minX, -minmax.minY, -minmax.minZ);
-
-	transformator->transformWorldToGrid(*this);
-
-	initalizeDataFromTriangles();
-	findNeighbors();
-}
 
 void TriangularMesh::findNeighbors()
 {
 	*logging::out << logging::Logger::INTERMEDIATE << "start finding neighbors ...\n";
 
-	clock_t begin = clock();
+	const clock_t begin = clock();
+
 	TriangleNeighborFinder finder(triangles, size);
 	finder.fillWithNeighborAngles(this);
-	clock_t end = clock();
 
-	real time = real(end - begin) / CLOCKS_PER_SEC;
-	*logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << SSTR(time) << "s\n";
-}
+	const clock_t end = clock();
 
-Transformator* TriangularMesh::getTransformator()
-{
-	return transformator;
+	const real time = real(end - begin) / CLOCKS_PER_SEC;
+	*logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << time << "s\n";
 }
 
 void TriangularMesh::setTriangles(std::vector<Triangle> triangles)

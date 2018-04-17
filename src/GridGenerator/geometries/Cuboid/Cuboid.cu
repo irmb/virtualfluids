@@ -1,5 +1,5 @@
 #include "Cuboid.h"
-#include "utilities/math/CudaMath.cuh"
+#include "utilities/math/Math.h"
 
 
 Cuboid::Cuboid(const double& x1a,const double& x2a, const double& x3a, const double& x1b,const double& x2b, const double& x3b)
@@ -81,12 +81,12 @@ double Cuboid::getMaximum(double x1, double x2)
 bool Cuboid::isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset)
 {
     //false, if 'not in Object' or 'on Boundary'!
-    if (CudaMath::lessEqual(x1, this->getX1Minimum() + minOffset))    return false;
-    if (CudaMath::lessEqual(x2, this->getX2Minimum() + minOffset))    return false;
-    if (CudaMath::lessEqual(x3, this->getX3Minimum() + minOffset))    return false;
-    if (CudaMath::greaterEqual(x1, this->getX1Maximum() - maxOffset)) return false;
-    if (CudaMath::greaterEqual(x2, this->getX2Maximum() - maxOffset)) return false;
-    if (CudaMath::greaterEqual(x3, this->getX3Maximum() - maxOffset)) return false;
+    if (vf::Math::lessEqual(x1, this->getX1Minimum() + minOffset))    return false;
+    if (vf::Math::lessEqual(x2, this->getX2Minimum() + minOffset))    return false;
+    if (vf::Math::lessEqual(x3, this->getX3Minimum() + minOffset))    return false;
+    if (vf::Math::greaterEqual(x1, this->getX1Maximum() - maxOffset)) return false;
+    if (vf::Math::greaterEqual(x2, this->getX2Maximum() - maxOffset)) return false;
+    if (vf::Math::greaterEqual(x3, this->getX3Maximum() - maxOffset)) return false;
 
     return true;
 }
@@ -94,12 +94,12 @@ bool Cuboid::isPointInObject(const double& x1, const double& x2, const double& x
 
 bool Cuboid::isOn(const real& coord, const real& plane1, const real& plane2)
 {
-    return  CudaMath::equal(coord, plane1) || CudaMath::equal(coord, plane2);
+    return  vf::Math::equal(coord, plane1) || vf::Math::equal(coord, plane2);
 }
 
 bool Cuboid::isBetween(const real& coord, const real& start, const real& end)
 {
-    return  CudaMath::greaterEqual(coord, start) && CudaMath::lessEqual(coord, end);
+    return  vf::Math::greaterEqual(coord, start) && vf::Math::lessEqual(coord, end);
 }
 
 

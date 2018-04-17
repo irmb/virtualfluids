@@ -8,7 +8,7 @@
 
 #include "Transformator.h"
 
-#include <geometries/Vertex/Vertex.cuh>
+#include <geometries/Vertex/Vertex.h>
 #include <geometries/Triangle/Triangle.h>
 #include <geometries/BoundingBox/BoundingBox.h>
 #include <geometries/TriangularMesh/TriangularMesh.h>

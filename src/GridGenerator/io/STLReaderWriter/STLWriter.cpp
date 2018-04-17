@@ -1,13 +1,9 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "STLWriter.h"
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
-#include <stdio.h>
 
-#include <GridGenerator/utilities/Transformator/Transformator.h>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 
 #include <utilities/logger/Logger.h>

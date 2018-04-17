@@ -5,7 +5,7 @@
 //#include <VTKWriter/UnstructuredGridWriter/UnstructuredGridWriter.h>
 //
 //#include <GridGenerator/geometries/Triangle/Triangle.h>
-//#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+//#include <GridGenerator/geometries/Vertex/Vertex.h>
 //#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 //#include <GridGenerator/grid/Grid.cuh>
 //

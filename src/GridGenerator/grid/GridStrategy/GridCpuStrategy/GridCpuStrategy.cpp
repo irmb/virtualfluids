@@ -64,9 +64,12 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangu
     for (int i = 0; i < triangularMesh->size; i++)
         grid->meshReverse(triangularMesh->triangles[i]);
 
-    GridVTKWriter::writeSparseGridToVTK(grid, "D:/GRIDGENERATION/gridBeforeStopper");
+    //GridVTKWriter::writeSparseGridToVTK(grid, "D:/GRIDGENERATION/gridBeforeStopper");
 
-    findInsideNodes(grid);
+    grid->findInsideNodes();
+
+    //GridVTKWriter::writeSparseGridToVTK(grid, "D:/GRIDGENERATION/gridFilled");
+
 
 #pragma omp parallel for
     for (int i = 0; i < grid->size; i++)
@@ -163,7 +166,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 {
     clock_t begin = clock();
 
-    findInsideNodes(grid);
+    grid->findInsideNodes();
     grid->updateSparseIndices();
     findForNeighborsNewIndices(grid);
 
@@ -172,16 +175,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
     *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR(time / 1000) + "sec\n";
 }
 
-void GridCpuStrategy::findInsideNodes(SPtr<GridImp> grid)
-{
-    bool foundInsideNode = true; 
-    while (foundInsideNode)
-    {
-        foundInsideNode = false;
-        for (uint index = 0; index < grid->size; index++)
-            grid->setInsideNode(index, foundInsideNode);
-    }
-}
+
 
 void GridCpuStrategy::freeFieldMemory(Field* field)
 {

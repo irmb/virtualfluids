@@ -3,7 +3,7 @@
 //#include <VTKWriter/PolyDataWriter/PolyDataWriterImp.h>
 //
 //#include <GridGenerator/geometries/Arrow/Arrow.h>
-//#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+//#include <GridGenerator/geometries/Vertex/Vertex.h>
 //
 //
 //PolyDataWriterWrapper::PolyDataWriterWrapper()

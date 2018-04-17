@@ -19,9 +19,9 @@ public:
     static void writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary = false);
 
 private:
-    STLWriter() {};
-    STLWriter(const STLWriter &) {};
-    virtual ~STLWriter() {};
+    STLWriter() {}
+    STLWriter(const STLWriter &) {}
+    virtual ~STLWriter() {}
 
     static void writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &vec);
     static void writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &vec);

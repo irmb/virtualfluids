@@ -1,5 +1,5 @@
 #include "MultipleGridBuilder.h"
-#include "utilities/math/CudaMath.cuh"
+#include "utilities/math/Math.h"
 #include "../Grid.h"
 #include "../GridFactory.h"
 
@@ -160,12 +160,12 @@ std::array<real, 3> MultipleGridBuilder::getOffset(real delta) const
 bool MultipleGridBuilder::isGridInCoarseGrid(SPtr<Grid> grid) const
 {
     return
-        CudaMath::greaterEqual(grid->getStartX(), grids[0]->getStartX()) &&
-        CudaMath::greaterEqual(grid->getStartY(), grids[0]->getStartY()) &&
-        CudaMath::greaterEqual(grid->getStartZ(), grids[0]->getStartZ()) &&
-        CudaMath::lessEqual(grid->getEndX(), grids[0]->getEndX()) &&
-        CudaMath::lessEqual(grid->getEndY(), grids[0]->getEndY()) &&
-        CudaMath::lessEqual(grid->getEndZ(), grids[0]->getEndZ());
+        vf::Math::greaterEqual(grid->getStartX(), grids[0]->getStartX()) &&
+        vf::Math::greaterEqual(grid->getStartY(), grids[0]->getStartY()) &&
+        vf::Math::greaterEqual(grid->getStartZ(), grids[0]->getStartZ()) &&
+        vf::Math::lessEqual(grid->getEndX(), grids[0]->getEndX()) &&
+        vf::Math::lessEqual(grid->getEndY(), grids[0]->getEndY()) &&
+        vf::Math::lessEqual(grid->getEndZ(), grids[0]->getEndZ());
 }
 
 uint MultipleGridBuilder::getNumberOfLevels() const

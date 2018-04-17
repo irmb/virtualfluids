@@ -8,7 +8,7 @@
 
 #include <GridGenerator/grid/Grid.h>
 
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 
 Distribution DistributionHelper::getDistribution7() 
 {

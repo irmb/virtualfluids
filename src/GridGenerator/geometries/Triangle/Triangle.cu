@@ -1,5 +1,5 @@
 #include "Triangle.h"
-#include <GridGenerator/utilities/math/CudaMath.cuh>
+#include <GridGenerator/utilities/math/Math.h>
 #include "TriangleException.h"
 
 #include "Serialization/TriangleMemento.h"
@@ -58,7 +58,7 @@ HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
 HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex & point, real &s) const
 {
     s = this->getPerpedicularDistanceFrom(point);
-    return ((CudaMath::greaterEqual(s, 0.0f)) && s < this->layerThickness);
+    return ((vf::Math::greaterEqual(s, 0.0f)) && s < this->layerThickness);
 }
 
 HOSTDEVICE real Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
@@ -74,7 +74,7 @@ HOSTDEVICE Vertex Triangle::getPerpedicularPointFrom(const Vertex &P) const
 
 HOSTDEVICE bool Triangle::isQNode(const Vertex & point, const real &s) const
 {
-    return (s < 0 && CudaMath::lessEqual(-s, this->layerThickness));
+    return (s < 0 && vf::Math::lessEqual(-s, this->layerThickness));
     //calculateQs(actualPoint, actualTriangle);
 }
 
@@ -100,7 +100,7 @@ HOSTDEVICE bool Triangle::isNotNextToFace(const Vertex &point) const
     real g2 = t2 * normal;
     real g3 = t3 * normal;
 
-    return CudaMath::lessEqual(g1, 0.0f) && CudaMath::lessEqual(g2, 0.0f) && CudaMath::lessEqual(g3, 0.0f);
+    return vf::Math::lessEqual(g1, 0.0f) && vf::Math::lessEqual(g2, 0.0f) && vf::Math::lessEqual(g3, 0.0f);
 }
 
 HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
@@ -121,7 +121,7 @@ HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
     }
 
     real eps = EPSILON * 100.0f;
-    return (CudaMath::lessEqual(betaAngles[0], alphaAngles[0], eps) && CudaMath::lessEqual(betaAngles[1], alphaAngles[1], eps) && CudaMath::lessEqual(betaAngles[2], alphaAngles[2], eps));
+    return (vf::Math::lessEqual(betaAngles[0], alphaAngles[0], eps) && vf::Math::lessEqual(betaAngles[1], alphaAngles[1], eps) && vf::Math::lessEqual(betaAngles[2], alphaAngles[2], eps));
 }
 
 HOSTDEVICE void Triangle::getClosestPointsOnEdges(Vertex arr[], const Vertex &P) const
@@ -281,7 +281,7 @@ HOSTDEVICE void Triangle::print() const
 HOST bool Triangle::operator==(const Triangle &t) const
 {
     return v1 == t.v1 && v2 == t.v2 && v3 == t.v3
-        && CudaMath::equal(alphaAngles[0], t.alphaAngles[0]) && CudaMath::equal(alphaAngles[1], t.alphaAngles[1]) && CudaMath::equal(alphaAngles[2], t.alphaAngles[2]);
+        && vf::Math::equal(alphaAngles[0], t.alphaAngles[0]) && vf::Math::equal(alphaAngles[1], t.alphaAngles[1]) && vf::Math::equal(alphaAngles[2], t.alphaAngles[2]);
 }
 
 

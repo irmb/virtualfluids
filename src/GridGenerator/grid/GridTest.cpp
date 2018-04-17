@@ -2,7 +2,7 @@
 #include "GridImp.h"
 
 #include <vector>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include "GridStrategy/GridCpuStrategy/GridCpuStrategy.h"

@@ -35,7 +35,6 @@ public:
     virtual void copyDataFromGPU() {};
 
 protected:
-    static void findInsideNodes(SPtr<GridImp> grid);
     static void findForNeighborsNewIndices(SPtr<GridImp> grid);
     static void findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid);
 

@@ -1,6 +1,6 @@
 #include "ArrowImp.h"
 
-#include "../Vertex/Vertex.cuh"
+#include "../Vertex/Vertex.h"
 
 
 

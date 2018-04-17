@@ -3,7 +3,7 @@
 
 #include "GridGenerator/global.h"
 
-#include "../Vertex/Vertex.cuh"
+#include "../Vertex/Vertex.h"
 
 #include <memory>
 

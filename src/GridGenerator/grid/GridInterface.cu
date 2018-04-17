@@ -3,7 +3,6 @@
 #include "GridImp.h"
 #include "Field.h"
 #include "NodeValues.h"
-#include "utilities/math/CudaMath.cuh"
 
 GridInterface::GridInterface()
 {

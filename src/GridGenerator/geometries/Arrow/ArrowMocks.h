@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "Arrow.h"
-#include "../Vertex/Vertex.cuh"
+#include "../Vertex/Vertex.h"
 
 class ArrowStub : public Arrow
 {

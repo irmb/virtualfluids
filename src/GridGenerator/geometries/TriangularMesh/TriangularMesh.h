@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "../Triangle/Triangle.h"
-#include <GridGenerator/utilities/Transformator/Transformator.h>
 #include "../BoundingBox/BoundingBox.h"
 
 #include "../Object.h"
@@ -21,16 +20,17 @@ class GeometryMemento;
 struct TriangularMesh : public Object
 {
 public:
+    enum class DiscretizationMethod {RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE};
+
+    VF_PUBLIC static TriangularMesh* make(const std::string& fileName);
 	VF_PUBLIC TriangularMesh();
 	VF_PUBLIC TriangularMesh(const TriangularMesh& geo);
     VF_PUBLIC TriangularMesh(const std::string& inputPath);
-	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox<int> &box, const Transformator *trafo);
+	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox<int> &box);
 	HOSTDEVICE VF_PUBLIC ~TriangularMesh();
-	VF_PUBLIC Transformator* getTransformator();
 
 	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
 	VF_PUBLIC void setMinMax(BoundingBox<real> minmax);
-	VF_PUBLIC void transformChannelGeometry(const real resolution);
 
 	std::vector<Triangle> triangleVec;
 	Triangle *triangles;
@@ -47,8 +47,9 @@ public:
 
 private:
 	
-	Transformator* transformator;
 	void initalizeDataFromTriangles();
+
+    DiscretizationMethod discretizationMethod;
 
 public:
     HOSTDEVICE Object* clone() const override { return new TriangularMesh(); }

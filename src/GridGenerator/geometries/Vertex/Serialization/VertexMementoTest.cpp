@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include <GridGenerator/geometries/Vertex/Serialization/VertexMemento.h>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>

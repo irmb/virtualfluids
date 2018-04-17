@@ -8,7 +8,7 @@
 #include <GridGenerator/utilities/Transformator/Transformator.h>
 #include <utilities/logger/Logger.h>
 #include <GridGenerator/grid/Grid.h>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "basics/container/CbArray3D.h"
 #include "grid/NodeValues.h"

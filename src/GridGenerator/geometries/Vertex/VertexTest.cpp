@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "Vertex.cuh"
+#include "Vertex.h"
 
 using namespace testing;
 

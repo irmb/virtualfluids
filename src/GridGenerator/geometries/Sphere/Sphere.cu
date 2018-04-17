@@ -1,5 +1,4 @@
 #include "Sphere.h"
-#include "utilities/math/CudaMath.cuh"
 
 Sphere::Sphere(const double& centerX, const double& centerY, const double& centerZ, const double& radius)
     : centerX(centerX), centerY(centerY), centerZ(centerZ), radius(radius)

@@ -1,6 +1,6 @@
-#include "Vertex.cuh"
+#include "Vertex.h"
 
-#include <GridGenerator/utilities/math/CudaMath.cuh>
+#include <GridGenerator/utilities/math/Math.h>
 
 
 #include "Serialization/VertexMemento.h"
@@ -18,7 +18,7 @@ HOSTDEVICE Vertex::Vertex(const Vertex& v)
 
 HOSTDEVICE  real Vertex::getEuclideanDistanceTo(const Vertex &w) const
 {
-    return CudaMath::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
+    return vf::Math::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
 }
 
 HOSTDEVICE Vertex Vertex::operator-(const Vertex &v) const
@@ -53,7 +53,7 @@ HOSTDEVICE struct Vertex Vertex::crossProduct(const Vertex &w) const
 
 HOSTDEVICE real Vertex::length() const 
 {
-    return CudaMath::sqrtReal(x * x + y * y + z * z);
+    return vf::Math::sqrtReal(x * x + y * y + z * z);
 }
 
 HOSTDEVICE void Vertex::normalize()
@@ -72,12 +72,12 @@ HOSTDEVICE void Vertex::normalize()
 HOSTDEVICE real Vertex::getMagnitude() const
 {
     real temp = x*x + y*y + z*z;
-    return CudaMath::sqrtReal(temp);
+    return vf::Math::sqrtReal(temp);
 }
 
 HOSTDEVICE int Vertex::isEqual(const Vertex &w) const
 {
-    return CudaMath::equal(x, w.x) && CudaMath::equal(y, w.y) && CudaMath::equal(z, w.z);
+    return vf::Math::equal(x, w.x) && vf::Math::equal(y, w.y) && vf::Math::equal(z, w.z);
 }
 
 HOSTDEVICE real Vertex::getInnerAngle(const Vertex &w) const
@@ -91,7 +91,7 @@ HOSTDEVICE real Vertex::getInnerAngle(const Vertex &w) const
     real skal = *this * w;
     if (mag - fabs(skal) < 0.0001)
         return 0.0f;
-    return  CudaMath::acosReal(skal / mag) * 180.0f / CudaMath::acosReal(-1.0f); // acos(-1.0f) = PI 
+    return  vf::Math::acosReal(skal / mag) * 180.0f / vf::Math::acosReal(-1.0f); // acos(-1.0f) = PI 
 }
 
 HOSTDEVICE void Vertex::print() const
@@ -115,7 +115,7 @@ HOST void Vertex::printFormatted(std::ostream &ost) const
 
 HOSTDEVICE bool Vertex::operator==(const Vertex &v) const
 {
-	return CudaMath::equal(x, v.x) && CudaMath::equal(y, v.y) && CudaMath::equal(z, v.z);
+	return vf::Math::equal(x, v.x) && vf::Math::equal(y, v.y) && vf::Math::equal(z, v.z);
 }
 
 HOST VertexMemento Vertex::getState() const

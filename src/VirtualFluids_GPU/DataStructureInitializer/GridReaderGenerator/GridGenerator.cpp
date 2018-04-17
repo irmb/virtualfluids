@@ -5,7 +5,7 @@
 #include <GPU/CudaMemoryManager.h>
 
 #include <iostream>
-#include "utilities/math/CudaMath.cuh"
+#include "utilities/math/Math.h"
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
 {
@@ -538,9 +538,9 @@ std::string GridGenerator::verifyNeighborIndex(int level, int index , int &inval
     real maxX = para->getParH(level)->coordX_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
     real maxY = para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
     real maxZ = para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
-    real realNeighborX = CudaMath::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordX_SP[1];
-    real realNeighborY = CudaMath::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordY_SP[1];
-    real realNeighborZ = CudaMath::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordZ_SP[1];
+    real realNeighborX = vf::Math::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordX_SP[1];
+    real realNeighborY = vf::Math::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordY_SP[1];
+    real realNeighborZ = vf::Math::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordZ_SP[1];
 
     oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborX_SP[index], realNeighborX, y, z, "X");
     oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY_SP[index], x, realNeighborY, z, "Y");
@@ -571,7 +571,7 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
     real neighborCoordY = para->getParH(level)->coordY_SP[neighborIndex];
     real neighborCoordZ = para->getParH(level)->coordZ_SP[neighborIndex];
 
-    const bool neighborValid = CudaMath::equal(neighborX, neighborCoordX) && CudaMath::equal(neighborY, neighborCoordY) && CudaMath::equal(neighborZ, neighborCoordZ);
+    const bool neighborValid = vf::Math::equal(neighborX, neighborCoordX) && vf::Math::equal(neighborY, neighborCoordY) && vf::Math::equal(neighborZ, neighborCoordZ);
 
     if (!neighborValid) {
         oss << "NeighborX invalid from: (" << x << ", " << y << ", " << z << "), index: " << index << ", "
