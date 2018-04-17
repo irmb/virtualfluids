@@ -46,6 +46,7 @@ namespace logging
         virtual Logger& operator<<(const std::string &log) = 0;
         virtual Logger& operator<<(const int &log) = 0;
         virtual Logger& operator<<(const unsigned int &log) = 0;
+        virtual Logger& operator<<(const unsigned long& log) = 0;
         virtual Logger& operator<<(const float &log) = 0;
         virtual Logger& operator<<(const double &log) = 0;
 
