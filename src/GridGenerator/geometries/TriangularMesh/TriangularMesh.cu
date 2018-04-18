@@ -7,21 +7,20 @@
 
 #include <utilities/logger/Logger.h>
 
-#include "Serialization/GeometryMemento.h"
-#include <GridGenerator/geometries/Triangle/Serialization/TriangleMemento.h>
 #include "Timer/Timer.h"
 
 
-TriangularMesh* TriangularMesh::make(const std::string& fileName)
+TriangularMesh* TriangularMesh::make(const std::string& fileName, DiscretizationMethod discretizationMethod)
 {
     TriangularMesh* triangularMesh = new TriangularMesh(fileName);
     for (uint i = 0; i < triangularMesh->triangleVec.size(); i++) {
         triangularMesh->minmax.setMinMax(triangularMesh->triangleVec[i]);
     }
+    triangularMesh->discretizationMethod = discretizationMethod;
     return triangularMesh;
 }
 
-TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox<int>& box)
+TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox& box)
 {
 	this->triangleVec = STLReader::readSTL(box, input);
 	initalizeDataFromTriangles();
@@ -40,7 +39,7 @@ TriangularMesh::TriangularMesh(const TriangularMesh& geo)
 	this->triangleVec = geo.triangleVec;
     this->triangles = geo.triangles;
     this->size = geo.size;
-	this->minmax = BoundingBox<real>(geo.minmax);
+	this->minmax = BoundingBox(geo.minmax);
 }
 
 TriangularMesh::TriangularMesh()
@@ -58,17 +57,13 @@ void TriangularMesh::findNeighbors()
 {
 	*logging::out << logging::Logger::INTERMEDIATE << "start finding neighbors ...\n";
 
-	const clock_t begin = clock();
-    Timer t = Timer::begin();
+    Timer t = Timer::makeStart();
 
 	TriangleNeighborFinder finder(triangles, size);
 	finder.fillWithNeighborAngles(this);
 
-	const clock_t end = clock();
     t.end();
 
-	const real time = real(end - begin) / CLOCKS_PER_SEC;
-    *logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << time << "s\n";
     *logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << t.getTimeInSeconds() << "s\n";
 }
 
@@ -78,7 +73,7 @@ void TriangularMesh::setTriangles(std::vector<Triangle> triangles)
 	initalizeDataFromTriangles();
 }
 
-void TriangularMesh::setMinMax(BoundingBox<real> minmax)
+void TriangularMesh::setMinMax(BoundingBox minmax)
 {
 	this->minmax = minmax;
 }
@@ -104,26 +99,7 @@ HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 }
 
 
-HOST GeometryMemento TriangularMesh::getState() const
+HOST DiscretizationMethod TriangularMesh::getDiscretizationMethod() const
 {
-    GeometryMemento memento;
-    for (int i = 0; i < size ; i++)
-        memento.triangles.push_back(triangleVec[i].getState());
-    
-    return memento;
+    return this->discretizationMethod;
 }
-
-HOST void TriangularMesh::setState(const GeometryMemento &memento)
-{
-    this->size = memento.triangles.size();
-    this->triangleVec.resize(size);
-
-    Triangle t;
-    for (int i = 0; i < size; i++) {
-        t.setState(memento.triangles[i]);
-        triangleVec[i] = t;
-    }
-    this->initalizeDataFromTriangles();
-}
-
-

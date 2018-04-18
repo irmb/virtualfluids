@@ -17,25 +17,27 @@
 
 class GeometryMemento;
 
+enum class DiscretizationMethod { RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE };
+
+
 struct TriangularMesh : public Object
 {
 public:
-    enum class DiscretizationMethod {RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE};
 
-    VF_PUBLIC static TriangularMesh* make(const std::string& fileName);
+    VF_PUBLIC static TriangularMesh* make(const std::string& fileName, DiscretizationMethod discretizationMethod);
 	VF_PUBLIC TriangularMesh();
 	VF_PUBLIC TriangularMesh(const TriangularMesh& geo);
     VF_PUBLIC TriangularMesh(const std::string& inputPath);
-	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox<int> &box);
+	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox &box);
 	HOSTDEVICE VF_PUBLIC ~TriangularMesh();
 
 	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
-	VF_PUBLIC void setMinMax(BoundingBox<real> minmax);
+	VF_PUBLIC void setMinMax(BoundingBox minmax);
 
 	std::vector<Triangle> triangleVec;
 	Triangle *triangles;
 	int size;
-	BoundingBox<real> minmax;
+	BoundingBox minmax;
 
     HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
 
@@ -43,6 +45,7 @@ public:
     HOST VF_PUBLIC void setState(const GeometryMemento &memento);
     VF_PUBLIC void findNeighbors();
 
+    HOST VF_PUBLIC DiscretizationMethod getDiscretizationMethod() const;
 
 
 private:

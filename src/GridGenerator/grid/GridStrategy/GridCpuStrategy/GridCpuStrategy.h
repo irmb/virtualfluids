@@ -38,6 +38,8 @@ protected:
     static void findForNeighborsNewIndices(SPtr<GridImp> grid);
     static void findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid);
 
+    void pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
+    void rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
 
 public:
     void allocateFieldMemory(Field* field) override;

@@ -25,7 +25,6 @@ class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
 
-template <typename T>
 class BoundingBox;
 
 class Grid;
@@ -46,7 +45,7 @@ public:
     virtual void deleteSolidNodes() = 0;
 
 	virtual void writeGridToVTK(std::string output, int level) = 0;
-    virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level) = 0;
+    virtual void writeSimulationFiles(std::string output, BoundingBox &nodesDelete, bool writeFilesBinary, int level) = 0;
     virtual void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const = 0;
 
 	virtual SPtr<Grid> getGrid(uint level) = 0;

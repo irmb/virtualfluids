@@ -7,11 +7,63 @@
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include "GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 #include "GridStrategy/GridStrategyMocks.h"
-//
+
+
+TEST(GridTest, getMinimumOnNode)
+{
+    auto gridStrategyDummy = SPtr<GridStrategy>(new GridStrategyDummy);
+
+    const real startX = 0.0;
+    const real startY = 0.75;
+    const real startZ = 1.75;
+    const real delta = 0.5;
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+
+    const real exactX = 0.4;
+    const real exactY = 0.8;
+    const real exactZ = 2.3;
+    const Vertex actual = sut->getMinimumOnNode(Vertex(exactX, exactY, exactZ));
+
+    const real expectedX = 0.0;
+    const real expectedY = 0.75;
+    const real expectedZ = 2.25;
+    const Vertex expected = Vertex(expectedX, expectedY, expectedZ);
+
+    EXPECT_TRUE(actual == expected);
+}
+
+TEST(GridTest, getMaximumOnNode)
+{
+    auto gridStrategyDummy = SPtr<GridStrategy>(new GridStrategyDummy);
+
+    const real startX = 0.0;
+    const real startY = 0.75;
+    const real startZ = 0.75;
+    const real delta = 0.5;
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+
+    const real exactX = 0.4;
+    const real exactY = 0.8;
+    const real exactZ = 1.3;
+    const Vertex actual = sut->getMaximumOnNode(Vertex(exactX, exactY, exactZ));
+
+    const real expectedX = 0.5;
+    const real expectedY = 1.25;
+    const real expectedZ = 1.75;
+    const Vertex expected = Vertex(expectedX, expectedY, expectedZ);
+
+    EXPECT_TRUE(actual == expected);
+}
+
+
+
+
+
+
 //std::vector<Vertex> getPointsInBoundingBox(Triangle t, real delta)
 //{
 //	int x, y, z;
-//	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(t);
+//	BoundingBox box = BoundingBox::makeNodeBox(t);
 //
 //	std::vector<Vertex> points;
 //

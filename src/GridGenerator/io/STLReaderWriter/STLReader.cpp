@@ -98,7 +98,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
     return triangles;
 }
 
-std::vector<Triangle> STLReader::readSTL(const BoundingBox<int> &box, const std::string& name)
+std::vector<Triangle> STLReader::readSTL(const BoundingBox &box, const std::string& name)
 {
 	std::ifstream file(name.c_str());
 	if (file.is_open()) {
@@ -123,7 +123,7 @@ std::vector<Triangle> STLReader::readSTL(const BoundingBox<int> &box, const std:
 	}
 }
 
-std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox<int> &box, const std::string& name)
+std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox &box, const std::string& name)
 {
     int lines = countLinesInFile(name);
     int nTriangles = (lines) / 7; // seven lines per triangle
@@ -154,7 +154,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const BoundingBox<int> &box, const
 }
 
 
-std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox<int> &box, const std::string& name)
+std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std::string& name)
 {
     FILE *file;
     std::string mode = "rb";

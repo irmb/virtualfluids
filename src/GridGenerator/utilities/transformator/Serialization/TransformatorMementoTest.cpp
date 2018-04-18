@@ -26,7 +26,7 @@
 //{
 //    std::string fileName = "boundingbox";
 //
-//    BoundingBox<real> box(1.2, 22.2, -23.2, 2, 0.0001, 1212122.1);
+//    BoundingBox box(1.2, 22.2, -23.2, 2, 0.0001, 1212122.1);
 //
 //
 //    BoundingBoxMemento sut = box.getState();
@@ -34,7 +34,7 @@
 //
 //    BoundingBoxMemento newSut;
 //    deserialize(newSut, fileName);
-//    BoundingBox<real> boxNew;
+//    BoundingBox boxNew;
 //    boxNew.setState(newSut);
 //
 //    EXPECT_TRUE(box == boxNew);

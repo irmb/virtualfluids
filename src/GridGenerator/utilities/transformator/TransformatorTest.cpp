@@ -134,7 +134,7 @@ TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToView)
 	Vertex translater = Vertex(-2.6f, 3434.0f, 0.1f);
 	std::shared_ptr<Transformator> sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
 
-	BoundingBox<real> box(0, 0, 0, 0, 0, 0);
+	BoundingBox box(0, 0, 0, 0, 0, 0);
 
 	sut->transformWorldToGrid(box);
 
@@ -153,7 +153,7 @@ TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToWorld)
 	Vertex translater = Vertex(-2.6f, 3434.0f, 0.1f);
 	std::shared_ptr<Transformator> sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
 
-	BoundingBox<real> box(0, 0, 0, 0, 0, 0);
+	BoundingBox box(0, 0, 0, 0, 0, 0);
 
 	sut->transformGridToWorld(box);
 

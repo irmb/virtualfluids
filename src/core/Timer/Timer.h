@@ -8,7 +8,8 @@ class VF_PUBLIC Timer
 {
 public:
     Timer();
-    static Timer begin();
+    static Timer makeStart();
+    void start();
     void end();
     real getTimeInSeconds() const;
 

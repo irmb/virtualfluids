@@ -98,7 +98,7 @@ void TransformatorImp::translateGridToWorld(Vertex & value) const
 }
 
 
-void TransformatorImp::transformGridToWorld(BoundingBox<real> &box) const
+void TransformatorImp::transformGridToWorld(BoundingBox &box) const
 {
 	//scale
 	box.minX = (box.minX * this->delta);
@@ -119,7 +119,7 @@ void TransformatorImp::transformGridToWorld(BoundingBox<real> &box) const
 	box.maxZ = (box.maxZ - this->translater->z);
 }
 
-void TransformatorImp::transformWorldToGrid(BoundingBox<real> &box) const
+void TransformatorImp::transformWorldToGrid(BoundingBox &box) const
 {
 	//translate
 	box.minX += this->translater->x;

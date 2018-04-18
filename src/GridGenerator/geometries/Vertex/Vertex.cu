@@ -3,9 +3,6 @@
 #include <GridGenerator/utilities/math/Math.h>
 
 
-#include "Serialization/VertexMemento.h"
-
-
 HOSTDEVICE Vertex::Vertex(real x, real y, real z) : x(x), y(y), z(z){}
 HOSTDEVICE Vertex::Vertex() { x = 0.0f; y = 0.0f; z = 0.0f; }
 
@@ -118,21 +115,6 @@ HOSTDEVICE bool Vertex::operator==(const Vertex &v) const
 	return vf::Math::equal(x, v.x) && vf::Math::equal(y, v.y) && vf::Math::equal(z, v.z);
 }
 
-HOST VertexMemento Vertex::getState() const
-{
-    VertexMemento memento;
-    memento.x = x;
-    memento.y = y;
-    memento.z = z;
-    return memento;
-}
-
-HOST void Vertex::setState(const VertexMemento &memento)
-{
-    this->x = memento.x;
-    this->y = memento.y;
-    this->z = memento.z;
-}
 
 HOST bool Vertex::isXbetween(real min, real max) const
 {

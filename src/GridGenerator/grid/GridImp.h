@@ -15,6 +15,7 @@ struct Triangle;
 class GridStrategy;
 class GridInterface;
 class Object;
+class BoundingBox;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -102,6 +103,9 @@ public:
     HOST int getStartDirection() const override;
     HOST int getEndDirection() const override;
 
+    HOSTDEVICE Vertex getMinimumOnNode(Vertex exact) const;
+    HOSTDEVICE Vertex getMaximumOnNode(Vertex exact) const;
+
     HOSTDEVICE real getStartX() const override;
     HOSTDEVICE real getStartY() const override;
     HOSTDEVICE real getStartZ() const override;
@@ -145,6 +149,9 @@ private:
     HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
     HOSTDEVICE int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
+    HOSTDEVICE BoundingBox GridImp::getBoundingBoxOnNodes(Triangle &triangle) const;
+    HOSTDEVICE static real getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta);
+    HOSTDEVICE static real getMaximumOnNodes(const real& maxExact, const real& decimalStart, const real& delta);
 
 public:
     HOST void mesh(TriangularMesh &geometry) override;

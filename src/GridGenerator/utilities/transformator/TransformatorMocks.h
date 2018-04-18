@@ -23,8 +23,8 @@ public:
 	virtual void transformWorldToView(TriangularMesh &geom) const override {}
 	virtual void transformWorldToView(Vertex &value) const override {}
 	
-	virtual void transformViewToWorld(BoundingBox<real> &box) const override {}
-	virtual void transformWorldToView(BoundingBox<real> &box) const override {}
+	virtual void transformViewToWorld(BoundingBox &box) const override {}
+	virtual void transformWorldToView(BoundingBox &box) const override {}
 
 	virtual void transformViewToWorld(Vertex &value) const override { v = value; counter++; logString.append("transformViewToWorld "); }
 

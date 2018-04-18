@@ -134,4 +134,4 @@
 //#endif
 //}
 //
-//template void UnstructuredGridWrapper::addBoundingBox<real>(BoundingBox<real> b, int type);
+//template void UnstructuredGridWrapper::addBoundingBox(BoundingBox b, int type);

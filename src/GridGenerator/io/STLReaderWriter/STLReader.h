@@ -9,19 +9,18 @@
 
 struct Triangle;
 struct Vertex;
-template<class T>
 class BoundingBox;
 
 class VF_PUBLIC STLReader
 {
 public:
     static std::vector<Triangle> readSTL(const std::string& name);
-	static std::vector<Triangle> readSTL(const BoundingBox<int> &box, const std::string& name);
+	static std::vector<Triangle> readSTL(const BoundingBox &box, const std::string& name);
 
     static std::vector<Triangle> readBinarySTL(const std::string& name);
     static std::vector<Triangle> readASCIISTL(const std::string& name);
-	static std::vector<Triangle> readBinarySTL(const BoundingBox<int> &box, const std::string& name);
-	static std::vector<Triangle> readASCIISTL(const BoundingBox<int> &box, const std::string& name);
+	static std::vector<Triangle> readBinarySTL(const BoundingBox &box, const std::string& name);
+	static std::vector<Triangle> readASCIISTL(const BoundingBox &box, const std::string& name);
 
 private:
     STLReader(){};

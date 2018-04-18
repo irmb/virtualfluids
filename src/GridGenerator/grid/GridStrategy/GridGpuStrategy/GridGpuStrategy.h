@@ -6,7 +6,6 @@
 
 #include "../GridStrategy.h"
 
-template <class T>
 class BoundingBox;
 struct TriangularMesh;
 

@@ -2,8 +2,6 @@
 #include <GridGenerator/utilities/math/Math.h>
 #include "TriangleException.h"
 
-#include "Serialization/TriangleMemento.h"
-
 #include "grid/NodeValues.h"
 
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal) {}
@@ -288,32 +286,5 @@ HOST bool Triangle::operator==(const Triangle &t) const
 HOSTDEVICE void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const
 {
     Vertex::setMinMax(minX, maxX, minY, maxY, minZ, maxZ, v1, v2, v3);
-}
-
-HOST TriangleMemento Triangle::getState() const
-{
-    TriangleMemento memento;
-    memento.v1 = v1.getState();
-    memento.v2 = v2.getState();
-    memento.v3 = v3.getState();
-    memento.normal = normal.getState();
-    
-    memento.alphaAngles[0] = alphaAngles[0];
-    memento.alphaAngles[1] = alphaAngles[1];
-    memento.alphaAngles[2] = alphaAngles[2];
-
-    return memento;
-}
-
-HOST void Triangle::setState(const TriangleMemento &memento)
-{
-    this->v1.setState(memento.v1);
-    this->v2.setState(memento.v2);
-    this->v3.setState(memento.v3);
-    this->normal.setState(memento.normal);
-
-    this->alphaAngles[0] = memento.alphaAngles[0];
-    this->alphaAngles[1] = memento.alphaAngles[1];
-    this->alphaAngles[2] = memento.alphaAngles[2];
 }
 

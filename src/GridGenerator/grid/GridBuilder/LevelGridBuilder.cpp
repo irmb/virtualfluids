@@ -24,7 +24,6 @@
 #include <utilities/logger/Logger.h>
 
 
-#include <GridGenerator/geometries/TriangularMesh/Serialization/GeometryMemento.h>
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.h"
@@ -263,7 +262,7 @@ void LevelGridBuilder::writeGridToVTK(std::string output, int level)
 }
 
 
-void LevelGridBuilder::writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level)
+void LevelGridBuilder::writeSimulationFiles(std::string output, BoundingBox &nodesDelete, bool writeFilesBinary, int level)
 {
     //checkLevel(level);
     //UnstructuredLevelGridBuilder builder;

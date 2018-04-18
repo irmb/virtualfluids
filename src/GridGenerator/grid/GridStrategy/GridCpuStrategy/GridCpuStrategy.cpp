@@ -60,16 +60,26 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 
 void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
 {
+    switch(triangularMesh->getDiscretizationMethod())
+    {
+    case DiscretizationMethod::POINT_UNDER_TRIANGLE:
+        pointUnderTriangleMethod(grid, triangularMesh);
+        break;
+    case DiscretizationMethod::RAYCASTING:
+        rayCastingMethod(grid, triangularMesh);
+        break;
+    }
+
+}
+
+void GridCpuStrategy::pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
+{
+
 #pragma omp parallel for
     for (int i = 0; i < triangularMesh->size; i++)
         grid->meshReverse(triangularMesh->triangles[i]);
 
-    //GridVTKWriter::writeSparseGridToVTK(grid, "D:/GRIDGENERATION/gridBeforeStopper");
-
     grid->findInsideNodes();
-
-    //GridVTKWriter::writeSparseGridToVTK(grid, "D:/GRIDGENERATION/gridFilled");
-
 
 #pragma omp parallel for
     for (int i = 0; i < grid->size; i++)
@@ -78,6 +88,160 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangu
     *logging::out << logging::Logger::INTERMEDIATE
         << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
         << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
+}
+
+void GridCpuStrategy::rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
+{
+    //int nx1 = bcMatrices.geoMatrix.getNX1();
+    //int nx2 = bcMatrices.geoMatrix.getNX2();
+    //int nx3 = bcMatrices.geoMatrix.getNX3();
+
+
+    //const int minX = triangularMesh->minmax.minX;
+    //const int minY = triangularMesh->minmax.minY;
+    //const int minZ = triangularMesh->minmax.minZ;
+    // 
+    //const int maxX = triangularMesh->minmax.maxX;
+    //const int maxY = triangularMesh->minmax.maxY;
+    //const int maxZ = triangularMesh->minmax.maxZ;
+
+    //int x, y, z;
+
+    //for (z = minZ; z <= maxZ; z++)
+    //{
+    //    for (y = minY; y <= maxY; y++)
+    //    {
+    //        for (x = minX; x <= maxX; x++)
+    //        {
+    //            if (y == 0 || y == (int)nx2 - 1 ||
+    //                x == 0 || x == (int)nx1 - 1 ||
+    //                z == 0 || z == (int)nx3 - 1)
+    //            {
+    //            }
+    //            else
+    //            {
+    //                /*
+    //                *  The first 3 bits contain node type (fluid, inlet, etc.).
+    //                *  The remaining 5 bits contain the unique geometry number
+    //                *  in case of solid nodes.
+    //                *
+    //                *  0 0 0 0 0 | 0 0 0
+    //                */
+
+    //                // Add the unique geometry number to the upper 5 bits.
+    //                geoMatrix(x, y, z) = NodeType::solid;
+    //                setGeoID(geoMatrix(x, y, z), mesh->getUniqueID());
+    //            }
+    //        }
+    //    }
+    //}
+
+
+    //int counter = 0;
+
+    //// Test line intersection
+    //for (z = minZ; z <= maxZ; z++)
+    //{
+    //    for (y = minY; y <= maxY; y++)
+    //    {
+    //        for (x = minX; x <= maxX; x++)
+    //        {
+    //            counter++;
+    //            if (mesh->intersectLine((x - 1)*deltaXWorld, y*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
+    //            else geoMatrix(x, y, z) = NodeType::fluid;
+    //        }
+    //    }
+    //}
+
+    //// Test line intersection from opposite direction
+    //for (z = minZ; z <= maxZ; z++)
+    //{
+    //    for (y = minY; y <= maxY; y++)
+    //    {
+    //        for (x = maxX; x >= minX; x--)
+    //        {
+    //            if (geoMatrix(x, y, z) != NodeType::fluid)
+    //            {
+    //                counter++;
+    //                if (mesh->intersectLine((x + 1)*deltaXWorld, y*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
+    //                else geoMatrix(x, y, z) = NodeType::fluid;
+    //            }
+    //        }
+    //    }
+    //}
+
+    //// Test line intersection
+    //for (z = minZ; z <= maxZ; z++)
+    //{
+    //    for (x = minX; x <= maxX; x++)
+    //    {
+    //        for (y = minY; y <= maxY; y++)
+    //        {
+    //            if (geoMatrix(x, y, z) != NodeType::fluid)
+    //            {
+    //                counter++;
+    //                if (mesh->intersectLine(x*deltaXWorld, (y - 1)*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
+    //                else geoMatrix(x, y, z) = NodeType::fluid;
+    //            }
+    //        }
+    //    }
+    //}
+
+    //// Test line intersection from opposite direction
+    //for (z = minZ; z <= maxZ; z++)
+    //{
+    //    for (x = minX; x <= maxX; x++)
+    //    {
+    //        for (y = maxY; y >= minY; y--)
+    //        {
+    //            if (geoMatrix(x, y, z) != NodeType::fluid)
+    //            {
+    //                counter++;
+    //                if (mesh->intersectLine(x*deltaXWorld, (y + 1)*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
+    //                else geoMatrix(x, y, z) = NodeType::fluid;;
+    //            }
+    //        }
+    //    }
+    //}
+
+    //// Test line intersection
+    //for (x = minX; x <= maxX; x++)
+    //{
+    //    for (y = minY; y <= maxY; y++)
+    //    {
+    //        for (z = minZ; z <= maxZ; z++)
+    //        {
+    //            if (geoMatrix(x, y, z) != NodeType::fluid)
+    //            {
+    //                counter++;
+    //                if (mesh->intersectLine(x*deltaXWorld, y*deltaXWorld, (z - 1)*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
+    //                else geoMatrix(x, y, z) = NodeType::fluid;
+    //            }
+    //        }
+    //    }
+    //}
+
+    //// Test line intersection from opposite direction
+    //for (x = minX; x <= maxX; x++)
+    //{
+    //    for (y = minY; y <= maxY; y++)
+    //    {
+    //        for (z = maxZ; z >= minZ; z--)
+    //        {
+    //            if (geoMatrix(x, y, z) != NodeType::fluid)
+    //            {
+    //                counter++;
+    //                if (mesh->intersectLine(x*deltaXWorld, y*deltaXWorld, (z + 1)*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
+    //                else geoMatrix(x, y, z) = NodeType::fluid;
+    //            }
+    //        }
+    //    }
+    //}
+
+    //std::cout << counter << " nodes tested...\n";
+
+    //// map temp geoMatrix to final geoMatrix
+    //mapSolidNodesToFinalGeoMatrix(geoMatrix, bcMatrices);
 }
 
 void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)

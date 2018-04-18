@@ -6,14 +6,11 @@
 
 #include <limits>
 
-#include "Serialization/BoundingBoxMemento.h"
 
 
-template <typename T>
- BoundingBox<T>::BoundingBox(T minX, T maxX, T minY, T maxY, T minZ, T maxZ) : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ) {}
+ BoundingBox::BoundingBox(real minX, real maxX, real minY, real maxY, real minZ, real maxZ) : minX(minX), maxX(maxX), minY(minY), maxY(maxY), minZ(minZ), maxZ(maxZ) {}
 
- template <typename T>
- HOSTDEVICE BoundingBox<T>::BoundingBox() :
+ HOSTDEVICE BoundingBox::BoundingBox() :
      minX(0),
      maxX(0),
      minY(0),
@@ -21,103 +18,21 @@ template <typename T>
      minZ(0),
      maxZ(0) {}
 
- BoundingBox<real>::BoundingBox(const BoundingBox<real> &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
+ BoundingBox::BoundingBox(const BoundingBox &t) : minX(t.minX), maxX(t.maxX), minY(t.minY), maxY(t.maxY), minZ(t.minZ), maxZ(t.maxZ) {}
 
- BoundingBox<int>::BoundingBox(const BoundingBox<real> &box)
+
+ HOST BoundingBox BoundingBox::makeInvalidMinMaxBox()
  {
-     this->minX = (int)(box.minX);
-     this->minY = (int)(box.minY);
-     this->minZ = (int)(box.minZ);
-
-     this->maxX = (int)floor(box.maxX + 1);
-     this->maxY = (int)floor(box.maxY + 1);
-     this->maxZ = (int)floor(box.maxZ + 1);
- }
-
- template <typename T>
- BoundingBox<T>::BoundingBox(const BoundingBox<int> &box)
- {
-	 this->minX = (real)box.minX;
-	 this->minY = (real)box.minY;
-	 this->minZ = (real)box.minZ;
-
-	 this->maxX = (real)box.maxX;
-	 this->maxY = (real)box.maxY;
-	 this->maxZ = (real)box.maxZ;
- }
-
-
- HOSTDEVICE BoundingBox<real> BoundingBox<real>::makeExactBox(const Triangle &t)
- {
-	 BoundingBox<real> box;
-     t.setMinMax(box.minX, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ);
-	 return box;
- }
-
-
- HOSTDEVICE BoundingBox<real> BoundingBox<real>::makeRealNodeBox(const Triangle& t, const real& startX, const real& startY, const real& startZ, const real& delta)
-{
-    BoundingBox<real> box;
-
-    real minX, maxX, minY, maxY, minZ, maxZ;
-    t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
-
-    calculateMinMaxOnNodes(box.minX, box.maxX, minX, maxX, startX, delta);
-    calculateMinMaxOnNodes(box.minY, box.maxY, minY, maxY, startY, delta);
-    calculateMinMaxOnNodes(box.minZ, box.maxZ, minZ, maxZ, startZ, delta);
-
-    return box;
-}
-
- template <>
- HOSTDEVICE void BoundingBox<real>::calculateMinMaxOnNodes(real &minNode, real &maxNode, const real &minExact, const real &maxExact, const real& start, const real& delta)
- {
-    const real decimalStart = vf::Math::getDecimalPart(start);
-    minNode = getMinimum(minExact, decimalStart, delta);
-    maxNode = getMaximum(maxExact, decimalStart, delta);
- }
-
- template <>
- HOSTDEVICE real BoundingBox<real>::getMinimum(const real& minExact, const real& decimalStart, const real& delta)
- {
-     real minNode = ceil(minExact - 1.0);
-     minNode += decimalStart;
-     while (minNode > minExact)
-         minNode -= delta;
-
-     while (minNode + delta < minExact)
-         minNode += delta;
-     return minNode;
- }
-
- template <>
- HOSTDEVICE real BoundingBox<real>::getMaximum(const real& maxExact, const real& decimalStart, const real& delta)
- {
-     real maxNode = ceil(maxExact - 1.0);
-     maxNode += decimalStart;
-
-     while (maxNode < maxExact)
-         maxNode += delta;
-     return maxNode;
- }
-
-
-template <typename T>
- HOST BoundingBox<T> BoundingBox<T>::makeInvalidMinMaxBox()
- {
-     BoundingBox<T> box = BoundingBox<T>(std::numeric_limits<T>::max(),
-         std::numeric_limits<T>::lowest(),
-         std::numeric_limits<T>::max(),
-         std::numeric_limits<T>::lowest(),
-         std::numeric_limits<T>::max(),
-         std::numeric_limits<T>::lowest());
+     BoundingBox box = BoundingBox(std::numeric_limits<real>::max(),
+         std::numeric_limits<real>::lowest(),
+         std::numeric_limits<real>::max(),
+         std::numeric_limits<real>::lowest(),
+         std::numeric_limits<real>::max(),
+         std::numeric_limits<real>::lowest());
      return box;
  }
 
-
-
-
- void BoundingBox<real>::setMinMax(const Triangle& t)
+ void BoundingBox::setMinMax(const Triangle& t)
  {
      real minX, maxX, minY, maxY, minZ, maxZ;
      t.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
@@ -136,32 +51,30 @@ template <typename T>
          this->maxZ = maxZ;
  }
 
- template <typename T>
- bool BoundingBox<T>::intersect(const Triangle &t) const
+
+ bool BoundingBox::intersect(const Triangle &t) const
  {
 	 if (isInside(t.v1) || isInside(t.v2) || isInside(t.v3))
 		 return true;
 	 return false;
  }
 
- template <typename T>
- bool BoundingBox<T>::isInside(const Triangle &t) const
+
+ bool BoundingBox::isInside(const Triangle &t) const
  {
 	 if (isInside(t.v1) && isInside(t.v2) && isInside(t.v3))
 		 return true;
 	 return false;
  }
 
- template <typename T>
- bool BoundingBox<T>::isInside(const Vertex &v) const
+ bool BoundingBox::isInside(const Vertex &v) const
  {
      if (v.isXbetween(minX, maxX) && v.isYbetween(minY, maxY) && v.isZbetween(minZ, maxZ))
 		 return true;
 	 return false;
  }
 
- template <typename T>
- std::vector<std::vector<Vertex> > BoundingBox<T>::getIntersectionPoints(const BoundingBox<real> &b) const
+ std::vector<std::vector<Vertex> > BoundingBox::getIntersectionPoints(const BoundingBox &b) const
  {
 	 std::vector<std::vector<Vertex> > intersectionBox;
 	 intersectionBox.resize(6);
@@ -207,9 +120,7 @@ template <typename T>
 	 return intersectionBox;
  }
 
-
- template <typename T>
- bool BoundingBox<T>::intersect(const BoundingBox<T> &box) const
+ bool BoundingBox::intersect(const BoundingBox &box) const
  {
 	 struct Vertex v[8];
 	 box.getPoints(v);
@@ -221,8 +132,7 @@ template <typename T>
 	 return false;
  }
 
- template <typename T>
- void BoundingBox<T>::getPoints(Vertex v[8]) const
+ void BoundingBox::getPoints(Vertex v[8]) const
  {
 	 v[0] = Vertex(minX, minY, minZ);
 	 v[1] = Vertex(maxX, minY, minZ);
@@ -236,14 +146,13 @@ template <typename T>
  }
 
 
- template <typename T>
- void BoundingBox<T>::print() const
+ void BoundingBox::print() const
  {
-	 printf("min/max - x: %2.4f/ %2.4f, y: %2.4f, %2.4f, z: %2.4f, %2.4f \n", (real)minX, (real)maxX, (real)minY, (real)maxY, (real)minZ, (real)maxZ);
+	 printf("min/max - x: %2.4f/ %2.4f, y: %2.4f, %2.4f, z: %2.4f, %2.4f \n", minX, maxX, minY, maxY, minZ, maxZ);
  }
 
 
- HOST bool BoundingBox<real>::operator==(const BoundingBox<real> &box) const
+ HOST bool BoundingBox::operator==(const BoundingBox &box) const
  {
      return vf::Math::equal(minX, box.minX)
          && vf::Math::equal(maxX, box.maxX)
@@ -254,30 +163,3 @@ template <typename T>
  }
 
 
- template <typename T>
- HOST BoundingBoxMemento BoundingBox<T>::getState() const
- {
-     BoundingBoxMemento memento;
-     memento.minX = (real)minX;
-     memento.maxX = (real)maxX;
-     memento.minY = (real)minY;
-     memento.maxY = (real)maxY;
-     memento.minZ = (real)minZ;
-     memento.maxZ = (real)maxZ;
-     return memento;
- }
-
- template <typename T>
- HOST void BoundingBox<T>::setState(const BoundingBoxMemento &memento)
- {
-     this->minX = (T)memento.minX;
-     this->maxX = (T)memento.maxX;
-     this->minY = (T)memento.minY;
-     this->maxY = (T)memento.maxY;
-     this->minZ = (T)memento.minZ;
-     this->maxZ = (T)memento.maxZ;
- }
-
-
- template class VF_PUBLIC BoundingBox<int>;
- template class VF_PUBLIC BoundingBox<real>;

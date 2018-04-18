@@ -7,11 +7,16 @@ Timer::Timer()
     
 }
 
-Timer Timer::begin()
+Timer Timer::makeStart()
 {
     Timer t;
     t.beginInClocks = clock();
     return t;
+}
+
+void Timer::start()
+{
+    beginInClocks = clock();
 }
 
 void Timer::end()

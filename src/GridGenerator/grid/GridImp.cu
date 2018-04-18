@@ -96,7 +96,8 @@ HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
 
 HOSTDEVICE void GridImp::meshReverse(Triangle &triangle)
 {
-    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, startX, startY, startZ, delta);
+    auto box = this->getBoundingBoxOnNodes(triangle);
+
     triangle.initalLayerThickness(getDelta());
 
     for (real x = box.minX; x <= box.maxX; x += delta)
@@ -518,7 +519,7 @@ HOST void GridImp::mesh(TriangularMesh &triangularMesh)
 
 HOSTDEVICE void GridImp::mesh(Triangle &triangle)
 {
-    BoundingBox<real> box = BoundingBox<real>::makeRealNodeBox(triangle, startX, startY, startZ, delta);
+    auto box = this->getBoundingBoxOnNodes(triangle);
     triangle.initalLayerThickness(getDelta());
 
     for (real x = box.minX; x <= box.maxX; x += delta)
@@ -624,6 +625,54 @@ HOST int GridImp::getStartDirection() const
 HOST int GridImp::getEndDirection() const
 {
     return this->distribution.dir_end;
+}
+
+HOSTDEVICE BoundingBox GridImp::getBoundingBoxOnNodes(Triangle &triangle) const
+{
+    real minX, maxX, minY, maxY, minZ, maxZ;
+    triangle.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
+    const Vertex minOnNodes = getMinimumOnNode(Vertex(minX, minY, minZ));
+    const Vertex maxOnNodes = getMaximumOnNode(Vertex(maxX, maxY, maxZ));
+
+    return BoundingBox(minOnNodes.x, maxOnNodes.x, minOnNodes.y, maxOnNodes.y, minOnNodes.z, maxOnNodes.z);
+}
+
+HOSTDEVICE Vertex GridImp::getMinimumOnNode(Vertex exact) const
+{
+    const real minX = getMinimumOnNodes(exact.x, vf::Math::getDecimalPart(startX), delta);
+    const real minY = getMinimumOnNodes(exact.y, vf::Math::getDecimalPart(startY), delta);
+    const real minZ = getMinimumOnNodes(exact.z, vf::Math::getDecimalPart(startZ), delta);
+    return Vertex(minX, minY, minZ);
+}
+
+HOSTDEVICE real GridImp::getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta)
+{
+    real minNode = ceil(minExact - 1.0);
+    minNode += decimalStart;
+    while (minNode > minExact)
+        minNode -= delta;
+
+    while (minNode + delta < minExact)
+        minNode += delta;
+    return minNode;
+}
+
+HOSTDEVICE Vertex GridImp::getMaximumOnNode(Vertex exact) const
+{
+    const real maxX = getMaximumOnNodes(exact.x, vf::Math::getDecimalPart(startX), delta);
+    const real maxY = getMaximumOnNodes(exact.y, vf::Math::getDecimalPart(startY), delta);
+    const real maxZ = getMaximumOnNodes(exact.z, vf::Math::getDecimalPart(startZ), delta);
+    return Vertex(maxX, maxY, maxZ);
+}
+
+HOSTDEVICE real GridImp::getMaximumOnNodes(const real& maxExact, const real& decimalStart, const real& delta)
+{
+    real maxNode = ceil(maxExact - 1.0);
+    maxNode += decimalStart;
+
+    while (maxNode < maxExact)
+        maxNode += delta;
+    return maxNode;
 }
 
 HOSTDEVICE int GridImp::getXIndex(real x) const
