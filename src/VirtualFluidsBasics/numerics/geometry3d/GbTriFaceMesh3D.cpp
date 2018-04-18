@@ -1,4 +1,3 @@
-
 #include <numerics/geometry3d/GbTriFaceMesh3D.h>
 
 #include <numerics/geometry3d/GbCuboid3D.h>
@@ -15,39 +14,31 @@
 #include <numerics/geometry3d/KdTree/intersectionhandler/KdCountLineIntersectionHandler.h>
 #include <numerics/geometry3d/KdTree/intersectionhandler/KdCountRayIntersectionHandler.h>
 
-#define MAX_ITER 10
-
 using namespace std;
 
 GbTriFaceMesh3D::GbTriFaceMesh3D() 
    :   GbObject3D()
      , buildVertTriRelationMap(false)
      , kdTree(NULL)
-     , transX1(0.0)
-     , transX2(0.0)
-     , transX3(0.0)
-     , transferViaFilename(false)
-
+     , kdTreeValid(false)
 {
    this->setName("CAB_GbTriFaceMesh3D");
    this->nodes          = new vector<Vertex>;
    this->triangles      = new vector<TriFace>;
    this->consistent     = false;
-   this->kdtreeSplitAlg = KDTREE_SAHPLIT;
+   //this->kdtreeSplitAlg = KDTREE_SHAPLIT;
+   this->kdtreeSplitAlg = KDTREE_SPATIALSPLIT;
 }
 /*=======================================================================*/
-GbTriFaceMesh3D::GbTriFaceMesh3D(string name, vector<Vertex>* nodes, vector<TriFace>* triangles, KDTREE_SPLITAGORITHM splitAlg, bool removeRedundantNodes)
+GbTriFaceMesh3D::GbTriFaceMesh3D(  string name, vector<Vertex>* nodes, vector<TriFace>* triangles, KDTREE_SPLITAGORITHM splitAlg, bool removeRedundantNodes)
    :  GbObject3D()
     , nodes(nodes)
     , triangles(triangles)
     , buildVertTriRelationMap(false)
     , consistent(false)
     , kdTree(NULL)
+    , kdTreeValid(false)
     , kdtreeSplitAlg(splitAlg)
-    , transX1(0.0)
-    , transX2(0.0)
-    , transX3(0.0)
-    , transferViaFilename(false)
 {
    if( name.empty() ) throw UbException(UB_EXARGS,"no name specified");
    if( !nodes       ) throw UbException(UB_EXARGS,"no nodes specified");
@@ -67,6 +58,7 @@ GbTriFaceMesh3D::GbTriFaceMesh3D(string name, vector<Vertex>* nodes, vector<TriF
 /*=======================================================================*/
 GbTriFaceMesh3D::~GbTriFaceMesh3D()
 {
+   UBLOG(logERROR,"~GbTriFaceMesh3D")
    if( nodes     ) { delete nodes;     nodes     = NULL; }
    if( triangles ) { delete triangles; triangles = NULL; }
    if( kdTree    ) { delete kdTree;    kdTree    = NULL; }
@@ -91,52 +83,16 @@ void GbTriFaceMesh3D::init()
    x3max      = 0.0;
    x3center   = 0.0;
    consistent = false;
+   kdTreeValid = false;
 }
-/*======================================================================*/
-GbTriFaceMesh3D* GbTriFaceMesh3D::clone()
-{
-   vector<GbTriFaceMesh3D::Vertex>    *newNodes     = new vector<GbTriFaceMesh3D::Vertex>;
-   vector<GbTriFaceMesh3D::TriFace>   *newTriangles = new vector<GbTriFaceMesh3D::TriFace>;
-
-   int numberNodes = (int)this->nodes->size();
-
-   double x,y,z;
-   for(int u=0;u<numberNodes;u++)
-   {
-      x=(*nodes)[u].x;
-      y=(*nodes)[u].y;
-      z=(*nodes)[u].z;
-      newNodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
-   }
-   int numberTris  = (int)this->triangles->size();
-   UBLOG(logDEBUG1,"numberTris:"<<numberTris);
-
-   int id1,id2,id3;
-   for(int u=0;u<numberTris;u++)
-   {
-      id1 = (*this->triangles)[u].v1;
-      id2 = (*this->triangles)[u].v2;
-      id3 = (*this->triangles)[u].v3;
-      newTriangles->push_back(GbTriFaceMesh3D::TriFace(id1,id2,id3));
-      //cout<<u<<" - id1,id2,id3:"<<id1<<","<<id2<<","<<id3<<endl;
-   }
-   UBLOG(logDEBUG1,"Tris gelesen");
-
-   GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D("no name", newNodes, newTriangles);
-   UBLOG(logDEBUG1,"mesh cloned ...");
-
-   return mesh;
-}
-
 /*======================================================================*/
 //checks for doppelt nodes und fixed Dreicke die zweimal denselben Knoten haben
 void GbTriFaceMesh3D::deleteRedundantNodes()
 {
-    UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - Nodes before deleting redundant: "<<this->nodes->size());
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes - Nodes before deleting redundant: "<<this->nodes->size());
 
     map<Vertex,size_t/*new vecIndex*/> vertexMap;
     map<Vertex,size_t/*new vecIndex*/>::iterator pos;
-    map<Vertex,size_t/*new vecIndex*/>::iterator it;
     
     vector<TriFace>& tris     = *this->triangles;
     vector<Vertex>&  oldNodes = *this->nodes;
@@ -144,25 +100,12 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
 
     for(size_t t=0; t<tris.size(); t++)
     {
-       if(t%100==0) UBLOG(logDEBUG5,"GbTriFaceMesh3D::deleteRedundantNodes - tri: "<<(t)<<" von "<<tris.size());
        TriFace& tri = tris[t];
        //Knoten bereits in neuem node vector?
        for(int v=0; v<=2; v++)
        {
           Vertex& vert = tri.getNode(v,oldNodes);
-          //pos=vertexMap.find( vert );
-          //if( pos==vertexMap.end() )
-          {
-             for(pos=vertexMap.begin();pos!=vertexMap.end();pos++)
-             {
-               Vertex rhs = pos->first;
-             //if(UbMath::inClosedInterval(vert.z,0.01999, 0.02001))
-               if ( fabs(vert.x-rhs.x)<1.E-5 && fabs(vert.y-rhs.y)<1.E-5 && fabs(vert.z-rhs.z)<1.E-5 )
-               {
-                  break;
-               }
-             }
-          }
+          pos=vertexMap.find( vert );
           if( pos!=vertexMap.end() ) tri.setNode(v, (int)pos->second);
           else
           {
@@ -176,56 +119,8 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
 
     std::swap(*nodes,newNodes);
 
-    UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - Nodes after deleting redundant:"<<this->nodes->size());
-    //
-    //Das geht irgendwie nicht ...
-    //
-    //UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - checking for double triangles !!!");
-    //UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - Triangles before deleting redundant: "<<this->triangles->size());
-    //vector<TriFace> newSingleTris;
-    //newSingleTris.reserve( this->triangles->size() );
-    //for(size_t t=0; t<tris.size(); t++)
-    //{
-    //   Vertex& v1 = tris[t].getNode(0,*nodes); 
-    //   Vertex& v2 = tris[t].getNode(1,*nodes); 
-    //   Vertex& v3 = tris[t].getNode(2,*nodes); 
-
-    //   if(UbMath::greater(std::fabs(v1.x), 0.0634) && UbMath::inClosedInterval(v1.z, 0.01999, 0.02001))
-    //   {
-    //      UBLOG2(logINFO,std::cout, "V1:"<<v1.x<<" "<<v1.y<<" "<<v1.z);
-    //   }
-    //   if(UbMath::greater(std::fabs(v2.x), 0.0634) && UbMath::inClosedInterval(v2.z, 0.01999, 0.02001))
-    //   {
-    //      UBLOG2(logINFO,std::cout, "V2:"<<v2.x<<" "<<v2.y<<" "<<v2.z);
-    //   }
-    //   if(UbMath::greater(std::fabs(v3.x), 0.0634) && UbMath::inClosedInterval(v3.z, 0.01999, 0.02001))
-    //   {
-    //      UBLOG2(logINFO,std::cout, "V3:"<<v3.x<<" "<<v3.y<<" "<<v3.z);
-    //   }
-
-    //   bool inList = false;
-    //   for(size_t u=0; u<newSingleTris.size(); u++)
-    //   {
-    //      Vertex& vn1 = newSingleTris[t].getNode(0,*nodes); 
-    //      Vertex& vn2 = newSingleTris[t].getNode(1,*nodes); 
-    //      Vertex& vn3 = newSingleTris[t].getNode(2,*nodes); 
-
-    //      if(v1==vn1 && v2==vn2 && v3==vn3)      inList = true;
-    //      else if(v1==vn1 && v2==vn3 && v3==vn2) inList = true;
-    //      else if(v1==vn2 && v2==vn3 && v3==vn1) inList = true;
-    //      else if(v1==vn2 && v2==vn1 && v3==vn3) inList = true;
-    //      else if(v1==vn3 && v2==vn1 && v3==vn2) inList = true;
-    //      else if(v1==vn3 && v2==vn2 && v3==vn1) inList = true;
-    //   }
-    //   if(!inList) newSingleTris.push_back(tris[t]);
-    //   else 
-    //      UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - inList !!!!");
-    
-    //}
-    //swap(tris,newSingleTris);
-
-    //UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - Triangles after deleting redundant:"<<this->triangles->size());
-    UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - checking for triangles that have same node several times or are lines!!!");
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes - Nodes after deleting redundant:"<<this->nodes->size());
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes - checking for triangles that have same node several times or are lines!!!");
     int counter1 = 0;
     int counter2 = 0;
     vector<TriFace> newTris;
@@ -247,23 +142,23 @@ void GbTriFaceMesh3D::deleteRedundantNodes()
     }
     if(counter1)
     {
-       UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - ### Warning ###: found and removed  "<<counter1<<" triangle with double nodes!");
+       UBLOG(logWARNING,"GbTriFaceMesh3D::deleteRedundantNodes - ### Warning ###: found and removed  "<<counter1<<" triangle with double nodes!");
     }
     if(counter2)
     {
-       UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - ### Warning ###: found and removed  "<<counter2<<" triangle that are lines!") ;
+       UBLOG(logWARNING,"GbTriFaceMesh3D::deleteRedundantNodes - ### Warning ###: found and removed  "<<counter2<<" triangle that are lines!") ;
     }
-    if(!counter1 && !counter2) { UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - alles gut... nix doppelt"); }
+    if(!counter1 && !counter2) { UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes - alles gut... nix doppelt"); }
     else swap(tris,newTris);
     
-    UBLOG(logDEBUG1,"GbTriFaceMesh3D::deleteRedundantNodes - done" );
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes - done" );
     this->calculateValues();
-}
-/*======================================================================*/
-void GbTriFaceMesh3D::setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode) 
-{ 
-   if(kdTree && mode != this->kdtreeSplitAlg) { delete kdTree; kdTree = NULL; }
-   this->kdtreeSplitAlg = mode; 
+
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes !!! Falls das FeTriFaceMesh verwendet wird !!!");
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes !!! und darin die VertexTriFaceMap         !!!");
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes !!! dann muss diese neu erzeugt werden     !!!");
+    UBLOG(logINFO,"GbTriFaceMesh3D::deleteRedundantNodes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 }
 /*======================================================================*/
    /**
@@ -288,10 +183,7 @@ vector<GbTriFaceMesh3D::Vertex>* GbTriFaceMesh3D::getNodes()       {  return thi
  * @return the triangles of this triangular mesh
  */
 vector<GbTriFaceMesh3D::TriFace>* GbTriFaceMesh3D::getTriangles()  { return this->triangles;  }
-/**
- * Returns the center x1 coordinate of this triangular mesh.
- * @return the center x1 coordinate of this triangular mesh
- */
+/*===============================================*/
 double GbTriFaceMesh3D::getVolume()
 {
    vector<Vertex>&  vertices = *nodes;
@@ -434,18 +326,16 @@ void GbTriFaceMesh3D::calculateValues()
       for(size_t i=1; i<this->nodes->size(); i++)
       {
          Vertex& v1 = (*nodes)[i];
-         
          x1min = UbMath::min<double>(x1min,v1.x);
-         x2min = UbMath::min<double>(x2min,v1.y);
-         x3min = UbMath::min<double>(x3min,v1.z);
-         
          x1max = UbMath::max<double>(x1max,v1.x);
+         x2min = UbMath::min<double>(x2min,v1.y);
          x2max = UbMath::max<double>(x2max,v1.y);
+         x3min = UbMath::min<double>(x3min,v1.z);
          x3max = UbMath::max<double>(x3max,v1.z);
       }
-      x1center = 0.5 * (x1min + x1max );
-      x2center = 0.5 * (x2min + x2max );
-      x3center = 0.5 * (x3min + x3max );
+      x1center = 0.5*(x1min+x1max);
+      x2center = 0.5*(x2min+x2max);
+      x3center = 0.5*(x3min+x3max);
       
       vector<TriFace>& tris  = *this->triangles;
       vector<Vertex>&  verts = *this->nodes;
@@ -465,18 +355,45 @@ void GbTriFaceMesh3D::calculateValues()
          }
       }
    }
-   if(kdTree)
-   { 
-      delete kdTree; 
-      kdTree=NULL; 
-   }
-   
    this->consistent = true;
+
+   // Need to rebuild kd-tree.
+   kdTreeValid=false;
+}
+
+void GbTriFaceMesh3D::generateKdTree()
+{
+   //////////////////////////////////////////////////////////////////////////
+   //ACHTUNG: kdTree MUSS hier erfolgen (nach this->consistent = true; da der kdTree auf Methodes des GbTriFaceMesh zurück greift)
+   if (!consistent) calculateValues();
+
+   if( !nodes->empty() )
+   {
+      UBLOG(logDEBUG1, "GbTriFaceMesh3D::calculateValues - build KdTree start");
+
+      if(kdTree) delete kdTree;
+
+      UbTimer timer; timer.start();
+      if(kdtreeSplitAlg == KDTREE_SHAPLIT     ) 
+      {
+         UBLOG(logDEBUG1, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
+         this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
+      }
+      else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
+      {
+         UBLOG(logDEBUG1, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
+         this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() ); 
+      }
+      else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
+      std::cout<<"GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds"<<std::endl;
+      //UBLOG(logDEBUG1, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
+   }
+   kdTreeValid = true;
 }
 /*=========================================================================*/
 std::vector<GbTriFaceMesh3D::TriFace*> GbTriFaceMesh3D::getTrianglesForVertex(Vertex* vertex)
 {
-   if(!buildVertTriRelationMap) { buildVertTriRelationMap=true; consistent = false;}
+   if(!buildVertTriRelationMap) { buildVertTriRelationMap=true; consistent = false; }
    if(!consistent) this->calculateValues();
 
    typedef std::multimap<Vertex*,TriFace*>::iterator Iterator;
@@ -488,70 +405,78 @@ std::vector<GbTriFaceMesh3D::TriFace*> GbTriFaceMesh3D::getTrianglesForVertex(Ve
 
    return tmpTris;
 }
-/*=======================================================*/
-void GbTriFaceMesh3D::setCenterCoordinates(const double& x1, const double& x2, const double& x3) 
+
+/*======================================================================*/
+void GbTriFaceMesh3D::transform(const double matrix[4][4])
+ {
+    if(!this->consistent) this->calculateValues();
+    vector<Vertex>& vertices = *nodes;
+    float tempX = 0.f;
+    float tempY = 0.f;
+    float tempZ = 0.f;
+
+    for(size_t i=0; i<vertices.size(); i++)
+    {
+       Vertex& v = vertices[i];
+       tempX = v.x;
+       tempY = v.y;
+       tempZ = v.z;
+       v.x = (float)(matrix[0][0] * tempX + matrix[0][1] * tempY + matrix[0][2] * tempZ + matrix[0][3] * 1.);
+       v.y = (float)(matrix[1][0] * tempX + matrix[1][1] * tempY + matrix[1][2] * tempZ + matrix[1][3] * 1.);
+       v.z = (float)(matrix[2][0] * tempX + matrix[2][1] * tempY + matrix[2][2] * tempZ + matrix[2][3] * 1.);
+    }
+    this->calculateValues();
+    this->notifyObserversObjectChanged();
+ }
+/*======================================================================*/
+void GbTriFaceMesh3D::rotate(const double& alpha, const double& beta, const double& gamma)
 {
-   this->translate(x1-getX1Centroid(), x2-getX2Centroid(), x3-getX3Centroid() );
+   if(!this->consistent) this->calculateValues();
+   double a1 = this->getX1Centroid();
+   double a2 = this->getX2Centroid();
+   double a3 = this->getX3Centroid();
+   CoordinateTransformation3D trafoFor(a1, a2, a3, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
+   CoordinateTransformation3D trafoBack(a1, a2, a3, 1.0, 1.0, 1.0, alpha, beta, gamma);
+
+   vector<Vertex>& vertices = *nodes;
+   for(size_t i=0; i<vertices.size(); i++)
+   {
+      Vertex& v = vertices[i];
+      double p1x1 = trafoFor.transformForwardToX1Coordinate(v.x, v.y, v.z);
+      double p1x2 = trafoFor.transformForwardToX2Coordinate(v.x, v.y, v.z);
+      double p1x3 = trafoFor.transformForwardToX3Coordinate(v.x, v.y, v.z);
+      v.x = (float)trafoBack.transformBackwardToX1Coordinate(p1x1, p1x2, p1x3);
+      v.y = (float)trafoBack.transformBackwardToX2Coordinate(p1x1, p1x2, p1x3);
+      v.z = (float)trafoBack.transformBackwardToX3Coordinate(p1x1, p1x2, p1x3);
+   }
+   this->calculateValues();
+   this->notifyObserversObjectChanged();
 }
 
 /*======================================================================*/
 void GbTriFaceMesh3D::scale(const double& sx1, const double& sx2, const double& sx3)
 {
-   CoordinateTransformation3D trafoForw(this->getX1Centroid(), this->getX2Centroid(), this->getX3Centroid(), 1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
-   CoordinateTransformation3D trafoBack(this->getX1Centroid(), this->getX2Centroid(), this->getX3Centroid(), sx1, sx2, sx3, 0, 0, 0);
+   if(!this->consistent) this->calculateValues();
+   double a1 = this->getX1Centroid();
+   double a2 = this->getX2Centroid();
+   double a3 = this->getX3Centroid();
+   CoordinateTransformation3D trafoFor(a1, a2, a3, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
+   CoordinateTransformation3D trafoBack(a1, a2, a3, sx1, sx2, sx3, 0.0, 0.0, 0.0);
 
    vector<Vertex>& vertices = *nodes;
    for(size_t i=0; i<vertices.size(); i++)
    {
       Vertex& v = vertices[i];
-      double p1x1 = trafoForw.transformForwardToX1Coordinate(v.x, v.y, v.z);
-      double p1x2 = trafoForw.transformForwardToX2Coordinate(v.x, v.y, v.z);
-      double p1x3 = trafoForw.transformForwardToX3Coordinate(v.x, v.y, v.z);
+      double p1x1 = trafoFor.transformForwardToX1Coordinate(v.x, v.y, v.z);
+      double p1x2 = trafoFor.transformForwardToX2Coordinate(v.x, v.y, v.z);
+      double p1x3 = trafoFor.transformForwardToX3Coordinate(v.x, v.y, v.z);
       v.x = (float)trafoBack.transformBackwardToX1Coordinate(p1x1, p1x2, p1x3);
       v.y = (float)trafoBack.transformBackwardToX2Coordinate(p1x1, p1x2, p1x3);
       v.z = (float)trafoBack.transformBackwardToX3Coordinate(p1x1, p1x2, p1x3);
    }
    this->calculateValues();
+   this->notifyObserversObjectChanged();
 }
-/*======================================================================*/
-void GbTriFaceMesh3D::rotate(const double& alpha, const double& beta, const double& gamma)
-{
-   CoordinateTransformation3D trafoForw(this->getX1Centroid(), this->getX2Centroid(), this->getX3Centroid(), 1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
-   CoordinateTransformation3D trafoBack(this->getX1Centroid(), this->getX2Centroid(), this->getX3Centroid(), 1.0, 1.0, 1.0, alpha, beta, gamma);
-
-   vector<Vertex>& vertices = *nodes;
-   for(size_t i=0; i<vertices.size(); i++)
-   {
-      Vertex& v = vertices[i];
-      double p1x1 = trafoForw.transformForwardToX1Coordinate(v.x, v.y, v.z);
-      double p1x2 = trafoForw.transformForwardToX2Coordinate(v.x, v.y, v.z);
-      double p1x3 = trafoForw.transformForwardToX3Coordinate(v.x, v.y, v.z);
-      v.x = (float)trafoBack.transformBackwardToX1Coordinate(p1x1, p1x2, p1x3);
-      v.y = (float)trafoBack.transformBackwardToX2Coordinate(p1x1, p1x2, p1x3);
-      v.z = (float)trafoBack.transformBackwardToX3Coordinate(p1x1, p1x2, p1x3);
-   }
-   this->calculateValues();
-}
-/*======================================================================*/
-void GbTriFaceMesh3D::rotateAroundPoint(const double& px1, const double& px2, const double& px3, const double& alpha, const double& beta, const double& gamma)
-{
-   CoordinateTransformation3D trafoForw(px1, px2, px3, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0);
-   CoordinateTransformation3D trafoBack(px1, px2, px3, 1.0, 1.0, 1.0, alpha, beta, gamma);
-
-   vector<Vertex>& vertices = *nodes;
-   for(size_t i=0; i<vertices.size(); i++)
-   {
-      Vertex& v = vertices[i];
-      double p1x1 = trafoForw.transformForwardToX1Coordinate(v.x, v.y, v.z);
-      double p1x2 = trafoForw.transformForwardToX2Coordinate(v.x, v.y, v.z);
-      double p1x3 = trafoForw.transformForwardToX3Coordinate(v.x, v.y, v.z);
-      v.x = (float)trafoBack.transformBackwardToX1Coordinate(p1x1, p1x2, p1x3);
-      v.y = (float)trafoBack.transformBackwardToX2Coordinate(p1x1, p1x2, p1x3);
-      v.z = (float)trafoBack.transformBackwardToX3Coordinate(p1x1, p1x2, p1x3);
-   }
-   this->calculateValues();
-}
-
 
 /*======================================================================*/
 void GbTriFaceMesh3D::translate(const double& x1, const double& x2, const double& x3)
@@ -560,16 +485,17 @@ void GbTriFaceMesh3D::translate(const double& x1, const double& x2, const double
    for(size_t i=0; i<vertices.size(); i++)
    {
       Vertex& v = vertices[i];
-      v.x += static_cast<float>(x1);
-      v.y += static_cast<float>(x2);
-      v.z += static_cast<float>(x3);
+      v.x+=static_cast<float>(x1);
+      v.y+=static_cast<float>(x2);
+      v.z+=static_cast<float>(x3);
    }
    this->calculateValues();
+   this->notifyObserversObjectChanged();
 }
 /*======================================================================*/
 vector<GbTriangle3D*> GbTriFaceMesh3D::getSurfaceTriangleSet()
 {
-   //SirAnn: eine miese Speicherlochmethode
+   //SirAnn: eine miese Spciehrflochmethode
    //        hier werden dynmamische Objekte angelegt 
    //        mit sowas rechnet von aussen kein Mensch!!!
    vector<GbTriangle3D*> tris( triangles->size() );
@@ -602,327 +528,69 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& pts, vector<U
    }
 }
 /*======================================================================*/
-//bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, int counter)
-//{
-//
-//
-//   if( !nodes->empty() )
-//   {
-//      //Baum erstellen, wen noch keiner vorhanden
-//      if( !kdTree)
-//      {
-//         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-//         UbTimer timer; timer.start();
-//         if(kdtreeSplitAlg == KDTREE_SAHPLIT     ) 
-//         {
-//            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-//            this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
-//         }
-//         else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
-//         {
-//            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-//            this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() ); 
-//         }
-//         else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
-//         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
-//      }
-//
-//      //eigentlicher PIO-Test
-//      //int iSec;
-//      //for(int i=0; i<100; i++)
-//      //{
-//      //   Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
-//      //                        , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
-//      //                        , ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
-//      //                        , ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) );
-//      //                        
-//      //   iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>() );
-//      //     
-//      //   if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
-//      //   {
-//      //      if(iSec == Kd::Intersection::ON_BOUNDARY )
-//      //      {
-//      //         return true;
-//      //      }
-//      //      return (iSec&1);  //ungerade anzahl an schnitten --> drinnen
-//      //   }
-//      //   UBLOG(logDEBUG3, "GbTriFaceMesh3D.isPointInGbObject3D.if  - an edge was hit ");
-//      //}
-//      //throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-//      int iSec1,iSec2;
-//         
-//      Kd::Ray<double> ray1(  x1, x2, x3, 1.0, 0.0 ,0.0 );
-//      iSec1 = kdTree->intersectRay( ray1, Kd::CountRayIntersectionHandler<double>() );
-//      Kd::Ray<double> ray2(  x1, x2, x3, -1.0, 0.0 ,0.0 );
-//      iSec2 = kdTree->intersectRay( ray2, Kd::CountRayIntersectionHandler<double>() );
-//
-//      if(iSec1 == Kd::Intersection::ON_BOUNDARY || iSec2 == Kd::Intersection::ON_BOUNDARY)
-//      {
-//         return true;
-//      }
-//      if( iSec1 == Kd::Intersection::INTERSECT_EDGE && iSec2 == Kd::Intersection::INTERSECT_EDGE) 
-//      {
-//         UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-//         double eps = UbMath::getEqualityEpsilon<float>()*1000.0;
-//         if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
-//         return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1)); 
-//      }
-//      else if( iSec1 == Kd::Intersection::INTERSECT_EDGE)
-//      {
-//         return (iSec2&1);  
-//      }
-//      else if( iSec2 == Kd::Intersection::INTERSECT_EDGE)
-//      {
-//         return (iSec1&1);  
-//      }
-//      else
-//      {
-//         if((iSec1&1) != (iSec2&1))
-//         {
-//            UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-//            double eps = UbMath::getEqualityEpsilon<float>()*1000.0;
-//            if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
-//            return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
-//         }
-//         return iSec1&1;
-//      }
-//      //throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-//
-//   }
-//   return false;
-//}
-bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, int counter)
-{
-
-
-   if( !nodes->empty() )
-   {
-      //Baum erstellen, wen noch keiner vorhanden
-      if( !kdTree)
-      {
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-         UbTimer timer; timer.start();
-         if(kdtreeSplitAlg == KDTREE_SAHPLIT     ) 
-         {
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-            this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
-         }
-         else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
-         {
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-            this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() ); 
-         }
-         else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
-      }
-
-      //eigentlicher PIO-Test
-      //int iSec;
-      //for(int i=0; i<100; i++)
-      //{
-      //   Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
-      //                        , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
-      //                        , ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
-      //                        , ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) );
-      //                        
-      //   iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>() );
-      //     
-      //   if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
-      //   {
-      //      if(iSec == Kd::Intersection::ON_BOUNDARY )
-      //      {
-      //         return true;
-      //      }
-      //      return (iSec&1);  //ungerade anzahl an schnitten --> drinnen
-      //   }
-      //   UBLOG(logDEBUG3, "GbTriFaceMesh3D.isPointInGbObject3D.if  - an edge was hit ");
-      //}
-      //throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-      int iSec1,iSec2;
-      double eps = 0.05;        
-      Kd::Ray<double> ray1(  x1, x2, x3, 1.0+eps*((double)counter), eps*((double)counter) ,eps*((double)counter) );
-      iSec1 = kdTree->intersectRay( ray1, Kd::CountRayIntersectionHandler<double>() );
-      Kd::Ray<double> ray2(  x1, x2, x3, -1.0-eps*((double)counter), -eps*((double)counter) ,-eps*((double)counter) );
- 
-      iSec2 = kdTree->intersectRay( ray2, Kd::CountRayIntersectionHandler<double>() );
-
-      if(iSec1 == Kd::Intersection::ON_BOUNDARY || iSec2 == Kd::Intersection::ON_BOUNDARY)
-      {
-         return true;
-      }
-      if( iSec1 == Kd::Intersection::INTERSECT_EDGE && iSec2 == Kd::Intersection::INTERSECT_EDGE) 
-      {
-         //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-
-         if (counter>20) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
-         return this->isPointInGbObject3D(x1, x2, x3,(counter+1)); 
-      }
-      else if( iSec1 == Kd::Intersection::INTERSECT_EDGE)
-      {
-         return (iSec2&1);  
-      }
-      else if( iSec2 == Kd::Intersection::INTERSECT_EDGE)
-      {
-         return (iSec1&1);  
-      }
-      else
-      {
-         if((iSec1&1) != (iSec2&1))
-         {
-            //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-
-            if (counter>20) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
-            return this->isPointInGbObject3D(x1, x2, x3,(counter+1));
-         }
-         return iSec1&1;
-      }
-      //throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-
-   }
-   return false;
-}
-/*======================================================================*/
 bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3)
 {
-  int counter=0;
+   if (!kdTreeValid) generateKdTree();
 
-   if( !nodes->empty() )
+   int iSec;
+   for(int i=0; i<100; i++)
    {
-      //Baum erstellen, wen noch keiner vorhanden
-      if( !kdTree)
+      Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
+                           , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
+                           , ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
+                           , ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) );
+        
+      iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>() );
+        
+      if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
       {
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-         UbTimer timer; timer.start();
-         if(kdtreeSplitAlg == KDTREE_SAHPLIT     ) 
+         if(iSec == Kd::Intersection::ON_BOUNDARY )
          {
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-            this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
+            return true;
          }
-         else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
-         {
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-            this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() ); 
-         }
-         else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
+         return (iSec&1);  //ungerade anzahl an schnitten --> drinnen
       }
-
-      //eigentlicher PIO-Test
-      int iSec;
-      for(int i=0; i<MAX_ITER; i++)
-      {
-         Kd::Ray<double> ray(  x1, x2, x3  //, 1, 0 ,0 );
-                              , ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
-                              , ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) )
-                              , ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) );
-                              
-         iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>() );
-           
-         if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
-         {
-            if(iSec == Kd::Intersection::ON_BOUNDARY )
-            {
-               return true;
-            }
-            return (iSec&1);  //ungerade anzahl an schnitten --> drinnen
-         }
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D.isPointInGbObject3D.if  - an edge was hit ");
-      }
-      throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-
-   //   int iSec1,iSec2;
-   //      
-   //   Kd::Ray<double> ray1(  x1, x2, x3, 1.0, 0.0 ,0.0 );
-   //   iSec1 = kdTree->intersectRay( ray1, Kd::CountRayIntersectionHandler<double>() );
-   //   Kd::Ray<double> ray2(  x1, x2, x3, -1.0, 0.0 ,0.0 );
-   //   iSec2 = kdTree->intersectRay( ray2, Kd::CountRayIntersectionHandler<double>() );
-
-   //   if(iSec1 == Kd::Intersection::ON_BOUNDARY || iSec2 == Kd::Intersection::ON_BOUNDARY)
-   //   {
-   //      return true;
-   //   }
-   //   if( iSec1 == Kd::Intersection::INTERSECT_EDGE && iSec2 == Kd::Intersection::INTERSECT_EDGE) 
-   //   {
-   //      //UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.INTERSECT_EDGE");
-   //      double eps = UbMath::getEqualityEpsilon<double>();
-   //      if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
-   //      return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1)); 
-   //   }
-   //   else if( iSec1 == Kd::Intersection::INTERSECT_EDGE)
-   //   {
-   //      return (iSec2&1);  
-   //   }
-   //   else if( iSec2 == Kd::Intersection::INTERSECT_EDGE)
-   //   {
-   //      return (iSec1&1);  
-   //   }
-   //   else
-   //   {
-   //      if((iSec1&1) != (iSec2&1))
-   //      {
-   //         UBLOG(logINFO, "GbTriFaceMesh3D.isPointInGbObject3D.iSec1&1 != iSec2&1");
-   //         double eps = UbMath::getEqualityEpsilon<double>();
-   //         if (counter>100) {return(iSec1&1);  UBLOG(logINFO, "NACH 100 Iterationen Eps umsetzen aufgegeben!");}
-   //         return this->isPointInGbObject3D(x1+eps, x2+eps, x3+eps,(counter+1));
-   //      }
-   //      return iSec1&1;
-   //   }
-   //   //throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-
+      UBLOG(logWARNING, "GbTriFaceMesh3D.isPointInGbObject3D.if  - an edge was hit ");
    }
-   return false;
+   throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
 }
 /*======================================================================*/
 bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary)
 {
-   if( !nodes->empty() )
-   {
-      //Baum erstellen, wen noch keiner vorhanden
-      if( !kdTree)
-      {
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
-         UbTimer timer; timer.start();
-         if(kdtreeSplitAlg == KDTREE_SAHPLIT     ) 
-         {
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
-            this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
-         }
-         else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
-         {
-            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
-            this->kdTree = new Kd::Tree<double>( *this, Kd::SpatialMedianSplit<double>() ); 
-         }
-         else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
-         UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
-      }
-
-      //eigentlicher PIO-Test
-      int iSec;
-      for(int i=0; i<MAX_ITER; i++)
-      {
-         Kd::Ray<double> ray(  x1, x2, x3 
-                            , float( ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) )
-                            , float( ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) )
-                            , float( ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) ) );
-
-         iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>()    );
-
-         if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
-         {
-            if(iSec == Kd::Intersection::ON_BOUNDARY )
-            {
-               pointIsOnBoundary = true;
-               return true;
-            }
-            pointIsOnBoundary = false;
-            return (iSec&1);  //ungerade anzahl an schnitten --> drinnen
-         }
-      }
-
-      throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
-   }
+   if (!kdTreeValid) generateKdTree();
    
-   return false;
+   int iSec;
+   for(int i=0; i<100; i++)
+   {
+      Kd::Ray<double> ray(  x1, x2, x3 
+                         , float( ( x1 < x1center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) )
+                         , float( ( x2 < x2center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) )
+                         , float( ( x3 < x3center ? UbRandom::rand(-1.0,-0.001, 10) : UbRandom::rand(0.001, 1.0, 10) ) ) );
+
+      iSec = kdTree->intersectRay( ray, Kd::CountRayIntersectionHandler<double>()    );
+
+      if( iSec != Kd::Intersection::INTERSECT_EDGE ) //KEINE Kante getroffen
+      {
+         if(iSec == Kd::Intersection::ON_BOUNDARY )
+         {
+            pointIsOnBoundary = true;
+            return true;
+         }
+         pointIsOnBoundary = false;
+         return (iSec&1);  //ungerade anzahl an schnitten --> drinnen
+      }
+   }
+
+   throw UbException(UB_EXARGS, "ups, nach 100 Strahlen immer noch kein Ergebnis");
+}
+/*======================================================================*/
+bool GbTriFaceMesh3D::intersectLine(const double& p1_x1, const double& p1_x2, const double& p1_x3, const double& p2_x1, const double& p2_x2, const double& p2_x3)
+{
+   if (!kdTreeValid) generateKdTree();
+
+   int iSec = kdTree->intersectLine( UbTupleDouble3(p1_x1, p1_x2, p1_x3), UbTupleDouble3(p2_x1, p2_x2, p2_x3), Kd::CountLineIntersectionHandler<double>() );
+
+   return (iSec != Kd::Intersection::NO_INTERSECTION);
 }
 /*======================================================================*/
 GbLine3D* GbTriFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2)
@@ -933,96 +601,69 @@ GbLine3D* GbTriFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& po
 void GbTriFaceMesh3D::write(UbFileOutput* out)
 {
    out->writeString(this->getCreator()->getTypeID());
+   
    out->writeInteger((int)kdtreeSplitAlg);
-   out->writeBool(transferViaFilename);
 
-   if(!transferViaFilename)
+   //nodes
+   vector<Vertex>& vertices = *nodes;
+   out->writeSize_t( nodes->size() );
+   out->writeLine();
+   for(size_t i=0; i<vertices.size(); i++)
    {
-      //nodes
-      vector<Vertex>& vertices = *nodes;
-      out->writeSize_t( nodes->size() );
+      Vertex& v = vertices[i];
+      out->writeFloat(v.x);
+      out->writeFloat(v.y);
+      out->writeFloat(v.z);
       out->writeLine();
-      for(size_t i=0; i<vertices.size(); i++)
-      {
-         Vertex& v = vertices[i];
-         out->writeFloat(v.x);
-         out->writeFloat(v.y);
-         out->writeFloat(v.z);
-         out->writeLine();
-      }
-      
-      //triangles
-      vector<TriFace>& tris = *triangles;
-      out->writeSize_t( tris.size() );
-      out->writeLine();
-      for(size_t i=0; i<tris.size(); i++)
-      {
-         TriFace& t = tris[i];
-         out->writeInteger(t.v1);
-         out->writeInteger(t.v2);
-         out->writeInteger(t.v3);
-         out->writeLine();
-      }
    }
-   else
+   
+   //triangles
+   vector<TriFace>& tris = *triangles;
+   out->writeSize_t( tris.size() );
+   out->writeLine();
+   for(size_t i=0; i<tris.size(); i++)
    {
-      out->writeString(filename);
+      TriFace& t = tris[i];
+      out->writeInteger(t.v1);
+      out->writeInteger(t.v2);
+      out->writeInteger(t.v3);
       out->writeLine();
-      out->writeDouble(transX1);
-      out->writeDouble(transX2);
-      out->writeDouble(transX3);
-
    }
 }
 /*======================================================================*/
 void GbTriFaceMesh3D::read(UbFileInput* in)
 {
    kdtreeSplitAlg =  (KDTREE_SPLITAGORITHM)in->readInteger();
-   transferViaFilename = in->readBool();
 
-   if(!transferViaFilename)
+   if(!nodes) nodes = new vector<Vertex>;
+   //nodes
+   vector<Vertex>& vertices = *nodes;
+   vertices.resize( in->readSize_t( ) );
+   in->readLine();
+   for(size_t i=0; i<vertices.size(); i++)
    {
-      if(!nodes) nodes = new vector<Vertex>;
-      //nodes
-      vector<Vertex>& vertices = *nodes;
-      vertices.resize( in->readSize_t( ) );
+      Vertex& v = vertices[i];
+      v.x = in->readFloat();
+      v.y = in->readFloat();
+      v.z = in->readFloat();
       in->readLine();
-      for(size_t i=0; i<vertices.size(); i++)
-      {
-         Vertex& v = vertices[i];
-         v.x = in->readFloat();
-         v.y = in->readFloat();
-         v.z = in->readFloat();
-         in->readLine();
-      }
-
-      //triangles
-      if(!triangles) triangles = new vector<TriFace>;
-      vector<TriFace>& tris = *triangles;
-      tris.resize( in->readSize_t( ) );
-      in->readLine();
-      for(size_t i=0; i<tris.size(); i++)
-      {
-         TriFace& t = tris[i];
-         t.v1 = in->readInteger();
-         t.v2 = in->readInteger();
-         t.v3 = in->readInteger();
-         in->readLine();
-      }
-
-      this->calculateValues();
    }
-   else
+
+   //triangles
+   if(!triangles) triangles = new vector<TriFace>;
+   vector<TriFace>& tris = *triangles;
+   tris.resize( in->readSize_t( ) );
+   in->readLine();
+   for(size_t i=0; i<tris.size(); i++)
    {
-      filename = in->readString();
+      TriFace& t = tris[i];
+      t.v1 = in->readInteger();
+      t.v2 = in->readInteger();
+      t.v3 = in->readInteger();
       in->readLine();
-      transX1 = in->readDouble();
-      transX2 = in->readDouble();
-      transX3 = in->readDouble();
-
-      this->readMeshFromSTLFile(filename, true);
-      this->translate(transX1,transX2,transX3);
    }
+
+   this->calculateValues();
 }
 /*======================================================================*/
 UbTuple<string, string> GbTriFaceMesh3D::writeMesh(string filename, WbWriter* writer, bool writeNormals, vector< string >* datanames, std::vector< std::vector < double > >* nodedata )
@@ -1059,10 +700,9 @@ UbTuple<string, string> GbTriFaceMesh3D::writeMesh(string filename, WbWriter* wr
          lineNodes[i*2  ] = makeUbTuple( triangle.getX1Centroid(*nodes)
                                         ,triangle.getX2Centroid(*nodes)
                                         ,triangle.getX3Centroid(*nodes));
-
-         lineNodes[i*2+1] = makeUbTuple( (float)(triangle.getX1Centroid(*nodes)+1.0*triangle.nx)
-                                        ,(float)(triangle.getX2Centroid(*nodes)+1.0*triangle.ny)
-                                        ,(float)(triangle.getX3Centroid(*nodes)+1.0*triangle.nz));
+         lineNodes[i*2+1] = makeUbTuple( (float)(triangle.getX1Centroid(*nodes)+1.*triangle.nx)
+                                        ,(float)(triangle.getX2Centroid(*nodes)+1.*triangle.ny)
+                                        ,(float)(triangle.getX3Centroid(*nodes)+1.*triangle.nz));
 
          lines[i] = makeUbTuple((int)i*2,(int)i*2+1);
       }
@@ -1072,156 +712,3 @@ UbTuple<string, string> GbTriFaceMesh3D::writeMesh(string filename, WbWriter* wr
    return filenames;
 }
 /*======================================================================*/
-void GbTriFaceMesh3D::writeMeshPly( const std::string& filename)
-{
-   ofstream out(filename.c_str() );
-   if( !out )
-      throw UbException(UB_EXARGS, "couldn't open " + filename);
-
-   out << "ply" << endl;
-   out << "format ascii 1.0" << endl;
-   out << "element vertex " << (int)nodes->size() << endl;
-   out << "property float x" << endl;
-   out << "property float y" << endl;
-   out << "property float z" << endl;
-   out << "element face " << (int)triangles->size() << endl;
-   out << "property list uchar int vertex_indices" << endl;
-   out << "end_header" << endl;
-
-   for(size_t i=0; i<nodes->size(); i++)
-      out << (*nodes)[i].x << " " << (*nodes)[i].y << " " << (*nodes)[i].z << endl;
-
-   for(size_t i=0; i<triangles->size(); i++)
-      out << "3 " << (*triangles)[i].v1 << " " << (*triangles)[i].v2 << " " << (*triangles)[i].v3 << endl;
-}
-/*======================================================================*/
-void GbTriFaceMesh3D::readMeshFromSTLFile(string filename, bool removeRedundantNodes)
-{
-   UBLOG(logDEBUG1,"GbTriFaceMesh3DCreator::readMeshFromSTLFile !!! Dieses Format hat leider redundante Knoten ...");
-
-   UbFileInputASCII in(filename);
-   //this->nodes     = new vector<GbTriFaceMesh3D::Vertex>;
-   //this->triangles = new vector<GbTriFaceMesh3D::TriFace>;
-   string dummy;
-
-   double x, y, z;
-   int nr=0;
-
-   in.readLine();
-   while(dummy!="endsolid")
-   {
-      in.readLine();
-      in.readLine();
-      dummy = in.readString();
-      if(dummy!="vertex") throw UbException(UB_EXARGS,"no vertex format");
-      x=in.readDouble();
-      y=in.readDouble();
-      z=in.readDouble();
-      nodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
-      in.readLine();
-      in.readString();
-      x=in.readDouble();
-      y=in.readDouble();
-      z=in.readDouble();
-      nodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
-      in.readLine();
-      in.readString();
-      x=in.readDouble();
-      y=in.readDouble();
-      z=in.readDouble();
-      nodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
-      triangles->push_back(GbTriFaceMesh3D::TriFace(nr,nr+1,nr+2));
-      in.readLine();
-      in.readLine();
-      in.readLine();
-      dummy = in.readString();
-      nr+=3;
-   }
-   if(removeRedundantNodes)
-   {
-      this->deleteRedundantNodes(); //dort wird autoamtisch calculateValues() aufgerufen
-   }
-   else
-   {
-      this->calculateValues();
-   }
-}
-//////////////////////////////////////////////////////////////////////////
-//void GbTriFaceMesh3D::writeMeshToSTLFile(string filename, bool isBinaryFormat)
-//{
-//   vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
-//   vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
-//   int nr=0;
-//
-//   if (!isBinaryFormat) {
-//      ofstream out(filename.c_str());
-//      if (!out.good())
-//      {
-//         delete nodes;
-//         delete triangles;
-//         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: "+filename));
-//      }
-//      char title[80] = "ASCII";
-//      std::string s0, s1;
-//      float n0, n1, n2, f0, f1, f2, f3, f4, f5, f6, f7, f8;
-//      out.write(title, 80);
-//      size_t size = nodes->size();
-//      for (size_t i = 0; i < size)
-//      {
-//         out << nodes[i++]
-//         in >> s0;                                // facet || endsolid
-//         if (s0=="facet") {
-//            in >> s1 >> n0 >> n1 >> n2;            // normal x y z
-//            in >> s0 >> s1;                        // outer loop
-//            in >> s0 >> f0 >> f1 >> f2;         // vertex x y z
-//            in >> s0 >> f3 >> f4 >> f5;         // vertex x y z
-//            in >> s0 >> f6 >> f7 >> f8;         // vertex x y z
-//            in >> s0;                            // endloop
-//            in >> s0;                            // endfacet
-//            // Generate a new Triangle without Normal as 3 Vertices
-//            nodes->push_back(GbTriFaceMesh3D::Vertex(f0, f1, f2));
-//            nodes->push_back(GbTriFaceMesh3D::Vertex(f3, f4, f5));
-//            nodes->push_back(GbTriFaceMesh3D::Vertex(f6, f7, f8));
-//            triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr+1, nr+2));
-//            nr+=3;
-//         }
-//         else if (s0=="endsolid") {
-//            break;
-//         }
-//      }
-//      in.close();
-//   }
-//   else {
-//      FILE *f = fopen(filename.c_str(), "rb");
-//      if (!f)
-//      {
-//         delete nodes;
-//         delete triangles;
-//         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: "+filename));
-//      }
-//      char title[80];
-//      int nFaces;
-//      fread(title, 80, 1, f);
-//      fread((void*)&nFaces, 4, 1, f);
-//      float v[12]; // normal=3, vertices=3*3 = 12
-//      unsigned short uint16;
-//      // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
-//      for (size_t i=0; i<nFaces; ++i) {
-//         for (size_t j=0; j<12; ++j) {
-//            fread((void*)&v[j], sizeof(float), 1, f);
-//         }
-//         fread((void*)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
-//         nodes->push_back(GbTriFaceMesh3D::Vertex(v[3], v[4], v[5]));
-//         nodes->push_back(GbTriFaceMesh3D::Vertex(v[6], v[7], v[8]));
-//         nodes->push_back(GbTriFaceMesh3D::Vertex(v[9], v[10], v[11]));
-//         triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr+1, nr+2));
-//         nr+=3;
-//      }
-//      fclose(f);
-//   }
-//
-//   GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
-//
-//   return mesh;
-//}
-//////////////////////////////////////////////////////////////////////////

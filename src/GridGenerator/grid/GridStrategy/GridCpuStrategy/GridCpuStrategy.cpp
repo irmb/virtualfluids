@@ -1,3 +1,4 @@
+
 #include "GridCpuStrategy.h"
 
 #include <time.h>
@@ -7,7 +8,7 @@
 
 #include <GridGenerator/grid/distributions/Distribution.h>
 #include <GridGenerator/grid/GridImp.h>
-      
+
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <utilities/logger/Logger.h>
@@ -15,14 +16,15 @@
 
 #include "grid/GridInterface.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
+#include "numerics/geometry3d/GbTriFaceMesh3D.h"
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
-        
+
     grid->neighborIndexX = new int[grid->size];
     grid->neighborIndexY = new int[grid->size];
     grid->neighborIndexZ = new int[grid->size];
-        
+
     grid->sparseIndices = new int[grid->size];
 
 
@@ -60,7 +62,7 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 
 void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
 {
-    switch(triangularMesh->getDiscretizationMethod())
+    switch (triangularMesh->getDiscretizationMethod())
     {
     case DiscretizationMethod::POINT_UNDER_TRIANGLE:
         pointUnderTriangleMethod(grid, triangularMesh);
@@ -68,13 +70,14 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangu
     case DiscretizationMethod::RAYCASTING:
         rayCastingMethod(grid, triangularMesh);
         break;
+    case DiscretizationMethod::POINT_IN_OBJECT:
+        pointInObjectMethod(grid, triangularMesh);
     }
 
 }
 
 void GridCpuStrategy::pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
 {
-
 #pragma omp parallel for
     for (int i = 0; i < triangularMesh->size; i++)
         grid->meshReverse(triangularMesh->triangles[i]);
@@ -90,158 +93,178 @@ void GridCpuStrategy::pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMes
         << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
 }
 
+void GridCpuStrategy::pointInObjectMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
+{
+    auto triangles = triangularMesh->triangleVec;
+    std::vector<GbTriFaceMesh3D::Vertex> *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(triangles.size() * 3);
+    std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(triangles.size());
+    for (int i = 0; i < triangles.size(); i++)
+    {
+        (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
+        (*gbVertices)[i * 3 + 1] = GbTriFaceMesh3D::Vertex(triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z);
+        (*gbVertices)[i * 3 + 2] = GbTriFaceMesh3D::Vertex(triangles[i].v3.x, triangles[i].v3.y, triangles[i].v3.z);
+
+        (*gbTriangles)[i] = GbTriFaceMesh3D::TriFace(i * 3, i * 3 + 1, i * 3 + 2);
+    }
+
+    GbTriFaceMesh3D mesh("stl", gbVertices, gbTriangles);
+
+    for (int i = 0; i < grid->getSize(); i++)
+    {
+        real x, y, z;
+        grid->transIndexToCoords(i, x, y, z);
+
+        if (mesh.isPointInGbObject3D(x, y, z))
+            grid->field.setFieldEntryToFluid(i);
+    }
+}
+
 void GridCpuStrategy::rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
 {
-    //int nx1 = bcMatrices.geoMatrix.getNX1();
-    //int nx2 = bcMatrices.geoMatrix.getNX2();
-    //int nx3 = bcMatrices.geoMatrix.getNX3();
+    auto triangles = triangularMesh->triangleVec;
+    std::vector<GbTriFaceMesh3D::Vertex> *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(triangles.size() * 3);
+    std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(triangles.size());
+    for (int i = 0; i < triangles.size(); i++)
+    {
+        (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
+        (*gbVertices)[i * 3 + 1] = GbTriFaceMesh3D::Vertex(triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z);
+        (*gbVertices)[i * 3 + 2] = GbTriFaceMesh3D::Vertex(triangles[i].v3.x, triangles[i].v3.y, triangles[i].v3.z);
+        
+        (*gbTriangles)[i] = GbTriFaceMesh3D::TriFace(i * 3, i * 3 + 1, i * 3 + 2);
+    }
+
+    GbTriFaceMesh3D mesh("stl", gbVertices, gbTriangles);
+
+    const real minXExact = triangularMesh->minmax.minX;
+    const real minYExact = triangularMesh->minmax.minY;
+    const real minZExact = triangularMesh->minmax.minZ;
+
+    const real maxXExact = triangularMesh->minmax.maxX;
+    const real maxYExact = triangularMesh->minmax.maxY;
+    const real maxZExact = triangularMesh->minmax.maxZ;
+
+    const auto min = grid->getMinimumOnNode(Vertex(minXExact, minYExact, minZExact));
+
+    const real minX = min.x;
+    const real minY = min.y;
+    const real minZ = min.z;
+
+    const auto max = grid->getMaximumOnNode(Vertex(maxXExact, maxYExact, maxZExact));
+
+    const real maxX = max.x;
+    const real maxY = max.y;
+    const real maxZ = max.z;
+
+    real x, y, z;
+
+    for (int i = 0; i < grid->getSize(); i++)
+    {
+        grid->field.setFieldEntryToFluid(i);
+    }
 
 
-    //const int minX = triangularMesh->minmax.minX;
-    //const int minY = triangularMesh->minmax.minY;
-    //const int minZ = triangularMesh->minmax.minZ;
-    // 
-    //const int maxX = triangularMesh->minmax.maxX;
-    //const int maxY = triangularMesh->minmax.maxY;
-    //const int maxZ = triangularMesh->minmax.maxZ;
+    int counter = 0;
 
-    //int x, y, z;
+    // Test line intersection
+    for (z = minZ; z <= maxZ; z += grid->getDelta())
+    {
+        for (y = minY; y <= maxY; y += grid->getDelta())
+        {
+            for (x = minX; x <= maxX; x += grid->getDelta())
+            {
+                counter++;
+                if (mesh.intersectLine((x - grid->getDelta()), y, z, x, y, z)) break;
+                else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
 
-    //for (z = minZ; z <= maxZ; z++)
-    //{
-    //    for (y = minY; y <= maxY; y++)
-    //    {
-    //        for (x = minX; x <= maxX; x++)
-    //        {
-    //            if (y == 0 || y == (int)nx2 - 1 ||
-    //                x == 0 || x == (int)nx1 - 1 ||
-    //                z == 0 || z == (int)nx3 - 1)
-    //            {
-    //            }
-    //            else
-    //            {
-    //                /*
-    //                *  The first 3 bits contain node type (fluid, inlet, etc.).
-    //                *  The remaining 5 bits contain the unique geometry number
-    //                *  in case of solid nodes.
-    //                *
-    //                *  0 0 0 0 0 | 0 0 0
-    //                */
+            }
+        }
+    }
 
-    //                // Add the unique geometry number to the upper 5 bits.
-    //                geoMatrix(x, y, z) = NodeType::solid;
-    //                setGeoID(geoMatrix(x, y, z), mesh->getUniqueID());
-    //            }
-    //        }
-    //    }
-    //}
+    // Test line intersection from opposite direction
+    for (z = minZ; z <= maxZ; z += grid->getDelta())
+    {
+        for (y = minY; y <= maxY; y += grid->getDelta())
+        {
+            for (x = maxX; x >= minX; x -= grid->getDelta())
+            {
+                if (!grid->field.isOutOfGrid(grid->transCoordToIndex(x, y, z)))
+                {
+                    counter++;
+                    if (mesh.intersectLine((x + grid->getDelta()), y, z, x, y, z)) break;
+                    else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
+                }
+            }
+        }
+    }
 
+    // Test line intersection
+    for (z = minZ; z <= maxZ; z += grid->getDelta())
+    {
+        for (x = minX; x <= maxX; x += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                if (!grid->field.isOutOfGrid(grid->transCoordToIndex(x, y, z)))
+                {
+                    counter++;
+                    if (mesh.intersectLine(x, (y - grid->getDelta()), z, x, y, z)) break;
+                    else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
+                }
+            }
+        }
+    }
 
-    //int counter = 0;
+    // Test line intersection from opposite direction
+    for (z = minZ; z <= maxZ; z += grid->getDelta())
+    {
+        for (x = minX; x <= maxX; x += grid->getDelta())
+        {
+            for (y = maxY; y >= minY; y -= grid->getDelta())
+            {
+                if (!grid->field.isOutOfGrid(grid->transCoordToIndex(x, y, z)))
+                {
+                    counter++;
+                    if (mesh.intersectLine(x, (y + grid->getDelta()), z, x, y, z)) break;
+                    else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
+                }
+            }
+        }
+    }
 
-    //// Test line intersection
-    //for (z = minZ; z <= maxZ; z++)
-    //{
-    //    for (y = minY; y <= maxY; y++)
-    //    {
-    //        for (x = minX; x <= maxX; x++)
-    //        {
-    //            counter++;
-    //            if (mesh->intersectLine((x - 1)*deltaXWorld, y*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
-    //            else geoMatrix(x, y, z) = NodeType::fluid;
-    //        }
-    //    }
-    //}
+    // Test line intersection
+    for (x = minX; x <= maxX; x += grid->getDelta())
+    {
+        for (y = minY; y <= maxY; y += grid->getDelta())
+        {
+            for (z = minZ; z <= maxZ; z += grid->getDelta())
+            {
+                if (!grid->field.isOutOfGrid(grid->transCoordToIndex(x, y, z)))
+                {
+                    counter++;
+                    if (mesh.intersectLine(x, y, (z - grid->getDelta()), x, y, z)) break;
+                    else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
+                }
+            }
+        }
+    }
 
-    //// Test line intersection from opposite direction
-    //for (z = minZ; z <= maxZ; z++)
-    //{
-    //    for (y = minY; y <= maxY; y++)
-    //    {
-    //        for (x = maxX; x >= minX; x--)
-    //        {
-    //            if (geoMatrix(x, y, z) != NodeType::fluid)
-    //            {
-    //                counter++;
-    //                if (mesh->intersectLine((x + 1)*deltaXWorld, y*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
-    //                else geoMatrix(x, y, z) = NodeType::fluid;
-    //            }
-    //        }
-    //    }
-    //}
+    // Test line intersection from opposite direction
+    for (x = minX; x <= maxX; x += grid->getDelta())
+    {
+        for (y = minY; y <= maxY; y += grid->getDelta())
+        {
+            for (z = maxZ; z >= minZ; z -= grid->getDelta())
+            {
+                if (!grid->field.isOutOfGrid(grid->transCoordToIndex(x, y, z)))
+                {
+                    counter++;
+                    if (mesh.intersectLine(x, y, (z + grid->getDelta()), x, y, z)) break;
+                    else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
 
-    //// Test line intersection
-    //for (z = minZ; z <= maxZ; z++)
-    //{
-    //    for (x = minX; x <= maxX; x++)
-    //    {
-    //        for (y = minY; y <= maxY; y++)
-    //        {
-    //            if (geoMatrix(x, y, z) != NodeType::fluid)
-    //            {
-    //                counter++;
-    //                if (mesh->intersectLine(x*deltaXWorld, (y - 1)*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
-    //                else geoMatrix(x, y, z) = NodeType::fluid;
-    //            }
-    //        }
-    //    }
-    //}
-
-    //// Test line intersection from opposite direction
-    //for (z = minZ; z <= maxZ; z++)
-    //{
-    //    for (x = minX; x <= maxX; x++)
-    //    {
-    //        for (y = maxY; y >= minY; y--)
-    //        {
-    //            if (geoMatrix(x, y, z) != NodeType::fluid)
-    //            {
-    //                counter++;
-    //                if (mesh->intersectLine(x*deltaXWorld, (y + 1)*deltaXWorld, z*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
-    //                else geoMatrix(x, y, z) = NodeType::fluid;;
-    //            }
-    //        }
-    //    }
-    //}
-
-    //// Test line intersection
-    //for (x = minX; x <= maxX; x++)
-    //{
-    //    for (y = minY; y <= maxY; y++)
-    //    {
-    //        for (z = minZ; z <= maxZ; z++)
-    //        {
-    //            if (geoMatrix(x, y, z) != NodeType::fluid)
-    //            {
-    //                counter++;
-    //                if (mesh->intersectLine(x*deltaXWorld, y*deltaXWorld, (z - 1)*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
-    //                else geoMatrix(x, y, z) = NodeType::fluid;
-    //            }
-    //        }
-    //    }
-    //}
-
-    //// Test line intersection from opposite direction
-    //for (x = minX; x <= maxX; x++)
-    //{
-    //    for (y = minY; y <= maxY; y++)
-    //    {
-    //        for (z = maxZ; z >= minZ; z--)
-    //        {
-    //            if (geoMatrix(x, y, z) != NodeType::fluid)
-    //            {
-    //                counter++;
-    //                if (mesh->intersectLine(x*deltaXWorld, y*deltaXWorld, (z + 1)*deltaXWorld, x*deltaXWorld, y*deltaXWorld, z*deltaXWorld)) break;
-    //                else geoMatrix(x, y, z) = NodeType::fluid;
-    //            }
-    //        }
-    //    }
-    //}
-
-    //std::cout << counter << " nodes tested...\n";
-
-    //// map temp geoMatrix to final geoMatrix
-    //mapSolidNodesToFinalGeoMatrix(geoMatrix, bcMatrices);
+                }
+            }
+        }
+    }
 }
 
 void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)
@@ -270,9 +293,9 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     grid->gridInterface = new GridInterface();
     const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
     grid->gridInterface->cf.coarse = new uint[sizeCF];
-    grid->gridInterface->cf.fine   = new uint[sizeCF];
+    grid->gridInterface->cf.fine = new uint[sizeCF];
     grid->gridInterface->fc.coarse = new uint[sizeCF];
-    grid->gridInterface->fc.fine   = new uint[sizeCF];
+    grid->gridInterface->fc.fine = new uint[sizeCF];
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid);
@@ -295,7 +318,7 @@ void GridCpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> 
 
     coarseGrid->updateSparseIndices();
     findForNeighborsNewIndices(coarseGrid);
-    if(fineGrid)
+    if (fineGrid)
     {
         fineGrid->updateSparseIndices();
         findForGridInterfaceNewIndices(coarseGrid, fineGrid);
@@ -351,7 +374,7 @@ void GridCpuStrategy::freeFieldMemory(Field* field)
 void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
 {
     //if(grid->gridInterface)
-        //delete grid->gridInterface;
+    //delete grid->gridInterface;
 
     delete[] grid->neighborIndexX;
     delete[] grid->neighborIndexY;

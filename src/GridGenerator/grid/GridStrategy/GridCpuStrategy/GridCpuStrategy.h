@@ -14,7 +14,7 @@ struct TriangularMesh;
 class VF_PUBLIC GridCpuStrategy : public GridStrategy
 {
 public:
-	virtual ~GridCpuStrategy() {};
+    virtual ~GridCpuStrategy() {};
 
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
@@ -40,6 +40,7 @@ protected:
 
     void pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
     void rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
+    void pointInObjectMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
 
 public:
     void allocateFieldMemory(Field* field) override;

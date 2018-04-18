@@ -10,20 +10,18 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <map>
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
-
+#include <VirtualFluidsDefinitions.h>
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
-#include <basics/writer/WbWriter.h>
 
-#include <basics/memory/MbSmartPtr.h>
 
-#include <numerics/geometry3d/GbPoint3D.h>                
 #include "basics/utilities/Vector3D.h"
+#include "GbObject3D.h"
+
+class WbWriter;
 
 namespace Kd 
 { 
@@ -44,7 +42,7 @@ namespace Kd
  * Note, that up to now no methods for checking consistency are included.
  * in this context this class describes facettes from an 3D-object !!!
 */
-class GbTriFaceMesh3D : public GbObject3D
+class VF_PUBLIC GbTriFaceMesh3D : public GbObject3D
 {
 public:
   // nested class start
@@ -191,12 +189,12 @@ public:
          //GbVector3D AC = C-A;
          //GbVector3D N = AB.Cross(AC);
          //return 0.5*N.Length();
-         Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
-         Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
-         Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
-         Vector3D AB = B-A;
-         Vector3D AC = C-A;
-         Vector3D N = AB.Cross(AC);
+          Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
+          Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
+          Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
+          Vector3D AB = B - A;
+          Vector3D AC = C - A;
+          Vector3D N = AB.Cross(AC);
          return 0.5*N.Length();
       }
       void calculateNormal(std::vector<Vertex>& nodes)

@@ -11,11 +11,8 @@
 #include <vector>
 
 
-#ifdef CAB_RCF
-   #include <3rdParty/rcf/RcfSerializationIncludes.h>
-#endif //CAB_RCF
 
-#include <basics/utilities/UbSystem.h>
+//#include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbFileInput.h>
 #include <basics/utilities/UbFileOutput.h>
@@ -28,14 +25,11 @@ class GbLine3D;
 class GbTriangle3D;
 class GbObject3DCreator;
 
-#ifdef CAB_CTL
-#include <ctl.h>
-#endif
+#include <VirtualFluidsDefinitions.h>
 
 #include <basics/memory/MbSharedPointerDefines.h>
 class GbObject3D;
 typedef VFSharedPtr<GbObject3D> GbObject3DPtr;
-
 
 /*=========================================================================*/
 /* GbObject3D                                                              */
@@ -47,7 +41,7 @@ typedef VFSharedPtr<GbObject3D> GbObject3DPtr;
  * @author <A HREF="mailto:muffmolch@gmx.de">S. Freudiger</A>
  * @version 1.0 - 02.02.05
 */
-class GbObject3D : public ObObject
+class VF_PUBLIC GbObject3D : public ObObject
 {
 public:
 #ifdef CAB_CTL

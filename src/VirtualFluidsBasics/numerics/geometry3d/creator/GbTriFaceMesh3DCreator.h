@@ -21,23 +21,22 @@ public:
       static GbTriFaceMesh3DCreator instance;
       return &instance;
    }
-   static GbTriFaceMesh3D* readMeshFromFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromFile(std::string filename, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
 
-   static GbTriFaceMesh3D* readMeshFromMeshFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
-   static GbTriFaceMesh3D* readMeshFromMeshFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromMeshFile(std::string filename, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromMeshFile(UbFileInput* in, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
 
-   static GbTriFaceMesh3D* readMeshFromPLYFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
-   static GbTriFaceMesh3D* readMeshFromPLYFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromPLYFile(std::string filename, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromPLYFile(UbFileInput* in, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
 
-   static GbTriFaceMesh3D* readMeshFromSTLFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true); 
-   static GbTriFaceMesh3D* readMeshFromSTLFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
-   static GbTriFaceMesh3D* readMeshFromSTLFile2(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true,  bool isBinaryFormat=true);
+   static GbTriFaceMesh3D* readMeshFromSTLFile(std::string filename, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true); 
+   static GbTriFaceMesh3D* readMeshFromSTLFile(UbFileInput* in, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
 
-   static GbTriFaceMesh3D* readMeshFromAVSFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true); 
-   static GbTriFaceMesh3D* readMeshFromAVSFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromAVSFile(std::string filename, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true); 
+   static GbTriFaceMesh3D* readMeshFromAVSFile(UbFileInput* in, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
 
-   static GbTriFaceMesh3D* readMeshFromVTKASCIIFile(std::string filename, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true); 
-   static GbTriFaceMesh3D* readMeshFromVTKASCIIFile(UbFileInput* in, std::string meshName="", GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SAHPLIT, bool removeRedundantNodes=true);
+   static GbTriFaceMesh3D* readMeshFromVTKASCIIFile(std::string filename, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true); 
+   static GbTriFaceMesh3D* readMeshFromVTKASCIIFile(UbFileInput* in, std::string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg = GbTriFaceMesh3D::KDTREE_SHAPLIT, bool removeRedundantNodes=true);
 
    GbTriFaceMesh3D* createGbObject3D() { return new GbTriFaceMesh3D(); }
    

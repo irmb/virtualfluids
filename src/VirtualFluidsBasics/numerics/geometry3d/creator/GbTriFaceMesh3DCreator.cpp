@@ -20,8 +20,6 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromFile(string filename, strin
    //in "kleinbuchstaben" umwandeln
    transform(ext.begin(), ext.end(), ext.begin(), (int(*)(int))tolower); //(int(*)(int)) ist irgendso ein fieser cast, weil tolower ne alte c-methode ist
 
-   //UBLOG(logINFO, "GbTriFaceMesh3DCreator::readMeshFromFile - read " <<filename );
-
    if     ( !ext.compare("ply" ) ) return GbTriFaceMesh3DCreator::readMeshFromPLYFile(filename, meshName,splitAlg , removeRedundantNodes);
    else if( !ext.compare("stl" ) ) return GbTriFaceMesh3DCreator::readMeshFromSTLFile(filename, meshName,splitAlg , removeRedundantNodes);
    else if( !ext.compare("inp" ) ) return GbTriFaceMesh3DCreator::readMeshFromAVSFile(filename, meshName,splitAlg , removeRedundantNodes);
@@ -52,7 +50,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromMeshFile(UbFileInput* in, s
    }
    int numVertices = in->readInteger();
 
-   UBLOG(logDEBUG1,"Number of vertices "<<numVertices);
+   UBLOG(logINFO,"Number of vertices "<<numVertices);
 
    nodes->resize(numVertices);
    
@@ -65,7 +63,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromMeshFile(UbFileInput* in, s
       in->readLine();
       (*nodes)[i] = GbTriFaceMesh3D::Vertex(x,y,z);
    }
-   UBLOG(logDEBUG1," - read vertices (#"<<numVertices<<") done");
+   UBLOG(logINFO," - read vertices (#"<<numVertices<<") done");
 
    while( !in->eof() )
    {
@@ -75,7 +73,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromMeshFile(UbFileInput* in, s
    }
    int numFaces = in->readInteger();
    triangles->reserve(numFaces);
-   UBLOG(logDEBUG1,"Number of faces    "<<numFaces);
+   UBLOG(logINFO,"Number of faces    "<<numFaces);
 
    int j,k,l;
    for(int i=0; i<numFaces; i++)
@@ -87,7 +85,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromMeshFile(UbFileInput* in, s
 
       (*triangles).push_back(GbTriFaceMesh3D::TriFace(j,k,l));
    }
-   UBLOG(logDEBUG1," - read faces (#"<<(int)triangles->size()<<", #nonTriangles="<<(int)triangles->size()-numFaces<<") done");
+   UBLOG(logINFO," - read faces (#"<<(int)triangles->size()<<", #nonTriangles="<<(int)triangles->size()-numFaces<<") done");
 
    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes );
 
@@ -114,8 +112,8 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromPLYFile(UbFileInput* in, st
    int numFaces    = in->readIntegerAfterString("element face");
    in->setPosAfterLineWithString("end_header");
    
-   UBLOG(logDEBUG1,"Number of vertices "<<numVertices);
-   UBLOG(logDEBUG1,"Number of faces    "<<numFaces);
+   UBLOG(logINFO,"Number of vertices "<<numVertices);
+   UBLOG(logINFO,"Number of faces    "<<numFaces);
    
    nodes->resize(numVertices);
    triangles->reserve(numFaces);
@@ -131,7 +129,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromPLYFile(UbFileInput* in, st
       in->readLine();
       (*nodes)[i] = GbTriFaceMesh3D::Vertex(x,y,z);
    }
-   UBLOG(logDEBUG1," - read vertices (#"<<numVertices<<") done");
+   UBLOG(logINFO," - read vertices (#"<<numVertices<<") done");
 
    int p,j,k,l,n;
    onePercent = (int)UbMath::max(1,UbMath::integerRounding(numFaces*0.01));
@@ -178,7 +176,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromPLYFile(UbFileInput* in, st
       in->readLine();
 
    }
-   UBLOG(logDEBUG1," - read faces (#"<<(int)triangles->size()<<", #nonTriangles="<<(int)triangles->size()-numFaces<<") done");
+   UBLOG(logINFO," - read faces (#"<<(int)triangles->size()<<", #nonTriangles="<<(int)triangles->size()-numFaces<<") done");
 
    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
    
@@ -194,7 +192,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromSTLFile(string filename, st
 /*======================================================================*/
 GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromSTLFile(UbFileInput *in, string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg, bool removeRedundantNodes)
 {
-   UBLOG(logDEBUG1,"GbTriFaceMesh3DCreator::readMeshFromSTLFile !!! Dieses Format hat leider redundante Knoten ...");
+   UBLOG(logINFO,"GbTriFaceMesh3DCreator::readMeshFromSTLFile !!! Dieses Format hat leider redundante Knoten ...");
 
    vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
    vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
@@ -232,89 +230,119 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromSTLFile(UbFileInput *in, st
       in->readLine();
       dummy = in->readString();
       nr+=3;
-      //std::cout<<"read mesh "<< nr <<" \n";
    }
 
    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
    
    return mesh;
 }
-//////////////////////////////////////////////////////////////////////////
-GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromSTLFile2(string filename, string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg, bool removeRedundantNodes,  bool isBinaryFormat)
-{
-   vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
-   vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
-   int nr=0;
-
-   if (!isBinaryFormat) {
-      ifstream in(filename.c_str());
-      if (!in.good()) 
-      {
-         delete nodes;
-         delete triangles;
-         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: "+filename));
-      }
-      char title[80];
-      std::string s0, s1;
-      float n0, n1, n2, f0, f1, f2, f3, f4, f5, f6, f7, f8;
-      in.read(title, 80);
-      while (!in.eof()) {
-         in >> s0;                                // facet || endsolid
-         if (s0=="facet") {
-            in >> s1 >> n0 >> n1 >> n2;            // normal x y z
-            in >> s0 >> s1;                        // outer loop
-            in >> s0 >> f0 >> f1 >> f2;         // vertex x y z
-            in >> s0 >> f3 >> f4 >> f5;         // vertex x y z
-            in >> s0 >> f6 >> f7 >> f8;         // vertex x y z
-            in >> s0;                            // endloop
-            in >> s0;                            // endfacet
-            // Generate a new Triangle without Normal as 3 Vertices
-            nodes->push_back(GbTriFaceMesh3D::Vertex(f0, f1, f2));
-            nodes->push_back(GbTriFaceMesh3D::Vertex(f3, f4, f5));
-            nodes->push_back(GbTriFaceMesh3D::Vertex(f6, f7, f8));
-            triangles->push_back(GbTriFaceMesh3D::TriFace(nr,nr+1,nr+2));
-            nr+=3;
-         }
-         else if (s0=="endsolid") {
-            break;
-         }
-      }
-      in.close();
-   }
-   else {
-      FILE *f = fopen(filename.c_str(), "rb");
-      if (!f) 
-      {
-         delete nodes;
-         delete triangles;
-         UB_THROW(UbException(UB_EXARGS, "Can not open STL file: "+filename));
-      }
-      char title[80];
-      int nFaces;
-      fread(title, 80, 1, f);
-      fread((void*)&nFaces, 4, 1, f);
-      float v[12]; // normal=3, vertices=3*3 = 12
-      unsigned short uint16;
-      // Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
-      for (size_t i=0; i<nFaces; ++i) {
-         for (size_t j=0; j<12; ++j) {
-            fread((void*)&v[j], sizeof(float), 1, f);
-         }
-         fread((void*)&uint16, sizeof(unsigned short), 1, f); // spacer between successive faces
-         nodes->push_back(GbTriFaceMesh3D::Vertex(v[3], v[4], v[5]));
-         nodes->push_back(GbTriFaceMesh3D::Vertex(v[6], v[7], v[8]));
-         nodes->push_back(GbTriFaceMesh3D::Vertex(v[9], v[10], v[11]));
-         triangles->push_back(GbTriFaceMesh3D::TriFace(nr, nr+1, nr+2));
-         nr+=3;
-      }
-      fclose(f);
-   }
-
-   GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
-
-   return mesh;
-}
-
+// /*======================================================================*/
+// GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromMeshFile(string filename, string meshName, bool removeRedundantNodes)
+// {
+//    public static void read(String file, ArrayList<Node3d> nodeList, ArrayList<TrianglePatch> patches) throws FileReaderException {
+// 
+//       UBLOG(logINFO,"GbTriFaceMesh3DCreator::readMeshFromSTLFile !!! Dieses Format hat leider redundante Knoten ...");
+// 
+//    vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
+//    vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
+//    string dummy;
+// 
+//    double x, y, z;
+//    int nr=0;
+// 
+//    in->readLine();
+//    while(dummy!="endsolid")
+//    {
+//       in->readLine();
+//       in->readLine();
+//       dummy = in->readString();
+//       if(dummy!="vertex") throw UbException(UB_EXARGS,"no vertex format");
+//       x=in->readDouble();
+//       y=in->readDouble();
+//       z=in->readDouble();
+//       nodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
+//       in->readLine();
+//       in->readString();
+//       x=in->readDouble();
+//       y=in->readDouble();
+//       z=in->readDouble();
+//       nodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
+//       in->readLine();
+//       in->readString();
+//       x=in->readDouble();
+//       y=in->readDouble();
+//       z=in->readDouble();
+//       nodes->push_back(GbTriFaceMesh3D::Vertex((float)x,(float)y,(float)z));
+//       triangles->push_back(GbTriFaceMesh3D::TriFace(nr,nr+1,nr+2));
+//       in->readLine();
+//       in->readLine();
+//       in->readLine();
+//       dummy = in->readString();
+//       nr+=3;
+//    }
+// 
+// 
+//    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
+// 
+//    return mesh;
+// 
+// 
+//    try {
+// 
+//       FileInput input = new FileInput(file);
+// 
+//       int line = 0;
+//       while(true)
+//       { 
+//          if(line>1000) break;            
+//          if(input.readLine().contains("Vertices")) 
+//             break;              
+//          line++;
+//       }
+// 
+//       int num_of_points = input.readInt();
+// 
+//       for (int i = 0; i < num_of_points; i++) {               
+//          float x = (float) input.readDouble();
+//          float y = (float) input.readDouble();
+//          float z = (float) input.readDouble();
+//          int nr = input.readInt();
+//          nodeList.add(new Node3d(x, y, z));
+//       }
+// 
+//       input.skipLine();
+//       input.skipLine();
+//       int num_of_triangles = input.readInt();
+// 
+//       for (int i = 0; i < num_of_triangles; i++) {
+// 
+//          int a = input.readInt();
+//          int b = input.readInt();
+//          int c = input.readInt();
+//          int nr = input.readInt();
+// 
+//          Node3d P1 = nodeList.get(a - 1);
+//          Node3d P2 = nodeList.get(b - 1);
+//          Node3d P3 = nodeList.get(c - 1);
+// 
+//          patches.add(new TrianglePatch(P1, P2, P3));
+//       }
+// 
+//       // END reading mesh file
+//    }
+// 
+//    -- 
+// 
+//       Dipl.-Ing. Sebastian Bindick
+// 
+//       Institute for Computational Modeling in Civil Engineering (iRMB) Technische Universität Braunschweig Pockelsstr. 3 (9th Floor) D-38106, Braunschweig, Germany
+// 
+//       phone +49 531/391-7598
+//       fax   +49 531/391-7599
+//       email    bindick@irmb.tu-bs.de
+//       web  www.irmb.tu-bs.de
+// 
+// 
 /*======================================================================*/
 GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromAVSFile(string filename, string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg, bool removeRedundantNodes)
 {
@@ -325,7 +353,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromAVSFile(string filename, st
 /*======================================================================*/
 GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromAVSFile(UbFileInput *in, string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg , bool removeRedundantNodes)
 {
-   UBLOG(logDEBUG1,"GbTriFaceMesh3DCreator.readMeshFromAVSFile !!! Dieses Format hat leider redundante Knoten ...");
+   UBLOG(logINFO,"GbTriFaceMesh3DCreator.readMeshFromAVSFile !!! Dieses Format hat leider redundante Knoten ...");
 
    vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
    vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
@@ -372,7 +400,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromVTKASCIIFile(string filenam
 /*======================================================================*/
 GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromVTKASCIIFile(UbFileInput *in, string meshName, GbTriFaceMesh3D::KDTREE_SPLITAGORITHM splitAlg, bool removeRedundantNodes)
 {
-   UBLOG(logDEBUG1,"GbTriFaceMesh3DCreator.readMeshFromVTKASCIIFile !!! Dieses Format hat leider redundante Knoten ...");
+   UBLOG(logINFO,"GbTriFaceMesh3DCreator.readMeshFromVTKASCIIFile !!! Dieses Format hat leider redundante Knoten ...");
 
    vector<GbTriFaceMesh3D::Vertex>    *nodes     = new vector<GbTriFaceMesh3D::Vertex>;
    vector<GbTriFaceMesh3D::TriFace>   *triangles = new vector<GbTriFaceMesh3D::TriFace>;
@@ -409,7 +437,7 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromVTKASCIIFile(UbFileInput *i
    in->readString();
    int numberTris  = in->readInteger();
    in->readLine();
-   UBLOG(logDEBUG1,"numberTris:"<<numberTris);
+   UBLOG(logINFO,"numberTris:"<<numberTris);
 
    int id1,id2,id3;
    for(int u=0;u<numberTris;u++)
@@ -421,10 +449,10 @@ GbTriFaceMesh3D* GbTriFaceMesh3DCreator::readMeshFromVTKASCIIFile(UbFileInput *i
       triangles->push_back(GbTriFaceMesh3D::TriFace(id1,id2,id3));
       //cout<<u<<" - id1,id2,id3:"<<id1<<","<<id2<<","<<id3<<endl;
    }
-   UBLOG(logDEBUG1,"Tris gelesen");
+   UBLOG(logINFO,"Tris gelesen");
 
    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D(meshName, nodes, triangles, splitAlg, removeRedundantNodes);
-   UBLOG(logDEBUG1,"mesh erzeugt (with remove redundant nodes = "<< boolalpha <<removeRedundantNodes<<")");
+   UBLOG(logINFO,"mesh erzeugt (with remove redundant nodes = "<< boolalpha <<removeRedundantNodes<<")");
 
 
    return mesh;

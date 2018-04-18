@@ -1,6 +1,8 @@
 #include <basics/writer/WbWriterVtkXmlBinary.h>
 #include <basics/writer/WbWriterVtkXmlASCII.h>
 #include <basics/utilities/UbLogger.h>
+#include <basics/utilities/UbSystem.h>
+
 #include <buildInfo.h>
 #include <cstring>
 
