@@ -85,7 +85,13 @@ HOST void GridImp::inital()
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
+    GridVTKWriter::writeSparseGridToVTK(shared_from_this(), "D:/GRIDGENERATION/pio");
+
     gridStrategy->findStopperNodes(shared_from_this());
+
+    if (triangularMesh)
+        GridVTKWriter::writeSparseGridToVTK(shared_from_this(), "D:/GRIDGENERATION/pio_stopper");
+
 }
 
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
@@ -209,6 +215,42 @@ HOSTDEVICE void GridImp::findStopperNode(uint index)
 
     if (isValidStartOfGridStopper(index))
         this->field.setFieldEntryToStopperEndOfGrid(index);
+}
+
+HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
+{
+    Cell cell = getOddCellFromIndex(index);
+    if (isOutSideOfGrid(cell))
+        return;
+    if (contains(cell, OUT_OF_GRID))
+        setTo(cell, OUT_OF_GRID);
+}
+
+HOSTDEVICE bool GridImp::isOutSideOfGrid(Cell &cell) const
+{
+    for (const auto point : cell) {
+        if (point.x < startX || point.x > endX
+            || point.y < startY || point.y > endY
+            || point.z < startZ || point.z > endZ)
+            return true;
+    }
+    return false;
+}
+
+HOSTDEVICE bool GridImp::contains(Cell &cell, char type) const
+{
+    for (const auto point : cell) {
+        if (field.is(transCoordToIndex(point.x, point.y, point.z), type))
+            return true;
+    }
+    return false;
+}
+
+HOSTDEVICE void GridImp::setTo(Cell &cell, char type)
+{
+    for (const auto point : cell) {
+        field.setFieldEntry(transCoordToIndex(point.x, point.y, point.z), type);
+    }
 }
 
 HOSTDEVICE bool GridImp::isValidStartOfGridStopper(uint index) const
@@ -490,6 +532,7 @@ HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid)
 HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid)
 {
     gridInterface->findInterfaceCF(index, this, &finerGrid);
+
 }
 
 HOSTDEVICE void GridImp::findGridInterfaceFC(uint index, GridImp& finerGrid)

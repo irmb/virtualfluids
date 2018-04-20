@@ -41,7 +41,7 @@ protected:
     void pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
     void rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
     void pointInObjectMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh);
-
+    void removeOddBoundaryCellNodes(SPtr<GridImp> grid);
 public:
     void allocateFieldMemory(Field* field) override;
     void freeFieldMemory(Field* field) override;

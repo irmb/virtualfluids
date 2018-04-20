@@ -26,7 +26,6 @@ public:
 
     VF_PUBLIC static TriangularMesh* make(const std::string& fileName, DiscretizationMethod discretizationMethod);
 	VF_PUBLIC TriangularMesh();
-	VF_PUBLIC TriangularMesh(const TriangularMesh& geo);
     VF_PUBLIC TriangularMesh(const std::string& inputPath);
 	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox &box);
 	HOSTDEVICE VF_PUBLIC ~TriangularMesh();

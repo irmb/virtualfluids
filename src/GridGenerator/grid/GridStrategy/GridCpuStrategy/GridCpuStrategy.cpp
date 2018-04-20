@@ -20,7 +20,6 @@
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
-
     grid->neighborIndexX = new int[grid->size];
     grid->neighborIndexY = new int[grid->size];
     grid->neighborIndexZ = new int[grid->size];
@@ -74,6 +73,7 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangu
         pointInObjectMethod(grid, triangularMesh);
     }
 
+    removeOddBoundaryCellNodes(grid);
 }
 
 void GridCpuStrategy::pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
@@ -267,6 +267,14 @@ void GridCpuStrategy::rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* trian
     }
 }
 
+void GridCpuStrategy::removeOddBoundaryCellNodes(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+    for (uint index = 0; index < grid->size; index++)
+        grid->removeOddBoundaryCellNode(index);
+}
+
+
 void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
@@ -300,6 +308,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid);
 
+    GridVTKWriter::writeSparseGridToVTK(fineGrid, "D:/GRIDGENERATION/CF");
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);
