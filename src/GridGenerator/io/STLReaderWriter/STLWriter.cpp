@@ -11,7 +11,8 @@
 
 void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary)
 {
-    *logging::out << logging::Logger::INTERMEDIATE << "Write " + SSTR(vec.size()) + " Triangles to STL : " + name + "\n";
+    const long size = vec.size();
+    *logging::out << logging::Logger::INTERMEDIATE << "Write " << size << " Triangles to STL : " + name + "\n";
 
     std::ios_base::openmode mode = std::ios::out;
     if (writeBinary)

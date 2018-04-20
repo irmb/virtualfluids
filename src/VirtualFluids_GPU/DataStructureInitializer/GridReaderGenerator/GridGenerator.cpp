@@ -4,6 +4,7 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 #include <GPU/CudaMemoryManager.h>
 
+#include <sstream>
 #include <iostream>
 #include "utilities/math/Math.h"
 

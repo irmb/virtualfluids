@@ -4,7 +4,7 @@
 
 #include "GridGenerator/global.h"
 #include <exception>
-
+#include <sstream>
 #include "Transformator.h"
 #include "ArrowTransformator.h"
 

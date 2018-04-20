@@ -59,7 +59,7 @@ void GridGpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
     /*---------------------------------------------------------------------------------*/
     float time = runKernelToMesh(LaunchParameter::make_1D1D_launchParameter(geom.size, 256), *grid.get(), geom);
     /*---------------------------------------------------------------------------------*/
-    *logging::out << logging::Logger::INTERMEDIATE << "Time GPU build grid: " + SSTR(time / 1000) + "sec\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "Time GPU build grid: "  << time / 1000 << "sec\n";
     *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
 
     freeTrianglesFromGPU(geom);
@@ -123,7 +123,7 @@ void GridGpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     copyAndFreeGridInterfaceFromGPU(grid);
 
 
-    //*logging::out << logging::Logger::INTERMEDIATE << "time find indices: " + SSTR(time / 1000) + "sec\n";
+    //*logging::out << logging::Logger::INTERMEDIATE << "time find indices: " << time / 1000 <<  "sec\n";
 }
 
 void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
@@ -139,7 +139,7 @@ void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
     allocAndCopyMatrixIndicesToGPU(grid, grid->size);
 
     float time2 = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
-    *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR((time1 + time2) / 1000) + "sec\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " << (time1 + time2) / 1000 << "sec\n";
 }
 
 
@@ -181,7 +181,8 @@ void GridGpuStrategy::allocField(SPtr<GridImp> grid)
 
 void GridGpuStrategy::allocateFieldMemory(Field* field)
 {
-    *logging::out << logging::Logger::INTERMEDIATE << "alloc on device for grid field: " + SSTR(field->size * sizeof(char) / 1000 / 1000) + " MB\n";
+    long size = field->size * sizeof(char) / 1000 / 1000;
+    *logging::out << logging::Logger::INTERMEDIATE << "alloc on device for grid field: " << size << " MB\n";
 
     char *field_d;
     CudaSafeCall(cudaMalloc(&field_d, field->size * sizeof(char)));
@@ -205,7 +206,7 @@ void GridGpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> 
 //    float time = runKernelToMarkNodesToDeleteOutsideOfGeometry(LaunchParameter::make_1D1D_launchParameter(numberOfEdgeNodes, 256), grid);
 //    /*---------------------------------------------------------------------------------*/
 //
-//    *logging::out << logging::Logger::INTERMEDIATE << "mark nodes to delete: " + SSTR(time / 1000) + "sec\n";
+//    *logging::out << logging::Logger::INTERMEDIATE << "mark nodes to delete: " << time / 1000 << "sec\n";
 //    *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
 //}
 
@@ -221,7 +222,7 @@ void GridGpuStrategy::allocDistribution(SPtr<GridImp> grid)
     unsigned long long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     unsigned long long size_in_bytes = distributionSize * sizeof(real);
     real sizeInMB = size_in_bytes / (1024.f*1024.f);
-    *logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] device memory for distributions.\n\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "Allocating " << sizeInMB << " [MB] device memory for distributions.\n\n";
 
     checkCudaErrors(cudaMalloc(&grid->distribution.f, size_in_bytes));
     CudaCheckError();
@@ -257,7 +258,7 @@ void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
     int size_in_bytes_triangles = sizeof(Triangle)*geom.size;
     real sizeInMB = size_in_bytes_triangles / (1024.f*1024.f);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Allocating " + SSTR(sizeInMB) + " [MB] device memory for triangles.\n\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "Allocating " << sizeInMB << " [MB] device memory for triangles.\n\n";
 
     Triangle *triangles_d;
     CudaSafeCall(cudaMalloc(&triangles_d, size_in_bytes_triangles));
@@ -266,7 +267,7 @@ void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
     CudaCheckError();
     clock_t end = clock();
     real time = real(end - begin) / CLOCKS_PER_SEC;
-    *logging::out << logging::Logger::INTERMEDIATE << "time copying triangles: " + SSTR(time) + "s\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "time copying triangles: " << time << "s\n";
     *logging::out << logging::Logger::INTERMEDIATE << "...copying triangles finish!\n\n";
 }
 

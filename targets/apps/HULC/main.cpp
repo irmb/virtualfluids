@@ -257,7 +257,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addGrid(conglomerate, 2);
 
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/sphereBinary.stl", DiscretizationMethod::POINT_IN_OBJECT);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/sphereBinary.stl", DiscretizationMethod::RAYCASTING);
 
     //TriangularMesh* sphere = STLReader::makeTriangularMesh("D:/GRIDGENERATION/STL/circleBinaer.stl");
     //TransformatorImp trans(1.0, Vertex(-30, -5, 10));

@@ -47,14 +47,6 @@ HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY,
 
 void GridImp::initalNumberOfNodesAndSize()
 {
-    //startX -= delta; // +1 stopper node
-    //startY -= delta; // +1 stopper node
-    //startZ -= delta; // +1 stopper node
-
-    //endX += delta; // +1 stopper node
-    //endY += delta; // +1 stopper node
-    //endZ += delta; // +1 stopper node
-
     const real length = endX - startX;
     const real width = endY - startY;
     const real height = endZ - startZ;
@@ -79,19 +71,11 @@ HOST void GridImp::inital()
 
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if(triangularMesh)
-    {
         gridStrategy->findInnerNodes(shared_from_this(), triangularMesh);
-    }
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
-    GridVTKWriter::writeSparseGridToVTK(shared_from_this(), "D:/GRIDGENERATION/pio");
-
     gridStrategy->findStopperNodes(shared_from_this());
-
-    if (triangularMesh)
-        GridVTKWriter::writeSparseGridToVTK(shared_from_this(), "D:/GRIDGENERATION/pio_stopper");
-
 }
 
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
@@ -557,7 +541,7 @@ HOST void GridImp::mesh(TriangularMesh &triangularMesh)
     const clock_t end = clock();
     const real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " + SSTR(time) + "s\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " << time << "s\n";
 }
 
 HOSTDEVICE void GridImp::mesh(Triangle &triangle)

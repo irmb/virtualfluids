@@ -170,7 +170,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     fread(nTri, sizeof(char), 4, file);
     nTriLong = *((unsigned long*)nTri);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles complete geometry: " + SSTR(nTriLong) + "\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles complete geometry: " << nTriLong << "\n";
     std::vector<Triangle> triangles;
 
     char facet[50];
@@ -187,7 +187,8 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
         if (box.isInside(t) || box.intersect(t))
             triangles.push_back(t);
     }
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles in process: " + SSTR(triangles.size()) + "\n";
+    long size = triangles.size();
+    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
     *logging::out << logging::Logger::INTERMEDIATE << "Complete reading STL file. \n";
 
 	fclose(file);

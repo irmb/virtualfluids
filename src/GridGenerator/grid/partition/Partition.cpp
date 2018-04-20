@@ -341,7 +341,7 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
     
 
     for (int part_i = 0; part_i < nVertices; part_i++)
-		*logging::out << logging::Logger::INTERMEDIATE << "Block: " + SSTR(part_i) + " - Partition: " + SSTR(part[part_i]) + "\n";
+		*logging::out << logging::Logger::INTERMEDIATE << "Block: " << part_i << " - Partition: " << part[part_i] << "\n";
     
 
     std::vector<std::vector<int> > tasks;

@@ -30,7 +30,7 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
     unsigned long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     real sizeInMB = distributionSize * sizeof(real) / (1024.f*1024.f);
 
-    //*logging::out << logging::Logger::LOW << "Allocating " + SSTR(sizeInMB) + " [MB] host memory for distributions.\n";
+    //*logging::out << logging::Logger::LOW << "Allocating " << sizeInMB << " [MB] host memory for distributions.\n";
 
     grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
 }
@@ -368,7 +368,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 
     clock_t end = clock();
     real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
-    *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " + SSTR(time / 1000) + "sec\n";
+    *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " << time / 1000 << "sec\n";
 }
 
 
