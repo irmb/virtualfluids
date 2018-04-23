@@ -16,6 +16,7 @@ class GridStrategy;
 class GridInterface;
 class Object;
 class BoundingBox;
+class TriangularMeshDiscretizationStrategy;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -34,12 +35,10 @@ private:
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
     HOSTDEVICE bool isValidStartOfGridStopper(uint index) const;
     HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
-    HOSTDEVICE void removeOddBoundaryCellNode(uint index);
     HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
     HOSTDEVICE bool contains(Cell &cell, char type) const;
-    HOSTDEVICE void setTo(Cell &cell, char type);
+    HOSTDEVICE void setNodeTo(Cell &cell, char type);
 
-    HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
     HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
     HOSTDEVICE bool nodeInCellIs(Cell& cell, char type) const override;
 
@@ -64,10 +63,12 @@ private:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
     int *sparseIndices;
     SPtr<GridStrategy> gridStrategy;
+    TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
 
 
 public:
     HOST void inital() override;
+    HOSTDEVICE void removeOddBoundaryCellNode(uint index);
 
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
     HOSTDEVICE void setCellTo(uint index, char type);
@@ -79,6 +80,8 @@ public:
     HOST void freeMemory() override;
 
     HOST uint getLevel(real levelNull) const;
+    HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
+    
 public:
     Distribution distribution;
 
@@ -94,6 +97,9 @@ public:
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
     HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
 
+    HOSTDEVICE void setNodeTo(uint index, char type);
+    HOSTDEVICE bool isNode(uint index, char type) const;
+    HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
 
     HOSTDEVICE Field getField() const;
     HOSTDEVICE char getFieldEntry(uint index) const override;
@@ -137,6 +143,7 @@ public:
 
     SPtr<GridStrategy> getGridStrategy() const override;
 
+
     HOSTDEVICE void print() const;
 
 
@@ -153,11 +160,12 @@ private:
     HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
     HOSTDEVICE int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
-    HOSTDEVICE BoundingBox GridImp::getBoundingBoxOnNodes(Triangle &triangle) const;
     HOSTDEVICE static real getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta);
     HOSTDEVICE static real getMaximumOnNodes(const real& maxExact, const real& decimalStart, const real& delta);
 
 public:
+    HOSTDEVICE BoundingBox getBoundingBoxOnNodes(Triangle &triangle) const;
+
     HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
     HOSTDEVICE void meshReverse(Triangle &triangle);

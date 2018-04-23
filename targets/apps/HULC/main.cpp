@@ -32,6 +32,7 @@
 #include "geometries/Conglomerate/Conglomerate.h"
 #include "io/STLReaderWriter/STLReader.h"
 #include "io/STLReaderWriter/STLWriter.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -247,6 +248,8 @@ void multipleLevel(const std::string& configPath)
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
     gridFactory->setGrid("grid");
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(-5.0, -5.0, -5.0, 40.0, 40.0, 40.0, 1.0);

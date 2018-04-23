@@ -16,6 +16,7 @@
 #include "../Object.h"
 
 class GeometryMemento;
+class GbTriFaceMesh3D;
 
 enum class DiscretizationMethod { RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE };
 
@@ -40,12 +41,11 @@ public:
 
     HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
 
-    HOST VF_PUBLIC GeometryMemento getState() const;
-    HOST VF_PUBLIC void setState(const GeometryMemento &memento);
+
     VF_PUBLIC void findNeighbors();
 
     HOST VF_PUBLIC DiscretizationMethod getDiscretizationMethod() const;
-
+    HOSTDEVICE VF_PUBLIC GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
 private:
 	

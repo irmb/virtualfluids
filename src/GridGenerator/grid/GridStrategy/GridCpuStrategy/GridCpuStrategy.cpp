@@ -260,7 +260,6 @@ void GridCpuStrategy::rayCastingMethod(SPtr<GridImp> grid, TriangularMesh* trian
                     counter++;
                     if (mesh.intersectLine(x, y, (z + grid->getDelta()), x, y, z)) break;
                     else grid->field.setFieldEntryToOutOfGrid(grid->transCoordToIndex(x, y, z));
-
                 }
             }
         }

@@ -13,6 +13,8 @@
 #include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMeshStrategy.h>
+
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 
 #include <GridGenerator/grid/NodeValues.h>
@@ -70,8 +72,9 @@ HOST void GridImp::inital()
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
 
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
-    if(triangularMesh)
-        gridStrategy->findInnerNodes(shared_from_this(), triangularMesh);
+    if (triangularMesh)
+        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, OUT_OF_GRID);
+        //gridStrategy->findInnerNodes(shared_from_this(), triangularMesh);
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
@@ -207,7 +210,7 @@ HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
     if (isOutSideOfGrid(cell))
         return;
     if (contains(cell, OUT_OF_GRID))
-        setTo(cell, OUT_OF_GRID);
+        setNodeTo(cell, OUT_OF_GRID);
 }
 
 HOSTDEVICE bool GridImp::isOutSideOfGrid(Cell &cell) const
@@ -230,12 +233,23 @@ HOSTDEVICE bool GridImp::contains(Cell &cell, char type) const
     return false;
 }
 
-HOSTDEVICE void GridImp::setTo(Cell &cell, char type)
+HOSTDEVICE void GridImp::setNodeTo(Cell &cell, char type)
 {
     for (const auto point : cell) {
         field.setFieldEntry(transCoordToIndex(point.x, point.y, point.z), type);
     }
 }
+
+HOSTDEVICE void GridImp::setNodeTo(uint index, char type)
+{
+    field.setFieldEntry(index, type);
+}
+
+HOSTDEVICE bool GridImp::isNode(uint index, char type) const
+{
+    return field.is(index, type);
+}
+
 
 HOSTDEVICE bool GridImp::isValidStartOfGridStopper(uint index) const
 {
@@ -385,6 +399,10 @@ HOST uint GridImp::getLevel(real startDelta) const
     return level;
 }
 
+HOST void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
+{
+    this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;
+}
 
 // --------------------------------------------------------- //
 //                  Set Sparse Indices                       //

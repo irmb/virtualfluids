@@ -9,6 +9,8 @@
 
 #include "Timer/Timer.h"
 
+#include "numerics/geometry3d/GbTriFaceMesh3D.h"
+
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName, DiscretizationMethod discretizationMethod)
 {
@@ -96,4 +98,21 @@ HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 HOST DiscretizationMethod TriangularMesh::getDiscretizationMethod() const
 {
     return this->discretizationMethod;
+}
+
+HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
+{
+    std::vector<GbTriFaceMesh3D::Vertex> *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
+    std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(this->triangleVec.size());
+    for (int i = 0; i < this->triangleVec.size(); i++)
+    {
+        (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
+        (*gbVertices)[i * 3 + 1] = GbTriFaceMesh3D::Vertex(triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z);
+        (*gbVertices)[i * 3 + 2] = GbTriFaceMesh3D::Vertex(triangles[i].v3.x, triangles[i].v3.y, triangles[i].v3.z);
+
+        (*gbTriangles)[i] = GbTriFaceMesh3D::TriFace(i * 3, i * 3 + 1, i * 3 + 2);
+    }
+
+    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D("stl", gbVertices, gbTriangles);
+    return mesh;
 }
