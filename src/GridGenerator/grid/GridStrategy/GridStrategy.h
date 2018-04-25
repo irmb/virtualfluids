@@ -6,7 +6,7 @@
 #include "grid/Field.h"
 
 struct Vertex;
-struct TriangularMesh;
+class TriangularMesh;
 class GridImp;
 
 class VF_PUBLIC GridStrategy

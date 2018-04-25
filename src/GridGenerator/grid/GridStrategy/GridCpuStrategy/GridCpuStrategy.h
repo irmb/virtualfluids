@@ -9,7 +9,7 @@
 
 
 class GridImp;
-struct TriangularMesh;
+class TriangularMesh;
 
 class VF_PUBLIC GridCpuStrategy : public GridStrategy
 {

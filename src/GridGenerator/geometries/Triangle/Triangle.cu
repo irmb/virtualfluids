@@ -16,6 +16,28 @@ HOSTDEVICE void Triangle::set(const Vertex &v1, const Vertex &v2, const Vertex &
     this->calcNormal();
 }
 
+HOSTDEVICE void Triangle::set(int index, Vertex value)
+{
+    if (index == 0)
+        v1 = value;
+    if (index == 1)
+        v2 = value;
+    if (index == 2)
+        v3 = value;
+}
+
+HOSTDEVICE Vertex Triangle::get(int index)
+{
+    if (index == 0)
+        return v1;
+    if (index == 1)
+        return v2;
+    if (index == 2)
+        return v3;
+    else
+        return Vertex(-999999999999999, -99999999999999, -9999999999999);
+}
+
 HOSTDEVICE void Triangle::calcNormal()
 {
     Vertex edge1 = v2 - v1;

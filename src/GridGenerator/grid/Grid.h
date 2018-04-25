@@ -4,7 +4,7 @@
 #include "GridGenerator/global.h"
 #include "Cell.h"
 
-struct TriangularMesh;
+class TriangularMesh;
 struct Vertex;
 struct Triangle;
 class GridStrategy;

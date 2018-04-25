@@ -7,7 +7,7 @@
 #include "../GridStrategy.h"
 
 class BoundingBox;
-struct TriangularMesh;
+class TriangularMesh;
 
 class VF_PUBLIC GridGpuStrategy : public GridStrategy
 {

@@ -9,7 +9,7 @@
 #include "Field.h"
 
 
-struct TriangularMesh;
+class TriangularMesh;
 struct Vertex;
 struct Triangle;
 class GridStrategy;

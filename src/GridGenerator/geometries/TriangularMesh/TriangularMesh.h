@@ -21,7 +21,7 @@ class GbTriFaceMesh3D;
 enum class DiscretizationMethod { RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE };
 
 
-struct TriangularMesh : public Object
+class TriangularMesh : public Object
 {
 public:
 
@@ -31,12 +31,14 @@ public:
 	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox &box);
 	HOSTDEVICE VF_PUBLIC ~TriangularMesh();
 
+    VF_PUBLIC uint getNumberOfTriangles() const;
+
 	VF_PUBLIC void setTriangles(std::vector<Triangle> triangles);
 	VF_PUBLIC void setMinMax(BoundingBox minmax);
 
 	std::vector<Triangle> triangleVec;
 	Triangle *triangles;
-	int size;
+	long size;
 	BoundingBox minmax;
 
     HOST VF_PUBLIC bool operator==(const TriangularMesh &geometry) const;
@@ -51,6 +53,9 @@ private:
 	
 	void initalizeDataFromTriangles();
 
+    static std::vector<Vertex> getAverrageNormalsPerVertex(std::vector<std::vector<Triangle> > trianglesPerVertex);
+    static void eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles);
+
     DiscretizationMethod discretizationMethod;
 
 public:
@@ -64,7 +69,7 @@ public:
     double getX3Centroid() override { throw "Not implemented in TriangularMesh"; }
     double getX3Minimum() override { return minmax.minZ; }
     double getX3Maximum() override { return minmax.maxZ; }
-    void scale(double delta) override { throw "Not implemented in TriangularMesh"; }
+    void scale(double delta) override;
     HOSTDEVICE bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset,
         const double& maxOffset) override {
         return false;

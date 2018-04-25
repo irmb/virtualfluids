@@ -28,12 +28,15 @@ HOSTDEVICE Vertex Vertex::operator+(const Vertex &v) const
     return Vertex(this->x + v.x, this->y + v.y, this->z + v.z);
 }
 
-HOSTDEVICE Vertex Vertex::operator*(const real value) const
+HOSTDEVICE Vertex Vertex::operator*(const real& value) const
 {
     return Vertex(value * this->x, value * this->y, value * this->z);
 }
 
-
+HOSTDEVICE Vertex Vertex::operator/(const real& value) const
+{
+    return *this * (1.0 / value);
+}
 
 HOSTDEVICE real Vertex::operator*(const Vertex &w) const
 {

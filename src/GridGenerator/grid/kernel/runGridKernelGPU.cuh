@@ -4,7 +4,7 @@
 
 class Grid;
 class GridImp;
-struct TriangularMesh;
+class TriangularMesh;
 class LaunchParameter;
 
 float runKernelInitalUniformGrid3d(const LaunchParameter& para, GridImp &grid);

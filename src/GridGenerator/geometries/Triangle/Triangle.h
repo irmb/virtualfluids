@@ -21,6 +21,8 @@ struct VF_PUBLIC Triangle
 	HOSTDEVICE Triangle();
 
 	HOSTDEVICE void set(const Vertex &v1, const Vertex &v2, const Vertex &v3);
+    HOSTDEVICE void set(int index, Vertex value);
+    HOSTDEVICE Vertex get(int index);
 	HOSTDEVICE void calcNormal();
 
     HOSTDEVICE void initalLayerThickness(real delta);
@@ -54,7 +56,7 @@ struct VF_PUBLIC Triangle
     HOST void setState(const TriangleMemento &memento);
 
 
-    HOSTDEVICE void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const;
+    HOSTDEVICE void setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const;
 };
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "GridStrategy.h"
 
-struct TriangularMesh;
+class TriangularMesh;
 class GridImp;
 
 class VF_PUBLIC GridStrategyDummy : public GridStrategy

@@ -33,6 +33,7 @@
 #include "io/STLReaderWriter/STLReader.h"
 #include "io/STLReaderWriter/STLWriter.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
+#include "utilities/triangleOffsetSurfaceGeneration/TriangleOffsetSurfaceGeneration.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -252,7 +253,7 @@ void multipleLevel(const std::string& configPath)
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    gridBuilder->addCoarseGrid(-5.0, -5.0, -5.0, 40.0, 40.0, 40.0, 1.0);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 4, 3, 6, 0.125);
 
     //Conglomerate* conglomerate = new Conglomerate();
     //conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
@@ -260,12 +261,15 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addGrid(conglomerate, 2);
 
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/sphereBinary.stl", DiscretizationMethod::RAYCASTING);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
 
-    //TriangularMesh* sphere = STLReader::makeTriangularMesh("D:/GRIDGENERATION/STL/circleBinaer.stl");
-    //TransformatorImp trans(1.0, Vertex(-30, -5, 10));
-    //trans.transformWorldToGrid(*sphere);
-    //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/sphereBinary.stl", false);
+
+    //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
+
+    TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
+    TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
+    trans.transformWorldToGrid(*sphere);
+    STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
     gridBuilder->addGrid(triangularMesh);

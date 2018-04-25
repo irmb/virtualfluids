@@ -7,7 +7,7 @@
 
 class BoundingBox;
 struct Triangle;
-struct TriangularMesh;
+class TriangularMesh;
 struct Vertex;
 
 
