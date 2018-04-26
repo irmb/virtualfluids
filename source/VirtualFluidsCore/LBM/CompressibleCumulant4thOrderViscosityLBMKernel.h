@@ -19,7 +19,7 @@ public:
 public:
    CompressibleCumulant4thOrderViscosityLBMKernel();
    virtual ~CompressibleCumulant4thOrderViscosityLBMKernel(void);
-   virtual void calculate();
+   virtual void calculate(int step);
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime() override;
    void setBulkViscosity(LBMReal value);

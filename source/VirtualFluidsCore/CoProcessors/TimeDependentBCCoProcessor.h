@@ -15,7 +15,7 @@ class Grid3D;
 class TimeDependentBCCoProcessor : public CoProcessor
 {
 public:
-	TimeDependentBCCoProcessor(SPtr<Grid3D> grid);
+	TimeDependentBCCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s);
 	virtual ~TimeDependentBCCoProcessor();
 
 	void process(double step) override;

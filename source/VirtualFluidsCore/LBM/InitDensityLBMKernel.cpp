@@ -852,7 +852,7 @@ double InitDensityLBMKernel::getCalculationTime()
 
 
 
-void InitDensityLBMKernel::calculate()
+void InitDensityLBMKernel::calculate(int step)
 {
    using namespace D3Q27System;
 

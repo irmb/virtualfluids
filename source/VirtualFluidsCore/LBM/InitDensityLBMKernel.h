@@ -12,7 +12,7 @@ class InitDensityLBMKernel :  public LBMKernel
 public:
    InitDensityLBMKernel();
    ~InitDensityLBMKernel();
-   void calculate();
+   void calculate(int step);
    SPtr<LBMKernel> clone();
    void setVelocity(int x1, int x2, int x3, LBMReal vvx, LBMReal vvy, LBMReal vvz);
    double getCalculationTime();

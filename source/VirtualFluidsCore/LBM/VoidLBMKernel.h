@@ -9,7 +9,7 @@ public:
    VoidLBMKernel();
    ~VoidLBMKernel();
    SPtr<LBMKernel> clone();
-   void calculate();
+   void calculate(int step);
    double getCalculationTime();
    void initDataSet();
 protected:

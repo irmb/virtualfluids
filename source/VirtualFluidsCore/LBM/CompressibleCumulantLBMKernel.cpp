@@ -4,6 +4,8 @@
 #include "D3Q27EsoTwist3DSplittedVector.h"
 #include <math.h>
 #include "DataSet3D.h"
+#include "Block3D.h"
+
 #define PROOF_CORRECTNESS
 
 //////////////////////////////////////////////////////////////////////////
@@ -41,6 +43,8 @@ SPtr<LBMKernel> CompressibleCumulantLBMKernel::clone()
    kernel->setForcingX3(muForcingX3);
    kernel->setIndex(ix1, ix2, ix3);
    kernel->setDeltaT(deltaT);
+   kernel->setBlock(block.lock());
+
    switch (parameter)
    {
    case NORMAL:
@@ -62,7 +66,7 @@ SPtr<LBMKernel> CompressibleCumulantLBMKernel::clone()
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulantLBMKernel::calculate()
+void CompressibleCumulantLBMKernel::calculate(int step)
 {
    using namespace D3Q27System;
    using namespace std;
@@ -980,9 +984,8 @@ void CompressibleCumulantLBMKernel::calculate()
                   {
                      UB_THROW(UbException(UB_EXARGS, "rho="+UbSystem::toString(drho)+", rho_post="+UbSystem::toString(drho_post)
                         +" dif="+UbSystem::toString(dif)
-                        +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)));
-                     //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
-                     //exit(EXIT_FAILURE);
+                        +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)
+                        +" in " + block.lock()->toString()+" step = "+UbSystem::toString(step)));
                   }
 #endif
                   //////////////////////////////////////////////////////////////////////////

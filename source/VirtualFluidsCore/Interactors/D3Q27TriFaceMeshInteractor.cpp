@@ -68,6 +68,8 @@ bool D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D(const SPtr<Block3D> 
 {
    if(!block) return false;
 
+   //UBLOG(logINFO, "D3Q27TriFaceMeshInteractor::setDifferencesToGbObject3D()");
+
    bcNodeIndicesMap[block] = set< std::vector<int> >();
    set< std::vector<int> >& transNodeIndices = bcNodeIndicesMap[block];
    solidNodeIndicesMap[block] = set< UbTupleInt3 >();

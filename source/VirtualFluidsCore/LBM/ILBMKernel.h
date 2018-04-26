@@ -12,7 +12,7 @@ class ILBMKernel
 public:
     virtual ~ILBMKernel() {};
 
-    virtual void calculate() = 0;
+    virtual void calculate(int step) = 0;
     virtual double getCalculationTime() = 0;
     virtual void swapDistributions() = 0;
 

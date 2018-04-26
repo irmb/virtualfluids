@@ -44,9 +44,9 @@ void BasicCalculator::calculate()
       double time[6];
 #endif
 
-      for (calcStep = startTimeStep; calcStep<=numberOfTimeSteps+1; calcStep++)
+      for (calcStep = startTimeStep; calcStep<=numberOfTimeSteps; calcStep++)
       {
-         coProcess((double)(calcStep-1));
+         //coProcess((double)(calcStep-1));
 
          //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
@@ -124,10 +124,12 @@ void BasicCalculator::calculate()
             }
          }
          //exchange data between blocks for visualization
-         if ((int)additionalGhostLayerUpdateScheduler->getNextDueTime()==calcStep)
+         //if ((int)additionalGhostLayerUpdateScheduler->getNextDueTime()==calcStep)
+         if (additionalGhostLayerUpdateScheduler->isDue(calcStep))
          {
             exchangeBlockData(straightStartLevel, maxInitLevel);
          }
+         coProcess((double)(calcStep));
          //now ghost nodes have actual values
       }
       UBLOG(logDEBUG1, "OMPCalculator::calculate() - stoped");
@@ -162,7 +164,7 @@ void BasicCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calc
             for (int i =0; i<size; i++)
             {
                blockTemp = blocks[level][i];
-               blockTemp->getKernel()->calculate();
+               blockTemp->getKernel()->calculate(calcStep);
             }
             //timer.stop();
             //UBLOG(logINFO, "level = " << level << " blocks = " << blocks[level].size() << " collision time = " << timer.getTotalTime());
@@ -171,7 +173,7 @@ void BasicCalculator::calculateBlocks(int startLevel, int maxInitLevel, int calc
       catch (std::exception& e)
       {
          UBLOG(logERROR, e.what());
-         UBLOG(logERROR, blockTemp->toString()<<" step = "<<calcStep);
+         //UBLOG(logERROR, blockTemp->toString()<<" step = "<<calcStep);
          //throw;
          exit(EXIT_FAILURE);
       }

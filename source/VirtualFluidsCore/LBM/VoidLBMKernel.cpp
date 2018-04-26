@@ -35,7 +35,7 @@ SPtr<LBMKernel> VoidLBMKernel::clone()
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void VoidLBMKernel::calculate()
+void VoidLBMKernel::calculate(int step)
 {
 
 }

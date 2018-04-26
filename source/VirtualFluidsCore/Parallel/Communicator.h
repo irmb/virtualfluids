@@ -46,6 +46,7 @@ public:
    virtual void broadcast(std::vector<double>& values) = 0;
 protected:
    Communicator(){}
+   Communicator( const Communicator& ){}
    static SPtr<Communicator> instance;
 private:
 };

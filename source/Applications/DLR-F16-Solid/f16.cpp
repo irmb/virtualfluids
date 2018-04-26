@@ -119,6 +119,9 @@ void run(string configname)
       //double nuLB = (uLB*lLB)/Re; //0.005;
       //double nuLB = 0.005;
 
+      UBLOG(logINFO, unitConverter.toString());
+     
+
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       const int baseLevel = 0;
@@ -170,10 +173,15 @@ void run(string configname)
       //////////////////////////////////////////////////////////////////////////
       //restart
       SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-      //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, rSch, pathOut, comm));
-      SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, rSch, pathOut, comm));
+      SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, rSch, pathOut, comm));
+      //SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, rSch, pathOut, comm));
       restartCoProcessor->setLBMKernel(kernel);
       restartCoProcessor->setBCProcessor(bcProc);
+
+      SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
+      SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut+"/mig", comm));
+      migCoProcessor->setLBMKernel(kernel);
+      migCoProcessor->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
 
       if (myid==0)
@@ -222,7 +230,7 @@ void run(string configname)
             UBLOG(logINFO, "Preprozess - start");
          }
 
-
+         
          //SPtr<GbObject3D> fngMeshWhole(new GbCylinder3D(15.0, 0.0, 0.0, 15.0, 100.0, 0.0, 25.0));
          //GbSystem3D::writeGeoObject(fngMeshWhole.get(), pathOut + "/geo/fngMeshWholeCylinder", WbWriterVtkXmlBinary::getInstance());
 
@@ -503,7 +511,7 @@ void run(string configname)
 
          if (writeBlocks)
          {
-            restartCoProcessor->writeBlocks(0);
+            migCoProcessor->writeBlocks(0);
          }
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
@@ -545,8 +553,26 @@ void run(string configname)
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
-         //initialization of distributions         //if (reinit)         //{         //   InitDistributionsBlockVisitor initVisitor1;         //   grid->accept(initVisitor1);         //   SPtr<Grid3D> oldGrid(new Grid3D(comm));
-         //   SPtr<UbScheduler> iSch(new UbScheduler());         //   SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(oldGrid, iSch, pathReInit, comm));         //   rcp->setLBMKernel(kernel);         //   rcp->setBCProcessor(bcProc);         //   rcp->restart(stepReInit);         //   InitDistributionsWithInterpolationGridVisitor initVisitor2(oldGrid, iProcessor, nuLB);         //   grid->accept(initVisitor2);         //}         //else         //{         //   InitDistributionsBlockVisitor initVisitor;         //   initVisitor.setVx1(fct);         //   grid->accept(initVisitor);         //}
+         //initialization of distributions
+         if (reinit)
+         {
+            InitDistributionsBlockVisitor initVisitor1;
+            grid->accept(initVisitor1);
+            SPtr<Grid3D> oldGrid(new Grid3D(comm));
+            SPtr<UbScheduler> iSch(new UbScheduler());
+            SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(oldGrid, iSch, pathReInit, comm));
+            rcp->setLBMKernel(kernel);
+            rcp->setBCProcessor(bcProc);
+            rcp->restart(stepReInit);
+            InitDistributionsWithInterpolationGridVisitor initVisitor2(oldGrid, iProcessor, nuLB);
+            grid->accept(initVisitor2);
+         }
+         else
+         {
+            InitDistributionsBlockVisitor initVisitor;
+            initVisitor.setVx1(fct);
+            grid->accept(initVisitor);
+         }
 
          //domain decomposition for threads
          //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
@@ -603,6 +629,12 @@ void run(string configname)
       }
       else
       {
+
+         //GbCuboid3DPtr mic5(new GbCuboid3D(0.3+deltaXfine, 0.015, 0.000517+0.00037+7.0*deltaXfine, 0.3+2.0*deltaXfine, 0.015+deltaXfine, 0.000517+0.00037+8.0*deltaXfine));
+         //if (myid==0) GbSystem3D::writeGeoObject(mic5.get(), pathOut+"/geo/mic5", WbWriterVtkXmlBinary::getInstance());
+
+         //return;
+
          restartCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
@@ -658,17 +690,39 @@ void run(string configname)
       //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
       //tav->setWithGhostLayer(true);
 
-      SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, 0.3-deltaXcoarse, 0.035, -0.6-deltaXcoarse, 0.3, 0.065, -0.6));
+      SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, 0.3-deltaXfine, 0.015, 0.0005, 0.3, 0.015+deltaXfine, 0.0005+deltaXfine));
       if (myid==0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(), pathOut+"/geo/mic1", WbWriterVtkXmlBinary::getInstance());
-      SPtr<UbScheduler> stepMV(new UbScheduler(1));
-      //TimeseriesCoProcessor tsp1(grid, stepMV, mic1, pathOut+"/mic/mic1", comm);
+      SPtr<UbScheduler> stepMV(new UbScheduler(1, 0, 1000000));
+      SPtr<TimeseriesCoProcessor> tsp1(new TimeseriesCoProcessor(grid, stepMV, mic1, pathOut+"/mic/mic1", comm));
+
+      SPtr<IntegrateValuesHelper> mic2(new IntegrateValuesHelper(grid, comm, 0.3+deltaXfine, 0.015, 0.001685, 0.3, 0.015+deltaXfine, 0.001685+deltaXfine));
+      if (myid==0) GbSystem3D::writeGeoObject(mic2->getBoundingBox().get(), pathOut+"/geo/mic2", WbWriterVtkXmlBinary::getInstance());
+      SPtr<TimeseriesCoProcessor> tsp2(new TimeseriesCoProcessor(grid, stepMV, mic2, pathOut+"/mic/mic2", comm));
+
+      SPtr<IntegrateValuesHelper> mic3(new IntegrateValuesHelper(grid, comm, 0.3-deltaXcoarse, 0.015, -0.46+4.25*deltaXcoarse, 0.3, 0.015+deltaXcoarse, -0.46+5.25*deltaXcoarse));
+      if (myid==0) GbSystem3D::writeGeoObject(mic3->getBoundingBox().get(), pathOut+"/geo/mic3", WbWriterVtkXmlBinary::getInstance());
+      SPtr<TimeseriesCoProcessor> tsp3(new TimeseriesCoProcessor(grid, stepMV, mic3, pathOut+"/mic/mic3", comm));
+
+      SPtr<IntegrateValuesHelper> mic4(new IntegrateValuesHelper(grid, comm, 0.3-deltaXcoarse, 0.015, 0.46-5.25*deltaXcoarse, 0.3, 0.015+deltaXcoarse, 0.46-4.25*deltaXcoarse));
+      if (myid==0) GbSystem3D::writeGeoObject(mic4->getBoundingBox().get(), pathOut+"/geo/mic4", WbWriterVtkXmlBinary::getInstance());
+      SPtr<TimeseriesCoProcessor> tsp4(new TimeseriesCoProcessor(grid, stepMV, mic4, pathOut+"/mic/mic4", comm));
+
+      SPtr<IntegrateValuesHelper> mic5(new IntegrateValuesHelper(grid, comm,0.3+deltaXfine, 0.015, 0.000517+0.00037+7.0*deltaXfine, 0.3+2.0*deltaXfine, 0.015+deltaXfine, 0.000517+0.00037+8.0*deltaXfine));
+      if (myid==0) GbSystem3D::writeGeoObject(mic5->getBoundingBox().get(), pathOut+"/geo/mic5", WbWriterVtkXmlBinary::getInstance());
+      SPtr<TimeseriesCoProcessor> tsp5(new TimeseriesCoProcessor(grid, stepMV, mic5, pathOut+"/mic/mic5", comm));
 
       omp_set_num_threads(numOfThreads);
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepSch, endTime));
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(100));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
+      calculator->addCoProcessor(tsp1);
+      calculator->addCoProcessor(tsp2);
+      calculator->addCoProcessor(tsp3);
+      calculator->addCoProcessor(tsp4);
+      calculator->addCoProcessor(tsp5);
       //calculator->addCoProcessor(tav);
 
 
@@ -702,7 +756,7 @@ void run(string configname)
 //   try
 //   {
 //
-//      SPtr<Communicator> comm = MPICommunicator::getInstance();
+//      SPtr<Communicator> comm = MPICommunicator::getInstance();.
 //      int myid = comm->getProcessID();
 //
 //      if (myid==0)
@@ -790,6 +844,7 @@ void run(string configname)
 
 int main(int argc, char* argv[])
 {
+   //Sleep(30000);
 
    if (argv!=NULL)
    {

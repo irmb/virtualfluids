@@ -210,12 +210,12 @@ public:
             ny *= length;
             nz *= length;
          }
-         else 
-         {
-            std::cerr<<"GbTriFaceMesh3D::TriFace - calculateNormal: nx=ny=nz=0 -> kann nich sein "
-                     <<"(dreieck hat evtl knoten doppelt oder ist ne Linie)"
-                     <<"->removeRedunantNodes"<<std::endl;
-         }
+         //else 
+         //{
+         //   std::cerr<<"GbTriFaceMesh3D::TriFace - calculateNormal: nx=ny=nz=0 -> kann nich sein "
+         //            <<"(dreieck hat evtl knoten doppelt oder ist ne Linie)"
+         //            <<"->removeRedunantNodes"<<std::endl;
+         //}
       }
    #ifdef CAB_RCF
       template<class Archive>

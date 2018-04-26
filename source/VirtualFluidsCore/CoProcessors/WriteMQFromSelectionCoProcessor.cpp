@@ -163,9 +163,9 @@ void WriteMQFromSelectionCoProcessor::addDataMQ(SPtr<Block3D> block)
       calcMacros = &D3Q27System::calcIncompMacroscopicValues;
    }
 
-   int minX1 = 0;
-   int minX2 = 0;
-   int minX3 = 0;
+   int minX1 = 1;
+   int minX2 = 1;
+   int minX3 = 1;
 
    int maxX1 = (int)(distributions->getNX1());
    int maxX2 = (int)(distributions->getNX2());

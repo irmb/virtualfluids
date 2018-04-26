@@ -14,22 +14,21 @@ void run(string configname)
       config.load(configname);
 
       string          pathname = config.getString("pathname");
-      int             numOfThreads = config.getInt("numOfThreads");
+      int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      double          uLB = config.getDouble("uLB");
-      double          endTime = config.getDouble("endTime");
-      double          outTime = config.getDouble("outTime");
-      double          availMem = config.getDouble("availMem");
-      int             refineLevel = config.getInt("refineLevel");
-      double          Re = config.getDouble("Re");
-      double          dx = config.getDouble("dx");
+      double          uLB = config.getValue<double>("uLB");
+      double          endTime = config.getValue<double>("endTime");
+      double          outTime = config.getValue<double>("outTime");
+      double          availMem = config.getValue<double>("availMem");
+      int             refineLevel = config.getValue<int>("refineLevel");
+      double          Re = config.getValue<double>("Re");
+      double          dx = config.getValue<double>("dx");
       vector<double>  length = config.getVector<double>("length");
-      bool            logToFile = config.getBool("logToFile");
+      bool            logToFile = config.getValue<bool>("logToFile");
 
       double          cpStep      = config.getValue<double>("cpStep");
       double          cpStepStart = config.getValue<double>("cpStepStart");
       bool            restart     = config.getValue<bool>("restart");
-      int             chunk       = config.getValue<int>("chunk");
       double          restartStep = config.getValue<double>("restartStep");
 
       //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG3");
@@ -86,7 +85,6 @@ void run(string configname)
 
       SPtr<UbScheduler> rSch2(new UbScheduler(cpStep, cpStepStart));
       MPIIORestartCoProcessor rcp(grid, rSch2, pathname, comm);
-      rcp.setChunk(chunk);
 
       if (!restart)
       {
@@ -113,7 +111,7 @@ void run(string configname)
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          //int bbOption = 1; //0=simple Bounce Back, 1=quadr. BB
          //D3Q27BoundaryConditionAdapterPtr bcObst(new D3Q27NoSlipBCAdapter(bbOption));
@@ -128,18 +126,9 @@ void run(string configname)
          ppblocks.reset();
 
          //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         //SPtr<ConnectorFactory> factory(new Block3DConnectorFactory());
-         //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-         UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:start");
-         grid->accept(setConnsVisitor);
-         UBLOG(logINFO, "D3Q27SetConnectorsBlockVisitor:end");
-
-         //domain decomposition for threads
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
-
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         //SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+         //grid->accept(setConnsVisitor);
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
          int ghostLayer = 3;
@@ -167,9 +156,10 @@ void run(string configname)
          }
 
          SPtr<LBMKernel> kernel;
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
          SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
+         kernel->setForcingX1(0.1);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
@@ -186,7 +176,8 @@ void run(string configname)
          //grid->accept(bcVisitor);
 
          //initialization of distributions
-         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB, uLB);
+         InitDistributionsBlockVisitor initVisitor;
+         initVisitor.setVx1(0.5);
          grid->accept(initVisitor);
 
          if (myid == 0) UBLOG(logINFO, "Preprocess - end");
@@ -216,15 +207,17 @@ void run(string configname)
       }
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm);
+      SPtr<CoProcessor> mqCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      SPtr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
+      omp_set_num_threads(numOfThreads);
+      SPtr<Calculator> calculator(new BasicCalculator(grid, visSch, (int)endTime));
+      calculator->addCoProcessor(nupsCoProcessor);
+      calculator->addCoProcessor(mqCoProcessor);
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
+      calculator->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)

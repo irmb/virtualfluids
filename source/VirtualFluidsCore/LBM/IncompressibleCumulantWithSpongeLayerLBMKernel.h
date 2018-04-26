@@ -23,7 +23,7 @@ public:
    IncompressibleCumulantWithSpongeLayerLBMKernel();
    virtual ~IncompressibleCumulantWithSpongeLayerLBMKernel(void);
    SPtr<LBMKernel> clone();
-   void calculate();
+   void calculate(int step);
    void initRelaxFactor(int vdir, double vL1, double vdx, double vSP);
    //! \param vdir where the sponge layer is placed
    //! \param vL1 length of simulation domain

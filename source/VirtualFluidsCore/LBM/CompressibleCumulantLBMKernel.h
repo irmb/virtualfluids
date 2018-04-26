@@ -19,7 +19,7 @@ public:
 public:
    CompressibleCumulantLBMKernel();
    virtual ~CompressibleCumulantLBMKernel(void);
-   virtual void calculate();
+   virtual void calculate(int step);
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime();
    void setBulkOmegaToOmega(bool value);

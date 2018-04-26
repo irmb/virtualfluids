@@ -21,7 +21,7 @@ public:
 
     virtual SPtr<LBMKernel> clone() = 0;
 
-    virtual void calculate() = 0;
+    virtual void calculate(int step) = 0;
     virtual double getCalculationTime() = 0;
 
     void setBCProcessor(SPtr<BCProcessor> bcp);

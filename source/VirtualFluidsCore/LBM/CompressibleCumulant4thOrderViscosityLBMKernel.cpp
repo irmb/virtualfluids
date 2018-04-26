@@ -5,6 +5,7 @@
 #include <math.h>
 #include "DataSet3D.h"
 #include "LBMKernel.h"
+#include "Block3D.h"
 
 #define PROOF_CORRECTNESS
 
@@ -39,6 +40,7 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
    kernel->setForcingX3(muForcingX3);
    kernel->setIndex(ix1, ix2, ix3);
    kernel->setDeltaT(deltaT);
+   kernel->setBlock(block.lock());
 
    if (bulkViscosity != 0)
    {
@@ -53,7 +55,7 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
    return kernel;
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleCumulant4thOrderViscosityLBMKernel::calculate()
+void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
 {
    using namespace D3Q27System;
    using namespace std;
@@ -999,9 +1001,8 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate()
                {
                   UB_THROW(UbException(UB_EXARGS, "rho="+UbSystem::toString(drho)+", rho_post="+UbSystem::toString(drho_post)
                      +" dif="+UbSystem::toString(dif)
-                     +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)));
-                  //UBLOG(logERROR,"LBMKernelETD3Q27CCLB::collideAll(): rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3));
-                  //exit(EXIT_FAILURE);
+                     +" rho is not correct for node "+UbSystem::toString(x1)+","+UbSystem::toString(x2)+","+UbSystem::toString(x3)
+                     +" in " + block.lock()->toString()+" step = "+UbSystem::toString(step)));
                }
 #endif
                //////////////////////////////////////////////////////////////////////////

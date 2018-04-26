@@ -21,7 +21,7 @@ public:
 public:
    IncompressibleCumulantLBMKernel();
    virtual ~IncompressibleCumulantLBMKernel(void);
-   virtual void calculate();
+   virtual void calculate(int step);
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime();
    void setRelaxationParameter(Parameter p);

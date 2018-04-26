@@ -48,6 +48,7 @@ public:
    virtual SPtr<GbObject3D>  getGbObject3D() const { return geoObject3D; }
    virtual bool setDifferencesToGbObject3D(const SPtr<Block3D> block/*, const double& x1, const double& x2, const double& x3, const double& blockLengthX1, const double& blockLengthX2, const double& blockLengthX3, const double& timestep=0*/)
    {
+      //UBLOG(logINFO, "Interactor3D::setDifferencesToGbObject3D()");
       return false;  
    }
 
