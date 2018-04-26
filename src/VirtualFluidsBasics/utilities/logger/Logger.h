@@ -20,9 +20,9 @@ namespace logging
 
         enum Level
         {
-            LOW = 3,
-            INTERMEDIATE = 2,
-            HIGH = 1,
+            INFO_LOW = 3,
+            INFO_INTERMEDIATE = 2,
+            INFO_HIGH = 1,
             WARNING = 0,
             ERROR = -1
         };

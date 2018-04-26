@@ -11,8 +11,8 @@ namespace logging {
 
     std::shared_ptr<Logger> out = nullptr;
 
-    logging::Logger::Level logging::Logger::globalLogLevel = logging::Logger::LOW;
-    logging::Logger::Level logging::Logger::localLogLevel = logging::Logger::LOW;
+    logging::Logger::Level logging::Logger::globalLogLevel = logging::Logger::INFO_LOW;
+    logging::Logger::Level logging::Logger::localLogLevel = logging::Logger::INFO_LOW;
     bool logging::Logger::printRankNumber = false;
     bool logging::Logger::timeStampEnabled = false;
    

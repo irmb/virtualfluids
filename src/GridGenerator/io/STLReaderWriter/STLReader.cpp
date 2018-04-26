@@ -22,17 +22,17 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name)
         line[strcspn(line.c_str(), "\r\n")] = 0;
         if (strcmp(line.c_str(), "solid ascii") == 0) {
             file.close();
-            *logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
             return readASCIISTL(name);
         }
         else {
             file.close();
-            *logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading binary STL file: " + name + "\n";
             return readBinarySTL(name);
         }
     }
 
-     *logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + " ... exit program! \n";
+     *logging::out << logging::Logger::INFO_INTERMEDIATE << "can't open STL-file" + name + " ... exit program! \n";
      exit(1);
 }
 
@@ -42,7 +42,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
     const int lines = countLinesInFile(name);
     const int nTriangles = (lines) / 7; // seven lines per triangle
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " << nTriangles << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles: " << nTriangles << "\n";
     std::vector<Triangle> triangles;
 
     std::string line;
@@ -78,7 +78,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const std::string& name)
     char nTri[4];
     fread(nTri, sizeof(char), 4, file);
     unsigned long nTriLong = *((unsigned long*)nTri);
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles: " << nTriLong << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles: " << nTriLong << "\n";
     std::vector<Triangle> triangles;
 
     char facet[50];
@@ -107,18 +107,18 @@ std::vector<Triangle> STLReader::readSTL(const BoundingBox &box, const std::stri
 		line[strcspn(line.c_str(), "\r\n")] = 0;
 		if (strcmp(line.c_str(), "solid ascii") == 0) {
 			file.close();
-			*logging::out << logging::Logger::INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
+			*logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading ascii STL file: " + name + "\n";
 			return readASCIISTL(box, name);
 		}
 		else {
 			file.close();
-			*logging::out << logging::Logger::INTERMEDIATE << "start reading binary STL file: " + name + "\n";
+			*logging::out << logging::Logger::INFO_INTERMEDIATE << "start reading binary STL file: " + name + "\n";
 			std::vector<Triangle> triangles = readBinarySTL(box, name);
 			return triangles;
 		}
 	}
 	else {
-		*logging::out << logging::Logger::INTERMEDIATE << "can't open STL-file" + name + "\n";
+		*logging::out << logging::Logger::INFO_INTERMEDIATE << "can't open STL-file" + name + "\n";
 		exit(1);
 	}
 }
@@ -170,7 +170,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
     fread(nTri, sizeof(char), 4, file);
     nTriLong = *((unsigned long*)nTri);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles complete geometry: " << nTriLong << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles complete geometry: " << nTriLong << "\n";
     std::vector<Triangle> triangles;
 
     char facet[50];
@@ -188,8 +188,8 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
             triangles.push_back(t);
     }
     long size = triangles.size();
-    *logging::out << logging::Logger::INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
-    *logging::out << logging::Logger::INTERMEDIATE << "Complete reading STL file. \n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Complete reading STL file. \n";
 
 	fclose(file);
 

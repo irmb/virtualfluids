@@ -10,7 +10,7 @@ TEST(LoggerTest, logStringWithoutSettingLevels_WillPutTheLogMesssageIntoTheStrea
     std::ostringstream stream;
     logging::Logger::setStream(&stream);
 
-    *logging::out << logging::Logger::LOW << "Hello World\n";
+    *logging::out << logging::Logger::INFO_LOW << "Hello World\n";
 
     EXPECT_THAT(stream.str(), "[LOW] Hello World\n");
 }
@@ -20,8 +20,8 @@ TEST(LoggerTest, logStringWithHighDebugLevel_logOnlyHighLevelMessages)
     std::ostringstream stream;
     logging::Logger::setStream(&stream);
 
-    logging::Logger::setDebugLevel(logging::Logger::HIGH);
-    *logging::out << logging::Logger::LOW << "Low Debug Message\n" << logging::Logger::HIGH << "HIGH Debug Message\n";
+    logging::Logger::setDebugLevel(logging::Logger::INFO_HIGH);
+    *logging::out << logging::Logger::INFO_LOW << "Low Debug Message\n" << logging::Logger::INFO_HIGH << "HIGH Debug Message\n";
 
     EXPECT_THAT(stream.str(), "[HIGH] HIGH Debug Message\n");
 }
@@ -33,9 +33,9 @@ TEST(LoggerTest, addTwoStreams_shouldWriteToBoth)
     std::ostringstream stream1, stream2;
     logging::out->addStream(&stream1);
     logging::out->addStream(&stream2);
-    logging::Logger::setDebugLevel(logging::Logger::LOW);
+    logging::Logger::setDebugLevel(logging::Logger::INFO_LOW);
 
-    *logging::out << logging::Logger::LOW <<"Hello World\n";
+    *logging::out << logging::Logger::INFO_LOW <<"Hello World\n";
 
     EXPECT_THAT(stream1.str(), "[LOW] Hello World\n");
     EXPECT_THAT(stream2.str(), "[LOW] Hello World\n");
@@ -46,7 +46,7 @@ TEST(LoggerTest, splittetOutputShouldHaveDebugInformationOnce)
     std::ostringstream stream;
     logging::Logger::setStream(&stream);
 
-    *logging::out << logging::Logger::LOW << "Hello" << " World\n";
+    *logging::out << logging::Logger::INFO_LOW << "Hello" << " World\n";
 
     EXPECT_THAT(stream.str(), "[LOW] Hello World\n");
 }
@@ -57,7 +57,7 @@ TEST(LoggerTest, enableTimeStampInOutput)
     logging::Logger::setStream(&stream);
     logging::Logger::timeStamp(logging::Logger::TimeStamp::ENABLE);
 
-    *logging::out << logging::Logger::LOW << "Hello" << " World\n";
+    *logging::out << logging::Logger::INFO_LOW << "Hello" << " World\n";
     
     EXPECT_THAT(stream.str(), testing::StrNe("[LOW] Hello World\n"));
 }

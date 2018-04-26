@@ -559,7 +559,7 @@ HOST void GridImp::mesh(TriangularMesh &triangularMesh)
     const clock_t end = clock();
     const real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "time grid generation: " << time << "s\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time grid generation: " << time << "s\n";
 }
 
 HOSTDEVICE void GridImp::mesh(Triangle &triangle)

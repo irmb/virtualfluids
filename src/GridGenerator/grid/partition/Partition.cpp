@@ -135,7 +135,7 @@ void Partition::partitionGridMesh(SPtr<Grid> grid)
         //grid->setFieldEntry(part_i, partMeshNodes[part_i]);
     }
 
-    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
+    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk");
 
     delete[] partMeshNodes;
     delete[] partMeshElements;
@@ -254,7 +254,7 @@ void Partition::partitionGrid(SPtr<Grid> grid) {
         //grid->setFieldEntry(part_i, part[part_i]);
     }
 
-    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
+    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk");
 }
 
 std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector<BoundingBox> > boxes, int processes, std::vector< std::shared_ptr<Transformator> > transformators)
@@ -336,12 +336,12 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
         NULL, options, &objval, part);
 
 	if (ret == METIS_OK)
-		*logging::out << logging::Logger::INTERMEDIATE << "Metis Status: OK\n";
+		*logging::out << logging::Logger::INFO_INTERMEDIATE << "Metis Status: OK\n";
 
     
 
     for (int part_i = 0; part_i < nVertices; part_i++)
-		*logging::out << logging::Logger::INTERMEDIATE << "Block: " << part_i << " - Partition: " << part[part_i] << "\n";
+		*logging::out << logging::Logger::INFO_INTERMEDIATE << "Block: " << part_i << " - Partition: " << part[part_i] << "\n";
     
 
     std::vector<std::vector<int> > tasks;

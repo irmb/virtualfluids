@@ -52,7 +52,7 @@ public:
     {
         auto mesh = triangularMesh->getGbTriFaceMesh3D();
 
-        for (int i = 0; i < grid->getSize(); i++)
+        for (uint i = 0; i < grid->getSize(); i++)
         {
             real x, y, z;
             grid->transIndexToCoords(i, x, y, z);
@@ -221,7 +221,7 @@ public:
     void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char innerType, char outerType) override
     {
 #pragma omp parallel for
-        for (uint i = 0; i < triangularMesh->size; i++)
+        for (long i = 0; i < triangularMesh->size; i++)
             this->meshReverse(triangularMesh->triangles[i], grid, innerType);
 
         this->findInsideNodes(grid, innerType);

@@ -54,7 +54,7 @@ uint TriangularMesh::getNumberOfTriangles() const
 
 void TriangularMesh::findNeighbors()
 {
-	*logging::out << logging::Logger::INTERMEDIATE << "start finding neighbors ...\n";
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "start finding neighbors ...\n";
 
     Timer t = Timer::makeStart();
 
@@ -63,7 +63,7 @@ void TriangularMesh::findNeighbors()
 
     t.end();
 
-    *logging::out << logging::Logger::INTERMEDIATE << "time finding neighbors: " << t.getTimeInSeconds() << "s\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time finding neighbors: " << t.getTimeInSeconds() << "s\n";
 }
 
 void TriangularMesh::setTriangles(std::vector<Triangle> triangles)

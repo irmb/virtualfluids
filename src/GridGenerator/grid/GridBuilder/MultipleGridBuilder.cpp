@@ -141,7 +141,11 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(real startX, re
     const real endYStaggered = std::ceil(endY) + offset[1];
     const real endZStaggered = std::ceil(endZ) + offset[2];
 
-    return std::array<real, 6>{startXStaggered, startYStaggered, startZStaggered, endXStaggered, endYStaggered, endZStaggered};
+    auto temporaryGrid = this->makeGrid(nullptr, startXStaggered, startYStaggered, startZStaggered, endXStaggered, endYStaggered, endZStaggered, delta);
+    auto startStaggered = temporaryGrid->getMinimumOnNode(Vertex(startX, startY, startZ));
+    auto endStaggered = temporaryGrid->getMaximumOnNode(Vertex(endX, endY, endZ));
+
+    return std::array<real, 6>{startStaggered.x, startStaggered.y, startStaggered.z, endStaggered.x, endStaggered.y, endStaggered.z};
 }
 
 std::array<real, 3> MultipleGridBuilder::getOffset(real delta) const

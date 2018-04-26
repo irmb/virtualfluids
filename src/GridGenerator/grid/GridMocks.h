@@ -4,6 +4,7 @@
 #include "GridGenerator/global.h"
 #include "GridStrategy/GridStrategyMocks.h"
 #include "distributions/Distribution.h"
+#include <geometries/Vertex/Vertex.h>
 
 #include "Grid.h"
 #include "geometries/Object.h"
@@ -62,19 +63,20 @@ public:
     virtual int* getNeighborsZ() const override { return nullptr; }
     virtual void inital() override {}
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
-    virtual void findSparseIndices(SPtr<Grid> fineGrid) override {};
+    virtual void findSparseIndices(SPtr<Grid> fineGrid) override {}
+    virtual Vertex getMinimumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }
+    virtual Vertex getMaximumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }
 };
 
 class GridStub : public GridDummy
 {
 protected:
-    GridStub(Object* gridShape, real delta) : startX(gridShape->getX1Minimum()), startY(gridShape->getX2Minimum()), startZ(gridShape->getX3Minimum()),
-                                        endX(gridShape->getX1Maximum()), endY(gridShape->getX2Maximum()), endZ(gridShape->getX3Maximum()), delta(delta) {}
+    GridStub(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
 
 public:
-    static SPtr<GridStub> makeShared(Object* gridShape, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridStub> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
-        return SPtr<GridStub>(new GridStub(gridShape, delta));
+        return SPtr<GridStub>(new GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta));
     }
 
     virtual real getDelta() const override { return delta; }
@@ -98,12 +100,12 @@ private:
 class GridSpy : public GridStub
 {
 protected:
-    GridSpy(Object* gridShape, real delta) : GridStub(gridShape, delta) {}
+    GridSpy(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta) {}
 
 public:
-    static SPtr<GridSpy> makeShared(Object* gridShape, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridSpy> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
-        return SPtr<GridSpy>(new GridSpy(gridShape, delta));
+        return SPtr<GridSpy>(new GridSpy(gridShape, startX, startY, startZ, endX, endY, endZ, delta));
     }
 
     bool hasGridInterface() const

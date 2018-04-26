@@ -53,14 +53,14 @@ void GridGpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 
 void GridGpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 {
-    *logging::out << logging::Logger::INTERMEDIATE << "start meshing on GPU...\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "start meshing on GPU...\n";
     allocAndCopyTrianglesToGPU(geom);
 
     /*---------------------------------------------------------------------------------*/
     float time = runKernelToMesh(LaunchParameter::make_1D1D_launchParameter(geom.size, 256), *grid.get(), geom);
     /*---------------------------------------------------------------------------------*/
-    *logging::out << logging::Logger::INTERMEDIATE << "Time GPU build grid: "  << time / 1000 << "sec\n";
-    *logging::out << logging::Logger::INTERMEDIATE << "-------------------------------------------\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Time GPU build grid: "  << time / 1000 << "sec\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "-------------------------------------------\n";
 
     freeTrianglesFromGPU(geom);
 
@@ -139,7 +139,7 @@ void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
     allocAndCopyMatrixIndicesToGPU(grid, grid->size);
 
     float time2 = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
-    *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " << (time1 + time2) / 1000 << "sec\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time delete solid nodes: " << (time1 + time2) / 1000 << "sec\n";
 }
 
 
@@ -182,7 +182,7 @@ void GridGpuStrategy::allocField(SPtr<GridImp> grid)
 void GridGpuStrategy::allocateFieldMemory(Field* field)
 {
     long size = field->size * sizeof(char) / 1000 / 1000;
-    *logging::out << logging::Logger::INTERMEDIATE << "alloc on device for grid field: " << size << " MB\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "alloc on device for grid field: " << size << " MB\n";
 
     char *field_d;
     CudaSafeCall(cudaMalloc(&field_d, field->size * sizeof(char)));
@@ -222,7 +222,7 @@ void GridGpuStrategy::allocDistribution(SPtr<GridImp> grid)
     unsigned long long distributionSize = grid->size * (grid->distribution.dir_end + 1);
     unsigned long long size_in_bytes = distributionSize * sizeof(real);
     real sizeInMB = size_in_bytes / (1024.f*1024.f);
-    *logging::out << logging::Logger::INTERMEDIATE << "Allocating " << sizeInMB << " [MB] device memory for distributions.\n\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Allocating " << sizeInMB << " [MB] device memory for distributions.\n\n";
 
     checkCudaErrors(cudaMalloc(&grid->distribution.f, size_in_bytes));
     CudaCheckError();
@@ -253,12 +253,12 @@ void GridGpuStrategy::allocMatrixIndicesOnGPU(SPtr<GridImp> grid)
 
 void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
 {
-    *logging::out << logging::Logger::INTERMEDIATE << "start copying triangles ...\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "start copying triangles ...\n";
     clock_t begin = clock();
     int size_in_bytes_triangles = sizeof(Triangle)*geom.size;
     real sizeInMB = size_in_bytes_triangles / (1024.f*1024.f);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Allocating " << sizeInMB << " [MB] device memory for triangles.\n\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Allocating " << sizeInMB << " [MB] device memory for triangles.\n\n";
 
     Triangle *triangles_d;
     CudaSafeCall(cudaMalloc(&triangles_d, size_in_bytes_triangles));
@@ -267,8 +267,8 @@ void GridGpuStrategy::allocAndCopyTrianglesToGPU(TriangularMesh &geom)
     CudaCheckError();
     clock_t end = clock();
     real time = real(end - begin) / CLOCKS_PER_SEC;
-    *logging::out << logging::Logger::INTERMEDIATE << "time copying triangles: " << time << "s\n";
-    *logging::out << logging::Logger::INTERMEDIATE << "...copying triangles finish!\n\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time copying triangles: " << time << "s\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "...copying triangles finish!\n\n";
 }
 
 void GridGpuStrategy::freeTrianglesFromGPU(const TriangularMesh &geom)

@@ -54,7 +54,7 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
     for (uint index = 0; index < grid->size; index++)
         grid->findInnerNode(index);
 
-    *logging::out << logging::Logger::INTERMEDIATE
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
         << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
 }
@@ -88,7 +88,7 @@ void GridCpuStrategy::pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMes
     for (int i = 0; i < grid->size; i++)
         grid->setNegativeDirBorder_toFluid(i);
 
-    *logging::out << logging::Logger::INTERMEDIATE
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
         << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
 }
@@ -293,7 +293,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     const auto coarseLevel = grid->getLevel(1.0);
     const auto fineLevel = fineGrid->getLevel(1.0);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel;
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel;
     const uint oldGridSize = grid->getSparseSize();
 
 
@@ -317,12 +317,12 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
         grid->findOverlapStopper(index, *fineGrid);
 
     const uint newGridSize = grid->getSparseSize();
-    *logging::out << logging::Logger::INTERMEDIATE << "  ... done. \n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "  ... done. \n";
 }
 
 void GridCpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
 {
-    *logging::out << logging::Logger::INTERMEDIATE << "Find sparse indices...";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Find sparse indices...";
 
     coarseGrid->updateSparseIndices();
     findForNeighborsNewIndices(coarseGrid);
@@ -333,7 +333,7 @@ void GridCpuStrategy::findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> 
     }
 
     const uint newGridSize = coarseGrid->getSparseSize();
-    *logging::out << logging::Logger::INTERMEDIATE << "... done. new size: " << newGridSize << ", delete nodes:" << coarseGrid->getSize() - newGridSize << "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "... done. new size: " << newGridSize << ", delete nodes:" << coarseGrid->getSize() - newGridSize << "\n";
 }
 
 
@@ -367,7 +367,7 @@ void GridCpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
 
     clock_t end = clock();
     real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
-    *logging::out << logging::Logger::INTERMEDIATE << "time delete solid nodes: " << time / 1000 << "sec\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time delete solid nodes: " << time / 1000 << "sec\n";
 }
 
 

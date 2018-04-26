@@ -33,7 +33,6 @@
 #include "io/STLReaderWriter/STLReader.h"
 #include "io/STLReaderWriter/STLWriter.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
-#include "utilities/triangleOffsetSurfaceGeneration/TriangleOffsetSurfaceGeneration.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -243,7 +242,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
     logging::Logger::setStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::LOW);
+    logging::Logger::setDebugLevel(logging::Logger::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
@@ -253,7 +252,7 @@ void multipleLevel(const std::string& configPath)
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 4, 3, 6, 0.125);
+    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 14, 10, 20, 0.25);
 
     //Conglomerate* conglomerate = new Conglomerate();
     //conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
@@ -261,15 +260,15 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addGrid(conglomerate, 2);
 
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI2.stl", DiscretizationMethod::RAYCASTING);
 
 
     //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
 
-    TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
-    TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
-    trans.transformWorldToGrid(*sphere);
-    STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
+    //TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
+    //TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
+    //trans.transformWorldToGrid(*sphere);
+    //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
     gridBuilder->addGrid(triangularMesh);

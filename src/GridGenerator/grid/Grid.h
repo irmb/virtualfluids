@@ -3,6 +3,7 @@
 
 #include "GridGenerator/global.h"
 #include "Cell.h"
+#include "geometries/Vertex/Vertex.h"
 
 class TriangularMesh;
 struct Vertex;
@@ -27,6 +28,9 @@ public:
     HOSTDEVICE virtual real getEndX() const = 0;
     HOSTDEVICE virtual real getEndY() const = 0;
     HOSTDEVICE virtual real getEndZ() const = 0;
+
+    HOSTDEVICE virtual Vertex getMinimumOnNode(Vertex exact) const = 0;
+    HOSTDEVICE virtual Vertex getMaximumOnNode(Vertex exact) const = 0;
 
     HOSTDEVICE virtual uint getNumberOfNodesX() const = 0;
     HOSTDEVICE virtual uint getNumberOfNodesY() const = 0;

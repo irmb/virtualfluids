@@ -43,9 +43,9 @@ public:
 
 
         if(this->grid == "stub")
-            return GridStub::makeShared(gridShape, delta, gridStrategy, distribution);
+            return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
         else if(this->grid == "spy")
-             return GridSpy::makeShared(gridShape, delta, gridStrategy, distribution);
+             return GridSpy::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
 
         SPtr<GridImp> grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
         grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);
