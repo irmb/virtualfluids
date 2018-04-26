@@ -5,7 +5,6 @@
 #include <sstream>
 #include <memory>
 
-#include <GridGenerator/utilities/Transformator/Transformator.h>
 #include <utilities/logger/Logger.h>
 #include <GridGenerator/grid/Grid.h>
 #include <GridGenerator/geometries/Vertex/Vertex.h>
@@ -14,19 +13,17 @@
 #include "grid/NodeValues.h"
 #include "grid/Cell.h"
 
-FILE* GridVTKWriter::file = 0;
-bool GridVTKWriter::binaer = true;
+FILE* GridVTKWriter::file = nullptr;
+WRITING_FORMAT GridVTKWriter::format = WRITING_FORMAT::ASCII;
 
-GridVTKWriter::GridVTKWriter(){}
-GridVTKWriter::~GridVTKWriter(){}
 
-void GridVTKWriter::writeSparseGridToVTK(SPtr<Grid> grid, std::string name, std::shared_ptr<const Transformator> trans, bool binaer)
+void GridVTKWriter::writeSparseGridToVTK(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
 {
-    initalVtkWriter(binaer, name);
-    writeVtkFile(trans, grid);
+    initalVtkWriter(format, name);
+    writeVtkFile(grid);
 }
 
-void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, bool binaer)
+void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
 {
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleUInt8> cells;
@@ -95,38 +92,42 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string name, b
 /*#################################################################################*/
 /*---------------------------------private methods---------------------------------*/
 /*---------------------------------------------------------------------------------*/
-void GridVTKWriter::initalVtkWriter(bool binaer, std::string name)
+void GridVTKWriter::initalVtkWriter(WRITING_FORMAT format, const std::string& name)
 {
-    GridVTKWriter::binaer = binaer;
-    name += ".vtk";
+    GridVTKWriter::format = format;
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Write Grid to vtk output file : " + name + "\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write Grid to vtk output file : " + name + "\n";
 
     std::string mode = "w";
-    if (binaer)
+    if (isBinaryWritingFormat())
         mode = "wb";
     GridVTKWriter::openFile(name, mode);
 
-    *logging::out << logging::Logger::INTERMEDIATE << "  Output file opened ...\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "  Output file opened ...\n";
 }
 
-void GridVTKWriter::writeVtkFile(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid)
+bool GridVTKWriter::isBinaryWritingFormat()
+{
+    return GridVTKWriter::format == WRITING_FORMAT::BINARY;
+}
+
+void GridVTKWriter::writeVtkFile(SPtr<Grid> grid)
 {
     GridVTKWriter::writeHeader();
-    GridVTKWriter::writePoints(trans, grid);
+    GridVTKWriter::writePoints(grid);
     GridVTKWriter::writeCells(grid->getSize());
     GridVTKWriter::writeTypeHeader(grid->getSize());
     GridVTKWriter::writeTypes(grid);
     GridVTKWriter::closeFile();
 
-    *logging::out << logging::Logger::INTERMEDIATE << "Output file closed\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Output file closed\n";
 }
 
-void GridVTKWriter::openFile(std::string name, std::string mode)
+void GridVTKWriter::openFile(const std::string& name, const std::string& mode)
 {
     file = fopen(name.c_str(), mode.c_str());
     if(file==NULL)
-        *logging::out << logging::Logger::HIGH << "  cannot open file ...\n";
+        *logging::out << logging::Logger::INFO_HIGH << "  cannot open file ...\n";
 }
 
 void GridVTKWriter::closeFile()
@@ -139,14 +140,14 @@ void GridVTKWriter::writeHeader()
 {
 	fprintf(file, "# vtk DataFile Version 3.0\n");
 	fprintf(file, "by MeshGenerator\n");
-	if (binaer)
+	if (isBinaryWritingFormat())
 		fprintf(file, "BINARY\n");
 	else
 		fprintf(file, "ASCII\n");
 	fprintf(file, "DATASET UNSTRUCTURED_GRID\n");
 }
 
-void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, SPtr<Grid> grid)
+void GridVTKWriter::writePoints(SPtr<Grid> grid)
 {
     fprintf(file, "POINTS %d float\n", grid->getSize());
     real x, y, z;
@@ -156,15 +157,14 @@ void GridVTKWriter::writePoints(std::shared_ptr<const Transformator> trans, SPtr
             continue;*/
 
         grid->transIndexToCoords(i, x, y, z);
-        Vertex v(x,y,z);
-        trans->transformGridToWorld(v);
-        if (binaer) {
-            write_float((float)v.x);
-            write_float((float)v.y);
-            write_float((float)v.z);
+
+        if (isBinaryWritingFormat()) {
+            write_float(float(x));
+            write_float(float(y));
+            write_float(float(z));
         }
         else
-            fprintf(file, "%f %f %f\n", v.x, v.y, v.z);
+            fprintf(file, "%f %f %f\n", x, y, z);
     }
 }
 
@@ -173,7 +173,7 @@ void GridVTKWriter::writeCells(const unsigned int &size)
 	fprintf(file, "\nCELLS %d %d\n", size, size * 2);
 	for (unsigned int i = 0; i < size; ++i)
 	{
-		if (binaer){
+		if (isBinaryWritingFormat()){
 			write_int(1);
 			write_int(i);
 		}
@@ -184,12 +184,12 @@ void GridVTKWriter::writeCells(const unsigned int &size)
 	fprintf(file, "\nCELL_TYPES %d\n", size);
 	for (unsigned int i = 0; i < size; ++i)
 	{
-		if (binaer)
+		if (isBinaryWritingFormat())
 			write_int(1);
 		else
 			fprintf(file, "1 ");
 	}
-	if (!binaer)
+	if (!isBinaryWritingFormat())
         GridVTKWriter::end_line();
 }
 
@@ -207,7 +207,7 @@ void GridVTKWriter::writeTypes(SPtr<Grid> grid)
         /*if (grid->getSparseIndex(i) == -1)
             continue;*/
 
-        if (binaer)
+        if (isBinaryWritingFormat())
             write_int(grid->getFieldEntry(i));
         else
             fprintf(file, "%d ", grid->getFieldEntry(i));
