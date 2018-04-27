@@ -427,7 +427,7 @@ void run(string configname)
 
       //BC adapters
       SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new ThinWallNoSlipBCAlgorithm()));
 
       //SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       //slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SlipBCAlgorithm()));
@@ -831,11 +831,6 @@ void run(string configname)
          }
          //////////////////////////////////////
 
-         {
-            WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-            ppblocks.process(2);
-         }
-
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
          int ghostLayer = 3;
          unsigned long long numberOfNodesPerBlock = (unsigned long long)(blockNx[0])* (unsigned long long)(blockNx[1])* (unsigned long long)(blockNx[2]);
@@ -861,10 +856,15 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         //if (writeBlocks)
-         //{
-         //   migCoProcessor->writeBlocks(0);
-         //}
+         if (writeBlocks)
+         {
+            migCoProcessor->writeBlocks(0);
+         }
+
+         {
+            WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+            ppblocks.process(2);
+         }
 
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
