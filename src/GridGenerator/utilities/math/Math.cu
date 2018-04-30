@@ -1,8 +1,8 @@
-#include "CudaMath.cuh"
+#include "Math.h"
 
 #include <cmath>
 
-HOSTDEVICE bool CudaMath::equal(const real& val1, const real& val2, real maxRelDiff)
+HOSTDEVICE bool vf::Math::equal(const real& val1, const real& val2, real maxRelDiff)
 {
 	const real diff = std::fabs(val1 - val2);
 	const real val1_abs = std::fabs(val1);
@@ -14,21 +14,21 @@ HOSTDEVICE bool CudaMath::equal(const real& val1, const real& val2, real maxRelD
 	return false;
 }
 
-HOSTDEVICE bool CudaMath::lessEqual(const real& val1, const real& val2, real maxRelDiff)
+HOSTDEVICE bool vf::Math::lessEqual(const real& val1, const real& val2, real maxRelDiff)
 {
 	if (val1 < val2 || equal(val1, val2, maxRelDiff))
 		return true;
 	return false;
 }
 
-HOSTDEVICE bool CudaMath::greaterEqual(const real& val1, const real& val2, real maxRelDiff)
+HOSTDEVICE bool vf::Math::greaterEqual(const real& val1, const real& val2, real maxRelDiff)
 {
 	if (val1 > val2 || equal(val1, val2, maxRelDiff))
 		return true;
 	return false;
 }
 
-HOSTDEVICE real CudaMath::sqrtReal(const real& val)
+HOSTDEVICE real vf::Math::sqrtReal(const real& val)
 {
 #ifdef VF_DOUBLE_ACCURACY
     return sqrt(val);
@@ -37,7 +37,7 @@ HOSTDEVICE real CudaMath::sqrtReal(const real& val)
 #endif
 }
 
-HOSTDEVICE real CudaMath::acosReal(const real& val)
+HOSTDEVICE real vf::Math::acosReal(const real& val)
 {
 #ifdef VF_DOUBLE_ACCURACY
     return acos(val);
@@ -45,4 +45,5 @@ HOSTDEVICE real CudaMath::acosReal(const real& val)
     return acosf(val);
 #endif
 }
+
 

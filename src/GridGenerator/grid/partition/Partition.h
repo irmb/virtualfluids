@@ -8,7 +8,6 @@
 #include <string>
 #include <memory>
 
-template <class T>
 class BoundingBox;
 struct Triangle;
 struct Vertex;
@@ -21,12 +20,12 @@ public:
     static void partitionGridMesh(SPtr<Grid> grid);
     static void partitionGrid(SPtr<Grid> grid);
 
-	static std::vector<BoundingBox<int> > getProcessBoxes(const int numberOfProcesses, const int globalNx, const int globalNy, const int globalNz);
-    static std::vector<std::vector<int> > partitionBoxes(std::vector<std::vector<BoundingBox<int>> >, int processes, std::vector< std::shared_ptr<Transformator> > transformators);
+	static std::vector<BoundingBox > getProcessBoxes(const int numberOfProcesses, const int globalNx, const int globalNy, const int globalNz);
+    static std::vector<std::vector<int> > partitionBoxes(std::vector<std::vector<BoundingBox> >, int processes, std::vector< std::shared_ptr<Transformator> > transformators);
 
-    static std::vector<std::vector<Triangle> > getTrianglesPerProcess(std::vector<BoundingBox<int>> &boxes, Triangle *triangles, int nTriangles);
+    static std::vector<std::vector<Triangle> > getTrianglesPerProcess(std::vector<BoundingBox> &boxes, Triangle *triangles, int nTriangles);
 
-    static std::vector<std::vector<Triangle> >  splitTriangles(std::vector<Triangle> &triangleVec, std::vector<BoundingBox<int>> boxes);
+    static std::vector<std::vector<Triangle> >  splitTriangles(std::vector<Triangle> &triangleVec, std::vector<BoundingBox> boxes);
     
 private:
     Partition(){};
@@ -34,11 +33,11 @@ private:
 
     static int calcEdgesFromGraph(SPtr<Grid> grid);
 
-    static void splitAllBoxesInThreePieces(std::vector<BoundingBox<int>> &boxes, bool splitX, bool splitY, bool splitZ);
-    static void splitAllBoxesInTwoPieces(std::vector<BoundingBox<int>> &boxes, bool splitX, bool splitY, bool splitZ);
-    static void findMaxBoxSize(std::vector<BoundingBox<int>> &boxes, bool &splitX, bool &splitY, bool &splitZ);
+    static void splitAllBoxesInThreePieces(std::vector<BoundingBox> &boxes, bool splitX, bool splitY, bool splitZ);
+    static void splitAllBoxesInTwoPieces(std::vector<BoundingBox> &boxes, bool splitX, bool splitY, bool splitZ);
+    static void findMaxBoxSize(std::vector<BoundingBox> &boxes, bool &splitX, bool &splitY, bool &splitZ);
 
-    static void splitAndPushTriangle(BoundingBox<int> &box, std::vector<Triangle> &trianglesPerProcess, std::vector<Triangle> &triangleVec, int indexTriangle);
+    static void splitAndPushTriangle(BoundingBox &box, std::vector<Triangle> &trianglesPerProcess, std::vector<Triangle> &triangleVec, int indexTriangle);
     static void sliceTriangle(std::vector<Triangle> &out, std::vector<Triangle>& triangleVec, int index, const Vertex& a, const Vertex& b, const Vertex& c, real d1, real d2, real d3);
 
 };

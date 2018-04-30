@@ -5,10 +5,9 @@
 #include "GridGenerator/global.h"
 
 
-template<typename T>
 class BoundingBox;
 struct Triangle;
-struct Geometry;
+class TriangularMesh;
 struct Vertex;
 
 
@@ -23,14 +22,14 @@ protected:
 
 public:
 	virtual void transformWorldToGrid(Triangle &value) const = 0;
-	virtual void transformWorldToGrid(Geometry &geom) const = 0;
+	virtual void transformWorldToGrid(TriangularMesh &geom) const = 0;
 	virtual void transformWorldToGrid(Vertex &value) const = 0;
 
     virtual void transformGridToWorld(Triangle &t) const = 0;
 	virtual void transformGridToWorld(Vertex &value) const = 0;
 	
-	virtual void transformGridToWorld(BoundingBox<real> &box) const = 0;
-	virtual void transformWorldToGrid(BoundingBox<real> &box) const = 0;
+	virtual void transformGridToWorld(BoundingBox &box) const = 0;
+	virtual void transformWorldToGrid(BoundingBox &box) const = 0;
 
 };
 

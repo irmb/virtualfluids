@@ -1,9 +1,9 @@
 #include "TransformatorImp.h"
 #include <memory>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Arrow/Arrow.h>
 
 TransformatorImp::TransformatorImp() 
@@ -36,7 +36,7 @@ TransformatorImp::~TransformatorImp()
 
 }
 
-void TransformatorImp::transformWorldToGrid(Geometry &geom) const
+void TransformatorImp::transformWorldToGrid(TriangularMesh &geom) const
 {
 	for (int i = 0; i < geom.size; i++)
 		transformWorldToGrid(geom.triangleVec[i]);
@@ -98,7 +98,7 @@ void TransformatorImp::translateGridToWorld(Vertex & value) const
 }
 
 
-void TransformatorImp::transformGridToWorld(BoundingBox<real> &box) const
+void TransformatorImp::transformGridToWorld(BoundingBox &box) const
 {
 	//scale
 	box.minX = (box.minX * this->delta);
@@ -119,7 +119,7 @@ void TransformatorImp::transformGridToWorld(BoundingBox<real> &box) const
 	box.maxZ = (box.maxZ - this->translater->z);
 }
 
-void TransformatorImp::transformWorldToGrid(BoundingBox<real> &box) const
+void TransformatorImp::transformWorldToGrid(BoundingBox &box) const
 {
 	//translate
 	box.minX += this->translater->x;

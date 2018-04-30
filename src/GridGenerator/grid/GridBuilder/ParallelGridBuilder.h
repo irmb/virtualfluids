@@ -36,7 +36,7 @@
 //	VF_PUBLIC virtual void flood(Vertex &startFlood, int level);
 //
 //	VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
-//	VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level);
+//	VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox &nodesDelete, bool writeFilesBinary, int level);
 //
 //	VF_PUBLIC virtual std::shared_ptr<GridWrapper> getGridWrapper(int level, int box);
 //
@@ -63,7 +63,7 @@
 //
 //    std::vector<std::vector<std::shared_ptr<GridWrapper> > >gridKernels;
 //    std::vector<std::shared_ptr<Transformator>> transformators;
-//    std::vector<std::vector<BoundingBox<int>> > boxes;
+//    std::vector<std::vector<BoundingBox> > boxes;
 //    std::vector<int> rankTasks;
 //    std::vector<std::vector<int> > gridDimensions;
 //

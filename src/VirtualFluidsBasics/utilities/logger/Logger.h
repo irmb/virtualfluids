@@ -20,16 +20,24 @@ namespace logging
 
         enum Level
         {
-            HIGH = 3,
-            INTERMEDIATE = 2,
-            LOW = 1,
+            INFO_LOW = 3,
+            INFO_INTERMEDIATE = 2,
+            INFO_HIGH = 1,
             WARNING = 0,
             ERROR = -1
+        };
+
+        enum TimeStamp
+        {
+            ENABLE,
+            DISABLE
         };
 
         static void setStream(std::ostream* stream);
         static void addStream(std::ostream* stream);
         static void resetStreams();
+
+        static void timeStamp(TimeStamp timeStamp);
 
         static void setDebugLevel(const Level &level = Level::ERROR);
         static void enablePrintedRankNumbers(bool printRankNumbers);
@@ -37,6 +45,8 @@ namespace logging
         virtual Logger& operator<<(const Level &level) = 0;
         virtual Logger& operator<<(const std::string &log) = 0;
         virtual Logger& operator<<(const int &log) = 0;
+        virtual Logger& operator<<(const unsigned int &log) = 0;
+        virtual Logger& operator<<(const unsigned long& log) = 0;
         virtual Logger& operator<<(const float &log) = 0;
         virtual Logger& operator<<(const double &log) = 0;
 
@@ -49,6 +59,7 @@ namespace logging
         static Level globalLogLevel;
         static Level localLogLevel;
         static bool printRankNumber;
+        static bool timeStampEnabled;
 
     };
     extern VF_SHARED_LIB_IMPORT std::shared_ptr<Logger> out;

@@ -73,6 +73,7 @@ struct ParameterStruct{
 
 	// turbulent viscosity ///
 	real *turbViscosity;
+    real *gSij, *gSDij, *gDxvx, *gDyvx, *gDzvx, *gDxvy, *gDyvy, *gDzvy, *gDxvz, *gDyvz, *gDzvz; //DebugInformation
 
 	//macroscopic values//////
 	real *vx,    *vy,    *vz,    *rho;

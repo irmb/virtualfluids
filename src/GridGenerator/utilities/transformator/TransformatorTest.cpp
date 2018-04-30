@@ -4,9 +4,9 @@
 #include <memory>
 using namespace testing;
 
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
 #include <GridGenerator/geometries/Arrow/ArrowMocks.h>
 
@@ -16,7 +16,7 @@ class TransformatorTest : public Test
 public:
 	std::shared_ptr<Transformator> sut;
 	Vertex v;
-
+    
 	real delta;
 	Vertex translater;
 
@@ -116,7 +116,7 @@ TEST_F(TransformatorTest, transformTriangleToView)
 TEST_F(TransformatorTest, transformGeometryToView)
 {
 	sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
-	Geometry g;
+    TriangularMesh g;
 	g.triangleVec.push_back(Triangle(v,v,v));
 	g.size = 1;
 	Vertex expected = Vertex((v + translater) * (1.0f / delta));
@@ -134,7 +134,7 @@ TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToView)
 	Vertex translater = Vertex(-2.6f, 3434.0f, 0.1f);
 	std::shared_ptr<Transformator> sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
 
-	BoundingBox<real> box(0, 0, 0, 0, 0, 0);
+	BoundingBox box(0, 0, 0, 0, 0, 0);
 
 	sut->transformWorldToGrid(box);
 
@@ -153,7 +153,7 @@ TEST(TransformatorTestBoundingBox, transformrealBoundingBoxToWorld)
 	Vertex translater = Vertex(-2.6f, 3434.0f, 0.1f);
 	std::shared_ptr<Transformator> sut = std::shared_ptr<Transformator>(new TransformatorImp(delta, translater));
 
-	BoundingBox<real> box(0, 0, 0, 0, 0, 0);
+	BoundingBox box(0, 0, 0, 0, 0, 0);
 
 	sut->transformGridToWorld(box);
 

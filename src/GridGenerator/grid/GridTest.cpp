@@ -1,17 +1,69 @@
 #include "gmock/gmock.h"
-#include "GridImp.cuh"
+#include "GridImp.h"
 
 #include <vector>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include "GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
 #include "GridStrategy/GridStrategyMocks.h"
-//
+
+
+TEST(GridTest, getMinimumOnNode)
+{
+    auto gridStrategyDummy = SPtr<GridStrategy>(new GridStrategyDummy);
+
+    const real startX = 0.0;
+    const real startY = 0.75;
+    const real startZ = 1.75;
+    const real delta = 0.5;
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+
+    const real exactX = 0.4;
+    const real exactY = 0.8;
+    const real exactZ = 2.3;
+    const Vertex actual = sut->getMinimumOnNode(Vertex(exactX, exactY, exactZ));
+
+    const real expectedX = 0.0;
+    const real expectedY = 0.75;
+    const real expectedZ = 2.25;
+    const Vertex expected = Vertex(expectedX, expectedY, expectedZ);
+
+    EXPECT_TRUE(actual == expected);
+}
+
+TEST(GridTest, getMaximumOnNode)
+{
+    auto gridStrategyDummy = SPtr<GridStrategy>(new GridStrategyDummy);
+
+    const real startX = 0.0;
+    const real startY = 0.75;
+    const real startZ = 0.75;
+    const real delta = 0.5;
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+
+    const real exactX = 0.4;
+    const real exactY = 0.8;
+    const real exactZ = 1.3;
+    const Vertex actual = sut->getMaximumOnNode(Vertex(exactX, exactY, exactZ));
+
+    const real expectedX = 0.5;
+    const real expectedY = 1.25;
+    const real expectedZ = 1.75;
+    const Vertex expected = Vertex(expectedX, expectedY, expectedZ);
+
+    EXPECT_TRUE(actual == expected);
+}
+
+
+
+
+
+
 //std::vector<Vertex> getPointsInBoundingBox(Triangle t, real delta)
 //{
 //	int x, y, z;
-//	BoundingBox<int> box = BoundingBox<int>::makeNodeBox(t);
+//	BoundingBox box = BoundingBox::makeNodeBox(t);
 //
 //	std::vector<Vertex> points;
 //
@@ -205,53 +257,3 @@
 //
 //    ASSERT_TRUE(grid.isStopper(grid.transCoordToIndex(1, 1, 1)));
 //}
-
-TEST(GridTest, transRealCoordsToIndex)
-{
-    SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
-
-    SPtr<Grid> grid = GridImp::makeShared(0, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
-
-
-    Vertex v(1.5, 0.0, 0.0);
-
-    unsigned int index = grid->transCoordToIndex(v);
-
-    EXPECT_THAT(index, testing::Eq(3));
-
-    real x, y, z;
-    grid->transIndexToCoords(index, x,y,z );
-
-}
-
-TEST(GridTest, transNegativeCoordToIndex)
-{
-    SPtr<GridCpuStrategy> gridStrategy(new GridCpuStrategy());
-
-    SPtr<Grid> grid = GridImp::makeShared(-1, 0, 0, 5, 5, 5, 0.5, gridStrategy, DistributionHelper::getDistribution27());
-
-    Vertex v(0.0, 0.0, 0.0);
-
-    unsigned int index = grid->transCoordToIndex(v);
-
-    EXPECT_THAT(index, testing::Eq(2));
-
-    real x, y, z;
-    grid->transIndexToCoords(index, x, y, z);
-
-}
-
-
-TEST(GridTest, changeStartingPoint_expectUpdatedNumberOfNodesAndSize)
-{
-    SPtr<GridStrategy> gridStrategy(new GridStrategyDummy());
-    SPtr<Grid> grid = GridImp::makeShared(0, 0, 0, 4, 4, 4, 1, gridStrategy, DistributionHelper::getDistribution27());
-    int expectedNumberOfNodesX = 6; // 0 - 4 + StopperNode
-    EXPECT_THAT(grid->getNumberOfNodesX(), testing::Eq(expectedNumberOfNodesX));
-
-    grid->setEndX(9);
-
-    expectedNumberOfNodesX = 11; // 0 - 9 + StopperNode
-    EXPECT_THAT(grid->getNumberOfNodesX(), testing::Eq(expectedNumberOfNodesX));
-}
-

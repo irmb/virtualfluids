@@ -185,7 +185,7 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
-				((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
+				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
 			real rho = one + drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -1339,7 +1339,7 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
-				((mfabb + mfcbb) + (mfbab + mfbcb)) + (mfbba + mfbbc)) + mfbbb;
+				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
 			real rho = one + drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -2400,7 +2400,7 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
+							((mfabb+mfcbb) + (mfbab+mfbcb) + (mfbba+mfbbc))) + mfbbb;
 
 			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -3379,7 +3379,7 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_SP_27( real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
+							((mfabb+mfcbb) + (mfbab+mfbcb) + (mfbba+mfbbc))) + mfbbb;
 
 			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -4450,7 +4450,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_Bulk_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
+							((mfabb+mfcbb) + (mfbab+mfbcb) + (mfbba+mfbbc))) + mfbbb;
 
 			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -5401,7 +5401,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_Sponge_SP_27(real omegaIn,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
+							((mfabb+mfcbb) + (mfbab+mfbcb) + (mfbba+mfbbc))) + mfbbb;
 
 			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -9925,7 +9925,7 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
 							(((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-							((mfabb+mfcbb) + (mfbab+mfbcb)) + (mfbba+mfbbc)) + mfbbb;
+							((mfabb+mfcbb) + (mfbab+mfbcb) + (mfbba+mfbbc))) + mfbbb;
 
 			real rho = one+drho;
 			////////////////////////////////////////////////////////////////////////////////////
@@ -10096,9 +10096,9 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(real omega,
 			//mfaca = (mfaca - c1over216*(rho-one))/(rho);
 			////////////////////////////////////////////////////////////////////////////////////
 			real wadjust;
-			real qudricLimitP = 0.01f;// * 0.0001f;
-			real qudricLimitM = 0.01f;// * 0.0001f;
-			real qudricLimitD = 0.01f;// * 0.001f;
+			real qudricLimitP = c1o100;// * 0.0001f;
+			real qudricLimitM = c1o100;// * 0.0001f;
+			real qudricLimitD = c1o100;// * 0.001f;
 			//real s9 = minusomega;
 			//test
 			//s9 = 0.;
@@ -10975,7 +10975,11 @@ extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(real omega,
 			//mfaaa = (mfaaa * rho + c1over216*(rho-one));
 			//mfcaa = (mfcaa * rho + c1over216*(rho-one));
 			//mfaca = (mfaca * rho + c1over216*(rho-one));
-
+			real drhoPost = 
+				((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
+				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
+				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
+			mfbbb += drho - drhoPost;
 			////////////////////////////////////////////////////////////////////////////////////
 			(D.f[ dirE   ])[k   ] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
 			(D.f[ dirW   ])[kw  ] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   

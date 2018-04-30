@@ -1,9 +1,9 @@
 //#include "gmock/gmock.h"
 //
-//#include <GridGenerator/geometries/Vertex/Vertex.cuh>
-//#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-//#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-//#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+//#include <GridGenerator/geometries/Vertex/Vertex.h>
+//#include <GridGenerator/geometries/Triangle/Triangle.h>
+//#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
+//#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 //
 //#include <GridGenerator/grid/kernel/GridKernelCPU.h>
 //#include <GridGenerator/grid/partition/Partition.h>
@@ -42,7 +42,7 @@
 //        std::string path = PATH_TO_DATA;
 //        std::string folder = "TESTSUITE/SIMULATION_FILES/";
 //        std::string input = path + folder + "gridcubeSimulation.stl";
-//        std::vector<BoundingBox<int>> boxes = Partition::getProcessBoxes(1, nx, ny, nz);
+//        std::vector<BoundingBox> boxes = Partition::getProcessBoxes(1, nx, ny, nz);
 //
 //		GridKernelCPU gridCPU(boxes[0], "D3Q27", trans, true);
 //		Geometry geom(input, boxes[0], trans);
@@ -52,7 +52,7 @@
 //        gridCPU.floodFill(Vertex(5,5,5));
 //
 //        UnstructuredGridBuilder builder;
-//		BoundingBox<int> box;
+//		BoundingBox box;
 //        builder.buildUnstructuredGrid(gridCPU.grid, box);
 //
 //        bool binaer = false;

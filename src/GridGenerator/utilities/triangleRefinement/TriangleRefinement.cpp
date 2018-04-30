@@ -1,6 +1,6 @@
 #include "TriangleRefinement.h"
 
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 
 TriangleRefinement::TriangleRefinement(std::vector<Triangle> *triangles)
 {

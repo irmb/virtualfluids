@@ -1,9 +1,6 @@
-#include "Vertex.cuh"
+#include "Vertex.h"
 
-#include <GridGenerator/utilities/math/CudaMath.cuh>
-
-
-#include "Serialization/VertexMemento.h"
+#include <GridGenerator/utilities/math/Math.h>
 
 
 HOSTDEVICE Vertex::Vertex(real x, real y, real z) : x(x), y(y), z(z){}
@@ -18,7 +15,7 @@ HOSTDEVICE Vertex::Vertex(const Vertex& v)
 
 HOSTDEVICE  real Vertex::getEuclideanDistanceTo(const Vertex &w) const
 {
-    return CudaMath::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
+    return vf::Math::sqrtReal((x - w.x)*(x - w.x) + (y - w.y)*(y - w.y) + (z - w.z)*(z - w.z));
 }
 
 HOSTDEVICE Vertex Vertex::operator-(const Vertex &v) const
@@ -31,12 +28,15 @@ HOSTDEVICE Vertex Vertex::operator+(const Vertex &v) const
     return Vertex(this->x + v.x, this->y + v.y, this->z + v.z);
 }
 
-HOSTDEVICE Vertex Vertex::operator*(const real value) const
+HOSTDEVICE Vertex Vertex::operator*(const real& value) const
 {
     return Vertex(value * this->x, value * this->y, value * this->z);
 }
 
-
+HOSTDEVICE Vertex Vertex::operator/(const real& value) const
+{
+    return *this * (1.0 / value);
+}
 
 HOSTDEVICE real Vertex::operator*(const Vertex &w) const
 {
@@ -53,7 +53,7 @@ HOSTDEVICE struct Vertex Vertex::crossProduct(const Vertex &w) const
 
 HOSTDEVICE real Vertex::length() const 
 {
-    return CudaMath::sqrtReal(x * x + y * y + z * z);
+    return vf::Math::sqrtReal(x * x + y * y + z * z);
 }
 
 HOSTDEVICE void Vertex::normalize()
@@ -72,12 +72,12 @@ HOSTDEVICE void Vertex::normalize()
 HOSTDEVICE real Vertex::getMagnitude() const
 {
     real temp = x*x + y*y + z*z;
-    return CudaMath::sqrtReal(temp);
+    return vf::Math::sqrtReal(temp);
 }
 
 HOSTDEVICE int Vertex::isEqual(const Vertex &w) const
 {
-    return CudaMath::equal(x, w.x) && CudaMath::equal(y, w.y) && CudaMath::equal(z, w.z);
+    return vf::Math::equal(x, w.x) && vf::Math::equal(y, w.y) && vf::Math::equal(z, w.z);
 }
 
 HOSTDEVICE real Vertex::getInnerAngle(const Vertex &w) const
@@ -91,7 +91,7 @@ HOSTDEVICE real Vertex::getInnerAngle(const Vertex &w) const
     real skal = *this * w;
     if (mag - fabs(skal) < 0.0001)
         return 0.0f;
-    return  CudaMath::acosReal(skal / mag) * 180.0f / CudaMath::acosReal(-1.0f); // acos(-1.0f) = PI 
+    return  vf::Math::acosReal(skal / mag) * 180.0f / vf::Math::acosReal(-1.0f); // acos(-1.0f) = PI 
 }
 
 HOSTDEVICE void Vertex::print() const
@@ -115,24 +115,9 @@ HOST void Vertex::printFormatted(std::ostream &ost) const
 
 HOSTDEVICE bool Vertex::operator==(const Vertex &v) const
 {
-	return CudaMath::equal(x, v.x) && CudaMath::equal(y, v.y) && CudaMath::equal(z, v.z);
+	return vf::Math::equal(x, v.x) && vf::Math::equal(y, v.y) && vf::Math::equal(z, v.z);
 }
 
-HOST VertexMemento Vertex::getState() const
-{
-    VertexMemento memento;
-    memento.x = x;
-    memento.y = y;
-    memento.z = z;
-    return memento;
-}
-
-HOST void Vertex::setState(const VertexMemento &memento)
-{
-    this->x = memento.x;
-    this->y = memento.y;
-    this->z = memento.z;
-}
 
 HOST bool Vertex::isXbetween(real min, real max) const
 {
@@ -157,18 +142,30 @@ HOSTDEVICE void Vertex::setMinMax(real & minX, real & maxX, real & minY, real & 
 }
 
 
+HOSTDEVICE real getMinimum(const real &value1, const real &value2)
+{
+    return value1 < value2 ? value1 : value2;
+}
+
+HOSTDEVICE real getMaximum(const real &value1, const real &value2)
+{
+    return value1 > value2 ? value1 : value2;
+}
+
+
 HOSTDEVICE void Vertex::calculateMinMax(const real &value1, const real &value2, const real &value3, real &min, real &max)
 {
-    min = value1;
-    max = value2;
-    if (value1 > value2) {
-        min = value2;
-        max = value1;
-    }
-    if (min > value3) {
-        min = value3;
-    }
-    if (max < value3) {
-        max = value3;
-    }
+    
+    real newMinimum = value1;
+    newMinimum = getMinimum(value2, newMinimum);
+    newMinimum = getMinimum(value3, newMinimum);
+
+    real newMaximum = value1;
+    newMaximum = getMaximum(value2, newMaximum);
+    newMaximum = getMaximum(value3, newMaximum);
+
+    min = newMinimum;
+    max = newMaximum;
 }
+
+

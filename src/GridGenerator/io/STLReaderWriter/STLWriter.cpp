@@ -1,21 +1,18 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "STLWriter.h"
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
-#include <stdio.h>
 
-#include <GridGenerator/utilities/Transformator/Transformator.h>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
 
 #include <utilities/logger/Logger.h>
 
 
-void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, std::shared_ptr<const Transformator> trans, bool writeBinary)
+void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary)
 {
-    *logging::out << logging::Logger::INTERMEDIATE << "Write " + SSTR(vec.size()) + " Triangles to STL : " + name + "\n";
+    const long size = vec.size();
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << size << " Triangles to STL : " + name + "\n";
 
     std::ios_base::openmode mode = std::ios::out;
     if (writeBinary)
@@ -24,27 +21,26 @@ void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, st
     std::ofstream ofstream(name, mode);
 
     if (!ofstream.is_open()) {
-        *logging::out << logging::Logger::HIGH << " Output file not open - exit function\n";
+        *logging::out << logging::Logger::INFO_HIGH << " Output file not open - exit function\n";
         return;
     }
 
     if (writeBinary)
-        writeBinarySTL(ofstream, vec, trans);
+        writeBinarySTL(ofstream, vec);
     else
-        writeAsciiSTL(ofstream, vec, trans);
+        writeAsciiSTL(ofstream, vec);
 
     ofstream.close();
-    *logging::out << logging::Logger::INTERMEDIATE << "Output file closed\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Output file closed\n";
 }
 
 
-void STLWriter::writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &vec, std::shared_ptr<const Transformator> trans)
+void STLWriter::writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &vec)
 {
     ofstream << "solid ascii\n";
     for (size_t i = 0; i < vec.size(); i++) 
     {
         Triangle t = vec[i];
-        trans->transformGridToWorld(t);
 
         ofstream << "facet normal ";
         t.normal.printFormatted(ofstream);
@@ -68,7 +64,7 @@ void STLWriter::writeAsciiSTL(std::ofstream &ofstream, std::vector<Triangle> &ve
     ofstream << "endsolid\n";
 }
 
-void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &vec, std::shared_ptr<const Transformator> trans)
+void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &vec)
 {
     char header_info[80] = "GridGeneration-File iRMB";
     unsigned long nTriLong = (unsigned long)vec.size();
@@ -78,7 +74,6 @@ void STLWriter::writeBinarySTL(std::ofstream &ofstream, std::vector<Triangle> &v
     for (size_t i = 0; i < vec.size(); i++)
     {
         Triangle t = vec[i];
-        trans->transformGridToWorld(t);
 
         t.normal.print(ofstream);
 

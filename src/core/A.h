@@ -5,22 +5,19 @@
 #ifndef A_H
 #define A_H
 
-#include <memory>
 
-#include <VirtualFluidsDefinitions.h>
+#include "PointerDefinitions.h"
 
-class A;
-std::shared_ptr<A> APtr;
 
 class VF_PUBLIC A
 {
 public:
-    virtual ~A();
-    std::shared_ptr<A> make() const;
+    virtual ~A() = default;
+    static SPtr<A> make();
 
 private:
-    A();
-    A(const A& a);
+    A() = default;
+    A(const A& a) = default;
 
 };
 

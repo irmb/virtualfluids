@@ -6,24 +6,33 @@
 
 #include "GridStrategy.h"
 
-struct Geometry;
+class TriangularMesh;
 class GridImp;
 
 class VF_PUBLIC GridStrategyDummy : public GridStrategy
 {
 public:
-    virtual ~GridStrategyDummy() {};
+    virtual ~GridStrategyDummy() {}
 
-    virtual void allocateGridMemory(SPtr<GridImp> grid) override {};
+    virtual void allocateGridMemory(SPtr<GridImp> grid) override {}
 
-    virtual void initalNodes(SPtr<GridImp> grid) override {};
-    virtual void mesh(SPtr<GridImp> grid, Geometry &geom) override {};
+    virtual void initalNodesToOutOfGrid(SPtr<GridImp> grid) override {}
+    virtual void findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh) override {}
+    virtual void findInnerNodes(SPtr<GridImp> grid) override {}
+    virtual void findStopperNodes(SPtr<GridImp> grid) override {}
 
-    virtual void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {};
+    virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override {}
 
-    virtual void deleteSolidNodes(SPtr<GridImp> grid) override {};
+    virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {}
 
-    virtual void freeMemory(SPtr<GridImp> grid) override {};
+    virtual void deleteSolidNodes(SPtr<GridImp> grid) override {}
+
+    virtual void freeMemory(SPtr<GridImp> grid) override {}
+    virtual void allocateFieldMemory(Field* field) override {}
+    virtual void freeFieldMemory(Field* field) override {}
+
+    virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override {}
+
 
 };
 

@@ -47,6 +47,6 @@ DEVICE int LaunchParameter::getGlobalIdx_1D_1D()
 
 HOST void LaunchParameter::print() const
 {
-	*logging::out << logging::Logger::INTERMEDIATE << "blocks: (" + SSTR(blocks.x) + ", " + SSTR(blocks.y) + ", " + SSTR(blocks.z) + ")"
-		+ ", threads: (" + SSTR(threads.x) + ", " + SSTR(threads.y) + ", " + SSTR(threads.z) + ")\n";
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "blocks: (" << blocks.x << ", " << blocks.y << ", " << blocks.z << ")"
+		<< ", threads: (" << threads.x << ", " << threads.y << ", " << threads.z << ")\n";
 }

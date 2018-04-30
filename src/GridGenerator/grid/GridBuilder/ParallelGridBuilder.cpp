@@ -9,9 +9,9 @@
 //#include <GridGenerator/grid/GridWrapper/GridWrapperGPU/GridWrapperGPU.h>
 //#include <GridGenerator/grid/partition/Partition.h>
 //
-//#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-//#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
-//#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+//#include <GridGenerator/geometries/Triangle/Triangle.h>
+//#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
+//#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 //
 //#include <GridGenerator/utilities/Transformator/Transformator.h>
 //
@@ -173,7 +173,7 @@
 //}
 //
 //
-//void ParallelGridBuilder::writeSimulationFiles(std::string output, BoundingBox<int> &nodesDelete, bool writeFilesBinary, int level)
+//void ParallelGridBuilder::writeSimulationFiles(std::string output, BoundingBox &nodesDelete, bool writeFilesBinary, int level)
 //{
 //    //checkLevel(level);
 //    //UnstructuredParallelGridBuilder builder;
@@ -329,7 +329,7 @@
 //    //for (int i = 0; i < rankTasks.size(); i += 2) {
 //    //    int level = rankTasks[i];
 //    //    int index = rankTasks[i + 1];
-//    //    BoundingBox<real> box = boxes[level][index];
+//    //    BoundingBox box = boxes[level][index];
 //    //    transformators[level]->transformGridToWorld(box);
 //    //    writer.addBoundingBox(box, rank);
 //    //}

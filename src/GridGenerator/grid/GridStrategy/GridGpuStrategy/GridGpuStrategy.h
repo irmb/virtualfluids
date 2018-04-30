@@ -6,9 +6,8 @@
 
 #include "../GridStrategy.h"
 
-template <class T>
 class BoundingBox;
-struct Geometry;
+class TriangularMesh;
 
 class VF_PUBLIC GridGpuStrategy : public GridStrategy
 {
@@ -17,9 +16,13 @@ public:
 
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
-    void initalNodes(SPtr<GridImp> grid) override;
-    void mesh(SPtr<GridImp> grid, Geometry &geom) override;
-    void createGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
+    void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
+    void findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh) override;
+    void findInnerNodes(SPtr<GridImp> grid) override;
+    void findStopperNodes(SPtr<GridImp> grid) override;
+
+    void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
+    void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 
     void freeMemory(SPtr<GridImp> grid) override;
 
@@ -37,20 +40,25 @@ private:
     void allocNeighborsIndices(SPtr<GridImp> grid);
     void allocMatrixIndicesOnGPU(SPtr<GridImp> grid);
 
-    void allocAndCopyTrianglesToGPU(Geometry &geom);
-    void freeTrianglesFromGPU(const Geometry &geom);
+    void allocAndCopyTrianglesToGPU(TriangularMesh &geom);
+    void freeTrianglesFromGPU(const TriangularMesh &geom);
 
 
     void allocAndCopyMatrixIndicesToGPU(SPtr<GridImp> grid, const uint& size);
 
-    void allocAndCopyFieldToGPU(SPtr<GridImp> grid, const uint& size);
+    void allocAndCopyFieldToGPU(Field& field);
+    void copyAndFreeFieldFromGPU(Field& field);
 
-    void copyAndFreeFieldFromGPU(SPtr<GridImp> grid);
     void copyAndFreeDistributiondFromGPU(SPtr<GridImp> grid);
 
     void copyAndFreeNeighborsToCPU(SPtr<GridImp> grid);
     void copyAndFreeMatrixIndicesFromGPU(SPtr<GridImp> grid, int size);
 
+public:
+    void allocateFieldMemory(Field* field) override;
+    void freeFieldMemory(Field* field) override;
+    void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override;
+    
 };
 
 #endif

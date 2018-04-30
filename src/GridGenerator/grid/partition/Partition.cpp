@@ -6,9 +6,9 @@
 
 #include <GridGenerator/global.h>
 #include <GridGenerator/grid/Grid.h>
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Vertex/Vertex.cuh>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/Vertex/Vertex.h>
+#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/io/GridVTKWriter/GridVTKWriter.h>
 #include <GridGenerator/io/VTKWriterWrapper/UnstructuredGridWrapper.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
@@ -132,10 +132,10 @@ void Partition::partitionGridMesh(SPtr<Grid> grid)
 
 
     for (unsigned int part_i = 0; part_i < grid->getSize(); part_i++){
-        grid->setFieldEntry(part_i, partMeshNodes[part_i]);
+        //grid->setFieldEntry(part_i, partMeshNodes[part_i]);
     }
 
-    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
+    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridMesh.vtk");
 
     delete[] partMeshNodes;
     delete[] partMeshElements;
@@ -251,13 +251,13 @@ void Partition::partitionGrid(SPtr<Grid> grid) {
     //}
 
     for (int part_i = 0; part_i < nVertices; part_i++){
-        grid->setFieldEntry(part_i, part[part_i]);
+        //grid->setFieldEntry(part_i, part[part_i]);
     }
 
-    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk", std::shared_ptr<Transformator>(new TransformatorImp()), true);
+    GridVTKWriter::writeSparseGridToVTK(grid, "../../../../metisGridFineFourParts.vtk");
 }
 
-std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector<BoundingBox<int>> > boxes, int processes, std::vector< std::shared_ptr<Transformator> > transformators)
+std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector<BoundingBox> > boxes, int processes, std::vector< std::shared_ptr<Transformator> > transformators)
 {
     if (processes == 1){
         std::vector<std::vector<int> > tasks;
@@ -275,7 +275,7 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
     for (int level = 0; level < boxes.size(); level++) {
         for (int i = 0; i < boxes[level].size(); i++) {
         	
-			BoundingBox<real> box = boxes[level][i];
+			BoundingBox box = boxes[level][i];
             transformators[level]->transformGridToWorld(box);
 
             int index = i + (int)boxes[level].size() * level;
@@ -285,7 +285,7 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
                     if (index == indexCompare)
                         continue;
 
-					BoundingBox<real> boxCompare = boxes[levelCompare][iCompare];
+					BoundingBox boxCompare = boxes[levelCompare][iCompare];
                     transformators[level]->transformGridToWorld(boxCompare);
                     if (box.intersect(boxCompare)) {
                         adjncy.push_back(indexCompare);
@@ -336,12 +336,12 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
         NULL, options, &objval, part);
 
 	if (ret == METIS_OK)
-		*logging::out << logging::Logger::INTERMEDIATE << "Metis Status: OK\n";
+		*logging::out << logging::Logger::INFO_INTERMEDIATE << "Metis Status: OK\n";
 
     
 
     for (int part_i = 0; part_i < nVertices; part_i++)
-		*logging::out << logging::Logger::INTERMEDIATE << "Block: " + SSTR(part_i) + " - Partition: " + SSTR(part[part_i]) + "\n";
+		*logging::out << logging::Logger::INFO_INTERMEDIATE << "Block: " << part_i << " - Partition: " << part[part_i] << "\n";
     
 
     std::vector<std::vector<int> > tasks;
@@ -357,10 +357,10 @@ std::vector<std::vector<int> > Partition::partitionBoxes(std::vector<std::vector
     return tasks;
 }
 
-std::vector<BoundingBox<int>> Partition::getProcessBoxes(const int numberOfProcesses, const int globalNx, const int globalNy, const int globalNz)
+std::vector<BoundingBox> Partition::getProcessBoxes(const int numberOfProcesses, const int globalNx, const int globalNy, const int globalNz)
 {
-    std::vector<BoundingBox<int>> boxes;
-	BoundingBox<int> b(0, globalNx, 0, globalNy, 0, globalNz);
+    std::vector<BoundingBox> boxes;
+	BoundingBox b(0, globalNx, 0, globalNy, 0, globalNz);
     boxes.push_back(b);
     if (numberOfProcesses == 1)
         return boxes;
@@ -377,7 +377,7 @@ std::vector<BoundingBox<int>> Partition::getProcessBoxes(const int numberOfProce
     return boxes;
 }
 
-std::vector<std::vector<Triangle> > Partition::getTrianglesPerProcess(std::vector<BoundingBox<int>> &boxes, Triangle *triangles, int nTriangles)
+std::vector<std::vector<Triangle> > Partition::getTrianglesPerProcess(std::vector<BoundingBox> &boxes, Triangle *triangles, int nTriangles)
 {
     std::vector<Triangle> triangleVec;
     triangleVec.resize(nTriangles);
@@ -404,7 +404,7 @@ std::vector<std::vector<Triangle> > Partition::getTrianglesPerProcess(std::vecto
     return trianglesPerProcess;
 }
 
-void Partition::findMaxBoxSize(std::vector<BoundingBox<int>> &boxes, bool &splitX, bool &splitY, bool &splitZ)
+void Partition::findMaxBoxSize(std::vector<BoundingBox> &boxes, bool &splitX, bool &splitY, bool &splitZ)
 {
     int lengthX, lengthY, lengthZ;
     lengthX = boxes[0].maxX - boxes[0].minX;
@@ -422,33 +422,33 @@ void Partition::findMaxBoxSize(std::vector<BoundingBox<int>> &boxes, bool &split
     }
 }
 
-void Partition::splitAllBoxesInThreePieces(std::vector<BoundingBox<int>> &boxes, bool splitX, bool splitY, bool splitZ)
+void Partition::splitAllBoxesInThreePieces(std::vector<BoundingBox> &boxes, bool splitX, bool splitY, bool splitZ)
 {
-    std::vector<BoundingBox<int>> boxesTemp;
+    std::vector<BoundingBox> boxesTemp;
     for (int i = 0; i < boxes.size(); i++) {
         if (splitX) {
             int newLengthX = (boxes[i].maxX - boxes[i].minX) / 3;
-			BoundingBox<int> splitBox1(boxes[i].minX, boxes[i].minX + newLengthX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
-			BoundingBox<int> splitBox2(boxes[i].minX, boxes[i].minX + newLengthX + newLengthX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
-			BoundingBox<int> splitBox3(boxes[i].minX + newLengthX + newLengthX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox1(boxes[i].minX, boxes[i].minX + newLengthX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox2(boxes[i].minX, boxes[i].minX + newLengthX + newLengthX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox3(boxes[i].minX + newLengthX + newLengthX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
             boxesTemp.push_back(splitBox1);
             boxesTemp.push_back(splitBox2);
             boxesTemp.push_back(splitBox3);
         }
         if (splitY) {
             int newLengthY = (boxes[i].maxY - boxes[i].minY) / 3;
-			BoundingBox<int> splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].minY + newLengthY, boxes[i].minZ, boxes[i].maxZ);
-			BoundingBox<int> splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY + newLengthY, boxes[i].minY + newLengthY + newLengthY, boxes[i].minZ, boxes[i].maxZ);
-			BoundingBox<int> splitBox3(boxes[i].minX, boxes[i].maxX, boxes[i].minY + newLengthY + newLengthY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].minY + newLengthY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY + newLengthY, boxes[i].minY + newLengthY + newLengthY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox3(boxes[i].minX, boxes[i].maxX, boxes[i].minY + newLengthY + newLengthY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
             boxesTemp.push_back(splitBox1);
             boxesTemp.push_back(splitBox2);
             boxesTemp.push_back(splitBox3);
         }
         if (splitZ) {
             int newLengthZ = (boxes[i].maxZ - boxes[i].minZ) / 3;
-			BoundingBox<int> splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].minZ + newLengthZ);
-			BoundingBox<int> splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ + newLengthZ, boxes[i].minZ + newLengthZ + newLengthZ);
-			BoundingBox<int> splitBox3(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ + newLengthZ + newLengthZ, boxes[i].maxZ);
+			BoundingBox splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].minZ + newLengthZ);
+			BoundingBox splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ + newLengthZ, boxes[i].minZ + newLengthZ + newLengthZ);
+			BoundingBox splitBox3(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ + newLengthZ + newLengthZ, boxes[i].maxZ);
             boxesTemp.push_back(splitBox1);
             boxesTemp.push_back(splitBox2);
             boxesTemp.push_back(splitBox3);
@@ -458,28 +458,28 @@ void Partition::splitAllBoxesInThreePieces(std::vector<BoundingBox<int>> &boxes,
     boxes = boxesTemp;
 }
 
-void Partition::splitAllBoxesInTwoPieces(std::vector<BoundingBox<int>> &boxes, bool splitX, bool splitY, bool splitZ)
+void Partition::splitAllBoxesInTwoPieces(std::vector<BoundingBox> &boxes, bool splitX, bool splitY, bool splitZ)
 {
-    std::vector<BoundingBox<int>> boxesTemp;
+    std::vector<BoundingBox> boxesTemp;
     for (int i = 0; i < boxes.size(); i++) {
         if (splitX) {
             int newLengthX = (boxes[i].maxX - boxes[i].minX) / 2;
-			BoundingBox<int> splitBox1(boxes[i].minX, boxes[i].minX + newLengthX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
-			BoundingBox<int> splitBox2(boxes[i].minX + newLengthX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox1(boxes[i].minX, boxes[i].minX + newLengthX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox2(boxes[i].minX + newLengthX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
             boxesTemp.push_back(splitBox1);
             boxesTemp.push_back(splitBox2);
         }
         if (splitY) {
             int newLengthY = (boxes[i].maxY - boxes[i].minY) / 2;
-			BoundingBox<int> splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].minY + newLengthY, boxes[i].minZ, boxes[i].maxZ);
-			BoundingBox<int> splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY + newLengthY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].minY + newLengthY, boxes[i].minZ, boxes[i].maxZ);
+			BoundingBox splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY + newLengthY, boxes[i].maxY, boxes[i].minZ, boxes[i].maxZ);
             boxesTemp.push_back(splitBox1);
             boxesTemp.push_back(splitBox2);
         }
         if (splitZ) {
             int newLengthZ = (boxes[i].maxZ - boxes[i].minZ) / 2;
-			BoundingBox<int> splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].minZ + newLengthZ);
-			BoundingBox<int> splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ + newLengthZ, boxes[i].maxZ);
+			BoundingBox splitBox1(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ, boxes[i].minZ + newLengthZ);
+			BoundingBox splitBox2(boxes[i].minX, boxes[i].maxX, boxes[i].minY, boxes[i].maxY, boxes[i].minZ + newLengthZ, boxes[i].maxZ);
             boxesTemp.push_back(splitBox1);
             boxesTemp.push_back(splitBox2);
         }
@@ -488,7 +488,7 @@ void Partition::splitAllBoxesInTwoPieces(std::vector<BoundingBox<int>> &boxes, b
     boxes = boxesTemp;
 }
 
-std::vector<std::vector<Triangle> >  Partition::splitTriangles(std::vector<Triangle> &triangleVec, std::vector<BoundingBox<int>> boxes)
+std::vector<std::vector<Triangle> >  Partition::splitTriangles(std::vector<Triangle> &triangleVec, std::vector<BoundingBox> boxes)
 {
     std::vector<std::vector<Triangle> > trianglesPerProcess;
     trianglesPerProcess.resize(boxes.size());
@@ -514,11 +514,11 @@ std::vector<std::vector<Triangle> >  Partition::splitTriangles(std::vector<Trian
 
 
 
-void Partition::splitAndPushTriangle(BoundingBox<int> &box, std::vector<Triangle> &trianglesPerProcess, std::vector<Triangle> &triangleVec, int indexTriangle)
+void Partition::splitAndPushTriangle(BoundingBox &box, std::vector<Triangle> &trianglesPerProcess, std::vector<Triangle> &triangleVec, int indexTriangle)
 {
     Triangle triangleToSplit = triangleVec[indexTriangle];
-	BoundingBox<real> triangleBox = BoundingBox<real>::makeExactBox(triangleToSplit);
-    std::vector<std::vector<Vertex> > intersectionsBox = box.getIntersectionPoints(triangleBox);
+	//BoundingBox triangleBox = BoundingBox::makeExactBox(triangleToSplit);
+    //std::vector<std::vector<Vertex> > intersectionsBox = box.getIntersectionPoints(triangleBox);
 
     //UnstructuredGridWriter writer;
     //double v1[3] = { triangleToSplit.v1.x, triangleToSplit.v1.y, triangleToSplit.v1.z };
@@ -532,36 +532,36 @@ void Partition::splitAndPushTriangle(BoundingBox<int> &box, std::vector<Triangle
     //writer.writeUnstructuredGridToFile("testIntersectionTriangle");
 
 
-    for (int i = 0; i < intersectionsBox.size(); i++) {
-        if (intersectionsBox[i].size() == 0)
-            continue;
+    //for (int i = 0; i < intersectionsBox.size(); i++) {
+    //    if (intersectionsBox[i].size() == 0)
+    //        continue;
 
-        Vertex edge1 = intersectionsBox[i][0] - intersectionsBox[i][1];
-        Vertex edge2 = intersectionsBox[i][1] - intersectionsBox[i][2];
-        Vertex normal = edge1.crossProduct(edge2);
-        normal.normalize();
+    //    Vertex edge1 = intersectionsBox[i][0] - intersectionsBox[i][1];
+    //    Vertex edge2 = intersectionsBox[i][1] - intersectionsBox[i][2];
+    //    Vertex normal = edge1.crossProduct(edge2);
+    //    normal.normalize();
 
-        Vertex point(intersectionsBox[i][0].x, intersectionsBox[i][0].y, intersectionsBox[i][0].z);
-        Vertex v4 = (triangleToSplit.v1 - point);
-        Vertex v5 = (triangleToSplit.v2 - point);
-        Vertex v6 = (triangleToSplit.v3 - point);
+    //    Vertex point(intersectionsBox[i][0].x, intersectionsBox[i][0].y, intersectionsBox[i][0].z);
+    //    Vertex v4 = (triangleToSplit.v1 - point);
+    //    Vertex v5 = (triangleToSplit.v2 - point);
+    //    Vertex v6 = (triangleToSplit.v3 - point);
 
-        real d1 = v4 * normal;
-        real d2 = v5 * normal;
-        real d3 = v6 * normal;
+    //    real d1 = v4 * normal;
+    //    real d2 = v5 * normal;
+    //    real d3 = v6 * normal;
 
-        // a to b crosses the clipping plane
-        if (d1 * d2 < 0.0f)
-            sliceTriangle(trianglesPerProcess, triangleVec, indexTriangle, triangleToSplit.v1, triangleToSplit.v2, triangleToSplit.v3, d1, d2, d3);
+    //    // a to b crosses the clipping plane
+    //    if (d1 * d2 < 0.0f)
+    //        sliceTriangle(trianglesPerProcess, triangleVec, indexTriangle, triangleToSplit.v1, triangleToSplit.v2, triangleToSplit.v3, d1, d2, d3);
 
-        // a to c crosses the clipping plane
-        else if (d1 * d3 < 0.0f)
-            sliceTriangle(trianglesPerProcess, triangleVec, indexTriangle, triangleToSplit.v3, triangleToSplit.v1, triangleToSplit.v2, d3, d1, d2);
+    //    // a to c crosses the clipping plane
+    //    else if (d1 * d3 < 0.0f)
+    //        sliceTriangle(trianglesPerProcess, triangleVec, indexTriangle, triangleToSplit.v3, triangleToSplit.v1, triangleToSplit.v2, d3, d1, d2);
 
-        // b to c crosses the clipping plane
-        else if (d2 * d3 < 0.0f)
-            sliceTriangle(trianglesPerProcess, triangleVec, indexTriangle, triangleToSplit.v2, triangleToSplit.v3, triangleToSplit.v1, d2, d3, d1);
-    }
+    //    // b to c crosses the clipping plane
+    //    else if (d2 * d3 < 0.0f)
+    //        sliceTriangle(trianglesPerProcess, triangleVec, indexTriangle, triangleToSplit.v2, triangleToSplit.v3, triangleToSplit.v1, d2, d3, d1);
+    //}
 }
 
 

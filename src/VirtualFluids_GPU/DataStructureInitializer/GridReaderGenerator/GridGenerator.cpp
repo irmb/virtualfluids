@@ -4,8 +4,9 @@
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 #include <GPU/CudaMemoryManager.h>
 
+#include <sstream>
 #include <iostream>
-#include "utilities/math/CudaMath.cuh"
+#include "utilities/math/Math.h"
 
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
 {
@@ -61,6 +62,46 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 			para->getParH(level)->neighborZ_SP,
 			para->getParH(level)->geoSP,
 			level);
+
+   /*     if (true) {
+            const real delta = para->getParH(level)->coordX_SP[2] - para->getParH(level)->coordX_SP[1];
+            for (uint i = 0; i < numberOfNodesPerLevel; i++)
+            {
+                const real coordX = para->getParH(level)->coordX_SP[i];
+                const real coordY = para->getParH(level)->coordY_SP[i];
+                const real coordZ = para->getParH(level)->coordZ_SP[i];
+
+                const uint neighborX = para->getParH(level)->neighborX_SP[i];
+                const uint neighborY = para->getParH(level)->neighborY_SP[i];
+                const uint neighborZ = para->getParH(level)->neighborZ_SP[i];
+
+                const uint type = para->getParH(level)->geoSP[i];
+
+                if (coordX == 40 || coordY ==1 || coordY == 40 || coordZ == 1 || coordZ == 40)
+                    continue;
+
+                real expectedXNeighborX;
+                if (level == 0 && coordX == 39)
+                    expectedXNeighborX = 2;
+                else
+                    expectedXNeighborX = coordX + delta;
+
+                const real expectedXNeighborY = coordY;
+                const real expectedXNeighborZ = coordZ;
+
+                const real actualXNeighborX = para->getParH(level)->coordX_SP[neighborX];
+                const real actualXNeighborY = para->getParH(level)->coordY_SP[neighborX];
+                const real actualXNeighborZ = para->getParH(level)->coordZ_SP[neighborX];
+
+                const bool equal = (expectedXNeighborX == actualXNeighborX) && (expectedXNeighborY == actualXNeighborY) && (expectedXNeighborZ == actualXNeighborZ);
+                if(!equal)
+                {
+                    printf("coordinate: %2.2f, %2.2f, %2.2f   expectedX neighbor: %2.2f, %2.2f, %2.2f    actual X neighbor: %2.2f, %2.2f, %2.2f;   type: %d\n", coordX, coordY, coordZ, expectedXNeighborX, expectedXNeighborY, expectedXNeighborZ, actualXNeighborX, actualXNeighborY, actualXNeighborZ, type);
+                }
+            }
+        }*/
+
+
 
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
@@ -498,9 +539,9 @@ std::string GridGenerator::verifyNeighborIndex(int level, int index , int &inval
     real maxX = para->getParH(level)->coordX_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
     real maxY = para->getParH(level)->coordY_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
     real maxZ = para->getParH(level)->coordZ_SP[para->getParH(level)->size_Mat_SP - 1] - delta;
-    real realNeighborX = CudaMath::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordX_SP[1];
-    real realNeighborY = CudaMath::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordY_SP[1];
-    real realNeighborZ = CudaMath::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordZ_SP[1];
+    real realNeighborX = vf::Math::lessEqual(x + delta, maxX) ? x + delta : para->getParH(level)->coordX_SP[1];
+    real realNeighborY = vf::Math::lessEqual(y + delta, maxY) ? y + delta : para->getParH(level)->coordY_SP[1];
+    real realNeighborZ = vf::Math::lessEqual(z + delta, maxZ) ? z + delta : para->getParH(level)->coordZ_SP[1];
 
     oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborX_SP[index], realNeighborX, y, z, "X");
     oss << checkNeighbor(level, x, y, z, index, wrongNeighbors, this->para->getParH(level)->neighborY_SP[index], x, realNeighborY, z, "Y");
@@ -531,7 +572,7 @@ std::string GridGenerator::checkNeighbor(int level, real x, real y, real z, int 
     real neighborCoordY = para->getParH(level)->coordY_SP[neighborIndex];
     real neighborCoordZ = para->getParH(level)->coordZ_SP[neighborIndex];
 
-    const bool neighborValid = CudaMath::equal(neighborX, neighborCoordX) && CudaMath::equal(neighborY, neighborCoordY) && CudaMath::equal(neighborZ, neighborCoordZ);
+    const bool neighborValid = vf::Math::equal(neighborX, neighborCoordX) && vf::Math::equal(neighborY, neighborCoordY) && vf::Math::equal(neighborZ, neighborCoordZ);
 
     if (!neighborValid) {
         oss << "NeighborX invalid from: (" << x << ", " << y << ", " << z << "), index: " << index << ", "

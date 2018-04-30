@@ -22,13 +22,17 @@
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridBuilder/ParallelGridBuilder.h"
-#include "geometries/Geometry/Geometry.cuh"
+#include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "grid/GridFactory.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 #include <grid/GridMocks.h>
 #include "grid/GridStrategy/GridStrategyMocks.h"
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
+#include "geometries/Conglomerate/Conglomerate.h"
+#include "io/STLReaderWriter/STLReader.h"
+#include "io/STLReaderWriter/STLWriter.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -238,26 +242,61 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
     logging::Logger::setStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::ERROR);
+    logging::Logger::setDebugLevel(logging::Logger::INFO_LOW);
+    logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
     gridFactory->setGrid("grid");
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
+
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 35.0, 35.0, 35.0, 1.0);
 
-    gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 4);
+    //Conglomerate* conglomerate = new Conglomerate();
+    //conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
+    //conglomerate->subtract(new Sphere(30, 20, 20, 4));
+    //gridBuilder->addGrid(conglomerate, 2);
+
+
+//    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 14, 10, 20, 0.25);
+    //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
+
+
+    gridBuilder->addCoarseGrid(-10, -8, -3, 50, 20, 20, 0.25);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl", DiscretizationMethod::RAYCASTING);
+
+
+    //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
+
+    //TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
+    //TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
+    //trans.transformWorldToGrid(*sphere);
+    //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
+
+    //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
+    gridBuilder->addGrid(triangularMesh, 2);
+
+    //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
+    //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
+
+
+    //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
+
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
-    gridBuilder->allocateGridMemory();
-    gridBuilder->createGridInterfaces();
+    gridBuilder->buildGrids();
 
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0", 0);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
 
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);
+
+    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/test/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //const uint level = 2;
     //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
@@ -274,7 +313,6 @@ void multipleLevel(const std::string& configPath)
 
 
     //gridBuilder->copyDataFromGpu();
-    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/periodicTaylorThreeLevel/simu/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
     //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);

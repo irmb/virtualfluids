@@ -9,6 +9,9 @@
 
 #include <VirtualFluidsDefinitions.h>
 
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
+
 class StringUtil
 {
 public:

@@ -4,11 +4,11 @@
 
 class Grid;
 class GridImp;
-struct Geometry;
+class TriangularMesh;
 class LaunchParameter;
 
 float runKernelInitalUniformGrid3d(const LaunchParameter& para, GridImp &grid);
-float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const Geometry &geom);
+float runKernelToMesh(const LaunchParameter& para, GridImp &grid, const TriangularMesh &geom);
 float runKernelToMarkNodesToDeleteOutsideOfGeometry(const LaunchParameter& para, GridImp &grid);
 
 float runKernelToFindGridInterface(const LaunchParameter& para, GridImp &grid, GridImp &finerGrid);

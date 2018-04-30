@@ -89,15 +89,15 @@ void writeInit(SPtr<Parameter> para)
 			}
 
 			//Debug
-            //InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-            //InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
-            //InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para.get());
-            //InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para.get());
-            //InterfaceDebugWriter::writeInterfaceLinesDebugFCCneighbor(para.get());
-            //InterfaceDebugWriter::writeInterfaceLinesDebugFCFneighbor(para.get());
-			//InterfaceDebugWriter::writeNeighborXLinesDebug(para);
-			//InterfaceDebugWriter::writeNeighborYLinesDebug(para);
-			//InterfaceDebugWriter::writeNeighborZLinesDebug(para);
+            InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugFCCneighbor(para.get());
+            InterfaceDebugWriter::writeInterfaceLinesDebugFCFneighbor(para.get());
+			InterfaceDebugWriter::writeNeighborXLinesDebug(para.get());
+			InterfaceDebugWriter::writeNeighborYLinesDebug(para.get());
+			InterfaceDebugWriter::writeNeighborZLinesDebug(para.get());
 
 			//if (para->getParH(lev)->QGeom.kQ > 0)
 			//{
@@ -250,7 +250,8 @@ void writeTimestep(Parameter* para, unsigned int t)
 
 			if (para->getUseWale())
 			{
-				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				//UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosityDebug(para, lev, fname);
 			}
 			//else if (para->getSimulatePorousMedia())
 			//{
@@ -271,8 +272,9 @@ void writeTimestep(Parameter* para, unsigned int t)
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()) && ((t%(unsigned int)para->getclockCycleForMP())==0))
 			{
-				//UnstrucuredGridWriter::writeUnstrucuredGridEffMedian(para, lev, ffname_bin_med);
-				UnstrucuredGridWriter::writeUnstrucuredGridMedianLT(para, lev, fname_med);
+				////UnstrucuredGridWriter::writeUnstrucuredGridEffMedian(para, lev, ffname_bin_med);
+				//UnstrucuredGridWriter::writeUnstrucuredGridMedianLT(para, lev, fname_med);
+				UnstrucuredGridWriter::writeUnstrucuredGridMedianLTwithDerivationsAndSqaredVelos(para, lev, fname_med);
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

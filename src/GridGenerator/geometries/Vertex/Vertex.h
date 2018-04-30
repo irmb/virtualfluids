@@ -24,7 +24,9 @@ public:
 	HOSTDEVICE real getEuclideanDistanceTo(const Vertex &w) const;
 	HOSTDEVICE Vertex operator-(const Vertex &v) const;
 	HOSTDEVICE Vertex operator+(const Vertex &v) const;
-	HOSTDEVICE Vertex operator*(const real value) const;
+	HOSTDEVICE Vertex operator*(const real& value) const;
+    HOSTDEVICE Vertex operator/(const real& value) const;
+
 	HOSTDEVICE real operator*(const Vertex &w) const;
 	HOSTDEVICE struct Vertex crossProduct(const Vertex &w) const;
 	HOSTDEVICE real length() const;

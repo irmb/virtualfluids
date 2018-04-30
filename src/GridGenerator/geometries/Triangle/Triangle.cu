@@ -1,8 +1,8 @@
-#include "Triangle.cuh"
-#include <GridGenerator/utilities/math/CudaMath.cuh>
+#include "Triangle.h"
+#include <GridGenerator/utilities/math/Math.h>
 #include "TriangleException.h"
 
-#include "Serialization/TriangleMemento.h"
+#include "grid/NodeValues.h"
 
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal) : v1(v1), v2(v2), v3(v3), normal(normal) {}
 HOSTDEVICE Triangle::Triangle(Vertex &v1, Vertex &v2, Vertex &v3) : v1(v1), v2(v2), v3(v3) { calcNormal(); }
@@ -16,6 +16,28 @@ HOSTDEVICE void Triangle::set(const Vertex &v1, const Vertex &v2, const Vertex &
     this->calcNormal();
 }
 
+HOSTDEVICE void Triangle::set(int index, Vertex value)
+{
+    if (index == 0)
+        v1 = value;
+    if (index == 1)
+        v2 = value;
+    if (index == 2)
+        v3 = value;
+}
+
+HOSTDEVICE Vertex Triangle::get(int index)
+{
+    if (index == 0)
+        return v1;
+    if (index == 1)
+        return v2;
+    if (index == 2)
+        return v3;
+    else
+        return Vertex(-999999999999999, -99999999999999, -9999999999999);
+}
+
 HOSTDEVICE void Triangle::calcNormal()
 {
     Vertex edge1 = v2 - v1;
@@ -24,33 +46,39 @@ HOSTDEVICE void Triangle::calcNormal()
     normal.normalize();
 }
 
+HOSTDEVICE void Triangle::initalLayerThickness(real delta)
+{
+    this->layerThickness = delta*(abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z));
+}
+
+
 HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
 {
-    real s, delta;
-    delta = abs(this->normal.x) + abs(this->normal.y) + abs(this->normal.z); //TODO: muss eigentlich nicht fuer jeden Punkt neu berechnet werden
+    real s;
 
-    if (this->isUnterExtendedFace(point, s, delta))
+    if (this->isUnterExtendedFace(point, s))
         if (this->isNotNextToFace(point))
             if (this->isUnderAngleToNeighbors(point))
-                if (this->isStopper(point))
-                    return 1;
+                if (this->isNegativeDirectionBorder(point))
+                    return NEGATIVE_DIRECTION_BORDER;
                 else
-                    return 99; //solid
+                    return INSIDE;
             else 
                 return 4;
         else
             return 3;
-    else if (this->isQNode(point, s, delta))
-        return 6;
-    else
-        return 2;
+
+
+    if (this->isQNode(point, s))
+        return Q;
     
+    return FLUID;
 }
 
-HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex &point, real &s, real &delta) const
+HOSTDEVICE bool Triangle::isUnterExtendedFace(const Vertex & point, real &s) const
 {
     s = this->getPerpedicularDistanceFrom(point);
-    return ((CudaMath::greaterEqual(s, 0.0f)) && s < delta);
+    return ((vf::Math::greaterEqual(s, 0.0f)) && s < this->layerThickness);
 }
 
 HOSTDEVICE real Triangle::getPerpedicularDistanceFrom(const Vertex &P) const
@@ -64,15 +92,15 @@ HOSTDEVICE Vertex Triangle::getPerpedicularPointFrom(const Vertex &P) const
     return P + normal * getPerpedicularDistanceFrom(P);
 }
 
-HOSTDEVICE bool Triangle::isQNode(const Vertex &point, const real &s, const real &delta) const
+HOSTDEVICE bool Triangle::isQNode(const Vertex & point, const real &s) const
 {
-    return (s < 0 && CudaMath::lessEqual(-s, delta));
+    return (s < 0 && vf::Math::lessEqual(-s, this->layerThickness));
     //calculateQs(actualPoint, actualTriangle);
 }
 
-HOSTDEVICE bool Triangle::isStopper(const Vertex &point) const
+HOSTDEVICE bool Triangle::isNegativeDirectionBorder(const Vertex &point) const
 {
-    return (CudaMath::lessEqual(normal.x, 0.0f) || CudaMath::lessEqual(normal.y, 0.0f) || CudaMath::lessEqual(normal.z, 0.0f));
+    return normal.x < 0.0f || normal.y < 0.0f || normal.z < 0.0f;
     //return (sVector.x < 0.0f && sVector.y < 0.0f && sVector.z < 0.0f);
 }
 
@@ -92,7 +120,7 @@ HOSTDEVICE bool Triangle::isNotNextToFace(const Vertex &point) const
     real g2 = t2 * normal;
     real g3 = t3 * normal;
 
-    return CudaMath::lessEqual(g1, 0.0f) && CudaMath::lessEqual(g2, 0.0f) && CudaMath::lessEqual(g3, 0.0f);
+    return vf::Math::lessEqual(g1, 0.0f) && vf::Math::lessEqual(g2, 0.0f) && vf::Math::lessEqual(g3, 0.0f);
 }
 
 HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
@@ -113,7 +141,7 @@ HOSTDEVICE bool Triangle::isUnderAngleToNeighbors(const Vertex &point) const
     }
 
     real eps = EPSILON * 100.0f;
-    return (CudaMath::lessEqual(betaAngles[0], alphaAngles[0], eps) && CudaMath::lessEqual(betaAngles[1], alphaAngles[1], eps) && CudaMath::lessEqual(betaAngles[2], alphaAngles[2], eps));
+    return (vf::Math::lessEqual(betaAngles[0], alphaAngles[0], eps) && vf::Math::lessEqual(betaAngles[1], alphaAngles[1], eps) && vf::Math::lessEqual(betaAngles[2], alphaAngles[2], eps));
 }
 
 HOSTDEVICE void Triangle::getClosestPointsOnEdges(Vertex arr[], const Vertex &P) const
@@ -273,39 +301,12 @@ HOSTDEVICE void Triangle::print() const
 HOST bool Triangle::operator==(const Triangle &t) const
 {
     return v1 == t.v1 && v2 == t.v2 && v3 == t.v3
-        && CudaMath::equal(alphaAngles[0], t.alphaAngles[0]) && CudaMath::equal(alphaAngles[1], t.alphaAngles[1]) && CudaMath::equal(alphaAngles[2], t.alphaAngles[2]);
+        && vf::Math::equal(alphaAngles[0], t.alphaAngles[0]) && vf::Math::equal(alphaAngles[1], t.alphaAngles[1]) && vf::Math::equal(alphaAngles[2], t.alphaAngles[2]);
 }
 
 
 HOSTDEVICE void Triangle::setMinMax(real &minX, real &maxX, real &minY, real &maxY, real &minZ, real &maxZ) const
 {
     Vertex::setMinMax(minX, maxX, minY, maxY, minZ, maxZ, v1, v2, v3);
-}
-
-HOST TriangleMemento Triangle::getState() const
-{
-    TriangleMemento memento;
-    memento.v1 = v1.getState();
-    memento.v2 = v2.getState();
-    memento.v3 = v3.getState();
-    memento.normal = normal.getState();
-    
-    memento.alphaAngles[0] = alphaAngles[0];
-    memento.alphaAngles[1] = alphaAngles[1];
-    memento.alphaAngles[2] = alphaAngles[2];
-
-    return memento;
-}
-
-HOST void Triangle::setState(const TriangleMemento &memento)
-{
-    this->v1.setState(memento.v1);
-    this->v2.setState(memento.v2);
-    this->v3.setState(memento.v3);
-    this->normal.setState(memento.normal);
-
-    this->alphaAngles[0] = memento.alphaAngles[0];
-    this->alphaAngles[1] = memento.alphaAngles[1];
-    this->alphaAngles[2] = memento.alphaAngles[2];
 }
 

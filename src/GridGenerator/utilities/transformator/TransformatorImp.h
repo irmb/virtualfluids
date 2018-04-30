@@ -4,14 +4,13 @@
 
 #include "GridGenerator/global.h"
 #include <exception>
-
+#include <sstream>
 #include "Transformator.h"
 #include "ArrowTransformator.h"
 
-template<typename T>
 class BoundingBox;
 struct Triangle;
-struct Geometry;
+class TriangularMesh;
 struct Vertex;
 
 
@@ -35,14 +34,14 @@ public:
 	VF_PUBLIC virtual ~TransformatorImp();
 	
 	VF_PUBLIC void transformWorldToGrid(Triangle &value) const;
-	VF_PUBLIC void transformWorldToGrid(Geometry &geom) const;
+	VF_PUBLIC void transformWorldToGrid(TriangularMesh &geom) const;
 	VF_PUBLIC void transformWorldToGrid(Vertex &value) const;
 
     VF_PUBLIC void transformGridToWorld(Triangle &t) const;
 	VF_PUBLIC void transformGridToWorld(Vertex &value) const;
 
-	VF_PUBLIC void transformGridToWorld(BoundingBox<real> &box) const;
-	VF_PUBLIC void transformWorldToGrid(BoundingBox<real> &box) const;
+	VF_PUBLIC void transformGridToWorld(BoundingBox &box) const;
+	VF_PUBLIC void transformWorldToGrid(BoundingBox &box) const;
 
 	VF_PUBLIC bool operator==(const TransformatorImp& trafo) const;
 

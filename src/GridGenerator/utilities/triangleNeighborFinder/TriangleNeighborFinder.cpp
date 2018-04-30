@@ -1,12 +1,10 @@
 #include "TriangleNeighborFinder.h"
 #include <omp.h>
 
-#include <GridGenerator/geometries/Triangle/Triangle.cuh>
-#include <GridGenerator/geometries/Geometry/Geometry.cuh>
+#include <GridGenerator/geometries/Triangle/Triangle.h>
+#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
 
-struct IDS {
-    enum IDs{ vertexID = 0, firstVertexID = 1, coordinateID = 2, uniqueCoordID = 3, x = 3, y = 4, z = 5 };
-};
+
 
 
 int compare2DArrayAccordingToXYZ(const void *pa, const void *pb) {
@@ -40,11 +38,11 @@ int compare2DArrayAccordingToIndex(const void *pa, const void *pb) {
     return 0;
 }
 
-TriangleNeighborFinder::TriangleNeighborFinder(Triangle *triangles_ptr, int size)
+TriangleNeighborFinder::TriangleNeighborFinder(Triangle *triangles, int size) : triangles(triangles)
 {
-    numberOfRows = size*DIMENSION;
+    numberOfRows = size * DIMENSION;
 
-    this->initalSortedInSpaceWithCoords(triangles_ptr, size);
+    this->initalSortedInSpaceWithCoords(triangles, size);
 
     qsort(sortedInSpace, numberOfRows, sizeof sortedInSpace[0], compare2DArrayAccordingToXYZ);
 
@@ -68,38 +66,38 @@ TriangleNeighborFinder::TriangleNeighborFinder(Triangle *triangles_ptr, int size
 }
 
 
-void TriangleNeighborFinder::initalSortedInSpaceWithCoords(Triangle *triangles_ptr, int size)
+void TriangleNeighborFinder::initalSortedInSpaceWithCoords(Triangle *triangles, int size)
 {
     sortedInSpace = new real*[numberOfRows];
 
     int vertexCounter = 0;
-    int numberOfColumns = 6;
+    const int numberOfColumns = 6;
     for (int i = 0; i < size; i++){
         sortedInSpace[vertexCounter] = new real[numberOfColumns];
         sortedInSpace[vertexCounter][IDS::vertexID] = (real)vertexCounter;
         sortedInSpace[vertexCounter][IDS::firstVertexID] = 0.0f;                  
         sortedInSpace[vertexCounter][IDS::coordinateID]  = 0.0f;                   
-        sortedInSpace[vertexCounter][IDS::x] = triangles_ptr[i].v1.x;
-        sortedInSpace[vertexCounter][IDS::y] = triangles_ptr[i].v1.y;
-        sortedInSpace[vertexCounter][IDS::z] = triangles_ptr[i].v1.z;
+        sortedInSpace[vertexCounter][IDS::x] = triangles[i].v1.x;
+        sortedInSpace[vertexCounter][IDS::y] = triangles[i].v1.y;
+        sortedInSpace[vertexCounter][IDS::z] = triangles[i].v1.z;
 
         vertexCounter++;
         sortedInSpace[vertexCounter] = new real[numberOfColumns];
         sortedInSpace[vertexCounter][IDS::vertexID]      = (real)vertexCounter;
         sortedInSpace[vertexCounter][IDS::firstVertexID] = 0.0f;
         sortedInSpace[vertexCounter][IDS::coordinateID]  = 0.0f;
-        sortedInSpace[vertexCounter][IDS::x] = triangles_ptr[i].v2.x;
-        sortedInSpace[vertexCounter][IDS::y] = triangles_ptr[i].v2.y;
-        sortedInSpace[vertexCounter][IDS::z] = triangles_ptr[i].v2.z;
+        sortedInSpace[vertexCounter][IDS::x] = triangles[i].v2.x;
+        sortedInSpace[vertexCounter][IDS::y] = triangles[i].v2.y;
+        sortedInSpace[vertexCounter][IDS::z] = triangles[i].v2.z;
 
         vertexCounter++;
         sortedInSpace[vertexCounter] = new real[numberOfColumns];
         sortedInSpace[vertexCounter][IDS::vertexID]      = (real)vertexCounter;
         sortedInSpace[vertexCounter][IDS::firstVertexID] = 0.0f;
         sortedInSpace[vertexCounter][IDS::coordinateID]  = 0.0f;
-        sortedInSpace[vertexCounter][IDS::x] = triangles_ptr[i].v3.x;
-        sortedInSpace[vertexCounter][IDS::y] = triangles_ptr[i].v3.y;
-        sortedInSpace[vertexCounter][IDS::z] = triangles_ptr[i].v3.z;
+        sortedInSpace[vertexCounter][IDS::x] = triangles[i].v3.x;
+        sortedInSpace[vertexCounter][IDS::y] = triangles[i].v3.y;
+        sortedInSpace[vertexCounter][IDS::z] = triangles[i].v3.z;
         vertexCounter++;
     }
 }
@@ -237,8 +235,7 @@ void TriangleNeighborFinder::fillWithNeighborIndices(IntegerPtr2D *neighborIndic
     }
 }
 
-
-void TriangleNeighborFinder::fillWithNeighborAngles(Geometry *geom) const
+void TriangleNeighborFinder::fillWithNeighborAngles(TriangularMesh *geom) const
 {
     int j, row, index, indexNeighbor;
     #pragma omp parallel for private(j, row, index, indexNeighbor) shared(neighborAngles->ptr)
@@ -264,3 +261,65 @@ void TriangleNeighborFinder::fillWithNeighborAngles(Geometry *geom) const
     //}
 }
 
+std::vector<int> TriangleNeighborFinder::getTriangleIDsWithCommonVertex(int vertexID) const
+{
+    std::vector<int> triangleIDs;
+
+    const int firstVertexId = sortedToTriangles[vertexID][IDS::firstVertexID];
+    int uniqueCoordID = sortedToTriangles[firstVertexId][IDS::uniqueCoordID]; 
+    const int coordinateID = sortedInSpace[uniqueCoordID][IDS::coordinateID];
+    while (coordinateID == sortedInSpace[uniqueCoordID][IDS::coordinateID])
+    {
+        int triangleID = sortedInSpace[uniqueCoordID][IDS::vertexID] / 3;
+        triangleIDs.push_back(triangleID);
+        uniqueCoordID++;
+        if (uniqueCoordID == numberOfRows)
+            break;
+    }
+
+    return triangleIDs;
+}
+
+std::vector< std::vector<Triangle> > TriangleNeighborFinder::getTrianglesPerVertex() const
+{
+    std::vector< std::vector<Triangle> > connected;
+    int uniqueCoordID = 0;
+    while (uniqueCoordID < numberOfRows)
+    {
+        std::vector<Triangle> triangles;
+
+        int nextCoordinateID = this->sortedInSpace[uniqueCoordID][IDS::coordinateID];
+        int currentCoordinateID = this->sortedInSpace[uniqueCoordID][IDS::coordinateID];
+        while (nextCoordinateID == currentCoordinateID)
+        {
+            const int vertexID = this->sortedInSpace[uniqueCoordID][IDS::vertexID];
+            const int triangleID = vertexID / 3;
+            triangles.push_back(this->triangles[triangleID]);
+
+            uniqueCoordID++;
+            if (uniqueCoordID >= numberOfRows)
+                break;
+            currentCoordinateID = nextCoordinateID;
+            nextCoordinateID = this->sortedInSpace[uniqueCoordID][IDS::coordinateID];
+        }
+        connected.push_back(triangles);
+    }
+    return connected;
+}
+
+
+void TriangleNeighborFinder::printSortedToTriangles() const
+{
+    printf("VertexID | FirstVertexID | CoordID | UniqueCoordID\n");
+    for (int row = 0; row < numberOfRows; row++) {
+        printf("%d \t %d \t %d \t %d\n", int(sortedToTriangles[row][IDS::vertexID]), int(sortedToTriangles[row][IDS::firstVertexID]), int(sortedToTriangles[row][IDS::coordinateID]), int(sortedToTriangles[row][IDS::uniqueCoordID]));
+    }
+}
+
+void TriangleNeighborFinder::printSortedInSpace() const
+{
+    printf("VertexID | X | Y | Z | FirstVertexID | CoordID | UniqueCoordID\n");
+    for (int row = 0; row < numberOfRows; row++) {
+        printf("%d \t %2.2f \t %2.2f \t %2.2f \t %d \t %d \t %d\n", int(sortedInSpace[row][IDS::vertexID]), sortedInSpace[row][IDS::x], sortedInSpace[row][IDS::y], sortedInSpace[row][IDS::z], int(sortedInSpace[row][IDS::firstVertexID]), int(sortedInSpace[row][IDS::coordinateID]), int(sortedInSpace[row][IDS::uniqueCoordID]));
+    }
+}

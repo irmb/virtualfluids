@@ -4,8 +4,10 @@
 #include "GridGenerator/global.h"
 #include "GridStrategy/GridStrategyMocks.h"
 #include "distributions/Distribution.h"
+#include <geometries/Vertex/Vertex.h>
 
 #include "Grid.h"
+#include "geometries/Object.h"
 
 class GridDummy : public Grid
 {
@@ -22,7 +24,7 @@ public:
         return 0.0;
     }
 
-    virtual uint getReducedSize() const override { return 0; }
+    virtual uint getSparseSize() const override { return 0; }
     virtual uint getSize() const override { return 0; }
     virtual real getStartX() const override { return 0.0; }
     virtual real getStartY() const override { return 0.0; }
@@ -35,7 +37,7 @@ public:
     virtual uint getNumberOfNodesZ() const override { return 0; }
     virtual uint getNumberOfNodesCF() const override { return 0; }
     virtual uint getNumberOfNodesFC() const override { return 0; }
-    virtual int getIndex(uint matrixIndex) const override { return 0; }
+    virtual int getSparseIndex(uint matrixIndex) const override { return 0; }
     virtual char getFieldEntry(uint matrixIndex) const override { return 0; }
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override {}
     virtual uint* getCF_coarse() const override { return 0; }
@@ -46,39 +48,35 @@ public:
     virtual int* getDirection() const override { return nullptr; }
     virtual int getStartDirection() const override { return 0; }
     virtual int getEndDirection() const override { return 0; }
-    virtual void setNodeValues(real* xCoords, real* yCoords, real* zCoords, unsigned* neighborX, unsigned* neighborY,
+    virtual void getNodeValues(real* xCoords, real* yCoords, real* zCoords, unsigned* neighborX, unsigned* neighborY,
         unsigned* neighborZ, unsigned* geo) const override {}
     virtual SPtr<GridStrategy> getGridStrategy() const override { return nullptr; }
     virtual void transIndexToCoords(int index, real& x, real& y, real& z) const override {}
     virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override {}
     virtual void freeMemory() override {}
 
-    virtual void setStartX(real startX) override {}
-    virtual void setStartY(real startY) override {}
-    virtual void setStartZ(real startZ) override {}
-    virtual void setEndX(real endX) override {}
-    virtual void setEndY(real endY) override {}
-    virtual void setEndZ(real endZ) override {}
-    virtual void removeOverlapNodes(SPtr<Grid> grid) override {}
-    virtual void mesh(Geometry& geometry) override {}
-    virtual int transCoordToIndex(const Vertex& v) const override { return 0; }
+    virtual void findGridInterface(SPtr<Grid> grid) override {}
+    virtual void mesh(TriangularMesh& geometry) override {}
     virtual int transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
-    virtual void setFieldEntry(uint index, char entry) override {}
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
-    virtual void allocateGridMemory() override {}
+    virtual void inital() override {}
+    virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
+    virtual void findSparseIndices(SPtr<Grid> fineGrid) override {}
+    virtual Vertex getMinimumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }
+    virtual Vertex getMaximumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }
 };
 
 class GridStub : public GridDummy
 {
 protected:
-    GridStub(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
+    GridStub(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
 
 public:
-    static SPtr<GridStub> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridStub> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
-        return SPtr<GridStub>(new GridStub(startX, startY, startZ, endX, endY, endZ, delta));
+        return SPtr<GridStub>(new GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta));
     }
 
     virtual real getDelta() const override { return delta; }
@@ -90,12 +88,6 @@ public:
     virtual real getEndY() const override { return endY; }
     virtual real getEndZ() const override { return endZ; }
 
-    virtual void setStartX(real startX) override { this->startX = startX; }
-    virtual void setStartY(real startY) override { this->startY = startY; }
-    virtual void setStartZ(real startZ) override { this->startZ = startZ; }
-    virtual void setEndX(real endX) override { this->endX = endX; }
-    virtual void setEndY(real endY) override { this->endY = endY; }
-    virtual void setEndZ(real endZ) override { this->endZ = endZ; }
 
 private:
     real startX, startY, startZ;
@@ -107,13 +99,13 @@ private:
 
 class GridSpy : public GridStub
 {
-private:
-    GridSpy(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : GridStub(startX, startY, startZ, endX, endY, endZ, delta) {}
+protected:
+    GridSpy(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta) {}
 
 public:
-    static SPtr<GridSpy> makeShared(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridSpy> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
     {
-        return SPtr<GridSpy>(new GridSpy(startX, startY, startZ, endX, endY, endZ, delta));
+        return SPtr<GridSpy>(new GridSpy(gridShape, startX, startY, startZ, endX, endY, endZ, delta));
     }
 
     bool hasGridInterface() const
@@ -133,7 +125,7 @@ public:
         this->periodicityZ = periodicityZ;
     }
 
-    virtual void removeOverlapNodes(SPtr<Grid> grid) override
+    virtual void findGridInterface(SPtr<Grid> grid) override
     {
         _hasGridInterface = true;
     }

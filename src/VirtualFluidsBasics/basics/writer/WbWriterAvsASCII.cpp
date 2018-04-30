@@ -1,6 +1,7 @@
 #include <basics/writer/WbWriterAvsASCII.h>
 #include <basics/utilities/UbLogger.h>
 #include <cstring>
+#include <basics/utilities/UbSystem.h>
 
 using namespace std;
 

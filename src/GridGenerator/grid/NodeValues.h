@@ -2,21 +2,36 @@
 #define NodeValues_H
 
 
-#define FLUID 0
-#define SOLID 1
-#define Q 6
 
+#define FLUID 0
+
+#define FLUID_CFC 1
+#define FLUID_CFF 2
+
+#define FLUID_FCC 3
+#define FLUID_FCF 4
+
+#define SOLID 5
+#define STOPPER_OVERLAP_GRID 6
+#define STOPPER_END_OF_GRID 7
+
+#define OUT_OF_GRID 8
+
+#define INVALID_NODE 9
+
+
+#define INSIDE 10
+#define NEGATIVE_DIRECTION_BORDER 11
+
+
+
+#define Q 6
 #define NOSLIP 2
 #define PRESSURE 3
 #define VELOCITY 4
 
-#define INVALID_NODE 99
 
-#define CFC 66
-#define CFF 67
 
-#define FCC 77
-#define FCF 78
 
 #define RB_INLET PRESSURE
 #define RB_OUTLET PRESSURE

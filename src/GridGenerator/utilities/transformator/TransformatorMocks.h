@@ -8,10 +8,10 @@
 
 #include "Transformator.h"
 
-#include <geometries/Vertex/Vertex.cuh>
-#include <geometries/Triangle/Triangle.cuh>
-#include <geometries/BoundingBox/BoundingBox.cuh>
-#include <geometries/Geometry/Geometry.cuh>
+#include <geometries/Vertex/Vertex.h>
+#include <geometries/Triangle/Triangle.h>
+#include <geometries/BoundingBox/BoundingBox.h>
+#include <geometries/TriangularMesh/TriangularMesh.h>
 
 class TransformatorStub : public Transformator
 {
@@ -20,11 +20,11 @@ public:
 	virtual ~TransformatorStub() {};
 
 	virtual void transformWorldToView(Triangle &value) const override{}
-	virtual void transformWorldToView(Geometry &geom) const override {}
+	virtual void transformWorldToView(TriangularMesh &geom) const override {}
 	virtual void transformWorldToView(Vertex &value) const override {}
 	
-	virtual void transformViewToWorld(BoundingBox<real> &box) const override {}
-	virtual void transformWorldToView(BoundingBox<real> &box) const override {}
+	virtual void transformViewToWorld(BoundingBox &box) const override {}
+	virtual void transformWorldToView(BoundingBox &box) const override {}
 
 	virtual void transformViewToWorld(Vertex &value) const override { v = value; counter++; logString.append("transformViewToWorld "); }
 

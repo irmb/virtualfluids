@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "Geometry.cuh"
+#include "TriangularMesh.h"
 
 using namespace testing;
 
