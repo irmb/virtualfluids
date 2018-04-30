@@ -59,7 +59,7 @@ private:
     DiscretizationMethod discretizationMethod;
 
 public:
-    HOSTDEVICE Object* clone() const override { return new TriangularMesh(); }
+    HOSTDEVICE Object* clone() const override;
     double getX1Centroid() override { throw "Not implemented in TriangularMesh"; }
     double getX1Minimum() override { return minmax.minX; }
     double getX1Maximum() override { return minmax.maxX; }

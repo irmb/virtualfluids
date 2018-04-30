@@ -53,10 +53,6 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
         grid->findInnerNode(index);
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE
-        << "Grid created: " << "from (" << grid->startX << ", " << grid->startY << ", " << grid->startZ << ") to (" << grid->endX << ", " << grid->endY << ", " << grid->endZ << ")\n"
-        << "nodes: " << grid->nx << " x " << grid->ny << " x " << grid->nz << " = " << grid->size << "\n";
 }
 
 void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
@@ -74,6 +70,8 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangu
     }
 
     removeOddBoundaryCellNodes(grid);
+
+
 }
 
 void GridCpuStrategy::pointUnderTriangleMethod(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
@@ -306,8 +304,6 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid);
-
-    GridVTKWriter::writeSparseGridToVTK(fineGrid, "D:/GRIDGENERATION/CF");
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);

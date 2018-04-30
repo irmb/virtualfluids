@@ -572,8 +572,33 @@ void Parameter::cudaAllocTurbulentViscosity(int lev)
 {
 	//Host
 	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->turbViscosity), parH[lev]->mem_size_real_SP));
+	//Debug
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gSij ), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gSDij), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDxvx), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDyvx), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDzvx), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDxvy), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDyvy), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDzvy), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDxvz), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDyvz), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->gDzvz), parH[lev]->mem_size_real_SP));
+
 	//Device						 
 	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->turbViscosity), parD[lev]->mem_size_real_SP));
+	//Debug
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gSij ), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gSDij), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDxvx), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDyvx), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDzvx), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDxvy), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDyvy), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDzvy), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDxvz), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDyvz), parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->gDzvz), parD[lev]->mem_size_real_SP));
 	//////////////////////////////////////////////////////////////////////////
 	double tmp = (double)parH[lev]->mem_size_real_SP;
 	setMemsizeGPU(tmp, false);
@@ -582,15 +607,51 @@ void Parameter::cudaCopyTurbulentViscosityHD(int lev)
 {
 	//copy host to device
 	checkCudaErrors(cudaMemcpy(parD[lev]->turbViscosity, parH[lev]->turbViscosity, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	//Debug
+	checkCudaErrors(cudaMemcpy(parD[lev]->gSij , parH[lev]->gSij , parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gSDij, parH[lev]->gSDij, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDxvx, parH[lev]->gDxvx, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDyvx, parH[lev]->gDyvx, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDzvx, parH[lev]->gDzvx, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDxvy, parH[lev]->gDxvy, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDyvy, parH[lev]->gDyvy, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDzvy, parH[lev]->gDzvy, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDxvz, parH[lev]->gDxvz, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDyvz, parH[lev]->gDyvz, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->gDzvz, parH[lev]->gDzvz, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
 }
 void Parameter::cudaCopyTurbulentViscosityDH(int lev)
 {
 	//copy device to host
 	checkCudaErrors(cudaMemcpy(parH[lev]->turbViscosity, parD[lev]->turbViscosity, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	//Debug
+	checkCudaErrors(cudaMemcpy(parH[lev]->gSij , parD[lev]->gSij , parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gSDij, parD[lev]->gSDij, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDxvx, parD[lev]->gDxvx, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDyvx, parD[lev]->gDyvx, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDzvx, parD[lev]->gDzvx, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDxvy, parD[lev]->gDxvy, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDyvy, parD[lev]->gDyvy, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDzvy, parD[lev]->gDzvy, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDxvz, parD[lev]->gDxvz, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDyvz, parD[lev]->gDyvz, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->gDzvz, parD[lev]->gDzvz, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaFreeTurbulentViscosity(int lev)
 {
 	checkCudaErrors(cudaFreeHost(parH[lev]->turbViscosity));
+	//Debug
+	checkCudaErrors(cudaFreeHost(parH[lev]->gSij ));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gSDij));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDxvx));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDyvx));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDzvx));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDxvy));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDyvy));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDzvy));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDxvz));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDyvz));
+	checkCudaErrors(cudaFreeHost(parH[lev]->gDzvz));
 }
 //median
 void Parameter::cudaAllocMedianSP(int lev)

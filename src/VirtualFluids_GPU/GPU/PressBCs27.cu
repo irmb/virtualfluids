@@ -3271,15 +3271,15 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 	  //(D.f[dirBSE ])[kbse ] = f_BSE ;
 	  //(D.f[dirBNE ])[kbne ] = f_BNE ;     
 	  // X
-	  //(D.f[dirW   ])[kw   ] = f_W   ;
-	  //(D.f[dirSW  ])[ksw  ] = f_SW  ;
-	  //(D.f[dirNW  ])[knw  ] = f_NW  ;
-	  //(D.f[dirBW  ])[kbw  ] = f_BW  ;
-	  //(D.f[dirTW  ])[ktw  ] = f_TW  ;
-	  //(D.f[dirTSW ])[ktsw ] = f_TSW ;
-	  //(D.f[dirTNW ])[ktnw ] = f_TNW ;
-	  //(D.f[dirBSW ])[kbsw ] = f_BSW ;
-	  //(D.f[dirBNW ])[kbnw ] = f_BNW ;     
+	  (D.f[dirW   ])[kw   ] = f_W   ;
+	  (D.f[dirSW  ])[ksw  ] = f_SW  ;
+	  (D.f[dirNW  ])[knw  ] = f_NW  ;
+	  (D.f[dirBW  ])[kbw  ] = f_BW  ;
+	  (D.f[dirTW  ])[ktw  ] = f_TW  ;
+	  (D.f[dirTSW ])[ktsw ] = f_TSW ;
+	  (D.f[dirTNW ])[ktnw ] = f_TNW ;
+	  (D.f[dirBSW ])[kbsw ] = f_BSW ;
+	  (D.f[dirBNW ])[kbnw ] = f_BNW ;     
 	  // Y
 	  //(D.f[dirS   ])[ks   ] = f_S   ;
 	  //(D.f[dirSE  ])[kse  ] = f_SE  ;
@@ -3291,15 +3291,15 @@ extern "C" __global__ void QPressNoRhoDevice27(  real* rhoBC,
 	  //(D.f[dirBSE ])[kbse ] = f_BSE ;
 	  //(D.f[dirBSW ])[kbsw ] = f_BSW ;     
 	  // Z
-	  (D.f[dirB   ])[kb   ] = f_B   ;
-	  (D.f[dirBE  ])[kbe  ] = f_BE  ;
-	  (D.f[dirBW  ])[kbw  ] = f_BW  ;
-	  (D.f[dirBN  ])[kbn  ] = f_BN  ;
-	  (D.f[dirBS  ])[kbs  ] = f_BS  ;
-	  (D.f[dirBNE ])[kbne ] = f_BNE ;
-	  (D.f[dirBNW ])[kbnw ] = f_BNW ;
-	  (D.f[dirBSE ])[kbse ] = f_BSE ;
-	  (D.f[dirBSW ])[kbsw ] = f_BSW ;     
+	  //(D.f[dirB   ])[kb   ] = f_B   ;
+	  //(D.f[dirBE  ])[kbe  ] = f_BE  ;
+	  //(D.f[dirBW  ])[kbw  ] = f_BW  ;
+	  //(D.f[dirBN  ])[kbn  ] = f_BN  ;
+	  //(D.f[dirBS  ])[kbs  ] = f_BS  ;
+	  //(D.f[dirBNE ])[kbne ] = f_BNE ;
+	  //(D.f[dirBNW ])[kbnw ] = f_BNW ;
+	  //(D.f[dirBSE ])[kbse ] = f_BSE ;
+	  //(D.f[dirBSW ])[kbsw ] = f_BSW ;     
       //////////////////////////////////////////////////////////////////////////
    }
 }

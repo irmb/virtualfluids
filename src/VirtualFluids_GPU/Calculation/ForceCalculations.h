@@ -13,6 +13,7 @@ public:
 	ForceCalculations(Parameter* para);
 	~ForceCalculations();
 	void calcPIDControllerForForce(Parameter* para);
+	void printForcing(Parameter* para);
 
 private:
 	double vx1Targed; //!< target velocity.

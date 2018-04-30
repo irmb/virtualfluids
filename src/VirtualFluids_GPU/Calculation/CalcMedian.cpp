@@ -36,3 +36,24 @@ void calcMedian(Parameter* para, unsigned int tdiff)
 		}
 	}
 }
+
+
+
+
+
+void resetMedian(Parameter* para)
+{
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+	{
+		ResetMedianValuesSP27(
+			para->getParD(lev)->vx_SP_Med,
+			para->getParD(lev)->vy_SP_Med,
+			para->getParD(lev)->vz_SP_Med,
+			para->getParD(lev)->rho_SP_Med,
+			para->getParD(lev)->press_SP_Med,
+			para->getParD(lev)->size_Mat_SP,
+			para->getParD(lev)->numberofthreads,
+			para->getParD(lev)->evenOrOdd);
+		getLastCudaError("ResetMedianValuesSP27 execution failed");
+	}
+}

@@ -3,7 +3,6 @@
 #include <GridGenerator/io/STLReaderWriter/STLReader.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
 #include <GridGenerator/utilities/triangleNeighborFinder/TriangleNeighborFinder.h>
-#include <time.h>
 
 #include <utilities/logger/Logger.h>
 
@@ -45,6 +44,14 @@ TriangularMesh::~TriangularMesh()
 {
 
 }
+
+Object* TriangularMesh::clone() const
+{
+    auto mesh = new TriangularMesh();
+    mesh->setTriangles(this->triangleVec);
+    return mesh;
+}
+
 
 uint TriangularMesh::getNumberOfTriangles() const
 {

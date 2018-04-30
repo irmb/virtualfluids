@@ -250,7 +250,8 @@ void writeTimestep(Parameter* para, unsigned int t)
 
 			if (para->getUseWale())
 			{
-				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				//UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				UnstrucuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosityDebug(para, lev, fname);
 			}
 			//else if (para->getSimulatePorousMedia())
 			//{
@@ -271,8 +272,9 @@ void writeTimestep(Parameter* para, unsigned int t)
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			if (para->getCalcMedian() && ((int)t > para->getTimeCalcMedStart()) && ((int)t <= para->getTimeCalcMedEnd()) && ((t%(unsigned int)para->getclockCycleForMP())==0))
 			{
-				//UnstrucuredGridWriter::writeUnstrucuredGridEffMedian(para, lev, ffname_bin_med);
-				UnstrucuredGridWriter::writeUnstrucuredGridMedianLT(para, lev, fname_med);
+				////UnstrucuredGridWriter::writeUnstrucuredGridEffMedian(para, lev, ffname_bin_med);
+				//UnstrucuredGridWriter::writeUnstrucuredGridMedianLT(para, lev, fname_med);
+				UnstrucuredGridWriter::writeUnstrucuredGridMedianLTwithDerivationsAndSqaredVelos(para, lev, fname_med);
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

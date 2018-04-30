@@ -1529,54 +1529,107 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 
       if(geoD[k] == GEO_FLUID)
       {
-         rhoD[k]    =   (D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
-                        (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
-                        (D.f[dirT   ])[kt  ]+ (D.f[dirB   ])[kb  ]+
-                        (D.f[dirNE  ])[kne ]+ (D.f[dirSW  ])[ksw ]+
-                        (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
-                        (D.f[dirTE  ])[kte ]+ (D.f[dirBW  ])[kbw ]+
-                        (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
-                        (D.f[dirTN  ])[ktn ]+ (D.f[dirBS  ])[kbs ]+
-                        (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                        (D.f[dirZERO])[kzero]+ 
-                        (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
-                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
-                        (D.f[dirBNE ])[kbne]+ (D.f[dirBSW ])[kbsw]+ 
-                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw]+
-                        RHO;
+		  real mfcbb = (D.f[dirE])[k];//[ke   ];
+		  real mfabb = (D.f[dirW])[kw];//[kw   ];  
+		  real mfbcb = (D.f[dirN])[k];//[kn   ];
+		  real mfbab = (D.f[dirS])[ks];//[ks   ];  
+		  real mfbbc = (D.f[dirT])[k];//[kt   ];
+		  real mfbba = (D.f[dirB])[kb];//[kb   ];  
+		  real mfccb = (D.f[dirNE])[k];//[kne  ];  
+		  real mfaab = (D.f[dirSW])[ksw];//[ksw  ];
+		  real mfcab = (D.f[dirSE])[ks];//[kse  ]; 
+		  real mfacb = (D.f[dirNW])[kw];//[knw  ]; 
+		  real mfcbc = (D.f[dirTE])[k];//[kte  ];  
+		  real mfaba = (D.f[dirBW])[kbw];//[kbw  ];
+		  real mfcba = (D.f[dirBE])[kb];//[kbe  ]; 
+		  real mfabc = (D.f[dirTW])[kw];//[ktw  ]; 
+		  real mfbcc = (D.f[dirTN])[k];//[ktn  ];  
+		  real mfbaa = (D.f[dirBS])[kbs];//[kbs  ];
+		  real mfbca = (D.f[dirBN])[kb];//[kbn  ]; 
+		  real mfbac = (D.f[dirTS])[ks];//[kts  ]; 
+		  real mfbbb = (D.f[dirZERO])[k];//[kzero];
+		  real mfccc = (D.f[dirTNE])[k];//[ktne ]; 
+		  real mfaac = (D.f[dirTSW])[ksw];//[ktsw ]; 
+		  real mfcac = (D.f[dirTSE])[ks];//[ktse ];
+		  real mfacc = (D.f[dirTNW])[kw];//[ktnw ];
+		  real mfcca = (D.f[dirBNE])[kb];//[kbne ];
+		  real mfaaa = (D.f[dirBSW])[kbsw];//[kbsw ];
+		  real mfcaa = (D.f[dirBSE])[kbs];//[kbse ]; 
+		  real mfaca = (D.f[dirBNW])[kbw];//[kbnw ]; 
+		  ////////////////////////////////////////////////////////////////////////////////////
+		  real drho = 
+			  ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
+			  (((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
+			  ((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
-         vxD[k]     =  ((D.f[dirE   ])[ke  ]- (D.f[dirW   ])[kw  ]+ 
-                        (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]+
-                        (D.f[dirSE  ])[kse ]- (D.f[dirNW  ])[knw ]+
-                        (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]+
-                        (D.f[dirBE  ])[kbe ]- (D.f[dirTW  ])[ktw ]+
-                        (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]+ 
-                        (D.f[dirTSE ])[ktse]- (D.f[dirTNW ])[ktnw]+ 
-                        (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]+ 
-                        (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (one + rhoD[k])+
-                        VX;
+		  real rho = one + drho;
+		  
+		  rhoD[k] = drho + RHO;
 
-         vyD[k]     =  ((D.f[dirN   ])[kn  ]- (D.f[dirS   ])[ks  ]+
-                        (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]-
-                        (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
-                        (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]+
-                        (D.f[dirBN  ])[kbn ]- (D.f[dirTS  ])[kts ]+
-                        (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]- 
-                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
-                        (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
-                        (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw]) / (one + rhoD[k])+
-                        VY;
+		  vxD[k] = 
+			  (((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
+			  (((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
+			  (mfcbb - mfabb)) / rho) + VX;
+		  vyD[k] = 
+			  (((((mfccc - mfaaa) + (mfaca - mfcac)) + ((mfacc - mfcaa) + (mfcca - mfaac))) +
+			  (((mfbca - mfbac) + (mfbcc - mfbaa)) + ((mfacb - mfcab) + (mfccb - mfaab))) +
+			  (mfbcb - mfbab)) / rho) + VY;
+		  vzD[k] = 
+			  (((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfacc - mfcaa) + (mfaac - mfcca))) +
+			  (((mfbac - mfbca) + (mfbcc - mfbaa)) + ((mfabc - mfcba) + (mfcbc - mfaba))) +
+			  (mfbbc - mfbba)) / rho) + VZ;
 
-         vzD[k]     =  ((D.f[dirT   ])[kt  ]- (D.f[dirB   ])[kb  ]+
-                        (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]-
-                        (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
-                        (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]-
-                        (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
-                        (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
-                        (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]- 
-                        (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
-                        (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (one + rhoD[k])+
-                        VZ;
+		  //rhoD[k] =
+			 // (D.f[dirE])[ke] + (D.f[dirW])[kw] +
+			 // (D.f[dirN])[kn] + (D.f[dirS])[ks] +
+			 // (D.f[dirT])[kt] + (D.f[dirB])[kb] +
+			 // (D.f[dirNE])[kne] + (D.f[dirSW])[ksw] +
+			 // (D.f[dirSE])[kse] + (D.f[dirNW])[knw] +
+			 // (D.f[dirTE])[kte] + (D.f[dirBW])[kbw] +
+			 // (D.f[dirBE])[kbe] + (D.f[dirTW])[ktw] +
+			 // (D.f[dirTN])[ktn] + (D.f[dirBS])[kbs] +
+			 // (D.f[dirBN])[kbn] + (D.f[dirTS])[kts] +
+			 // (D.f[dirZERO])[kzero] +
+			 // (D.f[dirTNE])[ktne] + (D.f[dirTSW])[ktsw] +
+			 // (D.f[dirTSE])[ktse] + (D.f[dirTNW])[ktnw] +
+			 // (D.f[dirBNE])[kbne] + (D.f[dirBSW])[kbsw] +
+			 // (D.f[dirBSE])[kbse] + (D.f[dirBNW])[kbnw];// +RHO;
+
+    //     vxD[k] =  
+			 //((D.f[dirE  ])[ke  ]- (D.f[dirW   ])[kw  ]+ 
+    //         (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]+
+    //         (D.f[dirSE  ])[kse ]- (D.f[dirNW  ])[knw ]+
+    //         (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]+
+    //         (D.f[dirBE  ])[kbe ]- (D.f[dirTW  ])[ktw ]+
+    //         (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]+ 
+    //         (D.f[dirTSE ])[ktse]- (D.f[dirTNW ])[ktnw]+ 
+    //         (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]+ 
+    //         (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (one + rhoD[k])+
+    //         VX;
+
+    //     vyD[k] =  
+			 //((D.f[dirN  ])[kn  ]- (D.f[dirS   ])[ks  ]+
+    //         (D.f[dirNE  ])[kne ]- (D.f[dirSW  ])[ksw ]-
+    //         (D.f[dirSE  ])[kse ]+ (D.f[dirNW  ])[knw ]+
+    //         (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]+
+    //         (D.f[dirBN  ])[kbn ]- (D.f[dirTS  ])[kts ]+
+    //         (D.f[dirTNE ])[ktne]- (D.f[dirTSW ])[ktsw]- 
+    //         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]+ 
+    //         (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
+    //         (D.f[dirBSE ])[kbse]+ (D.f[dirBNW ])[kbnw]) / (one + rhoD[k])+
+    //         VY;
+
+    //     vzD[k] =  
+			 //((D.f[dirT  ])[kt  ]- (D.f[dirB   ])[kb  ]+
+    //         (D.f[dirTE  ])[kte ]- (D.f[dirBW  ])[kbw ]-
+    //         (D.f[dirBE  ])[kbe ]+ (D.f[dirTW  ])[ktw ]+
+    //         (D.f[dirTN  ])[ktn ]- (D.f[dirBS  ])[kbs ]-
+    //         (D.f[dirBN  ])[kbn ]+ (D.f[dirTS  ])[kts ]+
+    //         (D.f[dirTNE ])[ktne]+ (D.f[dirTSW ])[ktsw]+ 
+    //         (D.f[dirTSE ])[ktse]+ (D.f[dirTNW ])[ktnw]- 
+    //         (D.f[dirBNE ])[kbne]- (D.f[dirBSW ])[kbsw]- 
+    //         (D.f[dirBSE ])[kbse]- (D.f[dirBNW ])[kbnw]) / (one + rhoD[k])+
+    //         VZ;
 
          pressD[k]  =  ((D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
                         (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+
@@ -1670,6 +1723,59 @@ extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
          pressD[k]  =   PRESS / tdiff;    
       }
    }
+}
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+extern "C" __global__ void LBResetMedianValuesSP27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	unsigned int size_Mat,
+	bool evenOrOdd)
+{
+	////////////////////////////////////////////////////////////////////////////////
+	const unsigned  x = threadIdx.x;  // Globaler x-Index 
+	const unsigned  y = blockIdx.x;   // Globaler y-Index 
+	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+
+	const unsigned nx = blockDim.x;
+	const unsigned ny = gridDim.x;
+
+	const unsigned k = nx*(ny*z + y) + x;
+	//////////////////////////////////////////////////////////////////////////
+
+	if (k<size_Mat)
+	{
+		//////////////////////////////////////////////////////////////////////////
+		pressD[k] = zero;
+		rhoD[k] = zero;
+		vxD[k] = zero;
+		vyD[k] = zero;
+		vzD[k] = zero;
+	}
 }
 ////////////////////////////////////////////////////////////////////////////////
 

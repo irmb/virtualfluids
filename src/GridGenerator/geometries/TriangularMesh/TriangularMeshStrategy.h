@@ -3,16 +3,12 @@
 
 #include "GridGenerator/global.h"
 
-
-
 #include "../Triangle/Triangle.h"
 #include "TriangularMesh.h"
 #include "numerics/geometry3d/GbTriFaceMesh3D.h"
 #include "grid/GridImp.h"
 #include "utilities/logger/Logger.h"
 #include "grid/NodeValues.h"
-
-
 
 
 class TriangularMeshDiscretizationStrategy

@@ -1005,6 +1005,61 @@ extern "C" void KernelPMCumOneCompSP27(unsigned int numberOfThreads,
 	getLastCudaError("LB_Kernel_PM_Cum_One_Comp_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void KernelWaleBySoniMalavCumOneCompSP27( unsigned int numberOfThreads,
+													 real s9,
+													 unsigned int* bcMatD,
+													 unsigned int* neighborX,
+													 unsigned int* neighborY,
+													 unsigned int* neighborZ,
+													 unsigned int* neighborWSB,
+													 real* veloX,
+													 real* veloY,
+													 real* veloZ,
+													 real* DD,
+													 real* turbulentViscosity,
+													 int size_Mat,
+													 int size_Array,
+													 int level,
+													 real* forces,
+													 bool EvenOrOdd)
+{
+	//int Grid = size_Array / numberOfThreads;
+	//dim3 grid(Grid, 1, 1);
+	//dim3 threads(numberOfThreads, 1, 1 );
+
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27 <<< grid, threads >>>( s9,
+																		bcMatD,
+																		neighborX,
+																		neighborY,
+																		neighborZ,
+																		neighborWSB,
+																		veloX,
+																		veloY,
+																		veloZ,
+																		DD,
+																		turbulentViscosity,
+																		size_Mat,
+																		level,
+																		forces,
+																		EvenOrOdd); 
+		getLastCudaError("LB_Kernel_WaleBySoniMalav_Cum_One_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void KernelWaleCumAA2016CompSP27( unsigned int numberOfThreads,
 											 real s9,
 											 unsigned int* bcMatD,
@@ -1058,6 +1113,85 @@ extern "C" void KernelWaleCumAA2016CompSP27( unsigned int numberOfThreads,
 																forces,
 																EvenOrOdd); 
 		getLastCudaError("LB_Kernel_Wale_Cum_AA2016_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void KernelWaleCumAA2016DebugCompSP27(
+	unsigned int numberOfThreads,
+	real s9,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int* neighborWSB,
+	real* veloX,
+	real* veloY,
+	real* veloZ,
+	real* DD,
+	real* turbulentViscosity,
+	real* gSij,
+	real* gSDij,
+	real* gDxvx,
+	real* gDyvx,
+	real* gDzvx,
+	real* gDxvy,
+	real* gDyvy,
+	real* gDzvy,
+	real* gDxvz,
+	real* gDyvz,
+	real* gDzvz,
+	int size_Mat,
+	int size_Array,
+	int level,
+	real* forces,
+	bool EvenOrOdd)
+{
+	//int Grid = size_Array / numberOfThreads;
+	//dim3 grid(Grid, 1, 1);
+	//dim3 threads(numberOfThreads, 1, 1 );
+
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27 << < grid, threads >> >(
+		s9,
+		bcMatD,
+		neighborX,
+		neighborY,
+		neighborZ,
+		neighborWSB,
+		veloX,
+		veloY,
+		veloZ,
+		DD,
+		turbulentViscosity,
+		gSij,
+		gSDij,
+		gDxvx,
+		gDyvx,
+		gDzvx,
+		gDxvy,
+		gDyvy,
+		gDzvy,
+		gDxvz,
+		gDyvz,
+		gDzvz,
+		size_Mat,
+		level,
+		forces,
+		EvenOrOdd);
+	getLastCudaError("LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelThS7(unsigned int numberOfThreads, 
@@ -1945,6 +2079,42 @@ extern "C" void CalcMacMedSP27(  real* vxD,
                                                 size_Mat,
                                                 evenOrOdd); 
       getLastCudaError("LBCalcMacMedSP27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ResetMedianValuesSP27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	unsigned int size_Mat,
+	unsigned int numberOfThreads,
+	bool evenOrOdd)
+{
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid>512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LBResetMedianValuesSP27 << < grid, threads >> > (
+		vxD,
+		vyD,
+		vzD,
+		rhoD,
+		pressD,
+		size_Mat,
+		evenOrOdd);
+	getLastCudaError("LBResetMedianValuesSP27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,
@@ -5247,6 +5417,72 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
       getLastCudaError("scaleCF_0817_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
+									 real* DF,
+									 real* G6, 
+									 unsigned int* neighborCX,
+									 unsigned int* neighborCY,
+									 unsigned int* neighborCZ,
+									 unsigned int* neighborFX,
+									 unsigned int* neighborFY,
+									 unsigned int* neighborFZ,
+									 unsigned int size_MatC, 
+									 unsigned int size_MatF, 
+									 bool evenOrOdd,
+									 unsigned int* posCSWB, 
+									 unsigned int* posFSWB, 
+									 unsigned int kCF, 
+									 real omCoarse, 
+									 real omFine, 
+									 real nu, 
+									 unsigned int nxC, 
+									 unsigned int nyC, 
+									 unsigned int nxF, 
+									 unsigned int nyF,
+									 unsigned int numberOfThreads,
+									 OffCF offCF)
+{
+   int Grid = (kCF / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridINT_CF(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+      scaleCF_comp_D3Q27F3 <<< gridINT_CF, threads >>>( DC,
+														DF,
+														G6,
+														neighborCX,
+														neighborCY,
+														neighborCZ,
+														neighborFX,
+														neighborFY,
+														neighborFZ,
+														size_MatC, 
+														size_MatF, 
+														evenOrOdd,
+														posCSWB, 
+														posFSWB, 
+														kCF, 
+														omCoarse, 
+														omFine, 
+														nu, 
+														nxC, 
+														nyC, 
+														nxF, 
+														nyF,
+														offCF);
+      getLastCudaError("scaleCF_0817_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void ScaleCF_staggered_time_comp_27(  real* DC, 
 												 real* DF, 
 												 unsigned int* neighborCX,
@@ -6120,7 +6356,8 @@ extern "C" void ScaleFC_Fix_comp_27(  real* DC,
 													   offFC);
       getLastCudaError("scaleFC_Fix_27 execution failed"); 
 }
-extern "C" void ScaleFC_0817_comp_27( real* DC, 
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ScaleFC_0817_comp_27( real* DC,
 									  real* DF, 
 									  unsigned int* neighborCX,
 									  unsigned int* neighborCY,
@@ -6161,6 +6398,72 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 
       scaleFC_0817_comp_27<<< gridINT_FC, threads >>> (DC, 
 													   DF, 
+													   neighborCX,
+													   neighborCY,
+													   neighborCZ,
+													   neighborFX,
+													   neighborFY,
+													   neighborFZ,
+													   size_MatC, 
+													   size_MatF, 
+													   evenOrOdd,
+													   posC, 
+													   posFSWB, 
+													   kFC, 
+													   omCoarse, 
+													   omFine, 
+													   nu, 
+													   nxC, 
+													   nyC, 
+													   nxF, 
+													   nyF,
+													   offFC);
+      getLastCudaError("scaleFC_0817_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ScaleFC_comp_D3Q27F3( real* DC,
+									  real* DF,
+									  real* G6,
+									  unsigned int* neighborCX,
+									  unsigned int* neighborCY,
+									  unsigned int* neighborCZ,
+									  unsigned int* neighborFX,
+									  unsigned int* neighborFY,
+									  unsigned int* neighborFZ,
+									  unsigned int size_MatC, 
+									  unsigned int size_MatF, 
+									  bool evenOrOdd,
+									  unsigned int* posC, 
+									  unsigned int* posFSWB, 
+									  unsigned int kFC, 
+									  real omCoarse, 
+									  real omFine, 
+									  real nu, 
+									  unsigned int nxC, 
+									  unsigned int nyC, 
+									  unsigned int nxF, 
+									  unsigned int nyF,
+									  unsigned int numberOfThreads,
+									  OffFC offFC)
+{
+   int Grid = (kFC / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridINT_FC(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+     scaleFC_comp_D3Q27F3 <<< gridINT_FC, threads >>> (DC,
+													   DF,
+													   G6,
 													   neighborCX,
 													   neighborCY,
 													   neighborCZ,

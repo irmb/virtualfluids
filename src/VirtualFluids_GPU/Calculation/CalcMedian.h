@@ -7,5 +7,6 @@
 
 extern "C" void allocMedian(Parameter* para);
 extern "C" void calcMedian(Parameter* para, unsigned int tdiff);
+extern "C" void resetMedian(Parameter* para);
 
 #endif

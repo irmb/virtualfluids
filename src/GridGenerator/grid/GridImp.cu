@@ -79,6 +79,10 @@ HOST void GridImp::inital()
         gridStrategy->findInnerNodes(shared_from_this());
 
     gridStrategy->findStopperNodes(shared_from_this());
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+        << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
+        << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
 }
 
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
