@@ -45,7 +45,7 @@ protected:
 
 	LogWriter output;
 
-    SPtr<Communicator> comm;
+    Communicator* comm;
     SPtr<Parameter> para;
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;

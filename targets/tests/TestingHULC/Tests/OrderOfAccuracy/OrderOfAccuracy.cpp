@@ -13,5 +13,5 @@ TEST_P(OrderOfAccuracy, Test) {
 
 bool OrderOfAccuracy::test(double a, double b)
 {
-	return a>b;
+	return a > b;
 }

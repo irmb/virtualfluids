@@ -18,7 +18,7 @@ TaylorGreenTestParameter::TaylorGreenTestParameter(real u0, real amplitude, real
 	:TestParameterImp(viscosity, lx, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, writeFiles, startStepFileWriter), u0(u0), amplitude(amplitude)
 {
 	std::ostringstream oss;
-	oss << filePath + "\\TaylorGreenVortex\\grid" << lx;
+	oss << filePath + "/TaylorGreenVortex/grid" << lx;
 	this->filePath = oss.str();
 
 	initialCondition = std::shared_ptr<InitialConditionTaylorGreen>(new InitialConditionTaylorGreen((double)lx, (double)lz, (double)l0, u0, amplitude, rho0));

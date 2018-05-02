@@ -57,6 +57,7 @@ void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std:
 
 	para->setTEnd(endTime);
 	para->setTOut(timeStepLength);
+    para->setTStartOut(1);
 
 	para->setViscosity(viscosity);
 	para->setVelocity(0.096);
@@ -88,7 +89,26 @@ void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std:
 	para->setbackBcValues(gridPath + "backBoundaryValues.dat");
 	para->setnumberNodes(gridPath + "numberNodes.dat");
 	para->setLBMvsSI(gridPath + "LBMvsSI.dat");
-
+    para->setscaleCFC(gridPath + "scaleCFC.dat");
+    para->setscaleCFF(gridPath + "scaleCFF.dat");
+    para->setscaleFCC(gridPath + "scaleFCC.dat");
+    para->setscaleFCF(gridPath + "scaleFCF.dat");
+    para->setscaleOffsetCF(gridPath + "offsetVecCF.dat");
+    para->setscaleOffsetFC(gridPath + "offsetVecFC.dat");
+    para->setCalcParticles(false);
+    para->setDiffOn(false);
+    para->setDoCheckPoint(false);
+    para->setDoRestart(false);
+    para->setGeometryValues(false);
+    para->setCalc2ndOrderMoments(false);
+    para->setCalc3rdOrderMoments(false);
+    para->setCalcHighOrderMoments(false);
+    para->setReadGeo(false);
+    para->setCalcMedian(false);
+    para->setConcFile(false);
+    para->setUseMeasurePoints(false);
+    para->setUseWale(false);
+    para->setSimulatePorousMedia(false);
 	para->setForcing(0.0, 0.0, 0.0);
 
 	std::vector<int> dist;
@@ -97,6 +117,8 @@ void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std:
 	para->setDistX(dist);
 	para->setDistY(dist);
 	para->setDistZ(dist);
+
+    para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
 
 void TestConditionImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition)

@@ -40,8 +40,8 @@ std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
     if (para->getNumprocs() == 1)
         return Gridpath + "/";
-    else
-        return Gridpath + "/" + StringUtil::toString(para->getMyID()) + "/";
+    
+    return Gridpath + "/" + StringUtil::toString(para->getMyID()) + "/";
 }
 
 void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input> &input)

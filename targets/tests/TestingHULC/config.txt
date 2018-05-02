@@ -40,19 +40,19 @@ ShearWave512=false
 ##################################################
 #				Grid Information				 #
 ##################################################
-GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni32x4x48"
-GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
-GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
-GridPath256="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni256x4x384"
-GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
+GridPath32="D:/GRIDGENERATION/numeric_testing/grids/gridUni32x4x48"
+GridPath64="D:/GRIDGENERATION/numeric_testing/grids/gridUni64x4x96"
+GridPath128="D:/GRIDGENERATION/numeric_testing/grids/gridUni128x4x192"
+GridPath256="D:/GRIDGENERATION/numeric_testing/grids/gridUni256x4x384"
+GridPath512="D:/GRIDGENERATION/numeric_testing/grids/gridUni512x4x768"
 
 ##################################################
 # 			File Writing Information			 #
 ##################################################
 WriteFiles=true
-PathForFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
+PathForFileWriting="D:/GRIDGENERATION/numeric_testing/output"
 StartStepFileWriter=0
 
-PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
+PathLogFile="D:/GRIDGENERATION/numeric_testing/logFiles"
 	
 

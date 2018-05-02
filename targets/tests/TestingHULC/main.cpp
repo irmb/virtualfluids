@@ -39,7 +39,7 @@ static void testHULC(const std::string &configFile)
 
 	std::vector< std::shared_ptr< EvaluationParameter > > evaPara = configReader->makeEvaluationParameter();
 	std::shared_ptr<TestInformation> testInfo = configReader->makeTestInformation();
-	std::vector<std::shared_ptr<TestParameter>> testPara = configReader->makeTestParameter();
+	std::vector<std::shared_ptr<TestParameter> > testPara = configReader->makeTestParameter();
 
 	std::shared_ptr<TestConditionFactory> factory = TestConditionFactoryImp::getNewInstance(testPara);
 	std::vector<std::shared_ptr<TestCondition>> testConditions = factory->makeTestConditions();
@@ -81,8 +81,9 @@ int main(int argc, char **argv)
 		testHULC(argv[1]);
 
 	::testing::InitGoogleTest(&argc, argv);
+    MPI_Finalize();
+
 	return RUN_ALL_TESTS();
-	MPI_Finalize();
 }
 
 INSTANTIATE_TEST_CASE_P(TaylorGreenVortexNu, OrderOfAccuracy, ValuesIn(nuTGV));

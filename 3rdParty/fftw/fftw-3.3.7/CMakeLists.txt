@@ -11,7 +11,7 @@ if (POLICY CMP0042)
 endif ()
 
 option (BUILD_SHARED_LIBS "Build shared libraries" ON)
-option (BUILD_TESTS "Build tests" ON)
+option (BUILD_TESTS "Build tests" OFF)
 
 option (ENABLE_OPENMP "Use OpenMP for multithreading" OFF)
 option (ENABLE_THREADS "Use pthread for multithreading" OFF)
@@ -334,6 +334,8 @@ if (OPENMP_FOUND)
   list (APPEND subtargets ${fftw3_lib}_omp)
   target_compile_options (${fftw3_lib}_omp PRIVATE ${OpenMP_C_FLAGS})
 endif ()
+
+groupTarget(${fftw3_lib} ${thirdPartyFolder})
 
 foreach(subtarget ${subtargets})
   set_target_properties (${subtarget} PROPERTIES SOVERSION 3.5.7 VERSION 3)
