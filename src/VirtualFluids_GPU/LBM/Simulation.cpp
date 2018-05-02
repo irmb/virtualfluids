@@ -53,6 +53,7 @@
 #include "Restart/RestartPostprocessor.h"
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
+#include "Output/DataWriter.h"
 
 Simulation::Simulation()
 {
@@ -64,11 +65,12 @@ Simulation::~Simulation()
 
 }
 
-void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
+void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter)
 {
+    this->dataWriter = dataWriter;
    this->gridProvider = gridProvider;
    gridProvider->initalGridInformations();
-   comm = SPtr<Communicator>(Communicator::getInstanz());
+   comm = Communicator::getInstanz();
    this->para = para;
 
    para->setMyID(comm->getPID());
@@ -320,7 +322,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
    //Print Init
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
-   writeInit(para);
+   dataWriter->writeInit(para);
    if (para->getCalcParticle()) 
        copyAndPrintParticles(para.get(), 0, true);
    output << "done.\n";
@@ -388,7 +390,7 @@ void Simulation::run()
 		getLastCudaError("before starting a kernel we get an execution failed");
 		if (para->getMaxLevel()>=1)
          {
-            updateGrid27(para.get(), comm.get(), pm, 1, para->getMaxLevel(), t);
+            updateGrid27(para.get(), comm, pm, 1, para->getMaxLevel(), t);
          }
          ////////////////////////////////////////////////////////////////////////////////
          // Collision and Propagation
@@ -1079,21 +1081,21 @@ void Simulation::run()
 			//////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition
 			//output << "start exchange Post X (level 0) \n";
-			exchangePostCollDataXGPU27(para.get(), comm.get(), 0);
+			exchangePostCollDataXGPU27(para.get(), comm, 0);
 			//output << "end exchange Post X (level 0) \n";
 			//output << "start exchange Post Y (level 0) \n";
-			exchangePostCollDataYGPU27(para.get(), comm.get(), 0);
+			exchangePostCollDataYGPU27(para.get(), comm, 0);
 			//output << "end exchange Post Y (level 0) \n";
 			//output << "start exchange Post Z (level 0) \n";
-			exchangePostCollDataZGPU27(para.get(), comm.get(), 0);
+			exchangePostCollDataZGPU27(para.get(), comm, 0);
 			//output << "end exchange Post Z (level 0) \n";
 			////////////////////////////////////////////////////////////////////////
 			//3D domain decomposition convection diffusion
 			if (para->getDiffOn()==true)
 			{
-				exchangePostCollDataADXGPU27(para.get(), comm.get(), 0);
-				exchangePostCollDataADYGPU27(para.get(), comm.get(), 0);
-				exchangePostCollDataADZGPU27(para.get(), comm.get(), 0);
+				exchangePostCollDataADXGPU27(para.get(), comm, 0);
+				exchangePostCollDataADYGPU27(para.get(), comm, 0);
+				exchangePostCollDataADZGPU27(para.get(), comm, 0);
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////
@@ -1472,6 +1474,7 @@ void Simulation::run()
           ////////////////////////////////////////////////////////////////////////////////
           if (para->getParD(0)->evenOrOdd==true)  para->getParD(0)->evenOrOdd=false;
           else                                    para->getParD(0)->evenOrOdd=true;
+
           ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1802,24 +1805,24 @@ void Simulation::run()
 			 if (para->getNumprocs() > 1)
 			 {
 				 ////1D domain decomposition
-				 //exchangePreCollDataGPU27(para, comm.get(), 0);
+				 //exchangePreCollDataGPU27(para, comm, 0);
 				 //3D domain decomposition
 				 //output << "start exchange Pre X (level 0) \n";
-				 exchangePreCollDataXGPU27(para.get(), comm.get(), 0);
+				 exchangePreCollDataXGPU27(para.get(), comm, 0);
 				 //output << "end exchange Pre X (level 0) \n";
 				 //output << "start exchange Pre Y (level 0) \n";
-				 exchangePreCollDataYGPU27(para.get(), comm.get(), 0);
+				 exchangePreCollDataYGPU27(para.get(), comm, 0);
 				 //output << "end exchange Pre Y (level 0) \n";
 				 //output << "start exchange Pre Z (level 0) \n";
-				 exchangePreCollDataZGPU27(para.get(), comm.get(), 0);
+				 exchangePreCollDataZGPU27(para.get(), comm, 0);
 				 //output << "end exchange Pre Z (level 0) \n";
 				 //////////////////////////////////////////////////////////////////////////
 				 //3D domain decomposition convection diffusion
 				 if (para->getDiffOn()==true)
 				 {
-					 exchangePreCollDataADXGPU27(para.get(), comm.get(), 0);
-					 exchangePreCollDataADYGPU27(para.get(), comm.get(), 0);
-					 exchangePreCollDataADZGPU27(para.get(), comm.get(), 0);
+					 exchangePreCollDataADXGPU27(para.get(), comm, 0);
+					 exchangePreCollDataADYGPU27(para.get(), comm, 0);
+					 exchangePreCollDataADZGPU27(para.get(), comm, 0);
 				 }
 			 }
 		    //////////////////////////////////////////////////////////////////////////
@@ -2213,7 +2216,7 @@ void Simulation::run()
 	  ////////////////////////////////////////////////////////////////////////////////
       // File IO
       ////////////////////////////////////////////////////////////////////////////////
-      //comm.get()->startTimer();
+      //comm->startTimer();
       if(para->getTOut()>0 && t%para->getTOut()==0 && t>para->getTStartOut())
       {
 		  //////////////////////////////////////////////////////////////////////////////////
@@ -2256,24 +2259,24 @@ void Simulation::run()
 		 if (para->getNumprocs() > 1)
 		 {
 			 ////1D domain decomposition
-			 //exchangePreCollDataGPU27(para, comm.get(), 0);
+			 //exchangePreCollDataGPU27(para, comm, 0);
 			 //3D domain decomposition
 			 //output << "(print) start exchange Pre X (level 0) \n";
-			 exchangePreCollDataXGPU27(para.get(), comm.get(), 0);
+			 exchangePreCollDataXGPU27(para.get(), comm, 0);
 			 //output << "(print) end exchange Pre X (level 0) \n";
 			 //output << "(print) start exchange Pre Y (level 0) \n";
-			 exchangePreCollDataYGPU27(para.get(), comm.get(), 0);
+			 exchangePreCollDataYGPU27(para.get(), comm, 0);
 			 //output << "(print) end exchange Pre Y (level 0) \n";
 			 //output << "(print) start exchange Pre Z (level 0) \n";
-			 exchangePreCollDataZGPU27(para.get(), comm.get(), 0);
+			 exchangePreCollDataZGPU27(para.get(), comm, 0);
 			 //output << "(print) end exchange Pre Z (level 0) \n";
 			 //////////////////////////////////////////////////////////////////////////
 			 //3D domain decomposition convection diffusion
 			 if (para->getDiffOn()==true)
 			 {
-				 exchangePreCollDataADXGPU27(para.get(), comm.get(), 0);
-				 exchangePreCollDataADYGPU27(para.get(), comm.get(), 0);
-				 exchangePreCollDataADZGPU27(para.get(), comm.get(), 0);
+				 exchangePreCollDataADXGPU27(para.get(), comm, 0);
+				 exchangePreCollDataADYGPU27(para.get(), comm, 0);
+				 exchangePreCollDataADZGPU27(para.get(), comm, 0);
 			 }
 		 }
 		 //////////////////////////////////////////////////////////////////////////
@@ -2522,7 +2525,7 @@ void Simulation::run()
 				/////////////////////////////////
 			}
 			////////////////////////////////////////////////////////////////////////
-			writeTimestep(para.get(), t);
+			dataWriter->writeTimestep(para, t);
 			////////////////////////////////////////////////////////////////////////
 			//printDragLift(para, t);
 			////////////////////////////////////////////////////////////////////////
@@ -2626,8 +2629,8 @@ void Simulation::run()
 	  //para->cudaFreeVeloBC(lev);
 	  //para->cudaFreeWallBC(lev);
 	  //para->cudaFreeVeloBC(lev); 
-	  para->cudaFreeInlet(lev);
-	  para->cudaFreeOutlet(lev);
+	  //para->cudaFreeInlet(lev);
+	  //para->cudaFreeOutlet(lev);
 	  //para->cudaFreeGeomBC(lev);
 	  //para->cudaFreePress(lev);
    }

@@ -34,7 +34,7 @@ public:
 
 protected:
 	void setNumberOfNodes(const int numberOfNodes, const int level) const;
-	void setInitalNodeValues(const int numberOfNodes, const int level) const;
+    virtual void setInitalNodeValues(const int numberOfNodes, const int level) const;
 
 	void setPressSizePerLevel(int level, int sizePerLevel) const;
 	void setVelocitySizePerLevel(int level, int sizePerLevel) const;

@@ -1,8 +1,7 @@
-include(${CMAKE_CURRENT_LIST_DIR}/FindFftw.cmake)
 
 macro(linkFftw targetName)
 
-	include_directories(${FFTW_INCLUDE_DIRS})
-	target_link_libraries(${targetName} ${FFTW_LIBRARIES})
+	include_directories(${FFTW_ROOT}/api)
+	target_link_libraries(${targetName} fftw3)
 
 endmacro(linkFftw)

@@ -164,6 +164,9 @@ class UnitTestImpl* GetUnitTestImpl();
 void ReportFailureInUnknownLocation(TestPartResult::Type result_type,
                                     const std::string& message);
 
+enum GTestColor;
+       void GTEST_API_ ColoredPrintf(GTestColor color, const char* fmt, ...);
+
 }  // namespace internal
 
 // The friend relationship of some of these classes is cyclic.

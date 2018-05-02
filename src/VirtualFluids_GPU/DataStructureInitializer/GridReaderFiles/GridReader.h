@@ -16,7 +16,7 @@ class BoundaryValues;
 class BoundaryQs;
 class CoordNeighborGeoV;
 
-class GridReader
+class VF_PUBLIC GridReader
 	: public GridProvider
 {
 private:
@@ -27,8 +27,8 @@ private:
 	std::vector<std::shared_ptr<BoundaryValues> > BC_Values;
 
 public:
-	VF_PUBLIC GridReader(bool binaer, std::shared_ptr<Parameter> para);
-    VF_PUBLIC ~GridReader();
+	GridReader(bool binaer, std::shared_ptr<Parameter> para);
+    ~GridReader();
 	void allocArrays_CoordNeighborGeo()override;
 	void allocArrays_BoundaryValues()override;
     void allocArrays_OffsetScale() override;
