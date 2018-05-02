@@ -33,6 +33,7 @@
 #include "io/STLReaderWriter/STLReader.h"
 #include "io/STLReaderWriter/STLWriter.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
+#include "Output/FileWriter.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -320,7 +321,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
-    SPtr<Parameter> para = Parameter::makeShared();
+    SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
     //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
 
@@ -334,7 +335,8 @@ void multipleLevel(const std::string& configPath)
     setParameters(para, input);
 
     Simulation sim;
-    sim.init(para, gridGenerator);
+    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+    sim.init(para, gridGenerator, fileWriter);
     sim.run();
 }
 

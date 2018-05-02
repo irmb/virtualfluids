@@ -74,6 +74,7 @@ option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
 option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
 option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
 option(HULC.BUILD_TESTS "Build shared libraries" ON)
+option(HULC.BUILD_NUMERIC_TESTS "Build shared libraries" ON)
 
 option(VF_DOUBLE_ACCURACY "Build shared libraries" ON)
 
@@ -175,4 +176,8 @@ if(HULC.BUILD_TESTS)
   add_subdirectory(targets/tests/VirtualFluidsBasicsTest)
 endif()
 
+if(HULC.BUILD_NUMERIC_TESTS)
+ 	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
+	add_subdirectory(targets/tests/TestingHULC)
+endif()
 

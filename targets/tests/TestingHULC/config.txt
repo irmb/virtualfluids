@@ -1,0 +1,58 @@
+##################################################
+#			   Basic Test Parameter				 #
+##################################################
+NumberOfTimeSteps=20
+BasisTimeStepLength=1000
+StartStepCalculation=11
+ySliceForCalculation=0
+
+Viscosity=0.00001
+
+MinOrderOfAccuracy=1.95
+
+##################################################
+#	    TaylorGreenVortex Test Parameter		 #
+##################################################
+u0_TGV=0.032
+Amplitude_TGV=0.01
+
+##################################################
+#	       Shear Wave Test Parameter			 #
+##################################################
+u0_SW=0.032
+v0_SW=0.1
+
+##################################################
+#				Tests To Perform				 #
+##################################################
+TaylorGreenVortex32=true
+TaylorGreenVortex64=true
+TaylorGreenVortex128=false
+TaylorGreenVortex256=false
+TaylorGreenVortex512=false
+
+ShearWave32=true
+ShearWave64=true
+ShearWave128=false
+ShearWave256=false
+ShearWave512=false
+
+##################################################
+#				Grid Information				 #
+##################################################
+GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni32x4x48"
+GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
+GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
+GridPath256="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni256x4x384"
+GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
+
+##################################################
+# 			File Writing Information			 #
+##################################################
+WriteFiles=true
+PathForFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
+StartStepFileWriter=0
+
+PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
+	
+

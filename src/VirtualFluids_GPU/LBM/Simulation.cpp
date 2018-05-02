@@ -53,6 +53,7 @@
 #include "Restart/RestartPostprocessor.h"
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
+#include "Output/DataWriter.h"
 
 Simulation::Simulation()
 {
@@ -64,8 +65,9 @@ Simulation::~Simulation()
 
 }
 
-void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
+void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter)
 {
+    this->dataWriter = dataWriter;
    this->gridProvider = gridProvider;
    gridProvider->initalGridInformations();
    comm = SPtr<Communicator>(Communicator::getInstanz());
@@ -320,7 +322,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider)
    //Print Init
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
-   writeInit(para);
+   dataWriter->writeInit(para);
    if (para->getCalcParticle()) 
        copyAndPrintParticles(para.get(), 0, true);
    output << "done.\n";
@@ -2522,7 +2524,7 @@ void Simulation::run()
 				/////////////////////////////////
 			}
 			////////////////////////////////////////////////////////////////////////
-			writeTimestep(para.get(), t);
+			dataWriter->writeTimestep(para, t);
 			////////////////////////////////////////////////////////////////////////
 			//printDragLift(para, t);
 			////////////////////////////////////////////////////////////////////////
