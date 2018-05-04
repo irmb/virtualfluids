@@ -94,12 +94,22 @@ public:
         const real maxZ = max.z;
 
 
-        for (uint i = 0; i < grid->getSize(); i++)
-            grid->setNodeTo(i, InnerType);
+        real x, y, z;
+        for (z = minZ; z <= maxZ; z += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                for (x = minX; x <= maxX; x += grid->getDelta())
+                {
+                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), InnerType);
+                }
+            }
+        }
+
+
 
         int counter = 0;
 
-        real x, y, z;
         // Test line intersection
         for (z = minZ; z <= maxZ; z += grid->getDelta())
         {
