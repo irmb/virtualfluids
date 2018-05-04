@@ -59,7 +59,9 @@ D3Q27Interactor::~D3Q27Interactor()
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::initRayVectors()
 {
-   int fdir; double c1oS2 = UbMath::one_over_sqrt2;
+   int fdir; 
+   double c1oS2 = UbMath::one_over_sqrt2;
+   double c1oS3 = UbMath::one_over_sqrt3;
    fdir = D3Q27System::E;  rayX1[fdir] =  1.0;   rayX2[fdir] =  0.0;   rayX3[fdir] =  0.0;
    fdir = D3Q27System::W;  rayX1[fdir] = -1.0;   rayX2[fdir] =  0.0;   rayX3[fdir] =  0.0;
    fdir = D3Q27System::N;  rayX1[fdir] =  0.0;   rayX2[fdir] =  1.0;   rayX3[fdir] =  0.0;
@@ -79,14 +81,14 @@ void D3Q27Interactor::initRayVectors()
    fdir = D3Q27System::BN; rayX1[fdir] =  0.0;   rayX2[fdir] = c1oS2;  rayX3[fdir] = -c1oS2;
    fdir = D3Q27System::TS; rayX1[fdir] =  0.0;   rayX2[fdir] =-c1oS2;  rayX3[fdir] =  c1oS2;
 
-   fdir = D3Q27System::TNW; rayX1[fdir] = -c1oS2; rayX2[fdir] = c1oS2; rayX3[fdir] =  c1oS2;;
-   fdir = D3Q27System::TNE; rayX1[fdir] =  c1oS2; rayX2[fdir] = c1oS2; rayX3[fdir] =  c1oS2;
-   fdir = D3Q27System::TSW; rayX1[fdir] = -c1oS2; rayX2[fdir] =-c1oS2; rayX3[fdir] =  c1oS2;
-   fdir = D3Q27System::TSE; rayX1[fdir] =  c1oS2; rayX2[fdir] =-c1oS2; rayX3[fdir] =  c1oS2;
-   fdir = D3Q27System::BNW; rayX1[fdir] = -c1oS2; rayX2[fdir] = c1oS2; rayX3[fdir] =  -c1oS2;
-   fdir = D3Q27System::BNE; rayX1[fdir] =  c1oS2; rayX2[fdir] = c1oS2; rayX3[fdir] =  -c1oS2;
-   fdir = D3Q27System::BSW; rayX1[fdir] = -c1oS2; rayX2[fdir] =-c1oS2; rayX3[fdir] =  -c1oS2;
-   fdir = D3Q27System::BSE; rayX1[fdir] =  c1oS2; rayX2[fdir] =-c1oS2; rayX3[fdir] =  -c1oS2;
+   fdir = D3Q27System::TNW; rayX1[fdir] = -c1oS3; rayX2[fdir] = c1oS3; rayX3[fdir] =   c1oS3;
+   fdir = D3Q27System::TNE; rayX1[fdir] =  c1oS3; rayX2[fdir] = c1oS3; rayX3[fdir] =   c1oS3;
+   fdir = D3Q27System::TSW; rayX1[fdir] = -c1oS3; rayX2[fdir] =-c1oS3; rayX3[fdir] =   c1oS3;
+   fdir = D3Q27System::TSE; rayX1[fdir] =  c1oS3; rayX2[fdir] =-c1oS3; rayX3[fdir] =   c1oS3;
+   fdir = D3Q27System::BNW; rayX1[fdir] = -c1oS3; rayX2[fdir] = c1oS3; rayX3[fdir] =  -c1oS3;
+   fdir = D3Q27System::BNE; rayX1[fdir] =  c1oS3; rayX2[fdir] = c1oS3; rayX3[fdir] =  -c1oS3;
+   fdir = D3Q27System::BSW; rayX1[fdir] = -c1oS3; rayX2[fdir] =-c1oS3; rayX3[fdir] =  -c1oS3;
+   fdir = D3Q27System::BSE; rayX1[fdir] =  c1oS3; rayX2[fdir] =-c1oS3; rayX3[fdir] =  -c1oS3;
 }
 //////////////////////////////////////////////////////////////////////////
 void D3Q27Interactor::initInteractor(const double& timeStep)
@@ -259,7 +261,11 @@ bool D3Q27Interactor::setDifferencesToGbObject3D(const SPtr<Block3D> block/*,con
       vector<double> distNeigh(D3Q27System::FENDDIR+1, UbMath::sqrt2*deltaX1);
       distNeigh[D3Q27System::E] = distNeigh[D3Q27System::W] = distNeigh[D3Q27System::N] = deltaX1;
       distNeigh[D3Q27System::S] = distNeigh[D3Q27System::T] = distNeigh[D3Q27System::B] = deltaX1;
-
+      distNeigh[D3Q27System::NE]  = distNeigh[D3Q27System::NW]  = distNeigh[D3Q27System::SW]  = distNeigh[D3Q27System::SE]  = UbMath::sqrt2*deltaX1;
+      distNeigh[D3Q27System::TE]  = distNeigh[D3Q27System::TN]  = distNeigh[D3Q27System::TW]  = distNeigh[D3Q27System::TS]  = UbMath::sqrt2*deltaX1;
+      distNeigh[D3Q27System::BE]  = distNeigh[D3Q27System::BN]  = distNeigh[D3Q27System::BW]  = distNeigh[D3Q27System::BS]  = UbMath::sqrt2*deltaX1;
+      distNeigh[D3Q27System::TNE] = distNeigh[D3Q27System::TNW] = distNeigh[D3Q27System::TSE] = distNeigh[D3Q27System::TSW] = UbMath::sqrt3*deltaX1;
+      distNeigh[D3Q27System::BNE] = distNeigh[D3Q27System::BNW] = distNeigh[D3Q27System::BSE] = distNeigh[D3Q27System::BSW] = UbMath::sqrt3*deltaX1;
       double q;
       bool pointOnBoundary = false;
 

@@ -126,6 +126,9 @@ void run(string configname)
 
       const int baseLevel = 0;
 
+      //SPtr<GbObject3D> mic6(new GbCuboid3D(0.3, 0.015, -0.46+4.25*deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -0.46+5.25*deltaXcoarse));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic6.get(), pathOut+"/geo/mic6", WbWriterVtkXmlBinary::getInstance());
+
       ////////////////////////////////////////////////////////////////////////
       //Grid
       //////////////////////////////////////////////////////////////////////////
@@ -707,9 +710,13 @@ void run(string configname)
       if (myid==0) GbSystem3D::writeGeoObject(mic4->getBoundingBox().get(), pathOut+"/geo/mic4", WbWriterVtkXmlBinary::getInstance());
       SPtr<TimeseriesCoProcessor> tsp4(new TimeseriesCoProcessor(grid, stepMV, mic4, pathOut+"/mic/mic4", comm));
 
-      SPtr<IntegrateValuesHelper> mic5(new IntegrateValuesHelper(grid, comm,0.3+deltaXfine, 0.015, 0.000517+0.00037+7.0*deltaXfine, 0.3+2.0*deltaXfine, 0.015+deltaXfine, 0.000517+0.00037+8.0*deltaXfine));
+      SPtr<IntegrateValuesHelper> mic5(new IntegrateValuesHelper(grid, comm, 0.3+deltaXfine, 0.015, 0.000517+0.00037+7.0*deltaXfine, 0.3+2.0*deltaXfine, 0.015+deltaXfine, 0.000517+0.00037+8.0*deltaXfine));
       if (myid==0) GbSystem3D::writeGeoObject(mic5->getBoundingBox().get(), pathOut+"/geo/mic5", WbWriterVtkXmlBinary::getInstance());
       SPtr<TimeseriesCoProcessor> tsp5(new TimeseriesCoProcessor(grid, stepMV, mic5, pathOut+"/mic/mic5", comm));
+
+      SPtr<IntegrateValuesHelper> mic6(new IntegrateValuesHelper(grid, comm, 0.3, 0.015,  -0.46+4.25*deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -0.46+5.25*deltaXcoarse));
+      if (myid==0) GbSystem3D::writeGeoObject(mic6->getBoundingBox().get(), pathOut+"/geo/mic6", WbWriterVtkXmlBinary::getInstance());
+      SPtr<TimeseriesCoProcessor> tsp6(new TimeseriesCoProcessor(grid, stepMV, mic6, pathOut+"/mic/mic6", comm));
 
       omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(100));
@@ -723,6 +730,7 @@ void run(string configname)
       calculator->addCoProcessor(tsp3);
       calculator->addCoProcessor(tsp4);
       calculator->addCoProcessor(tsp5);
+      calculator->addCoProcessor(tsp6);
       //calculator->addCoProcessor(tav);
 
 
@@ -751,96 +759,6 @@ void run(string configname)
 
 }
 
-//void test_run()
-//{
-//   try
-//   {
-//
-//      SPtr<Communicator> comm = MPICommunicator::getInstance();.
-//      int myid = comm->getProcessID();
-//
-//      if (myid==0)
-//      {
-//         UBLOG(logINFO, "PID = "<<myid<<" Point 1");
-//         UBLOG(logINFO, "PID = "<<myid<<" Total Physical Memory (RAM): "<<Utilities::getTotalPhysMem());
-//         UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used: "<<Utilities::getPhysMemUsed());
-//         UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
-//      }
-//
-//      double g_minX1 = 0;
-//      double g_minX2 = 0;
-//      double g_minX3 = 0;
-//
-//      double g_maxX1 = 5;
-//      double g_maxX2 = 5;
-//      double g_maxX3 = 5;
-//
-//      int blockNx[3] ={ 5, 5, 5 };
-//
-//      string pathOut = "d:/temp/DLR-F16-Solid-test";
-//
-//      double deltaX = 1;
-//      double rhoLB = 0.0;
-//      double uLB = 0.0866025;
-//      double nuLB = 0.001; //4.33013e-06;
-//      SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
-//      ////////////////////////////////////////////////////////////////////////
-//      //Grid
-//      //////////////////////////////////////////////////////////////////////////
-//      SPtr<Grid3D> grid(new Grid3D(comm));
-//      grid->setDeltaX(deltaX);
-//      grid->setBlockNX(blockNx[0], blockNx[1], blockNx[2]);
-//      grid->setPeriodicX1(false);
-//      grid->setPeriodicX2(false);
-//      grid->setPeriodicX3(false);
-//
-//      SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-//      if (myid==0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut+"/geo/gridCube", WbWriterVtkXmlASCII::getInstance());
-//      GenBlocksGridVisitor genBlocks(gridCube);
-//      grid->accept(genBlocks);
-//
-//      WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-//      ppblocks.process(0);
-//
-//      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-//      kernel->setNX(std::array<int, 3>{ {blockNx[0], blockNx[1], blockNx[2]}});
-//      SPtr<BCProcessor> bcProc;
-//      bcProc = SPtr<BCProcessor>(new BCProcessor());
-//      kernel->setBCProcessor(bcProc);
-//
-//      SetKernelBlockVisitor kernelVisitor(kernel, nuLB, 1e9, 12);
-//      grid->accept(kernelVisitor);
-//
-//      //initialization of distributions
-//      InitDistributionsBlockVisitor initVisitor1;
-//      initVisitor1.setVx1(0.001);
-//      grid->accept(initVisitor1);
-//
-//      SPtr<UbScheduler> stepSch(new UbScheduler(1));
-//      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
-//
-//      //omp_set_num_threads(numOfThreads);
-//      SPtr<Calculator> calculator(new BasicCalculator(grid, stepSch, 2));
-//      calculator->addCoProcessor(writeMQCoProcessor);
-//
-//
-//      if (myid==0) UBLOG(logINFO, "Simulation-start");
-//      calculator->calculate();
-//      if (myid==0) UBLOG(logINFO, "Simulation-end");
-//   }
-//   catch (std::exception& e)
-//   {
-//      cerr<<e.what()<<endl<<flush;
-//   }
-//   catch (std::string& s)
-//   {
-//      cerr<<s<<endl;
-//   }
-//   catch (...)
-//   {
-//      cerr<<"unknown exception"<<endl;
-//   }
-//}
 
 int main(int argc, char* argv[])
 {

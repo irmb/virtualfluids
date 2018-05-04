@@ -730,6 +730,39 @@ namespace D3Q27System
       distNeigh[BNE] = distNeigh[BNW] = distNeigh[BSE] = distNeigh[BSW] = sqrt(deltaX1*deltaX1+deltaX2*deltaX2+deltaX3*deltaX3);
    }
 //////////////////////////////////////////////////////////////////////////
+   static inline void initRayVectors(double* const& rayX1, double* const& rayX2, double* const&  rayX3)
+   {
+      int fdir;
+      double c1oS2 = UbMath::one_over_sqrt2;
+      double c1oS3 = UbMath::one_over_sqrt3;
+      fdir = E;  rayX1[fdir] =  1.0;   rayX2[fdir] =  0.0;   rayX3[fdir] =  0.0;
+      fdir = W;  rayX1[fdir] = -1.0;   rayX2[fdir] =  0.0;   rayX3[fdir] =  0.0;
+      fdir = N;  rayX1[fdir] =  0.0;   rayX2[fdir] =  1.0;   rayX3[fdir] =  0.0;
+      fdir = S;  rayX1[fdir] =  0.0;   rayX2[fdir] = -1.0;   rayX3[fdir] =  0.0;
+      fdir = T;  rayX1[fdir] =  0.0;   rayX2[fdir] =  0.0;   rayX3[fdir] =  1.0;
+      fdir = B;  rayX1[fdir] =  0.0;   rayX2[fdir] =  0.0;   rayX3[fdir] = -1.0;
+      fdir = NE; rayX1[fdir] =  c1oS2; rayX2[fdir] =  c1oS2; rayX3[fdir] =  0.0;
+      fdir = SW; rayX1[fdir] = -c1oS2; rayX2[fdir] = -c1oS2; rayX3[fdir] =  0.0;
+      fdir = SE; rayX1[fdir] =  c1oS2; rayX2[fdir] = -c1oS2; rayX3[fdir] =  0.0;
+      fdir = NW; rayX1[fdir] = -c1oS2; rayX2[fdir] =  c1oS2; rayX3[fdir] =  0.0;
+      fdir = TE; rayX1[fdir] =  c1oS2; rayX2[fdir] = 0.0;    rayX3[fdir] =  c1oS2;
+      fdir = BW; rayX1[fdir] = -c1oS2; rayX2[fdir] = 0.0;    rayX3[fdir] = -c1oS2;
+      fdir = BE; rayX1[fdir] =  c1oS2; rayX2[fdir] = 0.0;    rayX3[fdir] = -c1oS2;
+      fdir = TW; rayX1[fdir] = -c1oS2; rayX2[fdir] = 0.0;    rayX3[fdir] =  c1oS2;
+      fdir = TN; rayX1[fdir] =  0.0;   rayX2[fdir] = c1oS2;  rayX3[fdir] =  c1oS2;
+      fdir = BS; rayX1[fdir] =  0.0;   rayX2[fdir] =-c1oS2;  rayX3[fdir] = -c1oS2;
+      fdir = BN; rayX1[fdir] =  0.0;   rayX2[fdir] = c1oS2;  rayX3[fdir] = -c1oS2;
+      fdir = TS; rayX1[fdir] =  0.0;   rayX2[fdir] =-c1oS2;  rayX3[fdir] =  c1oS2;
+      fdir = TNE; rayX1[fdir] =  c1oS3; rayX2[fdir] =  c1oS3; rayX3[fdir] =  c1oS3;
+      fdir = TNW; rayX1[fdir] = -c1oS3; rayX2[fdir] =  c1oS3; rayX3[fdir] =  c1oS3;
+      fdir = TSE; rayX1[fdir] =  c1oS3; rayX2[fdir] = -c1oS3; rayX3[fdir] =  c1oS3;
+      fdir = TSW; rayX1[fdir] = -c1oS3; rayX2[fdir] = -c1oS3; rayX3[fdir] =  c1oS3;
+      fdir = BNE; rayX1[fdir] =  c1oS3; rayX2[fdir] =  c1oS3; rayX3[fdir] = -c1oS3;
+      fdir = BNW; rayX1[fdir] = -c1oS3; rayX2[fdir] =  c1oS3; rayX3[fdir] = -c1oS3;
+      fdir = BSE; rayX1[fdir] =  c1oS3; rayX2[fdir] = -c1oS3; rayX3[fdir] = -c1oS3;
+      fdir = BSW; rayX1[fdir] = -c1oS3; rayX2[fdir] = -c1oS3; rayX3[fdir] = -c1oS3;
+   }
+//////////////////////////////////////////////////////////////////////////
    static inline LBMReal calcPress(const LBMReal* const f, LBMReal rho, LBMReal vx1, LBMReal vx2, LBMReal vx3)
    {
       LBMReal op=1.0;
