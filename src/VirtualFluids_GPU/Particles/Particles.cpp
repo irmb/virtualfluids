@@ -1,6 +1,6 @@
 #include "Particles/Particles.h"
 //#include "Output/UnstructuredGridWriter.hpp"
-#include "Output/WriteData.h"
+#include "Output/FileWriter.h"
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
@@ -384,7 +384,7 @@ void copyAndPrintParticles(Parameter* para, unsigned int t, bool isInit)
 
 	//////////////////////////////////////////////////////////////////////////
 	//write particles
-	writeParticle(para, t);
+    FileWriter().writeParticle(para, t);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

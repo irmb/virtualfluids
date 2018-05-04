@@ -16,11 +16,9 @@
 
 using namespace std;
 
-namespace UnstrucuredGridWriter
+namespace UnstructuredGridWriter
 {
-
-
-	void writeUnstrucuredGrid(Parameter* para, int level, std::string& fname, std::string& filenameVec2) 
+	void writeUnstructuredGrid(Parameter* para, int level, std::string& fname, std::string& filenameVec2) 
 	{
 		vector< UbTupleFloat3 > nodes;
 		vector< UbTupleUInt8 > cells;
