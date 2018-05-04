@@ -166,6 +166,8 @@ private:
 public:
     HOSTDEVICE BoundingBox getBoundingBoxOnNodes(Triangle &triangle) const;
 
+    HOST void mesh(Object* object) override;
+
     HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
     HOSTDEVICE void meshReverse(Triangle &triangle);

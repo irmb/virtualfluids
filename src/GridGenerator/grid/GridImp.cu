@@ -554,6 +554,18 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
+HOST void GridImp::mesh(Object* object)
+{
+    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    if (triangularMesh)
+        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, OUT_OF_GRID, FLUID);
+    else
+        gridStrategy->findInnerNodes(shared_from_this());
+
+    gridStrategy->findStopperNodes(shared_from_this());
+}
+
+
 HOST void GridImp::mesh(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();

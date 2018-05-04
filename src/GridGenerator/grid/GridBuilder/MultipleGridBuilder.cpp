@@ -22,6 +22,12 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
     addGridToList(grid);
 }
 
+void MultipleGridBuilder::addGeometry(Object* solidObject)
+{
+    this->solidObject = solidObject;
+}
+
+
 void MultipleGridBuilder::addGrid(Object* gridShape)
 {
     if (!coarseGridExists())
@@ -231,6 +237,10 @@ void MultipleGridBuilder::buildGrids()
 
     for (auto grid : grids)
         grid->inital();
+
+
+     for (auto grid : grids)
+          grid->mesh(solidObject);
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);

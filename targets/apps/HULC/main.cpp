@@ -264,7 +264,7 @@ void multipleLevel(const std::string& configPath)
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
-    gridBuilder->addCoarseGrid(-10, -8, -3, 50, 20, 20, 0.25);
+    gridBuilder->addCoarseGrid(-12, -8, -3, 55, 20, 25, 0.5);
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl", DiscretizationMethod::RAYCASTING);
 
 
@@ -276,7 +276,8 @@ void multipleLevel(const std::string& configPath)
     //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    gridBuilder->addGrid(triangularMesh, 2);
+    //gridBuilder->addGrid(triangularMesh, 2);
+    gridBuilder->addGeometry(triangularMesh);
 
     //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
     //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
@@ -290,9 +291,9 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->buildGrids();
 
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0", 0);
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0.vtk", 0);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
 
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);
