@@ -139,8 +139,8 @@ float runKernelSetToInvalid(const LaunchParameter& para, GridImp &grid)
 GLOBAL void setInvalidNodes(GridImp grid, bool *foundInvalidNode)
 {
     uint index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.getSize())
-        grid.setInsideNode(index, *foundInvalidNode);
+    //if (index < grid.getSize())
+        //grid.setInsideNode(index, *foundInvalidNode);
 }
 
 

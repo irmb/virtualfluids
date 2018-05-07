@@ -170,10 +170,6 @@ public:
 
     HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
-    HOSTDEVICE void meshReverse(Triangle &triangle);
-    HOSTDEVICE void findInsideNodes();
-    HOSTDEVICE void setInsideNode(const int &index, bool &invalidNodeFound);
-    HOSTDEVICE void setNegativeDirBorder_toFluid(const uint &index);
 
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);

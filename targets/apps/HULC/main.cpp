@@ -243,13 +243,13 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath)
 {
     logging::Logger::setStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::INFO_LOW);
+    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
     gridFactory->setGrid("grid");
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -264,7 +264,7 @@ void multipleLevel(const std::string& configPath)
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
-    gridBuilder->addCoarseGrid(-12, -8, -3, 55, 20, 25, 0.5);
+    gridBuilder->addCoarseGrid(-12, -10, -10, 55, 24, 25, 0.5);
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl", DiscretizationMethod::RAYCASTING);
 
 
@@ -277,7 +277,7 @@ void multipleLevel(const std::string& configPath)
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
     //gridBuilder->addGrid(triangularMesh, 2);
-    gridBuilder->addGeometry(triangularMesh);
+    gridBuilder->addGeometry(triangularMesh, 1);
 
     //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
     //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
@@ -292,7 +292,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->buildGrids();
 
     gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0.vtk", 0);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1", 1);
+    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1.vtk", 1);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
 
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);

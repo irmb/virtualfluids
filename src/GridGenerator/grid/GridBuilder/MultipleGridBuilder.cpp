@@ -4,6 +4,7 @@
 #include "../GridFactory.h"
 
 #include <VirtualFluidsBasics/utilities/logger/Logger.h>
+#include "io/STLReaderWriter/STLWriter.h"
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
     LevelGridBuilder(device, d3qxx), gridFactory(gridFactory)
@@ -27,6 +28,17 @@ void MultipleGridBuilder::addGeometry(Object* solidObject)
     this->solidObject = solidObject;
 }
 
+void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
+{
+    this->solidObject = solidObject;
+    auto gridShape = solidObject->clone();
+    gridShape->scale(4.0);
+
+    //TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(gridShape);
+    //STLWriter::writeSTL(triangularMesh->triangleVec, "D:/GRIDGENERATION/STL/bridge.stl");
+
+    this->addGrid(gridShape, level);
+}
 
 void MultipleGridBuilder::addGrid(Object* gridShape)
 {
@@ -238,9 +250,7 @@ void MultipleGridBuilder::buildGrids()
     for (auto grid : grids)
         grid->inital();
 
-
-     for (auto grid : grids)
-          grid->mesh(solidObject);
+    grids[grids.size()-1]->mesh(solidObject);
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);

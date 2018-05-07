@@ -1,7 +1,6 @@
 #ifndef DATA_WRITER_H
 #define DATA_WRITER_H
 
-#define NOMINMAX
 
 #include <memory>
 #include <vector>

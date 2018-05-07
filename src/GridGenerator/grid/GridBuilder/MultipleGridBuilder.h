@@ -27,6 +27,7 @@ public:
     VF_PUBLIC void addGrid(Object* gridShape, uint levelFine);
 
     VF_PUBLIC void addGeometry(Object* gridShape);
+    VF_PUBLIC void addGeometry(Object* solidObject, uint level);
 
     VF_PUBLIC uint getNumberOfLevels() const;
     VF_PUBLIC real getDelta(uint level) const;

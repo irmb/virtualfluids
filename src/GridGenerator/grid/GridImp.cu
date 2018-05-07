@@ -74,7 +74,6 @@ HOST void GridImp::inital()
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, OUT_OF_GRID);
-        //gridStrategy->findInnerNodes(shared_from_this(), triangularMesh);
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
@@ -88,63 +87,6 @@ HOST void GridImp::inital()
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
 {
     this->field.setFieldEntryToOutOfGrid(index);
-}
-
-
-HOSTDEVICE void GridImp::meshReverse(Triangle &triangle)
-{
-    auto box = this->getBoundingBoxOnNodes(triangle);
-
-    triangle.initalLayerThickness(getDelta());
-
-    for (real x = box.minX; x <= box.maxX; x += delta)
-    {
-        for (real y = box.minY; y <= box.maxY; y += delta)
-        {
-            for (real z = box.minZ; z <= box.maxZ; z += delta)
-            {
-                const uint index = this->transCoordToIndex(x, y, z);
-
-                const Vertex point(x, y, z);
-
-                const char pointValue = triangle.isUnderFace(point);
-
-                if (pointValue == NEGATIVE_DIRECTION_BORDER)
-                    field.setFieldEntry(index, NEGATIVE_DIRECTION_BORDER);
-                else if (pointValue == INSIDE)
-                    field.setFieldEntryToFluid(index);
-            }
-        }
-    }
-}
-
-HOSTDEVICE void GridImp::findInsideNodes()
-{
-    bool foundInsideNode = true;
-    while (foundInsideNode)
-    {
-        foundInsideNode = false;
-        for (uint index = 0; index < this->size; index++)
-            this->setInsideNode(index, foundInsideNode);
-    }
-}
-
-HOSTDEVICE void GridImp::setInsideNode(const int &index, bool &insideNodeFound)
-{
-    if (field.is(index, NEGATIVE_DIRECTION_BORDER))
-        return;
-
-    if (!field.isFluid(index) && this->nodeInNextCellIs(index, FLUID))
-    {
-        field.setFieldEntryToFluid(index);
-        insideNodeFound = true;
-    }
-}
-
-HOSTDEVICE void GridImp::setNegativeDirBorder_toFluid(const uint &index)
-{
-    if (field.is(index, NEGATIVE_DIRECTION_BORDER))
-        field.setFieldEntryToFluid(index);
 }
 
 HOST void GridImp::freeMemory()
@@ -640,26 +582,6 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
     }
 }
 
-
-// --------------------------------------------------------- //
-//                  find inner nodes                         //
-// --------------------------------------------------------- //
-//HOSTDEVICE void GridImp::setInvalidNode(const int &index, bool &insideNodeFound)
-//{
-//    if (field.isNegativeDirectionBorder(index))
-//        return;
-//
-//    if (!field.isInside(index) && this->nodeInNextCellIs(index, INSIDE))
-//    {
-//        field.setFieldEntryToInvalid(index);
-//        insideNodeFound = true;
-//    }
-//}
-
-//HOSTDEVICE bool GridImp::isNeighborInside(const int &index) const
-//{
-//    return (field.isInside(neighborIndexX[index]) || field.isInside(neighborIndexY[index]) || field.isInside(neighborIndexZ[index]));
-//}
 
 // --------------------------------------------------------- //
 //                        Getter                             //

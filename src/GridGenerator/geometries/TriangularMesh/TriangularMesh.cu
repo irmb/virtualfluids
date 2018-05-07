@@ -9,6 +9,7 @@
 #include "Timer/Timer.h"
 
 #include "numerics/geometry3d/GbTriFaceMesh3D.h"
+#include "io/STLReaderWriter/STLWriter.h"
 
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName, DiscretizationMethod discretizationMethod)
@@ -207,7 +208,6 @@ void TriangularMesh::scale(double offset)
         triangles[triangleID].set(vertexTriangleID, lineOrigin + averrageNormal * offset);
     }
 
-    //STLWriter::writeSTL(triangles, "D:/GRIDGENERATION/STL/FICKEN_ASCII.stl");
     this->setTriangles(triangles);
 }
 
