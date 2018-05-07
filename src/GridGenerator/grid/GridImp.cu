@@ -204,8 +204,8 @@ HOSTDEVICE void GridImp::findStopperNode(uint index)
     if(isValidEndOfGridStopper(index))
         this->field.setFieldEntryToStopperEndOfGrid(index);
 
-    if (isValidStartOfGridStopper(index))
-        this->field.setFieldEntryToStopperEndOfGrid(index);
+    if (isValidInnerStopper(index))
+        this->field.setFieldEntryToStopperOverlapGrid(index);
 }
 
 HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
@@ -254,15 +254,16 @@ HOSTDEVICE bool GridImp::isNode(uint index, char type) const
     return field.is(index, type);
 }
 
-
-HOSTDEVICE bool GridImp::isValidStartOfGridStopper(uint index) const
-{
-    return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF));
-}
-
 HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 {
-    return this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+    return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+        || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
+HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
+{
+    return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+        || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
 
@@ -424,7 +425,7 @@ HOST void GridImp::updateSparseIndices()
     int newIndex = 0;
     for (uint index = 0; index < size; index++)
     {
-        if (this->field.isInvalid(index) || this->field.isOutOfGrid(index))
+        if (this->field.isInvalid(index) || this->field.isOutOfGrid(index) || this->field.isSolid(index))
         {
             sparseIndices[index] = -1;
             removedNodes++;
@@ -558,7 +559,7 @@ HOST void GridImp::mesh(Object* object)
 {
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
-        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, OUT_OF_GRID, FLUID);
+        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, SOLID, FLUID);
     else
         gridStrategy->findInnerNodes(shared_from_this());
 

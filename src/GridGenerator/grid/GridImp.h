@@ -33,7 +33,7 @@ public:
 private:
     HOST void initalNumberOfNodesAndSize();
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
-    HOSTDEVICE bool isValidStartOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidInnerStopper(uint index) const;
     HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
     HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
     HOSTDEVICE bool contains(Cell &cell, char type) const;
