@@ -3,6 +3,8 @@
 
 #include "../TestParameterImp.h"
 
+class  PhiAndNuTestResults;
+
 class ShearWaveTestParameter : public TestParameterImp
 {
 public:
@@ -11,7 +13,8 @@ public:
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
-		bool writeFiles, unsigned int startStepFileWriter, std::string filePath);
+		bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
+		std::shared_ptr<PhiAndNuTestResults> testResults);
 
 protected:
 	ShearWaveTestParameter() {};
@@ -20,13 +23,10 @@ protected:
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
-		bool writeFiles, unsigned int startStepFileWriter, std::string filePath);
-
-	std::shared_ptr<InitialCondition> getInitialCondition();
+		bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
+		std::shared_ptr<PhiAndNuTestResults> testResults);
 
 private:
-	std::shared_ptr<InitialCondition> initialCondition;
-
 	real u0, v0;
 };
 

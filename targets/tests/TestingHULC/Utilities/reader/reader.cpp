@@ -10,6 +10,7 @@
 #include "Utilities\TestInformation\TestInformationImp.h"
 #include "Utilities\TestParameter\TaylorGreenTestParameter\TaylorGreenTestParameter.h"
 #include "Utilities\TestParameter\ShearWaveTestParameter\ShearWaveTestParameter.h"
+#include "Utilities\TestResults\PhiAndNuTestResults.h"
 
 void Reader::calcNumberOfEqualTests()
 {
@@ -124,15 +125,17 @@ std::shared_ptr<TestInformation> Reader::makeTestInformation()
 std::vector<std::shared_ptr<TestParameter>> Reader::makeTestParameter()
 {
 	std::vector<std::shared_ptr<TestParameter>> testParameter;
+	std::shared_ptr<PhiAndNuTestResults> tgvTestResults = PhiAndNuTestResults::getNewInstance("TaylorGreenVortex");
+	std::shared_ptr<PhiAndNuTestResults> swTestResults = PhiAndNuTestResults::getNewInstance("ShearWave");
 
 	for (int i = 0; i < tgv.size(); i++) {
 		if (tgv.at(i)) {
-			testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath));
+			testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, tgvTestResults));
 		}
 	}
 	for (int i = 0; i < sw.size(); i++) {
 		if (sw.at(i)) {
-			testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath));
+			testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, swTestResults));
 		}
 	}
 

@@ -9,7 +9,8 @@
 class Parameter;
 class GridProvider;
 class DataWriter;
-class Results;
+class Calculator;
+class TestResults;
 
 class TestCondition
 {
@@ -17,7 +18,8 @@ public:
 	virtual std::shared_ptr<Parameter> getParameter() = 0;
 	virtual std::shared_ptr<GridProvider> getGrid() = 0;
 	virtual std::shared_ptr<DataWriter> getDataWriter() = 0;
-	virtual std::shared_ptr<Results> getSimulationResults() = 0;
+	virtual std::shared_ptr<TestResults> getTestResults() = 0;
+	virtual std::shared_ptr<Calculator> getCalculator() = 0;
 private:
 
 };

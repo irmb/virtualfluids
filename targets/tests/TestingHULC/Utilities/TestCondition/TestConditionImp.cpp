@@ -7,6 +7,7 @@
 #include "Utilities\Results\Results.h"
 #include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
 #include "Utilities\InitialCondition\InitialCondition.h"
+#include "Utilities\Calculator\Calculator.h"
 
 #include <sstream>
 
@@ -25,9 +26,14 @@ std::shared_ptr<DataWriter> TestConditionImp::getDataWriter()
 	return writeToVector;
 }
 
-std::shared_ptr<Results> TestConditionImp::getSimulationResults()
+std::shared_ptr<TestResults> TestConditionImp::getTestResults()
 {
-	return simResults;
+	return testResults;
+}
+
+std::shared_ptr<Calculator> TestConditionImp::getCalculator()
+{
+	return calculator;
 }
 
 
@@ -132,10 +138,17 @@ void TestConditionImp::initGridProvider()
 	grid = std::shared_ptr<GridProvider>(new GridReaderforTesting(para, initialCondition));
 }
 
-void TestConditionImp::initResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
+void TestConditionImp::initCalculator(std::shared_ptr<Calculator> calc)
 {
-	simResults = std::shared_ptr<Results>(new Results(lx,lz,timeStepLength));
+	this->calculator = calc;
 }
+
+
+void TestConditionImp::setTestResults(std::shared_ptr<TestResults> testResults)
+{
+	this->testResults = testResults;
+}
+
 
 void TestConditionImp::initDataWriter(unsigned int ySliceForCalculation, unsigned int startTimeCalculation, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, unsigned int startTimeDataWriter)
 {
@@ -143,3 +156,8 @@ void TestConditionImp::initDataWriter(unsigned int ySliceForCalculation, unsigne
 	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, ySliceForCalculation, startTimeCalculation, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter));
 }
 
+void TestConditionImp::initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
+{
+	simResults = Results::getNewInstance(lx, lz, timeStepLength);
+	calculator->setSimulationResults(simResults);
+}

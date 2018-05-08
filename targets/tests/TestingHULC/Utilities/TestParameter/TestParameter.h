@@ -5,11 +5,13 @@
 #include <string>
 
 class InitialCondition;
+class Calculator;
+class TestResults;
+class Results;
 
 class TestParameter
 {
 public:
-	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
 	virtual double getViscosity() = 0;
 	virtual std::string getGridPath() = 0;
 	virtual std::string getFilePath() = 0;
@@ -22,9 +24,12 @@ public:
 	virtual unsigned int getStartTimeCalculation() = 0;
 	virtual bool getWriteFiles() = 0;
 	virtual unsigned int getStartTimeDataWriter() = 0;
+	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
+	virtual std::shared_ptr<Calculator> getCalculator() = 0;
+	virtual std::shared_ptr<TestResults> getTestResults() = 0;
 
 private:
 
 };
 
-#endif // !TESTPARAMETER_H
+#endif

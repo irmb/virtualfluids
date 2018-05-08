@@ -10,6 +10,9 @@ class InitialCondition;
 class FileWriter;
 class ToVectorWriter;
 class TestParameter;
+class Calculator;
+class TestResults;
+class Results;
 
 class TestConditionImp: public TestCondition
 {
@@ -18,13 +21,17 @@ public:
 	void initParameter(real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength);
 	void initInitialConditions(std::shared_ptr<InitialCondition> initialCondition);
 	void initGridProvider();
-	void initResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
+	void initCalculator(std::shared_ptr<Calculator> calc);
 	void initDataWriter(unsigned int ySliceForCalculation, unsigned int startTimeCalculation, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, unsigned int startTimeDataWriter);
+	void initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
+
+	void setTestResults(std::shared_ptr<TestResults> testResults);
 
 	std::shared_ptr<Parameter> getParameter();
 	std::shared_ptr<GridProvider> getGrid();
 	std::shared_ptr<DataWriter> getDataWriter();
-	std::shared_ptr<Results> getSimulationResults();
+	std::shared_ptr<TestResults> getTestResults();
+	std::shared_ptr<Calculator> getCalculator();
 
 protected:
 	TestConditionImp() {};
@@ -37,6 +44,8 @@ private:
 	std::shared_ptr<Results> simResults;
 	std::shared_ptr<ToVectorWriter> writeToVector;
 	std::shared_ptr<FileWriter> fileWriter;
+	std::shared_ptr<Calculator> calculator;
+	std::shared_ptr<TestResults> testResults;
 	
 };
 #endif

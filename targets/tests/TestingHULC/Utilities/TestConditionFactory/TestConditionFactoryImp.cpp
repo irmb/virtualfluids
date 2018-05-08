@@ -21,7 +21,9 @@ std::vector<std::shared_ptr<TestCondition>> TestConditionFactoryImp::makeTestCon
 		testCondit->initParameter(testPara.at(i)->getViscosity(), testPara.at(i)->getGridPath(), testPara.at(i)->getFilePath(), testPara.at(i)->getNumberOfGridLevels(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength());
 		testCondit->initInitialConditions(testPara.at(i)->getInitialCondition());
 		testCondit->initGridProvider();
-		testCondit->initResults(testPara.at(i)->getLx(), testPara.at(i)->getLz(), testPara.at(i)->getTimeStepLength());
+		testCondit->initCalculator(testPara.at(i)->getCalculator());
+		testCondit->initSimulationResults(testPara.at(i)->getLx(), testPara.at(i)->getLz(), testPara.at(i)->getTimeStepLength());
+		testCondit->setTestResults(testPara.at(i)->getTestResults());
 		testCondit->initDataWriter(testPara.at(i)->getYSliceForCalculation(), testPara.at(i)->getStartTimeCalculation(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength(), testPara.at(i)->getWriteFiles(), testPara.at(i)->getStartTimeDataWriter());
 		testConditions.push_back(testCondit);
 	}

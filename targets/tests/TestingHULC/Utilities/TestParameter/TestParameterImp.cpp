@@ -1,8 +1,20 @@
 #include "TestParameterImp.h"
 
+#include "Utilities/TestResults/TestResults.h"
 
-TestParameterImp::TestParameterImp(real viscosity, unsigned int lx, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, bool writeFiles, unsigned int startStepFileWriter)
-	: viscosity(viscosity), lx(lx), numberOfTimeSteps(numberOfTimeSteps), basisTimeStepLength(basisTimeStepLength), startStepCalculation(startStepCalculation), ySliceForCalculation(ySliceForCalculation), gridPath(gridPath), writeFiles(writeFiles), startStepFileWriter(startStepFileWriter)
+TestParameterImp::TestParameterImp(
+	real viscosity, unsigned int lx, 
+	unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, 
+	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
+	std::string gridPath, 
+	bool writeFiles, unsigned int startStepFileWriter, 
+	std::shared_ptr<TestResults> testResults)
+		:viscosity(viscosity), lx(lx),
+		numberOfTimeSteps(numberOfTimeSteps), basisTimeStepLength(basisTimeStepLength), 
+		startStepCalculation(startStepCalculation), ySliceForCalculation(ySliceForCalculation), 
+		gridPath(gridPath), 
+		writeFiles(writeFiles), startStepFileWriter(startStepFileWriter), 
+		testResults(testResults)
 {
 	maxLevel = 0;
 	numberOfGridLevels = 1;
@@ -77,4 +89,17 @@ unsigned int TestParameterImp::getStartTimeDataWriter()
 	return startTimeDataWriter;
 }
 
+std::shared_ptr<InitialCondition> TestParameterImp::getInitialCondition()
+{
+	return initialCondition;
+}
 
+std::shared_ptr<Calculator> TestParameterImp::getCalculator()
+{
+	return calculator;
+}
+
+std::shared_ptr<TestResults> TestParameterImp::getTestResults()
+{
+	return testResults;
+}

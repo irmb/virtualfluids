@@ -8,8 +8,6 @@
 class TestParameterImp: public TestParameter
 {
 public:
-	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
-
 	double getViscosity();
 	std::string getGridPath();
 	std::string getFilePath();
@@ -22,6 +20,9 @@ public:
 	unsigned int getStartTimeCalculation();
 	bool getWriteFiles();
 	unsigned int getStartTimeDataWriter();
+	std::shared_ptr<InitialCondition> getInitialCondition();
+	std::shared_ptr<Calculator> getCalculator();
+	std::shared_ptr<TestResults> getTestResults();
 
 protected:
 	TestParameterImp() {};
@@ -29,7 +30,8 @@ protected:
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
-		bool writeFiles, unsigned int startStepFileWriter);
+		bool writeFiles, unsigned int startStepFileWriter,
+		std::shared_ptr<TestResults> testResults);
 
 	std::string filePath;
 	real viscosity;
@@ -46,6 +48,10 @@ protected:
 	unsigned int startTimeCalculation, startTimeDataWriter;
 	unsigned int endTime;
 
+	std::shared_ptr<InitialCondition> initialCondition;
+	std::shared_ptr<Calculator> calculator;
+	std::shared_ptr<Results> simResults;
+	std::shared_ptr<TestResults> testResults;
 };
 
 #endif // !TESTPARAMETERIMP_H
