@@ -1,28 +1,45 @@
-#include "Calculator.h"
+#include "FFTCalculator.h"
 
 #include "Utilities\Results\Results.h"
+#include "Utilities\TestResults\PhiAndNuTestResults.h"
 #include "Utilities\EvaluationParameter\EvaluationParameter.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdlib.h>
 
-Calulator::Calulator(std::shared_ptr<Results> simResults, std::shared_ptr<EvaluationParameter> evaPara):simResults(simResults)
+void FFTCalculator::calcAndCopyToTestResults()
 {
-	if (evaPara->getDataToCalculate() == "vX")
-		data = simResults->getVx();
-	if (evaPara->getDataToCalculate() == "vZ")
-		data = simResults->getVz();
+	init();
 
+	nu = calcNu();
+	nudiff = calcNuDiff(nu);
+	phidiff = calcPhiDiff();
+
+	testResults->add(nudiff, phidiff, lx);
+}
+
+void FFTCalculator::setSimulationResults(std::shared_ptr<Results> simResults)
+{
+	this->simResults = simResults;
+}
+
+void FFTCalculator::init()
+{
+	setVectorToCalc();
 	lz = (double)simResults->getZNodes();
 	lx = (double)simResults->getXNodes();
 	timeStepLength = simResults->getTimeStepLength();
-	vis = evaPara->getViscosity();
 	numberOfTimeSteps = simResults->getNumberOfTimeSteps();
 	fftCalculated = false;
 }
 
-double Calulator::calcNu()
+FFTCalculator::FFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTestResults> testResults) : vis(viscosity), testResults(testResults)
+{
+
+}
+
+double FFTCalculator::calcNu()
 {
 	calcLogAmplitudeForAllTimeSteps();
 	std::vector<double> linReg = calcLinReg(logAmplitude);
@@ -31,13 +48,13 @@ double Calulator::calcNu()
 	return nu;
 }
 
-double Calulator::calcNuDiff(double nu)
+double FFTCalculator::calcNuDiff(double nu)
 {
 	double nudiff = abs((nu - vis) / vis);
 	return nudiff;
 }
 
-double Calulator::calcPhiDiff()
+double FFTCalculator::calcPhiDiff()
 {
 	calcPhiForAllTimeSteps();
 	std::vector<double> linReg = calcLinReg(phi);
@@ -45,7 +62,7 @@ double Calulator::calcPhiDiff()
 	return linReg.at(0);
 }
 
-void Calulator::calcLogAmplitudeForAllTimeSteps()
+void FFTCalculator::calcLogAmplitudeForAllTimeSteps()
 {
 	calcAmplitudeForAllTimeSteps();
 	logAmplitude.resize(amplitude.size());
@@ -53,7 +70,7 @@ void Calulator::calcLogAmplitudeForAllTimeSteps()
 		logAmplitude.at(tS) = log(amplitude.at(tS));
 }
 
-std::vector<double> Calulator::calcLinReg(std::vector<double> y)
+std::vector<double> FFTCalculator::calcLinReg(std::vector<double> y)
 {
 	std::vector<double> result;
 	std::vector<double> x(y.size());
@@ -92,7 +109,7 @@ std::vector<double> Calulator::calcLinReg(std::vector<double> y)
 	return result;
 }
 
-void Calulator::calcAmplitudeForAllTimeSteps()
+void FFTCalculator::calcAmplitudeForAllTimeSteps()
 {
 	if (fftCalculated == false) {
 		for (int timeStep = 0; timeStep < numberOfTimeSteps; timeStep++)
@@ -104,7 +121,7 @@ void Calulator::calcAmplitudeForAllTimeSteps()
 		amplitude.push_back(4.0 / (lx * lz)  * sqrt(fftResultsRe.at(timeStep).at(pos) * fftResultsRe.at(timeStep).at(pos) + fftResultsIm.at(timeStep).at(pos) * fftResultsIm.at(timeStep).at(pos)));
 }
 
-void Calulator::calcPhiForAllTimeSteps()
+void FFTCalculator::calcPhiForAllTimeSteps()
 {
 	if (fftCalculated == false) {
 		for (int timeStep = 0; timeStep < numberOfTimeSteps; timeStep++)
@@ -116,7 +133,7 @@ void Calulator::calcPhiForAllTimeSteps()
 		phi.push_back(atan(fftResultsIm.at(timeStep).at(pos) / fftResultsRe.at(timeStep).at(pos)));
 }
 
-void Calulator::calcFFT2D(unsigned int timeStep)
+void FFTCalculator::calcFFT2D(unsigned int timeStep)
 {
 	fftw_complex *in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * lx * lz);
 	fftw_complex *out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * lx * lz);
@@ -133,7 +150,7 @@ void Calulator::calcFFT2D(unsigned int timeStep)
 	fftw_free(out);
 }
 
-void Calulator::initDataForFFT(fftw_complex * input, unsigned int timeStep)
+void FFTCalculator::initDataForFFT(fftw_complex * input, unsigned int timeStep)
 {
 	for (int i = 0; i < data.at(timeStep).size(); i++)
 	{
@@ -142,7 +159,7 @@ void Calulator::initDataForFFT(fftw_complex * input, unsigned int timeStep)
 	}
 }
 
-void Calulator::setFFTResults(fftw_complex * result, unsigned int timeStep)
+void FFTCalculator::setFFTResults(fftw_complex * result, unsigned int timeStep)
 {
 	std::vector<double> fftRe, fftIm;
 	fftRe.resize(data.at(timeStep).size());
