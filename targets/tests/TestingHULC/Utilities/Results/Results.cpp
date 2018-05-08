@@ -12,6 +12,11 @@ Results::Results(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
 	this->numberOfTimeSteps = 0;
 }
 
+std::shared_ptr<Results> Results::getNewInstance(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
+{
+	return std::shared_ptr<Results>(new Results(lx, lz, timeStepLength));
+}
+
 void Results::addTimeStep(unsigned int timeStep, unsigned int time, std::vector<double> x, std::vector<double> z, std::vector<double> vx, std::vector<double> vz, std::vector<double> press, std::vector<double> rho)
 {
 	this->timeStep.push_back(timeStep);
