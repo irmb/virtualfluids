@@ -5,6 +5,7 @@
 
 #include <VirtualFluidsBasics/utilities/logger/Logger.h>
 #include "io/STLReaderWriter/STLWriter.h"
+#include "io/GridVTKWriter/GridVTKWriter.h"
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
     LevelGridBuilder(device, d3qxx), gridFactory(gridFactory)
@@ -271,4 +272,16 @@ void MultipleGridBuilder::emitNoCoarseGridExistsWarning()
 void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
 {
     *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
+}
+
+void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
+{
+    for(uint level = 0; level < grids.size(); level++)
+    {
+        std::stringstream ss;
+        ss << path << level << ".vtk";
+
+        GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
+        GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
+    }
 }

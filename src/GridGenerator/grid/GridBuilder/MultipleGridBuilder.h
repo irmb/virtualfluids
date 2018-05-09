@@ -43,6 +43,8 @@ public:
     VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
     VF_PUBLIC void buildGrids();
 
+    VF_PUBLIC void writeGridsToVtk(const std::string& path) const;
+
 private:
     void addGridToList(SPtr<Grid> grid);
     real calculateDelta(uint level) const;

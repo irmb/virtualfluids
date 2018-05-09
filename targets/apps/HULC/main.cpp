@@ -249,7 +249,7 @@ void multipleLevel(const std::string& configPath)
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
     gridFactory->setGrid("grid");
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -259,13 +259,18 @@ void multipleLevel(const std::string& configPath)
     //conglomerate->subtract(new Sphere(30, 20, 20, 4));
     //gridBuilder->addGrid(conglomerate, 2);
 
+    //gridBuilder->addCoarseGrid(0, 0, 0, 40, 40, 40, 1.0);
+    //Object* cuboid = new Cuboid(15, 15, 15, 20, 20, 20);
+    //gridBuilder->addGrid(cuboid, 2);
 
 //    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 14, 10, 20, 0.25);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
     gridBuilder->addCoarseGrid(-12, -10, -10, 55, 24, 25, 0.5);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl", DiscretizationMethod::RAYCASTING);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
+    //gridBuilder->addGrid(triangularMesh, 2);
+    gridBuilder->addGeometry(triangularMesh);
 
 
     //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
@@ -276,8 +281,7 @@ void multipleLevel(const std::string& configPath)
     //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
 
     //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    //gridBuilder->addGrid(triangularMesh, 2);
-    gridBuilder->addGeometry(triangularMesh, 1);
+    //gridBuilder->addGeometry(triangularMesh, 1);
 
     //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
     //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
@@ -291,9 +295,9 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->buildGrids();
 
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_0.vtk", 0);
-    gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_1.vtk", 1);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2", 2);
+    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2.vtk", 2);
 
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);

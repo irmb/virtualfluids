@@ -12,10 +12,9 @@
 #include "io/STLReaderWriter/STLWriter.h"
 
 
-TriangularMesh* TriangularMesh::make(const std::string& fileName, DiscretizationMethod discretizationMethod)
+TriangularMesh* TriangularMesh::make(const std::string& fileName)
 {
     TriangularMesh* triangularMesh = new TriangularMesh(fileName);
-    triangularMesh->discretizationMethod = discretizationMethod;
     return triangularMesh;
 }
 
@@ -109,11 +108,6 @@ HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
     return true;
 }
 
-
-HOST DiscretizationMethod TriangularMesh::getDiscretizationMethod() const
-{
-    return this->discretizationMethod;
-}
 
 HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
 {
