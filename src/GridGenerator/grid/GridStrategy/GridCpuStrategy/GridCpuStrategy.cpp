@@ -15,8 +15,6 @@
 #include "grid/NodeValues.h"
 
 #include "grid/GridInterface.h"
-#include "io/GridVTKWriter/GridVTKWriter.h"
-#include "numerics/geometry3d/GbTriFaceMesh3D.h"
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {

@@ -1,4 +1,7 @@
 #include "MultipleGridBuilder.h"
+
+#include <sstream>
+
 #include "utilities/math/Math.h"
 #include "../Grid.h"
 #include "../GridFactory.h"
