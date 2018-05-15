@@ -2,7 +2,7 @@
 
 #include <GridGenerator/utilities/cuda/cudaDefines.h>
 #include <GridGenerator/utilities/cuda/cudaKernelCall.h>
-#include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
+#include <GridGenerator/utilities/cuda/LaunchParameter.cuh>
 
 #include <GridGenerator/grid/GridImp.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>

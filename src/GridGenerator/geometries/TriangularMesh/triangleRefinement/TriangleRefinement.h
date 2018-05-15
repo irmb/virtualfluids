@@ -5,7 +5,7 @@
 #include <vector>
 #include "GridGenerator/global.h"
 
-#include <GridGenerator/utilities/triangleNeighborFinder/TriangleNeighborFinder.h>
+#include "../triangleNeighborFinder/TriangleNeighborFinder.h"
 
 struct Triangle;
 struct Vertex;

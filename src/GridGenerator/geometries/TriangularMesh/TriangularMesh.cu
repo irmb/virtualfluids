@@ -2,7 +2,7 @@
 
 #include <GridGenerator/io/STLReaderWriter/STLReader.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
-#include <GridGenerator/utilities/triangleNeighborFinder/TriangleNeighborFinder.h>
+#include "triangleNeighborFinder/TriangleNeighborFinder.h"
 
 #include <utilities/logger/Logger.h>
 

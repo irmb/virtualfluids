@@ -5,7 +5,7 @@
 #include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
 #include "TriangleRefinement.h"
-#include <GridGenerator/utilities/triangleNeighborFinder/TriangleNeighborFinder.h>
+#include <GridGenerator/geometries/TriangularMesh/triangleNeighborFinder/TriangleNeighborFinder.h>
 #include <GridGenerator/io/GridVTKWriter/GridVTKWriter.h>
 #include <GridGenerator/utilities/Transformator/Transformator.h>
 

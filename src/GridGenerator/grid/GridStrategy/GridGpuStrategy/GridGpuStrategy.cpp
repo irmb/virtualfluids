@@ -4,7 +4,7 @@
 #include "GridGenerator/global.h"
 
 #include <GridGenerator/utilities/cuda/CudaErrorCheck.cu>
-#include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
+#include <GridGenerator/utilities/cuda/LaunchParameter.cuh>
 
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
