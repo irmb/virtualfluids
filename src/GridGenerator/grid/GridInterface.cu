@@ -15,7 +15,6 @@ GridInterface::~GridInterface()
 }
 
 
-
 void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
@@ -50,9 +49,7 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
     }
 }
 
-
-
-HOSTDEVICE void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
     const bool nodeOnCoarseGridIsCoarseToFine = coarseGrid->getField().isCoarseToFineNode(indexOnCoarseGrid);
@@ -157,7 +154,6 @@ int GridInterface::getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid,
     return fineGrid->transCoordToIndex(xFine, yFine, zFine);
 }
 
-
 void GridInterface::findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index)
 {
     findSparseIndex(cf.coarse, coarseGrid, index);
@@ -176,7 +172,6 @@ void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
     const uint sparseIndex = grid->getSparseIndex(matrixIndex);
     indices[index] = sparseIndex;
 }
-
 
 void GridInterface::print() const
 {

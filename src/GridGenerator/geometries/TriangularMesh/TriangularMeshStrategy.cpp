@@ -36,151 +36,151 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
 
 void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType)
 {
-    //    auto mesh = triangularMesh->getGbTriFaceMesh3D();
+        auto mesh = triangularMesh->getGbTriFaceMesh3D();
 
-    //    const real minXExact = triangularMesh->minmax.minX;
-    //    const real minYExact = triangularMesh->minmax.minY;
-    //    const real minZExact = triangularMesh->minmax.minZ;
+        const real minXExact = triangularMesh->minmax.minX;
+        const real minYExact = triangularMesh->minmax.minY;
+        const real minZExact = triangularMesh->minmax.minZ;
 
-    //    const real maxXExact = triangularMesh->minmax.maxX;
-    //    const real maxYExact = triangularMesh->minmax.maxY;
-    //    const real maxZExact = triangularMesh->minmax.maxZ;
+        const real maxXExact = triangularMesh->minmax.maxX;
+        const real maxYExact = triangularMesh->minmax.maxY;
+        const real maxZExact = triangularMesh->minmax.maxZ;
 
-    //    const auto min = grid->getMinimumOnNode(Vertex(minXExact, minYExact, minZExact));
+        const auto min = grid->getMinimumOnNode(Vertex(minXExact, minYExact, minZExact));
 
-    //    const real minX = min.x;
-    //    const real minY = min.y;
-    //    const real minZ = min.z;
+        const real minX = min.x;
+        const real minY = min.y;
+        const real minZ = min.z;
 
-    //    const auto max = grid->getMaximumOnNode(Vertex(maxXExact, maxYExact, maxZExact));
+        const auto max = grid->getMaximumOnNode(Vertex(maxXExact, maxYExact, maxZExact));
 
-    //    const real maxX = max.x;
-    //    const real maxY = max.y;
-    //    const real maxZ = max.z;
-
-
-    //    real x, y, z;
-    //    for (z = minZ; z <= maxZ; z += grid->getDelta())
-    //    {
-    //        for (y = minY; y <= maxY; y += grid->getDelta())
-    //        {
-    //            for (x = minX; x <= maxX; x += grid->getDelta())
-    //            {
-    //                grid->setNodeTo(grid->transCoordToIndex(x, y, z), InnerType);
-    //            }
-    //        }
-    //    }
+        const real maxX = max.x;
+        const real maxY = max.y;
+        const real maxZ = max.z;
 
 
+        real x, y, z;
+        for (z = minZ; z <= maxZ; z += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                for (x = minX; x <= maxX; x += grid->getDelta())
+                {
+                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), InnerType);
+                }
+            }
+        }
 
-    //    int counter = 0;
 
-    //    // Test line intersection
-    //    for (z = minZ; z <= maxZ; z += grid->getDelta())
-    //    {
-    //        for (y = minY; y <= maxY; y += grid->getDelta())
-    //        {
-    //            for (x = minX; x <= maxX; x += grid->getDelta())
-    //            {
-    //                counter++;
-    //                if (mesh->intersectLine((x - grid->getDelta()), y, z, x, y, z)) 
-    //                    break;
-    //                grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
-    //            }
-    //        }
-    //    }
 
-    //    // Test line intersection from opposite direction
-    //    for (z = minZ; z <= maxZ; z += grid->getDelta())
-    //    {
-    //        for (y = minY; y <= maxY; y += grid->getDelta())
-    //        {
-    //            for (x = maxX; x >= minX; x -= grid->getDelta())
-    //            {
-    //                if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
-    //                {
-    //                    counter++;
-    //                    if (mesh->intersectLine((x + grid->getDelta()), y, z, x, y, z))
-    //                        break;
-    //                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
-    //                }
-    //            }
-    //        }
-    //    }
+        int counter = 0;
 
-    //    // Test line intersection
-    //    for (z = minZ; z <= maxZ; z += grid->getDelta())
-    //    {
-    //        for (x = minX; x <= maxX; x += grid->getDelta())
-    //        {
-    //            for (y = minY; y <= maxY; y += grid->getDelta())
-    //            {
-    //                if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
-    //                {
-    //                    counter++;
-    //                    if (mesh->intersectLine(x, (y - grid->getDelta()), z, x, y, z)) 
-    //                        break;
-    //                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
-    //                }
-    //            }
-    //        }
-    //    }
+        // Test line intersection
+        for (z = minZ; z <= maxZ; z += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                for (x = minX; x <= maxX; x += grid->getDelta())
+                {
+                    counter++;
+                    if (mesh->intersectLine((x - grid->getDelta()), y, z, x, y, z)) 
+                        break;
+                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
+                }
+            }
+        }
 
-    //    // Test line intersection from opposite direction
-    //    for (z = minZ; z <= maxZ; z += grid->getDelta())
-    //    {
-    //        for (x = minX; x <= maxX; x += grid->getDelta())
-    //        {
-    //            for (y = maxY; y >= minY; y -= grid->getDelta())
-    //            {
-    //                if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
-    //                {
-    //                    counter++;
-    //                    if (mesh->intersectLine(x, (y + grid->getDelta()), z, x, y, z))
-    //                        break;
-    //                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
-    //                }
-    //            }
-    //        }
-    //    }
+        // Test line intersection from opposite direction
+        for (z = minZ; z <= maxZ; z += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                for (x = maxX; x >= minX; x -= grid->getDelta())
+                {
+                    if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
+                    {
+                        counter++;
+                        if (mesh->intersectLine((x + grid->getDelta()), y, z, x, y, z))
+                            break;
+                        grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
+                    }
+                }
+            }
+        }
 
-    //    // Test line intersection
-    //    for (x = minX; x <= maxX; x += grid->getDelta())
-    //    {
-    //        for (y = minY; y <= maxY; y += grid->getDelta())
-    //        {
-    //            for (z = minZ; z <= maxZ; z += grid->getDelta())
-    //            {
-    //                if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
-    //                {
-    //                    counter++;
-    //                    if (mesh->intersectLine(x, y, (z - grid->getDelta()), x, y, z)) 
-    //                        break;
-    //                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
-    //                }
-    //            }
-    //        }
-    //    }
+        // Test line intersection
+        for (z = minZ; z <= maxZ; z += grid->getDelta())
+        {
+            for (x = minX; x <= maxX; x += grid->getDelta())
+            {
+                for (y = minY; y <= maxY; y += grid->getDelta())
+                {
+                    if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
+                    {
+                        counter++;
+                        if (mesh->intersectLine(x, (y - grid->getDelta()), z, x, y, z)) 
+                            break;
+                        grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
+                    }
+                }
+            }
+        }
 
-    //    // Test line intersection from opposite direction
-    //    for (x = minX; x <= maxX; x += grid->getDelta())
-    //    {
-    //        for (y = minY; y <= maxY; y += grid->getDelta())
-    //        {
-    //            for (z = maxZ; z >= minZ; z -= grid->getDelta())
-    //            {
-    //                if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
-    //                {
-    //                    counter++;
-    //                    if (mesh->intersectLine(x, y, (z + grid->getDelta()), x, y, z)) 
-    //                        break;
-    //                    grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
-    //                }
-    //            }
-    //        }
-    //    }
+        // Test line intersection from opposite direction
+        for (z = minZ; z <= maxZ; z += grid->getDelta())
+        {
+            for (x = minX; x <= maxX; x += grid->getDelta())
+            {
+                for (y = maxY; y >= minY; y -= grid->getDelta())
+                {
+                    if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
+                    {
+                        counter++;
+                        if (mesh->intersectLine(x, (y + grid->getDelta()), z, x, y, z))
+                            break;
+                        grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
+                    }
+                }
+            }
+        }
 
-    //    delete mesh;
+        // Test line intersection
+        for (x = minX; x <= maxX; x += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                for (z = minZ; z <= maxZ; z += grid->getDelta())
+                {
+                    if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
+                    {
+                        counter++;
+                        if (mesh->intersectLine(x, y, (z - grid->getDelta()), x, y, z)) 
+                            break;
+                        grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
+                    }
+                }
+            }
+        }
+
+        // Test line intersection from opposite direction
+        for (x = minX; x <= maxX; x += grid->getDelta())
+        {
+            for (y = minY; y <= maxY; y += grid->getDelta())
+            {
+                for (z = maxZ; z >= minZ; z -= grid->getDelta())
+                {
+                    if (!grid->isNode(grid->transCoordToIndex(x, y, z), OuterType))
+                    {
+                        counter++;
+                        if (mesh->intersectLine(x, y, (z + grid->getDelta()), x, y, z)) 
+                            break;
+                        grid->setNodeTo(grid->transCoordToIndex(x, y, z), OuterType);
+                    }
+                }
+            }
+        }
+
+        delete mesh;
 }
 
 

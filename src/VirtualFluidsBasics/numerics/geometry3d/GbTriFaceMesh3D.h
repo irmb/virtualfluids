@@ -25,8 +25,7 @@
 
 #include <numerics/geometry3d/GbPoint3D.h> 
 
-#include <VirtualFluidsDefinitions.h>
-
+#include <PointerDefinitions.h>
 
 namespace Kd 
 { 
@@ -314,6 +313,9 @@ public:
 
    /*======================================================================*/
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
+
+   bool intersectLine(const double& p1_x1, const double& p1_x2, const double& p1_x3, const double& p2_x1, const double& p2_x2, const double& p2_x3);
+
 
 #ifdef CAB_RCF
    template<class Archive>

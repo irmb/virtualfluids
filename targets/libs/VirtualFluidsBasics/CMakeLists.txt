@@ -2,7 +2,7 @@ setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
 
 set(linkDirectories "")
 set(libsToLink "")
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName})
+set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName} ${CMAKE_SOURCE_DIR}/src/core)
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)

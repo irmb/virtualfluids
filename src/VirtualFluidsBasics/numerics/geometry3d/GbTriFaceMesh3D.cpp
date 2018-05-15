@@ -925,6 +925,32 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
    return false;
 }
 /*======================================================================*/
+bool GbTriFaceMesh3D::intersectLine(const double& p1_x1, const double& p1_x2, const double& p1_x3, const double& p2_x1, const double& p2_x2, const double& p2_x3)
+{
+    //Baum erstellen, wen noch keiner vorhanden
+    if (!kdTree)
+    {
+        UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree start");
+        UbTimer timer; timer.start();
+        if (kdtreeSplitAlg == KDTREE_SAHPLIT)
+        {
+            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
+            this->kdTree = new Kd::Tree<double>(*this, Kd::SAHSplit<double>());
+        }
+        else if (kdtreeSplitAlg == KDTREE_SPATIALSPLIT)
+        {
+            UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SpatialMedianSplit");
+            this->kdTree = new Kd::Tree<double>(*this, Kd::SpatialMedianSplit<double>());
+        }
+        else throw UbException(UB_EXARGS, "unknown kdtree split option)");
+        UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds");
+    }
+
+    int iSec = kdTree->intersectLine(UbTupleDouble3(p1_x1, p1_x2, p1_x3), UbTupleDouble3(p2_x1, p2_x2, p2_x3), Kd::CountLineIntersectionHandler<double>());
+
+    return (iSec != Kd::Intersection::NO_INTERSECTION);
+}
+/*======================================================================*/
 GbLine3D* GbTriFaceMesh3D::createClippedLine3D (GbPoint3D& point1, GbPoint3D& point2)
 {
    throw UbException(UB_EXARGS,"not implemented");

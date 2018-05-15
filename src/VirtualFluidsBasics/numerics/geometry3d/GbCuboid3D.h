@@ -21,9 +21,9 @@
 class GbLine3D;
 class GbObject3DCreator;
 
-#include <basics/memory/MbSharedPointerDefines.h>
+#include <PointerDefinitions.h>
 class GbCuboid3D;
-typedef VFSharedPtr<GbCuboid3D> GbCuboid3DPtr;
+typedef SPtr<GbCuboid3D> GbCuboid3DPtr;
 
 
 class GbCuboid3D : public GbObject3D, public UbObserver

@@ -16,9 +16,7 @@
 #include <numerics/geometry3d/GbTriangle3D.h>
 #include <numerics/geometry3d/GbVector3D.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbHalfSpace3D;
-typedef VFSharedPtr<GbHalfSpace3D> GbHalfSpace3DPtr;
+#include <PointerDefinitions.h>
 
 
 /*=========================================================================*/

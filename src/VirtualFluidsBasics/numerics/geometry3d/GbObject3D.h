@@ -11,8 +11,11 @@
 #include <vector>
 
 
+#ifdef CAB_RCF
+   #include <3rdParty/rcf/RcfSerializationIncludes.h>
+#endif //CAB_RCF
 
-//#include <basics/utilities/UbSystem.h>
+#include <basics/utilities/UbSystem.h>
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbFileInput.h>
 #include <basics/utilities/UbFileOutput.h>
@@ -25,11 +28,13 @@ class GbLine3D;
 class GbTriangle3D;
 class GbObject3DCreator;
 
-#include <VirtualFluidsDefinitions.h>
+#ifdef CAB_CTL
+#include <ctl.h>
+#endif
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbObject3D;
-typedef VFSharedPtr<GbObject3D> GbObject3DPtr;
+#include "VirtualFluidsDefinitions.h"
+#include <PointerDefinitions.h>
+
 
 /*=========================================================================*/
 /* GbObject3D                                                              */

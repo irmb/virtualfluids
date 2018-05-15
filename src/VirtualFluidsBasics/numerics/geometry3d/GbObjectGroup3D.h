@@ -21,10 +21,7 @@
 #include <basics/utilities/UbObserver.h>
 #include <numerics/geometry3d/GbPoint3D.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbObjectGroup3D;
-typedef VFSharedPtr<GbObjectGroup3D> GbObjectGroup3DPtr;
-
+#include <PointerDefinitions.h>
 
 class GbLine3D;
 class GbTriangle3D;

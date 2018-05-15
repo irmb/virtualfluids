@@ -16,6 +16,7 @@ class BoundaryValues;
 class BoundaryQs;
 class CoordNeighborGeoV;
 
+
 class VF_PUBLIC GridReader
 	: public GridProvider
 {

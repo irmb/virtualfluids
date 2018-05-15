@@ -42,7 +42,7 @@ namespace GbSystem3D
    }
    //the same as before
    /*========================================================================================*/
-   inline static std::string writeGeoObject(GbObject3DPtr gbobject, const std::string& filename, WbWriter* writer)
+   inline static std::string writeGeoObject(SPtr<GbObject3D> gbobject, const std::string& filename, WbWriter* writer)
    {
       std::vector<UbTupleFloat3> nodes;
       std::vector<UbTupleInt3>   triangles;

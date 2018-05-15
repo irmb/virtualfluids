@@ -249,7 +249,7 @@ void multipleLevel(const std::string& configPath)
     auto gridFactory = SPtr<GridFactory>(new GridFactory());
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
     gridFactory->setGrid("grid");
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -297,34 +297,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
 
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestSphere_level_2.vtk", 2);
 
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_0", 0);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTestCuboid_level_1", 1);
-
-    //SimulationFileWriter::write("D:/GRIDGENERATION/couplingVF/test/simu/", gridBuilder, FILEFORMAT::ASCII);
-
-    //const uint level = 2;
-    //gridBuilder->addFineGrid(0.0, 0.0, 0.0, 10.0, 10.0, 10.0, level);
-    //gridBuilderlevel->setGrids(gridBuilder->getGrids());
-
-
-    //gridBuilder->addGrid(14.4921875, 14.4921875, 14.4921875, 16.5078125, 16.5078125, 16.5078125, 0.015625, "cpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(13.984375, 13.984375, 13.984375, 17.015625, 17.015625, 17.015625, 0.03125, "cpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(13.46875, 13.46875, 13.46875, 17.53125, 17.53125, 17.53125, 0.0625, "cpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(12.4375, 12.4375, 12.4375, 18.5625, 18.5625, 18.5625, 0.125, "gpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(10.375, 10.375, 10.375, 20.625, 20.625, 20.625, 0.25, "gpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(5.25, 5.25, 5.25, 24.75, 24.75, 24.75, 0.5, "gpu", "D3Q27", false, false, false);
-    //gridBuilder->addGrid(0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 1.0, "gpu", "D3Q27", true, true, true);
-
-
-    //gridBuilder->copyDataFromGpu();
-
-    //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 1);
-    //gridBuilder->meshGeometry("D:/GRIDGENERATION/STL/circleBinaer.stl", 0);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_1", 1);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_0", 0);
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
