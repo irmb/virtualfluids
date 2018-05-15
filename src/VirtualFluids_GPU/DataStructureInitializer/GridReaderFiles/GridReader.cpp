@@ -11,6 +11,11 @@
 #include <GPU/CudaMemoryManager.h>
 #include "OffsetScale.h"
 
+std::shared_ptr<GridProvider> GridReader::make(FileFormat format, std::shared_ptr<Parameter> para)
+{
+    return std::make_shared<GridReader>(format, para);
+}
+
 GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para)
 {
     this->para = para;
@@ -29,15 +34,37 @@ GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para)
 	channelDirections[5] = "bottom";
 }
 
+GridReader::GridReader(FileFormat format, std::shared_ptr<Parameter> para)
+{
+    this->para = para;
+    this->cudaMemoryManager = CudaMemoryManager::make(para);
+
+    this->format = format;
+    switch(format)
+    {
+    case FileFormat::ASCII:
+        binaer = false; break;
+    case FileFormat::BINARY:
+        binaer = true; break;
+    }
+
+    channelDirections.resize(6);
+    channelBoundaryConditions.resize(6);
+    BC_Values.resize(6);
+
+    channelDirections[0] = "inlet";
+    channelDirections[1] = "outlet";
+    channelDirections[2] = "front";
+    channelDirections[3] = "back";
+    channelDirections[4] = "top";
+    channelDirections[5] = "bottom";
+}
+
 GridReader::~GridReader()
 {
 
 }
 
-bool GridReader::getBinaer()
-{
-	return binaer;
-}
 
 void rearrangeGeometry(Parameter* para, int lev)
 {

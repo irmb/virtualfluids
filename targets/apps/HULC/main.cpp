@@ -34,6 +34,8 @@
 #include "io/STLReaderWriter/STLWriter.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 #include "Output/FileWriter.h"
+#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -267,9 +269,9 @@ void multipleLevel(const std::string& configPath)
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
-    gridBuilder->addCoarseGrid(-12, -10, -10, 55, 24, 25, 0.5);
+    gridBuilder->addCoarseGrid(-12, -10, -10, 55, 24, 25, 1.0);
+    gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22));
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
-    //gridBuilder->addGrid(triangularMesh, 2);
     gridBuilder->addGeometry(triangularMesh);
 
 
@@ -300,8 +302,8 @@ void multipleLevel(const std::string& configPath)
 
 
     SPtr<Parameter> para = Parameter::make();
-    SPtr<GridProvider> gridGenerator = GridProvider::makeGridGenerator(gridBuilder, para);
-    //SPtr<GridProvider> gridGenerator = GridProvider::makeGridReader(false, para);
+    SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
+    //SPtr<GridProvider> gridGenerator = GridReader::make(FileFormat::BINARY, para);
 
     std::ifstream stream;
     stream.open(configPath.c_str(), std::ios::in);

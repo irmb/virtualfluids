@@ -8,6 +8,12 @@
 #include <iostream>
 #include "utilities/math/Math.h"
 
+
+std::shared_ptr<GridProvider> GridGenerator::make(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
+{
+    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para));
+}
+
 GridGenerator::GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
 {
 	this->builder = builder;

@@ -22,6 +22,9 @@ private:
 	std::shared_ptr<GridBuilder> builder;
 
 public:
+    VF_PUBLIC static std::shared_ptr<GridProvider> make(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
+
+
     VF_PUBLIC GridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para);
 	VF_PUBLIC virtual ~GridGenerator();
 
