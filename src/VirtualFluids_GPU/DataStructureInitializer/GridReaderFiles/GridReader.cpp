@@ -717,17 +717,345 @@ void GridReader::allocArrays_BoundaryQs()
 	std::vector<std::shared_ptr<BoundaryQs> > BC_Qs(channelDirections.size());
 	this->makeReader(BC_Qs, para);
 
-	for (int i = 0; i < channelBoundaryConditions.size(); i++)
-	{
-		if (this->channelBoundaryConditions[i] == "noSlip") { setNoSlipQs(BC_Qs[i]); }
-		else if (this->channelBoundaryConditions[i] == "velocity") { setVelocityQs(BC_Qs[i]); }
-		else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(BC_Qs[i]); }
-		else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowQs(BC_Qs[i]); }
+	int level = BC_Qs[0]->getLevel();
+
+	//-----------------------------------------Vektoren Deklarationen-----------
+	vector<vector<vector<real> > > noslipQs;
+	vector<vector<unsigned int> > noslipIndex;
+	vector<vector<vector<real> > > slipQs;
+	vector<vector<unsigned int> > slipIndex;
+	vector<vector<vector<real> > > pressureQs;
+	vector<vector<unsigned int> > pressureIndex;
+	vector<vector<vector<real> > > velocityQs;
+	vector<vector<unsigned int> > velocityIndex;
+	vector<vector<vector<real> > > outflowQs;
+	vector<vector<unsigned int> > outflowIndex;
+	//Geom-Daten werden mit dem Methode initArray() auf die Arrays kopiert. kein GetSet!
+
+	//cout << "5: MyID: " << para->getMyID() << endl;
+	noslipQs.resize(level + 1);
+	slipQs.resize(level + 1);
+	pressureQs.resize(level + 1);
+	velocityQs.resize(level + 1);
+	outflowQs.resize(level + 1);
+
+	noslipIndex.resize(level + 1);
+	slipIndex.resize(level + 1);
+	pressureIndex.resize(level + 1);
+	velocityIndex.resize(level + 1);
+	outflowIndex.resize(level + 1);
+
+	//cout << "6: MyID: " << para->getMyID() << endl;
+
+	for (int i = 0; i <= level; i++) {
+		noslipQs[i].resize(27);
+		slipQs[i].resize(27);
+		pressureQs[i].resize(27);
+		velocityQs[i].resize(27);
+		outflowQs[i].resize(27);
 	}
 
-	std::shared_ptr<BoundaryQs> obj_geomQ = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getgeomBoundaryBcQs(), para, "geo", false));
-	if (para->getIsGeo())
-		setGeoQs(obj_geomQ);
+	//cout << "7: MyID: " << para->getMyID() << endl;
+
+	for (int i = 0; i < this->channelBoundaryConditions.size(); i++) {
+		if (this->channelBoundaryConditions[i] == "noSlip") {  BC_Qs[i]->getQs(noslipQs);  BC_Qs[i]->getIndices(noslipIndex); }
+		else if (this->channelBoundaryConditions[i] == "velocity") {  BC_Qs[i]->getQs(velocityQs);  BC_Qs[i]->getIndices(velocityIndex); }
+		else if (this->channelBoundaryConditions[i] == "pressure") {  BC_Qs[i]->getQs(pressureQs);  BC_Qs[i]->getIndices(pressureIndex); }
+		else if (this->channelBoundaryConditions[i] == "slip") {  BC_Qs[i]->getQs(slipQs);  BC_Qs[i]->getIndices(slipIndex); }
+		else if (this->channelBoundaryConditions[i] == "outflow") {  BC_Qs[i]->getQs(outflowQs);  BC_Qs[i]->getIndices(outflowIndex); }
+	}
+
+
+
+	for (int i = 0; i <= level; i++) {
+		int temp1 = (int)pressureIndex[i].size();
+		if (temp1 > 0)
+		{
+			cout << "Groesse Pressure:  " << i << " : " << temp1 << endl;
+			//cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//preprocessing
+			real* QQ = para->getParH(i)->QPress.q27[0];
+			unsigned int sizeQ = para->getParH(i)->QPress.kQ;
+			QforBoundaryConditions Q;
+			Q.q27[dirE] = &QQ[dirE   *sizeQ];
+			Q.q27[dirW] = &QQ[dirW   *sizeQ];
+			Q.q27[dirN] = &QQ[dirN   *sizeQ];
+			Q.q27[dirS] = &QQ[dirS   *sizeQ];
+			Q.q27[dirT] = &QQ[dirT   *sizeQ];
+			Q.q27[dirB] = &QQ[dirB   *sizeQ];
+			Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+			Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+			Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+			Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+			Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+			Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+			Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+			Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+			Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+			Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+			Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+			Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+			Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+			Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+			Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+			Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+			Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+			Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+			Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+			Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+			Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+			//////////////////////////////////////////////////////////////////
+			int d = 0;
+			int j = 0;
+			int n = 0;
+			for (vector<vector<vector<real> > >::iterator it = pressureQs.begin(); it != pressureQs.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							Q.q27[j][n] = *it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			d = 0;
+			n = 0;
+			for (vector<vector<unsigned int> >::iterator it = pressureIndex.begin(); it != pressureIndex.end(); it++) {
+				if (i == d) {
+					for (vector<unsigned int>::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						para->getParH(i)->QPress.k[n] = *it2;
+						n++;
+					}
+				}
+				d++;
+				n = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// advection - diffusion stuff
+			//cout << "vor advec diff" << endl;
+			if (para->getDiffOn() == true) {
+				//////////////////////////////////////////////////////////////////////////
+				//cout << "vor setzen von kTemp" << endl;
+				para->getParH(i)->TempPress.kTemp = temp1;
+				para->getParD(i)->TempPress.kTemp = temp1;
+				cout << "Groesse TempPress.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+				//////////////////////////////////////////////////////////////////////////
+				para->cudaAllocTempPressBC(i);
+				//cout << "nach alloc" << endl;
+				//////////////////////////////////////////////////////////////////////////
+				for (int m = 0; m < temp1; m++)
+				{
+					para->getParH(i)->TempPress.temp[m] = para->getTemperatureInit();
+					para->getParH(i)->TempPress.velo[m] = (real)0.0;
+					para->getParH(i)->TempPress.k[m] = para->getParH(i)->QPress.k[m];
+				}
+				//////////////////////////////////////////////////////////////////////////
+				//cout << "vor copy" << endl;
+				para->cudaCopyTempPressBCHD(i);
+				//cout << "nach copy" << endl;
+				//////////////////////////////////////////////////////////////////////////
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyPress(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}//ende if
+	}//ende oberste for schleife
+
+
+
+	 //--------------------------------------------------------------------------//
+	for (int i = 0; i <= level; i++) {
+		int temp3 = (int)velocityIndex[i].size();
+		if (temp3 > 0)
+		{
+			cout << "Groesse velocity level " << i << " : " << temp3 << endl;
+			//cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//preprocessing
+			real* QQ = para->getParH(i)->Qinflow.q27[0];
+			unsigned int sizeQ = para->getParH(i)->Qinflow.kQ;
+			QforBoundaryConditions Q;
+			Q.q27[dirE] = &QQ[dirE   *sizeQ];
+			Q.q27[dirW] = &QQ[dirW   *sizeQ];
+			Q.q27[dirN] = &QQ[dirN   *sizeQ];
+			Q.q27[dirS] = &QQ[dirS   *sizeQ];
+			Q.q27[dirT] = &QQ[dirT   *sizeQ];
+			Q.q27[dirB] = &QQ[dirB   *sizeQ];
+			Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+			Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+			Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+			Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+			Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+			Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+			Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+			Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+			Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+			Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+			Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+			Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+			Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+			Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+			Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+			Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+			Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+			Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+			Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+			Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+			Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+			//////////////////////////////////////////////////////////////////
+			int d = 0;
+			int j = 0;
+			int n = 0;
+			for (vector<vector<vector<real> > >::iterator it = velocityQs.begin(); it != velocityQs.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							Q.q27[j][n] = *it3;
+
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			d = 0;
+			n = 0;
+			for (vector<vector<unsigned int> >::iterator it = velocityIndex.begin(); it != velocityIndex.end(); it++) {
+				if (i == d) {
+					for (vector<unsigned int>::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						para->getParH(i)->Qinflow.k[n] = *it2;
+						n++;
+					}
+				}
+				d++;
+				n = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// advection - diffusion stuff
+			if (para->getDiffOn() == true) {
+				//////////////////////////////////////////////////////////////////////////
+				para->getParH(i)->TempVel.kTemp = temp3;
+				para->getParD(i)->TempVel.kTemp = temp3;
+				cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+				cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
+				cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
+				//////////////////////////////////////////////////////////////////////////
+				para->cudaAllocTempVeloBC(i);
+				//cout << "nach alloc " << endl;
+				//////////////////////////////////////////////////////////////////////////
+				for (int m = 0; m < temp3; m++)
+				{
+					para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
+					para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
+					para->getParH(i)->TempVel.velo[m] = para->getVelocity();
+					para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
+				}
+				//////////////////////////////////////////////////////////////////////////
+				//cout << "vor copy " << endl;
+				para->cudaCopyTempVeloBCHD(i);
+				//cout << "nach copy " << endl;
+				//////////////////////////////////////////////////////////////////////////
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyVeloBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//if (para->getIsInflowNormal()) {
+			//	int temp = obj_inflowNormalX->getSize(i);
+			//	if (temp > 0)
+			//	{
+			//		cout << "Groesse der Daten InflowBoundaryNormalsX, Level " << i << " : " << temp << endl;
+			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//		para->getParH(i)->QInflowNormalX.kQ = temp;
+			//		para->getParH(i)->QInflowNormalY.kQ = temp;
+			//		para->getParH(i)->QInflowNormalZ.kQ = temp;
+			//		para->getParD(i)->QInflowNormalX.kQ = para->getParH(i)->QInflowNormalX.kQ;
+			//		para->getParD(i)->QInflowNormalY.kQ = para->getParH(i)->QInflowNormalY.kQ;
+			//		para->getParD(i)->QInflowNormalZ.kQ = para->getParH(i)->QInflowNormalZ.kQ;
+			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//		para->cudaAllocInflowNormals(i);
+			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			//		//////////////////////////////////////////////////////////////////////////
+			//		//Indexarray
+			//		obj_inflowNormalX->initIndex(para->getParH(i)->QInflowNormalX.k, i);
+			//		obj_inflowNormalY->initIndex(para->getParH(i)->QInflowNormalY.k, i);
+			//		obj_inflowNormalZ->initIndex(para->getParH(i)->QInflowNormalZ.k, i);
+			//		//////////////////////////////////////////////////////////////////
+
+			//		//////////////////////////////////////////////////////////////////////////
+			//		//preprocessing X
+			//		real* QQX = para->getParH(i)->QInflowNormalX.q27[0];
+			//		unsigned int sizeQX = para->getParH(i)->QInflowNormalX.kQ;
+			//		QforBoundaryConditions QX;
+			//		//////////////////////////////////////////////////////////////////
+			//		for (int j = 0; j < 27; j++) {
+			//			QX.q27[j] = &QQX[j * sizeQX];
+			//			obj_inflowNormalX->initArray(QX.q27[j], i, j);
+			//		}//ende der for schleife
+			//		 //////////////////////////////////////////////////////////////////
+
+			//		 //////////////////////////////////////////////////////////////////////////
+			//		 //preprocessing Y
+			//		real* QQY = para->getParH(i)->QInflowNormalY.q27[0];
+			//		unsigned int sizeQY = para->getParH(i)->QInflowNormalY.kQ;
+			//		QforBoundaryConditions QY;
+			//		//////////////////////////////////////////////////////////////////
+			//		for (int j = 0; j < 27; j++) {
+			//			QY.q27[j] = &QQY[j * sizeQY];
+			//			obj_inflowNormalY->initArray(QY.q27[j], i, j);
+			//		}//ende der for schleife
+			//		 //////////////////////////////////////////////////////////////////
+
+			//		 //////////////////////////////////////////////////////////////////////////
+			//		 //preprocessing Z
+			//		real* QQZ = para->getParH(i)->QInflowNormalZ.q27[0];
+			//		unsigned int sizeQZ = para->getParH(i)->QInflowNormalZ.kQ;
+			//		QforBoundaryConditions QZ;
+			//		//////////////////////////////////////////////////////////////////
+			//		for (int j = 0; j < 27; j++) {
+			//			QZ.q27[j] = &QQZ[j * sizeQZ];
+			//			obj_inflowNormalZ->initArray(QZ.q27[j], i, j);
+			//		}//ende der for schleife
+			//		 //////////////////////////////////////////////////////////////////
+
+			//		 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//		para->cudaCopyInflowNormals(i);
+			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//	}
+			//}
+		}
+	}//ende oberste for schleife
+
+
+
+
+
+
+
+	//for (int i = 0; i < channelBoundaryConditions.size(); i++)
+	//{
+	//	if (this->channelBoundaryConditions[i] == "noSlip") { setNoSlipQs(BC_Qs[i]); }
+	//	else if (this->channelBoundaryConditions[i] == "velocity") { setVelocityQs(BC_Qs[i]); }
+	//	else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(BC_Qs[i]); }
+	//	else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowQs(BC_Qs[i]); }
+	//}
+
+	//std::shared_ptr<BoundaryQs> obj_geomQ = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getgeomBoundaryBcQs(), para, "geo", false));
+	//if (para->getIsGeo())
+	//	setGeoQs(obj_geomQ);
 
 	std::cout << "-----finish BoundaryQs------" <<std::endl;
 }

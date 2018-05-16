@@ -178,3 +178,26 @@ void BoundaryQs::setIndex(int *data, unsigned int level) const
 	for (int index = 0; index < indices[level].size(); index++)
 		data[index] = indices[level][index];
 }
+
+
+void BoundaryQs::getQs(std::vector<std::vector<std::vector<real> > > &qs) {
+	int j = 0;
+	int i = 0;
+	for (std::vector<std::vector<std::vector<real> > >::iterator it = values.begin(); it != values.end(); it++) {
+		i = 0;
+		for (std::vector<std::vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+
+			for (std::vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+				qs[j][i].push_back(*it3);
+			}
+			i++;
+		}
+		j++;
+	}
+}
+
+void BoundaryQs::getIndices(std::vector<std::vector<uint> > &indices) {
+	for (int level = 0; level < this->indices.size(); level++)
+		for (int index = 0; index < this->indices[level].size(); index++)
+			indices[level].push_back(this->indices[level][index]);
+}
