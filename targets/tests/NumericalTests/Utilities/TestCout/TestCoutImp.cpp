@@ -58,15 +58,14 @@ void TestCoutImp::makeSimulationHeadOutput(std::string simName, int l)
 void TestCoutImp::makeFinalTestOutput(int numberOfPassedTests, int numberOfTests)
 {
 	setColor(numberOfPassedTests == numberOfTests);
-	testing::internal::ColoredPrintf(color, "\n[----------]\n[----------]");
+	testing::internal::ColoredPrintf(color, "[----------]\n[----------]");
 	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, "Test Summary\n");
 	testing::internal::ColoredPrintf(color, "[----------]");
 
 	std::ostringstream info;
 	info << numberOfPassedTests << " out of " << numberOfTests << " tests passed";
 	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, info.str().c_str());
-	testing::internal::ColoredPrintf(color, "\n[----------]\n");
-	std::cout << std::endl;
+	testing::internal::ColoredPrintf(color, "\n[----------]\n\n");
 }
 
 void TestCoutImp::printTestStart()
@@ -89,7 +88,7 @@ void TestCoutImp::printTestEnd(bool testPassed)
 		testing::internal::ColoredPrintf(testing::internal::COLOR_RED, "[    FAILED]");
 	std::cout << std::endl;
 	testing::internal::ColoredPrintf(color, "[----------]");
-	std::cout << std::endl;
+	std::cout << std::endl << std::endl;
 }
 
 void TestCoutImp::print(std::string output)
