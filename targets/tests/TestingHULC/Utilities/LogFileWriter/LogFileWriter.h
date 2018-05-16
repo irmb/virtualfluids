@@ -1,5 +1,5 @@
-#ifndef LOGFILEWRITER_H
-#define LOGFILEWRITER_H
+#ifndef LOG_FILE_WRITER_H
+#define LOG_FILE_WRITER_H
 
 #include <string>
 #include <fstream>
@@ -13,17 +13,15 @@ class TestInformation;
 class LogFileWriter
 {
 public:
-	LogFileWriter(std::vector<std::shared_ptr<EvaluationParameter>> evaPara, std::shared_ptr<TestInformation> testinfo);
-	void makeDataQueueOutput(DataQueue* data, int arraySize);
+	static std::shared_ptr<LogFileWriter> getNewInstance(std::string filePath);
+	void makeOutput(std::string output);
 
 private:
+	LogFileWriter(std::string filePath);
 	std::string calcDateAndTime();
-	void makeHastTags();
-	void makeCenterHead(std::string output);
-	
+
 	std::fstream logFile;
 	std::string logFilePath;
-
 	time_t now;
 	struct tm nowLocal;
 };
