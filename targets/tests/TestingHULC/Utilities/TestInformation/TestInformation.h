@@ -1,14 +1,15 @@
-#ifndef TESTINFORMATION_H
-#define TESTINFORMATION_H
-
-#include <string>
+#ifndef TEST_INFORMATION_H
+#define TEST_INFORMATION_H
 
 class TestInformation
 {
 public:
-	virtual std::string getInformation() = 0;
+	virtual void makeSimulationHeadOutput(int i) = 0;
+	virtual void setSimulationStartTime(int i) = 0;
+	virtual void setSimulationEndTime(int i) = 0;
+	virtual void writeLogFile() = 0;
 
 private:
 
 };
-#endif // !TESTINFORMATION_H
+#endif 

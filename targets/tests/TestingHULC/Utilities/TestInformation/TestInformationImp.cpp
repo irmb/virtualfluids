@@ -1,48 +1,69 @@
 #include "TestInformationImp.h"
 
+#include "Utilities/SimulationInfo/SimulationInfo.h"
+#include "Utilities/LogFileWriter/LogFileWriter.h"
+#include "Utilities/LogFileInformation/LogFileInformation.h"
+
 #include <iomanip>
 
-std::shared_ptr<TestInformation> TestInformationImp::getNewInstance(int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation, double viscosity, bool tgv, double u0TGV, double AmplitudeTGV, bool sw, double u0SW, double v0SW)
+std::shared_ptr<TestInformationImp> TestInformationImp::getNewInstance()
 {
-	return std::shared_ptr<TestInformation>(new TestInformationImp(numberOfTimeSteps, basisTimeStepLength, startStepCalculation, viscosity, tgv, u0TGV, AmplitudeTGV, sw, u0SW, v0SW));
+	return std::shared_ptr<TestInformationImp>(new TestInformationImp());
 }
 
-TestInformationImp::TestInformationImp(int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation, double viscosity, bool tgv, double u0TGV, double amplitudeTGV, bool sw, double u0SW, double v0SW)
+void TestInformationImp::setSimulationInfo(std::vector<std::shared_ptr<SimulationInfo>> simInfo)
 {
-	makeCenterHead("Basic Information");
-	oss << "NumberOfTimeSteps: " << numberOfTimeSteps << std::endl;
-	oss << "BasisTimeStepLength: " << basisTimeStepLength << std::endl;
-	oss << "StartStepCalculation: " << startStepCalculation << std::endl;
-	oss << "Viscosity: " << viscosity << std::endl;
-	oss << std::endl;
-	
-	if (tgv) {
-		makeCenterHead("TaylorGreenVortex Information");
-		oss << "u0: " << u0TGV << std::endl;
-		oss << "Amplitude: " << amplitudeTGV << std::endl;
-		oss << std::endl;
+	this->simInfos = simInfo;
+}
+
+void TestInformationImp::makeSimulationHeadOutput(int i)
+{
+	simInfos.at(i)->makeSimulationHeadOutput();
+}
+
+void TestInformationImp::setSimulationStartTime(int i)
+{
+	simInfos.at(i)->setStartTime();
+}
+
+void TestInformationImp::setSimulationEndTime(int i)
+{
+	simInfos.at(i)->setEndTime();
+}
+
+void TestInformationImp::writeLogFile()
+{
+	std::shared_ptr<LogFileWriter> logFile = LogFileWriter::getNewInstance(logFilePath);
+
+	for (int i = 0; i < logInfos.size(); i++) {
+		logFile->makeOutput(logInfos.at(i)->getOutput());
 	}
-	if (sw) {
-		makeCenterHead("ShearWave Information");
-		oss << "u0: " << u0SW << std::endl;
-		oss << "v0: " << v0SW << std::endl;
-		oss << std::endl;
-	}
 }
 
-std::string TestInformationImp::getInformation()
+void TestInformationImp::setLogFilePath(std::string aLogFilePath)
 {
-	return oss.str();
+	this->logFilePath = aLogFilePath;
 }
 
-void TestInformationImp::makeHastTags()
+void TestInformationImp::setLogFileInformation(std::vector<std::shared_ptr<LogFileInformation>> logInfo)
+{
+	this->logInfos = logInfo;
+}
+
+void TestInformationImp::makeHashLine()
 {
 	oss << "#################################################" << std::endl;
 }
 
 void TestInformationImp::makeCenterHead(std::string output)
 {
-	makeHastTags();
+	makeHashLine();
 	oss << "#" << std::setfill(' ') << std::right << std::setw(24 + output.length() / 2) << output << std::setw(24 - output.length() / 2) << "#" << std::endl;
-	makeHastTags();
+	makeHashLine();
+}
+
+TestInformationImp::TestInformationImp()
+{
+	simInfos.resize(0);
+	logInfos.resize(0);
 }
