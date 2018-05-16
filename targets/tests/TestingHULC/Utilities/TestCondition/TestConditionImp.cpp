@@ -42,14 +42,11 @@ std::shared_ptr<TestConditionImp> TestConditionImp::getNewInstance()
 	return std::shared_ptr<TestConditionImp>(new TestConditionImp());
 }
 
-void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength)
+void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
 {
 	para = Parameter::make();
 
-	para->setMaxDev(1);
-	std::vector<int> devices;
-	devices.resize(1);
-	devices[0] = 1;
+	para->setMaxDev(devices.size());
 	para->setDevices(devices);
 	para->setNumprocs(1);
 
@@ -66,7 +63,7 @@ void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std:
     para->setTStartOut(1);
 
 	para->setViscosity(viscosity);
-	para->setVelocity(0.096);
+	para->setVelocity(velocity);
 	para->setViscosityRatio(1.0);
 	para->setVelocityRatio(1.0);
 	para->setDensityRatio(1.0);

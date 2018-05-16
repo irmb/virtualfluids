@@ -18,7 +18,7 @@ class TestConditionImp: public TestCondition
 {
 public:
 	static std::shared_ptr<TestConditionImp> getNewInstance();
-	void initParameter(real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength);
+	void initParameter(real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity);
 	void initInitialConditions(std::shared_ptr<InitialCondition> initialCondition);
 	void initGridProvider();
 	void initCalculator(std::shared_ptr<Calculator> calc);
