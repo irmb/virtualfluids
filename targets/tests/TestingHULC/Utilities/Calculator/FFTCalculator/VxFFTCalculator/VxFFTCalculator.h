@@ -6,11 +6,11 @@
 class VxFFTCalculator : public FFTCalculator
 {
 public:
-	static std::shared_ptr<VxFFTCalculator> getNewInstance(double viscosity, std::shared_ptr<PhiAndNuTestResults> testResults);
+	static std::shared_ptr<VxFFTCalculator> getNewInstance(double viscosity, std::shared_ptr<PhiAndNuTest> testResults);
 
 protected:
 	void setVectorToCalc();
 private:
-	VxFFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTestResults> testResults);
+	VxFFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTest> testResults);
 };
 #endif 

@@ -1,7 +1,7 @@
 #include "FFTCalculator.h"
 
 #include "Utilities\Results\Results.h"
-#include "Utilities\TestResults\PhiAndNuTestResults.h"
+#include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Utilities\EvaluationParameter\EvaluationParameter.h"
 
 #define _USE_MATH_DEFINES
@@ -34,7 +34,7 @@ void FFTCalculator::init()
 	fftCalculated = false;
 }
 
-FFTCalculator::FFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTestResults> testResults) : vis(viscosity), testResults(testResults)
+FFTCalculator::FFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTest> testResults) : vis(viscosity), testResults(testResults)
 {
 
 }

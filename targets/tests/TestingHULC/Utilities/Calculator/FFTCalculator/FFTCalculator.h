@@ -10,7 +10,7 @@
 class Results;
 class EvaluationParameter;
 class TestResults;
-class PhiAndNuTestResults;
+class PhiAndNuTest;
 
 class FFTCalculator : public Calculator
 {
@@ -19,7 +19,7 @@ public:
 	void setSimulationResults(std::shared_ptr<Results> simResults);
 
 protected:
-	FFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTestResults> testResults);
+	FFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTest> testResults);
 	virtual void setVectorToCalc() = 0;
 
 	std::shared_ptr<Results> simResults;
@@ -38,7 +38,7 @@ private:
 	void initDataForFFT(fftw_complex* input, unsigned int timeStep);
 	void setFFTResults(fftw_complex* result, unsigned int timeStep);
 
-	std::shared_ptr<PhiAndNuTestResults> testResults;
+	std::shared_ptr<PhiAndNuTest> testResults;
 	std::vector<std::vector<double>> fftResultsIm;
 	std::vector<std::vector<double>> fftResultsRe;
 	std::vector<double> phi;
