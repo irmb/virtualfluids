@@ -16,6 +16,9 @@ public:
 	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::string aTestName, double minOrderOfAccuracy, std::shared_ptr<TestCout> testOut);
 	void evaluate();
 	void makeFinalOutput();
+	int getNumberOfPassedTests();
+	int getNumberOfTests();
+
 	void add(double phiDiff, double nuDiff, double lx);
 	std::string getOutput();
 
@@ -24,6 +27,7 @@ private:
 	void makeLastTestOutput();
 	std::vector<double> calcOrderOfAccuracy(std::vector<double> data);
 	std::vector<bool> checkTestPassed(std::vector<double> orderOfAccuracy);
+	int calcNumberOfPassedTests(std::vector< bool> orderOfAccuracy);
 
 	std::vector<double> phiDiff;
 	std::vector<double> nuDiff;

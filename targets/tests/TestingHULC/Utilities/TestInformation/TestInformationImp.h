@@ -10,6 +10,7 @@
 class SimulationInfo;
 class LogFileInformation;
 class TestResults;
+class TestCout;
 
 class TestInformationImp : public TestInformation
 {
@@ -25,6 +26,7 @@ public:
 	void setLogFilePath(std::string aLogFilePath);
 	void setLogFileInformation(std::vector< std::shared_ptr<LogFileInformation> > logInfos);
 	void setTestResults(std::vector< std::shared_ptr< TestResults> > testResults);
+	void setColorOutput(std::shared_ptr< TestCout> colorOutput);
 
 protected:
 	TestInformationImp();
@@ -32,10 +34,13 @@ protected:
 private:
 	void makeHashLine();
 	void makeCenterHead(std::string head);
+	int getNumberOfTests();
+	int getNumberOfPassedTests();
 
-	std::vector <std::shared_ptr<SimulationInfo> > simInfos;
-	std::vector< std::shared_ptr<LogFileInformation> > logInfos;
+	std::vector< std::shared_ptr< SimulationInfo> > simInfos;
+	std::vector< std::shared_ptr< LogFileInformation> > logInfos;
 	std::vector< std::shared_ptr< TestResults> > testResults;
+	std::shared_ptr< TestCout> colorOutput;
 	int numberOfTimeSteps;
 	int basisTimeStepLength;
 	int startStepCalculation;

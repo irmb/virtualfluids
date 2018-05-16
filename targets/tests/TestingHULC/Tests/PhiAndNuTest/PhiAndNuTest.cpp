@@ -28,6 +28,16 @@ void PhiAndNuTest::makeFinalOutput()
 	}
 }
 
+int PhiAndNuTest::getNumberOfPassedTests()
+{	
+	return (calcNumberOfPassedTests(nuDiffTestPassed) + calcNumberOfPassedTests(phiDiffTestPassed));
+}
+
+int PhiAndNuTest::getNumberOfTests()
+{
+	return (orderOfAccuracyNuDiff.size()+ orderOfAccuracyPhiDiff.size());
+}
+
 void PhiAndNuTest::add(double phiDiff, double nuDiff, double lx)
 {
 	this->nuDiff.push_back(nuDiff);
@@ -94,4 +104,14 @@ std::vector<bool> PhiAndNuTest::checkTestPassed(std::vector<double> orderOfAccur
 	for (int i = 0; i < orderOfAccuracy.size(); i++) 
 		result.push_back(orderOfAccuracy.at(i) > minOrderOfAccuracy);
 	return result;
+}
+
+int PhiAndNuTest::calcNumberOfPassedTests(std::vector<bool> orderOfAccuracy)
+{
+	int passed = 0;
+	for (int i = 0; i < orderOfAccuracy.size(); i++) {
+		if (orderOfAccuracy.at(i))
+			passed++;
+	}
+	return passed;
 }

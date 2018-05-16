@@ -55,6 +55,20 @@ void TestCoutImp::makeSimulationHeadOutput(std::string simName, int l)
 	printGreenHashLine();
 }
 
+void TestCoutImp::makeFinalTestOutput(int numberOfPassedTests, int numberOfTests)
+{
+	setColor(numberOfPassedTests == numberOfTests);
+	testing::internal::ColoredPrintf(color, "\n[----------]\n[----------]");
+	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, "Test Summary\n");
+	testing::internal::ColoredPrintf(color, "[----------]");
+
+	std::ostringstream info;
+	info << numberOfPassedTests << " out of " << numberOfTests << " tests passed";
+	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, info.str().c_str());
+	testing::internal::ColoredPrintf(color, "\n[----------]\n");
+	std::cout << std::endl;
+}
+
 void TestCoutImp::printTestStart()
 {
 	testing::internal::ColoredPrintf(color, "[----------]");

@@ -114,6 +114,8 @@ void Reader::makeTestInformation()
 {
 	testInfo = TestInformationImp::getNewInstance();
 
+	testInfo->setColorOutput(testOutput);
+
 	makeSimulationInfo();
 	testInfo->setSimulationInfo(simInfo);
 

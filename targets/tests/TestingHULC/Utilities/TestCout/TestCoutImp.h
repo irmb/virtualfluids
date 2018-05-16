@@ -35,6 +35,7 @@ public:
 
 	void makeTestOutput(bool testPassed, std::string testName, int l1, int l2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3);
 	void makeSimulationHeadOutput(std::string simName, int l);
+	void makeFinalTestOutput(int numberOfPassedTests, int numberOfTests);
 
 private:
 	TestCoutImp() {};
