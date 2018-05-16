@@ -23,7 +23,6 @@ public:
 
 	std::shared_ptr <TestInformation> getTestInformation();
 	std::vector <std::shared_ptr< TestParameter> > getTestParameter();
-	std::vector <std::shared_ptr< TestResults> > getAllTestResults();
 
 protected:
 	Reader() {};
@@ -34,6 +33,7 @@ private:
 	void makeTestParameter();
 	void makeSimulationInfo();
 	void makeLogFileInformation();
+	void makeTestResults();
 	bool testShouldRun(std::vector<bool> test);
 
 	std::vector<int> devices;
@@ -52,11 +52,12 @@ private:
 	real u0SW, v0SW;
 	real amplitudeTGV, u0TGV;
 
-	std::vector< std::shared_ptr< PhiAndNuTest> > testResults;
+	std::vector< std::shared_ptr< PhiAndNuTest> > tests;
 	std::shared_ptr< TestCout> testOutput;
 	std::vector< std::shared_ptr< TestParameter> > testParameter;
 	std::shared_ptr< TestInformationImp> testInfo;
 	std::vector < std::shared_ptr< SimulationInfo> > simInfo;
 	std::vector< std::shared_ptr<LogFileInformation> > logInfo;
+	std::vector< std::shared_ptr< TestResults> > testResults;
 };
 #endif

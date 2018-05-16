@@ -3,6 +3,7 @@
 #include "Utilities/SimulationInfo/SimulationInfo.h"
 #include "Utilities/LogFileWriter/LogFileWriter.h"
 #include "Utilities/LogFileInformation/LogFileInformation.h"
+#include "Utilities/TestResults/TestResults.h"
 
 #include <iomanip>
 
@@ -40,6 +41,13 @@ void TestInformationImp::writeLogFile()
 	}
 }
 
+void TestInformationImp::makeFinalTestOutput()
+{
+	for (int i = 0; i < testResults.size(); i++) {
+		testResults.at(i)->makeFinalOutput();
+	}
+}
+
 void TestInformationImp::setLogFilePath(std::string aLogFilePath)
 {
 	this->logFilePath = aLogFilePath;
@@ -48,6 +56,11 @@ void TestInformationImp::setLogFilePath(std::string aLogFilePath)
 void TestInformationImp::setLogFileInformation(std::vector<std::shared_ptr<LogFileInformation>> logInfo)
 {
 	this->logInfos = logInfo;
+}
+
+void TestInformationImp::setTestResults(std::vector<std::shared_ptr<TestResults>> testResults)
+{
+	this->testResults = testResults;
 }
 
 void TestInformationImp::makeHashLine()

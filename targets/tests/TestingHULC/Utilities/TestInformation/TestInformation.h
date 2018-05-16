@@ -8,6 +8,7 @@ public:
 	virtual void setSimulationStartTime(int i) = 0;
 	virtual void setSimulationEndTime(int i) = 0;
 	virtual void writeLogFile() = 0;
+	virtual void makeFinalTestOutput() = 0;
 
 private:
 

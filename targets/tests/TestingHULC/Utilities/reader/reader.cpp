@@ -9,10 +9,10 @@
 #include "Utilities/TestInformation/TestInformationImp.h"
 #include "Utilities/TestParameter/TaylorGreenTestParameter/TaylorGreenTestParameter.h"
 #include "Utilities/TestParameter/ShearWaveTestParameter/ShearWaveTestParameter.h"
-
-#include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Utilities/TestCout/TestCoutImp.h"
 #include "Utilities/SimulationInfo/SimulationInfoImp.h"
+
+#include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 
 #include "Utilities/LogFileInformation/LogFileInformation.h"
 #include "Utilities/LogFileInformation/LogFileInformationOutput/LogFileInformationOutput.h"
@@ -102,8 +102,9 @@ Reader::Reader(const std::string aFilePath)
 
 	stream.close();
 
-	testResults.resize(0);
+	tests.resize(0);
 	simInfo.resize(0);
+	testResults.resize(0);
 	testOutput = TestCoutImp::getNewInstance();
 	makeTestParameter();
 	makeTestInformation();
@@ -116,16 +117,19 @@ void Reader::makeTestInformation()
 	makeSimulationInfo();
 	testInfo->setSimulationInfo(simInfo);
 
-	testInfo->setLogFilePath(logFilePath);
 	makeLogFileInformation();
 	testInfo->setLogFileInformation(logInfo);
+	testInfo->setLogFilePath(logFilePath);
+
+	makeTestResults();
+	testInfo->setTestResults(testResults);
 }
 
 void Reader::makeTestParameter()
 {
 	if (testShouldRun(tgv)) {
 		std::shared_ptr< PhiAndNuTest> tgvTestResults = PhiAndNuTest::getNewInstance("TaylorGreenVortex", minOrderOfAccuracy, testOutput);
-		testResults.push_back(tgvTestResults);
+		tests.push_back(tgvTestResults);
 		for (int i = 0; i < tgv.size(); i++) {
 			if (tgv.at(i)) {
 				testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
@@ -135,7 +139,7 @@ void Reader::makeTestParameter()
 
 	if (testShouldRun(sw)) {
 		std::shared_ptr< PhiAndNuTest> swTestResults = PhiAndNuTest::getNewInstance("ShearWave", minOrderOfAccuracy, testOutput);
-		testResults.push_back(swTestResults);
+		tests.push_back(swTestResults);
 
 		for (int i = 0; i < sw.size(); i++) {
 			if (sw.at(i)) {
@@ -172,16 +176,14 @@ void Reader::makeLogFileInformation()
 
 	logInfo.push_back(SimulationTimeInformation::getNewInstance(simInfo, writeFiles));
 
-	for (int i = 0; i < testResults.size(); i++) {
-		logInfo.push_back(testResults.at(i));
+	for (int i = 0; i < tests.size(); i++) {
+		logInfo.push_back(tests.at(i));
 	}
 }
 
-std::vector< std::shared_ptr< TestResults> > Reader::getAllTestResults()
+void Reader::makeTestResults()
 {
-	std::vector< std::shared_ptr< TestResults> > allTestResults;
-	for (int i = 0; i < testResults.size(); i++) {
-		allTestResults.push_back(testResults.at(i));
+	for (int i = 0; i < tests.size(); i++) {
+		testResults.push_back(tests.at(i));
 	}
-	return allTestResults;
 }
