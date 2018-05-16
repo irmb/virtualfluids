@@ -1,8 +1,7 @@
 #include "FFTCalculator.h"
 
-#include "Utilities\Results\Results.h"
+#include "Utilities/Results/Results.h"
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
-#include "Utilities\EvaluationParameter\EvaluationParameter.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
