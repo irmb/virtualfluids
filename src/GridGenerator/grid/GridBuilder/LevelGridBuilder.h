@@ -18,7 +18,6 @@ class ArrowTransformator;
 class PolyDataWriterWrapper;
 
 class BoundingBox;
-//class GridStub;
 enum class Device;
 
 class LevelGridBuilder : public GridBuilder
@@ -27,23 +26,14 @@ protected:
     VF_PUBLIC LevelGridBuilder(Device device, const std::string& d3qxx);
 
 public:
-    //VF_PUBLIC void setGrids(std::vector<SPtr<GridStub> > grids);
 
     VF_PUBLIC static std::shared_ptr<LevelGridBuilder> makeShared(Device device, const std::string& d3qxx);
 
-    VF_PUBLIC void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ);
     VF_PUBLIC SPtr<Grid> getGrid(uint level) override;
 
     VF_PUBLIC void copyDataFromGpu();
     VF_PUBLIC virtual ~LevelGridBuilder();
-    VF_PUBLIC void verifyGridNeighbors();
 
-    VF_PUBLIC virtual void addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta,
-        Device device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ);
-    VF_PUBLIC virtual void generateGrids();
-
-    VF_PUBLIC virtual void meshGeometry(std::string input, int level);
-    VF_PUBLIC virtual void deleteSolidNodes();
 
     VF_PUBLIC virtual void writeGridToVTK(std::string output, int level);
     VF_PUBLIC virtual void writeSimulationFiles(std::string output, BoundingBox &nodesDelete,
@@ -109,11 +99,6 @@ public:
     VF_PUBLIC uint getNumberOfNodesFC(int level) override;
 
     VF_PUBLIC void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const;
-
-    VF_PUBLIC uint* getCF_coarse(uint level) const override;
-    VF_PUBLIC uint* getCF_fine(uint level) const override;
-    VF_PUBLIC uint* getFC_coarse(uint level) const override;
-    VF_PUBLIC uint* getFC_fine(uint level) const override;
 
     VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;

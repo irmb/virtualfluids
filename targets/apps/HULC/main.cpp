@@ -265,12 +265,12 @@ void multipleLevel(const std::string& configPath)
     //Object* cuboid = new Cuboid(15, 15, 15, 20, 20, 20);
     //gridBuilder->addGrid(cuboid, 2);
 
-//    gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 14, 10, 20, 0.25);
+    //gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 14, 10, 20, 0.25);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
-    gridBuilder->addCoarseGrid(-12, -10, -10, 55, 24, 25, 1.0);
-    gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22));
+    gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
+    gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
     gridBuilder->addGeometry(triangularMesh);
 
