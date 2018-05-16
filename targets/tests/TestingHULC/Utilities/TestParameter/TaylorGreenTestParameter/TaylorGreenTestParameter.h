@@ -1,12 +1,12 @@
-#ifndef TGVTESTPARAMETER_H
-#define TGVTESTPARAMETER_H
+#ifndef TGV_TEST_PARAMETER_H
+#define TGV_TEST_PARAMETER_H
 
 #include "../TestParameterImp.h"
 
 #include <string>
 #include <memory>
 
-class PhiAndNuTestResults;
+class PhiAndNuTest;
 
 class TaylorGreenTestParameter : public TestParameterImp
 {
@@ -17,7 +17,8 @@ public:
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
 		bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
-		std::shared_ptr<PhiAndNuTestResults> testResults);
+		std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
+	double getVelocity();
 	
 protected:
 	TaylorGreenTestParameter(real u0, real amplitude,
@@ -26,10 +27,10 @@ protected:
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
 		bool writeFiles, unsigned int startStepFileWriter, std::string filePath, 
-		std::shared_ptr<PhiAndNuTestResults> testResults);
+		std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
 
 private:
 	real u0, amplitude;
 
 };
-#endif // !TGVTESTPARAMETER_H
+#endif 

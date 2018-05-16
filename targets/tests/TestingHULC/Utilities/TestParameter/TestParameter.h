@@ -1,8 +1,9 @@
-#ifndef TESTPARAMETERINT_H
-#define TESTPARAMETERINT_H
+#ifndef TEST_PARAMETER_H
+#define TEST_PARAMETER_H
 
 #include <memory>
 #include <string>
+#include <vector>
 
 class InitialCondition;
 class Calculator;
@@ -24,6 +25,8 @@ public:
 	virtual unsigned int getStartTimeCalculation() = 0;
 	virtual bool getWriteFiles() = 0;
 	virtual unsigned int getStartTimeDataWriter() = 0;
+	virtual std::vector<int> getDevices() = 0;
+	virtual double getVelocity() = 0;
 	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
 	virtual std::shared_ptr<Calculator> getCalculator() = 0;
 	virtual std::shared_ptr<TestResults> getTestResults() = 0;

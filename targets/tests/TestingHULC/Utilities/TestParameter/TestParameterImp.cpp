@@ -8,13 +8,14 @@ TestParameterImp::TestParameterImp(
 	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
 	std::string gridPath, 
 	bool writeFiles, unsigned int startStepFileWriter, 
-	std::shared_ptr<TestResults> testResults)
+	std::shared_ptr<TestResults> testResults,
+	std::vector<int> devices)
 		:viscosity(viscosity), lx(lx),
 		numberOfTimeSteps(numberOfTimeSteps), basisTimeStepLength(basisTimeStepLength), 
 		startStepCalculation(startStepCalculation), ySliceForCalculation(ySliceForCalculation), 
 		gridPath(gridPath), 
 		writeFiles(writeFiles), startStepFileWriter(startStepFileWriter), 
-		testResults(testResults)
+		testResults(testResults), devices(devices)
 {
 	maxLevel = 0;
 	numberOfGridLevels = 1;
@@ -87,6 +88,16 @@ bool TestParameterImp::getWriteFiles()
 unsigned int TestParameterImp::getStartTimeDataWriter()
 {
 	return startTimeDataWriter;
+}
+
+std::vector<int> TestParameterImp::getDevices()
+{
+	return devices;
+}
+
+double TestParameterImp::getVelocity()
+{
+	return velocity;
 }
 
 std::shared_ptr<InitialCondition> TestParameterImp::getInitialCondition()

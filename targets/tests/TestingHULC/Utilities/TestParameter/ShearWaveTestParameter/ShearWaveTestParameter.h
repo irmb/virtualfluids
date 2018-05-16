@@ -3,7 +3,7 @@
 
 #include "../TestParameterImp.h"
 
-class  PhiAndNuTestResults;
+class  PhiAndNuTest;
 
 class ShearWaveTestParameter : public TestParameterImp
 {
@@ -14,7 +14,8 @@ public:
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
 		bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
-		std::shared_ptr<PhiAndNuTestResults> testResults);
+		std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
+	double getVelocity();
 
 protected:
 	ShearWaveTestParameter() {};
@@ -24,7 +25,7 @@ protected:
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
 		bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
-		std::shared_ptr<PhiAndNuTestResults> testResults);
+		std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
 
 private:
 	real u0, v0;
