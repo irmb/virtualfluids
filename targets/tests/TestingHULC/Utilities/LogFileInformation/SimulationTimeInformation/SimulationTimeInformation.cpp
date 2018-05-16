@@ -10,7 +10,7 @@ std::shared_ptr<LogFileInformation> SimulationTimeInformation::getNewInstance(st
 std::string SimulationTimeInformation::getOutput()
 {
 	makeCenterHead("Simulation Time Information");
-	oss << "FileWriting: " << fileWriting <<std::endl;
+	oss << "FileWriting: " << std::boolalpha << fileWriting <<std::endl;
 	oss << std::endl;
 	oss << "TestName \t \t \t" << " L\t\t" << "Time for Test" << std::endl;
 	oss << std::endl;
