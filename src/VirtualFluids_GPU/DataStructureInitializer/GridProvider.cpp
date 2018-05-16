@@ -31,94 +31,109 @@ void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) co
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
 {
-    //Taylor Green Vortex uniform
-    const real PI = 3.141592653589793238462643383279f;
+	const real PI = 3.141592653589793238462643383279;
+	const real gridX = para->getParH(level)->gridNX - 1;
+	const real gridY = para->getParH(level)->gridNY - 1;
+	const real gridZ = para->getParH(level)->gridNZ - 1;
+	////////////////////////////////////////////////////////////////////////////////
+	//Taylor Green Vortex uniform
+	//like MG
+ //   //real uAdvect = real (1. / 250.); //32 nodes -> 250; 40 nodes -> 200; 64 nodes -> 500; 128 nodes -> 1000; 256 nodes -> 2000; 512 nodes -> 4000
+ //   const real uAdvect = -0.0016; //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
 
-    const real gridX = (para->getParH(0)->gridNX - 1) ;
-    const real gridY = (para->getParH(0)->gridNY - 1) ;
-    const real gridZ = (para->getParH(0)->gridNZ - 1) ;
+ //   for (int j = 1; j <= numberOfNodes; j++)
+ //   {
+ //       const real coordX = para->getParH(level)->coordX_SP[j];
+ //       const real coordZ = para->getParH(level)->coordZ_SP[j];
+ //       const real velocity = para->getVelocity();
 
-    //like MG
-    //real uAdvect = real (1. / 250.); //32 nodes -> 250; 40 nodes -> 200; 64 nodes -> 500; 128 nodes -> 1000; 256 nodes -> 2000; 512 nodes -> 4000
-    const real uAdvect = -0.0016; //32 nodes -> 0.032; 64 nodes -> 0.016; 128 nodes -> 0.008; 256 nodes -> 0.004; 512 nodes -> 0.002
+ //       para->getParH(level)->rho_SP[j] = real((velocity * velocity) * 3.0 / 4.0 * (cos(coordX * 4.0*PI / gridX) + cos(coordZ * 4.0*PI / gridZ))) * gridZ / gridX;
 
-    for (int j = 1; j <= numberOfNodes; j++)
-    {
-        const real coordX = para->getParH(level)->coordX_SP[j];
-        const real coordZ = para->getParH(level)->coordZ_SP[j];
-        const real velocity = para->getVelocity();
+ //       para->getParH(level)->vy_SP[j] = real(0.0);
+ //       para->getParH(level)->vx_SP[j] = real( velocity * sin(coordX * 2.0*PI / gridX) * cos(coordZ * 2.0*PI / gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
+ //       para->getParH(level)->vz_SP[j] = real(-velocity * cos(coordX * 2.0*PI / gridX) * sin(coordZ * 2.0*PI / gridZ)); // *(real)(gridZ) / (real)(gridX);
 
-        para->getParH(level)->rho_SP[j] = real((velocity * velocity) * 3.0 / 4.0 * (cos(coordX * 4.0*PI / gridX) + cos(coordZ * 4.0*PI / gridZ))) * gridZ / gridX;
+ //      //para->getParH(level)->vx_SP[j] = 0.001;
+ //      //para->getParH(level)->vy_SP[j] = 0.0;
+ //      //para->getParH(level)->vz_SP[j] = 0.001;
+ //      //para->getParH(level)->rho_SP[j] = 0.0;
+ //      //para->getParH(level)->press_SP[j] = 0.0;
 
-        para->getParH(level)->vy_SP[j] = real(0.0);
-        para->getParH(level)->vx_SP[j] = real( velocity * sin(coordX * 2.0*PI / gridX) * cos(coordZ * 2.0*PI / gridZ)) + uAdvect * (1.0 + para->getParH(level)->rho_SP[j]);
-        para->getParH(level)->vz_SP[j] = real(-velocity * cos(coordX * 2.0*PI / gridX) * sin(coordZ * 2.0*PI / gridZ)); // *(real)(gridZ) / (real)(gridX);
+ //       if (para->getCalcMedian()) {
+ //           para->getParH(level)->vx_SP_Med[j] = 0.0f;
+ //           para->getParH(level)->vy_SP_Med[j] = 0.0f;
+ //           para->getParH(level)->vz_SP_Med[j] = 0.0f;
+ //           para->getParH(level)->rho_SP_Med[j] = 0.0f;
+ //           para->getParH(level)->press_SP_Med[j] = 0.0f;
+ //       }
+ //       if (para->getUseWale()) {
+ //           para->getParH(level)->turbViscosity[j] = 0.0f;
+ //           //Debug
+ //           para->getParH(level)->gSij[j] = 0.0f;
+ //           para->getParH(level)->gSDij[j] = 0.0f;
+ //           para->getParH(level)->gDxvx[j] = 0.0f;
+ //           para->getParH(level)->gDyvx[j] = 0.0f;
+ //           para->getParH(level)->gDzvx[j] = 0.0f;
+ //           para->getParH(level)->gDxvy[j] = 0.0f;
+ //           para->getParH(level)->gDyvy[j] = 0.0f;
+ //           para->getParH(level)->gDzvy[j] = 0.0f;
+ //           para->getParH(level)->gDxvz[j] = 0.0f;
+ //           para->getParH(level)->gDyvz[j] = 0.0f;
+ //           para->getParH(level)->gDzvz[j] = 0.0f;
+ //       }
+ //   }
+	////////////////////////////////////////////////////////////////////////////////
+	//2D parabolic test for turbulent channel flow
+	const real uBar = para->getVelocity();				// Bulk velocity computed from DNS results of Kim
+	const real h = 0.5 * gridY;						// half channel width
 
-       //para->getParH(level)->vx_SP[j] = 0.001;
-       //para->getParH(level)->vy_SP[j] = 0.0;
-       //para->getParH(level)->vz_SP[j] = 0.001;
-       //para->getParH(level)->rho_SP[j] = 0.0;
-       //para->getParH(level)->press_SP[j] = 0.0;
+	for (int j = 0; j <= numberOfNodes; j++)
+	{
+		//para->getParH(level)->rho_SP[j] = 
+		//	(doubflo)((para->getVelocity()*para->getVelocity())*3.0 / 4.0*(cos(para->getParH(level)->coordX_SP[j]*4.0*PI / (doubflo)gridX) + 
+		//		cos(para->getParH(i)->coordZ_SP[j] *4.0*PI /(real)gridZ)))*(real)(gridZ) / (real)(gridX);
+		para->getParH(level)->rho_SP[j] =
+			((real)((para->getVelocity()*para->getVelocity()) * 27.0 *
+			(cos(para->getParH(level)->coordX_SP[j] * 4.0*PI / (real)gridX) + cos(para->getParH(level)->coordY_SP[j] * 4.0*PI / (real)gridY))) *
+				(real)(gridY) / (real)(gridX)) +
+				((real)((para->getVelocity()*para->getVelocity()) * 27.0 *
+			(cos(para->getParH(level)->coordX_SP[j] * 4.0*PI / (real)gridX) + cos(para->getParH(level)->coordZ_SP[j] * 4.0*PI / (real)gridZ))) *
+					(real)(gridZ) / (real)(gridX));
 
-        if (para->getCalcMedian()) {
-            para->getParH(level)->vx_SP_Med[j] = 0.0f;
-            para->getParH(level)->vy_SP_Med[j] = 0.0f;
-            para->getParH(level)->vz_SP_Med[j] = 0.0f;
-            para->getParH(level)->rho_SP_Med[j] = 0.0f;
-            para->getParH(level)->press_SP_Med[j] = 0.0f;
-        }
-        if (para->getUseWale()) {
-            para->getParH(level)->turbViscosity[j] = 0.0f;
-            //Debug
-            para->getParH(level)->gSij[j] = 0.0f;
-            para->getParH(level)->gSDij[j] = 0.0f;
-            para->getParH(level)->gDxvx[j] = 0.0f;
-            para->getParH(level)->gDyvx[j] = 0.0f;
-            para->getParH(level)->gDzvx[j] = 0.0f;
-            para->getParH(level)->gDxvy[j] = 0.0f;
-            para->getParH(level)->gDyvy[j] = 0.0f;
-            para->getParH(level)->gDzvy[j] = 0.0f;
-            para->getParH(level)->gDxvz[j] = 0.0f;
-            para->getParH(level)->gDyvz[j] = 0.0f;
-            para->getParH(level)->gDzvz[j] = 0.0f;
-        }
+		//para->getParH(level)->vx_SP[j] = 3.0 * uBar*((para->getParH(level)->coordY_SP[j] / h) - 0.5*((pow(para->getParH(level)->coordY_SP[j], 2.0) / h)));
+		para->getParH(level)->vx_SP[j] =
+			3.0 * uBar * (((para->getParH(level)->coordY_SP[j]) / h) - 0.5 / h * ((pow((para->getParH(level)->coordY_SP[j]), 2.0) / h)));
 
+		//para->getParH(level)->vy_SP[j] = (real)0.0;
+		para->getParH(level)->vy_SP[j] =
+			(real)(-para->getVelocity()*cos((para->getParH(level)->coordX_SP[j] * 2.0*PI / (real)gridX))*sin(para->getParH(level)->coordY_SP[j] * 2.0*PI / (real)gridY));
 
-        ////2D parabolic test for turbulent channel flow
-        //doubflo PI = 3.141592653589793238462643383279f;
-        //doubflo uBar = para->getVelocity();				// Bulk velocity computed from DNS results of Kim
-        //doubflo gridX = para->getParH(i)->gridNX - 1;
-        //doubflo gridY = para->getParH(i)->gridNY - 1;
-        //doubflo gridZ = para->getParH(i)->gridNZ - 1;
-        //doubflo h = 0.5 * gridY;						// half channel width
-
-        //for (int j = 0; j <= temp; j++)
-        //{
-        //	//para->getParH(i)->rho_SP[j] = 
-        //	//	(doubflo)((para->getVelocity()*para->getVelocity())*3.0 / 4.0*(cos(para->getParH(i)->coordX_SP[j]*4.0*PI / (doubflo)gridX) + 
-        //	//		cos(para->getParH(i)->coordZ_SP[j] *4.0*PI /(doubflo)gridZ)))*(doubflo)(gridZ) / (doubflo)(gridX);
-        //	para->getParH(i)->rho_SP[j] =
-        //		((doubflo)((para->getVelocity()*para->getVelocity()) * 27.0 *
-        //		(cos(para->getParH(i)->coordX_SP[j] * 4.0*PI / (doubflo)gridX) + cos(para->getParH(i)->coordY_SP[j] * 4.0*PI / (doubflo)gridY))) * 
-        //		(doubflo)(gridY) / (doubflo)(gridX)) + 
-        //		((doubflo)((para->getVelocity()*para->getVelocity()) * 27.0 *
-        //		(cos(para->getParH(i)->coordX_SP[j] * 4.0*PI / (doubflo)gridX) + cos(para->getParH(i)->coordZ_SP[j] * 4.0*PI / (doubflo)gridZ))) *
-        //		(doubflo)(gridZ) / (doubflo)(gridX));
-
-        //	//para->getParH(i)->vx_SP[j] = 3.0 * uBar*((para->getParH(i)->coordY_SP[j] / h) - 0.5*((pow(para->getParH(i)->coordY_SP[j], 2.0) / h)));
-        //	para->getParH(i)->vx_SP[j] = 
-        //		3.0 * uBar * (((para->getParH(i)->coordY_SP[j]) / h) - 0.5 / h * ((pow((para->getParH(i)->coordY_SP[j]), 2.0) / h)));
-        //	
-        //	//para->getParH(i)->vy_SP[j] = (doubflo)0.0;
-        //	para->getParH(i)->vy_SP[j] =
-        //		(doubflo)(-para->getVelocity()*cos((para->getParH(i)->coordX_SP[j] * 2.0*PI / (doubflo)gridX))*sin(para->getParH(i)->coordY_SP[j] * 2.0*PI / (doubflo)gridY));
-        //	
-        //	para->getParH(i)->vz_SP[j] = (doubflo)0.0;
-        //}
-
-    }
-
-
+		para->getParH(level)->vz_SP[j] = (real)0.0;
+		//////////////////////////////////////////////////////////////////////////
+		if (para->getCalcMedian()) {
+			para->getParH(level)->vx_SP_Med[j] = 0.0f;
+			para->getParH(level)->vy_SP_Med[j] = 0.0f;
+			para->getParH(level)->vz_SP_Med[j] = 0.0f;
+			para->getParH(level)->rho_SP_Med[j] = 0.0f;
+			para->getParH(level)->press_SP_Med[j] = 0.0f;
+		}
+		if (para->getUseWale()) {
+			para->getParH(level)->turbViscosity[j] = 0.0f;
+			//Debug
+			para->getParH(level)->gSij[j] = 0.0f;
+			para->getParH(level)->gSDij[j] = 0.0f;
+			para->getParH(level)->gDxvx[j] = 0.0f;
+			para->getParH(level)->gDyvx[j] = 0.0f;
+			para->getParH(level)->gDzvx[j] = 0.0f;
+			para->getParH(level)->gDxvy[j] = 0.0f;
+			para->getParH(level)->gDyvy[j] = 0.0f;
+			para->getParH(level)->gDzvy[j] = 0.0f;
+			para->getParH(level)->gDxvz[j] = 0.0f;
+			para->getParH(level)->gDyvz[j] = 0.0f;
+			para->getParH(level)->gDzvz[j] = 0.0f;
+		}
+	}
+	////////////////////////////////////////////////////////////////////////////////
 }
 
 

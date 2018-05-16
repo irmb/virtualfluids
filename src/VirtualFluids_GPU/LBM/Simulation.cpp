@@ -322,7 +322,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //Print Init
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
-   dataWriter->writeInit(para);
+   //dataWriter->writeInit(para);
+   writeInit(para);
    if (para->getCalcParticle()) 
        copyAndPrintParticles(para.get(), 0, true);
    output << "done.\n";
@@ -574,24 +575,24 @@ void Simulation::run()
 		//Wale 
 		if (para->getUseWale())
 		{
-			KernelWaleCumOneCompSP27(para->getParD(0)->numberofthreads,
-									 para->getParD(0)->omega,			
-									 para->getParD(0)->geoSP, 
-									 para->getParD(0)->neighborX_SP, 
-									 para->getParD(0)->neighborY_SP, 
-									 para->getParD(0)->neighborZ_SP,
-									 para->getParD(0)->neighborWSB_SP,
-								     para->getParD(0)->vx_SP,        
-								     para->getParD(0)->vy_SP,        
-								     para->getParD(0)->vz_SP,        
-									 para->getParD(0)->d0SP.f[0],
-									 para->getParD(0)->turbViscosity,
-									 para->getParD(0)->size_Mat_SP,
-									 para->getParD(0)->size_Array_SP,
-									 0,
-									 para->getForcesDev(),
-									 para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
+			//KernelWaleCumOneCompSP27(para->getParD(0)->numberofthreads,
+			//						 para->getParD(0)->omega,			
+			//						 para->getParD(0)->geoSP, 
+			//						 para->getParD(0)->neighborX_SP, 
+			//						 para->getParD(0)->neighborY_SP, 
+			//						 para->getParD(0)->neighborZ_SP,
+			//						 para->getParD(0)->neighborWSB_SP,
+			//					     para->getParD(0)->vx_SP,        
+			//					     para->getParD(0)->vy_SP,        
+			//					     para->getParD(0)->vz_SP,        
+			//						 para->getParD(0)->d0SP.f[0],
+			//						 para->getParD(0)->turbViscosity,
+			//						 para->getParD(0)->size_Mat_SP,
+			//						 para->getParD(0)->size_Array_SP,
+			//						 0,
+			//						 para->getForcesDev(),
+			//						 para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
 
 			//KernelWaleCumAA2016CompSP27(para->getParD(0)->numberofthreads,
 			//							para->getParD(0)->omega,			
@@ -666,32 +667,32 @@ void Simulation::run()
 		} 
 		else
 		{
-			KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
-								 para->getParD(0)->omega,			
-								 para->getParD(0)->geoSP, 
-								 para->getParD(0)->neighborX_SP, 
-								 para->getParD(0)->neighborY_SP, 
-								 para->getParD(0)->neighborZ_SP,
-								 para->getParD(0)->d0SP.f[0],    
-								 para->getParD(0)->size_Mat_SP,
-								 para->getParD(0)->size_Array_SP,
-								 0,
-								 para->getForcesDev(),
-								 para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelCasSPKum27 execution failed");
-
-			//KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
-			//					 para->getParD(0)->omega, 
+			//KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
+			//					 para->getParD(0)->omega,			
 			//					 para->getParD(0)->geoSP, 
 			//					 para->getParD(0)->neighborX_SP, 
 			//					 para->getParD(0)->neighborY_SP, 
 			//					 para->getParD(0)->neighborZ_SP,
 			//					 para->getParD(0)->d0SP.f[0],    
 			//					 para->getParD(0)->size_Mat_SP,
+			//					 para->getParD(0)->size_Array_SP,
 			//					 0,
 			//					 para->getForcesDev(),
 			//					 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+			//getLastCudaError("KernelCasSPKum27 execution failed");
+
+			KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
+								 para->getParD(0)->omega, 
+								 para->getParD(0)->geoSP, 
+								 para->getParD(0)->neighborX_SP, 
+								 para->getParD(0)->neighborY_SP, 
+								 para->getParD(0)->neighborZ_SP,
+								 para->getParD(0)->d0SP.f[0],    
+								 para->getParD(0)->size_Mat_SP,
+								 0,
+								 para->getForcesDev(),
+								 para->getParD(0)->evenOrOdd); 
+			getLastCudaError("KernelKumAA2016CompSP27 execution failed");
 
 			//KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
 			//						 para->getParD(0)->omega, 
@@ -1191,13 +1192,13 @@ void Simulation::run()
 							//para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 							//para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 		     // getLastCudaError("QVelDevComp27 execution failed");
-		      //QVelDevCompZeroPress27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,             para->getParD(0)->ny,
-								//	 para->getParD(0)->Qinflow.Vx,      para->getParD(0)->Qinflow.Vy,     para->getParD(0)->Qinflow.Vz,
-								//	 para->getParD(0)->d0SP.f[0],       para->getParD(0)->Qinflow.k,      para->getParD(0)->Qinflow.q27[0], 
-								//	 para->getParD(0)->kInflowQ,        para->getParD(0)->Qinflow.kArray, para->getParD(0)->omega,
-								//	 para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP,   para->getParD(0)->neighborZ_SP,
-								//	 para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-		      //getLastCudaError("QVelDevComp27 execution failed");
+		      QVelDevCompZeroPress27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,             para->getParD(0)->ny,
+									 para->getParD(0)->Qinflow.Vx,      para->getParD(0)->Qinflow.Vy,     para->getParD(0)->Qinflow.Vz,
+									 para->getParD(0)->d0SP.f[0],       para->getParD(0)->Qinflow.k,      para->getParD(0)->Qinflow.q27[0], 
+									 para->getParD(0)->kInflowQ,        para->getParD(0)->Qinflow.kArray, para->getParD(0)->omega,
+									 para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP,   para->getParD(0)->neighborZ_SP,
+									 para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+		      getLastCudaError("QVelDevComp27 execution failed");
 
 			  ////////////////////////////////////////////////////////////////////////////
 		      //QVeloDevEQ27(para->getParD(0)->numberofthreads,
@@ -1496,14 +1497,14 @@ void Simulation::run()
             getLastCudaError("CalcMacSP27 execution failed"); 
 
 		} 
-		  //////////////////////////////////////////////////////////////////////////////////
-		  ////calculate the new forcing
-		  //if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
-		  //{
-			 // forceCalculator->calcPIDControllerForForce(para);
-			 // forceCalculator->printForcing(para);
-		  //}
-		  //////////////////////////////////////////////////////////////////////////////////
+		  ////////////////////////////////////////////////////////////////////////////////
+		  //calculate the new forcing
+		  if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
+		  {
+			  forceCalculator->calcPIDControllerForForce(para.get());
+			  forceCalculator->printForcing(para.get());
+		  }
+		  ////////////////////////////////////////////////////////////////////////////////
 		  
 		  // ////////////////////////////////////////////////////////////////////////
 		 // if (para->getDiffOn()==true)
@@ -2525,7 +2526,8 @@ void Simulation::run()
 				/////////////////////////////////
 			}
 			////////////////////////////////////////////////////////////////////////
-			dataWriter->writeTimestep(para, t);
+			//dataWriter->writeTimestep(para, t);
+			writeTimestep(para.get(), t);
 			////////////////////////////////////////////////////////////////////////
 			//printDragLift(para, t);
 			////////////////////////////////////////////////////////////////////////

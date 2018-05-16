@@ -112,16 +112,220 @@ void GridReader::allocArrays_BoundaryValues()
 
 	this->makeReader(para);
 	this->setChannelBoundaryCondition();
-	int level = BC_Values[0]->getLevel();
+	int maxLevel = BC_Values[0]->getLevel();
 
-    for (int i = 0; i < channelBoundaryConditions.size(); i++)
-    {
-        setVelocityValues(i);
-        setPressureValues(i);
-        setOutflowValues(i);
-    }
+	initalValuesDomainDecompostion(maxLevel);
 
-	initalValuesDomainDecompostion(level);
+	vector<vector<vector<real> > > pressureV;
+	pressureV.resize(maxLevel + 1);
+	vector<vector<vector<real> > > velocityV;
+	velocityV.resize(maxLevel + 1);
+	vector<vector<vector<real> > > outflowV;
+	outflowV.resize(maxLevel + 1);
+
+	for (int i = 0; i <= maxLevel; i++) {
+		pressureV[i].resize(2);
+		velocityV[i].resize(3);
+		outflowV[i].resize(2);
+	}
+
+	for (int i = 0; i < channelBoundaryConditions.size(); i++) {
+		if (this->channelBoundaryConditions[i] == "velocity") { BC_Values[i]->setBoundarys(velocityV); }
+		else if (this->channelBoundaryConditions[i] == "pressure") { BC_Values[i]->setBoundarys(pressureV); }
+		else if (this->channelBoundaryConditions[i] == "outflow") { BC_Values[i]->setBoundarys(outflowV); }
+	}
+
+	for (int i = 0; i <= maxLevel; i++) {
+		int temp1 = (int)pressureV[i][0].size();
+		if (temp1 > 1)
+		{
+			cout << "Groesse pressure level " << i << " : " << temp1 << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->getParH(i)->QPress.kQ = temp1;
+			para->getParD(i)->QPress.kQ = temp1;
+			para->getParH(i)->kPressQread = temp1 * para->getD3Qxx();
+			para->getParD(i)->kPressQread = temp1 * para->getD3Qxx();
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaAllocPress(i);
+			///////////////////////////////
+			////only for round of error test
+			//para->cudaAllocTestRE(i, temp1);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			int d = 0;
+			int j = 0;
+			int n = 0;
+
+			for (vector<vector<vector<real> > >::iterator it = pressureV.begin(); it != pressureV.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							if (j == 0) para->getParH(i)->QPress.RhoBC[n] = *it3;
+							if (j == 1) para->getParH(i)->QPress.kN[n] = (int)*it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			for (int m = 0; m < temp1; m++)
+			{
+				para->getParH(i)->QPress.RhoBC[m] = (para->getParH(i)->QPress.RhoBC[m] / para->getFactorPressBC() * (real)0.0);
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyPress(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			////only for round of error test
+			//para->cudaCopyTestREtoDevice(i,temp1);
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//// advection - diffusion stuff
+			////cout << "vor advec diff" << endl;
+			//if (para->getDiffOn()==true){
+			//	//////////////////////////////////////////////////////////////////////////
+			//	//cout << "vor setzen von kTemp" << endl;
+			//	para->getParH(i)->TempPress.kTemp = temp1;
+			//	//cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+			//	//////////////////////////////////////////////////////////////////////////
+			//	para->cudaAllocTempPressBC(i);
+			//	//cout << "nach alloc" << endl;
+			//	//////////////////////////////////////////////////////////////////////////
+			//	for (int m = 0; m < temp1; m++)
+			//	{
+			//		para->getParH(i)->TempPress.temp[m] = para->getTemperatureInit();
+			//		para->getParH(i)->TempPress.velo[m] = (doubflo)0.0;
+			//		para->getParH(i)->TempPress.k[m]    = para->getParH(i)->QPress.k[m];
+			//	}
+			//	//////////////////////////////////////////////////////////////////////////
+			//	//cout << "vor copy" << endl;
+			//	para->cudaCopyTempPressBCHD(i);
+			//	//cout << "nach copy" << endl;
+			//	//////////////////////////////////////////////////////////////////////////
+			//}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}//ende if
+	}//ende oberste for schleife
+
+
+
+
+	 //--------------------------------------------------------------------------//
+	for (int i = 0; i <= maxLevel; i++) {
+		int temp2 = (int)velocityV[i][0].size();
+		if (temp2 > 1)
+		{
+			cout << "Groesse velocity level " << i << " : " << temp2 << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			int blocks = (temp2 / para->getParH(i)->numberofthreads) + 1;
+			para->getParH(i)->Qinflow.kArray = blocks * para->getParH(i)->numberofthreads;
+			para->getParD(i)->Qinflow.kArray = para->getParH(i)->Qinflow.kArray;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->getParH(i)->Qinflow.kQ = temp2;
+			para->getParD(i)->Qinflow.kQ = temp2;
+			para->getParH(i)->kInflowQ = temp2;
+			para->getParD(i)->kInflowQ = temp2;
+			para->getParH(i)->kInflowQread = temp2 * para->getD3Qxx();
+			para->getParD(i)->kInflowQread = temp2 * para->getD3Qxx();
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaAllocVeloBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			int d = 0;
+			int j = 0;
+			int n = 0;
+			for (vector<vector<vector<real> > >::iterator it = velocityV.begin(); it != velocityV.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							if (j == 0) para->getParH(i)->Qinflow.Vx[n] = *it3;
+							if (j == 1) para->getParH(i)->Qinflow.Vy[n] = *it3;
+							if (j == 2) para->getParH(i)->Qinflow.Vz[n] = *it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+							 //cout << "n = " << n << endl;
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			//cout << "temp2 = " << temp2 << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			for (int m = 0; m < temp2; m++)
+			{
+				//para->getParH(i)->Qinflow.Vx[m] = para->getParH(i)->Qinflow.Vx[m] / para->getVelocityRatio();
+				//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
+				//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
+				para->getParH(i)->Qinflow.Vx[m] = para->getVelocity();//0.035;
+				para->getParH(i)->Qinflow.Vy[m] = 0.0;//para->getVelocity();//0.0;
+				para->getParH(i)->Qinflow.Vz[m] = 0.0;
+				//if (para->getParH(i)->Qinflow.Vz[m] > 0)
+				//{
+				//	cout << "velo Z = " << para->getParH(i)->Qinflow.Vz[m] << endl;
+				//}
+			}
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyVeloBC(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//// advection - diffusion stuff
+			//if (para->getDiffOn()==true){
+			//	//////////////////////////////////////////////////////////////////////////
+			//	para->getParH(i)->TempVel.kTemp = temp2;
+			//	//cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+			//	cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
+			//	cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
+			//	//////////////////////////////////////////////////////////////////////////
+			//	para->cudaAllocTempVeloBC(i);
+			//	//cout << "nach alloc " << endl;
+			//	//////////////////////////////////////////////////////////////////////////
+			//	for (int m = 0; m < temp2; m++)
+			//	{
+			//		para->getParH(i)->TempVel.temp[m]      = para->getTemperatureInit();
+			//		para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
+			//		para->getParH(i)->TempVel.velo[m]      = para->getVelocity();
+			//		para->getParH(i)->TempVel.k[m]         = para->getParH(i)->Qinflow.k[m];
+			//	}
+			//	//////////////////////////////////////////////////////////////////////////
+			//	//cout << "vor copy " << endl;
+			//	para->cudaCopyTempVeloBCHD(i);
+			//	//cout << "nach copy " << endl;
+			//	//////////////////////////////////////////////////////////////////////////
+			//}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}//ende if
+	}//ende oberste for schleife
+
+
+
+
+
+
+
+
+
+	//for (int level = 0; level < maxLevel; level++)
+	//{
+	//	setVelocitySizePerLevel(level, 0);
+	//	setPressSizePerLevel(level, 0);
+	//	setVelocitySizePerLevel(level, 0);
+	//}
+
+ //   for (int i = 0; i < channelBoundaryConditions.size(); i++)
+ //   {
+	//	if(this->channelBoundaryConditions[i] == "velocity")
+	//		setVelocityValues(i);
+
+	//	if (this->channelBoundaryConditions[i] == "pressure")
+	//		setPressureValues(i);
+
+	//	if (this->channelBoundaryConditions[i] == "outflow")
+	//		setOutflowValues(i);
+ //   }
+
 }
 
 void GridReader::allocArrays_OffsetScale()
@@ -258,7 +462,7 @@ void GridReader::setVelocity(int level, int sizePerLevel, int channelSide) const
 		//para->getParH(i)->Qinflow.Vx[m] = para->getParH(i)->Qinflow.Vx[m] / para->getVelocityRatio();
 		//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
 		//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
-		para->getParH(level)->Qinflow.Vx[index] = para->getVelocity();//0.035;
+		para->getParH(level)->Qinflow.Vx[index] = 0.0;//para->getVelocity();//0.035;
 		para->getParH(level)->Qinflow.Vy[index] = 0.0;//para->getVelocity();//0.0;
 		para->getParH(level)->Qinflow.Vz[index] = 0.0;
 	}
