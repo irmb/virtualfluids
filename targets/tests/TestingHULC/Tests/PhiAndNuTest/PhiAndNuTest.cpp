@@ -74,8 +74,8 @@ PhiAndNuTest::PhiAndNuTest(std::string aTestName, double minOrderOfAccuracy, std
 
 void PhiAndNuTest::makeLastTestOutput()
 {
-	testOut->makeTestOutput(nuDiffTestPassed.back(), testName, lx.at(lx.size() - 1), lx.back(), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(nuDiff.size() - 1), nuDiff.back(), orderOfAccuracyNuDiff.at(orderOfAccuracyNuDiff.size() - 1));
-	testOut->makeTestOutput(phiDiffTestPassed.back(), testName, lx.at(lx.size() - 1), lx.back(), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(phiDiff.size() - 1), phiDiff.back(), orderOfAccuracyPhiDiff.at(orderOfAccuracyPhiDiff.size() - 1));
+	testOut->makeTestOutput(nuDiffTestPassed.back(), testName, lx.at(lx.size() - 2), lx.back(), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(nuDiff.size() - 2), nuDiff.back(), orderOfAccuracyNuDiff.back());
+	testOut->makeTestOutput(phiDiffTestPassed.back(), testName, lx.at(lx.size() - 2), lx.back(), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(phiDiff.size() - 2), phiDiff.back(), orderOfAccuracyPhiDiff.back());
 }
 
 std::vector<double> PhiAndNuTest::calcOrderOfAccuracy(std::vector<double> data)
