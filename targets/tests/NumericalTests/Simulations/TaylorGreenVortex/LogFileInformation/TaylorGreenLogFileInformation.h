@@ -1,7 +1,7 @@
 #ifndef TAYLOR_GREEN_INFORMATION_H
 #define TAYLOR_GREEN_INFORMATION_H
 
-#include "../LogFileInformationImp.h"
+#include "Utilities/LogFileInformation/LogFileInformationImp.h"
 
 #include <memory>
 

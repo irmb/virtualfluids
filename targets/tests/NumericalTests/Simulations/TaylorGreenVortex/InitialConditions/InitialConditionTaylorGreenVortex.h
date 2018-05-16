@@ -1,5 +1,7 @@
-#include "../InitialConditionImp.h"
+#ifndef INITIAL_CONDITION_TAYLOR_GREEN_VORTEX_H
+#define INITIAL_CONDITION_TAYLOR_GREEN_VORTEX_H
 
+#include "Utilities/InitialCondition/InitialConditionImp.h"
 
 class InitialConditionTaylorGreen :public InitialConditionImp
 {
@@ -20,3 +22,5 @@ private:
 	real Lx, Lz;
 	real u0;
 };
+
+#endif

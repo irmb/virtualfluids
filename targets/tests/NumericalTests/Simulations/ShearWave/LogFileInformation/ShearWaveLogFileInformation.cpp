@@ -1,4 +1,4 @@
-#include "ShearWaveInformation.h"
+#include "ShearWaveLogFileInformation.h"
 
 std::shared_ptr<LogFileInformation> ShearWaveInformation::getNewInstance(double u0, double v0)
 {

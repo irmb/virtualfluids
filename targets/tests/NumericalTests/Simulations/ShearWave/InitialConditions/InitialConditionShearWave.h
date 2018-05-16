@@ -1,5 +1,7 @@
-#include "../InitialConditionImp.h"
+#ifndef INITIAL_CONDITION_SHEAR_WAVE_H
+#define	INITIAL_CONDITION_SHEAR_WAVE_H
 
+#include "Utilities/InitialCondition/InitialConditionImp.h"
 
 class InitialConditionShearWave :public InitialConditionImp
 {
@@ -18,3 +20,4 @@ private:
 	real lx, lz;
 	real u0, v0;
 };
+#endif 

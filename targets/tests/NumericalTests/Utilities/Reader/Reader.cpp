@@ -7,18 +7,20 @@
 #include "utilities/StringUtil/StringUtil.h"
 
 #include "Utilities/TestInformation/TestInformationImp.h"
-#include "Utilities/TestParameter/TaylorGreenTestParameter/TaylorGreenTestParameter.h"
-#include "Utilities/TestParameter/ShearWaveTestParameter/ShearWaveTestParameter.h"
 #include "Utilities/TestCout/TestCoutImp.h"
 #include "Utilities/SimulationInfo/SimulationInfoImp.h"
+
+#include "Simulations/TaylorGreenVortex/TestParameter/TaylorGreenTestParameter.h"
+#include "Simulations/ShearWave/TestParameter/ShearWaveTestParameter.h"
+#include "Simulations/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
+#include "Simulations/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
+
 
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 
 #include "Utilities/LogFileInformation/LogFileInformation.h"
 #include "Utilities/LogFileInformation/LogFileInformationOutput/LogFileInformationOutput.h"
 #include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
-#include "Utilities/LogFileInformation/TaylorGreenInformation/TaylorGreenInformation.h"
-#include "Utilities/LogFileInformation/ShearWaveInformation/ShearWaveInformation.h"
 #include "Utilities/LogFileInformation/SimulationTimeInformation/SimulationTimeInformation.h"
 
 bool Reader::testShouldRun(std::vector<bool> test)

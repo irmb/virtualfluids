@@ -1,4 +1,4 @@
-#include "TaylorGreenInformation.h"
+#include "TaylorGreenLogFileInformation.h"
 
 std::shared_ptr<LogFileInformation> TaylorGreenInformation::getNewInstance(double u0, double amplitude)
 {

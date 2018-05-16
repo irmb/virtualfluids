@@ -1,7 +1,7 @@
 #ifndef SHEAR_WAVE_INFORMATION_H
 #define SHEAR_WAVE_INFORMATION_H
 
-#include "../LogFileInformationImp.h"
+#include "Utilities/LogFileInformation/LogFileInformationImp.h"
 
 #include <memory>
 
