@@ -44,11 +44,11 @@ void TestInformationImp::writeLogFile()
 
 void TestInformationImp::makeFinalTestOutput()
 {
-	colorOutput->makeFinalTestOutput(getNumberOfPassedTests(),getNumberOfTests());
+	colorOutput->makeFinalTestOutputHead(getNumberOfPassedTests(),getNumberOfTests());
 	for (int i = 0; i < testResults.size(); i++) {
 		testResults.at(i)->makeFinalOutput();
 	}
-	colorOutput->makeFinalTestOutput(getNumberOfPassedTests(), getNumberOfTests());
+	colorOutput->makeFinalTestOutputFoot(getNumberOfPassedTests(), getNumberOfTests());
 }
 
 void TestInformationImp::setLogFilePath(std::string aLogFilePath)

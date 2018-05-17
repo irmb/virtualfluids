@@ -55,17 +55,19 @@ void TestCoutImp::makeSimulationHeadOutput(std::string simName, int l)
 	printGreenHashLine();
 }
 
-void TestCoutImp::makeFinalTestOutput(int numberOfPassedTests, int numberOfTests)
+void TestCoutImp::makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests)
 {
 	setColor(numberOfPassedTests == numberOfTests);
-	testing::internal::ColoredPrintf(color, "[----------]\n[----------]");
-	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, "Test Summary\n");
-	testing::internal::ColoredPrintf(color, "[----------]");
+	printTestPassed(numberOfPassedTests, numberOfTests);
+	printLine();
+}
 
-	std::ostringstream info;
-	info << numberOfPassedTests << " out of " << numberOfTests << " tests passed";
-	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, info.str().c_str());
-	testing::internal::ColoredPrintf(color, "\n[----------]\n\n");
+void TestCoutImp::makeFinalTestOutputHead(int numberOfPassedTests, int numberOfTests)
+{
+	setColor(numberOfPassedTests == numberOfTests);
+	printLine();
+	printTestPassed(numberOfPassedTests, numberOfTests);
+	std::cout << std::endl;
 }
 
 void TestCoutImp::printTestStart()
@@ -104,6 +106,21 @@ void TestCoutImp::setColor(bool testPassed)
 		color = testing::internal::COLOR_GREEN;
 	else
 		color = testing::internal::COLOR_RED;
+}
+
+void TestCoutImp::printTestPassed(int numberOfPassedTests, int numberOfTests)
+{
+	std::ostringstream test;
+	test << "[----------]" << std::endl;
+	test << "[----------] Test Summary" << std::endl;
+	test << "[----------] " << numberOfPassedTests << " out of " << numberOfTests << " tests passed" << std::endl;
+	test << "[----------]" << std::endl;
+	testing::internal::ColoredPrintf(color, test.str().c_str());
+}
+
+void TestCoutImp::printLine()
+{
+	testing::internal::ColoredPrintf(color, "----------------------------------------------------------------------\n");
 }
 
 void TestCoutImp::printGreen(std::string output)
