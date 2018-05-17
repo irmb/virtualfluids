@@ -4,7 +4,7 @@
 #include "GridGenerator/global.h"
 
 #include <GridGenerator/utilities/cuda/CudaErrorCheck.cu>
-#include <GridGenerator/utilities/Launchparameter/LaunchParameter.cuh>
+#include <GridGenerator/utilities/cuda/LaunchParameter.cuh>
 
 #include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
 #include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
@@ -35,10 +35,6 @@ void GridGpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
 
 }
 
-void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh)
-{
-
-}
 
 
 void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid)
@@ -126,21 +122,21 @@ void GridGpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     //*logging::out << logging::Logger::INTERMEDIATE << "time find indices: " << time / 1000 <<  "sec\n";
 }
 
-void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
-{
-    float time1 = runKernelSetToInvalid(LaunchParameter::make_2D1D_launchParameter(grid->size, 512), *grid.get());
-
-    copyAndFreeFieldFromGPU(grid->getField());
-    copyAndFreeMatrixIndicesFromGPU(grid, grid->size);
-
-    grid->updateSparseIndices();
-
-    allocAndCopyFieldToGPU(grid->getField());
-    allocAndCopyMatrixIndicesToGPU(grid, grid->size);
-
-    float time2 = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time delete solid nodes: " << (time1 + time2) / 1000 << "sec\n";
-}
+//void GridGpuStrategy::deleteSolidNodes(SPtr<GridImp> grid)
+//{
+//    float time1 = runKernelSetToInvalid(LaunchParameter::make_2D1D_launchParameter(grid->size, 512), *grid.get());
+//
+//    copyAndFreeFieldFromGPU(grid->getField());
+//    copyAndFreeMatrixIndicesFromGPU(grid, grid->size);
+//
+//    grid->updateSparseIndices();
+//
+//    allocAndCopyFieldToGPU(grid->getField());
+//    allocAndCopyMatrixIndicesToGPU(grid, grid->size);
+//
+//    float time2 = runKernelFindIndices(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
+//    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time delete solid nodes: " << (time1 + time2) / 1000 << "sec\n";
+//}
 
 
 

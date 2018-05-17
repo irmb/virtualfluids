@@ -9,15 +9,6 @@
 #include <GPU/CudaMemoryManager.h>
 
 
-std::shared_ptr<GridProvider> GridProvider::makeGridGenerator(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
-{
-    return std::shared_ptr<GridProvider>(new GridGenerator(builder, para));
-}
-
-std::shared_ptr<GridProvider> GridProvider::makeGridReader(bool readBinaryFiles, std::shared_ptr<Parameter> para)
-{
-    return std::shared_ptr<GridProvider>(new GridReader(readBinaryFiles, para));
-}
 
 void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) const
 {

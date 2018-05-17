@@ -2,7 +2,7 @@
 #define CELL_H
 
 #include "core/DataTypes.h"
-#include "GridGenerator/global.h"
+#include "utilities/cuda/cudaDefines.h"
 
 struct Point
 {

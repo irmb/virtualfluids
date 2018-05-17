@@ -10,18 +10,22 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-#include <map>
 
-#include <VirtualFluidsDefinitions.h>
+#ifdef CAB_RCF
+   #include <3rdParty/rcf/RcfSerializationIncludes.h>
+#endif //CAB_RCF
+
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
+#include <basics/utilities/Vector3D.h>
+#include <basics/writer/WbWriter.h>
 
+#include <basics/memory/MbSmartPtr.h>
 
-#include "basics/utilities/Vector3D.h"
-#include "GbObject3D.h"
+#include <numerics/geometry3d/GbPoint3D.h> 
 
-class WbWriter;
+#include <PointerDefinitions.h>
 
 namespace Kd 
 { 
@@ -29,9 +33,6 @@ namespace Kd
    template< typename T > class SplitAlgorithm;
    template< typename T > class RayIntersectionHandler;
 }
-
-//RayCrossing Test ...
-//http://orion.math.iastate.edu/burkardt/c_src/orourke/inhedron.c
 
 
 /*=========================================================================*/
@@ -75,7 +76,7 @@ public:
       }
       bool operator== (const Vertex& rhs)
       {
-         return ( fabs(x-rhs.x)<1.E-10 && fabs(y-rhs.y)<1.E-10 && fabs(z-rhs.z)<1.E-10 );
+         return ( fabs(x-rhs.x)<1.E-8 && fabs(y-rhs.y)<1.E-8 && fabs(z-rhs.z)<1.E-8 );
       }
       friend inline bool operator<(const Vertex & lhsVert,const Vertex & rhsVert)
       {
@@ -94,12 +95,6 @@ public:
       Vertex* clone()
       {
          return(new Vertex(this));
-      }
-
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & x & y & z;
       }
 
 #ifdef CAB_RCF
@@ -189,12 +184,12 @@ public:
          //GbVector3D AC = C-A;
          //GbVector3D N = AB.Cross(AC);
          //return 0.5*N.Length();
-          Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
-          Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
-          Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
-          Vector3D AB = B - A;
-          Vector3D AC = C - A;
-          Vector3D N = AB.Cross(AC);
+         Vector3D A(nodes[v1].x, nodes[v1].y, nodes[v1].z);
+         Vector3D B(nodes[v2].x, nodes[v2].y, nodes[v2].z);
+         Vector3D C(nodes[v3].x, nodes[v3].y, nodes[v3].z);
+         Vector3D AB = B-A;
+         Vector3D AC = C-A;
+         Vector3D N = AB.Cross(AC);
          return 0.5*N.Length();
       }
       void calculateNormal(std::vector<Vertex>& nodes)
@@ -222,13 +217,6 @@ public:
                      <<"->removeRedunantNodes"<<std::endl;
          }
       }
-
-      template<class Archive>
-      void serialize(Archive & ar, const unsigned int version)
-      {
-         ar & v1 & v2 & v3;
-      }
-
    #ifdef CAB_RCF
       template<class Archive>
       void SF_SERIALIZE(Archive & ar)
@@ -243,14 +231,14 @@ public:
    };
 
 public:
-  enum KDTREE_SPLITAGORITHM { KDTREE_SHAPLIT, KDTREE_SPATIALSPLIT };
+  enum KDTREE_SPLITAGORITHM { KDTREE_SAHPLIT, KDTREE_SPATIALSPLIT };
 
 public:
    GbTriFaceMesh3D();
-   GbTriFaceMesh3D(std::string name, std::vector<Vertex>* nodes, std::vector<TriFace>* triangles, KDTREE_SPLITAGORITHM splitAlg = KDTREE_SHAPLIT, bool removeRedundantNodes=true);
+   GbTriFaceMesh3D(std::string name, std::vector<Vertex>* nodes, std::vector<TriFace>* triangles, KDTREE_SPLITAGORITHM splitAlg = KDTREE_SAHPLIT, bool removeRedundantNodes=true);
 	~GbTriFaceMesh3D();
 
-   GbTriFaceMesh3D* clone() { throw UbException(UB_EXARGS,"not implemented"); }
+   GbTriFaceMesh3D* clone();// { throw UbException(UB_EXARGS,"not implemented"); }
    void finalize() {}
 
    //void setRegardPointInPolyhedronTest(bool value) { this->regardPiO=value; }
@@ -260,6 +248,16 @@ public:
    //std::string getName();
    std::vector<Vertex>*  getNodes();
    std::vector<TriFace>* getTriangles();
+   
+   void setTransferViaFilename(bool transferViaFilename, std::string filename, double transX1, double transX2, double transX3)
+   {
+      this->filename = filename;
+      this->transferViaFilename = transferViaFilename;
+      this->transX1 = transX1;
+      this->transX2 = transX2;
+      this->transX3 = transX3;
+   }
+   void readMeshFromSTLFile(std::string filename, bool removeRedundantNodes);
 
    double getX1Minimum()  { if(!this->consistent) this->calculateValues(); return this->x1min;    }
    double getX1Maximum()  { if(!this->consistent) this->calculateValues(); return this->x1max;    }
@@ -274,7 +272,6 @@ public:
    double getX3Maximum()  { if(!this->consistent) this->calculateValues(); return this->x3max;    }
 
    void   calculateValues();
-   void   generateKdTree();
 
    double getVolume();
    void   deleteRedundantNodes();
@@ -282,13 +279,17 @@ public:
    UbTupleDouble6 calculateMomentOfInertia(double rhoP);
    UbTupleDouble3 calculateCenterOfGravity();
 
-   void transform(const double matrix[4][4]);
- 
-   void rotate(const double& alpha, const double& beta, const double& gamma);
+   void setCenterCoordinates(const double& x1, const double& x2, const double& x3);
+
+
    void scale(const double& sx1, const double& sx2, const double& sx3);
+   void rotate(const double& alpha, const double& beta, const double& gamma);
+   void rotateAroundPoint(const double& px1, const double& px2, const double& px3, const double& alpha, const double& beta, const double& gamma);
    void translate(const double& x1, const double& x2, const double& x3);
+   void reflectAcrossXYLine(const double& alpha);
 
    bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3);
+   bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, int counter);
    bool isPointInGbObject3D(const double& x1, const double& x2, const double& x3, bool& pointIsOnBoundary);
 
    virtual GbLine3D* createClippedLine3D (GbPoint3D &point1,GbPoint3D &point2);
@@ -298,16 +299,7 @@ public:
 
    std::vector<GbTriFaceMesh3D::TriFace*> getTrianglesForVertex(Vertex* vertex);
 
-   void setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode) 
-   { 
-      this->kdtreeSplitAlg = mode; 
-      bool rebuild = (mode != kdtreeSplitAlg);
-      if(   ( rebuild || !kdTree) 
-         && ( kdtreeSplitAlg == KDTREE_SHAPLIT || kdtreeSplitAlg == KDTREE_SPATIALSPLIT ) )
-      {
-         this->calculateValues();
-      }
-   }
+   void setKdTreeSplitAlgorithm(KDTREE_SPLITAGORITHM mode); 
    KDTREE_SPLITAGORITHM getKdTreeSplitAlgorithm() { return this->kdtreeSplitAlg; }
    Kd::Tree<double>* getKdTree() { return this->kdTree; }
 
@@ -317,11 +309,13 @@ public:
    void read(UbFileInput* in);  
 
    virtual UbTuple<std::string, std::string> writeMesh(std::string filename, WbWriter* writer, bool writeNormals=false, std::vector< std::string >* datanames=NULL, std::vector< std::vector < double > >* nodedata=NULL );
+   void writeMeshPly( const std::string& filename);
 
    /*======================================================================*/
    using GbObject3D::isPointInGbObject3D; //Grund: dadurch muss man hier  isPointInGbObject3D(GbPoint3D*) nicht ausprogrammieren, welche sonst hier "ueberdeckt" waere
 
    bool intersectLine(const double& p1_x1, const double& p1_x2, const double& p1_x3, const double& p2_x1, const double& p2_x2, const double& p2_x3);
+
 
 #ifdef CAB_RCF
    template<class Archive>
@@ -329,8 +323,25 @@ public:
    {
       SF_SERIALIZE_PARENT<GbObject3D>(ar, *this);
       ar & kdtreeSplitAlg;
-      ar & nodes;
-      ar & triangles;
+      ar & transferViaFilename;
+      if(!transferViaFilename)
+      {
+         ar & nodes;
+         ar & triangles;
+      }
+      else
+      {
+         ar & filename;
+         ar & transX1;
+         ar & transX2;
+         ar & transX3;
+         if(ArchiveTools::isReading(ar) ) 
+         {
+            this->readMeshFromSTLFile(filename, true);
+            this->translate(transX1,transX2,transX3);
+         }
+      }
+      
       if(ArchiveTools::isReading(ar)) this->calculateValues();
    }
 #endif //CAB_RCF
@@ -341,6 +352,12 @@ protected:
 
    std::vector<Vertex>*  nodes;
    std::vector<TriFace>* triangles;
+   //for transfer
+   std::string filename;
+   bool transferViaFilename;
+   double transX1;
+   double transX2;
+   double transX3;
 
    double x1min;
    double x1max;
@@ -353,7 +370,6 @@ protected:
    double x3center;
 
    bool   consistent;
-   bool   kdTreeValid;
 
    bool buildVertTriRelationMap;
    std::multimap<Vertex*,TriFace*> relationVertTris;

@@ -1,9 +1,14 @@
 #include "MultipleGridBuilder.h"
+
+#include <sstream>
+
 #include "utilities/math/Math.h"
 #include "../Grid.h"
 #include "../GridFactory.h"
 
 #include <VirtualFluidsBasics/utilities/logger/Logger.h>
+#include "io/STLReaderWriter/STLWriter.h"
+#include "io/GridVTKWriter/GridVTKWriter.h"
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
     LevelGridBuilder(device, d3qxx), gridFactory(gridFactory)
@@ -20,6 +25,23 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
 {
     const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta);
     addGridToList(grid);
+}
+
+void MultipleGridBuilder::addGeometry(Object* solidObject)
+{
+    this->solidObject = solidObject;
+}
+
+void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
+{
+    this->solidObject = solidObject;
+    auto gridShape = solidObject->clone();
+    gridShape->scale(4.0);
+
+    //TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(gridShape);
+    //STLWriter::writeSTL(triangularMesh->triangleVec, "D:/GRIDGENERATION/STL/bridge.stl");
+
+    this->addGrid(gridShape, level);
 }
 
 void MultipleGridBuilder::addGrid(Object* gridShape)
@@ -232,6 +254,8 @@ void MultipleGridBuilder::buildGrids()
     for (auto grid : grids)
         grid->inital();
 
+    grids[grids.size()-1]->mesh(solidObject);
+
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);
 
@@ -251,4 +275,16 @@ void MultipleGridBuilder::emitNoCoarseGridExistsWarning()
 void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
 {
     *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
+}
+
+void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
+{
+    for(uint level = 0; level < grids.size(); level++)
+    {
+        std::stringstream ss;
+        ss << path << level << ".vtk";
+
+        GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
+        GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
+    }
 }

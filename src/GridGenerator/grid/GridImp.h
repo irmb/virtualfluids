@@ -33,7 +33,7 @@ public:
 private:
     HOST void initalNumberOfNodesAndSize();
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
-    HOSTDEVICE bool isValidStartOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidInnerStopper(uint index) const;
     HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
     HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
     HOSTDEVICE bool contains(Cell &cell, char type) const;
@@ -166,12 +166,10 @@ private:
 public:
     HOSTDEVICE BoundingBox getBoundingBoxOnNodes(Triangle &triangle) const;
 
+    HOST void mesh(Object* object) override;
+
     HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
-    HOSTDEVICE void meshReverse(Triangle &triangle);
-    HOSTDEVICE void findInsideNodes();
-    HOSTDEVICE void setInsideNode(const int &index, bool &invalidNodeFound);
-    HOSTDEVICE void setNegativeDirBorder_toFluid(const uint &index);
 
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);

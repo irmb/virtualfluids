@@ -17,7 +17,6 @@ public:
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
     void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
-    void findInnerNodes(SPtr<GridImp> grid, TriangularMesh* triangularMesh) override;
     void findInnerNodes(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
 
@@ -27,7 +26,6 @@ public:
     void freeMemory(SPtr<GridImp> grid) override;
 
 
-    void deleteSolidNodes(SPtr<GridImp> grid) override;
 
     void copyAndFreeGridInterfaceFromGPU(SPtr<GridImp> grid);
     virtual void copyDataFromGPU(SPtr<GridImp> grid);

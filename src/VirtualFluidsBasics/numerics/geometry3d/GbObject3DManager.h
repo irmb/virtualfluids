@@ -17,10 +17,7 @@
 #include <basics/utilities/UbTableModel.h>
 #include <basics/objects/ObObjectManager.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbObject3DManager;
-typedef VFSharedPtr<GbObject3DManager> GbObject3DManagerPtr;
-
+#include <PointerDefinitions.h>
                                                   
 class GbObject3D;   
 class GbObject3DManager;

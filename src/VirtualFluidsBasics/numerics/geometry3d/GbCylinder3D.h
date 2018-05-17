@@ -24,9 +24,9 @@ class GbTriangle3D;
 
 class GbObject3DCreator;
 
-#include <basics/memory/MbSharedPointerDefines.h>
+#include <PointerDefinitions.h>
 class GbCylinder3D;
-typedef VFSharedPtr<GbCylinder3D> GbCylinder3DPtr;
+typedef SPtr<GbCylinder3D> GbCylinder3DPtr;
 
 
 class GbCylinder3D : public GbObject3D , public UbObserver 

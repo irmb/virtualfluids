@@ -26,6 +26,9 @@ public:
     VF_PUBLIC void addGrid(Object* gridShape);
     VF_PUBLIC void addGrid(Object* gridShape, uint levelFine);
 
+    VF_PUBLIC void addGeometry(Object* gridShape);
+    VF_PUBLIC void addGeometry(Object* solidObject, uint level);
+
     VF_PUBLIC uint getNumberOfLevels() const;
     VF_PUBLIC real getDelta(uint level) const;
 
@@ -39,6 +42,8 @@ public:
 
     VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
     VF_PUBLIC void buildGrids();
+
+    VF_PUBLIC void writeGridsToVtk(const std::string& path) const;
 
 private:
     void addGridToList(SPtr<Grid> grid);
@@ -64,7 +69,7 @@ private:
     //std::vector<SPtr<Grid> > grids;
 
     SPtr<GridFactory> gridFactory;
- 
+    Object* solidObject;
 };
 
 #endif

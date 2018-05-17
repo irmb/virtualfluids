@@ -24,23 +24,15 @@ enum class TriangularMeshDiscretizationMethod
 };
 
 
-class TriangularMeshDiscretizationStrategyFactory
-{
-public:
-
-};
-
 class VF_PUBLIC GridFactory
 {
 public:
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, const std::string& d3Qxx = "D3Q27")
     {
-
         if (!gridStrategy)
             throw "GridStrategy has to be set before make Grid!";
 
         Distribution distribution = DistributionHelper::getDistribution(d3Qxx);
-
 
         if(this->grid == "stub")
             return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);

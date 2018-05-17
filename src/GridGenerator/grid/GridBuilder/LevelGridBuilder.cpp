@@ -19,11 +19,9 @@
 #include <GridGenerator/grid/NodeValues.h>
 
 #include <GridGenerator/geometries/Arrow/ArrowImp.h>
-#include <GridGenerator/utilities/Transformator/ArrowTransformator.h>
+#include <GridGenerator/utilities/transformator/ArrowTransformator.h>
 
 #include <utilities/logger/Logger.h>
-
-
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.h"
@@ -44,24 +42,6 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     channelBoundaryConditions[4] = "periodic";
     channelBoundaryConditions[5] = "periodic";
 }
-//
-//void LevelGridBuilder::setGrids(std::vector<SPtr<GridStub> > grids)
-//{
-//    auto gridFactory = SPtr<GridFactory>(new GridFactory());
-//    gridFactory->setGridStrategy(device);
-//
-//    for (int i = int(grids.size()) - 1; i >= 0; i--)
-//    {
-//        const auto grid = gridFactory->makeGrid(grids[i]->startX, grids[i]->startY, grids[i]->startZ, grids[i]->endX, grids[i]->endY, grids[i]->endZ, grids[i]->delta, d3qxx);
-//        this->grids.insert(this->grids.begin(), grid);
-//        if(i==0)
-//            this->grids[0]->setPeriodicity(true, true, true);
-//        else
-//            grid->setPeriodicity(false, false, false);
-//        this->findGridInterface();
-//        this->grids[0]->print();
-//    }
-//}
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
 {
@@ -86,45 +66,9 @@ LevelGridBuilder::~LevelGridBuilder()
         grid->freeMemory();
 }
 
-void LevelGridBuilder::verifyGridNeighbors()
-{
-    //for (const auto grid : grids)
-    //    std::cout << grid->verifyNeighborIndices();
-}
-
-void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, bool periodictyX, bool periodictyY, bool periodictyZ)
-{
-    auto gridFactory = SPtr<GridFactory>(new GridFactory());
-    gridFactory->setGridStrategy(device);
-
-    const auto grid = gridFactory->makeGrid(new Cuboid(minX, minY, minZ, maxX, maxY, maxZ), minX, minY, minZ, maxX, maxY, maxZ, -1.0, d3qxx);
-    grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
-
-    grids.insert(grids.begin(), grid);
-}
-
 SPtr<Grid> LevelGridBuilder::getGrid(uint level)
 {
     return grids[level];
-}
-
-void LevelGridBuilder::generateGrids()
-{
-
-}
-
-
-void LevelGridBuilder::addGrid(real minX, real minY, real minZ, real maxX, real maxY, real maxZ, real delta, Device device, const std::string& distribution, bool periodictyX, bool periodictyY, bool periodictyZ)
-{
-    auto gridFactory = SPtr<GridFactory>(new GridFactory());
-    gridFactory->setGridStrategy(device);
-
-    const auto grid = gridFactory->makeGrid(new Cuboid(minX, minY, minZ, maxX, maxY, maxZ), minX, minY, minZ, maxX, maxY, maxZ, delta, distribution);
-    grids.insert(grids.begin(), grid);
-
-    grid->setPeriodicity(periodictyX, periodictyY, periodictyZ);
-
-    this->removeOverlapNodes();
 }
 
 
@@ -144,26 +88,6 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
     }
 }
 
-void LevelGridBuilder::removeOverlapNodes()
-{
-    const uint numberOfLevels = getNumberOfGridLevels();
-    if(numberOfLevels > 1)
-    {
-        grids[0]->findGridInterface(grids[1]);
-    }   
-}
-
-
-void LevelGridBuilder::meshGeometry(std::string input, int level)
-{
-    checkLevel(level);
-
-    TriangularMesh geometry(input);
-
-    if (geometry.size > 0)
-        this->grids[level]->mesh(geometry);
-
-}
 
 uint LevelGridBuilder::getNumberOfGridLevels()
 {
@@ -178,26 +102,6 @@ uint LevelGridBuilder::getNumberOfNodesCF(int level)
 uint LevelGridBuilder::getNumberOfNodesFC(int level)
 {
     return this->grids[level]->getNumberOfNodesFC();
-}
-
-uint* LevelGridBuilder::getCF_coarse(uint level) const
-{
-    return this->grids[level]->getCF_coarse();
-}
-
-uint* LevelGridBuilder::getCF_fine(uint level) const
-{
-    return this->grids[level]->getCF_fine();
-}
-
-uint* LevelGridBuilder::getFC_coarse(uint level) const
-{
-    return this->grids[level]->getFC_coarse();
-}
-
-uint* LevelGridBuilder::getFC_fine(uint level) const
-{
-    return this->grids[level]->getFC_fine();
 }
 
 void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const
@@ -226,14 +130,6 @@ void LevelGridBuilder::setOffsetCF(real * xOffFc, real * yOffFc, real * zOffFc, 
 }
 
 
-void LevelGridBuilder::deleteSolidNodes()
-{
-    //this->gridWrapper[0]->deleteSolidNodes();
-    //this->gridWrapper[0]->copyDataFromGPU();
-}
-
-
-
 uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
     return grids[level]->getSparseSize();
@@ -254,24 +150,6 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
     return this->channelBoundaryConditions;
 }
 
-void LevelGridBuilder::writeGridToVTK(std::string output, int level)
-{
-   checkLevel(level);
-   GridVTKWriter::writeGridToVTKXML(grids[level], output);
-   GridVTKWriter::writeSparseGridToVTK(grids[level], output);
-}
-
-
-void LevelGridBuilder::writeSimulationFiles(std::string output, BoundingBox &nodesDelete, bool writeFilesBinary, int level)
-{
-    //checkLevel(level);
-    //UnstructuredLevelGridBuilder builder;
-    //builder.buildUnstructuredGrid(this->gridKernels[level]->grid, nodesDelete);
-
-    //std::vector<Node> coords = builder.getCoordsVec();
-    //std::vector<std::vector<std::vector<real> > > qs = builder.getQsValues();
-    //SimulationFileWriter::writeSimulationFiles(output, coords, qs, writeFilesBinary, this->gridKernels[level]->grid, this->transformators[level]);
-}
 
 std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
@@ -464,8 +342,6 @@ void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& start
         //writer->addVectorArrow(arrow);
     }
 }
-
-
 
 Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 {

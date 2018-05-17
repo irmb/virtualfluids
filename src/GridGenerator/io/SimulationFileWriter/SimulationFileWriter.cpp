@@ -210,20 +210,22 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
 void SimulationFileWriter::writeGridInterfaceToFile(SPtr<GridBuilder> builder, uint level)
 {
     const uint numberOfNodesCF = builder->getNumberOfNodesCF(level);
+    const uint numberOfNodesFC = builder->getNumberOfNodesFC(level);
+
+    uint* cf_coarse = new uint[numberOfNodesCF];
+    uint* cf_fine = new uint[numberOfNodesCF];
+    uint* fc_coarse = new uint[numberOfNodesFC];
+    uint* fc_fine = new uint[numberOfNodesFC];
+
+    builder->getGridInterfaceIndices(cf_coarse, cf_fine, fc_coarse, fc_fine, level);
+
     if(numberOfNodesCF > 0)
     {
-        uint* cf_coarse = builder->getCF_coarse(level);
-        uint* cf_fine = builder->getCF_fine(level);
-
         writeGridInterfaceToFile(numberOfNodesCF, scaleCF_coarse_File, cf_coarse, scaleCF_fine_File, cf_fine, offsetVecCF_File);
     }
 
-    const uint numberOfNodesFC = builder->getNumberOfNodesFC(level);
     if (numberOfNodesFC > 0)
     {
-        uint* fc_coarse = builder->getFC_coarse(level);
-        uint* fc_fine = builder->getFC_fine(level);
-
         writeGridInterfaceToFile(numberOfNodesFC, scaleFC_coarse_File, fc_coarse, scaleFC_fine_File, fc_fine, offsetVecFC_File);
     }
 }

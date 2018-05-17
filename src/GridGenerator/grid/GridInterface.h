@@ -33,7 +33,7 @@ public:
 
 private:
     HOSTDEVICE int getCoarseToFineIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
-    HOSTDEVICE bool isNeighborFineFluid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
+    HOSTDEVICE bool isNeighborFineInvalid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid);
 
     HOSTDEVICE int getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
 

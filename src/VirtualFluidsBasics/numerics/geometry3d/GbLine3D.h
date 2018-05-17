@@ -22,9 +22,7 @@
 class GbCuboid3D;
 class GbObject3DCreator;
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbLine3D;
-typedef VFSharedPtr<GbLine3D> GbLine3DPtr;
+#include <PointerDefinitions.h>
 
 
 /*=========================================================================*/

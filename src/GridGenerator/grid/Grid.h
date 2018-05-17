@@ -10,7 +10,7 @@ struct Vertex;
 struct Triangle;
 class GridStrategy;
 class GridInterface;
-
+class Object;
 
 class VF_PUBLIC Grid
 {
@@ -68,6 +68,7 @@ public:
 
     HOST virtual void findGridInterface(SPtr<Grid> grid) = 0;
     HOST virtual void mesh(TriangularMesh& geometry) = 0;
+    HOST virtual void mesh(Object* object) = 0;
 
 
     HOST virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) = 0;

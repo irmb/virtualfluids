@@ -10,9 +10,9 @@ logging::LoggerImp::LoggerImp(std::ostream* stream) : logging::Logger(stream)
 {
     levelString[Level::WARNING] = "[WARNING]";
     levelString[Level::ERROR] = "[ERROR]";
-    levelString[Level::INFO_LOW] = "[LOW]";
-    levelString[Level::INFO_INTERMEDIATE] = "[INTERMEDIATE]";
-    levelString[Level::INFO_HIGH] = "[HIGH]";
+    levelString[Level::INFO_LOW] = "[INFO_LOW]";
+    levelString[Level::INFO_INTERMEDIATE] = "[INFO_INTERMEDIATE]";
+    levelString[Level::INFO_HIGH] = "[INFO_HIGH]";
 }
 
 logging::LoggerImp::~LoggerImp()

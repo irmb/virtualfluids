@@ -15,9 +15,7 @@
    #include <3rdParty/rcf/RcfSerializationIncludes.h>
 #endif //CAB_RCF
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbVector3D;
-typedef VFSharedPtr<GbVector3D> GbVector3DPtr;
+#include <PointerDefinitions.h>
 
 class GbPoint3D;
 

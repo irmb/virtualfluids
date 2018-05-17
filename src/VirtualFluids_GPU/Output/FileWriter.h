@@ -16,10 +16,9 @@ public:
 
 	void VF_PUBLIC writeInit(std::shared_ptr<Parameter> para) override;
 	void VF_PUBLIC writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) override;
-
+    void VF_PUBLIC writeParticle(Parameter* para, unsigned int t);
 private:
 	void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level);
-	void writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string>& fname);
 	
 	FileWriter(const FileWriter& fileWriter) {};
 };

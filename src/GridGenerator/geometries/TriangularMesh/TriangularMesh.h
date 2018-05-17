@@ -25,7 +25,7 @@ class TriangularMesh : public Object
 {
 public:
 
-    VF_PUBLIC static TriangularMesh* make(const std::string& fileName, DiscretizationMethod discretizationMethod);
+    VF_PUBLIC static TriangularMesh* make(const std::string& fileName);
 	VF_PUBLIC TriangularMesh();
     VF_PUBLIC TriangularMesh(const std::string& inputPath);
 	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox &box);
@@ -46,7 +46,6 @@ public:
 
     VF_PUBLIC void findNeighbors();
 
-    HOST VF_PUBLIC DiscretizationMethod getDiscretizationMethod() const;
     HOSTDEVICE VF_PUBLIC GbTriFaceMesh3D* getGbTriFaceMesh3D() const;
 
 private:
@@ -55,8 +54,6 @@ private:
 
     static std::vector<Vertex> getAverrageNormalsPerVertex(std::vector<std::vector<Triangle> > trianglesPerVertex);
     static void eliminateTriangleswithIdenticialNormal(std::vector<Triangle> &triangles);
-
-    DiscretizationMethod discretizationMethod;
 
 public:
     HOSTDEVICE Object* clone() const override;

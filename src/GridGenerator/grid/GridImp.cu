@@ -74,7 +74,6 @@ HOST void GridImp::inital()
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, OUT_OF_GRID);
-        //gridStrategy->findInnerNodes(shared_from_this(), triangularMesh);
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
@@ -88,63 +87,6 @@ HOST void GridImp::inital()
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
 {
     this->field.setFieldEntryToOutOfGrid(index);
-}
-
-
-HOSTDEVICE void GridImp::meshReverse(Triangle &triangle)
-{
-    auto box = this->getBoundingBoxOnNodes(triangle);
-
-    triangle.initalLayerThickness(getDelta());
-
-    for (real x = box.minX; x <= box.maxX; x += delta)
-    {
-        for (real y = box.minY; y <= box.maxY; y += delta)
-        {
-            for (real z = box.minZ; z <= box.maxZ; z += delta)
-            {
-                const uint index = this->transCoordToIndex(x, y, z);
-
-                const Vertex point(x, y, z);
-
-                const char pointValue = triangle.isUnderFace(point);
-
-                if (pointValue == NEGATIVE_DIRECTION_BORDER)
-                    field.setFieldEntry(index, NEGATIVE_DIRECTION_BORDER);
-                else if (pointValue == INSIDE)
-                    field.setFieldEntryToFluid(index);
-            }
-        }
-    }
-}
-
-HOSTDEVICE void GridImp::findInsideNodes()
-{
-    bool foundInsideNode = true;
-    while (foundInsideNode)
-    {
-        foundInsideNode = false;
-        for (uint index = 0; index < this->size; index++)
-            this->setInsideNode(index, foundInsideNode);
-    }
-}
-
-HOSTDEVICE void GridImp::setInsideNode(const int &index, bool &insideNodeFound)
-{
-    if (field.is(index, NEGATIVE_DIRECTION_BORDER))
-        return;
-
-    if (!field.isFluid(index) && this->nodeInNextCellIs(index, FLUID))
-    {
-        field.setFieldEntryToFluid(index);
-        insideNodeFound = true;
-    }
-}
-
-HOSTDEVICE void GridImp::setNegativeDirBorder_toFluid(const uint &index)
-{
-    if (field.is(index, NEGATIVE_DIRECTION_BORDER))
-        field.setFieldEntryToFluid(index);
 }
 
 HOST void GridImp::freeMemory()
@@ -204,8 +146,8 @@ HOSTDEVICE void GridImp::findStopperNode(uint index)
     if(isValidEndOfGridStopper(index))
         this->field.setFieldEntryToStopperEndOfGrid(index);
 
-    if (isValidStartOfGridStopper(index))
-        this->field.setFieldEntryToStopperEndOfGrid(index);
+    if (isValidInnerStopper(index))
+        this->field.setFieldEntryToStopperOverlapGrid(index);
 }
 
 HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
@@ -254,15 +196,16 @@ HOSTDEVICE bool GridImp::isNode(uint index, char type) const
     return field.is(index, type);
 }
 
-
-HOSTDEVICE bool GridImp::isValidStartOfGridStopper(uint index) const
-{
-    return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF));
-}
-
 HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 {
-    return this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+    return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+        || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
+HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
+{
+    return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+        || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
 
@@ -424,7 +367,7 @@ HOST void GridImp::updateSparseIndices()
     int newIndex = 0;
     for (uint index = 0; index < size; index++)
     {
-        if (this->field.isInvalid(index) || this->field.isOutOfGrid(index))
+        if (this->field.isInvalid(index) || this->field.isOutOfGrid(index) || this->field.isSolid(index))
         {
             sparseIndices[index] = -1;
             removedNodes++;
@@ -554,6 +497,18 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
+HOST void GridImp::mesh(Object* object)
+{
+    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    if (triangularMesh)
+        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, SOLID, FLUID);
+    else
+        gridStrategy->findInnerNodes(shared_from_this());
+
+    gridStrategy->findStopperNodes(shared_from_this());
+}
+
+
 HOST void GridImp::mesh(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();
@@ -627,26 +582,6 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
     }
 }
 
-
-// --------------------------------------------------------- //
-//                  find inner nodes                         //
-// --------------------------------------------------------- //
-//HOSTDEVICE void GridImp::setInvalidNode(const int &index, bool &insideNodeFound)
-//{
-//    if (field.isNegativeDirectionBorder(index))
-//        return;
-//
-//    if (!field.isInside(index) && this->nodeInNextCellIs(index, INSIDE))
-//    {
-//        field.setFieldEntryToInvalid(index);
-//        insideNodeFound = true;
-//    }
-//}
-
-//HOSTDEVICE bool GridImp::isNeighborInside(const int &index) const
-//{
-//    return (field.isInside(neighborIndexX[index]) || field.isInside(neighborIndexY[index]) || field.isInside(neighborIndexZ[index]));
-//}
 
 // --------------------------------------------------------- //
 //                        Getter                             //

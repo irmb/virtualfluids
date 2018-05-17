@@ -2,19 +2,19 @@
 
 #include <GridGenerator/io/STLReaderWriter/STLReader.h>
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
-#include <GridGenerator/utilities/triangleNeighborFinder/TriangleNeighborFinder.h>
+#include "triangleNeighborFinder/TriangleNeighborFinder.h"
 
 #include <utilities/logger/Logger.h>
 
 #include "Timer/Timer.h"
 
 #include "numerics/geometry3d/GbTriFaceMesh3D.h"
+#include "io/STLReaderWriter/STLWriter.h"
 
 
-TriangularMesh* TriangularMesh::make(const std::string& fileName, DiscretizationMethod discretizationMethod)
+TriangularMesh* TriangularMesh::make(const std::string& fileName)
 {
     TriangularMesh* triangularMesh = new TriangularMesh(fileName);
-    triangularMesh->discretizationMethod = discretizationMethod;
     return triangularMesh;
 }
 
@@ -109,11 +109,6 @@ HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 }
 
 
-HOST DiscretizationMethod TriangularMesh::getDiscretizationMethod() const
-{
-    return this->discretizationMethod;
-}
-
 HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
 {
     std::vector<GbTriFaceMesh3D::Vertex> *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
@@ -207,7 +202,6 @@ void TriangularMesh::scale(double offset)
         triangles[triangleID].set(vertexTriangleID, lineOrigin + averrageNormal * offset);
     }
 
-    //STLWriter::writeSTL(triangles, "D:/GRIDGENERATION/STL/FICKEN_ASCII.stl");
     this->setTriangles(triangles);
 }
 

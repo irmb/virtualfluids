@@ -4,8 +4,8 @@
 #include "cudaDefines.h"
 
 
-#include <GridGenerator/utilities/cuda/CudaErrorCheck.cu>
-#include <GridGenerator/utilities/launchparameter/LaunchParameter.cuh>
+#include "CudaErrorCheck.cu"
+#include "LaunchParameter.cuh"
 
 template<typename Functor, typename... TArgs>
 HOST float runKernel(Functor kernel, const LaunchParameter& para, TArgs... args)

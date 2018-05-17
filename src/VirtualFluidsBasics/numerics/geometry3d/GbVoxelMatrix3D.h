@@ -18,10 +18,7 @@
 #include <basics/utilities/UbObserver.h>
 #include <basics/container/CbArray3D.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbVoxelMatrix3D;
-typedef VFSharedPtr<GbVoxelMatrix3D> GbVoxelMatrix3DPtr;
-
+#include <PointerDefinitions.h>
 
 class GbLine3D;
 class GbTriangle3D;

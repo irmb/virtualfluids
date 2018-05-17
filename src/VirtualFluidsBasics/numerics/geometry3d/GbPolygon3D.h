@@ -16,10 +16,7 @@
 #include <numerics/geometry3d/GbTriangle3D.h>
 #include <numerics/geometry3d/GbSystem3D.h>
 
-#include <basics/memory/MbSharedPointerDefines.h>
-class GbPolygon3D;
-typedef VFSharedPtr<GbPolygon3D> GbPolygon3DPtr;
-
+#include <PointerDefinitions.h>
 
 class GbObject3DCreator;
 
