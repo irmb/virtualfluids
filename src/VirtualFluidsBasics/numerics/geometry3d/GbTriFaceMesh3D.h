@@ -19,7 +19,6 @@
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbMath.h>
 #include <basics/utilities/Vector3D.h>
-#include <basics/writer/WbWriter.h>
 
 #include <basics/memory/MbSmartPtr.h>
 
@@ -34,6 +33,7 @@ namespace Kd
    template< typename T > class RayIntersectionHandler;
 }
 
+class WbWriter;
 
 /*=========================================================================*/
 /* GbTriFaceMesh3D                                                                  */

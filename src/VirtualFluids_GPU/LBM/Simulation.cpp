@@ -322,8 +322,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //Print Init
    //////////////////////////////////////////////////////////////////////////
    output << "Print files Init...";
-   //dataWriter->writeInit(para);
-   writeInit(para);
+   dataWriter->writeInit(para);
    if (para->getCalcParticle()) 
        copyAndPrintParticles(para.get(), 0, true);
    output << "done.\n";
@@ -2526,8 +2525,7 @@ void Simulation::run()
 				/////////////////////////////////
 			}
 			////////////////////////////////////////////////////////////////////////
-			//dataWriter->writeTimestep(para, t);
-			writeTimestep(para.get(), t);
+			dataWriter->writeTimestep(para, t);
 			////////////////////////////////////////////////////////////////////////
 			//printDragLift(para, t);
 			////////////////////////////////////////////////////////////////////////

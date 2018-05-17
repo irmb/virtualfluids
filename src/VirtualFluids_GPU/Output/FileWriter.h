@@ -18,7 +18,6 @@ public:
 	void VF_PUBLIC writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep) override;
     void VF_PUBLIC writeParticle(Parameter* para, unsigned int t);
 private:
-	void writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep, int level);
 	
 	FileWriter(const FileWriter& fileWriter) {};
 };

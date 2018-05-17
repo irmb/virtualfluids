@@ -8,6 +8,7 @@
 #include <basics/utilities/UbRandom.h>
 #include <basics/utilities/UbTiming.h>
 #include <basics/utilities/UbLogger.h>
+#include <basics/writer/WbWriter.h>
 
 #include <numerics/geometry3d/KdTree/KdTree.h>
 #include <numerics/geometry3d/KdTree/splitalgorithms/KdSpatiallMedianSplit.h>
