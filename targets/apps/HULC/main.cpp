@@ -248,10 +248,9 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
-    //auto gridFactory = SPtr<GridFactory>(new GridFactory());
-    //gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
-    //gridFactory->setGrid("grid");
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
+    auto gridFactory = GridFactory::make();
+    gridFactory->setGridStrategy(Device::CPU);
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
