@@ -174,9 +174,9 @@ void ConfigFileReader::makeLogFileInformation()
 	logInfo.push_back(BasicSimulationInfo::getNewInstance(numberOfTimeSteps, basisTimeStepLength, startStepCalculation, viscosity));
 
 	if (testShouldRun(tgv))
-		logInfo.push_back(TaylorGreenInformation::getNewInstance(u0TGV, amplitudeTGV));
+		logInfo.push_back(TaylorGreenInformation::getNewInstance(u0TGV, amplitudeTGV, tgv, l));
 	if (testShouldRun(sw))
-		logInfo.push_back(ShearWaveInformation::getNewInstance(u0SW, v0SW));
+		logInfo.push_back(ShearWaveInformation::getNewInstance(u0SW, v0SW, sw, l));
 
 	logInfo.push_back(SimulationTimeInformation::getNewInstance(simInfo, writeFiles));
 
