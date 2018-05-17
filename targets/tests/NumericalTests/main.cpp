@@ -3,16 +3,16 @@
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 
-#include "Utilities/Reader/Reader.h"
+#include "Utilities/ConfigFileReader/ConfigFileReader.h"
 #include "Utilities/TestCondition/TestCondition.h"
 #include "Utilities/TestConditionFactory/TestConditionFactoryImp.h"
 #include "Utilities/Calculator/Calculator.h"
 #include "Utilities/TestResults/TestResults.h"
 #include "Utilities/TestInformation/TestInformation.h"
 
-static void testHULC(const std::string &configFile)
+static void startNumericalTests(const std::string &configFile)
 {
-	std::shared_ptr< Reader> configReader = Reader::getNewInstance(configFile);
+	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
 
 	std::shared_ptr<TestInformation> testInfo = configReader->getTestInformation();
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	MPI_Init(&argc, &argv);
 
 	if (argc > 1)
-		testHULC(argv[1]);
+		startNumericalTests(argv[1]);
 
     MPI_Finalize();
 

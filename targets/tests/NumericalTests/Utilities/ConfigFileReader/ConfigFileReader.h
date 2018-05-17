@@ -1,5 +1,5 @@
-#ifndef READER_H
-#define READER_H
+#ifndef CONFIG_FILE_READER_H
+#define CONFIG_FILE_READER_H
 
 #include "LBM\LB.h"
 
@@ -16,17 +16,17 @@ class PhiAndNuTest;
 class SimulationInfo;
 class LogFileInformation;
 
-class Reader
+class ConfigFileReader
 {
 public:
-	static std::shared_ptr< Reader> getNewInstance(const std::string aFilePath);
+	static std::shared_ptr< ConfigFileReader> getNewInstance(const std::string aFilePath);
 
 	std::shared_ptr <TestInformation> getTestInformation();
 	std::vector <std::shared_ptr< TestParameter> > getTestParameter();
 
 protected:
-	Reader() {};
-	Reader(const std::string aFilePath);
+	ConfigFileReader() {};
+	ConfigFileReader(const std::string aFilePath);
 	
 private:
 	void makeTestInformation();

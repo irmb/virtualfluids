@@ -1,4 +1,4 @@
-#include "reader.h"
+#include "ConfigFileReader.h"
 
 #include <fstream>
 #include <iostream>
@@ -23,7 +23,7 @@
 #include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
 #include "Utilities/LogFileInformation/SimulationTimeInformation/SimulationTimeInformation.h"
 
-bool Reader::testShouldRun(std::vector<bool> test)
+bool ConfigFileReader::testShouldRun(std::vector<bool> test)
 {
 	for (int i = 0; i < test.size(); i++) {
 		if (test.at(i))
@@ -32,22 +32,22 @@ bool Reader::testShouldRun(std::vector<bool> test)
 	return false;
 }
 
-std::shared_ptr<Reader> Reader::getNewInstance(const std::string aFilePath)
+std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
 {
-	return std::shared_ptr<Reader>(new Reader(aFilePath));
+	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader(aFilePath));
 }
 
-std::shared_ptr<TestInformation> Reader::getTestInformation()
+std::shared_ptr<TestInformation> ConfigFileReader::getTestInformation()
 {
 	return testInfo;
 }
 
-std::vector<std::shared_ptr<TestParameter>> Reader::getTestParameter()
+std::vector<std::shared_ptr<TestParameter>> ConfigFileReader::getTestParameter()
 {
 	return testParameter;
 }
 
-Reader::Reader(const std::string aFilePath)
+ConfigFileReader::ConfigFileReader(const std::string aFilePath)
 {
 	std::ifstream stream;
 	stream.open(aFilePath.c_str(), std::ios::in);
@@ -112,7 +112,7 @@ Reader::Reader(const std::string aFilePath)
 	makeTestInformation();
 }
 
-void Reader::makeTestInformation()
+void ConfigFileReader::makeTestInformation()
 {
 	testInfo = TestInformationImp::getNewInstance();
 
@@ -129,7 +129,7 @@ void Reader::makeTestInformation()
 	testInfo->setTestResults(testResults);
 }
 
-void Reader::makeTestParameter()
+void ConfigFileReader::makeTestParameter()
 {
 	if (testShouldRun(tgv)) {
 		std::shared_ptr< PhiAndNuTest> tgvTestResults = PhiAndNuTest::getNewInstance("TaylorGreenVortex", minOrderOfAccuracy, testOutput);
@@ -153,7 +153,7 @@ void Reader::makeTestParameter()
 	}
 }
 
-void Reader::makeSimulationInfo()
+void ConfigFileReader::makeSimulationInfo()
 {
 	for (int i = 0; i < tgv.size(); i++) {
 		if (tgv.at(i)) {
@@ -167,7 +167,7 @@ void Reader::makeSimulationInfo()
 	}
 }
 
-void Reader::makeLogFileInformation()
+void ConfigFileReader::makeLogFileInformation()
 {
 	
 	logInfo.push_back(LogFileInformationOutput::getNewInstance(devices));
@@ -185,7 +185,7 @@ void Reader::makeLogFileInformation()
 	}
 }
 
-void Reader::makeTestResults()
+void ConfigFileReader::makeTestResults()
 {
 	for (int i = 0; i < tests.size(); i++) {
 		testResults.push_back(tests.at(i));
