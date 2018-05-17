@@ -1,6 +1,6 @@
 #include "TaylorGreenTestParameter.h"
 
-#include "Simulations/TaylorGreenVortex/InitialConditions/InitialConditionTaylorGreenVortex.h"
+#include "Simulation/TaylorGreenVortex/InitialConditions/InitialConditionTaylorGreenVortex.h"
 #include "Utilities/Calculator/FFTCalculator/VxFFTCalculator/VxFFTCalculator.h"
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Utilities/SimulationResults/SimulationResults.h"

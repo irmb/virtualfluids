@@ -10,10 +10,10 @@
 #include "Utilities/TestCout/TestCoutImp.h"
 #include "Utilities/SimulationInfo/SimulationInfoImp.h"
 
-#include "Simulations/TaylorGreenVortex/TestParameter/TaylorGreenTestParameter.h"
-#include "Simulations/ShearWave/TestParameter/ShearWaveTestParameter.h"
-#include "Simulations/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
-#include "Simulations/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
+#include "Simulation/TaylorGreenVortex/TestParameter/TaylorGreenTestParameter.h"
+#include "Simulation/ShearWave/TestParameter/ShearWaveTestParameter.h"
+#include "Simulation/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
+#include "Simulation/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
 
 
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"

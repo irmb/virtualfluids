@@ -1,6 +1,6 @@
 #include "ShearWaveTestParameter.h"
 
-#include "Simulations/ShearWave/InitialConditions/InitialConditionShearWave.h"
+#include "Simulation/ShearWave/InitialConditions/InitialConditionShearWave.h"
 #include "Utilities/Calculator/FFTCalculator/VzFFTCalculator/VzFFTCalculator.h"
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Utilities/SimulationResults/SimulationResults.h"
