@@ -35,14 +35,14 @@ v0_SW=0.1
 TaylorGreenVortex32=true
 TaylorGreenVortex64=true
 TaylorGreenVortex128=true
-TaylorGreenVortex256=false
-TaylorGreenVortex512=false
+TaylorGreenVortex256=true
+TaylorGreenVortex512=true
 
 ShearWave32=true
 ShearWave64=true
 ShearWave128=true
-ShearWave256=false
-ShearWave512=false
+ShearWave256=true
+ShearWave512=true
 
 ##################################################
 #				Grid Information				 #
