@@ -19,11 +19,9 @@
 #include <GridGenerator/grid/NodeValues.h>
 
 #include <GridGenerator/geometries/Arrow/ArrowImp.h>
-#include <GridGenerator/utilities/Transformator/ArrowTransformator.h>
+#include <GridGenerator/utilities/transformator/ArrowTransformator.h>
 
 #include <utilities/logger/Logger.h>
-
-
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.h"
@@ -152,24 +150,6 @@ std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
     return this->channelBoundaryConditions;
 }
 
-void LevelGridBuilder::writeGridToVTK(std::string output, int level)
-{
-   checkLevel(level);
-   GridVTKWriter::writeGridToVTKXML(grids[level], output);
-   GridVTKWriter::writeSparseGridToVTK(grids[level], output);
-}
-
-
-void LevelGridBuilder::writeSimulationFiles(std::string output, BoundingBox &nodesDelete, bool writeFilesBinary, int level)
-{
-    //checkLevel(level);
-    //UnstructuredLevelGridBuilder builder;
-    //builder.buildUnstructuredGrid(this->gridKernels[level]->grid, nodesDelete);
-
-    //std::vector<Node> coords = builder.getCoordsVec();
-    //std::vector<std::vector<std::vector<real> > > qs = builder.getQsValues();
-    //SimulationFileWriter::writeSimulationFiles(output, coords, qs, writeFilesBinary, this->gridKernels[level]->grid, this->transformators[level]);
-}
 
 std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
@@ -362,8 +342,6 @@ void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& start
         //writer->addVectorArrow(arrow);
     }
 }
-
-
 
 Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 {
