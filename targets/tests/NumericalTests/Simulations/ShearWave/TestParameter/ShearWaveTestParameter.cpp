@@ -3,7 +3,7 @@
 #include "Simulations/ShearWave/InitialConditions/InitialConditionShearWave.h"
 #include "Utilities/Calculator/FFTCalculator/VzFFTCalculator/VzFFTCalculator.h"
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
-#include "Utilities/Results/Results.h"
+#include "Utilities/SimulationResults/SimulationResults.h"
 
 #include <sstream>
 

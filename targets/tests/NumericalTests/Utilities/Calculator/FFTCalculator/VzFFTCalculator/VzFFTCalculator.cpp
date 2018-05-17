@@ -1,6 +1,6 @@
 #include "VzFFTCalculator.h"
 
-#include "Utilities\Results\Results.h"
+#include "Utilities/SimulationResults/SimulationResults.h"
 
 
 std::shared_ptr<VzFFTCalculator> VzFFTCalculator::getNewInstance(double viscosity, std::shared_ptr<PhiAndNuTest> testResults)

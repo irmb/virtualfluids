@@ -3,12 +3,12 @@
 
 #include <memory>
 
-class Results;
+class SimulationResults;
 class TestResults;
 
 class Calculator {
 public:
 	virtual void calcAndCopyToTestResults() = 0;
-	virtual void setSimulationResults(std::shared_ptr<Results> simResults) = 0;
+	virtual void setSimulationResults(std::shared_ptr<SimulationResults> simResults) = 0;
 };
 #endif

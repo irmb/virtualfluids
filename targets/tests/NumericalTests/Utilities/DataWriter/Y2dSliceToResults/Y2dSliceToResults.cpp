@@ -1,11 +1,11 @@
 #include "Y2dSliceToResults.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "../../Results/Results.h"
+#include "Utilities/SimulationResults/SimulationResults.h"
 #include "Utilities/TestCondition/TestCondition.h"
 
 
-Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<Results> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter): ToVectorWriter(ySliceForCalculation, startTimeY2dSliceToVector, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter)
+Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter): ToVectorWriter(ySliceForCalculation, startTimeY2dSliceToVector, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter)
 {
 	this->simResults = simResults;
 	counterTimeSteps = 0;

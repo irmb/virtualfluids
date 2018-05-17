@@ -4,7 +4,7 @@
 #include "VirtualFluids_GPU\Output\FileWriter.h"
 
 #include "Utilities\GridReaderforTesting\GridReaderforTesting.h"
-#include "Utilities\Results\Results.h"
+#include "Utilities/SimulationResults/SimulationResults.h"
 #include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
 #include "Utilities\InitialCondition\InitialCondition.h"
 #include "Utilities\Calculator\Calculator.h"
@@ -155,6 +155,6 @@ void TestConditionImp::initDataWriter(unsigned int ySliceForCalculation, unsigne
 
 void TestConditionImp::initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
 {
-	simResults = Results::getNewInstance(lx, lz, timeStepLength);
+	simResults = SimulationResults::getNewInstance(lx, lz, timeStepLength);
 	calculator->setSimulationResults(simResults);
 }

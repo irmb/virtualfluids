@@ -4,7 +4,7 @@
 #include "VirtualFluids_GPU/Output/DataWriter.h"
 
 class Parameter;
-class Results;
+class SimulationResults;
 class FileWriter;
 
 class ToVectorWriter : public DataWriter

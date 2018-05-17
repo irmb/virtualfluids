@@ -8,7 +8,6 @@
 class InitialCondition;
 class Calculator;
 class TestResults;
-class Results;
 
 class TestParameter
 {

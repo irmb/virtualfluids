@@ -1,9 +1,11 @@
-#ifndef TESTPARAMETERIMP_H
-#define TESTPARAMETERIMP_H
+#ifndef TEST_PARAMETER_IMP_H
+#define TEST_PARAMETER_IMP_H
 
 #include "TestParameter.h"
 
 #include "LBM\LB.h"
+
+class SimulationResults;
 
 class TestParameterImp: public TestParameter
 {
@@ -55,8 +57,8 @@ protected:
 
 	std::shared_ptr<InitialCondition> initialCondition;
 	std::shared_ptr<Calculator> calculator;
-	std::shared_ptr<Results> simResults;
+	std::shared_ptr<SimulationResults> simResults;
 	std::shared_ptr<TestResults> testResults;
 };
 
-#endif // !TESTPARAMETERIMP_H
+#endif

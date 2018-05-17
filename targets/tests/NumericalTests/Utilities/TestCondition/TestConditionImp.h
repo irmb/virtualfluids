@@ -12,7 +12,7 @@ class ToVectorWriter;
 class TestParameter;
 class Calculator;
 class TestResults;
-class Results;
+class SimulationResults;
 
 class TestConditionImp: public TestCondition
 {
@@ -41,11 +41,10 @@ private:
 	std::shared_ptr<Parameter> para;
 	std::shared_ptr<InitialCondition> initialCondition;
 	std::shared_ptr<GridProvider> grid;
-	std::shared_ptr<Results> simResults;
+	std::shared_ptr<SimulationResults> simResults;
 	std::shared_ptr<ToVectorWriter> writeToVector;
 	std::shared_ptr<FileWriter> fileWriter;
 	std::shared_ptr<Calculator> calculator;
-	std::shared_ptr<TestResults> testResults;
-	
+	std::shared_ptr<TestResults> testResults;	
 };
 #endif

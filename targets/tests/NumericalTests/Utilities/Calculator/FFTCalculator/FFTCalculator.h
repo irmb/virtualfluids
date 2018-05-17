@@ -7,7 +7,7 @@
 #include <vector>
 #include <fftw3.h>
 
-class Results;
+class SimulationResults;
 class EvaluationParameter;
 class TestResults;
 class PhiAndNuTest;
@@ -16,13 +16,13 @@ class FFTCalculator : public Calculator
 {
 public:
 	void calcAndCopyToTestResults();
-	void setSimulationResults(std::shared_ptr<Results> simResults);
+	void setSimulationResults(std::shared_ptr<SimulationResults> simResults);
 
 protected:
 	FFTCalculator(double viscosity, std::shared_ptr<PhiAndNuTest> testResults);
 	virtual void setVectorToCalc() = 0;
 
-	std::shared_ptr<Results> simResults;
+	std::shared_ptr<SimulationResults> simResults;
 	std::vector<std::vector<double>> data;
 
 private:

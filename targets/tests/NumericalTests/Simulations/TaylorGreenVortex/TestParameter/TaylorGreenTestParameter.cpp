@@ -3,7 +3,7 @@
 #include "Simulations/TaylorGreenVortex/InitialConditions/InitialConditionTaylorGreenVortex.h"
 #include "Utilities/Calculator/FFTCalculator/VxFFTCalculator/VxFFTCalculator.h"
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
-#include "Utilities/Results/Results.h"
+#include "Utilities/SimulationResults/SimulationResults.h"
 
 #include <sstream>
 
@@ -25,6 +25,6 @@ TaylorGreenTestParameter::TaylorGreenTestParameter(real u0, real amplitude, real
 	this->filePath = oss.str();
 
 	initialCondition = std::shared_ptr<InitialConditionTaylorGreen>(new InitialConditionTaylorGreen((double)lx, (double)lz, (double)l0, u0, amplitude, rho0));
-	simResults = Results::getNewInstance(lx, lz, timeStepLength);
+	simResults = SimulationResults::getNewInstance(lx, lz, timeStepLength);
 	calculator = VxFFTCalculator::getNewInstance(viscosity, testResults);
 }

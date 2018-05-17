@@ -1,6 +1,6 @@
 #include "FFTCalculator.h"
 
-#include "Utilities/Results/Results.h"
+#include "Utilities/SimulationResults/SimulationResults.h"
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 
 #define _USE_MATH_DEFINES
@@ -18,7 +18,7 @@ void FFTCalculator::calcAndCopyToTestResults()
 	testResults->add(nudiff, phidiff, lx);
 }
 
-void FFTCalculator::setSimulationResults(std::shared_ptr<Results> simResults)
+void FFTCalculator::setSimulationResults(std::shared_ptr<SimulationResults> simResults)
 {
 	this->simResults = simResults;
 }

@@ -1,13 +1,13 @@
-#ifndef RESULTS_H
-#define RESULTS_H
+#ifndef SIMULATION_RESULTS_H
+#define SIMULATION_RESULTS_H
 
 #include <vector>
 #include <memory>
 
-class Results
+class SimulationResults
 {
 public:
-	static std::shared_ptr<Results> getNewInstance(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
+	static std::shared_ptr<SimulationResults> getNewInstance(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
 	void addTimeStep(unsigned int timeStep, unsigned int time, std::vector<double> x, std::vector<double> z, std::vector<double> vx, std::vector<double> vz, std::vector<double> press, std::vector<double> rho);
 	int getNumberOfTimeSteps();
 	std::vector<std::vector<double>> getVx();
@@ -17,7 +17,7 @@ public:
 	int getTimeStepLength();
 
 private:
-	Results(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
+	SimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
 
 	unsigned int numberOfTimeSteps;
 	unsigned int timeStepLength;
