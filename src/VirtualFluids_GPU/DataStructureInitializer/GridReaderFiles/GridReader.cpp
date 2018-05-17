@@ -286,7 +286,7 @@ void GridReader::allocArrays_BoundaryValues()
 				//para->getParH(i)->Qinflow.Vx[m] = para->getParH(i)->Qinflow.Vx[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
-				para->getParH(i)->Qinflow.Vx[m] = para->getVelocity();//0.035;
+				para->getParH(i)->Qinflow.Vx[m] = 0.0;//para->getVelocity();//0.035;
 				para->getParH(i)->Qinflow.Vy[m] = 0.0;//para->getVelocity();//0.0;
 				para->getParH(i)->Qinflow.Vz[m] = 0.0;
 				//if (para->getParH(i)->Qinflow.Vz[m] > 0)
@@ -745,6 +745,23 @@ void GridReader::allocArrays_BoundaryQs()
 	this->makeReader(BC_Qs, para);
 
 	int level = BC_Qs[0]->getLevel();
+	BoundaryQs *obj_geomQ = new BoundaryQs(para->getgeomBoundaryBcQs(), para, "geo", false);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Normals Geo
+	BoundaryQs *obj_geomNormalX = new BoundaryQs(para->getgeomBoundaryNormalX(), para, "geoNormal", false);
+	BoundaryQs *obj_geomNormalY = new BoundaryQs(para->getgeomBoundaryNormalY(), para, "geoNormal", false);
+	BoundaryQs *obj_geomNormalZ = new BoundaryQs(para->getgeomBoundaryNormalZ(), para, "geoNormal", false);
+	//////////////////////////////////////////////////////////////////////////
+	//Normals Inflow
+	BoundaryQs *obj_inflowNormalX = new BoundaryQs(para->getInflowBoundaryNormalX(), para, "inflowNormal", false);
+	BoundaryQs *obj_inflowNormalY = new BoundaryQs(para->getInflowBoundaryNormalY(), para, "inflowNormal", false);
+	BoundaryQs *obj_inflowNormalZ = new BoundaryQs(para->getInflowBoundaryNormalZ(), para, "inflowNormal", false);
+	//////////////////////////////////////////////////////////////////////////
+	//Normals Outflow
+	BoundaryQs *obj_outflowNormalX = new BoundaryQs(para->getOutflowBoundaryNormalX(), para, "outflowNormal", false);
+	BoundaryQs *obj_outflowNormalY = new BoundaryQs(para->getOutflowBoundaryNormalY(), para, "outflowNormal", false);
+	BoundaryQs *obj_outflowNormalZ = new BoundaryQs(para->getOutflowBoundaryNormalZ(), para, "outflowNormal", false);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------Vektoren Deklarationen-----------
 	vector<vector<vector<real> > > noslipQs;
@@ -998,75 +1015,553 @@ void GridReader::allocArrays_BoundaryQs()
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//if (para->getIsInflowNormal()) {
-			//	int temp = obj_inflowNormalX->getSize(i);
-			//	if (temp > 0)
-			//	{
-			//		cout << "Groesse der Daten InflowBoundaryNormalsX, Level " << i << " : " << temp << endl;
-			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//		para->getParH(i)->QInflowNormalX.kQ = temp;
-			//		para->getParH(i)->QInflowNormalY.kQ = temp;
-			//		para->getParH(i)->QInflowNormalZ.kQ = temp;
-			//		para->getParD(i)->QInflowNormalX.kQ = para->getParH(i)->QInflowNormalX.kQ;
-			//		para->getParD(i)->QInflowNormalY.kQ = para->getParH(i)->QInflowNormalY.kQ;
-			//		para->getParD(i)->QInflowNormalZ.kQ = para->getParH(i)->QInflowNormalZ.kQ;
-			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//		para->cudaAllocInflowNormals(i);
-			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			if (para->getIsInflowNormal()) {
+				int temp = obj_inflowNormalX->getSize(i);
+				if (temp > 0)
+				{
+					cout << "Groesse der Daten InflowBoundaryNormalsX, Level " << i << " : " << temp << endl;
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->QInflowNormalX.kQ = temp;
+					para->getParH(i)->QInflowNormalY.kQ = temp;
+					para->getParH(i)->QInflowNormalZ.kQ = temp;
+					para->getParD(i)->QInflowNormalX.kQ = para->getParH(i)->QInflowNormalX.kQ;
+					para->getParD(i)->QInflowNormalY.kQ = para->getParH(i)->QInflowNormalY.kQ;
+					para->getParD(i)->QInflowNormalZ.kQ = para->getParH(i)->QInflowNormalZ.kQ;
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaAllocInflowNormals(i);
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			//		//////////////////////////////////////////////////////////////////////////
-			//		//Indexarray
-			//		obj_inflowNormalX->initIndex(para->getParH(i)->QInflowNormalX.k, i);
-			//		obj_inflowNormalY->initIndex(para->getParH(i)->QInflowNormalY.k, i);
-			//		obj_inflowNormalZ->initIndex(para->getParH(i)->QInflowNormalZ.k, i);
-			//		//////////////////////////////////////////////////////////////////
+					//////////////////////////////////////////////////////////////////////////
+					//Indexarray
+					obj_inflowNormalX->setIndex(para->getParH(i)->QInflowNormalX.k, i);
+					obj_inflowNormalY->setIndex(para->getParH(i)->QInflowNormalY.k, i);
+					obj_inflowNormalZ->setIndex(para->getParH(i)->QInflowNormalZ.k, i);
+					//////////////////////////////////////////////////////////////////
 
-			//		//////////////////////////////////////////////////////////////////////////
-			//		//preprocessing X
-			//		real* QQX = para->getParH(i)->QInflowNormalX.q27[0];
-			//		unsigned int sizeQX = para->getParH(i)->QInflowNormalX.kQ;
-			//		QforBoundaryConditions QX;
-			//		//////////////////////////////////////////////////////////////////
-			//		for (int j = 0; j < 27; j++) {
-			//			QX.q27[j] = &QQX[j * sizeQX];
-			//			obj_inflowNormalX->initArray(QX.q27[j], i, j);
-			//		}//ende der for schleife
-			//		 //////////////////////////////////////////////////////////////////
+					//////////////////////////////////////////////////////////////////////////
+					//preprocessing X
+					real* QQX = para->getParH(i)->QInflowNormalX.q27[0];
+					unsigned int sizeQX = para->getParH(i)->QInflowNormalX.kQ;
+					QforBoundaryConditions QX;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QX.q27[j] = &QQX[j * sizeQX];
+						obj_inflowNormalX->setValues(QX.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
 
-			//		 //////////////////////////////////////////////////////////////////////////
-			//		 //preprocessing Y
-			//		real* QQY = para->getParH(i)->QInflowNormalY.q27[0];
-			//		unsigned int sizeQY = para->getParH(i)->QInflowNormalY.kQ;
-			//		QforBoundaryConditions QY;
-			//		//////////////////////////////////////////////////////////////////
-			//		for (int j = 0; j < 27; j++) {
-			//			QY.q27[j] = &QQY[j * sizeQY];
-			//			obj_inflowNormalY->initArray(QY.q27[j], i, j);
-			//		}//ende der for schleife
-			//		 //////////////////////////////////////////////////////////////////
+					 //////////////////////////////////////////////////////////////////////////
+					 //preprocessing Y
+					real* QQY = para->getParH(i)->QInflowNormalY.q27[0];
+					unsigned int sizeQY = para->getParH(i)->QInflowNormalY.kQ;
+					QforBoundaryConditions QY;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QY.q27[j] = &QQY[j * sizeQY];
+						obj_inflowNormalY->setValues(QY.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
 
-			//		 //////////////////////////////////////////////////////////////////////////
-			//		 //preprocessing Z
-			//		real* QQZ = para->getParH(i)->QInflowNormalZ.q27[0];
-			//		unsigned int sizeQZ = para->getParH(i)->QInflowNormalZ.kQ;
-			//		QforBoundaryConditions QZ;
-			//		//////////////////////////////////////////////////////////////////
-			//		for (int j = 0; j < 27; j++) {
-			//			QZ.q27[j] = &QQZ[j * sizeQZ];
-			//			obj_inflowNormalZ->initArray(QZ.q27[j], i, j);
-			//		}//ende der for schleife
-			//		 //////////////////////////////////////////////////////////////////
+					 //////////////////////////////////////////////////////////////////////////
+					 //preprocessing Z
+					real* QQZ = para->getParH(i)->QInflowNormalZ.q27[0];
+					unsigned int sizeQZ = para->getParH(i)->QInflowNormalZ.kQ;
+					QforBoundaryConditions QZ;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QZ.q27[j] = &QQZ[j * sizeQZ];
+						obj_inflowNormalZ->setValues(QZ.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
 
-			//		 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//		para->cudaCopyInflowNormals(i);
-			//		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//	}
-			//}
+					 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaCopyInflowNormals(i);
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				}
+			}
 		}
 	}//ende oberste for schleife
 
 
+	 //--------------------------------------------------------------------------//
+	for (int i = 0; i <= level; i++) {
+		int temp = (int)outflowIndex[i].size();
+		if (temp > 0)
+		{
+			cout << "Groesse Outflow:  " << i << " : " << temp << endl;
+			//cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//preprocessing
+			real* QQ = para->getParH(i)->Qoutflow.q27[0];
+			unsigned int sizeQ = para->getParH(i)->Qoutflow.kQ;
+			QforBoundaryConditions Q;
+			Q.q27[dirE] = &QQ[dirE   *sizeQ];
+			Q.q27[dirW] = &QQ[dirW   *sizeQ];
+			Q.q27[dirN] = &QQ[dirN   *sizeQ];
+			Q.q27[dirS] = &QQ[dirS   *sizeQ];
+			Q.q27[dirT] = &QQ[dirT   *sizeQ];
+			Q.q27[dirB] = &QQ[dirB   *sizeQ];
+			Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+			Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+			Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+			Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+			Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+			Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+			Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+			Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+			Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+			Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+			Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+			Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+			Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+			Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+			Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+			Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+			Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+			Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+			Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+			Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+			Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+			//////////////////////////////////////////////////////////////////
+			int d = 0;
+			int j = 0;
+			int n = 0;
+			for (vector<vector<vector<real> > >::iterator it = outflowQs.begin(); it != outflowQs.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							Q.q27[j][n] = *it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			d = 0;
+			n = 0;
+			for (vector<vector<unsigned int> >::iterator it = outflowIndex.begin(); it != outflowIndex.end(); it++) {
+				if (i == d) {
+					for (vector<unsigned int>::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						para->getParH(i)->Qoutflow.k[n] = *it2;
+						n++;
+					}
+				}
+				d++;
+				n = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyOutflowBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			if (para->getIsOutflowNormal()) {
+				int temp = obj_outflowNormalX->getSize(i);
+				if (temp > 0)
+				{
+					cout << "Groesse der Daten OutflowBoundaryNormalsX, Level " << i << " : " << temp << endl;
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->QOutflowNormalX.kQ = temp;
+					para->getParH(i)->QOutflowNormalY.kQ = temp;
+					para->getParH(i)->QOutflowNormalZ.kQ = temp;
+					para->getParD(i)->QOutflowNormalX.kQ = para->getParH(i)->QOutflowNormalX.kQ;
+					para->getParD(i)->QOutflowNormalY.kQ = para->getParH(i)->QOutflowNormalY.kQ;
+					para->getParD(i)->QOutflowNormalZ.kQ = para->getParH(i)->QOutflowNormalZ.kQ;
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaAllocOutflowNormals(i);
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+					//////////////////////////////////////////////////////////////////////////
+					//Indexarray
+					obj_outflowNormalX->setIndex(para->getParH(i)->QOutflowNormalX.k, i);
+					obj_outflowNormalY->setIndex(para->getParH(i)->QOutflowNormalY.k, i);
+					obj_outflowNormalZ->setIndex(para->getParH(i)->QOutflowNormalZ.k, i);
+					//////////////////////////////////////////////////////////////////
+
+					//////////////////////////////////////////////////////////////////////////
+					//preprocessing X
+					real* QQX = para->getParH(i)->QOutflowNormalX.q27[0];
+					unsigned int sizeQX = para->getParH(i)->QOutflowNormalX.kQ;
+					QforBoundaryConditions QX;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QX.q27[j] = &QQX[j * sizeQX];
+						obj_outflowNormalX->setValues(QX.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
+
+					 //////////////////////////////////////////////////////////////////////////
+					 //preprocessing Y
+					real* QQY = para->getParH(i)->QOutflowNormalY.q27[0];
+					unsigned int sizeQY = para->getParH(i)->QOutflowNormalY.kQ;
+					QforBoundaryConditions QY;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QY.q27[j] = &QQY[j * sizeQY];
+						obj_outflowNormalY->setValues(QY.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
+
+					 //////////////////////////////////////////////////////////////////////////
+					 //preprocessing Z
+					real* QQZ = para->getParH(i)->QOutflowNormalZ.q27[0];
+					unsigned int sizeQZ = para->getParH(i)->QOutflowNormalZ.kQ;
+					QforBoundaryConditions QZ;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QZ.q27[j] = &QQZ[j * sizeQZ];
+						obj_outflowNormalZ->setValues(QZ.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
+
+					 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaCopyOutflowNormals(i);
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				}
+			}
+		}//ende if
+	}//ende oberste for schleife
+
+
+
+
+
+	 //--------------------------------------------------------------------------//
+	for (int i = 0; i <= level; i++) {
+		int temp2 = (int)noslipQs[i][0].size();
+		para->getParH(i)->QWall.kQ = temp2;
+		para->getParD(i)->QWall.kQ = para->getParH(i)->QWall.kQ;
+		para->getParH(i)->kQ = para->getParH(i)->QWall.kQ;
+		para->getParD(i)->kQ = para->getParH(i)->QWall.kQ;
+		if (temp2 > 0)
+		{
+			cout << "Groesse NoSlip: " << i << " : " << temp2 << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//para->getParH(i)->QWall.kQ = temp2;
+			//para->getParD(i)->QWall.kQ = para->getParH(i)->QWall.kQ;
+			//para->getParH(i)->kQ = para->getParH(i)->QWall.kQ;
+			//para->getParD(i)->kQ = para->getParH(i)->QWall.kQ;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaAllocWallBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//preprocessing
+			real* QQ = para->getParH(i)->QWall.q27[0];
+			unsigned int sizeQ = para->getParH(i)->QWall.kQ;
+			QforBoundaryConditions Q;
+			Q.q27[dirE] = &QQ[dirE   *sizeQ];
+			Q.q27[dirW] = &QQ[dirW   *sizeQ];
+			Q.q27[dirN] = &QQ[dirN   *sizeQ];
+			Q.q27[dirS] = &QQ[dirS   *sizeQ];
+			Q.q27[dirT] = &QQ[dirT   *sizeQ];
+			Q.q27[dirB] = &QQ[dirB   *sizeQ];
+			Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+			Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+			Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+			Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+			Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+			Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+			Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+			Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+			Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+			Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+			Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+			Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+			Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+			Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+			Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+			Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+			Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+			Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+			Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+			Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+			Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+			//////////////////////////////////////////////////////////////////
+			int d = 0;
+			int j = 0;
+			int n = 0;
+			for (vector<vector<vector<real> > >::iterator it = noslipQs.begin(); it != noslipQs.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							Q.q27[j][n] = *it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			d = 0;
+			n = 0;
+			for (vector<vector<unsigned int> >::iterator it = noslipIndex.begin(); it != noslipIndex.end(); it++) {
+				if (i == d) {
+					for (vector<unsigned int>::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						para->getParH(i)->QWall.k[n] = *it2;
+						n++;
+					}
+				}
+				d++;
+				n = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyWallBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
+	}//ende oberste for schleife
+
+
+
+	 //--------------------------------------------------------------------------//
+	for (int i = 0; i <= level; i++) {
+		int temp2 = (int)slipQs[i][0].size();
+		if (temp2 > 0)
+		{
+			cout << "Groesse Slip: " << i << " : " << temp2 << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->getParH(i)->QSlip.kQ = temp2;
+			para->getParD(i)->QSlip.kQ = para->getParH(i)->QSlip.kQ;
+			para->getParH(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
+			para->getParD(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaAllocSlipBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			//preprocessing
+			real* QQ = para->getParH(i)->QSlip.q27[0];
+			unsigned int sizeQ = para->getParH(i)->QSlip.kQ;
+			QforBoundaryConditions Q;
+			Q.q27[dirE] = &QQ[dirE   *sizeQ];
+			Q.q27[dirW] = &QQ[dirW   *sizeQ];
+			Q.q27[dirN] = &QQ[dirN   *sizeQ];
+			Q.q27[dirS] = &QQ[dirS   *sizeQ];
+			Q.q27[dirT] = &QQ[dirT   *sizeQ];
+			Q.q27[dirB] = &QQ[dirB   *sizeQ];
+			Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+			Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+			Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+			Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+			Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+			Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+			Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+			Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+			Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+			Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+			Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+			Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+			Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+			Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+			Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+			Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+			Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+			Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+			Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+			Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+			Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+			//////////////////////////////////////////////////////////////////
+			int d = 0;
+			int j = 0;
+			int n = 0;
+			for (vector<vector<vector<real> > >::iterator it = slipQs.begin(); it != slipQs.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							Q.q27[j][n] = *it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			d = 0;
+			n = 0;
+			for (vector<vector<unsigned int> >::iterator it = slipIndex.begin(); it != slipIndex.end(); it++) {
+				if (i == d) {
+					for (vector<unsigned int>::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						para->getParH(i)->QSlip.k[n] = *it2;
+						n++;
+					}
+				}
+				d++;
+				n = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopySlipBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}
+	}//ende oberste for schleife
+
+
+
+	 //--------------------------------------------------------------------------//
+	if (para->getIsGeo()) {
+		for (int i = 0; i <= level; i++) {
+			int temp4 = obj_geomQ->getSize(i);
+			para->getParH(i)->QGeom.kQ = temp4;
+			para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+			if (temp4 > 0)
+			{
+				cout << "Groesse der Daten GeomBoundaryQs, Level " << i << " : " << temp4 << endl;
+				cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << temp4 << "MyID: " << para->getMyID() << endl;
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				//para->getParH(i)->QGeom.kQ = temp4;
+				//para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				para->cudaAllocGeomBC(i);
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//////////////////////////////////////////////////////////////////////////
+				//Indexarray
+				obj_geomQ->setIndex(para->getParH(i)->QGeom.k, i);
+				//////////////////////////////////////////////////////////////////////////
+				//preprocessing
+				real* QQ = para->getParH(i)->QGeom.q27[0];
+				unsigned int sizeQ = para->getParH(i)->QGeom.kQ;
+				QforBoundaryConditions Q;
+				Q.q27[dirE] = &QQ[dirE   *sizeQ];
+				Q.q27[dirW] = &QQ[dirW   *sizeQ];
+				Q.q27[dirN] = &QQ[dirN   *sizeQ];
+				Q.q27[dirS] = &QQ[dirS   *sizeQ];
+				Q.q27[dirT] = &QQ[dirT   *sizeQ];
+				Q.q27[dirB] = &QQ[dirB   *sizeQ];
+				Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+				Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+				Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+				Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+				Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+				Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+				Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+				Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+				Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+				Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+				Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+				Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+				Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+				Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+				Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+				Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+				Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+				Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+				Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+				Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+				Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+				//////////////////////////////////////////////////////////////////
+				for (int j = 0; j < 27; j++) {
+					obj_geomQ->setValues(Q.q27, i);
+				}//ende der for schleife
+				 //////////////////////////////////////////////////////////////////
+				for (int test = 0; test < temp4; test++)
+				{
+					Q.q27[dirZERO][test] = 0.0f;
+				}
+				//for(int test = 0; test < 3; test++)
+				//{
+				//	for (int tmp = 0; tmp < 27; tmp++)
+				//	{
+				//		cout <<"Kuhs: " << Q.q27[tmp][test]  << endl;				
+				//	}
+				//}
+
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// advection - diffusion stuff
+				if (para->getDiffOn() == true) {
+					//////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->Temp.kTemp = temp4;
+					para->getParD(i)->Temp.kTemp = temp4;
+					cout << "Groesse Temp.kTemp = " << para->getParH(i)->Temp.kTemp << endl;
+					//////////////////////////////////////////////////////////////////////////
+					para->cudaAllocTempNoSlipBC(i);
+					//////////////////////////////////////////////////////////////////////////
+					for (int m = 0; m < temp4; m++)
+					{
+						para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
+						para->getParH(i)->Temp.k[m] = para->getParH(i)->QGeom.k[m];
+					}
+					//////////////////////////////////////////////////////////////////////////
+					para->cudaCopyTempNoSlipBCHD(i);
+					//////////////////////////////////////////////////////////////////////////
+				}
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				para->cudaCopyGeomBC(i);
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			}
+			if (para->getIsGeoNormal()) {
+				int temp = obj_geomNormalX->getSize(i);
+				if (temp > 0)
+				{
+					cout << "Groesse der Daten GeomBoundaryNormalsX, Level " << i << " : " << temp << endl;
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->QGeomNormalX.kQ = temp;
+					para->getParH(i)->QGeomNormalY.kQ = temp;
+					para->getParH(i)->QGeomNormalZ.kQ = temp;
+					para->getParD(i)->QGeomNormalX.kQ = para->getParH(i)->QGeomNormalX.kQ;
+					para->getParD(i)->QGeomNormalY.kQ = para->getParH(i)->QGeomNormalY.kQ;
+					para->getParD(i)->QGeomNormalZ.kQ = para->getParH(i)->QGeomNormalZ.kQ;
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaAllocGeomNormals(i);
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+					//////////////////////////////////////////////////////////////////////////
+					//Indexarray
+					obj_geomNormalX->setIndex(para->getParH(i)->QGeomNormalX.k, i);
+					obj_geomNormalY->setIndex(para->getParH(i)->QGeomNormalY.k, i);
+					obj_geomNormalZ->setIndex(para->getParH(i)->QGeomNormalZ.k, i);
+					//////////////////////////////////////////////////////////////////
+
+					//////////////////////////////////////////////////////////////////////////
+					//preprocessing X
+					real* QQX = para->getParH(i)->QGeomNormalX.q27[0];
+					unsigned int sizeQX = para->getParH(i)->QGeomNormalX.kQ;
+					QforBoundaryConditions QX;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QX.q27[j] = &QQX[j * sizeQX];
+						obj_geomNormalX->setValues(QX.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
+
+					 //////////////////////////////////////////////////////////////////////////
+					 //preprocessing Y
+					real* QQY = para->getParH(i)->QGeomNormalY.q27[0];
+					unsigned int sizeQY = para->getParH(i)->QGeomNormalY.kQ;
+					QforBoundaryConditions QY;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QY.q27[j] = &QQY[j * sizeQY];
+						obj_geomNormalY->setValues(QY.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
+
+					 //////////////////////////////////////////////////////////////////////////
+					 //preprocessing Z
+					real* QQZ = para->getParH(i)->QGeomNormalZ.q27[0];
+					unsigned int sizeQZ = para->getParH(i)->QGeomNormalZ.kQ;
+					QforBoundaryConditions QZ;
+					//////////////////////////////////////////////////////////////////
+					for (int j = 0; j < 27; j++) {
+						QZ.q27[j] = &QQZ[j * sizeQZ];
+						obj_geomNormalZ->setValues(QZ.q27, i);
+					}//ende der for schleife
+					 //////////////////////////////////////////////////////////////////
+
+					 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaCopyGeomNormals(i);
+					////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				}
+
+			}
+		}
+	}//ende oberstes for
+	 //--------------------------------------------------------------------------//
 
 
 

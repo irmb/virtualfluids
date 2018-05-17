@@ -36,6 +36,8 @@ public:
 	void setValues(real** q27, unsigned int level) const;
 	void getQs(std::vector<std::vector<std::vector<real> > > &qs);
 	void getIndices(std::vector<std::vector<uint> > &indices);
+	//void initArray(real* ptr, unsigned int level, unsigned int column);
+	//void initIndex(int *ptr, unsigned int level);
 
 private:
 	std::vector< std::vector<std::vector<real> > >values;

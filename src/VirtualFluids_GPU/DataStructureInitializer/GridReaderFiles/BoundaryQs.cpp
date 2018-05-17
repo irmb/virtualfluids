@@ -201,3 +201,4 @@ void BoundaryQs::getIndices(std::vector<std::vector<uint> > &indices) {
 		for (int index = 0; index < this->indices[level].size(); index++)
 			indices[level].push_back(this->indices[level][index]);
 }
+

@@ -111,7 +111,7 @@
 #define c10eM30		1e-30
 #define c10eM10		1e-10
 #define smallSingle 0.0000000002
-#endif
+
 
 #else
 #define c1o2		0.5f
@@ -222,3 +222,5 @@
 #define smallSingle 0.0000000002f
 #endif
 
+
+#endif
