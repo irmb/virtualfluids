@@ -108,7 +108,11 @@
 #define c367		367.0
 
 #define Op0000002   0.0000002
-#define smallSingle 0.0000000002f
+#define c10eM30		1e-30
+#define c10eM10		1e-10
+#define smallSingle 0.0000000002
+#endif
+
 #else
 #define c1o2		0.5f
 #define c3o2		1.5f
@@ -213,83 +217,8 @@
 #define c367		367.0f
 
 #define Op0000002   0.0000002f
+#define c10eM30		1e-30
+#define c10eM10		1e-10
 #define smallSingle 0.0000000002f
 #endif
 
-
-
-
-
-
-//__constant__ real c1o2			= 0.5				 ;
-//__constant__ real c3o2			= 1.5				 ;
-//__constant__ real c1o3			= 0.333333333333333	 ;
-//__constant__ real c2o3			= 0.666666666666667	 ;
-//__constant__ real c1o4			= 0.25				 ;
-//__constant__ real c1o6			= 0.166666666666667	 ;
-//__constant__ real c1o8			= 0.125				 ;
-//__constant__ real c1o9			= 0.111111111111111	 ;
-//__constant__ real c2o9			= 0.222222222222222	 ;
-//__constant__ real c4o9			= 0.444444444444444	 ;
-//__constant__ real c1o10			= 0.1				 ;
-//__constant__ real c1o12			= 0.083333333333333	 ;
-//__constant__ real c1o16			= 0.0625			 ;
-//__constant__ real c3o16			= 0.1875			 ;
-//__constant__ real c9o16			= 0.5625			 ;
-//__constant__ real c1o18			= 0.055555555555556	 ;
-//__constant__ real c1o20			= 0.05				 ;
-//__constant__ real c19o20			= 0.95				 ;
-//__constant__ real c21o20			= 1.05				 ;
-//__constant__ real c1o24			= 0.041666666666667	 ;
-//__constant__ real c1o27			= 0.037037037037037	 ;
-//__constant__ real c4o32			= 0.125				 ;
-//__constant__ real c1o36			= 0.027777777777778	 ;
-//__constant__ real c1o48			= 0.020833333333333	 ;
-//__constant__ real c1o64			= 0.015625			 ;
-//__constant__ real c3o64			= 0.046875			 ;
-//__constant__ real c9o64			= 0.140625			 ;
-//__constant__ real c27o64			= 0.421875			 ;
-//__constant__ real c1o72			= 0.013888888888889	 ;
-//__constant__ real c8over27		= 0.296296296296296	 ;
-//__constant__ real c2over27		= 0.074074074074074	 ;
-//__constant__ real c1over54		= 0.018518518518519	 ;
-//__constant__ real c1o100			= 0.01				 ;
-//__constant__ real c99o100		= 0.99				 ;
-//__constant__ real c1over126		= 0.007936507936508	 ;
-//__constant__ real c1over216		= 0.004629629629630	 ;
-//__constant__ real c9over2		= 4.5				 ;
-//
-//__constant__ real zero			= 0.				 ;
-//__constant__ real one			= 1.				 ;
-//__constant__ real two			= 2.				 ;
-//__constant__ real three			= 3.				 ;
-//__constant__ real four			= 4.				 ;
-//__constant__ real five			= 5.				 ;
-//__constant__ real six			= 6.				 ;
-//__constant__ real eight			= 8.				 ;
-//__constant__ real nine			= 9.				 ;
-//__constant__ real ten 			= 10.				 ;
-//__constant__ real eleven  		= 11.				 ;
-//__constant__ real twelve  		= 12.				 ;
-//__constant__ real fourteen		= 14.				 ;
-//__constant__ real sixteen 		= 16.				 ;
-//__constant__ real seventeen 		= 17.				 ;
-//__constant__ real eighteen		= 18.				 ;
-//__constant__ real twentyseven	= 27.				 ;
-//__constant__ real thirty  		= 30.				 ;
-//__constant__ real thirtytwo		= 32.				 ;
-//__constant__ real thirtythree	= 33.				 ;
-//__constant__ real thirtyfour		= 34.				 ;
-//__constant__ real thirtysix		= 36.				 ;
-//__constant__ real fortytwo		= 42.				 ;
-//__constant__ real fiftyfour		= 54.				 ;
-//__constant__ real sixtyfour		= 64.				 ;
-//__constant__ real sixtysix		= 66.				 ;
-//__constant__ real sixtyeight		= 68.				 ;
-//__constant__ real seventytwo		= 72.				 ;
-//__constant__ real eightyfour		= 84.				 ;
-//__constant__ real ninetysix		= 96.				 ;
-//
-//__constant__ real Op0000002		= 0.0000002			 ;
-
-#endif

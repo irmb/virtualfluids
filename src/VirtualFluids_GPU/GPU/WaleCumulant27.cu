@@ -181,176 +181,249 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(real omega_in,
 			{
 				/////////////      Wale Model     ///////////////
 				//neighbor index
-				unsigned int kPx   = neighborX[k];
-				unsigned int kPy   = neighborY[k];
-				unsigned int kPz   = neighborZ[k];
+				unsigned int kPx = neighborX[k];
+				unsigned int kPy = neighborY[k];
+				unsigned int kPz = neighborZ[k];
 				unsigned int kMxyz = neighborWSB[k];
-				unsigned int kMx   = neighborZ[neighborY[kMxyz]];
-				unsigned int kMy   = neighborZ[neighborX[kMxyz]];
-				unsigned int kMz   = neighborY[neighborX[kMxyz]];
-				//no wale at the boundary nodes
-				if ((bcMatD[kPx] == GEO_FLUID) && (bcMatD[kPy] == GEO_FLUID) && (bcMatD[kPz] == GEO_FLUID) &&
-					(bcMatD[kMx] == GEO_FLUID) && (bcMatD[kMy] == GEO_FLUID) && (bcMatD[kMz] == GEO_FLUID))
+				unsigned int kMx = neighborZ[neighborY[kMxyz]];
+				unsigned int kMy = neighborZ[neighborX[kMxyz]];
+				unsigned int kMz = neighborY[neighborX[kMxyz]];
+				//getVeloX//
+				real veloXNeighborPx = veloX[kPx];
+				real veloXNeighborMx = veloX[kMx];
+				real veloXNeighborPy = veloX[kPy];
+				real veloXNeighborMy = veloX[kMy];
+				real veloXNeighborPz = veloX[kPz];
+				real veloXNeighborMz = veloX[kMz];
+				//getVeloY//
+				real veloYNeighborPx = veloY[kPx];
+				real veloYNeighborMx = veloY[kMx];
+				real veloYNeighborPy = veloY[kPy];
+				real veloYNeighborMy = veloY[kMy];
+				real veloYNeighborPz = veloY[kPz];
+				real veloYNeighborMz = veloY[kMz];
+				//getVeloZ//
+				real veloZNeighborPx = veloZ[kPx];
+				real veloZNeighborMx = veloZ[kMx];
+				real veloZNeighborPy = veloZ[kPy];
+				real veloZNeighborMy = veloZ[kMy];
+				real veloZNeighborPz = veloZ[kPz];
+				real veloZNeighborMz = veloZ[kMz];
+				//getVeloLocal//
+				real veloLocalX = veloX[k];
+				real veloLocalY = veloY[k];
+				real veloLocalZ = veloZ[k];
+
+				//////////////////////////////////////////////////////////////////////////////
+				real dxvx = zero;
+				real dyvx = zero;
+				real dzvx = zero;
+				real dxvy = zero;
+				real dyvy = zero;
+				real dzvy = zero;
+				real dxvz = zero;
+				real dyvz = zero;
+				real dzvz = zero;
+				real SumSd = zero;
+				real SumS = zero;
+				//////////////////////////////////////////////////////////////////////////////
+				//no central differences at the boundary nodes
+				//Dx
+				if (bcMatD[kPx] != GEO_FLUID)
 				{
-					//getVeloX//
-					real veloXNeighborPx = veloX[kPx];
-					real veloXNeighborMx = veloX[kMx];
-					real veloXNeighborPy = veloX[kPy];
-					real veloXNeighborMy = veloX[kMy];
-					real veloXNeighborPz = veloX[kPz];
-					real veloXNeighborMz = veloX[kMz];
-					//getVeloY//
-					real veloYNeighborPx = veloY[kPx];
-					real veloYNeighborMx = veloY[kMx];
-					real veloYNeighborPy = veloY[kPy];
-					real veloYNeighborMy = veloY[kMy];
-					real veloYNeighborPz = veloY[kPz];
-					real veloYNeighborMz = veloY[kMz];
-					//getVeloZ//
-					real veloZNeighborPx = veloZ[kPx];
-					real veloZNeighborMx = veloZ[kMx];
-					real veloZNeighborPy = veloZ[kPy];
-					real veloZNeighborMy = veloZ[kMy];
-					real veloZNeighborPz = veloZ[kPz];
-					real veloZNeighborMz = veloZ[kMz];
-					//partial Div vx in x, y, z//
-					real dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
-					real dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
-					real dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
-																			  //partial Div vy in x, y, z//
-					real dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
-					real dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
-					real dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
-																			  //partial Div vz in x, y, z//
-					real dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
-					real dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
-					real dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
-																			  //SumSd
-					
-					real g11, g12, g13, g21, g22, g23, g31, g32, g33;
-					real g11sq, g12sq, g13sq, g21sq, g22sq, g23sq, g31sq, g32sq, g33sq;
-					
-					g11 = dxvx;
-					g12 = dyvx;
-					g13 = dzvx;
-					g21 = dxvy;
-					g22 = dyvy;
-					g23 = dzvy;
-					g31 = dxvz;
-					g32 = dyvz;
-					g33 = dzvz;
-
-					g11sq = g11 * g11 + g12 * g21 + g13 * g31;
-					g12sq = g11 * g12 + g12 * g22 + g13 * g32;
-					g13sq = g11 * g13 + g12 * g23 + g13 * g33;
-					g21sq = g21 * g11 + g22 * g21 + g23 * g31;
-					g22sq = g21 * g12 + g22 * g22 + g23 * g32;
-					g23sq = g21 * g13 + g22 * g23 + g23 * g33;
-					g31sq = g31 * g11 + g32 * g21 + g33 * g31;
-					g32sq = g31 * g12 + g32 * g22 + g33 * g32;
-					g33sq = g31 * g13 * g32 * g23 + g33 * g33;
-
-					real gkk = g11sq + g22sq + g33sq;
-
-					real Sd11 = c1o2 * (g11sq + g11sq) - c1o3 * gkk;
-					real Sd12 = c1o2 * (g12sq + g21sq);
-					real Sd13 = c1o2 * (g13sq + g31sq);
-					real Sd21 = c1o2 * (g21sq + g12sq); // ==Sd12
-					real Sd22 = c1o2 * (g22sq + g22sq) - c1o3 * gkk;
-					real Sd23 = c1o2 * (g23sq + g32sq);
-					real Sd31 = c1o2 * (g31sq + g13sq);
-					real Sd32 = c1o2 * (g32sq + g23sq);
-					real Sd33 = c1o2 * (g33sq + g33sq) - c1o3 * gkk;
-
-					real SumSd = Sd11*Sd11 + Sd12*Sd12 + Sd13*Sd13 + Sd21*Sd21 + Sd22*Sd22 + Sd23*Sd23 + Sd31*Sd31 + Sd32*Sd32 + Sd33*Sd33;
-
-
-
-					//real SumSd =
-					//	c1o2 * powf(dzvx, four) +
-					//	c1o2 * powf(dzvy, four) +
-					//	c2o3 * powf(dzvz, four) +
-					//	c2o3 * powf(dyvy, four) +
-					//	c1o2 * powf(dyvz, four) +
-					//	c2o3 * powf(dxvx, four) +
-					//	c1o2 * powf(dxvy, four) +
-					//	c1o2 * powf(dxvz, four) +
-					//	c1o2 * powf(dyvx, four) +
-					//	powf(dyvx, two) * powf(dxvy, two) +
-					//	powf(dzvx, two) * powf(dxvz, two) +
-					//	powf(dzvy, two) * powf(dyvz, two) -
-					//	c2o3 * powf(dzvz, two) * powf(dyvy, two) -
-					//	c2o3 * powf(dzvz, two) * powf(dxvx, two) -
-					//	c2o3 * powf(dyvy, two) * powf(dxvx, two);   //powf
-					//real SumSd =
-					//	((c1o2 * (((dzvx*dzvx)*(dzvx*dzvx)) + 
-					//		((dzvy*dzvy)*(dzvy*dzvy)) + 
-					//		((dyvz*dyvz)*(dyvz*dyvz)) + 
-					//		((dyvx*dyvx)*(dyvx*dyvx)) + 
-					//		((dxvy*dxvy)*(dxvy*dxvy)) + 
-					//		((dxvz*dxvz)*(dxvz*dxvz)))) +
-					//	(c2o3 * (((dxvx*dxvx)*(dxvx*dxvx)) + 
-					//		((dyvy*dyvy)*(dyvy*dyvy)) + 
-					//		((dzvz*dzvz)*(dzvz*dzvz)))) +
-					//	((dyvx * dyvx) * (dxvy * dxvy)) +
-					//	((dzvx * dzvx) * (dxvz * dxvz)) +
-					//	((dzvy * dzvy) * (dyvz * dyvz))) -
-					//	(c2o3 * ((dzvz * dzvz) * (dyvy * dyvy)) + 
-					//		((dzvz * dzvz) * (dxvx * dxvx)) + 
-					//		((dyvy * dyvy) * (dxvx * dxvx)));   //explicit
-					//real SumSd =
-					//	c1o2 * pow(dzvx, four) +
-					//	c1o2 * pow(dzvy, four) +
-					//	c2o3 * pow(dzvz, four) +
-					//	c2o3 * pow(dyvy, four) +
-					//	c1o2 * pow(dyvz, four) +
-					//	c2o3 * pow(dxvx, four) +
-					//	c1o2 * pow(dxvy, four) +
-					//	c1o2 * pow(dxvz, four) +
-					//	c1o2 * pow(dyvx, four) +
-					//	pow(dyvx, two) * pow(dxvy, two) +
-					//	pow(dzvx, two) * pow(dxvz, two) +
-					//	pow(dzvy, two) * pow(dyvz, two) -
-					//	c2o3 * pow(dzvz, two) * pow(dyvy, two) -
-					//	c2o3 * pow(dzvz, two) * pow(dxvx, two) -
-					//	c2o3 * pow(dyvy, two) * pow(dxvx, two);    //pow
-					//SumS
-					//real SumS =
-					//	powf(dxvx, two) +
-					//	powf(dyvy, two) +
-					//	powf(dzvz, two) +
-					//	c1o2 * powf(dyvx + dxvy, two) +
-					//	c1o2 * powf(dzvx + dxvz, two) +
-					//	c1o2 * powf(dyvz + dzvy, two);   //powf
-					real SumS =
-						((dxvx * dxvx) +
-						 (dyvy * dyvy) +
-						 (dzvz * dzvz)) +
-						(c1o2 * (((dyvx + dxvy) * (dyvx + dxvy)) +
-						    ((dzvx + dxvz) * (dzvx + dxvz)) +
-							((dyvz + dzvy) * (dyvz + dzvy))));   //explicit
-				    //real SumS =
-					//	pow(dxvx, two) +
-					//	pow(dyvy, two) +
-					//	pow(dzvz, two) +
-					//	c1o2 * pow(dyvx + dxvy, two) +
-					//	c1o2 * pow(dzvx + dxvz, two) +
-					//	c1o2 * pow(dyvz + dzvy, two);   //pow
-					//nu turbulent
-					real coefficient = 0.325; //0.55; //
-					real delta = coefficient * one;
-					/////////////////////////////////
-					//real SumSsq = SumS * SumS;
-					//real SumSDsq = SumSd * SumSd;
-					real SumSsq = SumS;
-					real SumSDsq = SumSd;
-					//nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle); //powf
-					//nuTurb = pow(delta, two) * pow(SumSDsq, c3o2) / (pow(SumSsq, c5o2) + pow(SumSDsq, c5o4) + smallSingle);     //pow
-					nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
-					/////////////////////////////////
-					//nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
-					//nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+					dxvx = (veloLocalX - veloXNeighborMx);
+					dxvy = (veloLocalY - veloYNeighborMx);
+					dxvz = (veloLocalZ - veloZNeighborMx);
 				}
+				else if (bcMatD[kMx] != GEO_FLUID)
+				{
+					dxvx = (veloXNeighborPx - veloLocalX);
+					dxvy = (veloYNeighborPx - veloLocalY);
+					dxvz = (veloZNeighborPx - veloLocalZ);
+				}
+				else
+				{
+					dxvx = (veloXNeighborPx - veloXNeighborMx) / two;
+					dxvy = (veloYNeighborPx - veloYNeighborMx) / two;
+					dxvz = (veloZNeighborPx - veloZNeighborMx) / two;
+				}
+				//Dy
+				if (bcMatD[kPy] != GEO_FLUID)
+				{
+					dyvx = (veloLocalX - veloXNeighborMy);
+					dyvy = (veloLocalY - veloYNeighborMy);
+					dyvz = (veloLocalZ - veloZNeighborMy);
+				}
+				else if (bcMatD[kMy] != GEO_FLUID)
+				{
+					dyvx = (veloXNeighborPy - veloLocalX);
+					dyvy = (veloYNeighborPy - veloLocalY);
+					dyvz = (veloZNeighborPy - veloLocalZ);
+				}
+				else
+				{
+					dyvx = (veloXNeighborPy - veloXNeighborMy) / two;
+					dyvy = (veloYNeighborPy - veloYNeighborMy) / two;
+					dyvz = (veloZNeighborPy - veloZNeighborMy) / two;
+				}
+				//Dz
+				if (bcMatD[kPz] != GEO_FLUID)
+				{
+					dzvx = (veloLocalX - veloXNeighborMz);
+					dzvy = (veloLocalY - veloYNeighborMz);
+					dzvz = (veloLocalZ - veloZNeighborMz);
+				}
+				else if (bcMatD[kMz] != GEO_FLUID)
+				{
+					dzvx = (veloXNeighborPz - veloLocalX);
+					dzvy = (veloYNeighborPz - veloLocalY);
+					dzvz = (veloZNeighborPz - veloLocalZ);
+				}
+				else
+				{
+					dzvx = (veloXNeighborPz - veloXNeighborMz) / two;
+					dzvy = (veloYNeighborPz - veloYNeighborMz) / two;
+					dzvz = (veloZNeighborPz - veloZNeighborMz) / two;
+				}
+				//////////////////////////////////////////////////////////////////////////////
+				////partial Div vx in x, y, z//
+				//dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
+				//dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
+				//dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
+				//												  //partial Div vy in x, y, z//
+				//dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
+				//dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
+				//dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
+				//												  //partial Div vz in x, y, z//
+				//dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
+				//dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
+				//dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
+
+				real g11, g12, g13, g21, g22, g23, g31, g32, g33;
+				real g11sq, g12sq, g13sq, g21sq, g22sq, g23sq, g31sq, g32sq, g33sq;
+
+				g11 = dxvx;
+				g12 = dyvx;
+				g13 = dzvx;
+				g21 = dxvy;
+				g22 = dyvy;
+				g23 = dzvy;
+				g31 = dxvz;
+				g32 = dyvz;
+				g33 = dzvz;
+
+				g11sq = g11 * g11 + g12 * g21 + g13 * g31;
+				g12sq = g11 * g12 + g12 * g22 + g13 * g32;
+				g13sq = g11 * g13 + g12 * g23 + g13 * g33;
+				g21sq = g21 * g11 + g22 * g21 + g23 * g31;
+				g22sq = g21 * g12 + g22 * g22 + g23 * g32;
+				g23sq = g21 * g13 + g22 * g23 + g23 * g33;
+				g31sq = g31 * g11 + g32 * g21 + g33 * g31;
+				g32sq = g31 * g12 + g32 * g22 + g33 * g32;
+				g33sq = g31 * g13 * g32 * g23 + g33 * g33;
+
+				real gkk = g11sq + g22sq + g33sq;
+
+				real Sd11 = c1o2 * (g11sq + g11sq) - c1o3 * gkk;
+				real Sd12 = c1o2 * (g12sq + g21sq);
+				real Sd13 = c1o2 * (g13sq + g31sq);
+				real Sd21 = c1o2 * (g21sq + g12sq); // ==Sd12
+				real Sd22 = c1o2 * (g22sq + g22sq) - c1o3 * gkk;
+				real Sd23 = c1o2 * (g23sq + g32sq);
+				real Sd31 = c1o2 * (g31sq + g13sq); // ==Sd13
+				real Sd32 = c1o2 * (g32sq + g23sq); // ==Sd23
+				real Sd33 = c1o2 * (g33sq + g33sq) - c1o3 * gkk;
+
+				SumSd = Sd11*Sd11 + Sd12*Sd12 + Sd13*Sd13 + Sd21*Sd21 + Sd22*Sd22 + Sd23*Sd23 + Sd31*Sd31 + Sd32*Sd32 + Sd33*Sd33;
+
+
+
+				//real SumSd =
+				//	c1o2 * powf(dzvx, four) +
+				//	c1o2 * powf(dzvy, four) +
+				//	c2o3 * powf(dzvz, four) +
+				//	c2o3 * powf(dyvy, four) +
+				//	c1o2 * powf(dyvz, four) +
+				//	c2o3 * powf(dxvx, four) +
+				//	c1o2 * powf(dxvy, four) +
+				//	c1o2 * powf(dxvz, four) +
+				//	c1o2 * powf(dyvx, four) +
+				//	powf(dyvx, two) * powf(dxvy, two) +
+				//	powf(dzvx, two) * powf(dxvz, two) +
+				//	powf(dzvy, two) * powf(dyvz, two) -
+				//	c2o3 * powf(dzvz, two) * powf(dyvy, two) -
+				//	c2o3 * powf(dzvz, two) * powf(dxvx, two) -
+				//	c2o3 * powf(dyvy, two) * powf(dxvx, two);   //powf
+				//real SumSd =
+				//	((c1o2 * (((dzvx*dzvx)*(dzvx*dzvx)) + 
+				//		((dzvy*dzvy)*(dzvy*dzvy)) + 
+				//		((dyvz*dyvz)*(dyvz*dyvz)) + 
+				//		((dyvx*dyvx)*(dyvx*dyvx)) + 
+				//		((dxvy*dxvy)*(dxvy*dxvy)) + 
+				//		((dxvz*dxvz)*(dxvz*dxvz)))) +
+				//	(c2o3 * (((dxvx*dxvx)*(dxvx*dxvx)) + 
+				//		((dyvy*dyvy)*(dyvy*dyvy)) + 
+				//		((dzvz*dzvz)*(dzvz*dzvz)))) +
+				//	((dyvx * dyvx) * (dxvy * dxvy)) +
+				//	((dzvx * dzvx) * (dxvz * dxvz)) +
+				//	((dzvy * dzvy) * (dyvz * dyvz))) -
+				//	(c2o3 * ((dzvz * dzvz) * (dyvy * dyvy)) + 
+				//		((dzvz * dzvz) * (dxvx * dxvx)) + 
+				//		((dyvy * dyvy) * (dxvx * dxvx)));   //explicit
+				//real SumSd =
+				//	c1o2 * pow(dzvx, four) +
+				//	c1o2 * pow(dzvy, four) +
+				//	c2o3 * pow(dzvz, four) +
+				//	c2o3 * pow(dyvy, four) +
+				//	c1o2 * pow(dyvz, four) +
+				//	c2o3 * pow(dxvx, four) +
+				//	c1o2 * pow(dxvy, four) +
+				//	c1o2 * pow(dxvz, four) +
+				//	c1o2 * pow(dyvx, four) +
+				//	pow(dyvx, two) * pow(dxvy, two) +
+				//	pow(dzvx, two) * pow(dxvz, two) +
+				//	pow(dzvy, two) * pow(dyvz, two) -
+				//	c2o3 * pow(dzvz, two) * pow(dyvy, two) -
+				//	c2o3 * pow(dzvz, two) * pow(dxvx, two) -
+				//	c2o3 * pow(dyvy, two) * pow(dxvx, two);    //pow
+				//SumS
+				//real SumS =
+				//	powf(dxvx, two) +
+				//	powf(dyvy, two) +
+				//	powf(dzvz, two) +
+				//	c1o2 * powf(dyvx + dxvy, two) +
+				//	c1o2 * powf(dzvx + dxvz, two) +
+				//	c1o2 * powf(dyvz + dzvy, two);   //powf
+				SumS =
+					((dxvx * dxvx) +
+					(dyvy * dyvy) +
+						(dzvz * dzvz)) +
+						(c1o2 * (((dyvx + dxvy) * (dyvx + dxvy)) +
+					((dzvx + dxvz) * (dzvx + dxvz)) +
+							((dyvz + dzvy) * (dyvz + dzvy))));   //explicit
+																 //real SumS =
+																 //	pow(dxvx, two) +
+																 //	pow(dyvy, two) +
+																 //	pow(dzvz, two) +
+																 //	c1o2 * pow(dyvx + dxvy, two) +
+																 //	c1o2 * pow(dzvx + dxvz, two) +
+																 //	c1o2 * pow(dyvz + dzvy, two);   //pow
+																 //nu turbulent
+				real coefficient = 0.5; //0.325; //
+				real delta = coefficient * one;
+				/////////////////////////////////
+				//real SumSsq = SumS * SumS;
+				//real SumSDsq = SumSd * SumSd;
+				real SumSsq = SumS;
+				real SumSDsq = SumSd;
+				//nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle); //powf
+				//nuTurb = pow(delta, two) * pow(SumSDsq, c3o2) / (pow(SumSsq, c5o2) + pow(SumSDsq, c5o4) + smallSingle);     //pow
+				//nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
+				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 0.25) /
+					((real)pow(((real)pow((double)SumSsq, 0.5) / ((real)pow((double)SumSDsq, 0.25) + c10eM10)), 5.0) + one); //SMversion2//
+																																	  /////////////////////////////////
+																																	  //nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+																																	  //nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 			}
 			//Test debug
 			//if (nuTurb > c1o100) nuTurb = c1o100;
@@ -1361,13 +1434,13 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 			{
 				/////////////      Wale Model     ///////////////
 				//neighbor index
-				unsigned int kPx   = neighborX[k];
-				unsigned int kPy   = neighborY[k];
-				unsigned int kPz   = neighborZ[k];
+				unsigned int kPx = neighborX[k];
+				unsigned int kPy = neighborY[k];
+				unsigned int kPz = neighborZ[k];
 				unsigned int kMxyz = neighborWSB[k];
-				unsigned int kMx   = neighborZ[neighborY[kMxyz]];
-				unsigned int kMy   = neighborZ[neighborX[kMxyz]];
-				unsigned int kMz   = neighborY[neighborX[kMxyz]];
+				unsigned int kMx = neighborZ[neighborY[kMxyz]];
+				unsigned int kMy = neighborZ[neighborX[kMxyz]];
+				unsigned int kMz = neighborY[neighborX[kMxyz]];
 				//getVeloX//
 				real veloXNeighborPx = veloX[kPx];
 				real veloXNeighborMx = veloX[kMx];
@@ -1389,18 +1462,95 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 				real veloZNeighborMy = veloZ[kMy];
 				real veloZNeighborPz = veloZ[kPz];
 				real veloZNeighborMz = veloZ[kMz];
-				//partial Div vx in x, y, z//
-				real dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
-				real dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
-				real dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
-			    //partial Div vy in x, y, z//
-				real dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
-				real dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
-				real dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
-			    //partial Div vz in x, y, z//
-				real dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
-				real dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
-				real dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
+				//getVeloLocal//
+				real veloLocalX = veloX[k];
+				real veloLocalY = veloY[k];
+				real veloLocalZ = veloZ[k];
+
+				//////////////////////////////////////////////////////////////////////////////
+				real dxvx = zero;
+				real dyvx = zero;
+				real dzvx = zero;
+				real dxvy = zero;
+				real dyvy = zero;
+				real dzvy = zero;
+				real dxvz = zero;
+				real dyvz = zero;
+				real dzvz = zero;
+				real SumSd = zero;
+				real SumS = zero;
+				//////////////////////////////////////////////////////////////////////////////
+				//no central differences at the boundary nodes
+				//Dx
+				if (bcMatD[kPx] != GEO_FLUID)
+				{
+					dxvx = (veloLocalX - veloXNeighborMx);
+					dxvy = (veloLocalY - veloYNeighborMx);
+					dxvz = (veloLocalZ - veloZNeighborMx);
+				}
+				else if (bcMatD[kMx] != GEO_FLUID)
+				{
+					dxvx = (veloXNeighborPx - veloLocalX);
+					dxvy = (veloYNeighborPx - veloLocalY);
+					dxvz = (veloZNeighborPx - veloLocalZ);
+				}
+				else
+				{
+					dxvx = (veloXNeighborPx - veloXNeighborMx) / two;
+					dxvy = (veloYNeighborPx - veloYNeighborMx) / two;
+					dxvz = (veloZNeighborPx - veloZNeighborMx) / two;
+				}
+				//Dy
+				if (bcMatD[kPy] != GEO_FLUID)
+				{
+					dyvx = (veloLocalX - veloXNeighborMy);
+					dyvy = (veloLocalY - veloYNeighborMy);
+					dyvz = (veloLocalZ - veloZNeighborMy);
+				}
+				else if (bcMatD[kMy] != GEO_FLUID)
+				{
+					dyvx = (veloXNeighborPy - veloLocalX);
+					dyvy = (veloYNeighborPy - veloLocalY);
+					dyvz = (veloZNeighborPy - veloLocalZ);
+				}
+				else
+				{
+					dyvx = (veloXNeighborPy - veloXNeighborMy) / two;
+					dyvy = (veloYNeighborPy - veloYNeighborMy) / two;
+					dyvz = (veloZNeighborPy - veloZNeighborMy) / two;
+				}
+				//Dz
+				if (bcMatD[kPz] != GEO_FLUID)
+				{
+					dzvx = (veloLocalX - veloXNeighborMz);
+					dzvy = (veloLocalY - veloYNeighborMz);
+					dzvz = (veloLocalZ - veloZNeighborMz);
+				}
+				else if (bcMatD[kMz] != GEO_FLUID)
+				{
+					dzvx = (veloXNeighborPz - veloLocalX);
+					dzvy = (veloYNeighborPz - veloLocalY);
+					dzvz = (veloZNeighborPz - veloLocalZ);
+				}
+				else
+				{
+					dzvx = (veloXNeighborPz - veloXNeighborMz) / two;
+					dzvy = (veloYNeighborPz - veloYNeighborMz) / two;
+					dzvz = (veloZNeighborPz - veloZNeighborMz) / two;
+				}
+				//////////////////////////////////////////////////////////////////////////////
+				////partial Div vx in x, y, z//
+				//dxvx = (veloXNeighborPx - veloXNeighborMx) / two; //deltaX * two??
+				//dyvx = (veloXNeighborPy - veloXNeighborMy) / two; //deltaX * two??
+				//dzvx = (veloXNeighborPz - veloXNeighborMz) / two; //deltaX * two??
+				//												  //partial Div vy in x, y, z//
+				//dxvy = (veloYNeighborPx - veloYNeighborMx) / two; //deltaX * two??
+				//dyvy = (veloYNeighborPy - veloYNeighborMy) / two; //deltaX * two??
+				//dzvy = (veloYNeighborPz - veloYNeighborMz) / two; //deltaX * two??
+				//												  //partial Div vz in x, y, z//
+				//dxvz = (veloZNeighborPx - veloZNeighborMx) / two; //deltaX * two??
+				//dyvz = (veloZNeighborPy - veloZNeighborMy) / two; //deltaX * two??
+				//dzvz = (veloZNeighborPz - veloZNeighborMz) / two; //deltaX * two??
 
 				real g11, g12, g13, g21, g22, g23, g31, g32, g33;
 				real g11sq, g12sq, g13sq, g21sq, g22sq, g23sq, g31sq, g32sq, g33sq;
@@ -1437,7 +1587,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 				real Sd32 = c1o2 * (g32sq + g23sq); // ==Sd23
 				real Sd33 = c1o2 * (g33sq + g33sq) - c1o3 * gkk;
 
-				real SumSd = Sd11*Sd11 + Sd12*Sd12 + Sd13*Sd13 + Sd21*Sd21 + Sd22*Sd22 + Sd23*Sd23 + Sd31*Sd31 + Sd32*Sd32 + Sd33*Sd33;
+				SumSd = Sd11*Sd11 + Sd12*Sd12 + Sd13*Sd13 + Sd21*Sd21 + Sd22*Sd22 + Sd23*Sd23 + Sd31*Sd31 + Sd32*Sd32 + Sd33*Sd33;
 
 
 
@@ -1497,7 +1647,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 				//	c1o2 * powf(dyvx + dxvy, two) +
 				//	c1o2 * powf(dzvx + dxvz, two) +
 				//	c1o2 * powf(dyvz + dzvy, two);   //powf
-				real SumS =
+				SumS =
 					((dxvx * dxvx) +
 					(dyvy * dyvy) +
 						(dzvz * dzvz)) +
@@ -1512,7 +1662,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 																 //	c1o2 * pow(dzvx + dxvz, two) +
 																 //	c1o2 * pow(dyvz + dzvy, two);   //pow
 																 //nu turbulent
-				real coefficient = 0.325; //0.55; //
+				real coefficient = 0.5; //0.325; //
 				real delta = coefficient * one;
 				/////////////////////////////////
 				//real SumSsq = SumS * SumS;
@@ -1521,10 +1671,12 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Comp_SP_27( real omega_in,
 				real SumSDsq = SumSd;
 				//nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle); //powf
 				//nuTurb = pow(delta, two) * pow(SumSDsq, c3o2) / (pow(SumSsq, c5o2) + pow(SumSDsq, c5o4) + smallSingle);     //pow
-				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
-				/////////////////////////////////
-				//nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
-				//nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+				//nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
+				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 0.25) /
+					((real)pow(((real)pow((double)SumSsq, 0.5) / ((real)pow((double)SumSDsq, 0.25) + c10eM10)), 5.0) + one); //SMversion2//
+																																	  /////////////////////////////////
+																																	  //nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+																																	  //nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 			}
 			//Test debug
 			//if (nuTurb > c1o100) nuTurb = c1o100;
@@ -3760,7 +3912,7 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27(
 																 //	c1o2 * pow(dzvx + dxvz, two) +
 																 //	c1o2 * pow(dyvz + dzvy, two);   //pow
 																 //nu turbulent
-				real coefficient = 0.325; //0.55; //
+				real coefficient = 0.55; //0.325; //
 				real delta = coefficient * one;
 				/////////////////////////////////
 				//real SumSsq = SumS * SumS;
@@ -3769,10 +3921,12 @@ extern "C" __global__ void LB_Kernel_Wale_Cum_AA2016_Debug_Comp_SP_27(
 				real SumSDsq = SumSd;
 				//nuTurb = powf(delta, two) * powf(SumSDsq, c3o2) / (powf(SumSsq, c5o2) + powf(SumSDsq, c5o4) + smallSingle); //powf
 				//nuTurb = pow(delta, two) * pow(SumSDsq, c3o2) / (pow(SumSsq, c5o2) + pow(SumSDsq, c5o4) + smallSingle);     //pow
-				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
-																																										 /////////////////////////////////
-																																										 //nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
-																																										 //nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+				//nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 1.5) / ((real)pow((double)SumSsq, 2.5) + (real)pow((double)SumSDsq, 1.25) + smallSingle); //SMversion//
+				nuTurb = (delta * delta) * (real)pow((double)SumSDsq, 0.25) / 
+					((real)pow(((real)pow((double)SumSsq, 0.5) / ((real)pow((double)SumSDsq, 0.25) + c10eM10)), 5.0) + one); //SMversion2//
+				/////////////////////////////////
+				//nuTurb = rho * powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
+				//nuTurb = powf(delta, two) * powf(SumSd*SumSd, c3o2) / (powf(SumS*SumS, c5o2) + powf(SumSd*SumSd, c5o4));
 			}
 			//Test debug
 			//if (nuTurb > c1o100) nuTurb = c1o100;
