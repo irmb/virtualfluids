@@ -16,6 +16,7 @@ void FFTCalculator::calcAndCopyToTestResults()
 	phidiff = calcPhiDiff();
 
 	testResults->add(nudiff, phidiff, lx);
+	testResults->evaluate();
 }
 
 void FFTCalculator::setSimulationResults(std::shared_ptr<SimulationResults> simResults)

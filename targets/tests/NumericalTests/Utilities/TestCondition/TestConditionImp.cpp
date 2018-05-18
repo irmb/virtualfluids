@@ -26,16 +26,10 @@ std::shared_ptr<DataWriter> TestConditionImp::getDataWriter()
 	return writeToVector;
 }
 
-std::shared_ptr<TestResults> TestConditionImp::getTestResults()
-{
-	return testResults;
-}
-
 std::shared_ptr<Calculator> TestConditionImp::getCalculator()
 {
 	return calculator;
 }
-
 
 std::shared_ptr<TestConditionImp> TestConditionImp::getNewInstance()
 {

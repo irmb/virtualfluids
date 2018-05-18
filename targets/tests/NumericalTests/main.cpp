@@ -7,7 +7,6 @@
 #include "Utilities/TestCondition/TestCondition.h"
 #include "Utilities/TestConditionFactory/TestConditionFactoryImp.h"
 #include "Utilities/Calculator/Calculator.h"
-#include "Utilities/TestResults/TestResults.h"
 #include "Utilities/TestInformation/TestInformation.h"
 
 static void startNumericalTests(const std::string &configFile)
@@ -31,7 +30,6 @@ static void startNumericalTests(const std::string &configFile)
 		testInfo->setSimulationEndTime(i);
 
 		testConditions.at(i)->getCalculator()->calcAndCopyToTestResults();
-		testConditions.at(i)->getTestResults()->evaluate();
 	}
 
 	testInfo->makeFinalTestOutput();

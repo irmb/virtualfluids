@@ -18,7 +18,6 @@ public:
 	virtual std::shared_ptr<Parameter> getParameter() = 0;
 	virtual std::shared_ptr<GridProvider> getGrid() = 0;
 	virtual std::shared_ptr<DataWriter> getDataWriter() = 0;
-	virtual std::shared_ptr<TestResults> getTestResults() = 0;
 	virtual std::shared_ptr<Calculator> getCalculator() = 0;
 private:
 
