@@ -183,11 +183,16 @@ void BoundaryValues::setBoundarys(std::vector<std::vector<std::vector<real> > > 
 				qs[level][index].push_back(values[level][index][value]);
 }
 
+void BoundaryValues::setValues(real* velo, unsigned int level, unsigned int column) const
+{
+	for (int index = 0; index < values[level][column].size(); index++)
+		velo[index] = values[level][column][index];
+}
+
 void BoundaryValues::initIndex(/*unsigned*/ int *ptr, unsigned int level)
 {
 	for (int i = 0; i < indices[level].size(); i++)
 		ptr[i] = indices[level][i];
-	
 }
 
 unsigned int BoundaryValues::getLevel()

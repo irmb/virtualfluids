@@ -156,6 +156,106 @@ void GridReader::allocArrays_BoundaryValues()
 		outflowV[i].resize(2);
 	}
 
+	BoundaryValues *obj_geomV = new BoundaryValues(para->getgeomBoundaryBcValues(), para, "geo");
+
+	////////////////////////////////////////////////////////////////////////
+	//3D domain decomposition
+	vector< BoundaryValues* > procNeighborsSendX, procNeighborsSendY, procNeighborsSendZ;
+	vector< BoundaryValues* > procNeighborsRecvX, procNeighborsRecvY, procNeighborsRecvZ;
+	vector< int >             neighborRankX, neighborRankY, neighborRankZ;
+
+	procNeighborsSendX.resize(0);
+	procNeighborsSendY.resize(0);
+	procNeighborsSendZ.resize(0);
+	procNeighborsRecvX.resize(0);
+	procNeighborsRecvY.resize(0);
+	procNeighborsRecvZ.resize(0);
+	neighborRankX.resize(0);
+	neighborRankY.resize(0);
+	neighborRankZ.resize(0);
+
+	if (para->getNumprocs() > 1)
+	{
+		for (int i = 0; i < para->getNumprocs(); i++)
+		{
+			BoundaryValues *pnXsend = new BoundaryValues(i, para, "send", "X");
+			BoundaryValues *pnYsend = new BoundaryValues(i, para, "send", "Y");
+			BoundaryValues *pnZsend = new BoundaryValues(i, para, "send", "Z");
+			BoundaryValues *pnXrecv = new BoundaryValues(i, para, "recv", "X");
+			BoundaryValues *pnYrecv = new BoundaryValues(i, para, "recv", "Y");
+			BoundaryValues *pnZrecv = new BoundaryValues(i, para, "recv", "Z");
+			if (para->getIsNeighborX())
+			{
+				procNeighborsSendX.push_back(pnXsend);
+				procNeighborsRecvX.push_back(pnXrecv);
+				neighborRankX.push_back(i);
+				cout << "MyID: " << para->getMyID() << ", neighborRankX: " << i << endl;
+			}
+			if (para->getIsNeighborY())
+			{
+				procNeighborsSendY.push_back(pnYsend);
+				procNeighborsRecvY.push_back(pnYrecv);
+				neighborRankY.push_back(i);
+				cout << "MyID: " << para->getMyID() << ", neighborRankY: " << i << endl;
+			}
+			if (para->getIsNeighborZ())
+			{
+				procNeighborsSendZ.push_back(pnZsend);
+				procNeighborsRecvZ.push_back(pnZrecv);
+				neighborRankZ.push_back(i);
+				cout << "MyID: " << para->getMyID() << ", neighborRankZ: " << i << endl;
+			}
+		}
+		cout << "MyID: " << para->getMyID() << ", size of neighborRankX: " << neighborRankX.size() << ", size of neighborRankY: " << neighborRankY.size() << ", size of neighborRankZ: " << neighborRankZ.size() << endl;
+	}
+	////////////////////////////////////////////////////////////////////////
+	//3D domain decomposition convection diffusion
+	vector< BoundaryValues* > procNeighborsSendADX, procNeighborsSendADY, procNeighborsSendADZ;
+	vector< BoundaryValues* > procNeighborsRecvADX, procNeighborsRecvADY, procNeighborsRecvADZ;
+	vector< int >             neighborRankADX, neighborRankADY, neighborRankADZ;
+
+	procNeighborsSendADX.resize(0);
+	procNeighborsSendADY.resize(0);
+	procNeighborsSendADZ.resize(0);
+	procNeighborsRecvADX.resize(0);
+	procNeighborsRecvADY.resize(0);
+	procNeighborsRecvADZ.resize(0);
+	neighborRankADX.resize(0);
+	neighborRankADY.resize(0);
+	neighborRankADZ.resize(0);
+
+	if (para->getDiffOn() == true && para->getNumprocs() > 1)
+	{
+		for (int i = 0; i < para->getNumprocs(); i++)
+		{
+			BoundaryValues *pnADXsend = new BoundaryValues(i, para, "send", "X");
+			BoundaryValues *pnADYsend = new BoundaryValues(i, para, "send", "Y");
+			BoundaryValues *pnADZsend = new BoundaryValues(i, para, "send", "Z");
+			BoundaryValues *pnADXrecv = new BoundaryValues(i, para, "recv", "X");
+			BoundaryValues *pnADYrecv = new BoundaryValues(i, para, "recv", "Y");
+			BoundaryValues *pnADZrecv = new BoundaryValues(i, para, "recv", "Z");
+			if (para->getIsNeighborX())
+			{
+				procNeighborsSendADX.push_back(pnADXsend);
+				procNeighborsRecvADX.push_back(pnADXrecv);
+				neighborRankADX.push_back(i);
+			}
+			if (para->getIsNeighborY())
+			{
+				procNeighborsSendADY.push_back(pnADYsend);
+				procNeighborsRecvADY.push_back(pnADYrecv);
+				neighborRankADY.push_back(i);
+			}
+			if (para->getIsNeighborZ())
+			{
+				procNeighborsSendADZ.push_back(pnADZsend);
+				procNeighborsRecvADZ.push_back(pnADZrecv);
+				neighborRankADZ.push_back(i);
+			}
+		}
+	}
+
+
 	for (int i = 0; i < channelBoundaryConditions.size(); i++) {
 		if (this->channelBoundaryConditions[i] == "velocity") { BC_Values[i]->setBoundarys(velocityV); }
 		else if (this->channelBoundaryConditions[i] == "pressure") { BC_Values[i]->setBoundarys(pressureV); }
@@ -325,6 +425,607 @@ void GridReader::allocArrays_BoundaryValues()
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}//ende if
 	}//ende oberste for schleife
+
+
+	 //--------------------------------------------------------------------------//
+	for (int i = 0; i <= maxLevel; i++) {
+		int temp = (int)outflowV[i][0].size();
+		if (temp > 1)
+		{
+			cout << "Groesse outflow level " << i << " : " << temp << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->getParH(i)->Qoutflow.kQ = temp;
+			para->getParD(i)->Qoutflow.kQ = temp;
+			para->getParH(i)->kOutflowQread = temp * para->getD3Qxx();
+			para->getParD(i)->kOutflowQread = temp * para->getD3Qxx();
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaAllocOutflowBC(i);
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			int d = 0;
+			int j = 0;
+			int n = 0;
+
+			for (vector<vector<vector<real> > >::iterator it = outflowV.begin(); it != outflowV.end(); it++) {
+				if (i == d) {
+					for (vector<vector<real> >::iterator it2 = it->begin(); it2 != it->end(); it2++) {
+						for (vector<real>::iterator it3 = it2->begin(); it3 != it2->end(); it3++) {
+							if (j == 0) para->getParH(i)->Qoutflow.RhoBC[n] = *it3;
+							if (j == 1) para->getParH(i)->Qoutflow.kN[n] = (int)*it3;
+							n++;
+						}
+						j++; // zaehlt die Spalte mit		
+						n = 0;
+					}
+				}
+				d++; // zaehlt das Level mit
+				j = 0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			for (int m = 0; m < temp; m++)
+			{
+				para->getParH(i)->Qoutflow.RhoBC[m] = (para->getParH(i)->Qoutflow.RhoBC[m] / para->getFactorPressBC()) * (real)0.0;
+			}
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->cudaCopyOutflowBC(i);
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		}//ende if
+	}//ende oberste for schleife
+
+
+
+
+	 //--------------------------------------------------------------------------//
+	if (para->getIsGeometryValues()) {
+		for (int i = 0; i <= maxLevel; i++) {
+			int temp4 = obj_geomV->getSize(i);
+			if (temp4 > 0)
+			{
+				cout << "Groesse der Daten obj_geomV, Level " << i << " : " << temp4 << endl;
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				para->getParH(i)->QGeom.kQ = temp4;
+				para->getParD(i)->QGeom.kQ = temp4;
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				para->cudaAllocGeomValuesBC(i);
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				//Indexarray
+				obj_geomV->setValues(para->getParH(i)->QGeom.Vx, i, 0);
+				obj_geomV->setValues(para->getParH(i)->QGeom.Vy, i, 1);
+				obj_geomV->setValues(para->getParH(i)->QGeom.Vz, i, 2);
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				for (int m = 0; m < temp4; m++)
+				{
+					para->getParH(i)->QGeom.Vx[m] = para->getParH(i)->QGeom.Vx[m] / para->getVelocityRatio();
+					para->getParH(i)->QGeom.Vy[m] = para->getParH(i)->QGeom.Vy[m] / para->getVelocityRatio();
+					para->getParH(i)->QGeom.Vz[m] = para->getParH(i)->QGeom.Vz[m] / para->getVelocityRatio();
+					//para->getParH(i)->QGeom.Vx[m] = para->getParH(i)->QGeom.Vx[m] / 100.0f;
+					//para->getParH(i)->QGeom.Vy[m] = para->getParH(i)->QGeom.Vy[m] / 100.0f;
+					//para->getParH(i)->QGeom.Vz[m] = para->getParH(i)->QGeom.Vz[m] / 100.0f;
+					//para->getParH(i)->QGeom.Vx[m] = 0.0f;
+					//para->getParH(i)->QGeom.Vy[m] = 0.0f;
+					//para->getParH(i)->QGeom.Vz[m] = 0.0f;
+				}
+				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				////Täst
+				//for (int m = 0; m < temp4; m++)
+				//{
+				//	para->getParH(i)->QGeom.Vx[m] = para->getVelocity();//0.035f;
+				//	para->getParH(i)->QGeom.Vy[m] = 0.0f;//para->getVelocity();//0.0f;
+				//	para->getParH(i)->QGeom.Vz[m] = 0.0f;
+				//}
+				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				para->cudaCopyGeomValuesBC(i);
+				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				//// advection - diffusion stuff
+				//if (para->getDiffOn()==true){
+				//	//////////////////////////////////////////////////////////////////////////
+				//	para->getParH(i)->Temp.kTemp = temp4;
+				//	cout << "Groesse kTemp = " << para->getParH(i)->Temp.kTemp << endl;
+				//	//////////////////////////////////////////////////////////////////////////
+				//	para->cudaAllocTempNoSlipBC(i);
+				//	//////////////////////////////////////////////////////////////////////////
+				//	for (int m = 0; m < temp4; m++)
+				//	{
+				//		para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
+				//		para->getParH(i)->Temp.k[m]    = para->getParH(i)->QGeom.k[m];
+				//	}
+				//	//////////////////////////////////////////////////////////////////////////
+				//	para->cudaCopyTempNoSlipBCHD(i);
+				//	//////////////////////////////////////////////////////////////////////////
+				//}
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			}
+		}
+	}//ende geo
+
+	 //cout << "Test 2 " << endl;
+
+	 ////--------------------------------------------------------------------------//
+	 //if (para->getIsProp()){
+	 //	BoundaryValues *obj_propV=new BoundaryValues(para->getpropellerValues(), para, "prop");
+	 //	for (int i = 0; i <= maxLevel; i++) {
+	 //		int temp4 = obj_propV->getSize(i);
+	 //		if (temp4 > 0)
+	 //		{
+	 //			cout << "Groesse der Daten PropellerValues, Level " << i << " : " << temp4 << endl;
+	 //			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //			para->getParH(i)->QPropeller.kQ = temp4;
+	 //			para->getParD(i)->QPropeller.kQ = temp4;
+	 //			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //			para->cudaAllocVeloPropeller(i);
+	 //			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //			//Indexarray
+	 //			obj_propV->initIndex(para->getParH(i)->QPropeller.k, i);
+	 //			obj_propV->initArray(para->getParH(i)->QPropeller.Vx, i, 0);
+	 //			obj_propV->initArray(para->getParH(i)->QPropeller.Vy, i, 1);
+	 //			obj_propV->initArray(para->getParH(i)->QPropeller.Vz, i, 2);
+	 //			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //			for (int m = 0; m < temp4; m++)
+	 //			{
+	 //				para->getParH(i)->QPropeller.Vx[m] = para->getParH(i)->QPropeller.Vx[m] / para->getVelocityRatio();
+	 //				para->getParH(i)->QPropeller.Vy[m] = para->getParH(i)->QPropeller.Vy[m] / para->getVelocityRatio();
+	 //				para->getParH(i)->QPropeller.Vz[m] = para->getParH(i)->QPropeller.Vz[m] / para->getVelocityRatio();
+	 //			}
+	 //			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //			para->cudaCopyVeloPropeller(i);
+	 //			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //		}
+	 //	}
+	 //}//ende prop
+
+	 //cout << "Test 3 " << endl;
+
+
+	 //--------------------------------------------------------------------------//
+	 //BoundaryValues *obj_cpTop=new BoundaryValues(para->getcpTop(), para, "cp");
+	 //BoundaryValues *obj_cpBottom=new BoundaryValues(para->getcpBottom(), para, "cp");
+	 //BoundaryValues *obj_cpBottom2=new BoundaryValues(para->getcpBottom2(), para, "cp");
+	 //if (para->getIsCp()){
+	 //	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //	//Top
+	 //	for (int i = 0; i <= maxLevel; i++) {
+	 //		int temp = obj_cpTop->getSize(i);
+	 //		if (temp > 0)
+	 //		{
+	 //			cout << "Groesse der Daten CpTop, Level " << i << " : " << temp << endl;
+	 //			////////////////////////////////////////////////////////////////////////////
+	 //			para->getParH(i)->numberOfPointsCpTop = temp;
+	 //			para->getParD(i)->numberOfPointsCpTop = temp;
+	 //			////////////////////////////////////////////////////////////////////////////
+	 //			para->cudaAllocCpTop(i);
+	 //			////////////////////////////////////////////////////////////////////////////
+	 //			//Indexarray
+	 //			obj_cpTop->initIndex(para->getParH(i)->cpTopIndex, i);
+	 //			////////////////////////////////////////////////////////////////////////////
+	 //			for (int m = 0; m < temp; m++)
+	 //			{
+	 //				para->getParH(i)->cpPressTop[m] = 0.0;
+	 //			}
+	 //			////////////////////////////////////////////////////////////////////////////
+	 //			para->cudaCopyCpTopInit(i);
+	 //			////////////////////////////////////////////////////////////////////////////
+	 //		}
+	 //	}
+	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 ////Bottom
+	 //for (int i = 0; i <= maxLevel; i++) {
+	 //	int temp = obj_cpBottom->getSize(i);
+	 //	if (temp > 0)
+	 //	{
+	 //		cout << "Groesse der Daten CpBottom, Level " << i << " : " << temp << endl;
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		para->getParH(i)->numberOfPointsCpBottom = temp;
+	 //		para->getParD(i)->numberOfPointsCpBottom = temp;
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		para->cudaAllocCpBottom(i);
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		//Indexarray
+	 //		obj_cpBottom->initIndex(para->getParH(i)->cpBottomIndex, i);
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		for (int m = 0; m < temp; m++)
+	 //		{
+	 //			para->getParH(i)->cpPressBottom[m] = 0.0;
+	 //		}
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		para->cudaCopyCpBottomInit(i);
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //	}
+	 //}
+	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 ////Bottom 2
+	 //for (int i = 0; i <= maxLevel; i++) {
+	 //	int temp = obj_cpBottom2->getSize(i);
+	 //	if (temp > 0)
+	 //	{
+	 //		cout << "Groesse der Daten CpBottom2, Level " << i << " : " << temp << endl;
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		para->getParH(i)->numberOfPointsCpBottom2 = temp;
+	 //		para->getParD(i)->numberOfPointsCpBottom2 = temp;
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		para->cudaAllocCpBottom2(i);
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		//Indexarray
+	 //		obj_cpBottom2->initIndex(para->getParH(i)->cpBottom2Index, i);
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		for (int m = 0; m < temp; m++)
+	 //		{
+	 //			para->getParH(i)->cpPressBottom2[m] = 0.0;
+	 //		}
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //		para->cudaCopyCpBottom2Init(i);
+	 //		////////////////////////////////////////////////////////////////////////////
+	 //	}
+	 //}
+	 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //	delete obj_cpTop;
+	 //	//delete obj_cpBottom;
+	 //	//delete obj_cpBottom2;
+	 //}//ende cp
+
+	 //cout << "Test 4 " << endl;
+
+
+	 //--------------------------------------------------------------------------//
+	if (para->getConcFile()) {
+		BoundaryValues *obj_Conc = new BoundaryValues(para->getConcentration());
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//concentration
+		for (int i = 0; i <= maxLevel; i++) {
+			int temp = obj_Conc->getSize(i);
+			if (temp > 0)
+			{
+				cout << "Groesse der Daten Concentration, Level " << i << " : " << temp << endl;
+				////////////////////////////////////////////////////////////////////////////
+				para->getParH(i)->numberOfPointsConc = temp;
+				para->getParD(i)->numberOfPointsConc = temp;
+				////////////////////////////////////////////////////////////////////////////
+				para->cudaAllocConcFile(i);
+				////////////////////////////////////////////////////////////////////////////
+				//Indexarray
+				obj_Conc->initIndex(para->getParH(i)->concIndex, i);
+				////////////////////////////////////////////////////////////////////////////
+				para->cudaCopyConcFile(i);
+				////////////////////////////////////////////////////////////////////////////
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		delete obj_Conc;
+	}//end concentration
+
+	 //cout << "Test 5 " << endl;
+
+
+
+	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //processor boundary (Martin Sch.) 
+	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //3D domain decomposition
+	 // X
+	if ((para->getNumprocs() > 1) && (procNeighborsSendX.size() == procNeighborsRecvX.size()))
+	{
+		for (int j = 0; j < procNeighborsSendX.size(); j++)
+		{
+			for (int i = 0; i <= maxLevel; i++) {
+				int tempSend = procNeighborsSendX[j]->getSize(i);
+				int tempRecv = procNeighborsRecvX[j]->getSize(i);
+				if (tempSend > 0)
+				{
+					////////////////////////////////////////////////////////////////////////////////////////
+					//send
+					cout << "Groesse der Daten für den X Sendepuffer, Level " << i << " : " << tempSend << endl;
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->setNumberOfProcessNeighborsX((unsigned int)procNeighborsSendX.size(), i, "send");
+					para->getParH(i)->sendProcessNeighborX[j].rankNeighbor = neighborRankX[j];
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->sendProcessNeighborX[j].numberOfNodes = tempSend;
+					para->getParD(i)->sendProcessNeighborX[j].numberOfNodes = tempSend;
+					para->getParH(i)->sendProcessNeighborX[j].numberOfFs = para->getD3Qxx() * tempSend;
+					para->getParD(i)->sendProcessNeighborX[j].numberOfFs = para->getD3Qxx() * tempSend;
+					para->getParH(i)->sendProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+					para->getParD(i)->sendProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+					para->getParH(i)->sendProcessNeighborX[j].memsizeFs = sizeof(real)     *tempSend;
+					para->getParD(i)->sendProcessNeighborX[j].memsizeFs = sizeof(real)     *tempSend;
+					////////////////////////////////////////////////////////////////////////////////////////
+					//recv
+					cout << "Groesse der Daten für den X Empfangspuffer, Level " << i << " : " << tempRecv << endl;
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->setNumberOfProcessNeighborsX((unsigned int)procNeighborsRecvX.size(), i, "recv");
+					para->getParH(i)->recvProcessNeighborX[j].rankNeighbor = neighborRankX[j];
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->recvProcessNeighborX[j].numberOfNodes = tempRecv;
+					para->getParD(i)->recvProcessNeighborX[j].numberOfNodes = tempRecv;
+					para->getParH(i)->recvProcessNeighborX[j].numberOfFs = para->getD3Qxx() * tempRecv;
+					para->getParD(i)->recvProcessNeighborX[j].numberOfFs = para->getD3Qxx() * tempRecv;
+					para->getParH(i)->recvProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+					para->getParD(i)->recvProcessNeighborX[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+					para->getParH(i)->recvProcessNeighborX[j].memsizeFs = sizeof(real)     *tempRecv;
+					para->getParD(i)->recvProcessNeighborX[j].memsizeFs = sizeof(real)     *tempRecv;
+					////////////////////////////////////////////////////////////////////////////////////////
+					//malloc on host and device
+					para->cudaAllocProcessNeighborX(i, j);
+					////////////////////////////////////////////////////////////////////////////////////////
+					//init index arrays
+					procNeighborsSendX[j]->initIndex(para->getParH(i)->sendProcessNeighborX[j].index, i);
+					procNeighborsRecvX[j]->initIndex(para->getParH(i)->recvProcessNeighborX[j].index, i);
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaCopyProcessNeighborXIndex(i, j);
+					////////////////////////////////////////////////////////////////////////////////////////
+				}
+			}
+		}
+	}//ende X processor boundarys
+	 //////////////////////////////////////////////////////////////////////////
+	 // Y
+	if ((para->getNumprocs() > 1) && (procNeighborsSendY.size() == procNeighborsRecvY.size()))
+	{
+		for (int j = 0; j < procNeighborsSendY.size(); j++)
+		{
+			for (int i = 0; i <= maxLevel; i++) {
+				int tempSend = procNeighborsSendY[j]->getSize(i);
+				int tempRecv = procNeighborsRecvY[j]->getSize(i);
+				if (tempSend > 0)
+				{
+					////////////////////////////////////////////////////////////////////////////////////////
+					//send
+					cout << "Groesse der Daten für den Y Sendepuffer, Level " << i << " : " << tempSend << endl;
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->setNumberOfProcessNeighborsY((unsigned int)procNeighborsSendY.size(), i, "send");
+					para->getParH(i)->sendProcessNeighborY[j].rankNeighbor = neighborRankY[j];
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->sendProcessNeighborY[j].numberOfNodes = tempSend;
+					para->getParD(i)->sendProcessNeighborY[j].numberOfNodes = tempSend;
+					para->getParH(i)->sendProcessNeighborY[j].numberOfFs = para->getD3Qxx() * tempSend;
+					para->getParD(i)->sendProcessNeighborY[j].numberOfFs = para->getD3Qxx() * tempSend;
+					para->getParH(i)->sendProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+					para->getParD(i)->sendProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+					para->getParH(i)->sendProcessNeighborY[j].memsizeFs = sizeof(real)     *tempSend;
+					para->getParD(i)->sendProcessNeighborY[j].memsizeFs = sizeof(real)     *tempSend;
+					////////////////////////////////////////////////////////////////////////////////////////
+					//recv
+					cout << "Groesse der Daten für den Y Empfangspuffer, Level " << i << " : " << tempRecv << endl;
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->setNumberOfProcessNeighborsY((unsigned int)procNeighborsRecvY.size(), i, "recv");
+					para->getParH(i)->recvProcessNeighborY[j].rankNeighbor = neighborRankY[j];
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->recvProcessNeighborY[j].numberOfNodes = tempRecv;
+					para->getParD(i)->recvProcessNeighborY[j].numberOfNodes = tempRecv;
+					para->getParH(i)->recvProcessNeighborY[j].numberOfFs = para->getD3Qxx() * tempRecv;
+					para->getParD(i)->recvProcessNeighborY[j].numberOfFs = para->getD3Qxx() * tempRecv;
+					para->getParH(i)->recvProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+					para->getParD(i)->recvProcessNeighborY[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+					para->getParH(i)->recvProcessNeighborY[j].memsizeFs = sizeof(real)     *tempRecv;
+					para->getParD(i)->recvProcessNeighborY[j].memsizeFs = sizeof(real)     *tempRecv;
+					////////////////////////////////////////////////////////////////////////////////////////
+					//malloc on host and device
+					para->cudaAllocProcessNeighborY(i, j);
+					////////////////////////////////////////////////////////////////////////////////////////
+					//init index arrays
+					procNeighborsSendY[j]->initIndex(para->getParH(i)->sendProcessNeighborY[j].index, i);
+					procNeighborsRecvY[j]->initIndex(para->getParH(i)->recvProcessNeighborY[j].index, i);
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaCopyProcessNeighborYIndex(i, j);
+					////////////////////////////////////////////////////////////////////////////////////////
+				}
+			}
+		}
+	}//ende Y processor boundarys
+	 //////////////////////////////////////////////////////////////////////////
+	 // Z
+	if ((para->getNumprocs() > 1) && (procNeighborsSendZ.size() == procNeighborsRecvZ.size()))
+	{
+		for (int j = 0; j < procNeighborsSendZ.size(); j++)
+		{
+			for (int i = 0; i <= maxLevel; i++) {
+				int tempSend = procNeighborsSendZ[j]->getSize(i);
+				int tempRecv = procNeighborsRecvZ[j]->getSize(i);
+				if (tempSend > 0)
+				{
+					////////////////////////////////////////////////////////////////////////////////////////
+					//send
+					cout << "Groesse der Daten für den Z Sendepuffer, Level " << i << " : " << tempSend << endl;
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->setNumberOfProcessNeighborsZ((unsigned int)procNeighborsSendZ.size(), i, "send");
+					para->getParH(i)->sendProcessNeighborZ[j].rankNeighbor = neighborRankZ[j];
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->sendProcessNeighborZ[j].numberOfNodes = tempSend;
+					para->getParD(i)->sendProcessNeighborZ[j].numberOfNodes = tempSend;
+					para->getParH(i)->sendProcessNeighborZ[j].numberOfFs = para->getD3Qxx() * tempSend;
+					para->getParD(i)->sendProcessNeighborZ[j].numberOfFs = para->getD3Qxx() * tempSend;
+					para->getParH(i)->sendProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+					para->getParD(i)->sendProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+					para->getParH(i)->sendProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempSend;
+					para->getParD(i)->sendProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempSend;
+					////////////////////////////////////////////////////////////////////////////////////////
+					//recv
+					cout << "Groesse der Daten für den Z Empfangspuffer, Level " << i << " : " << tempRecv << endl;
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->setNumberOfProcessNeighborsZ((unsigned int)procNeighborsRecvZ.size(), i, "recv");
+					para->getParH(i)->recvProcessNeighborZ[j].rankNeighbor = neighborRankZ[j];
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->getParH(i)->recvProcessNeighborZ[j].numberOfNodes = tempRecv;
+					para->getParD(i)->recvProcessNeighborZ[j].numberOfNodes = tempRecv;
+					para->getParH(i)->recvProcessNeighborZ[j].numberOfFs = para->getD3Qxx() * tempRecv;
+					para->getParD(i)->recvProcessNeighborZ[j].numberOfFs = para->getD3Qxx() * tempRecv;
+					para->getParH(i)->recvProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+					para->getParD(i)->recvProcessNeighborZ[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+					para->getParH(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempRecv;
+					para->getParD(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempRecv;
+					////////////////////////////////////////////////////////////////////////////////////////
+					//malloc on host and device
+					para->cudaAllocProcessNeighborZ(i, j);
+					////////////////////////////////////////////////////////////////////////////////////////
+					//init index arrays
+					procNeighborsSendZ[j]->initIndex(para->getParH(i)->sendProcessNeighborZ[j].index, i);
+					procNeighborsRecvZ[j]->initIndex(para->getParH(i)->recvProcessNeighborZ[j].index, i);
+					////////////////////////////////////////////////////////////////////////////////////////
+					para->cudaCopyProcessNeighborZIndex(i, j);
+					////////////////////////////////////////////////////////////////////////////////////////
+				}
+			}
+		}
+	}//ende Z processor boundarys
+	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 //3D domain decomposition convection diffusion
+	if (para->getDiffOn() == true) {
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// X
+		if ((para->getNumprocs() > 1) && (procNeighborsSendADX.size() == procNeighborsRecvADX.size()))
+		{
+			for (int j = 0; j < procNeighborsSendADX.size(); j++)
+			{
+				for (int i = 0; i <= maxLevel; i++) {
+					int tempSend = procNeighborsSendADX[j]->getSize(i);
+					int tempRecv = procNeighborsRecvADX[j]->getSize(i);
+					if (tempSend > 0)
+					{
+						////////////////////////////////////////////////////////////////////////////////////////
+						//send
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->sendProcessNeighborADX[j].rankNeighbor = neighborRankADX[j];
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->sendProcessNeighborADX[j].numberOfNodes = tempSend;
+						para->getParD(i)->sendProcessNeighborADX[j].numberOfNodes = tempSend;
+						para->getParH(i)->sendProcessNeighborADX[j].numberOfFs = para->getD3Qxx() * tempSend;
+						para->getParD(i)->sendProcessNeighborADX[j].numberOfFs = para->getD3Qxx() * tempSend;
+						para->getParH(i)->sendProcessNeighborADX[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+						para->getParD(i)->sendProcessNeighborADX[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+						para->getParH(i)->sendProcessNeighborADX[j].memsizeFs = sizeof(real)     *tempSend;
+						para->getParD(i)->sendProcessNeighborADX[j].memsizeFs = sizeof(real)     *tempSend;
+						////////////////////////////////////////////////////////////////////////////////////////
+						//recv
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->recvProcessNeighborADX[j].rankNeighbor = neighborRankADX[j];
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->recvProcessNeighborADX[j].numberOfNodes = tempRecv;
+						para->getParD(i)->recvProcessNeighborADX[j].numberOfNodes = tempRecv;
+						para->getParH(i)->recvProcessNeighborADX[j].numberOfFs = para->getD3Qxx() * tempRecv;
+						para->getParD(i)->recvProcessNeighborADX[j].numberOfFs = para->getD3Qxx() * tempRecv;
+						para->getParH(i)->recvProcessNeighborADX[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+						para->getParD(i)->recvProcessNeighborADX[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+						para->getParH(i)->recvProcessNeighborADX[j].memsizeFs = sizeof(real)     *tempRecv;
+						para->getParD(i)->recvProcessNeighborADX[j].memsizeFs = sizeof(real)     *tempRecv;
+						////////////////////////////////////////////////////////////////////////////////////////
+						//malloc on host and device
+						para->cudaAllocProcessNeighborADX(i, j);
+						////////////////////////////////////////////////////////////////////////////////////////
+						//init index arrays
+						procNeighborsSendADX[j]->initIndex(para->getParH(i)->sendProcessNeighborADX[j].index, i);
+						procNeighborsRecvADX[j]->initIndex(para->getParH(i)->recvProcessNeighborADX[j].index, i);
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->cudaCopyProcessNeighborADXIndex(i, j);
+						////////////////////////////////////////////////////////////////////////////////////////
+					}
+				}
+			}
+		}//ende X processor boundarys
+		 //////////////////////////////////////////////////////////////////////////
+		 // Y
+		if ((para->getNumprocs() > 1) && (procNeighborsSendADY.size() == procNeighborsRecvADY.size()))
+		{
+			for (int j = 0; j < procNeighborsSendADY.size(); j++)
+			{
+				for (int i = 0; i <= maxLevel; i++) {
+					int tempSend = procNeighborsSendADY[j]->getSize(i);
+					int tempRecv = procNeighborsRecvADY[j]->getSize(i);
+					if (tempSend > 0)
+					{
+						////////////////////////////////////////////////////////////////////////////////////////
+						//send
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->sendProcessNeighborADY[j].rankNeighbor = neighborRankADY[j];
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->sendProcessNeighborADY[j].numberOfNodes = tempSend;
+						para->getParD(i)->sendProcessNeighborADY[j].numberOfNodes = tempSend;
+						para->getParH(i)->sendProcessNeighborADY[j].numberOfFs = para->getD3Qxx() * tempSend;
+						para->getParD(i)->sendProcessNeighborADY[j].numberOfFs = para->getD3Qxx() * tempSend;
+						para->getParH(i)->sendProcessNeighborADY[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+						para->getParD(i)->sendProcessNeighborADY[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+						para->getParH(i)->sendProcessNeighborADY[j].memsizeFs = sizeof(real)     *tempSend;
+						para->getParD(i)->sendProcessNeighborADY[j].memsizeFs = sizeof(real)     *tempSend;
+						////////////////////////////////////////////////////////////////////////////////////////
+						//recv
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->recvProcessNeighborADY[j].rankNeighbor = neighborRankADY[j];
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->recvProcessNeighborADY[j].numberOfNodes = tempRecv;
+						para->getParD(i)->recvProcessNeighborADY[j].numberOfNodes = tempRecv;
+						para->getParH(i)->recvProcessNeighborADY[j].numberOfFs = para->getD3Qxx() * tempRecv;
+						para->getParD(i)->recvProcessNeighborADY[j].numberOfFs = para->getD3Qxx() * tempRecv;
+						para->getParH(i)->recvProcessNeighborADY[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+						para->getParD(i)->recvProcessNeighborADY[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+						para->getParH(i)->recvProcessNeighborADY[j].memsizeFs = sizeof(real)     *tempRecv;
+						para->getParD(i)->recvProcessNeighborADY[j].memsizeFs = sizeof(real)     *tempRecv;
+						////////////////////////////////////////////////////////////////////////////////////////
+						//malloc on host and device
+						para->cudaAllocProcessNeighborADY(i, j);
+						////////////////////////////////////////////////////////////////////////////////////////
+						//init index arrays
+						procNeighborsSendADY[j]->initIndex(para->getParH(i)->sendProcessNeighborADY[j].index, i);
+						procNeighborsRecvADY[j]->initIndex(para->getParH(i)->recvProcessNeighborADY[j].index, i);
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->cudaCopyProcessNeighborADYIndex(i, j);
+						////////////////////////////////////////////////////////////////////////////////////////
+					}
+				}
+			}
+		}//ende Y processor boundarys
+		 //////////////////////////////////////////////////////////////////////////
+		 // Z
+		if ((para->getNumprocs() > 1) && (procNeighborsSendADZ.size() == procNeighborsRecvADZ.size()))
+		{
+			for (int j = 0; j < procNeighborsSendADZ.size(); j++)
+			{
+				for (int i = 0; i <= maxLevel; i++) {
+					int tempSend = procNeighborsSendADZ[j]->getSize(i);
+					int tempRecv = procNeighborsRecvADZ[j]->getSize(i);
+					if (tempSend > 0)
+					{
+						////////////////////////////////////////////////////////////////////////////////////////
+						//send
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->sendProcessNeighborADZ[j].rankNeighbor = neighborRankADZ[j];
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->sendProcessNeighborADZ[j].numberOfNodes = tempSend;
+						para->getParD(i)->sendProcessNeighborADZ[j].numberOfNodes = tempSend;
+						para->getParH(i)->sendProcessNeighborADZ[j].numberOfFs = para->getD3Qxx() * tempSend;
+						para->getParD(i)->sendProcessNeighborADZ[j].numberOfFs = para->getD3Qxx() * tempSend;
+						para->getParH(i)->sendProcessNeighborADZ[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+						para->getParD(i)->sendProcessNeighborADZ[j].memsizeIndex = sizeof(unsigned int)*tempSend;
+						para->getParH(i)->sendProcessNeighborADZ[j].memsizeFs = sizeof(real)     *tempSend;
+						para->getParD(i)->sendProcessNeighborADZ[j].memsizeFs = sizeof(real)     *tempSend;
+						////////////////////////////////////////////////////////////////////////////////////////
+						//recv
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->recvProcessNeighborADZ[j].rankNeighbor = neighborRankADZ[j];
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->getParH(i)->recvProcessNeighborADZ[j].numberOfNodes = tempRecv;
+						para->getParD(i)->recvProcessNeighborADZ[j].numberOfNodes = tempRecv;
+						para->getParH(i)->recvProcessNeighborADZ[j].numberOfFs = para->getD3Qxx() * tempRecv;
+						para->getParD(i)->recvProcessNeighborADZ[j].numberOfFs = para->getD3Qxx() * tempRecv;
+						para->getParH(i)->recvProcessNeighborADZ[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+						para->getParD(i)->recvProcessNeighborADZ[j].memsizeIndex = sizeof(unsigned int)*tempRecv;
+						para->getParH(i)->recvProcessNeighborADZ[j].memsizeFs = sizeof(real)     *tempRecv;
+						para->getParD(i)->recvProcessNeighborADZ[j].memsizeFs = sizeof(real)     *tempRecv;
+						////////////////////////////////////////////////////////////////////////////////////////
+						//malloc on host and device
+						para->cudaAllocProcessNeighborADZ(i, j);
+						////////////////////////////////////////////////////////////////////////////////////////
+						//init index arrays
+						procNeighborsSendADZ[j]->initIndex(para->getParH(i)->sendProcessNeighborADZ[j].index, i);
+						procNeighborsRecvADZ[j]->initIndex(para->getParH(i)->recvProcessNeighborADZ[j].index, i);
+						////////////////////////////////////////////////////////////////////////////////////////
+						para->cudaCopyProcessNeighborADZIndex(i, j);
+						////////////////////////////////////////////////////////////////////////////////////////
+					}
+				}
+			}
+		}//ende Z processor boundarys
+		 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}
+
+
+
+
 
 
 
