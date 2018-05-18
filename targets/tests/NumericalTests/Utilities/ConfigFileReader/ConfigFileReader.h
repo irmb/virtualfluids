@@ -36,7 +36,7 @@ private:
 	void makeTestResults();
 	bool testShouldRun(std::vector<bool> test);
 
-	real viscosity;
+	real viscosity, rho0;
 	real u0SW, v0SW;
 	real amplitudeTGV, u0TGV;
 	real l0;
@@ -51,7 +51,7 @@ private:
 	std::string logFilePath;
 	std::vector< std::string> grids;
 	std::vector< real> lx;
-	std::vector< real> lx;
+	std::vector< real> lz;
 	std::vector< int> devices;
 	std::vector< bool> tgv;
 	std::vector< bool> sw;
