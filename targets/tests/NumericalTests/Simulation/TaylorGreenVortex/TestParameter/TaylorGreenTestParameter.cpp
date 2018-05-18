@@ -25,6 +25,5 @@ TaylorGreenTestParameter::TaylorGreenTestParameter(real u0, real amplitude, real
 	this->filePath = oss.str();
 
 	initialCondition = InitialConditionTaylorGreen::getNewInstance((double)lx, (double)lz, (double)l0, u0, amplitude, rho0);
-	simResults = SimulationResults::getNewInstance(lx, lz, timeStepLength);
 	calculator = VxFFTCalculator::getNewInstance(viscosity, testResults);
 }
