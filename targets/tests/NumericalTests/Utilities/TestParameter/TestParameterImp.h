@@ -29,7 +29,7 @@ public:
 
 protected:
 	TestParameterImp() {};
-	TestParameterImp(real viscosity, unsigned int lx,
+	TestParameterImp(real viscosity, unsigned int lx, unsigned int lz, unsigned int l0,
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath,
@@ -48,7 +48,6 @@ protected:
 
 	unsigned int maxLevel, numberOfGridLevels;
 	unsigned int l0, lz;
-	real rho0;
 	unsigned int timeStepLength;
 	unsigned int startTimeCalculation, startTimeDataWriter;
 	unsigned int endTime;

@@ -11,7 +11,8 @@ class PhiAndNuTest;
 class TaylorGreenTestParameter : public TestParameterImp
 {
 public:
-	static std::shared_ptr<TestParameter> getNewInstance(real u0, real amplitude, real viscosity, unsigned int lx,
+	static std::shared_ptr<TestParameter> getNewInstance(real u0, real amplitude, real viscosity, real rho0,
+														unsigned int lx, unsigned int lz, unsigned int l0,
 														unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 														unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 														std::string gridPath,
@@ -21,7 +22,7 @@ public:
 	
 protected:
 	TaylorGreenTestParameter(real u0, real amplitude,
-							real viscosity, unsigned int lx,
+							real viscosity, real rho0, unsigned int lx, unsigned int lz, unsigned int l0,
 							unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 							unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 							std::string gridPath,
@@ -29,7 +30,7 @@ protected:
 							std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
 
 private:
-	real u0, amplitude;
+	real u0, amplitude, rho0;
 
 };
 #endif 

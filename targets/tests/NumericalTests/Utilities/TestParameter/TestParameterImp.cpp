@@ -3,14 +3,14 @@
 #include "Utilities/TestResults/TestResults.h"
 
 TestParameterImp::TestParameterImp(
-	real viscosity, unsigned int lx, 
+	real viscosity, unsigned int lx, unsigned int lz, unsigned int l0,
 	unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, 
 	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
 	std::string gridPath, 
 	bool writeFiles, unsigned int startStepFileWriter, 
 	std::shared_ptr<TestResults> testResults,
 	std::vector<int> devices)
-		:viscosity(viscosity), lx(lx),
+		:viscosity(viscosity), lx(lx), l0(l0), lz(lz),
 		numberOfTimeSteps(numberOfTimeSteps), basisTimeStepLength(basisTimeStepLength), 
 		startStepCalculation(startStepCalculation), ySliceForCalculation(ySliceForCalculation), 
 		gridPath(gridPath), 
@@ -19,10 +19,6 @@ TestParameterImp::TestParameterImp(
 {
 	maxLevel = 0;
 	numberOfGridLevels = 1;
-	l0 = 32;
-	rho0 = 1.0;
-
-	lz = 3 * lx / 2;
 	timeStepLength = basisTimeStepLength*(lx / l0)*(lx / l0);
 	startTimeCalculation = timeStepLength * startStepCalculation;
 	startTimeDataWriter = timeStepLength * startStepFileWriter;

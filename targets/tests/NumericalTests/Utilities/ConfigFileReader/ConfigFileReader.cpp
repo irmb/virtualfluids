@@ -136,7 +136,7 @@ void ConfigFileReader::makeTestParameter()
 		tests.push_back(tgvTestResults);
 		for (int i = 0; i < tgv.size(); i++) {
 			if (tgv.at(i)) {
-				testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
+				testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, 1.0, l.at(i), l.at(i) * 3 / 2, 32, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
 			}
 		}
 	}
@@ -147,7 +147,7 @@ void ConfigFileReader::makeTestParameter()
 
 		for (int i = 0; i < sw.size(); i++) {
 			if (sw.at(i)) {
-				testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, l.at(i), numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, swTestResults, devices));
+				testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, 1.0, l.at(i), l.at(i) * 3 / 2, 32, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), writeFiles, startStepFileWriter, filePath, swTestResults, devices));
 			}
 		}
 	}

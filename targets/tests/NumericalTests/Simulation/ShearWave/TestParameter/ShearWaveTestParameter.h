@@ -7,8 +7,8 @@ class  PhiAndNuTest;
 class ShearWaveTestParameter : public TestParameterImp
 {
 public:
-	static std::shared_ptr<TestParameter> getNewInstance(real u0, real v0,
-														real viscosity, unsigned int lx,
+	static std::shared_ptr<TestParameter> getNewInstance(real u0, real v0, real viscosity, real rho0, 
+														unsigned int lx, unsigned int lz, unsigned int l0,
 														unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 														unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 														std::string gridPath,
@@ -18,8 +18,8 @@ public:
 
 protected:
 	ShearWaveTestParameter() {};
-	ShearWaveTestParameter(real u0, real v0,
-							real viscosity, unsigned int lx,
+	ShearWaveTestParameter(real u0, real v0, real viscosity, real rho0,
+							unsigned int lx, unsigned int lz, unsigned int l0,
 							unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 							unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 							std::string gridPath,
@@ -27,7 +27,7 @@ protected:
 							std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
 
 private:
-	real u0, v0;
+	real u0, v0, rho0;
 };
 
 #endif
