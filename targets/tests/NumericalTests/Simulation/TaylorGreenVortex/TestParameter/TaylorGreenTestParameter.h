@@ -17,7 +17,7 @@ public:
 														std::string gridPath,
 														bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
 														std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices);
-	double getVelocity();
+	double getMaxVelocity();
 	
 protected:
 	TaylorGreenTestParameter(real u0, real amplitude,

@@ -95,11 +95,6 @@ std::vector<int> TestParameterImp::getDevices()
 	return devices;
 }
 
-double TestParameterImp::getVelocity()
-{
-	return velocity;
-}
-
 std::shared_ptr<InitialCondition> TestParameterImp::getInitialCondition()
 {
 	return initialCondition;

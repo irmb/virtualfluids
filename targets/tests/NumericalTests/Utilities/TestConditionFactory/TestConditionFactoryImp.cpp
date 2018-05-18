@@ -18,7 +18,8 @@ std::vector<std::shared_ptr<TestCondition>> TestConditionFactoryImp::makeTestCon
 
 	for (int i = 0; i < testPara.size(); i++) {
 		std::shared_ptr<TestConditionImp> testCondit = TestConditionImp::getNewInstance();
-		testCondit->initParameter(testPara.at(i)->getViscosity(), testPara.at(i)->getGridPath(), testPara.at(i)->getFilePath(), testPara.at(i)->getNumberOfGridLevels(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength(), testPara.at(i)->getDevices(), testPara.at(i)->getVelocity());
+
+		testCondit->initParameter(testPara.at(i)->getViscosity(), testPara.at(i)->getGridPath(), testPara.at(i)->getFilePath(), testPara.at(i)->getNumberOfGridLevels(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength(), testPara.at(i)->getDevices(), testPara.at(i)->getMaxVelocity());
 		testCondit->initInitialConditions(testPara.at(i)->getInitialCondition());
 		testCondit->initGridProvider();
 		testCondit->initCalculator(testPara.at(i)->getCalculator());

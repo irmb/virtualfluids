@@ -16,11 +16,11 @@ std::shared_ptr<TestParameter> ShearWaveTestParameter::getNewInstance(	real u0, 
 																		writeFiles, startStepFileWriter, filePath,testResults, devices));
 }
 
-double ShearWaveTestParameter::getVelocity()
+double ShearWaveTestParameter::getMaxVelocity()
 {
 	if(u0 > v0)
-		return u0;
-	return v0;
+		return u0 / (lx / l0);
+	return v0 / (lx / l0);
 }
 
 ShearWaveTestParameter::ShearWaveTestParameter(	real u0, real v0, real viscosity, unsigned int lx, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, bool writeFiles, unsigned int startStepFileWriter, std::string filePath, std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices)

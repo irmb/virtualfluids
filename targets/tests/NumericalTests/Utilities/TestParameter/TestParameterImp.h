@@ -23,7 +23,6 @@ public:
 	bool getWriteFiles();
 	unsigned int getStartTimeDataWriter();
 	std::vector<int> getDevices();
-	double getVelocity();
 	std::shared_ptr<InitialCondition> getInitialCondition();
 	std::shared_ptr<Calculator> getCalculator();
 	std::shared_ptr<TestResults> getTestResults();
@@ -46,7 +45,6 @@ protected:
 	std::string gridPath;
 	bool writeFiles;
 	std::vector<int> devices;
-	double velocity;
 
 	unsigned int maxLevel, numberOfGridLevels;
 	unsigned int l0, lz;

@@ -25,7 +25,7 @@ public:
 	virtual bool getWriteFiles() = 0;
 	virtual unsigned int getStartTimeDataWriter() = 0;
 	virtual std::vector<int> getDevices() = 0;
-	virtual double getVelocity() = 0;
+	virtual double getMaxVelocity() = 0;
 	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
 	virtual std::shared_ptr<Calculator> getCalculator() = 0;
 	virtual std::shared_ptr<TestResults> getTestResults() = 0;
