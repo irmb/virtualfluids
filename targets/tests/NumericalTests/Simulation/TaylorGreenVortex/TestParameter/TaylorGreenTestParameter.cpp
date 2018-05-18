@@ -24,7 +24,7 @@ TaylorGreenTestParameter::TaylorGreenTestParameter(real u0, real amplitude, real
 	oss << filePath + "/TaylorGreenVortex/grid" << lx;
 	this->filePath = oss.str();
 
-	initialCondition = std::shared_ptr<InitialConditionTaylorGreen>(new InitialConditionTaylorGreen((double)lx, (double)lz, (double)l0, u0, amplitude, rho0));
+	initialCondition = InitialConditionTaylorGreen::getNewInstance((double)lx, (double)lz, (double)l0, u0, amplitude, rho0);
 	simResults = SimulationResults::getNewInstance(lx, lz, timeStepLength);
 	calculator = VxFFTCalculator::getNewInstance(viscosity, testResults);
 }

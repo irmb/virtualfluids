@@ -3,10 +3,13 @@
 
 #include "Utilities/InitialCondition/InitialConditionImp.h"
 
+#include <memory>
+
 class InitialConditionShearWave :public InitialConditionImp
 {
 public:
-	InitialConditionShearWave(real lx, real lz, real l0, real u0, real v0, real rho0);
+	static std::shared_ptr< InitialConditionShearWave> getNewInstance(real lx, real lz, real l0, real u0, real v0, real rho0);
+
 	real getInitVX(int i, int level);
 	real getInitVY(int i, int level);
 	real getInitVZ(int i, int level);
@@ -14,7 +17,9 @@ public:
 	real getInitPRESS(int i, int level);
 
 private:
-	InitialConditionShearWave();
+	InitialConditionShearWave(real lx, real lz, real l0, real u0, real v0, real rho0);
+	InitialConditionShearWave() {};
+	
 	real rho;
 	real l0;
 	real lx, lz;

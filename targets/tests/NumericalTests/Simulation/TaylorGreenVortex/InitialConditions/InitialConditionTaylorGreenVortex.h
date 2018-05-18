@@ -3,10 +3,12 @@
 
 #include "Utilities/InitialCondition/InitialConditionImp.h"
 
+#include <memory>
+
 class InitialConditionTaylorGreen :public InitialConditionImp
 {
 public:
-	InitialConditionTaylorGreen(real lx, real lz, real l0, real u0, real amplitude, real rho0);
+	static std::shared_ptr< InitialConditionTaylorGreen> getNewInstance(real lx, real lz, real l0, real u0, real amplitude, real rho0);
 
 	real getInitVX(int i, int level);
 	real getInitVY(int i, int level);
@@ -15,7 +17,9 @@ public:
 	real getInitPRESS(int i, int level);
 
 private:
-	InitialConditionTaylorGreen();
+	InitialConditionTaylorGreen(real lx, real lz, real l0, real u0, real amplitude, real rho0);
+	InitialConditionTaylorGreen() {};
+
 	real Amp;
 	real rho;
 	real L0;

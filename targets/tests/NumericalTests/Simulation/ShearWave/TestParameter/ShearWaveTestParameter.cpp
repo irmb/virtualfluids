@@ -30,6 +30,6 @@ ShearWaveTestParameter::ShearWaveTestParameter(	real u0, real v0, real viscosity
 	oss << filePath + "/ShearWave/grid" << lx;
 	this->filePath = oss.str();
 
-	initialCondition = std::shared_ptr<InitialConditionShearWave>(new InitialConditionShearWave((double)lx, (double)lz, (double)l0, u0, v0, rho0));
+	initialCondition = InitialConditionShearWave::getNewInstance((double)lx, (double)lz, (double)l0, u0, v0, rho0);
 	calculator = VzFFTCalculator::getNewInstance(viscosity, testResults);
 }

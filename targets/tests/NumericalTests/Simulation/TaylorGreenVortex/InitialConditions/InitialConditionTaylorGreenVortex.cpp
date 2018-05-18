@@ -13,6 +13,11 @@ InitialConditionTaylorGreen::InitialConditionTaylorGreen(real lx, real lz, real 
 	this->u0 = u0;
 }
 
+std::shared_ptr<InitialConditionTaylorGreen> InitialConditionTaylorGreen::getNewInstance(real lx, real lz, real l0, real u0, real amplitude, real rho0)
+{
+	return std::shared_ptr<InitialConditionTaylorGreen>(new InitialConditionTaylorGreen(lx, lz, l0, u0, amplitude, rho0));
+}
+
 real InitialConditionTaylorGreen::getInitVX(int i, int level)
 {
 	real x = getXCoord(i, level);

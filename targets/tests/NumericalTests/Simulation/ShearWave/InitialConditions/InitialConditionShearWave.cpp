@@ -14,6 +14,11 @@ InitialConditionShearWave::InitialConditionShearWave(real lx, real lz, real l0, 
 	this->v0 = v0;
 }
 
+std::shared_ptr<InitialConditionShearWave> InitialConditionShearWave::getNewInstance(real lx, real lz, real l0, real u0, real v0, real rho0)
+{
+	return std::shared_ptr<InitialConditionShearWave>(new InitialConditionShearWave(lx, lz, l0, u0, v0, rho0));
+}
+
 real InitialConditionShearWave::getInitVX(int i, int level)
 {
 	real x = getXCoord(i, level);
