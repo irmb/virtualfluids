@@ -32,7 +32,7 @@ protected:
 	TestParameterImp(real viscosity, unsigned int lx, unsigned int lz, unsigned int l0,
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
-		std::string gridPath,
+		std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
 		bool writeFiles, unsigned int startStepFileWriter,
 		std::shared_ptr<TestResults> testResults,
 		std::vector<int> devices);
