@@ -3,21 +3,22 @@
 #include "Utilities\TestParameter\TestParameter.h"
 #include "Utilities\TestCondition\TestConditionImp.h"
 
-std::shared_ptr<TestConditionFactory> TestConditionFactoryImp::getNewInstance(std::vector<std::shared_ptr<TestParameter>> testPara)
+std::shared_ptr<TestConditionFactory> TestConditionFactoryImp::getNewInstance()
 {
-	return std::shared_ptr<TestConditionFactory>(new TestConditionFactoryImp(testPara));
+	return std::shared_ptr<TestConditionFactory>(new TestConditionFactoryImp());
 }
 
-TestConditionFactoryImp::TestConditionFactoryImp(std::vector<std::shared_ptr<TestParameter>> testPara):testPara(testPara)
+TestConditionFactoryImp::TestConditionFactoryImp()
 {
+
 }
 
-std::vector<std::shared_ptr<TestCondition>> TestConditionFactoryImp::makeTestConditions()
+std::vector<std::shared_ptr<TestCondition>> TestConditionFactoryImp::makeTestConditions(std::vector< std::shared_ptr< TestParameter> > testPara)
 {
-	std::vector<std::shared_ptr<TestCondition>> testConditions;
+	std::vector< std::shared_ptr<TestCondition> > testConditions;
 
 	for (int i = 0; i < testPara.size(); i++) {
-		std::shared_ptr<TestConditionImp> testCondit = TestConditionImp::getNewInstance();
+		std::shared_ptr< TestConditionImp> testCondit = TestConditionImp::getNewInstance();
 
 		testCondit->initParameter(testPara.at(i)->getViscosity(), testPara.at(i)->getGridPath(), testPara.at(i)->getFilePath(), testPara.at(i)->getNumberOfGridLevels(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength(), testPara.at(i)->getDevices(), testPara.at(i)->getMaxVelocity());
 		testCondit->initInitialConditions(testPara.at(i)->getInitialCondition());

@@ -12,13 +12,14 @@
 
 static void startNumericalTests(const std::string &configFile)
 {
-	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
-
-	std::shared_ptr<TestInformation> testInfo = configReader->getTestInformation();
+	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
+	configReader->readConfigFile(configFile);
 
 	std::vector< std::shared_ptr< TestParameter> > testPara = configReader->getTestParameter();
-	std::shared_ptr< TestConditionFactory> factory = TestConditionFactoryImp::getNewInstance(testPara);
-	std::vector< std::shared_ptr< TestCondition> > testConditions = factory->makeTestConditions();
+	std::shared_ptr< TestInformation> testInfo = configReader->getTestInformation();
+
+	std::shared_ptr< TestConditionFactory> factory = TestConditionFactoryImp::getNewInstance();
+	std::vector< std::shared_ptr< TestCondition> > testConditions = factory->makeTestConditions(testPara);
 
 	for (int i = 0; i < testConditions.size(); i++)
 	{
