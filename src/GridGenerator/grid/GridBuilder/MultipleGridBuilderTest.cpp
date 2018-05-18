@@ -9,9 +9,8 @@ class MultipleGridBuilderAddGridTest : public testing::Test
 {
     virtual void SetUp() override
     {
-        gridFactory = SPtr<GridFactory>(new GridFactory());
+        gridFactory = GridFactory::make();
         gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
-        gridFactory->setGrid("");
         gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     }
 public:
@@ -85,9 +84,9 @@ TEST_F(MultipleGridBuilderAddGridTest, addGridWithFloatingStartPoints_ShouldCrea
 
 TEST(MultipleGridBuilderTest, everyExceptTheFinestGrid_shouldHaveAGridInterface)
 {
-    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
-    gridFactory->setGrid("spy");
+    gridFactory->setGridType(TestDouble::SPY);
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
     gridBuilder->addGrid(new Cuboid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0), 2);
@@ -103,9 +102,10 @@ TEST(MultipleGridBuilderTest, everyExceptTheFinestGrid_shouldHaveAGridInterface)
 
 TEST(MultipleGridBuilderTest, afterCreatingGridInterface_FineGridsShouldNotBeHavePeriodicBoundarys)
 {
-    auto gridFactory = SPtr<GridFactory>(new GridFactory());
+    auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridStrategyDummy()));
-    gridFactory->setGrid("spy");
+    gridFactory->setGridType(TestDouble::SPY);
+
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
     gridBuilder->addGrid(new Cuboid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0), 2);

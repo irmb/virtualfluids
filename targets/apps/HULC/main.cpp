@@ -248,13 +248,12 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
-    ////auto gridFactory = SPtr<GridFactory>(new GridFactory());
-    ////gridFactory->setGridStrategy(SPtr<GridStrategy>(new GridCpuStrategy()));
-    ////gridFactory->setGrid("grid");
-    ////gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
+    auto gridFactory = GridFactory::make();
+    gridFactory->setGridStrategy(Device::CPU);
+    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
 
-    ////auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
-    //auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+    //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
+    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
     ////Conglomerate* conglomerate = new Conglomerate();
     ////conglomerate->add(new Cuboid(10, 10, 10, 30, 30, 30));
@@ -269,41 +268,41 @@ void multipleLevel(const std::string& configPath)
     ////TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
-    //gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
-    //gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
-    //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
-    //gridBuilder->addGeometry(triangularMesh);
+    gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
+    gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
+    gridBuilder->addGeometry(triangularMesh);
 
 
-    ////TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
+    //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
 
-    ////TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
-    ////TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
-    ////trans.transformWorldToGrid(*sphere);
-    ////STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
+    //TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
+    //TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
+    //trans.transformWorldToGrid(*sphere);
+    //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
 
-    ////gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
-    ////gridBuilder->addGeometry(triangularMesh, 1);
+    //gridBuilder->addGrid(new Sphere(20, 20, 20, 8));
+    //gridBuilder->addGeometry(triangularMesh, 1);
 
-    ////gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
-    ////gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
-
-
-    ////gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
-    ////gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
+    //gridBuilder->addFineGrid(new Cuboid(15, 15, 15, 25, 25, 25), 1);
+    //gridBuilder->addFineGrid(new Cuboid(17, 17, 17, 23, 23, 23), 2);
 
 
-    ////gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
+    //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
+    //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
-    //gridBuilder->buildGrids();
 
-    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
+
+    gridBuilder->buildGrids();
+
+    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
 
 
 
     SPtr<Parameter> para = Parameter::make();
-    //SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
-    SPtr<GridProvider> gridGenerator = GridReader::make(FileFormat::BINARY, para);
+    SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
+    //SPtr<GridProvider> gridGenerator = GridReader::make(FileFormat::BINARY, para);
 
     std::ifstream stream;
     stream.open(configPath.c_str(), std::ios::in);

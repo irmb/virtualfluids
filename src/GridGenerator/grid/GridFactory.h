@@ -23,23 +23,46 @@ enum class TriangularMeshDiscretizationMethod
     RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE
 };
 
+enum class TestDouble
+{
+    PRODUCTIONCLASS, STUB, SPY
+};
+
 
 class VF_PUBLIC GridFactory
 {
 public:
+    static SPtr<GridFactory> make()
+    {
+        return SPtr<GridFactory>(new GridFactory());
+    }
+
+private:
+    GridFactory()
+    {
+        gridType = TestDouble::PRODUCTIONCLASS;
+        gridStrategy = SPtr<GridStrategy>(new GridCpuStrategy());
+        triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
+    }
+
+public:
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, const std::string& d3Qxx = "D3Q27")
     {
-        if (!gridStrategy)
-            throw "GridStrategy has to be set before make Grid!";
-
         Distribution distribution = DistributionHelper::getDistribution(d3Qxx);
 
-        if(this->grid == "stub")
-            return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
-        else if(this->grid == "spy")
-             return GridSpy::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        SPtr<GridImp> grid;
 
-        SPtr<GridImp> grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        switch (gridType)
+        {
+        case TestDouble::PRODUCTIONCLASS:
+            grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+            break;
+        case TestDouble::STUB:
+            return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        case TestDouble::SPY:
+            return GridSpy::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+        }
+
         grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);
 
         return grid;
@@ -62,9 +85,9 @@ public:
         this->gridStrategy = gridStrategy;
     }
 
-    void setGrid(const std::string& grid)
+    void setGridType(TestDouble gridType)
     {
-        this->grid = grid;
+        this->gridType = gridType;
     }
 
     void setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod triangularMeshDiscretizationMethod)
@@ -86,7 +109,7 @@ public:
 private:
     TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
     SPtr<GridStrategy> gridStrategy;
-    std::string grid;
+    TestDouble gridType;
 };
 
 
