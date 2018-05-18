@@ -43,6 +43,8 @@ private:
 	unsigned int ySliceForCalculation;
 	std::vector<real> l;
 	std::vector<std::string> grids;
+	unsigned int maxLevel;
+	unsigned int numberOfGridLevels;
 	bool writeFiles;
 	std::string filePath;
 	unsigned int startStepFileWriter;

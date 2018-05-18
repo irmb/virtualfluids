@@ -8,11 +8,11 @@
 #include <sstream>
 
 std::shared_ptr<TestParameter> ShearWaveTestParameter::getNewInstance(	real u0, real v0, real viscosity, real rho0, unsigned int lx, unsigned int lz, unsigned int l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
-																		unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, bool writeFiles,
+																		unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels, bool writeFiles,
 																		unsigned int startStepFileWriter, std::string filePath, std::shared_ptr<PhiAndNuTest> testResults,
 																		std::vector<int> devices)
 {
-	return std::shared_ptr<TestParameter>(new ShearWaveTestParameter(	u0, v0, viscosity, rho0, lx, lz, l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath,
+	return std::shared_ptr<TestParameter>(new ShearWaveTestParameter(	u0, v0, viscosity, rho0, lx, lz, l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels,
 																		writeFiles, startStepFileWriter, filePath,testResults, devices));
 }
 
@@ -23,8 +23,8 @@ double ShearWaveTestParameter::getMaxVelocity()
 	return v0 / (lx / l0);
 }
 
-ShearWaveTestParameter::ShearWaveTestParameter(	real u0, real v0, real viscosity, real rho0, unsigned int lx, unsigned int lz, unsigned int l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, bool writeFiles, unsigned int startStepFileWriter, std::string filePath, std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices)
-:TestParameterImp(viscosity, lx, lz, l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, writeFiles, startStepFileWriter, testResults, devices), u0(u0), v0(v0), rho0(rho0)
+ShearWaveTestParameter::ShearWaveTestParameter(	real u0, real v0, real viscosity, real rho0, unsigned int lx, unsigned int lz, unsigned int l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels, bool writeFiles, unsigned int startStepFileWriter, std::string filePath, std::shared_ptr<PhiAndNuTest> testResults, std::vector<int> devices)
+:TestParameterImp(viscosity, lx, lz, l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, testResults, devices), u0(u0), v0(v0), rho0(rho0)
 {
 	std::ostringstream oss;
 	oss << filePath + "/ShearWave/grid" << lx;
