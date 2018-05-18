@@ -36,23 +36,26 @@ private:
 	void makeTestResults();
 	bool testShouldRun(std::vector<bool> test);
 
-	std::vector< int> devices;
 	real viscosity;
+	real u0SW, v0SW;
+	real amplitudeTGV, u0TGV;
+	real l0;
 	double minOrderOfAccuracy;
 	unsigned int numberOfTimeSteps, basisTimeStepLength, startStepCalculation;
 	unsigned int ySliceForCalculation;
-	std::vector< real> l;
-	std::vector< std::string> grids;
+	unsigned int startStepFileWriter;
 	unsigned int maxLevel;
 	unsigned int numberOfGridLevels;
 	bool writeFiles;
 	std::string filePath;
-	unsigned int startStepFileWriter;
 	std::string logFilePath;
+	std::vector< std::string> grids;
+	std::vector< real> lx;
+	std::vector< real> lx;
+	std::vector< int> devices;
 	std::vector< bool> tgv;
 	std::vector< bool> sw;
-	real u0SW, v0SW;
-	real amplitudeTGV, u0TGV;
+	
 
 
 	std::shared_ptr< TestCout> testOutput;

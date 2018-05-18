@@ -53,6 +53,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	amplitudeTGV = StringUtil::toDouble(input->getValue("Amplitude_TGV"));
 	u0TGV = StringUtil::toDouble(input->getValue("u0_TGV"));
+
 	v0SW = StringUtil::toDouble(input->getValue("v0_SW"));
 	u0SW = StringUtil::toDouble(input->getValue("u0_SW"));
 
@@ -88,13 +89,6 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	sw.at(3) = StringUtil::toBool(input->getValue("ShearWave256"));
 	sw.at(4) = StringUtil::toBool(input->getValue("ShearWave512"));
 
-	l.resize(5);
-	l.at(0) = 32.0;
-	l.at(1) = 64.0;
-	l.at(2) = 128.0;
-	l.at(3) = 256.0;
-	l.at(4) = 512.0;
-
 	stream.close();
 
 	
@@ -120,8 +114,25 @@ ConfigFileReader::ConfigFileReader()
 	logInfo.resize(0);
 	testResults.resize(0);
 
+	lx.resize(5);
+	lx.at(0) = 32.0;	
+	lx.at(1) = 64.0;
+	lx.at(2) = 128.0;
+	lx.at(3) = 256.0;
+	lx.at(4) = 512.0;
+
+	lz.resize(5);
+	lz.at(0) = lx.at(0) * 3.0 / 2.0; 
+	lz.at(1) = lx.at(1) * 3.0 / 2.0;
+	lz.at(2) = lx.at(2) * 3.0 / 2.0;
+	lz.at(3) = lx.at(3) * 3.0 / 2.0;
+	lz.at(4) = lx.at(4) * 3.0 / 2.0;
+
+	l0 = 32.0;
+
 	maxLevel = 0;
 	numberOfGridLevels = 1;
+	
 }
 
 void ConfigFileReader::makeTestInformation()
@@ -150,7 +161,7 @@ void ConfigFileReader::makeTestParameter()
 		tests.push_back(tgvTestResults);
 		for (int i = 0; i < tgv.size(); i++) {
 			if (tgv.at(i)) {
-				testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, 1.0, l.at(i), l.at(i) * 3 / 2, 32, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
+				testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, 1.0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
 			}
 		}
 	}
@@ -161,7 +172,7 @@ void ConfigFileReader::makeTestParameter()
 
 		for (int i = 0; i < sw.size(); i++) {
 			if (sw.at(i)) {
-				testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, 1.0, l.at(i), l.at(i) * 3 / 2, 32, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, swTestResults, devices));
+				testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, 1.0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, swTestResults, devices));
 			}
 		}
 	}
@@ -171,12 +182,12 @@ void ConfigFileReader::makeSimulationInfo()
 {
 	for (int i = 0; i < tgv.size(); i++) {
 		if (tgv.at(i)) {
-			simInfo.push_back(SimulationInfoImp::getNewInstance(testOutput, "TaylorGreenVortex", l.at(i)));
+			simInfo.push_back(SimulationInfoImp::getNewInstance(testOutput, "TaylorGreenVortex", lx.at(i)));
 		}
 	}
 	for (int i = 0; i < sw.size(); i++) {
 		if (sw.at(i)) {
-			simInfo.push_back(SimulationInfoImp::getNewInstance(testOutput, "ShearWave", l.at(i)));
+			simInfo.push_back(SimulationInfoImp::getNewInstance(testOutput, "ShearWave", lx.at(i)));
 		}
 	}
 }
@@ -188,9 +199,9 @@ void ConfigFileReader::makeLogFileInformation()
 	logInfo.push_back(BasicSimulationInfo::getNewInstance(numberOfTimeSteps, basisTimeStepLength, startStepCalculation, viscosity));
 
 	if (testShouldRun(tgv))
-		logInfo.push_back(TaylorGreenInformation::getNewInstance(u0TGV, amplitudeTGV, tgv, l));
+		logInfo.push_back(TaylorGreenInformation::getNewInstance(u0TGV, amplitudeTGV, tgv, lx));
 	if (testShouldRun(sw))
-		logInfo.push_back(ShearWaveInformation::getNewInstance(u0SW, v0SW, sw, l));
+		logInfo.push_back(ShearWaveInformation::getNewInstance(u0SW, v0SW, sw, lx));
 
 	logInfo.push_back(SimulationTimeInformation::getNewInstance(simInfo, writeFiles));
 

@@ -22,14 +22,14 @@ public:
 	unsigned int getStartTimeCalculation();
 	bool getWriteFiles();
 	unsigned int getStartTimeDataWriter();
-	std::vector<int> getDevices();
-	std::shared_ptr<InitialCondition> getInitialCondition();
-	std::shared_ptr<Calculator> getCalculator();
-	std::shared_ptr<TestResults> getTestResults();
+	std::vector< int> getDevices();
+	std::shared_ptr< InitialCondition> getInitialCondition();
+	std::shared_ptr< Calculator> getCalculator();
+	std::shared_ptr< TestResults> getTestResults();
 
 protected:
 	TestParameterImp() {};
-	TestParameterImp(real viscosity, unsigned int lx, unsigned int lz, unsigned int l0,
+	TestParameterImp(real viscosity, real lx, real lz, real l0,
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
@@ -37,25 +37,24 @@ protected:
 		std::shared_ptr<TestResults> testResults,
 		std::vector<int> devices);
 
-	std::string filePath;
 	real viscosity;
-	unsigned int lx;
+	real lx, l0, lz;
 	unsigned int numberOfTimeSteps, basisTimeStepLength;
 	unsigned int startStepCalculation, startStepFileWriter, ySliceForCalculation;
 	std::string gridPath;
+	std::string filePath;
 	bool writeFiles;
 	std::vector<int> devices;
 
 	unsigned int maxLevel, numberOfGridLevels;
-	unsigned int l0, lz;
 	unsigned int timeStepLength;
 	unsigned int startTimeCalculation, startTimeDataWriter;
 	unsigned int endTime;
 
-	std::shared_ptr<InitialCondition> initialCondition;
-	std::shared_ptr<Calculator> calculator;
-	std::shared_ptr<SimulationResults> simResults;
-	std::shared_ptr<TestResults> testResults;
+	std::shared_ptr< InitialCondition> initialCondition;
+	std::shared_ptr< Calculator> calculator;
+	std::shared_ptr< SimulationResults> simResults;
+	std::shared_ptr< TestResults> testResults;
 };
 
 #endif
