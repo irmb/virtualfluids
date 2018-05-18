@@ -32,25 +32,18 @@ bool ConfigFileReader::testShouldRun(std::vector<bool> test)
 	return false;
 }
 
-std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
+std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance()
 {
-	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader(aFilePath));
+	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader());
 }
 
-std::shared_ptr<TestInformation> ConfigFileReader::getTestInformation()
-{
-	return testInfo;
-}
-
-std::vector<std::shared_ptr<TestParameter>> ConfigFileReader::getTestParameter()
-{
-	return testParameter;
-}
-
-ConfigFileReader::ConfigFileReader(const std::string aFilePath)
+void ConfigFileReader::readConfigFile(const std::string aFilePath)
 {
 	std::ifstream stream;
 	stream.open(aFilePath.c_str(), std::ios::in);
+	if (stream.fail())
+		throw "can not open config file!\n";
+
 	std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 
 	devices = StringUtil::toVector(input->getValue("Devices"));
@@ -62,7 +55,7 @@ ConfigFileReader::ConfigFileReader(const std::string aFilePath)
 	u0TGV = StringUtil::toDouble(input->getValue("u0_TGV"));
 	v0SW = StringUtil::toDouble(input->getValue("v0_SW"));
 	u0SW = StringUtil::toDouble(input->getValue("u0_SW"));
-	
+
 	numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
 	basisTimeStepLength = StringUtil::toInt(input->getValue("BasisTimeStepLength"));
 	startStepCalculation = StringUtil::toInt(input->getValue("StartStepCalculation"));
@@ -75,11 +68,11 @@ ConfigFileReader::ConfigFileReader(const std::string aFilePath)
 	grids.at(4) = input->getValue("GridPath512");
 
 	ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
-	
+
 	writeFiles = StringUtil::toBool(input->getValue("WriteFiles"));
 	filePath = input->getValue("PathForFileWriting");
 	startStepFileWriter = StringUtil::toInt(input->getValue("StartStepFileWriter"));
-	logFilePath= input->getValue("PathLogFile");;
+	logFilePath = input->getValue("PathLogFile");;
 
 	tgv.resize(5);
 	tgv.at(0) = StringUtil::toBool(input->getValue("TaylorGreenVortex32"));
@@ -104,16 +97,31 @@ ConfigFileReader::ConfigFileReader(const std::string aFilePath)
 
 	stream.close();
 
+	
+	makeTestParameter();
+	makeTestInformation();
+}
+
+std::shared_ptr<TestInformation> ConfigFileReader::getTestInformation()
+{
+	return testInfo;
+}
+
+std::vector<std::shared_ptr<TestParameter>> ConfigFileReader::getTestParameter()
+{
+	return testParameter;
+}
+
+ConfigFileReader::ConfigFileReader()
+{
 	tests.resize(0);
+	testParameter.resize(0);
 	simInfo.resize(0);
+	logInfo.resize(0);
 	testResults.resize(0);
 
 	maxLevel = 0;
 	numberOfGridLevels = 1;
-
-	testOutput = TestCoutImp::getNewInstance();
-	makeTestParameter();
-	makeTestInformation();
 }
 
 void ConfigFileReader::makeTestInformation()
@@ -135,6 +143,8 @@ void ConfigFileReader::makeTestInformation()
 
 void ConfigFileReader::makeTestParameter()
 {
+	testOutput = TestCoutImp::getNewInstance();
+
 	if (testShouldRun(tgv)) {
 		std::shared_ptr< PhiAndNuTest> tgvTestResults = PhiAndNuTest::getNewInstance("TaylorGreenVortex", minOrderOfAccuracy, testOutput);
 		tests.push_back(tgvTestResults);
