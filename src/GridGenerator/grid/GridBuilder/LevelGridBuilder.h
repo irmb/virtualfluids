@@ -32,6 +32,22 @@ public:
 
 };
 
+class PressureBoundaryCondition : public BoundaryCondition
+{
+public:
+    static SPtr<PressureBoundaryCondition> make(real rho)
+    {
+        return SPtr<PressureBoundaryCondition>(new PressureBoundaryCondition(rho));
+    }
+
+    SPtr<Side> side;
+    real rho;
+private:
+    PressureBoundaryCondition(real rho) : rho(rho)
+    {
+
+    }
+};
 
 class VelocityBoundaryCondition : public BoundaryCondition
 {
@@ -238,7 +254,8 @@ public:
     VF_PUBLIC void copyDataFromGpu();
     VF_PUBLIC virtual ~LevelGridBuilder();
 
-    VF_PUBLIC void setVelocityBoundaryCondition(SPtr<Side> side, SPtr<VelocityBoundaryCondition> boundaryCondition);
+    VF_PUBLIC void setVelocityBoundaryCondition(SPtr<Side> side, real vx, real vy, real vz);
+    VF_PUBLIC void setPressureBoundaryCondition(SPtr<Side> side, real rho);
 
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
@@ -266,7 +283,8 @@ public:
     VF_PUBLIC uint getVelocitySize(int level) const;
     VF_PUBLIC virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
     VF_PUBLIC virtual void getVelocityQs(real* qs[27], int level) const;
-
+    VF_PUBLIC uint getPressureSize(int level) const override;
+    VF_PUBLIC void getPressureValues(real* rho, int* indices, int level) const override;
 
     VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 
@@ -278,6 +296,7 @@ protected:
     std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
     std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
+    std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 
     //std::map<Side, BoundaryCondition> channelBoundaryConditionTypes;
 
@@ -313,7 +332,7 @@ public:
 
     VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
-    
+
 };
 
 #endif

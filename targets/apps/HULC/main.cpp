@@ -277,19 +277,14 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addGeometry(triangularMesh);
 
-    //SPtr<VelocityBoundaryCondition> bcVelocity1 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
-    //SPtr<VelocityBoundaryCondition> bcVelocity2 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
-    //SPtr<VelocityBoundaryCondition> bcVelocity3 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
-    //SPtr<VelocityBoundaryCondition> bcVelocity4 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
-    //SPtr<VelocityBoundaryCondition> bcVelocity5 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
-    //SPtr<VelocityBoundaryCondition> bcVelocity6 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
 
-    //gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MX()), bcVelocity1);
-    //gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PX()), bcVelocity2);
-    //gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MY()), bcVelocity3);
-    //gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PY()), bcVelocity4);
-    //gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MZ()), bcVelocity5);
-    //gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PZ()), bcVelocity6);
+
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MX()), 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PX()), 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MY()), 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PY()), 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MZ()), 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PZ()), 0.01, 0.0, 0.0);
 
     //gridBuilder->setBoundaryCondition("geometry", BoundaryCondition::VELOCITY);
 

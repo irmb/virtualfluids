@@ -48,12 +48,24 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, co
     return SPtr<LevelGridBuilder>(new LevelGridBuilder(device, d3qxx));
 }
 
-void LevelGridBuilder::setVelocityBoundaryCondition(SPtr<Side> side, SPtr<VelocityBoundaryCondition> boundaryCondition)
+void LevelGridBuilder::setVelocityBoundaryCondition(SPtr<Side> side, real vx, real vy, real vz)
 {
+    SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+
     side->setPeriodicy(grids[0]);
-    velocityBoundaryConditions.push_back(boundaryCondition);
-    boundaryCondition->side = side;
+    velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+    velocityBoundaryCondition->side = side;
 }
+
+void LevelGridBuilder::setPressureBoundaryCondition(SPtr<Side> side, real rho)
+{
+    SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
+
+    side->setPeriodicy(grids[0]);
+    pressureBoundaryConditions.push_back(pressureBoundaryCondition);
+    pressureBoundaryCondition->side = side;
+}
+
 
 void LevelGridBuilder::copyDataFromGpu()
 {
@@ -225,6 +237,30 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
             vx[allIndicesCounter] = boundaryCondition->vx;
             vy[allIndicesCounter] = boundaryCondition->vy;
             vz[allIndicesCounter] = boundaryCondition->vz;
+            allIndicesCounter++;
+        }
+    }
+}
+
+uint LevelGridBuilder::getPressureSize(int level) const
+{
+    uint size = 0;
+    for (auto boundaryCondition : this->pressureBoundaryConditions)
+    {
+        size += boundaryCondition->indices.size();
+    }
+    return size;
+}
+
+void LevelGridBuilder::getPressureValues(real* rho, int* indices, int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : this->pressureBoundaryConditions)
+    {
+        for (int i = 0; i < boundaryCondition->indices.size(); i++)
+        {
+            indices[allIndicesCounter] = boundaryCondition->indices[i];
+            rho[allIndicesCounter] = boundaryCondition->rho;
             allIndicesCounter++;
         }
     }
