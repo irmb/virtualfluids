@@ -1506,8 +1506,8 @@ void Simulation::run()
 		  //calculate the new forcing
 		  if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
 		  {
-			  forceCalculator->calcPIDControllerForForce(para.get());
-			  forceCalculator->printForcing(para.get());
+			  //forceCalculator->calcPIDControllerForForce(para.get());
+			  //forceCalculator->printForcing(para.get());
 		  }
 		  ////////////////////////////////////////////////////////////////////////////////
 		  
