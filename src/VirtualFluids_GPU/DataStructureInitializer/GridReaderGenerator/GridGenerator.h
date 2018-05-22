@@ -7,10 +7,12 @@
 #include <string>
 #include <memory>
 
-#include "LBM/LB.h"
+#include <core/DataTypes.h>
 
 class Parameter;
 class GridBuilder;
+struct QforBC;
+typedef QforBC QforBoundaryConditions;
 
 class GridGenerator
 	: public GridProvider
@@ -55,12 +57,12 @@ private:
 	void setGeoQs() const;
 	void modifyQElement(int channelSide, unsigned int level) const;
 
-	void initalQStruct(QforBoundaryConditions& Q,int channelSide, unsigned int level) const;
-	void printQSize(std::string bc,int channelSide, unsigned int level) const;
-	void setSizeNoSlip(int channelSide, unsigned int level) const;
-	void setSizeGeoQs(unsigned int level) const;
-	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
-	bool hasQs(int channelSide, unsigned int level) const;
+    void initalQStruct(QforBoundaryConditions& Q, int channelSide, unsigned int level) const;
+    void printQSize(std::string bc, int channelSide, unsigned int level) const;
+    void setSizeNoSlip(int channelSide, unsigned int level) const;
+    void setSizeGeoQs(unsigned int level) const;
+    void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
+    bool hasQs(int channelSide, unsigned int level) const;
 
 public:
     void initalGridInformations() override;

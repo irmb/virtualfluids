@@ -71,6 +71,10 @@ public:
     HOSTDEVICE void removeOddBoundaryCellNode(uint index);
 
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
+    void setPeriodicityX(bool periodicity) override;
+    void setPeriodicityY(bool periodicity) override;
+    void setPeriodicityZ(bool periodicity) override;
+
     HOSTDEVICE void setCellTo(uint index, char type);
 
     HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const override;
@@ -176,7 +180,7 @@ private:
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle) const;
 
 
-public:
+
 private:
     //HOSTDEVICE bool isNeighborInside(const int &index) const;
 

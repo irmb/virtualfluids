@@ -305,8 +305,20 @@ HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool per
     this->periodicityZ = periodicityZ;
 }
 
+void GridImp::setPeriodicityX(bool periodicity)
+{
+    this->periodicityX = periodicityX;
+}
 
+void GridImp::setPeriodicityY(bool periodicity)
+{
+    this->periodicityY = periodicityY;
+}
 
+void GridImp::setPeriodicityZ(bool periodicity)
+{
+    this->periodicityZ = periodicityZ;
+}
 
 HOSTDEVICE int GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {

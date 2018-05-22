@@ -48,6 +48,12 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, co
     return SPtr<LevelGridBuilder>(new LevelGridBuilder(device, d3qxx));
 }
 
+void LevelGridBuilder::setVelocityBoundaryCondition(SPtr<Side> side, SPtr<VelocityBoundaryCondition> boundaryCondition)
+{
+    side->setPeriodicy(grids[0]);
+    velocityBoundaryConditions.push_back(boundaryCondition);
+    boundaryCondition->side = side;
+}
 
 void LevelGridBuilder::copyDataFromGpu()
 {
@@ -196,6 +202,54 @@ void LevelGridBuilder::setOutflowValues(real* RhoBC, int* kN, int channelSide, i
         kN[index] = 0;
     }
 }
+
+
+uint LevelGridBuilder::getVelocitySize(int level) const
+{
+    uint size = 0;
+    for (auto boundaryCondition : this->velocityBoundaryConditions)
+    {
+        size += boundaryCondition->indices.size();
+    }
+    return size;
+}
+
+void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : this->velocityBoundaryConditions)
+    {
+        for(int i = 0; i < boundaryCondition->indices.size(); i++)
+        {
+            indices[allIndicesCounter] = boundaryCondition->indices[i];
+            vx[allIndicesCounter] = boundaryCondition->vx;
+            vy[allIndicesCounter] = boundaryCondition->vy;
+            vz[allIndicesCounter] = boundaryCondition->vz;
+            allIndicesCounter++;
+        }
+    }
+}
+
+void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : this->velocityBoundaryConditions)
+    {
+        for (int i = 0; i < boundaryCondition->indices.size(); i++)
+        {
+
+            for (int dir = 0; dir < grids[level]->getEndDirection(); dir++)
+            {
+                if (grids[level]->getDirection()[dir * DIMENSION + boundaryCondition->side->getCoordinate()] != boundaryCondition->side->getDirection())
+                    qs[dir][allIndicesCounter] = -1.0;
+                else
+                    qs[dir][allIndicesCounter] = 0.5;
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
 
 void LevelGridBuilder::setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const
 {

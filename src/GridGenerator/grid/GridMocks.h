@@ -67,6 +67,9 @@ public:
     virtual Vertex getMinimumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }
     virtual Vertex getMaximumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }
     virtual void mesh(Object* object) override {}
+    void setPeriodicityX(bool periodicity) override {}
+    void setPeriodicityY(bool periodicity) override {}
+    void setPeriodicityZ(bool periodicity) override {}
 };
 
 class GridStub : public GridDummy

@@ -72,6 +72,9 @@ public:
 
 
     HOST virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) = 0;
+    HOST virtual void setPeriodicityX(bool periodicity) = 0;
+    HOST virtual void setPeriodicityY(bool periodicity) = 0;
+    HOST virtual void setPeriodicityZ(bool periodicity) = 0;
     HOST virtual void freeMemory() = 0;
 
 

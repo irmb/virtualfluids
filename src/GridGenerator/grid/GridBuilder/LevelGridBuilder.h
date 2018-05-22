@@ -6,23 +6,224 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <map>
 
 #include "GridBuilder.h"
 #include "grid/GridInterface.h"
+
+#include "grid/Grid.h"
+#include "grid/NodeValues.h"
 
 struct Vertex;
 class  Grid;
 class Transformator;
 class ArrowTransformator;
 class PolyDataWriterWrapper;
-
+class BoundaryCondition;
 class BoundingBox;
 enum class Device;
 
-enum class BoundaryCondition
+class Side;
+
+class BoundaryCondition
 {
-    PERIODIC, VELOCITY, PRESSURE, SLIP, NOSLIP
+public:
+    std::vector<uint> indices;
+
 };
+
+
+class VelocityBoundaryCondition : public BoundaryCondition
+{
+public:
+    static SPtr<VelocityBoundaryCondition> make(real vx, real vy, real vz)
+    {
+        return SPtr<VelocityBoundaryCondition>(new VelocityBoundaryCondition(vx, vy, vz));
+    }
+
+    SPtr<Side> side;
+    real vx, vy, vz;
+private:
+    VelocityBoundaryCondition(real vx, real vy, real vz) : vx(vx), vy(vy), vz(vz)
+    {
+        
+    } 
+};
+
+#define X_INDEX 0
+#define Y_INDEX 1
+#define Z_INDEX 2
+
+#define POSITIVE_DIR 1
+#define NEGATIVE_DIR -1
+
+class Side
+{
+public:
+    virtual void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) = 0;
+    virtual void setPeriodicy(SPtr<Grid> grid) = 0;
+    
+    virtual int getCoordinate() const = 0;
+    virtual int getDirection() const = 0;
+
+protected:
+    static void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant, real startInner, real endInner, real startOuter, real endOuter) {
+        for (int v1 = startInner; v1 < endInner; v1 += grid->getDelta())
+        {
+            for (int v2 = startOuter; v2 < endOuter; v2 += grid->getDelta())
+            {
+                uint index = getIndex(grid, coord, constant, v1, v2);
+                if (grid->getFieldEntry(index) == FLUID)
+                    boundaryCondition->indices.push_back(index);
+            }
+        }
+    }
+
+    static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2)
+    {
+        if (coord == "x")
+            return grid->transCoordToIndex(constant, v1, v2);
+        if (coord == "y")
+            return grid->transCoordToIndex(v1, constant, v2);
+        if (coord == "z")
+            return grid->transCoordToIndex(v1, v2, constant);
+    }
+};
+
+class MX : public Side
+{
+public:
+    void setPeriodicy(SPtr<Grid> grid) override {
+        grid->setPeriodicityX(false);
+    }
+
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override {
+        Side::addIndices(grid, boundaryCondition, "x", grid->getStartX() + grid->getDelta(),  grid->getStartY(), grid->getEndY(),grid->getStartZ(), grid->getEndZ());
+    }
+
+    int getCoordinate() const override
+    {
+        return X_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return NEGATIVE_DIR;
+    }
+};
+
+class PX : public Side
+{
+public:
+    void setPeriodicy(SPtr<Grid> grid) override {
+        grid->setPeriodicityX(false);
+    }
+
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override {
+        Side::addIndices(grid, boundaryCondition, "x", grid->getEndX() - grid->getDelta(),  grid->getStartY(), grid->getEndY(), grid->getStartZ(), grid->getEndZ());
+    }
+
+    int getCoordinate() const override
+    {
+        return X_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return POSITIVE_DIR;
+    }
+};
+
+
+class MY : public Side
+{
+public:
+    void setPeriodicy(SPtr<Grid> grid) override {
+        grid->setPeriodicityY(false);
+    }
+
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override {
+        Side::addIndices(grid, boundaryCondition, "y", grid->getStartY() + grid->getDelta(), grid->getStartX(), grid->getEndX(), grid->getStartZ(), grid->getEndZ());
+    }
+
+    int getCoordinate() const override
+    {
+        return Y_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return NEGATIVE_DIR;
+    }
+};
+
+class PY : public Side
+{
+public:
+    void setPeriodicy(SPtr<Grid> grid) override {
+        grid->setPeriodicityY(false);
+    }
+
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override {
+        Side::addIndices(grid, boundaryCondition, "y", grid->getEndY() - grid->getDelta(), grid->getStartX(), grid->getEndX(), grid->getStartZ(), grid->getEndZ());
+    }
+
+    int getCoordinate() const override
+    {
+        return Y_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return POSITIVE_DIR;
+    }
+};
+
+
+class MZ : public Side
+{
+public:
+    void setPeriodicy(SPtr<Grid> grid) override {
+        grid->setPeriodicityZ(false);
+    }
+
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override {
+        Side::addIndices(grid, boundaryCondition, "z", grid->getStartZ() + grid->getDelta(), grid->getStartX(), grid->getEndX(), grid->getStartY(), grid->getEndY());
+    }
+
+    int getCoordinate() const override
+    {
+        return Z_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return NEGATIVE_DIR;
+    }
+};
+
+class PZ : public Side
+{
+public:
+    void setPeriodicy(SPtr<Grid> grid) override {
+        grid->setPeriodicityZ(false);
+    }
+
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override {
+        Side::addIndices(grid, boundaryCondition, "z", grid->getEndZ() - grid->getDelta(), grid->getStartX(), grid->getEndX(), grid->getStartY(), grid->getEndY());
+    }
+
+    int getCoordinate() const override
+    {
+        return Z_INDEX;
+    }
+
+    int getDirection() const override
+    {
+        return POSITIVE_DIR;
+    }
+};
+
 
 class LevelGridBuilder : public GridBuilder
 {
@@ -37,6 +238,7 @@ public:
     VF_PUBLIC void copyDataFromGpu();
     VF_PUBLIC virtual ~LevelGridBuilder();
 
+    VF_PUBLIC void setVelocityBoundaryCondition(SPtr<Side> side, SPtr<VelocityBoundaryCondition> boundaryCondition);
 
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
@@ -60,6 +262,12 @@ public:
     VF_PUBLIC virtual void setQs(real** q27, int* k, int channelSide, unsigned int level) const;
     VF_PUBLIC virtual void setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const;
     VF_PUBLIC virtual void setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const;
+
+    VF_PUBLIC uint getVelocitySize(int level) const;
+    VF_PUBLIC virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
+    VF_PUBLIC virtual void getVelocityQs(real* qs[27], int level) const;
+
+
     VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 
     VF_PUBLIC void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
@@ -67,10 +275,11 @@ public:
 protected:
 
     std::vector<std::shared_ptr<Grid> > grids;
-
     std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
-    std::vector<BoundaryCondition> channelBoundaryConditionTypes;
+    std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
+
+    //std::map<Side, BoundaryCondition> channelBoundaryConditionTypes;
 
     void checkLevel(int level);
 

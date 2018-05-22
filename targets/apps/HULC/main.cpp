@@ -11,11 +11,13 @@
 
 #include "LBM/Simulation.h"
 
+#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "grid/GridBuilder/LevelGridBuilder.h"
+
 #include "Parameter/Parameter.h"
 #include "DataStructureInitializer/GridProvider.h"
 #include "VirtualFluidsBasics/utilities/input/Input.h"
 #include "VirtualFluidsBasics/utilities/StringUtil/StringUtil.h"
-#include "grid/GridBuilder/LevelGridBuilder.h"
 #include "utilities/transformator/TransformatorImp.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
 
@@ -34,8 +36,7 @@
 #include "io/STLReaderWriter/STLWriter.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 #include "Output/FileWriter.h"
-#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
-#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+//#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
 
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -269,9 +270,28 @@ void multipleLevel(const std::string& configPath)
 
 
     gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
-    gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
+
+    //gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
+
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
+
     gridBuilder->addGeometry(triangularMesh);
+
+    SPtr<VelocityBoundaryCondition> bcVelocity1 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
+    SPtr<VelocityBoundaryCondition> bcVelocity2 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
+    SPtr<VelocityBoundaryCondition> bcVelocity3 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
+    SPtr<VelocityBoundaryCondition> bcVelocity4 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
+    SPtr<VelocityBoundaryCondition> bcVelocity5 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
+    SPtr<VelocityBoundaryCondition> bcVelocity6 = VelocityBoundaryCondition::make(0.01, 0.0, 0.0);
+
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MX()), bcVelocity1);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PX()), bcVelocity2);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MY()), bcVelocity3);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PY()), bcVelocity4);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MZ()), bcVelocity5);
+    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PZ()), bcVelocity6);
+
+    //gridBuilder->setBoundaryCondition("geometry", BoundaryCondition::VELOCITY);
 
 
     //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
@@ -296,7 +316,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->buildGrids();
 
-    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
 
 
 

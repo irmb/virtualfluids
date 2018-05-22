@@ -263,6 +263,13 @@ void MultipleGridBuilder::buildGrids()
         grids[i]->findSparseIndices(grids[i + 1]);
 
     grids[grids.size() - 1]->findSparseIndices(nullptr);
+
+
+
+    for(auto velocityBC : velocityBoundaryConditions)
+    {
+        velocityBC->side->addIndices(grids[0], velocityBC);
+    }
 }
 
 

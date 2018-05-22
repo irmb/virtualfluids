@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include "utilities/math/Math.h"
+#include "LBM/LB.h"
 
 
 std::shared_ptr<GridProvider> GridGenerator::make(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
@@ -124,14 +125,64 @@ void GridGenerator::allocArrays_BoundaryValues()
 {
 	std::cout << "------read BoundaryValues------" << std::endl;
 
-	channelBoundaryConditions = builder->getTypeOfBoundaryConditions();
+    for (int i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const int numberOfVelocityValues = int(builder->getVelocitySize(i));
+        if (numberOfVelocityValues > 1)
+        {
+            cout << "size velocity level " << i << " : " << numberOfVelocityValues << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            int blocks = (numberOfVelocityValues / para->getParH(i)->numberofthreads) + 1;
+            para->getParH(i)->Qinflow.kArray = blocks * para->getParH(i)->numberofthreads;
+            para->getParD(i)->Qinflow.kArray = para->getParH(i)->Qinflow.kArray;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->getParH(i)->Qinflow.kQ = numberOfVelocityValues;
+            para->getParD(i)->Qinflow.kQ = numberOfVelocityValues;
+            para->getParH(i)->kInflowQ = numberOfVelocityValues;
+            para->getParD(i)->kInflowQ = numberOfVelocityValues;
+            para->getParH(i)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
+            para->getParD(i)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->cudaAllocVeloBC(i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	for (int i = 0; i < channelBoundaryConditions.size(); i++)
-	{
-        setVelocityValues(i);
-        setPressureValues(i); 
-        setOutflowValues(i); 
-	}
+            builder->getVelocityValues(para->getParH(i)->Qinflow.Vx, para->getParH(i)->Qinflow.Vy, para->getParH(i)->Qinflow.Vz, para->getParH(i)->Qinflow.k, i);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+            //para->cudaCopyVeloBC(i);
+
+
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //// advection - diffusion stuff
+            //if (para->getDiffOn()==true){
+            //	//////////////////////////////////////////////////////////////////////////
+            //	para->getParH(i)->TempVel.kTemp = temp2;
+            //	//cout << "Groesse kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+            //	cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
+            //	cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
+            //	//////////////////////////////////////////////////////////////////////////
+            //	para->cudaAllocTempVeloBC(i);
+            //	//cout << "nach alloc " << endl;
+            //	//////////////////////////////////////////////////////////////////////////
+            //	for (int m = 0; m < temp2; m++)
+            //	{
+            //		para->getParH(i)->TempVel.temp[m]      = para->getTemperatureInit();
+            //		para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
+            //		para->getParH(i)->TempVel.velo[m]      = para->getVelocity();
+            //		para->getParH(i)->TempVel.k[m]         = para->getParH(i)->Qinflow.k[m];
+            //	}
+            //	//////////////////////////////////////////////////////////////////////////
+            //	//cout << "vor copy " << endl;
+            //	para->cudaCopyTempVeloBCHD(i);
+            //	//cout << "nach copy " << endl;
+            //	//////////////////////////////////////////////////////////////////////////
+            //}
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+    }
 }
 
 void GridGenerator::setPressureValues(int channelSide) const
@@ -236,18 +287,87 @@ void GridGenerator::allocArrays_BoundaryQs()
 {
 	std::cout << "------read BoundaryQs-------" << std::endl;
 
-	channelBoundaryConditions = builder->getTypeOfBoundaryConditions();
+    for (int i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const int numberOfVelocityNodes = int(builder->getVelocitySize(i));
+        if (numberOfVelocityNodes > 0)
+        {
+            cout << "size velocity level " << i << " : " << numberOfVelocityNodes << endl;
+            //cout << "Groesse velocity level:  " << i << " : " << temp3 << "MyID: " << para->getMyID() << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //preprocessing
+            real* QQ = para->getParH(i)->Qinflow.q27[0];
+            unsigned int sizeQ = para->getParH(i)->Qinflow.kQ;
+            QforBoundaryConditions Q;
+            Q.q27[dirE] = &QQ[dirE   *sizeQ];
+            Q.q27[dirW] = &QQ[dirW   *sizeQ];
+            Q.q27[dirN] = &QQ[dirN   *sizeQ];
+            Q.q27[dirS] = &QQ[dirS   *sizeQ];
+            Q.q27[dirT] = &QQ[dirT   *sizeQ];
+            Q.q27[dirB] = &QQ[dirB   *sizeQ];
+            Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+            Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+            Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+            Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+            Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+            Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+            Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+            Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+            Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+            Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+            Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+            Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+            Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+            Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+            Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+            Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+            Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+            Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+            Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
 
-	for (int i = 0; i < channelBoundaryConditions.size(); i++)
-	{
-		if (this->channelBoundaryConditions[i] == "noSlip") { setNoSlipQs(i); }
-		else if (this->channelBoundaryConditions[i] == "velocity") { setVelocityQs(i); }
-		else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(i); }
-		else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowQs(i); }
-	}
+            builder->getVelocityQs(Q.q27, i);
 
-	if (para->getIsGeo())
-		setGeoQs();
+            if (para->getDiffOn()) {
+                //////////////////////////////////////////////////////////////////////////
+                para->getParH(i)->TempVel.kTemp = numberOfVelocityNodes;
+                para->getParD(i)->TempVel.kTemp = numberOfVelocityNodes;
+                cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+                cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
+                cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
+                //////////////////////////////////////////////////////////////////////////
+                para->cudaAllocTempVeloBC(i);
+                //cout << "nach alloc " << endl;
+                //////////////////////////////////////////////////////////////////////////
+                for (int m = 0; m < numberOfVelocityNodes; m++)
+                {
+                    para->getParH(i)->TempVel.temp[m] = para->getTemperatureInit();
+                    para->getParH(i)->TempVel.tempPulse[m] = para->getTemperatureBC();
+                    para->getParH(i)->TempVel.velo[m] = para->getVelocity();
+                    para->getParH(i)->TempVel.k[m] = para->getParH(i)->Qinflow.k[m];
+                }
+                //////////////////////////////////////////////////////////////////////////
+                //cout << "vor copy " << endl;
+                para->cudaCopyTempVeloBCHD(i);
+                //cout << "nach copy " << endl;
+                //////////////////////////////////////////////////////////////////////////
+            }
+            para->cudaCopyVeloBC(i);
+        }
+    }
+
+	//channelBoundaryConditions = builder->getTypeOfBoundaryConditions();
+
+	//for (int i = 0; i < channelBoundaryConditions.size(); i++)
+	//{
+	//	if (this->channelBoundaryConditions[i] == "noSlip") { setNoSlipQs(i); }
+	//	else if (this->channelBoundaryConditions[i] == "velocity") { setVelocityQs(i); }
+	//	else if (this->channelBoundaryConditions[i] == "pressure") { setPressQs(i); }
+	//	else if (this->channelBoundaryConditions[i] == "outflow") { setOutflowQs(i); }
+	//}
+
+	//if (para->getIsGeo())
+	//	setGeoQs();
 
 	std::cout << "-----finish BoundaryQs------" << std::endl;
 }
