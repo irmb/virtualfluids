@@ -25,8 +25,11 @@
 
 #include <GridGenerator/grid/GridFactory.h>
 #include "grid/GridInterface.h"
-//#include "grid/GridMocks.h"
 #include "grid/Grid.h"
+
+#include "grid/BoundaryConditions/BoundaryCondition.h"
+#include "grid/BoundaryConditions/Side.h"
+
 
 #define GEOFLUID 19
 #define GEOSOLID 16
@@ -48,18 +51,21 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, co
     return SPtr<LevelGridBuilder>(new LevelGridBuilder(device, d3qxx));
 }
 
-void LevelGridBuilder::setVelocityBoundaryCondition(SPtr<Side> side, real vx, real vy, real vz)
+void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
 {
     SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+
+    auto side = SideFactory::make(sideType);
 
     side->setPeriodicy(grids[0]);
     velocityBoundaryConditions.push_back(velocityBoundaryCondition);
     velocityBoundaryCondition->side = side;
 }
 
-void LevelGridBuilder::setPressureBoundaryCondition(SPtr<Side> side, real rho)
+void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 {
     SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
+    auto side = SideFactory::make(sideType);
 
     side->setPeriodicy(grids[0]);
     pressureBoundaryConditions.push_back(pressureBoundaryCondition);
@@ -221,7 +227,7 @@ uint LevelGridBuilder::getVelocitySize(int level) const
     uint size = 0;
     for (auto boundaryCondition : this->velocityBoundaryConditions)
     {
-        size += boundaryCondition->indices.size();
+        size += uint(boundaryCondition->indices.size());
     }
     return size;
 }
@@ -247,7 +253,7 @@ uint LevelGridBuilder::getPressureSize(int level) const
     uint size = 0;
     for (auto boundaryCondition : this->pressureBoundaryConditions)
     {
-        size += boundaryCondition->indices.size();
+        size += uint(boundaryCondition->indices.size());
     }
     return size;
 }

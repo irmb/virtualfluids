@@ -9,6 +9,8 @@
 #include <VirtualFluidsBasics/utilities/logger/Logger.h>
 #include "io/STLReaderWriter/STLWriter.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
+#include <grid/BoundaryConditions/BoundaryCondition.h>
+#include <grid/BoundaryConditions/Side.h>
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
     LevelGridBuilder(device, d3qxx), gridFactory(gridFactory)

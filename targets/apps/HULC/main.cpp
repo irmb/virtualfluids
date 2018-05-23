@@ -38,6 +38,7 @@
 #include "Output/FileWriter.h"
 //#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
 
+#include "grid/BoundaryConditions/Side.h"
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -278,13 +279,12 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addGeometry(triangularMesh);
 
 
-
-    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MX()), 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PX()), 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MY()), 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PY()), 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new MZ()), 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SPtr<Side>(new PZ()), 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.01, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.01, 0.0, 0.0);
 
     //gridBuilder->setBoundaryCondition("geometry", BoundaryCondition::VELOCITY);
 
