@@ -12,10 +12,38 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
     {
         for (real v2 = startOuter; v2 <= endOuter; v2 += grid->getDelta())
         {
-            uint index = getIndex(grid, coord, constant, v1, v2);
+            const uint index = getIndex(grid, coord, constant, v1, v2);
             if (grid->getFieldEntry(index) == FLUID)
+            {
                 boundaryCondition->indices.push_back(grid->getSparseIndex(index) + 1);
+                setPressureNeighborIndices(boundaryCondition, grid, index);
+            }
         }
+    }
+}
+
+void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index)
+{
+    auto pressureBoundaryCondition = std::dynamic_pointer_cast<PressureBoundaryCondition>(boundaryCondition);
+    if (pressureBoundaryCondition)
+    {
+        real x, y, z;
+        grid->transIndexToCoords(index, x, y, z);
+
+        real nx = x;
+        real ny = y;
+        real nz = z;
+
+        if (boundaryCondition->side->getCoordinate() == X_INDEX)
+            nx = boundaryCondition->side->getDirection() * grid->getDelta() + x;
+        if (boundaryCondition->side->getCoordinate() == Y_INDEX)
+            ny = boundaryCondition->side->getDirection() * grid->getDelta() + y;
+        if (boundaryCondition->side->getCoordinate() == Z_INDEX)
+            nz = boundaryCondition->side->getDirection() * grid->getDelta() + z;
+
+        int neighborIndex = grid->transCoordToIndex(nx, ny, nz);
+        int sparseIndex = grid->getSparseIndex(neighborIndex);
+        pressureBoundaryCondition->neighborIndices.push_back(sparseIndex);
     }
 }
 

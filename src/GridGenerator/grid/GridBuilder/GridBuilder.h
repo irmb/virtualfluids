@@ -70,7 +70,7 @@ public:
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual uint getPressureSize(int level) const = 0;
-    virtual void getPressureValues(real* rho, int* indices, int level) const = 0;
+    virtual void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const = 0;
     virtual void getVelocityQs(real* qs[27], int level) const = 0;
 };
 

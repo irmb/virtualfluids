@@ -1586,12 +1586,12 @@ void Simulation::run()
 		  //getLastCudaError("QPressDevIncompNEQ27 execution failed");
 		  //////////////////////////////////////////////////////////////////////////////////
 		  //press NEQ comp
-		  //QPressDevNEQ27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
-		  //				  para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
-		  //				  para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
-		  //				  para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-		  //				  para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-		  //getLastCudaError("QPressDevNEQ27 execution failed");
+          QPressDevNEQ27(para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC,
+              para->getParD(0)->d0SP.f[0], para->getParD(0)->QPress.k,
+              para->getParD(0)->QPress.kN, para->getParD(0)->QPress.kQ, para->getParD(0)->omega,
+              para->getParD(0)->neighborX_SP, para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+              para->getParD(0)->size_Mat_SP, para->getParD(0)->evenOrOdd);
+          getLastCudaError("QPressDevNEQ27 execution failed");
 		  ////////////////////////////////////////////////////////////////////////////////
           //if (  myid == numprocs - 1)  
           //   PressSchlaffer27( para->getParD(0)->numberofthreads,  para->getParD(0)->Qoutflow.RhoBC,

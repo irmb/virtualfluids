@@ -125,7 +125,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 {
 	std::cout << "------read BoundaryValues------" << std::endl;
 
-    for (int level = 0; level < builder->getNumberOfGridLevels(); level++) {
+    for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfPressureValues = int(builder->getPressureSize(level));
 
         cout << "size pressure level " << level << " : " << numberOfPressureValues << endl;
@@ -137,7 +137,7 @@ void GridGenerator::allocArrays_BoundaryValues()
         if (numberOfPressureValues > 1)
         {
             para->cudaAllocPress(level);
-            builder->getPressureValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.k, level);
+            builder->getPressureValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.k, para->getParH(level)->QPress.kN, level);
             para->cudaCopyPress(level);
         }
     }

@@ -12,6 +12,9 @@ class BoundaryCondition
 {
 public:
     std::vector<uint> indices;
+    SPtr<Side> side;
+
+    virtual void print() const = 0;
 
 };
 
@@ -23,13 +26,18 @@ public:
         return SPtr<PressureBoundaryCondition>(new PressureBoundaryCondition(rho));
     }
 
-    SPtr<Side> side;
+
+    std::vector<uint> neighborIndices;
+
     real rho;
 private:
     PressureBoundaryCondition(real rho) : rho(rho)
     {
 
     }
+
+public:
+    void print() const override {};
 };
 
 class VelocityBoundaryCondition : public BoundaryCondition
@@ -40,13 +48,15 @@ public:
         return SPtr<VelocityBoundaryCondition>(new VelocityBoundaryCondition(vx, vy, vz));
     }
 
-    SPtr<Side> side;
     real vx, vy, vz;
 private:
     VelocityBoundaryCondition(real vx, real vy, real vz) : vx(vx), vy(vy), vz(vz)
     {
 
     }
+
+public:
+    void print() const override {};
 };
 
 

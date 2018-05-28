@@ -70,7 +70,7 @@ public:
     VF_PUBLIC virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
     VF_PUBLIC virtual void getVelocityQs(real* qs[27], int level) const;
     VF_PUBLIC uint getPressureSize(int level) const override;
-    VF_PUBLIC void getPressureValues(real* rho, int* indices, int level) const override;
+    VF_PUBLIC void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
 
     VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 

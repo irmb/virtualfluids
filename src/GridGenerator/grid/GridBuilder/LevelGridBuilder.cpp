@@ -268,7 +268,7 @@ uint LevelGridBuilder::getPressureSize(int level) const
     return size;
 }
 
-void LevelGridBuilder::getPressureValues(real* rho, int* indices, int level) const
+void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const
 {
     int allIndicesCounter = 0;
     for (auto boundaryCondition : this->pressureBoundaryConditions)
@@ -276,11 +276,15 @@ void LevelGridBuilder::getPressureValues(real* rho, int* indices, int level) con
         for (int i = 0; i < boundaryCondition->indices.size(); i++)
         {
             indices[allIndicesCounter] = boundaryCondition->indices[i];
+
+            neighborIndices[allIndicesCounter] = boundaryCondition->neighborIndices[i];;
+
             rho[allIndicesCounter] = boundaryCondition->rho;
             allIndicesCounter++;
         }
     }
 }
+
 
 void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
 {
