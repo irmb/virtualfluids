@@ -44,6 +44,10 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     channelBoundaryConditions[3] = "periodic";
     channelBoundaryConditions[4] = "periodic";
     channelBoundaryConditions[5] = "periodic";
+
+
+    sideIsSet = { { SideType::MX, false },{ SideType::PX, false },{ SideType::MY, false },{ SideType::PY, false },{ SideType::MZ, false },{ SideType::PZ, false } };
+
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
@@ -53,6 +57,8 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, co
 
 void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
 {
+    sideIsSet[sideType] = true;
+
     SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
 
     auto side = SideFactory::make(sideType);
@@ -64,7 +70,10 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
 
 void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 {
+    sideIsSet[sideType] = true;
+
     SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
+
     auto side = SideFactory::make(sideType);
 
     side->setPeriodicy(grids[0]);
@@ -239,7 +248,8 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
     {
         for(int i = 0; i < boundaryCondition->indices.size(); i++)
         {
-            indices[allIndicesCounter] = boundaryCondition->indices[i];
+            indices[allIndicesCounter] = boundaryCondition->indices[i];  
+
             vx[allIndicesCounter] = boundaryCondition->vx;
             vy[allIndicesCounter] = boundaryCondition->vy;
             vz[allIndicesCounter] = boundaryCondition->vz;

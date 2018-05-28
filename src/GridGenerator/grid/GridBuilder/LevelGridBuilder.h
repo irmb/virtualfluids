@@ -81,6 +81,8 @@ protected:
     std::vector<std::shared_ptr<Grid> > grids;
     std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
+
+    std::map<SideType, bool> sideIsSet;
     std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
     std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 

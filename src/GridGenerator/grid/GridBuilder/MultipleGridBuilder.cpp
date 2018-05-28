@@ -256,7 +256,7 @@ void MultipleGridBuilder::buildGrids()
     for (auto grid : grids)
         grid->inital();
 
-    grids[grids.size()-1]->mesh(solidObject);
+    //grids[grids.size()-1]->mesh(solidObject);
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);
@@ -270,8 +270,14 @@ void MultipleGridBuilder::buildGrids()
 
     for(auto velocityBC : velocityBoundaryConditions)
     {
-        velocityBC->side->addIndices(grids[0], velocityBC);
+        velocityBC->side->addIndices(grids[0], velocityBC, sideIsSet);
     }
+
+    for (auto pressureBC : pressureBoundaryConditions)
+    {
+        pressureBC->side->addIndices(grids[0], pressureBC, sideIsSet);
+    }
+
 }
 
 

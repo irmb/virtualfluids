@@ -276,17 +276,15 @@ void multipleLevel(const std::string& configPath)
 
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
 
-    gridBuilder->addGeometry(triangularMesh);
+    //gridBuilder->addGeometry(triangularMesh);
 
-
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.01, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.01, 0.0, 0.0);
-
-    //gridBuilder->setBoundaryCondition("geometry", BoundaryCondition::VELOCITY);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.001, 0.0, 0.0);
 
 
     //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
@@ -310,6 +308,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
     gridBuilder->buildGrids();
+    //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
     //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
 

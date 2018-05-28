@@ -72,6 +72,15 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
             para->getParH(level)->gDyvz[j] = 0.0f;
             para->getParH(level)->gDzvz[j] = 0.0f;
         }
+
+
+
+        para->getParH(level)->rho_SP[j] = 0.0;
+
+        para->getParH(level)->vx_SP[j] = 0.0;
+        para->getParH(level)->vy_SP[j] = 0.0;
+        para->getParH(level)->vz_SP[j] = 0.0;
+
     }
 	////////////////////////////////////////////////////////////////////////////////
 	//2D parabolic test for turbulent channel flow

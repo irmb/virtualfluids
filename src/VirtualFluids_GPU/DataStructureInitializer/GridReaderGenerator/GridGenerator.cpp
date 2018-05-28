@@ -124,34 +124,63 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 void GridGenerator::allocArrays_BoundaryValues()
 {
 	std::cout << "------read BoundaryValues------" << std::endl;
+
+    for (int level = 0; level < builder->getNumberOfGridLevels(); level++) {
+        const auto numberOfPressureValues = int(builder->getPressureSize(level));
+
+        cout << "size pressure level " << level << " : " << numberOfPressureValues << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->QPress.kQ = numberOfPressureValues;
+        para->getParD(level)->QPress.kQ = numberOfPressureValues;
+        para->getParH(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
+        para->getParD(level)->kPressQread = numberOfPressureValues * para->getD3Qxx();
+        if (numberOfPressureValues > 1)
+        {
+            para->cudaAllocPress(level);
+            builder->getPressureValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.k, level);
+            para->cudaCopyPress(level);
+        }
+    }
     
+
     for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
         const auto numberOfVelocityValues = int(builder->getVelocitySize(level));
+        cout << "size velocity level " << level << " : " << numberOfVelocityValues << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        int blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
+        para->getParH(level)->Qinflow.kArray = blocks * para->getParH(level)->numberofthreads;
+        para->getParD(level)->Qinflow.kArray = para->getParH(level)->Qinflow.kArray;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(level)->Qinflow.kQ = numberOfVelocityValues;
+        para->getParD(level)->Qinflow.kQ = numberOfVelocityValues;
+        para->getParH(level)->kInflowQ = numberOfVelocityValues;
+        para->getParD(level)->kInflowQ = numberOfVelocityValues;
+        para->getParH(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
+        para->getParD(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
+
         if (numberOfVelocityValues > 1)
         {
-            cout << "size velocity level " << level << " : " << numberOfVelocityValues << endl;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            int blocks = (numberOfVelocityValues / para->getParH(level)->numberofthreads) + 1;
-            para->getParH(level)->Qinflow.kArray = blocks * para->getParH(level)->numberofthreads;
-            para->getParD(level)->Qinflow.kArray = para->getParH(level)->Qinflow.kArray;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParH(level)->Qinflow.kQ = numberOfVelocityValues;
-            para->getParD(level)->Qinflow.kQ = numberOfVelocityValues;
-            para->getParH(level)->kInflowQ = numberOfVelocityValues;
-            para->getParD(level)->kInflowQ = numberOfVelocityValues;
-            para->getParH(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
-            para->getParD(level)->kInflowQread = numberOfVelocityValues * para->getD3Qxx();
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             para->cudaAllocVeloBC(level);
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             builder->getVelocityValues(para->getParH(level)->Qinflow.Vx, para->getParH(level)->Qinflow.Vy, para->getParH(level)->Qinflow.Vz, para->getParH(level)->Qinflow.k, level);
 
+
+            //for (int i = 0; i < numberOfVelocityValues; i++)
+            //{
+            //    std::cout << "index: " << para->getParH(level)->Qinflow.k[i];
+            //    std::cout << " (x,y,z)" << para->getParH(level)->coordX_SP[para->getParH(level)->Qinflow.k[i]];
+            //    std::cout << ", " << para->getParH(level)->coordY_SP[para->getParH(level)->Qinflow.k[i]];
+            //    std::cout << ", " << para->getParH(level)->coordZ_SP[para->getParH(level)->Qinflow.k[i]];
+            //    std::cout << " geo: " << para->getParH(level)->geoSP[para->getParH(level)->Qinflow.k[i]];
+            //    std::cout << std::endl;
+            //}
+
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             para->cudaCopyVeloBC(level);
-
-
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // advection - diffusion stuff
