@@ -58,20 +58,13 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
     return -1;
 }
 
-void Geometry::setPeriodicy(SPtr<Grid> grid)
-{
-
-}
 
 void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
 {
 
 }
 
-void MX::setPeriodicy(SPtr<Grid> grid)
-{
-    grid->setPeriodicityX(false);
-}
+
 
 void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
 {
@@ -98,10 +91,7 @@ void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
         endInner, startOuter, endOuter);
 }
 
-void PX::setPeriodicy(SPtr<Grid> grid)
-{
-    grid->setPeriodicityX(false);
-}
+
 
 void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
 {
@@ -125,11 +115,6 @@ void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
 
     Side::addIndices(grid, boundaryCondition, "x", grid->getEndX() - grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
-}
-
-void MY::setPeriodicy(SPtr<Grid> grid)
-{
-    grid->setPeriodicityY(false);
 }
 
 void MY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
@@ -156,10 +141,6 @@ void MY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
         endInner, startOuter, endOuter);
 }
 
-void PY::setPeriodicy(SPtr<Grid> grid)
-{
-    grid->setPeriodicityY(false);
-}
 
 void PY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
 {
@@ -185,10 +166,6 @@ void PY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
         endInner, startOuter, endOuter);
 }
 
-void MZ::setPeriodicy(SPtr<Grid> grid)
-{
-    grid->setPeriodicityZ(false);
-}
 
 void MZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
 {
@@ -212,11 +189,6 @@ void MZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
 
     Side::addIndices(grid, boundaryCondition, "z", grid->getStartZ() + grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
-}
-
-void PZ::setPeriodicy(SPtr<Grid> grid)
-{
-    grid->setPeriodicityZ(false);
 }
 
 void PZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)

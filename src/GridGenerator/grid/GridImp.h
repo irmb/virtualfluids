@@ -54,7 +54,7 @@ private:
 
 	uint size;
     uint sparseSize;
-    bool periodicityX = true, periodicityY = true, periodicityZ = true;
+    bool periodicityX = false, periodicityY = false, periodicityZ = false;
 
     Field field;
     Object* object;

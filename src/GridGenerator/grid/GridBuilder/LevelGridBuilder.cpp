@@ -63,7 +63,6 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
 
     auto side = SideFactory::make(sideType);
 
-    side->setPeriodicy(grids[0]);
     velocityBoundaryConditions.push_back(velocityBoundaryCondition);
     velocityBoundaryCondition->side = side;
 }
@@ -76,7 +75,6 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 
     auto side = SideFactory::make(sideType);
 
-    side->setPeriodicy(grids[0]);
     pressureBoundaryConditions.push_back(pressureBoundaryCondition);
     pressureBoundaryCondition->side = side;
 }

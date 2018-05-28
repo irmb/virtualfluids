@@ -250,9 +250,6 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
 
 void MultipleGridBuilder::buildGrids()
 {
-    for (size_t i = 1; i < grids.size(); i++)
-        grids[i]->setPeriodicity(false, false, false);
-
     for (auto grid : grids)
         grid->inital();
 
