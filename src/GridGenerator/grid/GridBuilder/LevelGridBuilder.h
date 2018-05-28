@@ -42,6 +42,9 @@ public:
 
     VF_PUBLIC void setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz);
     VF_PUBLIC void setPressureBoundaryCondition(SideType sideType, real rho);
+    VF_PUBLIC void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
+    VF_PUBLIC void setNoSlipBoundaryCondition(SideType sideType);
+
 
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
@@ -85,6 +88,8 @@ protected:
     std::map<SideType, bool> sideIsSet;
     std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
     std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
+
+    std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
 
     //std::map<Side, BoundaryCondition> channelBoundaryConditionTypes;
 

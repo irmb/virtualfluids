@@ -79,6 +79,24 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
     pressureBoundaryCondition->side = side;
 }
 
+void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z)
+{
+    grids[0]->setPeriodicity(periodic_X, periodic_Y, periodic_Z);
+}
+
+void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
+{
+    sideIsSet[sideType] = true;
+
+    SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
+
+    auto side = SideFactory::make(sideType);
+
+    noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
+    noSlipBoundaryCondition->side = side;
+}
+
+
 
 void LevelGridBuilder::copyDataFromGpu()
 {

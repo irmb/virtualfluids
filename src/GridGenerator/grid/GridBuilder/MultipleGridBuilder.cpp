@@ -275,6 +275,11 @@ void MultipleGridBuilder::buildGrids()
         pressureBC->side->addIndices(grids[0], pressureBC, sideIsSet);
     }
 
+    for (auto noSlipBC : noSlipBoundaryConditions)
+    {
+        noSlipBC->side->addIndices(grids[0], noSlipBC, sideIsSet);
+    }
+
 }
 
 
