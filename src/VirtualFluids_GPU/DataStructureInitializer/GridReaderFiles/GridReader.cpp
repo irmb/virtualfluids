@@ -264,14 +264,14 @@ void GridReader::allocArrays_BoundaryValues()
 
 	for (int i = 0; i <= maxLevel; i++) {
 		int temp1 = (int)pressureV[i][0].size();
+        cout << "size pressure level " << i << " : " << temp1 << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(i)->QPress.kQ = temp1;
+        para->getParD(i)->QPress.kQ = temp1;
+        para->getParH(i)->kPressQread = temp1 * para->getD3Qxx();
+        para->getParD(i)->kPressQread = temp1 * para->getD3Qxx();
 		if (temp1 > 1)
 		{
-			cout << "Groesse pressure level " << i << " : " << temp1 << endl;
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			para->getParH(i)->QPress.kQ = temp1;
-			para->getParD(i)->QPress.kQ = temp1;
-			para->getParH(i)->kPressQread = temp1 * para->getD3Qxx();
-			para->getParD(i)->kPressQread = temp1 * para->getD3Qxx();
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			para->cudaAllocPress(i);
 			///////////////////////////////
@@ -342,20 +342,21 @@ void GridReader::allocArrays_BoundaryValues()
 	 //--------------------------------------------------------------------------//
 	for (int i = 0; i <= maxLevel; i++) {
 		int temp2 = (int)velocityV[i][0].size();
+        cout << "size velocity level " << i << " : " << temp2 << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        int blocks = (temp2 / para->getParH(i)->numberofthreads) + 1;
+        para->getParH(i)->Qinflow.kArray = blocks * para->getParH(i)->numberofthreads;
+        para->getParD(i)->Qinflow.kArray = para->getParH(i)->Qinflow.kArray;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(i)->Qinflow.kQ = temp2;
+        para->getParD(i)->Qinflow.kQ = temp2;
+        para->getParH(i)->kInflowQ = temp2;
+        para->getParD(i)->kInflowQ = temp2;
+        para->getParH(i)->kInflowQread = temp2 * para->getD3Qxx();
+        para->getParD(i)->kInflowQread = temp2 * para->getD3Qxx();
 		if (temp2 > 1)
 		{
-			cout << "Groesse velocity level " << i << " : " << temp2 << endl;
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			int blocks = (temp2 / para->getParH(i)->numberofthreads) + 1;
-			para->getParH(i)->Qinflow.kArray = blocks * para->getParH(i)->numberofthreads;
-			para->getParD(i)->Qinflow.kArray = para->getParH(i)->Qinflow.kArray;
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			para->getParH(i)->Qinflow.kQ = temp2;
-			para->getParD(i)->Qinflow.kQ = temp2;
-			para->getParH(i)->kInflowQ = temp2;
-			para->getParD(i)->kInflowQ = temp2;
-			para->getParH(i)->kInflowQread = temp2 * para->getD3Qxx();
-			para->getParD(i)->kInflowQread = temp2 * para->getD3Qxx();
+
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			para->cudaAllocVeloBC(i);
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -430,14 +431,15 @@ void GridReader::allocArrays_BoundaryValues()
 	 //--------------------------------------------------------------------------//
 	for (int i = 0; i <= maxLevel; i++) {
 		int temp = (int)outflowV[i][0].size();
+        cout << "size outflow level " << i << " : " << temp << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(i)->Qoutflow.kQ = temp;
+        para->getParD(i)->Qoutflow.kQ = temp;
+        para->getParH(i)->kOutflowQread = temp * para->getD3Qxx();
+        para->getParD(i)->kOutflowQread = temp * para->getD3Qxx();
 		if (temp > 1)
 		{
-			cout << "Groesse outflow level " << i << " : " << temp << endl;
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			para->getParH(i)->Qoutflow.kQ = temp;
-			para->getParD(i)->Qoutflow.kQ = temp;
-			para->getParH(i)->kOutflowQread = temp * para->getD3Qxx();
-			para->getParD(i)->kOutflowQread = temp * para->getD3Qxx();
+
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			para->cudaAllocOutflowBC(i);
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -479,12 +481,13 @@ void GridReader::allocArrays_BoundaryValues()
 	if (para->getIsGeometryValues()) {
 		for (int i = 0; i <= maxLevel; i++) {
 			int temp4 = obj_geomV->getSize(i);
+            cout << "size obj_geomV, Level " << i << " : " << temp4 << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->getParH(i)->QGeom.kQ = temp4;
+            para->getParD(i)->QGeom.kQ = temp4;
 			if (temp4 > 0)
 			{
-				cout << "Groesse der Daten obj_geomV, Level " << i << " : " << temp4 << endl;
-				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				para->getParH(i)->QGeom.kQ = temp4;
-				para->getParD(i)->QGeom.kQ = temp4;
+
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				para->cudaAllocGeomValuesBC(i);
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -672,12 +675,13 @@ void GridReader::allocArrays_BoundaryValues()
 		//concentration
 		for (int i = 0; i <= maxLevel; i++) {
 			int temp = obj_Conc->getSize(i);
+            cout << "size Concentration, Level " << i << " : " << temp << endl;
+            ////////////////////////////////////////////////////////////////////////////
+            para->getParH(i)->numberOfPointsConc = temp;
+            para->getParD(i)->numberOfPointsConc = temp;
 			if (temp > 0)
 			{
-				cout << "Groesse der Daten Concentration, Level " << i << " : " << temp << endl;
-				////////////////////////////////////////////////////////////////////////////
-				para->getParH(i)->numberOfPointsConc = temp;
-				para->getParD(i)->numberOfPointsConc = temp;
+
 				////////////////////////////////////////////////////////////////////////////
 				para->cudaAllocConcFile(i);
 				////////////////////////////////////////////////////////////////////////////
@@ -2022,14 +2026,15 @@ void GridReader::allocArrays_BoundaryQs()
 	 //--------------------------------------------------------------------------//
 	for (int i = 0; i <= level; i++) {
 		int temp2 = (int)slipQs[i][0].size();
+        cout << "size Slip: " << i << " : " << temp2 << endl;
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        para->getParH(i)->QSlip.kQ = temp2;
+        para->getParD(i)->QSlip.kQ = para->getParH(i)->QSlip.kQ;
+        para->getParH(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
+        para->getParD(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
 		if (temp2 > 0)
 		{
-			cout << "Groesse Slip: " << i << " : " << temp2 << endl;
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			para->getParH(i)->QSlip.kQ = temp2;
-			para->getParD(i)->QSlip.kQ = para->getParH(i)->QSlip.kQ;
-			para->getParH(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
-			para->getParD(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
+
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			para->cudaAllocSlipBC(i);
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
