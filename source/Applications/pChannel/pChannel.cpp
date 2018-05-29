@@ -505,6 +505,7 @@ void run(string configname)
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(AdjForcCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
+      //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
 

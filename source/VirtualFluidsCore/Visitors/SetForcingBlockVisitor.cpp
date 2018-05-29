@@ -32,12 +32,12 @@ SetForcingBlockVisitor::SetForcingBlockVisitor(const std::string& sForcingX1, co
 //////////////////////////////////////////////////////////////////////////
 void SetForcingBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block)
 {
-    SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
-    if (!kernel)
-        throw std::runtime_error("SetForcingBlockVisitor: Kernel is not a LBMKernel");
-
    if(block->getRank() == grid->getRank())
    {
+      SPtr<LBMKernel> kernel = dynamicPointerCast<LBMKernel>(block->getKernel());
+      if (!kernel)
+         throw UbException(UB_EXARGS, "LBMKernel is not exist");
+
       switch (ftype)
       {
       case 0:
