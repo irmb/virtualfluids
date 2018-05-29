@@ -159,12 +159,14 @@ public:
 
     HOST void updateSparseIndices();
     HOSTDEVICE void setNeighborIndices(uint index);
-
+    HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
+    HOSTDEVICE real getLastFluidNode(real coords[3], int direction, real startCoord) const;
 private:
     HOSTDEVICE void setStopperNeighborCoords(uint index);
     HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     HOSTDEVICE real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
-    HOSTDEVICE real getFirstFluidNode(real coords[3], int direction, real startCoord) const;
+    
+
     HOSTDEVICE int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
 
     HOSTDEVICE static real getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta);

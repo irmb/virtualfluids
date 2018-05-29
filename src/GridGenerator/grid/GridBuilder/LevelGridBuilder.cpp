@@ -62,14 +62,15 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
         setVelocityGeometryBoundaryCondition(vx, vy, vz);
     else
     {
-
         SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
 
         auto side = SideFactory::make(sideType);
 
         velocityBoundaryConditions.push_back(velocityBoundaryCondition);
         velocityBoundaryCondition->side = side;
+        velocityBoundaryCondition->side->addIndices(grids[0], velocityBoundaryCondition);
     }
+
 }
 
 void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)
@@ -78,6 +79,7 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
     geometryBoundaryCondition->vx = vx;
     geometryBoundaryCondition->vy = vy;
     geometryBoundaryCondition->vz = vz;
+    geometryBoundaryCondition->side->addIndices(grids[0], geometryBoundaryCondition);
 }
 
 void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
@@ -88,6 +90,7 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 
     pressureBoundaryConditions.push_back(pressureBoundaryCondition);
     pressureBoundaryCondition->side = side;
+    pressureBoundaryCondition->side->addIndices(grids[0], pressureBoundaryCondition);
 }
 
 void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z)
@@ -103,6 +106,8 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
 
     noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
     noSlipBoundaryCondition->side = side;
+    noSlipBoundaryCondition->side->addIndices(grids[0], noSlipBoundaryCondition);
+
 }
 
 

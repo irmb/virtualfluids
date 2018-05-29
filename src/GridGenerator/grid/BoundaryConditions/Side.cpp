@@ -105,7 +105,10 @@ void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
     real startOuter = grid->getStartZ();
     real endOuter = grid->getEndZ();
 
-    Side::addIndices(grid, boundaryCondition, "x", grid->getStartX() + grid->getDelta(), startInner,
+    real coords[3] = { grid->getStartX(), grid->getStartY() + (grid->getEndY() - grid->getStartY()) / 2.0, grid->getStartZ() + (grid->getEndZ() - grid->getStartZ()) / 2.0 };
+    real startCoord = grid->getFirstFluidNode(coords, 0, grid->getStartX());
+
+    Side::addIndices(grid, boundaryCondition, "x", startCoord, startInner,
         endInner, startOuter, endOuter);
 }
 
@@ -119,7 +122,10 @@ void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
     real startOuter = grid->getStartZ();
     real endOuter = grid->getEndZ();
 
-    Side::addIndices(grid, boundaryCondition, "x", grid->getEndX() - grid->getDelta(), startInner,
+    real coords[3] = { grid->getEndX(), grid->getStartY() + (grid->getEndY() - grid->getStartY()) / 2.0, grid->getStartZ() + (grid->getEndZ() - grid->getStartZ()) / 2.0 };
+    real startCoord = grid->getLastFluidNode(coords, 0, grid->getEndX());
+
+    Side::addIndices(grid, boundaryCondition, "x", startCoord, startInner,
         endInner, startOuter, endOuter);
 }
 

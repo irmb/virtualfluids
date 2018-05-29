@@ -72,6 +72,8 @@ public:
     void setPeriodicityZ(bool periodicity) override {}
     void findQs(Object* object) override {}
     void setFieldEntry(uint matrixIndex, char type) override {}
+    real getFirstFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
+    real getLastFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
 };
 
 class GridStub : public GridDummy

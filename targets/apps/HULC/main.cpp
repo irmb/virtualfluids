@@ -281,6 +281,10 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addGeometry(triangularMesh);
 
+
+    gridBuilder->buildGrids(); // buildGrids() has to be called before setting the BCs!!!!
+
+
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
 
@@ -319,11 +323,10 @@ void multipleLevel(const std::string& configPath)
 
     //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
 
-    gridBuilder->buildGrids();
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
-    //gridBuilder->writeArrows("D:/arrows");
+    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    gridBuilder->writeArrows("D:/arrows");
 
 
     SPtr<Parameter> para = Parameter::make();

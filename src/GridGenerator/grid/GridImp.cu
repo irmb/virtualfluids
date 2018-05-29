@@ -501,6 +501,19 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
     return coords[direction] + delta;
 }
 
+
+HOSTDEVICE real GridImp::getLastFluidNode(real coords[3], int direction, real startCoord) const
+{
+    coords[direction] = startCoord;
+    int index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
+    while (!field.isFluid(index))
+    {
+        coords[direction] -= delta;
+        index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
+    }
+    return coords[direction];
+}
+
 HOSTDEVICE real GridImp::getFirstFluidNode(real coords[3], int direction, real startCoord) const
 {
     coords[direction] = startCoord;

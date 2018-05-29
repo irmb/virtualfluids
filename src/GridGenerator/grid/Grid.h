@@ -85,7 +85,8 @@ public:
 
     HOST virtual void findSparseIndices(SPtr<Grid> fineGrid) = 0;
 
-
+    HOSTDEVICE virtual real getFirstFluidNode(real coords[3], int direction, real startCoord) const = 0;
+    HOSTDEVICE virtual real getLastFluidNode(real coords[3], int direction, real startCoord) const = 0;
 };
 
 #endif

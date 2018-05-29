@@ -63,7 +63,7 @@ HOSTDEVICE bool Field::isFineToCoarseNode(uint index) const
 HOSTDEVICE bool Field::isFluid(uint index) const
 {
     const char type = field[index];
-    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF || type == Q;
+    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF || isRb(index);
 }
 
 HOSTDEVICE bool Field::isSolid(uint index) const
@@ -103,7 +103,7 @@ HOSTDEVICE bool Field::isQ(uint index) const
 
 HOSTDEVICE bool Field::isRb(uint index) const
 {
-    return  field[index] == SOLID;
+    return  field[index] == BC_GEOMETRY || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP;
 }
 
 // --------------------------------------------------------- //
