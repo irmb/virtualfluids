@@ -147,7 +147,7 @@ HOSTDEVICE void GridImp::findStopperNode(uint index)
         this->field.setFieldEntryToStopperEndOfGrid(index);
 
     if (isValidInnerStopper(index))
-        this->field.setFieldEntryToStopperOverlapGrid(index);
+        this->field.setFieldEntry(index, STOPPER_GEOMETRY);
 }
 
 HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
@@ -636,7 +636,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 const Vertex point(x, y, z);
 
-                if(hasNeighbor(index, STOPPER_OVERLAP_GRID))
+                if(hasNeighbor(index, STOPPER_GEOMETRY))
                 {
                     field.setFieldEntry(index, Q);
                     calculateQs(point, triangle);
