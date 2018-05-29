@@ -30,6 +30,8 @@
 #include "grid/BoundaryConditions/BoundaryCondition.h"
 #include "grid/BoundaryConditions/Side.h"
 
+#include <basics/utilities/UbTuple.h>
+
 
 #define GEOFLUID 19
 #define GEOSOLID 16
@@ -264,7 +266,7 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
     {
         for(int i = 0; i < boundaryCondition->indices.size(); i++)
         {
-            indices[allIndicesCounter] = boundaryCondition->indices[i];  
+            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
 
             vx[allIndicesCounter] = boundaryCondition->vx;
             vy[allIndicesCounter] = boundaryCondition->vy;
@@ -291,9 +293,9 @@ void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborI
     {
         for (int i = 0; i < boundaryCondition->indices.size(); i++)
         {
-            indices[allIndicesCounter] = boundaryCondition->indices[i];
+            indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) + 1;
 
-            neighborIndices[allIndicesCounter] = boundaryCondition->neighborIndices[i];;
+            neighborIndices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->neighborIndices[i]) + 1;
 
             rho[allIndicesCounter] = boundaryCondition->rho;
             allIndicesCounter++;
@@ -354,7 +356,7 @@ void LevelGridBuilder::getGeometryIndices(int* indices, int level) const
 {
     for (uint i = 0; i < geometryBoundaryCondition->indices.size(); i++)
     {
-        indices[i] = geometryBoundaryCondition->indices[i];
+        indices[i] = grids[level]->getSparseIndex(geometryBoundaryCondition->indices[i]) + 1;
     }
 }
 
@@ -485,46 +487,132 @@ void LevelGridBuilder::fillRBForNode(int index, int direction, int directionSign
     qNode.clear();
 }
 
-void LevelGridBuilder::writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const
-{
-    Grid* grid = grids[0].get();
 
-    //std::shared_ptr<PolyDataWriterWrapper> writer = std::shared_ptr<PolyDataWriterWrapper>(new PolyDataWriterWrapper());
-    for (int index = 0; index < Qs[GEOMQS].size(); index++)
+
+
+
+
+#include <fstream>
+using namespace std;
+void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vector<UbTupleInt2> lines)
+{
+    string vtkfilename = filename + ".bin.vtu";
+
+    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
+
+    int nofNodes = (int)nodes.size();
+    int nofCells = (int)lines.size();
+
+    int bytesPerByteVal = 4; //==sizeof(int)
+    int bytesPoints = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
+    int bytesCellConnectivty = 2 /*nodes per line */ * nofCells * sizeof(int);
+    int bytesCellOffsets = 1 /*offset per line */ * nofCells * sizeof(int);
+    int bytesCellTypes = 1 /*type of line */ * nofCells * sizeof(unsigned char);
+
+    int offset = 0;
+    //VTK FILE
+    out << "<?xml version=\"1.0\"?>\n";
+    out << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >" << "\n";
+    out << "   <UnstructuredGrid>" << "\n";
+    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\" NumberOfCells=\"" << nofCells << "\">\n";
+
+    //POINTS SECTION
+    out << "         <Points>\n";
+    out << "            <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"appended\" offset=\"" << offset << "\"  />\n";
+    out << "         </Points>\n";
+    offset += (bytesPerByteVal + bytesPoints);
+
+    //CELLS SECTION
+    out << "         <Cells>\n";
+    out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset << "\" />\n";
+    offset += (bytesPerByteVal + bytesCellConnectivty);
+    out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset << "\" />\n";
+    offset += (bytesPerByteVal + bytesCellOffsets);
+    out << "            <DataArray type=\"UInt8\" Name=\"types\" format=\"appended\" offset=\"" << offset << "\" />\n ";
+    offset += (bytesPerByteVal + bytesCellTypes);
+    out << "         </Cells>\n";
+
+    out << "      </Piece>\n";
+    out << "   </UnstructuredGrid>\n";
+
+    // AppendedData SECTION
+    out << "   <AppendedData encoding=\"raw\">\n";
+    out << "_";
+
+    //POINTS SECTION
+    out.write((char*)&bytesPoints, bytesPerByteVal);
+    for (int n = 0; n < nofNodes; n++)
     {
-        Vertex startNode = getVertex(getMatrixIndex(index));
-        //for (int qi = grid.d.dir_start; qi <= grid.d.dir_end; qi++)
-            //writeArrow(index, qi, startNode, trans, writer);
+        out.write((char*)&val<1>(nodes[n]), sizeof(float));
+        out.write((char*)&val<2>(nodes[n]), sizeof(float));
+        out.write((char*)&val<3>(nodes[n]), sizeof(float));
     }
-    //writer->writePolyDataToFile(fileName);
+
+    //CELLS SECTION
+    //cellConnectivity
+    out.write((char*)&bytesCellConnectivty, bytesPerByteVal);
+    for (int c = 0; c < nofCells; c++)
+    {
+        out.write((char*)&val<1>(lines[c]), sizeof(int));
+        out.write((char*)&val<2>(lines[c]), sizeof(int));
+
+    }
+
+    //cellOffsets
+    out.write((char*)&bytesCellOffsets, bytesPerByteVal);
+    int itmp;
+    for (int c = 1; c <= nofCells; c++)
+    {
+        itmp = 2 * c;
+        out.write((char*)&itmp, sizeof(int));
+    }
+
+    //cellTypes
+    out.write((char*)&bytesCellTypes, bytesPerByteVal);
+    unsigned char vtkCellType = 3;
+    for (int c = 0; c < nofCells; c++)
+    {
+        out.write((char*)&vtkCellType, sizeof(unsigned char));
+    }
+    out << "\n</AppendedData>\n";
+    out << "</VTKFile>";
+    out << endl;
+    out.close();
 }
 
-void LevelGridBuilder::writeArrow(const int i, const int qi, const Vertex& startNode, std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/) const
+void LevelGridBuilder::writeArrows(std::string fileName) const
 {
-    Grid* grid = grids[0].get();
+    std::vector<UbTupleFloat3> nodes;
+    std::vector<UbTupleInt2> cells;
 
-    real qval = Qs[GEOMQS][i][qi + 1];
-    if (qval > 0.0f)
+    int actualNodeNumber = 0;
+    for (int index = 0; index < geometryBoundaryCondition->indices.size(); index++)
     {
-        int qReverse = grid->getEndDirection() - qi;
-        Vertex dir((real)grid->getDirection()[qReverse * DIMENSION + 0], (real)grid->getDirection()[qReverse* DIMENSION + 1], (real)grid->getDirection()[qReverse * DIMENSION + 2]);
-        Vertex nodeOnGeometry(startNode + (dir * qval));
-        std::shared_ptr<Arrow> arrow = ArrowImp::make(startNode, nodeOnGeometry);
-        trans->transformGridToWorld(arrow);
-        //writer->addVectorArrow(arrow);
+        Vertex startNode = getVertex(geometryBoundaryCondition->indices[index]);
+        for (int qi = 0; qi <= 26; qi++)
+        {
+            real qval = geometryBoundaryCondition->qs[index][qi];
+            if (qval > 0.0f)
+            {
+                Vertex dir((real)grids[0]->getDirection()[qi * DIMENSION + 0], (real)grids[0]->getDirection()[qi* DIMENSION + 1], (real)grids[0]->getDirection()[qi * DIMENSION + 2]);
+                Vertex nodeOnGeometry(startNode + (dir * qval));
+
+                nodes.push_back(makeUbTuple(float(startNode.x), float(startNode.y), float(startNode.z)));
+                nodes.push_back(makeUbTuple(float(nodeOnGeometry.x), float(nodeOnGeometry.y), float(nodeOnGeometry.z)));
+                actualNodeNumber += 2;
+                cells.push_back(makeUbTuple(actualNodeNumber - 2, actualNodeNumber - 1));
+            }
+        }
     }
+
+    writeLines(fileName, nodes, cells);
 }
+
 
 Vertex LevelGridBuilder::getVertex(int matrixIndex) const
 {
     real x, y, z;
     this->grids[0]->transIndexToCoords(matrixIndex, x, y, z);
     return Vertex(x,y,z);
-}
-
-int LevelGridBuilder::getMatrixIndex(int i) const
-{
-    int index = (int)Qs[GEOMQS][i][0];
-    return this->grids[0]->getSparseIndex(index);
 }
 

@@ -55,7 +55,22 @@ TEST(GridTest, getMaximumOnNode)
     EXPECT_TRUE(actual == expected);
 }
 
+TEST(GridTest, getBoundingBoxOnNodes)
+{
+    auto gridStrategyDummy = SPtr<GridStrategy>(new GridStrategyDummy);
 
+    const real startX = -1.0;
+    const real startY = -1.0;
+    const real startZ = -1.0;
+    const real delta = 0.25;
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+
+    Triangle t = Triangle(Vertex(0,0,0), Vertex(1,0,0), Vertex(1,1,0), Vertex(0.0f, 0.0f, 0.0f));
+
+    const auto actual = sut->getBoundingBoxOnNodes(t);
+
+    EXPECT_THAT(actual.maxX, RealEq(1.25));
+}
 
 
 

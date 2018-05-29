@@ -104,6 +104,7 @@ public:
     HOSTDEVICE void setNodeTo(uint index, char type);
     HOSTDEVICE bool isNode(uint index, char type) const;
     HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
+    HOSTDEVICE bool hasNeighbor(uint index, char type)const;
 
     HOSTDEVICE Field getField() const;
     HOSTDEVICE char getFieldEntry(uint index) const override;

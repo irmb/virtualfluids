@@ -15,7 +15,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
             const uint index = getIndex(grid, coord, constant, v1, v2);
             if (grid->getFieldEntry(index) == FLUID)
             {
-                boundaryCondition->indices.push_back(grid->getSparseIndex(index) + 1);
+                boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
             }
         }
@@ -42,8 +42,7 @@ void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition,
             nz = boundaryCondition->side->getDirection() * grid->getDelta() + z;
 
         int neighborIndex = grid->transCoordToIndex(nx, ny, nz);
-        int sparseIndex = grid->getSparseIndex(neighborIndex);
-        pressureBoundaryCondition->neighborIndices.push_back(sparseIndex);
+        pressureBoundaryCondition->neighborIndices.push_back(neighborIndex);
     }
 }
 
@@ -68,6 +67,9 @@ void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondi
 
     for (int i = 0; i < grid->getSize(); i++)
     {
+        if (grid->getFieldEntry(i) != Q)
+            continue;
+
         for (int dir = 0; dir < grid->getEndDirection(); dir++)
         {
             const int qIndex = dir * grid->getSize() + i;
@@ -76,13 +78,15 @@ void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondi
             qNode[dir] = q;
             if (q > 0)
                 qFound = true;
+            else
+                qNode[dir] = -1.0;
+
 
         }
 
         if (qFound)
         {
-            const int sparseIndex = grid->getSparseIndex(i);
-            geometryBoundaryCondition->indices.push_back(sparseIndex);
+            geometryBoundaryCondition->indices.push_back(i);
             geometryBoundaryCondition->qs.push_back(qNode);
         }
 

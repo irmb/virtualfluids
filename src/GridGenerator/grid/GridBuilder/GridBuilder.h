@@ -42,7 +42,7 @@ public:
     virtual VF_PUBLIC uint getNumberOfGridLevels() = 0;
 
 
-    virtual void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const = 0;
+    virtual void writeArrows(std::string fileName) const = 0;
 
 	virtual SPtr<Grid> getGrid(uint level) = 0;
 

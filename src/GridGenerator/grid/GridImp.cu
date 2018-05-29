@@ -208,7 +208,46 @@ HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
         || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
+HOSTDEVICE bool GridImp::hasNeighbor(uint index, char type) const
+{
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
 
+    const real neighborX = x + this->delta > endX ? endX : x + this->delta;
+    const real neighborY = y + this->delta > endY ? endY : y + this->delta;
+    const real neighborZ = z + this->delta > endZ ? endZ : z + this->delta;
+
+    const real neighborMinusX = x - this->delta < startX ? startX : x - this->delta;
+    const real neighborMinusY = y - this->delta < startY ? startY : y - this->delta;
+    const real neighborMinusZ = z - this->delta < startZ ? startZ : z - this->delta;
+
+
+    const uint indexMXY = transCoordToIndex(-neighborX, neighborY, z);
+    const uint indexMYZ = transCoordToIndex(x, -neighborY, neighborZ);
+    const uint indexMXZ = transCoordToIndex(-neighborX, y, neighborZ);
+
+    const uint indexXMY = transCoordToIndex(neighborX, -neighborY, z);
+    const uint indexYMZ = transCoordToIndex(x, neighborY, -neighborZ);
+    const uint indexXMZ = transCoordToIndex(neighborX, y, -neighborZ);
+
+    const uint indexMXYMZ = transCoordToIndex(-neighborX, neighborY, -neighborZ);
+    const uint indexMXYZ  = transCoordToIndex(-neighborX, neighborY, neighborZ);
+    const uint indexMXMYZ = transCoordToIndex(-neighborX, -neighborY, neighborZ);
+    const uint indexXMYMZ = transCoordToIndex(neighborX, -neighborY, -neighborZ);
+    const uint indexXMYZ  = transCoordToIndex(neighborX, -neighborY, neighborZ);
+    const uint indexXYMZ  = transCoordToIndex(neighborX, neighborY, -neighborZ);
+
+
+
+    return nodeInNextCellIs(index, type) || nodeInPreviousCellIs(index, type) || indexMXY || indexMYZ || indexMXZ || indexXMY || indexYMZ || indexXMZ 
+        || indexMXYMZ
+        || indexMXYZ
+        || indexMXMYZ
+        || indexXMYMZ
+        || indexXMYZ
+        || indexXYMZ;
+
+}
 
 HOSTDEVICE bool GridImp::nodeInNextCellIs(int index, char type) const
 {
@@ -596,13 +635,11 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
                     continue;
 
                 const Vertex point(x, y, z);
-                const int value = triangle.isUnderFace(point);
 
-                if (value == Q)
+                if(hasNeighbor(index, STOPPER_OVERLAP_GRID))
                 {
                     field.setFieldEntry(index, Q);
                     calculateQs(point, triangle);
-
                 }
             }
         }
@@ -635,13 +672,13 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
 
         error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
-        if (error != 0 && subdistance <= 1.0f)
+        if (error != 0 && subdistance < 1.0 && subdistance > 0.0)
         {
             //solid_node = VertexInteger(actualPoint.x + direction.x, actualPoint.y + direction.y, actualPoint.z + direction.z);
             distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = subdistance;
             //printf("Q%d %d: %2.8f \n", i, grid.transCoordToIndex(actualPoint), grid.d.f[index]);
-        } else
-            distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = -1.0;
+        } /*else
+            distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = -1.0;*/
     }
 }
 
@@ -717,7 +754,7 @@ HOSTDEVICE real GridImp::getMaximumOnNodes(const real& maxExact, const real& dec
     real maxNode = ceil(maxExact - 1.0);
     maxNode += decimalStart;
 
-    while (maxNode < maxExact)
+    while (maxNode <= maxExact)
         maxNode += delta;
     return maxNode;
 }

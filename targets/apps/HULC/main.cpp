@@ -276,7 +276,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
 
-    gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, 0.25);
+    gridBuilder->addCoarseGrid(-10, -10, -10, 9, 9, 9, 0.25);
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/cubeBinaer1x1.stl");
 
     gridBuilder->addGeometry(triangularMesh);
@@ -319,7 +319,7 @@ void multipleLevel(const std::string& configPath)
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
     gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
-
+    gridBuilder->writeArrows("D:/arrows");
 
 
     SPtr<Parameter> para = Parameter::make();

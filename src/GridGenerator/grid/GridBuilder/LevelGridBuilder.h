@@ -83,7 +83,7 @@ public:
 
     VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 
-    VF_PUBLIC void writeArrows(std::string fileName, std::shared_ptr<ArrowTransformator> trans) const;
+    VF_PUBLIC void writeArrows(std::string fileName) const;
 
 protected:
 
@@ -110,11 +110,7 @@ protected:
     void addQsToVector(int index);
     void fillRBForNode(int index, int direction, int directionSign, int rb);
 
-    int getMatrixIndex(const int i) const;
     Vertex getVertex(const int matrixIndex) const;
-    void writeArrow(const int i, const int qi, const Vertex& startNode,
-                    std::shared_ptr<const ArrowTransformator> trans/*, std::shared_ptr<PolyDataWriterWrapper> writer*/)
-    const;
 
 private:
     Device device;
