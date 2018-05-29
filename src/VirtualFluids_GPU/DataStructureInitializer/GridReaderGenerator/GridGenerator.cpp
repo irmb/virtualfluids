@@ -214,6 +214,7 @@ void GridGenerator::allocArrays_BoundaryValues()
 
 
     if (builder->hasGeometryValues()) {
+        para->setGeometryValues(true);
         for (int i = 0; i < builder->getNumberOfGridLevels(); i++) {
             int numberOfGeometryValues = builder->getGeometrySize(i);
             cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << endl;

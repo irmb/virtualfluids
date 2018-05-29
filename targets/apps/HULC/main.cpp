@@ -286,9 +286,9 @@ void multipleLevel(const std::string& configPath)
 
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
-    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
 
