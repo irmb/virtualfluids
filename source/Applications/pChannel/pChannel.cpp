@@ -43,7 +43,7 @@ void run(string configname)
       double          u_LB              = config.getValue<double>("u_LB");
       double          restartStep       = config.getValue<double>("restartStep");
       double          cpStep            = config.getValue<double>("cpStep");
-      double          cpStart       = config.getValue<double>("cpStart");
+      double          cpStart           = config.getValue<double>("cpStart");
       double          endTime           = config.getValue<double>("endTime");
       double          outTime           = config.getValue<double>("outTime");
       double          availMem          = config.getValue<double>("availMem");
@@ -326,9 +326,9 @@ void run(string configname)
 
                   if (myid == 0)
                   {
-                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
-                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
-                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem()/1073741824.0<<" GB");
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed()/1073741824.0<<" GB");
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
                   }
 
                   //sample 1
@@ -340,9 +340,9 @@ void run(string configname)
 
                   if (myid == 0)
                   {
-                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
-                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
-                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem()/1073741824.0<<" GB");
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed()/1073741824.0<<" GB");
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
                   }
 
                   //sample 2
@@ -354,8 +354,8 @@ void run(string configname)
 
                   if (myid == 0)
                   {
-                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
-                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
+                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem()/1073741824.0<<" GB");
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed()/1073741824.0<<" GB");
                      UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
                   }
 
@@ -432,7 +432,7 @@ void run(string configname)
       if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathOut + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
       double vxTarget=u_LB;
-      AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathOut, intValHelp, vxTarget, comm);
+      SPtr<AdjustForcingCoProcessor> AdjForcCoProcessor(new AdjustForcingCoProcessor(grid, AdjForcSch, pathOut, intValHelp, vxTarget, comm));
 
       //mu::Parser decrViscFunc;
       //decrViscFunc.SetExpr("nue0+c0/(t+1)/(t+1)");
@@ -503,6 +503,7 @@ void run(string configname)
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
+      calculator->addCoProcessor(AdjForcCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);

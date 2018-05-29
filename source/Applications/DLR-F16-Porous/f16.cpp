@@ -1008,6 +1008,8 @@ void run(string configname)
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
+         if (reinit)         {            //InitDistributionsBlockVisitor initVisitor1;            //grid->accept(initVisitor1);            SPtr<Grid3D> oldGrid(new Grid3D(comm));            SPtr<UbScheduler> iSch(new UbScheduler());            SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(oldGrid, iSch, pathReInit, comm));            rcp->setLBMKernel(kernel);            rcp->setBCProcessor(bcProc);            rcp->restart(stepReInit);            InitDistributionsWithInterpolationGridVisitor initVisitor2(oldGrid, iProcessor, nuLB);            grid->accept(initVisitor2);            //if (myid==0) UBLOG(logINFO, "reinitGrid:start");            //reinitGrid(grid);            //if (myid==0) UBLOG(logINFO, "reinitGrid:end");         }
+
          //if (myid==0) UBLOG(logINFO, "setPointsTE:start");
          //SPtr<GbTriFaceMesh3D> fngMeshTE;
          //if (myid==0) UBLOG(logINFO, "Read fngMeshTE:start");

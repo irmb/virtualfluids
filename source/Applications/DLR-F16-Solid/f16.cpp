@@ -119,7 +119,7 @@ void run(string configname)
       //double nuLB = (uLB*lLB)/Re; //0.005;
       //double nuLB = 0.005;
 
-      UBLOG(logINFO, unitConverter.toString());
+      if (myid==0) UBLOG(logINFO, unitConverter.toString());
      
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());

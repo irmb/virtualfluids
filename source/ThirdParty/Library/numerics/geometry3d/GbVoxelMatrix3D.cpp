@@ -209,12 +209,12 @@ long GbVoxelMatrix3D::getNumberOfFluid()
 /*=======================================================*/
 double GbVoxelMatrix3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
 {
-   //if (!((UbMath::equal(rx1, 0.0)||UbMath::equal(fabs(rx1), 1.0)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt2))
-   //   &&(UbMath::equal(rx2, 0.0)||UbMath::equal(fabs(rx2), 1.0)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt2))
-   //   &&(UbMath::equal(rx3, 0.0)||UbMath::equal(fabs(rx3), 1.0)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt2))))
-   //{
-   //   throw UbException(UB_EXARGS, "nur fuer diskrete Boltzmannrichungen implementiert!!!");
-   //}
+   if (!((UbMath::equal(rx1, 0.0)||UbMath::equal(fabs(rx1), 1.0)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt2)||UbMath::equal(fabs(rx1), UbMath::one_over_sqrt3))
+      &&(UbMath::equal(rx2, 0.0)||UbMath::equal(fabs(rx2), 1.0)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt2)||UbMath::equal(fabs(rx2), UbMath::one_over_sqrt3))
+      &&(UbMath::equal(rx3, 0.0)||UbMath::equal(fabs(rx3), 1.0)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt2)||UbMath::equal(fabs(rx3), UbMath::one_over_sqrt3))))
+   {
+      throw UbException(UB_EXARGS, "nur fuer diskrete Boltzmannrichungen implementiert!!!");
+   }
 
    //nachbarindex ermitteln
    int ndx1 = 0, ndx2 = 0, ndx3 = 0;
