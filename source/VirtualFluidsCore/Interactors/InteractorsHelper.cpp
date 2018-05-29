@@ -1,6 +1,5 @@
 #include "InteractorsHelper.h"
 
-#include <SetSolidBlockVisitor.h>
 #include <Grid3DVisitor.h>
 #include <Grid3D.h>
 #include <Interactor3D.h>
@@ -49,7 +48,7 @@ void InteractorsHelper::deleteSolidBlocks()
 {
     for(SPtr<Interactor3D> interactor : interactors)
     {
-        setBlocks(interactor, BlockType::SOLID);
+        setBlocks(interactor, SetSolidOrBoundaryBlockVisitor::SOLID);
 
         std::vector<SPtr<Block3D>>& sb = interactor->getSolidBlockSet();
         solidBlocks.insert(solidBlocks.end(), sb.begin(), sb.end());
@@ -59,16 +58,16 @@ void InteractorsHelper::deleteSolidBlocks()
     updateGrid();
 }
 //////////////////////////////////////////////////////////////////////////
-void InteractorsHelper::setBlocks(const SPtr<Interactor3D> interactor, BlockType type) const
+void InteractorsHelper::setBlocks(const SPtr<Interactor3D> interactor, SetSolidOrBoundaryBlockVisitor::BlockType type) const
 {
-    SetSolidBlockVisitor v(interactor, type);
+    SetSolidOrBoundaryBlockVisitor v(interactor, type);
     grid->accept(v);
 }
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::setBcBlocks()
 {
     for(const SPtr<Interactor3D> interactor : interactors)
-        setBlocks(interactor, BlockType::BC);
+        setBlocks(interactor, SetSolidOrBoundaryBlockVisitor::BC);
 }
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::updateGrid()

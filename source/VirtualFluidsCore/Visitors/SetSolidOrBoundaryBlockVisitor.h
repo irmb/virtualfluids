@@ -9,18 +9,18 @@ class Grid3D;
 class Block3D;
 class Interactor3D;
 
-enum class BlockType { SOLID, BC };
-
-class SetSolidBlockVisitor : public Block3DVisitor
+class SetSolidOrBoundaryBlockVisitor : public Block3DVisitor
 {
 public:
-   SetSolidBlockVisitor(SPtr<Interactor3D> interactor, BlockType type);
-   virtual ~SetSolidBlockVisitor() {}
+   enum BlockType { SOLID, BC };
+public:
+   SetSolidOrBoundaryBlockVisitor(SPtr<Interactor3D> interactor, BlockType type);
+   virtual ~SetSolidOrBoundaryBlockVisitor() {}
 
    virtual void visit(SPtr<Grid3D> grid, SPtr<Block3D> block);
 
 private:
-    SPtr<Interactor3D> interactor;
+   SPtr<Interactor3D> interactor;
    BlockType type;
 };
 

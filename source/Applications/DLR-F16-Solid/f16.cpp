@@ -361,7 +361,7 @@ void run(string configname)
             /////delete solid blocks
             if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - start");
 
-            SetSolidBlockVisitor v(fngIntrWhole1, BlockType::SOLID);
+            SetSolidOrBoundaryBlockVisitor v(fngIntrWhole1, SetSolidOrBoundaryBlockVisitor::SOLID);
             grid->accept(v);
             std::vector<SPtr<Block3D>>& sb = fngIntrWhole1->getSolidBlockSet();
             for (SPtr<Block3D> block : sb)
@@ -645,6 +645,19 @@ void run(string configname)
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+         SPtr<GbTriFaceMesh3D> fngMeshWhole2;
+         if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:start");
+         fngMeshWhole2 = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/"+fngFileWhole2, "fngMeshWhole2", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:end");
+         fngMeshWhole2->rotate(0.0, 0.5, 0.0);
+         if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole2.get(), pathOut+"/geo/fngMeshWhole3", WbWriterVtkXmlBinary::getInstance());
+         SPtr<Interactor3D> fngIntrWhole2 = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(fngMeshWhole2, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy));
+         SetSolidOrBoundaryBlockVisitor v(fngIntrWhole2, SetSolidOrBoundaryBlockVisitor::BC);
+         grid->accept(v);
+         fngIntrWhole2->initInteractor();
+///////////////////////////////////////////////////////////////////////////////////////////////
+
          grid->accept(bcVisitor);
 
          ////sponge layer
@@ -688,10 +701,10 @@ void run(string configname)
       if (myid==0) GbSystem3D::writeGeoObject(bbBox.get(), pathOut+"/geo/bbBox", WbWriterVtkXmlASCII::getInstance());
       SPtr<WriteMQFromSelectionCoProcessor> writeMQSelectCoProcessor(new WriteMQFromSelectionCoProcessor(grid, stepSch, bbBox, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      //SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      //SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-      //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
-      //tav->setWithGhostLayer(true);
+      SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+         TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      tav->setWithGhostLayer(true);
 
       SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, 0.3-deltaXfine, 0.015, 0.0005, 0.3, 0.015+deltaXfine, 0.0005+deltaXfine));
       if (myid==0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(), pathOut+"/geo/mic1", WbWriterVtkXmlBinary::getInstance());
@@ -719,7 +732,7 @@ void run(string configname)
       SPtr<TimeseriesCoProcessor> tsp6(new TimeseriesCoProcessor(grid, stepMV, mic6, pathOut+"/mic/mic6", comm));
 
       omp_set_num_threads(numOfThreads);
-      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(100));
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
@@ -731,7 +744,7 @@ void run(string configname)
       calculator->addCoProcessor(tsp4);
       calculator->addCoProcessor(tsp5);
       calculator->addCoProcessor(tsp6);
-      //calculator->addCoProcessor(tav);
+      calculator->addCoProcessor(tav);
 
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");

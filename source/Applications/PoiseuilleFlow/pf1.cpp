@@ -54,8 +54,6 @@ void pf1()
    grid->setPeriodicX2(false);
    grid->setPeriodicX3(false);
 
-   if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
-
    //blocks generating
    GenBlocksGridVisitor genBlocks(gridCube);
    grid->accept(genBlocks);
@@ -79,7 +77,7 @@ void pf1()
    intHelper.selectBlocks();
 
    //write data for visualization of block grid
-   WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+   SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
    ppblocks->process(0);
    ppblocks.reset();
 
@@ -110,7 +108,7 @@ void pf1()
 
    //LBM kernel definition
    SPtr<LBMKernel> kernel;
-   kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
+   kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
    SPtr<BCProcessor> bcProc(new BCProcessor());
    kernel->setBCProcessor(bcProc);
 
@@ -130,7 +128,7 @@ void pf1()
    grid->accept(bcVisitor);
 
    //initialization of distributions
-   InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+   InitDistributionsBlockVisitor initVisitor;
    grid->accept(initVisitor);
 
    //set connectors
@@ -138,32 +136,32 @@ void pf1()
    SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
    grid->accept(setConnsVisitor);
 
-   //domain decomposition for threads
-   PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-   grid->accept(pqPartVisitor);
-
    //write data for visualization of boundary conditions
-   SPtr<UbScheduler> geoSch(new UbScheduler(1));
-   WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-      new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-   ppgeo->process(0);
-   ppgeo.reset();
+   {
+      SPtr<UbScheduler> geoSch(new UbScheduler(1));
+      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+      ppgeo.process(0);
+   }
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-   WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+   SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, 
+      WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
    //performance control
    SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-   NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+   SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
    //start simulation 
-   const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
-   CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
+   omp_set_num_threads(numOfThreads);
+   SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
+   SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+   calculator->addCoProcessor(npr);
+   calculator->addCoProcessor(writeMQCoProcessor);
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
-   calculation->calculate();
+   calculator->calculate();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
 }
 

@@ -31,37 +31,39 @@ void run(string configname)
       ConfigurationFile   config;
       config.load(configname);
 
-      string          pathname          = config.getString("pathname");
-      string          pathGeo           = config.getString("pathGeo");
-      int             numOfThreads      = config.getInt("numOfThreads");
-      string          sampleFilename    = config.getString("sampleFilename");
+      string          pathOut           = config.getValue<string>("pathOut");
+      string          pathGeo           = config.getValue<string>("pathGeo");
+      int             numOfThreads      = config.getValue<int>("numOfThreads");
+      string          sampleFilename    = config.getValue<string>("sampleFilename");
       vector<int>     pmNX              = config.getVector<int>("pmNX");
-      double          lthreshold        = config.getDouble("lthreshold");
-      double          uthreshold        = config.getDouble("uthreshold");
+      double          lthreshold        = config.getValue<double>("lthreshold");
+      double          uthreshold        = config.getValue<double>("uthreshold");
       vector<float>   voxelDeltaX       = config.getVector<float>("voxelDeltaX");
       vector<int>     blocknx           = config.getVector<int>("blocknx");
-      double          u_LB              = config.getDouble("u_LB");
-      double          restartStep       = config.getDouble("restartStep");
-      double          restartStepStart  = config.getDouble("restartStepStart");
-      double          endTime           = config.getDouble("endTime");
-      double          outTime           = config.getDouble("outTime");
-      double          availMem          = config.getDouble("availMem");
-      bool            rawFile           = config.getBool("rawFile");
-      bool            logToFile         = config.getBool("logToFile");
-      bool            writeSample       = config.getBool("writeSample");
+      double          u_LB              = config.getValue<double>("u_LB");
+      double          restartStep       = config.getValue<double>("restartStep");
+      double          cpStep            = config.getValue<double>("cpStep");
+      double          cpStart       = config.getValue<double>("cpStart");
+      double          endTime           = config.getValue<double>("endTime");
+      double          outTime           = config.getValue<double>("outTime");
+      double          availMem          = config.getValue<double>("availMem");
+      bool            rawFile           = config.getValue<bool>("rawFile");
+      bool            logToFile         = config.getValue<bool>("logToFile");
+      bool            writeSample       = config.getValue<bool>("writeSample");
       vector<double>  pmL               = config.getVector<double>("pmL");
-      double          deltaXfine        = config.getDouble("deltaXfine");
-      int             refineLevel       = config.getInt("refineLevel");
-      bool            thinWall          = config.getBool("thinWall");
-      double          Re                = config.getDouble("Re");
-      double          channelHigh       = config.getDouble("channelHigh");
-      double          lengthFactor      = config.getDouble("lengthFactor");
-      bool            changeQs          = config.getBool("changeQs"); 
-      double          timeAvStart       = config.getDouble("timeAvStart");
-      double          timeAvStop        = config.getDouble("timeAvStop");
-      bool            averaging         = config.getBool("averaging");
-      bool            averagingReset    = config.getBool("averagingReset");
-      double          nupsSteps         = config.getDouble("nupsSteps");
+      double          deltaXfine        = config.getValue<double>("deltaXfine");
+      int             refineLevel       = config.getValue<int>("refineLevel");
+      bool            thinWall          = config.getValue<bool>("thinWall");
+      double          Re                = config.getValue<double>("Re");
+      double          channelHigh       = config.getValue<double>("channelHigh");
+      bool            changeQs          = config.getValue<bool>("changeQs"); 
+      double          timeAvStart       = config.getValue<double>("timeAvStart");
+      double          timeAvStop        = config.getValue<double>("timeAvStop");
+      bool            averaging         = config.getValue<bool>("averaging");
+      bool            averagingReset    = config.getValue<bool>("averagingReset");
+      bool            newStart          = config.getValue<bool>("newStart");
+      vector<double>  nupsStep          = config.getVector<double>("nupsStep");
+      vector<double>  boundingBox       = config.getVector<double>("boundingBox");
 
       SPtr<Communicator> comm = MPICommunicator::getInstance();
       int myid = comm->getProcessID();
@@ -71,7 +73,7 @@ void run(string configname)
 #if defined(__unix__)
          if (myid == 0)
          {
-            const char* str = pathname.c_str();
+            const char* str = pathOut.c_str();
             mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
          }
 #endif 
@@ -79,12 +81,12 @@ void run(string configname)
          if (myid == 0)
          {
             stringstream logFilename;
-            logFilename << pathname + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
+            logFilename << pathOut + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
             UbLog::output_policy::setStream(logFilename.str());
          }
       }
 
-      Sleep(30000);
+      //Sleep(30000);
 
       if (myid == 0) UBLOG(logINFO, "Testcase porous channel");
 
@@ -95,8 +97,7 @@ void run(string configname)
       const int baseLevel = 0;
       double deltaXcoarse = deltaXfine*(double)(1<<refineLevel);
 
-      double coord[6];
-      bool restart;
+      //double coord[6];
 
       vector<double> origin(3);
       origin[0] = 0;
@@ -104,43 +105,81 @@ void run(string configname)
       origin[2] = 0;
 
       //real velocity is 49.63 m/s
-      double nu_LB;
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
+      //BC adapters
+      SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
+      noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+
+      BoundaryConditionsBlockVisitor bcVisitor;
+      bcVisitor.addBC(noSlipBCAdapter);
+
+      SPtr<BCProcessor> bcProc;
+      bcProc = SPtr<BCProcessor>(new BCProcessor());
+
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+      
+      mu::Parser fctForcingX1;
+      fctForcingX1.SetExpr("Fx1");
+      fctForcingX1.DefineConst("Fx1", 1.0e-6);
+      kernel->setWithForcing(true);
+      
+      kernel->setBCProcessor(bcProc);
+
       //////////////////////////////////////////////////////////////////////////
       //restart
-      SPtr<UbScheduler> rSch(new UbScheduler(restartStep, restartStepStart));
-      RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
+      SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
+      SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, rSch, pathOut, comm));
+      restartCoProcessor->setLBMKernel(kernel);
+      restartCoProcessor->setBCProcessor(bcProc);
+
+      SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
+      SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut+"/mig", comm));
+      migCoProcessor->setLBMKernel(kernel);
+      migCoProcessor->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
 
-      if (grid->getTimeStep() == 0)
+      //bounding box
+      double g_minX1 = boundingBox[0];
+      double g_minX2 = boundingBox[1];
+      double g_minX3 = boundingBox[2];
+
+      double g_maxX1 = boundingBox[3];
+      double g_maxX2 = boundingBox[4];
+      double g_maxX3 = boundingBox[5];
+
+      double blockLength = (double)blocknx[0]*deltaXcoarse;
+
+      double channel_high = channelHigh; // g_maxX3-g_minX3;
+      double channel_high_LB = channel_high/deltaXcoarse;
+      //////////////////////////////////////////////////////////////////////////
+      double nu_LB = (u_LB*channel_high_LB)/Re;
+      //////////////////////////////////////////////////////////////////////////
+      if (myid == 0)
+      {
+         UBLOG(logINFO, "Parameters:");
+         UBLOG(logINFO, "Re                  = " << Re);
+         UBLOG(logINFO, "u_LB                = " << u_LB);
+         UBLOG(logINFO, "rho_LB              = " << rho_LB);
+         UBLOG(logINFO, "nu_LB               = " << nu_LB);
+         UBLOG(logINFO, "dx coarse           = " << deltaXcoarse << " m");
+         UBLOG(logINFO, "dx fine             = " << deltaXfine << " m");
+         UBLOG(logINFO, "channel_high        = " << channel_high << " m");
+         UBLOG(logINFO, "channel_high_LB     = " << channel_high_LB);
+         UBLOG(logINFO, "number of levels    = " << refineLevel + 1);
+         UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
+         UBLOG(logINFO, "number of threads   = " << numOfThreads);
+         UBLOG(logINFO, "path = " << pathOut);
+         UBLOG(logINFO, "Preprocess - start");
+      }
+
+
+      if (newStart)
       {
          if (myid == 0) UBLOG(logINFO, "new start...");
-         restart = false;
 
-         double offsetMinX3 = pmL[2];
          
-         double offsetMaxX1 = pmL[0]*lengthFactor;
-         double offsetMaxX2 = pmL[1]*2.0;
-         double offsetMaxX3 = channelHigh; // pmL[2] + channelHigh; //DLR-F15  //pmL[2]*2.0;
-
-         //bounding box
-         double g_minX1 = origin[0];
-         double g_minX2 = origin[1];
-         double g_minX3 = origin[2];
-
-         double g_maxX1 = origin[0] + offsetMaxX1;
-         double g_maxX2 = origin[1] + offsetMaxX2;
-         double g_maxX3 = origin[2] + offsetMaxX3;
-//////////////////////////////////////////////////////////////////////////
-         double nx1_temp = floor((g_maxX1-g_minX1) /(deltaXcoarse*(double)blocknx[0]));
-
-         deltaXcoarse = (g_maxX1-g_minX1) /(nx1_temp*(double)blocknx[0]);
-
-         g_maxX1 -= 0.5* deltaXcoarse;
-//////////////////////////////////////////////////////////////////////////
-         double blockLength = (double)blocknx[0]*deltaXcoarse;
 
          grid->setPeriodicX1(true);
          grid->setPeriodicX2(true);
@@ -149,48 +188,29 @@ void run(string configname)
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
 
          SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
-         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
 
 
          GenBlocksGridVisitor genBlocks(gridCube);
          grid->accept(genBlocks);
-         double channel_high = channelHigh; // g_maxX3-g_minX3;
-         double channel_high_LB = channel_high/deltaXcoarse;
-//////////////////////////////////////////////////////////////////////////
-         //nu_LB = 0.005;
-         nu_LB = (u_LB*channel_high_LB)/Re;
-//////////////////////////////////////////////////////////////////////////
-         if (myid == 0)
-         {
-            UBLOG(logINFO, "Parameters:");
-            UBLOG(logINFO, "Re = " << Re);
-            UBLOG(logINFO, "u_LB = " << u_LB);
-            UBLOG(logINFO, "rho_LB = " << rho_LB);
-            UBLOG(logINFO, "nu_LB = " << nu_LB);
-            UBLOG(logINFO, "dx coarse = " << deltaXcoarse << " m");
-            UBLOG(logINFO, "dx fine = " << grid->getDeltaX(refineLevel) << " m");
-            UBLOG(logINFO, "number of levels = " << refineLevel + 1);
-            UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
-            UBLOG(logINFO, "number of threads = " << numOfThreads);
-            UBLOG(logINFO, "path = " << pathname);
-            UBLOG(logINFO, "Preprocess - start");
-         }
+
 
          //////////////////////////////////////////////////////////////////////////
          //refinement
          double blockLengthX3Fine = grid->getDeltaX(refineLevel) * blocknx[2];
+         double refHight = 0.002;
 
-         GbCuboid3DPtr refineBoxTop(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3-blockLengthX3Fine, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxTop.get(), pathname + "/geo/refineBoxTop", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr refineBoxTop(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3-refHight, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxTop.get(), pathOut + "/geo/refineBoxTop", WbWriterVtkXmlASCII::getInstance());
 
          //GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+offsetMinX3+blockLengthX3Fine));
-         GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLengthX3Fine, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+blockLengthX3Fine));
-         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxBottom.get(), pathname + "/geo/refineBoxBottom", WbWriterVtkXmlASCII::getInstance());
+         GbCuboid3DPtr refineBoxBottom(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+refHight));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxBottom.get(), pathOut + "/geo/refineBoxBottom", WbWriterVtkXmlASCII::getInstance());
 
          if (refineLevel > 0)
          {
             if (myid == 0) UBLOG(logINFO, "Refinement - start");
-            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel);
+            RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
             refineHelper.addGbObject(refineBoxTop, refineLevel);
             refineHelper.addGbObject(refineBoxBottom, refineLevel);
             refineHelper.refine();
@@ -200,49 +220,32 @@ void run(string configname)
 
          //walls
          GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathname+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathOut+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
 
          GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
-         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathname+"/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathOut+"/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
 
 
          //wall interactors
-         int bbOption = 1;
-         D3Q27BoundaryConditionAdapterPtr bcNoSlip(new D3Q27NoSlipBCAdapter(bbOption));
-         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, bcNoSlip, Interactor3D::SOLID));
-         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, bcNoSlip, Interactor3D::SOLID));
-
-		 ////////////////////////////////////////////////
-		 //TEST
-		 //SPtr<GbObject3D> testCube(new GbCuboid3D(g_minX1 + 2.0 * blockLength, g_minX2 + 2.0 * blockLength, g_minX3 + 5.0 * blockLength, 
-			// g_minX1 + 3.0 * blockLength, g_minX2 + 3.0 * blockLength, g_minX3 + 6.0 * blockLength));
-		 //if (myid == 0) GbSystem3D::writeGeoObject(testCube.get(), pathname + "/geo/testCube", WbWriterVtkXmlBinary::getInstance());
-		 //SPtr<D3Q27Interactor> testCubeInt(new D3Q27Interactor(testCube, grid, bcNoSlip, Interactor3D::SOLID));
-		 ///////////////////////////////////////////////
+         SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
          SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
          ////////////////////////////////////////////
-         //Zoltan
-         //SPtr<Grid3DVisitor> zoltanVisitor(new ZoltanPartitioningGridVisitor(comm, D3Q27System::BSW, 1));
-         //grid->accept(zoltanVisitor);
-         /////delete solid blocks
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(addWallZminInt);
          intHelper.addInteractor(addWallZmaxInt);
-		 //////////////////////////////////////////////////////////////////////////
-		 //TEST
-		 //intHelper.addInteractor(testCubeInt);
-         //////////////////////////////////////////////////////////////////////////
-		 intHelper.selectBlocks();
+         intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-         ppblocks->process(0);
-         ppblocks.reset();
+         {
+            WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+            ppblocks.process(0);
+         }
 
          unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
          int ghostLayer = 3;
@@ -269,31 +272,6 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         LBMKernel3DPtr kernel = LBMKernel3DPtr(new LBMKernelETD3Q27CCLB(blocknx[0], blocknx[1], blocknx[2], LBMKernelETD3Q27CCLB::NORMAL));
-
-         mu::Parser fctForcingX1;
-         fctForcingX1.SetExpr("Fx1");
-         fctForcingX1.DefineConst("Fx1", 1.0e-6);
-
-         kernel->setWithForcing(true);
-
-         SPtr<BCProcessor> bcProc;
-         BoundaryConditionPtr noSlipBC;
-
-         if (thinWall)
-         {
-            bcProc = SPtr<BCProcessor>(new D3Q27ETForThinWallBCProcessor());
-            noSlipBC = BoundaryConditionPtr(new ThinWallNoSlipBoundaryCondition());
-         }
-         else
-         {
-            bcProc = SPtr<BCProcessor>(new D3Q27ETBCProcessor());
-            noSlipBC = BoundaryConditionPtr(new NoSlipBoundaryCondition());
-         }
-
-         bcProc->addBC(noSlipBC);
-
-         kernel->setBCProcessor(bcProc);
 
          SetKernelBlockVisitor kernelVisitor(kernel, nu_LB, availMem, needMem);
          grid->accept(kernelVisitor);
@@ -302,7 +280,7 @@ void run(string configname)
          //undef nodes for refinement
          if (refineLevel > 0)
          {
-            D3Q27SetUndefinedNodesBlockVisitor undefNodesVisitor;
+            SetUndefinedNodesBlockVisitor undefNodesVisitor;
             grid->accept(undefNodesVisitor);
          }
 
@@ -311,11 +289,11 @@ void run(string configname)
          intHelper.setBC();
 
          ////porous media
-         if(false)
+         if(true)
          {
             string samplePathname = pathGeo + "/" + sampleFilename;
 
-            GbVoxelMatrix3DPtr sample(new GbVoxelMatrix3D(pmNX[0], pmNX[1], pmNX[2], 0, lthreshold, uthreshold));
+            SPtr<GbVoxelMatrix3D> sample(new GbVoxelMatrix3D(pmNX[0], pmNX[1], pmNX[2], 0, lthreshold, uthreshold));
             if (rawFile)
             {
                sample->readBufferedMatrixFromRawFile<unsigned short>(samplePathname, GbVoxelMatrix3D::BigEndian);
@@ -331,182 +309,81 @@ void run(string configname)
             int bounceBackOption = 1;
             bool vxFile = false;
             int i = 0;
-            for (int x = 0; x < lengthFactor; x+=2)
-            {
-               double offset = pmL[0] * (double)x;
-               //sample 0
-               if (myid == 0) UBLOG(logINFO, "sample # " << i);
-               sample->setVoxelMatrixMininum(origin[0]+offset, origin[1], origin[2]);
-               Utilities::voxelMatrixDiscretisation(sample, pathname, myid, i, grid, bounceBackOption, vxFile);
-               i++;
+            //for (int x = 0; x < lengthFactor; x+=2)
+            int lenX = (int)((g_maxX1-g_minX1)/(pmL[0]));
+            int lenY = (int)((g_maxX2-g_minX2)/(pmL[1]));
 
-               if (myid == 0)
+            for (int y = 0; y < lenY; y+=2)
+               for (int x = 0; x < lenX; x+=2)
                {
-                  UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
-                  UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
-                  UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+                  double offsetX = pmL[0] * (double)x;
+                  double offsetY = pmL[1] * (double)y;
+                  //sample 0
+                  if (myid == 0) UBLOG(logINFO, "sample # " << i);
+                  sample->setVoxelMatrixMininum(origin[0]+offsetX, origin[1]+offsetY, origin[2]);
+                  Utilities::voxelMatrixDiscretisation(sample, pathOut, myid, i, grid, bounceBackOption, vxFile);
+                  i++;
+
+                  if (myid == 0)
+                  {
+                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+                  }
+
+                  //sample 1
+                  if (myid == 0) UBLOG(logINFO, "sample # " << i);
+                  sample->setVoxelMatrixMininum(origin[0]+pmL[0]+offsetX, origin[1]+offsetY, origin[2]);
+                  sample->mirrorX();
+                  Utilities::voxelMatrixDiscretisation(sample, pathOut, myid, i, grid, bounceBackOption, vxFile);
+                  i++;
+
+                  if (myid == 0)
+                  {
+                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+                  }
+
+                  //sample 2
+                  if (myid == 0) UBLOG(logINFO, "sample # " << i);
+                  sample->setVoxelMatrixMininum(origin[0]+pmL[0]+offsetX, origin[1]+pmL[1]+offsetY, origin[2]);
+                  sample->mirrorY();
+                  Utilities::voxelMatrixDiscretisation(sample, pathOut, myid, i, grid, bounceBackOption, vxFile);
+                  i++;
+
+                  if (myid == 0)
+                  {
+                     UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
+                     UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
+                  }
+
+                  //sample 3
+                  if (myid == 0) UBLOG(logINFO, "sample # " << i);
+                  sample->setVoxelMatrixMininum(origin[0]+offsetX, origin[1]+pmL[1]+offsetY, origin[2]);
+                  sample->mirrorX();
+                  Utilities::voxelMatrixDiscretisation(sample, pathOut, myid, i, grid, bounceBackOption, vxFile);
+                  sample->mirrorY();
+                  i++;
                }
-
-               //sample 1
-               if (myid == 0) UBLOG(logINFO, "sample # " << i);
-               sample->setVoxelMatrixMininum(origin[0]+pmL[0]+offset, origin[1], origin[2]);
-               sample->mirrorX();
-               Utilities::voxelMatrixDiscretisation(sample, pathname, myid, i, grid, bounceBackOption, vxFile);
-               i++;
-
-               if (myid == 0)
-               {
-                  UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
-                  UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
-                  UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
-               }
-
-               //sample 2
-               if (myid == 0) UBLOG(logINFO, "sample # " << i);
-               sample->setVoxelMatrixMininum(origin[0]+pmL[0]+offset, origin[1]+pmL[1], origin[2]);
-               sample->mirrorY();
-               Utilities::voxelMatrixDiscretisation(sample, pathname, myid, i, grid, bounceBackOption, vxFile);
-               i++;
-
-               if (myid == 0)
-               {
-                  UBLOG(logINFO, "PID = " << myid << " Total Physical Memory (RAM): " << Utilities::getTotalPhysMem());
-                  UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used: " << Utilities::getPhysMemUsed());
-                  UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
-               }
-
-               //sample 3
-               if (myid == 0) UBLOG(logINFO, "sample # " << i);
-               sample->setVoxelMatrixMininum(origin[0]+offset, origin[1]+pmL[1], origin[2]);
-               sample->mirrorX();
-               Utilities::voxelMatrixDiscretisation(sample, pathname, myid, i, grid, bounceBackOption, vxFile);
-               sample->mirrorY();
-               i++;
-            }
 
          }
-         BoundaryConditionBlockVisitor bcVisitor;
+
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3, inflowProfileRho;
          inflowProfileVx1.SetExpr("x3 < h ? 0.0 : uLB+1*x1");
-         //inflowProfileVx1.SetExpr("x3 < h ? 0.0 : uLB+1*x1-1*x2");
-		   ////inflowProfile.SetExpr("uLB+1*x1-1*x2");
-     //    //inflowProfile.SetExpr("uLB");
          inflowProfileVx1.DefineConst("uLB", u_LB);
-     //    //inflowProfile.DefineConst("uLB", 0.0116);
-     //    inflowProfile.DefineConst("h", pmL[2]);
+         inflowProfileVx1.DefineConst("h", pmL[2]);
 
-         //inflowProfile = Utilities::getDuctParaboloidX(g_maxX2/2.0, g_maxX2, pmL[2]+channelHigh/2.0, channelHigh, 0.1);
-
-         //poiseuille flow
-         //double Cy = g_maxX2 / 2.0;
-         //double Hy = g_maxX2;
-         //double Cz = pmL[2] + channelHigh / 2.0;
-         //double Hz = channelHigh;
-         //double V = (9.0/4.0)*u_LB;
-         //inflowProfile.SetExpr("x3 < h ? 0.0 : V*(((-(x2-Cy)^2.0+(Hy/2.0)^2.0)/(Hy/2.0)^2.0)*((-(x3-Cz)^2.0+(Hz/2.0)^2.0)/(Hz/2.0)^2.0))");
-         //inflowProfile.DefineConst("Cy", Cy);
-         //inflowProfile.DefineConst("Hy", Hy);
-         //inflowProfile.DefineConst("Cz", Cz);
-         //inflowProfile.DefineConst("Hz", Hz);
-         //inflowProfile.DefineConst("V", V);
-         //inflowProfile.DefineConst("h", pmL[2]);
-
-         //log-law
-         double u_tau = 0.05;//sqrt(nu_LB * (u_LB/channel_high)); //0.0013252866627413104;
-         double z0 = 0.0001;//nu_LB / (9.0*u_tau);
-         double k = 0.4;
-         double nois = u_LB * 0.1;
-         //inflowProfile.SetExpr("2.3*u_tau/k*log(x3/z0)");
-         //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? 2.3*u_tau/k*log(x3/z0) : 2.3*u_tau/k*log((zMax-x3)/z0)) : 0");
-         //inflowProfile.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? (1.0/k)*log(9.8*x3/u_tau)*u_tau : (1.0/k)*log(9.8*(zMax-x3)/u_tau)*u_tau  ) : 0");
-         //inflowProfile.SetExpr("x3 < h && x3 > 0 ? 2.3*u_tau/k*log(x3/z0) : 0.0");
-
-         //inflowProfile.SetExpr("Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)");
-         //inflowProfileVx1.SetExpr("x3 > 0 && (zMax-x3) > 0 ? (x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)) : 0");
-         
-      //inflowProfileVx1.DefineFun("rangeRandom1", rangeRandom1);
-         //inflowProfile.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+rangeRandom(-nois, nois) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+rangeRandom(-nois, nois)");
-
-      //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+0.1*Uref*rangeRandom1() : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+0.1*Uref*rangeRandom1()");
-
-         //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+ U*cos(8.0*PI*(x1)/(L1))*sin(8.0*PI*(x3)/L3) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+U*cos(8.0*PI*(x1)/(L1))*sin(8.0*PI*(x3)/L3)");
-         //inflowProfileVx1.SetExpr("U*cos(4.0*PI*(x1)/(L1))*sin(4.0*PI*(x3)/L3)");
-         
-         //inflowProfileVx1.SetExpr("x3 < h ? Uref/log((Href+z0)/z0)*log((x3-zg+z0)/z0)+U*cos(rangeRandom(2,8)*PI*x1/L2)*sin(rangeRandom(2,8)*PI*x2/L2)*sin(rangeRandom(2,8)*PI*x3/L3) : Uref/log((Href+z0)/z0)*log((zMax-x3-zg+z0)/z0)+U*cos(rangeRandom(2,8)*PI*x1/L2)*sin(rangeRandom(2,8)*PI*x2/L2)*sin(rangeRandom(2,8)*PI*x3/L3)");
-         //inflowProfileVx1.SetExpr("U*cos(2.0*PI*x1/L1)*sin(2.0*PI*x2/L2)*sin(2.0*PI*x3/L3)");
-         //inflowProfileVx1.SetExpr("U*sin(2.0*PI*x1/L2)*cos(1.0*PI*x2/L2)*cos(1.0*PI*x3/L3)");
-         //inflowProfileVx1.SetExpr("U*cos(2.0*PI*(x1-L1/16.0)/(L1*2.0))*sin(2.0*PI*(x3-L3/4.0)/L3)");
-         //inflowProfileVx1.SetExpr("U*sin(2.0*PI*x1/L2)");
-
-         inflowProfileVx1.DefineConst("U", u_LB);
-         inflowProfileVx1.DefineConst("PI", PI);
-         inflowProfileVx1.DefineConst("L1", g_maxX1-g_minX1);
-         inflowProfileVx1.DefineConst("L2", g_maxX2-g_minX2);
-         inflowProfileVx1.DefineConst("L3", g_maxX3-g_minX3);
-
-         inflowProfileVx1.DefineConst("Uref", u_LB);
-         inflowProfileVx1.DefineConst("Href", channelHigh);
-         inflowProfileVx1.DefineConst("zg", 0.0);
-         inflowProfileVx1.DefineConst("nois", nois);
-
-         inflowProfileVx1.DefineConst("u_tau", u_tau);
-         inflowProfileVx1.DefineConst("k", k);
-         inflowProfileVx1.DefineConst("z0", z0);
-         inflowProfileVx1.DefineConst("h", channelHigh / 2.0);
-         inflowProfileVx1.DefineConst("zMax", channelHigh);
-
-         inflowProfileVx2.SetExpr("0.1*U*rangeRandom1()");
-         //inflowProfileVx2.SetExpr("0.0");
-         //inflowProfileVx2.SetExpr("-U*cos(2.0*PI*x1/L1)*sin(2.0*PI*x2/L2)*cos(2.0*PI*x3/L3)");
-         //inflowProfileVx2.SetExpr("-U/2.0*sin(2.0*PI*x1/L1)*cos(2.0*PI*x2/L2)*sin(2.0*PI*x3/L3)");
-         //inflowProfileVx2.SetExpr("-U/8.0*sin(rangeRandom(2,8)*PI*x1/L2)*cos(rangeRandom(2,8)*PI*x2/L2)*sin(rangeRandom(2,8)*PI*x3/L3)");
-         inflowProfileVx2.DefineConst("U", u_LB);
-         inflowProfileVx2.DefineConst("PI", PI);
-         inflowProfileVx2.DefineConst("L1", g_maxX1-g_minX1);
-         inflowProfileVx2.DefineConst("L2", g_maxX2-g_minX2);
-         inflowProfileVx2.DefineConst("L3", g_maxX3-g_minX3);
-         inflowProfileVx2.DefineFun("rangeRandom1", rangeRandom1);
-
-         inflowProfileVx3.SetExpr("0.1*U*rangeRandom1()");
-         //inflowProfileVx3.SetExpr("-U/2.0*sin(8.0*PI*(x1)/(L1))*cos(8.0*PI*(x3)/L3)");
-         //inflowProfileVx3.SetExpr("-U/2.0*sin(2.0*PI*(x1-L1/16.0)/(L1*2.0))*cos(2.0*PI*(x3-L3/4.0)/L3)");
-         //inflowProfileVx3.SetExpr("-U/2.0*sin(2.0*PI*x1/L2)*sin(2.0*PI*x3/L3)");
-         //inflowProfileVx3.SetExpr("-U*cos(1.0*PI*x1/L2)*sin(1.0*PI*x2/L2)*cos(1.0*PI*x3/L3)");
-         //inflowProfileVx3.SetExpr("-U/2.0*sin(2.0*PI*x1/L2)*sin(2.0*PI*x2/L2)*cos(2.0*PI*x3/L3)");
-         //inflowProfileVx3.SetExpr("-U/8.0*sin(rangeRandom(2,8)*PI*x1/L2)*sin(rangeRandom(2,8)*PI*x2/L2)*cos(rangeRandom(2,8)*PI*x3/L3)");
-         inflowProfileVx3.DefineConst("U", u_LB);
-         inflowProfileVx3.DefineConst("PI", PI);
-         inflowProfileVx3.DefineConst("L1", g_maxX1-g_minX1);
-         inflowProfileVx3.DefineConst("L2", g_maxX2-g_minX2);
-         inflowProfileVx3.DefineConst("L3", g_maxX3-g_minX3);
-         inflowProfileVx3.DefineFun("rangeRandom1", rangeRandom1);
-
-         inflowProfileRho.SetExpr("3.0*(rho/4.0*U^2*(sin(4.0*PI*(x1-L1/4.0)/L1)+sin(4.0*PI*(x3-L3/4.0)/L3)))");
-         //inflowProfileRho.SetExpr("3.0*(rho/3.0+((rho*U^2)/16.0)*(cos(2.0*PI*x1/L2)+cos(2.0*PI*x2/L2))*(cos(2.0*PI*x3/L3)+2.0))");
-         //inflowProfileRho.SetExpr("3.0*(rho/3.0+((rho*U^2)/32.0)*(cos(8.0*PI*x1/L2)+cos(8.0*PI*x2/L2))*(cos(8.0*PI*x3/L3)+2.0))");
-         inflowProfileRho.DefineConst("U", u_LB);
-         inflowProfileRho.DefineConst("PI", PI);
-         inflowProfileRho.DefineConst("L1", g_maxX1-g_minX1);
-         inflowProfileRho.DefineConst("L2", g_maxX2-g_minX2);
-         inflowProfileRho.DefineConst("L3", g_maxX3-g_minX3);
-         inflowProfileRho.DefineConst("rho", rho_LB);
-
-         D3Q27ETInitDistributionsBlockVisitor initVisitor(nu_LB, rho_LB);
+         InitDistributionsBlockVisitor initVisitor;
          initVisitor.setVx1(inflowProfileVx1);
-         //initVisitor.setVx2(inflowProfileVx2);
-         //initVisitor.setVx3(inflowProfileVx3);
-         //initVisitor.setRho(inflowProfileRho);
          grid->accept(initVisitor);
 
-         
-
          ////set connectors
-         D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
-         //SPtr<ConnectorFactory> factory(new Block3DConnectorFactory());
-         //ConnectorBlockVisitor setConnsVisitor(comm, nu_LB, iProcessor, factory);
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 
          //domain decomposition for threads
@@ -514,183 +391,48 @@ void run(string configname)
          grid->accept(pqPartVisitor);
 
          //Postrozess
-         SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         MacroscopicQuantitiesSPtr<CoProcessor> ppgeo(
-            new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-         ppgeo->process(0);
-         ppgeo.reset();
-
-         coord[0] = g_minX1;
-         coord[1] = g_minX2;
-         coord[2] = g_minX3 + pmL[2];
-         coord[3] = g_maxX1;
-         coord[4] = g_maxX2;
-         coord[5] = g_maxX3;
-
-         ////////////////////////////////////////////////////////
-         FILE * pFile;
-         string str = pathname + "/checkpoints/coord.txt";
-         pFile = fopen(str.c_str(), "w");
-         fprintf(pFile, "%g\n", deltaXcoarse);
-         fprintf(pFile, "%g\n", nu_LB);
-         fprintf(pFile, "%g\n", coord[0]);
-         fprintf(pFile, "%g\n", coord[1]);
-         fprintf(pFile, "%g\n", coord[2]);
-         fprintf(pFile, "%g\n", coord[3]);
-         fprintf(pFile, "%g\n", coord[4]);
-         fprintf(pFile, "%g\n", coord[5]);
-         fclose(pFile);
-         ////////////////////////////////////////////////////////
+         {
+            SPtr<UbScheduler> geoSch(new UbScheduler(1));
+            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            ppgeo.process(0);
+         }
 
          if (myid == 0) UBLOG(logINFO, "Preprozess - end");
       }
       else
       {
-         ////////////////////////////////////////////////////////
-         FILE * pFile;
-         string str = pathname + "/checkpoints/coord.txt";
-         pFile = fopen(str.c_str(), "r");
-         fscanf(pFile, "%lg\n", &deltaXcoarse);
-         fscanf(pFile, "%lg\n", &nu_LB);
-         fscanf(pFile, "%lg\n", &coord[0]);
-         fscanf(pFile, "%lg\n", &coord[1]);
-         fscanf(pFile, "%lg\n", &coord[2]);
-         fscanf(pFile, "%lg\n", &coord[3]);
-         fscanf(pFile, "%lg\n", &coord[4]);
-         fscanf(pFile, "%lg\n", &coord[5]);
-         fclose(pFile);
-         ////////////////////////////////////////////////////////
-
-         if (myid == 0)
-         {
-            UBLOG(logINFO, "Parameters:");
-            UBLOG(logINFO, "Re = " << Re);
-            UBLOG(logINFO, "u_LB = " << u_LB);
-            UBLOG(logINFO, "rho_LB = " << rho_LB);
-            UBLOG(logINFO, "nu_LB = " << nu_LB);
-            UBLOG(logINFO, "dx coarse = " << deltaXcoarse << " m");
-            UBLOG(logINFO, "dx fine = " << grid->getDeltaX(refineLevel) << " m");
-            UBLOG(logINFO, "number of levels = " << refineLevel + 1);
-            UBLOG(logINFO, "numOfThreads = " << numOfThreads);
-            UBLOG(logINFO, "path = " << pathname);
-         }
-
-         /////////////////////////////////////////////////////////////
-         ////bounding box
-         //double offsetMinX3 = pmL[2];
-
-         //double offsetMaxX1 = pmL[0]*lengthFactor;
-         //double offsetMaxX2 = pmL[1]*2.0;
-         //double offsetMaxX3 = channelHigh;
-
-         //double g_minX1 = origin[0];
-         //double g_minX2 = origin[1];
-         //double g_minX3 = origin[2];
-
-         //double g_maxX1 = origin[0]+offsetMaxX1;
-         //double g_maxX2 = origin[1]+offsetMaxX2;
-         //double g_maxX3 = origin[2]+offsetMaxX3;
-
-         //double blockLength = (double)blocknx[0]*deltaXcoarse;
-
-         //GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3+offsetMinX3));
-         //if (myid==0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathname+"/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
-         //int bbOption = 1;
-         //D3Q27BoundaryConditionAdapterPtr bcNoSlip(new D3Q27NoSlipBCAdapter(bbOption));
-         //SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, bcNoSlip, Interactor3D::SOLID));
-
-         //SetSolidOrTransBlockVisitor v1(addWallZminInt, SetSolidOrTransBlockVisitor::SOLID);
-         //grid->accept(v1);
-         //SetSolidOrTransBlockVisitor v2(addWallZminInt, SetSolidOrTransBlockVisitor::TRANS);
-         //grid->accept(v2);
-
-         //std::vector<SPtr<Block3D>> blocks;
-         //std::vector<SPtr<Block3D>>& sb = addWallZminInt->getSolidBlockSet();
-         //if (myid==0) UBLOG(logINFO, "number of solid blocks = "<<sb.size());
-         ////blocks.insert(blocks.end(), sb.begin(), sb.end());
-         //std::vector<SPtr<Block3D>>& tb = addWallZminInt->getTransBlockSet();
-         //if (myid==0) UBLOG(logINFO, "number of trans blocks = "<<tb.size());
-         //blocks.insert(blocks.end(), tb.begin(), tb.end());
-
-         //if (myid==0) UBLOG(logINFO, "number of blocks = "<<blocks.size());
-
-         //BOOST_FOREACH(SPtr<Block3D> block, blocks)
-         //{
-         //   block->setActive(true);
-         //   addWallZminInt->setDifferencesToGbObject3D(block);
-         //}
-
-         ////////////////////////////////////////////////
-         //////METIS
-         ////SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
-         ////////////////////////////////////////////////
-         /////////delete solid blocks
-         ////if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - start");
-         ////InteractorsHelper intHelper(grid, metisVisitor);
-         ////intHelper.addInteractor(addWallZminInt);
-         ////intHelper.selectBlocks();
-         ////if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - end");
-         //////////////////////////////////////////
-         ////intHelper.setBC();
-         ////////////////////////////////////////////////////////////////
-
-         //BoundaryConditionBlockVisitor bcVisitor;
-         //grid->accept(bcVisitor);
-
-         //WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
-         //ppblocks->process(0);
-         //ppblocks.reset();
-
-         //SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         //MacroscopicQuantitiesSPtr<CoProcessor> ppgeo(
-         //   new MacroscopicQuantitiesCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, true));
-         //ppgeo->process(0);
-         //ppgeo.reset();
-         //////////////////////////////////////////////////////////////////
-
-         //set connectors
-         D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         D3Q27SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
+         //restartCoProcessor->restart((int)restartStep);
+         migCoProcessor->restart((int)restartStep);
+         grid->setTimeStep(restartStep);
+         ////////////////////////////////////////////////////////////////////////////
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 
-         //domain decomposition for threads
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
-
-         restart = true;
+         grid->accept(bcVisitor);
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
-      SPtr<UbScheduler> nupsSch(new UbScheduler(nupsSteps));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+     
+      SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
+      std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
-      MacroscopicQuantitiesCoProcessor pp(grid, stepSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv);
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      double startStep = grid->getTimeStep();
-
-      //SPtr<UbScheduler> visSch(new UbScheduler());
-      //visSch->addSchedule(40000,40000,40000000);
-      //SPtr<UbScheduler> resSchRMS(new UbScheduler());
-      //resSchRMS->addSchedule(40000, startStep, 40000000);
-      //SPtr<UbScheduler> resSchMeans(new UbScheduler());
-      //resSchMeans->addSchedule(40000, startStep, 40000000);
-      //SPtr<UbScheduler> stepAvSch(new UbScheduler());
-      //stepAvSch->addSchedule(100, 0, 10000000);
-      //AverageValuesCoProcessor Avpp(grid, pathname, WbWriterVtkXmlBinary::getInstance(),
-      //   stepSch/*wann wird rausgeschrieben*/, stepAvSch/*wann wird gemittelt*/, resSchMeans, resSchRMS/*wann wird resettet*/, restart);
+      SPtr<GbObject3D> bbBox(new GbCuboid3D(g_minX1-blockLength, (g_maxX2-g_minX2)/2.0, g_minX3-blockLength, g_maxX1+blockLength, (g_maxX2-g_minX2)/2.0+deltaXcoarse, g_maxX3+blockLength));
+      if (myid==0) GbSystem3D::writeGeoObject(bbBox.get(), pathOut+"/geo/bbBox", WbWriterVtkXmlASCII::getInstance());
+      SPtr<WriteMQFromSelectionCoProcessor> writeMQSelectCoProcessor(new WriteMQFromSelectionCoProcessor(grid, stepSch, bbBox, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
 
       SPtr<UbScheduler> AdjForcSch(new UbScheduler());
       AdjForcSch->addSchedule(10, 0, 10000000);
-      D3Q27SPtr<IntegrateValuesHelper> intValHelp(new D3Q27IntegrateValuesHelper(grid, comm,
-         coord[0], coord[1], coord[2],
-         coord[3], coord[4], coord[5]));
-      if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathname + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
+      SPtr<IntegrateValuesHelper> intValHelp(new IntegrateValuesHelper(grid, comm, g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathOut + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
       double vxTarget=u_LB;
-      AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathname, intValHelp, vxTarget, comm);
+      AdjustForcingCoProcessor AdjForcPPPtr(grid, AdjForcSch, pathOut, intValHelp, vxTarget, comm);
 
       //mu::Parser decrViscFunc;
       //decrViscFunc.SetExpr("nue0+c0/(t+1)/(t+1)");
@@ -700,15 +442,15 @@ void run(string configname)
       //DecrViscSch->addSchedule(10, 0, 1000);
       //DecreaseViscosityCoProcessor decrViscPPPtr(grid, DecrViscSch, &decrViscFunc, comm);
 
-	  if (changeQs)
-	  {
-		  double z1 = pmL[2];
-		  D3Q27SPtr<IntegrateValuesHelper> intValHelp2(new D3Q27IntegrateValuesHelper(grid, comm,
-			  coord[0], coord[1], z1 - deltaXfine,
-			  coord[3], coord[4], z1 + deltaXfine));
-		  if (myid == 0) GbSystem3D::writeGeoObject(intValHelp2->getBoundingBox().get(), pathname + "/geo/intValHelp2", WbWriterVtkXmlBinary::getInstance());
-		  Utilities::ChangeRandomQs(intValHelp2);
-	  }
+	  //if (changeQs)
+	  //{
+		 // double z1 = pmL[2];
+		 // SPtr<IntegrateValuesHelper> intValHelp2(new IntegrateValuesHelper(grid, comm,
+			//  coord[0], coord[1], z1 - deltaXfine,
+			//  coord[3], coord[4], z1 + deltaXfine));
+		 // if (myid == 0) GbSystem3D::writeGeoObject(intValHelp2->getBoundingBox().get(), pathOut + "/geo/intValHelp2", WbWriterVtkXmlBinary::getInstance());
+		 // Utilities::ChangeRandomQs(intValHelp2);
+	  //}
 
       std::vector<double> levelCoords;
       std::vector<int> levels;
@@ -735,21 +477,11 @@ void run(string configname)
       levels.push_back(0);
       levelCoords.push_back(0);
       levelCoords.push_back(0.002);
-      SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      TimeAveragedValuesSPtr<CoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-         TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
-         levels, levelCoords, bounds));
+      //SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      //SPtr<CoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+      //   TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
+      //   levels, levelCoords, bounds));
       
-      if (averagingReset)
-      {
-         tav->reset();
-      }
-      
-      //SPtr<UbScheduler> catalystSch(new UbScheduler(1));
-      //InSituCatalystCoProcessor catalyst(grid, catalystSch, "pchannel.py");
-
-      //SPtr<UbScheduler> exitSch(new UbScheduler(10));
-      //EmergencyExitCoProcessor exitCoProc(grid, exitSch, pathname, RestartSPtr<CoProcessor>(&rp), comm);
       
       //create line time series
       SPtr<UbScheduler> tpcSch(new UbScheduler(1,1,3));
@@ -757,8 +489,8 @@ void run(string configname)
       //GbPoint3DPtr p2(new GbPoint3D(0.064,0.005,0.01));
       //SPtr<GbLine3D> line(new GbLine3D(p1.get(),p2.get()));
       SPtr<GbLine3D> line(new GbLine3D(new GbPoint3D(0.0,0.005,0.01),new GbPoint3D(0.064,0.005,0.01)));
-      LineTimeSeriesCoProcessor lineTs(grid, tpcSch,pathname+"/TimeSeries/line1.csv",line, 0,comm);
-      if (myid==0) lineTs.writeLine(pathname+"/geo/line1");
+      LineTimeSeriesCoProcessor lineTs(grid, tpcSch,pathOut+"/TimeSeries/line1.csv",line, 0,comm);
+      if (myid==0) lineTs.writeLine(pathOut+"/geo/line1");
 
       if (myid == 0)
       {
@@ -767,14 +499,16 @@ void run(string configname)
          UBLOG(logINFO, "PID = " << myid << " Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe());
       }
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(stepSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::HYBRID));
-      if (averaging)
-      {
-         calculation->setTimeAveragedValuesCoProcessor(tav);
-      }
+      omp_set_num_threads(numOfThreads);
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      calculator->addCoProcessor(nupsCoProcessor);
+      calculator->addCoProcessor(migCoProcessor);
+      calculator->addCoProcessor(writeMQSelectCoProcessor);
+      calculator->addCoProcessor(writeMQCoProcessor);
+
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
+      calculator->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (exception& e)

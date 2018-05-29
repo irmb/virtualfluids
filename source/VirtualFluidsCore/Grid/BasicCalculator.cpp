@@ -10,7 +10,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-#define OMP_SCHEDULE dynamic
+#define OMP_SCHEDULE guided
 
 //#define TIMING
 //#include "UbTiming.h"

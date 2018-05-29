@@ -3,12 +3,13 @@
 
 #include <vector>
 #include <PointerDefinitions.h>
+#include <SetSolidOrBoundaryBlockVisitor.h>
 
 class Interactor3D;
 class Block3D;
 class Grid3D;
 class Grid3DVisitor;
-enum class BlockType;
+class SetSolidOrBoundaryBlockVisitor;
 
 class InteractorsHelper
 {
@@ -19,12 +20,12 @@ public:
    void addInteractor(SPtr<Interactor3D> interactor);
    void selectBlocks();
    void setBC();
-    void sendDomainDecompositionVisitor() const;
+   void sendDomainDecompositionVisitor() const;
 
 protected:
    void deleteSolidBlocks();
-    void setBlocks(const SPtr<Interactor3D> interactor, BlockType type) const;
-    void setBcBlocks();
+   void setBlocks(const SPtr<Interactor3D> interactor, SetSolidOrBoundaryBlockVisitor::BlockType type) const;
+   void setBcBlocks();
 
 private:
    void updateGrid();
