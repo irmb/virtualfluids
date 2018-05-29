@@ -212,6 +212,71 @@ void GridGenerator::allocArrays_BoundaryValues()
     }
 
 
+
+    if (builder->hasGeometryValues()) {
+        for (int i = 0; i < builder->getNumberOfGridLevels(); i++) {
+            int numberOfGeometryValues = builder->getGeometrySize(i);
+            cout << "size geometry values, Level " << i << " : " << numberOfGeometryValues << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->getParH(i)->QGeom.kQ = numberOfGeometryValues;
+            para->getParD(i)->QGeom.kQ = numberOfGeometryValues;
+            if (numberOfGeometryValues > 0)
+            {
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                para->cudaAllocGeomValuesBC(i);
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //Indexarray
+
+                builder->getGeometryValues(para->getParH(i)->QGeom.Vx, para->getParH(i)->QGeom.Vy, para->getParH(i)->QGeom.Vz, i);
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                for (int m = 0; m < numberOfGeometryValues; m++)
+                {
+                    para->getParH(i)->QGeom.Vx[m] = para->getParH(i)->QGeom.Vx[m] / para->getVelocityRatio();
+                    para->getParH(i)->QGeom.Vy[m] = para->getParH(i)->QGeom.Vy[m] / para->getVelocityRatio();
+                    para->getParH(i)->QGeom.Vz[m] = para->getParH(i)->QGeom.Vz[m] / para->getVelocityRatio();
+                    //para->getParH(i)->QGeom.Vx[m] = para->getParH(i)->QGeom.Vx[m] / 100.0f;
+                    //para->getParH(i)->QGeom.Vy[m] = para->getParH(i)->QGeom.Vy[m] / 100.0f;
+                    //para->getParH(i)->QGeom.Vz[m] = para->getParH(i)->QGeom.Vz[m] / 100.0f;
+                    //para->getParH(i)->QGeom.Vx[m] = 0.0f;
+                    //para->getParH(i)->QGeom.Vy[m] = 0.0f;
+                    //para->getParH(i)->QGeom.Vz[m] = 0.0f;
+                }
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                ////Täst
+                //for (int m = 0; m < temp4; m++)
+                //{
+                //	para->getParH(i)->QGeom.Vx[m] = para->getVelocity();//0.035f;
+                //	para->getParH(i)->QGeom.Vy[m] = 0.0f;//para->getVelocity();//0.0f;
+                //	para->getParH(i)->QGeom.Vz[m] = 0.0f;
+                //}
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                para->cudaCopyGeomValuesBC(i);
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //// advection - diffusion stuff
+                //if (para->getDiffOn()==true){
+                //	//////////////////////////////////////////////////////////////////////////
+                //	para->getParH(i)->Temp.kTemp = temp4;
+                //	cout << "Groesse kTemp = " << para->getParH(i)->Temp.kTemp << endl;
+                //	//////////////////////////////////////////////////////////////////////////
+                //	para->cudaAllocTempNoSlipBC(i);
+                //	//////////////////////////////////////////////////////////////////////////
+                //	for (int m = 0; m < temp4; m++)
+                //	{
+                //		para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
+                //		para->getParH(i)->Temp.k[m]    = para->getParH(i)->QGeom.k[m];
+                //	}
+                //	//////////////////////////////////////////////////////////////////////////
+                //	para->cudaCopyTempNoSlipBCHD(i);
+                //	//////////////////////////////////////////////////////////////////////////
+                //}
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            }
+        }
+    }//ende geo
+
+
 }
 
 void GridGenerator::setPressureValues(int channelSide) const

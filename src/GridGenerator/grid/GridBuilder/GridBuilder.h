@@ -77,6 +77,8 @@ public:
     virtual uint getGeometrySize(int level) const = 0;
     virtual void getGeometryIndices(int* indices, int level) const = 0;
     virtual void getGeometryQs(real* qs[27], int level) const = 0;
+    virtual bool hasGeometryValues() const = 0;
+    virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const = 0;
 
 };
 

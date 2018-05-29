@@ -7,7 +7,6 @@
 
 #include <core/PointerDefinitions.h>
 #include <core/DataTypes.h>
-#include <map>
 
 #define X_INDEX 0
 #define Y_INDEX 1
@@ -31,7 +30,7 @@ enum class SideType
 class Side
 {
 public:
-    virtual void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) = 0;
+    virtual void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) = 0;
 
     virtual int getCoordinate() const = 0;
     virtual int getDirection() const = 0;
@@ -49,7 +48,7 @@ private:
 class Geometry : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -65,7 +64,7 @@ public:
 class MX : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -81,7 +80,7 @@ public:
 class PX : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -98,7 +97,7 @@ public:
 class MY : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -114,7 +113,7 @@ public:
 class PY : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -131,7 +130,7 @@ public:
 class MZ : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {
@@ -147,7 +146,7 @@ public:
 class PZ : public Side
 {
 public:
-    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet) override;
+    void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition) override;
 
     int getCoordinate() const override
     {

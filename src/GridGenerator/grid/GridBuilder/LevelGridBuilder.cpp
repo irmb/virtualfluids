@@ -48,7 +48,6 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     channelBoundaryConditions[5] = "periodic";
 
 
-    sideIsSet = { { SideType::MX, false },{ SideType::PX, false },{ SideType::MY, false },{ SideType::PY, false },{ SideType::MZ, false },{ SideType::PZ, false } };
 
 }
 
@@ -59,20 +58,30 @@ std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, co
 
 void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, real vy, real vz)
 {
-    sideIsSet[sideType] = true;
+    if (sideType == SideType::GEOMETRY)
+        setVelocityGeometryBoundaryCondition(vx, vy, vz);
+    else
+    {
 
-    SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+        SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
 
-    auto side = SideFactory::make(sideType);
+        auto side = SideFactory::make(sideType);
 
-    velocityBoundaryConditions.push_back(velocityBoundaryCondition);
-    velocityBoundaryCondition->side = side;
+        velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+        velocityBoundaryCondition->side = side;
+    }
+}
+
+void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)
+{
+    geometryBoundaryCondition->hasValues = true;
+    geometryBoundaryCondition->vx = vx;
+    geometryBoundaryCondition->vy = vy;
+    geometryBoundaryCondition->vz = vz;
 }
 
 void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 {
-    sideIsSet[sideType] = true;
-
     SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
 
     auto side = SideFactory::make(sideType);
@@ -88,8 +97,6 @@ void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool period
 
 void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
 {
-    sideIsSet[sideType] = true;
-
     SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
 
     auto side = SideFactory::make(sideType);
@@ -359,6 +366,23 @@ void LevelGridBuilder::getGeometryIndices(int* indices, int level) const
         indices[i] = grids[level]->getSparseIndex(geometryBoundaryCondition->indices[i]) + 1;
     }
 }
+
+bool LevelGridBuilder::hasGeometryValues() const
+{
+    return geometryBoundaryCondition->hasValues;
+}
+
+
+void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level) const
+{
+    for (uint i = 0; i < geometryBoundaryCondition->indices.size(); i++)
+    {
+        vx[i] = geometryBoundaryCondition->vx;
+        vy[i] = geometryBoundaryCondition->vy;
+        vz[i] = geometryBoundaryCondition->vz;
+    }
+}
+
 
 void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 {

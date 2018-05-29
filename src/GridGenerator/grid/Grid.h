@@ -41,6 +41,7 @@ public:
 
     HOSTDEVICE virtual int getSparseIndex(uint matrixIndex) const = 0;
     HOSTDEVICE virtual char getFieldEntry(uint matrixIndex) const = 0;
+    HOSTDEVICE virtual void setFieldEntry(uint matrixIndex, char type) = 0;
 
     HOST virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const = 0;
 

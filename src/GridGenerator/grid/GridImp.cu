@@ -638,7 +638,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 if(hasNeighbor(index, STOPPER_GEOMETRY))
                 {
-                    field.setFieldEntry(index, Q);
+                    field.setFieldEntry(index, BC_GEOMETRY);
                     calculateQs(point, triangle);
                 }
             }
@@ -798,6 +798,12 @@ char GridImp::getFieldEntry(uint index) const
 {
     return this->field.getFieldEntry(index);
 }
+
+HOSTDEVICE void GridImp::setFieldEntry(uint matrixIndex, char type)
+{
+    this->field.setFieldEntry(matrixIndex, type);
+}
+
 
 real GridImp::getStartX() const
 {

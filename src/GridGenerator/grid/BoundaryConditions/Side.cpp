@@ -15,6 +15,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
             const uint index = getIndex(grid, coord, constant, v1, v2);
             if (grid->getFieldEntry(index) == FLUID)
             {
+                grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
             }
@@ -58,7 +59,7 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 }
 
 
-void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
 
@@ -67,7 +68,7 @@ void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondi
 
     for (int i = 0; i < grid->getSize(); i++)
     {
-        if (grid->getFieldEntry(i) != Q)
+        if (grid->getFieldEntry(i) != BC_GEOMETRY)
             continue;
 
         for (int dir = 0; dir < grid->getEndDirection(); dir++)
@@ -96,26 +97,13 @@ void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondi
 
 
 
-void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid->getStartY();
     real endInner = grid->getEndY();
 
     real startOuter = grid->getStartZ();
     real endOuter = grid->getEndZ();
-
-    if (sideIsSet[SideType::MY])
-        startInner += grid->getDelta();
-
-    if (sideIsSet[SideType::PY])
-        endInner -= grid->getDelta();
-
-    if (sideIsSet[SideType::MZ])
-        startOuter += grid->getDelta();
-
-    if (sideIsSet[SideType::PZ])
-        endOuter -= grid->getDelta();
-
 
     Side::addIndices(grid, boundaryCondition, "x", grid->getStartX() + grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
@@ -123,7 +111,7 @@ void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
 
 
 
-void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid->getStartY();
     real endInner = grid->getEndY();
@@ -131,23 +119,11 @@ void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
     real startOuter = grid->getStartZ();
     real endOuter = grid->getEndZ();
 
-    if (sideIsSet[SideType::MY])
-        startInner += grid->getDelta();
-
-    if (sideIsSet[SideType::PY])
-        endInner -= grid->getDelta();
-
-    if (sideIsSet[SideType::MZ])
-        startOuter += grid->getDelta();
-
-    if (sideIsSet[SideType::PZ])
-        endOuter -= grid->getDelta();
-
     Side::addIndices(grid, boundaryCondition, "x", grid->getEndX() - grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
 }
 
-void MY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void MY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid->getStartX();
     real endInner = grid->getEndX();
@@ -155,24 +131,13 @@ void MY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
     real startOuter = grid->getStartZ();
     real endOuter = grid->getEndZ();
 
-    if (sideIsSet[SideType::MX])
-        startInner += grid->getDelta();
-
-    if (sideIsSet[SideType::PX])
-        endInner -= grid->getDelta();
-
-    if (sideIsSet[SideType::MZ])
-        startOuter += grid->getDelta();
-
-    if (sideIsSet[SideType::PZ])
-        endOuter -= grid->getDelta();
 
     Side::addIndices(grid, boundaryCondition, "y", grid->getStartY() + grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
 }
 
 
-void PY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void PY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid->getStartX();
     real endInner = grid->getEndX();
@@ -180,48 +145,25 @@ void PY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
     real startOuter = grid->getStartZ();
     real endOuter = grid->getEndZ();
 
-    if (sideIsSet[SideType::MX])
-        startInner += grid->getDelta();
-
-    if (sideIsSet[SideType::PX])
-        endInner -= grid->getDelta();
-
-    if (sideIsSet[SideType::MZ])
-        startOuter += grid->getDelta();
-
-    if (sideIsSet[SideType::PZ])
-        endOuter -= grid->getDelta();
 
     Side::addIndices(grid, boundaryCondition, "y", grid->getEndY() - grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
 }
 
 
-void MZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void MZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid->getStartX();
     real endInner = grid->getEndX();
 
     real startOuter = grid->getStartY();
     real endOuter = grid->getEndY();
-
-    if (sideIsSet[SideType::MX])
-        startInner += grid->getDelta();
-
-    if (sideIsSet[SideType::PX])
-        endInner -= grid->getDelta();
-
-    if (sideIsSet[SideType::MY])
-        startOuter += grid->getDelta();
-
-    if (sideIsSet[SideType::PY])
-        endOuter -= grid->getDelta();
 
     Side::addIndices(grid, boundaryCondition, "z", grid->getStartZ() + grid->getDelta(), startInner,
         endInner, startOuter, endOuter);
 }
 
-void PZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
+void PZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
 {
     real startInner = grid->getStartX();
     real endInner = grid->getEndX();
@@ -229,17 +171,6 @@ void PZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, 
     real startOuter = grid->getStartY();
     real endOuter = grid->getEndY();
 
-    if (sideIsSet[SideType::MX])
-        startInner += grid->getDelta();
-
-    if (sideIsSet[SideType::PX])
-        endInner -= grid->getDelta();
-
-    if (sideIsSet[SideType::MY])
-        startOuter += grid->getDelta();
-
-    if (sideIsSet[SideType::PY])
-        endOuter -= grid->getDelta();
 
     Side::addIndices(grid, boundaryCondition, "z", grid->getEndZ() - grid->getDelta(), startInner,
         endInner, startOuter, endOuter);

@@ -288,6 +288,10 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
 
+
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
+
+
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
@@ -318,8 +322,8 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->buildGrids();
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
-    gridBuilder->writeArrows("D:/arrows");
+    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    //gridBuilder->writeArrows("D:/arrows");
 
 
     SPtr<Parameter> para = Parameter::make();

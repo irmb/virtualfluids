@@ -108,6 +108,8 @@ public:
 
     HOSTDEVICE Field getField() const;
     HOSTDEVICE char getFieldEntry(uint index) const override;
+    HOSTDEVICE void setFieldEntry(uint matrixIndex, char type) override;
+
 
     HOSTDEVICE real getDelta() const override;
     HOSTDEVICE uint getSize() const override;

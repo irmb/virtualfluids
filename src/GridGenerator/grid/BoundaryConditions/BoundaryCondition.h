@@ -5,6 +5,7 @@
 
 #include <core/PointerDefinitions.h>
 #include <core/DataTypes.h>
+#include "grid/NodeValues.h"
 
 class Side;
 
@@ -14,7 +15,7 @@ public:
     std::vector<uint> indices;
     SPtr<Side> side;
 
-    virtual void print() const = 0;
+    virtual char getType() const = 0;
 
 };
 
@@ -37,7 +38,10 @@ private:
     }
 
 public:
-    void print() const override {};
+    char getType() const override
+    {
+        return BC_PRESSURE;
+    }
 };
 
 class VelocityBoundaryCondition : public BoundaryCondition
@@ -56,7 +60,10 @@ private:
     }
 
 public:
-    void print() const override {};
+    char getType() const override
+    {
+        return BC_VELOCITY;
+    }
 };
 
 
@@ -68,6 +75,8 @@ public:
         return SPtr<GeometryBoundaryCondition>(new GeometryBoundaryCondition());
     }
 
+    real vx, vy, vz;
+    bool hasValues = false;
     std::vector<std::vector<real> > qs;
 private:
     GeometryBoundaryCondition()
@@ -76,7 +85,10 @@ private:
     }
 
 public:
-    void print() const override {};
+    char getType() const override
+    {
+        return BC_GEOMETRY;
+    }
 };
 
 

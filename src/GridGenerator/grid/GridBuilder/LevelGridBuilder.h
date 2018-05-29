@@ -80,6 +80,9 @@ public:
     VF_PUBLIC virtual void getGeometryQs(real* qs[27], int level) const;
     VF_PUBLIC virtual uint getGeometrySize(int level) const;
     VF_PUBLIC virtual void getGeometryIndices(int* indices, int level) const;
+    VF_PUBLIC virtual bool hasGeometryValues() const;
+    VF_PUBLIC virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const;
+
 
     VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 
@@ -91,7 +94,6 @@ protected:
     std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
 
-    std::map<SideType, bool> sideIsSet;
     std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
     std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 
@@ -99,11 +101,15 @@ protected:
 
     SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
 
+
+
+
     //std::map<Side, BoundaryCondition> channelBoundaryConditionTypes;
 
     void checkLevel(int level);
 
 protected:
+    void setVelocityGeometryBoundaryCondition(real vx, real vy, real vz);
 
     void createBCVectors();
     void addShortQsToVector(int index);

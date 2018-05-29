@@ -26,7 +26,14 @@
 
 
 
-#define Q 12
+#define Q 13
+#define BC_PRESSURE 20
+#define BC_VELOCITY 21
+#define BC_GEOMETRY 22
+
+#define BC_SLIP 23
+#define BC_NOSLIP 24
+#define BC_OUTFLOW 25
 
 
 #endif

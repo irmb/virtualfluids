@@ -273,21 +273,21 @@ void MultipleGridBuilder::buildGrids()
 
     for(auto velocityBC : velocityBoundaryConditions)
     {
-        velocityBC->side->addIndices(grids[0], velocityBC, sideIsSet);
+        velocityBC->side->addIndices(grids[0], velocityBC);
     }
 
     for (auto pressureBC : pressureBoundaryConditions)
     {
-        pressureBC->side->addIndices(grids[0], pressureBC, sideIsSet);
+        pressureBC->side->addIndices(grids[0], pressureBC);
     }
 
     for (auto noSlipBC : noSlipBoundaryConditions)
     {
-        noSlipBC->side->addIndices(grids[0], noSlipBC, sideIsSet);
+        noSlipBC->side->addIndices(grids[0], noSlipBC);
     }
 
     if(geometryBoundaryCondition)
-        geometryBoundaryCondition->side->addIndices(grids[0], geometryBoundaryCondition, sideIsSet);
+        geometryBoundaryCondition->side->addIndices(grids[0], geometryBoundaryCondition);
 
 }
 

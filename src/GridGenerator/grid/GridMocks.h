@@ -71,6 +71,7 @@ public:
     void setPeriodicityY(bool periodicity) override {}
     void setPeriodicityZ(bool periodicity) override {}
     void findQs(Object* object) override {}
+    void setFieldEntry(uint matrixIndex, char type) override {}
 };
 
 class GridStub : public GridDummy
