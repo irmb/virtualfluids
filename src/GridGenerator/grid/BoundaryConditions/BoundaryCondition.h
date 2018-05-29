@@ -60,4 +60,24 @@ public:
 };
 
 
+class GeometryBoundaryCondition : public BoundaryCondition
+{
+public:
+    static SPtr<GeometryBoundaryCondition> make()
+    {
+        return SPtr<GeometryBoundaryCondition>(new GeometryBoundaryCondition());
+    }
+
+    std::vector<std::vector<real> > qs;
+private:
+    GeometryBoundaryCondition()
+    {
+
+    }
+
+public:
+    void print() const override {};
+};
+
+
 #endif

@@ -72,6 +72,12 @@ public:
     virtual uint getPressureSize(int level) const = 0;
     virtual void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const = 0;
     virtual void getVelocityQs(real* qs[27], int level) const = 0;
+    virtual void getPressureQs(real* qs[27], int level) const = 0;
+
+    virtual uint getGeometrySize(int level) const = 0;
+    virtual void getGeometryIndices(int* indices, int level) const = 0;
+    virtual void getGeometryQs(real* qs[27], int level) const = 0;
+
 };
 
 #endif

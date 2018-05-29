@@ -550,7 +550,7 @@ HOSTDEVICE void GridImp::mesh(Triangle &triangle)
 
                 const Vertex point(x, y, z);
                 const int value = triangle.isUnderFace(point);
-                setDebugPoint(index, value);
+                //setDebugPoint(index, value);
 
                 if (value == Q)
                     calculateQs(point, triangle);

@@ -61,7 +61,32 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 
 void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::map<SideType, bool> sideIsSet)
 {
+    auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
 
+    std::vector<real> qNode(27);
+    bool qFound = false;
+
+    for (int i = 0; i < grid->getSize(); i++)
+    {
+        for (int dir = 0; dir < grid->getEndDirection(); dir++)
+        {
+            const int qIndex = dir * grid->getSize() + i;
+            const real q = grid->getDistribution()[qIndex];
+
+            qNode[dir] = q;
+            if (q > 0)
+                qFound = true;
+
+        }
+
+        if (qFound)
+        {
+            geometryBoundaryCondition->indices.push_back(i);
+            geometryBoundaryCondition->qs.push_back(qNode);
+        }
+
+        qFound = false;
+    }
 }
 
 

@@ -322,6 +322,52 @@ void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
     }
 }
 
+void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
+{
+    int allIndicesCounter = 0;
+    for (auto boundaryCondition : this->pressureBoundaryConditions)
+    {
+        for (int i = 0; i < boundaryCondition->indices.size(); i++)
+        {
+            for (int dir = 0; dir < grids[level]->getEndDirection(); dir++)
+            {
+                if (grids[level]->getDirection()[dir * DIMENSION + boundaryCondition->side->getCoordinate()] != boundaryCondition->side->getDirection())
+                    qs[dir][allIndicesCounter] = -1.0;
+                else
+                    qs[dir][allIndicesCounter] = 0.5;
+            }
+            allIndicesCounter++;
+        }
+    }
+}
+
+
+uint LevelGridBuilder::getGeometrySize(int level) const
+{
+    if (geometryBoundaryCondition)
+        return geometryBoundaryCondition->indices.size();
+    
+    return 0;
+}
+
+void LevelGridBuilder::getGeometryIndices(int* indices, int level) const
+{
+    for (uint i = 0; i < geometryBoundaryCondition->indices.size(); i++)
+    {
+        indices[i] = geometryBoundaryCondition->indices[i];
+    }
+}
+
+void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
+{
+    for (int i = 0; i < geometryBoundaryCondition->indices.size(); i++)
+    {
+        for (int dir = 0; dir < grids[level]->getEndDirection(); dir++)
+        {
+            qs[dir][i] = geometryBoundaryCondition->qs[i][dir];
+        }
+    }
+}
 
 void LevelGridBuilder::setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const
 {

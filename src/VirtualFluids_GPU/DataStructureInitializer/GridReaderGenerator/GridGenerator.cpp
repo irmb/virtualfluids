@@ -314,6 +314,82 @@ void GridGenerator::allocArrays_BoundaryQs()
 {
 	std::cout << "------read BoundaryQs-------" << std::endl;
 
+
+    for (int i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        int numberOfPressureValues = (int)builder->getPressureSize(i);
+        if (numberOfPressureValues > 0)
+        {
+            cout << "size Pressure:  " << i << " : " << numberOfPressureValues << endl;
+            //cout << "Groesse Pressure:  " << i << " : " << temp1 << "MyID: " << para->getMyID() << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //preprocessing
+            real* QQ = para->getParH(i)->QPress.q27[0];
+            unsigned int sizeQ = para->getParH(i)->QPress.kQ;
+            QforBoundaryConditions Q;
+            Q.q27[dirE] = &QQ[dirE   *sizeQ];
+            Q.q27[dirW] = &QQ[dirW   *sizeQ];
+            Q.q27[dirN] = &QQ[dirN   *sizeQ];
+            Q.q27[dirS] = &QQ[dirS   *sizeQ];
+            Q.q27[dirT] = &QQ[dirT   *sizeQ];
+            Q.q27[dirB] = &QQ[dirB   *sizeQ];
+            Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+            Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+            Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+            Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+            Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+            Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+            Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+            Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+            Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+            Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+            Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+            Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+            Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+            Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+            Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+            Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+            Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+            Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+            Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+            
+            builder->getPressureQs(Q.q27, i);
+
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // advection - diffusion stuff
+            //cout << "vor advec diff" << endl;
+            if (para->getDiffOn() == true) {
+                //////////////////////////////////////////////////////////////////////////
+                //cout << "vor setzen von kTemp" << endl;
+                para->getParH(i)->TempPress.kTemp = numberOfPressureValues;
+                para->getParD(i)->TempPress.kTemp = numberOfPressureValues;
+                cout << "Groesse TempPress.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+                //////////////////////////////////////////////////////////////////////////
+                para->cudaAllocTempPressBC(i);
+                //cout << "nach alloc" << endl;
+                //////////////////////////////////////////////////////////////////////////
+                for (int m = 0; m < numberOfPressureValues; m++)
+                {
+                    para->getParH(i)->TempPress.temp[m] = para->getTemperatureInit();
+                    para->getParH(i)->TempPress.velo[m] = (real)0.0;
+                    para->getParH(i)->TempPress.k[m] = para->getParH(i)->QPress.k[m];
+                }
+                //////////////////////////////////////////////////////////////////////////
+                //cout << "vor copy" << endl;
+                para->cudaCopyTempPressBCHD(i);
+                //cout << "nach copy" << endl;
+                //////////////////////////////////////////////////////////////////////////
+            }
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->cudaCopyPress(i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }//ende if
+    }//ende oberste for schleife
+
+
+
     for (uint i = 0; i < builder->getNumberOfGridLevels(); i++) {
         const auto numberOfVelocityNodes = int(builder->getVelocitySize(i));
         if (numberOfVelocityNodes > 0)
@@ -382,6 +458,101 @@ void GridGenerator::allocArrays_BoundaryQs()
             para->cudaCopyVeloBC(i);
         }
     }
+
+
+    for (int i = 0; i < builder->getNumberOfGridLevels(); i++) {
+        const int numberOfGeometryNodes = builder->getGeometrySize(i);
+        cout << "size of GeomBoundaryQs, Level " << i << " : " << numberOfGeometryNodes << endl;
+
+        para->getParH(i)->QGeom.kQ = numberOfGeometryNodes;
+        para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+        if (numberOfGeometryNodes > 0)
+        {
+            //cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << numberOfGeometryNodes << "MyID: " << para->getMyID() << endl;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //para->getParH(i)->QGeom.kQ = temp4;
+            //para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->cudaAllocGeomBC(i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            //////////////////////////////////////////////////////////////////////////
+            //Indexarray
+            builder->getGeometryIndices(para->getParH(i)->QGeom.k, i);
+            //////////////////////////////////////////////////////////////////////////
+            //preprocessing
+            real* QQ = para->getParH(i)->QGeom.q27[0];
+            unsigned int sizeQ = para->getParH(i)->QGeom.kQ;
+            QforBoundaryConditions Q;
+            Q.q27[dirE] = &QQ[dirE   *sizeQ];
+            Q.q27[dirW] = &QQ[dirW   *sizeQ];
+            Q.q27[dirN] = &QQ[dirN   *sizeQ];
+            Q.q27[dirS] = &QQ[dirS   *sizeQ];
+            Q.q27[dirT] = &QQ[dirT   *sizeQ];
+            Q.q27[dirB] = &QQ[dirB   *sizeQ];
+            Q.q27[dirNE] = &QQ[dirNE  *sizeQ];
+            Q.q27[dirSW] = &QQ[dirSW  *sizeQ];
+            Q.q27[dirSE] = &QQ[dirSE  *sizeQ];
+            Q.q27[dirNW] = &QQ[dirNW  *sizeQ];
+            Q.q27[dirTE] = &QQ[dirTE  *sizeQ];
+            Q.q27[dirBW] = &QQ[dirBW  *sizeQ];
+            Q.q27[dirBE] = &QQ[dirBE  *sizeQ];
+            Q.q27[dirTW] = &QQ[dirTW  *sizeQ];
+            Q.q27[dirTN] = &QQ[dirTN  *sizeQ];
+            Q.q27[dirBS] = &QQ[dirBS  *sizeQ];
+            Q.q27[dirBN] = &QQ[dirBN  *sizeQ];
+            Q.q27[dirTS] = &QQ[dirTS  *sizeQ];
+            Q.q27[dirZERO] = &QQ[dirZERO*sizeQ];
+            Q.q27[dirTNE] = &QQ[dirTNE *sizeQ];
+            Q.q27[dirTSW] = &QQ[dirTSW *sizeQ];
+            Q.q27[dirTSE] = &QQ[dirTSE *sizeQ];
+            Q.q27[dirTNW] = &QQ[dirTNW *sizeQ];
+            Q.q27[dirBNE] = &QQ[dirBNE *sizeQ];
+            Q.q27[dirBSW] = &QQ[dirBSW *sizeQ];
+            Q.q27[dirBSE] = &QQ[dirBSE *sizeQ];
+            Q.q27[dirBNW] = &QQ[dirBNW *sizeQ];
+            //////////////////////////////////////////////////////////////////
+
+            builder->getGeometryQs(Q.q27, i);
+
+            //////////////////////////////////////////////////////////////////
+            for (int i = 0; i < numberOfGeometryNodes; i++)
+            {
+                Q.q27[dirZERO][i] = 0.0f;
+            }
+            //for(int test = 0; test < 3; test++)
+            //{
+            //	for (int tmp = 0; tmp < 27; tmp++)
+            //	{
+            //		cout <<"Kuhs: " << Q.q27[tmp][test]  << endl;				
+            //	}
+            //}
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // advection - diffusion stuff
+            if (para->getDiffOn() == true) {
+                    //////////////////////////////////////////////////////////////////////////
+                    para->getParH(i)->Temp.kTemp = numberOfGeometryNodes;
+                    para->getParD(i)->Temp.kTemp = numberOfGeometryNodes;
+                    cout << "Groesse Temp.kTemp = " << para->getParH(i)->Temp.kTemp << endl;
+                    //////////////////////////////////////////////////////////////////////////
+                    para->cudaAllocTempNoSlipBC(i);
+                    //////////////////////////////////////////////////////////////////////////
+                    for (int m = 0; m < numberOfGeometryNodes; m++)
+                    {
+                        para->getParH(i)->Temp.temp[m] = para->getTemperatureInit();
+                        para->getParH(i)->Temp.k[m] = para->getParH(i)->QGeom.k[m];
+                    }
+                    //////////////////////////////////////////////////////////////////////////
+                    para->cudaCopyTempNoSlipBCHD(i);
+                    //////////////////////////////////////////////////////////////////////////
+                }
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            para->cudaCopyGeomBC(i);
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+    }
+
 
 	//channelBoundaryConditions = builder->getTypeOfBoundaryConditions();
 

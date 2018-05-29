@@ -25,6 +25,7 @@ enum class Device;
 class Side;
 class VelocityBoundaryCondition;
 class PressureBoundaryCondition;
+class GeometryBoundaryCondition;
 enum class SideType;
 
 class LevelGridBuilder : public GridBuilder
@@ -74,6 +75,11 @@ public:
     VF_PUBLIC virtual void getVelocityQs(real* qs[27], int level) const;
     VF_PUBLIC uint getPressureSize(int level) const override;
     VF_PUBLIC void getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const override;
+    VF_PUBLIC virtual void getPressureQs(real* qs[27], int level) const;
+
+    VF_PUBLIC virtual void getGeometryQs(real* qs[27], int level) const;
+    VF_PUBLIC virtual uint getGeometrySize(int level) const;
+    VF_PUBLIC virtual void getGeometryIndices(int* indices, int level) const;
 
     VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
 
@@ -90,6 +96,8 @@ protected:
     std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 
     std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
+
+    SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
 
     //std::map<Side, BoundaryCondition> channelBoundaryConditionTypes;
 

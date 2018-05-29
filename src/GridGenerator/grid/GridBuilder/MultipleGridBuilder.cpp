@@ -280,6 +280,9 @@ void MultipleGridBuilder::buildGrids()
         noSlipBC->side->addIndices(grids[0], noSlipBC, sideIsSet);
     }
 
+    if(geometryBoundaryCondition)
+        geometryBoundaryCondition->side->addIndices(grids[0], geometryBoundaryCondition, sideIsSet);
+
 }
 
 
