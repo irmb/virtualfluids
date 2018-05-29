@@ -25,6 +25,8 @@ public:
 
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
 
+    virtual void findQs(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
+
     virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) = 0;
 
     virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) = 0;

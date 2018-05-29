@@ -70,6 +70,7 @@ public:
     void setPeriodicityX(bool periodicity) override {}
     void setPeriodicityY(bool periodicity) override {}
     void setPeriodicityZ(bool periodicity) override {}
+    void findQs(Object* object) override {}
 };
 
 class GridStub : public GridDummy

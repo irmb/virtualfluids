@@ -62,6 +62,13 @@ void GridGpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 
 }
 
+
+void GridGpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
+{
+    
+}
+
+
 void GridGpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
     copyAndFreeFieldFromGPU(grid->getField());

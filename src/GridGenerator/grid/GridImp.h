@@ -175,6 +175,10 @@ public:
     HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
 
+
+    HOST void findQs(Object* object) override;
+    HOST void findQs(TriangularMesh &triangularMesh);
+    HOSTDEVICE void findQs(Triangle &triangle);
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle) const;

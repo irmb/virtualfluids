@@ -76,6 +76,14 @@ void GridCpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
         grid->mesh(geom.triangles[i]);
 }
 
+void GridCpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
+{
+#pragma omp parallel for
+    for (int i = 0; i < geom.size; i++)
+        grid->findQs(geom.triangles[i]);
+}
+
+
 void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
 {
     const auto coarseLevel = grid->getLevel(1.0);

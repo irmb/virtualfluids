@@ -23,6 +23,7 @@ public:
     void findStopperNodes(SPtr<GridImp> grid) override;
 
     void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
+    void findQs(SPtr<GridImp> grid, TriangularMesh &geom) override;
 
     void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
 

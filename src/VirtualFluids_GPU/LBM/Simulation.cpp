@@ -1429,12 +1429,12 @@ void Simulation::run()
 			//		para->getParD(0)->neighborX_SP,          para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 			//		para->getParD(0)->size_Mat_SP,           para->getParD(0)->evenOrOdd);
 			//getLastCudaError("QDev27 execution failed");
-			//QDevComp27( para->getParD(0)->numberofthreads,       para->getParD(0)->nx,           para->getParD(0)->ny,
-			//			para->getParD(0)->d0SP.f[0],             para->getParD(0)->QGeom.k,		 para->getParD(0)->QGeom.q27[0], 
-			//			para->getParD(0)->QGeom.kQ,              para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
-			//			para->getParD(0)->neighborX_SP,          para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-			//			para->getParD(0)->size_Mat_SP,           para->getParD(0)->evenOrOdd);
-			//getLastCudaError("QDevComp27 (Geom) execution failed");
+			QDevComp27( para->getParD(0)->numberofthreads,       para->getParD(0)->nx,           para->getParD(0)->ny,
+						para->getParD(0)->d0SP.f[0],             para->getParD(0)->QGeom.k,		 para->getParD(0)->QGeom.q27[0], 
+						para->getParD(0)->QGeom.kQ,              para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,
+						para->getParD(0)->neighborX_SP,          para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+						para->getParD(0)->size_Mat_SP,           para->getParD(0)->evenOrOdd);
+			getLastCudaError("QDevComp27 (Geom) execution failed");
 
 
 		//QPressDevOld27( para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 

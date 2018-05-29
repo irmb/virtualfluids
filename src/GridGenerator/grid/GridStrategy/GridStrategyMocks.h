@@ -32,6 +32,7 @@ public:
     virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) override {}
 
 
+    void findQs(SPtr<GridImp> grid, TriangularMesh& geom) override {};
 };
 
 #endif

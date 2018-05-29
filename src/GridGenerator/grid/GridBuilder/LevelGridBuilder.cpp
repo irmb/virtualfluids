@@ -362,7 +362,7 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 {
     for (int i = 0; i < geometryBoundaryCondition->indices.size(); i++)
     {
-        for (int dir = 0; dir < grids[level]->getEndDirection(); dir++)
+        for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
         {
             qs[dir][i] = geometryBoundaryCondition->qs[i][dir];
         }

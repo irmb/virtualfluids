@@ -180,6 +180,8 @@ public:
             return SPtr<Side>(new MZ());
         case SideType::PZ:
             return SPtr<Side>(new PZ());
+        case SideType::GEOMETRY:
+            return SPtr<Side>(new Geometry());
         }
     }
 };

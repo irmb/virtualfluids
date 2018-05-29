@@ -103,7 +103,7 @@ HOSTDEVICE bool Field::isQ(uint index) const
 
 HOSTDEVICE bool Field::isRb(uint index) const
 {
-    return field[index] == VELOCITY || field[index] == PRESSURE || field[index] == NOSLIP || field[index] == SOLID;
+    return  field[index] == SOLID;
 }
 
 // --------------------------------------------------------- //

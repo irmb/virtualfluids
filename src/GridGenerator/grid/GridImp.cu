@@ -559,6 +559,56 @@ HOSTDEVICE void GridImp::mesh(Triangle &triangle)
     }
 }
 
+
+
+HOST void GridImp::findQs(Object* object)
+{
+    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
+    if (triangularMesh)
+        findQs(*triangularMesh);
+}
+
+HOST void GridImp::findQs(TriangularMesh &triangularMesh)
+{
+    const clock_t begin = clock();
+
+    gridStrategy->findQs(shared_from_this(), triangularMesh);
+
+    const clock_t end = clock();
+    const real time = (real)(real(end - begin) / CLOCKS_PER_SEC);
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "time finding qs: " << time << "s\n";
+}
+
+HOSTDEVICE void GridImp::findQs(Triangle &triangle)
+{
+    auto box = this->getBoundingBoxOnNodes(triangle);
+    triangle.initalLayerThickness(getDelta());
+
+    for (real x = box.minX; x <= box.maxX; x += delta)
+    {
+        for (real y = box.minY; y <= box.maxY; y += delta)
+        {
+            for (real z = box.minZ; z <= box.maxZ; z += delta)
+            {
+                const uint index = this->transCoordToIndex(x, y, z);
+                if (!field.isFluid(index))
+                    continue;
+
+                const Vertex point(x, y, z);
+                const int value = triangle.isUnderFace(point);
+
+                if (value == Q)
+                {
+                    field.setFieldEntry(index, Q);
+                    calculateQs(point, triangle);
+
+                }
+            }
+        }
+    }
+}
+
 HOSTDEVICE void GridImp::setDebugPoint(uint index, int pointValue)
 {
     if (field.isInvalid(index) && pointValue == SOLID)
@@ -590,7 +640,8 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
             //solid_node = VertexInteger(actualPoint.x + direction.x, actualPoint.y + direction.y, actualPoint.z + direction.z);
             distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = subdistance;
             //printf("Q%d %d: %2.8f \n", i, grid.transCoordToIndex(actualPoint), grid.d.f[index]);
-        }
+        } else
+            distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = -1.0;
     }
 }
 

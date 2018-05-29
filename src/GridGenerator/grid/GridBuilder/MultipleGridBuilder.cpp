@@ -32,6 +32,8 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
 void MultipleGridBuilder::addGeometry(Object* solidObject)
 {
     this->solidObject = solidObject;
+    this->geometryBoundaryCondition = GeometryBoundaryCondition::make();
+    this->geometryBoundaryCondition->side = SideFactory::make(SideType::GEOMETRY);
 }
 
 void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
@@ -253,7 +255,11 @@ void MultipleGridBuilder::buildGrids()
     for (auto grid : grids)
         grid->inital();
 
-    //grids[grids.size()-1]->mesh(solidObject);
+    if (geometryBoundaryCondition)
+    {
+        grids[grids.size() - 1]->mesh(solidObject);
+        grids[grids.size() - 1]->findQs(solidObject);
+    }
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);

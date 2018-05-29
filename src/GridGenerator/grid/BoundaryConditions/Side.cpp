@@ -81,7 +81,8 @@ void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondi
 
         if (qFound)
         {
-            geometryBoundaryCondition->indices.push_back(i);
+            const int sparseIndex = grid->getSparseIndex(i);
+            geometryBoundaryCondition->indices.push_back(sparseIndex);
             geometryBoundaryCondition->qs.push_back(qNode);
         }
 

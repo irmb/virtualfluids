@@ -270,13 +270,16 @@ void multipleLevel(const std::string& configPath)
     ////TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
-    gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
 
     //gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
 
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
+    //gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
+    //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
 
-    //gridBuilder->addGeometry(triangularMesh);
+    gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, 0.25);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/cubeBinaer1x1.stl");
+
+    gridBuilder->addGeometry(triangularMesh);
 
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
@@ -315,7 +318,7 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->buildGrids();
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
 
 
 
