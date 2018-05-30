@@ -36,11 +36,11 @@ void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition,
         real nz = z;
 
         if (boundaryCondition->side->getCoordinate() == X_INDEX)
-            nx = boundaryCondition->side->getDirection() * grid->getDelta() + x;
+            nx = -boundaryCondition->side->getDirection() * grid->getDelta() + x;
         if (boundaryCondition->side->getCoordinate() == Y_INDEX)
-            ny = boundaryCondition->side->getDirection() * grid->getDelta() + y;
+            ny = -boundaryCondition->side->getDirection() * grid->getDelta() + y;
         if (boundaryCondition->side->getCoordinate() == Z_INDEX)
-            nz = boundaryCondition->side->getDirection() * grid->getDelta() + z;
+            nz = -boundaryCondition->side->getDirection() * grid->getDelta() + z;
 
         int neighborIndex = grid->transCoordToIndex(nx, ny, nz);
         pressureBoundaryCondition->neighborIndices.push_back(neighborIndex);
