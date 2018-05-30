@@ -103,7 +103,9 @@ void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     real startOuter = grid[level]->getStartZ();
     real endOuter = grid[level]->getEndZ();
 
-    real coords[3] = { grid[level]->getStartX(), grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0 };
+    Vertex exactCoords(grid[level]->getStartX(), grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0);
+    Vertex noodCoords = grid[level]->getMaximumOnNode(exactCoords);
+    real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z};
     real startCoord = grid[level]->getFirstFluidNode(coords, level, grid[level]->getStartX());
 
     if(!isBoundaryOnFineGrid(level, grid, startCoord))
@@ -119,7 +121,7 @@ bool MX::isBoundaryOnFineGrid(uint level, std::vector<SPtr<Grid>> grid, real sta
 {
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getStartX(), grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
-        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level, grid[level - 1]->getStartX());
+        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level - 1, grid[level - 1]->getStartX());
         if (startCoord > startCoordCoarser)
             return false;
     }
