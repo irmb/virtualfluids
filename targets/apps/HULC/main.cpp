@@ -283,17 +283,21 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addGeometry(triangularMesh);
 
-    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
 
     gridBuilder->buildGrids(); // buildGrids() has to be called before setting the BCs!!!!
 
-    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
     //gridBuilder->writeArrows("D:/arrows");
 
 
-    //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    //gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.001, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.001, 0.0, 0.0);
 
 
     //gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
