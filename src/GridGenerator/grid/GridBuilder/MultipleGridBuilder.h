@@ -60,7 +60,7 @@ private:
     std::array<real, 3> getOffset(real delta) const;
     std::vector<uint> getSpacingFactors(uint levelDifference) const;
 
-    SPtr<Grid> makeGrid(Object* gridShape, uint level) const;
+    SPtr<Grid> makeGrid(Object* gridShape, uint level);
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const;
 
     static void emitNoCoarseGridExistsWarning();

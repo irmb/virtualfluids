@@ -57,8 +57,6 @@ void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
 
 void MultipleGridBuilder::addGrid(Object* gridShape)
 {
-    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
-
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
@@ -69,7 +67,6 @@ void MultipleGridBuilder::addGrid(Object* gridShape)
 
 void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
 {
-    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
 
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
@@ -149,11 +146,60 @@ bool MultipleGridBuilder::coarseGridExists() const
     return !grids.empty();
 }
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level) const
+SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level)
 {
+    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
+
     const real delta = calculateDelta(level);
 
-    auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
+    //auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
+
+
+
+    const real deltaCoarse = this->grids[0]->getDelta();
+
+    std::array<real, 6> staggeredCoordinates;
+
+    staggeredCoordinates[0] = this->grids[0]->getStartX();
+    staggeredCoordinates[1] = this->grids[0]->getStartY();
+    staggeredCoordinates[2] = this->grids[0]->getStartZ();
+    staggeredCoordinates[3] = this->grids[0]->getEndX();
+    staggeredCoordinates[4] = this->grids[0]->getEndY();
+    staggeredCoordinates[5] = this->grids[0]->getEndZ();
+
+    //do staggeredCoordinates[0] += deltaCoarse; while( staggeredCoordinates[0] < gridShape->getX1Minimum() /*+ deltaCoarse*/ );
+    //do staggeredCoordinates[1] += deltaCoarse; while( staggeredCoordinates[1] < gridShape->getX2Minimum() /*+ deltaCoarse*/ );
+    //do staggeredCoordinates[2] += deltaCoarse; while( staggeredCoordinates[2] < gridShape->getX3Minimum() /*+ deltaCoarse*/ );
+    //do staggeredCoordinates[3] -= deltaCoarse; while( staggeredCoordinates[3] > gridShape->getX1Maximum() /*- deltaCoarse*/ );
+    //do staggeredCoordinates[4] -= deltaCoarse; while( staggeredCoordinates[4] > gridShape->getX2Maximum() /*- deltaCoarse*/ );
+    //do staggeredCoordinates[5] -= deltaCoarse; while( staggeredCoordinates[5] > gridShape->getX3Maximum() /*- deltaCoarse*/ );
+
+    while (staggeredCoordinates[0] < gridShape->getX1Minimum() /*- deltaCoarse*/) staggeredCoordinates[0] += deltaCoarse;
+    while (staggeredCoordinates[1] < gridShape->getX2Minimum() /*- deltaCoarse*/) staggeredCoordinates[1] += deltaCoarse;
+    while (staggeredCoordinates[2] < gridShape->getX3Minimum() /*- deltaCoarse*/) staggeredCoordinates[2] += deltaCoarse;
+    while (staggeredCoordinates[3] > gridShape->getX1Maximum() /*+ deltaCoarse*/) staggeredCoordinates[3] -= deltaCoarse;
+    while (staggeredCoordinates[4] > gridShape->getX2Maximum() /*+ deltaCoarse*/) staggeredCoordinates[4] -= deltaCoarse;
+    while (staggeredCoordinates[5] > gridShape->getX3Maximum() /*+ deltaCoarse*/) staggeredCoordinates[5] -= deltaCoarse;
+
+    real offset = 0.0;
+
+    for (int i = 0; i < level; i++)
+        offset += 0.25 * pow(0.5, i) * deltaCoarse;
+
+    staggeredCoordinates[0] -= offset;
+    staggeredCoordinates[1] -= offset;
+    staggeredCoordinates[2] -= offset;
+    staggeredCoordinates[3] += offset;
+    staggeredCoordinates[4] += offset;
+    staggeredCoordinates[5] += offset;
+
+    while (staggeredCoordinates[0] > gridShape->getX1Minimum()) staggeredCoordinates[0] -= deltaCoarse * pow(0.5, level - 1);
+    while (staggeredCoordinates[1] > gridShape->getX2Minimum()) staggeredCoordinates[1] -= deltaCoarse * pow(0.5, level - 1);
+    while (staggeredCoordinates[2] > gridShape->getX3Minimum()) staggeredCoordinates[2] -= deltaCoarse * pow(0.5, level - 1);
+    while (staggeredCoordinates[3] < gridShape->getX1Maximum()) staggeredCoordinates[3] += deltaCoarse * pow(0.5, level - 1);
+    while (staggeredCoordinates[4] < gridShape->getX2Maximum()) staggeredCoordinates[4] += deltaCoarse * pow(0.5, level - 1);
+    while (staggeredCoordinates[5] < gridShape->getX3Maximum()) staggeredCoordinates[5] += deltaCoarse * pow(0.5, level - 1);
+
 
     return this->makeGrid(gridShape, staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
 }

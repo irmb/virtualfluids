@@ -278,7 +278,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid(-14, -14, -14, 14, 14, 14, 1.0);
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/cubeBinaer1x1.stl");
-    gridBuilder->addGrid(new Cuboid(-4, -4, -4, 5, 5, 5), 1);
+    gridBuilder->addGrid(new Cuboid(-4, -4, -4, 5, 5, 5), 2);
 
 
     gridBuilder->addGeometry(triangularMesh);
@@ -288,19 +288,18 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->buildGrids(); // buildGrids() has to be called before setting the BCs!!!!
 
-    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
     //gridBuilder->writeArrows("D:/arrows");
 
 
-    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
+    //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.001, 0.0, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
 
 
-    //gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+    //gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+    //gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
     gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);

@@ -97,7 +97,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
     if (indexOnFineGridFC == -1)
         return;
 
-    //const bool fineGridNodeIsFluid = fineGrid->getField().isFluid(indexOnFineGridFC);
+    const bool fineGridNodeIsFluid = fineGrid->getField().isFluid(indexOnFineGridFC);
     //if (!fineGridNodeIsFluid)
     //    return;
 
@@ -120,7 +120,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
         }
 
     }
-    if(!neighborBelongsToFineToCoarseInterpolationCell) //should be inside of fine grid and can be deleted
+    if(!neighborBelongsToFineToCoarseInterpolationCell && fineGrid->getField().isSolid(indexOnFineGridFC) || !neighborBelongsToFineToCoarseInterpolationCell && fineGrid->getField().isFluid(indexOnFineGridFC)) //should be inside of fine grid and can be deleted
         coarseGrid->getField().setFieldEntryToInvalid(indexOnCoarseGrid);
 }
 

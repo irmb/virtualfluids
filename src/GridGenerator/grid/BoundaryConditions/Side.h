@@ -67,8 +67,6 @@ class MX : public Side
 public:
     void addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition) override;
 
-    bool isBoundaryOnFineGrid(uint level, std::vector<SPtr<Grid>> grid, real startCoord);
-
     int getCoordinate() const override
     {
         return X_INDEX;
