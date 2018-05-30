@@ -21,7 +21,7 @@ MACRO(SET_COMPILER_SPECIFIC_FLAGS_INTERN build_type use64BitOptions)
    #~ LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-wd266")  #function "__GKfree" declared implicitly
    #LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST -O3 -ip -ipo -fno-alias -mcmodel=medium -qopt-streaming-stores=always")
 
-   LIST(APPEND CAB_COMPILER_ADDTIONAL_C_COMPILER_FLAGS "-wd1478") #auto_ptr warning from mu::Parser
+   LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-wd1478") #auto_ptr warning from mu::Parser
    LIST(APPEND CAB_COMPILER_ADDTIONAL_CXX_COMPILER_FLAGS "-xHOST -O3 -ip -fno-alias -mcmodel=medium -qopt-streaming-stores=always")
    
    #Debug
