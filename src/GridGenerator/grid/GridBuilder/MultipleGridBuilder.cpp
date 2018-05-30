@@ -26,7 +26,7 @@ SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> grid
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
-    boundaryConditions.push_back(BoundaryConditions());
+    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
 
     const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta);
     addGridToList(grid);
@@ -38,8 +38,8 @@ void MultipleGridBuilder::addGeometry(Object* solidObject)
 
     for(auto bcs : boundaryConditions)
     {
-        bcs.geometryBoundaryCondition = GeometryBoundaryCondition::make();
-        bcs.geometryBoundaryCondition->side = SideFactory::make(SideType::GEOMETRY);
+        bcs->geometryBoundaryCondition = GeometryBoundaryCondition::make();
+        bcs->geometryBoundaryCondition->side = SideFactory::make(SideType::GEOMETRY);
     }
 }
 
@@ -57,7 +57,7 @@ void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
 
 void MultipleGridBuilder::addGrid(Object* gridShape)
 {
-    boundaryConditions.push_back(BoundaryConditions());
+    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
 
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
@@ -69,7 +69,7 @@ void MultipleGridBuilder::addGrid(Object* gridShape)
 
 void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
 {
-    boundaryConditions.push_back(BoundaryConditions());
+    boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
 
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
@@ -272,14 +272,16 @@ void MultipleGridBuilder::buildGrids()
         grids[grids.size() - 1]->findQs(solidObject);
     }
 
+
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1]);
+
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findSparseIndices(grids[i + 1]);
 
-    grids[grids.size() - 1]->findSparseIndices(nullptr);
 
+    grids[grids.size() - 1]->findSparseIndices(nullptr);
 
 
     //for(auto velocityBC : velocityBoundaryConditions)

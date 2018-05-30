@@ -59,30 +59,28 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 }
 
 
-void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
+void Geometry::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
 
     std::vector<real> qNode(27);
     bool qFound = false;
 
-    for (int i = 0; i < grid->getSize(); i++)
+    for (int i = 0; i < grid[level]->getSize(); i++)
     {
-        if (grid->getFieldEntry(i) != BC_GEOMETRY)
+        if (grid[level]->getFieldEntry(i) != BC_GEOMETRY)
             continue;
 
-        for (int dir = 0; dir < grid->getEndDirection(); dir++)
+        for (int dir = 0; dir < grid[level]->getEndDirection(); dir++)
         {
-            const int qIndex = dir * grid->getSize() + i;
-            const real q = grid->getDistribution()[qIndex];
+            const int qIndex = dir * grid[level]->getSize() + i;
+            const real q = grid[level]->getDistribution()[qIndex];
 
             qNode[dir] = q;
             if (q > 0)
                 qFound = true;
             else
                 qNode[dir] = -1.0;
-
-
         }
 
         if (qFound)
@@ -97,87 +95,101 @@ void Geometry::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondi
 
 
 
-void MX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
+void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
-    real startInner = grid->getStartY();
-    real endInner = grid->getEndY();
+    real startInner = grid[level]->getStartY();
+    real endInner = grid[level]->getEndY();
 
-    real startOuter = grid->getStartZ();
-    real endOuter = grid->getEndZ();
+    real startOuter = grid[level]->getStartZ();
+    real endOuter = grid[level]->getEndZ();
 
-    real coords[3] = { grid->getStartX(), grid->getStartY() + (grid->getEndY() - grid->getStartY()) / 2.0, grid->getStartZ() + (grid->getEndZ() - grid->getStartZ()) / 2.0 };
-    real startCoord = grid->getFirstFluidNode(coords, 0, grid->getStartX());
+    real coords[3] = { grid[level]->getStartX(), grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0 };
+    real startCoord = grid[level]->getFirstFluidNode(coords, level, grid[level]->getStartX());
 
-    Side::addIndices(grid, boundaryCondition, "x", startCoord, startInner,
+    if(!isBoundaryOnFineGrid(level, grid, startCoord))
+        return;
+
+    Side::addIndices(grid[level], boundaryCondition, "x", startCoord, startInner,
         endInner, startOuter, endOuter);
 }
 
 
 
-void PX::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
+bool MX::isBoundaryOnFineGrid(uint level, std::vector<SPtr<Grid>> grid, real startCoord)
 {
-    real startInner = grid->getStartY();
-    real endInner = grid->getEndY();
-
-    real startOuter = grid->getStartZ();
-    real endOuter = grid->getEndZ();
-
-    real coords[3] = { grid->getEndX(), grid->getStartY() + (grid->getEndY() - grid->getStartY()) / 2.0, grid->getStartZ() + (grid->getEndZ() - grid->getStartZ()) / 2.0 };
-    real startCoord = grid->getLastFluidNode(coords, 0, grid->getEndX());
-
-    Side::addIndices(grid, boundaryCondition, "x", startCoord, startInner,
-        endInner, startOuter, endOuter);
-}
-
-void MY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
-{
-    real startInner = grid->getStartX();
-    real endInner = grid->getEndX();
-
-    real startOuter = grid->getStartZ();
-    real endOuter = grid->getEndZ();
-
-
-    Side::addIndices(grid, boundaryCondition, "y", grid->getStartY() + grid->getDelta(), startInner,
-        endInner, startOuter, endOuter);
+    if (level > 0) {
+        real coords[3] = { grid[level - 1]->getStartX(), grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
+        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level, grid[level - 1]->getStartX());
+        if (startCoord > startCoordCoarser)
+            return false;
+    }
 }
 
 
-void PY::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
+void PX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
-    real startInner = grid->getStartX();
-    real endInner = grid->getEndX();
+    //real startInner = grid->getStartY();
+    //real endInner = grid->getEndY();
 
-    real startOuter = grid->getStartZ();
-    real endOuter = grid->getEndZ();
+    //real startOuter = grid->getStartZ();
+    //real endOuter = grid->getEndZ();
+
+    //real coords[3] = { grid->getEndX(), grid->getStartY() + (grid->getEndY() - grid->getStartY()) / 2.0, grid->getStartZ() + (grid->getEndZ() - grid->getStartZ()) / 2.0 };
+    //real startCoord = grid->getLastFluidNode(coords, 0, grid->getEndX());
+
+    //Side::addIndices(grid, boundaryCondition, "x", startCoord, startInner,
+    //    endInner, startOuter, endOuter);
+}
+
+void MY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+{
+    //real startInner = grid->getStartX();
+    //real endInner = grid->getEndX();
+
+    //real startOuter = grid->getStartZ();
+    //real endOuter = grid->getEndZ();
 
 
-    Side::addIndices(grid, boundaryCondition, "y", grid->getEndY() - grid->getDelta(), startInner,
-        endInner, startOuter, endOuter);
+    //Side::addIndices(grid, boundaryCondition, "y", grid->getStartY() + grid->getDelta(), startInner,
+    //    endInner, startOuter, endOuter);
 }
 
 
-void MZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
+void PY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
-    real startInner = grid->getStartX();
-    real endInner = grid->getEndX();
+    //real startInner = grid->getStartX();
+    //real endInner = grid->getEndX();
 
-    real startOuter = grid->getStartY();
-    real endOuter = grid->getEndY();
+    //real startOuter = grid->getStartZ();
+    //real endOuter = grid->getEndZ();
 
-    Side::addIndices(grid, boundaryCondition, "z", grid->getStartZ() + grid->getDelta(), startInner,
-        endInner, startOuter, endOuter);
+
+    //Side::addIndices(grid, boundaryCondition, "y", grid->getEndY() - grid->getDelta(), startInner,
+    //    endInner, startOuter, endOuter);
 }
 
-void PZ::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition)
+
+void MZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
-    real startInner = grid->getStartX();
-    real endInner = grid->getEndX();
+    //real startInner = grid->getStartX();
+    //real endInner = grid->getEndX();
 
-    real startOuter = grid->getStartY();
-    real endOuter = grid->getEndY();
+    //real startOuter = grid->getStartY();
+    //real endOuter = grid->getEndY();
+
+    //Side::addIndices(grid, boundaryCondition, "z", grid->getStartZ() + grid->getDelta(), startInner,
+    //    endInner, startOuter, endOuter);
+}
+
+void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+{
+    //real startInner = grid->getStartX();
+    //real endInner = grid->getEndX();
+
+    //real startOuter = grid->getStartY();
+    //real endOuter = grid->getEndY();
 
 
-    Side::addIndices(grid, boundaryCondition, "z", grid->getEndZ() - grid->getDelta(), startInner,
-        endInner, startOuter, endOuter);
+    //Side::addIndices(grid, boundaryCondition, "z", grid->getEndZ() - grid->getDelta(), startInner,
+    //    endInner, startOuter, endOuter);
 }

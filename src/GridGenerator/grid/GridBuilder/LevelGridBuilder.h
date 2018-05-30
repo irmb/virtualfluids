@@ -108,7 +108,7 @@ protected:
     bool geometryHasValues = false;
 
     std::vector<std::shared_ptr<Grid> > grids;
-    std::vector<BoundaryConditions> boundaryConditions;
+    std::vector<SPtr<BoundaryConditions> > boundaryConditions;
 
 
     void checkLevel(int level);
