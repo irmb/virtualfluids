@@ -279,18 +279,20 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->addCoarseGrid(-10, -10, -10, 9, 9, 9, 0.25);
     TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/cubeBinaer1x1.stl");
 
+
     gridBuilder->addGeometry(triangularMesh);
+
+    gridBuilder->addGrid(new Cuboid(-2,-2,-2,2,2,2));
 
 
     gridBuilder->buildGrids(); // buildGrids() has to be called before setting the BCs!!!!
 
-
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(false, true, true);
 
-    gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+    //gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
 
 
     gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
@@ -325,8 +327,8 @@ void multipleLevel(const std::string& configPath)
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
-    gridBuilder->writeArrows("D:/arrows");
+    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    //gridBuilder->writeArrows("D:/arrows");
 
 
     SPtr<Parameter> para = Parameter::make();

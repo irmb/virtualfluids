@@ -39,7 +39,7 @@ public:
 
     virtual VF_PUBLIC ~GridBuilder() {}
     virtual void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY, std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY, std::vector<int>& distZ) = 0;
-    virtual VF_PUBLIC uint getNumberOfGridLevels() = 0;
+    virtual VF_PUBLIC uint getNumberOfGridLevels() const = 0;
 
 
     virtual void writeArrows(std::string fileName) const = 0;

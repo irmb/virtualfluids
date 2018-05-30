@@ -76,7 +76,6 @@ public:
     }
 
     real vx, vy, vz;
-    bool hasValues = false;
     std::vector<std::vector<real> > qs;
 private:
     GeometryBoundaryCondition()

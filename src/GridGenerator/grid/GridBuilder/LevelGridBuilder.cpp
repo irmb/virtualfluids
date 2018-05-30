@@ -46,9 +46,6 @@ LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : de
     channelBoundaryConditions[3] = "periodic";
     channelBoundaryConditions[4] = "periodic";
     channelBoundaryConditions[5] = "periodic";
-
-
-
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
@@ -62,35 +59,46 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
         setVelocityGeometryBoundaryCondition(vx, vy, vz);
     else
     {
-        SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
+        for (int level = 0; level < getNumberOfGridLevels(); level++)
+        {
+            SPtr<VelocityBoundaryCondition> velocityBoundaryCondition = VelocityBoundaryCondition::make(vx, vy, vz);
 
-        auto side = SideFactory::make(sideType);
+            auto side = SideFactory::make(sideType);
 
-        velocityBoundaryConditions.push_back(velocityBoundaryCondition);
-        velocityBoundaryCondition->side = side;
-        velocityBoundaryCondition->side->addIndices(grids[0], velocityBoundaryCondition);
+            velocityBoundaryCondition->side = side;
+            velocityBoundaryCondition->side->addIndices(grids[level], velocityBoundaryCondition);
+
+            boundaryConditions[level].velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+        }
     }
 
 }
 
 void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)
 {
-    geometryBoundaryCondition->hasValues = true;
-    geometryBoundaryCondition->vx = vx;
-    geometryBoundaryCondition->vy = vy;
-    geometryBoundaryCondition->vz = vz;
-    geometryBoundaryCondition->side->addIndices(grids[0], geometryBoundaryCondition);
+    geometryHasValues = true;
+
+    for (int level = 0; level < getNumberOfGridLevels(); level++)
+    {
+        boundaryConditions[level].geometryBoundaryCondition->vx = vx;
+        boundaryConditions[level].geometryBoundaryCondition->vy = vy;
+        boundaryConditions[level].geometryBoundaryCondition->vz = vz;
+        boundaryConditions[level].geometryBoundaryCondition->side->addIndices(grids[level], boundaryConditions[level].geometryBoundaryCondition);
+    }
 }
 
 void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 {
-    SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
+    for (int level = 0; level < getNumberOfGridLevels(); level++)
+    {
+        SPtr<PressureBoundaryCondition> pressureBoundaryCondition = PressureBoundaryCondition::make(rho);
 
-    auto side = SideFactory::make(sideType);
+        auto side = SideFactory::make(sideType);
+        pressureBoundaryCondition->side = side;
+        pressureBoundaryCondition->side->addIndices(grids[level], pressureBoundaryCondition);
 
-    pressureBoundaryConditions.push_back(pressureBoundaryCondition);
-    pressureBoundaryCondition->side = side;
-    pressureBoundaryCondition->side->addIndices(grids[0], pressureBoundaryCondition);
+        boundaryConditions[level].pressureBoundaryConditions.push_back(pressureBoundaryCondition);
+    }
 }
 
 void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z)
@@ -100,14 +108,17 @@ void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool period
 
 void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
 {
-    SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
+    for (int level = 0; level < getNumberOfGridLevels(); level++)
+    {
+        SPtr<VelocityBoundaryCondition> noSlipBoundaryCondition = VelocityBoundaryCondition::make(0.0, 0.0, 0.0);
 
-    auto side = SideFactory::make(sideType);
+        auto side = SideFactory::make(sideType);
 
-    noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
-    noSlipBoundaryCondition->side = side;
-    noSlipBoundaryCondition->side->addIndices(grids[0], noSlipBoundaryCondition);
+        noSlipBoundaryCondition->side = side;
+        noSlipBoundaryCondition->side->addIndices(grids[level], noSlipBoundaryCondition);
 
+        boundaryConditions[level].noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
+    }
 }
 
 
@@ -152,7 +163,7 @@ void LevelGridBuilder::getGridInformations(std::vector<int>& gridX, std::vector<
 }
 
 
-uint LevelGridBuilder::getNumberOfGridLevels()
+uint LevelGridBuilder::getNumberOfGridLevels() const
 {
     return uint(grids.size());
 }
@@ -264,7 +275,7 @@ void LevelGridBuilder::setOutflowValues(real* RhoBC, int* kN, int channelSide, i
 uint LevelGridBuilder::getVelocitySize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : this->velocityBoundaryConditions)
+    for (auto boundaryCondition : boundaryConditions[level].velocityBoundaryConditions)
     {
         size += uint(boundaryCondition->indices.size());
     }
@@ -274,7 +285,7 @@ uint LevelGridBuilder::getVelocitySize(int level) const
 void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : this->velocityBoundaryConditions)
+    for (auto boundaryCondition : boundaryConditions[level].velocityBoundaryConditions)
     {
         for(int i = 0; i < boundaryCondition->indices.size(); i++)
         {
@@ -291,7 +302,7 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
 uint LevelGridBuilder::getPressureSize(int level) const
 {
     uint size = 0;
-    for (auto boundaryCondition : this->pressureBoundaryConditions)
+    for (auto boundaryCondition : boundaryConditions[level].pressureBoundaryConditions)
     {
         size += uint(boundaryCondition->indices.size());
     }
@@ -301,7 +312,7 @@ uint LevelGridBuilder::getPressureSize(int level) const
 void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborIndices, int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : this->pressureBoundaryConditions)
+    for (auto boundaryCondition : boundaryConditions[level].pressureBoundaryConditions)
     {
         for (int i = 0; i < boundaryCondition->indices.size(); i++)
         {
@@ -319,7 +330,7 @@ void LevelGridBuilder::getPressureValues(real* rho, int* indices, int* neighborI
 void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : this->velocityBoundaryConditions)
+    for (auto boundaryCondition : boundaryConditions[level].velocityBoundaryConditions)
     {
         for (int i = 0; i < boundaryCondition->indices.size(); i++)
         {
@@ -339,7 +350,7 @@ void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
 void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
 {
     int allIndicesCounter = 0;
-    for (auto boundaryCondition : this->pressureBoundaryConditions)
+    for (auto boundaryCondition : boundaryConditions[level].pressureBoundaryConditions)
     {
         for (int i = 0; i < boundaryCondition->indices.size(); i++)
         {
@@ -358,44 +369,44 @@ void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
 
 uint LevelGridBuilder::getGeometrySize(int level) const
 {
-    if (geometryBoundaryCondition)
-        return geometryBoundaryCondition->indices.size();
+    if (boundaryConditions[level].geometryBoundaryCondition)
+        return  boundaryConditions[level].geometryBoundaryCondition->indices.size();
     
     return 0;
 }
 
 void LevelGridBuilder::getGeometryIndices(int* indices, int level) const
 {
-    for (uint i = 0; i < geometryBoundaryCondition->indices.size(); i++)
+    for (uint i = 0; i <  boundaryConditions[level].geometryBoundaryCondition->indices.size(); i++)
     {
-        indices[i] = grids[level]->getSparseIndex(geometryBoundaryCondition->indices[i]) + 1;
+        indices[i] = grids[level]->getSparseIndex(boundaryConditions[level].geometryBoundaryCondition->indices[i]) + 1;
     }
 }
 
 bool LevelGridBuilder::hasGeometryValues() const
 {
-    return geometryBoundaryCondition->hasValues;
+    return geometryHasValues;
 }
 
 
 void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level) const
 {
-    for (uint i = 0; i < geometryBoundaryCondition->indices.size(); i++)
+    for (uint i = 0; i < boundaryConditions[level].geometryBoundaryCondition->indices.size(); i++)
     {
-        vx[i] = geometryBoundaryCondition->vx;
-        vy[i] = geometryBoundaryCondition->vy;
-        vz[i] = geometryBoundaryCondition->vz;
+        vx[i] = boundaryConditions[level].geometryBoundaryCondition->vx;
+        vy[i] = boundaryConditions[level].geometryBoundaryCondition->vy;
+        vz[i] = boundaryConditions[level].geometryBoundaryCondition->vz;
     }
 }
 
 
 void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 {
-    for (int i = 0; i < geometryBoundaryCondition->indices.size(); i++)
+    for (int i = 0; i < boundaryConditions[level].geometryBoundaryCondition->indices.size(); i++)
     {
         for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
         {
-            qs[dir][i] = geometryBoundaryCondition->qs[i][dir];
+            qs[dir][i] = boundaryConditions[level].geometryBoundaryCondition->qs[i][dir];
         }
     }
 }
@@ -615,12 +626,12 @@ void LevelGridBuilder::writeArrows(std::string fileName) const
     std::vector<UbTupleInt2> cells;
 
     int actualNodeNumber = 0;
-    for (int index = 0; index < geometryBoundaryCondition->indices.size(); index++)
+    for (int index = 0; index < boundaryConditions[getNumberOfGridLevels() - 1].geometryBoundaryCondition->indices.size(); index++)
     {
-        Vertex startNode = getVertex(geometryBoundaryCondition->indices[index]);
+        Vertex startNode = getVertex(boundaryConditions[getNumberOfGridLevels() - 1].geometryBoundaryCondition->indices[index]);
         for (int qi = 0; qi <= 26; qi++)
         {
-            real qval = geometryBoundaryCondition->qs[index][qi];
+            real qval = boundaryConditions[getNumberOfGridLevels() - 1].geometryBoundaryCondition->qs[index][qi];
             if (qval > 0.0f)
             {
                 Vertex dir((real)grids[0]->getDirection()[qi * DIMENSION + 0], (real)grids[0]->getDirection()[qi* DIMENSION + 1], (real)grids[0]->getDirection()[qi * DIMENSION + 2]);

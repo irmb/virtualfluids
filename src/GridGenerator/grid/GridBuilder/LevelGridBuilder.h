@@ -28,6 +28,8 @@ class PressureBoundaryCondition;
 class GeometryBoundaryCondition;
 enum class SideType;
 
+
+
 class LevelGridBuilder : public GridBuilder
 {
 protected:
@@ -89,22 +91,25 @@ public:
     VF_PUBLIC void writeArrows(std::string fileName) const;
 
 protected:
-
-    std::vector<std::shared_ptr<Grid> > grids;
     std::vector<std::vector<std::vector<real> > > Qs;
     std::vector<std::string> channelBoundaryConditions;
 
-    std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
-    std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
-
-    std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
-
-    SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
 
 
+    struct BoundaryConditions
+    {
+        std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
+        std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 
+        std::vector<SPtr<VelocityBoundaryCondition> > noSlipBoundaryConditions;
 
-    //std::map<Side, BoundaryCondition> channelBoundaryConditionTypes;
+        SPtr<GeometryBoundaryCondition> geometryBoundaryCondition;
+    };
+    bool geometryHasValues = false;
+
+    std::vector<std::shared_ptr<Grid> > grids;
+    std::vector<BoundaryConditions> boundaryConditions;
+
 
     void checkLevel(int level);
 
@@ -126,7 +131,7 @@ public:
     VF_PUBLIC void getGridInformations(std::vector<int>& gridX, std::vector<int>& gridY,
                                        std::vector<int>& gridZ, std::vector<int>& distX, std::vector<int>& distY,
                                        std::vector<int>& distZ) override;
-    VF_PUBLIC uint getNumberOfGridLevels() override;
+    VF_PUBLIC uint getNumberOfGridLevels() const override;
 
     VF_PUBLIC uint getNumberOfNodesCF(int level) override;
     VF_PUBLIC uint getNumberOfNodesFC(int level) override;

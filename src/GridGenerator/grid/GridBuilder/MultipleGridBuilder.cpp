@@ -1,6 +1,7 @@
 #include "MultipleGridBuilder.h"
 
 #include <sstream>
+#include <vector>
 
 #include "utilities/math/Math.h"
 #include "../Grid.h"
@@ -13,7 +14,7 @@
 #include <grid/BoundaryConditions/Side.h>
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
-    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory)
+    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr)
 {
 
 }
@@ -25,6 +26,8 @@ SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> grid
 
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
+    boundaryConditions.push_back(BoundaryConditions());
+
     const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta);
     addGridToList(grid);
 }
@@ -32,8 +35,12 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
 void MultipleGridBuilder::addGeometry(Object* solidObject)
 {
     this->solidObject = solidObject;
-    this->geometryBoundaryCondition = GeometryBoundaryCondition::make();
-    this->geometryBoundaryCondition->side = SideFactory::make(SideType::GEOMETRY);
+
+    for(auto bcs : boundaryConditions)
+    {
+        bcs.geometryBoundaryCondition = GeometryBoundaryCondition::make();
+        bcs.geometryBoundaryCondition->side = SideFactory::make(SideType::GEOMETRY);
+    }
 }
 
 void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
@@ -50,6 +57,8 @@ void MultipleGridBuilder::addGeometry(Object* solidObject, uint level)
 
 void MultipleGridBuilder::addGrid(Object* gridShape)
 {
+    boundaryConditions.push_back(BoundaryConditions());
+
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
@@ -60,6 +69,8 @@ void MultipleGridBuilder::addGrid(Object* gridShape)
 
 void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
 {
+    boundaryConditions.push_back(BoundaryConditions());
+
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
@@ -255,7 +266,7 @@ void MultipleGridBuilder::buildGrids()
     for (auto grid : grids)
         grid->inital();
 
-    if (geometryBoundaryCondition)
+    if (solidObject)
     {
         grids[grids.size() - 1]->mesh(solidObject);
         grids[grids.size() - 1]->findQs(solidObject);
