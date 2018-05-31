@@ -114,24 +114,24 @@ void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     }
     else
     {
-        for (int i = 0; i < grid[level]->getSize(); i++)
-        {
-            real x, y, z;
-            grid[level]->transIndexToCoords(i, x, y, z);
+        //for (int i = 0; i < grid[level]->getSize(); i++)
+        //{
+        //    real x, y, z;
+        //    grid[level]->transIndexToCoords(i, x, y, z);
 
-            Vertex exactCoords(grid[level - 1]->getStartX(), grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0);
-            Vertex noodCoords = grid[level - 1]->getMaximumOnNode(exactCoords);
-            real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-            real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level - 1, grid[level - 1]->getStartX());
+        //    Vertex exactCoords(grid[level - 1]->getStartX(), grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0);
+        //    Vertex noodCoords = grid[level - 1]->getMaximumOnNode(exactCoords);
+        //    real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
+        //    real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level - 1, grid[level - 1]->getStartX());
 
-            if (x < startCoordCoarser && grid[level]->getFieldEntry(i) == FLUID)
-            {
-                grid[level]->setFieldEntry(i, boundaryCondition->getType());
-                boundaryCondition->indices.push_back(i);
-                setPressureNeighborIndices(boundaryCondition, grid[level], i);
-            }
+        //    if (x < startCoordCoarser && grid[level]->getFieldEntry(i) == FLUID)
+        //    {
+        //        grid[level]->setFieldEntry(i, boundaryCondition->getType());
+        //        boundaryCondition->indices.push_back(i);
+        //        setPressureNeighborIndices(boundaryCondition, grid[level], i);
+        //    }
 
-        }
+        //}
     }
 
 }
