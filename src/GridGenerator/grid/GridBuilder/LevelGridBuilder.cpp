@@ -30,7 +30,7 @@
 #include "grid/BoundaryConditions/BoundaryCondition.h"
 #include "grid/BoundaryConditions/Side.h"
 
-#include <basics/utilities/UbTuple.h>
+#include <GridGenerator/io/QLineWriter.h>
 
 
 #define GEOFLUID 19
@@ -39,13 +39,6 @@
 LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
 {
     this->Qs.resize(QFILES);
-    this->channelBoundaryConditions.resize(6);
-    channelBoundaryConditions[0] = "periodic";
-    channelBoundaryConditions[1] = "periodic";
-    channelBoundaryConditions[2] = "periodic";
-    channelBoundaryConditions[3] = "periodic";
-    channelBoundaryConditions[4] = "periodic";
-    channelBoundaryConditions[5] = "periodic";
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
@@ -219,11 +212,6 @@ int LevelGridBuilder::getBoundaryConditionSize(int rb) const
     return (int)Qs[rb].size();
 }
 
-std::vector<std::string> LevelGridBuilder::getTypeOfBoundaryConditions() const
-{
-    return this->channelBoundaryConditions;
-}
-
 
 std::shared_ptr<Grid> LevelGridBuilder::getGrid(int level, int box)
 {
@@ -239,7 +227,6 @@ void LevelGridBuilder::checkLevel(int level)
     }
 }
 
-
 void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level) const
 {
     nx = grids[level]->getNumberOfNodesX();
@@ -250,25 +237,6 @@ void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level)
 void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
 {
     grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, geo);
-}
-
-void LevelGridBuilder::setQs(real** q27, int* k, int channelSide, unsigned int level) const
-{
-    for (int index = 0; index < Qs[channelSide].size(); index++) {
-        k[index] = (int)Qs[channelSide][index][0];
-        for (int column = 1; column < Qs[channelSide][index].size(); column++) {
-            q27[column - 1][index] = Qs[channelSide][index][column];
-
-        }
-    }
-}
-
-void LevelGridBuilder::setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const
-{
-    for (int index = 0; index < Qs[channelSide].size(); index++) {
-        RhoBC[index] = 0.0;
-        kN[index] = 0;
-    }
 }
 
 
@@ -411,23 +379,6 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
     }
 }
 
-void LevelGridBuilder::setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const
-{
-    for (int index = 0; index < Qs[channelSide].size(); index++) {
-        vx[index] = 0.0;
-        vy[index] = 0.0;
-        vz[index] = 0.0;
-    }
-}
-
-void LevelGridBuilder::setPressValues(real* RhoBC, int* kN, int channelSide, int level) const
-{
-    for (int index = 0; index < Qs[channelSide].size(); index++) {
-        RhoBC[index] = 0.0;
-        kN[index] = 0;
-    }
-}
-
 
 void LevelGridBuilder::createBoundaryConditions()
 {
@@ -530,129 +481,7 @@ void LevelGridBuilder::fillRBForNode(int index, int direction, int directionSign
 
 
 
-
-
-#include <fstream>
-using namespace std;
-void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vector<UbTupleInt2> lines)
+void LevelGridBuilder::writeArrows(std::string fileName) const 
 {
-    string vtkfilename = filename + ".bin.vtu";
-
-    ofstream out(vtkfilename.c_str(), ios::out | ios::binary);
-
-    int nofNodes = (int)nodes.size();
-    int nofCells = (int)lines.size();
-
-    int bytesPerByteVal = 4; //==sizeof(int)
-    int bytesPoints = 3 /*x1/x2/x3        */ * nofNodes * sizeof(float);
-    int bytesCellConnectivty = 2 /*nodes per line */ * nofCells * sizeof(int);
-    int bytesCellOffsets = 1 /*offset per line */ * nofCells * sizeof(int);
-    int bytesCellTypes = 1 /*type of line */ * nofCells * sizeof(unsigned char);
-
-    int offset = 0;
-    //VTK FILE
-    out << "<?xml version=\"1.0\"?>\n";
-    out << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >" << "\n";
-    out << "   <UnstructuredGrid>" << "\n";
-    out << "      <Piece NumberOfPoints=\"" << nofNodes << "\" NumberOfCells=\"" << nofCells << "\">\n";
-
-    //POINTS SECTION
-    out << "         <Points>\n";
-    out << "            <DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"appended\" offset=\"" << offset << "\"  />\n";
-    out << "         </Points>\n";
-    offset += (bytesPerByteVal + bytesPoints);
-
-    //CELLS SECTION
-    out << "         <Cells>\n";
-    out << "            <DataArray type=\"Int32\" Name=\"connectivity\" format=\"appended\" offset=\"" << offset << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellConnectivty);
-    out << "            <DataArray type=\"Int32\" Name=\"offsets\" format=\"appended\" offset=\"" << offset << "\" />\n";
-    offset += (bytesPerByteVal + bytesCellOffsets);
-    out << "            <DataArray type=\"UInt8\" Name=\"types\" format=\"appended\" offset=\"" << offset << "\" />\n ";
-    offset += (bytesPerByteVal + bytesCellTypes);
-    out << "         </Cells>\n";
-
-    out << "      </Piece>\n";
-    out << "   </UnstructuredGrid>\n";
-
-    // AppendedData SECTION
-    out << "   <AppendedData encoding=\"raw\">\n";
-    out << "_";
-
-    //POINTS SECTION
-    out.write((char*)&bytesPoints, bytesPerByteVal);
-    for (int n = 0; n < nofNodes; n++)
-    {
-        out.write((char*)&val<1>(nodes[n]), sizeof(float));
-        out.write((char*)&val<2>(nodes[n]), sizeof(float));
-        out.write((char*)&val<3>(nodes[n]), sizeof(float));
-    }
-
-    //CELLS SECTION
-    //cellConnectivity
-    out.write((char*)&bytesCellConnectivty, bytesPerByteVal);
-    for (int c = 0; c < nofCells; c++)
-    {
-        out.write((char*)&val<1>(lines[c]), sizeof(int));
-        out.write((char*)&val<2>(lines[c]), sizeof(int));
-
-    }
-
-    //cellOffsets
-    out.write((char*)&bytesCellOffsets, bytesPerByteVal);
-    int itmp;
-    for (int c = 1; c <= nofCells; c++)
-    {
-        itmp = 2 * c;
-        out.write((char*)&itmp, sizeof(int));
-    }
-
-    //cellTypes
-    out.write((char*)&bytesCellTypes, bytesPerByteVal);
-    unsigned char vtkCellType = 3;
-    for (int c = 0; c < nofCells; c++)
-    {
-        out.write((char*)&vtkCellType, sizeof(unsigned char));
-    }
-    out << "\n</AppendedData>\n";
-    out << "</VTKFile>";
-    out << endl;
-    out.close();
+    QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[0]);
 }
-
-void LevelGridBuilder::writeArrows(std::string fileName) const
-{
-    std::vector<UbTupleFloat3> nodes;
-    std::vector<UbTupleInt2> cells;
-
-    int actualNodeNumber = 0;
-    for (int index = 0; index < boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition->indices.size(); index++)
-    {
-        Vertex startNode = getVertex(boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition->indices[index]);
-        for (int qi = 0; qi <= 26; qi++)
-        {
-            real qval = boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition->qs[index][qi];
-            if (qval > 0.0f)
-            {
-                Vertex dir((real)grids[0]->getDirection()[qi * DIMENSION + 0], (real)grids[0]->getDirection()[qi * DIMENSION + 1], (real)grids[0]->getDirection()[qi * DIMENSION + 2]);
-                Vertex nodeOnGeometry(startNode + (dir * qval));
-
-                nodes.push_back(makeUbTuple(float(startNode.x), float(startNode.y), float(startNode.z)));
-                nodes.push_back(makeUbTuple(float(nodeOnGeometry.x), float(nodeOnGeometry.y), float(nodeOnGeometry.z)));
-                actualNodeNumber += 2;
-                cells.push_back(makeUbTuple(actualNodeNumber - 2, actualNodeNumber - 1));
-            }
-        }
-    }
-
-    writeLines(fileName, nodes, cells);
-}
-
-
-Vertex LevelGridBuilder::getVertex(int matrixIndex) const
-{
-    real x, y, z;
-    this->grids[getNumberOfGridLevels() - 1]->transIndexToCoords(matrixIndex, x, y, z);
-    return Vertex(x,y,z);
-}
-

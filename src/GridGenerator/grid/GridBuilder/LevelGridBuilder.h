@@ -57,20 +57,11 @@ public:
     VF_PUBLIC virtual std::vector<std::vector<std::vector<real> > > getQsValues() const;
 
     VF_PUBLIC virtual int getBoundaryConditionSize(int rb) const;
-    VF_PUBLIC virtual std::vector<std::string> getTypeOfBoundaryConditions() const;
-
-    //VF_PUBLIC virtual void setInflowBoundaryCondition(BoundaryCondition boundaryCondition);
-    //VF_PUBLIC virtual void setOutflowBoundaryCondition(BoundaryCondition boundaryCondition);
-    //VF_PUBLIC virtual std::vector<BoundaryCondition> getTypeOfBoundaryCondition() const;
-
 
     VF_PUBLIC virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx,
                                          unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
     VF_PUBLIC virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
 
-    VF_PUBLIC virtual void setQs(real** q27, int* k, int channelSide, unsigned int level) const;
-    VF_PUBLIC virtual void setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const;
-    VF_PUBLIC virtual void setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const;
 
     VF_PUBLIC uint getVelocitySize(int level) const;
     VF_PUBLIC virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const;
@@ -86,15 +77,10 @@ public:
     VF_PUBLIC virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const;
 
 
-    VF_PUBLIC virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const;
-
     VF_PUBLIC void writeArrows(std::string fileName) const;
 
 protected:
     std::vector<std::vector<std::vector<real> > > Qs;
-    std::vector<std::string> channelBoundaryConditions;
-
-
 
     struct BoundaryConditions
     {

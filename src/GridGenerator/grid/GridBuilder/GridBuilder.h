@@ -49,14 +49,9 @@ public:
     virtual void createBoundaryConditions() = 0;
     virtual std::vector<std::vector<std::vector<real> > > getQsValues() const = 0;
     virtual int getBoundaryConditionSize(int rb) const = 0;
-    virtual std::vector<std::string> getTypeOfBoundaryConditions() const = 0;
     virtual unsigned int getNumberOfNodes(unsigned int level) const = 0;
     virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const = 0;
     virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const = 0;
-    virtual void setQs(real** q27, int* k, int channelSide, unsigned int level) const = 0;
-    virtual void setOutflowValues(real* RhoBC, int* kN, int channelSide, int level) const = 0;
-    virtual void setVelocityValues(real* vx, real* vy, real* vz, int channelSide, int level) const = 0;
-    virtual void setPressValues(real* RhoBC, int* kN, int channelSide, int level) const = 0;
     virtual uint getNumberOfNodesCF(int level) = 0;
     virtual uint getNumberOfNodesFC(int level) = 0;
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const = 0;

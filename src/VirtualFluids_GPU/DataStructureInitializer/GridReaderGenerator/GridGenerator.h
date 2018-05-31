@@ -40,31 +40,6 @@ public:
 
 	virtual void initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string way);
 	
-private:
-	void setPressureValues(int channelSide) const;
-	void setPressRhoBC(int sizePerLevel, int level, int channelSide) const;
-
-	void setVelocityValues(int channelSide) const;
-	void setVelocity(int level, int sizePerLevel, int channelSide) const;
-
-	void setOutflowValues(int channelSide) const;
-	void setOutflow(int level, int sizePerLevel, int channelSide) const;
-
-	void setPressQs(int channelSide) const;
-	void setVelocityQs(int channelSide) const;
-	void setOutflowQs(int channelSide) const;
-	void setNoSlipQs(int channelSide) const;
-	void setGeoQs() const;
-	void modifyQElement(int channelSide, unsigned int level) const;
-
-    void initalQStruct(QforBoundaryConditions& Q, int channelSide, unsigned int level) const;
-    void printQSize(std::string bc, int channelSide, unsigned int level) const;
-    void setSizeNoSlip(int channelSide, unsigned int level) const;
-    void setSizeGeoQs(unsigned int level) const;
-    void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
-    bool hasQs(int channelSide, unsigned int level) const;
-
-public:
     void initalGridInformations() override;
 
 

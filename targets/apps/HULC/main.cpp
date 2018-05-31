@@ -276,10 +276,9 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
 
-    gridBuilder->addCoarseGrid(-14, -14, -14, 14, 14, 14, 1.0);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/cubeBinaer1x1.stl");
-    gridBuilder->addGrid(new Cuboid(-4, -4, -4, 5, 5, 5), 2);
-
+    gridBuilder->addCoarseGrid(0, -25, -40, 100, 75, 60, 2.0);
+    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/circleBinaer.stl");
+    gridBuilder->addGrid(new Sphere(50,25,10,15), 2);
 
     gridBuilder->addGeometry(triangularMesh);
 
@@ -288,7 +287,7 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->buildGrids(); // buildGrids() has to be called before setting the BCs!!!!
 
-    gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
+    //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
     //gridBuilder->writeArrows("D:/arrows");
 
 
