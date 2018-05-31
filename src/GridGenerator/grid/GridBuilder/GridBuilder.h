@@ -56,9 +56,6 @@ public:
     virtual void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
     virtual void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
 
-
-
-
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;
     virtual uint getPressureSize(int level) const = 0;

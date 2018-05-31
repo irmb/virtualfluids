@@ -328,8 +328,6 @@ void MultipleGridBuilder::buildGrids()
 
 
     grids[grids.size() - 1]->findSparseIndices(nullptr);
-
-
 }
 
 

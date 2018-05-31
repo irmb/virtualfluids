@@ -141,7 +141,7 @@ HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
     return Cell(xCellStart, yCellStart, zCellStart, delta);
 }
 
-HOSTDEVICE void GridImp::findStopperNode(uint index)
+HOSTDEVICE void GridImp::findStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
 {
     if(isValidEndOfGridStopper(index))
         this->field.setFieldEntryToStopperEndOfGrid(index);
@@ -545,7 +545,6 @@ HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid)
 HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid)
 {
     gridInterface->findInterfaceCF(index, this, &finerGrid);
-
 }
 
 HOSTDEVICE void GridImp::findGridInterfaceFC(uint index, GridImp& finerGrid)
@@ -567,7 +566,7 @@ HOST void GridImp::mesh(Object* object)
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, SOLID, FLUID);
     else
-        gridStrategy->findInnerNodes(shared_from_this());
+        gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes
 
     gridStrategy->findStopperNodes(shared_from_this());
 }
@@ -613,7 +612,7 @@ HOSTDEVICE void GridImp::mesh(Triangle &triangle)
 
 
 
-HOST void GridImp::findQs(Object* object)
+HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive objects
 {
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
@@ -649,7 +648,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 const Vertex point(x, y, z);
 
-                if(hasNeighbor(index, STOPPER_GEOMETRY))
+                if(hasNeighbor(index, STOPPER_GEOMETRY)) //TODO: not working with thin walls
                 {
                     field.setFieldEntry(index, BC_GEOMETRY);
                     calculateQs(point, triangle);
