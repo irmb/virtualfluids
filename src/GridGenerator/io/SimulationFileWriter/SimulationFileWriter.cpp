@@ -41,9 +41,11 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
     const uint numberOfLevel = builder->getNumberOfGridLevels();
     openFiles();
     writeLevel(numberOfLevel);
+    auto qs = createBCVectors(builder->getGrid(0));
+
     for (uint level = 0; level < numberOfLevel; level++)
     {
-        writeLevelSize(builder->getNumberOfNodes(level), builder->getQsValues());
+        writeLevelSize(builder->getNumberOfNodes(level), qs);
         writeCoordFiles(builder, level, format);
 
         if (level < numberOfLevel - 1)
@@ -51,7 +53,7 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
             writeLevelSizeGridInterface(builder->getNumberOfNodesCF(level), builder->getNumberOfNodesFC(level));
             writeGridInterfaceToFile(builder, level);
         }
-        writeBoundaryQsFile(builder->getQsValues());
+        writeBoundaryQsFile(qs);
     }
     closeFiles();
 }
@@ -242,6 +244,97 @@ void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, st
     fineFile << "\n";
     offsetFile << "\n";
 }
+
+
+
+/*#################################################################################*/
+/*---------------------------------private methods---------------------------------*/
+/*---------------------------------------------------------------------------------*/
+std::vector<std::vector<std::vector<real> > > SimulationFileWriter::createBCVectors(SPtr<Grid> grid)
+{
+    std::vector<std::vector<std::vector<real> > > qs;
+    for (uint i = 0; i < grid->getSize(); i++)
+    {
+        real x, y, z;
+        grid->transIndexToCoords(grid->getSparseIndex(i), x, y, z);
+
+        if (grid->getFieldEntry(grid->getSparseIndex(i)) == Q) /*addShortQsToVector(i);*/ addQsToVector(i, qs, grid);
+        if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS, qs, grid);
+        if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS, qs, grid);
+
+        if (z == grid->getNumberOfNodesZ() - 2 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, 1, TOPQS, qs, grid);
+        if (z == 0 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, -1, BOTTOMQS, qs, grid);
+
+        if (y == 0 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, -1, FRONTQS, qs, grid);
+        if (y == grid->getNumberOfNodesY() - 2 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, 1, BACKQS, qs, grid);
+    }
+    return qs;
+}
+
+void SimulationFileWriter::addShortQsToVector(int index, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid)
+{
+    uint32_t qKey = 0;
+    std::vector<real> qNode;
+
+    for (int i = grid->getEndDirection(); i >= 0; i--)
+    {
+        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
+        real q = grid->getDistribution()[qIndex];
+        if (q > 0) {
+            //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
+            qKey += (uint32_t)pow(2, 26 - i);
+            qNode.push_back(q);
+        }
+    }
+    if (qKey > 0) {
+        real transportKey = *((real*)&qKey);
+        qNode.push_back(transportKey);
+        qNode.push_back((real)index);
+        qs[GEOMQS].push_back(qNode);
+    }
+    qNode.clear();
+}
+
+void SimulationFileWriter::addQsToVector(int index, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid)
+{
+    std::vector<real> qNode;
+    qNode.push_back((real)index);
+
+    for (int i = grid->getEndDirection(); i >= 0; i--)
+    {
+        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
+        real q = grid->getDistribution()[qIndex];
+        if (q > 0)
+            qNode.push_back(q);
+        else
+            qNode.push_back(-1);
+    }
+    qs[GEOMQS].push_back(qNode);
+    qNode.clear();
+}
+
+void SimulationFileWriter::fillRBForNode(int index, int direction, int directionSign, int rb, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid)
+{
+    uint32_t qKey = 0;
+    std::vector<real> qNode;
+
+    for (int i = grid->getEndDirection(); i >= 0; i--)
+    {
+        if (grid->getDirection()[i * DIMENSION + direction] != directionSign)
+            continue;
+
+        qKey += (uint32_t)pow(2, 26 - i);
+        qNode.push_back(0.5f);
+    }
+    if (qKey > 0) {
+        real transportKey = *((real*)&qKey);
+        qNode.push_back(transportKey);
+        qNode.push_back((real)index);
+        qs[rb].push_back(qNode);
+    }
+    qNode.clear();
+}
+
 
 void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles)
 {

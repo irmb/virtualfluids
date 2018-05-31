@@ -51,12 +51,9 @@ public:
 
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
-    VF_PUBLIC virtual void createBoundaryConditions();
 
     VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;;
-    VF_PUBLIC virtual std::vector<std::vector<std::vector<real> > > getQsValues() const;
 
-    VF_PUBLIC virtual int getBoundaryConditionSize(int rb) const;
 
     VF_PUBLIC virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx,
                                          unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
@@ -80,7 +77,7 @@ public:
     VF_PUBLIC void writeArrows(std::string fileName) const;
 
 protected:
-    std::vector<std::vector<std::vector<real> > > Qs;
+    
 
     struct BoundaryConditions
     {

@@ -38,7 +38,6 @@
 
 LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
 {
-    this->Qs.resize(QFILES);
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
@@ -200,16 +199,6 @@ void LevelGridBuilder::setOffsetCF(real * xOffFc, real * yOffFc, real * zOffFc, 
 uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {
     return grids[level]->getSparseSize();
-}
-
-std::vector<std::vector<std::vector<real> > > LevelGridBuilder::getQsValues() const
-{
-    return this->Qs;
-}
-
-int LevelGridBuilder::getBoundaryConditionSize(int rb) const
-{
-    return (int)Qs[rb].size();
 }
 
 
@@ -379,104 +368,6 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
     }
 }
 
-
-void LevelGridBuilder::createBoundaryConditions()
-{
-    this->createBCVectors();
-}
-
-/*#################################################################################*/
-/*---------------------------------private methods---------------------------------*/
-/*---------------------------------------------------------------------------------*/
-void LevelGridBuilder::createBCVectors()
-{
-    Grid* grid = grids[0].get();
-    for (uint i = 0; i < grid->getSize(); i++)
-    {
-        real x, y, z;
-        grid->transIndexToCoords(grid->getSparseIndex(i), x, y, z);
-
-        if (grid->getFieldEntry(grid->getSparseIndex(i)) == Q) /*addShortQsToVector(i);*/ addQsToVector(i);
-        if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS);
-        if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS);
-
-        if (z == grid->getNumberOfNodesZ() - 2 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, 1, TOPQS);
-        if (z == 0 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, -1, BOTTOMQS);
-
-        if (y == 0 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, -1, FRONTQS);
-        if (y == grid->getNumberOfNodesY() - 2 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, 1, BACKQS);
-    }
-}
-
-void LevelGridBuilder::addShortQsToVector(int index)
-{
-    uint32_t qKey = 0;
-    std::vector<real> qNode;
-
-    Grid* grid = grids[0].get();
-
-    for (int i = grid->getEndDirection(); i >= 0; i--)
-    {
-        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
-        real q = grid->getDistribution()[qIndex];
-        if (q > 0) {
-            //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
-            qKey += (uint32_t)pow(2, 26 - i);
-            qNode.push_back(q);
-        }
-    }
-    if (qKey > 0) {
-        real transportKey = *((real*)&qKey);
-        qNode.push_back(transportKey);
-        qNode.push_back((real)index);
-        Qs[GEOMQS].push_back(qNode);
-    }
-    qNode.clear();
-}
-
-void LevelGridBuilder::addQsToVector(int index)
-{
-    std::vector<real> qNode;
-    qNode.push_back((real)index);
-
-    Grid* grid = grids[0].get();
-
-    for (int i = grid->getEndDirection(); i >= 0; i--)
-    {
-        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
-        real q = grid->getDistribution()[qIndex];
-        if (q > 0)
-            qNode.push_back(q);
-        else
-            qNode.push_back(-1);
-    }
-    Qs[GEOMQS].push_back(qNode);
-    qNode.clear();
-}
-
-void LevelGridBuilder::fillRBForNode(int index, int direction, int directionSign, int rb)
-{
-    uint32_t qKey = 0;
-    std::vector<real> qNode;
-
-    Grid* grid = grids[0].get();
-
-    for (int i = grid->getEndDirection(); i >= 0; i--)
-    {
-        if (grid->getDirection()[i * DIMENSION + direction] != directionSign)
-            continue;
-
-        qKey += (uint32_t)pow(2, 26 - i);
-        qNode.push_back(0.5f);
-    }
-    if (qKey > 0) {
-        real transportKey = *((real*)&qKey);
-        qNode.push_back(transportKey);
-        qNode.push_back((real)index);
-        Qs[rb].push_back(qNode);
-    }
-    qNode.clear();
-}
 
 
 

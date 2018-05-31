@@ -5,12 +5,16 @@
 #include <vector>
 #include <fstream>
 #include <memory>
+#include <vector>
 
 #include <GridGenerator/global.h>
+#include <core/PointerDefinitions.h>
+#include <core/DataTypes.h>
 #include <core/NonCreatable.h>
 
 class UnstructuredGridBuilder;
 class GridBuilder;
+class Grid;
 
 enum class FILEFORMAT
 {
@@ -33,6 +37,10 @@ private:
     static void writeGridInterfaceToFile(SPtr<GridBuilder> builder, uint level);
     static void writeGridInterfaceToFile(uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine, std::ofstream& offsetFile);
     static void writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles);
+    static std::vector<std::vector<std::vector<real> > > createBCVectors(SPtr<Grid> grid);
+    static void addShortQsToVector(int index, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
+    static void addQsToVector(int index, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
+    static void fillRBForNode(int index, int direction, int directionSign, int rb, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
     static void writeBoundary(std::vector<real> boundary, int rb);
     static void closeFiles();
 

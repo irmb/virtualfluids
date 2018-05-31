@@ -46,9 +46,6 @@ public:
 
 	virtual SPtr<Grid> getGrid(uint level) = 0;
 
-    virtual void createBoundaryConditions() = 0;
-    virtual std::vector<std::vector<std::vector<real> > > getQsValues() const = 0;
-    virtual int getBoundaryConditionSize(int rb) const = 0;
     virtual unsigned int getNumberOfNodes(unsigned int level) const = 0;
     virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const = 0;
     virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const = 0;
