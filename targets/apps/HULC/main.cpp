@@ -24,17 +24,21 @@
 #include "io/SimulationFileWriter/SimulationFileWriter.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridBuilder/ParallelGridBuilder.h"
+
+#include "geometries/Sphere/Sphere.h"
+#include "geometries/VerticalCylinder/VerticalCylinder.h"
+#include "geometries/Cuboid/Cuboid.h"
 #include "geometries/TriangularMesh/TriangularMesh.h"
+#include "geometries/Conglomerate/Conglomerate.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
 #include "grid/GridFactory.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
 #include <grid/GridMocks.h>
 #include "grid/GridStrategy/GridStrategyMocks.h"
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
-#include "geometries/Conglomerate/Conglomerate.h"
 #include "io/STLReaderWriter/STLReader.h"
 #include "io/STLReaderWriter/STLWriter.h"
-#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 #include "Output/FileWriter.h"
 //#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
 
@@ -278,7 +282,8 @@ void multipleLevel(const std::string& configPath)
 
     gridBuilder->addCoarseGrid(0, -25, -40, 100, 75, 60, 2.0);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/circleBinaer.stl");
-    gridBuilder->addGrid(new Sphere(50,25,10,15), 2);
+    //gridBuilder->addGrid(new Sphere(50,25,10,15), 2);
+	gridBuilder->addGrid(new VerticalCylinder(50, 25, 10, 15, 15), 2);
 
     //gridBuilder->addGeometry(triangularMesh);
 
