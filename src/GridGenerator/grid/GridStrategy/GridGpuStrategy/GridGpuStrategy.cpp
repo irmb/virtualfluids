@@ -47,6 +47,16 @@ void GridGpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 
 }
 
+void GridGpuStrategy::findEndOfGridStopperNodes(SPtr<GridImp> grid)
+{
+
+}
+
+void GridGpuStrategy::findSolidStopperNodes(SPtr<GridImp> grid)
+{
+
+}
+
 void GridGpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "start meshing on GPU...\n";

@@ -96,6 +96,8 @@ public:
     bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void findStopperNode(uint index);
+	HOSTDEVICE void findEndOfGridStopperNode(uint index);
+	HOSTDEVICE void findSolidStopperNode(uint index);
 
     HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid);
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);

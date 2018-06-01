@@ -22,6 +22,8 @@ public:
 
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
     virtual void findStopperNodes(SPtr<GridImp> grid) = 0;
+	virtual void findEndOfGridStopperNodes(SPtr<GridImp> grid) = 0;
+	virtual void findSolidStopperNodes(SPtr<GridImp> grid) = 0;
 
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
 

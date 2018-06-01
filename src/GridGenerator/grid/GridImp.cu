@@ -77,7 +77,8 @@ HOST void GridImp::inital()
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
-    gridStrategy->findStopperNodes(shared_from_this());
+    //gridStrategy->findStopperNodes(shared_from_this());
+	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
@@ -150,6 +151,18 @@ HOSTDEVICE void GridImp::findStopperNode(uint index) // TODO: split method into 
         this->field.setFieldEntry(index, STOPPER_GEOMETRY);
 }
 
+HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
+{
+	if (isValidEndOfGridStopper(index))
+		this->field.setFieldEntryToStopperEndOfGrid(index);
+}
+
+HOSTDEVICE void GridImp::findSolidStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
+{
+	if (isValidInnerStopper(index))
+		this->field.setFieldEntry(index, STOPPER_GEOMETRY);
+}
+
 HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
 {
     Cell cell = getOddCellFromIndex(index);
@@ -198,14 +211,50 @@ HOSTDEVICE bool GridImp::isNode(uint index, char type) const
 
 HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 {
-    return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
-        || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+	// Lenz: also includes corner stopper nodes
+	if (!this->field.is(index, OUT_OF_GRID))
+		return false;
+
+	real x, y, z;
+	this->transIndexToCoords(index, x, y, z);
+	for (const auto dir : this->distribution) {
+		const int neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+
+		if (neighborIndex == -1) continue;
+
+		if (this->field.is(neighborIndex, FLUID) /*|| this->field.is(neighborIndex, FLUID_CFF)*/)
+			return true;
+	}
+
+	return false;
+
+	//previous version of Sören P.
+    //return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+    //    || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
 HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 {
-    return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
-        || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+	// Lenz: also includes corner stopper nodes
+	if (!this->field.is(index, SOLID))
+		return false;
+
+	real x, y, z;
+	this->transIndexToCoords(index, x, y, z);
+	for (const auto dir : this->distribution) {
+		const int neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+
+		if (neighborIndex == -1) continue;
+
+		if (this->field.is(neighborIndex, FLUID) /*|| this->field.is(neighborIndex, FLUID_CFF)*/)
+			return true;
+	}
+
+	return false;
+
+	//previous version of Sören P.
+	//return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+ //       || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
 HOSTDEVICE bool GridImp::hasNeighbor(uint index, char type) const
@@ -568,7 +617,8 @@ HOST void GridImp::mesh(Object* object)
     else
         gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes
 
-    gridStrategy->findStopperNodes(shared_from_this());
+	//gridStrategy->findStopperNodes(shared_from_this());
+	gridStrategy->findSolidStopperNodes(shared_from_this());
 }
 
 

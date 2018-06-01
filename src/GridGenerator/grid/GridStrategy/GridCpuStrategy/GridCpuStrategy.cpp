@@ -69,6 +69,20 @@ void GridCpuStrategy::findStopperNodes(SPtr<GridImp> grid)
         grid->findStopperNode(index);
 }
 
+void GridCpuStrategy::findEndOfGridStopperNodes(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+	for (uint index = 0; index < grid->size; index++)
+		grid->findEndOfGridStopperNode(index);
+}
+
+void GridCpuStrategy::findSolidStopperNodes(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+	for (uint index = 0; index < grid->size; index++)
+		grid->findSolidStopperNode(index);
+}
+
 void GridCpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 {
 #pragma omp parallel for

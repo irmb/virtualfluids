@@ -19,6 +19,8 @@ public:
     virtual void initalNodesToOutOfGrid(SPtr<GridImp> grid) override {}
     virtual void findInnerNodes(SPtr<GridImp> grid) override {}
     virtual void findStopperNodes(SPtr<GridImp> grid) override {}
+	void findEndOfGridStopperNodes(SPtr<GridImp> grid) override {}
+	void findSolidStopperNodes(SPtr<GridImp> grid) override {}
 
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override {}
 
