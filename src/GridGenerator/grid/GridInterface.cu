@@ -97,19 +97,14 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
     if (indexOnFineGridFC == -1)
         return;
 
-    const bool fineGridNodeIsFluid = fineGrid->getField().isFluid(indexOnFineGridFC);
-    //if (!fineGridNodeIsFluid)
-    //    return;
-
-
-    real x, y, z;
+	real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
     bool neighborBelongsToFineToCoarseInterpolationCell = false;
     for (const auto dir : coarseGrid->distribution)
     {
-        //if (dir[0] > 0 || dir[1] > 0 || dir[2] > 0)
-        //    continue;
+        //if (dir[0] > 0 || dir[1] > 0 || dir[2] > 0)  //only Esoteric Twist stopper, not perfectly implemented
+        //    continue;								   //should not be here, should be made conditional
 
         const int neighborIndex = coarseGrid->transCoordToIndex(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta());
         neighborBelongsToFineToCoarseInterpolationCell = coarseGrid->getField().isFineToCoarseNode(neighborIndex);
@@ -118,9 +113,11 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
             coarseGrid->getField().setFieldEntryToStopperOverlapGrid(indexOnCoarseGrid);
             break;
         }
-
     }
-    if(!neighborBelongsToFineToCoarseInterpolationCell && fineGrid->getField().isSolid(indexOnFineGridFC) || !neighborBelongsToFineToCoarseInterpolationCell && fineGrid->getField().isFluid(indexOnFineGridFC)) //should be inside of fine grid and can be deleted
+
+	//should be inside of fine grid and can be deleted
+    if(!neighborBelongsToFineToCoarseInterpolationCell && (fineGrid->getField().isSolid(indexOnFineGridFC) || 
+	                                                       fineGrid->getField().isFluid(indexOnFineGridFC)))
         coarseGrid->getField().setFieldEntryToInvalid(indexOnCoarseGrid);
 }
 
