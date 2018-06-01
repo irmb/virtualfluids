@@ -107,7 +107,7 @@ void MX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
         Vertex exactCoords(grid[level]->getStartX(), grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0);
         Vertex noodCoords = grid[level]->getMaximumOnNode(exactCoords);
         real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-        real startCoord = grid[level]->getFirstFluidNode(coords, level, grid[level]->getStartX());
+        real startCoord = grid[level]->getFirstFluidNode(coords, X_INDEX, grid[level]->getStartX());
 
         Side::addIndices(grid[level], boundaryCondition, "x", startCoord, startInner,
             endInner, startOuter, endOuter);
@@ -149,11 +149,11 @@ void PX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Vertex exactCoords(grid[level]->getEndX(), grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0);
     Vertex noodCoords = grid[level]->getMinimumOnNode(exactCoords);
     real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-    real startCoord = grid[level]->getLastFluidNode(coords, level, grid[level]->getEndX());
+    real startCoord = grid[level]->getLastFluidNode(coords, X_INDEX, grid[level]->getEndX());
 
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getEndX(), grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
-        real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, level - 1, grid[level - 1]->getEndX());
+        real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, X_INDEX, grid[level - 1]->getEndX());
         if (startCoord > startCoordCoarser)
             return;
     }
@@ -173,11 +173,11 @@ void MY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Vertex exactCoords(grid[level]->getStartY(), grid[level]->getStartX() + (grid[level]->getEndX() - grid[level]->getStartX()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0);
     Vertex noodCoords = grid[level]->getMaximumOnNode(exactCoords);
     real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-    real startCoord = grid[level]->getFirstFluidNode(coords, level, grid[level]->getStartY());
+    real startCoord = grid[level]->getFirstFluidNode(coords, Y_INDEX, grid[level]->getStartY());
 
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getStartY(), grid[level - 1]->getStartX() + (grid[level - 1]->getEndX() - grid[level - 1]->getStartX()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
-        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level - 1, grid[level - 1]->getStartY());
+        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, Y_INDEX, grid[level - 1]->getStartY());
         if (startCoord > startCoordCoarser)
             return;
     }
@@ -198,11 +198,11 @@ void PY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Vertex exactCoords(grid[level]->getEndY(), grid[level]->getStartX() + (grid[level]->getEndX() - grid[level]->getStartX()) / 2.0, grid[level]->getStartZ() + (grid[level]->getEndZ() - grid[level]->getStartZ()) / 2.0);
     Vertex noodCoords = grid[level]->getMinimumOnNode(exactCoords);
     real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-    real startCoord = grid[level]->getLastFluidNode(coords, level, grid[level]->getEndY());
+    real startCoord = grid[level]->getLastFluidNode(coords, Y_INDEX, grid[level]->getEndY());
 
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getEndY(), grid[level - 1]->getStartX() + (grid[level - 1]->getEndX() - grid[level - 1]->getStartX()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
-        real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, level - 1, grid[level - 1]->getEndY());
+        real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, Y_INDEX, grid[level - 1]->getEndY());
         if (startCoord > startCoordCoarser)
             return;
     }
@@ -223,11 +223,11 @@ void MZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Vertex exactCoords(grid[level]->getStartZ(), grid[level]->getStartX() + (grid[level]->getEndX() - grid[level]->getStartX()) / 2.0, grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0);
     Vertex noodCoords = grid[level]->getMaximumOnNode(exactCoords);
     real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-    real startCoord = grid[level]->getFirstFluidNode(coords, level, grid[level]->getStartZ());
+    real startCoord = grid[level]->getFirstFluidNode(coords, Z_INDEX, grid[level]->getStartZ());
 
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getStartZ(), grid[level - 1]->getStartX() + (grid[level - 1]->getEndX() - grid[level - 1]->getStartX()) / 2.0, grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0 };
-        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, level - 1, grid[level - 1]->getStartZ());
+        real startCoordCoarser = grid[level - 1]->getFirstFluidNode(coords, Z_INDEX, grid[level - 1]->getStartZ());
         if (startCoord > startCoordCoarser)
             return;
     }
@@ -247,11 +247,11 @@ void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     Vertex exactCoords(grid[level]->getEndZ(), grid[level]->getStartX() + (grid[level]->getEndX() - grid[level]->getStartX()) / 2.0, grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0);
     Vertex noodCoords = grid[level]->getMinimumOnNode(exactCoords);
     real coords[3] = { noodCoords.x, noodCoords.y, noodCoords.z };
-    real startCoord = grid[level]->getLastFluidNode(coords, level, grid[level]->getEndZ());
+    real startCoord = grid[level]->getLastFluidNode(coords, Z_INDEX, grid[level]->getEndZ());
 
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getEndZ(), grid[level - 1]->getStartX() + (grid[level - 1]->getEndX() - grid[level - 1]->getStartX()) / 2.0,  grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0 };
-        real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, level - 1, grid[level - 1]->getEndZ());
+        real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, Z_INDEX, grid[level - 1]->getEndZ());
         if (startCoord > startCoordCoarser)
             return;
     }

@@ -277,10 +277,10 @@ void multipleLevel(const std::string& configPath)
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
 
     gridBuilder->addCoarseGrid(0, -25, -40, 100, 75, 60, 2.0);
-    TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/circleBinaer.stl");
+    //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/circleBinaer.stl");
     gridBuilder->addGrid(new Sphere(50,25,10,15), 2);
 
-    gridBuilder->addGeometry(triangularMesh);
+    //gridBuilder->addGeometry(triangularMesh);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -291,7 +291,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->writeArrows("D:/arrows");
 
 
-    //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.001);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
@@ -301,7 +301,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
 
 
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
