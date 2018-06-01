@@ -576,159 +576,185 @@ void Simulation::run()
 		 //getLastCudaError("KernelCasSPKum27 execution failed");
 		 //////////////////////////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////////////////////////////
-		//Wale 
-		if (para->getUseWale())
-		{
-			//KernelWaleCumOneCompSP27(para->getParD(0)->numberofthreads,
-			//						 para->getParD(0)->omega,			
-			//						 para->getParD(0)->geoSP, 
-			//						 para->getParD(0)->neighborX_SP, 
-			//						 para->getParD(0)->neighborY_SP, 
-			//						 para->getParD(0)->neighborZ_SP,
-			//						 para->getParD(0)->neighborWSB_SP,
-			//					     para->getParD(0)->vx_SP,        
-			//					     para->getParD(0)->vy_SP,        
-			//					     para->getParD(0)->vz_SP,        
-			//						 para->getParD(0)->d0SP.f[0],
-			//						 para->getParD(0)->turbViscosity,
-			//						 para->getParD(0)->size_Mat_SP,
-			//						 para->getParD(0)->size_Array_SP,
-			//						 0,
-			//						 para->getForcesDev(),
-			//						 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
+		 //////////////////////////////////////////////////////////////////////////
+		 //Wale 
+if (para->getUseWale())
+{
+	//KernelWaleCumOneCompSP27(para->getParD(0)->numberofthreads,
+	//						 para->getParD(0)->omega,			
+	//						 para->getParD(0)->geoSP, 
+	//						 para->getParD(0)->neighborX_SP, 
+	//						 para->getParD(0)->neighborY_SP, 
+	//						 para->getParD(0)->neighborZ_SP,
+	//						 para->getParD(0)->neighborWSB_SP,
+	//					     para->getParD(0)->vx_SP,        
+	//					     para->getParD(0)->vy_SP,        
+	//					     para->getParD(0)->vz_SP,        
+	//						 para->getParD(0)->d0SP.f[0],
+	//						 para->getParD(0)->turbViscosity,
+	//						 para->getParD(0)->size_Mat_SP,
+	//						 para->getParD(0)->size_Array_SP,
+	//						 0,
+	//						 t,
+	//						 para->getForcesDev(),
+	//						 para->getParD(0)->evenOrOdd); 
+	//getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
 
-			//KernelWaleCumAA2016CompSP27(para->getParD(0)->numberofthreads,
-			//							para->getParD(0)->omega,			
-			//							para->getParD(0)->geoSP, 
-			//							para->getParD(0)->neighborX_SP, 
-			//							para->getParD(0)->neighborY_SP, 
-			//							para->getParD(0)->neighborZ_SP,
-			//							para->getParD(0)->neighborWSB_SP,
-			//							para->getParD(0)->vx_SP,        
-			//							para->getParD(0)->vy_SP,        
-			//							para->getParD(0)->vz_SP,        
-			//							para->getParD(0)->d0SP.f[0],
-			//							para->getParD(0)->turbViscosity,
-			//							para->getParD(0)->size_Mat_SP,
-			//							para->getParD(0)->size_Array_SP,
-			//							0,
-			//							para->getForcesDev(),
-			//							para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
+	KernelWaleCumAA2016CompSP27(para->getParD(0)->numberofthreads,
+								para->getParD(0)->omega,			
+								para->getParD(0)->geoSP, 
+								para->getParD(0)->neighborX_SP, 
+								para->getParD(0)->neighborY_SP, 
+								para->getParD(0)->neighborZ_SP,
+								para->getParD(0)->neighborWSB_SP,
+								para->getParD(0)->vx_SP,        
+								para->getParD(0)->vy_SP,        
+								para->getParD(0)->vz_SP,        
+								para->getParD(0)->d0SP.f[0],
+								para->getParD(0)->turbViscosity,
+								para->getParD(0)->size_Mat_SP,
+								para->getParD(0)->size_Array_SP,
+								0,
+								t,
+								para->getForcesDev(),
+								para->getParD(0)->evenOrOdd); 
+	getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
 
-			KernelWaleCumAA2016DebugCompSP27(
-				para->getParD(0)->numberofthreads,
-				para->getParD(0)->omega,			
-				para->getParD(0)->geoSP, 
-				para->getParD(0)->neighborX_SP, 
-				para->getParD(0)->neighborY_SP, 
-				para->getParD(0)->neighborZ_SP,
-				para->getParD(0)->neighborWSB_SP,
-				para->getParD(0)->vx_SP,        
-				para->getParD(0)->vy_SP,        
-				para->getParD(0)->vz_SP,        
-				para->getParD(0)->d0SP.f[0],
-				para->getParD(0)->turbViscosity,
-				para->getParD(0)->gSij,
-				para->getParD(0)->gSDij,
-				para->getParD(0)->gDxvx,
-				para->getParD(0)->gDyvx,
-				para->getParD(0)->gDzvx,
-				para->getParD(0)->gDxvy,
-				para->getParD(0)->gDyvy,
-				para->getParD(0)->gDzvy,
-				para->getParD(0)->gDxvz,
-				para->getParD(0)->gDyvz,
-				para->getParD(0)->gDzvz,
-				para->getParD(0)->size_Mat_SP,
-				para->getParD(0)->size_Array_SP,
-				0,
-				para->getForcesDev(),
-				para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelWaleCumAA2016DebugCompSP27 execution failed");
+	//KernelWaleCumAA2016DebugCompSP27(
+	//	para->getParD(0)->numberofthreads,
+	//	para->getParD(0)->omega,			
+	//	para->getParD(0)->geoSP, 
+	//	para->getParD(0)->neighborX_SP, 
+	//	para->getParD(0)->neighborY_SP, 
+	//	para->getParD(0)->neighborZ_SP,
+	//	para->getParD(0)->neighborWSB_SP,
+	//	para->getParD(0)->vx_SP,        
+	//	para->getParD(0)->vy_SP,        
+	//	para->getParD(0)->vz_SP,        
+	//	para->getParD(0)->d0SP.f[0],
+	//	para->getParD(0)->turbViscosity,
+	//	para->getParD(0)->gSij,
+	//	para->getParD(0)->gSDij,
+	//	para->getParD(0)->gDxvx,
+	//	para->getParD(0)->gDyvx,
+	//	para->getParD(0)->gDzvx,
+	//	para->getParD(0)->gDxvy,
+	//	para->getParD(0)->gDyvy,
+	//	para->getParD(0)->gDzvy,
+	//	para->getParD(0)->gDxvz,
+	//	para->getParD(0)->gDyvz,
+	//	para->getParD(0)->gDzvz,
+	//	para->getParD(0)->size_Mat_SP,
+	//	para->getParD(0)->size_Array_SP,
+	//	0,
+	//	para->getForcesDev(),
+	//	para->getParD(0)->evenOrOdd); 
+	//getLastCudaError("KernelWaleCumAA2016DebugCompSP27 execution failed");
 
-			//Wale by Soni Malav
-			//KernelWaleBySoniMalavCumOneCompSP27( para->getParD(0)->numberofthreads,
-			//									 para->getParD(0)->omega,			
-			//									 para->getParD(0)->geoSP, 
-			//									 para->getParD(0)->neighborX_SP, 
-			//									 para->getParD(0)->neighborY_SP, 
-			//									 para->getParD(0)->neighborZ_SP,
-			//									 para->getParD(0)->neighborWSB_SP,
-			//									 para->getParD(0)->vx_SP,        
-			//									 para->getParD(0)->vy_SP,        
-			//									 para->getParD(0)->vz_SP,        
-			//									 para->getParD(0)->d0SP.f[0],
-			//									 para->getParD(0)->turbViscosity,
-			//									 para->getParD(0)->size_Mat_SP,
-			//									 para->getParD(0)->size_Array_SP,
-			//									 0,
-			//									 para->getForcesDev(),
-			//									 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
+	//////Wale by Soni Malav
+	////One
+	//KernelWaleBySoniMalavCumOneCompSP27(
+	//	para->getParD(0)->numberofthreads,
+	//	para->getParD(0)->omega,
+	//	para->getParD(0)->geoSP,
+	//	para->getParD(0)->neighborX_SP,
+	//	para->getParD(0)->neighborY_SP,
+	//	para->getParD(0)->neighborZ_SP,
+	//	para->getParD(0)->neighborWSB_SP,
+	//	para->getParD(0)->vx_SP,
+	//	para->getParD(0)->vy_SP,
+	//	para->getParD(0)->vz_SP,
+	//	para->getParD(0)->d0SP.f[0],
+	//	para->getParD(0)->turbViscosity,
+	//	para->getParD(0)->size_Mat_SP,
+	//	para->getParD(0)->size_Array_SP,
+	//	0,
+	//	para->getForcesDev(),
+	//	para->getParD(0)->evenOrOdd);
+	//getLastCudaError("KernelWaleCumOneCompSP27 execution failed");
 
-		} 
-		else
-		{
-			//KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
-			//					 para->getParD(0)->omega,			
-			//					 para->getParD(0)->geoSP, 
-			//					 para->getParD(0)->neighborX_SP, 
-			//					 para->getParD(0)->neighborY_SP, 
-			//					 para->getParD(0)->neighborZ_SP,
-			//					 para->getParD(0)->d0SP.f[0],    
-			//					 para->getParD(0)->size_Mat_SP,
-			//					 para->getParD(0)->size_Array_SP,
-			//					 0,
-			//					 para->getForcesDev(),
-			//					 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelCasSPKum27 execution failed");
+	////AA2016
+	//KernelWaleBySoniMalavCumAA2016CompSP27(
+	//	para->getParD(0)->numberofthreads,
+	//	para->getParD(0)->omega,
+	//	para->getParD(0)->geoSP,
+	//	para->getParD(0)->neighborX_SP,
+	//	para->getParD(0)->neighborY_SP,
+	//	para->getParD(0)->neighborZ_SP,
+	//	para->getParD(0)->neighborWSB_SP,
+	//	para->getParD(0)->vx_SP,
+	//	para->getParD(0)->vy_SP,
+	//	para->getParD(0)->vz_SP,
+	//	para->getParD(0)->d0SP.f[0],
+	//	para->getParD(0)->turbViscosity,
+	//	para->getParD(0)->size_Mat_SP,
+	//	para->getParD(0)->size_Array_SP,
+	//	0,
+	//	para->getForcesDev(),
+	//	para->getParD(0)->evenOrOdd);
+	//getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
 
-			KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
-								 para->getParD(0)->omega, 
-								 para->getParD(0)->geoSP, 
-								 para->getParD(0)->neighborX_SP, 
-								 para->getParD(0)->neighborY_SP, 
-								 para->getParD(0)->neighborZ_SP,
-								 para->getParD(0)->d0SP.f[0],    
-								 para->getParD(0)->size_Mat_SP,
-								 0,
-								 para->getForcesDev(),
-								 para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+}
+else
+{
+	//KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
+	//					 para->getParD(0)->omega,			
+	//					 para->getParD(0)->geoSP, 
+	//					 para->getParD(0)->neighborX_SP, 
+	//					 para->getParD(0)->neighborY_SP, 
+	//					 para->getParD(0)->neighborZ_SP,
+	//					 para->getParD(0)->d0SP.f[0],    
+	//					 para->getParD(0)->size_Mat_SP,
+	//					 para->getParD(0)->size_Array_SP,
+	//					 0,
+	//					 para->getForcesDev(),
+	//					 para->getParD(0)->evenOrOdd); 
+	//getLastCudaError("KernelCasSPKum27 execution failed");
 
-			//KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
-			//						 para->getParD(0)->omega, 
-			//						 para->getParD(0)->geoSP, 
-			//						 para->getParD(0)->neighborX_SP, 
-			//						 para->getParD(0)->neighborY_SP, 
-			//						 para->getParD(0)->neighborZ_SP,
-			//						 para->getParD(0)->d0SP.f[0],    
-			//						 para->getParD(0)->size_Mat_SP,
-			//						 0,
-			//						 para->getForcesDev(),
-			//						 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelCumulantD3Q27All4 execution failed");
+	KernelKumAA2016CompSP27(
+		para->getParD(0)->numberofthreads,
+		para->getParD(0)->omega,
+		para->getParD(0)->geoSP,
+		para->getParD(0)->neighborX_SP,
+		para->getParD(0)->neighborY_SP,
+		para->getParD(0)->neighborZ_SP,
+		para->getParD(0)->d0SP.f[0],
+		para->getParD(0)->size_Mat_SP,
+		0,
+		para->getForcesDev(),
+		para->getParD(0)->evenOrOdd);
+	getLastCudaError("KernelKumAA2016CompSP27 execution failed");
 
-			//F3
-			//KernelCumulantD3Q27F3( para->getParD(0)->numberofthreads,
-			//					 para->getParD(0)->omega, 
-			//					 para->getParD(0)->geoSP, 
-			//					 para->getParD(0)->neighborX_SP, 
-			//					 para->getParD(0)->neighborY_SP, 
-			//					 para->getParD(0)->neighborZ_SP,
-			//					 para->getParD(0)->d0SP.f[0],    
-			//					 para->getParD(0)->g6.g[0],    
-			//					 para->getParD(0)->size_Mat_SP,
-			//					 0,
-			//					 para->getForcesDev(),
-			//					 para->getParD(0)->evenOrOdd); 
-			//getLastCudaError("KernelCumulantD3Q27F3 execution failed");
+	//KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
+	//						 para->getParD(0)->omega, 
+	//						 para->getParD(0)->geoSP, 
+	//						 para->getParD(0)->neighborX_SP, 
+	//						 para->getParD(0)->neighborY_SP, 
+	//						 para->getParD(0)->neighborZ_SP,
+	//						 para->getParD(0)->d0SP.f[0],    
+	//						 para->getParD(0)->size_Mat_SP,
+	//						 0,
+	//						 para->getForcesDev(),
+	//						 para->getParD(0)->evenOrOdd); 
+	//getLastCudaError("KernelCumulantD3Q27All4 execution failed");
 
-		}
-		//////////////////////////////////////////////////////////////////////////
+	//F3
+	//KernelCumulantD3Q27F3( para->getParD(0)->numberofthreads,
+	//					 para->getParD(0)->omega, 
+	//					 para->getParD(0)->geoSP, 
+	//					 para->getParD(0)->neighborX_SP, 
+	//					 para->getParD(0)->neighborY_SP, 
+	//					 para->getParD(0)->neighborZ_SP,
+	//					 para->getParD(0)->d0SP.f[0],    
+	//					 para->getParD(0)->g6.g[0],    
+	//					 para->getParD(0)->size_Mat_SP,
+	//					 0,
+	//					 para->getForcesDev(),
+	//					 para->getParD(0)->evenOrOdd); 
+	//getLastCudaError("KernelCumulantD3Q27F3 execution failed");
+
+}
+//////////////////////////////////////////////////////////////////////////
 
 
 		////////////////////////////////////////////////////////////////////////////

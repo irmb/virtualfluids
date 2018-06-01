@@ -1,6 +1,6 @@
 macro(linkBoost targetName components)
   if(BUILD_SHARED_LIBS)
-     set(Boost_USE_STATIC_LIBS OFF)
+     set(Boost_USE_STATIC_LIBS ON)
 	 set(Boost_USE_STATIC_RUNTIME OFF)
   else()
 	 set(Boost_USE_STATIC_LIBS ON)
