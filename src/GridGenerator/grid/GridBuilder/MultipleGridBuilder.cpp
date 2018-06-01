@@ -168,10 +168,27 @@ real MultipleGridBuilder::calculateDelta(uint level) const
 
 std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level) const
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                                                     |
+    //                                                     |
+    // Level 2:                                           2   2   2   2   2   2   2   2   2   2   2   2
+    // Level 1:                     1       1       1       1       1       1       1       1       1
+    // Level 0:         0               0               0               0               0               0      
+    //                                                     |
+    //                               (coarse) outside      |      inside (fine)
+    //                                                     |
+    //  Step  1) ------>x                                  |
+    //  Step  2)         -------------->x-------------->x-------------->x
+    //  Step  3)                                                  x<----   
+    //  Step  4)                                          x<------       
+    //
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	const real deltaCoarse = this->grids[0]->getDelta();
 
 	std::array<real, 6> staggeredCoordinates;
 
+	//Step 1
 	staggeredCoordinates[0] = this->grids[0]->getStartX();
 	staggeredCoordinates[1] = this->grids[0]->getStartY();
 	staggeredCoordinates[2] = this->grids[0]->getStartZ();
@@ -179,6 +196,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	staggeredCoordinates[4] = this->grids[0]->getEndY();
 	staggeredCoordinates[5] = this->grids[0]->getEndZ();
 
+	//Step 2
 	while (staggeredCoordinates[0] < gridShape->getX1Minimum()) staggeredCoordinates[0] += deltaCoarse;
 	while (staggeredCoordinates[1] < gridShape->getX2Minimum()) staggeredCoordinates[1] += deltaCoarse;
 	while (staggeredCoordinates[2] < gridShape->getX3Minimum()) staggeredCoordinates[2] += deltaCoarse;
@@ -186,8 +204,8 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	while (staggeredCoordinates[4] > gridShape->getX2Maximum()) staggeredCoordinates[4] -= deltaCoarse;
 	while (staggeredCoordinates[5] > gridShape->getX3Maximum()) staggeredCoordinates[5] -= deltaCoarse;
 
+	//Step 3
 	real offset = 0.0;
-
 	for (int i = 0; i < level; i++)
 		offset += 0.25 * pow(0.5, i) * deltaCoarse;
 
@@ -198,6 +216,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	staggeredCoordinates[4] += offset;
 	staggeredCoordinates[5] += offset;
 
+	//Step 4
 	while (staggeredCoordinates[0] > gridShape->getX1Minimum()) staggeredCoordinates[0] -= deltaCoarse * pow(0.5, level - 1);
 	while (staggeredCoordinates[1] > gridShape->getX2Minimum()) staggeredCoordinates[1] -= deltaCoarse * pow(0.5, level - 1);
 	while (staggeredCoordinates[2] > gridShape->getX3Minimum()) staggeredCoordinates[2] -= deltaCoarse * pow(0.5, level - 1);
