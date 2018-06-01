@@ -823,17 +823,20 @@ HOSTDEVICE real GridImp::getMaximumOnNodes(const real& maxExact, const real& dec
 
 HOSTDEVICE int GridImp::getXIndex(real x) const
 {
-    return int((x - startX) / delta);
+    //return lround((x - startX) / delta);
+	return int((x - startX) / delta);
 }
 
 HOSTDEVICE int GridImp::getYIndex(real y) const
 {
-    return int((y - startY) / delta);
+    //return lround((y - startY) / delta);
+	return int((y - startY) / delta);
 }
 
 HOSTDEVICE int GridImp::getZIndex(real z) const
 {
-    return int((z - startZ) / delta);
+	//return lround((z - startZ) / delta);
+	return int((z - startZ) / delta);
 }
 
 HOSTDEVICE real GridImp::getDelta() const
