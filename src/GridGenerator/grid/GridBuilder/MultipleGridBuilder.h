@@ -6,8 +6,9 @@
 #include <vector>
 #include <array>
 
-#include "LevelGridBuilder.h"
+#include "core/LbmOrGks.h"
 
+#include "LevelGridBuilder.h"
 
 #include "../GridFactory.h"
 
@@ -41,7 +42,7 @@ public:
     VF_PUBLIC real getEndZ(uint level) const;
 
     VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
-    VF_PUBLIC void buildGrids();
+    VF_PUBLIC void buildGrids(LbmOrGks lbmOrGks);
 
     VF_PUBLIC void writeGridsToVtk(const std::string& path) const;
 

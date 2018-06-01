@@ -2,6 +2,9 @@
 #define GRID_H
 
 #include "GridGenerator/global.h"
+
+#include "core/LbmOrGks.h"
+
 #include "Cell.h"
 #include "geometries/Vertex/Vertex.h"
 
@@ -67,7 +70,7 @@ public:
 
     HOST virtual void inital() = 0;
 
-    HOST virtual void findGridInterface(SPtr<Grid> grid) = 0;
+    HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
 
     HOST virtual void mesh(TriangularMesh& geometry) = 0;
     HOST virtual void mesh(Object* object) = 0;

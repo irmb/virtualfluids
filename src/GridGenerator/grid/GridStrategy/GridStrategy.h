@@ -3,6 +3,7 @@
 
 #include <VirtualFluidsDefinitions.h>
 #include "core/PointerDefinitions.h"
+#include "core/LbmOrGks.h"
 #include "grid/Field.h"
 
 struct Vertex;
@@ -29,7 +30,7 @@ public:
 
     virtual void findQs(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
 
-    virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) = 0;
+    virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid, LbmOrGks lbmOrGks) = 0;
 
     virtual void findSparseIndices(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid) = 0;
 

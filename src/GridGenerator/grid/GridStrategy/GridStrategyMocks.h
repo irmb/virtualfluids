@@ -24,7 +24,7 @@ public:
 
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override {}
 
-    virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid) override {}
+    virtual void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> finerGrid, LbmOrGks lbmOrGks) override {}
 
 
     virtual void freeMemory(SPtr<GridImp> grid) override {}

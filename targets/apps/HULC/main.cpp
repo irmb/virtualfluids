@@ -9,6 +9,8 @@
 #include <string>
 #include <iostream>
 
+#include "core/LbmOrGks.h"
+
 #include "LBM/Simulation.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
@@ -274,29 +276,55 @@ void multipleLevel(const std::string& configPath)
     ////TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/quadarBinaer.stl", DiscretizationMethod::POINT_IN_OBJECT);
 
 
+	//////////////////////////////////////////////////////////////////////////
+	// Test int cast
+	real L = 2.2;
+	real H = 0.41;
+
+	uint nx = 440;
+
+	real dx = L / real(nx);
+
+	real startX = -0.5*dx;
+	real startY = -0.5*dx;
+
+	real endX = round(L / dx)*dx + 0.5 * dx;
+	real endY = round(H / dx)*dx + 0.5 * dx;
+
+	real startZ = -10.0*dx;
+	real endZ = 10.0*dx;
+
+	gridBuilder->addCoarseGrid(startX, startY, startZ, endX, endY, endZ, dx);
+
+	Object* refCyln = new VerticalCylinder(0.20, 0.20, 0, 0.05, 8.0*dx);
+
+	gridBuilder->addGrid(refCyln, 2);
+	//////////////////////////////////////////////////////////////////////////
 
     //gridBuilder->addGrid(new Cuboid(-10, -8, -8, 50, 22, 22), 1);
 
     //gridBuilder->addCoarseGrid(-16, -14, -14, 59, 28, 29, 1.0);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/input/local_input/bruecke.stl");
 
-    gridBuilder->addCoarseGrid(0, -25, -40, 100, 75, 60, 2.0);
+    //gridBuilder->addCoarseGrid(0, -25, -40, 100, 75, 60, 2.0);
     //TriangularMesh* triangularMesh = TriangularMesh::make("D:/GRIDGENERATION/STL/circleBinaer.stl");
     //gridBuilder->addGrid(new Sphere(50,25,10,15), 2);
-	gridBuilder->addGrid(new VerticalCylinder(50, 25, 10, 15, 15), 2);
+	//gridBuilder->addGrid(new VerticalCylinder(50, 25, 10, 15, 15), 2);
 
     //gridBuilder->addGeometry(triangularMesh);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
 
-    gridBuilder->buildGrids(); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(LBM); // buildGrids() has to be called before setting the BCs!!!!
 
     //gridBuilder->writeGridsToVtk("D:/GRIDGENERATION/");
-    //gridBuilder->writeArrows("D:/arrows");
+	//gridBuilder->writeArrows("D:/arrows");
 
-
-    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/gridTest_level_");
+	//return;
+    
+	gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
@@ -334,7 +362,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
 
-    //gridBuilder->writeGridToVTK("D:/GRIDGENERATION/gridTest_level_2", 2);
+    gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/gridTest_level_");
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 

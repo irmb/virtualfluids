@@ -27,7 +27,7 @@ public:
     void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
     void findQs(SPtr<GridImp> grid, TriangularMesh &geom) override;
 
-    void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid) override;
+    void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid, LbmOrGks lbmOrGks) override;
 
     void freeMemory(SPtr<GridImp> grid) override;
 

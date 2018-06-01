@@ -49,6 +49,29 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
     }
 }
 
+void GridInterface::findInterfaceCF_GKS(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+{
+	const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
+	if (!nodeOnCoarseGridIsFluid)
+		return;
+
+	real x, y, z;
+	coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+	for (const auto dir : coarseGrid->distribution)
+	{
+		const uint indexOnFineGrid = fineGrid->transCoordToIndex(x + 0.25 * dir[0] * coarseGrid->getDelta(),
+																 y + 0.25 * dir[1] * coarseGrid->getDelta(),
+																 z + 0.25 * dir[2] * coarseGrid->getDelta());
+
+		if (indexOnFineGrid != -1 && fineGrid->getField().is(indexOnFineGrid, STOPPER_END_OF_GRID)) 
+		{
+			coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, FLUID_CFC);
+			break;
+		}
+	}
+}
+
 void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
     const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);

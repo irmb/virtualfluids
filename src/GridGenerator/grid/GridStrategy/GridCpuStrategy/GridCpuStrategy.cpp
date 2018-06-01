@@ -98,7 +98,7 @@ void GridCpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
 }
 
 
-void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid)
+void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid, LbmOrGks lbmOrGks)
 {
     const auto coarseLevel = grid->getLevel(1.0);
     const auto fineLevel = fineGrid->getLevel(1.0);
@@ -115,7 +115,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     grid->gridInterface->fc.fine = new uint[sizeCF];
 
     for (uint index = 0; index < grid->getSize(); index++)
-        grid->findGridInterfaceCF(index, *fineGrid);
+        grid->findGridInterfaceCF(index, *fineGrid, lbmOrGks);
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);

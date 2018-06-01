@@ -323,7 +323,7 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
     return this->grids;
 }
 
-void MultipleGridBuilder::buildGrids()
+void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
 {
     for (auto grid : grids)
         grid->inital();
@@ -336,14 +336,14 @@ void MultipleGridBuilder::buildGrids()
 
 
     for (size_t i = 0; i < grids.size() - 1; i++)
-        grids[i]->findGridInterface(grids[i + 1]);
+        grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
+	if (lbmOrGks == LBM) {
+		for (size_t i = 0; i < grids.size() - 1; i++)
+			grids[i]->findSparseIndices(grids[i + 1]);
 
-    for (size_t i = 0; i < grids.size() - 1; i++)
-        grids[i]->findSparseIndices(grids[i + 1]);
-
-
-    grids[grids.size() - 1]->findSparseIndices(nullptr);
+		grids[grids.size() - 1]->findSparseIndices(nullptr);
+	}
 }
 
 

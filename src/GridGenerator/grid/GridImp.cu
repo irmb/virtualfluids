@@ -586,14 +586,17 @@ HOSTDEVICE int GridImp::getSparseIndex(const real &x, const real &y, const real 
 // --------------------------------------------------------- //
 //                    Find Interface                         //
 // --------------------------------------------------------- //
-HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid)
+HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
 {
-    gridStrategy->findGridInterface(shared_from_this(), std::static_pointer_cast<GridImp>(finerGrid));
+    gridStrategy->findGridInterface(shared_from_this(), std::static_pointer_cast<GridImp>(finerGrid), lbmOrGks);
 }
 
-HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid)
+HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks)
 {
-    gridInterface->findInterfaceCF(index, this, &finerGrid);
+	if(lbmOrGks == LBM)
+		gridInterface->findInterfaceCF(index, this, &finerGrid);
+	else if (lbmOrGks == GKS)
+		gridInterface->findInterfaceCF_GKS(index, this, &finerGrid);
 }
 
 HOSTDEVICE void GridImp::findGridInterfaceFC(uint index, GridImp& finerGrid)

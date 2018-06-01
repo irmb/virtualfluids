@@ -4,6 +4,8 @@
 #include "GridGenerator/global.h"
 #include "distributions/Distribution.h"
 
+#include "core/LbmOrGks.h"
+
 #include "Grid.h"
 #include "Cell.h"
 #include "Field.h"
@@ -80,7 +82,7 @@ public:
     HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const override;
     HOSTDEVICE void transIndexToCoords(int index, real &x, real &y, real &z) const override;
 
-    HOST void findGridInterface(SPtr<Grid> grid) override;
+    HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
     HOST void freeMemory() override;
 
     HOST uint getLevel(real levelNull) const;
@@ -99,7 +101,7 @@ public:
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
 	HOSTDEVICE void findSolidStopperNode(uint index);
 
-    HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks);
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
     HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
 

@@ -91,7 +91,7 @@ TEST(MultipleGridBuilderTest, everyExceptTheFinestGrid_shouldHaveAGridInterface)
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
     gridBuilder->addGrid(new Cuboid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0), 2);
 
-    gridBuilder->buildGrids();
+    gridBuilder->buildGrids(LBM);
 
     auto grid0 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(0));
     auto grid1 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(1));
@@ -110,7 +110,7 @@ TEST(MultipleGridBuilderTest, afterCreatingGridInterface_FineGridsShouldNotBeHav
     gridBuilder->addCoarseGrid(0.0, 0.0, 0.0, 15.0, 15.0, 15.0, 1.0);
     gridBuilder->addGrid(new Cuboid(7.0, 7.0, 7.0, 10.0, 10.0, 10.0), 2);
 
-    gridBuilder->buildGrids();
+    gridBuilder->buildGrids(LBM);
 
     auto grid1 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(1));
     auto grid2 = std::dynamic_pointer_cast<GridSpy>(gridBuilder->getGrid(2));

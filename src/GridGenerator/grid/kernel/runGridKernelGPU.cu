@@ -83,9 +83,10 @@ float runKernelSetOverlapNodesToInvalid(const LaunchParameter& para, GridImp &gr
 
 GLOBAL void setOverlapNodesToInvalid(GridImp grid, GridImp finerGrid)
 {
-    const uint index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.getSize())
-        grid.findGridInterfaceCF(index, finerGrid);
+	// not up to date
+    //const uint index = LaunchParameter::getGlobalIdx_2D_1D();
+    //if (index < grid.getSize())
+        //grid.findGridInterfaceCF(index, finerGrid);
 }
 
 
@@ -168,9 +169,10 @@ float runKernelToFindGridInterface(const LaunchParameter& para, GridImp &grid, G
 
 GLOBAL void findGridInterface(GridImp grid, GridImp finerGrid)
 {
-    uint index = LaunchParameter::getGlobalIdx_2D_1D();
-    if (index < grid.getSize())
-        grid.findGridInterfaceCF(index, finerGrid);
+	// not up to date
+    //uint index = LaunchParameter::getGlobalIdx_2D_1D();
+    //if (index < grid.getSize())
+    //    grid.findGridInterfaceCF(index, finerGrid);
 }
 /*#################################################################################*/
 
