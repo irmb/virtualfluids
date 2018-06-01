@@ -25,68 +25,142 @@ void GridVTKWriter::writeSparseGridToVTK(SPtr<Grid> grid, const std::string& nam
 
 void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
 {
-    std::vector<UbTupleFloat3> nodes;
-    std::vector<UbTupleUInt8> cells;
-    std::vector<std::string> nodedatanames;
-    std::vector< std::vector<double> > nodedata;
+	std::vector<UbTupleFloat3> nodes;
+	std::vector<UbTupleUInt8> cells;
+	std::vector<std::string> nodedatanames;
+	std::vector< std::vector<double> > nodedata;
 
-    nodedatanames.push_back("types");
+	nodedatanames.push_back("types");
 
+	nodedata.resize(nodedatanames.size());
 
-    nodedata.resize(nodedatanames.size());
+	CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
+	int nr = 0;
 
-    CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
-    int nr = 0;
+	for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX(); xIndex++)
+	{
+		for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY(); yIndex++)
+		{
+			for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ(); zIndex++)
+			{
+				real x, y, z;
+				uint index = grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
+					+ grid->getNumberOfNodesX() *                             yIndex
+					+ xIndex;
 
-    for (real x = grid->getStartX(); x <= grid->getEndX(); x += grid->getDelta())
-    {
-        for (real y = grid->getStartY(); y <= grid->getEndY(); y += grid->getDelta())
-        {
-            for (real z = grid->getStartZ(); z <= grid->getEndZ(); z += grid->getDelta())
-            {
-                const auto xTranslate = int((x - grid->getStartX()) / grid->getDelta());
-                const auto yTranslate = int((y - grid->getStartY()) / grid->getDelta());
-                const auto zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
-                nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
-                nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
+				grid->transIndexToCoords(index, x, y, z);
 
-                const char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
-                nodedata[0].push_back(type);
-            }
-        }
-    }
+				nodeNumbers(xIndex, yIndex, zIndex) = nr++;
+				nodes.push_back(UbTupleFloat3(float(x), float(y), float(z)));
 
-    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
-    for (real x = grid->getStartX(); x < grid->getEndX(); x += grid->getDelta())
-    {
-        for (real y = grid->getStartY(); y < grid->getEndY(); y += grid->getDelta())
-        {
-            for (real z = grid->getStartZ(); z < grid->getEndZ(); z += grid->getDelta())
-            {
-                const auto xTranslate = int((x - grid->getStartX()) / grid->getDelta());
-                const auto yTranslate = int((y - grid->getStartY()) / grid->getDelta());
-                const auto zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
+				const char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
+				nodedata[0].push_back(type);
+			}
+		}
+	}
 
-                if ((SWB = nodeNumbers(xTranslate, yTranslate, zTranslate)) >= 0
-                    && (SEB = nodeNumbers(xTranslate + 1, yTranslate, zTranslate)) >= 0
-                    && (NEB = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate)) >= 0
-                    && (NWB = nodeNumbers(xTranslate, yTranslate + 1, zTranslate)) >= 0
-                    && (SWT = nodeNumbers(xTranslate, yTranslate, zTranslate + 1)) >= 0
-                    && (SET = nodeNumbers(xTranslate + 1, yTranslate, zTranslate + 1)) >= 0
-                    && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
-                    && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
-                {
-                    Cell cell(x, y, z, grid->getDelta());
-                    if(grid->nodeInCellIs(cell, OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_NODE))
-                        continue;
+	int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+	for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX() - 1; xIndex++)
+	{
+		for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY() - 1; yIndex++)
+		{
+			for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ() - 1; zIndex++)
+			{
+				real x, y, z;
+				uint index = grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
+					+ grid->getNumberOfNodesX() *                             yIndex
+					+ xIndex;
 
-                    cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
-                }
-            }
-        }
-    }
-    WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name, nodes, cells, nodedatanames, nodedata);
+				grid->transIndexToCoords(index, x, y, z);
+
+				if ((SWB = nodeNumbers(xIndex, yIndex, zIndex)) >= 0
+					&& (SEB = nodeNumbers(xIndex + 1, yIndex, zIndex)) >= 0
+					&& (NEB = nodeNumbers(xIndex + 1, yIndex + 1, zIndex)) >= 0
+					&& (NWB = nodeNumbers(xIndex, yIndex + 1, zIndex)) >= 0
+					&& (SWT = nodeNumbers(xIndex, yIndex, zIndex + 1)) >= 0
+					&& (SET = nodeNumbers(xIndex + 1, yIndex, zIndex + 1)) >= 0
+					&& (NET = nodeNumbers(xIndex + 1, yIndex + 1, zIndex + 1)) >= 0
+					&& (NWT = nodeNumbers(xIndex, yIndex + 1, zIndex + 1)) >= 0)
+				{
+					Cell cell(x, y, z, grid->getDelta());
+					if (grid->nodeInCellIs(cell, OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_NODE))
+						continue;
+
+					cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
+				}
+			}
+		}
+	}
+	WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name, nodes, cells, nodedatanames, nodedata);
 }
+//deprecated
+//void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
+//{
+//    std::vector<UbTupleFloat3> nodes;
+//    std::vector<UbTupleUInt8> cells;
+//    std::vector<std::string> nodedatanames;
+//    std::vector< std::vector<double> > nodedata;
+//
+//    nodedatanames.push_back("types");
+//
+//
+//    nodedata.resize(nodedatanames.size());
+//
+//    CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
+//    int nr = 0;
+//
+//    for (real x = grid->getStartX(); x <= grid->getEndX(); x += grid->getDelta())
+//    {
+//        for (real y = grid->getStartY(); y <= grid->getEndY(); y += grid->getDelta())
+//        {
+//            for (real z = grid->getStartZ(); z <= grid->getEndZ(); z += grid->getDelta())
+//            {
+//                const auto xTranslate = int((x - grid->getStartX()) / grid->getDelta());
+//                const auto yTranslate = int((y - grid->getStartY()) / grid->getDelta());
+//                const auto zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
+//                nodeNumbers(xTranslate, yTranslate, zTranslate) = nr++;
+//                nodes.push_back(UbTupleFloat3(float(x), float(y),float(z)));
+//
+//                const char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
+//                nodedata[0].push_back(type);
+//            }
+//        }
+//    }
+//
+//    int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+//    for (real x = grid->getStartX(); x < grid->getEndX(); x += grid->getDelta())
+//    {
+//        for (real y = grid->getStartY(); y < grid->getEndY(); y += grid->getDelta())
+//        {
+//            for (real z = grid->getStartZ(); z < grid->getEndZ(); z += grid->getDelta())
+//            {
+//                const auto xTranslate = int((x - grid->getStartX()) / grid->getDelta());
+//                const auto yTranslate = int((y - grid->getStartY()) / grid->getDelta());
+//                const auto zTranslate = int((z - grid->getStartZ()) / grid->getDelta());
+//
+//				if (!nodeNumbers.indicesInRange(xTranslate + 1, yTranslate +1, zTranslate +1)) // blame Lenz
+//					continue;
+//
+//                if ((SWB = nodeNumbers(xTranslate, yTranslate, zTranslate)) >= 0
+//                    && (SEB = nodeNumbers(xTranslate + 1, yTranslate, zTranslate)) >= 0
+//                    && (NEB = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate)) >= 0
+//                    && (NWB = nodeNumbers(xTranslate, yTranslate + 1, zTranslate)) >= 0
+//                    && (SWT = nodeNumbers(xTranslate, yTranslate, zTranslate + 1)) >= 0
+//                    && (SET = nodeNumbers(xTranslate + 1, yTranslate, zTranslate + 1)) >= 0
+//                    && (NET = nodeNumbers(xTranslate + 1, yTranslate + 1, zTranslate + 1)) >= 0
+//                    && (NWT = nodeNumbers(xTranslate, yTranslate + 1, zTranslate + 1)) >= 0)
+//                {
+//                    Cell cell(x, y, z, grid->getDelta());
+//                    if(grid->nodeInCellIs(cell, OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_NODE))
+//                        continue;
+//
+//                    cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
+//                }
+//            }
+//        }
+//    }
+//    WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name, nodes, cells, nodedatanames, nodedata);
+//}
 
 
 /*#################################################################################*/
