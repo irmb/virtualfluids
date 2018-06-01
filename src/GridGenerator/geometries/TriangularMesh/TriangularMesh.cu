@@ -37,7 +37,7 @@ TriangularMesh::TriangularMesh(const std::string& inputPath)
 
 TriangularMesh::TriangularMesh()
 {
-
+	this->minmax = BoundingBox::makeInvalidMinMaxBox();  // blame Lenz
 }
 
 TriangularMesh::~TriangularMesh()
