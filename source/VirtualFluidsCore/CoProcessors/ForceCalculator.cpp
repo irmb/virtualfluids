@@ -118,7 +118,10 @@ void ForceCalculator::calculateForces(std::vector<SPtr<D3Q27Interactor> > intera
 
 void ForceCalculator::gatherGlobalForces()
 {
-    std::vector<double> values{ forceX1global , forceX2global, forceX3global };
+    std::vector<double> values;// intel compiler 17 dasn't support this { forceX1global , forceX2global, forceX3global };
+    values.push_back(forceX1global);
+    values.push_back(forceX2global);
+    values.push_back(forceX3global);
     std::vector<double> rvalues = comm->gather(values);
 
     if (comm->isRoot())

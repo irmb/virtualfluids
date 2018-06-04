@@ -18,6 +18,8 @@
 #include "RenumberBlockVisitor.h"
 #include "MetisPartitioningGridVisitor.h"
 #include "PointerDefinitions.h"
+#include "UbFileOutputASCII.h"
+#include "UbFileInputASCII.h"
 
 MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path,
@@ -220,6 +222,22 @@ void MPIIOMigrationCoProcessor::clearAllFiles(int step)
    if (rc10 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename10);
    MPI_File_set_size(file_handler, new_size);
    MPI_File_close(&file_handler);
+}
+//////////////////////////////////////////////////////////////////////////
+void MPIIOMigrationCoProcessor::writeCpTimeStep(int step)
+{
+   if (comm->isRoot())
+   {
+      UbFileOutputASCII f(path + "/mpi_io_cp/cp.txt");
+      f.writeInteger(step);
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+int MPIIOMigrationCoProcessor::readCpTimeStep()
+{
+   UbFileInputASCII f(path + "/mpi_io_cp/cp.txt");
+   int step = f.readInteger();
+   return step;
 }
 //////////////////////////////////////////////////////////////////////////
 void MPIIOMigrationCoProcessor::writeBlocks(int step)

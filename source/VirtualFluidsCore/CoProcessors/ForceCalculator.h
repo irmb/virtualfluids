@@ -11,7 +11,7 @@
 #include <vector>
 #include <memory>
 
-#include "VirtualFluidsBasics/basics/utilities/Vector3D.h"
+#include "Vector3D.h"
 
 class D3Q27Interactor;
 class Communicator;

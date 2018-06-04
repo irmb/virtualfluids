@@ -15,6 +15,8 @@
 #include "UbScheduler.h"
 #include "LBMKernel.h"
 #include "BCProcessor.h"
+#include "UbFileOutputASCII.h"
+#include "UbFileInputASCII.h"
 
 //! BLOCK_SIZE defines the quantity of the BoundaryCondition-structures written as one block to the file
 //! To avoid overflow in the parameter \a count of the function MPI_File_write_at 
@@ -152,6 +154,8 @@ void MPIIORestartCoProcessor::process(double step)
       writeDataSet((int)step);
       writeBoundaryConds((int)step);
 
+      writeCpTimeStep(step);
+
       if (comm->isRoot()) UBLOG(logINFO, "Save check point - end");
    }
 }
@@ -229,6 +233,22 @@ void MPIIORestartCoProcessor::clearAllFiles(int step)
    if (rc10 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename10);
    MPI_File_set_size(file_handler, new_size);
    MPI_File_close(&file_handler);
+}
+//////////////////////////////////////////////////////////////////////////
+void MPIIORestartCoProcessor::writeCpTimeStep(int step)
+{
+   if (comm->isRoot())
+   {
+      UbFileOutputASCII f(path + "/mpi_io_cp/cp.txt");
+      f.writeInteger(step);
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+int MPIIORestartCoProcessor::readCpTimeStep()
+{
+   UbFileInputASCII f(path + "/mpi_io_cp/cp.txt");
+   int step = f.readInteger();
+   return step;
 }
 //////////////////////////////////////////////////////////////////////////
 void MPIIORestartCoProcessor::writeBlocks(int step)

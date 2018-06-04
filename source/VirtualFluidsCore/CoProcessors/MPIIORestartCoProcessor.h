@@ -200,6 +200,10 @@ public:
    void setBCProcessor(SPtr<BCProcessor> bcProcessor);
    //!The function truncates the data files
    void clearAllFiles(int step);
+   //!The function write a time step of last check point
+   void writeCpTimeStep(int step);
+   //!The function read a time step of last check point
+   int readCpTimeStep();
 
 protected:
    std::string path;
