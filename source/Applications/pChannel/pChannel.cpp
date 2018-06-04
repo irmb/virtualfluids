@@ -428,7 +428,7 @@ void run(string configname)
 
       SPtr<UbScheduler> AdjForcSch(new UbScheduler());
       AdjForcSch->addSchedule(10, 0, 10000000);
-      SPtr<IntegrateValuesHelper> intValHelp(new IntegrateValuesHelper(grid, comm, g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<IntegrateValuesHelper> intValHelp(new IntegrateValuesHelper(grid, comm, g_minX1, g_minX2, g_minX3+pmL[2], g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathOut + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
       double vxTarget=u_LB;

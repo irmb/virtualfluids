@@ -1651,6 +1651,8 @@ void MPIIORestartCoProcessor::restart(int step)
    readDataSet(step);
    readBoundaryConds(step);
 
+   grid->setTimeStep(step);
+
    if (comm->isRoot()) UBLOG(logINFO, "Load check point - end");
 }
 
