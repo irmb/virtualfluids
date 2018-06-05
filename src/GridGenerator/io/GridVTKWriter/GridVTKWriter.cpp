@@ -83,8 +83,8 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 					&& (NWT = nodeNumbers(xIndex, yIndex + 1, zIndex + 1)) >= 0)
 				{
 					Cell cell(x, y, z, grid->getDelta());
-					if (grid->nodeInCellIs(cell, INVALID_OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_COARSE_UNDER_FINE))
-						continue;
+					//if (grid->nodeInCellIs(cell, INVALID_OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_COARSE_UNDER_FINE))
+					//	continue;
 
 					cells.push_back(makeUbTuple(uint(SWB), uint(SEB), uint(NEB), uint(NWB), uint(SWT), uint(SET), uint(NET), uint(NWT)));
 				}
