@@ -22,13 +22,13 @@ void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryConditi
     for (int index = 0; index < geometryBoundaryCondition->indices.size(); index++)
     {
         Vertex startNode = getVertex(geometryBoundaryCondition->indices[index], grid);
-        for (int qi = 0; qi <= 26; qi++)
+		for (int qi = 0; qi <= 26; qi++)
         {
             real qval = geometryBoundaryCondition->qs[index][qi];
             if (qval > 0.0f)
             {
                 Vertex dir((real)grid->getDirection()[qi * DIMENSION + 0], (real)grid->getDirection()[qi * DIMENSION + 1], (real)grid->getDirection()[qi * DIMENSION + 2]);
-                Vertex nodeOnGeometry(startNode + (dir * qval));
+                Vertex nodeOnGeometry(startNode + (dir * qval)*grid->getDelta());
 
                 nodes.push_back(makeUbTuple(float(startNode.x), float(startNode.y), float(startNode.z)));
                 nodes.push_back(makeUbTuple(float(nodeOnGeometry.x), float(nodeOnGeometry.y), float(nodeOnGeometry.z)));

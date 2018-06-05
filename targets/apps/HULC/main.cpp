@@ -44,6 +44,8 @@
 #include "Output/FileWriter.h"
 //#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
 
+#include "utilities/math/Math.h"
+
 #include "grid/BoundaryConditions/Side.h"
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
@@ -318,8 +320,9 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
+	real dx = 0.25;
 	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/ShpereNotOptimal.stl");
-	gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, 0.25);
+	gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, dx);
 	gridBuilder->addGrid(new Sphere(0, 0, 0, 2.5), 2);
 	gridBuilder->addGeometry(triangularMesh);
 	//gridBuilder->addGrid(new Sphere(0, 0, 0, 0.1), 10);//until level 7 works
@@ -342,7 +345,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-    //gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
 
 
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
@@ -371,6 +374,30 @@ void multipleLevel(const std::string& configPath)
 
 
     gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/SmallSphere_level_");
+	gridBuilder->writeArrows("M:/TestGridGeneration/results/SmallSphere_Arrow_Qs");
+
+
+	{
+		SPtr<Grid> grid = gridBuilder->getGrid(2);
+
+		uint counter = 0;
+		for (uint gridIdx = 0; gridIdx < grid->getSize(); gridIdx++) {
+
+			if (grid->getFieldEntry(gridIdx) == BC_GEOMETRY) {
+				real x, y, z;
+				grid->transIndexToCoords(gridIdx, x, y, z);
+				if (fabs(z) > dx) continue;
+				std::cout << x << " " << y << " " << z << std::endl;
+				for (uint fIdx = 0; fIdx < 27; fIdx++) {
+					if (!vf::Math::equal(grid->getDistribution()[fIdx * grid->getSize() + gridIdx], 0.0)) {
+						std::cout << fIdx << "\t" << grid->getDistribution()[fIdx * grid->getSize() + gridIdx] << std::endl;
+					}
+				}
+				counter++;
+				if (counter > 10) break;
+			}
+		}
+	}
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 

@@ -374,5 +374,5 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 
 void LevelGridBuilder::writeArrows(std::string fileName) const 
 {
-    QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[0]);
+    QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
 }
