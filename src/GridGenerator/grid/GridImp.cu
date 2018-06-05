@@ -73,7 +73,7 @@ HOST void GridImp::inital()
 
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
-        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, OUT_OF_GRID);
+        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, INVALID_OUT_OF_GRID);
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
@@ -87,7 +87,7 @@ HOST void GridImp::inital()
 
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
 {
-    this->field.setFieldEntryToOutOfGrid(index);
+    this->field.setFieldEntryToInvalidOutOfGrid(index);
 }
 
 HOST void GridImp::freeMemory()
@@ -145,22 +145,22 @@ HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
 HOSTDEVICE void GridImp::findStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
 {
     if(isValidEndOfGridStopper(index))
-        this->field.setFieldEntryToStopperEndOfGrid(index);
+        this->field.setFieldEntryToStopperOutOfGrid(index);
 
     if (isValidInnerStopper(index))
-        this->field.setFieldEntry(index, STOPPER_GEOMETRY);
+        this->field.setFieldEntry(index, STOPPER_SOLID);
 }
 
 HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
 {
 	if (isValidEndOfGridStopper(index))
-		this->field.setFieldEntryToStopperEndOfGrid(index);
+		this->field.setFieldEntryToStopperOutOfGrid(index);
 }
 
 HOSTDEVICE void GridImp::findSolidStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
 {
 	if (isValidInnerStopper(index))
-		this->field.setFieldEntry(index, STOPPER_GEOMETRY);
+		this->field.setFieldEntry(index, STOPPER_SOLID);
 }
 
 HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
@@ -168,8 +168,8 @@ HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
     Cell cell = getOddCellFromIndex(index);
     if (isOutSideOfGrid(cell))
         return;
-    if (contains(cell, OUT_OF_GRID))
-        setNodeTo(cell, OUT_OF_GRID);
+    if (contains(cell, INVALID_OUT_OF_GRID))
+        setNodeTo(cell, INVALID_OUT_OF_GRID);
 }
 
 HOSTDEVICE bool GridImp::isOutSideOfGrid(Cell &cell) const
@@ -212,7 +212,7 @@ HOSTDEVICE bool GridImp::isNode(uint index, char type) const
 HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 {
 	// Lenz: also includes corner stopper nodes
-	if (!this->field.is(index, OUT_OF_GRID))
+	if (!this->field.is(index, INVALID_OUT_OF_GRID))
 		return false;
 
 	real x, y, z;
@@ -236,7 +236,7 @@ HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 {
 	// Lenz: also includes corner stopper nodes
-	if (!this->field.is(index, SOLID))
+	if (!this->field.is(index, INVALID_SOLID))
 		return false;
 
 	real x, y, z;
@@ -467,7 +467,7 @@ HOST void GridImp::updateSparseIndices()
     int newIndex = 0;
     for (uint index = 0; index < size; index++)
     {
-        if (this->field.isInvalid(index) || this->field.isOutOfGrid(index) || this->field.isSolid(index))
+        if (this->field.isInvalidCoarseUnderFine(index) || this->field.isInvalidOutOfGrid(index) || this->field.isInvalidSolid(index))
         {
             sparseIndices[index] = -1;
             removedNodes++;
@@ -516,13 +516,13 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    if (vf::Math::lessEqual(x + delta, endX) && !this->field.isOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
+    if (vf::Math::lessEqual(x + delta, endX) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x + delta, y, z)))
         neighborIndexX[index] = getSparseIndex(x + delta, y, z);
 
-    if (vf::Math::lessEqual(y + delta, endY) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
+    if (vf::Math::lessEqual(y + delta, endY) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y + delta, z)))
         neighborIndexY[index] = getSparseIndex(x, y + delta, z);
 
-    if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
+    if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
 }
 
@@ -541,7 +541,7 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
         real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
         neighborCoords[direction] = neighborCoords[direction] + delta;
         const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
-        if(!field.isStopperEndOfGrid(neighborIndex))
+        if(!field.isStopperOutOfGrid(neighborIndex))
             return coords[direction] + delta;
 
         return getFirstFluidNode(coords, direction, startCoord);
@@ -616,7 +616,7 @@ HOST void GridImp::mesh(Object* object)
 {
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh)
-        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, SOLID, FLUID);
+        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
     else
         gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes
 
@@ -701,7 +701,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 const Vertex point(x, y, z);
 
-                if(hasNeighbor(index, STOPPER_GEOMETRY)) //TODO: not working with thin walls
+                if(hasNeighbor(index, STOPPER_SOLID)) //TODO: not working with thin walls
                 {
                     field.setFieldEntry(index, BC_GEOMETRY);
                     calculateQs(point, triangle);
@@ -713,10 +713,10 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
 HOSTDEVICE void GridImp::setDebugPoint(uint index, int pointValue)
 {
-    if (field.isInvalid(index) && pointValue == SOLID)
+    if (field.isInvalidCoarseUnderFine(index) && pointValue == INVALID_SOLID)
         field.setFieldEntry(index, pointValue);
 
-    if(!field.isSolid(index) && !field.isQ(index) && !field.isInvalid(index) && pointValue != 3 && pointValue != 2)
+    if(!field.isInvalidSolid(index) && !field.isQ(index) && !field.isInvalidCoarseUnderFine(index) && pointValue != 3 && pointValue != 2)
         field.setFieldEntry(index, pointValue);
 }
 

@@ -22,22 +22,23 @@ public:
     HOSTDEVICE bool isCoarseToFineNode(uint index) const;
     HOSTDEVICE bool isFineToCoarseNode(uint index) const;
 	HOSTDEVICE bool isFluid(uint index) const;
-	HOSTDEVICE bool isSolid(uint index) const;
+	HOSTDEVICE bool isInvalidSolid(uint index) const;
 	HOSTDEVICE bool isQ(uint index) const;
-    HOSTDEVICE bool isRb(uint index) const;
-    HOSTDEVICE bool isInvalid(uint index) const;
-    HOSTDEVICE bool isStopperEndOfGrid(uint index) const;
-    HOSTDEVICE bool isStopperOverlapGrid(uint index) const;
-    HOSTDEVICE bool isStopper(uint index) const;
-    HOSTDEVICE bool isOutOfGrid(uint index) const;
+    HOSTDEVICE bool isBoundaryConditionNode(uint index) const;
+    HOSTDEVICE bool isInvalidCoarseUnderFine(uint index) const;
+    HOSTDEVICE bool isStopperOutOfGrid(uint index) const;
+    HOSTDEVICE bool isStopperCoarseUnderFine(uint index) const;
+	HOSTDEVICE bool isStopperSolid(uint index) const;
+	HOSTDEVICE bool isStopper(uint index) const;
+    HOSTDEVICE bool isInvalidOutOfGrid(uint index) const;
 
     HOSTDEVICE void setFieldEntry(uint index, char val);
 	HOSTDEVICE void setFieldEntryToFluid(uint index);
-	HOSTDEVICE void setFieldEntryToSolid(uint index);
-    HOSTDEVICE void setFieldEntryToStopperEndOfGrid(uint index);
-    HOSTDEVICE void setFieldEntryToStopperOverlapGrid(uint index);
-    HOSTDEVICE void setFieldEntryToInvalid(uint index);
-    HOSTDEVICE void setFieldEntryToOutOfGrid(uint index);
+	HOSTDEVICE void setFieldEntryToInvalidSolid(uint index);
+    HOSTDEVICE void setFieldEntryToStopperOutOfGrid(uint index);
+    HOSTDEVICE void setFieldEntryToStopperCoarseUnderFine(uint index);
+    HOSTDEVICE void setFieldEntryToInvalidCoarseUnderFine(uint index);
+    HOSTDEVICE void setFieldEntryToInvalidOutOfGrid(uint index);
 
 private:
     SPtr<GridStrategy> gridStrategy;

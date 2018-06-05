@@ -63,37 +63,42 @@ HOSTDEVICE bool Field::isFineToCoarseNode(uint index) const
 HOSTDEVICE bool Field::isFluid(uint index) const
 {
     const char type = field[index];
-    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF || isRb(index);
+    return type == FLUID || type == FLUID_CFC || type == FLUID_CFF || type == FLUID_FCC || type == FLUID_FCF || isBoundaryConditionNode(index);
 }
 
-HOSTDEVICE bool Field::isSolid(uint index) const
+HOSTDEVICE bool Field::isInvalidSolid(uint index) const
 {
-    return field[index] == SOLID;
+    return field[index] == INVALID_SOLID;
 }
 
-HOSTDEVICE bool Field::isOutOfGrid(uint index) const
+HOSTDEVICE bool Field::isInvalidOutOfGrid(uint index) const
 {
-    return field[index] == OUT_OF_GRID;
+    return field[index] == INVALID_OUT_OF_GRID;
 }
 
-HOSTDEVICE bool Field::isInvalid(uint index) const
+HOSTDEVICE bool Field::isInvalidCoarseUnderFine(uint index) const
 {
-    return field[index] == INVALID_NODE;
+    return field[index] == INVALID_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE bool Field::isStopperEndOfGrid(uint index) const
+HOSTDEVICE bool Field::isStopperOutOfGrid(uint index) const
 {
-    return field[index] == STOPPER_END_OF_GRID;
+    return field[index] == STOPPER_OUT_OF_GRID;
 }
 
-HOSTDEVICE bool Field::isStopperOverlapGrid(uint index) const
+HOSTDEVICE bool Field::isStopperCoarseUnderFine(uint index) const
 {
-    return field[index] == STOPPER_OVERLAP_GRID;
+    return field[index] == STOPPER_COARSE_UNDER_FINE;
+}
+
+HOSTDEVICE bool Field::isStopperSolid(uint index) const
+{
+	return field[index] == STOPPER_SOLID;
 }
 
 HOSTDEVICE bool Field::isStopper(uint index) const
 {
-    return isStopperEndOfGrid(index) || isStopperOverlapGrid(index) || is(index, STOPPER_GEOMETRY);
+    return isStopperOutOfGrid(index) || isStopperCoarseUnderFine(index) || isStopperSolid(index);
 }
 
 HOSTDEVICE bool Field::isQ(uint index) const
@@ -101,7 +106,7 @@ HOSTDEVICE bool Field::isQ(uint index) const
     return field[index] == Q;
 }
 
-HOSTDEVICE bool Field::isRb(uint index) const
+HOSTDEVICE bool Field::isBoundaryConditionNode(uint index) const
 {
     return  field[index] == BC_GEOMETRY || field[index] == BC_OUTFLOW || field[index] == BC_VELOCITY || field[index] == BC_PRESSURE || field[index] == BC_SLIP;
 }
@@ -119,27 +124,27 @@ HOSTDEVICE void Field::setFieldEntryToFluid(uint index)
     this->field[index] = FLUID;
 }
 
-HOSTDEVICE void Field::setFieldEntryToSolid(uint index)
+HOSTDEVICE void Field::setFieldEntryToInvalidSolid(uint index)
 {
-    this->field[index] = SOLID;
+    this->field[index] = INVALID_SOLID;
 }
 
-HOSTDEVICE void Field::setFieldEntryToStopperEndOfGrid(uint index)
+HOSTDEVICE void Field::setFieldEntryToStopperOutOfGrid(uint index)
 {
-    this->field[index] = STOPPER_END_OF_GRID;
+    this->field[index] = STOPPER_OUT_OF_GRID;
 }
 
-HOSTDEVICE void Field::setFieldEntryToStopperOverlapGrid(uint index)
+HOSTDEVICE void Field::setFieldEntryToStopperCoarseUnderFine(uint index)
 {
-    this->field[index] = STOPPER_OVERLAP_GRID;
+    this->field[index] = STOPPER_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE void Field::setFieldEntryToInvalid(uint index)
+HOSTDEVICE void Field::setFieldEntryToInvalidCoarseUnderFine(uint index)
 {
-    this->field[index] = INVALID_NODE;
+    this->field[index] = INVALID_COARSE_UNDER_FINE;
 }
 
-HOSTDEVICE void Field::setFieldEntryToOutOfGrid(uint index)
+HOSTDEVICE void Field::setFieldEntryToInvalidOutOfGrid(uint index)
 {
-    this->field[index] = OUT_OF_GRID;
+    this->field[index] = INVALID_OUT_OF_GRID;
 }
