@@ -215,18 +215,7 @@ HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
 	if (!this->field.is(index, INVALID_OUT_OF_GRID))
 		return false;
 
-	real x, y, z;
-	this->transIndexToCoords(index, x, y, z);
-	for (const auto dir : this->distribution) {
-		const int neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
-
-		if (neighborIndex == -1) continue;
-
-		if (this->field.is(neighborIndex, FLUID) /*|| this->field.is(neighborIndex, FLUID_CFF)*/)
-			return true;
-	}
-
-	return false;
+	return hasNeighborOfType(index, FLUID);
 
 	//previous version of Sören P.
     //return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
@@ -239,6 +228,16 @@ HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 	if (!this->field.is(index, INVALID_SOLID))
 		return false;
 
+	return hasNeighborOfType(index, FLUID);
+
+	//previous version of Sören P.
+	//return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+ //       || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
+HOSTDEVICE bool GridImp::hasNeighborOfType(uint index, char type) const
+{
+	// new version by Lenz, utilizes the range based for loop for all directions
 	real x, y, z;
 	this->transIndexToCoords(index, x, y, z);
 	for (const auto dir : this->distribution) {
@@ -246,55 +245,48 @@ HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 
 		if (neighborIndex == -1) continue;
 
-		if (this->field.is(neighborIndex, FLUID) /*|| this->field.is(neighborIndex, FLUID_CFF)*/)
+		if (this->field.is(neighborIndex, type))
 			return true;
 	}
 
 	return false;
 
-	//previous version of Sören P.
-	//return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
- //       || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
-}
+    //real x, y, z;
+    //this->transIndexToCoords(index, x, y, z);
 
-HOSTDEVICE bool GridImp::hasNeighbor(uint index, char type) const
-{
-    real x, y, z;
-    this->transIndexToCoords(index, x, y, z);
+    //const real neighborX = x + this->delta > endX ? endX : x + this->delta;
+    //const real neighborY = y + this->delta > endY ? endY : y + this->delta;
+    //const real neighborZ = z + this->delta > endZ ? endZ : z + this->delta;
 
-    const real neighborX = x + this->delta > endX ? endX : x + this->delta;
-    const real neighborY = y + this->delta > endY ? endY : y + this->delta;
-    const real neighborZ = z + this->delta > endZ ? endZ : z + this->delta;
-
-    const real neighborMinusX = x - this->delta < startX ? startX : x - this->delta;
-    const real neighborMinusY = y - this->delta < startY ? startY : y - this->delta;
-    const real neighborMinusZ = z - this->delta < startZ ? startZ : z - this->delta;
+    //const real neighborMinusX = x - this->delta < startX ? startX : x - this->delta;
+    //const real neighborMinusY = y - this->delta < startY ? startY : y - this->delta;
+    //const real neighborMinusZ = z - this->delta < startZ ? startZ : z - this->delta;
 
 
-    const uint indexMXY = transCoordToIndex(-neighborX, neighborY, z);
-    const uint indexMYZ = transCoordToIndex(x, -neighborY, neighborZ);
-    const uint indexMXZ = transCoordToIndex(-neighborX, y, neighborZ);
+    //const uint indexMXY = transCoordToIndex(-neighborX, neighborY, z);
+    //const uint indexMYZ = transCoordToIndex(x, -neighborY, neighborZ);
+    //const uint indexMXZ = transCoordToIndex(-neighborX, y, neighborZ);
 
-    const uint indexXMY = transCoordToIndex(neighborX, -neighborY, z);
-    const uint indexYMZ = transCoordToIndex(x, neighborY, -neighborZ);
-    const uint indexXMZ = transCoordToIndex(neighborX, y, -neighborZ);
+    //const uint indexXMY = transCoordToIndex(neighborX, -neighborY, z);
+    //const uint indexYMZ = transCoordToIndex(x, neighborY, -neighborZ);
+    //const uint indexXMZ = transCoordToIndex(neighborX, y, -neighborZ);
 
-    const uint indexMXYMZ = transCoordToIndex(-neighborX, neighborY, -neighborZ);
-    const uint indexMXYZ  = transCoordToIndex(-neighborX, neighborY, neighborZ);
-    const uint indexMXMYZ = transCoordToIndex(-neighborX, -neighborY, neighborZ);
-    const uint indexXMYMZ = transCoordToIndex(neighborX, -neighborY, -neighborZ);
-    const uint indexXMYZ  = transCoordToIndex(neighborX, -neighborY, neighborZ);
-    const uint indexXYMZ  = transCoordToIndex(neighborX, neighborY, -neighborZ);
+    //const uint indexMXYMZ = transCoordToIndex(-neighborX, neighborY, -neighborZ);
+    //const uint indexMXYZ  = transCoordToIndex(-neighborX, neighborY, neighborZ);
+    //const uint indexMXMYZ = transCoordToIndex(-neighborX, -neighborY, neighborZ);
+    //const uint indexXMYMZ = transCoordToIndex(neighborX, -neighborY, -neighborZ);
+    //const uint indexXMYZ  = transCoordToIndex(neighborX, -neighborY, neighborZ);
+    //const uint indexXYMZ  = transCoordToIndex(neighborX, neighborY, -neighborZ);
 
 
 
-    return nodeInNextCellIs(index, type) || nodeInPreviousCellIs(index, type) || indexMXY || indexMYZ || indexMXZ || indexXMY || indexYMZ || indexXMZ 
-        || indexMXYMZ
-        || indexMXYZ
-        || indexMXMYZ
-        || indexXMYMZ
-        || indexXMYZ
-        || indexXYMZ;
+    //return nodeInNextCellIs(index, type) || nodeInPreviousCellIs(index, type) || indexMXY || indexMYZ || indexMXZ || indexXMY || indexYMZ || indexXMZ 
+    //    || indexMXYMZ
+    //    || indexMXYZ
+    //    || indexMXMYZ
+    //    || indexXMYMZ
+    //    || indexXMYZ
+    //    || indexXYMZ;
 
 }
 
@@ -701,7 +693,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 const Vertex point(x, y, z);
 
-                if(hasNeighbor(index, STOPPER_SOLID)) //TODO: not working with thin walls
+                if(hasNeighborOfType(index, STOPPER_SOLID)) //TODO: not working with thin walls
                 {
                     field.setFieldEntry(index, BC_GEOMETRY);
                     calculateQs(point, triangle);
