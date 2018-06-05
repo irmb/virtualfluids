@@ -53,9 +53,9 @@ void GridImp::initalNumberOfNodesAndSize()
     const real width = endY - startY;
     const real height = endZ - startZ;
 
-    nx = int((length + delta) / delta);
-    ny = int((width + delta) / delta);
-    nz = int((height + delta) / delta);
+    nx = lround((length + delta) / delta);
+    ny = lround((width + delta) / delta);
+    nz = lround((height + delta) / delta);
 
     this->size = nx * ny * nz;
     this->sparseSize = size;
