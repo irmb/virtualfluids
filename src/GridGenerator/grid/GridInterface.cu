@@ -149,9 +149,14 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
 bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
     const int neighbor = coarseGrid->transCoordToIndex(x, y, z);
+
+    if( coarseGrid->getField().isStopperOutOfGrid(neighbor) || coarseGrid->getField().is(neighbor, STOPPER_OUT_OF_GRID_BOUNDARY) )
+        return false;
+
     const int indexOnFineGrid = getCoarseToFineIndexOnFineGrid(neighbor, coarseGrid, fineGrid);
     if (indexOnFineGrid == -1)
         return true;
+
     return fineGrid->getField().isInvalidOutOfGrid(indexOnFineGrid) || fineGrid->getField().isStopperOutOfGrid(indexOnFineGrid);
 }
 
