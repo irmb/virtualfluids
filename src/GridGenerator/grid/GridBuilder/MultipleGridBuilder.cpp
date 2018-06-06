@@ -343,15 +343,15 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
     for (auto grid : grids)
         grid->inital();
 
- //   if (solidObject)
- //   {
- //       grids[grids.size() - 1]->mesh(solidObject);
- //       grids[grids.size() - 1]->findQs(solidObject);
- //   }
+    if (solidObject)
+    {
+        grids[grids.size() - 1]->mesh(solidObject);
+        grids[grids.size() - 1]->findQs(solidObject);
+    }
 
 
- //   for (size_t i = 0; i < grids.size() - 1; i++)
- //       grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
+    for (size_t i = 0; i < grids.size() - 1; i++)
+        grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
 	//if (lbmOrGks == LBM) {
 	//	for (size_t i = 0; i < grids.size() - 1; i++)

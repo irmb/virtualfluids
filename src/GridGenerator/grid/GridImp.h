@@ -81,6 +81,7 @@ public:
     void setPeriodicityZ(bool periodicity) override;
 
     HOSTDEVICE void setCellTo(uint index, char type);
+    HOSTDEVICE void setNonStopperOutOfGridCellTo(uint index, char type);
 
     HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const override;
     HOSTDEVICE void transIndexToCoords(int index, real &x, real &y, real &z) const override;

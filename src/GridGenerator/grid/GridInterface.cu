@@ -42,8 +42,8 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
 
             cf.numberOfEntries++;
 
-            coarseGrid->setCellTo(indexOnCoarseGrid, FLUID_CFC);
-            fineGrid->setCellTo(indexOnFineGridCF, FLUID_CFF);
+            coarseGrid->setNonStopperOutOfGridCellTo(indexOnCoarseGrid, FLUID_CFC);
+            fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridCF, FLUID_CFF);
             break;
         }
     }
@@ -101,7 +101,7 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
 
             fc.numberOfEntries++;
 
-            fineGrid->setCellTo(indexOnFineGridFC, FLUID_FCF);
+            fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, FLUID_FCF);
             coarseGrid->getField().setFieldEntry(indexOnCoarseGrid, FLUID_FCC);
             break;
         }

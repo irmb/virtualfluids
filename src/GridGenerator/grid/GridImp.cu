@@ -422,6 +422,23 @@ void GridImp::setCellTo(uint index, char type)
 }
 
 
+void GridImp::setNonStopperOutOfGridCellTo(uint index, char type)
+{
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    Cell cell(x, y, z, this->delta);
+    for (const auto node : cell)
+    {
+        const uint nodeIndex = transCoordToIndex(node.x, node.y, node.z);
+
+        if( this->getFieldEntry( nodeIndex ) != STOPPER_OUT_OF_GRID && 
+            this->getFieldEntry( nodeIndex ) != STOPPER_OUT_OF_GRID_BOUNDARY )
+            this->field.setFieldEntry(nodeIndex, type);
+    }
+}
+
+
 HOST void GridImp::setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ)
 {
     this->periodicityX = periodicityX;
