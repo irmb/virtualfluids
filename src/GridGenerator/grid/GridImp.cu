@@ -729,8 +729,8 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
 
         error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
-		real lengthDirection = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-		subdistance /= lengthDirection * this->delta;
+		//real lengthDirection = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+		subdistance /= /*lengthDirection **/ this->delta;
 
         if (error != 0 && subdistance < 1.0 && subdistance > 0.0)
         {
