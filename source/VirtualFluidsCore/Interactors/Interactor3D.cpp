@@ -22,6 +22,8 @@ const int Interactor3D::FLUID              = (1<<3); //8
 const int Interactor3D::MOVEABLE           = (1<<4); //16  // geometrisch
 const int Interactor3D::CHANGENOTNECESSARY = (1<<5); //32
 
+int Interactor3D::id = 0;
+
 //////////////////////////////////////////////////////////////////////////
 Interactor3D::Interactor3D()
   : type(SOLID)
@@ -268,7 +270,26 @@ UbTupleDouble3 Interactor3D::getForces()
 {
     UB_THROW( UbException("UbTupleDouble3 getForces() - gehoert in die abgeleitete klasse") );
 }
-
+//////////////////////////////////////////////////////////////////////////
+int Interactor3D::getID()
+{
+   return id;
+}
+//////////////////////////////////////////////////////////////////////////
+void Interactor3D::setActive()
+{
+   active = true;
+}
+//////////////////////////////////////////////////////////////////////////
+void Interactor3D::setInactive()
+{
+   active = false;
+}
+//////////////////////////////////////////////////////////////////////////
+bool Interactor3D::isActive()
+{
+   return active;
+}
 //////////////////////////////////////////////////////////////////////////
 void Interactor3D::initInteractor(const double& timeStep)
 {

@@ -104,6 +104,10 @@ IF(${USE_FETOL})
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} ${LINK_LIBRARY})
 ENDIF()
 
+IF(${USE_DEM_COUPLING})
+   INCLUDE("${SOURCE_ROOT}/DemCoupling/DemCouplingCMakeMacros.txt")
+ENDIF()
+
 message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})
 #################################################################
 ###   CREATE PROJECT                                          ###

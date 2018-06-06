@@ -15,6 +15,7 @@ class GbObject3D;
 class Block3D;
 
 
+
 class Interactor3D : public enableSharedFromThis<Interactor3D>
 {
 public:
@@ -57,6 +58,12 @@ public:
    virtual std::vector<SPtr<Block3D> >& getSolidBlockSet() { return this->solidBlocks; }
    virtual void removeSolidBlocks() { this->solidBlocks.clear(); }
 
+   int getID();
+
+   void setActive();
+   void setInactive();
+   bool isActive();
+
 protected:
    void setTimeDependent()   { UbSystem::setBit(this->type  , TIMEDEPENDENT); }
    void unsetTimeDependent() { UbSystem::unsetBit(this->type, TIMEDEPENDENT); }
@@ -88,6 +95,9 @@ protected:
    std::vector<SPtr<Block3D> > bcBlocks;
    std::vector<SPtr<Block3D> > solidBlocks;
    int accuracy;
+   
+   bool active;
+   static int id;
 
 public:
    static const int SOLID	            ;//= (1<<0); //1

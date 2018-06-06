@@ -1,0 +1,254 @@
+#include "DemCoProcessor.h"
+
+#include "GbSphere3D.h"
+#include "MovableObjectInteractor.h"
+#include "Communicator.h"
+#include "ForceCalculator.h"
+#include "Grid3D.h"
+#include "UbScheduler.h"
+#include "ILBMKernel.h"
+#include "DistributionArray3D.h"
+#include "BCProcessor.h"
+#include "DataSet3D.h"
+
+#include "PhysicsEngineMaterialAdapter.h"
+#include "PhysicsEngineGeometryAdapter.h"
+#include "PhysicsEngineSolverAdapter.h"
+#include "PePhysicsEngineGeometryAdapter.h"
+
+#include "BoundaryConditions.h"
+#include "Block3D.h"
+#include "BCArray3D.h"
+#include "MPICommunicator.h"
+
+
+DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm, std::shared_ptr<ForceCalculator> forceCalculator, std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps) :
+   CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(physicsEngineSolver), intermediateDemSteps(intermediatePeSteps)
+{
+
+}
+
+DemCoProcessor::~DemCoProcessor()
+{
+
+}
+
+void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial, Vector3D initalVelocity)
+{
+   interactors.push_back(interactor);
+   const auto peGeometry = this->createPhysicsEngineGeometryAdapter(interactor, physicsEngineMaterial);
+   if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometry)->isActive())
+   {
+      peGeometry->setLinearVelolocity(initalVelocity);
+      physicsEngineGeometries.push_back(peGeometry);
+      //interactor->setActive();
+   }
+   else
+   {
+      physicsEngineGeometries.push_back(peGeometry);
+      //interactor->setInactive();
+   }
+}
+
+
+std::shared_ptr<PhysicsEngineGeometryAdapter> DemCoProcessor::createPhysicsEngineGeometryAdapter(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial) const
+{
+   const int id = static_cast<int>(interactors.size()) - 1;
+   SPtr<GbSphere3D> vfSphere = std::static_pointer_cast<GbSphere3D>(interactor->getGbObject3D());
+   const Vector3D position(vfSphere->getX1Centroid(), vfSphere->getX2Centroid(), vfSphere->getX3Centroid());
+
+   auto peGeometry = this->physicsEngineSolver->createPhysicsEngineGeometryAdapter(id, position, vfSphere->getRadius(), physicsEngineMaterial);
+   if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometry)->isActive())
+   {
+      interactor->setPhysicsEngineGeometry(peGeometry);
+      return peGeometry;
+   }
+   else
+   {
+      return peGeometry;
+   }
+}
+
+
+void DemCoProcessor::process(double actualTimeStep)
+{
+   this->applyForcesOnGeometries();
+
+   if (scheduler->isDue(actualTimeStep))
+   {
+      //UBLOG(logINFO, "DemCoProcessor::update - START" << step);
+      const double demTimeStepsPerIteration = scheduler->getMinStep();
+
+      if (demTimeStepsPerIteration != 1)
+         this->scaleForcesAndTorques(1.0 / demTimeStepsPerIteration);
+
+      if (this->intermediateDemSteps == 1)
+         this->calculateDemTimeStep(demTimeStepsPerIteration);
+      
+      //if ((int)actualTimeStep % 100 == 0)
+      //{
+      //    if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[0])->isActive())
+      //    {
+      //        //UBLOG(logINFO, "v: (x,y,z) " << physicsEngineGeometries[0]->getLinearVelocity() << " actualTimeStep = " << UbSystem::toString(actualTimeStep));
+      //    }
+      //}
+      
+      // during the intermediate time steps of the collision response, the currently acting forces
+      // (interaction forces, gravitational force, ...) have to remain constant.
+      // Since they are reset after the call to collision response, they have to be stored explicitly before.
+      // Then they are set again after each intermediate step.
+
+      this->moveVfGeoObject();
+
+      //UBLOG(logINFO, "DemCoProcessor::update - END" << step);
+   }
+}
+//////////////////////////////////////////////////////////////////////////
+std::shared_ptr<PhysicsEngineSolverAdapter> DemCoProcessor::getPhysicsEngineSolver()
+{
+   return physicsEngineSolver;
+}
+
+void DemCoProcessor::applyForcesOnGeometries()
+{
+   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         this->setForcesToObject(grid, interactors[i], physicsEngineGeometries[i]);
+
+         //physicsEngineGeometries[i]->setLinearVelolocity(Vector3D(-0.001, 0.0, 0.0));
+         //physicsEngineGeometries[i]->setAngularVelocity(Vector3D(0.01, 0.01, 0.01));
+         //UBLOG(logINFO, "v: (x,y,z) " << physicsEngineGeometries[i]->getLinearVelocity());
+      }
+   }
+}
+
+void DemCoProcessor::setForcesToObject(SPtr<Grid3D> grid, SPtr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry)
+{
+   for (BcNodeIndicesMap::value_type t : interactor->getBcNodeIndicesMap())
+   {
+      SPtr<Block3D> block = t.first;
+      SPtr<ILBMKernel> kernel = block->getKernel();
+      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+      SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
+      distributions->swap();
+
+      std::set< std::vector<int> >& transNodeIndicesSet = t.second;
+      for (std::vector<int> node : transNodeIndicesSet)
+      {
+         int x1 = node[0];
+         int x2 = node[1];
+         int x3 = node[2];
+
+         if (kernel->isInsideOfDomain(x1, x2, x3) && bcArray->isFluid(x1, x2, x3))
+         {
+            //TODO: calculate assumed boundary position 
+
+            const Vector3D worldCoordinates = grid->getNodeCoordinates(block, x1, x2, x3);
+            const auto boundaryVelocity = physicsEngineGeometry->getVelocityAtPosition(worldCoordinates);
+
+            SPtr<BoundaryConditions> bc = bcArray->getBC(x1, x2, x3);
+            const Vector3D force = forceCalculator->getForces(x1, x2, x3, distributions, bc, boundaryVelocity);
+            physicsEngineGeometry->addForceAtPosition(force, worldCoordinates);
+         }
+      }
+      distributions->swap();
+   }
+}
+
+
+void DemCoProcessor::scaleForcesAndTorques(double scalingFactor)
+{
+   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         const Vector3D force = physicsEngineGeometries[i]->getForce() * scalingFactor;
+         const Vector3D torque = physicsEngineGeometries[i]->getTorque() * scalingFactor;
+
+         physicsEngineGeometries[i]->resetForceAndTorque();
+
+         physicsEngineGeometries[i]->setForce(force);
+         physicsEngineGeometries[i]->setTorque(torque);
+
+         //UBLOG(logINFO, "F: (x,y,z) " << force);
+         //UBLOG(logINFO, "T: (x,y,z) " << torque);
+      }
+   }
+}
+
+
+void DemCoProcessor::calculateDemTimeStep(double step) const
+{
+   physicsEngineSolver->runTimestep(step);
+
+   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   {
+      //if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+      physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
+      }
+      }
+   }
+}
+
+void DemCoProcessor::moveVfGeoObject()
+{
+   for (int i = 0; i < interactors.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         interactors[i]->moveGbObjectTo(physicsEngineGeometries[i]->getPosition());
+      }
+   }
+}
+
+void DemCoProcessor::distributeIDs()
+{
+   std::vector<int> peIDsSend;
+   std::vector<int> vfIDsSend;
+
+   for (int i = 0; i < interactors.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         peIDsSend.push_back(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->getId());
+         vfIDsSend.push_back(interactors[i]->getID());
+      }
+   }
+
+   std::vector<int> peIDsRecv;
+   std::vector<int> vfIDsRecv;
+
+   comm->allGather(peIDsSend, peIDsRecv);
+   comm->allGather(vfIDsSend, vfIDsRecv);
+
+   std::map<int, int> idMap;
+
+   for (int i = 0; i < peIDsRecv.size(); i++)
+   {
+      idMap.insert(std::make_pair(vfIDsRecv[i], peIDsRecv[i]));
+   }
+
+   for (int i = 0; i < interactors.size(); i++)
+   {
+      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(idMap.find(interactors[i]->getID())->second);
+   }
+
+   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   {
+      //if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
+         if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+         {
+            interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
+         }
+      }
+   }
+}
+
