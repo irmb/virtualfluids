@@ -482,6 +482,11 @@ HOST uint GridImp::getLevel(real startDelta) const
     return level;
 }
 
+HOST uint GridImp::getLevel() const
+{
+    return this->level;
+}
+
 HOST void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
 {
     this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;

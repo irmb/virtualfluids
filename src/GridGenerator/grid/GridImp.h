@@ -89,6 +89,7 @@ public:
     HOST void freeMemory() override;
 
     HOST uint getLevel(real levelNull) const;
+    HOST uint getLevel() const;
     HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
     
 public:

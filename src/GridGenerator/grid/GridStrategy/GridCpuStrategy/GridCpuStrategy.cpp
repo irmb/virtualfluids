@@ -100,8 +100,8 @@ void GridCpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
 
 void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid, LbmOrGks lbmOrGks)
 {
-    const auto coarseLevel = grid->getLevel(1.0);
-    const auto fineLevel = fineGrid->getLevel(1.0);
+    const auto coarseLevel = grid->getLevel();
+    const auto fineLevel = fineGrid->getLevel();
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "find interface level " << coarseLevel << " -> " << fineLevel;
     const uint oldGridSize = grid->getSparseSize();
