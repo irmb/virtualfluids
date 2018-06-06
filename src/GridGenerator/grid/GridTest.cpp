@@ -17,7 +17,7 @@ TEST(GridTest, getMinimumOnNode)
     const real startY = 0.75;
     const real startZ = 1.75;
     const real delta = 0.5;
-    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution(), 0);
 
     const real exactX = 0.4;
     const real exactY = 0.8;
@@ -40,7 +40,7 @@ TEST(GridTest, getMaximumOnNode)
     const real startY = 0.75;
     const real startZ = 0.75;
     const real delta = 0.5;
-    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution(), 0);
 
     const real exactX = 0.4;
     const real exactY = 0.8;
@@ -63,7 +63,7 @@ TEST(GridTest, getBoundingBoxOnNodes)
     const real startY = -1.0;
     const real startZ = -1.0;
     const real delta = 0.25;
-    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution());
+    const auto sut = GridImp::makeShared(NULL, startX, startY, startZ, 10, 10, 10, delta, gridStrategyDummy, Distribution(), 0);
 
     Triangle t = Triangle(Vertex(0,0,0), Vertex(1,0,0), Vertex(1,1,0), Vertex(0.0f, 0.0f, 0.0f));
 

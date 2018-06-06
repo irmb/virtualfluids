@@ -46,7 +46,7 @@ private:
     }
 
 public:
-    SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, const std::string& d3Qxx = "D3Q27")
+    SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level, const std::string& d3Qxx = "D3Q27")
     {
         Distribution distribution = DistributionHelper::getDistribution(d3Qxx);
 
@@ -55,12 +55,12 @@ public:
         switch (gridType)
         {
         case TestDouble::PRODUCTIONCLASS:
-            grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+            grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
             break;
         case TestDouble::STUB:
-            return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+            return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
         case TestDouble::SPY:
-            return GridSpy::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution);
+            return GridSpy::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
         }
 
         grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);

@@ -79,12 +79,12 @@ public:
 class GridStub : public GridDummy
 {
 protected:
-    GridStub(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta) {}
+    GridStub(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) : startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), level(level) {}
 
 public:
-    static SPtr<GridStub> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridStub> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level)
     {
-        return SPtr<GridStub>(new GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta));
+        return SPtr<GridStub>(new GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level));
     }
 
     virtual real getDelta() const override { return delta; }
@@ -102,18 +102,20 @@ private:
     real endX, endY, endZ;
 
     real delta;
+
+    uint level;
 };
 
 
 class GridSpy : public GridStub
 {
 protected:
-    GridSpy(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) : GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta) {}
+    GridSpy(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) : GridStub(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level) {}
 
 public:
-    static SPtr<GridSpy> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+    static SPtr<GridSpy> makeShared(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level)
     {
-        return SPtr<GridSpy>(new GridSpy(gridShape, startX, startY, startZ, endX, endY, endZ, delta));
+        return SPtr<GridSpy>(new GridSpy(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level));
     }
 
     bool hasGridInterface() const

@@ -26,11 +26,11 @@ class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
 private:
     HOST GridImp();
-    HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+    HOST GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 
 public:
     virtual HOSTDEVICE ~GridImp();
-    static HOST SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d);
+    static HOST SPtr<GridImp> makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level);
 
 private:
     HOST void initalNumberOfNodesAndSize();
@@ -47,6 +47,8 @@ private:
     HOSTDEVICE int getXIndex(real x) const;
     HOSTDEVICE int getYIndex(real y) const;
     HOSTDEVICE int getZIndex(real z) const;
+
+    uint level;
 
     real startX = 0.0, startY = 0.0, startZ = 0.0;
     real endX, endY, endZ;

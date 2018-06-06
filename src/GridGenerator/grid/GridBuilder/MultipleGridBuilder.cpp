@@ -28,7 +28,7 @@ void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, r
 {
     boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
 
-    const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta);
+    const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta, 0);
     addGridToList(grid);
 }
 
@@ -136,9 +136,9 @@ void MultipleGridBuilder::addGridToListIfValid(SPtr<Grid> grid)
 }
 
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
+SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
 {
-    return gridFactory->makeGrid(gridShape, startX, startY, startZ, endX, endY, endZ, delta);
+    return gridFactory->makeGrid(gridShape, startX, startY, startZ, endX, endY, endZ, delta, level);
 }
 
 bool MultipleGridBuilder::coarseGridExists() const
@@ -155,7 +155,7 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level)
     //auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
 	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level);
 
-	return this->makeGrid(gridShape, staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta);
+	return this->makeGrid(gridShape, staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta, level);
 }
 
 real MultipleGridBuilder::calculateDelta(uint level) const
@@ -227,7 +227,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	return staggeredCoordinates;
 }
 
-std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta) const
+std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const
 {
 	//previous version of Soeren P.	
 	auto offset = getOffset(delta);
@@ -240,7 +240,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(real startX, re
     const real endYStaggered = std::ceil(endY) + offset[1];
     const real endZStaggered = std::ceil(endZ) + offset[2];
 
-    auto temporaryGrid = this->makeGrid(nullptr, startXStaggered, startYStaggered, startZStaggered, endXStaggered, endYStaggered, endZStaggered, delta);
+    auto temporaryGrid = this->makeGrid(nullptr, startXStaggered, startYStaggered, startZStaggered, endXStaggered, endYStaggered, endZStaggered, delta, level);
     auto startStaggered = temporaryGrid->getMinimumOnNode(Vertex(startX, startY, startZ));
     auto endStaggered = temporaryGrid->getMaximumOnNode(Vertex(endX, endY, endZ));
 

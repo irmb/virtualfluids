@@ -34,15 +34,15 @@
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 
-HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution) 
-: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution)
+HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level) 
+: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution), level(level)
 {
     initalNumberOfNodesAndSize();
 }
 
-HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d)
+HOST SPtr<GridImp> GridImp::makeShared(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution d, uint level)
 {
-    SPtr<GridImp> grid(new GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d));
+    SPtr<GridImp> grid(new GridImp(object, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, d, level));
     return grid;
 }
 
@@ -112,9 +112,23 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
 {
     this->sparseIndices[index] = index;
 
-    const Cell cell = getOddCellFromIndex(index);
-    if (isInside(cell))
-        this->field.setFieldEntryToFluid(index);
+    if( this->level != 0 ){
+        const Cell cell = getOddCellFromIndex(index);
+        if (isInside(cell))
+            this->field.setFieldEntryToFluid(index);
+    }
+    else{
+        real x, y, z;
+        this->transIndexToCoords(index, x, y, z);
+        const uint xIndex = getXIndex(x);
+        const uint yIndex = getYIndex(y);
+        const uint zIndex = getZIndex(z);
+
+        if( xIndex != 0 && xIndex != this->nx-1 &&
+            yIndex != 0 && yIndex != this->ny-1 &&
+            zIndex != 0 && zIndex != this->nz-1 )
+            this->field.setFieldEntryToFluid(index);
+    }
 }
 
 bool GridImp::isInside(const Cell& cell) const
