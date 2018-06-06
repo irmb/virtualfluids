@@ -134,6 +134,11 @@ HOSTDEVICE void Field::setFieldEntryToStopperOutOfGrid(uint index)
     this->field[index] = STOPPER_OUT_OF_GRID;
 }
 
+HOSTDEVICE void Field::setFieldEntryToStopperOutOfGridBoundary(uint index)
+{
+    this->field[index] = STOPPER_OUT_OF_GRID_BOUNDARY;
+}
+
 HOSTDEVICE void Field::setFieldEntryToStopperCoarseUnderFine(uint index)
 {
     this->field[index] = STOPPER_COARSE_UNDER_FINE;

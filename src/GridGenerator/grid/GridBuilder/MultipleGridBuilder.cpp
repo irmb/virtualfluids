@@ -78,7 +78,7 @@ void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
     addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, gridShape);
     addFineGridToList(levelFine, gridShape->clone());
 
-    eraseGridsFromListIfInvalid(oldGridSize);
+    //eraseGridsFromListIfInvalid(oldGridSize);
 }
 
 void MultipleGridBuilder::addFineGridToList(uint level, Object* gridShape)
@@ -196,6 +196,13 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	staggeredCoordinates[4] = this->grids[0]->getEndY();
 	staggeredCoordinates[5] = this->grids[0]->getEndZ();
 
+    //real X1Minimum = ( gridShape->getX1Minimum() > this->grids[0]->getStartX() ) ? ( gridShape->getX1Minimum() ) : ( this->grids[0]->getStartX() );
+    //real X2Minimum = ( gridShape->getX2Minimum() > this->grids[0]->getStartY() ) ? ( gridShape->getX2Minimum() ) : ( this->grids[0]->getStartY() );
+    //real X3Minimum = ( gridShape->getX3Minimum() > this->grids[0]->getStartZ() ) ? ( gridShape->getX3Minimum() ) : ( this->grids[0]->getStartZ() );
+    //real X1Maximum = ( gridShape->getX1Maximum() < this->grids[0]->getEndX()   ) ? ( gridShape->getX1Maximum() ) : ( this->grids[0]->getEndX()   );
+    //real X2Maximum = ( gridShape->getX2Maximum() < this->grids[0]->getEndY()   ) ? ( gridShape->getX2Maximum() ) : ( this->grids[0]->getEndY()   );
+    //real X3Maximum = ( gridShape->getX3Maximum() < this->grids[0]->getEndZ()   ) ? ( gridShape->getX3Maximum() ) : ( this->grids[0]->getEndZ()   );
+
 	//Step 2
 	while (staggeredCoordinates[0] < gridShape->getX1Minimum()) staggeredCoordinates[0] += deltaCoarse;
 	while (staggeredCoordinates[1] < gridShape->getX2Minimum()) staggeredCoordinates[1] += deltaCoarse;
@@ -223,6 +230,14 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	while (staggeredCoordinates[3] < gridShape->getX1Maximum()) staggeredCoordinates[3] += deltaCoarse * pow(0.5, level - 1);
 	while (staggeredCoordinates[4] < gridShape->getX2Maximum()) staggeredCoordinates[4] += deltaCoarse * pow(0.5, level - 1);
 	while (staggeredCoordinates[5] < gridShape->getX3Maximum()) staggeredCoordinates[5] += deltaCoarse * pow(0.5, level - 1);
+
+    //Step 5
+    while (staggeredCoordinates[0] < this->grids[0]->getStartX()) staggeredCoordinates[0] += deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[1] < this->grids[0]->getStartY()) staggeredCoordinates[1] += deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[2] < this->grids[0]->getStartZ()) staggeredCoordinates[2] += deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[3] > this->grids[0]->getEndX()  ) staggeredCoordinates[3] -= deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[4] > this->grids[0]->getEndY()  ) staggeredCoordinates[4] -= deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[5] > this->grids[0]->getEndZ()  ) staggeredCoordinates[5] -= deltaCoarse * pow(0.5, level);
 
 	return staggeredCoordinates;
 }
@@ -328,22 +343,22 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
     for (auto grid : grids)
         grid->inital();
 
-    if (solidObject)
-    {
-        grids[grids.size() - 1]->mesh(solidObject);
-        grids[grids.size() - 1]->findQs(solidObject);
-    }
+ //   if (solidObject)
+ //   {
+ //       grids[grids.size() - 1]->mesh(solidObject);
+ //       grids[grids.size() - 1]->findQs(solidObject);
+ //   }
 
 
-    for (size_t i = 0; i < grids.size() - 1; i++)
-        grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
+ //   for (size_t i = 0; i < grids.size() - 1; i++)
+ //       grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
-	if (lbmOrGks == LBM) {
-		for (size_t i = 0; i < grids.size() - 1; i++)
-			grids[i]->findSparseIndices(grids[i + 1]);
+	//if (lbmOrGks == LBM) {
+	//	for (size_t i = 0; i < grids.size() - 1; i++)
+	//		grids[i]->findSparseIndices(grids[i + 1]);
 
-		grids[grids.size() - 1]->findSparseIndices(nullptr);
-	}
+	//	grids[grids.size() - 1]->findSparseIndices(nullptr);
+	//}
 }
 
 

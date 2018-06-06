@@ -37,6 +37,7 @@ private:
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
     HOSTDEVICE bool isValidInnerStopper(uint index) const;
     HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidEndOfGridBoundaryStopper(uint index) const;
     HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
     HOSTDEVICE bool contains(Cell &cell, char type) const;
     HOSTDEVICE void setNodeTo(Cell &cell, char type);
@@ -110,6 +111,7 @@ public:
     HOSTDEVICE void setNodeTo(uint index, char type);
     HOSTDEVICE bool isNode(uint index, char type) const;
     HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
+    HOSTDEVICE bool hasAllNeighbors(uint index) const;
     HOSTDEVICE bool hasNeighborOfType(uint index, char type)const;
 
     HOSTDEVICE Field getField() const;

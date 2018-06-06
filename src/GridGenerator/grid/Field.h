@@ -36,6 +36,7 @@ public:
 	HOSTDEVICE void setFieldEntryToFluid(uint index);
 	HOSTDEVICE void setFieldEntryToInvalidSolid(uint index);
     HOSTDEVICE void setFieldEntryToStopperOutOfGrid(uint index);
+    HOSTDEVICE void setFieldEntryToStopperOutOfGridBoundary(uint index);
     HOSTDEVICE void setFieldEntryToStopperCoarseUnderFine(uint index);
     HOSTDEVICE void setFieldEntryToInvalidCoarseUnderFine(uint index);
     HOSTDEVICE void setFieldEntryToInvalidOutOfGrid(uint index);

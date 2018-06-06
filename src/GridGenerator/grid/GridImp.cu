@@ -169,6 +169,9 @@ HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index) // TODO: split met
 {
 	if (isValidEndOfGridStopper(index))
 		this->field.setFieldEntryToStopperOutOfGrid(index);
+
+	if (isValidEndOfGridBoundaryStopper(index))
+		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
 
 HOSTDEVICE void GridImp::findSolidStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
@@ -236,6 +239,19 @@ HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
     //    || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
+HOSTDEVICE bool GridImp::isValidEndOfGridBoundaryStopper(uint index) const
+{
+	// Lenz: also includes corner stopper nodes
+	if (!this->field.is(index, FLUID))
+		return false;
+
+	return ! hasAllNeighbors(index);
+
+	//previous version of Sören P.
+    //return this->field.is(index, OUT_OF_GRID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
+    //    || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
 HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 {
 	// Lenz: also includes corner stopper nodes
@@ -247,6 +263,20 @@ HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 	//previous version of Sören P.
 	//return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
  //       || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
+HOSTDEVICE bool GridImp::hasAllNeighbors(uint index) const
+{
+	// new version by Lenz, utilizes the range based for loop for all directions
+	real x, y, z;
+	this->transIndexToCoords(index, x, y, z);
+	for (const auto dir : this->distribution) {
+		const int neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+
+		if (neighborIndex == -1) return false;
+	}
+
+	return true;
 }
 
 HOSTDEVICE bool GridImp::hasNeighborOfType(uint index, char type) const
