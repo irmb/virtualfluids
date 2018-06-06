@@ -232,12 +232,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	while (staggeredCoordinates[5] < gridShape->getX3Maximum()) staggeredCoordinates[5] += deltaCoarse * pow(0.5, level - 1);
 
     //Step 5
-    while (staggeredCoordinates[0] < this->grids[0]->getStartX()) staggeredCoordinates[0] += deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[1] < this->grids[0]->getStartY()) staggeredCoordinates[1] += deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[2] < this->grids[0]->getStartZ()) staggeredCoordinates[2] += deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[3] > this->grids[0]->getEndX()  ) staggeredCoordinates[3] -= deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[4] > this->grids[0]->getEndY()  ) staggeredCoordinates[4] -= deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[5] > this->grids[0]->getEndZ()  ) staggeredCoordinates[5] -= deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[0] < this->grids[level - 1]->getStartX()) staggeredCoordinates[0] += deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[1] < this->grids[level - 1]->getStartY()) staggeredCoordinates[1] += deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) staggeredCoordinates[2] += deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[3] > this->grids[level - 1]->getEndX()  ) staggeredCoordinates[3] -= deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= deltaCoarse * pow(0.5, level);
+    while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= deltaCoarse * pow(0.5, level);
 
 	return staggeredCoordinates;
 }
