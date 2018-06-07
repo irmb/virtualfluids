@@ -23,6 +23,7 @@ class ForceCalculator;
 class Communicator;
 class MovableObjectInteractor;
 class Communicator;
+class BoundaryConditionsBlockVisitor;
 
 
 class DemCoProcessor : public CoProcessor
@@ -38,6 +39,8 @@ public:
     std::shared_ptr<PhysicsEngineSolverAdapter> getPhysicsEngineSolver();
 
     void distributeIDs();
+
+    void setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> blockVisitor);
   
 private:
     std::shared_ptr<PhysicsEngineGeometryAdapter> createPhysicsEngineGeometryAdapter(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial) const;
@@ -60,6 +63,8 @@ private:
     std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometries;
 
     double intermediateDemSteps;
+
+    SPtr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
 
 };
 

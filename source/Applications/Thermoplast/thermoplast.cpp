@@ -76,7 +76,7 @@ void pf1()
    double          deltax = 1;
    double          rhoLB = 0.0;
    double          nuLB = 0.005;
-   double          uLB =  0.01;
+   double          uLB =  0.1;
 
    //geometry definition
 
@@ -93,10 +93,6 @@ void pf1()
 
    SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
    if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathname + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
-
-   //cylinder
-   //SPtr<GbObject3D> cylinder(new GbCylinder3D(g_minX1 - 2.0*deltax, 0.0, 0.0, g_maxX1 + 2.0*deltax, 0.0, 0.0, g_maxX2));
-   //GbSystem3D::writeGeoObject(cylinder.get(), pathname + "/geo/cylinder", WbWriterVtkXmlBinary::getInstance());
 
    //box
    SPtr<GbObject3D> box(new GbCuboid3D(g_minX1-blockLength, g_minX2, g_minX3, g_maxX1+blockLength, g_maxX2, g_maxX3));
@@ -138,7 +134,7 @@ void pf1()
    fct.SetExpr("U");
    fct.DefineConst("U", uLB);
    SPtr<BCAdapter> inflowAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-   inflowAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+   inflowAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
 
    SPtr<BCAdapter> outflowAdapter(new DensityBCAdapter(rhoLB));
    outflowAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
@@ -167,7 +163,7 @@ void pf1()
    //////////////////////////////////////////////////////////////////////////////////
 
    //set boundary conditions for blocks and create process decomposition for MPI
-   SPtr<D3Q27Interactor> cylinderInt(new D3Q27Interactor(box, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
+   SPtr<D3Q27Interactor> boxInt(new D3Q27Interactor(box, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
 
    //sphere bc object
    SPtr<MovableObjectInteractor> sphereInt1;
@@ -175,8 +171,6 @@ void pf1()
    const std::shared_ptr<Reconstructor> extrapolationReconstructor = std::make_shared<ExtrapolationReconstructor>(velocityReconstructor);
 
    sphereInt1 = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(sphere1, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
-   sphereInt1->setBlockVisitor(bcVisitor);
-
 
    //inflow
    SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, inflowAdapter, Interactor3D::SOLID));
@@ -186,8 +180,8 @@ void pf1()
 
    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
    InteractorsHelper intHelper(grid, metisVisitor);
-   intHelper.addInteractor(cylinderInt);
-   //intHelper.addInteractor(sphereInt1);
+   intHelper.addInteractor(boxInt);
+   intHelper.addInteractor(sphereInt1);
    intHelper.addInteractor(inflowInt);
    intHelper.addInteractor(outflowInt);
 
@@ -289,13 +283,14 @@ void pf1()
    const int timestep = 2;
    const SPtr<UbScheduler> peScheduler(new UbScheduler(timestep));
    SPtr<DemCoProcessor> demCoProcessor = makePeCoProcessor(grid, comm, peScheduler, lbmUnitConverter);
-   //demCoProcessor->addInteractor(sphereInt1, sphereMaterial, Vector3D(0.0, 0.0, 0.0));
+   demCoProcessor->addInteractor(sphereInt1, sphereMaterial, Vector3D(0.0, 0.0, 0.0));
    demCoProcessor->distributeIDs();
+   demCoProcessor->setBlockVisitor(bcVisitor);
    double g = 9.81 * lbmUnitConverter->getFactorAccWToLb();
    double rhoFluid = lbmUnitConverter->getFactorDensityWToLb() * 830.0; // 1 // kg/m^3
    //////////////////////////////////////////////////////////////////////////
    SPtr<UbScheduler> sphereScheduler(new UbScheduler(2.0*radius/uLB,1));
-   SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphere1,sphereMaterial,bcVisitor));
+   SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphere1,sphereMaterial));
 
 
    //start simulation 
@@ -304,7 +299,7 @@ void pf1()
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
    //SPtr<Calculator> calculator(new DemCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
-   calculator->addCoProcessor(createSphereCoProcessor);
+   //calculator->addCoProcessor(createSphereCoProcessor);
    calculator->addCoProcessor(demCoProcessor);
    calculator->addCoProcessor(writeBCCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);

@@ -46,8 +46,6 @@ void BasicCalculator::calculate()
 
       for (calcStep = startTimeStep; calcStep<=numberOfTimeSteps; calcStep++)
       {
-         //coProcess((double)(calcStep-1));
-
          //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
          UBLOG(logINFO, "calcStep = "<<calcStep);
@@ -124,7 +122,6 @@ void BasicCalculator::calculate()
             }
          }
          //exchange data between blocks for visualization
-         //if ((int)additionalGhostLayerUpdateScheduler->getNextDueTime()==calcStep)
          if (additionalGhostLayerUpdateScheduler->isDue(calcStep))
          {
             exchangeBlockData(straightStartLevel, maxInitLevel);

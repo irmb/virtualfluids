@@ -35,11 +35,6 @@ void MovableObjectInteractor::setPhysicsEngineGeometry(std::shared_ptr<PhysicsEn
     physicsEngineGeometry->changeState(this->state);
 }
 
-void MovableObjectInteractor::setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor)
-{
-    this->boundaryConditionsBlockVisitor = boundaryConditionsBlockVisitor;
-}
-
 void MovableObjectInteractor::moveGbObjectTo(const Vector3D& position)
 {
     //UBLOG(logINFO, "new position: (x,y,z) " << val<1>(position) << ", " << val<2>(position) << ", " << val<3>(position));
@@ -51,7 +46,9 @@ void MovableObjectInteractor::moveGbObjectTo(const Vector3D& position)
 void MovableObjectInteractor::rearrangeGrid()
 {
     this->reconstructDistributionOnSolidNodes();
+    
     this->setSolidNodesToFluid();
+    this->setBcNodesToFluid();
 
     this->removeSolidBlocks();
     this->removeBcBlocks();
@@ -60,7 +57,6 @@ void MovableObjectInteractor::rearrangeGrid()
 
     this->initInteractor();
 
-    this->setBcs();
     this->updateVelocityBc();
 }
 
@@ -103,15 +99,25 @@ void MovableObjectInteractor::setSolidNodesToFluid()
     }
 }
 
+void MovableObjectInteractor::setBcNodesToFluid()
+{
+   for (BcNodeIndicesMap::value_type t : bcNodeIndicesMap)
+   {
+      SPtr<Block3D> block = t.first;
+      std::set< std::vector<int> >& bcNodeIndices = t.second;
+
+      SPtr<ILBMKernel> kernel = block->getKernel();
+      SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();
+
+      for (std::vector<int> node : bcNodeIndices)
+         bcArray->setFluid(node[0], node[1], node[2]);
+   }
+}
+
 void MovableObjectInteractor::setBcBlocks()
 {
     SetSolidOrBoundaryBlockVisitor v(shared_from_this(), SetSolidOrBoundaryBlockVisitor::BC);
     this->grid.lock()->accept(v);
-}
-
-void MovableObjectInteractor::setBcs() const
-{
-    this->grid.lock()->accept(*boundaryConditionsBlockVisitor.get());
 }
 
 void MovableObjectInteractor::updateVelocityBc()

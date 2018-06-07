@@ -484,150 +484,150 @@ double GbCuboid3D::getCellVolumeInsideGbObject3D(const double& x1a,const double&
    return 0.0;
 }
 /*==========================================================*/
-double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
-{
-   double minB[3]   = { this->getX1Minimum(), this->getX2Minimum(), this->getX3Minimum() };
-   double maxB[3]   = { this->getX1Maximum(), this->getX2Maximum(), this->getX3Maximum() };
-   double origin[3] = { x1,  x2,  x3  }; //point
-   double dir[3]    = { rx1, rx2, rx3 }; //ray 
-
-   bool inside = true;
-   char quadrant[3];
-   int  whichPlane;
-   double maxT[3];
-   double candidatePlane[3];
-
-   /* Find candidate planes; this loop can be avoided if
-   rays cast all from the eye(assume perpsective view) */
-   for(int i=0; i<3; i++)
-   {
-      if(origin[i] < minB[i])
-      {
-         quadrant[i] = 1/*LEFT*/;
-         candidatePlane[i] = minB[i];
-         inside = false;
-      }
-      else if(origin[i] > maxB[i]) 
-      {
-         quadrant[i] = 0/*RIGHT*/;
-         candidatePlane[i] = maxB[i];
-         inside = false;
-      }
-      else	
-      {
-         quadrant[i] = 2/*MIDDLE*/;
-      }
-   }
-   /* Ray origin inside bounding box */
-   if(inside)
-   {
-      //throw UbException(UB_EXARGS,"not done");
-      return 0.0;
-   }
-
-   /* Calculate T distances to candidate planes */
-   for(int i=0; i<3; i++)
-   {
-      if( quadrant[i]!=2/*MIDDLE*/ && fabs(dir[i])>1.E-10 )
-      {
-         maxT[i] = (candidatePlane[i]-origin[i])/dir[i];
-      }
-      else maxT[i] = -1.0;
-   }
-
-   /* Get largest of the maxT's for final choice of intersection */
-   whichPlane = 0;
-   for(int i=1; i<3; i++)
-      if (maxT[whichPlane] < maxT[i])
-            whichPlane = i;
-   
-   /* Check final candidate actually inside box */
-   if(maxT[whichPlane]< -1.E-10) return -1.0;
-   double dummy;
-   for(int i= 0; i<3; i++)
-   {
-      if( whichPlane!= i) 
-      {
-         dummy = origin[i] + maxT[whichPlane]*dir[i];
-         if(dummy < minB[i] || dummy > maxB[i])
-            return -1.0;
-      } 
-   }
-
-   return maxT[whichPlane] ;				/* ray hits box */
-}	
+//double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
+//{
+//   double minB[3]   = { this->getX1Minimum(), this->getX2Minimum(), this->getX3Minimum() };
+//   double maxB[3]   = { this->getX1Maximum(), this->getX2Maximum(), this->getX3Maximum() };
+//   double origin[3] = { x1,  x2,  x3  }; //point
+//   double dir[3]    = { rx1, rx2, rx3 }; //ray 
+//
+//   bool inside = true;
+//   char quadrant[3];
+//   int  whichPlane;
+//   double maxT[3];
+//   double candidatePlane[3];
+//
+//   /* Find candidate planes; this loop can be avoided if
+//   rays cast all from the eye(assume perpsective view) */
+//   for(int i=0; i<3; i++)
+//   {
+//      if(origin[i] < minB[i])
+//      {
+//         quadrant[i] = 1/*LEFT*/;
+//         candidatePlane[i] = minB[i];
+//         inside = false;
+//      }
+//      else if(origin[i] > maxB[i]) 
+//      {
+//         quadrant[i] = 0/*RIGHT*/;
+//         candidatePlane[i] = maxB[i];
+//         inside = false;
+//      }
+//      else	
+//      {
+//         quadrant[i] = 2/*MIDDLE*/;
+//      }
+//   }
+//   /* Ray origin inside bounding box */
+//   if(inside)
+//   {
+//      //throw UbException(UB_EXARGS,"not done");
+//      return 0.0;
+//   }
+//
+//   /* Calculate T distances to candidate planes */
+//   for(int i=0; i<3; i++)
+//   {
+//      if( quadrant[i]!=2/*MIDDLE*/ && fabs(dir[i])>1.E-10 )
+//      {
+//         maxT[i] = (candidatePlane[i]-origin[i])/dir[i];
+//      }
+//      else maxT[i] = -1.0;
+//   }
+//
+//   /* Get largest of the maxT's for final choice of intersection */
+//   whichPlane = 0;
+//   for(int i=1; i<3; i++)
+//      if (maxT[whichPlane] < maxT[i])
+//            whichPlane = i;
+//   
+//   /* Check final candidate actually inside box */
+//   if(maxT[whichPlane]< -1.E-10) return -1.0;
+//   double dummy;
+//   for(int i= 0; i<3; i++)
+//   {
+//      if( whichPlane!= i) 
+//      {
+//         dummy = origin[i] + maxT[whichPlane]*dir[i];
+//         if(dummy < minB[i] || dummy > maxB[i])
+//            return -1.0;
+//      } 
+//   }
+//
+//   return maxT[whichPlane] ;				/* ray hits box */
+//}	
 // /*==========================================================*/
-// double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
-// {
-//     double absX,absMaxX,absY,absMaxY,absZ,absMaxZ;
-//  
-//     if(rx1<0.0)     absX    = this->getX1Maximum() - x1;
-//     else            absX    = this->getX1Minimum() - x1;
-//     if(1-(rx1<0.0)) absMaxX = this->getX1Maximum() - x1;
-//     else            absMaxX = this->getX1Minimum() - x1;
-//  
-//     if(rx2<0.0)     absY    = this->getX2Maximum() - x2;
-//     else            absY    = this->getX2Minimum() - x2;
-//     if(1-(rx2<0.0)) absMaxY = this->getX2Maximum() - x2;
-//     else            absMaxY = this->getX2Minimum() - x2;
-//  
-//     if(rx3<0.0)     absZ    = this->getX3Maximum() - x3;
-//     else            absZ    = this->getX3Minimum() - x3;
-//     if(1-(rx3<0.0)) absMaxZ = this->getX3Maximum() - x3;
-//     else            absMaxZ = this->getX3Minimum() - x3;
-//  
-//     
-//     //tmin ist die verschneidung des Gerade (Ray) durch die naehere Gerade (MinX oder MaxX)
-//     //tmax ist die verschneidung des Gerade (Ray) durch die weiteste Gerade (MinX oder MaxX)
-//     //analog fuer tymin und tymax 
-//     double tmin, tymin, tzmin, tmax, tymax, tzmax;
-// 
-//     if(!UbMath::zero(rx1)) tmin  = tmax  = 1.0/rx1;     
-//     else if(rx1<0.0)       tmin  = tmax  = -UbMath::getPositiveInfinity<double>();
-//     else                   tmin  = tmax  = UbMath::getPositiveInfinity<double>();
-// 
-//     if(!UbMath::zero(rx2)) tymin = tymax = 1.0/rx2;     
-//     else if(rx2<0.0)       tymin = tymax = -UbMath::getPositiveInfinity<double>();
-//     else                   tymin = tymax = UbMath::getPositiveInfinity<double>();
-// 
-//     if(!UbMath::zero(rx3)) tzmin = tzmax = 1.0/rx3;     
-//     else if(rx1<0.0)       tzmin = tzmax = -UbMath::getPositiveInfinity<double>();
-//     else                   tzmin = tzmax = UbMath::getPositiveInfinity<double>();
-// 
-//     //tmin  *= absX;
-//     //tmax  *= absMaxX;
-//     //tymin *= absY;
-//     //tymax *= absMaxY;
-//     //tzmin *= absZ;
-//     //tzmax *= absMaxZ;
-//  
-//     //0 * 1/0  vermeiden, da es ein Undefined wert produziert 
-//     if( !UbMath::zero(absX) || !UbMath::zero(rx1) ) tmin *= absX;
-//     else                                            tmin  = tymin;
-// 
-//     if( !UbMath::zero(absY) || !UbMath::zero(rx2))    tymin *= absY;
-//     else                                              tymin  = tmin;
-//     
-//     if( !UbMath::zero(absZ) || !UbMath::zero(rx3))    tzmin *= absZ;
-//     else                                              tzmin  = tymin;
-//  
-//     if( !UbMath::zero(absMaxX) || !UbMath::zero(rx1)) tmax *= absMaxX;
-//     else                                              tmax  = tymax;
-//     
-//     if( !UbMath::zero(absMaxY) || !UbMath::zero(rx2)) tymax *= absMaxY;
-//     else                                              tymax  = tmax;
-//     
-//     if( !UbMath::zero(absMaxZ) || !UbMath::zero(rx3)) tzmax *= absMaxZ;
-//     else                                              tzmax = tymax;
-//  
-//     //in dieser Fall gibt es keine Verschneidung
-//     if( (tmin > tymax) || (tymin > tmax) ) return -1;
-// 
-//     tmin = UbMath::max3(tmin,tymin,tzmin);
-//     tmax = UbMath::min3(tmax,tymax,tzmax);
-//  
-//     if( (tmin > tzmax) || (tzmin > tmax) ) return -1;
-//     if(tmin >= 0.0) return tmin ;
-//  
-//     return tmax;
-//}
+ double GbCuboid3D::getIntersectionRaytraceFactor(const double& x1, const double& x2, const double& x3, const double& rx1, const double& rx2, const double& rx3)
+ {
+     double absX,absMaxX,absY,absMaxY,absZ,absMaxZ;
+  
+     if(rx1<0.0)     absX    = this->getX1Maximum() - x1;
+     else            absX    = this->getX1Minimum() - x1;
+     if(1-(rx1<0.0)) absMaxX = this->getX1Maximum() - x1;
+     else            absMaxX = this->getX1Minimum() - x1;
+  
+     if(rx2<0.0)     absY    = this->getX2Maximum() - x2;
+     else            absY    = this->getX2Minimum() - x2;
+     if(1-(rx2<0.0)) absMaxY = this->getX2Maximum() - x2;
+     else            absMaxY = this->getX2Minimum() - x2;
+  
+     if(rx3<0.0)     absZ    = this->getX3Maximum() - x3;
+     else            absZ    = this->getX3Minimum() - x3;
+     if(1-(rx3<0.0)) absMaxZ = this->getX3Maximum() - x3;
+     else            absMaxZ = this->getX3Minimum() - x3;
+  
+     
+     //tmin ist die verschneidung des Gerade (Ray) durch die naehere Gerade (MinX oder MaxX)
+     //tmax ist die verschneidung des Gerade (Ray) durch die weiteste Gerade (MinX oder MaxX)
+     //analog fuer tymin und tymax 
+     double tmin, tymin, tzmin, tmax, tymax, tzmax;
+ 
+     if(!UbMath::zero(rx1)) tmin  = tmax  = 1.0/rx1;     
+     else if(rx1<0.0)       tmin  = tmax  = -UbMath::getPositiveInfinity<double>();
+     else                   tmin  = tmax  = UbMath::getPositiveInfinity<double>();
+ 
+     if(!UbMath::zero(rx2)) tymin = tymax = 1.0/rx2;     
+     else if(rx2<0.0)       tymin = tymax = -UbMath::getPositiveInfinity<double>();
+     else                   tymin = tymax = UbMath::getPositiveInfinity<double>();
+ 
+     if(!UbMath::zero(rx3)) tzmin = tzmax = 1.0/rx3;     
+     else if(rx1<0.0)       tzmin = tzmax = -UbMath::getPositiveInfinity<double>();
+     else                   tzmin = tzmax = UbMath::getPositiveInfinity<double>();
+ 
+     //tmin  *= absX;
+     //tmax  *= absMaxX;
+     //tymin *= absY;
+     //tymax *= absMaxY;
+     //tzmin *= absZ;
+     //tzmax *= absMaxZ;
+  
+     //0 * 1/0  vermeiden, da es ein Undefined wert produziert 
+     if( !UbMath::zero(absX) || !UbMath::zero(rx1) ) tmin *= absX;
+     else                                            tmin  = tymin;
+ 
+     if( !UbMath::zero(absY) || !UbMath::zero(rx2))    tymin *= absY;
+     else                                              tymin  = tmin;
+     
+     if( !UbMath::zero(absZ) || !UbMath::zero(rx3))    tzmin *= absZ;
+     else                                              tzmin  = tymin;
+  
+     if( !UbMath::zero(absMaxX) || !UbMath::zero(rx1)) tmax *= absMaxX;
+     else                                              tmax  = tymax;
+     
+     if( !UbMath::zero(absMaxY) || !UbMath::zero(rx2)) tymax *= absMaxY;
+     else                                              tymax  = tmax;
+     
+     if( !UbMath::zero(absMaxZ) || !UbMath::zero(rx3)) tzmax *= absMaxZ;
+     else                                              tzmax = tymax;
+  
+     //in dieser Fall gibt es keine Verschneidung
+     if( (tmin > tymax) || (tymin > tmax) ) return -1;
+ 
+     tmin = UbMath::max(tmin,tymin,tzmin);
+     tmax = UbMath::min(tmax,tymax,tzmax);
+  
+     if( (tmin > tzmax) || (tzmin > tmax) ) return -1;
+     if(tmin >= 0.0) return tmin ;
+  
+     return tmax;
+}

@@ -20,7 +20,7 @@
 #include "Block3D.h"
 #include "BCArray3D.h"
 #include "MPICommunicator.h"
-
+#include "BoundaryConditionsBlockVisitor.h"
 
 DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm, std::shared_ptr<ForceCalculator> forceCalculator, std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps) :
    CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(physicsEngineSolver), intermediateDemSteps(intermediatePeSteps)
@@ -99,6 +99,8 @@ void DemCoProcessor::process(double actualTimeStep)
       // Then they are set again after each intermediate step.
 
       this->moveVfGeoObject();
+
+      grid->accept(*boundaryConditionsBlockVisitor.get());
 
       //UBLOG(logINFO, "DemCoProcessor::update - END" << step);
    }
@@ -252,3 +254,7 @@ void DemCoProcessor::distributeIDs()
    }
 }
 
+void DemCoProcessor::setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor)
+{
+   this->boundaryConditionsBlockVisitor = boundaryConditionsBlockVisitor;
+}

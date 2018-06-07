@@ -19,7 +19,6 @@ class Block3D;
 class BCArray3D;
 class BCAdapter;
 class GbObject3D;
-class BoundaryConditionsBlockVisitor;
 
 class PhysicsEngineGeometryAdapter;
 class Reconstructor;
@@ -31,21 +30,19 @@ public:
     virtual ~MovableObjectInteractor();
 
     void setPhysicsEngineGeometry(std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry);
-    void setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> blockVisitor);
 
     void moveGbObjectTo(const Vector3D& position);
 
 private:
     void rearrangeGrid();
     void setSolidNodesToFluid();
+    void setBcNodesToFluid();
     void reconstructDistributionOnSolidNodes();
-    void setBcs() const;
     void setBcBlocks();
 
     void updateVelocityBc();
     void setGeometryVelocityToBoundaryCondition(std::vector<int> node, std::shared_ptr<Block3D> block, std::shared_ptr<BCArray3D> bcArray) const;
 
-    std::shared_ptr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
     std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry;
 
     std::shared_ptr<Reconstructor> reconstructor;

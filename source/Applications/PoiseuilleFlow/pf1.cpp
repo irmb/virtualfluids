@@ -139,7 +139,7 @@ void pf1()
    //write data for visualization of boundary conditions
    {
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm);
       ppgeo.process(0);
    }
    
