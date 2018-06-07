@@ -11,6 +11,8 @@
 #include "PePhysicsEngineMaterialAdapter.h"
 #include "muParser.h"
 #include "PhysicsEngineMaterialAdapter.h"
+#include "SetSolidOrBoundaryBlockVisitor.h"
+#include "Grid3D.h"
 
 CreateGeoObjectsCoProcessor::CreateGeoObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<DemCoProcessor> demCoProcessor,  
    SPtr<GbObject3D> geoObjectPrototype, SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial, SPtr<BoundaryConditionsBlockVisitor> bcVisitor) : 
@@ -33,16 +35,23 @@ void CreateGeoObjectsCoProcessor::process(double step)
       SPtr<BCAdapter> velocityBcParticleAdapter(new VelocityBCAdapter(true, false, false, fct2, 0, BCFunction::INFCONST));
       velocityBcParticleAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
-      SPtr<MovableObjectInteractor> sphereInt;
+      SPtr<MovableObjectInteractor> geoObjectInt;
       const std::shared_ptr<Reconstructor> velocityReconstructor(new VelocityBcReconstructor());
       const std::shared_ptr<Reconstructor> extrapolationReconstructor(new ExtrapolationReconstructor(velocityReconstructor));
       //SPtr<GbObject3D> geoObject(dynamicPointerCast<GbSphere3D>(geoObjectPrototype)->clone());
       SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototype->clone()));
-      sphereInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
-      sphereInt->setBlockVisitor(bcVisitor);
-
-      demCoProcessor->addInteractor(sphereInt, geoObjectMaterial, Vector3D(0.0, 0.0, 0.0));
+      geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
+      geoObjectInt->setBlockVisitor(bcVisitor);
+      //SetSolidOrBoundaryBlockVisitor setSolidVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::SOLID);
+      //grid->accept(setSolidVisitor);
+      SetSolidOrBoundaryBlockVisitor setBcVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::BC);
+      grid->accept(setBcVisitor);
+      geoObjectInt->initInteractor();
+      grid->accept(*bcVisitor.get());
+      demCoProcessor->addInteractor(geoObjectInt, geoObjectMaterial, Vector3D(0.0, 0.0, 0.0));
       demCoProcessor->distributeIDs();
+
+      UBLOG(logINFO, "CreateGeoObjectsCoProcessor::process() step = "<<step);
    }
 }
 

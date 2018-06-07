@@ -67,7 +67,7 @@ void pf1()
    int myid = comm->getProcessID();
 
    //parameters
-   string          pathname = "d:/temp/pflow_pipe_forcing2";
+   string          pathname = "d:/temp/thermoplast";
    int             numOfThreads = 1;
    int             blocknx[3] ={ 16,16,16 };
    double          endTime = 1000000;
@@ -85,7 +85,7 @@ void pf1()
    double g_minX2 = 0.0;
    double g_minX3 = 0.0;
 
-   double g_maxX1 = 64;
+   double g_maxX1 = 32;
    double g_maxX2 = 32;
    double g_maxX3 = 32;
 
@@ -187,7 +187,7 @@ void pf1()
    SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
    InteractorsHelper intHelper(grid, metisVisitor);
    intHelper.addInteractor(cylinderInt);
-   intHelper.addInteractor(sphereInt1);
+   //intHelper.addInteractor(sphereInt1);
    intHelper.addInteractor(inflowInt);
    intHelper.addInteractor(outflowInt);
 
@@ -256,16 +256,20 @@ void pf1()
    //write data for visualization of boundary conditions
    {
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm);
       ppgeo.process(0);
    }
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
    //write data for visualization of macroscopic quantities
-   SPtr<UbScheduler> visSch(new UbScheduler(outTime));
+   SPtr<UbScheduler> visSch(new UbScheduler(outTime,1));
    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, 
       WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+
+   SPtr<WriteBoundaryConditionsCoProcessor> writeBCCoProcessor(new WriteBoundaryConditionsCoProcessor(grid, visSch, pathname,
+      WbWriterVtkXmlASCII::getInstance(), comm));
+
 
    //performance control
    SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
@@ -300,9 +304,10 @@ void pf1()
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
    //SPtr<Calculator> calculator(new DemCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
-   calculator->addCoProcessor(writeMQCoProcessor);
-   calculator->addCoProcessor(demCoProcessor);
    calculator->addCoProcessor(createSphereCoProcessor);
+   calculator->addCoProcessor(demCoProcessor);
+   calculator->addCoProcessor(writeBCCoProcessor);
+   calculator->addCoProcessor(writeMQCoProcessor);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();

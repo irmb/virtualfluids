@@ -22,12 +22,10 @@ WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor()
 }
 //////////////////////////////////////////////////////////////////////////
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-   const std::string& path, WbWriter* const writer,
-   SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm)
+   const std::string& path, WbWriter* const writer, SPtr<Communicator> comm)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
-   conv(conv),
    comm(comm)
 {
    gridRank = comm->getProcessID();
