@@ -98,7 +98,7 @@ HOSTDEVICE bool Field::isStopperSolid(uint index) const
 
 HOSTDEVICE bool Field::isStopper(uint index) const
 {
-    return isStopperOutOfGrid(index) || isStopperCoarseUnderFine(index) || isStopperSolid(index);
+    return isStopperOutOfGrid(index) || isStopperCoarseUnderFine(index) || isStopperSolid(index) || is(index, STOPPER_OUT_OF_GRID_BOUNDARY);
 }
 
 HOSTDEVICE bool Field::isQ(uint index) const

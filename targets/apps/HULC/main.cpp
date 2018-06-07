@@ -320,20 +320,25 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
-	real dx = 0.25;
-	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/ShpereNotOptimal.stl");
-	gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, dx);
-	gridBuilder->addGrid(new Sphere(0, 0, 0, 2.5), 2);
-	gridBuilder->addGeometry(triangularMesh);
+	real dx = 0.5;
+	TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/ShpereNotOptimal.stl");
+	gridBuilder->addCoarseGrid(-10, -10, -5, 10, 10, 5, dx);
+
+	//gridBuilder->addGrid(new Cuboid(-5, -5, -20, 5, 5, 20), 1);
+	//gridBuilder->addGrid(new Sphere( 0, 0, -5, 4), 2);
+	gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 5, 20), 2);
+
+	//gridBuilder->addGeometry(triangularMesh);
 	//gridBuilder->addGrid(new Sphere(0, 0, 0, 0.1), 10);//until level 7 works
 	////////////////////////////////////////////////////////////////////////////
 	//general call
-	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+	gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+
     gridBuilder->buildGrids(LBM); // buildGrids() has to be called before setting the BCs!!!!
 	///////////////////////////////////////////////////////////////////////////
 	//BCs
-	gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
+	//gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+ //   gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
  //   gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
  //   gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
 	//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.001, 0.0, 0.0);
@@ -345,7 +350,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.001, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
 
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
@@ -373,35 +378,88 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
 
-    gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/SmallSphere_level_");
-	gridBuilder->writeArrows("M:/TestGridGeneration/results/SmallSphere_Arrow_Qs");
+    gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/out/gridTest_");
+	//gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/out/gridTest_Arrow");
+
+
+	//{
+	//	SPtr<Grid> grid = gridBuilder->getGrid(2);
+
+	//	uint counter = 0;
+	//	for (uint gridIdx = 0; gridIdx < grid->getSize(); gridIdx++) {
+
+	//		if (grid->getFieldEntry(gridIdx) == BC_GEOMETRY) {
+	//			real x, y, z;
+	//			grid->transIndexToCoords(gridIdx, x, y, z);
+	//			if (fabs(z) > dx) continue;
+	//			std::cout << x << " " << y << " " << z << std::endl;
+	//			for (uint fIdx = 0; fIdx < 27; fIdx++) {
+	//				if (!vf::Math::equal(grid->getDistribution()[fIdx * grid->getSize() + gridIdx], 0.0)) {
+	//					std::cout << fIdx << "\t" << grid->getDistribution()[fIdx * grid->getSize() + gridIdx] << std::endl;
+	//				}
+	//			}
+	//			counter++;
+	//			if (counter > 10) break;
+	//		}
+	//	}
+	//}
 
 
 	{
-		SPtr<Grid> grid = gridBuilder->getGrid(2);
+        uint level = 2;
+
+        SPtr<Grid> grid = gridBuilder->getGrid(level);
+
+        real* xCoords   = new real [ grid->getSparseSize() ];
+        real* yCoords   = new real [ grid->getSparseSize() ];
+        real* zCoords   = new real [ grid->getSparseSize() ];
+        uint* xNeighbor = new uint [ grid->getSparseSize() ];
+        uint* yNeighbor = new uint [ grid->getSparseSize() ];
+        uint* zNeighbor = new uint [ grid->getSparseSize() ];
+        uint* geo       = new uint [ grid->getSparseSize() ];
+
+        gridBuilder->getNodeValues(xCoords, yCoords, zCoords, xNeighbor, yNeighbor, zNeighbor, geo, level);
 
 		uint counter = 0;
 		for (uint gridIdx = 0; gridIdx < grid->getSize(); gridIdx++) {
 
-			if (grid->getFieldEntry(gridIdx) == BC_GEOMETRY) {
-				real x, y, z;
-				grid->transIndexToCoords(gridIdx, x, y, z);
-				if (fabs(z) > dx) continue;
-				std::cout << x << " " << y << " " << z << std::endl;
-				for (uint fIdx = 0; fIdx < 27; fIdx++) {
-					if (!vf::Math::equal(grid->getDistribution()[fIdx * grid->getSize() + gridIdx], 0.0)) {
-						std::cout << fIdx << "\t" << grid->getDistribution()[fIdx * grid->getSize() + gridIdx] << std::endl;
-					}
-				}
-				counter++;
-				if (counter > 10) break;
-			}
+            //if( grid->getFieldEntry(gridIdx) != FLUID ) continue;
+
+			real x, y, z;
+			grid->transIndexToCoords(gridIdx, x, y, z);
+            
+			if(level == 0) if ( !vf::Math::equal(z, 4.5   ) ) continue;
+			if(level == 1) if ( !vf::Math::equal(z, 4.625 ) ) continue;
+			if(level == 2) if ( !vf::Math::equal(z, 4.8125/*4.6875*/) ) continue;
+
+            if( grid->getSparseIndex( gridIdx ) == -1 ) continue;
+
+            std::cout << int( grid->getFieldEntry(gridIdx) ) << " ";
+
+			std::cout << grid->getSparseIndex( gridIdx ) << " (" << x << " " << y << " " << z << ") --> ";
+
+            uint neighborIndex = grid->getNeighborsZ()[ gridIdx ];
+
+            std::cout << neighborIndex << " (" << xCoords[neighborIndex + 1] << " "
+                                               << yCoords[neighborIndex + 1] << " "
+                                               << zCoords[neighborIndex + 1] << ")" << std::endl;
+
+			counter++;
+			//if (counter > 1000) break;
 		}
+
+        //delete [] xCoords;
+        //delete [] yCoords;
+        //delete [] zCoords;
+        //delete [] xNeighbor;
+        //delete [] yNeighbor;
+        //delete [] zNeighbor;
+        //delete [] geo;
 	}
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-
+    return;
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
@@ -426,29 +484,30 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
    MPI_Init(&argc, &argv);
-   std::string str, str2; 
-   if ( argv != NULL )
-   {
-      str = static_cast<std::string>(argv[0]);
-      if (argc > 1)
-      {
-         str2 = static_cast<std::string>(argv[1]);
+   //std::string str, str2; 
+   //if ( argv != NULL )
+   //{
+   //   str = static_cast<std::string>(argv[0]);
+   //   if (argc > 1)
+   //   {
+   //      str2 = static_cast<std::string>(argv[1]);
          try
          {
-             multipleLevel(str2);
+             //multipleLevel(str2);
+             multipleLevel("");
          }
          catch (std::exception e)
          {
              std::cout << e.what() << std::flush;
              //MPI_Abort(MPI_COMM_WORLD, -1);
          }
-      }
-      else
-      {
-          std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
-         //MPI_Abort(MPI_COMM_WORLD, -1);
-      }
-   }
+   //   }
+   //   else
+   //   {
+   //       std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+   //      //MPI_Abort(MPI_COMM_WORLD, -1);
+   //   }
+   //}
    /*
    MPE_Init_log() & MPE_Finish_log() are NOT needed when
    liblmpe.a is linked with this program.  In that case,

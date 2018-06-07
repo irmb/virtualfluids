@@ -599,7 +599,8 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
         real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
         neighborCoords[direction] = neighborCoords[direction] + delta;
         const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
-        if(!field.isStopperOutOfGrid(neighborIndex))
+
+        if(!field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
             return coords[direction] + delta;
 
         return getFirstFluidNode(coords, direction, startCoord);

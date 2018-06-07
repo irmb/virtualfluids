@@ -95,7 +95,8 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
 
 void LevelGridBuilder::setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z)
 {
-    grids[0]->setPeriodicity(periodic_X, periodic_Y, periodic_Z);
+    for( uint level = 0; level < this->grids.size(); level++ )
+        grids[level]->setPeriodicity(periodic_X, periodic_Y, periodic_Z);
 }
 
 void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)

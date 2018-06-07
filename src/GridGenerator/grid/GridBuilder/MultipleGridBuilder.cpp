@@ -353,12 +353,12 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
-	//if (lbmOrGks == LBM) {
-	//	for (size_t i = 0; i < grids.size() - 1; i++)
-	//		grids[i]->findSparseIndices(grids[i + 1]);
+	if (lbmOrGks == LBM) {
+		for (size_t i = 0; i < grids.size() - 1; i++)
+			grids[i]->findSparseIndices(grids[i + 1]);
 
-	//	grids[grids.size() - 1]->findSparseIndices(nullptr);
-	//}
+		grids[grids.size() - 1]->findSparseIndices(nullptr);
+	}
 }
 
 
