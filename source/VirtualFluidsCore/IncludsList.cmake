@@ -1,6 +1,5 @@
 #directory pathes for header files
 
-INCLUDE_DIRECTORIES(${SOURCE_ROOT})
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions)
 INCLUDE_DIRECTORIES(${SOURCE_ROOT}/VirtualFluidsCore/Connectors)
