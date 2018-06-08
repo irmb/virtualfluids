@@ -157,5 +157,6 @@ ENDIF()
 
 add_subdirectory(VirtualFluidsCore)
 
-INCLUDE("Applications.cmake")
+set(APPS_ROOT "${SOURCE_ROOT}/Applications")
+INCLUDE(${APPS_ROOT}/Applications.cmake)
 

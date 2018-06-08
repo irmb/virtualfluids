@@ -5,7 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 ########################################################
 PROJECT(thermoplast)
 IF(${USE_DEM_COUPLING})
-	INCLUDE(${SOURCE_ROOT}/IncludsList.cmake) 
+	INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
 	INCLUDE(${SOURCE_ROOT}/DemCoupling/IncludsList.cmake)
 
 	#################################################################

@@ -5,7 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 ########################################################
 PROJECT(sphere)
 
-INCLUDE(${SOURCE_ROOT}/IncludsList.cmake) 
+INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
 
 #################################################################
 ###   LOCAL FILES                                             ###
