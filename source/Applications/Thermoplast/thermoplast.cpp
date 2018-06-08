@@ -71,7 +71,7 @@ void pf1()
    int             numOfThreads = 1;
    int             blocknx[3] ={ 16,16,16 };
    double          endTime = 1000000;
-   double          outTime = 100;
+   double          outTime = 10;
    double          availMem = 8e9;
    double          deltax = 1;
    double          rhoLB = 0.0;
@@ -178,10 +178,30 @@ void pf1()
    //outflow
    SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowAdapter, Interactor3D::SOLID));
 
-   SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
-   InteractorsHelper intHelper(grid, metisVisitor);
+   //PE
+   double refLengthLb = radius*2.0;
+   double refLengthWorld = refLengthLb * deltax;
+   double refVelWorld = 0.1;
+   //const std::shared_ptr<LBMUnitConverter> lbmUnitConverter = std::make_shared<LBMUnitConverter>(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::AIR_20C, refLengthLb);
+   const SPtr<LBMUnitConverter> lbmUnitConverter(new LBMUnitConverter(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::OIL, refLengthLb));
+   if (myid == 0) std::cout << lbmUnitConverter->toString() << std::endl;
+   double rhoSphere = 915 * lbmUnitConverter->getFactorDensityWToLb(); // 2 // kg/m^3
+   if (myid == 0) UBLOG(logINFO, "rhoSphere = "<<rhoSphere);
+   SPtr<PhysicsEngineMaterialAdapter> sphereMaterial(new PePhysicsEngineMaterialAdapter("Polyethylen", rhoSphere, 0, 0.15, 0.1, 0.45, 0.5, 1, 0, 0));
+   const int timestep = 2;
+   const SPtr<UbScheduler> peScheduler(new UbScheduler(timestep));
+   SPtr<DemCoProcessor> demCoProcessor = makePeCoProcessor(grid, comm, peScheduler, lbmUnitConverter);
+   //demCoProcessor->addInteractor(sphereInt1, sphereMaterial, Vector3D(0.0, 0.0, 0.0));
+   //demCoProcessor->distributeIDs();
+   demCoProcessor->setBlockVisitor(bcVisitor);
+   double g = 9.81 * lbmUnitConverter->getFactorAccWToLb();
+   double rhoFluid = lbmUnitConverter->getFactorDensityWToLb() * 830.0; // 1 // kg/m^3
+   //////////////////////////////////////////////////////////////////////////
+
+   SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
+   InteractorsHelper intHelper(grid, peVisitor);
    intHelper.addInteractor(boxInt);
-   intHelper.addInteractor(sphereInt1);
+   //intHelper.addInteractor(sphereInt1);
    intHelper.addInteractor(inflowInt);
    intHelper.addInteractor(outflowInt);
 
@@ -259,10 +279,10 @@ void pf1()
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime,1));
    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, 
-      WbWriterVtkXmlASCII::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
+      WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
    SPtr<WriteBoundaryConditionsCoProcessor> writeBCCoProcessor(new WriteBoundaryConditionsCoProcessor(grid, visSch, pathname,
-      WbWriterVtkXmlASCII::getInstance(), comm));
+      WbWriterVtkXmlBinary::getInstance(), comm));
 
 
    //performance control
@@ -270,26 +290,8 @@ void pf1()
    SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
    //////////////////////////////////////////////////////////////////////////
-   //PE
-   double refLengthLb = radius*2.0;
-   double refLengthWorld = refLengthLb * deltax;
-   double refVelWorld = 0.1;
-   //const std::shared_ptr<LBMUnitConverter> lbmUnitConverter = std::make_shared<LBMUnitConverter>(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::AIR_20C, refLengthLb);
-   const SPtr<LBMUnitConverter> lbmUnitConverter(new LBMUnitConverter(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::OIL, refLengthLb));
-   if (myid == 0) std::cout << lbmUnitConverter->toString() << std::endl;
-   double rhoSphere = 915 * lbmUnitConverter->getFactorDensityWToLb(); // 2 // kg/m^3
-   if (myid == 0) UBLOG(logINFO, "rhoSphere = "<<rhoSphere);
-   SPtr<PhysicsEngineMaterialAdapter> sphereMaterial(new PePhysicsEngineMaterialAdapter("Polyethylen", rhoSphere, 0, 0.15, 0.1, 0.45, 0.5, 1, 0, 0));
-   const int timestep = 2;
-   const SPtr<UbScheduler> peScheduler(new UbScheduler(timestep));
-   SPtr<DemCoProcessor> demCoProcessor = makePeCoProcessor(grid, comm, peScheduler, lbmUnitConverter);
-   demCoProcessor->addInteractor(sphereInt1, sphereMaterial, Vector3D(0.0, 0.0, 0.0));
-   demCoProcessor->distributeIDs();
-   demCoProcessor->setBlockVisitor(bcVisitor);
-   double g = 9.81 * lbmUnitConverter->getFactorAccWToLb();
-   double rhoFluid = lbmUnitConverter->getFactorDensityWToLb() * 830.0; // 1 // kg/m^3
-   //////////////////////////////////////////////////////////////////////////
-   SPtr<UbScheduler> sphereScheduler(new UbScheduler(2.0*radius/uLB,1));
+
+   SPtr<UbScheduler> sphereScheduler(new UbScheduler(1,1,2));
    SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphere1,sphereMaterial));
 
 
@@ -299,8 +301,11 @@ void pf1()
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
    //SPtr<Calculator> calculator(new DemCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
-   //calculator->addCoProcessor(createSphereCoProcessor);
+   
+   calculator->addCoProcessor(createSphereCoProcessor);
    calculator->addCoProcessor(demCoProcessor);
+   
+   
    calculator->addCoProcessor(writeBCCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
 

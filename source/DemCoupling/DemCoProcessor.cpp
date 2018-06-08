@@ -36,6 +36,8 @@ DemCoProcessor::~DemCoProcessor()
 void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial, Vector3D initalVelocity)
 {
    interactors.push_back(interactor);
+   const int id = static_cast<int>(interactors.size()) - 1;
+   interactor->setID(id);
    const auto peGeometry = this->createPhysicsEngineGeometryAdapter(interactor, physicsEngineMaterial);
    if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometry)->isActive())
    {

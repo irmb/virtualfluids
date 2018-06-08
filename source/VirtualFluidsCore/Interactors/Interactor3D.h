@@ -58,6 +58,7 @@ public:
    virtual std::vector<SPtr<Block3D> >& getSolidBlockSet() { return this->solidBlocks; }
    virtual void removeSolidBlocks() { this->solidBlocks.clear(); }
 
+   void setID(int id);
    int getID();
 
    void setActive();
@@ -97,7 +98,7 @@ protected:
    int accuracy;
    
    bool active;
-   static int id;
+   int id;
 
 public:
    static const int SOLID	            ;//= (1<<0); //1

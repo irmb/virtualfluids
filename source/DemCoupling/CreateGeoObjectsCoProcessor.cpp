@@ -25,7 +25,36 @@ CreateGeoObjectsCoProcessor::CreateGeoObjectsCoProcessor(SPtr<Grid3D> grid, SPtr
 //////////////////////////////////////////////////////////////////////////
 void CreateGeoObjectsCoProcessor::process(double step)
 {
-   if (scheduler->isDue(step))
+   //if (scheduler->isDue(step))
+   //{
+   //   mu::Parser fct2;
+   //   fct2.SetExpr("U");
+   //   fct2.DefineConst("U", 0.0);
+   //   SPtr<BCAdapter> velocityBcParticleAdapter(new VelocityBCAdapter(true, false, false, fct2, 0, BCFunction::INFCONST));
+   //   velocityBcParticleAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+
+   //   SPtr<MovableObjectInteractor> geoObjectInt;
+   //   const std::shared_ptr<Reconstructor> velocityReconstructor(new VelocityBcReconstructor());
+   //   const std::shared_ptr<Reconstructor> extrapolationReconstructor(new ExtrapolationReconstructor(velocityReconstructor));
+   //   
+   //   //SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototype->clone()));
+   //   
+   //   double radius = 5;
+   //   SPtr<GbObject3D> geoObject(new GbSphere3D(10, 16, 16, radius));
+
+   //   geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
+   //   //SetSolidOrBoundaryBlockVisitor setSolidVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::SOLID);
+   //   //grid->accept(setSolidVisitor);
+   //   SetSolidOrBoundaryBlockVisitor setBcVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::BC);
+   //   grid->accept(setBcVisitor);
+   //   geoObjectInt->initInteractor();
+   //   demCoProcessor->addInteractor(geoObjectInt, geoObjectMaterial, Vector3D(0.0, 0.0, 0.0));
+   //   demCoProcessor->distributeIDs();
+
+   //   UBLOG(logINFO, "CreateGeoObjectsCoProcessor::process() step = "<<step);
+   //}
+
+   if (step == 1)
    {
       mu::Parser fct2;
       fct2.SetExpr("U");
@@ -36,7 +65,41 @@ void CreateGeoObjectsCoProcessor::process(double step)
       SPtr<MovableObjectInteractor> geoObjectInt;
       const std::shared_ptr<Reconstructor> velocityReconstructor(new VelocityBcReconstructor());
       const std::shared_ptr<Reconstructor> extrapolationReconstructor(new ExtrapolationReconstructor(velocityReconstructor));
-      SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototype->clone()));
+
+      //SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototype->clone()));
+
+      double radius = 5;
+      SPtr<GbObject3D> geoObject(new GbSphere3D(10, 16, 10, radius));
+
+      geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
+      //SetSolidOrBoundaryBlockVisitor setSolidVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::SOLID);
+      //grid->accept(setSolidVisitor);
+      SetSolidOrBoundaryBlockVisitor setBcVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::BC);
+      grid->accept(setBcVisitor);
+      geoObjectInt->initInteractor();
+      demCoProcessor->addInteractor(geoObjectInt, geoObjectMaterial, Vector3D(0.0, 0.0, 0.0));
+      demCoProcessor->distributeIDs();
+
+      UBLOG(logINFO, "CreateGeoObjectsCoProcessor::process() step = "<<step);
+   }
+
+   if (step==1)
+   {
+      mu::Parser fct2;
+      fct2.SetExpr("U");
+      fct2.DefineConst("U", 0.0);
+      SPtr<BCAdapter> velocityBcParticleAdapter(new VelocityBCAdapter(true, false, false, fct2, 0, BCFunction::INFCONST));
+      velocityBcParticleAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+
+      SPtr<MovableObjectInteractor> geoObjectInt;
+      const std::shared_ptr<Reconstructor> velocityReconstructor(new VelocityBcReconstructor());
+      const std::shared_ptr<Reconstructor> extrapolationReconstructor(new ExtrapolationReconstructor(velocityReconstructor));
+
+      //SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototype->clone()));
+
+      double radius = 5;
+      SPtr<GbObject3D> geoObject(new GbSphere3D(10, 16, 23, radius));
+
       geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
       //SetSolidOrBoundaryBlockVisitor setSolidVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::SOLID);
       //grid->accept(setSolidVisitor);
