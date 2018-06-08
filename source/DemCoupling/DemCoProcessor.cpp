@@ -43,12 +43,10 @@ void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> inte
    {
       peGeometry->setLinearVelolocity(initalVelocity);
       physicsEngineGeometries.push_back(peGeometry);
-      //interactor->setActive();
    }
    else
    {
       physicsEngineGeometries.push_back(peGeometry);
-      //interactor->setInactive();
    }
 }
 
@@ -189,13 +187,10 @@ void DemCoProcessor::calculateDemTimeStep(double step) const
 
    for (int i = 0; i < physicsEngineGeometries.size(); i++)
    {
-      //if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
-      {
       physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
       {
          interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
-      }
       }
    }
 }
@@ -245,14 +240,11 @@ void DemCoProcessor::distributeIDs()
 
    for (int i = 0; i < physicsEngineGeometries.size(); i++)
    {
-      //if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
-      {
          physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
          if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
          {
             interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
          }
-      }
    }
 }
 

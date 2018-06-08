@@ -67,11 +67,11 @@ void pf1()
    int myid = comm->getProcessID();
 
    //parameters
-   string          pathname = "d:/temp/thermoplast";
+   string          pathname = "d:/temp/thermoplast3";
    int             numOfThreads = 1;
    int             blocknx[3] ={ 16,16,16 };
    double          endTime = 1000000;
-   double          outTime = 10;
+   double          outTime = 100;
    double          availMem = 8e9;
    double          deltax = 1;
    double          rhoLB = 0.0;
@@ -109,6 +109,7 @@ void pf1()
       UBLOG(logINFO, "rhoLB = " << rhoLB);
       UBLOG(logINFO, "nuLB = " << nuLB);
       UBLOG(logINFO, "deltaX = " << deltax);
+      UBLOG(logINFO, "Re = " << uLB*(g_maxX3-g_minX3)/nuLB);
       UBLOG(logINFO, "Preprocess - start");
    }
 
@@ -185,7 +186,7 @@ void pf1()
    //const std::shared_ptr<LBMUnitConverter> lbmUnitConverter = std::make_shared<LBMUnitConverter>(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::AIR_20C, refLengthLb);
    const SPtr<LBMUnitConverter> lbmUnitConverter(new LBMUnitConverter(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::OIL, refLengthLb));
    if (myid == 0) std::cout << lbmUnitConverter->toString() << std::endl;
-   double rhoSphere = 915 * lbmUnitConverter->getFactorDensityWToLb(); // 2 // kg/m^3
+   double rhoSphere = 0.7625;//915 * lbmUnitConverter->getFactorDensityWToLb(); // 2 // kg/m^3
    if (myid == 0) UBLOG(logINFO, "rhoSphere = "<<rhoSphere);
    SPtr<PhysicsEngineMaterialAdapter> sphereMaterial(new PePhysicsEngineMaterialAdapter("Polyethylen", rhoSphere, 0, 0.15, 0.1, 0.45, 0.5, 1, 0, 0));
    const int timestep = 2;
@@ -272,12 +273,15 @@ void pf1()
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
       WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm);
       ppgeo.process(0);
+
+      WriteMacroscopicQuantitiesCoProcessor ppInit(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+      ppInit.process(0);
    }
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
    //write data for visualization of macroscopic quantities
-   SPtr<UbScheduler> visSch(new UbScheduler(outTime,1));
+   SPtr<UbScheduler> visSch(new UbScheduler(outTime));
    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, 
       WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
@@ -291,14 +295,14 @@ void pf1()
 
    //////////////////////////////////////////////////////////////////////////
 
-   SPtr<UbScheduler> sphereScheduler(new UbScheduler(1,1,2));
+   SPtr<UbScheduler> sphereScheduler(new UbScheduler(1000,10,1010));
    SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphere1,sphereMaterial));
 
 
    //start simulation 
    //omp_set_num_threads(numOfThreads);
-   SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
-   SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+   //SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
+   SPtr<Calculator> calculator(new BasicCalculator(grid, peScheduler, endTime));
    //SPtr<Calculator> calculator(new DemCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
    
