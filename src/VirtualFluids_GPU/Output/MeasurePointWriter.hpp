@@ -265,6 +265,30 @@ public:
 		out.writeLine();
 	}
 
+	static void writeNodes(SPtr<Parameter> para, int level)
+	{
+		ostringstream convert;   // stream used for the conversion
+		std::string st = convert.str();
+		UbFileOutputASCII out(para->getFName() + "_Nodes_" + std::to_string(level) + ".dat");
+
+		out.writeString("Level:");
+		out.writeInteger(level);
+		out.writeLine();
+		out.writeString("Index  Nx  Ny  Ny");
+		out.writeLine();
+		int numberNodes = (int)para->getParH(level)->size_Mat_SP;
+		out.writeInteger(numberNodes);
+		out.writeLine();
+		for (int u = 0; u < numberNodes; u++)
+		{
+			out.writeInteger((int)(u));
+			out.writeInteger((int)(para->getParH(level)->neighborX_SP[u]));
+			out.writeInteger((int)(para->getParH(level)->neighborY_SP[u]));
+			out.writeInteger((int)(para->getParH(level)->neighborZ_SP[u]));
+			out.writeLine();
+		}
+		out.writeLine();
+	}
 protected:
 
 private:
