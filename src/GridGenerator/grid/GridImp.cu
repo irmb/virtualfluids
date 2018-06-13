@@ -551,7 +551,7 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
     if (this->field.isStopper(index))
     {
         this->setStopperNeighborCoords(index);
-        return;
+        //return;
     }
 
     if (this->sparseIndices[index] == -1)

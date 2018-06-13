@@ -154,7 +154,7 @@ void PX::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getEndX(), grid[level - 1]->getStartY() + (grid[level - 1]->getEndY() - grid[level - 1]->getStartY()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
         real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, X_INDEX, grid[level - 1]->getEndX());
-        if (startCoord > startCoordCoarser)
+        if (startCoord < startCoordCoarser)
             return;
     }
 
@@ -203,7 +203,7 @@ void PY::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getEndY(), grid[level - 1]->getStartX() + (grid[level - 1]->getEndX() - grid[level - 1]->getStartX()) / 2.0, grid[level - 1]->getStartZ() + (grid[level - 1]->getEndZ() - grid[level - 1]->getStartZ()) / 2.0 };
         real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, Y_INDEX, grid[level - 1]->getEndY());
-        if (startCoord > startCoordCoarser)
+        if (startCoord < startCoordCoarser)
             return;
     }
 
@@ -252,7 +252,7 @@ void PZ::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCond
     if (level > 0) {
         real coords[3] = { grid[level - 1]->getEndZ(), grid[level - 1]->getStartX() + (grid[level - 1]->getEndX() - grid[level - 1]->getStartX()) / 2.0,  grid[level]->getStartY() + (grid[level]->getEndY() - grid[level]->getStartY()) / 2.0 };
         real startCoordCoarser = grid[level - 1]->getLastFluidNode(coords, Z_INDEX, grid[level - 1]->getEndZ());
-        if (startCoord > startCoordCoarser)
+        if (startCoord < startCoordCoarser)
             return;
     }
 
