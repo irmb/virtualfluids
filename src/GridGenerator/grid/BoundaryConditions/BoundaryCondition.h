@@ -86,7 +86,7 @@ private:
 public:
     char getType() const override
     {
-        return BC_GEOMETRY;
+        return BC_SOLID;
     }
 };
 

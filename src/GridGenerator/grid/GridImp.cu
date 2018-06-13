@@ -762,7 +762,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 if(hasNeighborOfType(index, STOPPER_SOLID)) //TODO: not working with thin walls
                 {
-                    field.setFieldEntry(index, BC_GEOMETRY);
+                    field.setFieldEntry(index, BC_SOLID);
                     calculateQs(point, triangle);
                 }
             }

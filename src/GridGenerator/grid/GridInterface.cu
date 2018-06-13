@@ -142,7 +142,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
     if(!neighborBelongsToFineToCoarseInterpolationCell && (fineGrid->getField().isInvalidSolid(indexOnFineGridFC) || 
 	                                                       fineGrid->getField().isFluid(indexOnFineGridFC) ||
 	                                                       fineGrid->getField().is(indexOnFineGridFC, STOPPER_SOLID) || 
-	                                                       fineGrid->getField().is(indexOnFineGridFC, BC_GEOMETRY)))
+	                                                       fineGrid->getField().is(indexOnFineGridFC, BC_SOLID)))
         coarseGrid->getField().setFieldEntryToInvalidCoarseUnderFine(indexOnCoarseGrid);
 }
 

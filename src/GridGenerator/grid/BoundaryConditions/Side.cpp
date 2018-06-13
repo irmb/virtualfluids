@@ -68,7 +68,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<Bounda
 
     for (uint i = 0; i < grid[level]->getSize(); i++)
     {
-        if (grid[level]->getFieldEntry(i) != BC_GEOMETRY)
+        if (grid[level]->getFieldEntry(i) != BC_SOLID)
             continue;
 
         for (int dir = 0; dir < grid[level]->getEndDirection(); dir++)

@@ -329,7 +329,7 @@ void multipleLevel(const std::string& configPath)
 	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/ShpereNotOptimal.stl");
 	gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, dx);
 
-	gridBuilder->addGrid(new Cuboid(-5, -20, -5, 5, 20, 5), 1);
+	gridBuilder->addGrid(new Cuboid(-5, -5, -5, 5, 5, 5), 1);
 	//gridBuilder->addGrid(new Sphere( 0, 0, -5, 4), 2);
 	//gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 5, 20), 2);
 
@@ -337,7 +337,7 @@ void multipleLevel(const std::string& configPath)
 	//gridBuilder->addGrid(new Sphere(0, 0, 0, 0.1), 10);//until level 7 works
 	////////////////////////////////////////////////////////////////////////////
 	//general call
-	gridBuilder->setPeriodicBoundaryCondition(false, true, false);
+	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(LBM); // buildGrids() has to be called before setting the BCs!!!!
 	///////////////////////////////////////////////////////////////////////////
@@ -383,7 +383,8 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
 
-    gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/Sphere_");
+	gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/Sphere_");
+	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
 	//gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/out/gridTest_Arrow");
 
 
@@ -409,7 +410,76 @@ void multipleLevel(const std::string& configPath)
 	//	}
 	//}
 
+	//debug information
+	//{
+ //       uint level = 0;
 
+ //       SPtr<Grid> grid = gridBuilder->getGrid(level);
+
+ //       real* xCoords   = new real [ grid->getSparseSize() ];
+ //       real* yCoords   = new real [ grid->getSparseSize() ];
+ //       real* zCoords   = new real [ grid->getSparseSize() ];
+ //       uint* xNeighbor = new uint [ grid->getSparseSize() ];
+ //       uint* yNeighbor = new uint [ grid->getSparseSize() ];
+ //       uint* zNeighbor = new uint [ grid->getSparseSize() ];
+ //       uint* geo       = new uint [ grid->getSparseSize() ];
+
+ //       gridBuilder->getNodeValues(xCoords, yCoords, zCoords, xNeighbor, yNeighbor, zNeighbor, geo, level);
+
+	//	uint counter = 0;
+	//	for (uint gridIdx = 0; gridIdx < grid->getSize(); gridIdx++) {
+
+	//		////////////////////////////////////////////////////////////////////////////
+	//		if (grid->getFieldEntry(gridIdx) != FLUID_CFC) continue;
+
+	//		real x, y, z;
+	//		grid->transIndexToCoords(gridIdx, x, y, z);
+ //           
+	//		if(level == 0) if ( !vf::Math::equal(y, 4.5   ) && !vf::Math::equal(y, -4.5)) continue;
+	//		if(level == 1) if ( !vf::Math::equal(y, 4.625 ) ) continue;
+	//		if(level == 2) if ( !vf::Math::equal(y, 4.8125/*4.6875*/) ) continue;
+
+ //           if( grid->getSparseIndex( gridIdx ) == -1 ) continue;
+
+ //           std::cout << int( grid->getFieldEntry(gridIdx) ) << " ";
+
+	//		std::cout << grid->getSparseIndex( gridIdx ) << " (" << x << " " << y << " " << z << ") --> ";
+
+ //           uint neighborIndex = grid->getNeighborsZ()[ gridIdx ];
+
+ //           std::cout << neighborIndex << " (" << xCoords[neighborIndex + 1] << " "
+ //                                              << yCoords[neighborIndex + 1] << " "
+ //                                              << zCoords[neighborIndex + 1] << ")" << std::endl;
+
+	//		counter++;
+	//		////if (counter > 1000) break;
+	//		//////////////////////////////////////////////////////////////////////////////
+	//		//real x, y, z;
+	//		//grid->transIndexToCoords(gridIdx, x, y, z);
+
+	//		////one interesting stopper node
+	//		//int stopperOfInterest = 17528;
+	//		//if ((grid->getNeighborsX()[gridIdx] == stopperOfInterest) ||
+	//		//	(grid->getNeighborsY()[gridIdx] == stopperOfInterest) ||
+	//		//	(grid->getNeighborsZ()[gridIdx] == stopperOfInterest))
+	//		//{
+	//		//	std::cout << int(grid->getFieldEntry(gridIdx)) << " ";
+
+	//		//	std::cout << grid->getSparseIndex(gridIdx) << " (" << x << " " << y << " " << z << ") --> ";
+
+
+	//		//	std::cout << stopperOfInterest << " (" << xCoords[stopperOfInterest + 1] << " "
+	//		//		<< yCoords[stopperOfInterest + 1] << " "
+	//		//		<< zCoords[stopperOfInterest + 1] << ")" << std::endl;
+	//		//}
+
+	//		////////////////////////////////////////////////////////////////////////////
+	//	}
+	//}
+
+    //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
+
+    //return;
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
