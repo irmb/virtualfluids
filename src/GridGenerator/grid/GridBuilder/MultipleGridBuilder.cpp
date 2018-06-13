@@ -380,7 +380,7 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
         std::stringstream ss;
         ss << path << level << ".vtk";
 
-        GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
+        //GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
         GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
 }

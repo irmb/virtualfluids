@@ -548,10 +548,10 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
     neighborIndexY[index] = -1;
     neighborIndexZ[index] = -1;
 
-    if (this->field.isStopper(index))
+    if (this->field.isStopper(index) || this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY))
     {
         this->setStopperNeighborCoords(index);
-        //return;
+        return;
     }
 
     if (this->sparseIndices[index] == -1)
