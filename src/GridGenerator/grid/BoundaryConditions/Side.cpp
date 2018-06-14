@@ -13,7 +13,7 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
         for (real v2 = startOuter; v2 <= endOuter; v2 += grid->getDelta())
         {
             const uint index = getIndex(grid, coord, constant, v1, v2);
-            if (grid->getFieldEntry(index) == FLUID)
+            if ((index != INVALID_INDEX) && (grid->getFieldEntry(index) == FLUID))
             {
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
@@ -55,7 +55,7 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
         return grid->transCoordToIndex(v1, constant, v2);
     if (coord == "z")
         return grid->transCoordToIndex(v1, v2, constant);
-    return -1;
+    return INVALID_INDEX;
 }
 
 
