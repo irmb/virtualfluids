@@ -203,7 +203,10 @@ HOSTDEVICE bool GridImp::isOutSideOfGrid(Cell &cell) const
 HOSTDEVICE bool GridImp::contains(Cell &cell, char type) const
 {
     for (const auto point : cell) {
-        if (field.is(transCoordToIndex(point.x, point.y, point.z), type))
+		uint index = transCoordToIndex(point.x, point.y, point.z);
+		if (index == INVALID_INDEX)
+			continue;
+        if (field.is(index, type))
             return true;
     }
     return false;
@@ -212,7 +215,10 @@ HOSTDEVICE bool GridImp::contains(Cell &cell, char type) const
 HOSTDEVICE void GridImp::setNodeTo(Cell &cell, char type)
 {
     for (const auto point : cell) {
-        field.setFieldEntry(transCoordToIndex(point.x, point.y, point.z), type);
+		uint index = transCoordToIndex(point.x, point.y, point.z);
+		if (index == INVALID_INDEX)
+			continue;
+		field.setFieldEntry(index, type);
     }
 }
 
@@ -271,9 +277,9 @@ HOSTDEVICE bool GridImp::hasAllNeighbors(uint index) const
 	real x, y, z;
 	this->transIndexToCoords(index, x, y, z);
 	for (const auto dir : this->distribution) {
-		const int neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+		const uint neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
 
-		if (neighborIndex == -1) return false;
+		if (neighborIndex == INVALID_INDEX) return false;
 	}
 
 	return true;
@@ -285,9 +291,9 @@ HOSTDEVICE bool GridImp::hasNeighborOfType(uint index, char type) const
 	real x, y, z;
 	this->transIndexToCoords(index, x, y, z);
 	for (const auto dir : this->distribution) {
-		const int neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
+		const uint neighborIndex = this->transCoordToIndex(x + dir[0] * this->getDelta(), y + dir[1] * this->getDelta(), z + dir[2] * this->getDelta());
 
-		if (neighborIndex == -1) continue;
+		if (neighborIndex == INVALID_INDEX) continue;
 
 		if (this->field.is(neighborIndex, type))
 			return true;
@@ -353,13 +359,13 @@ HOSTDEVICE bool GridImp::nodeInNextCellIs(int index, char type) const
 
     const uint indexXYZ = transCoordToIndex(neighborX, neighborY, neighborZ);
 
-    const bool typeX = this->field.is(indexX, type);
-    const bool typeY = this->field.is(indexY, type);
-    const bool typeXY = this->field.is(indexXY, type);
-    const bool typeZ = this->field.is(indexZ, type);
-    const bool typeYZ = this->field.is(indexYZ, type);
-    const bool typeXZ = this->field.is(indexXZ, type);
-    const bool typeXYZ = this->field.is(indexXYZ, type);
+	const bool typeX   = indexX   == INVALID_INDEX ? false : this->field.is(indexX, type);
+	const bool typeY   = indexY   == INVALID_INDEX ? false : this->field.is(indexY, type);
+	const bool typeXY  = indexXY  == INVALID_INDEX ? false : this->field.is(indexXY, type);
+	const bool typeZ   = indexZ   == INVALID_INDEX ? false : this->field.is(indexZ, type);
+	const bool typeYZ  = indexYZ  == INVALID_INDEX ? false : this->field.is(indexYZ, type);
+	const bool typeXZ  = indexXZ  == INVALID_INDEX ? false : this->field.is(indexXZ, type);
+	const bool typeXYZ = indexXYZ == INVALID_INDEX ? false : this->field.is(indexXYZ, type);
 
     return typeX || typeY || typeXY || typeZ || typeYZ
         || typeXZ || typeXYZ;
@@ -384,13 +390,13 @@ HOSTDEVICE bool GridImp::nodeInPreviousCellIs(int index, char type) const
 
     const uint indexXYZ = transCoordToIndex(neighborX, neighborY, neighborZ);
 
-    const bool typeX = this->field.is(indexX, type);
-    const bool typeY = this->field.is(indexY, type);
-    const bool typeXY = this->field.is(indexXY, type);
-    const bool typeZ = this->field.is(indexZ, type);
-    const bool typeYZ = this->field.is(indexYZ, type);
-    const bool typeXZ = this->field.is(indexXZ, type);
-    const bool typeXYZ = this->field.is(indexXYZ, type);
+	const bool typeX   = indexX   == INVALID_INDEX ? false : this->field.is(indexX  , type);
+	const bool typeY   = indexY   == INVALID_INDEX ? false : this->field.is(indexY  , type);
+	const bool typeXY  = indexXY  == INVALID_INDEX ? false : this->field.is(indexXY , type);
+	const bool typeZ   = indexZ   == INVALID_INDEX ? false : this->field.is(indexZ  , type);
+	const bool typeYZ  = indexYZ  == INVALID_INDEX ? false : this->field.is(indexYZ , type);
+	const bool typeXZ  = indexXZ  == INVALID_INDEX ? false : this->field.is(indexXZ , type);
+	const bool typeXYZ = indexXYZ == INVALID_INDEX ? false : this->field.is(indexXYZ, type);
 
     return typeX || typeY || typeXY || typeZ || typeYZ
         || typeXZ || typeXYZ;
@@ -401,6 +407,8 @@ HOSTDEVICE bool GridImp::nodeInCellIs(Cell& cell, char type) const
     for (const auto node : cell)
     {
         const uint index = transCoordToIndex(node.x, node.y, node.z);
+		if (index == INVALID_INDEX)
+			continue;
         if (field.is(index, type))
             return true;
     }
@@ -417,7 +425,9 @@ void GridImp::setCellTo(uint index, char type)
     for (const auto node : cell)
     {
         const uint nodeIndex = transCoordToIndex(node.x, node.y, node.z);
-        this->field.setFieldEntry(nodeIndex, type);
+		if (nodeIndex == INVALID_INDEX)
+			continue;
+		this->field.setFieldEntry(nodeIndex, type);
     }
 }
 
@@ -431,6 +441,8 @@ void GridImp::setNonStopperOutOfGridCellTo(uint index, char type)
     for (const auto node : cell)
     {
         const uint nodeIndex = transCoordToIndex(node.x, node.y, node.z);
+		if (nodeIndex == INVALID_INDEX)
+			continue;
 
         if( this->getFieldEntry( nodeIndex ) != STOPPER_OUT_OF_GRID && 
             this->getFieldEntry( nodeIndex ) != STOPPER_OUT_OF_GRID_BOUNDARY )
@@ -461,21 +473,21 @@ void GridImp::setPeriodicityZ(bool periodicity)
     this->periodicityZ = periodicityZ;
 }
 
-HOSTDEVICE int GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
+HOSTDEVICE uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
-    const int xIndex = getXIndex(x);
-    const int yIndex = getYIndex(y);
-    const int zIndex = getZIndex(z);
+    const uint xIndex = getXIndex(x);
+    const uint yIndex = getYIndex(y);
+    const uint zIndex = getZIndex(z);
 
-    if (xIndex < 0 || yIndex < 0 || zIndex < 0 || uint(xIndex) >= nx || uint(yIndex) >= ny || uint(zIndex) >= nz)
-        return -1;
+	if (xIndex >= nx || yIndex >= ny || zIndex >= nz)
+        return INVALID_INDEX;
 
     return xIndex + nx * (yIndex + ny * zIndex);
 }
 
-HOSTDEVICE void GridImp::transIndexToCoords(int index, real &x, real &y, real &z) const
+HOSTDEVICE void GridImp::transIndexToCoords(uint index, real &x, real &y, real &z) const
 {
-    if (index < 0 || index >= int(size))
+    if (index == INVALID_INDEX)
         printf("Function: transIndexToCoords. GridImp Index: %d, size: %d. Exit Program!\n", index, size);
 
     x = index % nx;
@@ -886,19 +898,19 @@ HOSTDEVICE real GridImp::getMaximumOnNodes(const real& maxExact, const real& dec
     return maxNode;
 }
 
-HOSTDEVICE int GridImp::getXIndex(real x) const
+HOSTDEVICE uint GridImp::getXIndex(real x) const
 {
     return lround((x - startX) / delta);
 	//return int((x - startX) / delta);
 }
 
-HOSTDEVICE int GridImp::getYIndex(real y) const
+HOSTDEVICE uint GridImp::getYIndex(real y) const
 {
     return lround((y - startY) / delta);
 	//return int((y - startY) / delta);
 }
 
-HOSTDEVICE int GridImp::getZIndex(real z) const
+HOSTDEVICE uint GridImp::getZIndex(real z) const
 {
 	return lround((z - startZ) / delta);
 	//return int((z - startZ) / delta);

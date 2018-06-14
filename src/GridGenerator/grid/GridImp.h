@@ -45,9 +45,9 @@ private:
     HOSTDEVICE bool nodeInPreviousCellIs(int index, char type) const;
     HOSTDEVICE bool nodeInCellIs(Cell& cell, char type) const override;
 
-    HOSTDEVICE int getXIndex(real x) const;
-    HOSTDEVICE int getYIndex(real y) const;
-    HOSTDEVICE int getZIndex(real z) const;
+    HOSTDEVICE uint getXIndex(real x) const;
+    HOSTDEVICE uint getYIndex(real y) const;
+    HOSTDEVICE uint getZIndex(real z) const;
 
     uint level;
 
@@ -83,8 +83,8 @@ public:
     HOSTDEVICE void setCellTo(uint index, char type);
     HOSTDEVICE void setNonStopperOutOfGridCellTo(uint index, char type);
 
-    HOSTDEVICE int transCoordToIndex(const real &x, const real &y, const real &z) const override;
-    HOSTDEVICE void transIndexToCoords(int index, real &x, real &y, real &z) const override;
+    HOSTDEVICE uint transCoordToIndex(const real &x, const real &y, const real &z) const override;
+    HOSTDEVICE void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
     HOST void freeMemory() override;

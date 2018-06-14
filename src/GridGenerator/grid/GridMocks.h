@@ -51,13 +51,13 @@ public:
     virtual void getNodeValues(real* xCoords, real* yCoords, real* zCoords, unsigned* neighborX, unsigned* neighborY,
         unsigned* neighborZ, unsigned* geo) const override {}
     virtual SPtr<GridStrategy> getGridStrategy() const override { return nullptr; }
-    virtual void transIndexToCoords(int index, real& x, real& y, real& z) const override {}
+    virtual void transIndexToCoords(uint index, real& x, real& y, real& z) const override {}
     virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override {}
     virtual void freeMemory() override {}
 
     virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override {}
     virtual void mesh(TriangularMesh& geometry) override {}
-    virtual int transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
+    virtual uint transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }

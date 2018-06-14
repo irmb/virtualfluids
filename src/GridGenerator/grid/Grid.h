@@ -65,8 +65,8 @@ public:
     HOST virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const = 0;
 
     HOST virtual SPtr<GridStrategy> getGridStrategy() const = 0;
-    HOSTDEVICE virtual void transIndexToCoords(int index, real &x, real &y, real &z) const = 0;
-    HOSTDEVICE virtual int transCoordToIndex(const real &x, const real &y, const real &z) const = 0;
+    HOSTDEVICE virtual void transIndexToCoords(uint index, real &x, real &y, real &z) const = 0;
+    HOSTDEVICE virtual uint transCoordToIndex(const real &x, const real &y, const real &z) const = 0;
 
     HOST virtual void inital() = 0;
 
