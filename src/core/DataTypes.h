@@ -14,5 +14,6 @@ typedef float  real;
 #endif
 
 typedef unsigned int uint;
+#define INVALID_INDEX 4294967295 //=-1 in int
 
 #endif
