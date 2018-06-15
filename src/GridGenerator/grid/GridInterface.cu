@@ -21,8 +21,8 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
     if (!nodeOnCoarseGridIsFluid)
         return;
 
-    const int indexOnFineGridCF = getCoarseToFineIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
-    if (indexOnFineGridCF == -1)
+    const uint indexOnFineGridCF = getCoarseToFineIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
+    if (indexOnFineGridCF == INVALID_INDEX)
         return;
 
     const bool fineGridNodeIsFluid = fineGrid->getField().isFluid(indexOnFineGridCF);
