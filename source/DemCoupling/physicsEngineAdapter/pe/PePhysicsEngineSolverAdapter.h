@@ -41,8 +41,8 @@ namespace walberla
 
 struct PeParameter
 {
-    PeParameter(double relaxationParameter, int maxPeIterations, Vector3D globalLinearAcceleration, std::shared_ptr<PePhysicsEngineMaterialAdapter> planes, UbTupleInt3 simulationDomain, UbTupleInt3 numberOfBlocks, UbTupleBool3 isPeriodic)
-        : relaxationParameter(relaxationParameter), maxPeIterations(maxPeIterations), globalLinearAcceleration(globalLinearAcceleration), simulationDomain(simulationDomain), numberOfBlocks(numberOfBlocks), isPeriodic(isPeriodic), planes(planes)
+   PeParameter(double relaxationParameter, int maxPeIterations, Vector3D globalLinearAcceleration, std::shared_ptr<PePhysicsEngineMaterialAdapter> planes, std::array<double, 6> simulationDomain, UbTupleInt3 numberOfBlocks, UbTupleBool3 isPeriodic, Vector3D minOffset, Vector3D maxOffset)
+        : relaxationParameter(relaxationParameter), maxPeIterations(maxPeIterations), globalLinearAcceleration(globalLinearAcceleration), simulationDomain(simulationDomain), numberOfBlocks(numberOfBlocks), isPeriodic(isPeriodic), planes(planes), minOffset(minOffset), maxOffset(maxOffset)
     {
     }
 
@@ -50,11 +50,15 @@ struct PeParameter
     int maxPeIterations;
     Vector3D globalLinearAcceleration;
 
-    UbTupleInt3 simulationDomain;
+    std::array<double, 6> simulationDomain;
     UbTupleInt3 numberOfBlocks;
     UbTupleBool3 isPeriodic;
 
     std::shared_ptr<PePhysicsEngineMaterialAdapter> planes;
+
+    Vector3D minOffset;
+    Vector3D maxOffset;
+
 };
 
 class PePhysicsEngineSolverAdapter : public PhysicsEngineSolverAdapter

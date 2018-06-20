@@ -594,7 +594,7 @@ void run(string configname)
          //Post process
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
             ppgeo.process(0);
          }
 
@@ -730,6 +730,10 @@ void run(string configname)
       SPtr<IntegrateValuesHelper> mic6(new IntegrateValuesHelper(grid, comm, 0.3, 0.015,  -0.46+4.25*deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -0.46+5.25*deltaXcoarse));
       if (myid==0) GbSystem3D::writeGeoObject(mic6->getBoundingBox().get(), pathOut+"/geo/mic6", WbWriterVtkXmlBinary::getInstance());
       SPtr<TimeseriesCoProcessor> tsp6(new TimeseriesCoProcessor(grid, stepMV, mic6, pathOut+"/mic/mic6", comm));
+
+      SPtr<IntegrateValuesHelper> mic7(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -0.3+4.25*deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -0.3+5.25*deltaXcoarse));
+      if (myid==0) GbSystem3D::writeGeoObject(mic7->getBoundingBox().get(), pathOut+"/geo/mic7", WbWriterVtkXmlBinary::getInstance());
+      SPtr<TimeseriesCoProcessor> tsp7(new TimeseriesCoProcessor(grid, stepMV, mic7, pathOut+"/mic/mic7", comm));
 
       omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));

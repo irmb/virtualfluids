@@ -64,7 +64,9 @@ void PePhysicsEngineSolverAdapter::initalPeBlockForest()
 {
     forest = walberla::pe::createBlockForest
     (
-        walberla::AABB(0, 0, 0, val<1>(peParameter->simulationDomain), val<2>(peParameter->simulationDomain), val<3>(peParameter->simulationDomain)), // simulationDomain
+        //walberla::AABB(0, 0, 0, val<1>(peParameter->simulationDomain), val<2>(peParameter->simulationDomain), val<3>(peParameter->simulationDomain)), // simulationDomain
+       walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2], 
+          peParameter->simulationDomain[3], peParameter->simulationDomain[4], peParameter->simulationDomain[5]), // simulationDomain
         walberla::Vector3<walberla::uint_t>(val<1>(peParameter->numberOfBlocks), val<2>(peParameter->numberOfBlocks), val<3>(peParameter->numberOfBlocks)), // blocks in each direction
         walberla::Vector3<bool>(val<1>(peParameter->isPeriodic), val<2>(peParameter->isPeriodic), val<3>(peParameter->isPeriodic)) // periodicity
     ); 
@@ -103,12 +105,33 @@ void PePhysicsEngineSolverAdapter::initalPeChannel() const
     const walberla::pe::MaterialID material = peParameter->planes->getPeMaterial();
 
     auto simulationDomain = forest->getDomain();
-    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(1, 0, 0), simulationDomain.minCorner(), material);
-    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(-1, 0, 0), simulationDomain.maxCorner(), material);
-    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, 1, 0), simulationDomain.minCorner(), material);
-    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, -1, 0), simulationDomain.maxCorner(), material);
-    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, 0, 1), simulationDomain.minCorner(), material);
-    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, 0, -1), simulationDomain.maxCorner(), material);
+
+    //createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(1, 0, 0), simulationDomain.minCorner(), material);
+    //createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(-1, 0, 0), simulationDomain.maxCorner(), material);
+    //createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, 1, 0), simulationDomain.minCorner(), material);
+    //createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, -1, 0), simulationDomain.maxCorner(), material);
+    //createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, 0, 1), simulationDomain.minCorner(), material);
+    //createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(0, 0, -1), simulationDomain.maxCorner(), material);
+
+    Vector3D minOffset = peParameter->minOffset;
+    Vector3D maxOffset = peParameter->maxOffset;
+
+    walberla::pe::Vec3 minX1_Offset( minOffset.X1(), 0, 0);
+    walberla::pe::Vec3 maxX1_Offset( maxOffset.X1(), 0, 0);
+    walberla::pe::Vec3 minX2_Offset( 0, minOffset.X2(), 0);
+    walberla::pe::Vec3 maxX2_Offset( 0, maxOffset.X2(), 0);
+    walberla::pe::Vec3 minX3_Offset( 0, 0, minOffset.X3());
+    walberla::pe::Vec3 maxX3_Offset( 0, 0, maxOffset.X3());
+
+    walberla::pe::Vec3 minCorner = simulationDomain.minCorner();
+    walberla::pe::Vec3 maxCorner = simulationDomain.maxCorner();
+
+    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3( 1, 0, 0), minCorner + minX1_Offset, material);
+    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3(-1, 0, 0), maxCorner + maxX1_Offset, material);
+    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3( 0, 1, 0), minCorner + minX2_Offset, material);
+    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3( 0,-1, 0), maxCorner + maxX2_Offset, material);
+    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3( 0, 0, 1), minCorner + minX3_Offset, material);
+    createPlane(*globalBodyStorage, 0, walberla::pe::Vec3( 0, 0,-1), maxCorner + maxX3_Offset, material);
 }
 
 walberla::pe::RigidBody* PePhysicsEngineSolverAdapter::getPeGeoObject(walberla::id_t id)

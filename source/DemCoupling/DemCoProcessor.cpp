@@ -48,6 +48,7 @@ void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> inte
    {
       physicsEngineGeometries.push_back(peGeometry);
    }
+   distributeIDs();
 }
 
 
@@ -76,7 +77,7 @@ void DemCoProcessor::process(double actualTimeStep)
 
    if (scheduler->isDue(actualTimeStep))
    {
-      //UBLOG(logINFO, "DemCoProcessor::update - START" << step);
+      //UBLOG(logINFO, "DemCoProcessor::update - START - timestep = " << actualTimeStep);
       const double demTimeStepsPerIteration = scheduler->getMinStep();
 
       if (demTimeStepsPerIteration != 1)
@@ -102,7 +103,7 @@ void DemCoProcessor::process(double actualTimeStep)
 
       grid->accept(*boundaryConditionsBlockVisitor.get());
 
-      //UBLOG(logINFO, "DemCoProcessor::update - END" << step);
+      //UBLOG(logINFO, "DemCoProcessor::update - END - timestep = " << actualTimeStep);
    }
 }
 //////////////////////////////////////////////////////////////////////////

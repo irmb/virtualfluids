@@ -40,7 +40,7 @@ void NonEqDensityBCAlgorithm::applyBC()
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::S)) { nx2 += 1; direction = D3Q27System::S; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::T)) { nx3 -= 1; direction = D3Q27System::T; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::B)) { nx3 += 1; direction = D3Q27System::B; }
-   else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
+   else return; //UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
    LBMReal rho, vx1, vx2, vx3;
    calcMacrosFct(f, rho, vx1, vx2, vx3);
