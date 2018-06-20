@@ -2,6 +2,7 @@
 
 #include "../Grid.h"
 #include "../NodeValues.h"
+#include <GridGenerator/utilities/math/Math.h>
 
 #include "BoundaryCondition.h"
 
@@ -73,17 +74,19 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<Bounda
 
         for (int dir = 0; dir < grid[level]->getEndDirection(); dir++)
         {
-            const int qIndex = dir * grid[level]->getSize() + i;
-            const real q = grid[level]->getDistribution()[qIndex];
+            //const int qIndex = dir * grid[level]->getSize() + i;
+            //const real q = grid[level]->getDistribution()[qIndex];
+
+			const real q = grid[level]->getQValue(i, dir);
 
             qNode[dir] = q;
-            if (q > 0)
+            if (vf::Math::greaterEqual(q, 0.0))
                 qFound = true;
-            else
-                qNode[dir] = -1.0;
+            //else
+            //    qNode[dir] = -1.0;
         }
 
-        if (qFound)
+        //if (qFound)
         {
             geometryBoundaryCondition->indices.push_back(i);
             geometryBoundaryCondition->qs.push_back(qNode);

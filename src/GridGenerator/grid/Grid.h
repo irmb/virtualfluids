@@ -90,6 +90,11 @@ public:
 
     HOSTDEVICE virtual real getFirstFluidNode(real coords[3], int direction, real startCoord) const = 0;
     HOSTDEVICE virtual real getLastFluidNode(real coords[3], int direction, real startCoord) const = 0;
+
+	HOST virtual uint getNumberOfSolidBoundaryNodes() const = 0;
+	HOST virtual void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) = 0;
+
+	HOST virtual real getQValue(const uint index, const uint dir) const = 0;
 };
 
 #endif

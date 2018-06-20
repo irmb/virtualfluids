@@ -19,10 +19,13 @@ public:
 
     virtual void allocateGridMemory(SPtr<GridImp> grid) = 0;
 
+	virtual void allocateQs(SPtr<GridImp> grid) = 0;
+
     virtual void initalNodesToOutOfGrid(SPtr<GridImp> grid) = 0;
 
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
     virtual void findStopperNodes(SPtr<GridImp> grid) = 0;
+	virtual void findBoundarySolidNodes(SPtr<GridImp> grid) = 0; 
 	virtual void findEndOfGridStopperNodes(SPtr<GridImp> grid) = 0;
 	virtual void findSolidStopperNodes(SPtr<GridImp> grid) = 0;
 

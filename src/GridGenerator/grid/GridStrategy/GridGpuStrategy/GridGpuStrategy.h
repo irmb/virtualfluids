@@ -16,9 +16,12 @@ public:
 
     void allocateGridMemory(SPtr<GridImp> grid) override;
 
-    void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
+	void allocateQs(SPtr<GridImp> grid) override;
+	
+	void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
     void findInnerNodes(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
+	void findBoundarySolidNodes(SPtr<GridImp> grid)  override;
 	void findEndOfGridStopperNodes(SPtr<GridImp> grid) override;
 	void findSolidStopperNodes(SPtr<GridImp> grid) override;
 

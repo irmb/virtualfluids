@@ -74,6 +74,12 @@ public:
     void setFieldEntry(uint matrixIndex, char type) override {}
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
+
+	uint getNumberOfSolidBoundaryNodes() const override { return 0; }
+	void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override {}
+
+	real getQValue(const uint index, const uint dir) const override { return 0.0; }
+
 };
 
 class GridStub : public GridDummy

@@ -30,6 +30,10 @@ void GridGpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
     this->allocNeighborsIndices(grid);
 }
 
+void GridGpuStrategy::allocateQs(SPtr<GridImp> grid)
+{
+}
+
 void GridGpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
 {
 
@@ -45,6 +49,10 @@ void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 void GridGpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 {
 
+}
+
+void GridGpuStrategy::findBoundarySolidNodes(SPtr<GridImp> grid)
+{
 }
 
 void GridGpuStrategy::findEndOfGridStopperNodes(SPtr<GridImp> grid)

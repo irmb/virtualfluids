@@ -24,13 +24,25 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 
     grid->sparseIndices = new int[grid->size];
 
+	grid->qIndices = new uint[grid->size];
+	for (size_t i = 0; i < grid->size; i++) 
+		grid->qIndices[i] = INVALID_INDEX;
+	
+ //   unsigned long distributionSize = grid->size * (grid->distribution.dir_end + 1);
+ //   real sizeInMB = distributionSize * sizeof(real) / (1024.f*1024.f);
 
-    unsigned long distributionSize = grid->size * (grid->distribution.dir_end + 1);
-    real sizeInMB = distributionSize * sizeof(real) / (1024.f*1024.f);
+ //   //*logging::out << logging::Logger::LOW << "Allocating " << sizeInMB << " [MB] host memory for distributions.\n";
 
-    //*logging::out << logging::Logger::LOW << "Allocating " << sizeInMB << " [MB] host memory for distributions.\n";
+ //   grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
+	//for (uint index = 0; index < distributionSize; index++) grid->distribution.f[index] = -1.0;
+}
 
-    grid->distribution.f = new real[distributionSize](); // automatic initialized with zeros
+void GridCpuStrategy::allocateQs(SPtr<GridImp> grid)
+{
+	const uint numberOfQs = grid->getNumberOfSolidBoundaryNodes() * (grid->distribution.dir_end + 1);
+	grid->qValues = new real[numberOfQs];
+	for (size_t i = 0; i < numberOfQs; i++)
+		grid->qValues[i] = -1.0;
 }
 
 void GridCpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
@@ -81,6 +93,15 @@ void GridCpuStrategy::findSolidStopperNodes(SPtr<GridImp> grid)
 #pragma omp parallel for
 	for (uint index = 0; index < grid->size; index++)
 		grid->findSolidStopperNode(index);
+}
+
+void GridCpuStrategy::findBoundarySolidNodes(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+	for (uint index = 0; index < grid->size; index++)
+	{
+		grid->findBoundarySolidNode(index);
+	}
 }
 
 void GridCpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
@@ -181,6 +202,8 @@ void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
     delete[] grid->neighborIndexY;
     delete[] grid->neighborIndexZ;
     delete[] grid->sparseIndices;
+	delete[] grid->qIndices;
+	delete[] grid->qValues;
 
     delete[] grid->distribution.f;
 }

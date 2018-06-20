@@ -1533,13 +1533,13 @@ else
 
 		} 
 		  ////////////////////////////////////////////////////////////////////////////////
-		  //calculate the new forcing
-		  if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
-		  {
-			  //forceCalculator->calcPIDControllerForForce(para.get());
-			  //forceCalculator->printForcing(para.get());
-		  }
-		  ////////////////////////////////////////////////////////////////////////////////
+		  ////calculate the new forcing
+		  //if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
+		  //{
+			 // //forceCalculator->calcPIDControllerForForce(para.get());
+			 // //forceCalculator->printForcing(para.get());
+		  //}
+		  //////////////////////////////////////////////////////////////////////////////////
 		  
 		  // ////////////////////////////////////////////////////////////////////////
 		 // if (para->getDiffOn()==true)
@@ -1567,12 +1567,12 @@ else
 		 if (para->getParD(0)->QPress.kQ > 0)
 		 {
 			 // //////////////////////////////////////////////////////////////////////////////////
-			 QPressNoRhoDev27(  para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
-			 					para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
-			 					para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
-			 					para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-			 					para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-			 getLastCudaError("QPressNoRhoDev27 execution failed");
+			 //QPressNoRhoDev27(  para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
+			 //					para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
+			 //					para->getParD(0)->QPress.kN,       para->getParD(0)->QPress.kQ,    para->getParD(0)->omega,
+			 //					para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+			 //					para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
+			 //getLastCudaError("QPressNoRhoDev27 execution failed");
 			 //QPressDevEQZ27(para->getParD(0)->numberofthreads, para->getParD(0)->QPress.RhoBC, 
 		 	//				para->getParD(0)->d0SP.f[0],       para->getParD(0)->QPress.k,  
 				//			para->getParD(0)->QPress.kN,       para->getParD(0)->kDistTestRE.f[0],       
@@ -1587,6 +1587,22 @@ else
 			//							para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 			//							para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 			//getLastCudaError("QInflowScaleByPressDev27 execution failed");
+
+			QPressDevNEQ27(
+				para->getParD(0)->numberofthreads, 
+				para->getParD(0)->QPress.RhoBC,
+			    para->getParD(0)->d0SP.f[0], 
+				para->getParD(0)->QPress.k,
+			    para->getParD(0)->QPress.kN,
+				para->getParD(0)->QPress.kQ, 
+				para->getParD(0)->omega,
+			    para->getParD(0)->neighborX_SP, 
+				para->getParD(0)->neighborY_SP, 
+				para->getParD(0)->neighborZ_SP,
+			    para->getParD(0)->size_Mat_SP, 
+				para->getParD(0)->evenOrOdd);
+			getLastCudaError("QPressDevNEQ27 execution failed");
+
 
 		 }
 		 //////////////////////////////////////////////////////////////////////////////////

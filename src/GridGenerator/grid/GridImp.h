@@ -35,8 +35,9 @@ public:
 private:
     HOST void initalNumberOfNodesAndSize();
     HOSTDEVICE Cell getOddCellFromIndex(uint index) const;
-    HOSTDEVICE bool isValidInnerStopper(uint index) const;
-    HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
+    HOSTDEVICE bool isValidSolidStopper(uint index) const;
+	HOSTDEVICE bool shouldBeBoundarySolidNode(uint index) const;
+	HOSTDEVICE bool isValidEndOfGridStopper(uint index) const;
     HOSTDEVICE bool isValidEndOfGridBoundaryStopper(uint index) const;
     HOSTDEVICE bool isOutSideOfGrid(Cell &cell) const;
     HOSTDEVICE bool contains(Cell &cell, char type) const;
@@ -67,9 +68,14 @@ private:
 
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
     int *sparseIndices;
-    SPtr<GridStrategy> gridStrategy;
+
+	uint *qIndices;
+	real *qValues;
+
+	SPtr<GridStrategy> gridStrategy;
     TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
 
+	uint numberOfSolidBoundaryNodes;
 
 public:
     HOST void inital() override;
@@ -92,7 +98,12 @@ public:
     HOST uint getLevel(real levelNull) const;
     HOST uint getLevel() const;
     HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
-    
+
+	HOST uint getNumberOfSolidBoundaryNodes() const override;
+	HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
+
+	HOST real getQValue(const uint index, const uint dir) const override;
+
 public:
     Distribution distribution;
 
@@ -105,6 +116,7 @@ public:
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
 	HOSTDEVICE void findSolidStopperNode(uint index);
+	HOSTDEVICE void findBoundarySolidNode(uint index);
 
     HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks);
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
@@ -197,6 +209,7 @@ public:
 private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);
 	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle) const;
+	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &actualTriangle) const;
 
 
 

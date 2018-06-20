@@ -320,20 +320,22 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
-	real dx = 1.0;
+	real dx = 0.25;
+	real vx = 0.002;
 	//////////////////////////////////////////////////////////////////////////////
 	//// test periodic bc non uniform
 	//gridBuilder->addCoarseGrid(-10, -10, -5, 10, 10, 5, dx);
 	//gridBuilder->addGrid(new VerticalCylinder(0, 0, 0, 5, 20), 2);
 	//////////////////////////////////////////////////////////////////////////////
-	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/ShpereNotOptimal.stl");
-	gridBuilder->addCoarseGrid(-10, -10, -10, 10, 10, 10, dx);
+	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/ShpereNotOptimal.stl");
+	//gridBuilder->addCoarseGrid(-9.9, -9.9, -9.9, 20.1, 10.1, 10.1, dx);
+	gridBuilder->addCoarseGrid(-10, -10, -10, 20, 10, 10, dx);
 
-	gridBuilder->addGrid(new Cuboid(-5, -5, -5, 5, 5, 5), 1);
+	//gridBuilder->addGrid(new Cuboid(-5, -5, -5, 5, 5, 5), 1);
 	//gridBuilder->addGrid(new Sphere( 0, 0, -5, 4), 2);
 	//gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 5, 20), 2);
 
-	//gridBuilder->addGeometry(triangularMesh);
+	gridBuilder->addGeometry(triangularMesh);
 	//gridBuilder->addGrid(new Sphere(0, 0, 0, 0.1), 10);//until level 7 works
 	////////////////////////////////////////////////////////////////////////////
 	//general call
@@ -343,19 +345,20 @@ void multipleLevel(const std::string& configPath)
 	///////////////////////////////////////////////////////////////////////////
 	//BCs
 	gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.001, 0.0, 0.0);
- //   gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
- //   gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
-	//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.001, 0.0, 0.0);
-	//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.001, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+ //   gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
+ //   gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
+	//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
+	//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
 	////////////////////////////////////////////////////////////////////////////
 
+	//gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
+	//gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
+ //   gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
+ //   gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
-    //gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-    //gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
-
-    //gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
 
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
@@ -385,7 +388,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/Sphere_");
 	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
-	//gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/out/gridTest_Arrow");
+	gridBuilder->writeArrows    ("M:/TestGridGeneration/results/Sphere_Arrow");
 
 
 	//{

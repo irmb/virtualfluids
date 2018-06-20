@@ -60,6 +60,8 @@ void GridImp::initalNumberOfNodesAndSize()
     this->size = nx * ny * nz;
     this->sparseSize = size;
     distribution.setSize(size);
+
+	this->numberOfSolidBoundaryNodes = 0;
 }
 
 
@@ -156,16 +158,16 @@ HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
     return Cell(xCellStart, yCellStart, zCellStart, delta);
 }
 
-HOSTDEVICE void GridImp::findStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
+HOSTDEVICE void GridImp::findStopperNode(uint index) // deprecated
 {
     if(isValidEndOfGridStopper(index))
         this->field.setFieldEntryToStopperOutOfGrid(index);
 
-    if (isValidInnerStopper(index))
+    if (isValidSolidStopper(index))
         this->field.setFieldEntry(index, STOPPER_SOLID);
 }
 
-HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
+HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index)
 {
 	if (isValidEndOfGridStopper(index))
 		this->field.setFieldEntryToStopperOutOfGrid(index);
@@ -174,10 +176,20 @@ HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index) // TODO: split met
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
 }
 
-HOSTDEVICE void GridImp::findSolidStopperNode(uint index) // TODO: split method into two methods for inital() and mesh()
+HOSTDEVICE void GridImp::findSolidStopperNode(uint index)
 {
-	if (isValidInnerStopper(index))
+	if (isValidSolidStopper(index))
 		this->field.setFieldEntry(index, STOPPER_SOLID);
+}
+
+HOSTDEVICE void GridImp::findBoundarySolidNode(uint index)
+{
+	if (shouldBeBoundarySolidNode(index)) 
+	{
+		this->field.setFieldEntry(index, BC_SOLID);
+		this->qIndices[index] = this->numberOfSolidBoundaryNodes++;
+		//grid->setNumberOfSolidBoundaryNodes(grid->getNumberOfSolidBoundaryNodes() + 1);
+	}
 }
 
 HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
@@ -258,7 +270,7 @@ HOSTDEVICE bool GridImp::isValidEndOfGridBoundaryStopper(uint index) const
     //    || this->field.is(index, OUT_OF_GRID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
 }
 
-HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
+HOSTDEVICE bool GridImp::isValidSolidStopper(uint index) const
 {
 	// Lenz: also includes corner stopper nodes
 	if (!this->field.is(index, INVALID_SOLID))
@@ -269,6 +281,14 @@ HOSTDEVICE bool GridImp::isValidInnerStopper(uint index) const
 	//previous version of Sören P.
 	//return this->field.is(index, SOLID) && (nodeInNextCellIs(index, FLUID) || nodeInNextCellIs(index, FLUID_CFF))
  //       || this->field.is(index, SOLID) && (nodeInPreviousCellIs(index, FLUID) || nodeInPreviousCellIs(index, FLUID_CFF));
+}
+
+HOSTDEVICE bool GridImp::shouldBeBoundarySolidNode(uint index) const
+{
+	if (!this->field.is(index, FLUID))
+		return false;
+
+	return hasNeighborOfType(index, STOPPER_SOLID);
 }
 
 HOSTDEVICE bool GridImp::hasAllNeighbors(uint index) const
@@ -521,6 +541,24 @@ HOST void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscret
     this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;
 }
 
+HOST uint GridImp::getNumberOfSolidBoundaryNodes() const
+{
+	return this->numberOfSolidBoundaryNodes;
+}
+
+HOST void GridImp::setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes)
+{
+	if (numberOfSolidBoundaryNodes >= 0 && numberOfSolidBoundaryNodes < INVALID_INDEX)
+		this->numberOfSolidBoundaryNodes = numberOfSolidBoundaryNodes;
+}
+
+HOST real GridImp::getQValue(const uint index, const uint dir) const
+{
+	const int qIndex = dir * this->numberOfSolidBoundaryNodes + this->qIndices[index];
+
+	return this->qValues[qIndex];
+}
+
 // --------------------------------------------------------- //
 //                  Set Sparse Indices                       //
 // --------------------------------------------------------- //
@@ -689,10 +727,12 @@ HOST void GridImp::mesh(Object* object)
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
     else
-        gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes
+        gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes 
+		//new method for geometric primitives (not cell based) to be implemented
 
-	//gridStrategy->findStopperNodes(shared_from_this());
+	//gridStrategy->findStopperNodes(shared_from_this()); //deprecated
 	gridStrategy->findSolidStopperNodes(shared_from_this());
+	gridStrategy->findBoundarySolidNodes(shared_from_this());
 }
 
 
@@ -747,6 +787,7 @@ HOST void GridImp::findQs(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();
 
+	gridStrategy->allocateQs(shared_from_this());
     gridStrategy->findQs(shared_from_this(), triangularMesh);
 
     const clock_t end = clock();
@@ -767,16 +808,16 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
             for (real z = box.minZ; z <= box.maxZ; z += delta)
             {
                 const uint index = this->transCoordToIndex(x, y, z);
-                if (!field.isFluid(index))
-                    continue;
+                //if (!field.isFluid(index))
+                //    continue;
 
                 const Vertex point(x, y, z);
 
-                if(hasNeighborOfType(index, STOPPER_SOLID)) //TODO: not working with thin walls
+                if(this->field.is(index, BC_SOLID)) //TODO: not working with thin walls
                 {
-                    field.setFieldEntry(index, BC_SOLID);
-                    calculateQs(point, triangle);
-                }
+                    //calculateQs(point, triangle);
+					calculateQs(index, point, triangle);
+				}
             }
         }
     }
@@ -819,6 +860,43 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
         } /*else
             distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = -1.0;*/
     }
+}
+
+
+HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const
+{
+	Vertex pointOnTriangle, direction;
+	//VertexInteger solid_node;
+	real subdistance;
+	int error;
+	for (int i = distribution.dir_start; i <= distribution.dir_end; i++)
+	{
+#if defined(__CUDA_ARCH__)
+		direction = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
+#else
+		direction = Vertex(real(distribution.dirs[i * DIMENSION + 0]), real(distribution.dirs[i * DIMENSION + 1]),
+			real(distribution.dirs[i * DIMENSION + 2]));
+#endif
+
+		error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
+
+		subdistance /= this->delta;
+
+		if (error != 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
+		{
+			this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
+		}
+		//else
+		//{
+		//	uint neighborIndex = this->transCoordToIndex( point.x + direction.x * this->delta,
+		//		                                          point.y + direction.y * this->delta, 
+		//		                                          point.z + direction.z * this->delta );
+		//	if (neighborIndex == INVALID_INDEX) continue;
+
+		//	if( this->field.is(neighborIndex, STOPPER_SOLID) )
+		//		this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
+		//}
+	}
 }
 
 
