@@ -25,16 +25,16 @@ void ExtrapolationReconstructor::reconstructNode(const int& x1, const int& x2, c
     const UbTupleInt3 extrapolationDirection = getSphereDirection(worldCoordinates, physicsEngineGeometry);
     const int numberOfCellsForExtrapolation = getNumberOfExtrapolationCells(x1, x2, x3, extrapolationDirection, kernel);
 
-    if (numberOfCellsForExtrapolation < 2)
+    //if (numberOfCellsForExtrapolation < 2)
         alternativeReconstructor->reconstructNode(x1, x2, x3, worldCoordinates, physicsEngineGeometry, kernel);
-    else
-    {
-        //UBLOG(logINFO, "point (x,y,z) " << val<1>(worldCoordinates) << ", " << val<2>(worldCoordinates) << ", " << val<3>(worldCoordinates));
-        //UBLOG(logINFO, "extradir (x,y,z) " << val<1>(extrapolationDirection) << ", " << val<2>(extrapolationDirection) << ", " << val<3>(extrapolationDirection));
-        //UBLOG(logINFO, "numberOfCellsForExtrapolation: " << numberOfCellsForExtrapolation );
+    //else
+    //{
+    //    //UBLOG(logINFO, "point (x,y,z) " << val<1>(worldCoordinates) << ", " << val<2>(worldCoordinates) << ", " << val<3>(worldCoordinates));
+    //    //UBLOG(logINFO, "extradir (x,y,z) " << val<1>(extrapolationDirection) << ", " << val<2>(extrapolationDirection) << ", " << val<3>(extrapolationDirection));
+    //    //UBLOG(logINFO, "numberOfCellsForExtrapolation: " << numberOfCellsForExtrapolation );
 
-        this->extrapolatePdFs(x1, x2, x3, extrapolationDirection, numberOfCellsForExtrapolation, kernel);
-    }
+    //    this->extrapolatePdFs(x1, x2, x3, extrapolationDirection, numberOfCellsForExtrapolation, kernel);
+    //}
         
 }
 

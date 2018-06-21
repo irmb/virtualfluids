@@ -4,6 +4,7 @@
 #include "CoProcessor.h"
 #include "Vector3D.h"
 #include <vector>
+#include <array>
 
 class Grid3D;
 class UbScheduler;

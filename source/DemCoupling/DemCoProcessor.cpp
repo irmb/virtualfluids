@@ -22,6 +22,9 @@
 #include "MPICommunicator.h"
 #include "BoundaryConditionsBlockVisitor.h"
 
+
+#include <array>
+
 DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm, std::shared_ptr<ForceCalculator> forceCalculator, std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps) :
    CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(physicsEngineSolver), intermediateDemSteps(intermediatePeSteps)
 {
@@ -203,6 +206,62 @@ void DemCoProcessor::moveVfGeoObject()
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
       {
          interactors[i]->moveGbObjectTo(physicsEngineGeometries[i]->getPosition());
+      }
+   }
+}
+
+bool  DemCoProcessor::isGeoObjectInAABB(std::array<double, 6> AABB)
+{
+   bool result = false;
+   for (int i = 0; i < interactors.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         SPtr<GbObject3D> geoObject = interactors[i]->getGbObject3D();
+         std::array <double, 2> minMax1;
+         std::array <double, 2> minMax2;
+         std::array <double, 2> minMax3;
+         minMax1[0] = geoObject->getX1Minimum();
+         minMax2[0] = geoObject->getX2Minimum();
+         minMax3[0] = geoObject->getX3Minimum();
+         minMax1[1] = geoObject->getX1Maximum();
+         minMax2[1] = geoObject->getX2Maximum();
+         minMax3[1] = geoObject->getX3Maximum();
+
+         for (int x3 = 0; x3 < 2; x3++)
+            for (int x2 = 0; x2 < 2; x2++)
+               for (int x1 = 0; x1 < 2; x1++)
+               {
+                  result = result || (minMax1[x1] >= AABB[0] && minMax2[x2] >= AABB[1] && minMax3[x3] >= AABB[2] && minMax1[x1] <= AABB[3] && minMax2[x2] <= AABB[4] && minMax3[x3] <= AABB[5]);
+               }
+      }
+   }
+   
+   std::vector<int> values;
+   values.push_back((int)result);
+   std::vector<int> rvalues = comm->gather(values);
+
+   if (comm->isRoot())
+   {
+      for (int i = 0; i < (int)rvalues.size(); i ++)
+      {
+         result = result || (bool)rvalues[i];
+      }
+   }
+   int iresult = (int)result;
+   comm->broadcast(iresult);
+   result = (bool)iresult;
+
+   return result;
+}
+
+void DemCoProcessor::addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles)
+{
+   for (int i = 0; i < interactors.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         interactors[i]->getGbObject3D()->addSurfaceTriangleSet(nodes, triangles);
       }
    }
 }

@@ -32,7 +32,7 @@ void LBMReconstructor::reconstructNode(const int& x1, const int& x2, const int& 
 
    LBMReal rho_dif = 1; 
 
-   while (rho_dif > 1e-7)
+   while (rho_dif > 1e-5)
    {
       for (int fDir = D3Q27System::FSTARTDIR; fDir <= D3Q27System::FENDDIR; fDir++)
       {

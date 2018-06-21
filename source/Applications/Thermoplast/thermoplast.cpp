@@ -29,6 +29,7 @@
 #include <DummyPhysicsEngineSolverAdapter.h>
 #include <DummyPhysicsEngineMaterialAdapter.h>
 #include <DummyPhysicsEngineGeometryAdapter.h>
+#include <WriteDemObjectsCoProcessor.h>
 
 #include "CreateGeoObjectsCoProcessor.h"
 
@@ -51,7 +52,7 @@ double g_maxX1 = 100;
 double g_maxX2 = 60;
 double g_maxX3 = 60;
 
-string          pathOut = "d:/temp/thermoplast";
+string          pathOut = "d:/temp/thermoplast2";
 string          pathGeo = "d:/Projects/ThermoPlast/Geometrie";
 
 std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Communicator> comm, const SPtr<UbScheduler> peScheduler, const std::shared_ptr<LBMUnitConverter> lbmUnitConverter,  int maxpeIterations)
@@ -76,7 +77,7 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    UbTupleInt3 numberOfBlocks(grid->getNX1(), grid->getNX2(), grid->getNX3());
    //UbTupleInt3 numberOfBlocks((simulationDomain[3]-simulationDomain[0])/val<1>(grid->getBlockNX()), (simulationDomain[4]-simulationDomain[1])/val<2>(grid->getBlockNX()), (simulationDomain[5]-simulationDomain[2])/val<3>(grid->getBlockNX()));
    UbTupleBool3 isPeriodic(grid->isPeriodicX1(), grid->isPeriodicX2(), grid->isPeriodicX3());
-   Vector3D minOffset(2,2,2);
+   Vector3D minOffset(4,2,2);
    Vector3D maxOffset(-2,-2,-2);
    std::shared_ptr<PeParameter> peParamter = std::make_shared<PeParameter>(peRelaxtion, maxpeIterations, globalLinearAcc, 
       planeMaterial, simulationDomain, numberOfBlocks, isPeriodic, minOffset, maxOffset);
@@ -349,6 +350,8 @@ void pf1()
    SPtr<WriteBoundaryConditionsCoProcessor> writeBCCoProcessor(new WriteBoundaryConditionsCoProcessor(grid, visSch, pathOut,
       WbWriterVtkXmlBinary::getInstance(), comm));
 
+   SPtr<WriteDemObjectsCoProcessor> writeDemObjectsCoProcessor(new WriteDemObjectsCoProcessor(grid, visSch, pathOut, SPtr<WbWriter>(WbWriterVtkXmlBinary::getInstance()), demCoProcessor, comm));
+   writeDemObjectsCoProcessor->process(0);
 
    //performance control
    SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
@@ -356,16 +359,20 @@ void pf1()
 
    //////////////////////////////////////////////////////////////////////////
    //generating spheres 
-   SPtr<UbScheduler> sphereScheduler(new UbScheduler(200));
-   SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphereMaterial,Vector3D(uLB, 0.0, 0.0)));
-   Vector3D origin(g_minX1+2.0*radius, g_minX2+2.0*radius, g_maxX3-6.0*radius);
+   SPtr<UbScheduler> sphereScheduler(new UbScheduler(100));
+   Vector3D origin(g_minX1+4.0+radius, g_minX2+4.0+radius, g_maxX3-4.0-4.0*radius);
    double d = 2.0*radius;
+   //std::array<double, 6> AABB={origin[0]-radius-1,origin[1]-radius,origin[2]-radius-1,origin[0]+radius+1, origin[1]+2.0*d+radius+1, origin[2]+2.0*d+radius+1};
+   //SPtr<GbObject3D> boxAABB(new GbCuboid3D(AABB[0],AABB[1],AABB[2],AABB[3],AABB[4],AABB[5]));
+   //GbSystem3D::writeGeoObject(boxAABB.get(), pathOut + "/geo/boxAABB", WbWriterVtkXmlBinary::getInstance());
+   SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphereMaterial,Vector3D(uLB, 0.0, 0.0)));
    //spheres
    for (int x3 = 0; x3 < 2; x3++)
       for (int x2 = 0; x2 < 2; x2++)
          for (int x1 = 0; x1 < 1; x1++)
          {
-            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
+            //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
+            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
             if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
             createSphereCoProcessor->addGeoObject(sphere);
          }
@@ -380,9 +387,9 @@ void pf1()
    
    calculator->addCoProcessor(createSphereCoProcessor);
    calculator->addCoProcessor(demCoProcessor);
-   
-   
+      
    calculator->addCoProcessor(writeBCCoProcessor);
+   calculator->addCoProcessor(writeDemObjectsCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");

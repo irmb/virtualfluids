@@ -7,6 +7,7 @@
 #include "VelocityWithDensityBCAlgorithm.h"
 #include "VelocityBCAlgorithm.h"
 #include "MovableObjectInteractor.h"
+#include "LBMReconstructor.h"
 #include "EquilibriumReconstructor.h"
 #include "VelocityBcReconstructor.h"
 #include "ExtrapolationReconstructor.h"
@@ -36,15 +37,21 @@ void CreateGeoObjectsCoProcessor::process(double step)
       velocityBcParticleAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
       //velocityBcParticleAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
-      SPtr<MovableObjectInteractor> geoObjectInt;
       //const std::shared_ptr<Reconstructor> velocityReconstructor(new VelocityBcReconstructor());
       const std::shared_ptr<Reconstructor> equilibriumReconstructor(new EquilibriumReconstructor());
+      //const std::shared_ptr<Reconstructor> lbmReconstructor(new LBMReconstructor(false));
       const std::shared_ptr<Reconstructor> extrapolationReconstructor(new ExtrapolationReconstructor(equilibriumReconstructor));
       
       for(SPtr<GbObject3D> proto : geoObjectPrototypeVector)
       {
+         std::array<double, 6> AABB = {proto->getX1Minimum(),proto->getX2Minimum(),proto->getX3Minimum(),proto->getX1Maximum(),proto->getX2Maximum(),proto->getX3Maximum()};
+         //UBLOG(logINFO, "demCoProcessor->isGeoObjectInAABB(AABB) = " << demCoProcessor->isGeoObjectInAABB(AABB));
+         if (demCoProcessor->isGeoObjectInAABB(AABB))
+         {
+            continue;
+         }
          SPtr<GbObject3D> geoObject((GbObject3D*)(proto->clone()));
-         geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
+         SPtr<MovableObjectInteractor> geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
          //SetSolidOrBoundaryBlockVisitor setSolidVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::SOLID);
          //grid->accept(setSolidVisitor);
          SetSolidOrBoundaryBlockVisitor setBcVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::BC);
