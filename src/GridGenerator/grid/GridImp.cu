@@ -236,12 +236,14 @@ HOSTDEVICE void GridImp::setNodeTo(Cell &cell, char type)
 
 HOSTDEVICE void GridImp::setNodeTo(uint index, char type)
 {
-    field.setFieldEntry(index, type);
+	if( index != INVALID_INDEX )
+		field.setFieldEntry(index, type);
 }
 
 HOSTDEVICE bool GridImp::isNode(uint index, char type) const
 {
-    return field.is(index, type);
+    if( index != INVALID_INDEX )
+		return field.is(index, type);
 }
 
 HOSTDEVICE bool GridImp::isValidEndOfGridStopper(uint index) const
@@ -810,6 +812,8 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
                 const uint index = this->transCoordToIndex(x, y, z);
                 //if (!field.isFluid(index))
                 //    continue;
+
+				if( index == INVALID_INDEX ) continue;
 
                 const Vertex point(x, y, z);
 
