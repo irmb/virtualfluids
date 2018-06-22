@@ -1,4 +1,4 @@
-#include "CreateGeoObjectsCoProcessor.h"
+#include "CreateDemObjectsCoProcessor.h"
 #include "UbScheduler.h"
 #include "DemCoProcessor.h"
 #include "GbSphere3D.h"
@@ -17,16 +17,16 @@
 #include "SetSolidOrBoundaryBlockVisitor.h"
 #include "Grid3D.h"
 
-CreateGeoObjectsCoProcessor::CreateGeoObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial, Vector3D initalVelocity) : 
+CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial, Vector3D initalVelocity) : 
    CoProcessor(grid, s),
    demCoProcessor(demCoProcessor), 
-   geoObjectMaterial(geoObjectMaterial),
+   demObjectMaterial(demObjectMaterial),
    initalVelocity(initalVelocity)
 {
 
 }
 //////////////////////////////////////////////////////////////////////////
-void CreateGeoObjectsCoProcessor::process(double step)
+void CreateDemObjectsCoProcessor::process(double step)
 {
    if (scheduler->isDue(step))
    {
@@ -46,7 +46,7 @@ void CreateGeoObjectsCoProcessor::process(double step)
       {
          std::array<double, 6> AABB = {proto->getX1Minimum(),proto->getX2Minimum(),proto->getX3Minimum(),proto->getX1Maximum(),proto->getX2Maximum(),proto->getX3Maximum()};
          //UBLOG(logINFO, "demCoProcessor->isGeoObjectInAABB(AABB) = " << demCoProcessor->isGeoObjectInAABB(AABB));
-         if (demCoProcessor->isGeoObjectInAABB(AABB))
+         if (demCoProcessor->isDemObjectInAABB(AABB))
          {
             continue;
          }
@@ -57,13 +57,13 @@ void CreateGeoObjectsCoProcessor::process(double step)
          SetSolidOrBoundaryBlockVisitor setBcVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::BC);
          grid->accept(setBcVisitor);
          geoObjectInt->initInteractor();
-         demCoProcessor->addInteractor(geoObjectInt, geoObjectMaterial, initalVelocity);
+         demCoProcessor->addInteractor(geoObjectInt, demObjectMaterial, initalVelocity);
          //demCoProcessor->distributeIDs();
       }
    }
 }
 //////////////////////////////////////////////////////////////////////////
-void CreateGeoObjectsCoProcessor::addGeoObject(SPtr<GbObject3D> geoObjectPrototype)
+void CreateDemObjectsCoProcessor::addGeoObject(SPtr<GbObject3D> geoObjectPrototype)
 {
    geoObjectPrototypeVector.push_back(geoObjectPrototype);
 }

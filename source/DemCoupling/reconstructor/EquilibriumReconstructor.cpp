@@ -22,7 +22,7 @@ void EquilibriumReconstructor::reconstructNode(const int& x1, const int& x2, con
 
 
     SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();
-    distributions->setDistribution(feq, x1, x2, x3);
+    //distributions->setDistribution(feq, x1, x2, x3);
     distributions->setDistributionInv(feq, x1, x2, x3);
 }
 

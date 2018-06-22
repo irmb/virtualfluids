@@ -38,7 +38,7 @@ public:
     std::shared_ptr<PhysicsEngineSolverAdapter> getPhysicsEngineSolver();
     void distributeIDs();
     void setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> blockVisitor);
-    bool isGeoObjectInAABB(std::array<double,6> AABB);
+    bool isDemObjectInAABB(std::array<double,6> AABB);
     void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
   
 private:

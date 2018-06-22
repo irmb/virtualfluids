@@ -31,7 +31,7 @@
 #include <DummyPhysicsEngineGeometryAdapter.h>
 #include <WriteDemObjectsCoProcessor.h>
 
-#include "CreateGeoObjectsCoProcessor.h"
+#include "CreateDemObjectsCoProcessor.h"
 
 using namespace std;
 
@@ -52,7 +52,7 @@ double g_maxX1 = 100;
 double g_maxX2 = 60;
 double g_maxX3 = 60;
 
-string          pathOut = "d:/temp/thermoplast2";
+string          pathOut = "d:/temp/thermoplast3";
 string          pathGeo = "d:/Projects/ThermoPlast/Geometrie";
 
 std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Communicator> comm, const SPtr<UbScheduler> peScheduler, const std::shared_ptr<LBMUnitConverter> lbmUnitConverter,  int maxpeIterations)
@@ -323,6 +323,7 @@ void pf1()
 
    //initialization of distributions
    InitDistributionsBlockVisitor initVisitor;
+   initVisitor.setVx1(uLB);
    grid->accept(initVisitor);
 
    //set connectors
@@ -365,7 +366,7 @@ void pf1()
    //std::array<double, 6> AABB={origin[0]-radius-1,origin[1]-radius,origin[2]-radius-1,origin[0]+radius+1, origin[1]+2.0*d+radius+1, origin[2]+2.0*d+radius+1};
    //SPtr<GbObject3D> boxAABB(new GbCuboid3D(AABB[0],AABB[1],AABB[2],AABB[3],AABB[4],AABB[5]));
    //GbSystem3D::writeGeoObject(boxAABB.get(), pathOut + "/geo/boxAABB", WbWriterVtkXmlBinary::getInstance());
-   SPtr<CreateGeoObjectsCoProcessor> createSphereCoProcessor(new CreateGeoObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphereMaterial,Vector3D(uLB, 0.0, 0.0)));
+   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphereMaterial,Vector3D(uLB, 0.0, 0.0)));
    //spheres
    for (int x3 = 0; x3 < 2; x3++)
       for (int x2 = 0; x2 < 2; x2++)

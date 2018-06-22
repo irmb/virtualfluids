@@ -13,17 +13,17 @@ class GbObject3D;
 class PhysicsEngineMaterialAdapter;
 
 
-class CreateGeoObjectsCoProcessor : public CoProcessor
+class CreateDemObjectsCoProcessor : public CoProcessor
 {
 public:
-   CreateGeoObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<DemCoProcessor> demCoProcessor,  SPtr<PhysicsEngineMaterialAdapter> sphereMaterial, Vector3D initalVelocity);
+   CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<DemCoProcessor> demCoProcessor,  SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial, Vector3D initalVelocity);
    void process(double step) override;
    void addGeoObject( SPtr<GbObject3D> geoObjectPrototype);
 protected:
 private:
    SPtr<DemCoProcessor> demCoProcessor;
    std::vector< SPtr<GbObject3D> > geoObjectPrototypeVector;
-   SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial; 
+   SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial; 
    Vector3D initalVelocity;
 };
 #endif // CreateSphereCoProcessor_h__

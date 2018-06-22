@@ -210,7 +210,7 @@ void DemCoProcessor::moveVfGeoObject()
    }
 }
 
-bool  DemCoProcessor::isGeoObjectInAABB(std::array<double, 6> AABB)
+bool  DemCoProcessor::isDemObjectInAABB(std::array<double, 6> AABB)
 {
    bool result = false;
    for (int i = 0; i < interactors.size(); i++)
