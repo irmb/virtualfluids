@@ -14,18 +14,18 @@ void run(string configname)
       config.load(configname);
 
       string          pathname = config.getString("pathname");
-      int             numOfThreads = config.getInt("numOfThreads");
+      int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
-      double          uLB = config.getDouble("uLB");
-      double          endTime = config.getDouble("endTime");
-      double          outTime = config.getDouble("outTime");
-      double          availMem = config.getDouble("availMem");
-      int             refineLevel = config.getInt("refineLevel");
-      double          Re = config.getDouble("Re");
-      double          dx = config.getDouble("dx");
+      double          uLB = config.getValue<double>("uLB");
+      double          endTime = config.getValue<double>("endTime");
+      double          outTime = config.getValue<double>("outTime");
+      double          availMem = config.getValue<double>("availMem");
+      int             refineLevel = config.getValue<int>("refineLevel");
+      double          Re = config.getValue<double>("Re");
+      double          dx = config.getValue<double>("dx");
       vector<double>  length = config.getVector<double>("length");
-      bool            logToFile = config.getBool("logToFile");
-      double          restartStep = config.getDouble("restartStep");
+      bool            logToFile = config.getValue<bool>("logToFile");
+      double          restartStep = config.getValue<double>("restartStep");
       double          cpStart = config.getValue<double>("cpStart");
       double          cpStep = config.getValue<double>("cpStep");
       bool            newStart = config.getValue<bool>("newStart");
@@ -71,7 +71,8 @@ void run(string configname)
       noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
       SPtr<BCAdapter> denBCAdapter(new DensityBCAdapter(rhoLB));
-      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      //denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+      denBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
 
       //mu::Parser fct;
       //fct.SetExpr("U");
@@ -86,14 +87,14 @@ void run(string configname)
       bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(denBCAdapter);
       //bcVisitor.addBC(velBCAdapter);
-      
+
       SPtr<Grid3D> grid(new Grid3D(comm));
-      
+
       //////////////////////////////////////////////////////////////////////////
       //restart
       SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
       //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
-      MPIIORestart1CoProcessor rcp(grid, rSch, pathname, comm);
+      MPIIORestartCoProcessor rcp(grid, rSch, pathname, comm);
       //////////////////////////////////////////////////////////////////////////
 
       if (newStart)
@@ -161,7 +162,7 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathname+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
          ppblocks->process(0);
 
@@ -173,18 +174,19 @@ void run(string configname)
          double cx3 = cylinder->getX3Centroid();
 
          mu::Parser fct;
-         fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
-         fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
-         fct.DefineConst("x3Vmax", 0.0); //x3-Pos fuer vmax
-         fct.DefineConst("R", r);
+         fct.SetExpr("vx1");
+         //fct.SetExpr("vx1*(1-((x2-y0)^2+(x3-z0)^2)/(R^2))");
+         //fct.DefineConst("x2Vmax", 0.0); //x2-Pos fuer vmax
+         //fct.DefineConst("x3Vmax", 0.0); //x3-Pos fuer vmax
+         //fct.DefineConst("R", r);
          fct.DefineConst("vx1", uLB);
-         fct.DefineConst("x0", cx1);
-         fct.DefineConst("y0", cx2);
-         fct.DefineConst("z0", cx3);
-         fct.DefineConst("nue", nuLB);
+         //fct.DefineConst("x0", cx1);
+         //fct.DefineConst("y0", cx2);
+         //fct.DefineConst("z0", cx3);
+         //fct.DefineConst("nue", nuLB);
          SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
-         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-         velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+         velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
 
          SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
@@ -231,8 +233,8 @@ void run(string configname)
 
          SPtr<LBMKernel> kernel;
 
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], IncompressibleCumulantLBMKernel::NORMAL));
-         //kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
+         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+         //kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
 
          //
          SPtr<BCProcessor> bcProc(new BCProcessor());
@@ -255,7 +257,7 @@ void run(string configname)
          grid->accept(bcVisitor);
 
          //initialization of distributions
-         InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor;
          //initVisitor.setVx1(fct);
          //initVisitor.setVx1(uLB);
          grid->accept(initVisitor);
@@ -275,8 +277,7 @@ void run(string configname)
          //boundary conditions grid
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-               new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+            SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
             ppgeo->process(0);
             ppgeo.reset();
          }
@@ -302,32 +303,33 @@ void run(string configname)
          grid->setTimeStep(restartStep);
 
          SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter());
-         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-         velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
+         velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
+         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
          bcVisitor.addBC(velBCAdapter);
          grid->accept(bcVisitor);
 
          //set connectors
-         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm);
+      SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      SPtr<CoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch,CalculationManager::MPI));
+      omp_set_num_threads(numOfThreads);
+      SPtr<UbScheduler> stepGhostLayer(visSch);
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      calculator->addCoProcessor(npr);
+      calculator->addCoProcessor(pp);
 
-
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
+      calculator->calculate();
       if (myid == 0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)
