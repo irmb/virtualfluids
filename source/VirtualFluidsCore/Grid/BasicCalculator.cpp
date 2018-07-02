@@ -130,12 +130,21 @@ void BasicCalculator::calculate()
          //now ghost nodes have actual values
       }
       UBLOG(logDEBUG1, "OMPCalculator::calculate() - stoped");
-   }
-   catch (std::exception& e)
+   }   catch (std::exception& e)
    {
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
       //throw;
+      exit(EXIT_FAILURE);
+   }
+   catch (std::string& s)
+   {
+      UBLOG(logERROR, s);
+      exit(EXIT_FAILURE);
+   }
+   catch (...)
+   {
+      UBLOG(logERROR, "unknown exception");
       exit(EXIT_FAILURE);
    }
 }
@@ -320,6 +329,7 @@ void BasicCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 {
+   try{
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
@@ -331,6 +341,26 @@ void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
       {
          blocks[level][i]->getKernel()->getBCProcessor()->applyPostCollisionBC();
       }
+   }
+}
+   catch (std::exception& e)
+   {
+      UBLOG(logERROR, e.what());
+      //UBLOG(logERROR, " step = "<<calcStep);
+      throw;
+      //exit(EXIT_FAILURE);
+   }
+   catch (std::string& s)
+   {
+      UBLOG(logERROR, s);
+      throw;
+      //exit(EXIT_FAILURE);
+   }
+   catch (...)
+   {
+      UBLOG(logERROR, "unknown exception");
+      throw;
+      //exit(EXIT_FAILURE);
    }
 }
 

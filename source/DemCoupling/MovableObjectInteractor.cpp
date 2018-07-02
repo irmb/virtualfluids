@@ -11,7 +11,7 @@
 #include "BCProcessor.h"
 #include "ILBMKernel.h"
 
-#include "SetSolidOrBoundaryBlockVisitor.h"
+#include "SetBcBlocksBlockVisitor.h"
 #include "BoundaryConditionsBlockVisitor.h"
 
 #include "PhysicsEngineGeometryAdapter.h"
@@ -116,7 +116,7 @@ void MovableObjectInteractor::setBcNodesToFluid()
 
 void MovableObjectInteractor::setBcBlocks()
 {
-    SetSolidOrBoundaryBlockVisitor v(shared_from_this(), SetSolidOrBoundaryBlockVisitor::BC);
+    SetBcBlocksBlockVisitor v(shared_from_this());
     this->grid.lock()->accept(v);
 }
 

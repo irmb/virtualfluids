@@ -14,7 +14,6 @@
 
 
 #include <MovableObjectInteractor.h>
-#include <DemCalculator.h>
 #include <DemCoProcessor.h>
 #include <PePartitioningGridVisitor.h>
 
@@ -36,23 +35,18 @@
 using namespace std;
 
 //simulation bounding box
-//double g_minX1 = -81.0;
-//double g_minX2 = -372.0;
-//double g_minX3 = -36.0;
-//
-//double g_maxX1 = 49.0;
-//double g_maxX2 = -318.0;
-//double g_maxX3 = 24;
-
 double g_minX1 = 0;
 double g_minX2 = 0;
 double g_minX3 = 0;
 
-double g_maxX1 = 100;
-double g_maxX2 = 60;
-double g_maxX3 = 60;
+double g_maxX1 = 0;
+double g_maxX2 = 0;
+double g_maxX3 = 0;
 
-string          pathOut = "d:/temp/thermoplast3";
+vector<double> peMinOffset;
+vector<double> peMaxOffset;
+
+string          pathOut = "d:/temp/thermoplastCluster";
 string          pathGeo = "d:/Projects/ThermoPlast/Geometrie";
 
 std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Communicator> comm, const SPtr<UbScheduler> peScheduler, const std::shared_ptr<LBMUnitConverter> lbmUnitConverter,  int maxpeIterations)
@@ -61,7 +55,7 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    //int maxpeIterations = 10000;
    //Beschleunigung g
    double g = 9.81 * lbmUnitConverter->getFactorAccWToLb();
-   Vector3D globalLinearAcc(0.0, 0.0, -g);
+   Vector3D globalLinearAcc(0.0, -g, 0.0);
 
    std::shared_ptr<PePhysicsEngineMaterialAdapter> planeMaterial = std::make_shared<PePhysicsEngineMaterialAdapter>("granular", 1.0, 0, 0.1 / 2, 0.1 / 2, 0.5, 1, 1, 0, 0);
 
@@ -72,13 +66,15 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    //UbTupleInt3 simulationDomain(gridNx, gridNy, gridNz);
    //std::array<double, 6> simulationDomain = {1, 1, 1, 30, 30, 30};
    std::array<double, 6> simulationDomain = {g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3};
-   SPtr<GbObject3D> boxPE(new GbCuboid3D(simulationDomain[0],simulationDomain[1],simulationDomain[2],simulationDomain[3],simulationDomain[4],simulationDomain[5]));
-   GbSystem3D::writeGeoObject(boxPE.get(), pathOut + "/geo/boxPE", WbWriterVtkXmlBinary::getInstance());
    UbTupleInt3 numberOfBlocks(grid->getNX1(), grid->getNX2(), grid->getNX3());
    //UbTupleInt3 numberOfBlocks((simulationDomain[3]-simulationDomain[0])/val<1>(grid->getBlockNX()), (simulationDomain[4]-simulationDomain[1])/val<2>(grid->getBlockNX()), (simulationDomain[5]-simulationDomain[2])/val<3>(grid->getBlockNX()));
    UbTupleBool3 isPeriodic(grid->isPeriodicX1(), grid->isPeriodicX2(), grid->isPeriodicX3());
-   Vector3D minOffset(4,2,2);
-   Vector3D maxOffset(-2,-2,-2);
+   Vector3D minOffset(peMinOffset[0], peMinOffset[1], peMinOffset[2]);
+   Vector3D maxOffset(peMaxOffset[0], peMaxOffset[1], peMaxOffset[2]);
+   
+   SPtr<GbObject3D> boxPE(new GbCuboid3D(simulationDomain[0]+minOffset[0], simulationDomain[1]+minOffset[1], simulationDomain[2]+minOffset[2], simulationDomain[3]+maxOffset[0], simulationDomain[4]+maxOffset[1], simulationDomain[5]+maxOffset[2]));
+   GbSystem3D::writeGeoObject(boxPE.get(), pathOut + "/geo/boxPE", WbWriterVtkXmlBinary::getInstance());
+
    std::shared_ptr<PeParameter> peParamter = std::make_shared<PeParameter>(peRelaxtion, maxpeIterations, globalLinearAcc, 
       planeMaterial, simulationDomain, numberOfBlocks, isPeriodic, minOffset, maxOffset);
    std::shared_ptr<PhysicsEngineSolverAdapter> peSolver = std::make_shared<PePhysicsEngineSolverAdapter>(peParamter);
@@ -88,39 +84,63 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    return std::make_shared<DemCoProcessor>(grid, peScheduler, comm, forceCalculator, peSolver);
 }
 
-//pipe flow with forcing
-void pf1()
+void createGridObjects()
 {
+
+}
+
+//pipe flow with forcing
+void thermoplast(string configname)
+{
+   try
+   {
    SPtr<Communicator> comm = MPICommunicator::getInstance();
    int myid = comm->getProcessID();
+
+   ConfigurationFile   config;
+   config.load(configname);
+
+   vector<int>     blocknx = config.getVector<int>("blocknx");
+   vector<double>  boundingBox = config.getVector<double>("boundingBox");
+                   peMinOffset = config.getVector<double>("peMinOffset");
+                   peMaxOffset = config.getVector<double>("peMaxOffset");
+   int             endTime = config.getValue<int>("endTime");
+   double          outTime = config.getValue<double>("outTime");
+   double          availMem = config.getValue<double>("availMem");
+   double          uLB = config.getValue<double>("uLB");
+   string          pathOut = config.getValue<string>("pathOut");
+   string          pathGeo = config.getValue<string>("pathGeo");
+   string          michel = config.getValue<string>("michel");
+   string          plexiglas = config.getValue<string>("plexiglas");
+   double          sphereTime = config.getValue<double>("sphereTime");
 
    //parameters
    //string          pathOut = "d:/temp/thermoplast3";
    //string          pathGeo = "d:/Projects/ThermoPlast/Geometrie";
    int             numOfThreads = 1;
-   int             blocknx[3] ={ 10,10,10 };
-   double          endTime = 1000000;
-   double          outTime = 300;
-   double          availMem = 8e9;
+   //int             blocknx[3] ={ 10,10,10 };
+   //double          endTime = 1000000;
+   //double          outTime = 300;
+   //double          availMem = 8e9;
    double          deltax = 1;
    double          rhoLB = 0.0;
-   double          uLB =  0.1;
+   //double          uLB =  0.1;
    double          radius = 5;
-   double          Re = 100;
+   double          Re = 300;
    double          nuLB = (uLB*2.0*radius)/Re;
 
              
 
    //geometry definition
 
-   ////simulation bounding box
-   //double g_minX1 = -70.0;
-   //double g_minX2 = -370.0;
-   //double g_minX3 = -25.0;
+   //simulation bounding box
+   g_minX1 = boundingBox[0];
+   g_minX2 = boundingBox[1];
+   g_minX3 = boundingBox[2];
 
-   //double g_maxX1 = 25.0;
-   //double g_maxX2 = -330.0;
-   //double g_maxX3 = 15;
+   g_maxX1 = boundingBox[3];
+   g_maxX2 = boundingBox[4];
+   g_maxX3 = boundingBox[5];
 
    double blockLength = blocknx[0]*deltax;
 
@@ -131,14 +151,17 @@ void pf1()
    SPtr<GbObject3D> box(new GbCuboid3D(g_minX1-blockLength, g_minX2, g_minX3, g_maxX1+blockLength, g_maxX2, g_maxX3));
    GbSystem3D::writeGeoObject(box.get(), pathOut + "/geo/box", WbWriterVtkXmlBinary::getInstance());
 
-
+   //michel
+   if (myid==0) UBLOG(logINFO, "Read michelGeo:start");
+   SPtr<GbTriFaceMesh3D> michelGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+michel, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+   if (myid==0) UBLOG(logINFO, "Read michelGeo:end");
+   if (myid==0) GbSystem3D::writeGeoObject(michelGeo.get(), pathOut+"/geo/michelGeo", WbWriterVtkXmlBinary::getInstance());
 
    //plexiglas
-   //SPtr<GbTriFaceMesh3D> plexiglasGeo;
-   //if (myid==0) UBLOG(logINFO, "Read plexiglasGeo:start");
-   //plexiglasGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/"+"Plexiglas_perforiert1.stl", "plexiglasGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-   //if (myid==0) UBLOG(logINFO, "Read plexiglasGeo:end");
-   //if (myid==0) GbSystem3D::writeGeoObject(plexiglasGeo.get(), pathOut+"/geo/plexiglasGeo", WbWriterVtkXmlBinary::getInstance());
+   if (myid==0) UBLOG(logINFO, "Read plexiglasGeo:start");
+   SPtr<GbTriFaceMesh3D> plexiglasGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+plexiglas, "plexiglasGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+   if (myid==0) UBLOG(logINFO, "Read plexiglasGeo:end");
+   if (myid==0) GbSystem3D::writeGeoObject(plexiglasGeo.get(), pathOut+"/geo/plexiglasGeo", WbWriterVtkXmlBinary::getInstance());
 
    if (myid == 0)
    {
@@ -181,6 +204,7 @@ void pf1()
 
    SPtr<BCAdapter> outflowAdapter(new DensityBCAdapter(rhoLB));
    outflowAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonEqDensityBCAlgorithm()));
+   //outflowAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
 
    //sphere
    mu::Parser fct2;
@@ -190,8 +214,7 @@ void pf1()
    velocityBcParticleAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
    //inflow
-   GbCuboid3DPtr geoInflow1(new GbCuboid3D(g_minX1-blockLength, g_minX2-radius, g_maxX3-8.0*radius, g_minX1+1, g_minX2+8.0*radius, g_maxX3+radius));
-   if (myid == 0) GbSystem3D::writeGeoObject(geoInflow1.get(), pathOut + "/geo/geoInflow1", WbWriterVtkXmlASCII::getInstance());
+   GbCuboid3DPtr geoInflow1(new GbCuboid3D(g_minX1-blockLength, g_maxX2-120.0, g_minX3+190.0, g_minX1+1, g_maxX2+20.0, g_minX3+320.0));   if (myid == 0) GbSystem3D::writeGeoObject(geoInflow1.get(), pathOut + "/geo/geoInflow1", WbWriterVtkXmlASCII::getInstance());
 
    GbCuboid3DPtr geoInflow2(new GbCuboid3D(g_minX1-blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1, g_maxX2 + blockLength, g_maxX3 + blockLength));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInflow2.get(), pathOut + "/geo/geoInflow2", WbWriterVtkXmlASCII::getInstance());
@@ -233,8 +256,11 @@ void pf1()
    //outflow
    SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowAdapter, Interactor3D::SOLID));
 
+   //michel
+   SPtr<Interactor3D> michelInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(michelGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
    //plexiglas
-   //SPtr<Interactor3D> plexiglasInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(plexiglasGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+   SPtr<Interactor3D> plexiglasInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(plexiglasGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
    //PE
    double refLengthLb = radius*2.0;
@@ -254,12 +280,25 @@ void pf1()
    //double g = 9.81 * lbmUnitConverter->getFactorAccWToLb();
    //double rhoFluid = lbmUnitConverter->getFactorDensityWToLb() * 830.0; // 1 // kg/m^3
    //////////////////////////////////////////////////////////////////////////
-
    SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
+   //grid->accept(peVisitor);
+
+   //SetSolidBlocksBlockVisitor solidBlocksVisitor1(michelInt);
+   //grid->accept(solidBlocksVisitor1);
+   //SetSolidBlocksBlockVisitor solidBlocksVisitor2(plexiglasInt);
+   //grid->accept(solidBlocksVisitor2);
+
+   //SetBcBlocksBlockVisitor bcBlocksVisitor1(michelInt);
+   //grid->accept(bcBlocksVisitor1);
+   //SetBcBlocksBlockVisitor bcBlocksVisitor2(plexiglasInt);
+   //grid->accept(bcBlocksVisitor2);
+   
    InteractorsHelper intHelper(grid, peVisitor);
    intHelper.addInteractor(boxInt);
    //intHelper.addInteractor(sphereInt1);
    //intHelper.addInteractor(inflowInt2);
+   intHelper.addInteractor(michelInt);
+   intHelper.addInteractor(plexiglasInt);
    intHelper.addInteractor(inflowInt1);
    intHelper.addInteractor(outflowInt);
    intHelper.addInteractor(inflowInt2);
@@ -318,6 +357,9 @@ void pf1()
    grid->accept(kernelVisitor);
 
    //set boundary conditions for nodes
+   //michelInt->initInteractor();
+   //plexiglasInt->initInteractor();
+
    intHelper.setBC();
    grid->accept(*bcVisitor.get());
 
@@ -344,7 +386,7 @@ void pf1()
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
    //write data for visualization of macroscopic quantities
-   SPtr<UbScheduler> visSch(new UbScheduler(100));
+   SPtr<UbScheduler> visSch(new UbScheduler(outTime));
    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathOut, 
       WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
 
@@ -360,17 +402,13 @@ void pf1()
 
    //////////////////////////////////////////////////////////////////////////
    //generating spheres 
-   SPtr<UbScheduler> sphereScheduler(new UbScheduler(100));
-   Vector3D origin(g_minX1+4.0+radius, g_minX2+4.0+radius, g_maxX3-4.0-4.0*radius);
-   double d = 2.0*radius;
+   double d = 2.0*radius;   SPtr<UbScheduler> sphereScheduler(new UbScheduler(sphereTime));   Vector3D origin(g_minX1+60.0+4.0+radius, geoInflow1->getX2Minimum()+4.0*d,  geoInflow1->getX3Minimum()+2.0*d);
    //std::array<double, 6> AABB={origin[0]-radius-1,origin[1]-radius,origin[2]-radius-1,origin[0]+radius+1, origin[1]+2.0*d+radius+1, origin[2]+2.0*d+radius+1};
    //SPtr<GbObject3D> boxAABB(new GbCuboid3D(AABB[0],AABB[1],AABB[2],AABB[3],AABB[4],AABB[5]));
    //GbSystem3D::writeGeoObject(boxAABB.get(), pathOut + "/geo/boxAABB", WbWriterVtkXmlBinary::getInstance());
    SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid,sphereScheduler,demCoProcessor,sphereMaterial,Vector3D(uLB, 0.0, 0.0)));
    //spheres
-   for (int x3 = 0; x3 < 2; x3++)
-      for (int x2 = 0; x2 < 2; x2++)
-         for (int x1 = 0; x1 < 1; x1++)
+   for (int x3 = 0; x3 < 6; x3++)      for (int x2 = 0; x2 < 4; x2++)         for (int x1 = 0; x1 < 1; x1++)
          {
             //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
             SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
@@ -378,12 +416,12 @@ void pf1()
             createSphereCoProcessor->addGeoObject(sphere);
          }
 
+   createSphereCoProcessor->process(0);
 
    //start simulation 
    omp_set_num_threads(numOfThreads);
-   //SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
+   SPtr<UbScheduler> stepGhostLayer(visSch);
    SPtr<Calculator> calculator(new BasicCalculator(grid, peScheduler, endTime));
-   //SPtr<Calculator> calculator(new DemCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
    
    calculator->addCoProcessor(createSphereCoProcessor);
@@ -396,31 +434,32 @@ void pf1()
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
+
+      }
+      catch (std::exception& e)      {         UBLOG(logERROR, e.what());      }      catch (std::string& s)      {         UBLOG(logERROR, s);      }      catch (...)      {         UBLOG(logERROR, "unknown exception");      }
 }
 
 
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-   try
-   {
+   //try
+   //{
       //Sleep(30000);
       walberla::Environment env(argc, argv);
 
-      pf1();
-      //peFlow(std::string(argv[1]));
+      if (argv!=NULL)
+      {
+         if (argv[1]!=NULL)
+         {
+            thermoplast(string(argv[1]));
+         }
+         else
+         {
+            cout<<"Configuration file must be set!: "<<argv[0]<<" <config file>"<<endl<<std::flush;
+         }
+      }
       return 0;
-   }
-   catch (std::exception& e)
-   {
-      cerr << e.what() << endl << flush;
-   }
-   catch (std::string& s)
-   {
-      cerr << s << endl;
-   }
-   catch (...)
-   {
-      cerr << "unknown exception" << endl;
-   }
+   //}
+   //catch (std::exception& e)   //{   //   UBLOG(logERROR, e.what());   //}   //catch (std::string& s)   //{   //   UBLOG(logERROR, s);   //}   //catch (...)   //{   //   UBLOG(logERROR, "unknown exception");   //}
 }

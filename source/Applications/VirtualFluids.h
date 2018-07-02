@@ -272,7 +272,8 @@
 #include <Visitors/SetKernelBlockVisitor.h>
 #include <Visitors/SetForcingBlockVisitor.h>
 #include <Visitors/SetSpongeLayerBlockVisitor.h>
-#include <Visitors/SetSolidOrBoundaryBlockVisitor.h>
+#include <Visitors/SetSolidBlocksBlockVisitor.h>
+#include <Visitors/SetBcBlocksBlockVisitor.h>
 #include <Visitors/RenumberBlockVisitor.h>
 #include <Visitors/ConnectorBlockVisitor.h>
 #include <Visitors/ViscosityBlockVisitor.h>

@@ -13,8 +13,8 @@
 #include <array>
 
 ////////////////////////////////////////////////////////////////////////
-//! \brief The class implements domain decomposition with METIS library
-//! \author Kostyantyn Kucher
+//! \brief The class implements domain decomposition with PE library
+//! \author Konstantin Kutscher
 //////////////////////////////////////////////////////////////////////////
 class Communicator;
 class Grid3D;
@@ -39,7 +39,7 @@ public:
 protected:
    void collectData(SPtr<Grid3D> grid);
    void distributePartitionData(SPtr<Grid3D> grid);
-   void getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks, SPtr<Grid3D> grid);
+   //void getBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks, SPtr<Grid3D> grid);
    SPtr<Block3D> getBlockByMinUniform(double minX1, double minX2, double minX3, SPtr<Grid3D> grid);
 
 private:

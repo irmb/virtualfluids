@@ -14,7 +14,7 @@
 #include "PePhysicsEngineMaterialAdapter.h"
 #include "muParser.h"
 #include "PhysicsEngineMaterialAdapter.h"
-#include "SetSolidOrBoundaryBlockVisitor.h"
+#include "SetBcBlocksBlockVisitor.h"
 #include "Grid3D.h"
 
 CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial, Vector3D initalVelocity) : 
@@ -52,9 +52,7 @@ void CreateDemObjectsCoProcessor::process(double step)
          }
          SPtr<GbObject3D> geoObject((GbObject3D*)(proto->clone()));
          SPtr<MovableObjectInteractor> geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
-         //SetSolidOrBoundaryBlockVisitor setSolidVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::SOLID);
-         //grid->accept(setSolidVisitor);
-         SetSolidOrBoundaryBlockVisitor setBcVisitor(geoObjectInt, SetSolidOrBoundaryBlockVisitor::BC);
+         SetBcBlocksBlockVisitor setBcVisitor(geoObjectInt);
          grid->accept(setBcVisitor);
          geoObjectInt->initInteractor();
          demCoProcessor->addInteractor(geoObjectInt, demObjectMaterial, initalVelocity);
