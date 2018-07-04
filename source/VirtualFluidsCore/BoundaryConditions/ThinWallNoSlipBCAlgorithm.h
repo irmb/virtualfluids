@@ -21,12 +21,5 @@ protected:
 private:
    int pass;
    LBMReal fTemp[D3Q27System::ENDF + 1];
-
-   //friend class boost::serialization::access;
-   //template<class Archive>
-   //void serialize(Archive & ar, const unsigned int version)
-   //{
-   //   ar & boost::serialization::base_object<BCAlgorithm>(*this);
-   //}
 };
 #endif // ThinWallNoSlipBCAlgorithm_h__

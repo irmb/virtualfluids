@@ -130,7 +130,8 @@ void BasicCalculator::calculate()
          //now ghost nodes have actual values
       }
       UBLOG(logDEBUG1, "OMPCalculator::calculate() - stoped");
-   }   catch (std::exception& e)
+   }
+   catch (std::exception& e)
    {
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
@@ -347,20 +348,20 @@ void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
    {
       UBLOG(logERROR, e.what());
       //UBLOG(logERROR, " step = "<<calcStep);
-      throw;
-      //exit(EXIT_FAILURE);
+      //throw;
+      exit(EXIT_FAILURE);
    }
    catch (std::string& s)
    {
       UBLOG(logERROR, s);
-      throw;
-      //exit(EXIT_FAILURE);
+      //throw;
+      exit(EXIT_FAILURE);
    }
    catch (...)
    {
       UBLOG(logERROR, "unknown exception");
-      throw;
-      //exit(EXIT_FAILURE);
+      //throw;
+      exit(EXIT_FAILURE);
    }
 }
 

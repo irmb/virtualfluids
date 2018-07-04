@@ -51,7 +51,7 @@ void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> inte
    {
       physicsEngineGeometries.push_back(peGeometry);
    }
-   distributeIDs();
+   //distributeIDs();
 }
 
 
@@ -266,6 +266,23 @@ void DemCoProcessor::addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, st
    }
 }
 
+void DemCoProcessor::getObjectsPropertiesVector(std::vector<double>& p)
+{
+   for (int i = 0; i < interactors.size(); i++)
+   {
+      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+      {
+         p.push_back(interactors[i]->getGbObject3D()->getX1Centroid());
+         p.push_back(interactors[i]->getGbObject3D()->getX2Centroid());
+         p.push_back(interactors[i]->getGbObject3D()->getX3Centroid());
+         Vector3D v = physicsEngineGeometries[i]->getLinearVelocity();
+         p.push_back(v[0]);
+         p.push_back(v[1]);
+         p.push_back(v[2]);
+      }
+   }
+}
+
 void DemCoProcessor::distributeIDs()
 {
    std::vector<int> peIDsSend;
@@ -295,7 +312,15 @@ void DemCoProcessor::distributeIDs()
 
    for (int i = 0; i < interactors.size(); i++)
    {
-      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(idMap.find(interactors[i]->getID())->second);
+       std::map<int, int>::const_iterator it;
+      if ((it=idMap.find(interactors[i]->getID())) == idMap.end())
+      {
+         throw UbException(UB_EXARGS, "not valid ID!");
+      }
+      
+
+      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(it->second);
+      //std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(idMap.find(interactors[i]->getID())->second);
    }
 
    for (int i = 0; i < physicsEngineGeometries.size(); i++)

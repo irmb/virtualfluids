@@ -10,6 +10,8 @@
 #include "UbLogger.h"
 #include <boost/tuple/tuple.hpp>
 
+#include <memory>
+
 typedef boost::tuple<walberla::pe::Sphere, walberla::pe::Plane> BodyTypeTuple;
 
 
@@ -175,4 +177,31 @@ void PePhysicsEngineSolverAdapter::updateGeometry(std::shared_ptr<PhysicsEngineG
 std::shared_ptr< walberla::blockforest::BlockForest > PePhysicsEngineSolverAdapter::getForest()
 {
    return forest;
+}
+
+void PePhysicsEngineSolverAdapter::saveToFile(const std::string & path)
+{
+   //forest->saveToFile(path+"SerializeDeserialize.sbf");
+   //forest->saveBlockData("SerializeDeserialize.dump", *storageId.get());
+}
+
+void PePhysicsEngineSolverAdapter::loadFromFile(const std::string & path)
+{
+   //forest = std::make_shared< walberla::blockforest::BlockForest >( walberla::uint_c( walberla::MPIManager::instance()->rank() ), path+"SerializeDeserialize.sbf", true, false );
+   //storageId = std::make_shared< walberla::domain_decomposition::BlockDataID >(forest->loadBlockData(path+"SerializeDeserialize.dump", walberla::pe::createStorageDataHandling<BodyTypeTuple>(), "Storage"));
+   //
+   //auto ccdID = forest->addBlockData(walberla::pe::ccd::createHashGridsDataHandling(globalBodyStorage, *storageId), "CCD");
+   //auto fcdID = forest->addBlockData(walberla::pe::fcd::createGenericFCDDataHandling<BodyTypeTuple, walberla::pe::fcd::AnalyticCollideFunctor>(), "FCD");
+
+   //cr = std::make_shared<walberla::pe::cr::HardContactSemiImplicitTimesteppingSolvers>(globalBodyStorage, forest, *storageId, ccdID, fcdID);
+   //cr->setMaxIterations(peParameter->maxPeIterations);
+   //cr->setRelaxationModel(walberla::pe::cr::HardContactSemiImplicitTimesteppingSolvers::ApproximateInelasticCoulombContactByDecoupling);
+   //cr->setRelaxationParameter(walberla::real_t(peParameter->relaxationParameter));
+   //cr->setGlobalLinearAcceleration(PeConverter::convert(peParameter->globalLinearAcceleration));
+
+   //for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
+   //{
+   //   walberla::pe::ccd::ICCD* ccd = blockIt->getData< walberla::pe::ccd::ICCD >(ccdID);
+   //   ccd->reloadBodies();
+   //}
 }

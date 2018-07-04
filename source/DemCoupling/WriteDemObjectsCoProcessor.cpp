@@ -1,6 +1,4 @@
 #include "WriteDemObjectsCoProcessor.h"
-#include "LBMKernel.h"
-#include "BCProcessor.h"
 
 #include "basics/writer/WbWriterVtkXmlBinary.h"
 #include "basics/writer/WbWriterVtkXmlASCII.h"
@@ -23,7 +21,7 @@ WriteDemObjectsCoProcessor::WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<U
    demCoProcessor(demCoProcessor),
    comm(comm)
 {
-    //this->path += "/geo/dem/objects";
+    
 }
 //////////////////////////////////////////////////////////////////////////
 void WriteDemObjectsCoProcessor::process(double step)
@@ -71,8 +69,5 @@ void WriteDemObjectsCoProcessor::process(double step)
           }
           UBLOG(logINFO, "WriteDemObjectsCoProcessor step: " << istep);
        }
-
    }
-     
-
 }

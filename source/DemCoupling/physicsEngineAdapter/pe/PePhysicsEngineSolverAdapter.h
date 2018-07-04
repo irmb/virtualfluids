@@ -72,6 +72,8 @@ public:
     walberla::pe::RigidBody* getPeGeoObject(walberla::id_t id);
     void updateGeometry(std::shared_ptr<PhysicsEngineGeometryAdapter>) override;
     std::shared_ptr< walberla::blockforest::BlockForest > getForest();
+    void saveToFile(const std::string& path);
+    void loadFromFile(const std::string& path);
 
 private:
     void initalizePeEnvironment();

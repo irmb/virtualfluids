@@ -41,9 +41,11 @@ public:
    virtual void broadcast(int& value) = 0;
    virtual void broadcast(float& value) = 0;
    virtual void broadcast(double& value) = 0;
+   virtual void broadcast(long int& value) = 0;
    virtual void broadcast(std::vector<int>& values) = 0;
    virtual void broadcast(std::vector<float>& values) = 0;
    virtual void broadcast(std::vector<double>& values) = 0;
+   virtual void broadcast(std::vector<long int>& values) = 0;
 protected:
    Communicator(){}
    Communicator( const Communicator& ){}
