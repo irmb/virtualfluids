@@ -41,16 +41,17 @@ void RestartDemObjectsCoProcessor::write(int step)
 
    if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor size p: " << p.size());
 
-   std::vector<double> values = comm->gather(p);
+   std::vector<double> rvalues;
+   comm->allGather(p, rvalues);
 
    if (comm->isRoot())
    {
       std::string subfolder = "dem_cp_"+UbSystem::toString(step);
       std::string filePath =  path+"/dem_cp/"+subfolder+"/dem_cp.bin";
       UbFileOutputBinary fo(filePath);
-      fo.writeInteger((int)values.size());
-      fo.writeVector<double>(values);
-      UBLOG(logINFO, "RestartDemObjectsCoProcessor size: " << values.size());
+      fo.writeInteger((int)rvalues.size());
+      fo.writeVector<double>(rvalues);
+      UBLOG(logINFO, "RestartDemObjectsCoProcessor size: " << rvalues.size());
    }
    if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor write:stop ");
 }

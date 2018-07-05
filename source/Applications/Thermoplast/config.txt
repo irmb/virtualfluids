@@ -6,15 +6,15 @@ boundingBox = 60 1370 10 190 1530 320
 #boundingBox = 60 0 10 190 1530 2320
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 20
-outTime = 20
+endTime = 100
+outTime = 100
 availMem = 25e9
 uLB = 0.1
 
 #PE parameters
 peMinOffset = 0 0 0 #46 2 2
 peMaxOffset = 0 0 0 #-8 -25 -2
-sphereTime = 20
+sphereTime = 100
 
 #geometry files
 pathGeo = d:/Projects/ThermoPlast/SimGeo
