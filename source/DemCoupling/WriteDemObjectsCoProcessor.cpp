@@ -14,7 +14,7 @@ WriteDemObjectsCoProcessor::WriteDemObjectsCoProcessor()
 
 }
 //////////////////////////////////////////////////////////////////////////
-WriteDemObjectsCoProcessor::WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<WbWriter> writer, SPtr<DemCoProcessor> demCoProcessor, SPtr<Communicator> comm)
+WriteDemObjectsCoProcessor::WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<DemCoProcessor> demCoProcessor, SPtr<Communicator> comm)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),

@@ -25,27 +25,29 @@ void RestartDemObjectsCoProcessor::process(double step)
    {
       int istep = static_cast<int>(step);
 
-      write(istep);
+      if (comm->isRoot())
+         UBLOG(logINFO, "RestartDemObjectsCoProcessor::write step: " << istep);
 
-     if (comm->isRoot())
-        UBLOG(logINFO, "RestartDemObjectsCoProcessor write step: " << istep);
+      write(istep);
    }
 }
 
 void RestartDemObjectsCoProcessor::restart(double step)
 {
+   if (comm->isRoot())
+      UBLOG(logINFO, "RestartDemObjectsCoProcessor::read step: " << (int)step);
+
    read((int)step);
 }
 
 void RestartDemObjectsCoProcessor::write(int step)
 {
-   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor write:start ");
+   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::write start ");
    std::vector<double> p;
 
    demCoProcessor->getObjectsPropertiesVector(p);
 
-   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor size p: " << p.size());
-
+   //TODO implement getherv 
    std::vector<double> rvalues;
    comm->allGather(p, rvalues);
 
@@ -56,13 +58,14 @@ void RestartDemObjectsCoProcessor::write(int step)
       UbFileOutputBinary fo(filePath);
       fo.writeInteger((int)rvalues.size());
       fo.writeVector<double>(rvalues);
-      UBLOG(logINFO, "RestartDemObjectsCoProcessor size: " << rvalues.size());
+      UBLOG(logINFO, "RestartDemObjectsCoProcessor: number of objects = " << rvalues.size()/6);
    }
-   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor write:stop ");
+   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::write stop ");
 }
 
 void RestartDemObjectsCoProcessor::read(int step)
 {
+   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::read start ");
    std::vector<double> p;
 
    if (comm->isRoot())
@@ -73,11 +76,10 @@ void RestartDemObjectsCoProcessor::read(int step)
       int size = fi.readInteger();
       p.resize(size);
       fi.readVector<double>(p);
-      if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor read size p: " << p.size());
    }
    comm->broadcast(p);
 
-   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor read size p broadcast: " << p.size());
+   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::read number of objects = " << p.size()/6);
 
    createDemObjectsCoProcessor->clearGeoObjects();
 
@@ -93,4 +95,5 @@ void RestartDemObjectsCoProcessor::read(int step)
 
    createDemObjectsCoProcessor->clearGeoObjects();
 
+   if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::read stop ");
 }

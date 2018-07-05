@@ -51,7 +51,7 @@ void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> inte
    {
       physicsEngineGeometries.push_back(peGeometry);
    }
-   //distributeIDs();
+   distributeIDs();
 }
 
 

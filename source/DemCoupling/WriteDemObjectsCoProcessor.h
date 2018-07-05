@@ -21,13 +21,13 @@ class WriteDemObjectsCoProcessor : public  CoProcessor
 {
 public:
     WriteDemObjectsCoProcessor();
-    WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<WbWriter> const writer, SPtr<DemCoProcessor> demCoProcessor, SPtr<Communicator> comm);
+    WriteDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<DemCoProcessor> demCoProcessor, SPtr<Communicator> comm);
    ~WriteDemObjectsCoProcessor() {}
    void process(double step) override;
 
 private:
     std::string path;
-    SPtr<WbWriter> writer;
+    WbWriter* writer;
     SPtr<Communicator> comm;
     SPtr<DemCoProcessor> demCoProcessor;
 };
