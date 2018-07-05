@@ -24,6 +24,7 @@ public:
    RestartDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<DemCoProcessor> demCoProcessor, SPtr<CreateDemObjectsCoProcessor> createDemObjectsCoProcessor, double radius, SPtr<Communicator> comm);
    ~RestartDemObjectsCoProcessor() {}
    void process(double step) override;
+   void restart(double step);
    void write(int step);
    void read(int step);
 
