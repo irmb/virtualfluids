@@ -6,7 +6,6 @@
 
 #include <sstream>
 
-
 #include <GridGenerator/utilities/math/Math.h>
 #include "distributions/Distribution.h"
 
@@ -704,8 +703,10 @@ HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
 
 HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks)
 {
-	if(lbmOrGks == LBM)
+	if (lbmOrGks == LBM)
+	{
 		gridInterface->findInterfaceCF(index, this, &finerGrid);
+	}
 	else if (lbmOrGks == GKS)
 		gridInterface->findInterfaceCF_GKS(index, this, &finerGrid);
 }
@@ -856,7 +857,7 @@ HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triang
 		//real lengthDirection = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
 		subdistance /= /*lengthDirection **/ this->delta;
 
-        if (error != 0 && subdistance < 1.0 && subdistance > 0.0)
+        if (error == 0 && subdistance < 1.0 && subdistance > 0.0)
         {
             //solid_node = VertexInteger(actualPoint.x + direction.x, actualPoint.y + direction.y, actualPoint.z + direction.z);
             distribution.f[i*size + transCoordToIndex(point.x, point.y, point.z)] = subdistance;
@@ -882,23 +883,40 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 			real(distribution.dirs[i * DIMENSION + 2]));
 #endif
 
+		uint neighborIndex = this->transCoordToIndex(point.x + direction.x * this->delta,
+													 point.y + direction.y * this->delta,
+													 point.z + direction.z * this->delta);
+		if (neighborIndex == INVALID_INDEX) continue;
+		if (!this->field.is(neighborIndex, STOPPER_SOLID)) continue;
+
+		if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
+		{
+			this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
+		}
+
 		error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
 		subdistance /= this->delta;
 
-		if (error != 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
+		if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
 		{
-			this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
+			if (subdistance < this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]])
+			{
+				this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
+				//printf("%d %f \n", this->qIndices[index], subdistance);
+			}
 		}
+
+		//if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
+		//{
+		//	this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
+		//}
 		//else
 		//{
-		//	uint neighborIndex = this->transCoordToIndex( point.x + direction.x * this->delta,
-		//		                                          point.y + direction.y * this->delta, 
-		//		                                          point.z + direction.z * this->delta );
-		//	if (neighborIndex == INVALID_INDEX) continue;
-
-		//	if( this->field.is(neighborIndex, STOPPER_SOLID) )
+		//	if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
+		//	{
 		//		this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
+		//	}
 		//}
 	}
 }
@@ -936,13 +954,30 @@ HOSTDEVICE BoundingBox GridImp::getBoundingBoxOnNodes(Triangle &triangle) const
 {
     real minX, maxX, minY, maxY, minZ, maxZ;
     triangle.setMinMax(minX, maxX, minY, maxY, minZ, maxZ);
-    const Vertex minOnNodes = getMinimumOnNode(Vertex(minX, minY, minZ));
-    const Vertex maxOnNodes = getMaximumOnNode(Vertex(maxX, maxY, maxZ));
+    //const Vertex minOnNodes = getMinimumOnNode(Vertex(minX, minY, minZ));
+    //const Vertex maxOnNodes = getMaximumOnNode(Vertex(maxX, maxY, maxZ));
 
-    return BoundingBox(minOnNodes.x, maxOnNodes.x, minOnNodes.y, maxOnNodes.y, minOnNodes.z, maxOnNodes.z);
+	int minXIndex = lround(floor((minX - this->startX) / this->delta)) - 1;
+	int minYIndex = lround(floor((minY - this->startY) / this->delta)) - 1;
+	int minZIndex = lround(floor((minZ - this->startZ) / this->delta)) - 1;
+
+	int maxXIndex = lround(ceil ((maxX - this->startX) / this->delta)) + 1;
+	int maxYIndex = lround(ceil ((maxY - this->startY) / this->delta)) + 1;
+	int maxZIndex = lround(ceil ((maxZ - this->startZ) / this->delta)) + 1;
+
+	minX = this->startX + minXIndex * this->delta;
+	minY = this->startY + minYIndex * this->delta;
+	minZ = this->startZ + minZIndex * this->delta;
+
+	maxX = this->startX + maxXIndex * this->delta;
+	maxY = this->startY + maxYIndex * this->delta;
+	maxZ = this->startZ + maxZIndex * this->delta;
+
+    //return BoundingBox(minOnNodes.x, maxOnNodes.x, minOnNodes.y, maxOnNodes.y, minOnNodes.z, maxOnNodes.z);
+	return BoundingBox( minX, maxX, minY, maxY, minZ, maxZ );
 }
 
-HOSTDEVICE Vertex GridImp::getMinimumOnNode(Vertex exact) const
+HOSTDEVICE Vertex GridImp::getMinimumOnNode(Vertex exact) const  //deprecated
 {
     const real minX = getMinimumOnNodes(exact.x, vf::Math::getDecimalPart(startX), delta);
     const real minY = getMinimumOnNodes(exact.y, vf::Math::getDecimalPart(startY), delta);
@@ -950,7 +985,7 @@ HOSTDEVICE Vertex GridImp::getMinimumOnNode(Vertex exact) const
     return Vertex(minX, minY, minZ);
 }
 
-HOSTDEVICE real GridImp::getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta)
+HOSTDEVICE real GridImp::getMinimumOnNodes(const real& minExact, const real& decimalStart, const real& delta)  //deprecated
 {
     real minNode = ceil(minExact - 1.0);
     minNode += decimalStart;
@@ -962,7 +997,7 @@ HOSTDEVICE real GridImp::getMinimumOnNodes(const real& minExact, const real& dec
     return minNode;
 }
 
-HOSTDEVICE Vertex GridImp::getMaximumOnNode(Vertex exact) const
+HOSTDEVICE Vertex GridImp::getMaximumOnNode(Vertex exact) const  //deprecated
 {
     const real maxX = getMaximumOnNodes(exact.x, vf::Math::getDecimalPart(startX), delta);
     const real maxY = getMaximumOnNodes(exact.y, vf::Math::getDecimalPart(startY), delta);
@@ -970,7 +1005,7 @@ HOSTDEVICE Vertex GridImp::getMaximumOnNode(Vertex exact) const
     return Vertex(maxX, maxY, maxZ);
 }
 
-HOSTDEVICE real GridImp::getMaximumOnNodes(const real& maxExact, const real& decimalStart, const real& delta)
+HOSTDEVICE real GridImp::getMaximumOnNodes(const real& maxExact, const real& decimalStart, const real& delta)  //deprecated
 {
     real maxNode = ceil(maxExact - 1.0);
     maxNode += decimalStart;
