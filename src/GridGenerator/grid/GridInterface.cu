@@ -153,7 +153,7 @@ bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp*
 {
     const int neighbor = coarseGrid->transCoordToIndex(x, y, z);
 
-    if( neighbor != INVALID_INDEX || coarseGrid->getField().isStopperOutOfGrid(neighbor) || coarseGrid->getField().is(neighbor, STOPPER_OUT_OF_GRID_BOUNDARY) )
+    if( (neighbor != INVALID_INDEX) && (coarseGrid->getField().isStopperOutOfGrid(neighbor) || coarseGrid->getField().is(neighbor, STOPPER_OUT_OF_GRID_BOUNDARY)) )
         return false;
 
     const uint indexOnFineGrid = getCoarseToFineIndexOnFineGrid(neighbor, coarseGrid, fineGrid);
