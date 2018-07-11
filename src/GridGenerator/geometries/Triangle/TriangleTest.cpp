@@ -99,7 +99,7 @@ TEST(TriangleTest, pointintersectTriangle_directionIntoTriangle_ExpectReturn1)
 
     real q;
     int err = t.getTriangleIntersection(v, direction, intersect, q);
-    ASSERT_THAT(err, Eq(1));
+    ASSERT_THAT(err, Eq(0));
 }
 
 
@@ -113,7 +113,7 @@ TEST(TriangleTest, pointintersectTriangle_directionAgainstTriangle_ExpectReturn0
 
     real q;
     int err = t.getTriangleIntersection(v, direction, intersect, q);
-    ASSERT_THAT(err, Eq(0));
+    ASSERT_THAT(err, Eq(1));
 }
 
 

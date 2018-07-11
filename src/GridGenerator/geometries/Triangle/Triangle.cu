@@ -249,6 +249,10 @@ HOSTDEVICE int Triangle::getNumberOfCommonEdge(const Triangle &t2) const
 
 HOSTDEVICE int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &direction, Vertex &pointOnTri, real &qVal) const
 {
+	///// taken from /////
+	//http://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
+
+
     Vertex edge1, edge2, tvec, pvec, qvec, tuv;
     float det, inv_det;
 
@@ -259,31 +263,33 @@ HOSTDEVICE int Triangle::getTriangleIntersection(const Vertex &P, const Vertex &
     det = edge1 * pvec;
 
     if (det < EPSILON)
-        return 0;
+        return 3;
 
-    inv_det = 1 / det;
+    inv_det = 1.0 / det;
 
     tvec = P - v1;
     tuv.y = (tvec * pvec) * inv_det;
 
-    if (tuv.y < 0.0 || tuv.y > 1.0)
-        return 0;
+	if (!vf::Math::greaterEqual(tuv.y, 0.0) || !vf::Math::lessEqual(tuv.y, 1.0))
+	//if (tuv.y < 0.0 || tuv.y > 1.0)
+        return 1;
 
     qvec = tvec.crossProduct(edge1);
     tuv.z = (direction * qvec) * inv_det;
 
-    if (tuv.z < 0.0 || (tuv.y + tuv.z) > 1.0)
-        return 0;
+	if ( !vf::Math::greaterEqual(tuv.z, 0.0) || !vf::Math::lessEqual((tuv.y + tuv.z), 1.0))
+    //if (tuv.z < 0.0 || (tuv.y + tuv.z) > 1.0)
+        return 2;
 
     tuv.x = (edge2 * qvec) * inv_det;
 
-    pointOnTri.x = (1 - tuv.y - tuv.z) * v1.x + tuv.y * v2.x + tuv.z * v3.x;
-    pointOnTri.y = (1 - tuv.y - tuv.z) * v1.y + tuv.y * v2.y + tuv.z * v3.y;
-    pointOnTri.z = (1 - tuv.y - tuv.z) * v1.z + tuv.y * v2.z + tuv.z * v3.z;
+    pointOnTri.x = (1.0 - tuv.y - tuv.z) * v1.x + tuv.y * v2.x + tuv.z * v3.x;
+    pointOnTri.y = (1.0 - tuv.y - tuv.z) * v1.y + tuv.y * v2.y + tuv.z * v3.y;
+    pointOnTri.z = (1.0 - tuv.y - tuv.z) * v1.z + tuv.y * v2.z + tuv.z * v3.z;
 
     qVal = tuv.x;
 
-    return 1;
+    return 0;
 }
 
 HOSTDEVICE void Triangle::print() const
