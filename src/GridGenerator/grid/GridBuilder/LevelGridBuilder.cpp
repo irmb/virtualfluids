@@ -64,6 +64,21 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
         }
     }
 
+	//// DEBUG
+	//{
+	//	std::ofstream file;
+
+	//	file.open("M:/TestGridGeneration/results/Box2_25_Qs.csv");
+
+	//	for (auto nodeQs : boundaryConditions[0]->geometryBoundaryCondition->qs) {
+	//		for (auto q : nodeQs) {
+	//			file << q << ", ";
+	//		}
+	//		file << "100" << std::endl;
+	//	}
+
+	//	file.close();
+	//}
 }
 
 void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)
@@ -72,10 +87,13 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 
     for (int level = 0; level < getNumberOfGridLevels(); level++)
     {
-        boundaryConditions[level]->geometryBoundaryCondition->vx = vx;
-        boundaryConditions[level]->geometryBoundaryCondition->vy = vy;
-        boundaryConditions[level]->geometryBoundaryCondition->vz = vz;
-        boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+		if (boundaryConditions[level]->geometryBoundaryCondition != nullptr)
+		{
+			boundaryConditions[level]->geometryBoundaryCondition->vx = vx;
+			boundaryConditions[level]->geometryBoundaryCondition->vy = vy;
+			boundaryConditions[level]->geometryBoundaryCondition->vz = vz;
+			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+		}
     }
 }
 
@@ -351,9 +369,9 @@ void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level
 {
     for (uint i = 0; i < boundaryConditions[level]->geometryBoundaryCondition->indices.size(); i++)
     {
-        vx[i] = boundaryConditions[level]->geometryBoundaryCondition->vx;
-        vy[i] = boundaryConditions[level]->geometryBoundaryCondition->vy;
-        vz[i] = boundaryConditions[level]->geometryBoundaryCondition->vz;
+		vx[i] = boundaryConditions[level]->geometryBoundaryCondition->vx;
+		vy[i] = boundaryConditions[level]->geometryBoundaryCondition->vy;
+		vz[i] = boundaryConditions[level]->geometryBoundaryCondition->vz;
     }
 }
 

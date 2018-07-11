@@ -81,6 +81,8 @@ protected:
 
     struct BoundaryConditions
     {
+		BoundaryConditions() : geometryBoundaryCondition(nullptr) {}
+
         std::vector<SPtr<VelocityBoundaryCondition> > velocityBoundaryConditions;
         std::vector<SPtr<PressureBoundaryCondition> > pressureBoundaryConditions;
 
