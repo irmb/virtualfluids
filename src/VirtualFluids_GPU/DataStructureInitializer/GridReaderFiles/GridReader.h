@@ -1,15 +1,14 @@
 #ifndef GridReaderFiles_H
 #define GridReaderFiles_H
 
-#include <VirtualFluidsDefinitions.h>
-
+//#include <VirtualFluidsDefinitions.h>
+#include "LBM/LB.h"
 #include "../GridProvider.h"
 
 #include <vector>
 #include <string>
 #include <memory>
 
-#include "LBM/LB.h"
 
 class Parameter;
 class BoundaryValues;
@@ -77,7 +76,7 @@ private:
 	void printQSize(std::string bc, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 	void setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
-	void setQ27Size(QforBoundaryConditions &Q, real* QQ, unsigned int sizeQ) const;
+	void setQ27Size(QforBoundaryConditions& Q, real* QQ, unsigned int sizeQ) const;
 	bool hasQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const;
 public:
     void initalGridInformations() override;
