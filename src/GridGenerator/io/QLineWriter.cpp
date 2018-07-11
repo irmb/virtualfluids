@@ -9,12 +9,19 @@
 #include <grid/Grid.h>
 #include <geometries/Vertex/Vertex.h>
 
+#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+
 using namespace std;
 void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vector<UbTupleInt2> lines);
 
 
 void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryCondition> geometryBoundaryCondition, SPtr<Grid> grid)
 {
+	if (geometryBoundaryCondition == nullptr)
+	{
+		*logging::out << logging::Logger::WARNING << "(QLineWriter::writeArrows) no geometry bc on this grid level.\n";
+		return;
+	}
     std::vector<UbTupleFloat3> nodes;
     std::vector<UbTupleInt2> cells;
 
