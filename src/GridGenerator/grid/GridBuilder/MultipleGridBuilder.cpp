@@ -71,7 +71,7 @@ void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
-    const uint nodesBetweenGrids = 8;
+    const uint nodesBetweenGrids = 12;
     const uint levelDifference = levelFine - getNumberOfLevels();
     const uint oldGridSize = this->getNumberOfLevels();
 
@@ -380,7 +380,7 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
         std::stringstream ss;
         ss << path << level << ".vtk";
 
-        //GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
+        GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
         GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
 }
