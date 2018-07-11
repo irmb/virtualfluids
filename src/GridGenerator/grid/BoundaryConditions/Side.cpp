@@ -72,7 +72,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<Bounda
         if (grid[level]->getFieldEntry(i) != BC_SOLID)
             continue;
 
-        for (int dir = 0; dir < grid[level]->getEndDirection(); dir++)
+        for (int dir = 0; dir <= grid[level]->getEndDirection(); dir++)
         {
             //const int qIndex = dir * grid[level]->getSize() + i;
             //const real q = grid[level]->getDistribution()[qIndex];
@@ -80,10 +80,10 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<Bounda
 			const real q = grid[level]->getQValue(i, dir);
 
             qNode[dir] = q;
-            if (vf::Math::greaterEqual(q, 0.0))
-                qFound = true;
-            //else
-            //    qNode[dir] = -1.0;
+            //if (vf::Math::greaterEqual(q, 0.0))
+            //    qFound = true;
+            ////else
+            ////    qNode[dir] = -1.0;
         }
 
         //if (qFound)
