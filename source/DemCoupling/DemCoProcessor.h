@@ -14,6 +14,13 @@
 #include "CoProcessor.h"
 #include "UbTuple.h"
 
+#define TIMING
+
+#ifdef TIMING
+   #include "UbTiming.h"
+#endif
+ 
+
 class PhysicsEngineGeometryAdapter;
 class PhysicsEngineSolverAdapter;
 class PhysicsEngineMaterialAdapter;
@@ -47,7 +54,7 @@ private:
     void applyForcesOnGeometries();
     void setForcesToObject(SPtr<Grid3D> grid, std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry);
     void scaleForcesAndTorques(double scalingFactor);
-    void calculateDemTimeStep(double step) const;
+    void calculateDemTimeStep(double step);
     void moveVfGeoObject();
 private:
     std::shared_ptr<Communicator> comm;
@@ -57,6 +64,10 @@ private:
     std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometries;
     double intermediateDemSteps;
     SPtr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
+
+#ifdef TIMING
+    UbTimer timer;
+#endif
 };
 
 

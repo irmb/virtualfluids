@@ -22,13 +22,17 @@
 #include "MPICommunicator.h"
 #include "BoundaryConditionsBlockVisitor.h"
 
+#include "UbLogger.h"
+
 
 #include <array>
 
 DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm, std::shared_ptr<ForceCalculator> forceCalculator, std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps) :
    CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(physicsEngineSolver), intermediateDemSteps(intermediatePeSteps)
 {
-
+#ifdef TIMING
+   timer.resetAndStart();
+#endif
 }
 
 DemCoProcessor::~DemCoProcessor()
@@ -51,7 +55,7 @@ void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> inte
    {
       physicsEngineGeometries.push_back(peGeometry);
    }
-   distributeIDs();
+   //distributeIDs();
 }
 
 
@@ -76,7 +80,16 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> DemCoProcessor::createPhysicsEngin
 
 void DemCoProcessor::process(double actualTimeStep)
 {
+#ifdef TIMING
+   timer.resetAndStart();
+#endif
+
    this->applyForcesOnGeometries();
+
+#ifdef TIMING
+   if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::process start step: " << actualTimeStep);
+   if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::applyForcesOnGeometries() time = "<<timer.stop()<<" s");
+#endif
 
    if (scheduler->isDue(actualTimeStep))
    {
@@ -86,9 +99,17 @@ void DemCoProcessor::process(double actualTimeStep)
       if (demTimeStepsPerIteration != 1)
          this->scaleForcesAndTorques(1.0 / demTimeStepsPerIteration);
 
+#ifdef TIMING
+      if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::scaleForcesAndTorques() time = "<<timer.stop()<<" s");
+      if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::calculateDemTimeStep():");
+#endif
+
       if (this->intermediateDemSteps == 1)
          this->calculateDemTimeStep(demTimeStepsPerIteration);
       
+//#ifdef TIMING
+//      if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::calculateDemTimeStep() time = "<<timer.stop()<<" s");
+//#endif
       //if ((int)actualTimeStep % 100 == 0)
       //{
       //    if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[0])->isActive())
@@ -104,10 +125,22 @@ void DemCoProcessor::process(double actualTimeStep)
 
       this->moveVfGeoObject();
 
+#ifdef TIMING
+      if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::moveVfGeoObject() time = "<<timer.stop()<<" s");
+#endif
+
       grid->accept(*boundaryConditionsBlockVisitor.get());
+
+#ifdef TIMING
+      if (comm->isRoot()) UBLOG(logINFO, "grid->accept(*boundaryConditionsBlockVisitor.get()) time = "<<timer.stop()<<" s");
+#endif
 
       //UBLOG(logINFO, "DemCoProcessor::update - END - timestep = " << actualTimeStep);
    }
+
+#ifdef TIMING
+   if (comm->isRoot()) UBLOG(logINFO, "DemCoProcessor::process stop step: " << actualTimeStep);
+#endif
 }
 //////////////////////////////////////////////////////////////////////////
 std::shared_ptr<PhysicsEngineSolverAdapter> DemCoProcessor::getPhysicsEngineSolver()
@@ -185,9 +218,13 @@ void DemCoProcessor::scaleForcesAndTorques(double scalingFactor)
 }
 
 
-void DemCoProcessor::calculateDemTimeStep(double step) const
+void DemCoProcessor::calculateDemTimeStep(double step)
 {
    physicsEngineSolver->runTimestep(step);
+
+#ifdef TIMING
+   if (comm->isRoot()) UBLOG(logINFO, "  physicsEngineSolver->runTimestep() time = "<< timer.stop() <<" s");
+#endif
 
    for (int i = 0; i < physicsEngineGeometries.size(); i++)
    {
@@ -197,6 +234,10 @@ void DemCoProcessor::calculateDemTimeStep(double step) const
          interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
       }
    }
+
+#ifdef TIMING
+   if (comm->isRoot()) UBLOG(logINFO, "  physicsEngineSolver->updateGeometry() time = "<<timer.stop()<<" s");
+#endif
 }
 
 void DemCoProcessor::moveVfGeoObject()
@@ -315,7 +356,7 @@ void DemCoProcessor::distributeIDs()
        std::map<int, int>::const_iterator it;
       if ((it=idMap.find(interactors[i]->getID())) == idMap.end())
       {
-         throw UbException(UB_EXARGS, "not valid ID!");
+         throw UbException(UB_EXARGS, "Interactor ID is invalid! The DEM object may be not in PE domain!");
       }
       
 

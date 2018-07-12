@@ -58,7 +58,7 @@ void RestartDemObjectsCoProcessor::write(int step)
       UbFileOutputBinary fo(filePath);
       fo.writeInteger((int)rvalues.size());
       fo.writeVector<double>(rvalues);
-      UBLOG(logINFO, "RestartDemObjectsCoProcessor: number of objects = " << rvalues.size()/6);
+      UBLOG(logINFO, "RestartDemObjectsCoProcessor::write number of objects = " << rvalues.size()/6);
    }
    if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::write stop ");
 }

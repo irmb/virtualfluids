@@ -331,14 +331,14 @@ void thermoplast(string configname)
       grid->accept(initVisitor);
 
       //write data for visualization of boundary conditions
-      {
-         SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-         ppgeo.process(0);
+      //{
+      //   SPtr<UbScheduler> geoSch(new UbScheduler(1));
+      //   WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+      //   ppgeo.process(0);
 
-         WriteMacroscopicQuantitiesCoProcessor ppInit(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
-         ppInit.process(0);
-      }
+      //   WriteMacroscopicQuantitiesCoProcessor ppInit(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+      //   ppInit.process(0);
+      //}
 
       if (myid == 0) UBLOG(logINFO, "Preprocess - end");
    }
@@ -347,7 +347,7 @@ void thermoplast(string configname)
    ////generating spheres 
    //UBLOG(logINFO, "generating spheres - start, rank="<<myid);
    SPtr<UbScheduler> sphereScheduler(new UbScheduler(sphereTime));
-   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, demCoProcessor, sphereMaterial));
+   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial));
    //UBLOG(logINFO, "generating spheres - stop, rank="<<myid);
 
    //restart
@@ -381,17 +381,30 @@ void thermoplast(string configname)
    //sphere prototypes
    //UBLOG(logINFO, "sphere prototypes - start, rank="<<myid);
    double d = 2.0*radius;
-   Vector3D origin(g_minX1+peMinOffset[0]+radius, geoInflow1->getX2Minimum()+4.0*d, geoInflow1->getX3Minimum()+2.0*d);
-   for (int x3 = 0; x3 < 6; x3++)
-      for (int x2 = 0; x2 < 4; x2++)
-         for (int x1 = 0; x1 < 1; x1++)
+   //Vector3D origin(g_minX1+peMinOffset[0]+radius, geoInflow1->getX2Minimum()+4.0*d, geoInflow1->getX3Minimum()+2.0*d);
+   //for (int x3 = 0; x3 < 6; x3++)
+   //   for (int x2 = 0; x2 < 4; x2++)
+   //      for (int x1 = 0; x1 < 1; x1++)
+   //      {
+   //         //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
+   //         SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
+   //         if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
+   //         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
+   //      }
+   //UBLOG(logINFO, "sphere prototypes - stop, rank="<<myid);
+
+   Vector3D origin(106+radius, 1372+radius, 12+radius);
+   for (int x3 = 0; x3 < 28; x3++)
+      for (int x2 = 0; x2 < 12; x2++)
+         for (int x1 = 0; x1 < 7; x1++)
          {
             //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
-            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
-            if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
+            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*1.1*d, origin[1]+x2*1.1*d, origin[2]+x3*1.1*d, radius));
+            //if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
             createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
          }
-   //UBLOG(logINFO, "sphere prototypes - stop, rank="<<myid);
+
+   createSphereCoProcessor->process(0);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));
@@ -402,7 +415,7 @@ void thermoplast(string configname)
       WbWriterVtkXmlBinary::getInstance(), comm));
 
    SPtr<WriteDemObjectsCoProcessor> writeDemObjectsCoProcessor(new WriteDemObjectsCoProcessor(grid, visSch, pathOut, WbWriterVtkXmlBinary::getInstance(), demCoProcessor, comm));
-   //writeDemObjectsCoProcessor->process(0);
+   writeDemObjectsCoProcessor->process(0);
 
    ////performance control
    SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
@@ -416,11 +429,11 @@ void thermoplast(string configname)
 
    calculator->addCoProcessor(createSphereCoProcessor);
    calculator->addCoProcessor(demCoProcessor);
-   calculator->addCoProcessor(writeBCCoProcessor);
+   //calculator->addCoProcessor(writeBCCoProcessor);
    calculator->addCoProcessor(writeDemObjectsCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
-   calculator->addCoProcessor(restartDemObjectsCoProcessor);
-   calculator->addCoProcessor(restartCoProcessor);
+   //calculator->addCoProcessor(restartDemObjectsCoProcessor);
+   //calculator->addCoProcessor(restartCoProcessor);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();

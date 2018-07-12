@@ -7,8 +7,8 @@ boundingBox = 60 1370 10 190 1530 320 #test bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 10
-outTime = 10
+endTime = 100
+outTime = 100
 availMem = 25e9
 uLB = 0.1
 
@@ -24,8 +24,9 @@ plexiglas = /plexiglas.stl
 
 pathOut = g:/temp/thermoplastCluster3
 
-
 #restart
 cpStart = 200
 cpStep = 200
 restart = false
+
+nupsStep = 1000 1000 10000000
