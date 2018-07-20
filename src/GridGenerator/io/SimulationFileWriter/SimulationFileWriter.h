@@ -42,7 +42,8 @@ private:
     static void addQsToVector(int index, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
     static void fillRBForNode(int index, int direction, int directionSign, int rb, std::vector<std::vector<std::vector<real> > > &qs, SPtr<Grid> grid);
     static void writeBoundary(std::vector<real> boundary, int rb);
-    static void closeFiles();
+	static void writeBoundaryShort(std::vector<real> boundary, int rb);
+	static void closeFiles();
 
 
     static std::ofstream xCoordFile;

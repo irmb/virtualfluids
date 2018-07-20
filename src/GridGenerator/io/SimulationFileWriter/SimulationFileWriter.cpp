@@ -253,20 +253,21 @@ void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, st
 std::vector<std::vector<std::vector<real> > > SimulationFileWriter::createBCVectors(SPtr<Grid> grid)
 {
     std::vector<std::vector<std::vector<real> > > qs;
+	qs.resize(QFILES);
     for (uint i = 0; i < grid->getSize(); i++)
     {
         real x, y, z;
         grid->transIndexToCoords(grid->getSparseIndex(i), x, y, z);
 
-        if (grid->getFieldEntry(grid->getSparseIndex(i)) == Q) /*addShortQsToVector(i);*/ addQsToVector(i, qs, grid);
-        if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS, qs, grid);
-        if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS, qs, grid);
+        if (grid->getFieldEntry(grid->getSparseIndex(i)) == BC_SOLID) addShortQsToVector(i, qs, grid); //addQsToVector(i, qs, grid);
+        //if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS, qs, grid);
+        //if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS, qs, grid);
 
-        if (z == grid->getNumberOfNodesZ() - 2 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, 1, TOPQS, qs, grid);
-        if (z == 0 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, -1, BOTTOMQS, qs, grid);
+        //if (z == grid->getNumberOfNodesZ() - 2 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, 1, TOPQS, qs, grid);
+        //if (z == 0 && x < grid->getNumberOfNodesX() - 1 && y < grid->getNumberOfNodesY() - 1) fillRBForNode(i, 2, -1, BOTTOMQS, qs, grid);
 
-        if (y == 0 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, -1, FRONTQS, qs, grid);
-        if (y == grid->getNumberOfNodesY() - 2 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, 1, BACKQS, qs, grid);
+        //if (y == 0 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, -1, FRONTQS, qs, grid);
+        //if (y == grid->getNumberOfNodesY() - 2 && x < grid->getNumberOfNodesX() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 1, 1, BACKQS, qs, grid);
     }
     return qs;
 }
@@ -278,8 +279,9 @@ void SimulationFileWriter::addShortQsToVector(int index, std::vector<std::vector
 
     for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
-        real q = grid->getDistribution()[qIndex];
+		/*int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
+		real q = grid->getDistribution()[qIndex];*/
+		real q = grid->getQValue(index, i);
         if (q > 0) {
             //printf("Q%d (old:%d, new:%d), : %2.8f \n", i, coordsVec[index].matrixIndex, index, grid.d.f[i * grid.size + coordsVec[index].matrixIndex]);
             qKey += (uint32_t)pow(2, 26 - i);
@@ -302,12 +304,15 @@ void SimulationFileWriter::addQsToVector(int index, std::vector<std::vector<std:
 
     for (int i = grid->getEndDirection(); i >= 0; i--)
     {
-        int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
-        real q = grid->getDistribution()[qIndex];
-        if (q > 0)
-            qNode.push_back(q);
-        else
-            qNode.push_back(-1);
+        //int qIndex = i * grid->getSize() + grid->getSparseIndex(index);
+        //real q = grid->getDistribution()[qIndex];
+		real q = grid->getQValue(index, i);
+        qNode.push_back(q);
+		if (q > 0)
+			printf("Q= %f; Index = %d \n", q, index);
+            //qNode.push_back(q);
+  //      else
+  //          qNode.push_back(-1);
     }
     qs[GEOMQS].push_back(qNode);
     qNode.clear();
@@ -340,25 +345,41 @@ void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vect
 {
     for (int rb = 0; rb < QFILES; rb++) {
         for (int index = 0; index < qFiles[rb].size(); index++) {
-            writeBoundary(qFiles[rb][index], rb);
-        }
+            //writeBoundary(qFiles[rb][index], rb);
+			writeBoundaryShort(qFiles[rb][index], rb);
+		}
     }
 }
 
 void SimulationFileWriter::writeBoundary(std::vector<real> boundary, int rb)
 {
-    uint32_t key = *((uint32_t*)&boundary[boundary.size() - 2]);
-    int index = (int)boundary[boundary.size() - 1];
+    int index = (int)boundary[0];
 
-    *qStreams[rb] << (index + 1) << " " << key;
+    *qStreams[rb] << (index + 1);
 
-    for (int i = 0; i < boundary.size() - 2; i++) {
+    for (int i = 1; i < boundary.size(); i++) {
         *qStreams[rb] << " " << std::fixed << std::setprecision(16) << boundary[i];
     }
     *valueStreams[rb] << (index+1) << " 0 0 0";
 
     *qStreams[rb] << "\n";
     *valueStreams[rb] << "\n";
+}
+
+void SimulationFileWriter::writeBoundaryShort(std::vector<real> boundary, int rb)
+{
+	uint32_t key = *((uint32_t*)&boundary[boundary.size() - 2]);
+	int index = (int)boundary[boundary.size() - 1];
+
+	*qStreams[rb] << (index + 1) << " " << key;
+
+	for (int i = 0; i < boundary.size() - 2; i++) {
+		*qStreams[rb] << " " << std::fixed << std::setprecision(16) << boundary[i];
+	}
+	*valueStreams[rb] << (index + 1) << " 0 0 0";
+
+	*qStreams[rb] << "\n";
+	*valueStreams[rb] << "\n";
 }
 
 void SimulationFileWriter::closeFiles()
