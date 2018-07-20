@@ -30,6 +30,9 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 	std::vector<std::string> nodedatanames;
 	std::vector< std::vector<double> > nodedata;
 
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "Write Grid to XML VTK (*.vtu) output file : " + name + "\n";
+
 	nodedatanames.push_back("types");
 	nodedatanames.push_back("sparse_id");
 
@@ -95,6 +98,8 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 		}
 	}
 	WbWriterVtkXmlBinary::getInstance()->writeOctsWithNodeData(name, nodes, cells, nodedatanames, nodedata);
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done. \n";
+
 }
 //deprecated
 //void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
