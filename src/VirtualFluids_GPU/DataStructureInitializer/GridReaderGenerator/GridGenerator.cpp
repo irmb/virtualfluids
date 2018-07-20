@@ -8,6 +8,7 @@
 #include <iostream>
 #include "utilities/math/Math.h"
 #include "LBM/LB.h"
+#include "Output/QDebugWriter.hpp"
 
 
 std::shared_ptr<GridProvider> GridGenerator::make(std::shared_ptr<GridBuilder> builder, std::shared_ptr<Parameter> para)
@@ -445,7 +446,7 @@ void GridGenerator::allocArrays_BoundaryQs()
             //////////////////////////////////////////////////////////////////
 
             builder->getGeometryQs(Q.q27, i);
-
+			//QDebugWriter::writeQValues(Q, para->getParH(i)->QGeom.k, para->getParH(i)->QGeom.kQ, "M:/TestGridGeneration/results/GeomGPU.dat");
             //////////////////////////////////////////////////////////////////
             for (int i = 0; i < numberOfGeometryNodes; i++)
             {
