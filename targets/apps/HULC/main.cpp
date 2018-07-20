@@ -260,7 +260,8 @@ void multipleLevel(const std::string& configPath)
 
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
+	gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+	//gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -320,23 +321,32 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
-	real dx = 0.25;
-	real vx = 0.002;
+	real dx = 1.0;
+	real vx = 0.02;
 	//////////////////////////////////////////////////////////////////////////////
 	//// test periodic bc non uniform
 	//gridBuilder->addCoarseGrid(-10, -10, -5, 10, 10, 5, dx);
 	//gridBuilder->addGrid(new VerticalCylinder(0, 0, 0, 5, 20), 2);
 	//////////////////////////////////////////////////////////////////////////////
-	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/ShpereNotOptimal.stl");
+	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Sphere101ParaviewRot.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Sphere101Paraview2x.stl");
+	////TransformatorImp trans(0.99, Vertex(0.0, 0.0, 0.0));
+	////trans.transformWorldToGrid(*triangularMesh);
+	////STLWriter::writeSTL(triangularMesh->triangleVec, "M:/TestGridGeneration/STL/SphereScaled.stl", true);
+	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Box_2.25.stl");
 	//gridBuilder->addCoarseGrid(-9.9, -9.9, -9.9, 20.1, 10.1, 10.1, dx);
-	gridBuilder->addCoarseGrid(-10, -10, -10, 20, 10, 10, dx);
 
-	//gridBuilder->addGrid(new Cuboid(-5, -5, -5, 5, 5, 5), 1);
-	//gridBuilder->addGrid(new Sphere( 0, 0, -5, 4), 2);
-	//gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 5, 20), 2);
+	gridBuilder->addCoarseGrid(-20, -20, -20, 40, 20, 20, dx);
+	//gridBuilder->addCoarseGrid(-5, -5, -5, 10, 5, 5, dx);
 
-	gridBuilder->addGeometry(triangularMesh);
-	//gridBuilder->addGrid(new Sphere(0, 0, 0, 0.1), 10);//until level 7 works
+	////gridBuilder->addGrid(new Cuboid(-5, -5, -5, 5, 5, 5), 1);
+	////gridBuilder->addGrid(new Sphere( 0, 0, -5, 4), 2);
+	////gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 5, 20), 2);
+
+	gridBuilder->addGrid(new Sphere(0, 0, 0, 0.01), 12);
+	//gridBuilder->addGeometry(triangularMesh);
+	////gridBuilder->addGeometry(triangularMesh, 5);
+	////gridBuilder->addGrid(new Sphere(0, 0, 0, 0.1), 10);//until level 7 works
 	////////////////////////////////////////////////////////////////////////////
 	//general call
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -384,12 +394,16 @@ void multipleLevel(const std::string& configPath)
 
     //gridBuilder->addFineGrid(17.0, 17.0, 17.0, 20.0, 20.0, 20.0, 3);
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
+	
 
-
+	
+	
 	gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/Sphere_");
 	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
 	gridBuilder->writeArrows    ("M:/TestGridGeneration/results/Sphere_Arrow");
 
+
+	//SimulationFileWriter::write("M:/TestGridGeneration/grid/TestSymmetricSoeren/", gridBuilder, FILEFORMAT::BINARY);
 
 	//{
 	//	SPtr<Grid> grid = gridBuilder->getGrid(2);
