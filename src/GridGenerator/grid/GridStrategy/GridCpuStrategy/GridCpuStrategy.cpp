@@ -132,9 +132,11 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     // TODO: this is stupid! concave refinements can easily have many more interface cells
     const uint sizeCF = (fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz);
     grid->gridInterface->cf.coarse = new uint[sizeCF];
-    grid->gridInterface->cf.fine = new uint[sizeCF];
+    grid->gridInterface->cf.fine   = new uint[sizeCF];
+    grid->gridInterface->cf.offset = new uint[sizeCF];
     grid->gridInterface->fc.coarse = new uint[sizeCF];
-    grid->gridInterface->fc.fine = new uint[sizeCF];
+    grid->gridInterface->fc.fine   = new uint[sizeCF];
+    grid->gridInterface->fc.offset = new uint[sizeCF];
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid, lbmOrGks);

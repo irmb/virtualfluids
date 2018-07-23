@@ -4,6 +4,8 @@
 #include "Field.h"
 #include "NodeValues.h"
 
+#include "distributions/D3Q27.h"
+
 GridInterface::GridInterface()
 {
 
@@ -40,6 +42,8 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
             cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
 
+            this->findOffset( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
+
             cf.numberOfEntries++;
 
             coarseGrid->setNonStopperOutOfGridCellTo(indexOnCoarseGrid, FLUID_CFC);
@@ -74,6 +78,8 @@ void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, G
         {
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
             cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
+
+            this->findOffset( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
 
             cf.numberOfEntries++;
 
@@ -243,6 +249,35 @@ void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
     const uint matrixIndex = indices[index];
     const uint sparseIndex = grid->getSparseIndex(matrixIndex);
     indices[index] = sparseIndex;
+}
+
+HOSTDEVICE void GridInterface::findOffset(const uint & indexOnCoarseGrid, GridImp * coarseGrid, uint interfaceIndex)
+{
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    if( coarseGrid->cellContainsOnly( Cell(x, y, z, coarseGrid->getDelta()), FLUID, FLUID_CFC ) ){
+        this->cf.offset[ interfaceIndex ] = DIR_27_ZERO;
+        return;
+    }
+
+
+    uint dirIndex = 0;
+    for(const auto dir : coarseGrid->distribution){
+    
+        Cell neighborCell( x + dir[0] * coarseGrid->getDelta(), 
+                           y + dir[1] * coarseGrid->getDelta(), 
+                           z + dir[2] * coarseGrid->getDelta(), 
+                           coarseGrid->getDelta() );
+
+
+        if( coarseGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
+            this->cf.offset[ interfaceIndex ] = dirIndex;
+            return;
+        }
+    
+        dirIndex++;
+    }
 }
 
 void GridInterface::print() const

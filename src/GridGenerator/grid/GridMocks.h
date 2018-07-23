@@ -42,8 +42,10 @@ public:
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override {}
     virtual uint* getCF_coarse() const override { return 0; }
     virtual uint* getCF_fine() const override { return 0; }
+    virtual uint* getCF_offset() const override { return 0; }
     virtual uint* getFC_coarse() const override { return 0; }
     virtual uint* getFC_fine() const override { return 0; }
+    virtual uint* getFC_offset() const override { return 0; }
     virtual real* getDistribution() const override { return nullptr; }
     virtual int* getDirection() const override { return nullptr; }
     virtual int getStartDirection() const override { return 0; }

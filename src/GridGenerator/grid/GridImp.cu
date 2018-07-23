@@ -227,6 +227,30 @@ HOSTDEVICE bool GridImp::contains(Cell &cell, char type) const
     return false;
 }
 
+HOSTDEVICE bool GridImp::cellContainsOnly(Cell &cell, char type) const
+{
+    for (const auto point : cell) {
+		uint index = transCoordToIndex(point.x, point.y, point.z);
+		if (index == INVALID_INDEX)
+            return false;
+        if (!field.is(index, type))
+            return false;
+    }
+    return true;
+}
+
+HOSTDEVICE bool GridImp::cellContainsOnly(Cell &cell, char typeA, char typeB) const
+{
+    for (const auto point : cell) {
+		uint index = transCoordToIndex(point.x, point.y, point.z);
+		if (index == INVALID_INDEX)
+            return false;
+        if (!field.is(index, typeA) && !field.is(index, typeB))
+            return false;
+    }
+    return true;
+}
+
 HOSTDEVICE void GridImp::setNodeTo(Cell &cell, char type)
 {
     for (const auto point : cell) {
@@ -1160,6 +1184,11 @@ uint* GridImp::getCF_fine() const
     return this->gridInterface->cf.fine;
 }
 
+HOST uint * GridImp::getCF_offset() const
+{
+    return this->gridInterface->cf.offset;
+}
+
 uint* GridImp::getFC_coarse() const
 {
     return this->gridInterface->fc.coarse;
@@ -1168,6 +1197,11 @@ uint* GridImp::getFC_coarse() const
 uint* GridImp::getFC_fine() const
 {
     return this->gridInterface->fc.fine;
+}
+
+HOST uint * GridImp::getFC_offset() const
+{
+    return this->gridInterface->fc.offset;
 }
 
 void GridImp::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const
