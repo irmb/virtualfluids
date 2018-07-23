@@ -129,7 +129,8 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
 
 
     grid->gridInterface = new GridInterface();
-    const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
+    // TODO: this is stupid! concave refinements can easily have many more interface cells
+    const uint sizeCF = (fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz);
     grid->gridInterface->cf.coarse = new uint[sizeCF];
     grid->gridInterface->cf.fine = new uint[sizeCF];
     grid->gridInterface->fc.coarse = new uint[sizeCF];
@@ -205,6 +206,6 @@ void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
 	delete[] grid->qIndices;
 	delete[] grid->qValues;
 
-    delete[] grid->distribution.f;
+    //delete[] grid->distribution.f;
 }
 

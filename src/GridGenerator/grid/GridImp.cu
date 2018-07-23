@@ -34,7 +34,7 @@ CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 
 HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level) 
-: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution), level(level)
+: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution), level(level), gridInterface(nullptr)
 {
     initalNumberOfNodesAndSize();
 }
@@ -168,8 +168,12 @@ HOSTDEVICE void GridImp::findStopperNode(uint index) // deprecated
 
 HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index)
 {
-	if (isValidEndOfGridStopper(index))
-		this->field.setFieldEntryToStopperOutOfGrid(index);
+	if (isValidEndOfGridStopper(index)){
+        if( this->level != 0 )
+		    this->field.setFieldEntryToStopperOutOfGrid(index);
+        else
+            this->field.setFieldEntryToStopperOutOfGridBoundary(index);
+    }
 
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
@@ -705,7 +709,8 @@ HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, Lbm
 {
 	if (lbmOrGks == LBM)
 	{
-		gridInterface->findInterfaceCF(index, this, &finerGrid);
+		gridInterface->findInterfaceCF            (index, this, &finerGrid);
+		gridInterface->findBoundaryGridInterfaceCF(index, this, &finerGrid);
 	}
 	else if (lbmOrGks == GKS)
 		gridInterface->findInterfaceCF_GKS(index, this, &finerGrid);

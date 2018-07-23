@@ -49,6 +49,41 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
     }
 }
 
+
+void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+{
+    const bool nodeOnCoarseGridIsBoundaryStopper = coarseGrid->getField().is(indexOnCoarseGrid, STOPPER_OUT_OF_GRID_BOUNDARY);
+    if (!nodeOnCoarseGridIsBoundaryStopper)
+        return;
+
+    const uint indexOnFineGridCF = getCoarseToFineIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
+    if (indexOnFineGridCF == INVALID_INDEX)
+        return;
+
+    const bool fineGridNodeIsBoundaryStopper = fineGrid->getField().is(indexOnFineGridCF, STOPPER_OUT_OF_GRID_BOUNDARY);
+    if (!fineGridNodeIsBoundaryStopper)
+        return;
+
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    for(const auto dir : coarseGrid->distribution)
+    {
+        const bool isFineGridNeighborInvalid = isNeighborFineInvalid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);
+        if(isFineGridNeighborInvalid)
+        {
+            cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
+            cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
+
+            cf.numberOfEntries++;
+
+            coarseGrid->setNonStopperOutOfGridCellTo(indexOnCoarseGrid, FLUID_CFC);
+            fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridCF, FLUID_CFF);
+            break;
+        }
+    }
+}
+
 void GridInterface::findInterfaceCF_GKS(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
 {
 	const bool nodeOnCoarseGridIsFluid = coarseGrid->getField().isFluid(indexOnCoarseGrid);
@@ -153,6 +188,9 @@ bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp*
 {
     const int neighbor = coarseGrid->transCoordToIndex(x, y, z);
 
+    if( neighbor == INVALID_INDEX )
+        return false;
+
     if( (neighbor != INVALID_INDEX) && (coarseGrid->getField().isStopperOutOfGrid(neighbor) || coarseGrid->getField().is(neighbor, STOPPER_OUT_OF_GRID_BOUNDARY)) )
         return false;
 
@@ -165,6 +203,9 @@ bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp*
 
 uint GridInterface::getCoarseToFineIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
+    if( indexOnCoarseGrid == INVALID_INDEX )
+        return INVALID_INDEX;
+
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
     const real xFine = x + (fineGrid->getDelta() * 0.5);
