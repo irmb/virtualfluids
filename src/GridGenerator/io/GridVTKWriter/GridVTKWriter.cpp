@@ -100,6 +100,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name, WRITING_FORMAT format)
 {
     std::vector<char> nodeInterpolationCellType( grid->getSize() );
+    std::vector<char> nodeOffset( grid->getSize() );
 
     for( auto& type : nodeInterpolationCellType ) type = 0;
 
@@ -113,6 +114,7 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 
     for( int index = 0; index < grid->getNumberOfNodesCF(); index++ ){
         nodeInterpolationCellType[ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getFieldEntry( matrixIndices[ grid->getCF_coarse()[index] ] );
+        nodeOffset               [ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getCF_offset()[index];
     }
 
     //for( int index = 0; index < grid->getNumberOfNodesFC(); index++ ){
@@ -136,6 +138,7 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 	std::vector< std::vector<double> > celldata;
 
 	celldatanames.push_back("InterpolationCells");
+    celldatanames.push_back("Offset");
 
 	celldata.resize(celldatanames.size());
 
@@ -194,8 +197,10 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 				    //const char type = grid->getFieldEntry(grid->transCoordToIndex(nodes[SWB].v1, nodes[SWB].v2.v1, nodes[SWB].v2.v2));
 				    //const char type = grid->getFieldEntry(grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])));
 				    const char type = nodeInterpolationCellType[ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
+                    const char offset = nodeOffset               [ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
 
                     celldata[0].push_back( type );
+                    celldata[1].push_back( offset );
 				}
 			}
 		}
