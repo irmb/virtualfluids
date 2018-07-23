@@ -45,7 +45,9 @@ private:
 
     HOSTDEVICE static void findSparseIndex(uint* indices, GridImp* grid, uint index);
 
-    HOSTDEVICE void findOffset( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
+    HOSTDEVICE void findOffsetCF( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
+
+    HOSTDEVICE void findOffsetFC( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
 };
 
 

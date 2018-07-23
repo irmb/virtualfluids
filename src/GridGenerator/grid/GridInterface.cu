@@ -42,7 +42,7 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
             cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
 
-            this->findOffset( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
+            this->findOffsetCF( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
 
             cf.numberOfEntries++;
 
@@ -79,7 +79,7 @@ void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, G
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
             cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
 
-            this->findOffset( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
+            this->findOffsetCF( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
 
             cf.numberOfEntries++;
 
@@ -141,6 +141,8 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
 			{
 				fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
 				fc.fine[fc.numberOfEntries] = indexOnFineGridFC;
+
+                this->findOffsetFC(indexOnFineGridFC, fineGrid, fc.numberOfEntries);
 
 				fc.numberOfEntries++;
 
@@ -251,7 +253,7 @@ void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
     indices[index] = sparseIndex;
 }
 
-HOSTDEVICE void GridInterface::findOffset(const uint & indexOnCoarseGrid, GridImp * coarseGrid, uint interfaceIndex)
+HOSTDEVICE void GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex)
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
@@ -270,9 +272,36 @@ HOSTDEVICE void GridInterface::findOffset(const uint & indexOnCoarseGrid, GridIm
                            z + dir[2] * coarseGrid->getDelta(), 
                            coarseGrid->getDelta() );
 
-
         if( coarseGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
             this->cf.offset[ interfaceIndex ] = dirIndex;
+            return;
+        }
+    
+        dirIndex++;
+    }
+}
+
+HOSTDEVICE void GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
+{
+    real x, y, z;
+    fineGrid->transIndexToCoords(indexOnFineGrid, x, y, z);
+
+    if( fineGrid->cellContainsOnly( Cell(x, y, z, fineGrid->getDelta()), FLUID, FLUID_FCF ) ){
+        this->fc.offset[ interfaceIndex ] = DIR_27_ZERO;
+        return;
+    }
+
+
+    uint dirIndex = 0;
+    for(const auto dir : fineGrid->distribution){
+    
+        Cell neighborCell( x + dir[0] * fineGrid->getDelta(), 
+                           y + dir[1] * fineGrid->getDelta(), 
+                           z + dir[2] * fineGrid->getDelta(), 
+                           fineGrid->getDelta() );
+
+        if( fineGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
+            this->fc.offset[ interfaceIndex ] = dirIndex;
             return;
         }
     

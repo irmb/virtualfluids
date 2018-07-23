@@ -100,9 +100,10 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name, WRITING_FORMAT format)
 {
     std::vector<char> nodeInterpolationCellType( grid->getSize() );
-    std::vector<char> nodeOffset( grid->getSize() );
+    for( auto& type : nodeInterpolationCellType ) type = -1;
 
-    for( auto& type : nodeInterpolationCellType ) type = 0;
+    std::vector<char> nodeOffset( grid->getSize() );
+    for( auto& offset : nodeOffset ) offset = -1;
 
     std::vector<uint> matrixIndices( grid->getSparseSize() );
 
@@ -114,6 +115,7 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 
     for( int index = 0; index < grid->getNumberOfNodesCF(); index++ ){
         nodeInterpolationCellType[ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getFieldEntry( matrixIndices[ grid->getCF_coarse()[index] ] );
+
         nodeOffset               [ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getCF_offset()[index];
     }
 
@@ -129,6 +131,8 @@ void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> 
 
         for( int index = 0; index < gridCoarse->getNumberOfNodesFC(); index++ ){
             nodeInterpolationCellType[ matrixIndices[ gridCoarse->getFC_fine()[index] ] ] = grid->getFieldEntry( matrixIndices[ gridCoarse->getFC_fine()[index] ] );
+
+            nodeOffset               [ matrixIndices[ gridCoarse->getFC_fine()[index] ] ] = gridCoarse->getFC_offset()[index];
         }
     }
 

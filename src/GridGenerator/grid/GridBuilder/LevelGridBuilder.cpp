@@ -194,23 +194,27 @@ void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, u
     this->grids[level]->getGridInterfaceIndices(iCellCfc, iCellCff, iCellFcc, iCellFcf);
 }
 
-void LevelGridBuilder::setOffsetFC(real * xOffCf, real * yOffCf, real * zOffCf, int level)
+void LevelGridBuilder::setOffsetFC(real * xOffFC, real * yOffFC, real * zOffFC, int level)
 {
     for (uint i = 0; i < getNumberOfNodesFC(level); i++)
     {
-        xOffCf[i] = 0.0;
-        yOffCf[i] = 0.0;
-        zOffCf[i] = 0.0;
+        uint offset = this->grids[level]->getFC_offset()[i];
+
+        xOffFC[i] = this->grids[level]->getDirection()[ 3*offset + 0 ];
+        yOffFC[i] = this->grids[level]->getDirection()[ 3*offset + 1 ];
+        zOffFC[i] = this->grids[level]->getDirection()[ 3*offset + 2 ];
     }
 }
 
-void LevelGridBuilder::setOffsetCF(real * xOffFc, real * yOffFc, real * zOffFc, int level)
+void LevelGridBuilder::setOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, int level)
 {
     for (uint i = 0; i < getNumberOfNodesCF(level); i++)
     {
-        xOffFc[i] = 0.0;
-        yOffFc[i] = 0.0;
-        zOffFc[i] = 0.0;
+        uint offset = this->grids[level]->getCF_offset()[i];
+
+        xOffCF[i] = this->grids[level]->getDirection()[ 3*offset + 0 ];
+        yOffCF[i] = this->grids[level]->getDirection()[ 3*offset + 1 ];
+        zOffCF[i] = this->grids[level]->getDirection()[ 3*offset + 2 ];
     }
 }
 
