@@ -381,6 +381,10 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
         ss << path << level << ".vtk";
 
         GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
-        GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
+        if( level != 0 )
+            GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], grids[level-1], ss.str() + ".InterpolationCells");
+        else
+            GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], nullptr       , ss.str() + ".InterpolationCells");
+        //GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
 }
