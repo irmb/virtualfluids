@@ -64,6 +64,7 @@ public:
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
     virtual void inital() override {}
+    virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) {};
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override {}
     virtual Vertex getMinimumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }

@@ -50,6 +50,10 @@ void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid)
     float time = runKernelInitalUniformGrid3d(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
 }
 
+void GridGpuStrategy::fixRefinementIntoWall(SPtr<GridImp> grid)
+{
+}
+
 void GridGpuStrategy::findStopperNodes(SPtr<GridImp> grid)
 {
 

@@ -152,10 +152,20 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level)
 
     const real delta = calculateDelta(level);
 
-    //auto staggeredCoordinates = getStaggeredCoordinates(gridShape->getX1Minimum(), gridShape->getX2Minimum(), gridShape->getX3Minimum(), gridShape->getX1Maximum(), gridShape->getX2Maximum(), gridShape->getX3Maximum(), delta);
-	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level);
+    bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-	return this->makeGrid(gridShape, staggeredCoordinates[0], staggeredCoordinates[1], staggeredCoordinates[2], staggeredCoordinates[3], staggeredCoordinates[4], staggeredCoordinates[5], delta, level);
+	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, xOddStart, yOddStart, zOddStart);
+
+	SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0], 
+                                                   staggeredCoordinates[1], 
+                                                   staggeredCoordinates[2], 
+                                                   staggeredCoordinates[3], 
+                                                   staggeredCoordinates[4], 
+                                                   staggeredCoordinates[5], delta, level);
+
+    newGrid->setOddStart( xOddStart, yOddStart, zOddStart );
+
+    return newGrid;
 }
 
 real MultipleGridBuilder::calculateDelta(uint level) const
@@ -166,44 +176,43 @@ real MultipleGridBuilder::calculateDelta(uint level) const
     return delta;
 }
 
-std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level) const
+std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level, bool& xOddStart, bool& yOddStart, bool& zOddStart) const
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //                                                     |
-    //                                                     |
-    // Level 2:                                           2   2   2   2   2   2   2   2   2   2   2   2
-    // Level 1:                     1       1       1       1       1       1       1       1       1
-    // Level 0:         0               0               0               0               0               0      
-    //                                                     |
-    //                               (coarse) outside      |      inside (fine)
-    //                                                     |
-    //  Step  1) ------>x                                  |
-    //  Step  2)         -------------->x-------------->x-------------->x
-    //  Step  3)                                                  x<----   
-    //  Step  4)                                          x<------       
+    //
+    //                          /----------------------- domain --------------------------------\ 
+    //                          |                      /----------------- refinement region ------------------------\
+    //                          |                      |                                        |                   |
+    //                          |                      |                                        |                   |
+    // Level 2:                 |                 2   2|  2   2   2   2   2   2   2   2   2   2 | 2  (2) (2) (2)    |
+    // Level 1:             1   |   1       1       1  |    1       1       1       1       1   |   1      (1)      |
+    // Level 0:         0       |       0              |0               0               0       |       0           |
+    //                          |                      |                                        |                   |
+    //                          |  out of refinement   |             inside refinement          |   out of domain   |   out of refinement
+    //                          |                      |                                        |                   |
+    //  Step  1) ------------------>x                  |                                        |   x<-------------------------------------------
+    //  Step  2)                |    ------>x------>x------>x                                   |                   |
+    //  Step  3)                |                      |  x<                                    |    >x             |
+    //  Step  4)                |                 x<------                                      |      ------>x     |
+    //  Step  5)                |                      |                                        | x<--x<--x<--      |
     //
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	const real deltaCoarse = this->grids[0]->getDelta();
+	const real deltaCoarse = this->grids[level-1]->getDelta();
 
 	std::array<real, 6> staggeredCoordinates;
 
-	//Step 1
-	staggeredCoordinates[0] = this->grids[0]->getStartX();
-	staggeredCoordinates[1] = this->grids[0]->getStartY();
-	staggeredCoordinates[2] = this->grids[0]->getStartZ();
-	staggeredCoordinates[3] = this->grids[0]->getEndX();
-	staggeredCoordinates[4] = this->grids[0]->getEndY();
-	staggeredCoordinates[5] = this->grids[0]->getEndZ();
+	// Step 1
+    // go to boundary of coarse grid
+	staggeredCoordinates[0] = this->grids[level-1]->getStartX();
+	staggeredCoordinates[1] = this->grids[level-1]->getStartY();
+	staggeredCoordinates[2] = this->grids[level-1]->getStartZ();
+	staggeredCoordinates[3] = this->grids[level-1]->getEndX();
+	staggeredCoordinates[4] = this->grids[level-1]->getEndY();
+	staggeredCoordinates[5] = this->grids[level-1]->getEndZ();
 
-    //real X1Minimum = ( gridShape->getX1Minimum() > this->grids[0]->getStartX() ) ? ( gridShape->getX1Minimum() ) : ( this->grids[0]->getStartX() );
-    //real X2Minimum = ( gridShape->getX2Minimum() > this->grids[0]->getStartY() ) ? ( gridShape->getX2Minimum() ) : ( this->grids[0]->getStartY() );
-    //real X3Minimum = ( gridShape->getX3Minimum() > this->grids[0]->getStartZ() ) ? ( gridShape->getX3Minimum() ) : ( this->grids[0]->getStartZ() );
-    //real X1Maximum = ( gridShape->getX1Maximum() < this->grids[0]->getEndX()   ) ? ( gridShape->getX1Maximum() ) : ( this->grids[0]->getEndX()   );
-    //real X2Maximum = ( gridShape->getX2Maximum() < this->grids[0]->getEndY()   ) ? ( gridShape->getX2Maximum() ) : ( this->grids[0]->getEndY()   );
-    //real X3Maximum = ( gridShape->getX3Maximum() < this->grids[0]->getEndZ()   ) ? ( gridShape->getX3Maximum() ) : ( this->grids[0]->getEndZ()   );
-
-	//Step 2
+	// Step 2
+    // move to first coarse node in refinement region
 	while (staggeredCoordinates[0] < gridShape->getX1Minimum()) staggeredCoordinates[0] += deltaCoarse;
 	while (staggeredCoordinates[1] < gridShape->getX2Minimum()) staggeredCoordinates[1] += deltaCoarse;
 	while (staggeredCoordinates[2] < gridShape->getX3Minimum()) staggeredCoordinates[2] += deltaCoarse;
@@ -211,33 +220,38 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	while (staggeredCoordinates[4] > gridShape->getX2Maximum()) staggeredCoordinates[4] -= deltaCoarse;
 	while (staggeredCoordinates[5] > gridShape->getX3Maximum()) staggeredCoordinates[5] -= deltaCoarse;
 
-	//Step 3
-	real offset = 0.0;
-	for (int i = 0; i < level; i++)
-		offset += 0.25 * pow(0.5, i) * deltaCoarse;
+	// Step 3
+    // make the grid staggered with one layer of stopper nodes on the outside
+	staggeredCoordinates[0] -= 0.25 * deltaCoarse;
+	staggeredCoordinates[1] -= 0.25 * deltaCoarse;
+	staggeredCoordinates[2] -= 0.25 * deltaCoarse;
+	staggeredCoordinates[3] += 0.25 * deltaCoarse;
+	staggeredCoordinates[4] += 0.25 * deltaCoarse;
+	staggeredCoordinates[5] += 0.25 * deltaCoarse;
 
-	staggeredCoordinates[0] -= offset;
-	staggeredCoordinates[1] -= offset;
-	staggeredCoordinates[2] -= offset;
-	staggeredCoordinates[3] += offset;
-	staggeredCoordinates[4] += offset;
-	staggeredCoordinates[5] += offset;
+	// Step 4
+    // add two layers until the refinement region is completely inside the fine grid
+	if (staggeredCoordinates[0] > gridShape->getX1Minimum()) staggeredCoordinates[0] -= deltaCoarse;
+	if (staggeredCoordinates[1] > gridShape->getX2Minimum()) staggeredCoordinates[1] -= deltaCoarse;
+	if (staggeredCoordinates[2] > gridShape->getX3Minimum()) staggeredCoordinates[2] -= deltaCoarse;
+	if (staggeredCoordinates[3] < gridShape->getX1Maximum()) staggeredCoordinates[3] += deltaCoarse;
+	if (staggeredCoordinates[4] < gridShape->getX2Maximum()) staggeredCoordinates[4] += deltaCoarse;
+	if (staggeredCoordinates[5] < gridShape->getX3Maximum()) staggeredCoordinates[5] += deltaCoarse;
 
-	//Step 4
-	while (staggeredCoordinates[0] > gridShape->getX1Minimum()) staggeredCoordinates[0] -= deltaCoarse * pow(0.5, level - 1);
-	while (staggeredCoordinates[1] > gridShape->getX2Minimum()) staggeredCoordinates[1] -= deltaCoarse * pow(0.5, level - 1);
-	while (staggeredCoordinates[2] > gridShape->getX3Minimum()) staggeredCoordinates[2] -= deltaCoarse * pow(0.5, level - 1);
-	while (staggeredCoordinates[3] < gridShape->getX1Maximum()) staggeredCoordinates[3] += deltaCoarse * pow(0.5, level - 1);
-	while (staggeredCoordinates[4] < gridShape->getX2Maximum()) staggeredCoordinates[4] += deltaCoarse * pow(0.5, level - 1);
-	while (staggeredCoordinates[5] < gridShape->getX3Maximum()) staggeredCoordinates[5] += deltaCoarse * pow(0.5, level - 1);
+    // Step 5
 
-    //Step 5
-    while (staggeredCoordinates[0] < this->grids[level - 1]->getStartX()) staggeredCoordinates[0] += deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[1] < this->grids[level - 1]->getStartY()) staggeredCoordinates[1] += deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) staggeredCoordinates[2] += deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[3] > this->grids[level - 1]->getEndX()  ) staggeredCoordinates[3] -= deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= deltaCoarse * pow(0.5, level);
-    while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= deltaCoarse * pow(0.5, level);
+    // if the mesh is bigger than the domain then it has an odd start
+    if (staggeredCoordinates[0] < this->grids[level - 1]->getStartX()) xOddStart = true;
+    if (staggeredCoordinates[1] < this->grids[level - 1]->getStartY()) yOddStart = true;
+    if (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) zOddStart = true;
+
+    // if the refinement region is larger than the domain, then the start and end points are moved inwards again
+    while (staggeredCoordinates[0] < this->grids[level - 1]->getStartX()) staggeredCoordinates[0] += 0.5 * deltaCoarse;
+    while (staggeredCoordinates[1] < this->grids[level - 1]->getStartY()) staggeredCoordinates[1] += 0.5 * deltaCoarse;
+    while (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) staggeredCoordinates[2] += 0.5 * deltaCoarse;
+    while (staggeredCoordinates[3] > this->grids[level - 1]->getEndX()  ) staggeredCoordinates[3] -= 0.5 * deltaCoarse;
+    while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= 0.5 * deltaCoarse;
+    while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= 0.5 * deltaCoarse;
 
 	return staggeredCoordinates;
 }
@@ -347,6 +361,11 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
     {
         grids[grids.size() - 1]->mesh(solidObject);
         grids[grids.size() - 1]->findQs(solidObject);
+
+        //for (size_t i = 0; i < grids.size(); i++){
+        //    grids[i]->mesh(solidObject);
+        //    grids[i]->findQs(solidObject);
+        //}
     }
 
 

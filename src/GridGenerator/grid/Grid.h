@@ -72,6 +72,8 @@ public:
     HOSTDEVICE virtual uint transCoordToIndex(const real &x, const real &y, const real &z) const = 0;
 
     HOST virtual void inital() = 0;
+    
+    HOST virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) = 0;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
 

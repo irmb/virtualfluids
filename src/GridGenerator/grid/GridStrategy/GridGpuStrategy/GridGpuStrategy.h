@@ -21,6 +21,7 @@ public:
 	void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
     void fixOddCells(SPtr<GridImp> grid) override;
     void findInnerNodes(SPtr<GridImp> grid) override;
+    void fixRefinementIntoWall(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
 	void findBoundarySolidNodes(SPtr<GridImp> grid)  override;
 	void findEndOfGridStopperNodes(SPtr<GridImp> grid) override;

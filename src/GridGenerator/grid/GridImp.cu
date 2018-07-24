@@ -80,12 +80,20 @@ HOST void GridImp::inital()
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
-    //gridStrategy->findStopperNodes(shared_from_this());
+    gridStrategy->fixRefinementIntoWall(shared_from_this());
+
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
+}
+
+HOST void GridImp::setOddStart(bool xOddStart, bool yOddStart, bool zOddStart)
+{
+    this->xOddStart = xOddStart;
+    this->yOddStart = yOddStart;
+    this->zOddStart = zOddStart;
 }
 
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
@@ -109,7 +117,6 @@ HOST GridImp::~GridImp()
     //printf("Destructor\n");
     //this->print();
 }
-
 
 HOSTDEVICE void GridImp::findInnerNode(uint index)
 {
@@ -140,10 +147,17 @@ bool GridImp::isInside(const Cell& cell) const
 }
 
 ////TODO: check where the fine grid starts (0.25 or 0.75) and if even or odd-cell is needed
-// *--*--*--*
-// |  |  |  |
-// *--*--*--*
-//  0  1  2
+// Cell numbering:
+//       even start                            odd start
+//    +---------+                           +---------+
+//    |       +-----+-----+-----+           | +-----+-----+-----+
+//    |       | |   |     |     |           | |     | |   |     |
+//    |       +-----+-----+-----+           | +-----+-----+-----+
+//    +---------+                           +---------+
+//               0     1     2                   0     1     2
+//              even      even                        even     
+//                   odd                        odd         odd
+//
 HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
 {
     real x, y, z;
@@ -153,10 +167,77 @@ HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
     const uint yIndex = getYIndex(y);
     const uint zIndex = getZIndex(z);
 
-    const real xCellStart = xIndex % 2 != 0 ? x : x - this->delta;
-    const real yCellStart = yIndex % 2 != 0 ? y : y - this->delta;
-    const real zCellStart = zIndex % 2 != 0 ? z : z - this->delta;
+    real xCellStart;
+    if( this->xOddStart ) xCellStart = xIndex % 2 != 0 ? x - this->delta : x;
+    else                  xCellStart = xIndex % 2 != 0 ? x               : x - this->delta;
+
+    real yCellStart;
+    if( this->yOddStart ) yCellStart = yIndex % 2 != 0 ? y - this->delta : y;
+    else                  yCellStart = yIndex % 2 != 0 ? y               : y - this->delta;
+
+    real zCellStart;
+    if( this->zOddStart ) zCellStart = zIndex % 2 != 0 ? z - this->delta : z;
+    else                  zCellStart = zIndex % 2 != 0 ? z               : z - this->delta;
+
     return Cell(xCellStart, yCellStart, zCellStart, delta);
+}
+
+HOSTDEVICE void GridImp::fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir)
+{
+
+    real x = this->startX + this->delta * xIndex;
+    real y = this->startY + this->delta * yIndex;
+    real z = this->startZ + this->delta * zIndex;
+
+    uint index = this->transCoordToIndex(x, y, z);
+
+    if( !this->xOddStart && ( dir == 1 || dir == -1 ) && ( xIndex % 2 || 1 && xIndex == 0 ) ) return;
+    if( !this->yOddStart && ( dir == 2 || dir == -2 ) && ( yIndex % 2 || 1 && yIndex == 0 ) ) return;
+    if( !this->zOddStart && ( dir == 3 || dir == -3 ) && ( zIndex % 2 || 1 && zIndex == 0 ) ) return;
+
+    if(  this->xOddStart && ( dir == 1 || dir == -1 ) && xIndex % 2 == 0 && xIndex != 0 ) return;
+    if(  this->yOddStart && ( dir == 2 || dir == -2 ) && yIndex % 2 == 0 && yIndex != 0 ) return;
+    if(  this->zOddStart && ( dir == 3 || dir == -3 ) && zIndex % 2 == 0 && zIndex != 0 ) return;
+    
+    //////////////////////////////////////////////////////////////////////////
+
+    real dx, dy, dz;
+
+    if      ( dir ==  1 ){ dx =   this->delta; dy = 0.0;           dz = 0.0;           }
+    else if ( dir == -1 ){ dx = - this->delta; dy = 0.0;           dz = 0.0;           }
+    else if ( dir ==  2 ){ dx = 0.0;           dy =   this->delta; dz = 0.0;           }
+    else if ( dir == -2 ){ dx = 0.0;           dy = - this->delta; dz = 0.0;           }
+    else if ( dir ==  3 ){ dx = 0.0;           dy = 0.0;           dz =   this->delta; }
+    else if ( dir == -3 ){ dx = 0.0;           dy = 0.0;           dz = - this->delta; }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    char type = this->field.getFieldEntry(index);
+
+    char type2    = ( type == FLUID ) ? ( INVALID_OUT_OF_GRID ) : ( FLUID );
+    uint distance = ( type == FLUID ) ? ( 9                   ) : ( 5     );
+
+    bool allTypesAreTheSame = true;
+
+    for( uint i = 1; i <= distance; i++ ){
+        uint neighborIndex = this->transCoordToIndex(x + i * dx, y + i * dy, z + i * dz);
+
+        if( ! this->field.is( neighborIndex, type ) )
+            allTypesAreTheSame = false;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( allTypesAreTheSame )
+        return;
+
+    this->setFieldEntry(index, type2);
+
+    for( uint i = 1; i <= distance; i++ ){
+        uint neighborIndex = this->transCoordToIndex(x + i * dx, y + i * dy, z + i * dz);
+
+        this->setFieldEntry(neighborIndex, type2);
+    }
 }
 
 HOSTDEVICE void GridImp::findStopperNode(uint index) // deprecated

@@ -73,6 +73,31 @@ void GridCpuStrategy::fixOddCells(SPtr<GridImp> grid)
         grid->fixOddCell(index);
 }
 
+void GridCpuStrategy::fixRefinementIntoWall(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+	for (uint xIdx = 0; xIdx < grid->nx; xIdx++){
+	    for (uint yIdx = 0; yIdx < grid->ny; yIdx++){
+		    grid->fixRefinementIntoWall( xIdx, yIdx, 0         ,  3 );
+		    grid->fixRefinementIntoWall( xIdx, yIdx, grid->nz-1, -3 );
+        }
+    }
+
+#pragma omp parallel for
+	for (uint xIdx = 0; xIdx < grid->nx; xIdx++){
+	    for (uint zIdx = 0; zIdx < grid->nz; zIdx++){
+		    grid->fixRefinementIntoWall( xIdx, 0,          zIdx,  2 );
+		    grid->fixRefinementIntoWall( xIdx, grid->ny-1, zIdx, -2 );
+        }
+    }
+
+#pragma omp parallel for
+	for (uint yIdx = 0; yIdx < grid->ny; yIdx++){
+	    for (uint zIdx = 0; zIdx < grid->nz; zIdx++){
+		    grid->fixRefinementIntoWall( 0,          yIdx, zIdx,  1 );
+		    grid->fixRefinementIntoWall( grid->nx-1, yIdx, zIdx, -1 );
+        }
+    }
 }
 
 

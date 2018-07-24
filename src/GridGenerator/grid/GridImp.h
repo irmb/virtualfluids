@@ -56,6 +56,8 @@ private:
     real endX, endY, endZ;
     real delta = 1.0;
 
+    bool xOddStart = false, yOddStart = false, zOddStart = false;
+
 	uint nx, ny, nz;
 
 	uint size;
@@ -79,6 +81,7 @@ private:
 
 public:
     HOST void inital() override;
+    HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
     HOSTDEVICE void fixOddCell(uint index);
 
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
@@ -113,6 +116,7 @@ public:
 
     bool isInside(const Cell& cell) const;
 
+    HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
 	HOSTDEVICE void findSolidStopperNode(uint index);
