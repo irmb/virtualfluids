@@ -21,6 +21,7 @@ public:
 	void allocateQs(SPtr<GridImp> grid) override;
 
     void initalNodesToOutOfGrid(SPtr<GridImp> grid) override;
+    void fixOddCells(SPtr<GridImp> grid) override;
     void findInnerNodes(SPtr<GridImp> grid) override;
     void findStopperNodes(SPtr<GridImp> grid) override;
 	void findBoundarySolidNodes(SPtr<GridImp> grid)  override;
@@ -41,8 +42,6 @@ public:
 protected:
     static void findForNeighborsNewIndices(SPtr<GridImp> grid);
     static void findForGridInterfaceNewIndices(SPtr<GridImp> grid, SPtr<GridImp> fineGrid);
-
-    void removeOddBoundaryCellNodes(SPtr<GridImp> grid);
 public:
     void allocateFieldMemory(Field* field) override;
     void freeFieldMemory(Field* field) override;

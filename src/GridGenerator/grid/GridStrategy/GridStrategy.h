@@ -22,6 +22,7 @@ public:
 	virtual void allocateQs(SPtr<GridImp> grid) = 0;
 
     virtual void initalNodesToOutOfGrid(SPtr<GridImp> grid) = 0;
+    virtual void fixOddCells(SPtr<GridImp> grid) = 0;
 
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
     virtual void findStopperNodes(SPtr<GridImp> grid) = 0;

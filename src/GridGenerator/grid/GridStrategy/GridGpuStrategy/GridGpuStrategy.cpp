@@ -39,6 +39,10 @@ void GridGpuStrategy::initalNodesToOutOfGrid(SPtr<GridImp> grid)
 
 }
 
+void GridGpuStrategy::fixOddCells(SPtr<GridImp> grid)
+{
+}
+
 
 
 void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid)

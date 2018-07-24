@@ -66,11 +66,13 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 }
 
 
-void GridCpuStrategy::removeOddBoundaryCellNodes(SPtr<GridImp> grid)
+void GridCpuStrategy::fixOddCells(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
-        grid->removeOddBoundaryCellNode(index);
+        grid->fixOddCell(index);
+}
+
 }
 
 

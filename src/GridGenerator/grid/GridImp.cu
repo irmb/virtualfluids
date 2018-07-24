@@ -73,8 +73,10 @@ HOST void GridImp::inital()
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
 
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
-    if (triangularMesh)
+    if (triangularMesh){
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, INVALID_OUT_OF_GRID);
+        gridStrategy->fixOddCells( shared_from_this() );
+    }
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
@@ -195,13 +197,13 @@ HOSTDEVICE void GridImp::findBoundarySolidNode(uint index)
 	}
 }
 
-HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
+HOSTDEVICE void GridImp::fixOddCell(uint index)
 {
     Cell cell = getOddCellFromIndex(index);
     if (isOutSideOfGrid(cell))
         return;
-    if (contains(cell, INVALID_OUT_OF_GRID))
-        setNodeTo(cell, INVALID_OUT_OF_GRID);
+    if (contains(cell, FLUID))
+        setNodeTo(cell, FLUID);
 }
 
 HOSTDEVICE bool GridImp::isOutSideOfGrid(Cell &cell) const

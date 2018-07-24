@@ -79,7 +79,7 @@ private:
 
 public:
     HOST void inital() override;
-    HOSTDEVICE void removeOddBoundaryCellNode(uint index);
+    HOSTDEVICE void fixOddCell(uint index);
 
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
     void setPeriodicityX(bool periodicity) override;

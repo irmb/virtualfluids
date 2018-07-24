@@ -19,7 +19,6 @@ public:
     void discretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType)
     {  
         this->doDiscretize(triangularMesh, grid, InnerType, OuterType);
-        //this->removeOddBoundaryCellNodes(grid);
     }
 
 private:
