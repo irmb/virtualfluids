@@ -24,6 +24,8 @@ public:
         return 0.0;
     }
 
+    virtual const Object* getObject() const { return nullptr; }
+
     virtual uint getSparseSize() const override { return 0; }
     virtual uint getSize() const override { return 0; }
     virtual real getStartX() const override { return 0.0; }
@@ -64,6 +66,7 @@ public:
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
     virtual void inital() override {}
+    virtual void inital(const SPtr<Grid> fineGrid) override {};
     virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) {};
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override {}

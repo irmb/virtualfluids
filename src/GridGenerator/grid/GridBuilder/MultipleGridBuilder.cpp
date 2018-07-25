@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 #include "utilities/math/Math.h"
 #include "../Grid.h"
@@ -60,30 +61,40 @@ void MultipleGridBuilder::addGrid(Object* gridShape)
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
-    const auto grid = makeGrid(gridShape, getNumberOfLevels());
+    const auto grid = makeGrid(gridShape, getNumberOfLevels(), 0);
 
     addGridToListIfValid(grid);
 }
 
 void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
 {
-
     if (!coarseGridExists())
         return emitNoCoarseGridExistsWarning();
 
-    const uint nodesBetweenGrids = 12;
-    const uint levelDifference = levelFine - getNumberOfLevels();
-    const uint oldGridSize = this->getNumberOfLevels();
+    for( uint level = this->getNumberOfLevels(); level <= levelFine; level++ ){
+        const auto grid = makeGrid(gridShape, level, levelFine);
+        grids.push_back(grid);
+    }
 
-    addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, gridShape);
-    addFineGridToList(levelFine, gridShape->clone());
+    //////////////////////////////////////////////////////////////////////////
+    // this old code by Soeren P. scaled the object
+    // this did not work for concave geometries
+    //////////////////////////////////////////////////////////////////////////
+
+    //const uint nodesBetweenGrids = 12;
+    //const uint levelDifference = levelFine - getNumberOfLevels();
+    //const uint oldGridSize = this->getNumberOfLevels();
+
+    //addIntermediateGridsToList(levelDifference, levelFine, nodesBetweenGrids, gridShape);
+    //addFineGridToList(levelFine, gridShape->clone());
+
 
     //eraseGridsFromListIfInvalid(oldGridSize);
 }
 
 void MultipleGridBuilder::addFineGridToList(uint level, Object* gridShape)
 {
-    const auto grid = makeGrid(gridShape, level);
+    const auto grid = makeGrid(gridShape, level, 0);
     grids.push_back(grid);
 }
 
@@ -101,7 +112,7 @@ void MultipleGridBuilder::addIntermediateGridsToList(uint levelDifference, uint 
             Object* gridShapeClone = gridShape->clone();
             gridShapeClone->scale(scalingFactor);
 
-            const auto grid = makeGrid(gridShapeClone, level++);
+            const auto grid = makeGrid(gridShapeClone, level++, 0);
             grids.push_back(grid);
         }
     }
@@ -146,7 +157,7 @@ bool MultipleGridBuilder::coarseGridExists() const
     return !grids.empty();
 }
 
-SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level)
+SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level, uint levelFine)
 {
     boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
 
@@ -154,7 +165,7 @@ SPtr<Grid> MultipleGridBuilder::makeGrid(Object* gridShape, uint level)
 
     bool xOddStart = false, yOddStart = false, zOddStart = false;
 
-	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, xOddStart, yOddStart, zOddStart);
+	auto staggeredCoordinates = getStaggeredCoordinates(gridShape, level, levelFine, xOddStart, yOddStart, zOddStart);
 
 	SPtr<Grid> newGrid = this->makeGrid(gridShape, staggeredCoordinates[0], 
                                                    staggeredCoordinates[1], 
@@ -176,7 +187,7 @@ real MultipleGridBuilder::calculateDelta(uint level) const
     return delta;
 }
 
-std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level, bool& xOddStart, bool& yOddStart, bool& zOddStart) const
+std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart) const
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -199,8 +210,32 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	const real deltaCoarse = this->grids[level-1]->getDelta();
+    const real delta = 0.5 * deltaCoarse;
+
 
 	std::array<real, 6> staggeredCoordinates;
+
+    real X1Minimum = gridShape->getX1Minimum();
+    real X2Minimum = gridShape->getX2Minimum();
+    real X3Minimum = gridShape->getX3Minimum();
+    real X1Maximum = gridShape->getX1Maximum();
+    real X2Maximum = gridShape->getX2Maximum();
+    real X3Maximum = gridShape->getX3Maximum();
+
+    if( levelFine >= level ){
+        real overlap = 8 * delta;
+
+        // use geometric series to account for overlapp of higher levels:
+        // overlap + overlap/2 + overlap/4 + ...
+        overlap *= 2.0 * ( 1.0 - pow(0.5, levelFine - level + 1 ) );
+
+        X1Minimum -= overlap;
+        X2Minimum -= overlap;
+        X3Minimum -= overlap;
+        X1Maximum += overlap;
+        X2Maximum += overlap;
+        X3Maximum += overlap;
+    }
 
 	// Step 1
     // go to boundary of coarse grid
@@ -213,12 +248,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 
 	// Step 2
     // move to first coarse node in refinement region
-	while (staggeredCoordinates[0] < gridShape->getX1Minimum()) staggeredCoordinates[0] += deltaCoarse;
-	while (staggeredCoordinates[1] < gridShape->getX2Minimum()) staggeredCoordinates[1] += deltaCoarse;
-	while (staggeredCoordinates[2] < gridShape->getX3Minimum()) staggeredCoordinates[2] += deltaCoarse;
-	while (staggeredCoordinates[3] > gridShape->getX1Maximum()) staggeredCoordinates[3] -= deltaCoarse;
-	while (staggeredCoordinates[4] > gridShape->getX2Maximum()) staggeredCoordinates[4] -= deltaCoarse;
-	while (staggeredCoordinates[5] > gridShape->getX3Maximum()) staggeredCoordinates[5] -= deltaCoarse;
+	while (staggeredCoordinates[0] < X1Minimum) staggeredCoordinates[0] += deltaCoarse;
+	while (staggeredCoordinates[1] < X2Minimum) staggeredCoordinates[1] += deltaCoarse;
+	while (staggeredCoordinates[2] < X3Minimum) staggeredCoordinates[2] += deltaCoarse;
+	while (staggeredCoordinates[3] > X1Maximum) staggeredCoordinates[3] -= deltaCoarse;
+	while (staggeredCoordinates[4] > X2Maximum) staggeredCoordinates[4] -= deltaCoarse;
+	while (staggeredCoordinates[5] > X3Maximum) staggeredCoordinates[5] -= deltaCoarse;
 
 	// Step 3
     // make the grid staggered with one layer of stopper nodes on the outside
@@ -231,12 +266,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
 
 	// Step 4
     // add two layers until the refinement region is completely inside the fine grid
-	if (staggeredCoordinates[0] > gridShape->getX1Minimum()) staggeredCoordinates[0] -= deltaCoarse;
-	if (staggeredCoordinates[1] > gridShape->getX2Minimum()) staggeredCoordinates[1] -= deltaCoarse;
-	if (staggeredCoordinates[2] > gridShape->getX3Minimum()) staggeredCoordinates[2] -= deltaCoarse;
-	if (staggeredCoordinates[3] < gridShape->getX1Maximum()) staggeredCoordinates[3] += deltaCoarse;
-	if (staggeredCoordinates[4] < gridShape->getX2Maximum()) staggeredCoordinates[4] += deltaCoarse;
-	if (staggeredCoordinates[5] < gridShape->getX3Maximum()) staggeredCoordinates[5] += deltaCoarse;
+	if (staggeredCoordinates[0] > X1Minimum) staggeredCoordinates[0] -= deltaCoarse;
+	if (staggeredCoordinates[1] > X2Minimum) staggeredCoordinates[1] -= deltaCoarse;
+	if (staggeredCoordinates[2] > X3Minimum) staggeredCoordinates[2] -= deltaCoarse;
+	if (staggeredCoordinates[3] < X1Maximum) staggeredCoordinates[3] += deltaCoarse;
+	if (staggeredCoordinates[4] < X2Maximum) staggeredCoordinates[4] += deltaCoarse;
+	if (staggeredCoordinates[5] < X3Maximum) staggeredCoordinates[5] += deltaCoarse;
 
     // Step 5
 
@@ -246,12 +281,12 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
     if (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) zOddStart = true;
 
     // if the refinement region is larger than the domain, then the start and end points are moved inwards again
-    while (staggeredCoordinates[0] < this->grids[level - 1]->getStartX()) staggeredCoordinates[0] += 0.5 * deltaCoarse;
-    while (staggeredCoordinates[1] < this->grids[level - 1]->getStartY()) staggeredCoordinates[1] += 0.5 * deltaCoarse;
-    while (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) staggeredCoordinates[2] += 0.5 * deltaCoarse;
-    while (staggeredCoordinates[3] > this->grids[level - 1]->getEndX()  ) staggeredCoordinates[3] -= 0.5 * deltaCoarse;
-    while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= 0.5 * deltaCoarse;
-    while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= 0.5 * deltaCoarse;
+    while (staggeredCoordinates[0] < this->grids[level - 1]->getStartX()) staggeredCoordinates[0] += delta;
+    while (staggeredCoordinates[1] < this->grids[level - 1]->getStartY()) staggeredCoordinates[1] += delta;
+    while (staggeredCoordinates[2] < this->grids[level - 1]->getStartZ()) staggeredCoordinates[2] += delta;
+    while (staggeredCoordinates[3] > this->grids[level - 1]->getEndX()  ) staggeredCoordinates[3] -= delta;
+    while (staggeredCoordinates[4] > this->grids[level - 1]->getEndY()  ) staggeredCoordinates[4] -= delta;
+    while (staggeredCoordinates[5] > this->grids[level - 1]->getEndZ()  ) staggeredCoordinates[5] -= delta;
 
 	return staggeredCoordinates;
 }
@@ -354,8 +389,21 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
 
 void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
 {
-    for (auto grid : grids)
-        grid->inital();
+    //////////////////////////////////////////////////////////////////////////
+
+    // orginal version with scaling the object (also use old version of MultipleGridBuilder::addGrid()
+    //for (auto grid : grids)
+    //    grid->inital();
+
+     //new version with 
+    for( int level = grids.size()-1; level >= 0; level-- ){
+        if( level == 0 || level == grids.size()-1 )
+            grids[level]->inital();
+        else
+            grids[level]->inital( grids[level+1] );
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 
     if (solidObject)
     {

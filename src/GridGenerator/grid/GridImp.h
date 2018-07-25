@@ -81,6 +81,7 @@ private:
 
 public:
     HOST void inital() override;
+    HOST void inital(const SPtr<Grid> fineGrid) override;
     HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
     HOSTDEVICE void fixOddCell(uint index);
 
@@ -116,6 +117,8 @@ public:
 
     bool isInside(const Cell& cell) const;
 
+    HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
+    HOSTDEVICE void addOverlap();
     HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
@@ -133,6 +136,8 @@ public:
     HOSTDEVICE bool hasNeighborOfType(uint index, char type)const;
     HOSTDEVICE bool cellContainsOnly(Cell &cell, char type) const;
     HOSTDEVICE bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
+
+    HOSTDEVICE const Object* getObject() const override;
 
     HOSTDEVICE Field getField() const;
     HOSTDEVICE char getFieldEntry(uint index) const override;

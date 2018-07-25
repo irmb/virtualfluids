@@ -80,6 +80,31 @@ HOST void GridImp::inital()
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
+    this->addOverlap();
+
+    gridStrategy->fixRefinementIntoWall(shared_from_this());
+
+	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+        << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
+        << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
+}
+
+HOST void GridImp::inital(const SPtr<Grid> fineGrid)
+{
+    field = Field(gridStrategy, size);
+    field.allocateMemory();
+    gridStrategy->allocateGridMemory(shared_from_this());
+
+    gridStrategy->initalNodesToOutOfGrid(shared_from_this());
+
+    this->setInnerBasedOnFinerGrid(fineGrid);
+
+    this->addOverlap();
+
+    gridStrategy->fixOddCells( shared_from_this() );
+
     gridStrategy->fixRefinementIntoWall(shared_from_this());
 
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
@@ -180,6 +205,55 @@ HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
     else                  zCellStart = zIndex % 2 != 0 ? z               : z - this->delta;
 
     return Cell(xCellStart, yCellStart, zCellStart, delta);
+}
+
+HOSTDEVICE void GridImp::setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid)
+{
+    for( uint index = 0; index < this->size; index++ ){
+
+        real x, y, z;
+        this->transIndexToCoords(index, x, y, z);
+
+        uint childIndex[8];
+
+        childIndex[0] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y + 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[1] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y + 0.25 * this->delta, z - 0.25 * this->delta );
+        childIndex[2] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y - 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[3] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y - 0.25 * this->delta, z - 0.25 * this->delta );
+        childIndex[4] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y + 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[5] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y + 0.25 * this->delta, z - 0.25 * this->delta );
+        childIndex[6] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y - 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[7] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y - 0.25 * this->delta, z - 0.25 * this->delta );
+
+        for( uint i = 0; i < 8; i++ ){
+            if( childIndex[i] != INVALID_INDEX && fineGrid->getFieldEntry( childIndex[i] ) == FLUID ){
+                this->setFieldEntry(index, FLUID);
+                break;
+            }
+        }
+    }
+}
+
+HOSTDEVICE void GridImp::addOverlap()
+{
+    for( uint layer = 0; layer < 8; layer++ ){
+        for( uint index = 0; index < this->size; index++ ){
+    
+            if( this->field.is( index, INVALID_OUT_OF_GRID ) ){
+        
+                if( this->hasNeighborOfType(index, FLUID) ){
+                    this->field.setFieldEntry( index, OVERLAP_TMP );
+                }
+            }
+        }
+
+        for( uint index = 0; index < this->size; index++ ){
+    
+            if( this->field.is( index, OVERLAP_TMP ) ){
+                this->field.setFieldEntry( index, FLUID );
+            }
+        }
+    }
 }
 
 HOSTDEVICE void GridImp::fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir)
@@ -332,6 +406,11 @@ HOSTDEVICE bool GridImp::cellContainsOnly(Cell &cell, char typeA, char typeB) co
             return false;
     }
     return true;
+}
+
+HOSTDEVICE const Object * GridImp::getObject() const
+{
+    return this->object;
 }
 
 HOSTDEVICE void GridImp::setNodeTo(Cell &cell, char type)
