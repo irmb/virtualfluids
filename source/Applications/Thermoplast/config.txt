@@ -1,21 +1,21 @@
 #simulation parameters
 #boundingBox = 0 0 0 300 1520 2320
 
-boundingBox = 60 1370 150 190 1530 320 #test bb
+boundingBox = 60 1370 10 190 1530 320 #test bb
 
 #boundingBox = 60 0 10 190 1530 2320  #production bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 1000
-outTime = 10000
+endTime = 100
+outTime = 100
 availMem = 25e9
 uLB = 0.1
 
 #PE parameters
 peMinOffset = 46 2 2
 peMaxOffset = -8 -25 -2
-sphereTime = 100000
+sphereTime = 100
 
 #geometry files
 pathGeo = d:/Projects/ThermoPlast/SimGeo

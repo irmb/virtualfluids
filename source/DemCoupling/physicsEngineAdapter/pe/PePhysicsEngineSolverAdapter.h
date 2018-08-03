@@ -69,8 +69,6 @@ public:
 
     std::shared_ptr<PhysicsEngineGeometryAdapter> createPhysicsEngineGeometryAdapter(int id, const Vector3D& position, double radius, std::shared_ptr<PhysicsEngineMaterialAdapter> material) const override;
     void runTimestep(double step) override;
-    walberla::pe::RigidBody* getPeGeoObject(walberla::id_t id);
-    void updateGeometry(std::shared_ptr<PhysicsEngineGeometryAdapter>) override;
     std::shared_ptr< walberla::blockforest::BlockForest > getForest();
     void saveToFile(const std::string& path);
     void loadFromFile(const std::string& path);

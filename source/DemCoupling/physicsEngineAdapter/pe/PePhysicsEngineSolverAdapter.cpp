@@ -136,47 +136,6 @@ void PePhysicsEngineSolverAdapter::initalPeChannel() const
     createPlane(*globalBodyStorage, 0, walberla::pe::Vec3( 0, 0,-1), maxCorner + maxX3_Offset, material);
 }
 
-walberla::pe::RigidBody* PePhysicsEngineSolverAdapter::getPeGeoObject(walberla::id_t id)
-{
-    for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
-    {
-        for (auto bodyIt = walberla::pe::BodyIterator::begin(*blockIt, *storageId.get()); bodyIt != walberla::pe::BodyIterator::end(); ++bodyIt)
-        {
-            if(bodyIt->getID() == id)
-            {
-                walberla::pe::RigidBody* geo = *(bodyIt);
-                return geo;
-            }
-        }
-    }
-    return NULL;
-   
-   //return getBody(*globalBodyStorage.get(), *forest.get(), *storageId.get(), id, walberla::pe::StorageSelect::LOCAL);
-
-}
-
-void PePhysicsEngineSolverAdapter::updateGeometry(std::shared_ptr<PhysicsEngineGeometryAdapter> geometryAdapter)
-{
-    auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(geometryAdapter);
-    if (!geometry)
-        throw "PhysicsEngineGeometryAdapter has to be a PePhysicsEngineGeometryAdapter";
-
-    int id = geometry->getId();
-
-    walberla::pe::RigidBody* peGeoObject = this->getPeGeoObject(id);
-    if (peGeoObject)
-    {
-       //UBLOG(logINFO, "rank " << Communicator::getInstance()->getProcessID());
-       geometry->setGeometry(peGeoObject);
-       geometry->setActive();
-       //UBLOG(logINFO, "rank " << Communicator::getInstance()->getProcessID()<<" id="<<peGeoObject->getID());
-    } 
-    else
-    {
-       geometry->setInactive();
-    }
-}
-
 std::shared_ptr< walberla::blockforest::BlockForest > PePhysicsEngineSolverAdapter::getForest()
 {
    return forest;

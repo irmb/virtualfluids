@@ -223,7 +223,7 @@ void thermoplast(string configname)
       UBLOG(logINFO, "Preprocess - start");
    }
 
-   GbCuboid3DPtr geoInflow1(new GbCuboid3D(g_minX1-blockLength, g_maxX2-120.0, g_minX3+190.0-150.0, g_minX1+1, g_maxX2+20.0, g_minX3+320.0));
+   GbCuboid3DPtr geoInflow1(new GbCuboid3D(g_minX1-blockLength, g_maxX2-120.0, g_minX3+190.0, g_minX1+1, g_maxX2+20.0, g_minX3+320.0));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInflow1.get(), pathOut + "/geo/geoInflow1", WbWriterVtkXmlASCII::getInstance());
 
    if (!restart)
@@ -381,28 +381,28 @@ void thermoplast(string configname)
    //sphere prototypes
    //UBLOG(logINFO, "sphere prototypes - start, rank="<<myid);
    double d = 2.0*radius;
-   Vector3D origin(g_minX1+peMinOffset[0]+radius, geoInflow1->getX2Minimum()+4.0*d, geoInflow1->getX3Minimum()+2.0*d);
-   for (int x3 = 0; x3 < 2; x3++)
-      for (int x2 = 0; x2 < 2; x2++)
-         for (int x1 = 0; x1 < 1; x1++)
-         {
-            //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
-            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
-            if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
-            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
-         }
-   //UBLOG(logINFO, "sphere prototypes - stop, rank="<<myid);
-
-   //Vector3D origin(106+radius, 1372+radius, 12+radius);
-   //for (int x3 = 0; x3 < 28; x3++)
-   //   for (int x2 = 0; x2 < 12; x2++)
-   //      for (int x1 = 0; x1 < 7; x1++)
+   //Vector3D origin(g_minX1+peMinOffset[0]+radius, geoInflow1->getX2Minimum()+4.0*d, geoInflow1->getX3Minimum()+2.0*d);
+   //for (int x3 = 0; x3 < 2; x3++)
+   //   for (int x2 = 0; x2 < 2; x2++)
+   //      for (int x1 = 0; x1 < 1; x1++)
    //      {
    //         //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
-   //         SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*1.1*d, origin[1]+x2*1.1*d, origin[2]+x3*1.1*d, radius));
-   //         //if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
+   //         SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
+   //         if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
    //         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
    //      }
+   //UBLOG(logINFO, "sphere prototypes - stop, rank="<<myid);
+
+   Vector3D origin(106+radius, 1372+radius, 12+radius);
+   for (int x3 = 0; x3 < 28; x3++)
+      for (int x2 = 0; x2 < 12; x2++)
+         for (int x1 = 0; x1 < 7; x1++)
+         {
+            //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
+            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*1.1*d, origin[1]+x2*1.1*d, origin[2]+x3*1.1*d, radius));
+            //if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
+            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
+         }
 
    createSphereCoProcessor->process(0);
 

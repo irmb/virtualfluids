@@ -18,9 +18,6 @@ public:
 
     virtual std::shared_ptr<PhysicsEngineGeometryAdapter> createPhysicsEngineGeometryAdapter(int id, const Vector3D& position, double radius, std::shared_ptr<PhysicsEngineMaterialAdapter> material)  const = 0;
     virtual void runTimestep(double step) = 0;
-
-    virtual void updateGeometry(std::shared_ptr<PhysicsEngineGeometryAdapter>) = 0;
-
 };
 
 
