@@ -14,6 +14,7 @@
 #include "PhysicsEngineMaterialAdapter.h"
 #include "PhysicsEngineGeometryAdapter.h"
 #include "PhysicsEngineSolverAdapter.h"
+#include "PePhysicsEngineSolverAdapter.h"
 #include "PePhysicsEngineGeometryAdapter.h"
 
 #include "BoundaryConditions.h"
@@ -26,6 +27,7 @@
 
 
 #include <array>
+#include <functional>
 
 DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm, std::shared_ptr<ForceCalculator> forceCalculator, std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps) :
    CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(physicsEngineSolver), intermediateDemSteps(intermediatePeSteps)
@@ -33,6 +35,19 @@ DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Comm
 #ifdef TIMING
    timer.resetAndStart();
 #endif
+
+   std::shared_ptr<walberla::blockforest::BlockForest> forest = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getBlockForest();
+   std::shared_ptr<walberla::domain_decomposition::BlockDataID> storageId = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getStorageId();
+
+
+   for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
+   {
+      walberla::pe::Storage* storage = blockIt->getData< walberla::pe::Storage >(*storageId.get());
+      walberla::pe::BodyStorage* bodyStorage = &(*storage)[0];
+
+      bodyStorage->registerAddCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::addPeGeo), this));
+      bodyStorage->registerRemoveCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::removePeGeo), this));
+   }
 }
 
 DemCoProcessor::~DemCoProcessor()
@@ -228,7 +243,7 @@ void DemCoProcessor::calculateDemTimeStep(double step)
 
    for (int i = 0; i < physicsEngineGeometries.size(); i++)
    {
-      physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
+      //physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
       {
          interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
@@ -300,8 +315,10 @@ void DemCoProcessor::addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, st
 {
    for (int i = 0; i < interactors.size(); i++)
    {
+      //UBLOG(logINFO, "DemCoProcessor::addSurfaceTriangleSet()1");
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
       {
+         //UBLOG(logINFO, "DemCoProcessor::addSurfaceTriangleSet()2");
          interactors[i]->getGbObject3D()->addSurfaceTriangleSet(nodes, triangles);
       }
    }
@@ -320,6 +337,36 @@ void DemCoProcessor::getObjectsPropertiesVector(std::vector<double>& p)
          p.push_back(v[0]);
          p.push_back(v[1]);
          p.push_back(v[2]);
+      }
+   }
+}
+
+void DemCoProcessor::addPeGeo(walberla::pe::RigidBody * peGeo)
+{
+   //UBLOG(logINFO, "DemCoProcessor::addPeGeo()");
+   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   {
+      auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i]);
+      if (geometry->getId() == peGeo->getID())
+      {
+         geometry->setActive();
+         geometry->setGeometry(peGeo);
+         return;
+      }
+   }
+}
+
+void DemCoProcessor::removePeGeo(walberla::pe::RigidBody * peGeo)
+{
+   //UBLOG(logINFO, "DemCoProcessor::removePeGeo()");
+   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   {
+      auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i]);
+      if (geometry->getId() == peGeo->getID())
+      {
+         geometry->setInactive();
+         geometry->setGeometry(NULL);
+         return;
       }
    }
 }
@@ -366,7 +413,7 @@ void DemCoProcessor::distributeIDs()
 
    for (int i = 0; i < physicsEngineGeometries.size(); i++)
    {
-         physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
+         //physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
          if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
          {
             interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);

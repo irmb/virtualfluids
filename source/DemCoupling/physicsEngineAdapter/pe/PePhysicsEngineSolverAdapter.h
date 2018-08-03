@@ -74,6 +74,8 @@ public:
     std::shared_ptr< walberla::blockforest::BlockForest > getForest();
     void saveToFile(const std::string& path);
     void loadFromFile(const std::string& path);
+    std::shared_ptr<walberla::blockforest::BlockForest> getBlockForest();
+    std::shared_ptr<walberla::domain_decomposition::BlockDataID> getStorageId();
 
 private:
     void initalizePeEnvironment();

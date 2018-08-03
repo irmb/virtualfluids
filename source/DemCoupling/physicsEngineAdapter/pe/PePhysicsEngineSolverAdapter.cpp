@@ -150,6 +150,9 @@ walberla::pe::RigidBody* PePhysicsEngineSolverAdapter::getPeGeoObject(walberla::
         }
     }
     return NULL;
+   
+   //return getBody(*globalBodyStorage.get(), *forest.get(), *storageId.get(), id, walberla::pe::StorageSelect::LOCAL);
+
 }
 
 void PePhysicsEngineSolverAdapter::updateGeometry(std::shared_ptr<PhysicsEngineGeometryAdapter> geometryAdapter)
@@ -204,4 +207,14 @@ void PePhysicsEngineSolverAdapter::loadFromFile(const std::string & path)
    //   walberla::pe::ccd::ICCD* ccd = blockIt->getData< walberla::pe::ccd::ICCD >(ccdID);
    //   ccd->reloadBodies();
    //}
+}
+
+std::shared_ptr<walberla::blockforest::BlockForest> PePhysicsEngineSolverAdapter::getBlockForest()
+{
+   return forest;
+}
+
+std::shared_ptr<walberla::domain_decomposition::BlockDataID> PePhysicsEngineSolverAdapter::getStorageId()
+{
+   return storageId;
 }

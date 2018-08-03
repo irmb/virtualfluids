@@ -14,7 +14,9 @@
 #include "CoProcessor.h"
 #include "UbTuple.h"
 
-#define TIMING
+#include <pe/basic.h>
+
+//#define TIMING
 
 #ifdef TIMING
    #include "UbTiming.h"
@@ -48,6 +50,8 @@ public:
     bool isDemObjectInAABB(std::array<double,6> AABB);
     void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
     void getObjectsPropertiesVector(std::vector<double>& p);
+    void addPeGeo(walberla::pe::RigidBody* peGeo);
+    void removePeGeo(walberla::pe::RigidBody* peGeo);
   
 private:
     std::shared_ptr<PhysicsEngineGeometryAdapter> createPhysicsEngineGeometryAdapter(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial) const;
