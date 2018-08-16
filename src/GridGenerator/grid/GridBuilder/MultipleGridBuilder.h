@@ -57,12 +57,12 @@ private:
     void eraseGridsFromListIfInvalid(uint oldSize);
     void addGridToListIfValid(SPtr<Grid> grid);
 
-	std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level) const;
+	std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridShape, uint level, uint levelFine, bool& xOddStart, bool& yOddStart, bool& zOddStart) const;
     std::array<real, 6> getStaggeredCoordinates(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
     std::array<real, 3> getOffset(real delta) const;
     std::vector<uint> getSpacingFactors(uint levelDifference) const;
 
-    SPtr<Grid> makeGrid(Object* gridShape, uint level);
+    SPtr<Grid> makeGrid(Object* gridShape, uint level, uint levelFine);
     SPtr<Grid> makeGrid(Object* gridShape, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, uint level) const;
 
     static void emitNoCoarseGridExistsWarning();

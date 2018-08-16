@@ -34,7 +34,7 @@ CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 
 HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level) 
-: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution), level(level)
+: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution), level(level), gridInterface(nullptr)
 {
     initalNumberOfNodesAndSize();
 }
@@ -73,17 +73,52 @@ HOST void GridImp::inital()
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
 
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
-    if (triangularMesh)
+    if (triangularMesh){
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, INVALID_OUT_OF_GRID);
+        gridStrategy->fixOddCells( shared_from_this() );
+    }
     else
         gridStrategy->findInnerNodes(shared_from_this());
 
-    //gridStrategy->findStopperNodes(shared_from_this());
+    this->addOverlap();
+
+    gridStrategy->fixRefinementIntoWall(shared_from_this());
+
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
         << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
         << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
+}
+
+HOST void GridImp::inital(const SPtr<Grid> fineGrid)
+{
+    field = Field(gridStrategy, size);
+    field.allocateMemory();
+    gridStrategy->allocateGridMemory(shared_from_this());
+
+    gridStrategy->initalNodesToOutOfGrid(shared_from_this());
+
+    this->setInnerBasedOnFinerGrid(fineGrid);
+
+    this->addOverlap();
+
+    gridStrategy->fixOddCells( shared_from_this() );
+
+    gridStrategy->fixRefinementIntoWall(shared_from_this());
+
+	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE
+        << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
+        << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
+}
+
+HOST void GridImp::setOddStart(bool xOddStart, bool yOddStart, bool zOddStart)
+{
+    this->xOddStart = xOddStart;
+    this->yOddStart = yOddStart;
+    this->zOddStart = zOddStart;
 }
 
 HOSTDEVICE void GridImp::initalNodeToOutOfGrid(uint index)
@@ -107,7 +142,6 @@ HOST GridImp::~GridImp()
     //printf("Destructor\n");
     //this->print();
 }
-
 
 HOSTDEVICE void GridImp::findInnerNode(uint index)
 {
@@ -138,10 +172,17 @@ bool GridImp::isInside(const Cell& cell) const
 }
 
 ////TODO: check where the fine grid starts (0.25 or 0.75) and if even or odd-cell is needed
-// *--*--*--*
-// |  |  |  |
-// *--*--*--*
-//  0  1  2
+// Cell numbering:
+//       even start                            odd start
+//    +---------+                           +---------+
+//    |       +-----+-----+-----+           | +-----+-----+-----+
+//    |       | |   |     |     |           | |     | |   |     |
+//    |       +-----+-----+-----+           | +-----+-----+-----+
+//    +---------+                           +---------+
+//               0     1     2                   0     1     2
+//              even      even                        even     
+//                   odd                        odd         odd
+//
 HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
 {
     real x, y, z;
@@ -151,10 +192,126 @@ HOSTDEVICE Cell GridImp::getOddCellFromIndex(uint index) const
     const uint yIndex = getYIndex(y);
     const uint zIndex = getZIndex(z);
 
-    const real xCellStart = xIndex % 2 != 0 ? x : x - this->delta;
-    const real yCellStart = yIndex % 2 != 0 ? y : y - this->delta;
-    const real zCellStart = zIndex % 2 != 0 ? z : z - this->delta;
+    real xCellStart;
+    if( this->xOddStart ) xCellStart = xIndex % 2 != 0 ? x - this->delta : x;
+    else                  xCellStart = xIndex % 2 != 0 ? x               : x - this->delta;
+
+    real yCellStart;
+    if( this->yOddStart ) yCellStart = yIndex % 2 != 0 ? y - this->delta : y;
+    else                  yCellStart = yIndex % 2 != 0 ? y               : y - this->delta;
+
+    real zCellStart;
+    if( this->zOddStart ) zCellStart = zIndex % 2 != 0 ? z - this->delta : z;
+    else                  zCellStart = zIndex % 2 != 0 ? z               : z - this->delta;
+
     return Cell(xCellStart, yCellStart, zCellStart, delta);
+}
+
+HOSTDEVICE void GridImp::setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid)
+{
+    for( uint index = 0; index < this->size; index++ ){
+
+        real x, y, z;
+        this->transIndexToCoords(index, x, y, z);
+
+        uint childIndex[8];
+
+        childIndex[0] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y + 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[1] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y + 0.25 * this->delta, z - 0.25 * this->delta );
+        childIndex[2] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y - 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[3] = fineGrid->transCoordToIndex( x + 0.25 * this->delta, y - 0.25 * this->delta, z - 0.25 * this->delta );
+        childIndex[4] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y + 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[5] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y + 0.25 * this->delta, z - 0.25 * this->delta );
+        childIndex[6] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y - 0.25 * this->delta, z + 0.25 * this->delta );
+        childIndex[7] = fineGrid->transCoordToIndex( x - 0.25 * this->delta, y - 0.25 * this->delta, z - 0.25 * this->delta );
+
+        for( uint i = 0; i < 8; i++ ){
+            if( childIndex[i] != INVALID_INDEX && fineGrid->getFieldEntry( childIndex[i] ) == FLUID ){
+                this->setFieldEntry(index, FLUID);
+                break;
+            }
+        }
+    }
+}
+
+HOSTDEVICE void GridImp::addOverlap()
+{
+    for( uint layer = 0; layer < 8; layer++ ){
+        for( uint index = 0; index < this->size; index++ ){
+    
+            if( this->field.is( index, INVALID_OUT_OF_GRID ) ){
+        
+                if( this->hasNeighborOfType(index, FLUID) ){
+                    this->field.setFieldEntry( index, OVERLAP_TMP );
+                }
+            }
+        }
+
+        for( uint index = 0; index < this->size; index++ ){
+    
+            if( this->field.is( index, OVERLAP_TMP ) ){
+                this->field.setFieldEntry( index, FLUID );
+            }
+        }
+    }
+}
+
+HOSTDEVICE void GridImp::fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir)
+{
+
+    real x = this->startX + this->delta * xIndex;
+    real y = this->startY + this->delta * yIndex;
+    real z = this->startZ + this->delta * zIndex;
+
+    uint index = this->transCoordToIndex(x, y, z);
+
+    if( !this->xOddStart && ( dir == 1 || dir == -1 ) && ( xIndex % 2 || 1 && xIndex == 0 ) ) return;
+    if( !this->yOddStart && ( dir == 2 || dir == -2 ) && ( yIndex % 2 || 1 && yIndex == 0 ) ) return;
+    if( !this->zOddStart && ( dir == 3 || dir == -3 ) && ( zIndex % 2 || 1 && zIndex == 0 ) ) return;
+
+    if(  this->xOddStart && ( dir == 1 || dir == -1 ) && xIndex % 2 == 0 && xIndex != 0 ) return;
+    if(  this->yOddStart && ( dir == 2 || dir == -2 ) && yIndex % 2 == 0 && yIndex != 0 ) return;
+    if(  this->zOddStart && ( dir == 3 || dir == -3 ) && zIndex % 2 == 0 && zIndex != 0 ) return;
+    
+    //////////////////////////////////////////////////////////////////////////
+
+    real dx, dy, dz;
+
+    if      ( dir ==  1 ){ dx =   this->delta; dy = 0.0;           dz = 0.0;           }
+    else if ( dir == -1 ){ dx = - this->delta; dy = 0.0;           dz = 0.0;           }
+    else if ( dir ==  2 ){ dx = 0.0;           dy =   this->delta; dz = 0.0;           }
+    else if ( dir == -2 ){ dx = 0.0;           dy = - this->delta; dz = 0.0;           }
+    else if ( dir ==  3 ){ dx = 0.0;           dy = 0.0;           dz =   this->delta; }
+    else if ( dir == -3 ){ dx = 0.0;           dy = 0.0;           dz = - this->delta; }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    char type = this->field.getFieldEntry(index);
+
+    char type2    = ( type == FLUID ) ? ( INVALID_OUT_OF_GRID ) : ( FLUID );
+    uint distance = ( type == FLUID ) ? ( 9                   ) : ( 5     );
+
+    bool allTypesAreTheSame = true;
+
+    for( uint i = 1; i <= distance; i++ ){
+        uint neighborIndex = this->transCoordToIndex(x + i * dx, y + i * dy, z + i * dz);
+
+        if( ! this->field.is( neighborIndex, type ) )
+            allTypesAreTheSame = false;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( allTypesAreTheSame )
+        return;
+
+    this->setFieldEntry(index, type2);
+
+    for( uint i = 1; i <= distance; i++ ){
+        uint neighborIndex = this->transCoordToIndex(x + i * dx, y + i * dy, z + i * dz);
+
+        this->setFieldEntry(neighborIndex, type2);
+    }
 }
 
 HOSTDEVICE void GridImp::findStopperNode(uint index) // deprecated
@@ -168,8 +325,12 @@ HOSTDEVICE void GridImp::findStopperNode(uint index) // deprecated
 
 HOSTDEVICE void GridImp::findEndOfGridStopperNode(uint index)
 {
-	if (isValidEndOfGridStopper(index))
-		this->field.setFieldEntryToStopperOutOfGrid(index);
+	if (isValidEndOfGridStopper(index)){
+        if( this->level != 0 )
+		    this->field.setFieldEntryToStopperOutOfGrid(index);
+        else
+            this->field.setFieldEntryToStopperOutOfGridBoundary(index);
+    }
 
 	if (isValidEndOfGridBoundaryStopper(index))
 		this->field.setFieldEntryToStopperOutOfGridBoundary(index);
@@ -191,13 +352,13 @@ HOSTDEVICE void GridImp::findBoundarySolidNode(uint index)
 	}
 }
 
-HOSTDEVICE void GridImp::removeOddBoundaryCellNode(uint index)
+HOSTDEVICE void GridImp::fixOddCell(uint index)
 {
     Cell cell = getOddCellFromIndex(index);
     if (isOutSideOfGrid(cell))
         return;
-    if (contains(cell, INVALID_OUT_OF_GRID))
-        setNodeTo(cell, INVALID_OUT_OF_GRID);
+    if (contains(cell, FLUID))
+        setNodeTo(cell, FLUID);
 }
 
 HOSTDEVICE bool GridImp::isOutSideOfGrid(Cell &cell) const
@@ -221,6 +382,35 @@ HOSTDEVICE bool GridImp::contains(Cell &cell, char type) const
             return true;
     }
     return false;
+}
+
+HOSTDEVICE bool GridImp::cellContainsOnly(Cell &cell, char type) const
+{
+    for (const auto point : cell) {
+		uint index = transCoordToIndex(point.x, point.y, point.z);
+		if (index == INVALID_INDEX)
+            return false;
+        if (!field.is(index, type))
+            return false;
+    }
+    return true;
+}
+
+HOSTDEVICE bool GridImp::cellContainsOnly(Cell &cell, char typeA, char typeB) const
+{
+    for (const auto point : cell) {
+		uint index = transCoordToIndex(point.x, point.y, point.z);
+		if (index == INVALID_INDEX)
+            return false;
+        if (!field.is(index, typeA) && !field.is(index, typeB))
+            return false;
+    }
+    return true;
+}
+
+HOSTDEVICE const Object * GridImp::getObject() const
+{
+    return this->object;
 }
 
 HOSTDEVICE void GridImp::setNodeTo(Cell &cell, char type)
@@ -705,7 +895,8 @@ HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, Lbm
 {
 	if (lbmOrGks == LBM)
 	{
-		gridInterface->findInterfaceCF(index, this, &finerGrid);
+		gridInterface->findInterfaceCF            (index, this, &finerGrid);
+		gridInterface->findBoundaryGridInterfaceCF(index, this, &finerGrid);
 	}
 	else if (lbmOrGks == GKS)
 		gridInterface->findInterfaceCF_GKS(index, this, &finerGrid);
@@ -1155,6 +1346,11 @@ uint* GridImp::getCF_fine() const
     return this->gridInterface->cf.fine;
 }
 
+HOST uint * GridImp::getCF_offset() const
+{
+    return this->gridInterface->cf.offset;
+}
+
 uint* GridImp::getFC_coarse() const
 {
     return this->gridInterface->fc.coarse;
@@ -1163,6 +1359,11 @@ uint* GridImp::getFC_coarse() const
 uint* GridImp::getFC_fine() const
 {
     return this->gridInterface->fc.fine;
+}
+
+HOST uint * GridImp::getFC_offset() const
+{
+    return this->gridInterface->fc.offset;
 }
 
 void GridImp::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const

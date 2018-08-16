@@ -24,6 +24,8 @@ public:
         return 0.0;
     }
 
+    virtual const Object* getObject() const { return nullptr; }
+
     virtual uint getSparseSize() const override { return 0; }
     virtual uint getSize() const override { return 0; }
     virtual real getStartX() const override { return 0.0; }
@@ -42,8 +44,10 @@ public:
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf) const override {}
     virtual uint* getCF_coarse() const override { return 0; }
     virtual uint* getCF_fine() const override { return 0; }
+    virtual uint* getCF_offset() const override { return 0; }
     virtual uint* getFC_coarse() const override { return 0; }
     virtual uint* getFC_fine() const override { return 0; }
+    virtual uint* getFC_offset() const override { return 0; }
     virtual real* getDistribution() const override { return nullptr; }
     virtual int* getDirection() const override { return nullptr; }
     virtual int getStartDirection() const override { return 0; }
@@ -62,6 +66,8 @@ public:
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
     virtual void inital() override {}
+    virtual void inital(const SPtr<Grid> fineGrid) override {};
+    virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) {};
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override {}
     virtual Vertex getMinimumOnNode(Vertex exact) const override { return Vertex(0, 0, 0); }

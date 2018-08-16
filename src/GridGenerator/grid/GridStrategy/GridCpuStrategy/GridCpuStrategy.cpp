@@ -66,11 +66,38 @@ void GridCpuStrategy::findInnerNodes(SPtr<GridImp> grid)
 }
 
 
-void GridCpuStrategy::removeOddBoundaryCellNodes(SPtr<GridImp> grid)
+void GridCpuStrategy::fixOddCells(SPtr<GridImp> grid)
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->size; index++)
-        grid->removeOddBoundaryCellNode(index);
+        grid->fixOddCell(index);
+}
+
+void GridCpuStrategy::fixRefinementIntoWall(SPtr<GridImp> grid)
+{
+#pragma omp parallel for
+	for (uint xIdx = 0; xIdx < grid->nx; xIdx++){
+	    for (uint yIdx = 0; yIdx < grid->ny; yIdx++){
+		    grid->fixRefinementIntoWall( xIdx, yIdx, 0         ,  3 );
+		    grid->fixRefinementIntoWall( xIdx, yIdx, grid->nz-1, -3 );
+        }
+    }
+
+#pragma omp parallel for
+	for (uint xIdx = 0; xIdx < grid->nx; xIdx++){
+	    for (uint zIdx = 0; zIdx < grid->nz; zIdx++){
+		    grid->fixRefinementIntoWall( xIdx, 0,          zIdx,  2 );
+		    grid->fixRefinementIntoWall( xIdx, grid->ny-1, zIdx, -2 );
+        }
+    }
+
+#pragma omp parallel for
+	for (uint yIdx = 0; yIdx < grid->ny; yIdx++){
+	    for (uint zIdx = 0; zIdx < grid->nz; zIdx++){
+		    grid->fixRefinementIntoWall( 0,          yIdx, zIdx,  1 );
+		    grid->fixRefinementIntoWall( grid->nx-1, yIdx, zIdx, -1 );
+        }
+    }
 }
 
 
@@ -129,11 +156,14 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
 
 
     grid->gridInterface = new GridInterface();
-    const uint sizeCF = fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz;
+    // TODO: this is stupid! concave refinements can easily have many more interface cells
+    const uint sizeCF = (fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz);
     grid->gridInterface->cf.coarse = new uint[sizeCF];
-    grid->gridInterface->cf.fine = new uint[sizeCF];
+    grid->gridInterface->cf.fine   = new uint[sizeCF];
+    grid->gridInterface->cf.offset = new uint[sizeCF];
     grid->gridInterface->fc.coarse = new uint[sizeCF];
-    grid->gridInterface->fc.fine = new uint[sizeCF];
+    grid->gridInterface->fc.fine   = new uint[sizeCF];
+    grid->gridInterface->fc.offset = new uint[sizeCF];
 
     for (uint index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceCF(index, *fineGrid, lbmOrGks);
@@ -205,6 +235,6 @@ void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
 	delete[] grid->qIndices;
 	delete[] grid->qValues;
 
-    delete[] grid->distribution.f;
+    //delete[] grid->distribution.f;
 }
 

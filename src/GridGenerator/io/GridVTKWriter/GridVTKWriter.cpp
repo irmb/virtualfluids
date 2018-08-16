@@ -101,6 +101,121 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done. \n";
 
 }
+
+void GridVTKWriter::writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name, WRITING_FORMAT format)
+{
+    std::vector<char> nodeInterpolationCellType( grid->getSize() );
+    for( auto& type : nodeInterpolationCellType ) type = -1;
+
+    std::vector<char> nodeOffset( grid->getSize() );
+    for( auto& offset : nodeOffset ) offset = -1;
+
+    std::vector<uint> matrixIndices( grid->getSparseSize() );
+
+    for( uint matrixIndex = 0; matrixIndex < grid->getSize(); matrixIndex++ ){
+        uint sparseIndex = grid->getSparseIndex(matrixIndex);
+        if( sparseIndex != INVALID_INDEX )
+            matrixIndices[ sparseIndex ] = matrixIndex;
+    }
+
+    for( int index = 0; index < grid->getNumberOfNodesCF(); index++ ){
+        nodeInterpolationCellType[ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getFieldEntry( matrixIndices[ grid->getCF_coarse()[index] ] );
+
+        nodeOffset               [ matrixIndices[ grid->getCF_coarse()[index] ] ] = grid->getCF_offset()[index];
+    }
+
+    //for( int index = 0; index < grid->getNumberOfNodesFC(); index++ ){
+    //    nodeInterpolationCellType[ grid->getFC_coarse()[index] ] = grid->getFieldEntry( grid->getFC_coarse()[index] );
+    //}
+
+    if( gridCoarse ){
+
+        for( int index = 0; index < gridCoarse->getNumberOfNodesCF(); index++ ){
+            nodeInterpolationCellType[ matrixIndices[ gridCoarse->getCF_fine()[index] ] ] = grid->getFieldEntry( matrixIndices[ gridCoarse->getCF_fine()[index] ] );
+        }
+
+        for( int index = 0; index < gridCoarse->getNumberOfNodesFC(); index++ ){
+            nodeInterpolationCellType[ matrixIndices[ gridCoarse->getFC_fine()[index] ] ] = grid->getFieldEntry( matrixIndices[ gridCoarse->getFC_fine()[index] ] );
+
+            nodeOffset               [ matrixIndices[ gridCoarse->getFC_fine()[index] ] ] = gridCoarse->getFC_offset()[index];
+        }
+    }
+
+	std::vector<UbTupleFloat3> nodes;
+	std::vector<UbTupleInt8> cells;
+	std::vector<std::string> celldatanames;
+	std::vector< std::vector<double> > celldata;
+
+	celldatanames.push_back("InterpolationCells");
+    celldatanames.push_back("Offset");
+
+	celldata.resize(celldatanames.size());
+
+	CbArray3D<int> nodeNumbers(grid->getNumberOfNodesX(), grid->getNumberOfNodesY(), grid->getNumberOfNodesZ(), -1);
+	int nr = 0;
+
+	for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX(); xIndex++)
+	{
+		for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY(); yIndex++)
+		{
+			for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ(); zIndex++)
+			{
+				real x, y, z;
+				uint index = 
+					  grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
+					+ grid->getNumberOfNodesX() *                             yIndex
+					+ xIndex;
+
+				grid->transIndexToCoords(index, x, y, z);
+
+				nodeNumbers(xIndex, yIndex, zIndex) = nr++;
+				nodes.push_back(UbTupleFloat3(float(x), float(y), float(z)));
+			}
+		}
+	}
+
+	int SWB, SEB, NEB, NWB, SWT, SET, NET, NWT;
+	for (uint xIndex = 0; xIndex < grid->getNumberOfNodesX() - 1; xIndex++)
+	{
+		for (uint yIndex = 0; yIndex < grid->getNumberOfNodesY() - 1; yIndex++)
+		{
+			for (uint zIndex = 0; zIndex < grid->getNumberOfNodesZ() - 1; zIndex++)
+			{
+				real x, y, z;
+				uint index = grid->getNumberOfNodesX() * grid->getNumberOfNodesY() * zIndex
+					+ grid->getNumberOfNodesX() *                             yIndex
+					+ xIndex;
+
+				grid->transIndexToCoords(index, x, y, z);
+
+				if ((SWB = nodeNumbers(xIndex, yIndex, zIndex)) >= 0
+					&& (SEB = nodeNumbers(xIndex + 1, yIndex, zIndex)) >= 0
+					&& (NEB = nodeNumbers(xIndex + 1, yIndex + 1, zIndex)) >= 0
+					&& (NWB = nodeNumbers(xIndex, yIndex + 1, zIndex)) >= 0
+					&& (SWT = nodeNumbers(xIndex, yIndex, zIndex + 1)) >= 0
+					&& (SET = nodeNumbers(xIndex + 1, yIndex, zIndex + 1)) >= 0
+					&& (NET = nodeNumbers(xIndex + 1, yIndex + 1, zIndex + 1)) >= 0
+					&& (NWT = nodeNumbers(xIndex, yIndex + 1, zIndex + 1)) >= 0)
+				{
+					Cell cell(x, y, z, grid->getDelta());
+					//if (grid->nodeInCellIs(cell, INVALID_OUT_OF_GRID) || grid->nodeInCellIs(cell, INVALID_COARSE_UNDER_FINE))
+					//	continue;
+
+					cells.push_back(makeUbTuple(SWB, SEB, NEB, NWB, SWT, SET, NET, NWT));
+
+				    //const char type = grid->getFieldEntry(grid->transCoordToIndex(nodes[SWB].v1, nodes[SWB].v2.v1, nodes[SWB].v2.v2));
+				    //const char type = grid->getFieldEntry(grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])));
+				    const char type = nodeInterpolationCellType[ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
+                    const char offset = nodeOffset               [ grid->transCoordToIndex(val<1>(nodes[SWB]), val<2>(nodes[SWB]), val<3>(nodes[SWB])) ];
+
+                    celldata[0].push_back( type );
+                    celldata[1].push_back( offset );
+				}
+			}
+		}
+	}
+    WbWriterVtkXmlBinary::getInstance()->writeOctsWithCellData(name, nodes, cells, celldatanames, celldata);
+}
 //deprecated
 //void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format)
 //{

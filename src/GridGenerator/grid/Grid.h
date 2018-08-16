@@ -20,6 +20,8 @@ class VF_PUBLIC Grid
 public:
     HOSTDEVICE virtual ~Grid() {}
 
+    HOSTDEVICE virtual const Object* getObject() const = 0;
+
     HOSTDEVICE virtual real getDelta() const = 0;
     HOSTDEVICE virtual uint getSparseSize() const = 0;
     HOSTDEVICE virtual uint getSize() const = 0;
@@ -53,9 +55,12 @@ public:
     HOST virtual int *getNeighborsZ() const = 0;
 
     HOST virtual uint* getCF_coarse() const = 0;
-    HOST virtual uint* getCF_fine() const = 0;
+    HOST virtual uint* getCF_fine()   const = 0;
+    HOST virtual uint* getCF_offset() const = 0;
+
     HOST virtual uint* getFC_coarse() const = 0;
-    HOST virtual uint* getFC_fine() const = 0;
+    HOST virtual uint* getFC_fine()   const = 0;
+    HOST virtual uint* getFC_offset() const = 0;
 
     HOST virtual real* getDistribution() const = 0;
     HOST virtual int* getDirection() const = 0;
@@ -69,6 +74,9 @@ public:
     HOSTDEVICE virtual uint transCoordToIndex(const real &x, const real &y, const real &z) const = 0;
 
     HOST virtual void inital() = 0;
+    HOST virtual void inital(const SPtr<Grid> fineGrid) = 0;
+    
+    HOST virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) = 0;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
 

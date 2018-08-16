@@ -31,4 +31,6 @@
 #define NEGATIVE_DIRECTION_BORDER 51
 #define Q 52
 
+#define OVERLAP_TMP 60
+
 #endif

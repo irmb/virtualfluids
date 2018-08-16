@@ -15,6 +15,7 @@ class VF_PUBLIC GridVTKWriter
 public:
     static void writeSparseGridToVTK(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
     static void writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
+    static void writeInterpolationCellsToVTKXML(SPtr<Grid> grid, SPtr<Grid> gridCoarse, const std::string& name, WRITING_FORMAT format = WRITING_FORMAT::ASCII);
 
 private:
     GridVTKWriter() {}

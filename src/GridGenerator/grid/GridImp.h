@@ -56,6 +56,8 @@ private:
     real endX, endY, endZ;
     real delta = 1.0;
 
+    bool xOddStart = false, yOddStart = false, zOddStart = false;
+
 	uint nx, ny, nz;
 
 	uint size;
@@ -79,7 +81,9 @@ private:
 
 public:
     HOST void inital() override;
-    HOSTDEVICE void removeOddBoundaryCellNode(uint index);
+    HOST void inital(const SPtr<Grid> fineGrid) override;
+    HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
+    HOSTDEVICE void fixOddCell(uint index);
 
     HOST void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override;
     void setPeriodicityX(bool periodicity) override;
@@ -113,6 +117,9 @@ public:
 
     bool isInside(const Cell& cell) const;
 
+    HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
+    HOSTDEVICE void addOverlap();
+    HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
 	HOSTDEVICE void findSolidStopperNode(uint index);
@@ -127,6 +134,10 @@ public:
     HOSTDEVICE bool nodeInNextCellIs(int index, char type) const;
     HOSTDEVICE bool hasAllNeighbors(uint index) const;
     HOSTDEVICE bool hasNeighborOfType(uint index, char type)const;
+    HOSTDEVICE bool cellContainsOnly(Cell &cell, char type) const;
+    HOSTDEVICE bool cellContainsOnly(Cell &cell, char typeA, char typeB) const;
+
+    HOSTDEVICE const Object* getObject() const override;
 
     HOSTDEVICE Field getField() const;
     HOSTDEVICE char getFieldEntry(uint index) const override;
@@ -167,8 +178,12 @@ public:
 
     HOST uint* getCF_coarse() const override;
     HOST uint* getCF_fine() const override;
+    HOST uint* getCF_offset() const override;
+
+
     HOST uint* getFC_coarse() const override;
     HOST uint* getFC_fine() const override;
+    HOST uint* getFC_offset() const override;
 
     SPtr<GridStrategy> getGridStrategy() const override;
 

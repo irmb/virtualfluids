@@ -11,7 +11,7 @@ void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* g
 {
 #pragma omp parallel for
     for (uint index = 0; index < grid->getSize(); index++)
-        grid->removeOddBoundaryCellNode(index);
+        grid->fixOddCell(index);
 }
 
 

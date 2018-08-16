@@ -16,7 +16,11 @@ public:
     HOSTDEVICE VF_PUBLIC ~GridInterface();
 
     HOSTDEVICE void VF_PUBLIC findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+    HOSTDEVICE void VF_PUBLIC findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+
+
 	HOSTDEVICE void VF_PUBLIC findInterfaceCF_GKS(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
+
 	HOSTDEVICE void VF_PUBLIC findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
     HOSTDEVICE void VF_PUBLIC findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid);
 
@@ -29,6 +33,7 @@ public:
     {
         uint *fine, *coarse;
         uint numberOfEntries = 0;
+        uint *offset;
     } fc, cf;
 
 
@@ -39,6 +44,10 @@ private:
     HOSTDEVICE uint getFineToCoarseIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid);
 
     HOSTDEVICE static void findSparseIndex(uint* indices, GridImp* grid, uint index);
+
+    HOSTDEVICE void findOffsetCF( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
+
+    HOSTDEVICE void findOffsetFC( const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex );
 };
 
 

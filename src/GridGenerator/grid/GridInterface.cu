@@ -4,6 +4,8 @@
 #include "Field.h"
 #include "NodeValues.h"
 
+#include "distributions/D3Q27.h"
+
 GridInterface::GridInterface()
 {
 
@@ -39,6 +41,45 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
         {
             cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
             cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
+
+            this->findOffsetCF( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
+
+            cf.numberOfEntries++;
+
+            coarseGrid->setNonStopperOutOfGridCellTo(indexOnCoarseGrid, FLUID_CFC);
+            fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridCF, FLUID_CFF);
+            break;
+        }
+    }
+}
+
+
+void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, GridImp* fineGrid)
+{
+    const bool nodeOnCoarseGridIsBoundaryStopper = coarseGrid->getField().is(indexOnCoarseGrid, STOPPER_OUT_OF_GRID_BOUNDARY);
+    if (!nodeOnCoarseGridIsBoundaryStopper)
+        return;
+
+    const uint indexOnFineGridCF = getCoarseToFineIndexOnFineGrid(indexOnCoarseGrid, coarseGrid, fineGrid);
+    if (indexOnFineGridCF == INVALID_INDEX)
+        return;
+
+    const bool fineGridNodeIsBoundaryStopper = fineGrid->getField().is(indexOnFineGridCF, STOPPER_OUT_OF_GRID_BOUNDARY);
+    if (!fineGridNodeIsBoundaryStopper)
+        return;
+
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    for(const auto dir : coarseGrid->distribution)
+    {
+        const bool isFineGridNeighborInvalid = isNeighborFineInvalid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);
+        if(isFineGridNeighborInvalid)
+        {
+            cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
+            cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
+
+            this->findOffsetCF( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
 
             cf.numberOfEntries++;
 
@@ -101,6 +142,8 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
 				fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
 				fc.fine[fc.numberOfEntries] = indexOnFineGridFC;
 
+                this->findOffsetFC(indexOnFineGridFC, fineGrid, fc.numberOfEntries);
+
 				fc.numberOfEntries++;
 
 				fineGrid->setNonStopperOutOfGridCellTo(indexOnFineGridFC, FLUID_FCF);
@@ -153,6 +196,9 @@ bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp*
 {
     const int neighbor = coarseGrid->transCoordToIndex(x, y, z);
 
+    if( neighbor == INVALID_INDEX )
+        return false;
+
     if( (neighbor != INVALID_INDEX) && (coarseGrid->getField().isStopperOutOfGrid(neighbor) || coarseGrid->getField().is(neighbor, STOPPER_OUT_OF_GRID_BOUNDARY)) )
         return false;
 
@@ -165,6 +211,9 @@ bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp*
 
 uint GridInterface::getCoarseToFineIndexOnFineGrid(const uint& indexOnCoarseGrid, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
+    if( indexOnCoarseGrid == INVALID_INDEX )
+        return INVALID_INDEX;
+
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
     const real xFine = x + (fineGrid->getDelta() * 0.5);
@@ -202,6 +251,62 @@ void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
     const uint matrixIndex = indices[index];
     const uint sparseIndex = grid->getSparseIndex(matrixIndex);
     indices[index] = sparseIndex;
+}
+
+HOSTDEVICE void GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex)
+{
+    real x, y, z;
+    coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
+
+    if( coarseGrid->cellContainsOnly( Cell(x, y, z, coarseGrid->getDelta()), FLUID, FLUID_CFC ) ){
+        this->cf.offset[ interfaceIndex ] = DIR_27_ZERO;
+        return;
+    }
+
+
+    uint dirIndex = 0;
+    for(const auto dir : coarseGrid->distribution){
+    
+        Cell neighborCell( x + dir[0] * coarseGrid->getDelta(), 
+                           y + dir[1] * coarseGrid->getDelta(), 
+                           z + dir[2] * coarseGrid->getDelta(), 
+                           coarseGrid->getDelta() );
+
+        if( coarseGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
+            this->cf.offset[ interfaceIndex ] = dirIndex;
+            return;
+        }
+    
+        dirIndex++;
+    }
+}
+
+HOSTDEVICE void GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
+{
+    real x, y, z;
+    fineGrid->transIndexToCoords(indexOnFineGrid, x, y, z);
+
+    if( fineGrid->cellContainsOnly( Cell(x, y, z, fineGrid->getDelta()), FLUID, FLUID_FCF ) ){
+        this->fc.offset[ interfaceIndex ] = DIR_27_ZERO;
+        return;
+    }
+
+
+    uint dirIndex = 0;
+    for(const auto dir : fineGrid->distribution){
+    
+        Cell neighborCell( x + dir[0] * fineGrid->getDelta(), 
+                           y + dir[1] * fineGrid->getDelta(), 
+                           z + dir[2] * fineGrid->getDelta(), 
+                           fineGrid->getDelta() );
+
+        if( fineGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
+            this->fc.offset[ interfaceIndex ] = dirIndex;
+            return;
+        }
+    
+        dirIndex++;
+    }
 }
 
 void GridInterface::print() const
