@@ -322,21 +322,21 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
 	real dx = 1;
-	real vx = 0.002;
+	real vx = 0.02;
 	//////////////////////////////////////////////////////////////////////////////
 	//// test periodic bc non uniform
 	//gridBuilder->addCoarseGrid(-10, -10, -5, 10, 10, 5, dx);
 	//gridBuilder->addGrid(new VerticalCylinder(0, 0, 0, 5, 20), 2);
 	//////////////////////////////////////////////////////////////////////////////
 	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/inp/Box_2.00.stl");
-	TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/inp/Concave.stl");
+	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Concave.stl");
 	//gridBuilder->addCoarseGrid(-9.9, -9.9, -9.9, 20.1, 10.1, 10.1, dx);
-	gridBuilder->addCoarseGrid(-20, -20, 0, 40, 20, 20, dx);
+	gridBuilder->addCoarseGrid(-20, -20, -20, 40, 20, 20, dx);
 
     //real size = 0.02;
 	//gridBuilder->addGrid(new Cuboid(-size, -size, -size+0.5*dx, size, size, size+0.5*dx), 6);
 	//gridBuilder->addGrid(new Sphere( 0, 0, 0, 20), 2);
-    gridBuilder->addGrid(triangularMesh, 4);
+    gridBuilder->addGrid(triangularMesh, 2);
 	//gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 3, 60), 2);
 
 	gridBuilder->addGeometry(triangularMesh);
@@ -348,8 +348,8 @@ void multipleLevel(const std::string& configPath)
     gridBuilder->buildGrids(LBM); // buildGrids() has to be called before setting the BCs!!!!
 	///////////////////////////////////////////////////////////////////////////
 	//BCs
-    //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    //gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
     //gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
 	//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
@@ -390,8 +390,8 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addFineGrid(10.0, 10.0, 10.0, 20.0, 20.0, 20.0, 3);
 
 
-	gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/Sphere_");
-	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
+	//gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/Sphere_");
+	gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
 	//gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/Sphere_Arrow");
 
 
@@ -486,7 +486,7 @@ void multipleLevel(const std::string& configPath)
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-    return;
+    //return;
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
@@ -511,17 +511,17 @@ void multipleLevel(const std::string& configPath)
 int main( int argc, char* argv[])
 {
    MPI_Init(&argc, &argv);
-   //std::string str, str2; 
-   //if ( argv != NULL )
-   //{
-   //   str = static_cast<std::string>(argv[0]);
-   //   if (argc > 1)
-   //   {
-   //      str2 = static_cast<std::string>(argv[1]);
+   std::string str, str2; 
+   if ( argv != NULL )
+   {
+      str = static_cast<std::string>(argv[0]);
+      if (argc > 1)
+      {
+         str2 = static_cast<std::string>(argv[1]);
          try
          {
-             //multipleLevel(str2);
-             multipleLevel("");
+             multipleLevel(str2);
+             //multipleLevel("");
          }
          catch (std::exception e)
          {
@@ -532,13 +532,13 @@ int main( int argc, char* argv[])
          {
             std::cout << "unknown exeption" << std::endl;
          }
-   //   }
-   //   else
-   //   {
-   //       std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
-   //      //MPI_Abort(MPI_COMM_WORLD, -1);
-   //   }
-   //}
+      }
+      else
+      {
+          std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+         //MPI_Abort(MPI_COMM_WORLD, -1);
+      }
+   }
    /*
    MPE_Init_log() & MPE_Finish_log() are NOT needed when
    liblmpe.a is linked with this program.  In that case,

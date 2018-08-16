@@ -77,7 +77,7 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 
         para->getParH(level)->rho_SP[j] = 0.0;
 
-        para->getParH(level)->vx_SP[j] = 0.0;
+        para->getParH(level)->vx_SP[j] = 0.02;
         para->getParH(level)->vy_SP[j] = 0.0;
         para->getParH(level)->vz_SP[j] = 0.0;
 
