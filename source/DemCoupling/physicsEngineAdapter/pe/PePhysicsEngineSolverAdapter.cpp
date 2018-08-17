@@ -37,14 +37,30 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::crea
 
     walberla::pe::GeomID peGeometry = createSphere(*globalBodyStorage, *forest, *storageId, id, PeConverter::convert(position), radius, peMaterial->getPeMaterial());
 
+    std::shared_ptr<PePhysicsEngineGeometryAdapter> peGeometryAdapter(new PePhysicsEngineGeometryAdapter());
+
     if (peGeometry)
     {
-       return std::static_pointer_cast<PhysicsEngineGeometryAdapter>(std::make_shared<PePhysicsEngineGeometryAdapter>(peGeometry));
-    } 
+       peGeometryAdapter->setId(id);
+       peGeometryAdapter->setActive();
+       peGeometryAdapter->setGeometry(peGeometry);
+       return peGeometryAdapter;
+    }
     else
     {
-       return std::shared_ptr<PhysicsEngineGeometryAdapter>(new PePhysicsEngineGeometryAdapter());
+       peGeometryAdapter->setId(id);
+       peGeometryAdapter->setInactive();
+       return peGeometryAdapter;
     }
+
+    //if (peGeometry)
+    //{
+    //   return std::static_pointer_cast<PhysicsEngineGeometryAdapter>(std::make_shared<PePhysicsEngineGeometryAdapter>(peGeometry));
+    //} 
+    //else
+    //{
+    //   return std::shared_ptr<PhysicsEngineGeometryAdapter>(new PePhysicsEngineGeometryAdapter());
+    //}
 
     walberla::pe::syncNextNeighbors<BodyTypeTuple>(*forest, *storageId);
 }

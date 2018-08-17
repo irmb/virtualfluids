@@ -56,11 +56,11 @@ void CreateDemObjectsCoProcessor::process(double step)
       if (comm->isRoot()) UBLOG(logINFO, "number of objects = "<<(int)(geoObjectPrototypeVector.size()));
 #endif
       
-      demCoProcessor->distributeIDs();
-
-#ifdef TIMING
-      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
-#endif
+//      demCoProcessor->distributeIDs();
+//
+//#ifdef TIMING
+//      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
+//#endif
 
       if (comm->isRoot())
          UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
@@ -83,19 +83,36 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
 {
    int size =  (int)(geoObjectPrototypeVector.size());
 
+   std::vector< std::shared_ptr<Block3D> > blockVector;
+
    for (int i = 0; i < size; i++)
    {
       //timer.resetAndStart();
       std::array<double, 6> AABB ={ geoObjectPrototypeVector[i]->getX1Minimum(),geoObjectPrototypeVector[i]->getX2Minimum(),geoObjectPrototypeVector[i]->getX3Minimum(),geoObjectPrototypeVector[i]->getX1Maximum(),geoObjectPrototypeVector[i]->getX2Maximum(),geoObjectPrototypeVector[i]->getX3Maximum() };
       //UBLOG(logINFO, "demCoProcessor->isGeoObjectInAABB(AABB) = " << demCoProcessor->isGeoObjectInAABB(AABB));
-      if (demCoProcessor->isDemObjectInAABB(AABB))
+      //if (demCoProcessor->isDemObjectInAABB(AABB))
+      //{
+      //   continue;
+      //}
+      SPtr<GbSphere3D> sphere = std::dynamic_pointer_cast<GbSphere3D>(geoObjectPrototypeVector[i]);
+      if (demCoProcessor->isSpheresIntersection(sphere->getX1Centroid(), sphere->getX2Centroid(), sphere->getX3Centroid(), sphere->getRadius()*2.0))
       {
          continue;
       }
+
       SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototypeVector[i]->clone()));
       SPtr<MovableObjectInteractor> geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
-      SetBcBlocksBlockVisitor setBcVisitor(geoObjectInt);
-      grid->accept(setBcVisitor);
+
+      //SetBcBlocksBlockVisitor setBcVisitor(geoObjectInt);
+      //grid->accept(setBcVisitor);
+
+      //std::vector< std::shared_ptr<Block3D> > blockVector;
+      blockVector.clear();
+      grid->getBlocksByCuboid(AABB[0], AABB[1], AABB[2], AABB[3], AABB[4], AABB[5], blockVector);
+      for (std::shared_ptr<Block3D> block : blockVector)
+         geoObjectInt->setBCBlock(block);
+
+
       //UBLOG(logINFO, "grid->accept(setBcVisitor) time = "<<timer.stop());
       geoObjectInt->initInteractor();
       //UBLOG(logINFO, "geoObjectInt->initInteractor() time = "<<timer.stop());

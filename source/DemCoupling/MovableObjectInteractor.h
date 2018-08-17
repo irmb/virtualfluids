@@ -47,7 +47,7 @@ private:
 
     std::shared_ptr<Reconstructor> reconstructor;
     State state;
-
+    std::vector< std::shared_ptr<Block3D> > blockVector;
 };
 
 

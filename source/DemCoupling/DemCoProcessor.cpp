@@ -73,15 +73,15 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> DemCoProcessor::createPhysicsEngin
    const Vector3D position(vfSphere->getX1Centroid(), vfSphere->getX2Centroid(), vfSphere->getX3Centroid());
 
    auto peGeometry = this->physicsEngineSolver->createPhysicsEngineGeometryAdapter(id, position, vfSphere->getRadius(), physicsEngineMaterial);
-   if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometry)->isActive())
-   {
+   //if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometry)->isActive())
+   //{
       interactor->setPhysicsEngineGeometry(peGeometry);
       return peGeometry;
-   }
-   else
-   {
-      return peGeometry;
-   }
+   //}
+   //else
+   //{
+   //   return peGeometry;
+   //}
 }
 
 
@@ -233,17 +233,17 @@ void DemCoProcessor::calculateDemTimeStep(double step)
    if (comm->isRoot()) UBLOG(logINFO, "  physicsEngineSolver->runTimestep() time = "<< timer.stop() <<" s");
 #endif
 
-   for (int i = 0; i < physicsEngineGeometries.size(); i++)
-   {
-      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
-      {
-         interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
-      }
-   }
+   //for (int i = 0; i < physicsEngineGeometries.size(); i++)
+   //{
+   //   if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+   //   {
+   //      interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
+   //   }
+   //}
 
-#ifdef TIMING
-   if (comm->isRoot()) UBLOG(logINFO, "  physicsEngineSolver->updateGeometry() time = "<<timer.stop()<<" s");
-#endif
+//#ifdef TIMING
+//   if (comm->isRoot()) UBLOG(logINFO, "  physicsEngineSolver->updateGeometry() time = "<<timer.stop()<<" s");
+//#endif
 }
 
 void DemCoProcessor::moveVfGeoObject()
@@ -386,55 +386,84 @@ void DemCoProcessor::removePeGeo(walberla::pe::RigidBody * peGeo)
       throw UbException(UB_EXARGS, "PeGeo ID is not matching!");
 }
 
-void DemCoProcessor::distributeIDs()
+bool DemCoProcessor::isSpheresIntersection(double centerX1, double centerX2, double centerX3, double d)
 {
-   std::vector<int> peIDsSend;
-   std::vector<int> vfIDsSend;
-
+   bool result = false;
    for (int i = 0; i < interactors.size(); i++)
    {
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
       {
-         peIDsSend.push_back(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->getId());
-         vfIDsSend.push_back(interactors[i]->getID());
+         SPtr<GbObject3D> sphere = interactors[i]->getGbObject3D();
+         result = result || ( sqrt(pow(sphere->getX1Centroid()-centerX1, 2)+pow(sphere->getX2Centroid()-centerX2, 2)+pow(sphere->getX3Centroid()-centerX3, 2)) < d );
       }
    }
+   std::vector<int> values;
+   values.push_back((int)result);
+   std::vector<int> rvalues = comm->gather(values);
 
-   std::vector<int> peIDsRecv;
-   std::vector<int> vfIDsRecv;
-
-   comm->allGather(peIDsSend, peIDsRecv);
-   comm->allGather(vfIDsSend, vfIDsRecv);
-
-   std::map<int, int> idMap;
-
-   for (int i = 0; i < peIDsRecv.size(); i++)
+   if (comm->isRoot())
    {
-      idMap.insert(std::make_pair(vfIDsRecv[i], peIDsRecv[i]));
-   }
-
-   for (int i = 0; i < interactors.size(); i++)
-   {
-       std::map<int, int>::const_iterator it;
-      if ((it=idMap.find(interactors[i]->getID())) == idMap.end())
+      for (int i = 0; i < (int)rvalues.size(); i++)
       {
-         throw UbException(UB_EXARGS, "Interactor ID is invalid! The DEM object may be not in PE domain!");
+         result = result || (bool)rvalues[i];
       }
-      
-
-      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(it->second);
-      //std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(idMap.find(interactors[i]->getID())->second);
    }
+   int iresult = (int)result;
+   comm->broadcast(iresult);
+   result = (bool)iresult;
 
-   for (int i = 0; i < physicsEngineGeometries.size(); i++)
-   {
-         //physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
-         if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
-         {
-            interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
-         }
-   }
+   return result;
 }
+
+//void DemCoProcessor::distributeIDs()
+//{
+//   std::vector<int> peIDsSend;
+//   std::vector<int> vfIDsSend;
+//
+//   for (int i = 0; i < interactors.size(); i++)
+//   {
+//      if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+//      {
+//         peIDsSend.push_back(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->getId());
+//         vfIDsSend.push_back(interactors[i]->getID());
+//      }
+//   }
+//
+//   std::vector<int> peIDsRecv;
+//   std::vector<int> vfIDsRecv;
+//
+//   comm->allGather(peIDsSend, peIDsRecv);
+//   comm->allGather(vfIDsSend, vfIDsRecv);
+//
+//   std::map<int, int> idMap;
+//
+//   for (int i = 0; i < peIDsRecv.size(); i++)
+//   {
+//      idMap.insert(std::make_pair(vfIDsRecv[i], peIDsRecv[i]));
+//   }
+//
+//   for (int i = 0; i < interactors.size(); i++)
+//   {
+//       std::map<int, int>::const_iterator it;
+//      if ((it=idMap.find(interactors[i]->getID())) == idMap.end())
+//      {
+//         throw UbException(UB_EXARGS, "Interactor ID is invalid! The DEM object may be not in PE domain!");
+//      }
+//      
+//
+//      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(it->second);
+//      //std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(idMap.find(interactors[i]->getID())->second);
+//   }
+//
+//   for (int i = 0; i < physicsEngineGeometries.size(); i++)
+//   {
+//         //physicsEngineSolver->updateGeometry(physicsEngineGeometries[i]);
+//         if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->isActive())
+//         {
+//            interactors[i]->setPhysicsEngineGeometry(physicsEngineGeometries[i]);
+//         }
+//   }
+//}
 
 void DemCoProcessor::setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor)
 {

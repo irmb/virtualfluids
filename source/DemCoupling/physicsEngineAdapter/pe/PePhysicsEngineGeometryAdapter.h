@@ -20,7 +20,7 @@ class PePhysicsEngineGeometryAdapter : public PhysicsEngineGeometryAdapter
 {
 public:
     PePhysicsEngineGeometryAdapter();
-    PePhysicsEngineGeometryAdapter(walberla::pe::RigidBody* peGeoObject);
+    //PePhysicsEngineGeometryAdapter(walberla::pe::RigidBody* peGeoObject);
     virtual ~PePhysicsEngineGeometryAdapter() {}
 
     void addForce(const Vector3D& force) override;

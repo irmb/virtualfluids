@@ -45,13 +45,14 @@ public:
     void addInteractor(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial, Vector3D initalVelocity = Vector3D(0.0, 0.0, 0.0));
     void process(double step) override;
     std::shared_ptr<PhysicsEngineSolverAdapter> getPhysicsEngineSolver();
-    void distributeIDs();
+    //void distributeIDs();
     void setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> blockVisitor);
     bool isDemObjectInAABB(std::array<double,6> AABB);
     void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
     void getObjectsPropertiesVector(std::vector<double>& p);
     void addPeGeo(walberla::pe::RigidBody* peGeo);
     void removePeGeo(walberla::pe::RigidBody* peGeo);
+    bool isSpheresIntersection(double centerX1, double centerX2, double centerX3, double d);
   
 private:
     std::shared_ptr<PhysicsEngineGeometryAdapter> createPhysicsEngineGeometryAdapter(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial) const;

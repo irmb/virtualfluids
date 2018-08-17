@@ -17,11 +17,19 @@
 #include "PhysicsEngineGeometryAdapter.h"
 #include "Reconstructor.h"
 
+#include <array>
+
+//#define TIMING
+
+#ifdef TIMING
+   #include "UbTiming.h"
+#endif
+
 
 MovableObjectInteractor::MovableObjectInteractor(std::shared_ptr<GbObject3D> geoObject3D, std::shared_ptr<Grid3D> grid, std::shared_ptr<BCAdapter> bcAdapter, int type, std::shared_ptr<Reconstructor> reconstructor, State state)
    : D3Q27Interactor(geoObject3D, grid, bcAdapter, type), reconstructor(reconstructor), state(state)
 {
-
+   //grid->getBlocks(0, grid->getRank(), true, blockVector);
 }
 
 MovableObjectInteractor::~MovableObjectInteractor()
@@ -45,19 +53,62 @@ void MovableObjectInteractor::moveGbObjectTo(const Vector3D& position)
 
 void MovableObjectInteractor::rearrangeGrid()
 {
+#ifdef TIMING
+   UbTimer timer;
+   timer.resetAndStart();
+#endif
+
+#ifdef TIMING
+   UBLOG(logINFO, "MovableObjectInteractor::rearrangeGrid():start");
+#endif
+
     this->reconstructDistributionOnSolidNodes();
-    
+
+#ifdef TIMING
+    UBLOG(logINFO, "reconstructDistributionOnSolidNodes() time = "<<timer.stop()<<" s");
+#endif
+
     this->setSolidNodesToFluid();
+
+#ifdef TIMING
+    UBLOG(logINFO, "setSolidNodesToFluid() time = "<<timer.stop()<<" s");
+#endif
+
     this->setBcNodesToFluid();
 
+#ifdef TIMING
+    UBLOG(logINFO, "setBcNodesToFluid() time = "<<timer.stop()<<" s");
+#endif
+
     this->removeSolidBlocks();
+
+#ifdef TIMING
+    UBLOG(logINFO, "removeSolidBlocks() time = "<<timer.stop()<<" s");
+#endif
+
     this->removeBcBlocks();
+
+#ifdef TIMING
+    UBLOG(logINFO, "removeBcBlocks() time = "<<timer.stop()<<" s");
+#endif
 
     this->setBcBlocks();
 
+#ifdef TIMING
+    UBLOG(logINFO, "setBcBlocks() time = "<<timer.stop()<<" s");
+#endif
+
     this->initInteractor();
 
+#ifdef TIMING
+    UBLOG(logINFO, "initInteractor() time = "<<timer.stop()<<" s");
+#endif
+
     this->updateVelocityBc();
+
+#ifdef TIMING
+    UBLOG(logINFO, "updateVelocityBc() time = "<<timer.stop()<<" s");
+#endif
 }
 
 void MovableObjectInteractor::reconstructDistributionOnSolidNodes()
@@ -116,8 +167,15 @@ void MovableObjectInteractor::setBcNodesToFluid()
 
 void MovableObjectInteractor::setBcBlocks()
 {
-    SetBcBlocksBlockVisitor v(shared_from_this());
-    this->grid.lock()->accept(v);
+    //SetBcBlocksBlockVisitor v(shared_from_this());
+    //this->grid.lock()->accept(v);
+   SPtr<GbObject3D> geoObject = this->getGbObject3D();
+   std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
+   blockVector.clear();
+   grid.lock()->getBlocksByCuboid(AABB[0], AABB[1], AABB[2], AABB[3], AABB[4], AABB[5], blockVector);
+
+   for(std::shared_ptr<Block3D> block : this->blockVector)
+      setBCBlock(block);
 }
 
 void MovableObjectInteractor::updateVelocityBc()

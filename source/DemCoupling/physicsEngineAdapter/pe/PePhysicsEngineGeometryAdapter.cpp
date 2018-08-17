@@ -5,11 +5,11 @@
 #include "PeAdapter.h"
 
 
-PePhysicsEngineGeometryAdapter::PePhysicsEngineGeometryAdapter(walberla::pe::RigidBody* peGeoObject) : peGeoObject(peGeoObject)
-{
-    this->id = peGeoObject->getID();
-    this->active = true;
-}
+//PePhysicsEngineGeometryAdapter::PePhysicsEngineGeometryAdapter(walberla::pe::RigidBody* peGeoObject) : peGeoObject(peGeoObject)
+//{
+//    this->id = peGeoObject->getID();
+//    this->active = true;
+//}
 
 PePhysicsEngineGeometryAdapter::PePhysicsEngineGeometryAdapter()
 {
