@@ -564,6 +564,22 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			//			 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
 			//			 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 		 //getLastCudaError("QPressDev27 execution failed");
+		   //if (para->getParD(level)->kQ > 0)
+		   //{
+			  // //QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+			  // //		      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,	   para->getParD(level)->QWall.q27[0], 
+			  // //		      para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
+			  // //		      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+			  // //		      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+			  // //getLastCudaError("QDevComp27 (Wall) execution failed");
+			  //QVelDevCompZeroPress27(	para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+					//					para->getParD(level)->QWall.Vx,        para->getParD(level)->QWall.Vy,     para->getParD(level)->QWall.Vz,
+					//					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
+			  //							para->getParD(level)->kQ,              para->getParD(level)->kQ,           para->getParD(level)->omega,
+					//					para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+					//					para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+			  //getLastCudaError("QVelDevCompZeroPress27 execution failed");
+		   //}
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//if (para->getParD(level)->kSlipQ > 0)
 			//{
@@ -1501,6 +1517,23 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			//			para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
 			//getLastCudaError("QDevComp27 (Wall) execution failed");
 		 //}
+		   //if (para->getParD(level)->kQ > 0)
+		   //{
+			  // //QDevComp27(para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
+			  // //		      para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,	   para->getParD(level)->QWall.q27[0], 
+			  // //		      para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,
+			  // //		      para->getParD(level)->neighborX_SP,          para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+			  // //		      para->getParD(level)->size_Mat_SP,           para->getParD(level)->evenOrOdd);
+			  // //getLastCudaError("QDevComp27 (Wall) execution failed");
+			  //QVelDevCompZeroPress27(	para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+					//					para->getParD(level)->QWall.Vx,        para->getParD(level)->QWall.Vy,     para->getParD(level)->QWall.Vz,
+					//					para->getParD(level)->d0SP.f[0],       para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0],
+			  //							para->getParD(level)->kQ,              para->getParD(level)->kQ,           para->getParD(level)->omega,
+					//					para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+					//					para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+			  //getLastCudaError("QVelDevCompZeroPress27 execution failed");
+		   //}
+
 		 //QDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
 			//	 para->getParD(level)->d0SP.f[0],             para->getParD(level)->QWall.k,      para->getParD(level)->QWall.q27[0], 
 			//	 para->getParD(level)->kQ,                    para->getParD(level)->kQ,           para->getParD(level)->omega,

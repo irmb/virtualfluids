@@ -39,10 +39,8 @@ void GridInterface::findInterfaceCF(const uint& indexOnCoarseGrid, GridImp* coar
         const bool isFineGridNeighborInvalid = isNeighborFineInvalid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);
         if(isFineGridNeighborInvalid)
         {
-            cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
-            cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
-
-            this->findOffsetCF( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
+            cf.coarse[cf.numberOfEntries] = this->findOffsetCF(indexOnCoarseGrid, coarseGrid, cf.numberOfEntries);
+            cf.fine[cf.numberOfEntries]   = indexOnFineGridCF;
 
             cf.numberOfEntries++;
 
@@ -76,10 +74,8 @@ void GridInterface::findBoundaryGridInterfaceCF(const uint& indexOnCoarseGrid, G
         const bool isFineGridNeighborInvalid = isNeighborFineInvalid(x + dir[0] * coarseGrid->getDelta(), y + dir[1] * coarseGrid->getDelta(), z + dir[2] * coarseGrid->getDelta(), coarseGrid, fineGrid);
         if(isFineGridNeighborInvalid)
         {
-            cf.coarse[cf.numberOfEntries] = indexOnCoarseGrid;
-            cf.fine[cf.numberOfEntries] = indexOnFineGridCF;
-
-            this->findOffsetCF( indexOnCoarseGrid, coarseGrid, cf.numberOfEntries );
+			cf.coarse[cf.numberOfEntries] = this->findOffsetCF(indexOnCoarseGrid, coarseGrid, cf.numberOfEntries);
+			cf.fine[cf.numberOfEntries]   = indexOnFineGridCF;
 
             cf.numberOfEntries++;
 
@@ -253,16 +249,15 @@ void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
     indices[index] = sparseIndex;
 }
 
-HOSTDEVICE void GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex)
+HOSTDEVICE uint GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridImp* coarseGrid, uint interfaceIndex)
 {
     real x, y, z;
     coarseGrid->transIndexToCoords(indexOnCoarseGrid, x, y, z);
 
     if( coarseGrid->cellContainsOnly( Cell(x, y, z, coarseGrid->getDelta()), FLUID, FLUID_CFC ) ){
         this->cf.offset[ interfaceIndex ] = DIR_27_ZERO;
-        return;
+        return indexOnCoarseGrid;
     }
-
 
     uint dirIndex = 0;
     for(const auto dir : coarseGrid->distribution){
@@ -274,23 +269,28 @@ HOSTDEVICE void GridInterface::findOffsetCF(const uint& indexOnCoarseGrid, GridI
 
         if( coarseGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
             this->cf.offset[ interfaceIndex ] = dirIndex;
-            return;
+
+			return coarseGrid->transCoordToIndex( x + dir[0] * coarseGrid->getDelta(),
+				                                  y + dir[1] * coarseGrid->getDelta(),
+				                                  z + dir[2] * coarseGrid->getDelta() );
         }
     
         dirIndex++;
     }
+
+	// this point should never be reached
+	return indexOnCoarseGrid;
 }
 
-HOSTDEVICE void GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
+HOSTDEVICE uint GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp* fineGrid, uint interfaceIndex)
 {
     real x, y, z;
     fineGrid->transIndexToCoords(indexOnFineGrid, x, y, z);
 
     if( fineGrid->cellContainsOnly( Cell(x, y, z, fineGrid->getDelta()), FLUID, FLUID_FCF ) ){
         this->fc.offset[ interfaceIndex ] = DIR_27_ZERO;
-        return;
+        return indexOnFineGrid;
     }
-
 
     uint dirIndex = 0;
     for(const auto dir : fineGrid->distribution){
@@ -301,12 +301,18 @@ HOSTDEVICE void GridInterface::findOffsetFC(const uint& indexOnFineGrid, GridImp
                            fineGrid->getDelta() );
 
         if( fineGrid->cellContainsOnly( neighborCell, FLUID, FLUID_CFC ) ){
-            this->fc.offset[ interfaceIndex ] = dirIndex;
-            return;
+			this->fc.offset[interfaceIndex] = dirIndex;
+
+			return fineGrid->transCoordToIndex(x + dir[0] * fineGrid->getDelta(),
+				                               y + dir[1] * fineGrid->getDelta(),
+				                               z + dir[2] * fineGrid->getDelta());
         }
     
         dirIndex++;
     }
+
+	// this point should never be reached
+	return indexOnFineGrid;
 }
 
 void GridInterface::print() const

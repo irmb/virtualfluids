@@ -866,7 +866,7 @@ HOSTDEVICE real GridImp::getLastFluidNode(real coords[3], int direction, real st
 HOSTDEVICE real GridImp::getFirstFluidNode(real coords[3], int direction, real startCoord) const
 {
     coords[direction] = startCoord;
-    int index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
+    uint index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
     while (!field.isFluid(index))
     {
         coords[direction] += delta;

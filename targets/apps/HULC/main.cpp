@@ -321,17 +321,19 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
-	real dx = 1;
+	real dx = 0.2; // 1.0;
 	real vx = 0.02;
 	//////////////////////////////////////////////////////////////////////////////
 	//// test periodic bc non uniform
 	//gridBuilder->addCoarseGrid(-10, -10, -5, 10, 10, 5, dx);
 	//gridBuilder->addGrid(new VerticalCylinder(0, 0, 0, 5, 20), 2);
 	//////////////////////////////////////////////////////////////////////////////
-	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/inp/Box_2.00.stl");
-	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Concave.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Concave.stl");
 	//gridBuilder->addCoarseGrid(-9.9, -9.9, -9.9, 20.1, 10.1, 10.1, dx);
-	gridBuilder->addCoarseGrid(-20, -20, -20, 40, 20, 20, dx);
+	//gridBuilder->addCoarseGrid(-20, -20, 0, 40, 20, 20, dx);
+	gridBuilder->addCoarseGrid(-4, -4, -4, 8, 4, 4, dx);
 
     //real size = 0.02;
 	//gridBuilder->addGrid(new Cuboid(-size, -size, -size+0.5*dx, size, size, size+0.5*dx), 6);
@@ -350,8 +352,8 @@ void multipleLevel(const std::string& configPath)
 	//BCs
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
     gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
-    //gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
-    //gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
+ //   gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
+ //   gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
 	//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
 	//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
 	////////////////////////////////////////////////////////////////////////////
@@ -362,7 +364,7 @@ void multipleLevel(const std::string& configPath)
  //   gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-    //gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, vx, 0.0, 0.0);
 
 
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
