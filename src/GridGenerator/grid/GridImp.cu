@@ -70,20 +70,31 @@ HOST void GridImp::inital()
     field.allocateMemory();
     gridStrategy->allocateGridMemory(shared_from_this());
 
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initalNodesToOutOfGrid()\n";
+
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
 
     TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
     if (triangularMesh){
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start discretize()\n";
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, INVALID_OUT_OF_GRID);
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
         gridStrategy->fixOddCells( shared_from_this() );
     }
     else
+    {
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findInnerNodes()\n";
         gridStrategy->findInnerNodes(shared_from_this());
-
+    }
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
     this->addOverlap();
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
     gridStrategy->fixRefinementIntoWall(shared_from_this());
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findEndOfGridStopperNodes()\n";
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE
@@ -96,17 +107,23 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid)
     field = Field(gridStrategy, size);
     field.allocateMemory();
     gridStrategy->allocateGridMemory(shared_from_this());
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initalNodesToOutOfGrid()\n";
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start setInnerBasedOnFinerGrid()\n";
     this->setInnerBasedOnFinerGrid(fineGrid);
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
     this->addOverlap();
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
     gridStrategy->fixOddCells( shared_from_this() );
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
     gridStrategy->fixRefinementIntoWall(shared_from_this());
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findEndOfGridStopperNodes()\n";
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE

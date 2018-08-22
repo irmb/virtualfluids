@@ -2249,6 +2249,216 @@ namespace UnstructuredGridWriter
 		//WbWriterVtkXmlASCII::getInstance()->writeLinesWithNodeData(fname, nodes, qs, nodedatanames, nodedata);
 	}
 	//////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	void writeQsInflow(Parameter* para, int level, std::string& fname)
+	{
+		vector< UbTupleFloat3 > nodes;
+		vector< UbTupleInt2 > qs;
+		unsigned int startpos = 0;
+		unsigned int endpos = 0;
+		unsigned int sizeOfNodes = 0;
+		int node = 0;
+		int wall = 1;
+		int line = 0;
+		double dx = 1.0 / pow(2, level);
+		real* QQ;
+		QforBoundaryConditions Q;
+		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
+		//////////////////////////////////////////////////////////////////////////
+		sizeOfNodes = para->getParH(level)->Qinflow.kQ;
+		endpos = startpos + sizeOfNodes;
+		//////////////////////////////////////////////////////////////////////////
+		//qs.clear();
+		//nodes.clear();
+		unsigned int numberOfLines = para->getD3Qxx() * sizeOfNodes;
+		unsigned int numberOfNodes = numberOfLines * 2;
+		qs.resize(numberOfLines);
+		nodes.resize(numberOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		vector< string > nodedatanames;
+		nodedatanames.push_back("sizeQ");
+		vector< vector< double > > nodedata(nodedatanames.size());
+		nodedata[0].resize(numberOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		for (unsigned int pos = startpos; pos < endpos; pos++)
+		{
+			//////////////////////////////////////////////////////////////////////////
+			nodeX1 = para->getParH(level)->coordX_SP[para->getParH(level)->Qinflow.k[pos]];
+			nodeX2 = para->getParH(level)->coordY_SP[para->getParH(level)->Qinflow.k[pos]];
+			nodeX3 = para->getParH(level)->coordZ_SP[para->getParH(level)->Qinflow.k[pos]];
+			wallX1 = 0.0;
+			wallX2 = 0.0;
+			wallX3 = 0.0;
+			q      = 0.0;
+			//////////////////////////////////////////////////////////////////////////
+			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			{
+				QQ = para->getParH(level)->Qinflow.q27[0];
+				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
+				q = (double)(Q.q27[typeOfQ][pos]);
+                if( q < 0.0 ) q = 0.0;
+				//////////////////////////////////////////////////////////////////////////
+				switch (typeOfQ)
+				{
+					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					default: throw UbException(UB_EXARGS, "unknown direction");
+				}
+				//////////////////////////////////////////////////////////////////////////
+				nodes[node] = makeUbTuple((float)(nodeX1), (float)(nodeX2), (float)(nodeX3));
+				nodes[wall] = makeUbTuple((float)(wallX1), (float)(wallX2), (float)(wallX3));
+				qs[line]    = makeUbTuple(node, wall);
+				//////////////////////////////////////////////////////////////////////////
+				nodedata[0][node] = q;
+				nodedata[0][wall] = q;
+				//////////////////////////////////////////////////////////////////////////
+				node = node + 2;
+				wall = wall + 2;
+				line++;
+				//////////////////////////////////////////////////////////////////////////
+			}
+		}
+		WbWriterVtkXmlBinary::getInstance()->writeLines(fname, nodes, qs);
+		//WbWriterVtkXmlBinary::getInstance()->writeLinesWithNodeData(fname, nodes, qs, nodedatanames, nodedata);
+		//WbWriterVtkXmlASCII::getInstance()->writeLinesWithNodeData(fname, nodes, qs, nodedatanames, nodedata);
+	}
+	//////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	void writeQsPressure(Parameter* para, int level, std::string& fname)
+	{
+		vector< UbTupleFloat3 > nodes;
+		vector< UbTupleInt2 > qs;
+		unsigned int startpos = 0;
+		unsigned int endpos = 0;
+		unsigned int sizeOfNodes = 0;
+		int node = 0;
+		int wall = 1;
+		int line = 0;
+		double dx = 1.0 / pow(2, level);
+		real* QQ;
+		QforBoundaryConditions Q;
+		double nodeX1, nodeX2, nodeX3, wallX1, wallX2, wallX3, q;
+		//////////////////////////////////////////////////////////////////////////
+		sizeOfNodes = para->getParH(level)->QPress.kQ;
+		endpos = startpos + sizeOfNodes;
+		//////////////////////////////////////////////////////////////////////////
+		//qs.clear();
+		//nodes.clear();
+		unsigned int numberOfLines = para->getD3Qxx() * sizeOfNodes;
+		unsigned int numberOfNodes = numberOfLines * 2;
+		qs.resize(numberOfLines);
+		nodes.resize(numberOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		vector< string > nodedatanames;
+		nodedatanames.push_back("sizeQ");
+		vector< vector< double > > nodedata(nodedatanames.size());
+		nodedata[0].resize(numberOfNodes);
+		//////////////////////////////////////////////////////////////////////////
+		for (unsigned int pos = startpos; pos < endpos; pos++)
+		{
+			//////////////////////////////////////////////////////////////////////////
+			nodeX1 = para->getParH(level)->coordX_SP[para->getParH(level)->QPress.k[pos]];
+			nodeX2 = para->getParH(level)->coordY_SP[para->getParH(level)->QPress.k[pos]];
+			nodeX3 = para->getParH(level)->coordZ_SP[para->getParH(level)->QPress.k[pos]];
+			wallX1 = 0.0;
+			wallX2 = 0.0;
+			wallX3 = 0.0;
+			q      = 0.0;
+			//////////////////////////////////////////////////////////////////////////
+			for (unsigned int typeOfQ = dirSTART; typeOfQ <= dirEND; typeOfQ++)
+			{
+				QQ = para->getParH(level)->QPress.q27[0];
+				Q.q27[typeOfQ] = &QQ[typeOfQ*sizeOfNodes];
+				q = (double)(Q.q27[typeOfQ][pos]);
+                if( q < 0.0 ) q = 0.0;
+				//////////////////////////////////////////////////////////////////////////
+				switch (typeOfQ)
+				{
+					case dirE:   wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case dirN:   wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case dirW:   wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3;        break;
+					case dirS:   wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case dirNE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case dirNW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3;        break;
+					case dirSW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case dirSE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3;        break;
+					case dirT:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case dirTE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case dirTN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirTW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 + q*dx; break;
+					case dirTS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirB:   wallX1 = nodeX1;        wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case dirBE:  wallX1 = nodeX1 + q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case dirBN:  wallX1 = nodeX1;        wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirBW:  wallX1 = nodeX1 - q*dx; wallX2 = nodeX2;        wallX3 = nodeX3 - q*dx; break;
+					case dirBS:  wallX1 = nodeX1;        wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirTNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirBSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirBNE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirTSW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirTSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirBNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirBSE: wallX1 = nodeX1 + q*dx; wallX2 = nodeX2 - q*dx; wallX3 = nodeX3 - q*dx; break;
+					case dirTNW: wallX1 = nodeX1 - q*dx; wallX2 = nodeX2 + q*dx; wallX3 = nodeX3 + q*dx; break;
+					case dirZERO:wallX1 = nodeX1;        wallX2 = nodeX2;		 wallX3 = nodeX3;        break;
+					default: throw UbException(UB_EXARGS, "unknown direction");
+				}
+				//////////////////////////////////////////////////////////////////////////
+				nodes[node] = makeUbTuple((float)(nodeX1), (float)(nodeX2), (float)(nodeX3));
+				nodes[wall] = makeUbTuple((float)(wallX1), (float)(wallX2), (float)(wallX3));
+				qs[line]    = makeUbTuple(node, wall);
+				//////////////////////////////////////////////////////////////////////////
+				nodedata[0][node] = q;
+				nodedata[0][wall] = q;
+				//////////////////////////////////////////////////////////////////////////
+				node = node + 2;
+				wall = wall + 2;
+				line++;
+				//////////////////////////////////////////////////////////////////////////
+			}
+		}
+		WbWriterVtkXmlBinary::getInstance()->writeLines(fname, nodes, qs);
+		//WbWriterVtkXmlBinary::getInstance()->writeLinesWithNodeData(fname, nodes, qs, nodedatanames, nodedata);
+		//WbWriterVtkXmlASCII::getInstance()->writeLinesWithNodeData(fname, nodes, qs, nodedatanames, nodedata);
+	}
+	//////////////////////////////////////////////////////////////////////////
 }
 
 #endif
