@@ -265,13 +265,14 @@ HOSTDEVICE void GridImp::fixRefinementIntoWall(uint xIndex, uint yIndex, uint zI
 
     uint index = this->transCoordToIndex(x, y, z);
 
-    if( !this->xOddStart && ( dir == 1 || dir == -1 ) && ( xIndex % 2 || 1 && xIndex == 0 ) ) return;
-    if( !this->yOddStart && ( dir == 2 || dir == -2 ) && ( yIndex % 2 || 1 && yIndex == 0 ) ) return;
-    if( !this->zOddStart && ( dir == 3 || dir == -3 ) && ( zIndex % 2 || 1 && zIndex == 0 ) ) return;
+    if( !this->xOddStart && ( dir == 1 || dir == -1 ) && ( xIndex % 2 == 1 || xIndex == 0 ) ) return;
+    if( !this->yOddStart && ( dir == 2 || dir == -2 ) && ( yIndex % 2 == 1 || yIndex == 0 ) ) return;
+    if( !this->zOddStart && ( dir == 3 || dir == -3 ) && ( zIndex % 2 == 1 || zIndex == 0 ) ) return;
 
-    if(  this->xOddStart && ( dir == 1 || dir == -1 ) && xIndex % 2 == 0 && xIndex != 0 ) return;
-    if(  this->yOddStart && ( dir == 2 || dir == -2 ) && yIndex % 2 == 0 && yIndex != 0 ) return;
-    if(  this->zOddStart && ( dir == 3 || dir == -3 ) && zIndex % 2 == 0 && zIndex != 0 ) return;
+    // Dont do this if inside of the domain
+    if(  this->xOddStart && ( dir == 1 || dir == -1 ) && ( xIndex % 2 == 0 && xIndex != 0 ) ) return;
+    if(  this->yOddStart && ( dir == 2 || dir == -2 ) && ( yIndex % 2 == 0 && yIndex != 0 ) ) return;
+    if(  this->zOddStart && ( dir == 3 || dir == -3 ) && ( zIndex % 2 == 0 && zIndex != 0 ) ) return;
     
     //////////////////////////////////////////////////////////////////////////
 

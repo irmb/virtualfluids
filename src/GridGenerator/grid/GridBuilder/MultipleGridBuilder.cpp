@@ -400,6 +400,9 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
 
+        // On the coarse grid every thing is Fluid (w.r.t. the refinement)
+        // On the finest grid the Fluid region is defined by the Object
+        // On the intermediate levels the Fluid region is defined by the fluid region of the finer level
         if( level == 0 || level == grids.size()-1 )
             grids[level]->inital();
         else
