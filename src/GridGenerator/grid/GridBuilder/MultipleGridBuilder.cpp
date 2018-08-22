@@ -223,7 +223,7 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
     real X3Maximum = gridShape->getX3Maximum();
 
     if( levelFine >= level ){
-        real overlap = 8 * delta;
+        real overlap = 9 * delta;
 
         // use geometric series to account for overlapp of higher levels:
         // overlap + overlap/2 + overlap/4 + ...
@@ -397,16 +397,24 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
 
      //new version with 
     for( int level = grids.size()-1; level >= 0; level-- ){
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initializing level " << level << "\n";
+
         if( level == 0 || level == grids.size()-1 )
             grids[level]->inital();
         else
             grids[level]->inital( grids[level+1] );
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done initializing level " << level << "\n";
     }
 
     //////////////////////////////////////////////////////////////////////////
 
     if (solidObject)
     {
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
+
         grids[grids.size() - 1]->mesh(solidObject);
         grids[grids.size() - 1]->findQs(solidObject);
 
@@ -414,6 +422,8 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
         //    grids[i]->mesh(solidObject);
         //    grids[i]->findQs(solidObject);
         //}
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
     }
 
 
@@ -448,10 +458,10 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
         ss << path << level << ".vtk";
 
         GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
-        if( level != 0 )
-            GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], grids[level-1], ss.str() + ".InterpolationCells");
-        else
-            GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], nullptr       , ss.str() + ".InterpolationCells");
+        //if( level != 0 )
+        //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], grids[level-1], ss.str() + ".InterpolationCells");
+        //else
+        //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], nullptr       , ss.str() + ".InterpolationCells");
         //GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
 }

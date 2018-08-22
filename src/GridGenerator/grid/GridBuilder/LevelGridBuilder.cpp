@@ -200,9 +200,9 @@ void LevelGridBuilder::setOffsetFC(real * xOffFC, real * yOffFC, real * zOffFC, 
     {
         uint offset = this->grids[level]->getFC_offset()[i];
 
-        xOffFC[i] = this->grids[level]->getDirection()[ 3*offset + 0 ];
-        yOffFC[i] = this->grids[level]->getDirection()[ 3*offset + 1 ];
-        zOffFC[i] = this->grids[level]->getDirection()[ 3*offset + 2 ];
+        xOffFC[i] = - this->grids[level]->getDirection()[ 3*offset + 0 ];
+        yOffFC[i] = - this->grids[level]->getDirection()[ 3*offset + 1 ];
+        zOffFC[i] = - this->grids[level]->getDirection()[ 3*offset + 2 ];
     }
 }
 
@@ -212,9 +212,9 @@ void LevelGridBuilder::setOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, 
     {
         uint offset = this->grids[level]->getCF_offset()[i];
 
-        xOffCF[i] = this->grids[level]->getDirection()[ 3*offset + 0 ];
-        yOffCF[i] = this->grids[level]->getDirection()[ 3*offset + 1 ];
-        zOffCF[i] = this->grids[level]->getDirection()[ 3*offset + 2 ];
+        xOffCF[i] = - this->grids[level]->getDirection()[ 3*offset + 0 ];
+        yOffCF[i] = - this->grids[level]->getDirection()[ 3*offset + 1 ];
+        zOffCF[i] = - this->grids[level]->getDirection()[ 3*offset + 2 ];
     }
 }
 
@@ -312,15 +312,30 @@ void LevelGridBuilder::getVelocityQs(real* qs[27], int level) const
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->velocityBoundaryConditions)
     {
-        for (int i = 0; i < boundaryCondition->indices.size(); i++)
+        for (uint index : boundaryCondition->indices)
         {
-
-            for (int dir = 0; dir < grids[level]->getEndDirection(); dir++)
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
             {
-                if (grids[level]->getDirection()[dir * DIMENSION + boundaryCondition->side->getCoordinate()] != boundaryCondition->side->getDirection())
-                    qs[dir][allIndicesCounter] = -1.0;
-                else
+                //if (grids[level]->getDirection()[dir * DIMENSION + boundaryCondition->side->getCoordinate()] != boundaryCondition->side->getDirection())
+                //    qs[dir][allIndicesCounter] = -1.0;
+                //else
+                //    qs[dir][allIndicesCounter] = 0.5;
+
+                //////////////////////////////////////////////////////////////////////////
+
+                real x,y,z;
+                grids[level]->transIndexToCoords( index, x, y, z );
+
+                x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
+                y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
+                z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
+
+                uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
+
+                if( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
                     qs[dir][allIndicesCounter] = 0.5;
+                else
+                    qs[dir][allIndicesCounter] = -1.0;
             }
             allIndicesCounter++;
         }
@@ -332,14 +347,30 @@ void LevelGridBuilder::getPressureQs(real* qs[27], int level) const
     int allIndicesCounter = 0;
     for (auto boundaryCondition : boundaryConditions[level]->pressureBoundaryConditions)
     {
-        for (int i = 0; i < boundaryCondition->indices.size(); i++)
+        for (uint index : boundaryCondition->indices)
         {
-            for (int dir = 0; dir < grids[level]->getEndDirection(); dir++)
+            for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
             {
-                if (grids[level]->getDirection()[dir * DIMENSION + boundaryCondition->side->getCoordinate()] != boundaryCondition->side->getDirection())
-                    qs[dir][allIndicesCounter] = -1.0;
-                else
+                //if (grids[level]->getDirection()[dir * DIMENSION + boundaryCondition->side->getCoordinate()] != boundaryCondition->side->getDirection())
+                //    qs[dir][allIndicesCounter] = -1.0;
+                //else
+                //    qs[dir][allIndicesCounter] = 0.5;
+
+                //////////////////////////////////////////////////////////////////////////
+
+                real x,y,z;
+                grids[level]->transIndexToCoords( index, x, y, z );
+
+                x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
+                y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
+                z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
+
+                uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
+
+                if( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
                     qs[dir][allIndicesCounter] = 0.5;
+                else
+                    qs[dir][allIndicesCounter] = -1.0;
             }
             allIndicesCounter++;
         }

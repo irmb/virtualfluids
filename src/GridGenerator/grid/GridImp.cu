@@ -296,7 +296,7 @@ HOSTDEVICE void GridImp::fixRefinementIntoWall(uint xIndex, uint yIndex, uint zI
     for( uint i = 1; i <= distance; i++ ){
         uint neighborIndex = this->transCoordToIndex(x + i * dx, y + i * dy, z + i * dz);
 
-        if( ! this->field.is( neighborIndex, type ) )
+        if( neighborIndex != INVALID_INDEX && !this->field.is( neighborIndex, type ) )
             allTypesAreTheSame = false;
     }
 
