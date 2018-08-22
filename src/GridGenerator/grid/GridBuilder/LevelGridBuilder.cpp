@@ -61,6 +61,8 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
             velocityBoundaryCondition->side->addIndices(grids, level, velocityBoundaryCondition);
 
             boundaryConditions[level]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
+
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << level << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
         }
     }
 
