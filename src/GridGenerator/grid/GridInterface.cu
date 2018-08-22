@@ -136,9 +136,7 @@ void GridInterface::findInterfaceFC(const uint& indexOnCoarseGrid, GridImp* coar
 			if (neighborBelongsToCoarseToFineInterpolationCell)
 			{
 				fc.coarse[fc.numberOfEntries] = indexOnCoarseGrid;
-				fc.fine[fc.numberOfEntries] = indexOnFineGridFC;
-
-                this->findOffsetFC(indexOnFineGridFC, fineGrid, fc.numberOfEntries);
+				fc.fine[fc.numberOfEntries] = this->findOffsetFC(indexOnFineGridFC, fineGrid, fc.numberOfEntries);
 
 				fc.numberOfEntries++;
 
