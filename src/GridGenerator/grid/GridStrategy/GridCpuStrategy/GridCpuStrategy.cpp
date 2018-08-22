@@ -41,6 +41,7 @@ void GridCpuStrategy::allocateQs(SPtr<GridImp> grid)
 {
 	const uint numberOfQs = grid->getNumberOfSolidBoundaryNodes() * (grid->distribution.dir_end + 1);
 	grid->qValues = new real[numberOfQs];
+#pragma omp parallel for
 	for (size_t i = 0; i < numberOfQs; i++)
 		grid->qValues[i] = -1.0;
 }
@@ -140,7 +141,7 @@ void GridCpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
 
 void GridCpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
 {
-//#pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < geom.size; i++)
         grid->findQs(geom.triangles[i]);
 }
@@ -157,7 +158,7 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
 
     grid->gridInterface = new GridInterface();
     // TODO: this is stupid! concave refinements can easily have many more interface cells
-    const uint sizeCF = (fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz);
+    const uint sizeCF = 10*(fineGrid->nx * fineGrid->ny + fineGrid->ny * fineGrid->nz + fineGrid->nx * fineGrid->nz);
     grid->gridInterface->cf.coarse = new uint[sizeCF];
     grid->gridInterface->cf.fine   = new uint[sizeCF];
     grid->gridInterface->cf.offset = new uint[sizeCF];

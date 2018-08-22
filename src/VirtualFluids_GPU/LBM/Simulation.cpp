@@ -1232,15 +1232,13 @@ else
             //    para->getParD(0)->neighborX_SP, para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
             //    para->getParD(0)->size_Mat_SP, para->getParD(0)->evenOrOdd);
             //getLastCudaError("QVelDevComp27 execution failed");
-
-	         QVelDevComp27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
+		      QVelDevComp27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
 							para->getParD(0)->Qinflow.Vx,      para->getParD(0)->Qinflow.Vy,   para->getParD(0)->Qinflow.Vz,
 							para->getParD(0)->d0SP.f[0],       para->getParD(0)->Qinflow.k,    para->getParD(0)->Qinflow.q27[0], 
 							para->getParD(0)->kInflowQ,        para->getParD(0)->kInflowQ,     para->getParD(0)->omega,
 							para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
 							para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 		      getLastCudaError("QVelDevComp27 execution failed");
-
         }
 
 
@@ -1443,19 +1441,12 @@ else
 			//getLastCudaError("QDev27 execution failed");
 		   //if (para->getParD(0)->kQ > 0)
 		   //{
-			  // //QDevComp27(para->getParD(0)->numberofthreads,       para->getParD(0)->nx,           para->getParD(0)->ny,
-			  // //		      para->getParD(0)->d0SP.f[0],             para->getParD(0)->QWall.k,	   para->getParD(0)->QWall.q27[0], 
-			  // //		      para->getParD(0)->kQ,                    para->getParD(0)->kQ,           para->getParD(0)->omega,
-			  // //		      para->getParD(0)->neighborX_SP,          para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-			  // //		      para->getParD(0)->size_Mat_SP,           para->getParD(0)->evenOrOdd);
-			  // //getLastCudaError("QDevComp27 (Wall) execution failed");
-			  //QVelDevCompZeroPress27(	para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
-					//					para->getParD(0)->QWall.Vx,        para->getParD(0)->QWall.Vy,     para->getParD(0)->QWall.Vz,
-					//					para->getParD(0)->d0SP.f[0],       para->getParD(0)->QWall.k,      para->getParD(0)->QWall.q27[0],
-			  //							para->getParD(0)->kQ,              para->getParD(0)->kQ,           para->getParD(0)->omega,
-					//					para->getParD(0)->neighborX_SP,    para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
-					//					para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
-			  //getLastCudaError("QVelDevCompZeroPress27 execution failed");
+			  // QDevComp27(para->getParD(0)->numberofthreads,       para->getParD(0)->nx,           para->getParD(0)->ny,
+			  // 		      para->getParD(0)->d0SP.f[0],             para->getParD(0)->QWall.k,	   para->getParD(0)->QWall.q27[0], 
+			  // 		      para->getParD(0)->kQ,                    para->getParD(0)->kQ,           para->getParD(0)->omega,
+			  // 		      para->getParD(0)->neighborX_SP,          para->getParD(0)->neighborY_SP, para->getParD(0)->neighborZ_SP,
+			  // 		      para->getParD(0)->size_Mat_SP,           para->getParD(0)->evenOrOdd);
+			  // getLastCudaError("QDevComp27 (Wall) execution failed");
 		   //}
 			////////////////////////////////////////////////////////////////////////////
 			//Geom

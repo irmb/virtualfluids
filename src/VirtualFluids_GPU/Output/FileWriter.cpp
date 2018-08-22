@@ -54,7 +54,9 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para)
 
 		//std::string ffname_bin  = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit()) + ".vtk";
 
-		std::string fname_qs = para->getFName() + "_Qs_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
+		std::string fname_qs          = para->getFName() + "_Qs_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
+		std::string fname_qs_inflow   = para->getFName() + "_QsInflow_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
+		std::string fname_qs_pressure = para->getFName() + "_QsPressure_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////2nd and 3rd Moments
@@ -91,8 +93,8 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para)
 			}
 
 			//Debug
-			//InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
-			//InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
+			InterfaceDebugWriter::writeInterfaceLinesDebugCF(para.get());
+			InterfaceDebugWriter::writeInterfaceLinesDebugFC(para.get());
 			//InterfaceDebugWriter::writeInterfaceLinesDebugCFCneighbor(para.get());
 			//InterfaceDebugWriter::writeInterfaceLinesDebugCFFneighbor(para.get());
 			//InterfaceDebugWriter::writeInterfaceLinesDebugFCCneighbor(para.get());
@@ -101,10 +103,20 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para)
 			//InterfaceDebugWriter::writeNeighborYLinesDebug(para.get());
 			//InterfaceDebugWriter::writeNeighborZLinesDebug(para.get());
 
-			//if (para->getParH(lev)->QGeom.kQ > 0)
-			//{
-			//	UnstructuredGridWriter::writeQs(para, lev, fname_qs);
-			//}
+			if (para->getParH(lev)->QGeom.kQ > 0)
+			{
+				UnstructuredGridWriter::writeQs(para.get(), lev, fname_qs);
+			}
+
+            if (para->getParH(lev)->Qinflow.kQ > 0)
+            {
+                UnstructuredGridWriter::writeQsInflow(para.get(), lev, fname_qs_inflow);
+            }
+
+            if (para->getParH(lev)->QPress.kQ > 0)
+            {
+                UnstructuredGridWriter::writeQsPressure(para.get(), lev, fname_qs_pressure);
+            }
 
 			////2nd and 3rd Moments
 			//if (para->getCalc2ndOrderMoments())  UnstructuredGridWriter::writeUnstrucuredGridEff2ndMomentsLT(para, lev, fname2ndMoments);

@@ -262,6 +262,7 @@ void multipleLevel(const std::string& configPath)
     gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     //auto gridBuilderlevel = LevelGridBuilder::makeShared(Device::CPU, "D3Q27");
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
@@ -321,41 +322,57 @@ void multipleLevel(const std::string& configPath)
 
 	////////////////////////////////////////////////////////////////////////////
 	//Test Big Sphere
-	real dx = 0.2; // 1.0;
+	real dx = 0.1;
 	real vx = 0.02;
 	//////////////////////////////////////////////////////////////////////////////
 	//// test periodic bc non uniform
 	//gridBuilder->addCoarseGrid(-10, -10, -5, 10, 10, 5, dx);
 	//gridBuilder->addGrid(new VerticalCylinder(0, 0, 0, 5, 20), 2);
 	//////////////////////////////////////////////////////////////////////////////
+
+    
+	TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_NoSTLGroups.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse_200k.stl");
 	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-	TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
-	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/Concave.stl");
-	//gridBuilder->addCoarseGrid(-9.9, -9.9, -9.9, 20.1, 10.1, 10.1, dx);
-	//gridBuilder->addCoarseGrid(-20, -20, 0, 40, 20, 20, dx);
-	gridBuilder->addCoarseGrid(-4, -4, -4, 8, 4, 4, dx);
+	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+	gridBuilder->addCoarseGrid(-5, -5, -0.4, 15, 5, 5, dx);  // DrivAer
+    gridBuilder->addGrid(triangularMesh, 2);                 // DrivAer
+	gridBuilder->addGeometry(triangularMesh);
+
+
+
+	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
+	//gridBuilder->addCoarseGrid(-5, -5, -1-dx/2.0, 15, 5, 5-dx/2.0, dx);  // Wall Mounted Cube
+	//gridBuilder->addGrid(new Cuboid(-3, -2, -2, 5, 2, 2), 1);            // Wall Mounted Cube
+	//gridBuilder->addGeometry(triangularMesh);
+
+
 
     //real size = 0.02;
-	//gridBuilder->addGrid(new Cuboid(-size, -size, -size+0.5*dx, size, size, size+0.5*dx), 6);
-	//gridBuilder->addGrid(new Sphere( 0, 0, 0, 20), 2);
-    gridBuilder->addGrid(triangularMesh, 2);
+	//gridBuilder->addGrid(new Sphere( 0, 0, 0, 2.5), 1);
 	//gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 3, 60), 2);
-
-	gridBuilder->addGeometry(triangularMesh);
 	//gridBuilder->addGrid(new Sphere(0, 0, 19.5, 1), 6);//until level 7 works
+
 	////////////////////////////////////////////////////////////////////////////
 	//general call
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(LBM); // buildGrids() has to be called before setting the BCs!!!!
+
+
 	///////////////////////////////////////////////////////////////////////////
 	//BCs
+    //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
+    //gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+	gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+	gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+
     gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
- //   gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
- //   gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
-	//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
-	//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx , 0.0, 0.0);
+
 	////////////////////////////////////////////////////////////////////////////
 
 	//gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
@@ -364,7 +381,7 @@ void multipleLevel(const std::string& configPath)
  //   gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, vx, 0.0, 0.0);
+    gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
 
     //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
@@ -393,7 +410,11 @@ void multipleLevel(const std::string& configPath)
 
 
 	//gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/Sphere_");
-	gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
+
+	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
+	gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/out/Test_");
+
+	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
 	//gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/Sphere_Arrow");
 
 
@@ -512,35 +533,37 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
-   MPI_Init(&argc, &argv);
-   std::string str, str2; 
-   if ( argv != NULL )
-   {
-      str = static_cast<std::string>(argv[0]);
-      if (argc > 1)
-      {
-         str2 = static_cast<std::string>(argv[1]);
-         try
-         {
-             multipleLevel(str2);
-             //multipleLevel("");
-         }
-         catch (std::exception e)
-         {
-             std::cout << e.what() << std::flush;
-             //MPI_Abort(MPI_COMM_WORLD, -1);
-         }
-         catch (...)
-         {
+    MPI_Init(&argc, &argv);
+    std::string str, str2; 
+    if ( argv != NULL )
+    {
+        str = static_cast<std::string>(argv[0]);
+        if (argc > 1)
+        {
+            str2 = static_cast<std::string>(argv[1]);
+            try
+            {
+                multipleLevel(str2);
+            }
+            catch (std::exception e)
+            {
+                std::cout << e.what() << std::flush;
+                //MPI_Abort(MPI_COMM_WORLD, -1);
+            }
+            catch (...)
+            {
             std::cout << "unknown exeption" << std::endl;
-         }
-      }
-      else
-      {
-          std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
-         //MPI_Abort(MPI_COMM_WORLD, -1);
-      }
-   }
+            }
+        }
+        else
+        {
+            multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
+            std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+            //MPI_Abort(MPI_COMM_WORLD, -1);
+        }
+    }
+
+
    /*
    MPE_Init_log() & MPE_Finish_log() are NOT needed when
    liblmpe.a is linked with this program.  In that case,
@@ -549,8 +572,6 @@ int main( int argc, char* argv[])
 #if defined( MPI_LOGGING )
    MPE_Init_log();
 #endif
-
-   
 
 #if defined( MPI_LOGGING )
    if ( argv != NULL )
