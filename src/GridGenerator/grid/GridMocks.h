@@ -65,7 +65,7 @@ public:
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
-    virtual void inital(const SPtr<Grid> fineGrid) override {};
+    virtual void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override {};
     virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) {};
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }
     virtual void findSparseIndices(SPtr<Grid> fineGrid) override {}

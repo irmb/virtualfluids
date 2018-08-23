@@ -73,7 +73,7 @@ public:
     HOSTDEVICE virtual void transIndexToCoords(uint index, real &x, real &y, real &z) const = 0;
     HOSTDEVICE virtual uint transCoordToIndex(const real &x, const real &y, const real &z) const = 0;
 
-    HOST virtual void inital(const SPtr<Grid> fineGrid) = 0;
+    HOST virtual void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) = 0;
     
     HOST virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) = 0;
 

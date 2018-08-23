@@ -75,7 +75,7 @@ void GridImp::initalNumberOfNodesAndSize()
 	this->numberOfSolidBoundaryNodes = 0;
 }
 
-HOST void GridImp::inital(const SPtr<Grid> fineGrid)
+HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
 {
     field = Field(gridStrategy, size);
     field.allocateMemory();
@@ -94,7 +94,7 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid)
     }
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
-    this->addOverlap();
+    this->addOverlap(numberOfLayers);
     
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
     gridStrategy->fixOddCells( shared_from_this() );
@@ -230,9 +230,9 @@ HOSTDEVICE void GridImp::setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid)
     }
 }
 
-HOSTDEVICE void GridImp::addOverlap()
+HOSTDEVICE void GridImp::addOverlap( uint numberOfLayers )
 {
-    for( uint layer = 0; layer < 8; layer++ ){
+    for( uint layer = 0; layer < numberOfLayers; layer++ ){
         for( uint index = 0; index < this->size; index++ ){
     
             if( this->field.is( index, INVALID_OUT_OF_GRID ) ){

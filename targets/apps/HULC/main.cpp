@@ -274,30 +274,34 @@ void multipleLevel(const std::string& configPath)
     // DrivAer
     //////////////////////////////////////////////////////////////////////////
 
-	//real dx = 0.2;
-	//real vx = 0.02;
+	real dx = 0.2;
+	real vx = 0.02;
 
-	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
+	TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
 	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_NoSTLGroups.stl");
 	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse_200k.stl");
 	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
 	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
-	//gridBuilder->addCoarseGrid(-5, -5, -0.4, 15, 5, 5, dx);  // DrivAer
+	gridBuilder->addCoarseGrid(-5, -5, -0.4, 15, 5, 5, dx);  // DrivAer
     //gridBuilder->addGrid(new Cuboid(-1.5, -1.2, -1.5, 6.5, 1.5, 1.5), 2);
     //gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
 
-    //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-    //Object* wakeBox = new Cuboid( 3.5, -1, -1, 4.5, 1, 0.8 );
+    Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
+    Object* wakeBox = new Cuboid( 3.5, -1, -1, 4.5, 1, 0.8 );
 
-    //Conglomerate* refRegion = new Conglomerate();
+    Conglomerate* refRegion = new Conglomerate();
 
-    //refRegion->add(floorBox);
-    //refRegion->add(wakeBox);
-    //refRegion->add(triangularMesh);
+    refRegion->add(floorBox);
+    refRegion->add(wakeBox);
+    refRegion->add(triangularMesh);
 
-    //gridBuilder->addGrid(refRegion, 3);
+    gridBuilder->setNumberOfLayers(15,8);
 
-	//gridBuilder->addGeometry(triangularMesh);
+    gridBuilder->addGrid(refRegion, 3);
+
+    //gridBuilder->addGrid(triangularMesh, 5);
+
+	gridBuilder->addGeometry(triangularMesh);
 
     //////////////////////////////////////////////////////////////////////////
     // Wall Mounted Cube
@@ -315,14 +319,20 @@ void multipleLevel(const std::string& configPath)
     // Testing layer refinement
     //////////////////////////////////////////////////////////////////////////
 
-    real dx = 0.25;
-    real vx = 0.002;
+    //real dx = 0.2;
+    //real vx = 0.002;
 
-    TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
+    //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
 
-    gridBuilder->addCoarseGrid(-4, -4, -4, 4, 4, 4, dx);
+    //gridBuilder->setNumberOfLayers(1, 8);   // this must come before the grids are added!!!
+
+    //gridBuilder->addCoarseGrid(-4, -4, -4, 4, 4, 4, dx);
     
-    gridBuilder->addGrid(triangularMesh, 3);
+    //gridBuilder->addGrid(triangularMesh, 3);
+
+
+    //gridBuilder->addGrid( new Sphere( 0, 0, 0, 0.0005 ), 12 );
+    //gridBuilder->addGrid( new Cuboid( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 ), 3 );
 
     //////////////////////////////////////////////////////////////////////////
     // other tests

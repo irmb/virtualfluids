@@ -44,6 +44,8 @@ public:
     VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
     VF_PUBLIC void buildGrids(LbmOrGks lbmOrGks);
 
+    VF_PUBLIC void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
+
     VF_PUBLIC void writeGridsToVtk(const std::string& path) const;
 
 private:
@@ -72,6 +74,9 @@ private:
 
     SPtr<GridFactory> gridFactory;
     Object* solidObject;
+
+    uint numberOfLayersFine;
+    uint numberOfLayersBetweenLevels;
 };
 
 #endif

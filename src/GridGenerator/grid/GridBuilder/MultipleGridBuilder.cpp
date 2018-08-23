@@ -15,7 +15,7 @@
 #include <grid/BoundaryConditions/Side.h>
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
-    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr)
+    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr), numberOfLayersFine(12), numberOfLayersBetweenLevels(8)
 {
 
 }
@@ -228,11 +228,19 @@ std::array<real, 6> MultipleGridBuilder::getStaggeredCoordinates(Object* gridSha
     real X3Maximum = gridShape->getX3Maximum();
 
     if( levelFine >= level ){
-        real overlap = 9 * delta;
+        real overlap = 0.0;
+        
+        if(level != levelFine)
+        {
+            overlap += ( this->numberOfLayersBetweenLevels + 1 ) * delta;
 
-        // use geometric series to account for overlapp of higher levels:
-        // overlap + overlap/2 + overlap/4 + ...
-        overlap *= 2.0 * ( 1.0 - pow(0.5, levelFine - level + 1 ) );
+            // use geometric series to account for overlap of higher levels:
+            // overlap + overlap/2 + overlap/4 + ...
+            overlap *= 2.0 * ( 1.0 - pow(0.5, levelFine - level ) );
+        }
+
+        // add overlap for finest level
+        overlap += this->numberOfLayersFine * delta * pow(0.5, levelFine - level);
 
         X1Minimum -= overlap;
         X2Minimum -= overlap;
@@ -392,7 +400,7 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
     return this->grids;
 }
 
-void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
+void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks )
 {
     //////////////////////////////////////////////////////////////////////////
 
@@ -413,10 +421,12 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
         //else
         //    grids[level]->inital( grids[level+1] );
         
-        if( level == 0 || level == grids.size()-1 )
-            grids[level]->inital( nullptr );
+        if     ( level == 0 )
+            grids[level]->inital( nullptr, 0 );
+        else if( level == 0 || level == grids.size()-1 )
+            grids[level]->inital( nullptr, this->numberOfLayersFine );
         else
-            grids[level]->inital( grids[level+1] );
+            grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done initializing level " << level << "\n";
     }
@@ -449,6 +459,12 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
 
 		grids[grids.size() - 1]->findSparseIndices(nullptr);
 	}
+}
+
+VF_PUBLIC void MultipleGridBuilder::setNumberOfLayers(uint numberOfLayersFine, uint numberOfLayersBetweenLevels)
+{
+    this->numberOfLayersFine = numberOfLayersFine;
+    this->numberOfLayersBetweenLevels = numberOfLayersBetweenLevels;
 }
 
 

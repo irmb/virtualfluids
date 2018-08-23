@@ -82,7 +82,7 @@ private:
 	uint numberOfSolidBoundaryNodes;
 
 public:
-    HOST void inital(const SPtr<Grid> fineGrid) override;
+    HOST void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
     HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
     HOSTDEVICE void fixOddCell(uint index);
 
@@ -122,7 +122,7 @@ public:
     bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
-    HOSTDEVICE void addOverlap();
+    HOSTDEVICE void addOverlap(uint numberOfLayers);
     HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
