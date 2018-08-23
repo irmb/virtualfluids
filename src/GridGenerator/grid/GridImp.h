@@ -74,6 +74,8 @@ private:
 	uint *qIndices;
 	real *qValues;
 
+    bool innerRegionFromFinerGrid;
+
 	SPtr<GridStrategy> gridStrategy;
     TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
 
@@ -108,6 +110,8 @@ public:
 	HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
 
 	HOST real getQValue(const uint index, const uint dir) const override;
+
+    HOST void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override;
 
 public:
     Distribution distribution;

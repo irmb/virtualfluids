@@ -103,6 +103,8 @@ public:
 	HOST virtual void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) = 0;
 
 	HOST virtual real getQValue(const uint index, const uint dir) const = 0;
+
+    HOST virtual void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) = 0;
 };
 
 #endif

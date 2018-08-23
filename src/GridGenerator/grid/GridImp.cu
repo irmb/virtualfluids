@@ -34,7 +34,19 @@ CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
 
 HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, real endX, real endY, real endZ, real delta, SPtr<GridStrategy> gridStrategy, Distribution distribution, uint level) 
-: object(object), startX(startX), startY(startY), startZ(startZ), endX(endX), endY(endY), endZ(endZ), delta(delta), gridStrategy(gridStrategy), distribution(distribution), level(level), gridInterface(nullptr)
+            : object(object), 
+    startX(startX),
+    startY(startY),
+    startZ(startZ),
+    endX(endX),
+    endY(endY),
+    endZ(endZ),
+    delta(delta),
+    gridStrategy(gridStrategy),
+    distribution(distribution),
+    level(level),
+    gridInterface(nullptr),
+    innerRegionFromFinerGrid(false)
 {
     initalNumberOfNodesAndSize();
 }
@@ -63,36 +75,6 @@ void GridImp::initalNumberOfNodesAndSize()
 	this->numberOfSolidBoundaryNodes = 0;
 }
 
-
-HOST void GridImp::inital()
-{
-    field = Field(gridStrategy, size);
-    field.allocateMemory();
-    gridStrategy->allocateGridMemory(shared_from_this());
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initalNodesToOutOfGrid()\n";
-    gridStrategy->initalNodesToOutOfGrid(shared_from_this());
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findInnerNodes()\n";
-    this->object->findInnerNodes( shared_from_this() );
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
-    gridStrategy->fixOddCells( shared_from_this() );
-    
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
-    this->addOverlap();
-    
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
-    gridStrategy->fixRefinementIntoWall(shared_from_this());
-    
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findEndOfGridStopperNodes()\n";
-	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
-
-    *logging::out << logging::Logger::INFO_INTERMEDIATE
-        << "Grid created: " << "from (" << this->startX << ", " << this->startY << ", " << this->startZ << ") to (" << this->endX << ", " << this->endY << ", " << this->endZ << ")\n"
-        << "nodes: " << this->nx << " x " << this->ny << " x " << this->nz << " = " << this->size << "\n";
-}
-
 HOST void GridImp::inital(const SPtr<Grid> fineGrid)
 {
     field = Field(gridStrategy, size);
@@ -102,9 +84,15 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid)
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initalNodesToOutOfGrid()\n";
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
     
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start setInnerBasedOnFinerGrid()\n";
-    this->setInnerBasedOnFinerGrid(fineGrid);
-    
+    if( this->innerRegionFromFinerGrid ){
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start setInnerBasedOnFinerGrid()\n";
+        this->setInnerBasedOnFinerGrid(fineGrid);
+    }
+    else{
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findInnerNodes()\n";
+        this->object->findInnerNodes( shared_from_this() );
+    }
+
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
     this->addOverlap();
     
@@ -762,6 +750,11 @@ HOST real GridImp::getQValue(const uint index, const uint dir) const
 	const int qIndex = dir * this->numberOfSolidBoundaryNodes + this->qIndices[index];
 
 	return this->qValues[qIndex];
+}
+
+HOST void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
+{
+   this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
 }
 
 // --------------------------------------------------------- //

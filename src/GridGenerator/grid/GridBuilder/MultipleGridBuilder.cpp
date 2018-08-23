@@ -73,7 +73,12 @@ void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
 
     for( uint level = this->getNumberOfLevels(); level <= levelFine; level++ ){
         const auto grid = makeGrid(gridShape, level, levelFine);
+
+        if(level != levelFine)
+            grid->setInnerRegionFromFinerGrid(true);
+
         grids.push_back(grid);
+
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -403,8 +408,13 @@ void MultipleGridBuilder::buildGrids(LbmOrGks lbmOrGks)
         // On the coarse grid every thing is Fluid (w.r.t. the refinement)
         // On the finest grid the Fluid region is defined by the Object
         // On the intermediate levels the Fluid region is defined by the fluid region of the finer level
+        //if( level == 0 || level == grids.size()-1 )
+        //    grids[level]->inital();
+        //else
+        //    grids[level]->inital( grids[level+1] );
+        
         if( level == 0 || level == grids.size()-1 )
-            grids[level]->inital();
+            grids[level]->inital( nullptr );
         else
             grids[level]->inital( grids[level+1] );
 

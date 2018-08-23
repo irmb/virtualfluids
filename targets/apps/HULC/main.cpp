@@ -337,19 +337,19 @@ void multipleLevel(const std::string& configPath)
 	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
 	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
 	gridBuilder->addCoarseGrid(-5, -5, -0.4, 15, 5, 5, dx);  // DrivAer
-    //gridBuilder->addGrid(new Cuboid(-1.5, -1.2, -1.5, 6.5, 1.5, 1.5), 2);
-    //gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
+    gridBuilder->addGrid(new Cuboid(-1.5, -1.2, -1.5, 6.5, 1.5, 1.5), 2);
+    gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
 
-    Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-    Object* wakeBox = new Cuboid( 3.5, -1, -1, 4.5, 1, 0.8 );
+    //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
+    //Object* wakeBox = new Cuboid( 3.5, -1, -1, 4.5, 1, 0.8 );
 
-    Conglomerate* refRegion = new Conglomerate();
+    //Conglomerate* refRegion = new Conglomerate();
 
-    refRegion->add(floorBox);
-    refRegion->add(wakeBox);
-    refRegion->add(triangularMesh);
+    //refRegion->add(floorBox);
+    //refRegion->add(wakeBox);
+    //refRegion->add(triangularMesh);
 
-    gridBuilder->addGrid(refRegion, 3);
+    //gridBuilder->addGrid(refRegion, 3);
 
 	gridBuilder->addGeometry(triangularMesh);
 
