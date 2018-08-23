@@ -82,7 +82,6 @@ private:
 	uint numberOfSolidBoundaryNodes;
 
 public:
-    HOST void inital() override;
     HOST void inital(const SPtr<Grid> fineGrid) override;
     HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
     HOSTDEVICE void fixOddCell(uint index);
