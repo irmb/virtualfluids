@@ -71,6 +71,8 @@ public:
         const double& maxOffset) override {
         return false;
     }
+    
+    void findInnerNodes(SPtr<GridImp> grid) override;
 };
 
 

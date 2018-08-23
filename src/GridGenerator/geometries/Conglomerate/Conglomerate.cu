@@ -1,5 +1,6 @@
 #include "Conglomerate.h"
 
+#include <utilities/logger/Logger.h>
 
 Conglomerate::Conglomerate()
 {
@@ -154,4 +155,13 @@ void Conglomerate::scale(double delta)
 
     for (uint i = 0; i < numberOfSubtractObjects; i++)
         subtractObjects[i]->scale(delta);
+}
+
+void Conglomerate::findInnerNodes(SPtr<GridImp> grid)
+{
+    for (uint i = 0; i < numberOfAddObjects; i++)
+        addObjects[i]->findInnerNodes(grid);
+
+    if( numberOfSubtractObjects > 0 )
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Warning: Conglomerate::substract() is currently nut fully implemented!\n";
 }

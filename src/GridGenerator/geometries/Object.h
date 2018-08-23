@@ -11,6 +11,7 @@
 #include "grid/Cell.h"
 #include "global.h"
 
+class GridImp;
 
 class VF_PUBLIC Object
 {
@@ -46,6 +47,7 @@ public:
         return true;
     }
 
+    HOST virtual void findInnerNodes(SPtr<GridImp> grid);
 };
 
 

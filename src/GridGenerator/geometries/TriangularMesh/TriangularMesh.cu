@@ -4,12 +4,17 @@
 #include <GridGenerator/utilities/Transformator/TransformatorImp.h>
 #include "triangleNeighborFinder/TriangleNeighborFinder.h"
 
+
 #include <utilities/logger/Logger.h>
 
 #include "Timer/Timer.h"
 
 #include "numerics/geometry3d/GbTriFaceMesh3D.h"
 #include "io/STLReaderWriter/STLWriter.h"
+
+#include "grid/GridImp.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
+#include "grid/NodeValues.h"
 
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName)
@@ -232,4 +237,9 @@ void TriangularMesh::eliminateTriangleswithIdenticialNormal(std::vector<Triangle
                 triangles.erase(triangles.begin() + i);
         }
     }
+}
+
+void TriangularMesh::findInnerNodes(SPtr<GridImp> grid)
+{
+    grid->getTriangularMeshDiscretizationStrategy()->discretize(this, grid.get(), FLUID, INVALID_OUT_OF_GRID);
 }

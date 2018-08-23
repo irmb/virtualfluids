@@ -71,22 +71,13 @@ HOST void GridImp::inital()
     gridStrategy->allocateGridMemory(shared_from_this());
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start initalNodesToOutOfGrid()\n";
-
     gridStrategy->initalNodesToOutOfGrid(shared_from_this());
 
-    TriangularMesh* triangularMesh = dynamic_cast<TriangularMesh*>(object);
-    if (triangularMesh){
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start discretize()\n";
-        triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, FLUID, INVALID_OUT_OF_GRID);
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findInnerNodes()\n";
+    this->object->findInnerNodes( shared_from_this() );
 
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
-        gridStrategy->fixOddCells( shared_from_this() );
-    }
-    else
-    {
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findInnerNodes()\n";
-        gridStrategy->findInnerNodes(shared_from_this());
-    }
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
+    gridStrategy->fixOddCells( shared_from_this() );
     
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
     this->addOverlap();
@@ -748,6 +739,11 @@ HOST uint GridImp::getLevel() const
 HOST void GridImp::setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy)
 {
     this->triangularMeshDiscretizationStrategy = triangularMeshDiscretizationStrategy;
+}
+
+HOST TriangularMeshDiscretizationStrategy * GridImp::getTriangularMeshDiscretizationStrategy()
+{
+    return this->triangularMeshDiscretizationStrategy;
 }
 
 HOST uint GridImp::getNumberOfSolidBoundaryNodes() const

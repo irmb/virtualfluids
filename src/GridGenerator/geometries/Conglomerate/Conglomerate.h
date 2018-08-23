@@ -44,6 +44,8 @@ public:
 
     HOSTDEVICE    bool isPointInObject(const double& x1, const double& x2, const double& x3, const double& minOffset, const double& maxOffset) override;
 
+    HOST void findInnerNodes(SPtr<GridImp> grid) override;
+
 protected:
     static double getMinimum(double val1, double val2);
     static double getMaximum(double val1, double val2);

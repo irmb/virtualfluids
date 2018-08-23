@@ -102,6 +102,7 @@ public:
     HOST uint getLevel(real levelNull) const;
     HOST uint getLevel() const;
     HOST void setTriangularMeshDiscretizationStrategy(TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy);
+    HOST TriangularMeshDiscretizationStrategy* getTriangularMeshDiscretizationStrategy();
 
 	HOST uint getNumberOfSolidBoundaryNodes() const override;
 	HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
