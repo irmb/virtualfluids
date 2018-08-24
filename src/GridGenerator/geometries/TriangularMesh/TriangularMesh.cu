@@ -127,7 +127,7 @@ HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
         (*gbTriangles)[i] = GbTriFaceMesh3D::TriFace(i * 3, i * 3 + 1, i * 3 + 2);
     }
 
-    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D("stl", gbVertices, gbTriangles);
+    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D("stl", gbVertices, gbTriangles, GbTriFaceMesh3D::KDTREE_SAHPLIT, false);
     return mesh;
 }
 
