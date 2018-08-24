@@ -46,7 +46,8 @@ HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, rea
     distribution(distribution),
     level(level),
     gridInterface(nullptr),
-    innerRegionFromFinerGrid(false)
+    innerRegionFromFinerGrid(false),
+    numberOfLayers(0)
 {
     initalNumberOfNodesAndSize();
 }
@@ -94,7 +95,7 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
     }
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start addOverlap()\n";
-    this->addOverlap(numberOfLayers);
+    this->addOverlap();
     
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
     gridStrategy->fixOddCells( shared_from_this() );
@@ -230,9 +231,9 @@ HOSTDEVICE void GridImp::setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid)
     }
 }
 
-HOSTDEVICE void GridImp::addOverlap( uint numberOfLayers )
+HOSTDEVICE void GridImp::addOverlap(  )
 {
-    for( uint layer = 0; layer < numberOfLayers; layer++ ){
+    for( uint layer = 0; layer < this->numberOfLayers; layer++ ){
         for( uint index = 0; index < this->size; index++ ){
     
             if( this->field.is( index, INVALID_OUT_OF_GRID ) ){
@@ -755,6 +756,11 @@ HOST real GridImp::getQValue(const uint index, const uint dir) const
 HOST void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
 {
    this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
+}
+
+HOST void GridImp::setNumberOfLayers(uint numberOfLayers)
+{
+    this->numberOfLayers = numberOfLayers;
 }
 
 // --------------------------------------------------------- //

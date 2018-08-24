@@ -104,6 +104,8 @@ public:
 	HOST virtual real getQValue(const uint index, const uint dir) const = 0;
 
     HOST virtual void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) = 0;
+
+    HOST virtual void setNumberOfLayers( uint numberOfLayers ) = 0;
 };
 
 #endif

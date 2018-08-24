@@ -74,11 +74,16 @@ void MultipleGridBuilder::addGrid(Object* gridShape, uint levelFine)
     for( uint level = this->getNumberOfLevels(); level <= levelFine; level++ ){
         const auto grid = makeGrid(gridShape, level, levelFine);
 
-        if(level != levelFine)
+
+        if(level != levelFine){
             grid->setInnerRegionFromFinerGrid(true);
+            grid->setNumberOfLayers( this->numberOfLayersBetweenLevels );
+        }
+        else{
+            grid->setNumberOfLayers( this->numberOfLayersFine );
+        }
 
         grids.push_back(grid);
-
     }
 
     //////////////////////////////////////////////////////////////////////////

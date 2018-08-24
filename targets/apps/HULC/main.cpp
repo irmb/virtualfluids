@@ -287,7 +287,7 @@ void multipleLevel(const std::string& configPath)
     //gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
 
     Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-    Object* wakeBox = new Cuboid( 3.5, -1, -1, 4.5, 1, 0.8 );
+    Object* wakeBox = new Cuboid( 3.5, -1, -1, 5.5, 1, 0.8 );
 
     Conglomerate* refRegion = new Conglomerate();
 
@@ -296,10 +296,10 @@ void multipleLevel(const std::string& configPath)
     refRegion->add(triangularMesh);
 
     gridBuilder->setNumberOfLayers(15,8);
-
-    gridBuilder->addGrid(refRegion, 3);
-
-    //gridBuilder->addGrid(triangularMesh, 5);
+    gridBuilder->addGrid(refRegion, 2);
+    
+    gridBuilder->setNumberOfLayers(10,8);
+    gridBuilder->addGrid(triangularMesh, 4);
 
 	gridBuilder->addGeometry(triangularMesh);
 
@@ -495,7 +495,7 @@ void multipleLevel(const std::string& configPath)
 
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
 
-    return;
+    //return;
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);

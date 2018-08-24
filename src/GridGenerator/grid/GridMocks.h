@@ -86,6 +86,8 @@ public:
 	real getQValue(const uint index, const uint dir) const override { return 0.0; }
 
     void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override {};
+
+    void setNumberOfLayers( uint numberOfLayers ) override {};
 };
 
 class GridStub : public GridDummy

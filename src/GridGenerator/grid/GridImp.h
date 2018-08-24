@@ -76,6 +76,8 @@ private:
 
     bool innerRegionFromFinerGrid;
 
+    uint numberOfLayers;
+
 	SPtr<GridStrategy> gridStrategy;
     TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
 
@@ -112,6 +114,8 @@ public:
 
     HOST void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override;
 
+    HOST void setNumberOfLayers( uint numberOfLayers ) override;
+
 public:
     Distribution distribution;
 
@@ -122,7 +126,7 @@ public:
     bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
-    HOSTDEVICE void addOverlap(uint numberOfLayers);
+    HOSTDEVICE void addOverlap();
     HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
