@@ -25,6 +25,9 @@ public:
     virtual void fixOddCells(SPtr<GridImp> grid) = 0;
 
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
+
+    virtual void addOverlap(SPtr<GridImp> grid) = 0;
+
     virtual void fixRefinementIntoWall(SPtr<GridImp> grid) = 0;
     virtual void findStopperNodes(SPtr<GridImp> grid) = 0;
 	virtual void findBoundarySolidNodes(SPtr<GridImp> grid) = 0; 

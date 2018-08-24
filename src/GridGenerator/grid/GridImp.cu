@@ -3,6 +3,8 @@
 #include "GridGenerator/global.h"
 #include <stdio.h>
 #include <time.h>
+#include <iostream>
+#include <omp.h>
 
 #include <sstream>
 
@@ -231,25 +233,27 @@ HOSTDEVICE void GridImp::setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid)
     }
 }
 
-HOSTDEVICE void GridImp::addOverlap(  )
+HOSTDEVICE void GridImp::addOverlap()
 {
     for( uint layer = 0; layer < this->numberOfLayers; layer++ ){
-        for( uint index = 0; index < this->size; index++ ){
-    
-            if( this->field.is( index, INVALID_OUT_OF_GRID ) ){
-        
-                if( this->hasNeighborOfType(index, FLUID) ){
-                    this->field.setFieldEntry( index, OVERLAP_TMP );
-                }
-            }
-        }
+        this->gridStrategy->addOverlap( shared_from_this() );
+    }
+}
 
-        for( uint index = 0; index < this->size; index++ ){
-    
-            if( this->field.is( index, OVERLAP_TMP ) ){
-                this->field.setFieldEntry( index, FLUID );
-            }
+HOSTDEVICE void GridImp::setOverlapTmp( uint index )
+{
+    if( this->field.is( index, INVALID_OUT_OF_GRID ) ){
+        
+        if( this->hasNeighborOfType(index, FLUID) ){
+            this->field.setFieldEntry( index, OVERLAP_TMP );
         }
+    }
+}
+
+HOSTDEVICE void GridImp::setOverlapFluid( uint index )
+{
+    if( this->field.is( index, OVERLAP_TMP ) ){
+        this->field.setFieldEntry( index, FLUID );
     }
 }
 

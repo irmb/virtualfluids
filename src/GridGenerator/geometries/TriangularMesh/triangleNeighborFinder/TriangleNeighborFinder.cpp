@@ -238,7 +238,7 @@ void TriangleNeighborFinder::fillWithNeighborIndices(IntegerPtr2D *neighborIndic
 void TriangleNeighborFinder::fillWithNeighborAngles(TriangularMesh *geom) const
 {
     int j, row, index, indexNeighbor;
-    #pragma omp parallel for private(j, row, index, indexNeighbor) shared(neighborAngles->ptr)
+    //#pragma omp parallel for private(j, row, index, indexNeighbor) shared(neighborAngles->ptr)
     for (int i = 0; i < indicesOfTriangleNeighbors.size(); i++){
         row = i * 3;
         geom->triangles[i].alphaAngles[0] = geom->triangles[i].alphaAngles[1] = geom->triangles[i].alphaAngles[2] = 90.0f;

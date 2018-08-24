@@ -10,7 +10,7 @@
 void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
 {
 #pragma omp parallel for
-    for (uint index = 0; index < grid->getSize(); index++)
+    for (int index = 0; index < grid->getSize(); index++)
         grid->fixOddCell(index);
 }
 
@@ -194,7 +194,7 @@ void PointUnderTriangleStrategy::doDiscretize(TriangularMesh* triangularMesh, Gr
     this->findInsideNodes(grid, innerType);
 
 #pragma omp parallel for
-    for (uint i = 0; i < grid->getSize(); i++)
+    for (int i = 0; i < grid->getSize(); i++)
         this->setNegativeDirBorderTo(grid, i, innerType);
 }
 

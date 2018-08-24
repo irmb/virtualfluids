@@ -50,6 +50,10 @@ void GridGpuStrategy::findInnerNodes(SPtr<GridImp> grid)
     float time = runKernelInitalUniformGrid3d(LaunchParameter::make_2D1D_launchParameter(grid->size, 256), *grid.get());
 }
 
+void GridGpuStrategy::addOverlap(SPtr<GridImp> grid)
+{
+}
+
 void GridGpuStrategy::fixRefinementIntoWall(SPtr<GridImp> grid)
 {
 }

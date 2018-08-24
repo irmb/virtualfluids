@@ -126,7 +126,11 @@ public:
     bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
+    
     HOSTDEVICE void addOverlap();
+    HOSTDEVICE void setOverlapTmp( uint index );
+    HOSTDEVICE void setOverlapFluid( uint index );
+
     HOSTDEVICE void fixRefinementIntoWall(uint xIndex, uint yIndex, uint zIndex, int dir);
     HOSTDEVICE void findStopperNode(uint index);
 	HOSTDEVICE void findEndOfGridStopperNode(uint index);
