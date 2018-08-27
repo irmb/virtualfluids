@@ -297,8 +297,8 @@ void thermoplast(string configname)
       SPtr<Interactor3D> p2Int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(p2Geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
       //////////////////////////////////////////////////////////////////////////
-      //SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
-      SPtr<Grid3DVisitor> peVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+      SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
+      //SPtr<Grid3DVisitor> peVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
       InteractorsHelper intHelper(grid, peVisitor);
       intHelper.addInteractor(boxInt);
       intHelper.addInteractor(michelInt);
@@ -438,6 +438,7 @@ void thermoplast(string configname)
 
    SPtr<WriteBoundaryConditionsCoProcessor> writeBCCoProcessor(new WriteBoundaryConditionsCoProcessor(grid, visSch, pathOut,
       WbWriterVtkXmlBinary::getInstance(), comm));
+   writeBCCoProcessor->process(0);
 
    SPtr<WriteDemObjectsCoProcessor> writeDemObjectsCoProcessor(new WriteDemObjectsCoProcessor(grid, visSch, pathOut, WbWriterVtkXmlBinary::getInstance(), demCoProcessor, comm));
    writeDemObjectsCoProcessor->process(0);
@@ -454,7 +455,7 @@ void thermoplast(string configname)
 
    calculator->addCoProcessor(createSphereCoProcessor);
    calculator->addCoProcessor(demCoProcessor);
-   //calculator->addCoProcessor(writeBCCoProcessor);
+   calculator->addCoProcessor(writeBCCoProcessor);
    calculator->addCoProcessor(writeDemObjectsCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
    //calculator->addCoProcessor(restartDemObjectsCoProcessor);

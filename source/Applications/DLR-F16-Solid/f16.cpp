@@ -169,9 +169,12 @@ void run(string configname)
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(nuLB*2.0e3);
 
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+
       kernel->setBCProcessor(bcProc);
 
       SPtr<LBMKernel> spKernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+      //SPtr<LBMKernel> spKernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
       spKernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -745,15 +748,15 @@ void run(string configname)
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(restartCoProcessor);
-      calculator->addCoProcessor(writeMQSelectCoProcessor);
+      //calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->addCoProcessor(tsp1);
-      calculator->addCoProcessor(tsp2);
-      calculator->addCoProcessor(tsp3);
-      calculator->addCoProcessor(tsp4);
-      calculator->addCoProcessor(tsp5);
+      //calculator->addCoProcessor(tsp1);
+      //calculator->addCoProcessor(tsp2);
+      //calculator->addCoProcessor(tsp3);
+      //calculator->addCoProcessor(tsp4);
+      //calculator->addCoProcessor(tsp5);
       //calculator->addCoProcessor(tsp6);
-      calculator->addCoProcessor(tav);
+      //calculator->addCoProcessor(tav);
 
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");

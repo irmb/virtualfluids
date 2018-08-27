@@ -43,9 +43,10 @@ void CreateDemObjectsCoProcessor::process(double step)
    if (scheduler->isDue(step))
    {
       int istep = static_cast<int>(step);
-      if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process start step: " << istep);
+      
 
 #ifdef TIMING
+      if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process start step: " << istep);
       timer.resetAndStart();
 #endif
 
@@ -54,16 +55,16 @@ void CreateDemObjectsCoProcessor::process(double step)
 #ifdef TIMING
       if (comm->isRoot()) UBLOG(logINFO, "createGeoObjects() time = "<<timer.stop()<<" s");
       if (comm->isRoot()) UBLOG(logINFO, "number of objects = "<<(int)(geoObjectPrototypeVector.size()));
+      if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
 #endif
       
-//      demCoProcessor->distributeIDs();
+      //demCoProcessor->distributeIDs();
 //
 //#ifdef TIMING
 //      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
 //#endif
 
-      if (comm->isRoot())
-         UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
+      
    }
 }
 //////////////////////////////////////////////////////////////////////////
@@ -107,14 +108,15 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
       //grid->accept(setBcVisitor);
 
       //std::vector< std::shared_ptr<Block3D> > blockVector;
-      blockVector.clear();
-      grid->getBlocksByCuboid(AABB[0], AABB[1], AABB[2], AABB[3], AABB[4], AABB[5], blockVector);
-      for (std::shared_ptr<Block3D> block : blockVector)
-         geoObjectInt->setBCBlock(block);
+      //blockVector.clear();
+      //UbTupleInt3 blockNX=grid->getBlockNX();
+      //grid->getAllBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*2.0, AABB[1]-(double)val<2>(blockNX)*2.0, AABB[2]-(double)val<3>(blockNX)*2.0, AABB[3]+(double)val<1>(blockNX)*2.0, AABB[4]+(double)val<2>(blockNX)*2.0, AABB[5]+(double)val<3>(blockNX)*2.0, blockVector);
+      //for (std::shared_ptr<Block3D> block : blockVector)
+      //   geoObjectInt->setBCBlock(block);
 
 
-      //UBLOG(logINFO, "grid->accept(setBcVisitor) time = "<<timer.stop());
-      geoObjectInt->initInteractor();
+      ////UBLOG(logINFO, "grid->accept(setBcVisitor) time = "<<timer.stop());
+      //geoObjectInt->initInteractor();
       //UBLOG(logINFO, "geoObjectInt->initInteractor() time = "<<timer.stop());
       demCoProcessor->addInteractor(geoObjectInt, demObjectMaterial, initalVelocity[i]);
       //UBLOG(logINFO, "demCoProcessor->addInteractor() time = "<<timer.stop());

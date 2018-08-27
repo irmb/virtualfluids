@@ -172,10 +172,17 @@ void MovableObjectInteractor::setBcBlocks()
    SPtr<GbObject3D> geoObject = this->getGbObject3D();
    std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
    blockVector.clear();
-   grid.lock()->getBlocksByCuboid(AABB[0], AABB[1], AABB[2], AABB[3], AABB[4], AABB[5], blockVector);
+   UbTupleInt3 blockNX=grid.lock()->getBlockNX();
+   double ext = 0.0;
+   grid.lock()->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
 
    for(std::shared_ptr<Block3D> block : this->blockVector)
-      setBCBlock(block);
+   {
+      if (block->getKernel())
+      {
+         setBCBlock(block);
+      }
+   }
 }
 
 void MovableObjectInteractor::updateVelocityBc()

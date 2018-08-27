@@ -45,7 +45,7 @@ public:
     void addInteractor(std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineMaterialAdapter> physicsEngineMaterial, Vector3D initalVelocity = Vector3D(0.0, 0.0, 0.0));
     void process(double step) override;
     std::shared_ptr<PhysicsEngineSolverAdapter> getPhysicsEngineSolver();
-    //void distributeIDs();
+    void distributeIDs();
     void setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> blockVisitor);
     bool isDemObjectInAABB(std::array<double,6> AABB);
     void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
@@ -66,7 +66,7 @@ private:
     std::vector<std::shared_ptr<MovableObjectInteractor> > interactors;
     std::shared_ptr<ForceCalculator> forceCalculator;
     std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver;
-    std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometries;
+    std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometrieAdapters;
     double intermediateDemSteps;
     SPtr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
 
