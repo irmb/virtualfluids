@@ -1,0 +1,32 @@
+#simulation parameters
+#boundingBox = 0 0 0 300 1520 2320
+
+boundingBox = 60 1370 10 190 1530 320 #test bb
+
+#boundingBox = 60 0 10 190 1530 2320  #production bb
+ 
+blocknx = 10 10 10 
+#blocknx = 300 420 320
+endTime = 100000
+outTime = 500
+availMem = 25e9
+uLB = 0.1
+
+#PE parameters
+peMinOffset = 46 2 2
+peMaxOffset = -8 -25 -2
+sphereTime = 10
+
+#geometry files
+pathGeo = d:/Projects/ThermoPlast/SimGeo
+michel = /michel.stl
+plexiglas = /plexiglas.stl
+
+pathOut = g:/temp/thermoplastCluster5
+
+#restart
+cpStart = 20000000
+cpStep =  20000000
+restart = false
+
+nupsStep = 1000 1000 10000000

@@ -145,6 +145,8 @@ void MPIIOMigrationCoProcessor::process(double step)
       writeDataSet((int)step);
       writeBoundaryConds((int)step);
 
+      writeCpTimeStep(step);
+
       if (comm->isRoot()) UBLOG(logINFO, "Save check point - end");
    }
 }

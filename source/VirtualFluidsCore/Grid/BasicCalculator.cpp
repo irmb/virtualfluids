@@ -46,8 +46,6 @@ void BasicCalculator::calculate()
 
       for (calcStep = startTimeStep; calcStep<=numberOfTimeSteps; calcStep++)
       {
-         //coProcess((double)(calcStep-1));
-
          //////////////////////////////////////////////////////////////////////////
 #ifdef TIMING
          UBLOG(logINFO, "calcStep = "<<calcStep);
@@ -124,7 +122,6 @@ void BasicCalculator::calculate()
             }
          }
          //exchange data between blocks for visualization
-         //if ((int)additionalGhostLayerUpdateScheduler->getNextDueTime()==calcStep)
          if (additionalGhostLayerUpdateScheduler->isDue(calcStep))
          {
             exchangeBlockData(straightStartLevel, maxInitLevel);
@@ -139,6 +136,16 @@ void BasicCalculator::calculate()
       UBLOG(logERROR, e.what());
       UBLOG(logERROR, " step = "<<calcStep);
       //throw;
+      exit(EXIT_FAILURE);
+   }
+   catch (std::string& s)
+   {
+      UBLOG(logERROR, s);
+      exit(EXIT_FAILURE);
+   }
+   catch (...)
+   {
+      UBLOG(logERROR, "unknown exception");
       exit(EXIT_FAILURE);
    }
 }
@@ -323,6 +330,7 @@ void BasicCalculator::applyPreCollisionBC(int startLevel, int maxInitLevel)
 //////////////////////////////////////////////////////////////////////////
 void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
 {
+   try{
    //startLevel bis maxInitLevel
    for (int level = startLevel; level<=maxInitLevel; level++)
    {
@@ -334,6 +342,26 @@ void BasicCalculator::applyPostCollisionBC(int startLevel, int maxInitLevel)
       {
          blocks[level][i]->getKernel()->getBCProcessor()->applyPostCollisionBC();
       }
+   }
+}
+   catch (std::exception& e)
+   {
+      UBLOG(logERROR, e.what());
+      //UBLOG(logERROR, " step = "<<calcStep);
+      //throw;
+      exit(EXIT_FAILURE);
+   }
+   catch (std::string& s)
+   {
+      UBLOG(logERROR, s);
+      //throw;
+      exit(EXIT_FAILURE);
+   }
+   catch (...)
+   {
+      UBLOG(logERROR, "unknown exception");
+      //throw;
+      exit(EXIT_FAILURE);
    }
 }
 

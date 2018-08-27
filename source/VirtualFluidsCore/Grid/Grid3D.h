@@ -52,6 +52,7 @@ public:
    void getBlocksByCuboid(int level, double minX1, double minX2, double minX3, 
                           double maxX1, double maxX2, double maxX3, 
                           std::vector<SPtr<Block3D>>& blocks);
+   void getAllBlocksByCuboid(double minX1, double minX2, double minX3, double maxX1, double maxX2, double maxX3, std::vector<SPtr<Block3D>>& blocks);
    //!get blocks for level
    void getBlocks(int level, std::vector<SPtr<Block3D>>& blockVector);
    //!get blocks for level with current rank

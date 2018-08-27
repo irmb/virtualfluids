@@ -40,10 +40,14 @@ void NonEqDensityBCAlgorithm::applyBC()
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::S)) { nx2 += 1; direction = D3Q27System::S; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::T)) { nx3 -= 1; direction = D3Q27System::T; }
    else if (bcPtr->hasDensityBoundaryFlag(D3Q27System::B)) { nx3 += 1; direction = D3Q27System::B; }
-   else UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
+   else return; //UB_THROW(UbException(UB_EXARGS, "Danger...no orthogonal BC-Flag on density boundary..."));
 
    LBMReal rho, vx1, vx2, vx3;
    calcMacrosFct(f, rho, vx1, vx2, vx3);
+   //LBMReal vlimit=0.01;
+   //vx1=(fabs(vx1)>vlimit) ? vx1/fabs(vx1)*vlimit : vx1;
+   //vx2=(fabs(vx2)>vlimit) ? vx2/fabs(vx2)*vlimit : vx2;
+   //vx3=(fabs(vx3)>vlimit) ? vx3/fabs(vx3)*vlimit : vx3;
    LBMReal rhoBC = bcPtr->getBoundaryDensity();
    for (int fdir = D3Q27System::STARTF; fdir<=D3Q27System::ENDF; fdir++)
    {
@@ -52,6 +56,7 @@ void NonEqDensityBCAlgorithm::applyBC()
          // Martins NEQ ADDON
          ////original: 15.2.2013:
          LBMReal ftemp = calcFeqsForDirFct(fdir, rho, vx1, vx2, vx3);
+         //rhoBC=(rho>rhoBC)? rhoBC : rho; //Limiter 08.08.2018
          ftemp = calcFeqsForDirFct(fdir, rhoBC, vx1, vx2, vx3)+f[fdir]-ftemp;
          distributions->setDistributionForDirection(ftemp, nx1, nx2, nx3, fdir);
       }

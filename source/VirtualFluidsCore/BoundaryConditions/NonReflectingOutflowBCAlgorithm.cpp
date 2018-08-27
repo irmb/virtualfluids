@@ -9,7 +9,6 @@ NonReflectingOutflowBCAlgorithm::NonReflectingOutflowBCAlgorithm()
 {
    BCAlgorithm::type = BCAlgorithm::NonReflectingOutflowBCAlgorithm;
    BCAlgorithm::preCollision = true;
-   step=0;
 }
 //////////////////////////////////////////////////////////////////////////
 NonReflectingOutflowBCAlgorithm::~NonReflectingOutflowBCAlgorithm()

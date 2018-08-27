@@ -5,7 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 ########################################################
 PROJECT(pf)
 
-INCLUDE(${SOURCE_ROOT}/IncludsList.cmake) 
+INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
 
 #################################################################
 ###   LOCAL FILES                                             ###

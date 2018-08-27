@@ -22,12 +22,10 @@ WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor()
 }
 //////////////////////////////////////////////////////////////////////////
 WriteBoundaryConditionsCoProcessor::WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-   const std::string& path, WbWriter* const writer,
-   SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm)
+   const std::string& path, WbWriter* const writer, SPtr<Communicator> comm)
    : CoProcessor(grid, s),
    path(path),
    writer(writer),
-   conv(conv),
    comm(comm)
 {
    gridRank = comm->getProcessID();
@@ -183,8 +181,8 @@ void WriteBoundaryConditionsCoProcessor::addDataGeo(SPtr<Block3D> block)
                   data[0].push_back(3.0);
                else if (bcArray->getBC(ix1, ix2, ix3)->hasSlipBoundary())
                   data[0].push_back(4.0);
-               else
-                  data[0].push_back(5.0);
+               //else
+               //   data[0].push_back(5.0);
 
 
                if (bcArray->isSolid(ix1, ix2, ix3))

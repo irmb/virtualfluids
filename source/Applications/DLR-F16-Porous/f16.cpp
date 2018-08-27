@@ -174,9 +174,9 @@ void initPteBC(SPtr<Grid3D> grid, vector<SPtr<Block3D>>& vectorTE, string fngFil
 //////////////////////////////////////////////////////////////////////////
 void initPte(SPtr<Grid3D> grid, SPtr<Interactor3D> fngIntrTE, SPtr<Interactor3D> fngIntrTEmesh, string pathOut, SPtr<Communicator> comm)
 {
-   SetSolidOrBoundaryBlockVisitor v1(fngIntrTE, SetSolidOrBoundaryBlockVisitor::SOLID);
+   SetSolidBlocksBlockVisitor v1(fngIntrTE);
    grid->accept(v1);
-   SetSolidOrBoundaryBlockVisitor v2(fngIntrTE, SetSolidOrBoundaryBlockVisitor::BC);
+   SetBcBlocksBlockVisitor v2(fngIntrTE);
    grid->accept(v2);
    std::vector<SPtr<Block3D>>& sb = fngIntrTE->getSolidBlockSet();
    std::vector<SPtr<Block3D>>& bb = fngIntrTE->getBcBlocks();
@@ -649,7 +649,7 @@ void run(string configname)
 
             SPtr<Interactor3D> fngIntrNoTapeBody = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(fngMeshNoTapeBody, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy));//, Interactor3D::POINTS));
 
-            SetSolidOrBoundaryBlockVisitor v(fngIntrNoTapeBody, SetSolidOrBoundaryBlockVisitor::SOLID);
+            SetSolidBlocksBlockVisitor v(fngIntrNoTapeBody);
             grid->accept(v);
             std::vector<SPtr<Block3D>>& sb = fngIntrNoTapeBody->getSolidBlockSet();
             for (SPtr<Block3D> block : sb)
@@ -892,9 +892,9 @@ void run(string configname)
          if (myid==0) UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
 
          if (myid==0) UBLOG(logINFO, "initPteBC:start");
-         SetSolidOrBoundaryBlockVisitor v1(fngIntrTE, SetSolidOrBoundaryBlockVisitor::SOLID);
+         SetSolidBlocksBlockVisitor v1(fngIntrTE);
          grid->accept(v1);
-         SetSolidOrBoundaryBlockVisitor v2(fngIntrTE, SetSolidOrBoundaryBlockVisitor::BC);
+         SetBcBlocksBlockVisitor v2(fngIntrTE);
          grid->accept(v2);
          std::vector<SPtr<Block3D>>& vectorTE = fngIntrTE->getSolidBlockSet();
          std::vector<SPtr<Block3D>>& bb = fngIntrTE->getBcBlocks();
@@ -959,7 +959,7 @@ void run(string configname)
          //Post process
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
             ppgeo.process(0);
          }
 
@@ -1008,7 +1008,22 @@ void run(string configname)
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
-         if (reinit)         {            //InitDistributionsBlockVisitor initVisitor1;            //grid->accept(initVisitor1);            SPtr<Grid3D> oldGrid(new Grid3D(comm));            SPtr<UbScheduler> iSch(new UbScheduler());            SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(oldGrid, iSch, pathReInit, comm));            rcp->setLBMKernel(kernel);            rcp->setBCProcessor(bcProc);            rcp->restart(stepReInit);            InitDistributionsWithInterpolationGridVisitor initVisitor2(oldGrid, iProcessor, nuLB);            grid->accept(initVisitor2);            //if (myid==0) UBLOG(logINFO, "reinitGrid:start");            //reinitGrid(grid);            //if (myid==0) UBLOG(logINFO, "reinitGrid:end");         }
+         if (reinit)
+         {
+            //InitDistributionsBlockVisitor initVisitor1;
+            //grid->accept(initVisitor1);
+            SPtr<Grid3D> oldGrid(new Grid3D(comm));
+            SPtr<UbScheduler> iSch(new UbScheduler());
+            SPtr<MPIIORestartCoProcessor> rcp(new MPIIORestartCoProcessor(oldGrid, iSch, pathReInit, comm));
+            rcp->setLBMKernel(kernel);
+            rcp->setBCProcessor(bcProc);
+            rcp->restart(stepReInit);
+            InitDistributionsWithInterpolationGridVisitor initVisitor2(oldGrid, iProcessor, nuLB);
+            grid->accept(initVisitor2);
+            //if (myid==0) UBLOG(logINFO, "reinitGrid:start");
+            //reinitGrid(grid);
+            //if (myid==0) UBLOG(logINFO, "reinitGrid:end");
+         }
 
          //if (myid==0) UBLOG(logINFO, "setPointsTE:start");
          //SPtr<GbTriFaceMesh3D> fngMeshTE;
@@ -1040,7 +1055,7 @@ void run(string configname)
          fngMeshBody->translate(0.0, 0.0, -0.00011);
          if (myid==0) GbSystem3D::writeGeoObject(fngMeshBody.get(), pathOut+"/geo/fngMeshBody2", WbWriterVtkXmlBinary::getInstance());
          SPtr<Interactor3D> fngIntrBody = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(fngMeshBody, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy));
-         SetSolidOrBoundaryBlockVisitor v(fngIntrBody, SetSolidOrBoundaryBlockVisitor::BC);
+         SetBcBlocksBlockVisitor v(fngIntrBody);
          grid->accept(v);
          fngIntrBody->initInteractor();
 //////////////////////////////////////////////////////////////////////////

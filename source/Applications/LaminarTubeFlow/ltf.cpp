@@ -277,7 +277,7 @@ void run(string configname)
          //boundary conditions grid
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+            SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
             ppgeo->process(0);
             ppgeo.reset();
          }

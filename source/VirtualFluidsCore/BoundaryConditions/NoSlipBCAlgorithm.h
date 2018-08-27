@@ -15,11 +15,5 @@ public:
    void addDistributions(SPtr<DistributionArray3D> distributions);
    void applyBC() override;
 private:
-   //friend class boost::serialization::access;
-   //template<class Archive>
-   //void serialize(Archive & ar, const unsigned int version)
-   //{
-   //   ar & boost::serialization::base_object<BCAlgorithm>(*this);
-   //}
 };
 #endif // NoSlipBCAlgorithm_h__

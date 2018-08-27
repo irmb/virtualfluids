@@ -39,6 +39,7 @@ SET(USE_BOOST OFF CACHE BOOL "include Boost support")
 SET(USE_INTEL OFF CACHE BOOL "include Intel compiler support")
 SET(USE_GCC OFF CACHE BOOL "include gcc compiler support")
 SET(USE_HLRN_LUSTRE OFF CACHE BOOL "include HLRN Lustre support")
+SET(USE_DEM_COUPLING OFF CACHE BOOL "PE plugin")
 
 #CAB
 INCLUDE("CMake/CMakeCABMacros.txt")
@@ -149,7 +150,13 @@ ENDIF()
    #message("MPI_LIBRARY: " ${MPI_LIBRARY})
 #ENDIF() 
 
+
+#IF(${USE_DEM_COUPLING})
+#    add_subdirectory(Plugins/dem_coupling)
+#ENDIF()
+
 add_subdirectory(VirtualFluidsCore)
 
-INCLUDE("Applications.cmake")
+set(APPS_ROOT "${SOURCE_ROOT}/Applications")
+INCLUDE(${APPS_ROOT}/Applications.cmake)
 

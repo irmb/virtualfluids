@@ -4,7 +4,7 @@
 #include "GbCuboid3D.h"
 #include "NoSlipBCAdapter.h"
 #include "D3Q27Interactor.h"
-#include "SetSolidOrBoundaryBlockVisitor.h"
+#include "SetBcBlocksBlockVisitor.h"
 #include "Block3D.h"
 #include "Grid3D.h"
 
@@ -50,7 +50,7 @@ namespace Utilities
       //   vmInt->setDifferencesToGbObject3D(block);
       //}
 
-      SetSolidOrBoundaryBlockVisitor v(vmInt, SetSolidOrBoundaryBlockVisitor::BC);
+      SetBcBlocksBlockVisitor v(vmInt);
       grid->accept(v);
       vmInt->initInteractor();
    }

@@ -82,7 +82,6 @@ void WriteMacroscopicQuantitiesCoProcessor::collectData(double step)
    piece = subfolder + "/" + piece;
 
    std::vector<std::string> cellDataNames;
-   SPtr<Communicator> comm = Communicator::getInstance();
    std::vector<std::string> pieces = comm->gather(piece);
    if (comm->getProcessID() == comm->getRoot())
    {

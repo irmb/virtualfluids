@@ -53,9 +53,11 @@ public:
    void broadcast(int& value);
    void broadcast(float& value);
    void broadcast(double& value);
+   void broadcast(long int& value);
    void broadcast(std::vector<int>& values);
    void broadcast(std::vector<float>& values);
    void broadcast(std::vector<double>& values);
+   void broadcast(std::vector<long int>& values);
 
    template <class T>
    std::vector<T> gather(std::vector<T>& values);
@@ -145,6 +147,7 @@ void MPICommunicator::broadcast(std::vector<T>& values)
    if ((std::string)typeid(T).name()==(std::string)typeid(double).name()) mpiDataType = MPI_DOUBLE;
    else if ((std::string)typeid(T).name()==(std::string)typeid(float).name()) mpiDataType = MPI_FLOAT;
    else if ((std::string)typeid(T).name()==(std::string)typeid(int).name()) mpiDataType = MPI_INT;
+   else if ((std::string)typeid(T).name()==(std::string)typeid(long int).name()) mpiDataType = MPI_LONG_INT;
    else throw UbException(UB_EXARGS, "no MpiDataType for T"+(std::string)typeid(T).name());
 
    int rcount;
@@ -170,6 +173,7 @@ void MPICommunicator::broadcast(T& value)
    if ((std::string)typeid(T).name() == (std::string)typeid(double).name()) mpiDataType = MPI_DOUBLE;
    else if ((std::string)typeid(T).name() == (std::string)typeid(float).name()) mpiDataType = MPI_FLOAT;
    else if ((std::string)typeid(T).name() == (std::string)typeid(int).name()) mpiDataType = MPI_INT;
+   else if ((std::string)typeid(T).name()==(std::string)typeid(long int).name()) mpiDataType = MPI_LONG_INT;
    else throw UbException(UB_EXARGS, "no MpiDataType for T" + (std::string)typeid(T).name());
 
    MPI_Bcast(&value, 1, mpiDataType, this->root, comm);

@@ -20,8 +20,7 @@ class WriteBoundaryConditionsCoProcessor : public  CoProcessor
 public:
    WriteBoundaryConditionsCoProcessor();
    WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-      const std::string& path, WbWriter* const writer,
-       SPtr<LBMUnitConverter> conv, SPtr<Communicator> comm);
+      const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
    ~WriteBoundaryConditionsCoProcessor() {}
 
    void process(double step) override;
@@ -38,7 +37,6 @@ private:
    std::vector<std::vector<double> > data;
    std::string path;
    WbWriter* writer;
-   SPtr<LBMUnitConverter> conv;
    bool bcInformation;
    std::vector<std::vector<SPtr<Block3D> > > blockVector;
    int minInitLevel;

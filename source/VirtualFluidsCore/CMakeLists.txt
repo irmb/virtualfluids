@@ -6,19 +6,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(VirtualFluids)
   
 #################################################################
-###   PACKAGES						                        ###
+###   PACKAGES						                          ###
 #################################################################
 SET(WITH_SUBFOLDERS_FOR_SG TRUE)
-#old VirtualFluids
+
 INCLUDE(${SOURCE_ROOT}/ThirdParty/MuParser/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/ThirdParty/MarchingCubes/CMakePackage.txt)
-#INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/objects/CMakePackage.txt)
-# INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/utilities/CMakePackage.txt)
-# #INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/memory/CMakePackage.txt)
-# INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/container/CMakePackage.txt)
-# INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/writer/CMakePackage.txt)
-# #INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/parallel/CMakePackage.txt)
-# INCLUDE(${SOURCE_ROOT}/ThirdParty/Basics/transmitter/CMakePackage.txt)
 
 #new VirtualFluids
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/BoundaryConditions/CMakePackage.txt)
@@ -31,22 +23,16 @@ INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Grid/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Visitors/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/CoProcessors/CMakePackage.txt)
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/Utilities/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/numerics/geometry3d/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/numerics/geometry3d/creator/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/numerics/geometry3d/KdTree/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/objects/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/memory/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/utilities/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/container/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/writer/CMakePackage.txt)
-INCLUDE(${SOURCE_ROOT}/ThirdParty/Library/basics/transmitter/CMakePackage.txt)
+
+#old VirtualFluids
+INCLUDE(${SOURCE_ROOT}/VirtualFluidsBasic/VirtualFluidsBasic.cmake)
 
 #FETOL
 IF(${USE_FETOL})
 INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/FETOL/CMakePackage.txt)
 ENDIF()
 
-INCLUDE(${SOURCE_ROOT}/IncludsList.cmake)
+INCLUDE(${SOURCE_ROOT}/VirtualFluidsCore/IncludsList.cmake)
 
 #SET(CAB_ADDITIONAL_LINK_LIBRARIES muParserLib ${Boost_LIBRARIES} ${MPI_LIBRARY})
 SET(CAB_ADDITIONAL_LINK_LIBRARIES muParserLib ${MPI_LIBRARY})
@@ -102,6 +88,10 @@ IF(${USE_FETOL})
    
    SET(LINK_LIBRARY optimized ${FETOL_RELEASE_LIBRARY} debug ${FETOL_DEBUG_LIBRARY})
    SET(CAB_ADDITIONAL_LINK_LIBRARIES ${CAB_ADDITIONAL_LINK_LIBRARIES} ${LINK_LIBRARY})
+ENDIF()
+
+IF(${USE_DEM_COUPLING})
+   INCLUDE(${SOURCE_ROOT}/DemCoupling/DemCoupling.cmake)
 ENDIF()
 
 message("CAB_ADDITIONAL_LINK_LIBRARIES: " ${CAB_ADDITIONAL_LINK_LIBRARIES})

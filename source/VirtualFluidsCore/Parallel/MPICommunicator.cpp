@@ -208,6 +208,11 @@ void MPICommunicator::broadcast(std::vector<double>& values)
    broadcast<double>(values);
 }
 //////////////////////////////////////////////////////////////////////////
+void MPICommunicator::broadcast(std::vector<long int>& values)
+{
+   broadcast<long int>(values);
+}
+//////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(int& value)
 {
    broadcast<int>(value);
@@ -223,5 +228,8 @@ void MPICommunicator::broadcast(double& value)
    broadcast<double>(value);
 }
 //////////////////////////////////////////////////////////////////////////
-
+void MPICommunicator::broadcast(long int& value)
+{
+   broadcast<long int>(value);
+}
 #endif
