@@ -26,6 +26,9 @@ class Reconstructor;
 class MovableObjectInteractor : public D3Q27Interactor
 {
 public:
+   typedef std::map<SPtr<Block3D>, std::set< std::array<int,3> > > InBcNodeIndicesMap;
+   typedef std::map<SPtr<Block3D>, std::set< std::array<int,3> > > OutBcNodeIndicesMap;
+public:
     MovableObjectInteractor(std::shared_ptr<GbObject3D> geoObject3D, std::shared_ptr<Grid3D> grid, std::shared_ptr<BCAdapter> bcAdapter, int type, std::shared_ptr<Reconstructor> reconstructor, State isPinned);
     virtual ~MovableObjectInteractor();
 
@@ -35,6 +38,7 @@ public:
 
 private:
     void rearrangeGrid();
+    void updateNodeLists();
     void setSolidNodesToFluid();
     void setBcNodesToFluid();
     void reconstructDistributionOnSolidNodes();

@@ -20,6 +20,7 @@
 #include <PePhysicsEngineMaterialAdapter.h>
 #include <PePhysicsEngineGeometryAdapter.h>
 #include <PePhysicsEngineSolverAdapter.h>
+#include "PeLoadBalancerAdapter.h"
 
 #include <VelocityBcReconstructor.h>
 #include <EquilibriumReconstructor.h>
@@ -79,7 +80,8 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
 
    std::shared_ptr<PeParameter> peParamter = std::make_shared<PeParameter>(peRelaxtion, maxpeIterations, globalLinearAcc,
       planeMaterial, simulationDomain, numberOfBlocks, isPeriodic, minOffset, maxOffset);
-   std::shared_ptr<PhysicsEngineSolverAdapter> peSolver = std::make_shared<PePhysicsEngineSolverAdapter>(peParamter);
+   std::shared_ptr<PeLoadBalancerAdapter> loadBalancer(new PeLoadBalancerAdapter(grid, comm->getNumberOfProcesses(), comm->getProcessID()));
+   std::shared_ptr<PhysicsEngineSolverAdapter> peSolver = std::make_shared<PePhysicsEngineSolverAdapter>(peParamter, loadBalancer);
 
    const std::shared_ptr<ForceCalculator> forceCalculator = std::make_shared<ForceCalculator>(comm);
 
@@ -197,19 +199,6 @@ void thermoplast(string configname)
    GenBlocksGridVisitor genBlocks(gridCube);
    grid->accept(genBlocks);
 
-   //PE initialization
-   double refLengthLb = radius*2.0;
-   double refLengthWorld = refLengthLb * deltax;
-   const std::shared_ptr<LBMUnitConverter> lbmUnitConverter = std::make_shared<LBMUnitConverter>(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::AIR_20C, refLengthLb);
-   if (myid == 0) std::cout << lbmUnitConverter->toString() << std::endl;
-   double rhoSphere = 915 * lbmUnitConverter->getFactorDensityWToLb();  // kg/m^3
-   if (myid == 0) UBLOG(logINFO, "rhoSphere = "<<rhoSphere);
-   SPtr<PhysicsEngineMaterialAdapter> sphereMaterial(new PePhysicsEngineMaterialAdapter("Polypropylen", rhoSphere, 0, 0.15, 0.1, 0.45, 0.5, 1, 0, 0));
-   const int timestep = 2;
-   const SPtr<UbScheduler> peScheduler(new UbScheduler(timestep));
-   int maxpeIterations = 10;//endTime/2;
-   SPtr<DemCoProcessor> demCoProcessor = makePeCoProcessor(grid, comm, peScheduler, lbmUnitConverter, maxpeIterations);
-   demCoProcessor->setBlockVisitor(bcVisitor);
 
    if (myid == 0)
    {
@@ -297,8 +286,8 @@ void thermoplast(string configname)
       SPtr<Interactor3D> p2Int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(p2Geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
       //////////////////////////////////////////////////////////////////////////
-      SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
-      //SPtr<Grid3DVisitor> peVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+      //SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
+      SPtr<Grid3DVisitor> peVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
       InteractorsHelper intHelper(grid, peVisitor);
       intHelper.addInteractor(boxInt);
       intHelper.addInteractor(michelInt);
@@ -366,6 +355,20 @@ void thermoplast(string configname)
 
       if (myid == 0) UBLOG(logINFO, "Preprocess - end");
    }
+
+   //PE initialization
+   double refLengthLb = radius*2.0;
+   double refLengthWorld = refLengthLb * deltax;
+   const std::shared_ptr<LBMUnitConverter> lbmUnitConverter = std::make_shared<LBMUnitConverter>(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::AIR_20C, refLengthLb);
+   if (myid == 0) std::cout << lbmUnitConverter->toString() << std::endl;
+   double rhoSphere = 915 * lbmUnitConverter->getFactorDensityWToLb();  // kg/m^3
+   if (myid == 0) UBLOG(logINFO, "rhoSphere = "<<rhoSphere);
+   SPtr<PhysicsEngineMaterialAdapter> sphereMaterial(new PePhysicsEngineMaterialAdapter("Polypropylen", rhoSphere, 0, 0.15, 0.1, 0.45, 0.5, 1, 0, 0));
+   const int timestep = 2;
+   const SPtr<UbScheduler> peScheduler(new UbScheduler(timestep));
+   int maxpeIterations = 10;//endTime/2;
+   SPtr<DemCoProcessor> demCoProcessor = makePeCoProcessor(grid, comm, peScheduler, lbmUnitConverter, maxpeIterations);
+   demCoProcessor->setBlockVisitor(bcVisitor);
 
    ////////////////////////////////////////////////////////////////////////////
    ////generating spheres 

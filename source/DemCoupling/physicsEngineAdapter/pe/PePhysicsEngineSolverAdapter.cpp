@@ -6,6 +6,7 @@
 #include "PeAdapter.h"
 #include "PePhysicsEngineGeometryAdapter.h"
 #include "PePhysicsEngineMaterialAdapter.h"
+#include "PeLoadBalancerAdapter.h"
 #include "Communicator.h"
 #include "UbLogger.h"
 #include <boost/tuple/tuple.hpp>
@@ -15,7 +16,7 @@
 typedef boost::tuple<walberla::pe::Sphere, walberla::pe::Plane> BodyTypeTuple;
 
 
-PePhysicsEngineSolverAdapter::PePhysicsEngineSolverAdapter(std::shared_ptr<PeParameter> peParameter) : peParameter(peParameter)
+PePhysicsEngineSolverAdapter::PePhysicsEngineSolverAdapter(std::shared_ptr<PeParameter> peParameter, std::shared_ptr<PeLoadBalancerAdapter> loadBalancer) : peParameter(peParameter), loadBalancer(loadBalancer)
 {
     this->initalizePeEnvironment();
 }
@@ -80,17 +81,30 @@ void PePhysicsEngineSolverAdapter::initialPeBodyStorage()
 
 void PePhysicsEngineSolverAdapter::initalPeBlockForest()
 {
-    forest = walberla::pe::createBlockForest
-    (
-        //walberla::AABB(0, 0, 0, val<1>(peParameter->simulationDomain), val<2>(peParameter->simulationDomain), val<3>(peParameter->simulationDomain)), // simulationDomain
-       walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2], 
-          peParameter->simulationDomain[3], peParameter->simulationDomain[4], peParameter->simulationDomain[5]), // simulationDomain
-        walberla::Vector3<walberla::uint_t>(val<1>(peParameter->numberOfBlocks), val<2>(peParameter->numberOfBlocks), val<3>(peParameter->numberOfBlocks)), // blocks in each direction
-        walberla::Vector3<bool>(val<1>(peParameter->isPeriodic), val<2>(peParameter->isPeriodic), val<3>(peParameter->isPeriodic)) // periodicity
-    ); 
+    //forest = walberla::pe::createBlockForest
+    //(
+    //    //walberla::AABB(0, 0, 0, val<1>(peParameter->simulationDomain), val<2>(peParameter->simulationDomain), val<3>(peParameter->simulationDomain)), // simulationDomain
+    //   walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2], 
+    //      peParameter->simulationDomain[3], peParameter->simulationDomain[4], peParameter->simulationDomain[5]), // simulationDomain
+    //    walberla::Vector3<walberla::uint_t>(val<1>(peParameter->numberOfBlocks), val<2>(peParameter->numberOfBlocks), val<3>(peParameter->numberOfBlocks)), // blocks in each direction
+    //    walberla::Vector3<bool>(val<1>(peParameter->isPeriodic), val<2>(peParameter->isPeriodic), val<3>(peParameter->isPeriodic)) // periodicity
+    //); 
 
+
+
+    walberla::SetupBlockForest sforest;
+    //sforest.addWorkloadMemorySUIDAssignmentFunction( uniformWorkloadAndMemoryAssignment );
+    sforest.init(walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2],
+       peParameter->simulationDomain[3], peParameter->simulationDomain[4], peParameter->simulationDomain[5]), // simulationDomain
+       walberla::uint_t(val<1>(peParameter->numberOfBlocks)), walberla::uint_t(val<2>(peParameter->numberOfBlocks)), walberla::uint_t(val<3>(peParameter->numberOfBlocks)), // blocks in each direction
+       val<1>(peParameter->isPeriodic), val<2>(peParameter->isPeriodic), val<3>(peParameter->isPeriodic));
+    sforest.balanceLoad(*loadBalancer.get(), loadBalancer->getNumberOfProcesses());
+    forest = std::shared_ptr< walberla::blockforest::BlockForest >( new walberla::blockforest::BlockForest( walberla::uint_c( loadBalancer->getRank() ), sforest) );
+
+     auto mpiManager = walberla::MPIManager::instance();
+     mpiManager->useWorldComm();
     if (!forest)
-        throw std::runtime_error("No PE BlockForest created ... ");
+       throw std::runtime_error("No PE BlockForest created ... ");
 }
 
 void PePhysicsEngineSolverAdapter::initalBlockData()

@@ -22,7 +22,7 @@ pathGeo = d:/Projects/ThermoPlast/SimGeo
 michel = /michel.stl
 plexiglas = /plexiglas.stl
 
-pathOut = g:/temp/thermoplastCluster5
+pathOut = g:/temp/thermoplastCluster6
 
 #restart
 cpStart = 20000000
