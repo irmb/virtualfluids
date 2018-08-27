@@ -38,8 +38,8 @@ void PePartitioningGridVisitor::visit(SPtr<Grid3D> grid)
 //////////////////////////////////////////////////////////////////////////
 void PePartitioningGridVisitor::collectData(SPtr<Grid3D> grid)
 {
-   int minInitLevel = grid->getCoarsestInitializedLevel();
-   int maxInitLevel = grid->getFinestInitializedLevel();
+   //int minInitLevel = grid->getCoarsestInitializedLevel();
+   //int maxInitLevel = grid->getFinestInitializedLevel();
 
    walberla::uint_t peRank;
 

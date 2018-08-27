@@ -111,6 +111,23 @@ void MovableObjectInteractor::rearrangeGrid()
 #endif
 }
 
+void MovableObjectInteractor::updateNodeLists()
+{
+   //for (BcNodeIndicesMap::value_type t : bcNodeIndicesMap)
+   //{
+   //   SPtr<Block3D> block = t.first;
+   //   std::set< UbTupleInt3 >& bcNodeIndices = t.second;
+
+
+   //   SPtr<ILBMKernel> kernel = block->getKernel();
+
+   //   for (UbTupleInt3 node : bcNodeIndices)
+   //   {
+
+   //   }
+   //}
+}
+
 void MovableObjectInteractor::reconstructDistributionOnSolidNodes()
 {
     for(SolidNodeIndicesMap::value_type t : solidNodeIndicesMap)

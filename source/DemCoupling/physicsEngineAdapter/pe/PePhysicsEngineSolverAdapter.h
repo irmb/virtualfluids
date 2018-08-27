@@ -17,6 +17,7 @@
 
 class PePhysicsEngineMaterialAdapter;
 class PhysicsEngineGeometryAdapter;
+class PeLoadBalancerAdapter;
 
 namespace walberla
 {
@@ -64,7 +65,7 @@ struct PeParameter
 class PePhysicsEngineSolverAdapter : public PhysicsEngineSolverAdapter
 {
 public:
-    PePhysicsEngineSolverAdapter(std::shared_ptr<PeParameter> peParameter);
+    PePhysicsEngineSolverAdapter(std::shared_ptr<PeParameter> peParameter, std::shared_ptr<PeLoadBalancerAdapter> loadBalancer);
     virtual ~PePhysicsEngineSolverAdapter() {}
 
     std::shared_ptr<PhysicsEngineGeometryAdapter> createPhysicsEngineGeometryAdapter(int id, const Vector3D& position, double radius, std::shared_ptr<PhysicsEngineMaterialAdapter> material) const override;
@@ -87,6 +88,7 @@ private:
 
 private:
     std::shared_ptr<PeParameter> peParameter;
+    std::shared_ptr<PeLoadBalancerAdapter> loadBalancer;
 
     std::shared_ptr<walberla::pe::BodyStorage> globalBodyStorage;
     std::shared_ptr< walberla::blockforest::BlockForest > forest;
