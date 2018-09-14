@@ -695,7 +695,6 @@ void GbTriFaceMesh3D::addSurfaceTriangleSet(vector<UbTupleFloat3>& pts, vector<U
 bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, const double& x3, int counter)
 {
 
-
    if( !nodes->empty() )
    {
       //Baum erstellen, wen noch keiner vorhanden
@@ -806,6 +805,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
          }
          else throw UbException(UB_EXARGS, "unknown kdtree split option)" );
          UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - built kdTree in "<<timer.stop()<<"seconds");
+         cout << "GbTriFaceMesh3D::calculateValues - built kdTree in " << timer.stop() << "seconds" << std::endl;
       }
 
       //eigentlicher PIO-Test

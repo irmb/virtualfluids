@@ -39,6 +39,7 @@
 #include <grid/GridMocks.h>
 #include "grid/GridStrategy/GridStrategyMocks.h"
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
+//#include "VirtualFluidsBasics/basics/utilities/UbLogger.h"
 #include "io/STLReaderWriter/STLReader.h"
 #include "io/STLReaderWriter/STLWriter.h"
 #include "Output/FileWriter.h"
@@ -258,6 +259,8 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
+    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
+
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
@@ -274,34 +277,34 @@ void multipleLevel(const std::string& configPath)
     // DrivAer
     //////////////////////////////////////////////////////////////////////////
 
-	real dx = 0.2;
-	real vx = 0.02;
+	//real dx = 0.2;
+	//real vx = 0.02;
 
-	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
-	TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_NoSTLGroups.stl");
-	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse_200k.stl");
-	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-	//TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
-	gridBuilder->addCoarseGrid(-5, -5, -0.4, 15, 5, 5, dx);  // DrivAer
-    //gridBuilder->addGrid(new Cuboid(-1.5, -1.2, -1.5, 6.5, 1.5, 1.5), 2);
-    //gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
+	////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_NoSTLGroups.stl");
+	////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse_200k.stl");
+	////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+	////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+	//gridBuilder->addCoarseGrid(-5, -5, -0.4, 15, 5, 5, dx);  // DrivAer
+ //   //gridBuilder->addGrid(new Cuboid(-1.5, -1.2, -1.5, 6.5, 1.5, 1.5), 2);
+ //   //gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
 
-    Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-    Object* wakeBox = new Cuboid( 3.5, -1, -1, 5.5, 1, 0.8 );
+ //   Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
+ //   Object* wakeBox = new Cuboid( 3.5, -1, -1, 5.5, 1, 0.8 );
 
-    Conglomerate* refRegion = new Conglomerate();
+ //   Conglomerate* refRegion = new Conglomerate();
 
-    refRegion->add(floorBox);
-    refRegion->add(wakeBox);
-    refRegion->add(triangularMesh);
+ //   refRegion->add(floorBox);
+ //   refRegion->add(wakeBox);
+ //   refRegion->add(triangularMesh);
 
-    gridBuilder->setNumberOfLayers(15,8);
-    gridBuilder->addGrid(refRegion, 2);
-    
-    gridBuilder->setNumberOfLayers(10,8);
-    gridBuilder->addGrid(triangularMesh, 4);
+ //   gridBuilder->setNumberOfLayers(15,8);
+ //   gridBuilder->addGrid(refRegion, 2);
+ //   
+ //   gridBuilder->setNumberOfLayers(10,8);
+ //   gridBuilder->addGrid(triangularMesh, 5);
 
-	gridBuilder->addGeometry(triangularMesh);
+	//gridBuilder->addGeometry(triangularMesh);
 
     //////////////////////////////////////////////////////////////////////////
     // Wall Mounted Cube
@@ -333,6 +336,19 @@ void multipleLevel(const std::string& configPath)
 
     //gridBuilder->addGrid( new Sphere( 0, 0, 0, 0.0005 ), 12 );
     //gridBuilder->addGrid( new Cuboid( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 ), 3 );
+
+    //////////////////////////////////////////////////////////////////////////
+    // Testing Thin Wall
+    //////////////////////////////////////////////////////////////////////////
+
+    real dx = 0.05;
+    real vx = 0.05;
+
+    TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ThinWallTest.stl");
+
+    gridBuilder->addCoarseGrid(-2, -2, -2+0.5*dx, 3, 2, 2+0.5*dx, dx);
+
+    gridBuilder->addGeometry( triangularMesh );
 
     //////////////////////////////////////////////////////////////////////////
     // other tests
