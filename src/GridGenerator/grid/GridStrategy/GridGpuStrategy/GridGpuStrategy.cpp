@@ -190,6 +190,7 @@ void GridGpuStrategy::freeMemory(SPtr<GridImp> grid)
     delete[] grid->neighborIndexX;
     delete[] grid->neighborIndexY;
     delete[] grid->neighborIndexZ;
+    delete[] grid->neighborIndexNegative;
     delete[] grid->sparseIndices;
 
     delete[] grid->distribution.f;
@@ -264,13 +265,18 @@ void GridGpuStrategy::allocDistribution(SPtr<GridImp> grid)
 void GridGpuStrategy::allocNeighborsIndices(SPtr<GridImp> grid)
 {
     int size_in_bytes_neighbors = grid->size * sizeof(int);
-    int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
-    CudaSafeCall(cudaMalloc(&neighborIndexX, size_in_bytes_neighbors));
-    CudaSafeCall(cudaMalloc(&neighborIndexY, size_in_bytes_neighbors));
-    CudaSafeCall(cudaMalloc(&neighborIndexZ, size_in_bytes_neighbors));
-    grid->neighborIndexX = neighborIndexX;
-    grid->neighborIndexY = neighborIndexY;
-    grid->neighborIndexZ = neighborIndexZ;
+    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;;
+
+    CudaSafeCall(cudaMalloc(&neighborIndexX,        size_in_bytes_neighbors));
+    CudaSafeCall(cudaMalloc(&neighborIndexY,        size_in_bytes_neighbors));
+    CudaSafeCall(cudaMalloc(&neighborIndexZ,        size_in_bytes_neighbors));
+    CudaSafeCall(cudaMalloc(&neighborIndexNegative, size_in_bytes_neighbors));
+
+    grid->neighborIndexX        = neighborIndexX;
+    grid->neighborIndexY        = neighborIndexY;
+    grid->neighborIndexZ        = neighborIndexZ;
+    grid->neighborIndexNegative = neighborIndexNegative;
+
     CudaCheckError();
 }
 
@@ -356,21 +362,26 @@ void GridGpuStrategy::copyAndFreeDistributiondFromGPU(SPtr<GridImp> grid)
 void GridGpuStrategy::copyAndFreeNeighborsToCPU(SPtr<GridImp> grid)
 {
     int size_in_bytes_neighbors = grid->size * sizeof(int);
-    int *neighborIndexX_h, *neighborIndexY_h, *neighborIndexZ_h;
-    neighborIndexX_h = new int[grid->size];
-    neighborIndexY_h = new int[grid->size];
-    neighborIndexZ_h = new int[grid->size];
+    int *neighborIndexX_h, *neighborIndexY_h, *neighborIndexZ_h, *neighborIndexNegative_h;
+    neighborIndexX_h        = new int[grid->size];
+    neighborIndexY_h        = new int[grid->size];
+    neighborIndexZ_h        = new int[grid->size];
+    neighborIndexNegative_h = new int[grid->size];
 
-    CudaSafeCall(cudaMemcpy(neighborIndexX_h, grid->neighborIndexX, size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
-    CudaSafeCall(cudaMemcpy(neighborIndexY_h, grid->neighborIndexY, size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
-    CudaSafeCall(cudaMemcpy(neighborIndexZ_h, grid->neighborIndexZ, size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(neighborIndexX_h,        grid->neighborIndexX,        size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(neighborIndexY_h,        grid->neighborIndexY,        size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(neighborIndexZ_h,        grid->neighborIndexZ,        size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(neighborIndexNegative_h, grid->neighborIndexNegative, size_in_bytes_neighbors, cudaMemcpyDeviceToHost));
+
     CudaSafeCall(cudaFree(grid->neighborIndexX));
     CudaSafeCall(cudaFree(grid->neighborIndexY));
     CudaSafeCall(cudaFree(grid->neighborIndexZ));
+    CudaSafeCall(cudaFree(grid->neighborIndexNegative));
 
-    grid->neighborIndexX = neighborIndexX_h;
-    grid->neighborIndexY = neighborIndexY_h;
-    grid->neighborIndexZ = neighborIndexZ_h;
+    grid->neighborIndexX        = neighborIndexX_h;
+    grid->neighborIndexY        = neighborIndexY_h;
+    grid->neighborIndexZ        = neighborIndexZ_h;
+    grid->neighborIndexNegative = neighborIndexNegative_h;
     CudaCheckError();
 }
 

@@ -405,7 +405,7 @@ std::vector<SPtr<Grid> > MultipleGridBuilder::getGrids() const
     return this->grids;
 }
 
-void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks )
+void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 {
     //////////////////////////////////////////////////////////////////////////
 
@@ -444,6 +444,13 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks )
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
 
         grids[grids.size() - 1]->mesh(solidObject);
+
+        if( enableThinWalls ){
+            grids[grids.size() - 1]->enableFindSolidBoundaryNodes();
+            grids[grids.size() - 1]->findQs(solidObject);
+            grids[grids.size() - 1]->enableComputeQs();
+        }
+
         grids[grids.size() - 1]->findQs(solidObject);
 
         //for (size_t i = 0; i < grids.size(); i++){

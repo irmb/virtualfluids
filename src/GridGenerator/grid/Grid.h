@@ -53,6 +53,7 @@ public:
     HOST virtual int *getNeighborsX() const = 0;
     HOST virtual int *getNeighborsY() const = 0;
     HOST virtual int *getNeighborsZ() const = 0;
+    HOST virtual int *getNeighborsNegative() const = 0;
 
     HOST virtual uint* getCF_coarse() const = 0;
     HOST virtual uint* getCF_fine()   const = 0;
@@ -67,7 +68,7 @@ public:
     HOST virtual int getStartDirection() const = 0;
     HOST virtual int getEndDirection() const = 0;
 
-    HOST virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo) const = 0;
+    HOST virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const = 0;
 
     HOST virtual SPtr<GridStrategy> getGridStrategy() const = 0;
     HOSTDEVICE virtual void transIndexToCoords(uint index, real &x, real &y, real &z) const = 0;
@@ -78,6 +79,9 @@ public:
     HOST virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) = 0;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
+    
+    HOST virtual void enableFindSolidBoundaryNodes() = 0;
+    HOST virtual void enableComputeQs() = 0;
 
     HOST virtual void mesh(TriangularMesh& geometry) = 0;
     HOST virtual void mesh(Object* object) = 0;

@@ -3920,6 +3920,77 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
       getLastCudaError("QVelDeviceComp27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
+							           int nx,
+							           int ny,
+							           real* vx,
+							           real* vy,
+							           real* vz,
+							           real* DD, 
+							           int* k_Q, 
+							           real* QQ,
+							           unsigned int sizeQ,
+							           unsigned int kQ, 
+							           real om1, 
+									   unsigned int* geom,
+							           unsigned int* neighborX,
+							           unsigned int* neighborY,
+							           unsigned int* neighborZ,
+									   unsigned int* neighborWSB,
+							           unsigned int size_Mat, 
+							           bool evenOrOdd)
+{
+   int Grid = (kQ / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridQ(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+      QVelDeviceCompThinWallsPartOne27<<< gridQ, threads >>> (nx,
+											                  ny,
+											                  vx,
+											                  vy,
+											                  vz,
+											                  DD, 
+											                  k_Q, 
+											                  QQ,
+											                  sizeQ,
+											                  kQ, 
+											                  om1, 
+											                  neighborX,
+											                  neighborY,
+											                  neighborZ,
+											                  size_Mat, 
+											                  evenOrOdd);
+      getLastCudaError("QVelDeviceCompThinWallsPartOne27 execution failed");
+
+      QVelDeviceCompThinWallsPartTwo27<<< gridQ, threads >>> (nx,
+											                  ny,
+											                  DD, 
+											                  k_Q, 
+											                  QQ,
+											                  sizeQ,
+											                  kQ, 
+											                  om1, 
+                                                              geom,
+											                  neighborX,
+											                  neighborY,
+											                  neighborZ,
+                                                              neighborWSB,
+											                  size_Mat, 
+											                  evenOrOdd);
+      getLastCudaError("QVelDeviceCompThinWallsPartTwo27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void QVelDevCompZeroPress27(   unsigned int numberOfThreads,
 										  int nx,
 										  int ny,

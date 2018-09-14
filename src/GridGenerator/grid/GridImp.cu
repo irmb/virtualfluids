@@ -49,7 +49,8 @@ HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, rea
     level(level),
     gridInterface(nullptr),
     innerRegionFromFinerGrid(false),
-    numberOfLayers(0)
+    numberOfLayers(0),
+    qComputationStage(qComputationStageType::ComputeQs)
 {
     initalNumberOfNodesAndSize();
 }
@@ -802,9 +803,10 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    neighborIndexX[index] = -1;
-    neighborIndexY[index] = -1;
-    neighborIndexZ[index] = -1;
+    this->neighborIndexX[index]        = -1;
+    this->neighborIndexY[index]        = -1;
+    this->neighborIndexZ[index]        = -1;
+    this->neighborIndexNegative[index] = -1;
 
     if (this->field.isStopper(index) || this->field.is(index, STOPPER_OUT_OF_GRID_BOUNDARY))
     {
@@ -822,9 +824,13 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
     const int neighborY = getSparseIndex(x, neighborYCoord, z);
     const int neighborZ = getSparseIndex(x, y, neighborZCoord);
 
-    this->neighborIndexX[index] = neighborX;
-    this->neighborIndexY[index] = neighborY;
-    this->neighborIndexZ[index] = neighborZ;
+    this->getNegativeNeighborCoords(neighborXCoord, neighborYCoord, neighborZCoord, x, y, z);
+    const int neighborNegative = getSparseIndex(neighborXCoord, neighborYCoord, neighborZCoord);
+
+    this->neighborIndexX[index]        = neighborX;
+    this->neighborIndexY[index]        = neighborY;
+    this->neighborIndexZ[index]        = neighborZ;
+    this->neighborIndexNegative[index] = neighborNegative;
 }
 
 HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
@@ -840,6 +846,14 @@ HOSTDEVICE void GridImp::setStopperNeighborCoords(uint index)
 
     if (vf::Math::lessEqual(z + delta, endZ) && !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x, y, z + delta)))
         neighborIndexZ[index] = getSparseIndex(x, y, z + delta);
+
+    if (vf::Math::greaterEqual(x - delta, endX) && 
+        vf::Math::greaterEqual(y - delta, endY) && 
+        vf::Math::greaterEqual(z - delta, endZ) && 
+        !this->field.isInvalidOutOfGrid(this->transCoordToIndex(x - delta, y - delta, z - delta)))
+    {
+        neighborIndexNegative[index] = getSparseIndex(x - delta, y - delta, z - delta);
+    }
 }
 
 HOSTDEVICE void GridImp::getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const
@@ -865,6 +879,31 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
     }
     
     return coords[direction] + delta;
+}
+
+HOSTDEVICE void GridImp::getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const
+{
+    real coords[3] = { x, y, z };
+    neighborX = getNegativeNeighborCoord(periodicityX, startX, coords, 0);
+    neighborY = getNegativeNeighborCoord(periodicityY, startY, coords, 1);
+    neighborZ = getNegativeNeighborCoord(periodicityZ, startZ, coords, 2);
+}
+
+HOSTDEVICE real GridImp::getNegativeNeighborCoord(bool periodicity, real startCoord, real coords[3], int direction) const
+{
+    if (periodicity)
+    {
+        real neighborCoords[3] = {coords[0], coords[1] , coords[2] };
+        neighborCoords[direction] = neighborCoords[direction] - delta;
+        const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
+
+        if(!field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
+            return coords[direction] - delta;
+
+        return getLastFluidNode(coords, direction, startCoord);
+    }
+    
+    return coords[direction] - delta;
 }
 
 
@@ -998,7 +1037,10 @@ HOST void GridImp::findQs(TriangularMesh &triangularMesh)
 {
     const clock_t begin = clock();
 
-	gridStrategy->allocateQs(shared_from_this());
+    if( this->qComputationStage == qComputationStageType::ComputeQs ){
+	    gridStrategy->allocateQs(shared_from_this());
+    }
+
     gridStrategy->findQs(shared_from_this(), triangularMesh);
 
     const clock_t end = clock();
@@ -1026,11 +1068,23 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
 
                 const Vertex point(x, y, z);
 
-                if(this->field.is(index, BC_SOLID)) //TODO: not working with thin walls
+                if( this->qComputationStage == qComputationStageType::ComputeQs ){
+                    if(this->field.is(index, BC_SOLID)) //TODO: not working with thin walls
+                    {
+					    calculateQs(index, point, triangle);
+				    }
+                }
+                else if( this->qComputationStage == qComputationStageType::FindSolidBoundaryNodes )
                 {
-                    //calculateQs(point, triangle);
-					calculateQs(index, point, triangle);
-				}
+                    if( this->field.is(index, BC_SOLID) || this->field.is(index, STOPPER_SOLID ) ) continue;
+
+                    if( checkIfAtLeastOneValidQ(index, point, triangle) )
+                    {
+                        // similar as in void GridImp::findBoundarySolidNode(uint index)
+                        this->field.setFieldEntry( index, BC_SOLID );
+                        this->qIndices[index] = this->numberOfSolidBoundaryNodes++;
+                    }
+                }
             }
         }
     }
@@ -1045,7 +1099,7 @@ HOSTDEVICE void GridImp::setDebugPoint(uint index, int pointValue)
         field.setFieldEntry(index, pointValue);
 }
 
-HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triangle) const
+HOSTDEVICE void GridImp::calculateQs(const Vertex &point, const Triangle &triangle) const   // NOT USED !!!!
 {
     Vertex pointOnTriangle, direction;
     //VertexInteger solid_node;
@@ -1095,12 +1149,14 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 													 point.y + direction.y * this->delta,
 													 point.z + direction.z * this->delta);
 		if (neighborIndex == INVALID_INDEX) continue;
-		if (!this->field.is(neighborIndex, STOPPER_SOLID)) continue;
 
-		if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
-		{
-			this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
-		}
+		if ( this->field.is(neighborIndex, STOPPER_SOLID) )
+        {
+            if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
+            {
+                this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
+            }
+        }
 
 		error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
@@ -1108,25 +1164,46 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 
 		if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
 		{
-			if (subdistance < this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]])
+			if ( -0.5        > this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] ||
+                 subdistance < this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] )
 			{
 				this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
 				//printf("%d %f \n", this->qIndices[index], subdistance);
 			}
 		}
-
-		//if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
-		//{
-		//	this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
-		//}
-		//else
-		//{
-		//	if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
-		//	{
-		//		this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
-		//	}
-		//}
 	}
+}
+
+HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex & point, const Triangle & triangle) const
+{
+	Vertex pointOnTriangle, direction;
+	//VertexInteger solid_node;
+	real subdistance;
+	int error;
+	for (int i = distribution.dir_start; i <= distribution.dir_end; i++)
+	{
+#if defined(__CUDA_ARCH__)
+		direction = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
+#else
+		direction = Vertex(real(distribution.dirs[i * DIMENSION + 0]), real(distribution.dirs[i * DIMENSION + 1]),
+			real(distribution.dirs[i * DIMENSION + 2]));
+#endif
+
+		uint neighborIndex = this->transCoordToIndex(point.x + direction.x * this->delta,
+													 point.y + direction.y * this->delta,
+													 point.z + direction.z * this->delta);
+		if (neighborIndex == INVALID_INDEX) continue;
+
+		error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
+
+		subdistance /= this->delta;
+
+		if (error == 0 && vf::Math::lessEqual(subdistance, 1.0) && vf::Math::greaterEqual(subdistance, 0.0))
+		{
+			return true;
+		}
+	}
+    return false;
 }
 
 
@@ -1338,6 +1415,11 @@ int* GridImp::getNeighborsZ() const
     return this->neighborIndexZ;
 }
 
+int* GridImp::getNeighborsNegative() const
+{
+    return this->neighborIndexNegative;
+}
+
 
 uint GridImp::getNumberOfNodesCF() const
 {
@@ -1400,7 +1482,7 @@ void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInter
 #define GEOFLUID 19
 #define GEOSOLID 16
 
-HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *geo) const
+HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const
 {
     xCoords[0] = 0;
     yCoords[0] = 0;
@@ -1419,9 +1501,10 @@ HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, ui
         real x, y, z;
         this->transIndexToCoords(i, x, y, z);
 
-        const uint neighborXIndex = uint(this->neighborIndexX[i] + 1);
-        const uint neighborYIndex = uint(this->neighborIndexY[i] + 1);
-        const uint neighborZIndex = uint(this->neighborIndexZ[i] + 1);
+        const uint neighborXIndex        = uint(this->neighborIndexX[i] + 1);
+        const uint neighborYIndex        = uint(this->neighborIndexY[i] + 1);
+        const uint neighborZIndex        = uint(this->neighborIndexZ[i] + 1);
+        const uint neighborNegativeIndex = uint(this->neighborIndexNegative[i] + 1);
 
         const char type2 = this->field.getFieldEntry(i);
 
@@ -1431,9 +1514,11 @@ HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, ui
         yCoords[nodeNumber + 1] = y;
         zCoords[nodeNumber + 1] = z;
 
-        neighborX[nodeNumber + 1] = neighborXIndex;
-        neighborY[nodeNumber + 1] = neighborYIndex;
-        neighborZ[nodeNumber + 1] = neighborZIndex;
+        neighborX       [nodeNumber + 1] = neighborXIndex;
+        neighborY       [nodeNumber + 1] = neighborYIndex;
+        neighborZ       [nodeNumber + 1] = neighborZIndex;
+        neighborNegative[nodeNumber + 1] = neighborNegativeIndex;
+
         geo[nodeNumber + 1] = type;
         nodeNumber++;
     }

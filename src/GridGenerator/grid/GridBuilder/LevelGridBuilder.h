@@ -52,11 +52,12 @@ public:
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
 
-    VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;;
+    VF_PUBLIC virtual unsigned int getNumberOfNodes(unsigned int level) const;
 
 
-    VF_PUBLIC virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx,
-                                         unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const;
+    VF_PUBLIC virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
+                                         uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
+                                         uint *geo, const int level) const override;
     VF_PUBLIC virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const;
 
 

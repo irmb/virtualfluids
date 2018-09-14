@@ -68,7 +68,7 @@ private:
     Object* object;
     GridInterface* gridInterface;
 
-    int *neighborIndexX, *neighborIndexY, *neighborIndexZ;
+    int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
 
 	uint *qIndices;
@@ -177,7 +177,7 @@ public:
     HOSTDEVICE uint getNumberOfNodesX() const override;
     HOSTDEVICE uint getNumberOfNodesY() const override;
     HOSTDEVICE uint getNumberOfNodesZ() const override;
-    HOST void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *geo) const override;
+    HOST void getNodeValues(real *xCoords, real *yCoords, real *zCoords, uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, uint *geo) const override;
 
     HOSTDEVICE uint getNumberOfNodesCF() const override;
     HOSTDEVICE uint getNumberOfNodesFC() const override;
@@ -187,6 +187,7 @@ public:
     int* getNeighborsX() const override;
     int* getNeighborsY() const override;
     int* getNeighborsZ() const override;
+    int* getNeighborsNegative() const override;
 
     HOST uint* getCF_coarse() const override;
     HOST uint* getCF_fine() const override;
@@ -214,6 +215,8 @@ private:
     HOSTDEVICE void setStopperNeighborCoords(uint index);
     HOSTDEVICE void getNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
     HOSTDEVICE real getNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
+    HOSTDEVICE void getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const;
+    HOSTDEVICE real getNegativeNeighborCoord(bool periodicity, real endCoord, real coords[3], int direction) const;
     
 
     HOSTDEVICE int getSparseIndex(const real &expectedX, const real &expectedY, const real &expectedZ) const;
@@ -234,9 +237,21 @@ public:
     HOST void findQs(TriangularMesh &triangularMesh);
     HOSTDEVICE void findQs(Triangle &triangle);
 private:
+
+    enum class qComputationStageType{
+        FindSolidBoundaryNodes,
+        ComputeQs
+    } qComputationStage;
+
+public:
+    HOST void enableFindSolidBoundaryNodes(){ qComputationStage = qComputationStageType::FindSolidBoundaryNodes; }
+    HOST void enableComputeQs(){ qComputationStage = qComputationStageType::ComputeQs; }
+
+private:
     HOSTDEVICE void setDebugPoint(uint index, int pointValue);
-	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &actualTriangle) const;
-	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &actualTriangle) const;
+	HOSTDEVICE void calculateQs(const Vertex &point, const Triangle &triangle) const;
+	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const;
+    HOSTDEVICE bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
 
 
 

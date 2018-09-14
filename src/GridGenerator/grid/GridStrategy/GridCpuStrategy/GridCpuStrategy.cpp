@@ -19,9 +19,10 @@
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {
-    grid->neighborIndexX = new int[grid->size];
-    grid->neighborIndexY = new int[grid->size];
-    grid->neighborIndexZ = new int[grid->size];
+    grid->neighborIndexX        = new int[grid->size];
+    grid->neighborIndexY        = new int[grid->size];
+    grid->neighborIndexZ        = new int[grid->size];
+    grid->neighborIndexNegative = new int[grid->size];
 
     grid->sparseIndices = new int[grid->size];
 
@@ -245,6 +246,7 @@ void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
     delete[] grid->neighborIndexX;
     delete[] grid->neighborIndexY;
     delete[] grid->neighborIndexZ;
+    delete[] grid->neighborIndexNegative;
     delete[] grid->sparseIndices;
 	delete[] grid->qIndices;
 	delete[] grid->qValues;

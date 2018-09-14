@@ -341,12 +341,12 @@ void multipleLevel(const std::string& configPath)
     // Testing Thin Wall
     //////////////////////////////////////////////////////////////////////////
 
-    real dx = 0.05;
+    real dx = 0.0125;
     real vx = 0.05;
 
-    TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ThinWallTest.stl");
+    TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ThinWallTest2.stl");
 
-    gridBuilder->addCoarseGrid(-2, -2, -2+0.5*dx, 3, 2, 2+0.5*dx, dx);
+    gridBuilder->addCoarseGrid(-2, -1.5, -0.5, 4, 1.5, 0.5, dx);
 
     gridBuilder->addGeometry( triangularMesh );
 
@@ -373,7 +373,7 @@ void multipleLevel(const std::string& configPath)
 
 	gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-    gridBuilder->buildGrids(LBM); // buildGrids() has to be called before setting the BCs!!!!
+    gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -413,7 +413,7 @@ void multipleLevel(const std::string& configPath)
 	gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/out/Test_");
 
 	//gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
-	//gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/Sphere_Arrow");
+	gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/Test_Arrow");
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

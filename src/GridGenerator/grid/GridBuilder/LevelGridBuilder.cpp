@@ -248,9 +248,11 @@ void LevelGridBuilder::getDimensions(int &nx, int &ny, int &nz, const int level)
     nz = grids[level]->getNumberOfNodesZ();
 }
 
-void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *neighborX, unsigned int *neighborY, unsigned int *neighborZ, unsigned int *geo, const int level) const
+void LevelGridBuilder::getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
+                                     uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
+                                     uint *geo, const int level) const
 {
-    grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, geo);
+    grids[level]->getNodeValues(xCoords, yCoords, zCoords, neighborX, neighborY, neighborZ, neighborNegative, geo);
 }
 
 

@@ -52,19 +52,25 @@ public:
     virtual int* getDirection() const override { return nullptr; }
     virtual int getStartDirection() const override { return 0; }
     virtual int getEndDirection() const override { return 0; }
-    virtual void getNodeValues(real* xCoords, real* yCoords, real* zCoords, unsigned* neighborX, unsigned* neighborY,
-        unsigned* neighborZ, unsigned* geo) const override {}
+    virtual void getNodeValues(real* xCoords, real* yCoords, real* zCoords, 
+                               uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborNegative,
+                               uint* geo) const override {}
     virtual SPtr<GridStrategy> getGridStrategy() const override { return nullptr; }
     virtual void transIndexToCoords(uint index, real& x, real& y, real& z) const override {}
     virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) override {}
     virtual void freeMemory() override {}
 
     virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override {}
+    
+    virtual void enableFindSolidBoundaryNodes() override {}
+    virtual void enableComputeQs() override {}
+
     virtual void mesh(TriangularMesh& geometry) override {}
     virtual uint transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
     virtual int* getNeighborsZ() const override { return nullptr; }
+    virtual int* getNeighborsNegative() const override { return nullptr; }
     virtual void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override {};
     virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) {};
     virtual bool nodeInCellIs(Cell& cell, char type) const override { return false; }

@@ -42,7 +42,7 @@ public:
     VF_PUBLIC real getEndZ(uint level) const;
 
     VF_PUBLIC std::vector<SPtr<Grid> > getGrids() const;
-    VF_PUBLIC void buildGrids(LbmOrGks lbmOrGks);
+    VF_PUBLIC void buildGrids(LbmOrGks lbmOrGks, bool enableThinWalls = false);
 
     VF_PUBLIC void setNumberOfLayers( uint numberOfLayersFine, uint numberOfLayersBetweenLevels );
 

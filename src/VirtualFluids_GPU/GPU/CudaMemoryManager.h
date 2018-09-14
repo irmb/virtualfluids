@@ -28,6 +28,10 @@ public:
 	void cudaCopySP(int lev);
 	void cudaFreeSP(int lev);
 
+	void cudaAllocNeighborWSB(int lev);
+	void cudaCopyNeighborWSB(int lev);
+	void cudaFreeNeighborWSB(int lev);
+
 	void cudaAllocVeloBC(int lev);
 	void cudaCopyVeloBC(int lev);
 	void cudaFreeVeloBC(int lev);

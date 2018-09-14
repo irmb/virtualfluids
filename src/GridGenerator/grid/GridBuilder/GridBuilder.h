@@ -47,7 +47,9 @@ public:
 	virtual SPtr<Grid> getGrid(uint level) = 0;
 
     virtual unsigned int getNumberOfNodes(unsigned int level) const = 0;
-    virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, unsigned int *nx, unsigned int *ny, unsigned int *nz, unsigned int *geo, const int level) const = 0;
+    virtual void getNodeValues(real *xCoords, real *yCoords, real *zCoords, 
+                               uint *neighborX, uint *neighborY, uint *neighborZ, uint *neighborNegative, 
+                               uint *geo, const int level) const = 0;
     virtual void getDimensions(int &nx, int &ny, int &nz, const int level) const = 0;
     virtual uint getNumberOfNodesCF(int level) = 0;
     virtual uint getNumberOfNodesFC(int level) = 0;

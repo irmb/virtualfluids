@@ -95,6 +95,26 @@ void CudaMemoryManager::cudaFreeSP(int lev)
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->neighborY_SP));
 	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->neighborZ_SP));
 }
+//negative neighbor (WSB)
+void CudaMemoryManager::cudaAllocNeighborWSB(int lev)
+{
+	//Host
+	checkCudaErrors( cudaMallocHost((void**) &(parameter->getParH(lev)->neighborWSB_SP    ), parameter->getParH(lev)->mem_size_int_SP    ));
+	//Device						 
+	checkCudaErrors( cudaMalloc((void**) &(parameter->getParD(lev)->neighborWSB_SP        ), parameter->getParD(lev)->mem_size_int_SP    ));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)parameter->getParH(lev)->mem_size_int_SP;
+	parameter->setMemsizeGPU(tmp, false);
+}
+void CudaMemoryManager::cudaCopyNeighborWSB(int lev)
+{
+	//copy host to device
+	checkCudaErrors( cudaMemcpy(parameter->getParD(lev)->neighborWSB_SP,  parameter->getParH(lev)->neighborWSB_SP,  parameter->getParH(lev)->mem_size_int_SP     , cudaMemcpyHostToDevice));
+}
+void CudaMemoryManager::cudaFreeNeighborWSB(int lev)
+{
+	checkCudaErrors( cudaFreeHost(parameter->getParH(lev)->neighborWSB_SP));
+}
 //Velo
 void CudaMemoryManager::cudaAllocVeloBC(int lev)
 {

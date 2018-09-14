@@ -60,6 +60,7 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 	
 		cudaMemoryManager->cudaAllocCoord(level);
         cudaMemoryManager->cudaAllocSP(level);
+        cudaMemoryManager->cudaAllocNeighborWSB(level);
 
 		builder->getNodeValues(
 			para->getParH(level)->coordX_SP,
@@ -68,11 +69,13 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 			para->getParH(level)->neighborX_SP,
 			para->getParH(level)->neighborY_SP,
 			para->getParH(level)->neighborZ_SP,
+			para->getParH(level)->neighborWSB_SP,
 			para->getParH(level)->geoSP,
 			level);
 
 		setInitalNodeValues(numberOfNodesPerLevel, level);
 
+        cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
 
