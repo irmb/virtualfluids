@@ -24,6 +24,8 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                 grid->setFieldEntry(index, boundaryCondition->getType());
                 boundaryCondition->indices.push_back(index);
                 setPressureNeighborIndices(boundaryCondition, grid, index);
+
+                setQs(grid, boundaryCondition, index);
             }
         }
     }
@@ -53,6 +55,31 @@ void Side::setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition,
     }
 }
 
+void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index)
+{
+
+    std::vector<real> qNode(grid->getEndDirection() + 1);
+
+    for (int dir = 0; dir <= grid->getEndDirection(); dir++)
+    {
+        real x,y,z;
+        grid->transIndexToCoords( index, x, y, z );
+
+        x += grid->getDirection()[dir * DIMENSION + 0] * grid->getDelta();
+        y += grid->getDirection()[dir * DIMENSION + 1] * grid->getDelta();
+        z += grid->getDirection()[dir * DIMENSION + 2] * grid->getDelta();
+
+        uint neighborIndex = grid->transCoordToIndex( x, y, z );
+
+        if( grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            qNode[dir] = 0.5;
+        else
+            qNode[dir] = -1.0;
+    }
+
+    boundaryCondition->qs.push_back(qNode);
+}
+
 uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2)
 {
     if (coord == "x")
@@ -65,37 +92,40 @@ uint Side::getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, 
 }
 
 
-void Geometry::addIndices(std::vector<SPtr<Grid> > grid, uint level, SPtr<BoundaryCondition> boundaryCondition)
+void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<BoundaryCondition> boundaryCondition)
 {
     auto geometryBoundaryCondition = std::dynamic_pointer_cast<GeometryBoundaryCondition>(boundaryCondition);
 
-    std::vector<real> qNode(27);
+    std::vector<real> qNode(grids[level]->getEndDirection() + 1);
     bool qFound = false;
 
-    for (uint i = 0; i < grid[level]->getSize(); i++)
+    for (uint index = 0; index < grids[level]->getSize(); index++)
     {
-        if (grid[level]->getFieldEntry(i) != BC_SOLID)
+        if (grids[level]->getFieldEntry(index) != BC_SOLID)
             continue;
 
-        for (int dir = 0; dir <= grid[level]->getEndDirection(); dir++)
+        for (int dir = 0; dir <= grids[level]->getEndDirection(); dir++)
         {
-            //const int qIndex = dir * grid[level]->getSize() + i;
-            //const real q = grid[level]->getDistribution()[qIndex];
-
-			const real q = grid[level]->getQValue(i, dir);
+			const real q = grids[level]->getQValue(index, dir);
 
             qNode[dir] = q;
-            //if (vf::Math::greaterEqual(q, 0.0))
-            //    qFound = true;
-            ////else
-            ////    qNode[dir] = -1.0;
+
+            // also the neighbor if any Qs are required
+            real x,y,z;
+            grids[level]->transIndexToCoords( index, x, y, z );
+
+            x += grids[level]->getDirection()[dir * DIMENSION + 0] * grids[level]->getDelta();
+            y += grids[level]->getDirection()[dir * DIMENSION + 1] * grids[level]->getDelta();
+            z += grids[level]->getDirection()[dir * DIMENSION + 2] * grids[level]->getDelta();
+
+            uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
+
+            if( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
+                qNode[dir] = 0.5;
         }
 
-        //if (qFound)
-        {
-            geometryBoundaryCondition->indices.push_back(i);
-            geometryBoundaryCondition->qs.push_back(qNode);
-        }
+        geometryBoundaryCondition->indices.push_back(index);
+        geometryBoundaryCondition->qs.push_back(qNode);
 
         qFound = false;
     }

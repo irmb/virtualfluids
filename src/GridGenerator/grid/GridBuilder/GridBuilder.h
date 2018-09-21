@@ -26,8 +26,11 @@ class ArrowTransformator;
 class PolyDataWriterWrapper;
 
 class BoundingBox;
-
 class Grid;
+
+enum class SideType;
+
+class BoundaryCondition;
 
 class GridBuilder
 {
@@ -55,8 +58,8 @@ public:
     virtual uint getNumberOfNodesFC(int level) = 0;
     virtual void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const = 0;
 
-    virtual void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
-    virtual void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
+    virtual void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) = 0;
+    virtual void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) = 0;
 
     virtual uint getVelocitySize(int level) const = 0;
     virtual void getVelocityValues(real* vx, real* vy, real* vz, int* indices, int level) const = 0;
@@ -70,6 +73,8 @@ public:
     virtual void getGeometryQs(real* qs[27], int level) const = 0;
     virtual bool hasGeometryValues() const = 0;
     virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const = 0;
+
+    virtual SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const = 0;
 
 };
 

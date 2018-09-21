@@ -36,11 +36,15 @@ public:
     virtual int getCoordinate() const = 0;
     virtual int getDirection() const = 0;
 
+    virtual SideType whoAmI() const = 0;
+
 protected:
     static void addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant,
                            real startInner, real endInner, real startOuter, real endOuter);
 
     static void setPressureNeighborIndices(SPtr<BoundaryCondition> boundaryCondition, SPtr<Grid> grid, const uint index);
+
+    static void setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint index);
 
 private:
     static uint getIndex(SPtr<Grid> grid, std::string coord, real constant, real v1, real v2);
@@ -60,6 +64,11 @@ public:
     {
         return NEGATIVE_DIR;
     }
+
+    SideType whoAmI() const override
+    {
+        return SideType::GEOMETRY;
+    }
 };
 
 class MX : public Side
@@ -76,6 +85,11 @@ public:
     {
         return NEGATIVE_DIR;
     }
+
+    SideType whoAmI() const override
+    {
+        return SideType::MX;
+    }
 };
 
 class PX : public Side
@@ -91,6 +105,11 @@ public:
     int getDirection() const override
     {
         return POSITIVE_DIR;
+    }
+
+    SideType whoAmI() const override
+    {
+        return SideType::PX;
     }
 };
 
@@ -109,6 +128,11 @@ public:
     {
         return NEGATIVE_DIR;
     }
+
+    SideType whoAmI() const override
+    {
+        return SideType::MY;
+    }
 };
 
 class PY : public Side
@@ -124,6 +148,11 @@ public:
     int getDirection() const override
     {
         return POSITIVE_DIR;
+    }
+
+    SideType whoAmI() const override
+    {
+        return SideType::PY;
     }
 };
 
@@ -142,6 +171,11 @@ public:
     {
         return NEGATIVE_DIR;
     }
+
+    SideType whoAmI() const override
+    {
+        return SideType::MZ;
+    }
 };
 
 class PZ : public Side
@@ -157,6 +191,11 @@ public:
     int getDirection() const override
     {
         return POSITIVE_DIR;
+    }
+
+    SideType whoAmI() const override
+    {
+        return SideType::PZ;
     }
 };
 

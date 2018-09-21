@@ -1511,7 +1511,7 @@ void GridImp::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCel
 void GridImp::getGridInterface(uint* gridInterfaceList, const uint* oldGridInterfaceList, uint size)
 {
     for (uint i = 0; i < size; i++)
-        gridInterfaceList[i] = oldGridInterfaceList[i] + 1;
+        gridInterfaceList[i] = oldGridInterfaceList[i] + 1; // + 1 for numbering shift between GridGenerator and VF_GPU
 }
 
 #define GEOFLUID 19
@@ -1536,6 +1536,7 @@ HOST void GridImp::getNodeValues(real *xCoords, real *yCoords, real *zCoords, ui
         real x, y, z;
         this->transIndexToCoords(i, x, y, z);
 
+        // + 1 for numbering shift between GridGenerator and VF_GPU
         const uint neighborXIndex        = uint(this->neighborIndexX[i] + 1);
         const uint neighborYIndex        = uint(this->neighborIndexY[i] + 1);
         const uint neighborZIndex        = uint(this->neighborIndexZ[i] + 1);

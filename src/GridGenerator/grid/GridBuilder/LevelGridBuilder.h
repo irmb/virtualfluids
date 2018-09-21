@@ -77,6 +77,8 @@ public:
 
     VF_PUBLIC void writeArrows(std::string fileName) const;
 
+    VF_PUBLIC SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
+
 protected:
     
 
@@ -95,7 +97,6 @@ protected:
 
     std::vector<std::shared_ptr<Grid> > grids;
     std::vector<SPtr<BoundaryConditions> > boundaryConditions;
-
 
     void checkLevel(int level);
 
@@ -124,8 +125,8 @@ public:
 
     VF_PUBLIC void getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, uint* iCellFcc, uint* iCellFcf, int level) const override;
 
-    VF_PUBLIC void setOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
-    VF_PUBLIC void setOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
+    VF_PUBLIC void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
+    VF_PUBLIC void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 
 };
 

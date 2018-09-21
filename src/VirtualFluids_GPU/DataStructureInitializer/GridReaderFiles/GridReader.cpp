@@ -81,6 +81,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
 {
 	std::cout << "-----Config Arrays Coord, Neighbor, Geo------" << std::endl;
 
+    // Lenz: The first parameter in the CoordNeighborGeoV constructur is the file
 	CoordNeighborGeoV coordX(para->getcoordX(), binaer, true);
 	CoordNeighborGeoV coordY(para->getcoordY(), binaer, true);
 	CoordNeighborGeoV coordZ(para->getcoordZ(), binaer, true);

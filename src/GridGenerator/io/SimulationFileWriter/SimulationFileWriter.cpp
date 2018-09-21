@@ -13,6 +13,8 @@
 
 #include <GridGenerator/grid/GridBuilder/GridBuilder.h>
 
+#include <GridGenerator/grid/BoundaryConditions/Side.h>
+#include <GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
 
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/
@@ -41,11 +43,11 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
     const uint numberOfLevel = builder->getNumberOfGridLevels();
     openFiles();
     writeLevel(numberOfLevel);
-    auto qs = createBCVectors(builder->getGrid(0));
+    //auto qs = createBCVectors(builder->getGrid(0));
 
     for (uint level = 0; level < numberOfLevel; level++)
     {
-        writeLevelSize(builder->getNumberOfNodes(level), qs);
+        writeLevelSize(builder->getNumberOfNodes(level));
         writeCoordFiles(builder, level, format);
 
         if (level < numberOfLevel - 1)
@@ -53,8 +55,10 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
             writeLevelSizeGridInterface(builder->getNumberOfNodesCF(level), builder->getNumberOfNodesFC(level));
             writeGridInterfaceToFile(builder, level);
         }
-        writeBoundaryQsFile(qs);
     }
+
+    writeBoundaryQsFile(builder);
+
     closeFiles();
 }
 
@@ -127,15 +131,15 @@ void SimulationFileWriter::writeLevel(uint numberOfLevels)
     offsetVecCF_File << level << "\n";
     offsetVecFC_File << level << "\n";
 
-    const std::string geoRB = "noSlip\n";
+    //const std::string geoRB = "noSlip\n";
 
-    for (int rb = 0; rb < QFILES; rb++) {
-        *qStreams[rb] << level << "\n";
-        *valueStreams[rb] << geoRB << level << "\n";
-    }
+    //for (int rb = 0; rb < QFILES; rb++) {
+    //    *qStreams[rb] << level << "\n";
+    //    *valueStreams[rb] << geoRB << level << "\n";
+    //}
 }
 
-void SimulationFileWriter::writeLevelSize(uint numberOfNodes, std::vector<std::vector<std::vector<real> > > qFiles)
+void SimulationFileWriter::writeLevelSize(uint numberOfNodes)
 {
     const std::string zeroIndex = "0 ";
     const std::string zeroGeo = "16 ";
@@ -148,12 +152,12 @@ void SimulationFileWriter::writeLevelSize(uint numberOfNodes, std::vector<std::v
     zNeighborFile << numberOfNodes << "\n" << zeroIndex;
     geoVecFile << numberOfNodes << "\n" << zeroGeo;
 
-    const std::string geoRB = "noSlip\n";
+    //const std::string geoRB = "noSlip\n";
 
-    for (int rb = 0; rb < QFILES; rb++) {
-        *qStreams[rb] << qFiles[rb].size() << "\n";
-        *valueStreams[rb] << geoRB << qFiles[rb].size() << "\n";
-    }
+    //for (int rb = 0; rb < QFILES; rb++) {
+    //    *qStreams[rb] << qFiles[rb].size() << "\n";
+    //    *valueStreams[rb] << geoRB << qFiles[rb].size() << "\n";
+    //}
 }
 
 void SimulationFileWriter::writeLevelSizeGridInterface(uint sizeCF, uint sizeFC)
@@ -171,6 +175,16 @@ void SimulationFileWriter::writeCoordFiles(SPtr<GridBuilder> builder, uint level
 {
     for (uint index = 0; index < builder->getNumberOfNodes(level); index++)
         writeCoordsNeighborsGeo(builder, index, level, format);
+
+    xCoordFile << "\n";
+    yCoordFile << "\n";
+    zCoordFile << "\n";
+
+    xNeighborFile << "\n";
+    yNeighborFile << "\n";
+    zNeighborFile << "\n";
+
+    geoVecFile << "\n";
 }
 
 void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, int index, uint level, FILEFORMAT format)
@@ -179,7 +193,16 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
     if (grid->getSparseIndex(index) == -1)
         return;
 
-    int type = grid->getFieldEntry(index) == FLUID ? 19 : 16;
+    // Lenz: in the GPU code all nodes that perform collisions have to be fluid = 19
+    bool isStopper = grid->getFieldEntry(index) == STOPPER_SOLID                || 
+                     grid->getFieldEntry(index) == STOPPER_OUT_OF_GRID          || 
+                     grid->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY || 
+                     grid->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE;
+    int type = !isStopper ? 19 : 16;
+
+    // old code from Soeren P.
+    //int type = grid->getFieldEntry(index) == FLUID ? 19 : 16;
+
     real x, y, z;
     grid->transIndexToCoords(index, x, y, z);
 
@@ -189,6 +212,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
         yCoordFile.write((char*)&y, sizeof(double));
         zCoordFile.write((char*)&z, sizeof(double));
 
+        // + 1 for numbering shift between GridGenerator and VF_GPU
         xNeighborFile.write((char*)(&grid->getNeighborsX()[index] + 1), sizeof(unsigned int));
         yNeighborFile.write((char*)(&grid->getNeighborsY()[index] + 1), sizeof(unsigned int));
         zNeighborFile.write((char*)(&grid->getNeighborsZ()[index] + 1), sizeof(unsigned int));
@@ -201,6 +225,7 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
         yCoordFile << y << " ";
         zCoordFile << z << " ";
 
+        // + 1 for numbering shift between GridGenerator and VF_GPU
         xNeighborFile << (grid->getNeighborsX()[index] + 1) << " ";
         yNeighborFile << (grid->getNeighborsY()[index] + 1) << " ";
         zNeighborFile << (grid->getNeighborsZ()[index] + 1) << " ";
@@ -214,34 +239,79 @@ void SimulationFileWriter::writeGridInterfaceToFile(SPtr<GridBuilder> builder, u
     const uint numberOfNodesCF = builder->getNumberOfNodesCF(level);
     const uint numberOfNodesFC = builder->getNumberOfNodesFC(level);
 
-    uint* cf_coarse = new uint[numberOfNodesCF];
-    uint* cf_fine = new uint[numberOfNodesCF];
-    uint* fc_coarse = new uint[numberOfNodesFC];
-    uint* fc_fine = new uint[numberOfNodesFC];
-
-    builder->getGridInterfaceIndices(cf_coarse, cf_fine, fc_coarse, fc_fine, level);
-
-    if(numberOfNodesCF > 0)
     {
-        writeGridInterfaceToFile(numberOfNodesCF, scaleCF_coarse_File, cf_coarse, scaleCF_fine_File, cf_fine, offsetVecCF_File);
+        uint* cf_coarse = new uint[numberOfNodesCF];
+        uint* cf_fine = new uint[numberOfNodesCF];
+        uint* fc_coarse = new uint[numberOfNodesFC];
+        uint* fc_fine = new uint[numberOfNodesFC];
+
+        builder->getGridInterfaceIndices(cf_coarse, cf_fine, fc_coarse, fc_fine, level);
+
+        if (numberOfNodesCF > 0)
+        {
+            writeGridInterfaceToFile(numberOfNodesCF, scaleCF_coarse_File, cf_coarse, scaleCF_fine_File, cf_fine);
+        }
+
+        if (numberOfNodesFC > 0)
+        {
+            writeGridInterfaceToFile(numberOfNodesFC, scaleFC_coarse_File, fc_coarse, scaleFC_fine_File, fc_fine);
+        }
+
+        delete [] cf_coarse;
+        delete [] cf_fine;
+        delete [] fc_coarse;
+        delete [] fc_fine;
     }
 
-    if (numberOfNodesFC > 0)
     {
-        writeGridInterfaceToFile(numberOfNodesFC, scaleFC_coarse_File, fc_coarse, scaleFC_fine_File, fc_fine, offsetVecFC_File);
+        real* cf_offset_X = new real[numberOfNodesCF];
+        real* cf_offset_Y = new real[numberOfNodesCF];
+        real* cf_offset_Z = new real[numberOfNodesCF];
+
+        real* fc_offset_X = new real[numberOfNodesFC];
+        real* fc_offset_Y = new real[numberOfNodesFC];
+        real* fc_offset_Z = new real[numberOfNodesFC];
+
+        builder->getOffsetCF(cf_offset_X, cf_offset_Y, cf_offset_Z, level);
+        builder->getOffsetFC(fc_offset_X, fc_offset_Y, fc_offset_Z, level);
+
+        if (numberOfNodesCF > 0)
+        {
+            writeGridInterfaceOffsetToFile(numberOfNodesCF, offsetVecCF_File, cf_offset_X, cf_offset_Y, cf_offset_Z);
+        }
+
+        if (numberOfNodesFC > 0)
+        {
+            writeGridInterfaceOffsetToFile(numberOfNodesCF, offsetVecFC_File, fc_offset_X, fc_offset_Y, fc_offset_Z);
+        }
+
+        delete[] cf_offset_X;
+        delete[] cf_offset_Y;
+        delete[] cf_offset_Z;
+
+        delete[] fc_offset_X;
+        delete[] fc_offset_Y;
+        delete[] fc_offset_Z;
     }
 }
 
-void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine, std::ofstream& offsetFile)
+void SimulationFileWriter::writeGridInterfaceToFile(const uint numberOfNodes, std::ofstream& coarseFile, uint* coarse, std::ofstream& fineFile, uint* fine)
 {
     for (uint index = 0; index < numberOfNodes; index++)
     {
-        coarseFile << coarse[index] + 1 << " ";
-        fineFile << fine[index] + 1 << " ";
-        offsetFile << 0 << " " << 0 << " " << 0 << " ";
+        coarseFile << coarse[index] << " \n";
+        fineFile << fine[index] << " \n";
     }
     coarseFile << "\n";
     fineFile << "\n";
+}
+
+void SimulationFileWriter::writeGridInterfaceOffsetToFile(uint numberOfNodes, std::ofstream & offsetFile, real* offset_X, real* offset_Y, real* offset_Z)
+{
+    for (uint index = 0; index < numberOfNodes; index++)
+    {
+        offsetFile << offset_X[index] << " " << offset_Y[index] << " " << offset_Z[index] << " \n";
+    }
     offsetFile << "\n";
 }
 
@@ -257,9 +327,9 @@ std::vector<std::vector<std::vector<real> > > SimulationFileWriter::createBCVect
     for (uint i = 0; i < grid->getSize(); i++)
     {
         real x, y, z;
-        grid->transIndexToCoords(grid->getSparseIndex(i), x, y, z);
+        grid->transIndexToCoords(i, x, y, z);
 
-        if (grid->getFieldEntry(grid->getSparseIndex(i)) == BC_SOLID) addShortQsToVector(i, qs, grid); //addQsToVector(i, qs, grid);
+        if (grid->getFieldEntry(i) == BC_SOLID) addShortQsToVector(i, qs, grid); //addQsToVector(i, qs, grid);
         //if (x == 0 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, -1, INLETQS, qs, grid);
         //if (x == grid->getNumberOfNodesX() - 2 && y < grid->getNumberOfNodesY() - 1 && z < grid->getNumberOfNodesZ() - 1) fillRBForNode(i, 0, 1, OUTLETQS, qs, grid);
 
@@ -341,13 +411,40 @@ void SimulationFileWriter::fillRBForNode(int index, int direction, int direction
 }
 
 
-void SimulationFileWriter::writeBoundaryQsFile(std::vector<std::vector<std::vector<real> > > qFiles)
+void SimulationFileWriter::writeBoundaryQsFile(SPtr<GridBuilder> builder)
 {
-    for (int rb = 0; rb < QFILES; rb++) {
-        for (int index = 0; index < qFiles[rb].size(); index++) {
-            //writeBoundary(qFiles[rb][index], rb);
-			writeBoundaryShort(qFiles[rb][index], rb);
-		}
+    // old code of Soeren P.
+  //  for (int rb = 0; rb < QFILES; rb++) {
+  //      for (int index = 0; index < qFiles[rb].size(); index++) {
+  //          //writeBoundary(qFiles[rb][index], rb);
+		//	writeBoundaryShort(qFiles[rb][index], rb);
+		//}
+  //  }
+
+    SideType sides[] = {SideType::MX, SideType::PX, SideType::PZ, SideType::MZ, SideType::MY, SideType::PY, SideType::GEOMETRY};
+
+    for (int side = 0; side < QFILES; side++) {
+
+        for (uint level = 0; level < builder->getNumberOfGridLevels(); level++) {
+            
+            auto bc = builder->getBoundaryCondition( sides[side], level );
+
+            if( !bc ) continue;
+
+            if( level == 0 ){
+            
+                if( bc->getType() == BC_PRESSURE ) *valueStreams[side] << "pressure\n";
+                if( bc->getType() == BC_VELOCITY ) *valueStreams[side] << "velocity\n";
+                if( bc->getType() == BC_SOLID    ) *valueStreams[side] << "noSlip\n";
+                if( bc->getType() == BC_SLIP     ) *valueStreams[side] << "slip\n";
+                if( bc->getType() == BC_OUTFLOW  ) *valueStreams[side] << "outflow\n";
+
+                *valueStreams[side] << builder->getNumberOfGridLevels() - 1 << "\n";
+                *qStreams[side]     << builder->getNumberOfGridLevels() - 1 << "\n";
+            }
+
+            writeBoundaryShort( builder->getGrid(level), bc, side );
+        }
     }
 }
 
@@ -380,6 +477,74 @@ void SimulationFileWriter::writeBoundaryShort(std::vector<real> boundary, int rb
 
 	*qStreams[rb] << "\n";
 	*valueStreams[rb] << "\n";
+}
+
+void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint side)
+{
+    uint numberOfBoundaryNodes = boundaryCondition->indices.size();
+
+    *valueStreams[side] << numberOfBoundaryNodes << "\n";
+    *qStreams[side]     << numberOfBoundaryNodes << "\n";
+
+    for( uint index = 0; index < numberOfBoundaryNodes; index++ ){
+    
+        // + 1 for numbering shift between GridGenerator and VF_GPU
+        *valueStreams[side] << grid->getSparseIndex( boundaryCondition->indices[index] ) + 1 << " ";
+        *qStreams[side]     << grid->getSparseIndex( boundaryCondition->indices[index] ) + 1 << " ";
+
+        {
+            uint32_t key = 0;
+
+            for (int dir = 26; dir >= 0; dir--)
+            {
+                real q = boundaryCondition->getQ(index,dir);
+                if (q > 0) {
+                    key += (uint32_t)pow(2, 26 - dir);
+                }
+            }
+
+            *qStreams[side] << key << " ";
+
+            for (int dir = 26; dir >= 0; dir--)
+            {
+                real q = boundaryCondition->qs[index][dir];
+                if (q > 0) {
+                    *qStreams[side] << std::fixed << std::setprecision(16) << q << " ";
+                }
+            }
+
+            *qStreams[side] << "\n";
+        }
+
+        if( boundaryCondition->getType() == BC_PRESSURE )
+        {
+            auto bcPressure = dynamic_cast< PressureBoundaryCondition* >( boundaryCondition.get() );
+
+            *valueStreams[side] << bcPressure->getRho() << " ";
+            *valueStreams[side] << bcPressure->neighborIndices[index] << " ";
+        }
+
+        if( boundaryCondition->getType() == BC_VELOCITY )
+        {
+            auto bcVelocity = dynamic_cast< VelocityBoundaryCondition* >( boundaryCondition.get() );
+
+            *valueStreams[side] << bcVelocity->getVx() << " ";
+            *valueStreams[side] << bcVelocity->getVy() << " ";
+            *valueStreams[side] << bcVelocity->getVz() << " ";
+        }
+
+        if( boundaryCondition->getType() == BC_SOLID )
+        {
+            auto bcGeometry = dynamic_cast< GeometryBoundaryCondition* >( boundaryCondition.get() );
+
+            *valueStreams[side] << bcGeometry->getVx() << " ";
+            *valueStreams[side] << bcGeometry->getVy() << " ";
+            *valueStreams[side] << bcGeometry->getVz() << " ";
+        }
+
+        *valueStreams[side] << "\n";
+    }
+    
 }
 
 void SimulationFileWriter::closeFiles()

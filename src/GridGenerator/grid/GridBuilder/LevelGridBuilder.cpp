@@ -196,7 +196,7 @@ void LevelGridBuilder::getGridInterfaceIndices(uint* iCellCfc, uint* iCellCff, u
     this->grids[level]->getGridInterfaceIndices(iCellCfc, iCellCff, iCellFcc, iCellFcf);
 }
 
-void LevelGridBuilder::setOffsetFC(real * xOffFC, real * yOffFC, real * zOffFC, int level)
+void LevelGridBuilder::getOffsetFC(real * xOffFC, real * yOffFC, real * zOffFC, int level)
 {
     for (uint i = 0; i < getNumberOfNodesFC(level); i++)
     {
@@ -208,7 +208,7 @@ void LevelGridBuilder::setOffsetFC(real * xOffFC, real * yOffFC, real * zOffFC, 
     }
 }
 
-void LevelGridBuilder::setOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, int level)
+void LevelGridBuilder::getOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, int level)
 {
     for (uint i = 0; i < getNumberOfNodesCF(level); i++)
     {
@@ -433,4 +433,22 @@ void LevelGridBuilder::getGeometryQs(real* qs[27], int level) const
 void LevelGridBuilder::writeArrows(std::string fileName) const 
 {
     QLineWriter::writeArrows(fileName, boundaryConditions[getNumberOfGridLevels() - 1]->geometryBoundaryCondition, grids[getNumberOfGridLevels() - 1]);
+}
+
+VF_PUBLIC SPtr<BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideType side, uint level) const
+{
+    for( auto bc : this->boundaryConditions[level]->pressureBoundaryConditions )
+        if( bc->isSide(side) )
+            return bc;
+    
+    for( auto bc : this->boundaryConditions[level]->velocityBoundaryConditions )
+        if( bc->isSide(side) )
+            return bc;
+
+    auto bc = this->boundaryConditions[level]->geometryBoundaryCondition;
+    
+    if( bc && bc->isSide(side) )
+        return bc;
+
+    return nullptr;
 }
