@@ -153,6 +153,20 @@ void GridCpuStrategy::mesh(SPtr<GridImp> grid, TriangularMesh &geom)
         grid->mesh(geom.triangles[i]);
 }
 
+uint GridCpuStrategy::closeNeedleCells(SPtr<GridImp> grid)
+{
+    uint numberOfClosedNeedleCells = 0;
+
+#pragma omp parallel for reduction(+:numberOfClosedNeedleCells)
+	for (int index = 0; index < grid->size; index++)
+	{
+		if( grid->closeCellIfNeedle(index) )
+            numberOfClosedNeedleCells++;
+	}
+
+    return numberOfClosedNeedleCells;
+}
+
 void GridCpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
 {
 #pragma omp parallel for

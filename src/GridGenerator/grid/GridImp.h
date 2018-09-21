@@ -232,6 +232,9 @@ public:
     HOST void mesh(TriangularMesh &geometry) override;
     HOSTDEVICE void mesh(Triangle &triangle);
 
+    HOST void closeNeedleCells();
+
+    HOSTDEVICE bool closeCellIfNeedle(uint index);
 
     HOST void findQs(Object* object) override;
     HOST void findQs(TriangularMesh &triangularMesh);

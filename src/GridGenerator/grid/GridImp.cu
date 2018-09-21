@@ -1024,7 +1024,40 @@ HOSTDEVICE void GridImp::mesh(Triangle &triangle)
     }
 }
 
+HOST void GridImp::closeNeedleCells()
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start closeNeedleCells()\n";
 
+    uint numberOfClosedNeedleCells = 0;
+
+    do{
+        numberOfClosedNeedleCells = this->gridStrategy->closeNeedleCells( shared_from_this() );
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "  " << " cells closed!\n";
+    }
+    while( numberOfClosedNeedleCells > 0 );
+}
+
+HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
+{
+    if( !this->getField().is( index, FLUID ) ) return false;
+
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    bool noValidNeighborInX = this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , INVALID_SOLID) &&
+                              this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , INVALID_SOLID);
+    bool noValidNeighborInY = this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , INVALID_SOLID) &&
+                              this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , INVALID_SOLID);
+    bool noValidNeighborInZ = this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , INVALID_SOLID) &&
+                              this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , INVALID_SOLID);
+
+    if( noValidNeighborInX || noValidNeighborInY || noValidNeighborInZ ){
+        this->setFieldEntry(index, INVALID_SOLID);
+        return true;
+    }
+
+    return false;
+}
 
 HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive objects
 {
@@ -1076,7 +1109,9 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
                 }
                 else if( this->qComputationStage == qComputationStageType::FindSolidBoundaryNodes )
                 {
-                    if( this->field.is(index, BC_SOLID) || this->field.is(index, STOPPER_SOLID ) ) continue;
+                    //if( this->field.is(index, BC_SOLID) || this->field.is(index, STOPPER_SOLID ) ) continue;
+
+                    if( !this->field.is(index, FLUID) ) continue;
 
                     if( checkIfAtLeastOneValidQ(index, point, triangle) )
                     {

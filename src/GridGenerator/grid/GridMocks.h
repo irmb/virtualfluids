@@ -66,6 +66,9 @@ public:
     virtual void enableComputeQs() override {}
 
     virtual void mesh(TriangularMesh& geometry) override {}
+    virtual void closeNeedleCells() override {}
+    void findQs(Object* object) override {}
+
     virtual uint transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }
     virtual int* getNeighborsX() const override { return nullptr; }
     virtual int* getNeighborsY() const override { return nullptr; }
@@ -81,7 +84,6 @@ public:
     void setPeriodicityX(bool periodicity) override {}
     void setPeriodicityY(bool periodicity) override {}
     void setPeriodicityZ(bool periodicity) override {}
-    void findQs(Object* object) override {}
     void setFieldEntry(uint matrixIndex, char type) override {}
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }

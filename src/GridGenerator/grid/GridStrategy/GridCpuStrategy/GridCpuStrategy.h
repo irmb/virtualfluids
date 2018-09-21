@@ -31,6 +31,7 @@ public:
 	void findSolidStopperNodes(SPtr<GridImp> grid) override;
 
     void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override;
+    uint closeNeedleCells(SPtr<GridImp> grid) override;
     void findQs(SPtr<GridImp> grid, TriangularMesh &geom) override;
 
     void findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGrid, LbmOrGks lbmOrGks) override;

@@ -86,6 +86,8 @@ public:
     HOST virtual void mesh(TriangularMesh& geometry) = 0;
     HOST virtual void mesh(Object* object) = 0;
 
+    HOST virtual void closeNeedleCells() = 0;
+
     HOST virtual void findQs(Object* object) = 0;
 
     HOST virtual void setPeriodicity(bool periodicityX, bool periodicityY, bool periodicityZ) = 0;
