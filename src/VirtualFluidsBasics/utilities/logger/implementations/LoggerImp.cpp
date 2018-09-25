@@ -3,16 +3,17 @@
 #include "mpi.h"
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 
 
 logging::LoggerImp::LoggerImp(std::ostream* stream) : logging::Logger(stream)
 {
-    levelString[Level::WARNING] = "[WARNING]";
-    levelString[Level::ERROR] = "[ERROR]";
-    levelString[Level::INFO_LOW] = "[INFO_LOW]";
+    levelString[Level::WARNING]           = "[WARNING]          ";
+    levelString[Level::ERROR]             = "[ERROR]            ";
+    levelString[Level::INFO_LOW]          = "[INFO_LOW]         ";
     levelString[Level::INFO_INTERMEDIATE] = "[INFO_INTERMEDIATE]";
-    levelString[Level::INFO_HIGH] = "[INFO_HIGH]";
+    levelString[Level::INFO_HIGH]         = "[INFO_HIGH]        ";
 }
 
 logging::LoggerImp::~LoggerImp()
@@ -101,7 +102,9 @@ std::string logging::LoggerImp::getTimeStamp()
     const tm local_tm = *localtime(&tt);
 
     std::stringstream os;
-    os << " [" << local_tm.tm_hour << ":" << local_tm.tm_min << ":" << local_tm.tm_sec << "]";
+    os << " [" << std::setw(2) << std::setfill('0') << local_tm.tm_hour << ":";
+    os         << std::setw(2) << std::setfill('0') << local_tm.tm_min  << ":";
+    os         << std::setw(2) << std::setfill('0') << local_tm.tm_sec  << "]";
     return os.str();
 }
 
