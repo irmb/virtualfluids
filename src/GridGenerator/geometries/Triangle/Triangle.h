@@ -16,6 +16,8 @@ struct VF_PUBLIC Triangle
     real alphaAngles[3];
     real layerThickness;
     
+    uint patchIndex;
+
 	HOSTDEVICE Triangle(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &normal);
 	HOSTDEVICE Triangle(Vertex &v1, Vertex &v2, Vertex &v3);
 	HOSTDEVICE Triangle();

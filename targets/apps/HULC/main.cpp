@@ -8,6 +8,7 @@
 
 #include <string>
 #include <iostream>
+#include <stdexcept>
 
 #include "core/LbmOrGks.h"
 
@@ -280,7 +281,8 @@ void multipleLevel(const std::string& configPath)
 	//real dx = 0.2;
 	//real vx = 0.1;
 
-	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
+	//TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+	////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
 	////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_NoSTLGroups.stl");
 	////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse_200k.stl");
 	////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
@@ -323,15 +325,15 @@ void multipleLevel(const std::string& configPath)
 
  //   Conglomerate* refRegion = new Conglomerate();
 
- //   refRegion->add(floorBox);
- //   refRegion->add(wakeBox);
- //   refRegion->add(triangularMesh);
+ //   //refRegion->add(floorBox);
+ //   //refRegion->add(wakeBox);
+ //   //refRegion->add(triangularMesh);
 
- //   gridBuilder->setNumberOfLayers(15,8);
- //   gridBuilder->addGrid(refRegion, 2);
+ //   //gridBuilder->setNumberOfLayers(15,8);
+ //   //gridBuilder->addGrid(refRegion, 2);
  //   
- //   //gridBuilder->setNumberOfLayers(10,8);
- //   //gridBuilder->addGrid(triangularMesh, 5);
+ //   gridBuilder->setNumberOfLayers(10,8);
+ //   gridBuilder->addGrid(triangularMesh, 4);
 
 	//gridBuilder->addGeometry(triangularMesh);
 
@@ -356,13 +358,14 @@ void multipleLevel(const std::string& configPath)
 
     TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
 
-    gridBuilder->addCoarseGrid(-4, -1.5, -1.5,
-                                4,  1.5,  1.5, dx);
+    gridBuilder->addCoarseGrid(-4, -4, -4,
+                                4,  4,  4, dx);
 
-    gridBuilder->setNumberOfLayers(3, 8);   // this must come before the grids are added!!!
+    gridBuilder->setNumberOfLayers(8, 8);   // this must come before the grids are added!!!
     
     gridBuilder->addGrid(triangularMesh, 1);
 
+    gridBuilder->addGeometry(triangularMesh);
 
     //gridBuilder->addGrid( new Sphere( 0, 0, 0, 0.0005 ), 12 );
     //gridBuilder->addGrid( new Cuboid( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 ), 3 );
@@ -600,7 +603,7 @@ void multipleLevel(const std::string& configPath)
     //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
     SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
 
-    return;
+    //return;
 
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator = GridGenerator::make(gridBuilder, para);
@@ -624,6 +627,21 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
+    //try
+    //{
+    //    throw std::exception("Test");
+    //}
+    //catch (std::exception e)
+    //{
+    //	std::cout << e.what() << std::endl;
+    //}
+
+    //return 0;
+
+
+
+
+
     MPI_Init(&argc, &argv);
     std::string str, str2; 
     if ( argv != NULL )
@@ -636,19 +654,35 @@ int main( int argc, char* argv[])
             {
                 multipleLevel(str2);
             }
-            catch (std::exception e)
+            catch (const std::exception e)
             {
                 std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
             {
-            std::cout << "unknown exeption" << std::endl;
+                std::cout << "unknown exeption" << std::endl;
             }
         }
         else
         {
-            multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
+            try
+            {
+                multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
+            }
+            catch (const std::exception e)
+            {
+                
+                *logging::out << logging::Logger::ERROR << e.what();
+                //std::cout << e.what() << std::flush;
+                //MPI_Abort(MPI_COMM_WORLD, -1);
+            }
+            catch (...)
+            {
+                *logging::out << logging::Logger::ERROR << "Unknown exception!";
+                //std::cout << "unknown exeption" << std::endl;
+            }
+
             std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <stdexcept>
 
 #include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
@@ -36,6 +37,12 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name)
      exit(1);
 }
 
+std::vector<Triangle> STLReader::readSTL(const std::string & name, FileType fileType)
+{
+    if ( fileType == ascii ) return readASCIISTLWithPatches(name);
+    else                     return readBinarySTL(name);
+}
+
 
 std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
 {
@@ -64,6 +71,93 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
         triangles.push_back(tri);
     }
     file.close();
+    return triangles;
+}
+
+
+std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name)
+{
+    *logging::out << logging::Logger::INFO_HIGH << "Start reading ascii STL file:\n";
+    *logging::out << logging::Logger::INFO_HIGH << "    " + name + "\n";
+
+    std::vector<Triangle> triangles;
+
+    std::string line;
+    std::ifstream file;
+    file.open(name.c_str(), std::ifstream::in);
+
+    uint currentPatchIndex = 0;
+
+    uint currentFacetLine = 0;
+
+    Vertex vertex1, vertex2, vertex3, normal;
+
+    while( std::getline(file, line) ){
+
+        // trim the string
+        line = line.substr( line.find_first_not_of(" "), line.find_last_not_of(" ") + 1 );
+        
+        // ========================================================================================
+        if     ( currentFacetLine == 0 && line.substr( 0, line.find(' ') ) == "solid" )
+        {
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Reading STL-Group " << line.substr( line.find(' ') + 1 ) << " as patch " << currentPatchIndex << "\n";
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 1 && line.substr( 0, line.find(' ') ) == "endsolid" )
+        {
+            currentFacetLine = 0;
+            currentPatchIndex++;
+        }
+        // ========================================================================================
+        else if( currentFacetLine == 1 && line.substr( 0, line.find(' ') ) == "facet" )
+        {
+            normal = parseLineToCoordinates(line, "%*s %*s %f %f %f");
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 2 && line.substr( 0, line.find(' ') ) == "outer" )
+        {
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 3 && line.substr( 0, line.find(' ') ) == "vertex" )
+        {
+            vertex1 = parseLineToCoordinates(line, "%*s %f %f %f");
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 4 && line.substr( 0, line.find(' ') ) == "vertex" )
+        {
+            vertex2 = parseLineToCoordinates(line, "%*s %f %f %f");
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 5 && line.substr( 0, line.find(' ') ) == "vertex" )
+        {
+            vertex3 = parseLineToCoordinates(line, "%*s %f %f %f");
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 6 && line.substr( 0, line.find(' ') ) == "endloop" )
+        {
+            currentFacetLine++;
+        }
+        else if( currentFacetLine == 7 && line.substr( 0, line.find(' ') ) == "endfacet" )
+        {
+            Triangle tri = Triangle(vertex1, vertex2, vertex3, normal);
+            tri.calcNormal();
+
+            tri.patchIndex = currentPatchIndex;
+
+            triangles.push_back(tri);
+
+            currentFacetLine = 1;
+        }
+        else
+        {
+            throw std::runtime_error("STL-File does not comply with standard!\n");
+        }
+    }
+
+    file.close();
+
+    *logging::out << logging::Logger::INFO_HIGH << "Done reading ascii STL file\n";
+
     return triangles;
 }
 
@@ -204,6 +298,14 @@ Vertex STLReader::parseLineToCoordinates(std::ifstream& file, std::string format
 {
     std::string line;
     getline(file, line);
+    const char* buffer = line.c_str();
+    float x, y, z;
+    sscanf(buffer, format.c_str(), &x, &y, &z);
+    return Vertex(x, y, z);
+}
+
+Vertex STLReader::parseLineToCoordinates(const std::string& line, const std::string format)
+{
     const char* buffer = line.c_str();
     float x, y, z;
     sscanf(buffer, format.c_str(), &x, &y, &z);

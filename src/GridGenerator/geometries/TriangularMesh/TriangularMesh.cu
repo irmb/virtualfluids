@@ -34,7 +34,8 @@ TriangularMesh::TriangularMesh(const std::string& inputPath)
 {
     this->minmax = BoundingBox::makeInvalidMinMaxBox();
 
-    this->triangleVec = STLReader::readSTL(inputPath);
+    this->triangleVec = STLReader::readSTL(inputPath, STLReader::ascii);
+    //this->triangleVec = STLReader::readSTL(inputPath);
     initalizeDataFromTriangles();
     this->findNeighbors();
 }
