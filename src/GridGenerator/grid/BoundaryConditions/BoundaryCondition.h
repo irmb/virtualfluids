@@ -7,6 +7,8 @@
 #include <core/DataTypes.h>
 #include "grid/NodeValues.h"
 
+class Grid;
+
 class Side;
 enum class SideType;
 
@@ -17,12 +19,16 @@ public:
     SPtr<Side> side;
     std::vector<std::vector<real> > qs;
 
+    std::vector<uint> patches;
+
     virtual char getType() const = 0;
 
     bool isSide( SideType side ) const;
 
     real getQ( uint index, uint dir ){ return this->qs[index][dir]; }
 };
+
+//////////////////////////////////////////////////////////////////////////
 
 class PressureBoundaryCondition : public BoundaryCondition
 {
@@ -32,15 +38,11 @@ public:
         return SPtr<PressureBoundaryCondition>(new PressureBoundaryCondition(rho));
     }
 
-
     std::vector<uint> neighborIndices;
 
     real rho;
-private:
-    PressureBoundaryCondition(real rho) : rho(rho)
-    {
-
-    }
+protected:
+    PressureBoundaryCondition(real rho) : rho(rho) { }
 
 public:
     char getType() const override
@@ -54,6 +56,8 @@ public:
     }
 };
 
+//////////////////////////////////////////////////////////////////////////
+
 class VelocityBoundaryCondition : public BoundaryCondition
 {
 public:
@@ -63,25 +67,38 @@ public:
     }
 
     real vx, vy, vz;
-private:
-    VelocityBoundaryCondition(real vx, real vy, real vz) : vx(vx), vy(vy), vz(vz)
-    {
-
-    }
+    std::vector<real> vxList, vyList, vzList;
+protected:
+    VelocityBoundaryCondition(real vx, real vy, real vz) : vx(vx), vy(vy), vz(vz) { }
 
 public:
-    char getType() const override
+    virtual char getType() const override
     {
         return BC_VELOCITY;
+    }
+
+    void fillVelocityLists()
+    {
+        for( uint index : this->indices ){
+            this->vxList.push_back(vx);
+            this->vyList.push_back(vy);
+            this->vzList.push_back(vz);
+        }
     }
 
     real getVx() { return this->vx; }
     real getVy() { return this->vy; }
     real getVz() { return this->vz; }
+
+    real getVx(uint index) { return this->vxList[index]; }
+    real getVy(uint index) { return this->vyList[index]; }
+    real getVz(uint index) { return this->vzList[index]; }
 };
 
+//////////////////////////////////////////////////////////////////////////
 
-class GeometryBoundaryCondition : public BoundaryCondition
+
+class GeometryBoundaryCondition : public VelocityBoundaryCondition
 {
 public:
     static SPtr<GeometryBoundaryCondition> make()
@@ -89,12 +106,8 @@ public:
         return SPtr<GeometryBoundaryCondition>(new GeometryBoundaryCondition());
     }
 
-    real vx, vy, vz;
 private:
-    GeometryBoundaryCondition()
-    {
-
-    }
+    GeometryBoundaryCondition() : VelocityBoundaryCondition(0.0, 0.0, 0.0) { }
 
 public:
     char getType() const override
@@ -102,9 +115,20 @@ public:
         return BC_SOLID;
     }
 
-    real getVx() { return this->vx; }
-    real getVy() { return this->vy; }
-    real getVz() { return this->vz; }
+    void setVelocityForPatch( uint patch, real vx, real vy, real vz ){
+        for( uint index = 0; index < this->indices.size(); index++ ){
+            if( this->patches[index] == patch ){
+                this->vxList[index] = vx;
+                this->vyList[index] = vy;
+                this->vzList[index] = vz;
+            }
+        }
+    }
+
+    VF_PUBLIC void setTangentialVelocityForPatch( SPtr<Grid> grid, uint patch, 
+                                                  real p1x, real p1y, real p1z, 
+                                                  real p2x, real p2y, real p2z, 
+                                                  real v, real r );
 };
 
 

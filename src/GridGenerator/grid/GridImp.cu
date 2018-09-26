@@ -758,6 +758,11 @@ HOST real GridImp::getQValue(const uint index, const uint dir) const
 	return this->qValues[qIndex];
 }
 
+HOST uint GridImp::getQPatch(const uint index) const
+{
+    return this->qPatches[ this->qIndices[index] ];
+}
+
 HOST void GridImp::setInnerRegionFromFinerGrid(bool innerRegionFromFinerGrid)
 {
    this->innerRegionFromFinerGrid = innerRegionFromFinerGrid;
@@ -1032,14 +1037,15 @@ HOST void GridImp::closeNeedleCells()
 
     do{
         numberOfClosedNeedleCells = this->gridStrategy->closeNeedleCells( shared_from_this() );
-        *logging::out << logging::Logger::INFO_INTERMEDIATE << "  " << " cells closed!\n";
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << numberOfClosedNeedleCells << " cells closed!\n";
     }
     while( numberOfClosedNeedleCells > 0 );
 }
 
 HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
 {
-    if( !this->getField().is( index, FLUID ) ) return false;
+    //if( !this->getField().is( index, FLUID ) ) return false;
+    if( !this->getField().is( index, BC_SOLID ) ) return false;
 
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -1203,6 +1209,9 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
                  subdistance < this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] )
 			{
 				this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = subdistance;
+
+                this->qPatches[ this->qIndices[index] ] = triangle.patchIndex;
+
 				//printf("%d %f \n", this->qIndices[index], subdistance);
 			}
 		}

@@ -445,7 +445,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
         grids[grids.size() - 1]->mesh(solidObject);
 
-        //grids[grids.size() - 1]->closeNeedleCells();
+        grids[grids.size() - 1]->closeNeedleCells();
 
         if( enableThinWalls ){
             grids[grids.size() - 1]->enableFindSolidBoundaryNodes();

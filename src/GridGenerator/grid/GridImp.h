@@ -73,6 +73,7 @@ private:
 
 	uint *qIndices;
 	real *qValues;
+    uint *qPatches;
 
     bool innerRegionFromFinerGrid;
 
@@ -111,6 +112,7 @@ public:
 	HOST void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override;
 
 	HOST real getQValue(const uint index, const uint dir) const override;
+	HOST uint getQPatch(const uint index) const override;
 
     HOST void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override;
 

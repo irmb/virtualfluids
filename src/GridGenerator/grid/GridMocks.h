@@ -92,6 +92,7 @@ public:
 	void setNumberOfSolidBoundaryNodes(uint numberOfSolidBoundaryNodes) override {}
 
 	real getQValue(const uint index, const uint dir) const override { return 0.0; }
+	uint getQPatch(const uint index) const override { return 0.0; }
 
     void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override {};
 

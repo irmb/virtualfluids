@@ -60,27 +60,13 @@ void LevelGridBuilder::setVelocityBoundaryCondition(SideType sideType, real vx, 
             velocityBoundaryCondition->side = side;
             velocityBoundaryCondition->side->addIndices(grids, level, velocityBoundaryCondition);
 
+            velocityBoundaryCondition->fillVelocityLists();
+
             boundaryConditions[level]->velocityBoundaryConditions.push_back(velocityBoundaryCondition);
 
             *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Velocity BC on level " << level << " with " << (int)velocityBoundaryCondition->indices.size() <<"\n";
         }
     }
-
-	//// DEBUG
-	//{
-	//	std::ofstream file;
-
-	//	file.open("M:/TestGridGeneration/results/Box2_25_Qs.csv");
-
-	//	for (auto nodeQs : boundaryConditions[0]->geometryBoundaryCondition->qs) {
-	//		for (auto q : nodeQs) {
-	//			file << q << ", ";
-	//		}
-	//		file << "100" << std::endl;
-	//	}
-
-	//	file.close();
-	//}
 }
 
 void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, real vz)
@@ -95,6 +81,10 @@ void LevelGridBuilder::setVelocityGeometryBoundaryCondition(real vx, real vy, re
 			boundaryConditions[level]->geometryBoundaryCondition->vy = vy;
 			boundaryConditions[level]->geometryBoundaryCondition->vz = vz;
 			boundaryConditions[level]->geometryBoundaryCondition->side->addIndices(grids, level, boundaryConditions[level]->geometryBoundaryCondition);
+
+            boundaryConditions[level]->geometryBoundaryCondition->fillVelocityLists();
+
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Geometry Velocity BC on level " << level << " with " << (int)boundaryConditions[level]->geometryBoundaryCondition->indices.size() <<"\n";
 		}
     }
 }
@@ -110,6 +100,8 @@ void LevelGridBuilder::setPressureBoundaryCondition(SideType sideType, real rho)
         pressureBoundaryCondition->side->addIndices(grids, level, pressureBoundaryCondition);
 
         boundaryConditions[level]->pressureBoundaryConditions.push_back(pressureBoundaryCondition);
+
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Set Pressure BC on level " << level << " with " << (int)pressureBoundaryCondition->indices.size() <<"\n";
     }
 }
 
@@ -275,9 +267,9 @@ void LevelGridBuilder::getVelocityValues(real* vx, real* vy, real* vz, int* indi
         {
             indices[allIndicesCounter] = grids[level]->getSparseIndex(boundaryCondition->indices[i]) +1;  
 
-            vx[allIndicesCounter] = boundaryCondition->vx;
-            vy[allIndicesCounter] = boundaryCondition->vy;
-            vz[allIndicesCounter] = boundaryCondition->vz;
+            vx[allIndicesCounter] = boundaryCondition->getVx(i);
+            vy[allIndicesCounter] = boundaryCondition->getVy(i);
+            vz[allIndicesCounter] = boundaryCondition->getVz(i);
             allIndicesCounter++;
         }
     }
@@ -408,9 +400,9 @@ void LevelGridBuilder::getGeometryValues(real* vx, real* vy, real* vz, int level
 {
     for (uint i = 0; i < boundaryConditions[level]->geometryBoundaryCondition->indices.size(); i++)
     {
-		vx[i] = boundaryConditions[level]->geometryBoundaryCondition->vx;
-		vy[i] = boundaryConditions[level]->geometryBoundaryCondition->vy;
-		vz[i] = boundaryConditions[level]->geometryBoundaryCondition->vz;
+		vx[i] = boundaryConditions[level]->geometryBoundaryCondition->getVx(i);
+		vy[i] = boundaryConditions[level]->geometryBoundaryCondition->getVy(i);
+		vz[i] = boundaryConditions[level]->geometryBoundaryCondition->getVz(i);
     }
 }
 
@@ -451,4 +443,9 @@ VF_PUBLIC SPtr<BoundaryCondition> LevelGridBuilder::getBoundaryCondition(SideTyp
         return bc;
 
     return nullptr;
+}
+
+VF_PUBLIC SPtr<GeometryBoundaryCondition> LevelGridBuilder::getGeometryBoundaryCondition(uint level) const
+{
+    return this->boundaryConditions[level]->geometryBoundaryCondition;
 }

@@ -78,6 +78,7 @@ public:
     VF_PUBLIC void writeArrows(std::string fileName) const;
 
     VF_PUBLIC SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const override;
+    VF_PUBLIC SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition(uint level) const override;
 
 protected:
     

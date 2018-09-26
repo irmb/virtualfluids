@@ -41,6 +41,8 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 
 void GridCpuStrategy::allocateQs(SPtr<GridImp> grid)
 {
+    grid->qPatches = new uint[grid->getNumberOfSolidBoundaryNodes()];
+
 	const uint numberOfQs = grid->getNumberOfSolidBoundaryNodes() * (grid->distribution.dir_end + 1);
 	grid->qValues = new real[numberOfQs];
 #pragma omp parallel for

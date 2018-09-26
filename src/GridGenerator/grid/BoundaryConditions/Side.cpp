@@ -26,6 +26,8 @@ void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition
                 setPressureNeighborIndices(boundaryCondition, grid, index);
 
                 setQs(grid, boundaryCondition, index);
+
+                boundaryCondition->patches.push_back(0);
             }
         }
     }
@@ -126,6 +128,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
         geometryBoundaryCondition->indices.push_back(index);
         geometryBoundaryCondition->qs.push_back(qNode);
+        geometryBoundaryCondition->patches.push_back( grids[level]->getQPatch(index) );
 
         qFound = false;
     }

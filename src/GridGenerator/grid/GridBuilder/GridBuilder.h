@@ -31,6 +31,7 @@ class Grid;
 enum class SideType;
 
 class BoundaryCondition;
+class GeometryBoundaryCondition;
 
 class GridBuilder
 {
@@ -75,6 +76,8 @@ public:
     virtual void getGeometryValues(real* vx, real* vy, real* vz, int level) const = 0;
 
     virtual SPtr<BoundaryCondition> getBoundaryCondition( SideType side, uint level ) const = 0;
+
+    virtual SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition( uint level ) const = 0;
 
 };
 
