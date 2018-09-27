@@ -103,7 +103,7 @@ HOSTDEVICE bool Field::isStopper(uint index) const
 
 HOSTDEVICE bool Field::isQ(uint index) const
 {
-    return field[index] == Q;
+    return field[index] == Q_DEPRECATED;
 }
 
 HOSTDEVICE bool Field::isBoundaryConditionNode(uint index) const

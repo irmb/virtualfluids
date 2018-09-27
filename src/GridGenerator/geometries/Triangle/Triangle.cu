@@ -70,7 +70,7 @@ HOSTDEVICE char Triangle::isUnderFace(const Vertex &point) const
 
 
     if (this->isQNode(point, s))
-        return Q;
+        return Q_DEPRECATED;
     
     return FLUID;
 }

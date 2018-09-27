@@ -38,6 +38,7 @@ public:
         return SPtr<PressureBoundaryCondition>(new PressureBoundaryCondition(rho));
     }
 
+    // matrix indices!!!
     std::vector<uint> neighborIndices;
 
     real rho;

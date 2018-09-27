@@ -14,6 +14,7 @@ class VF_PUBLIC GridStrategy
 {
 public:
     virtual ~GridStrategy() {}
+
     virtual void allocateFieldMemory(Field* field) = 0;
     virtual void freeFieldMemory(Field* field) = 0;
 
@@ -23,9 +24,7 @@ public:
 
     virtual void initalNodesToOutOfGrid(SPtr<GridImp> grid) = 0;
     virtual void fixOddCells(SPtr<GridImp> grid) = 0;
-
     virtual void findInnerNodes(SPtr<GridImp> grid) = 0;
-
     virtual void addOverlap(SPtr<GridImp> grid) = 0;
 
     virtual void fixRefinementIntoWall(SPtr<GridImp> grid) = 0;

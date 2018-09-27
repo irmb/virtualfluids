@@ -1022,7 +1022,7 @@ HOSTDEVICE void GridImp::mesh(Triangle &triangle)
                 const int value = triangle.isUnderFace(point);
                 //setDebugPoint(index, value);
 
-                if (value == Q)
+                if (value == Q_DEPRECATED)
                     calculateQs(point, triangle);
             }
         }
@@ -1108,7 +1108,7 @@ HOSTDEVICE void GridImp::findQs(Triangle &triangle)
                 const Vertex point(x, y, z);
 
                 if( this->qComputationStage == qComputationStageType::ComputeQs ){
-                    if(this->field.is(index, BC_SOLID)) //TODO: not working with thin walls
+                    if(this->field.is(index, BC_SOLID))
                     {
 					    calculateQs(index, point, triangle);
 				    }
@@ -1182,13 +1182,15 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 #if defined(__CUDA_ARCH__)
 		direction = Vertex(DIRECTIONS[i][0], DIRECTIONS[i][1], DIRECTIONS[i][2]);
 #else
-		direction = Vertex(real(distribution.dirs[i * DIMENSION + 0]), real(distribution.dirs[i * DIMENSION + 1]),
-			real(distribution.dirs[i * DIMENSION + 2]));
+		direction = Vertex( real(distribution.dirs[i * DIMENSION + 0]), 
+                            real(distribution.dirs[i * DIMENSION + 1]),
+			                real(distribution.dirs[i * DIMENSION + 2]) );
 #endif
 
 		uint neighborIndex = this->transCoordToIndex(point.x + direction.x * this->delta,
 													 point.y + direction.y * this->delta,
 													 point.z + direction.z * this->delta);
+
 		if (neighborIndex == INVALID_INDEX) continue;
 
 		if ( this->field.is(neighborIndex, STOPPER_SOLID) )
