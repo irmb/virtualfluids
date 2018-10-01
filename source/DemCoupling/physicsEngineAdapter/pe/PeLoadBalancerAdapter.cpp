@@ -2,6 +2,7 @@
 #include "Grid3D.h"
 #include "Block3D.h"
 #include "CoordinateTransformation3D.h"
+#include "UbLogger.h"
 
 #include "core/debug/CheckFunctions.h"
 
@@ -19,11 +20,17 @@ walberla::uint_t PeLoadBalancerAdapter::operator()(walberla::SetupBlockForest & 
    for (auto peBlock = peBlocks.begin(); peBlock != peBlocks.end(); ++peBlock)
    {
       walberla::AABB aabb = (*peBlock)->getAABB();
-      SPtr<Block3D> block = getBlockByMinUniform((double)aabb.xMin(), (double)aabb.yMin(), (double)aabb.zMin(), grid);
+      SPtr<Block3D> block = getBlockByMinUniform(aabb.xMin()+0.5*(aabb.xMax()-aabb.xMin()), aabb.yMin()+0.5*(aabb.yMax()-aabb.yMin()), aabb.zMin()+0.5*(aabb.zMax()-aabb.zMin()), grid);
       if (block)
       {
          (*peBlock)->assignTargetProcess((walberla::uint_t)block->getRank());
       }
+      //else
+      //{
+         ////TODO: the rank of pe blocks is not consistent with VF blocks 
+         //(*peBlock)->assignTargetProcess(0);
+         ////UBLOG(logINFO, "PeLoadBalancerAdapter::operator() peBlockId="<<(*peBlock)->getId());
+      //}
    }
 
    return numberOfProcesses;

@@ -1,12 +1,12 @@
 /*
-*  BlocksCoProcessor.h
+*  WriteBlocksCoProcessor.h
 *
 *  Created on: 24.09.2012
 *  Author: K. Kucher
 */
 
-#ifndef BlocksCoProcessor_H_
-#define BlocksCoProcessor_H_
+#ifndef WriteBlocksCoProcessor_H_
+#define WriteBlocksCoProcessor_H_
 
 #include <PointerDefinitions.h>
 #include <string>

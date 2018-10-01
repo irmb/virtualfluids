@@ -13,7 +13,7 @@ class Grid3DVisitor;
 class InteractorsHelper
 {
 public:
-   InteractorsHelper(SPtr<Grid3D> grid, SPtr<Grid3DVisitor> visitor);
+   InteractorsHelper(SPtr<Grid3D> grid, SPtr<Grid3DVisitor> visitor, bool deleteBlocks=true);
    ~InteractorsHelper();
 
    void addInteractor(SPtr<Interactor3D> interactor);
@@ -32,6 +32,7 @@ private:
    SPtr<Grid3D> grid;
    std::vector<SPtr<Block3D> > solidBlocks;
    SPtr<Grid3DVisitor> visitor;
+   bool deleteBlocks;
 };
 
 #endif

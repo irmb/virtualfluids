@@ -52,6 +52,8 @@ public:
     void getObjectsPropertiesVector(std::vector<double>& p);
     void addPeGeo(walberla::pe::RigidBody* peGeo);
     void removePeGeo(walberla::pe::RigidBody* peGeo);
+    void addPeShadowGeo(walberla::pe::RigidBody* peGeo);
+    void removePeShadowGeo(walberla::pe::RigidBody* peGeo);
     bool isSpheresIntersection(double centerX1, double centerX2, double centerX3, double d);
   
 private:
@@ -60,7 +62,8 @@ private:
     void setForcesToObject(SPtr<Grid3D> grid, std::shared_ptr<MovableObjectInteractor> interactor, std::shared_ptr<PhysicsEngineGeometryAdapter> physicsEngineGeometry);
     void scaleForcesAndTorques(double scalingFactor);
     void calculateDemTimeStep(double step);
-    void moveVfGeoObject();
+    void moveVfGeoObjects();
+    walberla::pe::RigidBody* getPeGeoObject(walberla::id_t id);
 private:
     std::shared_ptr<Communicator> comm;
     std::vector<std::shared_ptr<MovableObjectInteractor> > interactors;
@@ -69,6 +72,8 @@ private:
     std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometrieAdapters;
     double intermediateDemSteps;
     SPtr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
+    walberla::pe::BodyStorage* bodyStorage;    //!< Reference to the central body storage.
+    walberla::pe::BodyStorage* bodyStorageShadowCopies;    //!< Reference to the body storage containing body shadow copies.
 
 #ifdef TIMING
     UbTimer timer;
