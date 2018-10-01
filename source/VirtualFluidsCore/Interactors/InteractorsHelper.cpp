@@ -9,8 +9,8 @@
 #include "SetBcBlocksBlockVisitor.h"
 
 
-InteractorsHelper::InteractorsHelper(SPtr<Grid3D> grid, SPtr<Grid3DVisitor> visitor) :
-                                     grid(grid), visitor(visitor)
+InteractorsHelper::InteractorsHelper(SPtr<Grid3D> grid, SPtr<Grid3DVisitor> visitor, bool deleteBlocks) :
+                                     grid(grid), visitor(visitor), deleteBlocks(deleteBlocks)
 {
 
 }
@@ -50,16 +50,17 @@ void InteractorsHelper::deleteSolidBlocks()
 {
     for(SPtr<Interactor3D> interactor : interactors)
     {
-        //setBlocks(interactor, SetBcBlocksBlockVisitor::SOLID);
         SetSolidBlocksBlockVisitor v(interactor);
         grid->accept(v);
-
-        std::vector<SPtr<Block3D>>& sb = interactor->getSolidBlockSet();
-        solidBlocks.insert(solidBlocks.end(), sb.begin(), sb.end());
-        interactor->removeSolidBlocks();
+        if (deleteBlocks)
+        {
+           std::vector<SPtr<Block3D>>& sb = interactor->getSolidBlockSet();
+           solidBlocks.insert(solidBlocks.end(), sb.begin(), sb.end());
+           interactor->removeSolidBlocks();
+        }
     }
 
-    updateGrid();
+   if (deleteBlocks) updateGrid();
 }
 //////////////////////////////////////////////////////////////////////////
 void InteractorsHelper::setBcBlocks()

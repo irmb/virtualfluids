@@ -51,12 +51,17 @@ public:
     void setActive();
     void setInactive();
     bool isActive();
+    //void increaseShadowCounter();
+    //void decreaseShad
+    int shadowCounter;
+    int counter;
 
 private:
     walberla::pe::RigidBody* peGeoObject;
     //unsigned long long id;
     int id;
     bool active;
+
 };
 
 #endif

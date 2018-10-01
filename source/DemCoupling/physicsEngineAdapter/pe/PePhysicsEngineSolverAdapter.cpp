@@ -24,11 +24,11 @@ PePhysicsEngineSolverAdapter::PePhysicsEngineSolverAdapter(std::shared_ptr<PePar
 void PePhysicsEngineSolverAdapter::initalizePeEnvironment()
 {
     this->initialPeBodyStorage();
-    this->initalPeBlockForest();
+    this->initialPeBlockForest();
     this->initalBlockData();
     this->initalPeIntegrator();
     this->executePeBodyTypeTuple();
-    this->initalPeChannel();
+    this->initialPeChannel();
 }
 
 
@@ -54,22 +54,15 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::crea
        return peGeometryAdapter;
     }
 
-    //if (peGeometry)
-    //{
-    //   return std::static_pointer_cast<PhysicsEngineGeometryAdapter>(std::make_shared<PePhysicsEngineGeometryAdapter>(peGeometry));
-    //} 
-    //else
-    //{
-    //   return std::shared_ptr<PhysicsEngineGeometryAdapter>(new PePhysicsEngineGeometryAdapter());
-    //}
-
     walberla::pe::syncNextNeighbors<BodyTypeTuple>(*forest, *storageId);
+    //walberla::pe::syncShadowOwners<BodyTypeTuple>(*forest, *storageId);
 }
 
 void PePhysicsEngineSolverAdapter::runTimestep(double step)
 {
     cr->timestep(walberla::real_c(step));
     walberla::pe::syncNextNeighbors<BodyTypeTuple>(*forest, *storageId);
+    //walberla::pe::syncShadowOwners<BodyTypeTuple>(*forest, *storageId);
 }
 
 
@@ -79,19 +72,8 @@ void PePhysicsEngineSolverAdapter::initialPeBodyStorage()
     globalBodyStorage = std::make_shared<walberla::pe::BodyStorage>();
 }
 
-void PePhysicsEngineSolverAdapter::initalPeBlockForest()
+void PePhysicsEngineSolverAdapter::initialPeBlockForest()
 {
-    //forest = walberla::pe::createBlockForest
-    //(
-    //    //walberla::AABB(0, 0, 0, val<1>(peParameter->simulationDomain), val<2>(peParameter->simulationDomain), val<3>(peParameter->simulationDomain)), // simulationDomain
-    //   walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2], 
-    //      peParameter->simulationDomain[3], peParameter->simulationDomain[4], peParameter->simulationDomain[5]), // simulationDomain
-    //    walberla::Vector3<walberla::uint_t>(val<1>(peParameter->numberOfBlocks), val<2>(peParameter->numberOfBlocks), val<3>(peParameter->numberOfBlocks)), // blocks in each direction
-    //    walberla::Vector3<bool>(val<1>(peParameter->isPeriodic), val<2>(peParameter->isPeriodic), val<3>(peParameter->isPeriodic)) // periodicity
-    //); 
-
-
-
     walberla::SetupBlockForest sforest;
     //sforest.addWorkloadMemorySUIDAssignmentFunction( uniformWorkloadAndMemoryAssignment );
     sforest.init(walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2],
@@ -132,7 +114,7 @@ void PePhysicsEngineSolverAdapter::executePeBodyTypeTuple()
     walberla::pe::SetBodyTypeIDs<BodyTypeTuple>::execute();
 }
 
-void PePhysicsEngineSolverAdapter::initalPeChannel() const
+void PePhysicsEngineSolverAdapter::initialPeChannel() const
 {
     const walberla::pe::MaterialID material = peParameter->planes->getPeMaterial();
 
@@ -206,4 +188,9 @@ std::shared_ptr<walberla::blockforest::BlockForest> PePhysicsEngineSolverAdapter
 std::shared_ptr<walberla::domain_decomposition::BlockDataID> PePhysicsEngineSolverAdapter::getStorageId()
 {
    return storageId;
+}
+
+std::shared_ptr<walberla::pe::BodyStorage> PePhysicsEngineSolverAdapter::getGlobalBodyStorage()
+{
+   return globalBodyStorage;
 }

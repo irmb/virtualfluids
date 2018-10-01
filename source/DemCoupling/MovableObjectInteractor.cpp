@@ -10,6 +10,7 @@
 #include "BCAdapter.h"
 #include "BCProcessor.h"
 #include "ILBMKernel.h"
+#include "CoordinateTransformation3D.h"
 
 #include "SetBcBlocksBlockVisitor.h"
 #include "BoundaryConditionsBlockVisitor.h"
@@ -184,22 +185,54 @@ void MovableObjectInteractor::setBcNodesToFluid()
 
 void MovableObjectInteractor::setBcBlocks()
 {
-    //SetBcBlocksBlockVisitor v(shared_from_this());
-    //this->grid.lock()->accept(v);
-   SPtr<GbObject3D> geoObject = this->getGbObject3D();
-   std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
-   blockVector.clear();
-   UbTupleInt3 blockNX=grid.lock()->getBlockNX();
-   double ext = 0.0;
-   grid.lock()->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
+    SetBcBlocksBlockVisitor v(shared_from_this());
+    this->grid.lock()->accept(v);
 
-   for(std::shared_ptr<Block3D> block : this->blockVector)
-   {
-      if (block->getKernel())
-      {
-         setBCBlock(block);
-      }
-   }
+    //////////////////////////////////////////////////////////////////////////
+   //SPtr<GbObject3D> geoObject = this->getGbObject3D();
+   //std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
+   //blockVector.clear();
+   //UbTupleInt3 blockNX=grid.lock()->getBlockNX();
+   //double ext = 0.0;
+   //grid.lock()->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
+
+   //for(std::shared_ptr<Block3D> block : this->blockVector)
+   //{
+   //   if (block->getKernel())
+   //   {
+   //      setBCBlock(block);
+   //   }
+   //}
+   //////////////////////////////////////////////////////////////////////////
+   //SPtr<GbObject3D> geoObject = this->getGbObject3D();
+   //std::array <double, 2> minMax1;
+   //std::array <double, 2> minMax2;
+   //std::array <double, 2> minMax3;
+   //minMax1[0] = geoObject->getX1Minimum();
+   //minMax2[0] = geoObject->getX2Minimum();
+   //minMax3[0] = geoObject->getX3Minimum();
+   //minMax1[1] = geoObject->getX1Maximum();
+   //minMax2[1] = geoObject->getX2Maximum();
+   //minMax3[1] = geoObject->getX3Maximum();
+
+   //SPtr<CoordinateTransformation3D> trafo = grid.lock()->getCoordinateTransformator();
+
+   //for (int x3 = 0; x3 < 2; x3++)
+   //   for (int x2 = 0; x2 < 2; x2++)
+   //      for (int x1 = 0; x1 < 2; x1++)
+   //      {
+   //         int ix1 = (int)trafo->transformForwardToX1Coordinate(minMax1[x1], minMax2[x2], minMax3[x3]);
+   //         int ix2 = (int)trafo->transformForwardToX2Coordinate(minMax1[x1], minMax2[x2], minMax3[x3]);
+   //         int ix3 = (int)trafo->transformForwardToX3Coordinate(minMax1[x1], minMax2[x2], minMax3[x3]);
+   //         blockVector.push_back(grid.lock()->getBlock(ix1, ix2, ix3, 0));
+   //      }
+   //for(std::shared_ptr<Block3D> block : this->blockVector)
+   //{
+   //   if (block->getKernel())
+   //   {
+   //      setBCBlock(block);
+   //   }
+   //}
 }
 
 void MovableObjectInteractor::updateVelocityBc()

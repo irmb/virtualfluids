@@ -148,6 +148,6 @@ void WriteBlocksCoProcessor::collectData(double step)
          WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(path + "/blocks/blocks_collection", filenames, istep, false);
       }
 
-      UBLOG(logINFO,"BlocksCoProcessor step: " << istep);
+      UBLOG(logINFO,"WriteBlocksCoProcessor step: " << istep);
    }
 }

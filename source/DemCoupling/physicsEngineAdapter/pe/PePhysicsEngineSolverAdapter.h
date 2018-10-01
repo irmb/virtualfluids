@@ -75,16 +75,17 @@ public:
     void loadFromFile(const std::string& path);
     std::shared_ptr<walberla::blockforest::BlockForest> getBlockForest();
     std::shared_ptr<walberla::domain_decomposition::BlockDataID> getStorageId();
+    std::shared_ptr<walberla::pe::BodyStorage> getGlobalBodyStorage();
 
 private:
     void initalizePeEnvironment();
     void initialPeBodyStorage();
-    void initalPeBlockForest();
+    void initialPeBlockForest();
     void initalBlockData();
 
     void initalPeIntegrator();
     static void executePeBodyTypeTuple();
-    void initalPeChannel() const;
+    void initialPeChannel() const;
 
 private:
     std::shared_ptr<PeParameter> peParameter;

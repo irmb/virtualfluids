@@ -15,87 +15,89 @@ PePhysicsEngineGeometryAdapter::PePhysicsEngineGeometryAdapter()
 {
    this->id = -999;
    this->active = false;
+   shadowCounter = 0;
+   counter = 0;
 }
 
 void PePhysicsEngineGeometryAdapter::addForce(const Vector3D& force)
 {
-    peGeoObject->addForce(PeConverter::convert(force));
+   peGeoObject->addForce(PeConverter::convert(force));
 }
 
 void PePhysicsEngineGeometryAdapter::addTorque(const Vector3D& torque)
 {
-    peGeoObject->addTorque(PeConverter::convert(torque));
+   peGeoObject->addTorque(PeConverter::convert(torque));
 }
 
 void PePhysicsEngineGeometryAdapter::setForce(const Vector3D& force)
 {
-    peGeoObject->setForce(PeConverter::convert(force));
+   peGeoObject->setForce(PeConverter::convert(force));
 }
 
 void PePhysicsEngineGeometryAdapter::setTorque(const Vector3D& torque)
 {
-    peGeoObject->setTorque(PeConverter::convert(torque));
+   peGeoObject->setTorque(PeConverter::convert(torque));
 }
 
 void PePhysicsEngineGeometryAdapter::addForceAtPosition(const Vector3D& force, const Vector3D& position)
 {
-    peGeoObject->addForceAtPos(PeConverter::convert(force), PeConverter::convert(position));
+   peGeoObject->addForceAtPos(PeConverter::convert(force), PeConverter::convert(position));
 }
 
 void PePhysicsEngineGeometryAdapter::setLinearVelolocity(const Vector3D& velocity)
 {
-    peGeoObject->setLinearVel(PeConverter::convert(velocity));
+   peGeoObject->setLinearVel(PeConverter::convert(velocity));
 }
 
 void PePhysicsEngineGeometryAdapter::setAngularVelocity(const Vector3D& velocity)
 {
-    peGeoObject->setAngularVel(PeConverter::convert(velocity));
+   peGeoObject->setAngularVel(PeConverter::convert(velocity));
 }
 
 void PePhysicsEngineGeometryAdapter::resetForceAndTorque()
 {
-    peGeoObject->resetForceAndTorque();
+   peGeoObject->resetForceAndTorque();
 }
 
 Vector3D PePhysicsEngineGeometryAdapter::getVelocityAtPosition(const Vector3D& position) const
 {
-    return PeConverter::convert(peGeoObject->velFromWF(PeConverter::convert(position)));
+   return PeConverter::convert(peGeoObject->velFromWF(PeConverter::convert(position)));
 }
 
 Vector3D PePhysicsEngineGeometryAdapter::getLinearVelocity() const
 {
-    return PeConverter::convert(peGeoObject->getLinearVel());
+   return PeConverter::convert(peGeoObject->getLinearVel());
 }
 
 Vector3D PePhysicsEngineGeometryAdapter::getAngularVelocity() const
 {
-    return PeConverter::convert(peGeoObject->getAngularVel());
+   return PeConverter::convert(peGeoObject->getAngularVel());
 }
 
 Vector3D PePhysicsEngineGeometryAdapter::getPosition() const
 {
-    return PeConverter::convert(peGeoObject->getPosition());
+   return PeConverter::convert(peGeoObject->getPosition());
 }
 
 Vector3D PePhysicsEngineGeometryAdapter::getForce() const
 {
-    return PeConverter::convert(peGeoObject->getForce());
+   return PeConverter::convert(peGeoObject->getForce());
 }
 
 Vector3D PePhysicsEngineGeometryAdapter::getTorque() const
 {
-    return PeConverter::convert(peGeoObject->getTorque());
+   return PeConverter::convert(peGeoObject->getTorque());
 }
 
 void PePhysicsEngineGeometryAdapter::changeState(State state)
 {
-    if (state == State::PIN)
-       peGeoObject->setMassAndInertiaToInfinity();
+   if (state == State::PIN)
+      peGeoObject->setMassAndInertiaToInfinity();
 }
 
 int PePhysicsEngineGeometryAdapter::getId() const
 {
-    return id;
+   return id;
 }
 
 void PePhysicsEngineGeometryAdapter::setId(int id)
@@ -105,7 +107,7 @@ void PePhysicsEngineGeometryAdapter::setId(int id)
 
 void PePhysicsEngineGeometryAdapter::setGeometry(walberla::pe::RigidBody* peGeoObject)
 {
-    this->peGeoObject = peGeoObject;
+   this->peGeoObject = peGeoObject;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -121,5 +123,7 @@ void PePhysicsEngineGeometryAdapter::setInactive()
 //////////////////////////////////////////////////////////////////////////
 bool PePhysicsEngineGeometryAdapter::isActive()
 {
+
+
    return active;
 }
