@@ -23,6 +23,147 @@ double rangeRandom1()
 
 using namespace std;
 
+std::vector<int> x1Nbr;
+std::vector<int> x2Nbr;
+std::vector<int> x3Nbr;
+
+std::vector<int> x1NbrTemp;
+std::vector<int> x2NbrTemp;
+std::vector<int> x3NbrTemp;
+
+//void findSolidNeighbor(SPtr<GbVoxelMatrix3D> voxelMatrix, int x1, int x2, int x3)
+//{
+//   for (int k3 = -1; k3<=1; k3++)
+//   {
+//      for (int k2 = -1; k2<=1; k2++)
+//      {
+//         for (int k1 = -1; k1<=1; k1++)
+//         {
+//            int j1 = x1+k1;
+//            int j2 = x2+k2;
+//            int j3 = x3+k3;
+//            if (j1>=0&&j1<nodesX1 && j2>=0&&j2<nodesX2 && j3>=0&&j3<nodesX3)
+//            {
+//               if ((*voxelMatrix)(j1, j2, j3)==GbVoxelMatrix3D::FLUID)
+//               {
+//                  if (flagMatrix(j1, j2, j3)==0)
+//                  {
+//                     voxelMatrixTemp(j1, j2, j3) = GbVoxelMatrix3D::SOLID;
+//                     flagMatrix(j1, j2, j3) = 1;
+//                     x1NbrTemp.push_back(j1);
+//                     x2NbrTemp.push_back(j2);
+//                     x3NbrTemp.push_back(j3);
+//                  }
+//               }
+//            }
+//         }
+//      }
+//   }
+//}
+
+void changePorosity(SPtr<GbVoxelMatrix3D> sample, vector<int> pmNX)
+{
+   int minX1 = 0;
+   int minX2 = 0;
+   int minX3 = 0;
+   int maxX1 = pmNX[0];
+   int maxX2 = pmNX[1];
+   int maxX3 = pmNX[2];
+   sample->calculateNumberOfSolidAndFluid();
+   double nSolid = sample->getNumberOfSolid();
+   double nFluid = sample->getNumberOfFluid();
+   double porosityStart = nFluid/(nSolid+nFluid);
+   double porosityEnd = 0.5;
+   double porosityStep = (porosityEnd-porosityStart)/(double)maxX3;
+   double totallSliceVoxel = maxX1*maxX2;
+   vector<int> fluidThreshold;
+
+   SPtr<GbVoxelMatrix3D> sampleTemp = SPtr<GbVoxelMatrix3D>(sample->clone());
+
+   int count=1;
+
+   for (int ix3=minX3; ix3<maxX3; ix3++)
+   {
+      int cFluid = 0;
+      for (int ix2=minX2; ix2<maxX2; ix2++)
+      {
+         for (int ix1=minX1; ix1<maxX1; ix1++)
+         {
+            if ((*sample)(ix1, ix2, ix3) == GbVoxelMatrix3D::FLUID)
+            {
+               cFluid++;
+            }
+         }
+      }
+      double slicePorosity = (double)cFluid/totallSliceVoxel;
+      double porosityPercent = (porosityStep*(double)count)/slicePorosity;
+      fluidThreshold.push_back((totallSliceVoxel-(double)cFluid)*porosityPercent);
+      count++;
+   }
+   int solidCount = 0;
+   count=0;
+
+   for (int ix3=minX3; ix3<maxX3; ix3++)
+   {
+      //while (fluidThreshold[count] > 0)
+      //{
+     // int fTh = fluidThreshold[count];
+
+         int solidCount = 0;
+         for (int ix2=minX2; ix2<maxX2; ix2++)
+         {
+            for (int ix1=minX1; ix1<maxX1; ix1++)
+            {
+               if ((*sample)(ix1, ix2, ix3) == GbVoxelMatrix3D::SOLID)
+               {
+                  bool flagSolid = true;
+                  for (int k3 = -1; k3<=1; k3++)
+                  {
+                     for (int k2 = -1; k2<=1; k2++)
+                     {
+                        for (int k1 = -1; k1<=1; k1++)
+                        {
+                           int j1 = ix1+k1;
+                           int j2 = ix2+k2;
+                           int j3 = ix3;//+k3;
+                           if (j1>=0&&j1<maxX1 && j2>=0&&j2<maxX2 && j3>=0&&j3<maxX3)
+                           {
+                              if ((*sample)(j1, j2, j3) == GbVoxelMatrix3D::FLUID)
+                              {
+                                 flagSolid = flagSolid && false;
+                              }
+                           }
+                        }
+                     }
+                  }
+                  if (!flagSolid)
+                  {
+                     (*sample)(ix1, ix2, ix3)=GbVoxelMatrix3D::FLUID;
+                      fluidThreshold[count]--;
+                     solidCount++;
+                  }
+                  if ( fluidThreshold[count] == 0)
+                  {
+                     ix1=maxX1;
+                     ix2=maxX2;
+                  }
+               }
+            }
+         }
+         UBLOG(logINFO, "count = " << count);
+         UBLOG(logINFO, "fTh = " <<  fluidThreshold[count]);
+         UBLOG(logINFO, "solidCount = " << solidCount);
+         //sample = sampleTemp;
+         //sampleTemp = SPtr<GbVoxelMatrix3D>(sample->clone());
+         
+        count++;     
+      
+       }
+      
+   //}
+   //sampleTemp->writeToLegacyVTKBinary("d:/temp/ChannelFlow/geo/sampleTemp.vtk");
+}
+
 //////////////////////////////////////////////////////////////////////////
 void run(string configname)
 {
@@ -56,7 +197,7 @@ void run(string configname)
       bool            thinWall          = config.getValue<bool>("thinWall");
       double          Re                = config.getValue<double>("Re");
       double          channelHigh       = config.getValue<double>("channelHigh");
-      bool            changeQs          = config.getValue<bool>("changeQs"); 
+      bool            changeQs          = config.getValue<bool>("changeQs");
       double          timeAvStart       = config.getValue<double>("timeAvStart");
       double          timeAvStop        = config.getValue<double>("timeAvStop");
       bool            averaging         = config.getValue<bool>("averaging");
@@ -119,12 +260,12 @@ void run(string configname)
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-      
+
       mu::Parser fctForcingX1;
       fctForcingX1.SetExpr("Fx1");
       fctForcingX1.DefineConst("Fx1", 1.0e-6);
       kernel->setWithForcing(true);
-      
+
       kernel->setBCProcessor(bcProc);
 
       //////////////////////////////////////////////////////////////////////////
@@ -179,7 +320,7 @@ void run(string configname)
       {
          if (myid == 0) UBLOG(logINFO, "new start...");
 
-         
+
 
          grid->setPeriodicX1(true);
          grid->setPeriodicX2(true);
@@ -289,7 +430,7 @@ void run(string configname)
          intHelper.setBC();
 
          ////porous media
-         if(true)
+         if (true)
          {
             string samplePathname = pathGeo + "/" + sampleFilename;
 
@@ -305,6 +446,11 @@ void run(string configname)
 
             sample->setVoxelMatrixDelta(voxelDeltaX[0], voxelDeltaX[1], voxelDeltaX[2]);
             sample->setVoxelMatrixMininum(origin[0], origin[1], origin[2]);
+
+            changePorosity(sample, pmNX);
+
+            sample->writeToLegacyVTKBinary(pathOut+"/geo/sample.vtk");
+            return;
 
             int bounceBackOption = 1;
             bool vxFile = false;
@@ -393,7 +539,7 @@ void run(string configname)
          //Postrozess
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
             ppgeo.process(0);
          }
 
@@ -413,7 +559,7 @@ void run(string configname)
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
-     
+
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
       std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
@@ -442,15 +588,15 @@ void run(string configname)
       //DecrViscSch->addSchedule(10, 0, 1000);
       //DecreaseViscosityCoProcessor decrViscPPPtr(grid, DecrViscSch, &decrViscFunc, comm);
 
-	  //if (changeQs)
-	  //{
-		 // double z1 = pmL[2];
-		 // SPtr<IntegrateValuesHelper> intValHelp2(new IntegrateValuesHelper(grid, comm,
-			//  coord[0], coord[1], z1 - deltaXfine,
-			//  coord[3], coord[4], z1 + deltaXfine));
-		 // if (myid == 0) GbSystem3D::writeGeoObject(intValHelp2->getBoundingBox().get(), pathOut + "/geo/intValHelp2", WbWriterVtkXmlBinary::getInstance());
-		 // Utilities::ChangeRandomQs(intValHelp2);
-	  //}
+     //if (changeQs)
+     //{
+       // double z1 = pmL[2];
+       // SPtr<IntegrateValuesHelper> intValHelp2(new IntegrateValuesHelper(grid, comm,
+         //  coord[0], coord[1], z1 - deltaXfine,
+         //  coord[3], coord[4], z1 + deltaXfine));
+       // if (myid == 0) GbSystem3D::writeGeoObject(intValHelp2->getBoundingBox().get(), pathOut + "/geo/intValHelp2", WbWriterVtkXmlBinary::getInstance());
+       // Utilities::ChangeRandomQs(intValHelp2);
+     //}
 
       std::vector<double> levelCoords;
       std::vector<int> levels;
@@ -481,15 +627,15 @@ void run(string configname)
       //SPtr<CoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
       //   TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
       //   levels, levelCoords, bounds));
-      
-      
+
+
       //create line time series
-      SPtr<UbScheduler> tpcSch(new UbScheduler(1,1,3));
+      SPtr<UbScheduler> tpcSch(new UbScheduler(1, 1, 3));
       //GbPoint3DPtr p1(new GbPoint3D(0.0,0.005,0.01));
       //GbPoint3DPtr p2(new GbPoint3D(0.064,0.005,0.01));
       //SPtr<GbLine3D> line(new GbLine3D(p1.get(),p2.get()));
-      SPtr<GbLine3D> line(new GbLine3D(new GbPoint3D(0.0,0.005,0.01),new GbPoint3D(0.064,0.005,0.01)));
-      LineTimeSeriesCoProcessor lineTs(grid, tpcSch,pathOut+"/TimeSeries/line1.csv",line, 0,comm);
+      SPtr<GbLine3D> line(new GbLine3D(new GbPoint3D(0.0, 0.005, 0.01), new GbPoint3D(0.064, 0.005, 0.01)));
+      LineTimeSeriesCoProcessor lineTs(grid, tpcSch, pathOut+"/TimeSeries/line1.csv", line, 0, comm);
       if (myid==0) lineTs.writeLine(pathOut+"/geo/line1");
 
       if (myid == 0)
@@ -501,7 +647,7 @@ void run(string configname)
 
       omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, (int)endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(AdjForcCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
