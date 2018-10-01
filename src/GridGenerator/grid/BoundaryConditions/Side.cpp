@@ -122,7 +122,7 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
             uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
 
-            if( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( qNode[dir] < -0.5 && grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
                 qNode[dir] = 0.5;
         }
 

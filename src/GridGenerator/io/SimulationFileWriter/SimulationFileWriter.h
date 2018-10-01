@@ -30,6 +30,10 @@ public:
 private:
     static void write(SPtr<GridBuilder> builder, FILEFORMAT format);
     static void openFiles();
+
+    static void writeNumberNodes(SPtr<GridBuilder> builder, uint level);
+    static void writeLBMvsSI(SPtr<GridBuilder> builder, uint level);
+
     static void writeLevel(uint numberOfLevels);
     static void writeLevelSize(uint numberOfNodes);
     static void writeCoordFiles(SPtr<GridBuilder> builder, uint level, FILEFORMAT format);
@@ -57,6 +61,7 @@ private:
     static std::ofstream xNeighborFile;
     static std::ofstream yNeighborFile;
     static std::ofstream zNeighborFile;
+    static std::ofstream wsbNeighborFile;
     static std::ofstream geoVecFile;
 
     static std::ofstream scaleCF_coarse_File;
@@ -72,6 +77,10 @@ private:
 
     static std::vector<std::ofstream> qFiles;
     static std::vector<std::ofstream> valueFiles;
+
+    static std::ofstream numberNodes_File;
+    static std::ofstream LBMvsSI_File;
+
     static std::string folder;
 };
 

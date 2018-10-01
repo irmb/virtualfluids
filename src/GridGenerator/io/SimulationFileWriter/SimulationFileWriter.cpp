@@ -6,6 +6,8 @@
 #include <omp.h>
 #include "stdint.h"
 
+#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+
 #include "SimulationFileNames.h"
 
 #include <GridGenerator/grid/NodeValues.h>
@@ -47,6 +49,9 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
 
     for (uint level = 0; level < numberOfLevel; level++)
     {
+        writeNumberNodes(builder, level);
+        writeLBMvsSI(builder, level);
+
         writeLevelSize(builder->getNumberOfNodes(level));
         writeCoordFiles(builder, level, format);
 
@@ -65,13 +70,14 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
 void SimulationFileWriter::openFiles()
 {
     std::string path = folder;
-    xCoordFile.open((path + simulationFileNames::coordX).c_str(), std::ios::out | std::ios::binary);
-    yCoordFile.open((path + simulationFileNames::coordY).c_str(), std::ios::out | std::ios::binary);
-    zCoordFile.open((path + simulationFileNames::coordZ).c_str(), std::ios::out | std::ios::binary);
-    xNeighborFile.open((path + simulationFileNames::neighborX).c_str(), std::ios::out | std::ios::binary);
-    yNeighborFile.open((path + simulationFileNames::neighborY).c_str(), std::ios::out | std::ios::binary);
-    zNeighborFile.open((path + simulationFileNames::neighborZ).c_str(), std::ios::out | std::ios::binary);
-    geoVecFile.open((path + simulationFileNames::geoVec).c_str(), std::ios::out | std::ios::binary);
+    xCoordFile.open((      path + simulationFileNames::coordX).c_str(),      std::ios::out | std::ios::binary);
+    yCoordFile.open((      path + simulationFileNames::coordY).c_str(),      std::ios::out | std::ios::binary);
+    zCoordFile.open((      path + simulationFileNames::coordZ).c_str(),      std::ios::out | std::ios::binary);
+    xNeighborFile.open((   path + simulationFileNames::neighborX).c_str(),   std::ios::out | std::ios::binary);
+    yNeighborFile.open((   path + simulationFileNames::neighborY).c_str(),   std::ios::out | std::ios::binary);
+    zNeighborFile.open((   path + simulationFileNames::neighborZ).c_str(),   std::ios::out | std::ios::binary);
+    wsbNeighborFile.open(( path + simulationFileNames::neighborWSB).c_str(), std::ios::out | std::ios::binary);
+    geoVecFile.open((      path + simulationFileNames::geoVec).c_str(),      std::ios::out | std::ios::binary);
 
     scaleCF_coarse_File.open((path + simulationFileNames::scaleCFC).c_str(), std::ios::out | std::ios::binary);
     scaleCF_fine_File.open((path + simulationFileNames::scaleCFF).c_str(), std::ios::out | std::ios::binary);
@@ -109,6 +115,34 @@ void SimulationFileWriter::openFiles()
         outV->open(valueNames[i].c_str(), std::ios::out | std::ios::binary);
         valueStreams.push_back(outV);
     }
+
+    numberNodes_File.open((path + simulationFileNames::numberNodes).c_str(), std::ios::out | std::ios::binary);
+    LBMvsSI_File.open((path + simulationFileNames::LBMvsSI).c_str(), std::ios::out | std::ios::binary);
+}
+
+void SimulationFileWriter::writeNumberNodes(SPtr<GridBuilder> builder, uint level)
+{
+    SPtr<Grid> grid = builder->getGrid(level);
+    numberNodes_File << level << '\n';
+
+    numberNodes_File << grid->getNumberOfNodesX() << ' ';
+    numberNodes_File << grid->getNumberOfNodesY() << ' ';
+    numberNodes_File << grid->getNumberOfNodesZ() << ' ';
+    numberNodes_File << '\n';
+}
+
+void SimulationFileWriter::writeLBMvsSI(SPtr<GridBuilder> builder, uint level)
+{
+    SPtr<Grid> grid = builder->getGrid(level);
+
+    LBMvsSI_File << grid->getStartX() << ' ';
+    LBMvsSI_File << grid->getStartY() << ' ';
+    LBMvsSI_File << grid->getStartZ() << ' ';
+
+    LBMvsSI_File << grid->getEndX() << ' ';
+    LBMvsSI_File << grid->getEndY() << ' ';
+    LBMvsSI_File << grid->getEndZ() << ' ';
+    LBMvsSI_File << '\n';
 }
 
 void SimulationFileWriter::writeLevel(uint numberOfLevels)
@@ -121,6 +155,7 @@ void SimulationFileWriter::writeLevel(uint numberOfLevels)
     xNeighborFile << level << "\n";
     yNeighborFile << level << "\n";
     zNeighborFile << level << "\n";
+    wsbNeighborFile << level << "\n";
     geoVecFile << level << "\n";
 
     scaleCF_coarse_File << level << "\n";
@@ -150,6 +185,7 @@ void SimulationFileWriter::writeLevelSize(uint numberOfNodes)
     xNeighborFile << numberOfNodes << "\n" << zeroIndex;
     yNeighborFile << numberOfNodes << "\n" << zeroIndex;
     zNeighborFile << numberOfNodes << "\n" << zeroIndex;
+    wsbNeighborFile << numberOfNodes << "\n" << zeroIndex;
     geoVecFile << numberOfNodes << "\n" << zeroGeo;
 
     //const std::string geoRB = "noSlip\n";
@@ -173,8 +209,9 @@ void SimulationFileWriter::writeLevelSizeGridInterface(uint sizeCF, uint sizeFC)
 
 void SimulationFileWriter::writeCoordFiles(SPtr<GridBuilder> builder, uint level, FILEFORMAT format)
 {
-    for (uint index = 0; index < builder->getNumberOfNodes(level); index++)
+    for (uint index = 0; index < builder->getGrid(level)->getSize(); index++){
         writeCoordsNeighborsGeo(builder, index, level, format);
+    }
 
     xCoordFile << "\n";
     yCoordFile << "\n";
@@ -183,6 +220,7 @@ void SimulationFileWriter::writeCoordFiles(SPtr<GridBuilder> builder, uint level
     xNeighborFile << "\n";
     yNeighborFile << "\n";
     zNeighborFile << "\n";
+    wsbNeighborFile << "\n";
 
     geoVecFile << "\n";
 }
@@ -216,21 +254,23 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
         xNeighborFile.write((char*)(&grid->getNeighborsX()[index] + 1), sizeof(unsigned int));
         yNeighborFile.write((char*)(&grid->getNeighborsY()[index] + 1), sizeof(unsigned int));
         zNeighborFile.write((char*)(&grid->getNeighborsZ()[index] + 1), sizeof(unsigned int));
+        wsbNeighborFile.write((char*)(&grid->getNeighborsNegative()[index] + 1), sizeof(unsigned int));
 
         geoVecFile.write((char*)&type, sizeof(unsigned int));
     }
     else 
 	{
-        xCoordFile << x << " ";
-        yCoordFile << y << " ";
-        zCoordFile << z << " ";
+        xCoordFile << x << "\n";
+        yCoordFile << y << "\n";
+        zCoordFile << z << "\n";
 
         // + 1 for numbering shift between GridGenerator and VF_GPU
-        xNeighborFile << (grid->getNeighborsX()[index] + 1) << " ";
-        yNeighborFile << (grid->getNeighborsY()[index] + 1) << " ";
-        zNeighborFile << (grid->getNeighborsZ()[index] + 1) << " ";
+        xNeighborFile << (grid->getNeighborsX()[index] + 1) << "\n";
+        yNeighborFile << (grid->getNeighborsY()[index] + 1) << "\n";
+        zNeighborFile << (grid->getNeighborsZ()[index] + 1) << "\n";
+        wsbNeighborFile << (grid->getNeighborsNegative()[index] + 1) << "\n";
 
-        geoVecFile << type << " ";
+        geoVecFile << type << "\n";
     }
 }
 
@@ -282,7 +322,7 @@ void SimulationFileWriter::writeGridInterfaceToFile(SPtr<GridBuilder> builder, u
 
         if (numberOfNodesFC > 0)
         {
-            writeGridInterfaceOffsetToFile(numberOfNodesCF, offsetVecFC_File, fc_offset_X, fc_offset_Y, fc_offset_Z);
+            writeGridInterfaceOffsetToFile(numberOfNodesFC, offsetVecFC_File, fc_offset_X, fc_offset_Y, fc_offset_Z);
         }
 
         delete[] cf_offset_X;
@@ -429,7 +469,11 @@ void SimulationFileWriter::writeBoundaryQsFile(SPtr<GridBuilder> builder)
             
             auto bc = builder->getBoundaryCondition( sides[side], level );
 
-            if( !bc ) continue;
+            if( !bc ){
+                *valueStreams[side] << "noSlip\n" << "0\n" << "0\n";
+                *qStreams[side]     <<               "0\n" << "0\n";
+                continue;
+            }
 
             if( level == 0 ){
             
@@ -521,25 +565,26 @@ void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<BoundaryCond
             auto bcPressure = dynamic_cast< PressureBoundaryCondition* >( boundaryCondition.get() );
 
             *valueStreams[side] << bcPressure->getRho() << " ";
-            *valueStreams[side] << bcPressure->neighborIndices[index] << " ";
+            // + 1 for numbering shift between GridGenerator and VF_GPU
+            *valueStreams[side] << grid->getSparseIndex( bcPressure->neighborIndices[index] ) + 1 << " ";
         }
 
         if( boundaryCondition->getType() == BC_VELOCITY )
         {
             auto bcVelocity = dynamic_cast< VelocityBoundaryCondition* >( boundaryCondition.get() );
 
-            *valueStreams[side] << bcVelocity->getVx() << " ";
-            *valueStreams[side] << bcVelocity->getVy() << " ";
-            *valueStreams[side] << bcVelocity->getVz() << " ";
+            *valueStreams[side] << bcVelocity->getVx(index) << " ";
+            *valueStreams[side] << bcVelocity->getVy(index) << " ";
+            *valueStreams[side] << bcVelocity->getVz(index) << " ";
         }
 
         if( boundaryCondition->getType() == BC_SOLID )
         {
             auto bcGeometry = dynamic_cast< GeometryBoundaryCondition* >( boundaryCondition.get() );
 
-            *valueStreams[side] << bcGeometry->getVx() << " ";
-            *valueStreams[side] << bcGeometry->getVy() << " ";
-            *valueStreams[side] << bcGeometry->getVz() << " ";
+            *valueStreams[side] << bcGeometry->getVx(index) << " ";
+            *valueStreams[side] << bcGeometry->getVy(index) << " ";
+            *valueStreams[side] << bcGeometry->getVz(index) << " ";
         }
 
         *valueStreams[side] << "\n";
@@ -555,6 +600,7 @@ void SimulationFileWriter::closeFiles()
     xNeighborFile.close();
     yNeighborFile.close();
     zNeighborFile.close();
+    wsbNeighborFile.close();
     geoVecFile.close();
 
     scaleCF_coarse_File.close();
@@ -569,6 +615,9 @@ void SimulationFileWriter::closeFiles()
         qStreams[rb]->close();
         valueStreams[rb]->close();
     }
+
+    numberNodes_File.close();
+    LBMvsSI_File.close();
 }
 
 
@@ -584,6 +633,7 @@ std::ofstream SimulationFileWriter::zCoordFile;
 std::ofstream SimulationFileWriter::xNeighborFile;
 std::ofstream SimulationFileWriter::yNeighborFile;
 std::ofstream SimulationFileWriter::zNeighborFile;
+std::ofstream SimulationFileWriter::wsbNeighborFile;
 std::ofstream SimulationFileWriter::geoVecFile;
 std::string SimulationFileWriter::folder;
 
@@ -594,3 +644,6 @@ std::ofstream SimulationFileWriter::scaleFC_fine_File;
 
 std::ofstream SimulationFileWriter::offsetVecCF_File;
 std::ofstream SimulationFileWriter::offsetVecFC_File;
+
+std::ofstream SimulationFileWriter::numberNodes_File;
+std::ofstream SimulationFileWriter::LBMvsSI_File;

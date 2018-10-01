@@ -13,6 +13,7 @@ struct VF_PUBLIC simulationFileNames
 	static const std::string neighborX;
 	static const std::string neighborY;
 	static const std::string neighborZ;
+	static const std::string neighborWSB;
 	static const std::string geoVec;
 
     static const std::string scaleCFC;
@@ -43,6 +44,9 @@ struct VF_PUBLIC simulationFileNames
 	
 	static const std::string outletBoundaryQ;
 	static const std::string outletBoundaryValues;
+
+    static const std::string numberNodes;
+    static const std::string LBMvsSI;
 };
 
 

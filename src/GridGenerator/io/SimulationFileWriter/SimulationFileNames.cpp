@@ -8,6 +8,7 @@ const std::string simulationFileNames::coordZ = "coordZ" + fileEnding;
 const std::string simulationFileNames::neighborX = "neighborX" + fileEnding;
 const std::string simulationFileNames::neighborY = "neighborY" + fileEnding;
 const std::string simulationFileNames::neighborZ = "neighborZ" + fileEnding;
+const std::string simulationFileNames::neighborWSB = "neighborWSB" + fileEnding;
 const std::string simulationFileNames::geoVec = "geoVec" + fileEnding;
 
 const std::string simulationFileNames::scaleCFC = "scaleCFC" + fileEnding;
@@ -38,4 +39,7 @@ const std::string simulationFileNames::inletBoundaryValues = "inletBoundaryValue
 				
 const std::string simulationFileNames::outletBoundaryQ = "outletBoundaryQs" + fileEnding;
 const std::string simulationFileNames::outletBoundaryValues = "outletBoundaryValues" + fileEnding;
+
+const std::string simulationFileNames::numberNodes = "numberNodes" + fileEnding;
+const std::string simulationFileNames::LBMvsSI = "LBMvsSI" + fileEnding;
 
