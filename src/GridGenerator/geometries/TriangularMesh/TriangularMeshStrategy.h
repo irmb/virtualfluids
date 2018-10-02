@@ -43,7 +43,7 @@ public:
     RayCastingDiscretizationStrategy() {}
     virtual ~RayCastingDiscretizationStrategy() {}
 
-    virtual void RayCastingDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
+    virtual void doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType);
 };
 
 class VF_PUBLIC PointUnderTriangleStrategy : public TriangularMeshDiscretizationStrategy

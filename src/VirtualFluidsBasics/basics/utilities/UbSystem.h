@@ -57,6 +57,7 @@
 #include <typeinfo>
 #include <cctype> //for toupper
 #include <ctime>
+#include <cstring>
 
 #include <basics/utilities/UbException.h>
 #include <basics/utilities/UbLogger.h>

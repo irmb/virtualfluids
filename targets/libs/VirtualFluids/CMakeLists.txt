@@ -9,7 +9,10 @@ include(CMakePackage.cmake)
 buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
 include(includes.cmake)
 groupTarget(${targetName} ${libraryFolder})
+
+IF(MSVC)
 set_target_properties(${targetName} PROPERTIES LINK_FLAGS "/ignore:4251")
+ENDIF(MSVC)
 
 #Specify the linking to 3rdParty libs
 include(3rdPartyLinking.cmake)

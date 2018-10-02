@@ -15,7 +15,7 @@ TransformatorImp::TransformatorImp()
 	this->translater->z = 0;
 }
 
-TransformatorImp::TransformatorImp(real delta, Vertex& translater) : delta(delta), translater(std::make_shared<Vertex>(translater))
+TransformatorImp::TransformatorImp(real delta, const Vertex& translater) : delta(delta), translater(std::make_shared<Vertex>(translater))
 {
 	this->verifyDelta(delta);
 }

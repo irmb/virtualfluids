@@ -29,7 +29,7 @@ class TransformatorImp
 public:
 	VF_PUBLIC TransformatorImp();
 	VF_PUBLIC TransformatorImp(const TransformatorImp& trafo);
-	VF_PUBLIC TransformatorImp(real delta, Vertex& translater);
+	VF_PUBLIC TransformatorImp(real delta, const Vertex& translater);
 	VF_PUBLIC TransformatorImp(real delta, real dx, real dy, real dz);
 	VF_PUBLIC virtual ~TransformatorImp();
 	

@@ -5,7 +5,9 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <stdexcept>
+#include <algorithm>
 
 #include <GridGenerator/geometries/Vertex/Vertex.h>
 #include <GridGenerator/geometries/Triangle/Triangle.h>
@@ -281,7 +283,7 @@ std::vector<Triangle> STLReader::readBinarySTL(const BoundingBox &box, const std
         if (box.isInside(t) || box.intersect(t))
             triangles.push_back(t);
     }
-    long size = triangles.size();
+    int size = triangles.size();
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Number of Triangles in process: " << size << "\n";
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Complete reading STL file. \n";
 

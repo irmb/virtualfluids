@@ -1,5 +1,7 @@
 #include "BoundaryCondition.h"
 
+#include <cmath>
+
 #include "Side.h"
 #include "../Grid.h"
 

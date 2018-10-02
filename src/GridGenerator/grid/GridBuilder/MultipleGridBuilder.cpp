@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <iostream>
+#include <cmath>
 
 #include "utilities/math/Math.h"
 #include "../Grid.h"
@@ -361,7 +362,7 @@ uint MultipleGridBuilder::getNumberOfLevels() const
 real MultipleGridBuilder::getDelta(uint level) const
 {
     if (grids.size() <= level)
-        throw std::exception("delta from invalid level was required.");
+        throw std::runtime_error("delta from invalid level was required.");
     return grids[level]->getDelta();
 }
 

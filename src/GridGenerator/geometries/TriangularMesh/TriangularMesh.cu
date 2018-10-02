@@ -1,11 +1,11 @@
 #include "TriangularMesh.h"
 
-#include <GridGenerator/io/STLReaderWriter/STLReader.h>
-#include <GridGenerator/utilities/Transformator/TransformatorImp.h>
+#include "io/STLReaderWriter/STLReader.h"
+#include "utilities/transformator/TransformatorImp.h"
 #include "triangleNeighborFinder/TriangleNeighborFinder.h"
 
 
-#include <utilities/logger/Logger.h>
+#include "VirtualFluidsBasics/utilities/logger/Logger.h"
 
 #include "Timer/Timer.h"
 

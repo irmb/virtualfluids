@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <omp.h>
+#include <cmath>
 #include "stdint.h"
 
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
