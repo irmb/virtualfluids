@@ -286,36 +286,36 @@ void multipleLevel(const std::string& configPath)
         // DrivAer
         //////////////////////////////////////////////////////////////////////////
 
-        real dx = 0.2;
-        real vx = 0.05;
+        //real dx = 0.2;
+        //real vx = 0.05;
 
-        TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+        //TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+        ////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+        ////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
 
-        TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+        //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
 
-        real z0 = 0.318+0.5*dx;
+        //real z0 = 0.318+0.5*dx;
 
-        gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
-                                    15.0,  5.0, 5.0 - z0, dx);  // DrivAer
+        //gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
+        //                            15.0,  5.0, 5.0 - z0, dx);  // DrivAer
 
-        //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-        //Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
+        ////Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
+        ////Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
 
-        //Conglomerate* refRegion = new Conglomerate();
+        ////Conglomerate* refRegion = new Conglomerate();
 
-        //refRegion->add(floorBox);
-        //refRegion->add(wakeBox);
-        //refRegion->add(DrivAerRefBoxSTL);
+        ////refRegion->add(floorBox);
+        ////refRegion->add(wakeBox);
+        ////refRegion->add(DrivAerRefBoxSTL);
 
-        gridBuilder->setNumberOfLayers(4,8);
-        gridBuilder->addGrid(DrivAerRefBoxSTL, 5);
-        
-        gridBuilder->setNumberOfLayers(10,8);
-        gridBuilder->addGrid(DrivAerSTL, 6);
+        //gridBuilder->setNumberOfLayers(4,8);
+        //gridBuilder->addGrid(DrivAerRefBoxSTL, 3);
+        //
+        ////gridBuilder->setNumberOfLayers(10,8);
+        ////gridBuilder->addGrid(DrivAerSTL, 5);
 
-        gridBuilder->addGeometry(DrivAerSTL);
+        //gridBuilder->addGeometry(DrivAerSTL);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // DLC
@@ -452,6 +452,16 @@ void multipleLevel(const std::string& configPath)
         //gridBuilder->addGeometry( paperPlaneSTL );
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Testing Periodic Cube
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        real dx = 1.0 / 64.0;
+        real vx = 0.05;
+
+        gridBuilder->addCoarseGrid(-0.5 - 0.5*dx, -0.5 - 0.5*dx, -0.5 - 0.5*dx,  
+                                    0.5 + 0.5*dx,  0.5 + 0.5*dx,  0.5 + 0.5*dx, dx);
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // other tests
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -472,7 +482,8 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+        //gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+        gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
@@ -481,13 +492,13 @@ void multipleLevel(const std::string& configPath)
         //BCs
         //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
         //gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+        //gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+        //gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+        //gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+        //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
 
-        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+        //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+        //gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
         ////////////////////////////////////////////////////////////////////////////
 
@@ -497,7 +508,7 @@ void multipleLevel(const std::string& configPath)
      //   gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
 
 
-        gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+        //gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
         {
             //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setVelocityForPatch(0, vx, 0.0, 0.0);
@@ -509,10 +520,10 @@ void multipleLevel(const std::string& configPath)
             //    0.0, 1.0, 0.0, -5.0 * vx, 1.0);
 
             // DrivAer
-            gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 4, 0.0075, -2.0, 0.0,
-                                                                                                                                     0.0075,  2.0, 0.0, -vx, 0.318);
-            gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 3, 2.793 , -2.0, 0.0,
-                                                                                                                                     2.793 ,  2.0, 0.0, -vx, 0.318);
+            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 4, 0.0075, -2.0, 0.0,
+            //                                                                                                                         0.0075,  2.0, 0.0, -vx, 0.318);
+            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 3, 2.793 , -2.0, 0.0,
+            //                                                                                                                         2.793 ,  2.0, 0.0, -vx, 0.318);
         }
 
         //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);

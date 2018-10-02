@@ -902,7 +902,7 @@ HOSTDEVICE real GridImp::getNegativeNeighborCoord(bool periodicity, real startCo
         neighborCoords[direction] = neighborCoords[direction] - delta;
         const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
 
-        if(!field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
+        if(neighborIndex != INVALID_INDEX && !field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
             return coords[direction] - delta;
 
         return getLastFluidNode(coords, direction, startCoord);
@@ -916,7 +916,7 @@ HOSTDEVICE real GridImp::getLastFluidNode(real coords[3], int direction, real st
 {
     coords[direction] = startCoord;
     int index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
-    while (!field.isFluid(index))
+    while (index != INVALID_INDEX && !field.isFluid(index))
     {
         coords[direction] -= delta;
         index = this->transCoordToIndex(coords[0], coords[1], coords[2]);
