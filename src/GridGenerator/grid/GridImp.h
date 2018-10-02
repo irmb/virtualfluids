@@ -94,6 +94,10 @@ public:
     void setPeriodicityY(bool periodicity) override;
     void setPeriodicityZ(bool periodicity) override;
 
+    bool getPeriodicityX() override;
+    bool getPeriodicityY() override;
+    bool getPeriodicityZ() override;
+
     HOSTDEVICE void setCellTo(uint index, char type);
     HOSTDEVICE void setNonStopperOutOfGridCellTo(uint index, char type);
 

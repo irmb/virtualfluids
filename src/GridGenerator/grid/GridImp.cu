@@ -687,6 +687,21 @@ void GridImp::setPeriodicityZ(bool periodicity)
     this->periodicityZ = periodicityZ;
 }
 
+bool GridImp::getPeriodicityX()
+{
+    return this->periodicityX;
+}
+
+bool GridImp::getPeriodicityY()
+{
+    return this->periodicityY;
+}
+
+bool GridImp::getPeriodicityZ()
+{
+    return this->periodicityZ;
+}
+
 HOSTDEVICE uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const
 {
     const uint xIndex = getXIndex(x);
@@ -877,10 +892,18 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
         neighborCoords[direction] = neighborCoords[direction] + delta;
         const int neighborIndex = this->transCoordToIndex(neighborCoords[0], neighborCoords[1], neighborCoords[2]);
 
-        if(!field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
+        //if(!field.isStopperOutOfGrid(neighborIndex) && !field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
+        //    return coords[direction] + delta;
+
+        //return getFirstFluidNode(coords, direction, startCoord);
+
+        //////////////////////////////////////////////////////////////////////////
+
+        if( field.is(neighborIndex, STOPPER_OUT_OF_GRID_BOUNDARY) )
+            return getFirstFluidNode(coords, direction, startCoord);
+        else
             return coords[direction] + delta;
 
-        return getFirstFluidNode(coords, direction, startCoord);
     }
     
     return coords[direction] + delta;

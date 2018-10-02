@@ -84,6 +84,9 @@ public:
     void setPeriodicityX(bool periodicity) override {}
     void setPeriodicityY(bool periodicity) override {}
     void setPeriodicityZ(bool periodicity) override {}
+    bool getPeriodicityX() override {return false;}
+    bool getPeriodicityY() override {return false;}
+    bool getPeriodicityZ() override {return false;}
     void setFieldEntry(uint matrixIndex, char type) override {}
     real getFirstFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
     real getLastFluidNode(real coords[3], int direction, real startCoord) const override { return 0.0; }
