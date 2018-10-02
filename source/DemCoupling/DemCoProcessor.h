@@ -72,8 +72,8 @@ private:
     std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometrieAdapters;
     double intermediateDemSteps;
     SPtr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
-    walberla::pe::BodyStorage* bodyStorage;    //!< Reference to the central body storage.
-    walberla::pe::BodyStorage* bodyStorageShadowCopies;    //!< Reference to the body storage containing body shadow copies.
+    //walberla::pe::BodyStorage* bodyStorage;    //!< Reference to the central body storage.
+    //walberla::pe::BodyStorage* bodyStorageShadowCopies;    //!< Reference to the body storage containing body shadow copies.
 
 #ifdef TIMING
     UbTimer timer;

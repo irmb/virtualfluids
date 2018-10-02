@@ -58,7 +58,7 @@ void CreateDemObjectsCoProcessor::process(double step)
       if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
 #endif
       
-      //demCoProcessor->distributeIDs();
+      demCoProcessor->distributeIDs();
 //
 //#ifdef TIMING
 //      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");

@@ -25,12 +25,12 @@ walberla::uint_t PeLoadBalancerAdapter::operator()(walberla::SetupBlockForest & 
       {
          (*peBlock)->assignTargetProcess((walberla::uint_t)block->getRank());
       }
-      //else
-      //{
-         ////TODO: the rank of pe blocks is not consistent with VF blocks 
-         //(*peBlock)->assignTargetProcess(0);
-         ////UBLOG(logINFO, "PeLoadBalancerAdapter::operator() peBlockId="<<(*peBlock)->getId());
-      //}
+      else
+      {
+         //TODO: the rank of pe blocks is not consistent with VF blocks 
+         (*peBlock)->assignTargetProcess(0);
+         //UBLOG(logINFO, "PeLoadBalancerAdapter::operator() peBlockId="<<(*peBlock)->getId());
+      }
    }
 
    return numberOfProcesses;

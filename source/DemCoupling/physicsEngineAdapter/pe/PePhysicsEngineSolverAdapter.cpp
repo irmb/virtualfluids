@@ -10,7 +10,8 @@
 #include "Communicator.h"
 #include "UbLogger.h"
 #include <boost/tuple/tuple.hpp>
-
+#include "UbException.h"
+#include "UbSystem.h"
 #include <memory>
 
 typedef boost::tuple<walberla::pe::Sphere, walberla::pe::Plane> BodyTypeTuple;
@@ -43,6 +44,11 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::crea
     if (peGeometry)
     {
        peGeometryAdapter->setId(id);
+       peGeometryAdapter->setSystemId(peGeometry->getSystemID());
+       
+       if(peGeometry->getSystemID() != id+1)
+          UB_THROW(UbException(UB_EXARGS, "id="+UbSystem::toString(id)+" does not match pe::SystemId="+UbSystem::toString(peGeometry->getSystemID())));
+
        peGeometryAdapter->setActive();
        peGeometryAdapter->setGeometry(peGeometry);
        return peGeometryAdapter;
