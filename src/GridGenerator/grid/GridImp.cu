@@ -985,6 +985,8 @@ HOST void GridImp::mesh(Object* object)
         gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes 
 		//new method for geometric primitives (not cell based) to be implemented
 
+    this->closeNeedleCells();
+
 	//gridStrategy->findStopperNodes(shared_from_this()); //deprecated
 	gridStrategy->findSolidStopperNodes(shared_from_this());
 	gridStrategy->findBoundarySolidNodes(shared_from_this());
@@ -1044,8 +1046,8 @@ HOST void GridImp::closeNeedleCells()
 
 HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
 {
-    //if( !this->getField().is( index, FLUID ) ) return false;
-    if( !this->getField().is( index, BC_SOLID ) ) return false;
+    if( !this->getField().is( index, FLUID ) ) return false;
+    //if( !this->getField().is( index, BC_SOLID ) ) return false;
 
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
@@ -1056,6 +1058,13 @@ HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
                               this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , INVALID_SOLID);
     bool noValidNeighborInZ = this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , INVALID_SOLID) &&
                               this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , INVALID_SOLID);
+
+    //bool noValidNeighborInX = this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , STOPPER_SOLID) &&
+    //                          this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , STOPPER_SOLID);
+    //bool noValidNeighborInY = this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , STOPPER_SOLID) &&
+    //                          this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , STOPPER_SOLID);
+    //bool noValidNeighborInZ = this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , STOPPER_SOLID) &&
+    //                          this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , STOPPER_SOLID);
 
     if( noValidNeighborInX || noValidNeighborInY || noValidNeighborInZ ){
         this->setFieldEntry(index, INVALID_SOLID);

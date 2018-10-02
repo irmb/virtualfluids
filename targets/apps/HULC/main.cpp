@@ -274,49 +274,48 @@ void multipleLevel(const std::string& configPath)
     SPtr<Parameter> para = Parameter::make();
     SPtr<GridProvider> gridGenerator;
 
-    if(false){
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    bool useGridGenerator = true;
+
+    if(useGridGenerator){
 
         //////////////////////////////////////////////////////////////////////////
         // DrivAer
         //////////////////////////////////////////////////////////////////////////
 
-        //real dx = 0.2;
-        //real vx = 0.05;
+        real dx = 0.2;
+        real vx = 0.05;
 
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Coarse.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_NoSTLGroups.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse_200k.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+        TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+        //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+        //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
 
-     //   real z0 = 0.318+0.5*dx;
+        TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
 
-        //gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
-     //                               15.0,  5.0, 5.0 - z0, dx);  // DrivAer
-     //   //gridBuilder->addGrid(new Cuboid(-1.5, -1.2, -1.5, 6.5, 1.5, 1.5), 2);
-     //   //gridBuilder->addGrid(triangularMesh, 3);                 // DrivAer
+        real z0 = 0.318+0.5*dx;
 
-     //   Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-     //   Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
+        gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
+                                    15.0,  5.0, 5.0 - z0, dx);  // DrivAer
 
-     //   Conglomerate* refRegion = new Conglomerate();
+        //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
+        //Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
 
-     //   refRegion->add(floorBox);
-     //   refRegion->add(wakeBox);
-     //   refRegion->add(triangularMesh);
+        //Conglomerate* refRegion = new Conglomerate();
 
-     //   gridBuilder->setNumberOfLayers(15,8);
-     //   gridBuilder->addGrid(refRegion, 4);
-     //   
-     //   //gridBuilder->setNumberOfLayers(10,8);
-     //   //gridBuilder->addGrid(triangularMesh, 5);
+        //refRegion->add(floorBox);
+        //refRegion->add(wakeBox);
+        //refRegion->add(DrivAerRefBoxSTL);
 
-        //gridBuilder->addGeometry(triangularMesh);
+        gridBuilder->setNumberOfLayers(4,8);
+        gridBuilder->addGrid(DrivAerRefBoxSTL, 5);
+        
+        gridBuilder->setNumberOfLayers(10,8);
+        gridBuilder->addGrid(DrivAerSTL, 6);
+
+        gridBuilder->addGeometry(DrivAerSTL);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // DLC
@@ -363,23 +362,23 @@ void multipleLevel(const std::string& configPath)
         // Testing layer refinement
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        real dx = 0.125;
-        real vx = 0.02;
+        //real dx = 0.125;
+        //real vx = 0.02;
 
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
-        TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/STL_Group_Test.stl");
+        ////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
+        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/STL_Group_Test.stl");
 
-        gridBuilder->addCoarseGrid(-4, -4, -4,
-                                   12,  4,  4, dx);
+        //gridBuilder->addCoarseGrid(-4, -4, -4,
+        //                           12,  4,  4, dx);
 
-        gridBuilder->setNumberOfLayers(15, 8);   // this must come before the grids are added!!!
+        //gridBuilder->setNumberOfLayers(15, 8);   // this must come before the grids are added!!!
 
-        gridBuilder->addGrid(triangularMesh, 2);
+        //gridBuilder->addGrid(triangularMesh, 2);
 
-        //gridBuilder->addGrid( new Sphere( 0, 0, 0, 0.0005 ), 12 );
-        //gridBuilder->addGrid( new Cuboid( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 ), 3 );
+        ////gridBuilder->addGrid( new Sphere( 0, 0, 0, 0.0005 ), 12 );
+        ////gridBuilder->addGrid( new Cuboid( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 ), 3 );
 
-        gridBuilder->addGeometry(triangularMesh);
+        //gridBuilder->addGeometry(triangularMesh);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Testing NeedleCells
@@ -482,10 +481,10 @@ void multipleLevel(const std::string& configPath)
         //BCs
         //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
         //gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.0, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.0, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.0, 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.0, 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
 
         gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
         gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
@@ -510,10 +509,10 @@ void multipleLevel(const std::string& configPath)
             //    0.0, 1.0, 0.0, -5.0 * vx, 1.0);
 
             // DrivAer
-            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 4, 0.0075, -2.0, 0.0,
-            //                                                                                                                         0.0075,  2.0, 0.0, -vx, 0.318);
-            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 3, 2.793 , -2.0, 0.0,
-            //                                                                                                                         2.793 ,  2.0, 0.0, -vx, 0.318);
+            gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 4, 0.0075, -2.0, 0.0,
+                                                                                                                                     0.0075,  2.0, 0.0, -vx, 0.318);
+            gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 3, 2.793 , -2.0, 0.0,
+                                                                                                                                     2.793 ,  2.0, 0.0, -vx, 0.318);
         }
 
         //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
@@ -527,10 +526,10 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
-        gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/out/Test_");
+        gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_");
 
         //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
-        gridBuilder->writeArrows("C:/Users/lenz/Desktop/Work/gridGenerator/out/Test_Arrow");
+        gridBuilder->writeArrows("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_Arrow");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -630,12 +629,18 @@ void multipleLevel(const std::string& configPath)
         SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
 
         gridGenerator = GridGenerator::make(gridBuilder, para);
+
+        //return;
     }
     else
     {
         //gridGenerator = GridReader::make(FileFormat::BINARY, para);
         gridGenerator = GridReader::make(FileFormat::ASCII, para);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     std::ifstream stream;

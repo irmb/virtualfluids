@@ -71,7 +71,7 @@ private:
     int *neighborIndexX, *neighborIndexY, *neighborIndexZ, *neighborIndexNegative;
     int *sparseIndices;
 
-	uint *qIndices;
+	uint *qIndices;     //maps from matrix index to qIndex
 	real *qValues;
     uint *qPatches;
 

@@ -42,6 +42,10 @@ void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 void GridCpuStrategy::allocateQs(SPtr<GridImp> grid)
 {
     grid->qPatches = new uint[grid->getNumberOfSolidBoundaryNodes()];
+    //grid->qPatches.resize( grid->getNumberOfSolidBoundaryNodes() );
+
+    for( int i = 0; i < grid->getNumberOfSolidBoundaryNodes(); i++ )
+        grid->qPatches[i] = INVALID_INDEX;
 
 	const uint numberOfQs = grid->getNumberOfSolidBoundaryNodes() * (grid->distribution.dir_end + 1);
 	grid->qValues = new real[numberOfQs];
@@ -141,7 +145,7 @@ void GridCpuStrategy::findSolidStopperNodes(SPtr<GridImp> grid)
 
 void GridCpuStrategy::findBoundarySolidNodes(SPtr<GridImp> grid)
 {
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int index = 0; index < grid->size; index++)
 	{
 		grid->findBoundarySolidNode(index);
