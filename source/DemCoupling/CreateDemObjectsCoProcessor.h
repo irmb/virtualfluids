@@ -7,7 +7,7 @@
 #include <array>
 
 
-//#define TIMING
+#define TIMING
 
 #ifdef TIMING
 #include "UbTiming.h"

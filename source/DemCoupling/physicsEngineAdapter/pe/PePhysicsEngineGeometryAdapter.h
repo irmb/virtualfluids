@@ -7,6 +7,7 @@
 
 
 #include "PhysicsEngineGeometryAdapter.h"
+#include <core\DataTypes.h>
 
 namespace walberla
 {
@@ -56,13 +57,14 @@ public:
     int shadowCounter;
     int counter;
 
-    int getSystemId() const { return systemId; }
-    void setSystemId(int val) { systemId = val; }
+    unsigned long long getSystemId() const { return systemId; }
+    void setSystemId(unsigned long long val) { systemId = val; }
 private:
     walberla::pe::RigidBody* peGeoObject;
     //unsigned long long id;
     int id;
-    int systemId;
+    //walberla::id_t systemId;
+    unsigned long long systemId;
     bool active;
 
 };

@@ -49,7 +49,7 @@ void CreateDemObjectsCoProcessor::process(double step)
       if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process start step: " << istep);
       timer.resetAndStart();
 #endif
-
+      
       createGeoObjects();
 
 #ifdef TIMING
@@ -59,10 +59,10 @@ void CreateDemObjectsCoProcessor::process(double step)
 #endif
       
       demCoProcessor->distributeIDs();
-//
-//#ifdef TIMING
-//      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
-//#endif
+
+#ifdef TIMING
+      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
+#endif
 
       
    }

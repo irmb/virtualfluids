@@ -97,6 +97,11 @@ vector<double> MPICommunicator::gather(vector<double>& values)
    return gather<double>(values);
 }
 //////////////////////////////////////////////////////////////////////////
+std::vector<unsigned long long> MPICommunicator::gather(std::vector<unsigned long long>& values)
+{
+   return gather<unsigned long long>(values);
+}
+//////////////////////////////////////////////////////////////////////////
 int MPICommunicator::getProcessID()
 {
    return PID;
@@ -191,6 +196,11 @@ void MPICommunicator::allGather(std::vector<float>& svalues, std::vector<float>&
 void MPICommunicator::allGather(std::vector<double>& svalues, std::vector<double>& rvalues)
 {
    allGather<double>(svalues, rvalues);
+}
+//////////////////////////////////////////////////////////////////////////
+void MPICommunicator::allGather(std::vector<unsigned long long>& svalues, std::vector<unsigned long long>& rvalues)
+{
+   allGather<unsigned long long>(svalues, rvalues);
 }
 //////////////////////////////////////////////////////////////////////////
 void MPICommunicator::broadcast(std::vector<int>& values)
