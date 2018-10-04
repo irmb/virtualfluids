@@ -796,6 +796,7 @@ bool GbTriFaceMesh3D::isPointInGbObject3D(const double& x1, const double& x2, co
          if(kdtreeSplitAlg == KDTREE_SAHPLIT     ) 
          {
             UBLOG(logDEBUG3, "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit");
+            cout << "GbTriFaceMesh3D::calculateValues - build KdTree with SAHSplit" << std::endl;
             this->kdTree = new Kd::Tree<double>( *this, Kd::SAHSplit<double>()            );
          }
          else if(kdtreeSplitAlg == KDTREE_SPATIALSPLIT)

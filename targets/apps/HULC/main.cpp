@@ -278,7 +278,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = true;
+    bool useGridGenerator = false;
 
     if(useGridGenerator){
 
@@ -324,11 +324,11 @@ void multipleLevel(const std::string& configPath)
         real dx = 0.2;
         real vx = 0.05;
 
-        real z0 = 0.25+0.5*dx;
+        real z0 = 0.265+0.5*dx;
 
         std::vector<uint> ignorePatches = { 152, 153, 154 };
 
-        TriangularMesh* GolfSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+        TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
         
         TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
 
@@ -342,12 +342,12 @@ void multipleLevel(const std::string& configPath)
         
         Conglomerate* refinement = new Conglomerate();
         refinement->add(DLC_RefBox);
-        refinement->add(GolfSTL);
+        refinement->add(VW370_SERIE_STL);
 
         gridBuilder->setNumberOfLayers(10,8);
         gridBuilder->addGrid(refinement, 5);
 
-        gridBuilder->addGeometry(GolfSTL);
+        gridBuilder->addGeometry(VW370_SERIE_STL);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Wall Mounted Cube
@@ -531,9 +531,9 @@ void multipleLevel(const std::string& configPath)
             //                                                                                                                         2.793 ,  2.0, 0.0, -vx, 0.318);
 
             real wheelsFrontX = -0.081;
-            real wheelsRearX  =  0.0515;
+            real wheelsRearX  =  2.5485;
 
-            real wheelsFrontZ =  2.5485;
+            real wheelsFrontZ =  0.0515;
             real wheelsRearZ  =  0.0585;
 
             real wheelsRadius =  0.318;

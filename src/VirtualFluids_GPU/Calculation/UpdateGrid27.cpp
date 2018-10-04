@@ -767,25 +767,32 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 
 		if ((para->getParD(level)->QGeom.kQ) > 0 && (para->getIsGeometryValues()))
 		{
-			QVelDevComp27(
-				para->getParD(level)->numberofthreads, 
-				para->getParD(level)->nx, 
-				para->getParD(level)->ny,
-				para->getParD(level)->QGeom.Vx, 
-				para->getParD(level)->QGeom.Vy, 
-				para->getParD(level)->QGeom.Vz,
-				para->getParD(level)->d0SP.f[0], 
-				para->getParD(level)->QGeom.k, 
-				para->getParD(level)->QGeom.q27[0],
-				para->getParD(level)->QGeom.kQ, 
-				para->getParD(level)->QGeom.kQ, 
-				para->getParD(level)->omega,
-				para->getParD(level)->neighborX_SP, 
-				para->getParD(level)->neighborY_SP, 
-				para->getParD(level)->neighborZ_SP,
-				para->getParD(level)->size_Mat_SP, 
-				para->getParD(level)->evenOrOdd);
-			getLastCudaError("QVelDevComp27 execution failed");
+			//QVelDevComp27(
+			//	para->getParD(level)->numberofthreads, 
+			//	para->getParD(level)->nx, 
+			//	para->getParD(level)->ny,
+			//	para->getParD(level)->QGeom.Vx, 
+			//	para->getParD(level)->QGeom.Vy, 
+			//	para->getParD(level)->QGeom.Vz,
+			//	para->getParD(level)->d0SP.f[0], 
+			//	para->getParD(level)->QGeom.k, 
+			//	para->getParD(level)->QGeom.q27[0],
+			//	para->getParD(level)->QGeom.kQ, 
+			//	para->getParD(level)->QGeom.kQ, 
+			//	para->getParD(level)->omega,
+			//	para->getParD(level)->neighborX_SP, 
+			//	para->getParD(level)->neighborY_SP, 
+			//	para->getParD(level)->neighborZ_SP,
+			//	para->getParD(level)->size_Mat_SP, 
+			//	para->getParD(level)->evenOrOdd);
+			//getLastCudaError("QVelDevComp27 execution failed");
+		    QVelDevCompThinWalls27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+						           para->getParD(level)->QGeom.Vx,        para->getParD(level)->QGeom.Vy,     para->getParD(level)->QGeom.Vz,
+						           para->getParD(level)->d0SP.f[0],       para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
+						           para->getParD(level)->QGeom.kQ,        para->getParD(level)->QGeom.kQ,     para->getParD(level)->omega,        para->getParD(level)->geoSP,
+						           para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP, para->getParD(level)->neighborWSB_SP,
+						           para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+		    getLastCudaError("QVelDevComp27 execution failed");
 		}
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          if (para->getParD(level)->evenOrOdd==true)  para->getParD(level)->evenOrOdd=false;

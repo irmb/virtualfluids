@@ -117,8 +117,18 @@ HOST bool TriangularMesh::operator==(const TriangularMesh &geometry) const
 
 HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
 {
-    std::vector<GbTriFaceMesh3D::Vertex> *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
+    return this->VF_GbTriFaceMesh3D.get();
+}
+
+HOST VF_PUBLIC void TriangularMesh::generateGbTriFaceMesh3D()
+{
+    if( this->VF_GbTriFaceMesh3D ) return;
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start generating GbTriFaceMesh3D:\n";
+
+    std::vector<GbTriFaceMesh3D::Vertex>  *gbVertices = new std::vector<GbTriFaceMesh3D::Vertex>(this->triangleVec.size() * 3);
     std::vector<GbTriFaceMesh3D::TriFace> *gbTriangles = new std::vector<GbTriFaceMesh3D::TriFace>(this->triangleVec.size());
+
     for (int i = 0; i < this->triangleVec.size(); i++)
     {
         (*gbVertices)[i * 3] = GbTriFaceMesh3D::Vertex(triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z);
@@ -128,8 +138,9 @@ HOSTDEVICE GbTriFaceMesh3D* TriangularMesh::getGbTriFaceMesh3D() const
         (*gbTriangles)[i] = GbTriFaceMesh3D::TriFace(i * 3, i * 3 + 1, i * 3 + 2);
     }
 
-    GbTriFaceMesh3D* mesh = new GbTriFaceMesh3D("stl", gbVertices, gbTriangles, GbTriFaceMesh3D::KDTREE_SAHPLIT, false);
-    return mesh;
+    this->VF_GbTriFaceMesh3D = std::make_shared<GbTriFaceMesh3D>( "stl", gbVertices, gbTriangles, GbTriFaceMesh3D::KDTREE_SAHPLIT, false );
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done generating GbTriFaceMesh3D\n";
 }
 
 
