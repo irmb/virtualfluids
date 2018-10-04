@@ -39,9 +39,9 @@ std::vector<Triangle> STLReader::readSTL(const std::string& name)
      exit(1);
 }
 
-std::vector<Triangle> STLReader::readSTL(const std::string & name, FileType fileType)
+std::vector<Triangle> STLReader::readSTL(const std::string & name, FileType fileType, const std::vector<uint> ignorePatches)
 {
-    if ( fileType == ascii ) return readASCIISTLWithPatches(name);
+    if ( fileType == ascii ) return readASCIISTLWithPatches(name, ignorePatches);
     else                     return readBinarySTL(name);
 }
 
@@ -77,7 +77,7 @@ std::vector<Triangle> STLReader::readASCIISTL(const std::string& name)
 }
 
 
-std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name)
+std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name, const std::vector<uint> ignorePatches)
 {
     *logging::out << logging::Logger::INFO_HIGH << "Start reading ascii STL file:\n";
     *logging::out << logging::Logger::INFO_HIGH << "    " + name + "\n";
@@ -92,6 +92,8 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
 
     uint currentFacetLine = 0;
 
+    bool ignoreCurrentPatch = false;
+
     Vertex vertex1, vertex2, vertex3, normal;
 
     while( std::getline(file, line) ){
@@ -99,10 +101,18 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
         // trim the string
         line = line.substr( line.find_first_not_of(" "), line.find_last_not_of(" ") + 1 );
         
+        if( line.substr( 0, line.find(' ') ) == "color" ) continue;
+
         // ========================================================================================
         if     ( currentFacetLine == 0 && line.substr( 0, line.find(' ') ) == "solid" )
         {
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Reading STL-Group " << line.substr( line.find(' ') + 1 ) << " as patch " << currentPatchIndex << "\n";
+            ignoreCurrentPatch = std::find( ignorePatches.begin(), ignorePatches.end(), currentPatchIndex ) != ignorePatches.end();
+
+            if( !ignoreCurrentPatch )
+                *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Reading STL-Group " << line.substr( line.find(' ') + 1 ) << " as patch " << currentPatchIndex << "\n";
+            else
+                *logging::out << logging::Logger::WARNING           << "    Ignoring STL-Group " << line.substr( line.find(' ') + 1 ) << " as patch " << currentPatchIndex << "\n";
+
             currentFacetLine++;
         }
         else if( currentFacetLine == 1 && line.substr( 0, line.find(' ') ) == "endsolid" )
@@ -141,12 +151,14 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
         }
         else if( currentFacetLine == 7 && line.substr( 0, line.find(' ') ) == "endfacet" )
         {
-            Triangle tri = Triangle(vertex1, vertex2, vertex3, normal);
-            tri.calcNormal();
+            if( !ignoreCurrentPatch ){
+                Triangle tri = Triangle(vertex1, vertex2, vertex3, normal);
+                tri.calcNormal();
 
-            tri.patchIndex = currentPatchIndex;
+                tri.patchIndex = currentPatchIndex;
 
-            triangles.push_back(tri);
+                triangles.push_back(tri);
+            }
 
             currentFacetLine = 1;
         }

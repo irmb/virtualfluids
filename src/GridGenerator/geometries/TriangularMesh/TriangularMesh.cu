@@ -17,9 +17,9 @@
 #include "grid/NodeValues.h"
 
 
-TriangularMesh* TriangularMesh::make(const std::string& fileName)
+TriangularMesh* TriangularMesh::make(const std::string& fileName, const std::vector<uint> ignorePatches)
 {
-    TriangularMesh* triangularMesh = new TriangularMesh(fileName);
+    TriangularMesh* triangularMesh = new TriangularMesh(fileName, ignorePatches);
     return triangularMesh;
 }
 
@@ -30,11 +30,11 @@ TriangularMesh::TriangularMesh(const std::string& input, const BoundingBox& box)
 	this->findNeighbors();
 }
 
-TriangularMesh::TriangularMesh(const std::string& inputPath)
+TriangularMesh::TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches)
 {
     this->minmax = BoundingBox::makeInvalidMinMaxBox();
 
-    this->triangleVec = STLReader::readSTL(inputPath, STLReader::ascii);
+    this->triangleVec = STLReader::readSTL(inputPath, STLReader::ascii, ignorePatches);
     //this->triangleVec = STLReader::readSTL(inputPath);
     initalizeDataFromTriangles();
     this->findNeighbors();

@@ -25,9 +25,9 @@ class TriangularMesh : public Object
 {
 public:
 
-    VF_PUBLIC static TriangularMesh* make(const std::string& fileName);
+    VF_PUBLIC static TriangularMesh* make(const std::string& fileName, const std::vector<uint> ignorePatches = std::vector<uint>());
 	VF_PUBLIC TriangularMesh();
-    VF_PUBLIC TriangularMesh(const std::string& inputPath);
+    VF_PUBLIC TriangularMesh(const std::string& inputPath, const std::vector<uint> ignorePatches = std::vector<uint>());
 	VF_PUBLIC TriangularMesh(const std::string& inputPath, const BoundingBox &box);
 	HOSTDEVICE VF_PUBLIC ~TriangularMesh();
 

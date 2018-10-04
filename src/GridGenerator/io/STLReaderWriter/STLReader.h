@@ -7,6 +7,8 @@
 
 #include <VirtualFluidsDefinitions.h>
 
+#include "core/DataTypes.h"
+
 struct Triangle;
 struct Vertex;
 class BoundingBox;
@@ -18,12 +20,12 @@ public:
     enum FileType { ascii, binary };
 
     static std::vector<Triangle> readSTL(const std::string& name);
-    static std::vector<Triangle> readSTL(const std::string& name, FileType fileType );
+    static std::vector<Triangle> readSTL(const std::string& name, FileType fileType, const std::vector<uint> ignorePatches = std::vector<uint>() );
 	static std::vector<Triangle> readSTL(const BoundingBox &box, const std::string& name);
 
     static std::vector<Triangle> readBinarySTL(const std::string& name);
     static std::vector<Triangle> readASCIISTL(const std::string& name);
-    static std::vector<Triangle> readASCIISTLWithPatches(const std::string& name);
+    static std::vector<Triangle> readASCIISTLWithPatches(const std::string& name, const std::vector<uint> ignorePatches);
 	static std::vector<Triangle> readBinarySTL(const BoundingBox &box, const std::string& name);
 	static std::vector<Triangle> readASCIISTL(const BoundingBox &box, const std::string& name);
 
