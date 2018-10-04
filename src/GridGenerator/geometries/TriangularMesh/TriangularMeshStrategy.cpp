@@ -7,6 +7,10 @@
 #include "numerics/geometry3d/GbTriFaceMesh3D.h"
 #include "grid/NodeValues.h"
 
+#include "utilities/logger/Logger.h"
+
+#include "core/Timer/Timer.h"
+
 void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
 {
 #pragma omp parallel for
@@ -17,18 +21,36 @@ void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* g
 
 void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangularMesh, GridImp* grid, char InnerType, char OuterType)
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start generating GbTriFaceMesh3D:\n";
+
     auto mesh = triangularMesh->getGbTriFaceMesh3D();
 
-    for (uint i = 0; i < grid->getSize(); i++)
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done generating GbTriFaceMesh3D\n";
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start Point-In-Object Test:\n";
+
+    Timer timer;
+
+    timer.start();
+
+    for (uint index = 0; index < grid->getSize(); index++)
     {
+        if( grid->getFieldEntry(index) == InnerType ) continue;
+
         real x, y, z;
-        grid->transIndexToCoords(i, x, y, z);
+        grid->transIndexToCoords(index, x, y, z);
 
         if (mesh->isPointInGbObject3D(x, y, z))
-            grid->setNodeTo(i, InnerType);
+            grid->setNodeTo(index, InnerType);
         //else
         //    grid->setNodeTo(i, OuterType);
+
+        if( timer.getTimeInSeconds() > 5.0 * 60.0 ){
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    "  <<"\n";
+        }
     }
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done Point-In-Object Test\n";
 
     delete mesh;
 }
