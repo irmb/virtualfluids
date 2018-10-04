@@ -46,7 +46,7 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
         //    grid->setNodeTo(i, OuterType);
 
         if( timer.getTimeInSeconds() > 5.0 * 60.0 ){
-            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    "  <<"\n";
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << "    " << index << "/" << grid->getSize() <<" nodes tested!\n";
         }
     }
 
