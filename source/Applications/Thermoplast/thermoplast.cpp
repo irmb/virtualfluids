@@ -551,7 +551,7 @@ void thermoplast(string configname)
    //         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
    //      }
 
-   createSphereCoProcessor->process(0);
+   //createSphereCoProcessor->process(0);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));

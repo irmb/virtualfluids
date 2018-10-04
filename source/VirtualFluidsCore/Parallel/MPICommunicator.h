@@ -45,10 +45,12 @@ public:
    std::vector<int> gather(std::vector<int>& values);
    std::vector<float> gather(std::vector<float>& values);
    std::vector<double> gather(std::vector<double>& values);
+   std::vector<unsigned long long> gather(std::vector<unsigned long long>& values);
 
    void allGather(std::vector<int>& svalues, std::vector<int>& rvalues);
    void allGather(std::vector<float>& svalues, std::vector<float>& rvalues);
    void allGather(std::vector<double>& svalues, std::vector<double>& rvalues);
+   void allGather(std::vector<unsigned long long>& svalues, std::vector<unsigned long long>& rvalues);
 
    void broadcast(int& value);
    void broadcast(float& value);
@@ -85,6 +87,7 @@ std::vector<T> MPICommunicator::gather(std::vector<T>& values)
    if ((std::string)typeid(T).name()==(std::string)typeid(double).name()) mpiDataType = MPI_DOUBLE;
    else if ((std::string)typeid(T).name()==(std::string)typeid(float).name()) mpiDataType = MPI_FLOAT;
    else if ((std::string)typeid(T).name()==(std::string)typeid(int).name()) mpiDataType = MPI_INT;
+   else if ((std::string)typeid(T).name()==(std::string)typeid(unsigned long long).name()) mpiDataType = MPI_UNSIGNED_LONG_LONG;
    else throw UbException(UB_EXARGS, "no MpiDataType for T"+(std::string)typeid(T).name());
 
    int count = static_cast<int> (values.size());
@@ -107,6 +110,7 @@ void MPICommunicator::allGather(std::vector<T>& svalues, std::vector<T>& rvalues
    if ((std::string)typeid(T).name()==(std::string)typeid(double).name()) mpiDataType = MPI_DOUBLE;
    else if ((std::string)typeid(T).name()==(std::string)typeid(float).name()) mpiDataType = MPI_FLOAT;
    else if ((std::string)typeid(T).name()==(std::string)typeid(int).name()) mpiDataType = MPI_INT;
+   else if ((std::string)typeid(T).name()==(std::string)typeid(unsigned long long).name()) mpiDataType = MPI_UNSIGNED_LONG_LONG;
    else throw UbException(UB_EXARGS, "no MpiDataType for T"+(std::string)typeid(T).name());
 
    int scount;

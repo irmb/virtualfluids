@@ -33,10 +33,12 @@ public:
    virtual std::vector<int> gather(std::vector<int>& values) = 0;
    virtual std::vector<float> gather(std::vector<float>& values) = 0;
    virtual std::vector<double> gather(std::vector<double>& values) = 0;
+   virtual std::vector<unsigned long long> gather(std::vector<unsigned long long>& values) = 0;
 
    virtual void allGather(std::vector<int>& svalues, std::vector<int>& rvalues) = 0;
    virtual void allGather(std::vector<float>& svalues, std::vector<float>& rvalues) = 0;
    virtual void allGather(std::vector<double>& svalues, std::vector<double>& rvalues) = 0;
+   virtual void allGather(std::vector<unsigned long long>& svalues, std::vector<unsigned long long>& rvalues) = 0;
    
    virtual void broadcast(int& value) = 0;
    virtual void broadcast(float& value) = 0;
