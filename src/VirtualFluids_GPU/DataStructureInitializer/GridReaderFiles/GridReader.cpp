@@ -88,6 +88,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
 	neighX = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborX(), binaer, false));
 	neighY = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborY(), binaer, false));
 	neighZ = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborZ(), binaer, false));
+	neighWSB = std::shared_ptr<CoordNeighborGeoV>(new CoordNeighborGeoV(para->getneighborWSB(), binaer, false));
 	CoordNeighborGeoV geoV(para->getgeoVec(), binaer, false);
 
 	int maxLevel = coordX.getLevel();
@@ -105,6 +106,7 @@ void GridReader::allocArrays_CoordNeighborGeo()
 
         cudaMemoryManager->cudaAllocCoord(level);
 		cudaMemoryManager->cudaAllocSP(level);
+        cudaMemoryManager->cudaAllocNeighborWSB(level);
 
         ///////////////////////////
         //F3
@@ -123,10 +125,13 @@ void GridReader::allocArrays_CoordNeighborGeo()
 		neighX->initalNeighbors(para->getParH(level)->neighborX_SP, level);
 		neighY->initalNeighbors(para->getParH(level)->neighborY_SP, level);
 		neighZ->initalNeighbors(para->getParH(level)->neighborZ_SP, level);
+		neighWSB->initalNeighbors(para->getParH(level)->neighborWSB_SP, level);
 		geoV.initalNeighbors(para->getParH(level)->geoSP, level);
+
         rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
-
+        
+        cudaMemoryManager->cudaCopyNeighborWSB(level);
         cudaMemoryManager->cudaCopySP(level);
         cudaMemoryManager->cudaCopyCoord(level);
 	}
@@ -388,9 +393,14 @@ void GridReader::allocArrays_BoundaryValues()
 				//para->getParH(i)->Qinflow.Vx[m] = para->getParH(i)->Qinflow.Vx[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
-				para->getParH(i)->Qinflow.Vx[m] = 0.0;//para->getVelocity();//0.035;
-				para->getParH(i)->Qinflow.Vy[m] = 0.0;//para->getVelocity();//0.0;
-				para->getParH(i)->Qinflow.Vz[m] = 0.0;
+
+                // Lenz: I do not know what this is, but it harms me ... comment out 
+                // ==========================================================================
+				//para->getParH(i)->Qinflow.Vx[m] = 0.0;//para->getVelocity();//0.035;
+				//para->getParH(i)->Qinflow.Vy[m] = 0.0;//para->getVelocity();//0.0;
+				//para->getParH(i)->Qinflow.Vz[m] = 0.0;
+                // ==========================================================================
+
 				//if (para->getParH(i)->Qinflow.Vz[m] > 0)
 				//{
 				//	cout << "velo Z = " << para->getParH(i)->Qinflow.Vz[m] << endl;
@@ -1071,12 +1081,12 @@ void GridReader::allocArrays_OffsetScale()
     OffsetScale *obj_scaleFCC = new OffsetScale(para->getscaleFCC(), false);
     OffsetScale *obj_scaleFCF = new OffsetScale(para->getscaleFCF(), false);
 
-    int level = obj_offCF->getLevel();
+    int maxLevel = obj_offCF->getLevel();
 
     int AnzahlKnotenGesCF = 0;
     int AnzahlKnotenGesFC = 0;
 
-    for (int i = 0; i<level; i++) {
+    for (int i = 0; i<maxLevel; i++) {
         unsigned int tempCF = obj_offCF->getSize(i);
         cout << "Groesse der Daten CF vom Level " << i << " : " << tempCF << endl;
         unsigned int tempFC = obj_offFC->getSize(i);

@@ -85,6 +85,8 @@ int BoundaryValues::getNumberOfColumns()
 {
 	if (boundaryCondition == "velocity")
 		return 3;
+	if (boundaryCondition == "noSlip")
+		return 3;
 	if (boundaryCondition == "pressure")
 		return 2;
 	else
