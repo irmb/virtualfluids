@@ -173,6 +173,20 @@ uint GridCpuStrategy::closeNeedleCells(SPtr<GridImp> grid)
     return numberOfClosedNeedleCells;
 }
 
+uint GridCpuStrategy::closeNeedleCellsThinWall(SPtr<GridImp> grid)
+{
+    uint numberOfClosedNeedleCells = 0;
+
+#pragma omp parallel for reduction(+:numberOfClosedNeedleCells)
+	for (int index = 0; index < grid->size; index++)
+	{
+		if( grid->closeCellIfNeedleThinWall(index) )
+            numberOfClosedNeedleCells++;
+	}
+
+    return numberOfClosedNeedleCells;
+}
+
 void GridCpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
 {
 #pragma omp parallel for

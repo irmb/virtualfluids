@@ -1070,24 +1070,16 @@ HOST void GridImp::closeNeedleCells()
 HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
 {
     if( !this->getField().is( index, FLUID ) ) return false;
-    //if( !this->getField().is( index, BC_SOLID ) ) return false;
 
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    bool noValidNeighborInX = this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , INVALID_SOLID) &&
-                              this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , INVALID_SOLID);
-    bool noValidNeighborInY = this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , INVALID_SOLID) &&
-                              this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , INVALID_SOLID);
-    bool noValidNeighborInZ = this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , INVALID_SOLID) &&
-                              this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , INVALID_SOLID);
-
-    //bool noValidNeighborInX = this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , STOPPER_SOLID) &&
-    //                          this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , STOPPER_SOLID);
-    //bool noValidNeighborInY = this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , STOPPER_SOLID) &&
-    //                          this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , STOPPER_SOLID);
-    //bool noValidNeighborInZ = this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , STOPPER_SOLID) &&
-    //                          this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , STOPPER_SOLID);
+    bool noValidNeighborInX = this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , INVALID_SOLID ) &&
+                              this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , INVALID_SOLID );
+    bool noValidNeighborInY = this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , INVALID_SOLID ) &&
+                              this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , INVALID_SOLID );
+    bool noValidNeighborInZ = this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , INVALID_SOLID ) &&
+                              this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , INVALID_SOLID );
 
     if( noValidNeighborInX || noValidNeighborInY || noValidNeighborInZ ){
         this->setFieldEntry(index, INVALID_SOLID);
@@ -1096,6 +1088,43 @@ HOSTDEVICE bool GridImp::closeCellIfNeedle(uint index)
 
     return false;
 }
+
+HOST void GridImp::closeNeedleCellsThinWall()
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start closeNeedleCellsThinWall()\n";
+
+    uint numberOfClosedNeedleCells = 0;
+
+    do{
+        numberOfClosedNeedleCells = this->gridStrategy->closeNeedleCellsThinWall( shared_from_this() );
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << numberOfClosedNeedleCells << " cells closed!\n";
+    }
+    while( numberOfClosedNeedleCells > 0 );
+}
+
+HOSTDEVICE bool GridImp::closeCellIfNeedleThinWall(uint index)
+{
+    if( !this->getField().is( index, BC_SOLID ) ) return false;
+
+    real x, y, z;
+    this->transIndexToCoords(index, x, y, z);
+
+    bool noValidNeighborInX = !this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , FLUID ) &&
+                              !this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , FLUID );
+    bool noValidNeighborInY = !this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , FLUID ) &&
+                              !this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , FLUID );
+    bool noValidNeighborInZ = !this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , FLUID ) &&
+                              !this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , FLUID );
+
+    if( noValidNeighborInX && noValidNeighborInY && noValidNeighborInZ ){
+        this->setFieldEntry(index, STOPPER_SOLID);
+        return true;
+    }
+
+    return false;
+}
+
+
 
 HOST void GridImp::findQs(Object* object) //TODO: enable qs for primitive objects
 {

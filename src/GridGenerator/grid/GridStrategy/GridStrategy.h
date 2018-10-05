@@ -36,6 +36,7 @@ public:
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
 
     virtual uint closeNeedleCells(SPtr<GridImp> grid) = 0;
+    virtual uint closeNeedleCellsThinWall(SPtr<GridImp> grid) = 0;
 
     virtual void findQs(SPtr<GridImp> grid, TriangularMesh &geom) = 0;
 

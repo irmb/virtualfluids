@@ -449,6 +449,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         if( enableThinWalls ){
             grids[grids.size() - 1]->enableFindSolidBoundaryNodes();
             grids[grids.size() - 1]->findQs(solidObject);
+            grids[grids.size() - 1]->closeNeedleCellsThinWall();
             grids[grids.size() - 1]->enableComputeQs();
         }
 

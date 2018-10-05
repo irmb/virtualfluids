@@ -73,7 +73,9 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
 
         uint neighborIndex = grid->transCoordToIndex( x, y, z );
 
-        if( grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
+        if( grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
+            grids->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
+            grids->getFieldEntry(neighborIndex) == STOPPER_SOLID )
             qNode[dir] = 0.5;
         else
             qNode[dir] = -1.0;
@@ -122,7 +124,9 @@ void Geometry::addIndices(std::vector<SPtr<Grid> > grids, uint level, SPtr<Bound
 
             uint neighborIndex = grids[level]->transCoordToIndex( x, y, z );
 
-            if( qNode[dir] < -0.5 && grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY )
+            if( qNode[dir] < -0.5 && ( grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
+                                       grids[level]->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
+                                       grids[level]->getFieldEntry(neighborIndex) == STOPPER_SOLID ) )
                 qNode[dir] = 0.5;
         }
 

@@ -97,6 +97,11 @@ uint GridGpuStrategy::closeNeedleCells(SPtr<GridImp> grid)
     return uint();
 }
 
+uint GridGpuStrategy::closeNeedleCellsThinWall(SPtr<GridImp> grid)
+{
+    return uint();
+}
+
 
 void GridGpuStrategy::findQs(SPtr<GridImp> grid, TriangularMesh &geom)
 {

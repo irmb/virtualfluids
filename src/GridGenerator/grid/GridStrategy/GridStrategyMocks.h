@@ -35,6 +35,7 @@ public:
     virtual void mesh(SPtr<GridImp> grid, TriangularMesh &geom) override {}
 
     virtual uint closeNeedleCells(SPtr<GridImp> grid) override {return 0;};
+    virtual uint closeNeedleCellsThinWall(SPtr<GridImp> grid) override {return 0;};
 
     void findQs(SPtr<GridImp> grid, TriangularMesh& geom) override {};
 

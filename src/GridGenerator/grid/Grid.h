@@ -87,6 +87,7 @@ public:
     HOST virtual void mesh(Object* object) = 0;
 
     HOST virtual void closeNeedleCells() = 0;
+    HOST virtual void closeNeedleCellsThinWall() = 0;
 
     HOST virtual void findQs(Object* object) = 0;
 

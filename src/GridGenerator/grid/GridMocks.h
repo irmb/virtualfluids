@@ -67,6 +67,7 @@ public:
 
     virtual void mesh(TriangularMesh& geometry) override {}
     virtual void closeNeedleCells() override {}
+    virtual void closeNeedleCellsThinWall() override {}
     void findQs(Object* object) override {}
 
     virtual uint transCoordToIndex(const real& x, const real& y, const real& z) const override { return 0; }

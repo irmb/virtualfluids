@@ -29,7 +29,7 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
 
     timer.start();
 
-    uint timerOutputCounter = 1;
+    real outputTime = 60.0;
 
     for (uint index = 0; index < grid->getSize(); index++)
     {
@@ -43,8 +43,9 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
         //else
         //    grid->setNodeTo(i, OuterType);
 
-        if( timer.getCurrentRuntimeInSeconds() > timerOutputCounter++ * 2.0 *  30.0 ){
+        if( timer.getCurrentRuntimeInSeconds() > outputTime ){
             *logging::out << logging::Logger::INFO_INTERMEDIATE << "    " << index << "/" << grid->getSize() <<" nodes tested!\n";
+            timer.start();
         }
     }
 

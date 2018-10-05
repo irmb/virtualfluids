@@ -552,7 +552,7 @@ void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<BoundaryCond
 
             for (int dir = 26; dir >= 0; dir--)
             {
-                real q = boundaryCondition->qs[index][dir];
+                real q = boundaryCondition->getQ(index,dir);
                 if (q > 0) {
                     *qStreams[side] << std::fixed << std::setprecision(16) << q << " ";
                 }
