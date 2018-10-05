@@ -74,8 +74,8 @@ void Side::setQs(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uin
         uint neighborIndex = grid->transCoordToIndex( x, y, z );
 
         if( grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID_BOUNDARY ||
-            grids->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
-            grids->getFieldEntry(neighborIndex) == STOPPER_SOLID )
+            grid->getFieldEntry(neighborIndex) == STOPPER_OUT_OF_GRID ||
+            grid->getFieldEntry(neighborIndex) == STOPPER_SOLID )
             qNode[dir] = 0.5;
         else
             qNode[dir] = -1.0;
