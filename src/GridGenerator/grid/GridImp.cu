@@ -1109,14 +1109,19 @@ HOSTDEVICE bool GridImp::closeCellIfNeedleThinWall(uint index)
     real x, y, z;
     this->transIndexToCoords(index, x, y, z);
 
-    bool noValidNeighborInX = !this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , FLUID ) &&
-                              !this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , FLUID );
-    bool noValidNeighborInY = !this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , FLUID ) &&
-                              !this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , FLUID );
-    bool noValidNeighborInZ = !this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , FLUID ) &&
-                              !this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , FLUID );
+    //bool noValidNeighborInX = !this->getField().is( this->transCoordToIndex( x + this->delta, y,               z               ) , FLUID ) &&
+    //                          !this->getField().is( this->transCoordToIndex( x - this->delta, y,               z               ) , FLUID );
+    //bool noValidNeighborInY = !this->getField().is( this->transCoordToIndex( x,               y + this->delta, z               ) , FLUID ) &&
+    //                          !this->getField().is( this->transCoordToIndex( x,               y - this->delta, z               ) , FLUID );
+    //bool noValidNeighborInZ = !this->getField().is( this->transCoordToIndex( x,               y,               z + this->delta ) , FLUID ) &&
+    //                          !this->getField().is( this->transCoordToIndex( x,               y,               z - this->delta ) , FLUID );
 
-    if( noValidNeighborInX && noValidNeighborInY && noValidNeighborInZ ){
+    //if( noValidNeighborInX && noValidNeighborInY && noValidNeighborInZ ){
+    //    this->setFieldEntry(index, STOPPER_SOLID);
+    //    return true;
+    //}
+
+    if( !this->hasNeighborOfType(index, FLUID) ){
         this->setFieldEntry(index, STOPPER_SOLID);
         return true;
     }
@@ -1254,13 +1259,13 @@ HOSTDEVICE void GridImp::calculateQs(const uint index, const Vertex &point, cons
 
 		if (neighborIndex == INVALID_INDEX) continue;
 
-		if ( this->field.is(neighborIndex, STOPPER_SOLID) )
-        {
-            if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
-            {
-                this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
-            }
-        }
+		//if ( this->field.is(neighborIndex, STOPPER_SOLID) )
+  //      {
+  //          if (this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] < -0.5)
+  //          {
+  //              this->qValues[i*this->numberOfSolidBoundaryNodes + this->qIndices[index]] = 1.0;
+  //          }
+  //      }
 
 		error = triangle.getTriangleIntersection(point, direction, pointOnTriangle, subdistance);
 
