@@ -10,22 +10,26 @@ Timer::Timer()
 Timer Timer::makeStart()
 {
     Timer t;
-    t.beginInClocks = clock();
+    t.start();
     return t;
 }
 
 void Timer::start()
 {
-    beginInClocks = clock();
+    this->startTime = std::chrono::high_resolution_clock::now();
 }
 
 void Timer::end()
 {
-    const clock_t endInClocks = clock();
-    timeInClocks = endInClocks - beginInClocks;
+    this->endTime = std::chrono::high_resolution_clock::now();
 }
 
 real Timer::getTimeInSeconds() const
 {
-    return real(timeInClocks) / CLOCKS_PER_SEC;
+    return std::chrono::duration_cast<std::chrono::microseconds>( endTime - startTime ).count() / 1000000.0;
+}
+
+real Timer::getCurrentRuntimeInSeconds() const
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - startTime ).count() / 1000000.0;
 }
