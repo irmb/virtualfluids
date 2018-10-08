@@ -25,13 +25,17 @@ void PointInObjectDiscretizationStrategy::doDiscretize(TriangularMesh* triangula
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start Point-In-Object Test:\n";
 
+    // trigger the GbTriFaceMesh3D to generate a kd-tree
+    triangularMesh->getGbTriFaceMesh3D()->isPointInGbObject3D(0.0, 0.0, 0.0);
+
     Timer timer;
 
     timer.start();
 
     real outputTime = 60.0;
-
-    for (uint index = 0; index < grid->getSize(); index++)
+    
+#pragma omp parallel for
+    for (int index = 0; index < grid->getSize(); index++)
     {
         if( grid->getFieldEntry(index) == InnerType ) continue;
 
