@@ -975,6 +975,22 @@ HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
     gridStrategy->findGridInterface(shared_from_this(), std::static_pointer_cast<GridImp>(finerGrid), lbmOrGks);
 }
 
+HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
+{
+    for( uint index = 0; index < this->size; index++ ){
+
+        real x, y, z;
+        this->transIndexToCoords( index, x, y, z );
+
+        BoundingBox tmpSubDomainBox = *subDomainBox;
+
+        tmpSubDomainBox.extend(this->delta);
+
+        if( !tmpSubDomainBox.isInside(x,y,z) )
+            this->setFieldEntry(index, INVALID_OUT_OF_GRID);
+    }
+}
+
 HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks)
 {
 	if (lbmOrGks == LBM)
@@ -1317,6 +1333,50 @@ HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex 
 	}
     return false;
 }
+
+void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox)
+{
+    for( uint index = 0; index < this->size; index++ ){
+        
+        real x, y, z;
+        this->transIndexToCoords(index, x, y, z);
+    
+        if( this->getFieldEntry(index) == INVALID_OUT_OF_GRID ||
+            this->getFieldEntry(index) == INVALID_SOLID ||
+            this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ) continue;
+
+        if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
+        if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);
+        if( direction == CommunicationDirections::MY ) findCommunicationIndex( index, y, subDomainBox->minY, direction);
+        if( direction == CommunicationDirections::PY ) findCommunicationIndex( index, y, subDomainBox->maxY, direction);
+        if( direction == CommunicationDirections::MZ ) findCommunicationIndex( index, z, subDomainBox->minZ, direction);
+        if( direction == CommunicationDirections::PZ ) findCommunicationIndex( index, z, subDomainBox->maxZ, direction);
+    }
+}
+
+void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
+        
+    // negative direction get a negative sign
+    real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );
+
+    //if( vf::Math::equal( coordinate, limit + s * 0.5 * this->delta ) ){
+    //    this->communicationIndices[direction].receiveIndices.push_back(index);
+    //    this->setFieldEntry(index, MULTI_GPU_RECIEVE);
+    //}
+    //if( vf::Math::equal( coordinate, limit - s * 0.5 * this->delta ) ){
+    //    this->communicationIndices[direction].sendIndices.push_back(index);
+    //    this->setFieldEntry(index, MULTI_GPU_SEND);
+    //}    
+
+    if( vf::Math::equal( coordinate, limit + s * 0.5 * this->delta, 0.01 * this->delta ) ){
+        this->communicationIndices[direction].receiveIndices.push_back(index);
+        this->setFieldEntry(index, MULTI_GPU_RECIEVE);
+    }
+    if( vf::Math::equal( coordinate, limit - s * 0.5 * this->delta, 0.01 * this->delta ) ){
+        this->communicationIndices[direction].sendIndices.push_back(index);
+        this->setFieldEntry(index, MULTI_GPU_SEND);
+    }  
+} 
 
 
 // --------------------------------------------------------- //

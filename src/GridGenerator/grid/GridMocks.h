@@ -62,6 +62,8 @@ public:
 
     virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override {}
     
+    virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override {}
+
     virtual void enableFindSolidBoundaryNodes() override {}
     virtual void enableComputeQs() override {}
 
@@ -98,9 +100,12 @@ public:
 	real getQValue(const uint index, const uint dir) const override { return 0.0; }
 	uint getQPatch(const uint index) const override { return 0.0; }
 
-    void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override {};
+    void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) override {}
 
-    void setNumberOfLayers( uint numberOfLayers ) override {};
+    void setNumberOfLayers( uint numberOfLayers ) override {}
+
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override {}
+
 };
 
 class GridStub : public GridDummy

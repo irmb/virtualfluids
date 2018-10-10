@@ -13,7 +13,7 @@
 #include "../GridFactory.h"
 
 class Object;
-
+class BoundingBox;
 
 class MultipleGridBuilder : public LevelGridBuilder
 {
@@ -48,6 +48,8 @@ public:
 
     VF_PUBLIC void writeGridsToVtk(const std::string& path) const;
 
+    VF_PUBLIC void setSubDomainBox(SPtr<BoundingBox> subDomainBox);
+
 private:
     void addGridToList(SPtr<Grid> grid);
     real calculateDelta(uint level) const;
@@ -77,6 +79,12 @@ private:
 
     uint numberOfLayersFine;
     uint numberOfLayersBetweenLevels;
+
+    SPtr<BoundingBox> subDomainBox;
+
+public:
+
+    VF_PUBLIC void findCommunicationIndices( int direction );
 };
 
 #endif

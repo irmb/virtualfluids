@@ -14,9 +14,10 @@
 #include "io/GridVTKWriter/GridVTKWriter.h"
 #include <grid/BoundaryConditions/BoundaryCondition.h>
 #include <grid/BoundaryConditions/Side.h>
+#include "geometries/BoundingBox/BoundingBox.h"
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
-    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr), numberOfLayersFine(12), numberOfLayersBetweenLevels(8)
+    LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)
 {
 
 }
@@ -29,6 +30,13 @@ SPtr<MultipleGridBuilder> MultipleGridBuilder::makeShared(SPtr<GridFactory> grid
 void MultipleGridBuilder::addCoarseGrid(real startX, real startY, real startZ, real endX, real endY, real endZ, real delta)
 {
     boundaryConditions.push_back(SPtr<BoundaryConditions>(new BoundaryConditions));
+
+    startX -= 0.5 * delta;
+    startY -= 0.5 * delta;
+    startZ -= 0.5 * delta;
+    endX   += 0.5 * delta;
+    endY   += 0.5 * delta;
+    endZ   += 0.5 * delta;
 
     const auto grid = this->makeGrid(new Cuboid(startX, startY, startZ, endX, endY, endZ), startX, startY, startZ, endX, endY, endZ, delta, 0);
     addGridToList(grid);
@@ -429,7 +437,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         
         if     ( level == 0 )
             grids[level]->inital( nullptr, 0 );
-        else if( level == 0 || level == grids.size()-1 )
+        else if( level == grids.size()-1 )
             grids[level]->inital( nullptr, this->numberOfLayersFine );
         else
             grids[level]->inital( grids[level+1], this->numberOfLayersBetweenLevels );
@@ -467,6 +475,10 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
+    if( this->subDomainBox )
+        for (size_t i = 0; i < grids.size(); i++)
+            grids[i]->limitToSubDomain( this->subDomainBox );
+
 	if (lbmOrGks == LBM) {
 		for (size_t i = 0; i < grids.size() - 1; i++)
 			grids[i]->findSparseIndices(grids[i + 1]);
@@ -493,6 +505,13 @@ void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
     *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
 }
 
+void MultipleGridBuilder::findCommunicationIndices(int direction)
+{
+    if( this->subDomainBox )
+        for (size_t i = 0; i < grids.size(); i++)
+            grids[i]->findCommunicationIndices(direction, this->subDomainBox);
+}
+
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
 {
     for(uint level = 0; level < grids.size(); level++)
@@ -507,4 +526,9 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
         //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], nullptr       , ss.str() + ".InterpolationCells");
         //GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
+}
+
+VF_PUBLIC void MultipleGridBuilder::setSubDomainBox(SPtr<BoundingBox> subDomainBox)
+{
+    this->subDomainBox = subDomainBox;
 }

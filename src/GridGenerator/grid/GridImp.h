@@ -1,6 +1,8 @@
 #ifndef GRID_IMP_H
 #define GRID_IMP_H
 
+#include <array>
+
 #include "GridGenerator/global.h"
 #include "distributions/Distribution.h"
 
@@ -21,6 +23,17 @@ class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
+
+namespace CommunicationDirections {
+    enum {
+        MX = 0,
+        PX = 1,
+        MY = 2,
+        PY = 3,
+        MZ = 4,
+        PZ = 5
+    };
+}
 
 class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
@@ -105,6 +118,9 @@ public:
     HOSTDEVICE void transIndexToCoords(uint index, real &x, real &y, real &z) const override;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
+
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
+
     HOST void freeMemory() override;
 
     HOST uint getLevel(real levelNull) const;
@@ -264,10 +280,20 @@ private:
 	HOSTDEVICE void calculateQs(const uint index, const Vertex &point, const Triangle &triangle) const;
     HOSTDEVICE bool checkIfAtLeastOneValidQ(const uint index, const Vertex &point, const Triangle &triangle) const;
 
+public:
 
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox);
+    void findCommunicationIndex( uint index, real coordinate, real limit, int direction );
 
 private:
-    //HOSTDEVICE bool isNeighborInside(const int &index) const;
+
+    struct CommunicationIndices
+    {
+        std::vector<uint> sendIndices;
+        std::vector<uint> receiveIndices;
+    };
+
+    std::array<CommunicationIndices, 6> communicationIndices;
 
 
 private:

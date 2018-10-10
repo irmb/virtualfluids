@@ -9,6 +9,9 @@
 #define FLUID_FCC 3
 #define FLUID_FCF 4
 
+#define MULTI_GPU_SEND 10
+#define MULTI_GPU_RECIEVE 11
+
 #define BC_PRESSURE 20
 #define BC_VELOCITY 21
 #define BC_SOLID 22

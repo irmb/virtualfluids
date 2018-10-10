@@ -67,6 +67,11 @@
 	 return false;
  }
 
+ bool BoundingBox::isInside(const real x, const real y, const real z) const
+ {
+     return this->isInside(Vertex(x,y,z));
+ }
+
  bool BoundingBox::isInside(const Vertex &v) const
  {
      if (v.isXbetween(minX, maxX) && v.isYbetween(minY, maxY) && v.isZbetween(minZ, maxZ))
@@ -160,6 +165,17 @@
          && vf::Math::equal(maxY, box.maxY)
          && vf::Math::equal(minZ, box.minZ)
          && vf::Math::equal(maxZ, box.maxZ);
+ }
+
+ void BoundingBox::extend(real delta)
+ {
+     this->minX -= delta;
+     this->minY -= delta;
+     this->minZ -= delta;
+
+     this->maxX += delta;
+     this->maxY += delta;
+     this->maxZ += delta;
  }
 
 

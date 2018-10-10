@@ -14,6 +14,7 @@ struct Triangle;
 class GridStrategy;
 class GridInterface;
 class Object;
+class BoundingBox;
 
 class VF_PUBLIC Grid
 {
@@ -79,6 +80,8 @@ public:
     HOST virtual void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) = 0;
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
+
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) = 0;
     
     HOST virtual void enableFindSolidBoundaryNodes() = 0;
     HOST virtual void enableComputeQs() = 0;
@@ -119,6 +122,8 @@ public:
     HOST virtual void setInnerRegionFromFinerGrid( bool innerRegionFromFinerGrid ) = 0;
 
     HOST virtual void setNumberOfLayers( uint numberOfLayers ) = 0;
+
+    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) = 0;
 };
 
 #endif
