@@ -12,7 +12,6 @@
 #include "Cell.h"
 #include "Field.h" 
 
-
 class TriangularMesh;
 struct Vertex;
 struct Triangle;
@@ -23,17 +22,6 @@ class BoundingBox;
 class TriangularMeshDiscretizationStrategy;
 
 extern CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
-
-namespace CommunicationDirections {
-    enum {
-        MX = 0,
-        PX = 1,
-        MY = 2,
-        PY = 3,
-        MZ = 4,
-        PZ = 5
-    };
-}
 
 class VF_PUBLIC GridImp : public enableSharedFromThis<GridImp>, public Grid
 {
@@ -284,6 +272,12 @@ public:
 
     void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox);
     void findCommunicationIndex( uint index, real coordinate, real limit, int direction );
+
+    uint getNumberOfSendNodes(int direction) override;
+    uint getNumberOfReceiveNodes(int direction) override;
+
+    uint getSendIndex(int direction, uint index) override;
+    uint getReceiveIndex(int direction, uint index) override;
 
 private:
 

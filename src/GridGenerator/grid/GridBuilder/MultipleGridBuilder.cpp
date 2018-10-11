@@ -507,9 +507,13 @@ void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
 
 void MultipleGridBuilder::findCommunicationIndices(int direction)
 {
+    *logging::out << logging::Logger::INFO_HIGH << "Start findCommunicationIndices()\n";
+
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
             grids[i]->findCommunicationIndices(direction, this->subDomainBox);
+
+    *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
 }
 
 void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const

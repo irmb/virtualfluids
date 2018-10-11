@@ -32,12 +32,20 @@
 
 #include <GridGenerator/io/QLineWriter.h>
 
+#include "utilities/communication.h"
+
 
 #define GEOFLUID 19
 #define GEOSOLID 16
 
 LevelGridBuilder::LevelGridBuilder(Device device, const std::string& d3qxx) : device(device), d3qxx(d3qxx)
 {
+    this->communicationProcesses[CommunicationDirections::MX] = INVALID_INDEX;
+    this->communicationProcesses[CommunicationDirections::PX] = INVALID_INDEX;
+    this->communicationProcesses[CommunicationDirections::MY] = INVALID_INDEX;
+    this->communicationProcesses[CommunicationDirections::PY] = INVALID_INDEX;
+    this->communicationProcesses[CommunicationDirections::MZ] = INVALID_INDEX;
+    this->communicationProcesses[CommunicationDirections::PZ] = INVALID_INDEX;
 }
 
 std::shared_ptr<LevelGridBuilder> LevelGridBuilder::makeShared(Device device, const std::string& d3qxx)
@@ -124,6 +132,16 @@ void LevelGridBuilder::setNoSlipBoundaryCondition(SideType sideType)
 
         boundaryConditions[level]->noSlipBoundaryConditions.push_back(noSlipBoundaryCondition);
     }
+}
+
+VF_PUBLIC void LevelGridBuilder::setCommunicationProcess(int direction, uint process)
+{
+    this->communicationProcesses[direction] = process;
+}
+
+VF_PUBLIC uint LevelGridBuilder::getCommunicationProcess(int direction)
+{
+    return this->communicationProcesses[direction];
 }
 
 

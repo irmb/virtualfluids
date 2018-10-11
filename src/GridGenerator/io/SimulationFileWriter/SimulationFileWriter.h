@@ -6,6 +6,7 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include <array>
 
 #include <GridGenerator/global.h>
 #include <core/PointerDefinitions.h>
@@ -29,7 +30,7 @@ public:
 
 private:
     static void write(SPtr<GridBuilder> builder, FILEFORMAT format);
-    static void openFiles();
+    static void openFiles(SPtr<GridBuilder> builder);
 
     static void writeNumberNodes(SPtr<GridBuilder> builder, uint level);
     static void writeLBMvsSI(SPtr<GridBuilder> builder, uint level);
@@ -52,6 +53,9 @@ private:
     static void writeBoundary(std::vector<real> boundary, int rb);
 	static void writeBoundaryShort(std::vector<real> boundary, int rb);
 	static void writeBoundaryShort(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, uint side);
+
+    static void writeCommunicationFiles(SPtr<GridBuilder> builder);
+
 	static void closeFiles();
 
 
@@ -77,6 +81,9 @@ private:
 
     static std::vector<std::ofstream> qFiles;
     static std::vector<std::ofstream> valueFiles;
+
+    static std::array<std::ofstream, 6> sendFiles;
+    static std::array<std::ofstream, 6> receiveFiles;
 
     static std::ofstream numberNodes_File;
     static std::ofstream LBMvsSI_File;

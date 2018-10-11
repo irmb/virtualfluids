@@ -30,7 +30,7 @@
 
 #include "io/GridVTKWriter/GridVTKWriter.h"
 
-
+#include "utilities/communication.h"
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 
@@ -1357,16 +1357,7 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
         
     // negative direction get a negative sign
-    real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );
-
-    //if( vf::Math::equal( coordinate, limit + s * 0.5 * this->delta ) ){
-    //    this->communicationIndices[direction].receiveIndices.push_back(index);
-    //    this->setFieldEntry(index, MULTI_GPU_RECIEVE);
-    //}
-    //if( vf::Math::equal( coordinate, limit - s * 0.5 * this->delta ) ){
-    //    this->communicationIndices[direction].sendIndices.push_back(index);
-    //    this->setFieldEntry(index, MULTI_GPU_SEND);
-    //}    
+    real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );  
 
     if( vf::Math::equal( coordinate, limit + s * 0.5 * this->delta, 0.01 * this->delta ) ){
         this->communicationIndices[direction].receiveIndices.push_back(index);
@@ -1376,7 +1367,27 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
         this->communicationIndices[direction].sendIndices.push_back(index);
         this->setFieldEntry(index, MULTI_GPU_SEND);
     }  
-} 
+}
+
+uint GridImp::getNumberOfSendNodes(int direction)
+{
+    return this->communicationIndices[direction].sendIndices.size();
+}
+
+uint GridImp::getNumberOfReceiveNodes(int direction)
+{
+    return this->communicationIndices[direction].receiveIndices.size();
+}
+
+uint GridImp::getSendIndex(int direction, uint index)
+{
+    return this->communicationIndices[direction].sendIndices[ index ];
+}
+
+uint GridImp::getReceiveIndex(int direction, uint index)
+{
+    return this->communicationIndices[direction].receiveIndices[ index ];
+}
 
 
 // --------------------------------------------------------- //

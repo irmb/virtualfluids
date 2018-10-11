@@ -19,6 +19,10 @@
 #include <GridGenerator/grid/BoundaryConditions/Side.h>
 #include <GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
 
+#include "utilities/communication.h"
+
+#include "core/Timer/Timer.h"
+
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/
 /*---------------------------------------------------------------------------------*/
@@ -26,15 +30,14 @@ void SimulationFileWriter::write(std::string folder, SPtr<GridBuilder> builder, 
 {
     SimulationFileWriter::folder = folder;
 
-    std::cout << "Write Simulation Files ... \n";
-    clock_t  begin = clock();
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start writing simulation files to " << folder << ":\n";
+    Timer timer;
+    timer.start();
 
     write(builder, format);
 
-    clock_t  end = clock();
-    real time = real(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "time write files: " << time << " sec" << std::endl;
-    std::cout << "... finish writing Simulation Files!\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Time writing files: " << timer.getCurrentRuntimeInSeconds() << " sec\n";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done writing simulation Files!\n";
 }
 
 
@@ -44,10 +47,11 @@ void SimulationFileWriter::write(std::string folder, SPtr<GridBuilder> builder, 
 void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
 {
     const uint numberOfLevel = builder->getNumberOfGridLevels();
-    openFiles();
+    openFiles(builder);
     writeLevel(numberOfLevel);
     //auto qs = createBCVectors(builder->getGrid(0));
 
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Coordinate and neighbor files:\n";
     for (uint level = 0; level < numberOfLevel; level++)
     {
         writeNumberNodes(builder, level);
@@ -62,13 +66,17 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
             writeGridInterfaceToFile(builder, level);
         }
     }
-
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Boundary Condition files:\n";
     writeBoundaryQsFile(builder);
+    
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "    Communication files:\n";
+    writeCommunicationFiles(builder);
 
     closeFiles();
 }
 
-void SimulationFileWriter::openFiles()
+void SimulationFileWriter::openFiles(SPtr<GridBuilder> builder)
 {
     std::string path = folder;
     xCoordFile.open((      path + simulationFileNames::coordX).c_str(),      std::ios::out | std::ios::binary);
@@ -116,6 +124,20 @@ void SimulationFileWriter::openFiles()
         outV->open(valueNames[i].c_str(), std::ios::out | std::ios::binary);
         valueStreams.push_back(outV);
     }
+
+    if(builder->getCommunicationProcess(CommunicationDirections::MX) != INVALID_INDEX) sendFiles   [CommunicationDirections::MX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MX)) + "Xs.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::PX) != INVALID_INDEX) sendFiles   [CommunicationDirections::PX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PX)) + "Xs.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::MY) != INVALID_INDEX) sendFiles   [CommunicationDirections::MY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MY)) + "Ys.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::PY) != INVALID_INDEX) sendFiles   [CommunicationDirections::PY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PY)) + "Ys.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::MZ) != INVALID_INDEX) sendFiles   [CommunicationDirections::MZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MZ)) + "Zs.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::PZ) != INVALID_INDEX) sendFiles   [CommunicationDirections::PZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PZ)) + "Zs.dat").c_str() );
+
+    if(builder->getCommunicationProcess(CommunicationDirections::MX) != INVALID_INDEX) receiveFiles[CommunicationDirections::MX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MX)) + "Xr.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::PX) != INVALID_INDEX) receiveFiles[CommunicationDirections::PX].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PX)) + "Xr.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::MY) != INVALID_INDEX) receiveFiles[CommunicationDirections::MY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MY)) + "Yr.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::PY) != INVALID_INDEX) receiveFiles[CommunicationDirections::PY].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PY)) + "Yr.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::MZ) != INVALID_INDEX) receiveFiles[CommunicationDirections::MZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::MZ)) + "Zr.dat").c_str() );
+    if(builder->getCommunicationProcess(CommunicationDirections::PZ) != INVALID_INDEX) receiveFiles[CommunicationDirections::PZ].open( (path + std::to_string(builder->getCommunicationProcess(CommunicationDirections::PZ)) + "Zr.dat").c_str() );
 
     numberNodes_File.open((path + simulationFileNames::numberNodes).c_str(), std::ios::out | std::ios::binary);
     LBMvsSI_File.open((path + simulationFileNames::LBMvsSI).c_str(), std::ios::out | std::ios::binary);
@@ -593,6 +615,38 @@ void SimulationFileWriter::writeBoundaryShort(SPtr<Grid> grid, SPtr<BoundaryCond
     
 }
 
+void SimulationFileWriter::writeCommunicationFiles(SPtr<GridBuilder> builder)
+{
+    const uint numberOfLevel = builder->getNumberOfGridLevels();
+    
+    for( uint direction = 0; direction < 6; direction++ ){
+        
+        if(builder->getCommunicationProcess(direction) == INVALID_INDEX) continue;
+
+        sendFiles[direction] << "processor\n";
+        sendFiles[direction] << builder->getNumberOfGridLevels() - 1 << "\n";
+
+        receiveFiles[direction] << "processor\n";
+        receiveFiles[direction] << builder->getNumberOfGridLevels() - 1 << "\n";
+
+        for (uint level = 0; level < numberOfLevel; level++){
+        
+            uint numberOfSendNodes    = builder->getGrid(level)->getNumberOfSendNodes(direction);
+            uint numberOfReceiveNodes = builder->getGrid(level)->getNumberOfReceiveNodes(direction);
+        
+            sendFiles[direction] <<    numberOfSendNodes    << "\n";
+            receiveFiles[direction] << numberOfReceiveNodes << "\n";
+
+            for( uint index = 0; index < numberOfSendNodes; index++ )
+                sendFiles[direction]    << builder->getGrid(level)->getSendIndex   (direction, index) << "\n";
+
+            for( uint index = 0; index < numberOfReceiveNodes; index++ )
+                receiveFiles[direction] << builder->getGrid(level)->getReceiveIndex(direction, index) << "\n";
+
+        }
+    }
+}
+
 void SimulationFileWriter::closeFiles()
 {
     xCoordFile.close();
@@ -616,6 +670,20 @@ void SimulationFileWriter::closeFiles()
         qStreams[rb]->close();
         valueStreams[rb]->close();
     }
+
+    sendFiles[CommunicationDirections::MX].close();
+    sendFiles[CommunicationDirections::PX].close();
+    sendFiles[CommunicationDirections::MY].close();
+    sendFiles[CommunicationDirections::PY].close();
+    sendFiles[CommunicationDirections::MZ].close();
+    sendFiles[CommunicationDirections::PZ].close();
+    
+    receiveFiles[CommunicationDirections::MX].close();
+    receiveFiles[CommunicationDirections::PX].close();
+    receiveFiles[CommunicationDirections::MY].close();
+    receiveFiles[CommunicationDirections::PY].close();
+    receiveFiles[CommunicationDirections::MZ].close();
+    receiveFiles[CommunicationDirections::PZ].close();
 
     numberNodes_File.close();
     LBMvsSI_File.close();
@@ -648,3 +716,6 @@ std::ofstream SimulationFileWriter::offsetVecFC_File;
 
 std::ofstream SimulationFileWriter::numberNodes_File;
 std::ofstream SimulationFileWriter::LBMvsSI_File;
+
+std::array<std::ofstream, 6> SimulationFileWriter::sendFiles;
+std::array<std::ofstream, 6> SimulationFileWriter::receiveFiles;

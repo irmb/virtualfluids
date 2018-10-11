@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
 
 #include "core/LbmOrGks.h"
 
@@ -37,8 +38,8 @@
 
 #include "grid/GridFactory.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
-#include <grid/GridMocks.h>
-#include "grid/GridStrategy/GridStrategyMocks.h"
+//#include "grid/GridMocks.h"
+//#include "grid/GridStrategy/GridStrategyMocks.h"
 #include "VirtualFluidsBasics/utilities/logger/Logger.h"
 //#include "VirtualFluidsBasics/basics/utilities/UbLogger.h"
 #include "io/STLReaderWriter/STLReader.h"
@@ -50,6 +51,8 @@
 
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/BoundaryConditions/BoundaryCondition.h"
+
+#include "utilities/communication.h"
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -257,7 +260,11 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    logging::Logger::setStream(&std::cout);
+    //std::ofstream logFile( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/gridGeneratorLog.txt" );
+    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
+    logging::Logger::addStream(&logFile);
+
+    logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
@@ -482,25 +489,36 @@ void multipleLevel(const std::string& configPath)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         const uint generatePart = 2;
+        
+        std::ofstream logFile2;
+        
+        //if( generatePart == 1 )
+        //    logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_1/gridGeneratorLog.txt" );
+        //
+        //if( generatePart == 2 )
+        //    logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/gridGeneratorLog.txt" );
+
+        logging::Logger::addStream(&logFile2);
 
         real dx = 1.0 / 10.0;
         real vx = 0.01;
 
-        TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ShpereNotOptimal.stl");
+        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ShpereNotOptimal.stl");
+        TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
 
         // all
-        //gridBuilder->addCoarseGrid(-2, -2, -2,  
-        //                            4,  2,  2, dx);
+        gridBuilder->addCoarseGrid(-2, -2, -2,  
+                                    4,  2,  2, dx);
 
         real overlap = 10.0 * dx;
 
-        if( generatePart == 1 )
-            gridBuilder->addCoarseGrid(-2.0          , -2.0, -2.0,  
-                                        0.5 + overlap,  2.0,  2.0, dx);
+        //if( generatePart == 1 )
+        //    gridBuilder->addCoarseGrid(-2.0          , -2.0, -2.0,  
+        //                                0.5 + overlap,  2.0,  2.0, dx);
 
-        if( generatePart == 2 )
-            gridBuilder->addCoarseGrid( 0.5 - overlap, -2.0, -2.0,  
-                                        4.0          ,  2.0,  2.0, dx);
+        //if( generatePart == 2 )
+        //    gridBuilder->addCoarseGrid( 0.5 - overlap, -2.0, -2.0,  
+        //                                4.0          ,  2.0,  2.0, dx);
 
 
         gridBuilder->setNumberOfLayers(10,8);
@@ -508,26 +526,29 @@ void multipleLevel(const std::string& configPath)
 
         gridBuilder->addGeometry(triangularMesh);
         
-        if( generatePart == 1 )
-            gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -2.0, 0.5, 
-                                                                         -2.0, 2.0, 
-                                                                         -2.0, 2.0 ) );
-        
-        if( generatePart == 2 )
-            gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.5, 4.0, 
-                                                                         -2.0, 2.0, 
-                                                                         -2.0, 2.0 ) );
-
+        //if( generatePart == 1 )
+        //    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -2.0, 0.5, 
+        //                                                                 -2.0, 2.0, 
+        //                                                                 -2.0, 2.0 ) );
+        //
+        //if( generatePart == 2 )
+        //    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.5, 4.0, 
+        //                                                                 -2.0, 2.0, 
+        //                                                                 -2.0, 2.0 ) );
 
         gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
         gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
         
-        if( generatePart == 1 )
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-        
-        if( generatePart == 2 )
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+        //if( generatePart == 1 ){
+        //    gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
+        //    gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
+        //}
+        //
+        //if( generatePart == 2 ){
+        //    gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+        //    gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
+        //}
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // other tests
@@ -559,19 +580,17 @@ void multipleLevel(const std::string& configPath)
         gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
         gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
 
-        //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+        gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
 
         gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
-        if (generatePart == 1) {
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
-            //gridBuilder->setDomainDecompositionBoundaryCondition(SideType::PX);
-        }
-        if (generatePart == 2) {
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-            //gridBuilder->setDomainDecompositionBoundaryCondition(SideType::MX);
-        }
+        //if (generatePart == 1) {
+        //    gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+        //}
+        //if (generatePart == 2) {
+        //    gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+        //}
 
         ////////////////////////////////////////////////////////////////////////////
 
@@ -629,20 +648,22 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
 
-        if (generatePart == 1) {
-            gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_1/Test_");
-            gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_1/Test_Arrow");
-        }
-        if (generatePart == 2) {
-            gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_");
-            gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_Arrow");
-        }
+        //if (generatePart == 1) {
+        //    gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_1/Test_");
+        //    gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_1/Test_Arrow");
+        //}
+        //if (generatePart == 2) {
+        //    gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_");
+        //    gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_Arrow");
+        //}
 
         //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
-        //gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_");
+        //gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_");
+        gridBuilder->writeGridsToVtk("grid/Test_");
 
         //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
         //gridBuilder->writeArrows("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_Arrow");
+        gridBuilder->writeArrows("grid/Test_Arrow");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -740,16 +761,24 @@ void multipleLevel(const std::string& configPath)
 
         //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
         //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+        SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
-        //gridGenerator = GridGenerator::make(gridBuilder, para);
+        //if (generatePart == 1)
+        //    SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_1/", gridBuilder, FILEFORMAT::ASCII);
+        //if (generatePart == 2)
+        //    SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/", gridBuilder, FILEFORMAT::ASCII);
 
-        return;
+        gridGenerator = GridGenerator::make(gridBuilder, para);
     }
     else
     {
         //gridGenerator = GridReader::make(FileFormat::BINARY, para);
         gridGenerator = GridReader::make(FileFormat::ASCII, para);
     }
+
+    logFile.close();
+
+    //return;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -786,9 +815,9 @@ int main( int argc, char* argv[])
             {
                 multipleLevel(str2);
             }
-            catch (const std::exception e)
+            catch (const std::exception& e)
             {
-                std::cout << e.what() << std::flush;
+                *logging::out << logging::Logger::ERROR << e.what() << "\n";
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (...)
@@ -802,17 +831,17 @@ int main( int argc, char* argv[])
             {
                 multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
             }
-            catch (const std::exception e)
+            catch (const std::exception& e)
             {
                 
-                *logging::out << logging::Logger::ERROR << e.what() << '\n';
+                *logging::out << logging::Logger::ERROR << e.what() << "\n";
                 //std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }
             catch (const std::bad_alloc e)
             {
                 
-                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << '\n';
+                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
                 //std::cout << e.what() << std::flush;
                 //MPI_Abort(MPI_COMM_WORLD, -1);
             }

@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <map>
+#include <array>
 
 #include "GridBuilder.h"
 #include "grid/GridInterface.h"
@@ -48,6 +48,9 @@ public:
     VF_PUBLIC void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     VF_PUBLIC void setNoSlipBoundaryCondition(SideType sideType);
 
+    VF_PUBLIC void setCommunicationProcess(int direction, uint process);
+
+    VF_PUBLIC uint getCommunicationProcess(int direction) override;
 
     VF_PUBLIC virtual std::shared_ptr<Grid> getGrid(int level, int box);
 
@@ -98,6 +101,8 @@ protected:
 
     std::vector<std::shared_ptr<Grid> > grids;
     std::vector<SPtr<BoundaryConditions> > boundaryConditions;
+
+    std::array<uint, 6> communicationProcesses;
 
     void checkLevel(int level);
 

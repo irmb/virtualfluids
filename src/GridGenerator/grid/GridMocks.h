@@ -106,6 +106,12 @@ public:
 
     void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) override {}
 
+    uint getNumberOfSendNodes(int direction) override { return INVALID_INDEX; }
+    uint getNumberOfReceiveNodes(int direction) override { return INVALID_INDEX; }
+
+    uint getSendIndex(int direction, uint index) override { return INVALID_INDEX; }
+    uint getReceiveIndex(int direction, uint index) override { return INVALID_INDEX; }
+
 };
 
 class GridStub : public GridDummy
