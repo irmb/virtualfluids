@@ -70,13 +70,13 @@ ENDIF(MSVC)
 #############################################################
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
-option(HULC.BUILD_dem_coupling "Builds dem coupling " ON)
+option(HULC.BUILD_dem_coupling "Builds dem coupling " OFF)
 option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
 option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
 option(HULC.BUILD_TESTS "Build tests" OFF)
-option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests" ON)
+option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests" OFF)
 
-option(VF_DOUBLE_ACCURACY "Build shared libraries" ON)
+option(VF_DOUBLE_ACCURACY "Build shared libraries" OFF)
 
 if(HULC.BUILD_GPU_CODE)
   #SET(CMAKE_CUDA_COMPILER $ENV{CUDA_PATH_V9_0}/bin/nvcc.exe)

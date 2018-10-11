@@ -88,6 +88,8 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
     std::ifstream file;
     file.open(name.c_str(), std::ifstream::in);
 
+    if( !file.is_open() ) throw std::runtime_error(name + "cannot be opened!");
+
     uint currentPatchIndex = 0;
 
     uint currentFacetLine = 0;
@@ -100,11 +102,11 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
 
         // trim the string
         line = line.substr( line.find_first_not_of(" "), line.find_last_not_of(" ") + 1 );
-        
-        if( line.substr( 0, line.find(' ') ) == "color" ) continue;
+
+        if( line.substr( 0, line.find(" ") ) == "color" ) continue;
 
         // ========================================================================================
-        if     ( currentFacetLine == 0 && line.substr( 0, line.find(' ') ) == "solid" )
+        if     ( currentFacetLine == 0 && line.substr( 0, line.find(" ") ) == "solid" )
         {
             ignoreCurrentPatch = std::find( ignorePatches.begin(), ignorePatches.end(), currentPatchIndex ) != ignorePatches.end();
 
@@ -115,41 +117,41 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
 
             currentFacetLine++;
         }
-        else if( currentFacetLine == 1 && line.substr( 0, line.find(' ') ) == "endsolid" )
+        else if( currentFacetLine == 1 && line.substr( 0, line.find(" ") ) == "endsolid" )
         {
             currentFacetLine = 0;
             currentPatchIndex++;
         }
         // ========================================================================================
-        else if( currentFacetLine == 1 && line.substr( 0, line.find(' ') ) == "facet" )
+        else if( currentFacetLine == 1 && line.substr( 0, line.find(" ") ) == "facet" )
         {
             normal = parseLineToCoordinates(line, "%*s %*s %f %f %f");
             currentFacetLine++;
         }
-        else if( currentFacetLine == 2 && line.substr( 0, line.find(' ') ) == "outer" )
+        else if( currentFacetLine == 2 && line.substr( 0, line.find(" ") ) == "outer" )
         {
             currentFacetLine++;
         }
-        else if( currentFacetLine == 3 && line.substr( 0, line.find(' ') ) == "vertex" )
+        else if( currentFacetLine == 3 && line.substr( 0, line.find(" ") ) == "vertex" )
         {
             vertex1 = parseLineToCoordinates(line, "%*s %f %f %f");
             currentFacetLine++;
         }
-        else if( currentFacetLine == 4 && line.substr( 0, line.find(' ') ) == "vertex" )
+        else if( currentFacetLine == 4 && line.substr( 0, line.find(" ") ) == "vertex" )
         {
             vertex2 = parseLineToCoordinates(line, "%*s %f %f %f");
             currentFacetLine++;
         }
-        else if( currentFacetLine == 5 && line.substr( 0, line.find(' ') ) == "vertex" )
+        else if( currentFacetLine == 5 && line.substr( 0, line.find(" ") ) == "vertex" )
         {
             vertex3 = parseLineToCoordinates(line, "%*s %f %f %f");
             currentFacetLine++;
         }
-        else if( currentFacetLine == 6 && line.substr( 0, line.find(' ') ) == "endloop" )
+        else if( currentFacetLine == 6 && line.substr( 0, line.find(" ") ) == "endloop" )
         {
             currentFacetLine++;
         }
-        else if( currentFacetLine == 7 && line.substr( 0, line.find(' ') ) == "endfacet" )
+        else if( currentFacetLine == 7 && line.substr( 0, line.find(" ") ) == "endfacet" )
         {
             if( !ignoreCurrentPatch ){
                 Triangle tri = Triangle(vertex1, vertex2, vertex3, normal);
@@ -164,7 +166,7 @@ std::vector<Triangle> STLReader::readASCIISTLWithPatches(const std::string& name
         }
         else
         {
-            throw std::runtime_error("STL-File does not comply with standard!\n");
+            throw std::runtime_error("STL-File does not comply with standard: " + line + "|\n");
         }
     }
 
