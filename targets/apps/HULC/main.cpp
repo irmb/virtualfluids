@@ -9,6 +9,8 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "core/LbmOrGks.h"
 
@@ -321,18 +323,23 @@ void multipleLevel(const std::string& configPath)
         // DLC - Golf
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        real dx = 0.2;
-        real vx = 0.05;
+		real velocityRatio = 594.093427;
 
-        real z0 = 0.265+0.5*dx;
+        real dx = 0.2;
+        real vx = 0.065272188;
+
+        real z0 = 0.24395+0.5*dx;
 
         std::vector<uint> ignorePatches = { 152, 153, 154 };
 
-        TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
-        
-        TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+        //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+		TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("M:/DLC/STL/VW370_SERIE.stl", ignorePatches);
 
-        TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
+        //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+		TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("M:/DLC/STL/DrivAer_REF_BOX_Adrea.stl");
+
+        //TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
+		TriangularMesh* DLC_RefBox = TriangularMesh::make("M:/DLC/STL/DLC_RefBox.stl");
 
         gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
                                     15.0,  5.0, 5.0 - z0, dx);
@@ -532,24 +539,30 @@ void multipleLevel(const std::string& configPath)
             //                                                                                                                         2.793 ,  2.0, 0.0, -vx, 0.318);
 
             real wheelsFrontX = -0.081;
-            real wheelsRearX  =  2.5485;
+            real wheelsRearX  =  2.5486;
 
-            real wheelsFrontZ =  0.0515;
-            real wheelsRearZ  =  0.0585;
+            real wheelsFrontZ =  0.0504;
+            real wheelsRearZ  =  0.057;
 
             real wheelsRadius =  0.318;
+
+			real wheelRotationFrequency = 1170.74376 / 60.0;
+
+			real wheelTangentialVelocity = -2.0 * M_PI * wheelsRadius * wheelRotationFrequency / velocityRatio;
 
             std::vector<uint> frontWheelPatches = { 71, 86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97, 159 };
             std::vector<uint> rearWheelPatches  = { 82, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 160 };
 
             for( uint patch : frontWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsFrontX, -2.0, wheelsFrontZ,
-                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ, -vx, wheelsRadius);
+                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ, 
+					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
             }
 
             for( uint patch : rearWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsRearX , -2.0, wheelsRearZ ,
-                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ , -vx, wheelsRadius);
+                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ , 
+					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
             }
 
         }
@@ -564,11 +577,11 @@ void multipleLevel(const std::string& configPath)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
-        gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_");
+        gridBuilder->writeGridsToVtk("M:/DLC/results/Test_");
+        //gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_");
 
-        //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/CylinderTest_");
-        gridBuilder->writeArrows("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_Arrow");
+        gridBuilder->writeGridsToVtk("M:/DLC/results/CylinderTest_");
+        //gridBuilder->writeArrows("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_Arrow");
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -664,8 +677,8 @@ void multipleLevel(const std::string& configPath)
         //	}
         //}
 
-        //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
-        SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+        SimulationFileWriter::write("M:/DLC/grid/", gridBuilder, FILEFORMAT::ASCII);
+        //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
 
         gridGenerator = GridGenerator::make(gridBuilder, para);
 
@@ -726,8 +739,9 @@ int main( int argc, char* argv[])
         {
             try
             {
-                multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
-            }
+                //multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
+				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseDLC/configDLC.txt");
+			}
             catch (const std::exception e)
             {
                 

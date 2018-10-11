@@ -249,13 +249,13 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int t)
 
 			if (para->getUseWale())
 			{
-				//UnstructuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				//UnstructuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para.get(), lev, fname);
 				UnstructuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosityDebug(para.get(), lev, fname);
 			}
-			//else if (para->getSimulatePorousMedia())
-			//{
-			//	UnstructuredGridWriter::writeUnstrucuredGridPM(para, lev, fname);
-			//}
+			else if (para->getSimulatePorousMedia())
+			{
+				UnstructuredGridWriter::writeUnstrucuredGridPM(para.get(), lev, fname);
+			}
 			else
 			{
 				UnstructuredGridWriter::writeUnstrucuredGridLT(para.get(), lev, fname);

@@ -11,13 +11,13 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(int inx,
 											                real* DD, 
 											                int* k_Q, 
 											                real* QQ,
-											                unsigned int sizeQ,
+											                uint sizeQ,
 											                int kQ, 
 											                real om1, 
-											                unsigned int* neighborX,
-											                unsigned int* neighborY,
-											                unsigned int* neighborZ,
-											                unsigned int size_Mat, 
+											                uint* neighborX,
+											                uint* neighborY,
+											                uint* neighborZ,
+											                uint size_Mat, 
 											                bool evenOrOdd)
 {
    Distributions27 D;
@@ -132,34 +132,34 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
-      unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
-      unsigned int kse  = ks;
-      unsigned int knw  = kw;
-      unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
-      unsigned int kbe  = kb;
-      unsigned int ktw  = kw;
-      unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
-      unsigned int kbn  = kb;
-      unsigned int kts  = ks;
-      unsigned int ktse = ks;
-      unsigned int kbnw = kbw;
-      unsigned int ktnw = kw;
-      unsigned int kbse = kbs;
-      unsigned int ktsw = ksw;
-      unsigned int kbne = kb;
-      unsigned int ktne = KQK;
-      unsigned int kbsw = neighborZ[ksw];
+      uint KQK  = k_Q[k];
+      uint kzero= KQK;
+      uint ke   = KQK;
+      uint kw   = neighborX[KQK];
+      uint kn   = KQK;
+      uint ks   = neighborY[KQK];
+      uint kt   = KQK;
+      uint kb   = neighborZ[KQK];
+      uint ksw  = neighborY[kw];
+      uint kne  = KQK;
+      uint kse  = ks;
+      uint knw  = kw;
+      uint kbw  = neighborZ[kw];
+      uint kte  = KQK;
+      uint kbe  = kb;
+      uint ktw  = kw;
+      uint kbs  = neighborZ[ks];
+      uint ktn  = KQK;
+      uint kbn  = kb;
+      uint kts  = ks;
+      uint ktse = ks;
+      uint kbnw = kbw;
+      uint ktnw = kw;
+      uint kbse = kbs;
+      uint ktsw = ksw;
+      uint kbne = kb;
+      uint ktne = KQK;
+      uint kbsw = neighborZ[ksw];
       ////////////////////////////////////////////////////////////////////////////////
       real f_E,  f_W,  f_N,  f_S,  f_T,  f_B,   f_NE,  f_SW,  f_SE,  f_NW,  f_TE,  f_BW,  f_BE,
          f_TW, f_TN, f_BS, f_BN, f_TS, f_TNE, f_TSW, f_TSE, f_TNW, f_BNE, f_BSW, f_BSE, f_BNW;
@@ -534,15 +534,15 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartTwo27(int inx,
 														    real* DD, 
 														    int* k_Q, 
 														    real* QQ,
-														    unsigned int sizeQ,
+														    uint sizeQ,
 														    int kQ, 
 														    real om1, 
-														    unsigned int* geom,
-														    unsigned int* neighborX,
-														    unsigned int* neighborY,
-														    unsigned int* neighborZ,
-														    unsigned int* neighborWSB,
-														    unsigned int size_Mat, 
+														    uint* geom,
+														    uint* neighborX,
+														    uint* neighborY,
+														    uint* neighborZ,
+														    uint* neighborWSB,
+														    uint size_Mat, 
 														    bool evenOrOdd)
 {
    ////////////////////////////////////////////////////////////////////////////////
@@ -592,50 +592,50 @@ extern "C" __global__ void QVelDeviceCompThinWallsPartTwo27(int inx,
       q_dirBNW = &QQ[dirBNW *sizeQ];
       ////////////////////////////////////////////////////////////////////////////////
       //index
-      unsigned int KQK  = k_Q[k];
-      unsigned int kzero= KQK;
-      unsigned int ke   = KQK;
-      unsigned int kw   = neighborX[KQK];
-      unsigned int kn   = KQK;
-      unsigned int ks   = neighborY[KQK];
-      unsigned int kt   = KQK;
-      unsigned int kb   = neighborZ[KQK];
-      unsigned int ksw  = neighborY[kw];
-      unsigned int kne  = KQK;
-      unsigned int kse  = ks;
-      unsigned int knw  = kw;
-      unsigned int kbw  = neighborZ[kw];
-      unsigned int kte  = KQK;
-      unsigned int kbe  = kb;
-      unsigned int ktw  = kw;
-      unsigned int kbs  = neighborZ[ks];
-      unsigned int ktn  = KQK;
-      unsigned int kbn  = kb;
-      unsigned int kts  = ks;
-      unsigned int ktse = ks;
-      unsigned int kbnw = kbw;
-      unsigned int ktnw = kw;
-      unsigned int kbse = kbs;
-      unsigned int ktsw = ksw;
-      unsigned int kbne = kb;
-      unsigned int ktne = KQK;
-      unsigned int kbsw = neighborZ[ksw];
+      uint KQK  = k_Q[k];
+      uint kzero= KQK;
+      uint ke   = KQK;
+      uint kw   = neighborX[KQK];
+      uint kn   = KQK;
+      uint ks   = neighborY[KQK];
+      uint kt   = KQK;
+      uint kb   = neighborZ[KQK];
+      uint ksw  = neighborY[kw];
+      uint kne  = KQK;
+      uint kse  = ks;
+      uint knw  = kw;
+      uint kbw  = neighborZ[kw];
+      uint kte  = KQK;
+      uint kbe  = kb;
+      uint ktw  = kw;
+      uint kbs  = neighborZ[ks];
+      uint ktn  = KQK;
+      uint kbn  = kb;
+      uint kts  = ks;
+      uint ktse = ks;
+      uint kbnw = kbw;
+      uint ktnw = kw;
+      uint kbse = kbs;
+      uint ktsw = ksw;
+      uint kbne = kb;
+      uint ktne = KQK;
+      uint kbsw = neighborZ[ksw];
 	  ////////////////////////////////////////////////////////////////////////////////
 	  //anti ET intermediate steps
-	  unsigned int kmmm = neighborWSB[KQK]; // -1 -1 -1
-	  unsigned int k0mm = neighborX[kmmm];  //  0 -1 -1
-	  unsigned int km0m = neighborY[kmmm];  // -1  0 -1
-	  unsigned int kmm0 = neighborZ[kmmm];  // -1 -1  0
-	  unsigned int k0m0 = neighborX[kmm0];  //  0 -1  0
-	  unsigned int km00 = neighborY[kmm0];  // -1  0  0
+	  uint kmmm = neighborWSB[KQK]; // -1 -1 -1
+	  uint k0mm = neighborX[kmmm];  //  0 -1 -1
+	  uint km0m = neighborY[kmmm];  // -1  0 -1
+	  uint kmm0 = neighborZ[kmmm];  // -1 -1  0
+	  uint k0m0 = neighborX[kmm0];  //  0 -1  0
+	  uint km00 = neighborY[kmm0];  // -1  0  0
 	  /////////////////////////////////////////////////
 	  //final indices for anti ET
-	  unsigned int kpmm = neighborX[k0mm];  //  1 -1 -1
-	  unsigned int kmpm = neighborY[km0m];  // -1  1 -1
-	  unsigned int kmmp = neighborZ[kmm0];  // -1 -1  1
-	  unsigned int kmp0 = neighborY[km00];  // -1  1  0
-	  unsigned int km0p = neighborZ[km00];  // -1  0  1
-	  unsigned int k0mp = neighborZ[k0m0];  //  0 -1  1
+	  uint kpmm = neighborX[k0mm];  //  1 -1 -1
+	  uint kmpm = neighborY[km0m];  // -1  1 -1
+	  uint kmmp = neighborZ[kmm0];  // -1 -1  1
+	  uint kmp0 = neighborY[km00];  // -1  1  0
+	  uint km0p = neighborZ[km00];  // -1  0  1
+	  uint k0mp = neighborZ[k0m0];  //  0 -1  1
 	  ////////////////////////////////////////////////////////////////////////////////
 	  Distributions27 D, DN;
 	  if (evenOrOdd == true)

@@ -656,7 +656,7 @@ namespace UnstructuredGridWriter
 
 			for (unsigned int pos = startpos; pos < endpos; pos++)
 			{
-				if (/*(para->getParH(level)->geoSP[pos] >= GEO_FLUID) || ((para->getParH(level)->geoSP[pos] >= GEO_PM_0) && (para->getParH(level)->geoSP[pos] <= GEO_PM_2))*/true)
+				if ((para->getParH(level)->geoSP[pos] >= GEO_FLUID) || ((para->getParH(level)->geoSP[pos] >= GEO_PM_0) && (para->getParH(level)->geoSP[pos] <= GEO_PM_2)))
 				{
 					//////////////////////////////////////////////////////////////////////////
 					double x1 = para->getParH(level)->coordX_SP[pos];
