@@ -36,15 +36,19 @@ void PePhysicsEngineSolverAdapter::initalizePeEnvironment()
 std::shared_ptr<PhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::createPhysicsEngineGeometryAdapter(int id, const Vector3D& position, double radius, std::shared_ptr<PhysicsEngineMaterialAdapter> material) const
 {
     const std::shared_ptr<PePhysicsEngineMaterialAdapter> peMaterial = std::dynamic_pointer_cast<PePhysicsEngineMaterialAdapter>(material);
-
-    walberla::pe::GeomID peGeometry = createSphere(*globalBodyStorage, *forest, *storageId, id, PeConverter::convert(position), radius, peMaterial->getPeMaterial());
-
     std::shared_ptr<PePhysicsEngineGeometryAdapter> peGeometryAdapter(new PePhysicsEngineGeometryAdapter());
+
+    //UBLOG(logINFO, "PePhysicsEngineSolverAdapter::createSphere():start");
+    walberla::pe::GeomID peGeometry = createSphere(*globalBodyStorage, *forest, *storageId, id, PeConverter::convert(position), radius, peMaterial->getPeMaterial());
+    //UBLOG(logINFO, "PePhysicsEngineSolverAdapter::createSphere():end");
 
     if (peGeometry)
     {
        peGeometryAdapter->setId(id);
-       peGeometryAdapter->setSystemId(peGeometry->getSystemID());
+       peGeometryAdapter->setSystemID(peGeometry->getSystemID());
+       //unsigned long long sid = peGeometryAdapter->getSystemID();
+       //geoIdMap.insert(std::make_pair(sid, peGeometryAdapter));
+       //peGeometryAdapter->counter++;
        
        //if(peGeometry->getSystemID() != id+1)
        //   UB_THROW(UbException(UB_EXARGS, "id="+UbSystem::toString(id)+" does not match pe::SystemId="+UbSystem::toString(peGeometry->getSystemID())));
@@ -80,6 +84,10 @@ void PePhysicsEngineSolverAdapter::initialPeBodyStorage()
 
 void PePhysicsEngineSolverAdapter::initialPeBlockForest()
 {
+
+   //walberla::SetupBlockForest sforest = walberla::blockforest::createUniformBlockGrid(walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2],
+   //   peParameter->simulationDomain[3], peParameter->simulationDomain[4], peParameter->simulationDomain[5]), // simulationDomain
+   //   walberla::uint_t(val<1>(peParameter->numberOfBlocks)), walberla::uint_t(val<2>(peParameter->numberOfBlocks)), walberla::uint_t(val<3>(peParameter->numberOfBlocks)),walberla::uint_t(10),walberla::uint_t(10),walberla::uint_t(10), 5.0,false);
     walberla::SetupBlockForest sforest;
     //sforest.addWorkloadMemorySUIDAssignmentFunction( uniformWorkloadAndMemoryAssignment );
     sforest.init(walberla::AABB(peParameter->simulationDomain[0], peParameter->simulationDomain[1], peParameter->simulationDomain[2],
@@ -200,3 +208,15 @@ std::shared_ptr<walberla::pe::BodyStorage> PePhysicsEngineSolverAdapter::getGlob
 {
    return globalBodyStorage;
 }
+//////////////////////////////////////////////////////////////////////////
+//std::shared_ptr<PePhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::getPeGeoAdapter(unsigned long long systemId)
+//{
+//   std::map< unsigned long long, std::shared_ptr<PePhysicsEngineGeometryAdapter> >::const_iterator it;
+//   if ((it=geoIdMap.find(systemId)) == geoIdMap.end())
+//   {
+//      //throw UbException(UB_EXARGS, "pe SystemId can not be found!");
+//      return nullptr;
+//   }
+//   else
+//      return it->second;
+//}

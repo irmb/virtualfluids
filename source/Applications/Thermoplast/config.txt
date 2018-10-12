@@ -9,8 +9,8 @@ boundingBox = 60 1370 130 190 1530 320 #test bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 100000
-outTime = 100
+endTime = 10000
+outTime = 1000
 availMem = 25e9
 uLB = 0.1
 

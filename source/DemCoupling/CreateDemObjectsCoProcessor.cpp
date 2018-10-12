@@ -89,7 +89,7 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
    for (int i = 0; i < size; i++)
    {
       //timer.resetAndStart();
-      std::array<double, 6> AABB ={ geoObjectPrototypeVector[i]->getX1Minimum(),geoObjectPrototypeVector[i]->getX2Minimum(),geoObjectPrototypeVector[i]->getX3Minimum(),geoObjectPrototypeVector[i]->getX1Maximum(),geoObjectPrototypeVector[i]->getX2Maximum(),geoObjectPrototypeVector[i]->getX3Maximum() };
+      //std::array<double, 6> AABB ={ geoObjectPrototypeVector[i]->getX1Minimum(),geoObjectPrototypeVector[i]->getX2Minimum(),geoObjectPrototypeVector[i]->getX3Minimum(),geoObjectPrototypeVector[i]->getX1Maximum(),geoObjectPrototypeVector[i]->getX2Maximum(),geoObjectPrototypeVector[i]->getX3Maximum() };
       //UBLOG(logINFO, "demCoProcessor->isGeoObjectInAABB(AABB) = " << demCoProcessor->isGeoObjectInAABB(AABB));
       //if (demCoProcessor->isDemObjectInAABB(AABB))
       //{
@@ -119,6 +119,7 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
       //geoObjectInt->initInteractor();
       //UBLOG(logINFO, "geoObjectInt->initInteractor() time = "<<timer.stop());
       demCoProcessor->addInteractor(geoObjectInt, demObjectMaterial, initalVelocity[i]);
+
       //UBLOG(logINFO, "demCoProcessor->addInteractor() time = "<<timer.stop());
    }
 }

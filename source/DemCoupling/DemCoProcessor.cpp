@@ -31,7 +31,7 @@
 #include <functional>
 
 DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Communicator> comm, std::shared_ptr<ForceCalculator> forceCalculator, std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver, double intermediatePeSteps) :
-   CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(physicsEngineSolver), intermediateDemSteps(intermediatePeSteps)
+   CoProcessor(grid, s), comm(comm), forceCalculator(forceCalculator), physicsEngineSolver(std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)), intermediateDemSteps(intermediatePeSteps)
 {
 #ifdef TIMING
    timer.resetAndStart();
@@ -48,7 +48,7 @@ DemCoProcessor::DemCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, SPtr<Comm
       walberla::pe::BodyStorage* bodyStorageShadowCopies = &(*storage)[1];
 
       bodyStorage->registerAddCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::addPeGeo), this));
-      //bodyStorage->registerRemoveCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::removePeGeo), this));
+      bodyStorage->registerRemoveCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::removePeGeo), this));
 
       bodyStorageShadowCopies->registerAddCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::addPeShadowGeo), this));
       bodyStorageShadowCopies->registerRemoveCallback("DemCoProcessor", std::bind1st(std::mem_fun(&DemCoProcessor::removePeShadowGeo), this));
@@ -94,6 +94,7 @@ void DemCoProcessor::addInteractor(std::shared_ptr<MovableObjectInteractor> inte
    if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometryAdapter)->isActive())
    {
       peGeometryAdapter->setLinearVelolocity(initalVelocity);
+      geoIdMap.insert(std::make_pair(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometryAdapter)->getSystemID(), std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(peGeometryAdapter)));
    }
    SetBcBlocksBlockVisitor setBcVisitor(interactor);
    grid->accept(setBcVisitor);
@@ -305,18 +306,36 @@ void DemCoProcessor::moveVfGeoObjects()
    {
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->isActive())
       {
-         walberla::pe::RigidBody* peGeoObject = getPeGeoObject(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getSystemId());
-         if (peGeoObject != nullptr)
+         ////walberla::pe::RigidBody* peGeoObject = getPeGeoObject(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getSystemId());
+         ////if (peGeoObject != nullptr)
+         ////{
+         ////   std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setGeometry(peGeoObject);
+         //   interactors[i]->moveGbObjectTo(physicsEngineGeometrieAdapters[i]->getPosition());
+         ////}
+         ////else
+         ////{
+         ////   std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setInactive();
+         ////}
+
+         ////UBLOG(logINFO, "DemCoProcessor::moveVfGeoObject() id = "<<std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getId()<<"  position="<<physicsEngineGeometrieAdapters[i]->getPosition()<<" rank="<<comm->getProcessID());
+         if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getSemiactive())
          {
-            std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setGeometry(peGeoObject);
-            interactors[i]->moveGbObjectTo(physicsEngineGeometrieAdapters[i]->getPosition());
+            walberla::pe::RigidBody* peGeoObject = getPeGeoObject(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getSystemID());
+            if (peGeoObject != nullptr)
+            {
+               std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setGeometry(peGeoObject);
+               interactors[i]->moveGbObjectTo(physicsEngineGeometrieAdapters[i]->getPosition());
+               std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setSemiactive(false);
+            }
+            else
+            {
+               std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setInactive();
+            }
          }
          else
          {
-            std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setInactive();
+            interactors[i]->moveGbObjectTo(physicsEngineGeometrieAdapters[i]->getPosition());
          }
-
-         //UBLOG(logINFO, "DemCoProcessor::moveVfGeoObject() id = "<<std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getId()<<"  position="<<physicsEngineGeometrieAdapters[i]->getPosition()<<" rank="<<comm->getProcessID());
       }
    }
 }
@@ -399,21 +418,23 @@ void DemCoProcessor::getObjectsPropertiesVector(std::vector<double>& p)
 void DemCoProcessor::addPeGeo(walberla::pe::RigidBody * peGeo)
 {
 
+   //UBLOG(logINFO, "DemCoProcessor::addPeGeo() SystemID="<<peGeo->getSystemID());
 
+   //if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
 
-   if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
-
-   auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
-   geometry->counter++;
+   //auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
+   auto geometry = getPeGeoAdapter(peGeo->getSystemID());
+   //geometry->counter++;
    //if (comm->getProcessID()==3)UBLOG(logINFO, "DemCoProcessor::addPeGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
-   if (geometry->getSystemId() == peGeo->getSystemID())
+   if (geometry != nullptr) //(geometry->getSystemId() == peGeo->getSystemID())
    {
       geometry->setActive();
       geometry->setGeometry(peGeo);
+      //geometry->counter++;
       return;
    }
    else
-      throw UbException(UB_EXARGS, "PeGeo ID="+UbSystem::toString(peGeo->getID())+" is not matching geometry ID="+UbSystem::toString(geometry->getId()));
+      return;//throw UbException(UB_EXARGS, "PeGeo SystemId="+UbSystem::toString(peGeo->getSystemID())+" is not matching geometry ID");
 }
 
 void DemCoProcessor::removePeGeo(walberla::pe::RigidBody * peGeo)
@@ -422,70 +443,64 @@ void DemCoProcessor::removePeGeo(walberla::pe::RigidBody * peGeo)
 
    //if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
 
-
-   auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
-   geometry->counter--;
-
-   if (geometry->getSystemId() == peGeo->getSystemID())
-   {
-      if (geometry->shadowCounter == 0)
-      {
-         geometry->setInactive();
-         geometry->setGeometry(NULL);
-      }
-      //if (comm->getProcessID()==3)UBLOG(logINFO, "DemCoProcessor::removePeGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
-      return;
-   }
-   else
-      throw UbException(UB_EXARGS, "PeGeo ID="+UbSystem::toString(peGeo->getID())+" is not matching geometry ID="+UbSystem::toString(geometry->getId()));
-
-
-   //if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
-
-   //std::shared_ptr<walberla::blockforest::BlockForest> forest = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getBlockForest();
-   //std::shared_ptr<walberla::domain_decomposition::BlockDataID> storageId = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getStorageId();
-
-   //for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
-   //{
-   //   for (auto bodyIt = walberla::pe::BodyIterator::begin(*blockIt, *storageId.get()); bodyIt != walberla::pe::BodyIterator::end(); ++bodyIt)
-   //   {
-   //      if (bodyIt->getID() == peGeo->getID())
-   //      {
-   //         return;
-   //      }
-   //   }
-   //}
+   //UBLOG(logINFO, "DemCoProcessor::removePeGeo() SystemID="<<peGeo->getSystemID());
 
    //auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
-   //if (geometry->getId() == peGeo->getID())
-   //{
-   //   geometry->setInactive();
-   //   geometry->setGeometry(NULL);
-   //   return;
-   //}
-   //else
-   //   throw UbException(UB_EXARGS, "PeGeo ID is not matching!");
+   auto geometry = getPeGeoAdapter(peGeo->getSystemID());
+   //geometry->counter--;
+
+   if (geometry != nullptr)//(geometry->getSystemID() == peGeo->getSystemID())
+   {
+      geometry->setSemiactive(true);
+      //walberla::pe::RigidBody* peGeoObject = getPeGeoObject(peGeo->getSystemID());
+      //if (peGeoObject != nullptr)
+      //{
+      //   geometry->setGeometry(peGeoObject);
+      //}
+      //else
+      //{
+      //   geometry->setInactive();
+      //   geometry->setGeometry(nullptr);
+      //}
+      //////if (geometry->shadowCounter == 0)
+      //////{
+      ////   geometry->setInactive();
+      ////   geometry->setGeometry(nullptr);
+      //////   geometry->counter--;
+      //////}
+      ////if (comm->getProcessID()==3)UBLOG(logINFO, "DemCoProcessor::removePeGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
+      //return;
+   }
+   else
+      throw UbException(UB_EXARGS, "PeGeo SystemId="+UbSystem::toString(peGeo->getSystemID())+" is not matching geometry ID");
 }
 
 void DemCoProcessor::addPeShadowGeo(walberla::pe::RigidBody * peGeo)
 {
-   if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
+   //if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
 
-   auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
-   geometry->shadowCounter++;
+   //UBLOG(logINFO, "DemCoProcessor::addPeShadowGeo()");
+   //UBLOG(logINFO, "DemCoProcessor::addPeShadowGeo() SystemID="<<peGeo->getSystemID());
+
+
+   //auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
+   auto geometry = getPeGeoAdapter(peGeo->getSystemID());
+
    //if (comm->getProcessID()==3) UBLOG(logINFO, "DemCoProcessor::addPeShadowGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
-   if (geometry->getSystemId() == peGeo->getSystemID())
+   if (geometry != nullptr)//(geometry->getSystemId() == peGeo->getSystemID())
    {
-      if (geometry->shadowCounter == 1)
-      {
-         geometry->setActive();
-         geometry->setGeometry(peGeo);
-      }
+      //geometry->shadowCounter++;
+      //if (geometry->shadowCounter == 1)
+      //{
+      geometry->setActive();
+      geometry->setGeometry(peGeo);
+      //geometry->shadowCounter++;
+   //}
 
       return;
    }
    else
-      throw UbException(UB_EXARGS, "PeGeo ID="+UbSystem::toString(peGeo->getID())+" is not matching geometry ID="+UbSystem::toString(geometry->getId()));
+      throw UbException(UB_EXARGS, "PeGeo ID="+UbSystem::toString(peGeo->getSystemID())+" is not matching geometry ID");
 }
 
 void DemCoProcessor::removePeShadowGeo(walberla::pe::RigidBody * peGeo)
@@ -494,64 +509,50 @@ void DemCoProcessor::removePeShadowGeo(walberla::pe::RigidBody * peGeo)
 
    //if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
 
-   //std::shared_ptr<walberla::blockforest::BlockForest> forest = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getBlockForest();
-   //std::shared_ptr<walberla::domain_decomposition::BlockDataID> storageId = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getStorageId();
+   //auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
 
-   //for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
-   //{
-   //   for (auto bodyIt = walberla::pe::BodyIterator::begin(*blockIt, *storageId.get()); bodyIt != walberla::pe::BodyIterator::end(); ++bodyIt)
-   //   {
-   //      if (bodyIt->getID() == peGeo->getID())
-   //      {
-   //         return;
-   //      }
-   //   }
-   //}
+   //UBLOG(logINFO, "DemCoProcessor::removePeShadowGeo() SystemID="<<peGeo->getSystemID());
 
+   auto geometry = getPeGeoAdapter(peGeo->getSystemID());
 
-
-   //std::vector< std::shared_ptr<Block3D> > blockVector;
-   //UbTupleInt3 blockNX=grid->getBlockNX();
-   //SPtr<GbObject3D> geoObject(interactors[peGeo->getID()]->getGbObject3D());
-   //double ext = 0.0;
-   //std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
-   //grid->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
-   //if (blockVector.size() == 0)
-   //{
-   //   auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
-   //   if (geometry->getId() == peGeo->getID())
-   //   {
-   //      geometry->setInactive();
-   //      geometry->setGeometry(NULL);
-   //      return;
-   //   }
-   //   else
-   //      throw UbException(UB_EXARGS, "PeGeo ID is not matching!");
-   //}
-
-
-   //if (peGeo->getID() < 0 || peGeo->getID() >= physicsEngineGeometrieAdapters.size()) return;
-
-   auto geometry = std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[peGeo->getID()]);
-   geometry->shadowCounter--;
-
-   if (geometry->getSystemId() == peGeo->getSystemID())
+   if (geometry != nullptr) //(geometry->getSystemId() == peGeo->getSystemID())
    {
-      if (geometry->shadowCounter == 0)
-      {
-         geometry->setInactive();
-         geometry->setGeometry(NULL);
-      }
-      else
-      {
-         geometry->setActive();
-         geometry->setGeometry(peGeo);
-      }
-      //if (comm->getProcessID()==3)UBLOG(logINFO, "DemCoProcessor::removePeShadowGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
-      return;
+      geometry->setSemiactive(true);
+      //walberla::pe::RigidBody* peGeoObject = getPeGeoObject(peGeo->getSystemID());
+      //if (peGeoObject != nullptr)
+      //{
+      //   geometry->setGeometry(peGeoObject);
+      //}
+      //else
+      //{
+      //   geometry->setInactive();
+      //   geometry->setGeometry(nullptr);
+      //}
+      //////if (geometry->shadowCounter == 0)
+      //////{
+      ////   geometry->setInactive();
+      ////   geometry->setGeometry(nullptr);
+      //////   geometry->counter--;
+      //////}
+      ////if (comm->getProcessID()==3)UBLOG(logINFO, "DemCoProcessor::removePeGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
+      //return;
+      //////geometry->shadowCounter--;
+      //////if (geometry->shadowCounter == 0)
+      //////{
+      ////   geometry->setInactive();
+      ////   geometry->setGeometry(nullptr);
+      //////}
+      //////else
+      //////{
+      //////   geometry->setActive();
+      //////   geometry->setGeometry(peGeo);
+      ////   //geometry->shadowCounter--;
+      //////}
+      //////if (comm->getProcessID()==3)UBLOG(logINFO, "DemCoProcessor::removePeShadowGeo() geoID = "<<peGeo->getID()<<" counter="<<geometry->counter<<" shadowCounter="<<geometry->shadowCounter);
+      ////return;
    }
    else
-      throw UbException(UB_EXARGS, "PeGeo ID="+UbSystem::toString(peGeo->getID())+" is not matching geometry ID="+UbSystem::toString(geometry->getId()));
+      throw UbException(UB_EXARGS, "PeGeo ID="+UbSystem::toString(peGeo->getSystemID())+" is not matching geometry ID");
 }
 
 bool DemCoProcessor::isSpheresIntersection(double centerX1, double centerX2, double centerX3, double d)
@@ -592,7 +593,7 @@ void DemCoProcessor::distributeIDs()
    {
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->isActive())
       {
-         peIDsSend.push_back(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getSystemId());
+         peIDsSend.push_back(std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->getSystemID());
          vfIDsSend.push_back(interactors[i]->getID());
       }
    }
@@ -615,11 +616,13 @@ void DemCoProcessor::distributeIDs()
       std::map<int, unsigned long long>::const_iterator it;
       if ((it=idMap.find(interactors[i]->getID())) == idMap.end())
       {
-         throw UbException(UB_EXARGS, "Interactor ID is invalid! The DEM object may be not in PE domain!");
+         throw UbException(UB_EXARGS, "Interactor ID = "+UbSystem::toString(interactors[i]->getID())+" is invalid! The DEM object may be not in PE domain!");
       }
 
+      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setSystemID(it->second);
 
-      std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->setSystemId(it->second);
+      geoIdMap.insert(std::make_pair(it->second, std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])));
+
       //std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometries[i])->setId(idMap.find(interactors[i]->getID())->second);
    }
 
@@ -632,7 +635,7 @@ void DemCoProcessor::distributeIDs()
    //   }
    //}
 }
-
+//////////////////////////////////////////////////////////////////////////
 void DemCoProcessor::setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor)
 {
    this->boundaryConditionsBlockVisitor = boundaryConditionsBlockVisitor;
@@ -642,60 +645,19 @@ walberla::pe::RigidBody* DemCoProcessor::getPeGeoObject(walberla::id_t id)
 {
    std::shared_ptr<walberla::blockforest::BlockForest> forest = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getBlockForest();
    std::shared_ptr<walberla::domain_decomposition::BlockDataID> storageId = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getStorageId();
-
-   //for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
-   //{
-
-   //   for (auto bodyIt = walberla::pe::BodyIterator::begin(*blockIt, *storageId.get()); bodyIt != walberla::pe::BodyIterator::end(); ++bodyIt)
-   //   {
-   //      if (bodyIt->getID() == id)
-   //      {
-   //         walberla::pe::RigidBody* geo = *(bodyIt);
-   //         return geo;
-   //      }
-   //   }
-   //}
-
    std::shared_ptr<walberla::pe::BodyStorage> globalBodyStorage = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getGlobalBodyStorage();
-   //walberla::pe::BodyID peGeo =  walberla::pe::getBody(*globalBodyStorage, *forest, *storageId, id);
-   //if (peGeo != nullptr)
-   //{
-   //   return peGeo;
-   //}
-   //return NULL;
 
-
-   return walberla::pe::getBody(*globalBodyStorage, *forest, *storageId, id);
-
-
-
-   //walberla::pe::RigidBody* peBody = NULL;
-
-   //std::shared_ptr<walberla::pe::BodyStorage> globalStorage = std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(physicsEngineSolver)->getGlobalBodyStorage();
-
-   //auto bodyIt = globalStorage->find(id);
-   //if (bodyIt != globalStorage->end())
-   //{
-   //   return *bodyIt;
-   //}
-
-   //for (auto blockIt = forest->begin(); blockIt != forest->end(); ++blockIt)
-   //{
-   //   walberla::pe::Storage* storage = blockIt->getData< walberla::pe::Storage >(*storageId.get());
-   //   walberla::pe::BodyStorage* bodyStorage = &(*storage)[0];
-   //   walberla::pe::BodyStorage* bodystorageShadowCopies = &(*storage)[1];
-   //   
-   //   auto bodyIt = bodyStorage->find(id);
-   //   if (bodyIt != bodyStorage->end())
-   //   {
-   //      return *bodyIt;
-   //   }
-
-   //   bodyIt = bodystorageShadowCopies->find(id);
-   //   if (bodyIt != bodystorageShadowCopies->end())
-   //   {
-   //      return *bodyIt;
-   //   }
-   //}
-   //return NULL;
+   return walberla::pe::getBody(*globalBodyStorage, *forest, *storageId, id, walberla::pe::StorageSelect::LOCAL | walberla::pe::StorageSelect::SHADOW);
+}
+////////////////////////////////////////////////////////////////////////////
+std::shared_ptr<PePhysicsEngineGeometryAdapter> DemCoProcessor::getPeGeoAdapter(unsigned long long systemId)
+{
+   std::map< unsigned long long, std::shared_ptr<PePhysicsEngineGeometryAdapter> >::const_iterator it;
+   if ((it=geoIdMap.find(systemId)) == geoIdMap.end())
+   {
+      //throw UbException(UB_EXARGS, "pe SystemId can not be found!");
+      return nullptr;
+   }
+   else
+      return it->second;
 }
