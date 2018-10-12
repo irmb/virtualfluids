@@ -46,13 +46,6 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::crea
     {
        peGeometryAdapter->setId(id);
        peGeometryAdapter->setSystemID(peGeometry->getSystemID());
-       //unsigned long long sid = peGeometryAdapter->getSystemID();
-       //geoIdMap.insert(std::make_pair(sid, peGeometryAdapter));
-       //peGeometryAdapter->counter++;
-       
-       //if(peGeometry->getSystemID() != id+1)
-       //   UB_THROW(UbException(UB_EXARGS, "id="+UbSystem::toString(id)+" does not match pe::SystemId="+UbSystem::toString(peGeometry->getSystemID())));
-
        peGeometryAdapter->setActive();
        peGeometryAdapter->setGeometry(peGeometry);
        return peGeometryAdapter;
@@ -65,14 +58,12 @@ std::shared_ptr<PhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::crea
     }
 
     walberla::pe::syncNextNeighbors<BodyTypeTuple>(*forest, *storageId);
-    //walberla::pe::syncShadowOwners<BodyTypeTuple>(*forest, *storageId);
 }
 
 void PePhysicsEngineSolverAdapter::runTimestep(double step)
 {
     cr->timestep(walberla::real_c(step));
     walberla::pe::syncNextNeighbors<BodyTypeTuple>(*forest, *storageId);
-    //walberla::pe::syncShadowOwners<BodyTypeTuple>(*forest, *storageId);
 }
 
 
@@ -208,15 +199,3 @@ std::shared_ptr<walberla::pe::BodyStorage> PePhysicsEngineSolverAdapter::getGlob
 {
    return globalBodyStorage;
 }
-//////////////////////////////////////////////////////////////////////////
-//std::shared_ptr<PePhysicsEngineGeometryAdapter> PePhysicsEngineSolverAdapter::getPeGeoAdapter(unsigned long long systemId)
-//{
-//   std::map< unsigned long long, std::shared_ptr<PePhysicsEngineGeometryAdapter> >::const_iterator it;
-//   if ((it=geoIdMap.find(systemId)) == geoIdMap.end())
-//   {
-//      //throw UbException(UB_EXARGS, "pe SystemId can not be found!");
-//      return nullptr;
-//   }
-//   else
-//      return it->second;
-//}

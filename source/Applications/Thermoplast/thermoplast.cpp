@@ -152,15 +152,14 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
 void createSpheres(double radius,  Vector3D origin, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
 {
    double d = 2.0*radius;
-   int maxX2 = 5;
-   int maxX3 = 6;
+   int maxX2 = 5;//5;
+   int maxX3 = 5;//6;
    for (int x3 = 0; x3 < maxX3; x3++)
       for (int x2 = 0; x2 < maxX2; x2++)
          for (int x1 = 0; x1 < 1; x1++)
          {
-            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*x1, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
-            
-            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/2.0*x2, -uLB+uLB/2.5*x3));
+            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*(double)x1, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
+            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/2.0*(double)x2, -uLB+uLB/2.5*(double)x3));
          }
 }
 
@@ -207,9 +206,10 @@ void thermoplast(string configname)
    double          deltax = 1;
    double          rhoLB = 0.0;
    //double          uLB =  0.1;
-   double          radius = 5;
+   double          radiusLB = 7.5;
+   double          radiusWorld = 1.5e-3;
    double          Re = 900;
-   double          nuLB = (uLB*2.0*radius)/Re;
+   double          nuLB = (uLB*2.0*radiusLB)/Re;
 
    //geometry definition
 
@@ -295,7 +295,7 @@ void thermoplast(string configname)
       UBLOG(logINFO, "* rhoLB  = " << rhoLB);
       UBLOG(logINFO, "* nuLB   = " << nuLB);
       UBLOG(logINFO, "* deltaX = " << deltax);
-      UBLOG(logINFO, "* radius = " << radius);
+      UBLOG(logINFO, "* radius = " << radiusLB);
       UBLOG(logINFO, "* Re     = " << Re);
       UBLOG(logINFO, "* number of threads   = "<<numOfThreads);
       UBLOG(logINFO, "* number of processes = "<<comm->getNumberOfProcesses());
@@ -466,8 +466,8 @@ void thermoplast(string configname)
    }
 
    //PE initialization
-   double refLengthLb = radius*2.0;
-   double refLengthWorld = 2e-3;
+   double refLengthLb = radiusLB*2.0;
+   double refLengthWorld = radiusWorld*2.0;
    const std::shared_ptr<LBMUnitConverter> lbmUnitConverter = std::make_shared<LBMUnitConverter>(refLengthWorld, LBMUnitConverter::WORLD_MATERIAL::AIR_20C, refLengthLb);
    if (myid == 0) std::cout << lbmUnitConverter->toString() << std::endl;
    double rhoSphere = 915 * lbmUnitConverter->getFactorDensityWToLb();  // kg/m^3
@@ -492,7 +492,7 @@ void thermoplast(string configname)
    SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, restartSch, pathOut, comm));
    restartCoProcessor->setLBMKernel(kernel);
    restartCoProcessor->setBCProcessor(bcProc);
-   SPtr<RestartDemObjectsCoProcessor> restartDemObjectsCoProcessor(new RestartDemObjectsCoProcessor(grid, restartSch, pathOut, demCoProcessor, createSphereCoProcessor, radius, comm));
+   SPtr<RestartDemObjectsCoProcessor> restartDemObjectsCoProcessor(new RestartDemObjectsCoProcessor(grid, restartSch, pathOut, demCoProcessor, createSphereCoProcessor, radiusLB, comm));
    //UBLOG(logINFO, "restart definition - stop, rank="<<myid);
 
    if (restart)
@@ -516,9 +516,9 @@ void thermoplast(string configname)
 
    //sphere prototypes
    //UBLOG(logINFO, "sphere prototypes - start, rank="<<myid);
-   double d = 2.0*radius;
-   Vector3D origin1(g_minX1+peMinOffset[0]+radius, geoInjector5->getX2Minimum()+2.0*d, geoInjector5->getX3Minimum()+2.0*d);
-   createSpheres(radius,origin1,uLB,createSphereCoProcessor);
+   double d = 2.0*radiusLB;
+   Vector3D origin1(g_minX1+peMinOffset[0]+radiusLB, geoInjector5->getX2Minimum()+1.5*d, geoInjector5->getX3Minimum()+1.5*d);
+   createSpheres(radiusLB,origin1,uLB,createSphereCoProcessor);
 
    //Vector3D origin2(g_minX1+peMinOffset[0]+radius, geoInjector4->getX2Minimum()+3.0*d, geoInjector4->getX3Minimum()+2.0*d);
    //createSpheres(radius, origin2, uLB, createSphereCoProcessor);

@@ -77,7 +77,6 @@ public:
     std::shared_ptr<walberla::blockforest::BlockForest> getBlockForest();
     std::shared_ptr<walberla::domain_decomposition::BlockDataID> getStorageId();
     std::shared_ptr<walberla::pe::BodyStorage> getGlobalBodyStorage();
-    //std::shared_ptr<PePhysicsEngineGeometryAdapter> getPeGeoAdapter(unsigned long long systemId);
 
 private:
     void initalizePeEnvironment();
@@ -98,7 +97,6 @@ private:
     std::shared_ptr< walberla::blockforest::BlockForest > forest;
     std::shared_ptr<walberla::domain_decomposition::BlockDataID> storageId;
     std::shared_ptr<walberla::pe::cr::HardContactSemiImplicitTimesteppingSolvers> cr;
-    // std::map< unsigned long long, std::shared_ptr<PePhysicsEngineGeometryAdapter> > geoIdMap;
 };
 
 #endif

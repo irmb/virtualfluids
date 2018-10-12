@@ -36,6 +36,7 @@ CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr
    std::shared_ptr<Reconstructor> equilibriumReconstructor(new EquilibriumReconstructor());
    //const std::shared_ptr<Reconstructor> lbmReconstructor(new LBMReconstructor(false));
    extrapolationReconstructor = SPtr<Reconstructor>(new ExtrapolationReconstructor(equilibriumReconstructor));
+   demCounter = 0;
 }
 //////////////////////////////////////////////////////////////////////////
 void CreateDemObjectsCoProcessor::process(double step)
@@ -55,6 +56,7 @@ void CreateDemObjectsCoProcessor::process(double step)
 #ifdef TIMING
       if (comm->isRoot()) UBLOG(logINFO, "createGeoObjects() time = "<<timer.stop()<<" s");
       if (comm->isRoot()) UBLOG(logINFO, "number of objects = "<<(int)(geoObjectPrototypeVector.size()));
+      if (comm->isRoot()) UBLOG(logINFO, "total number of objects = "<<demCounter);
       if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
 #endif
       
@@ -88,13 +90,6 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
 
    for (int i = 0; i < size; i++)
    {
-      //timer.resetAndStart();
-      //std::array<double, 6> AABB ={ geoObjectPrototypeVector[i]->getX1Minimum(),geoObjectPrototypeVector[i]->getX2Minimum(),geoObjectPrototypeVector[i]->getX3Minimum(),geoObjectPrototypeVector[i]->getX1Maximum(),geoObjectPrototypeVector[i]->getX2Maximum(),geoObjectPrototypeVector[i]->getX3Maximum() };
-      //UBLOG(logINFO, "demCoProcessor->isGeoObjectInAABB(AABB) = " << demCoProcessor->isGeoObjectInAABB(AABB));
-      //if (demCoProcessor->isDemObjectInAABB(AABB))
-      //{
-      //   continue;
-      //}
       SPtr<GbSphere3D> sphere = std::dynamic_pointer_cast<GbSphere3D>(geoObjectPrototypeVector[i]);
       if (demCoProcessor->isSpheresIntersection(sphere->getX1Centroid(), sphere->getX2Centroid(), sphere->getX3Centroid(), sphere->getRadius()*2.0))
       {
@@ -103,24 +98,8 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
 
       SPtr<GbObject3D> geoObject((GbObject3D*)(geoObjectPrototypeVector[i]->clone()));
       SPtr<MovableObjectInteractor> geoObjectInt = SPtr<MovableObjectInteractor>(new MovableObjectInteractor(geoObject, grid, velocityBcParticleAdapter, Interactor3D::SOLID, extrapolationReconstructor, State::UNPIN));
-
-      //SetBcBlocksBlockVisitor setBcVisitor(geoObjectInt);
-      //grid->accept(setBcVisitor);
-
-      //std::vector< std::shared_ptr<Block3D> > blockVector;
-      //blockVector.clear();
-      //UbTupleInt3 blockNX=grid->getBlockNX();
-      //grid->getAllBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*2.0, AABB[1]-(double)val<2>(blockNX)*2.0, AABB[2]-(double)val<3>(blockNX)*2.0, AABB[3]+(double)val<1>(blockNX)*2.0, AABB[4]+(double)val<2>(blockNX)*2.0, AABB[5]+(double)val<3>(blockNX)*2.0, blockVector);
-      //for (std::shared_ptr<Block3D> block : blockVector)
-      //   geoObjectInt->setBCBlock(block);
-
-
-      ////UBLOG(logINFO, "grid->accept(setBcVisitor) time = "<<timer.stop());
-      //geoObjectInt->initInteractor();
-      //UBLOG(logINFO, "geoObjectInt->initInteractor() time = "<<timer.stop());
       demCoProcessor->addInteractor(geoObjectInt, demObjectMaterial, initalVelocity[i]);
-
-      //UBLOG(logINFO, "demCoProcessor->addInteractor() time = "<<timer.stop());
+      demCounter++;
    }
 }
 
