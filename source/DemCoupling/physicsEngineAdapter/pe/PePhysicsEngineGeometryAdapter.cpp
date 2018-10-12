@@ -14,8 +14,9 @@
 PePhysicsEngineGeometryAdapter::PePhysicsEngineGeometryAdapter()
 {
    this->id = -999;
-   this->systemId = -999;
+   this->systemID = -999;
    this->active = false;
+   this->semiactive = false;
    shadowCounter = 0;
    counter = 0;
 }

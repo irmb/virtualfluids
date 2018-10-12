@@ -57,16 +57,18 @@ public:
     int shadowCounter;
     int counter;
 
-    unsigned long long getSystemId() const { return systemId; }
-    void setSystemId(unsigned long long val) { systemId = val; }
+    unsigned long long getSystemID() const { return systemID; }
+    void setSystemID(unsigned long long val) { systemID = val; }
+    bool getSemiactive() const { return semiactive; }
+    void setSemiactive(bool val) { semiactive = val; }
 private:
     walberla::pe::RigidBody* peGeoObject;
     //unsigned long long id;
     int id;
     //walberla::id_t systemId;
-    unsigned long long systemId;
+    unsigned long long systemID;
     bool active;
-
+    bool semiactive;
 };
 
 #endif

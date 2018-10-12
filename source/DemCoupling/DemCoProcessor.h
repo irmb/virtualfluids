@@ -25,7 +25,9 @@
 
 class PhysicsEngineGeometryAdapter;
 class PhysicsEngineSolverAdapter;
+class PePhysicsEngineSolverAdapter;
 class PhysicsEngineMaterialAdapter;
+class PePhysicsEngineGeometryAdapter;
 
 class UbScheduler;
 class Grid3D;
@@ -64,16 +66,19 @@ private:
     void calculateDemTimeStep(double step);
     void moveVfGeoObjects();
     walberla::pe::RigidBody* getPeGeoObject(walberla::id_t id);
+    std::shared_ptr<PePhysicsEngineGeometryAdapter> getPeGeoAdapter(unsigned long long systemId);
 private:
     std::shared_ptr<Communicator> comm;
     std::vector<std::shared_ptr<MovableObjectInteractor> > interactors;
     std::shared_ptr<ForceCalculator> forceCalculator;
-    std::shared_ptr<PhysicsEngineSolverAdapter> physicsEngineSolver;
+    std::shared_ptr<PePhysicsEngineSolverAdapter> physicsEngineSolver;
     std::vector<std::shared_ptr<PhysicsEngineGeometryAdapter> > physicsEngineGeometrieAdapters;
     double intermediateDemSteps;
     SPtr<BoundaryConditionsBlockVisitor> boundaryConditionsBlockVisitor;
     //walberla::pe::BodyStorage* bodyStorage;    //!< Reference to the central body storage.
     //walberla::pe::BodyStorage* bodyStorageShadowCopies;    //!< Reference to the body storage containing body shadow copies.
+
+    std::map< unsigned long long, std::shared_ptr<PePhysicsEngineGeometryAdapter> > geoIdMap;
 
 #ifdef TIMING
     UbTimer timer;
