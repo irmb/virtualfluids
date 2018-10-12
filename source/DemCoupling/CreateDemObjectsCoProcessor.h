@@ -41,6 +41,7 @@ private:
    std::vector<Vector3D>  initalVelocity;
    SPtr<BCAdapter> velocityBcParticleAdapter;
    SPtr<Reconstructor> extrapolationReconstructor;
+   int demCounter;
 #ifdef TIMING
    UbTimer timer;
 #endif
