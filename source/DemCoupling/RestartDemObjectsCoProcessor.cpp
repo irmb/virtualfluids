@@ -53,12 +53,32 @@ void RestartDemObjectsCoProcessor::write(int step)
 
    if (comm->isRoot())
    {
+      std::map< int, std::vector< double> > infMap;
+      int size =  (int)rvalues.size();
+      for (int i = 0; i < size; i += 7)
+      {
+         std::vector< double> infVector(6);
+         for (int j = 0; j < 6; j ++)
+         {
+            infVector[j] = rvalues[i+1+j];
+         }
+         infMap.insert(std::make_pair((int)rvalues[i], infVector));
+      }
+      std::vector< double> wvalues;
+      typedef std::map< int, std::vector< double> >::iterator it_type;
+      for (it_type iterator = infMap.begin(); iterator != infMap.end(); iterator++) 
+      {
+         // iterator->first = key
+         // iterator->second = value
+         std::vector<double>::iterator it = wvalues.end();
+         it = wvalues.insert(it, iterator->second.begin(), iterator->second.end());
+      }
       std::string subfolder = "dem_cp_"+UbSystem::toString(step);
       std::string filePath =  path+"/dem_cp/"+subfolder+"/dem_cp.bin";
       UbFileOutputBinary fo(filePath);
-      fo.writeInteger((int)rvalues.size());
-      fo.writeVector<double>(rvalues);
-      UBLOG(logINFO, "RestartDemObjectsCoProcessor::write number of objects = " << rvalues.size()/6);
+      fo.writeInteger((int)wvalues.size());
+      fo.writeVector<double>(wvalues);
+      UBLOG(logINFO, "RestartDemObjectsCoProcessor::write number of objects = " << wvalues.size()/6);
    }
    if (comm->isRoot()) UBLOG(logINFO, "RestartDemObjectsCoProcessor::write stop ");
 }
