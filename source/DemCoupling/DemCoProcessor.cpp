@@ -427,7 +427,7 @@ bool DemCoProcessor::isSpheresIntersection(double centerX1, double centerX2, dou
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->isActive())
       {
          SPtr<GbObject3D> sphere = interactors[i]->getGbObject3D();
-         result = result || (sqrt(pow(sphere->getX1Centroid()-centerX1, 2)+pow(sphere->getX2Centroid()-centerX2, 2)+pow(sphere->getX3Centroid()-centerX3, 2)) < d);
+         result = result || (sqrt(pow(sphere->getX1Centroid()-centerX1, 2.0)+pow(sphere->getX2Centroid()-centerX2, 2.0)+pow(sphere->getX3Centroid()-centerX3, 2.0)) <= d);
       }
    }
    std::vector<int> values;
