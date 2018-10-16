@@ -27,7 +27,7 @@ class PhysicsEngineMaterialAdapter;
 class CreateDemObjectsCoProcessor : public CoProcessor
 {
 public:
-   CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,  std::shared_ptr<Communicator> comm, SPtr<DemCoProcessor> demCoProcessor,  SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial);
+   CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,  std::shared_ptr<Communicator> comm, SPtr<DemCoProcessor> demCoProcessor,  SPtr<PhysicsEngineMaterialAdapter> geoObjectMaterial, double toleranz = 0);
    void process(double step) override;
    void addGeoObject(SPtr<GbObject3D> geoObjectPrototype, Vector3D  initalVelocity);
    void clearGeoObjects();
@@ -42,6 +42,7 @@ private:
    SPtr<BCAdapter> velocityBcParticleAdapter;
    SPtr<Reconstructor> extrapolationReconstructor;
    int demCounter;
+   double toleranz;
 #ifdef TIMING
    UbTimer timer;
 #endif

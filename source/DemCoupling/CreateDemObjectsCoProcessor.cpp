@@ -20,11 +20,12 @@
 
 
 
-CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,  std::shared_ptr<Communicator> comm, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial) : 
+CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,  std::shared_ptr<Communicator> comm, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial, double toleranz) : 
    CoProcessor(grid, s),
    comm(comm),
    demCoProcessor(demCoProcessor), 
-   demObjectMaterial(demObjectMaterial)
+   demObjectMaterial(demObjectMaterial),
+   toleranz(toleranz)
 {
    mu::Parser fct;
    fct.SetExpr("U");
@@ -91,7 +92,7 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
    for (int i = 0; i < size; i++)
    {
       SPtr<GbSphere3D> sphere = std::dynamic_pointer_cast<GbSphere3D>(geoObjectPrototypeVector[i]);
-      if (demCoProcessor->isSpheresIntersection(sphere->getX1Centroid(), sphere->getX2Centroid(), sphere->getX3Centroid(), sphere->getRadius()*2.0*0.99))
+      if (demCoProcessor->isSpheresIntersection(sphere->getX1Centroid(), sphere->getX2Centroid(), sphere->getX3Centroid(), sphere->getRadius()*2.0*(1.0-toleranz)))
       {
          continue;
       }
