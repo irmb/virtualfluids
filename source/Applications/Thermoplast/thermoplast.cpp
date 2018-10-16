@@ -186,6 +186,7 @@ void thermoplast(string configname)
    double          cpStart = config.getValue<double>("cpStart");
    double          cpStep = config.getValue<double>("cpStep");
    bool            restart = config.getValue<bool>("restart");
+   int             restartStep = config.getValue<int>("restartStep");
 
    peMinOffset = config.getVector<double>("peMinOffset");
    peMaxOffset = config.getVector<double>("peMaxOffset");
@@ -194,6 +195,25 @@ void thermoplast(string configname)
    pathGeo = config.getValue<string>("pathGeo");
 
    vector<int>     nupsTime = config.getVector<int>("nupsTime");
+
+   bool            logToFile = config.getValue<bool>("logToFile");
+   if (logToFile)
+   {
+#if defined(__unix__)
+      if (myid==0)
+      {
+         const char* str = pathOut.c_str();
+         mkdir(str, S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH);
+      }
+#endif 
+
+      if (myid==0)
+      {
+         stringstream logFilename;
+         logFilename<<pathOut+"/logfile"+UbSystem::toString(UbSystem::getTimeStamp())+".txt";
+         UbLog::output_policy::setStream(logFilename.str());
+      }
+   }
 
    //parameters
    //string          pathOut = "d:/temp/thermoplast3";
@@ -464,6 +484,19 @@ void thermoplast(string configname)
 
       if (myid == 0) UBLOG(logINFO, "Preprocess - end");
    }
+   //restart
+   //UBLOG(logINFO, "restart definition - start, rank="<<myid);
+   SPtr<UbScheduler> restartSch(new UbScheduler(cpStep, cpStart));
+   //SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, restartSch, pathOut, comm));
+   SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, restartSch, pathOut, comm));
+   restartCoProcessor->setLBMKernel(kernel);
+   restartCoProcessor->setBCProcessor(bcProc);
+
+   if (restart)
+   {
+      //restartStep = restartCoProcessor->readCpTimeStep();
+      restartCoProcessor->restart(restartStep);
+   }
 
    //PE initialization
    double refLengthLb = radiusLB*2.0;
@@ -486,20 +519,19 @@ void thermoplast(string configname)
    SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial));
    //UBLOG(logINFO, "generating spheres - stop, rank="<<myid);
 
-   //restart
-   //UBLOG(logINFO, "restart definition - start, rank="<<myid);
-   SPtr<UbScheduler> restartSch(new UbScheduler(cpStep, cpStart));
-   SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, restartSch, pathOut, comm));
-   restartCoProcessor->setLBMKernel(kernel);
-   restartCoProcessor->setBCProcessor(bcProc);
+   ////restart
+   ////UBLOG(logINFO, "restart definition - start, rank="<<myid);
+   //SPtr<UbScheduler> restartSch(new UbScheduler(cpStep, cpStart));
+   ////SPtr<MPIIORestartCoProcessor> restartCoProcessor(new MPIIORestartCoProcessor(grid, restartSch, pathOut, comm));
+   //SPtr<MPIIOMigrationCoProcessor> restartCoProcessor(new MPIIOMigrationCoProcessor(grid, restartSch, pathOut, comm));
+   //restartCoProcessor->setLBMKernel(kernel);
+   //restartCoProcessor->setBCProcessor(bcProc);
    SPtr<RestartDemObjectsCoProcessor> restartDemObjectsCoProcessor(new RestartDemObjectsCoProcessor(grid, restartSch, pathOut, demCoProcessor, createSphereCoProcessor, radiusLB, comm));
    //UBLOG(logINFO, "restart definition - stop, rank="<<myid);
 
    if (restart)
    {
-      int startStep = restartCoProcessor->readCpTimeStep();
-      restartCoProcessor->restart(startStep);
-      restartDemObjectsCoProcessor->restart(startStep);
+      restartDemObjectsCoProcessor->restart(restartStep);
    }
 
    //set connectors
@@ -517,7 +549,7 @@ void thermoplast(string configname)
    //sphere prototypes
    //UBLOG(logINFO, "sphere prototypes - start, rank="<<myid);
    double d = 2.0*radiusLB;
-   Vector3D origin1(g_minX1+peMinOffset[0]+radiusLB, geoInjector5->getX2Minimum()+1.5*d, geoInjector5->getX3Minimum()+1.5*d);
+   Vector3D origin1(g_minX1+peMinOffset[0]+radiusLB, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
    createSpheres(radiusLB,origin1,uLB,createSphereCoProcessor);
 
    //Vector3D origin2(g_minX1+peMinOffset[0]+radius, geoInjector4->getX2Minimum()+3.0*d, geoInjector4->getX3Minimum()+2.0*d);
@@ -557,15 +589,18 @@ void thermoplast(string configname)
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));
    SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathOut,
       WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm));
-   writeMQCoProcessor->process(0);
 
    SPtr<WriteBoundaryConditionsCoProcessor> writeBCCoProcessor(new WriteBoundaryConditionsCoProcessor(grid, visSch, pathOut,
       WbWriterVtkXmlBinary::getInstance(), comm));
-   writeBCCoProcessor->process(0);
 
    SPtr<WriteDemObjectsCoProcessor> writeDemObjectsCoProcessor(new WriteDemObjectsCoProcessor(grid, visSch, pathOut, WbWriterVtkXmlBinary::getInstance(), demCoProcessor, comm));
-   writeDemObjectsCoProcessor->process(0);
 
+   if (!restart)
+   {
+      writeMQCoProcessor->process(0);
+      writeBCCoProcessor->process(0);
+      writeDemObjectsCoProcessor->process(0);
+   }
    ////performance control
    SPtr<UbScheduler> nupsSch(new UbScheduler(nupsTime[0], nupsTime[1], nupsTime[2]));
    SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
@@ -581,8 +616,8 @@ void thermoplast(string configname)
    calculator->addCoProcessor(writeBCCoProcessor);
    calculator->addCoProcessor(writeDemObjectsCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
-   //calculator->addCoProcessor(restartDemObjectsCoProcessor);
-   //calculator->addCoProcessor(restartCoProcessor);
+   calculator->addCoProcessor(restartDemObjectsCoProcessor);
+   calculator->addCoProcessor(restartCoProcessor);
 
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();

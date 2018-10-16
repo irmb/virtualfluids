@@ -358,6 +358,7 @@ void DemCoProcessor::getObjectsPropertiesVector(std::vector<double>& p)
    {
       if (std::dynamic_pointer_cast<PePhysicsEngineGeometryAdapter>(physicsEngineGeometrieAdapters[i])->isActive())
       {
+         p.push_back(i);
          p.push_back(interactors[i]->getGbObject3D()->getX1Centroid());
          p.push_back(interactors[i]->getGbObject3D()->getX2Centroid());
          p.push_back(interactors[i]->getGbObject3D()->getX3Centroid());

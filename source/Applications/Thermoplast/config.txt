@@ -9,7 +9,7 @@ boundingBox = 60 1370 130 190 1530 320 #test bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 10000
+endTime = 1000
 outTime = 1000
 availMem = 25e9
 uLB = 0.1
@@ -31,11 +31,14 @@ pathGeo = d:/Projects/ThermoPlast/SimGeo
 michel = /michel.stl
 plexiglas = /plexiglas.stl
 
-pathOut = g:/temp/thermoplast
+pathOut = g:/temp/thermoplast2
+
+logToFile = false
 
 #restart
-cpStart = 20000000
-cpStep =  20000000
-restart = false
+cpStart = 1000
+cpStep =  1000
+restart = true
+restartStep = 20
 
 nupsTime = 10 10 1000000

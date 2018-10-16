@@ -54,17 +54,17 @@ void CreateDemObjectsCoProcessor::process(double step)
       createGeoObjects();
 
 #ifdef TIMING
-      if (comm->isRoot()) UBLOG(logINFO, "createGeoObjects() time = "<<timer.stop()<<" s");
-      if (comm->isRoot()) UBLOG(logINFO, "number of objects = "<<(int)(geoObjectPrototypeVector.size()));
-      if (comm->isRoot()) UBLOG(logINFO, "total number of objects = "<<demCounter);
+//      if (comm->isRoot()) UBLOG(logINFO, "createGeoObjects() time = "<<timer.stop()<<" s");
+//      if (comm->isRoot()) UBLOG(logINFO, "number of objects = "<<(int)(geoObjectPrototypeVector.size()));
+//      if (comm->isRoot()) UBLOG(logINFO, "total number of objects = "<<demCounter);
       if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
 #endif
       
-      demCoProcessor->distributeIDs();
+      //demCoProcessor->distributeIDs();
 
-#ifdef TIMING
-      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
-#endif
+//#ifdef TIMING
+//      if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
+//#endif
 
       
    }
@@ -101,5 +101,18 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
       demCoProcessor->addInteractor(geoObjectInt, demObjectMaterial, initalVelocity[i]);
       demCounter++;
    }
+
+#ifdef TIMING
+   if (comm->isRoot()) UBLOG(logINFO, "createGeoObjects() time = "<<timer.stop()<<" s");
+   if (comm->isRoot()) UBLOG(logINFO, "number of objects = "<<(int)(geoObjectPrototypeVector.size()));
+   if (comm->isRoot()) UBLOG(logINFO, "total number of objects = "<<demCounter);
+   //if (comm->isRoot()) UBLOG(logINFO, "CreateDemObjectsCoProcessor::process stop step: " << istep);
+#endif
+
+   demCoProcessor->distributeIDs();
+
+#ifdef TIMING
+   if (comm->isRoot()) UBLOG(logINFO, "demCoProcessor->distributeIDs() time = "<<timer.stop()<<" s");
+#endif
 }
 
