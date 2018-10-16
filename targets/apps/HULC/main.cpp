@@ -14,7 +14,8 @@
 
 #include "core/LbmOrGks.h"
 
-#include "LBM/Simulation.h"
+#include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
@@ -63,12 +64,17 @@ std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 
 void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input> &input)
 {
+	Communicator* comm = Communicator::getInstanz();
+
+	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
+	para->setNumprocs(comm->getNummberOfProcess());
+	para->setDevices(StringUtil::toVector(input->getValue("Devices")));
+	para->setMyID(comm->getPID());
+
     std::string _path = input->getValue("Path");
     std::string _prefix = input->getValue("Prefix");
     std::string _gridpath = input->getValue("GridPath");
-    para->setNumprocs(1);
     std::string gridPath = getGridPath(para, _gridpath);
-    para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
     para->setDevices(StringUtil::toVector(input->getValue("Devices")));
     para->setOutputPath(_path);
     para->setOutputPrefix(_prefix);
