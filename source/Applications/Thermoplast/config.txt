@@ -9,8 +9,8 @@ boundingBox = 60 1370 130 190 1530 320 #test bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 2000
-outTime = 2000
+endTime = 3000
+outTime = 3000
 availMem = 25e9
 uLB = 0.1
 
@@ -36,9 +36,9 @@ pathOut = g:/temp/thermoplast2
 logToFile = false
 
 #restart
-cpStart = 2000
-cpStep =  2000
+cpStart = 3000
+cpStep =  3000
 restart = true
-restartStep = 1000
+restartStep = 2000
 
 nupsTime = 10 10 1000000

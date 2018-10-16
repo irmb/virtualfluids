@@ -516,7 +516,7 @@ void thermoplast(string configname)
    ////generating spheres 
    //UBLOG(logINFO, "generating spheres - start, rank="<<myid);
    SPtr<UbScheduler> sphereScheduler(new UbScheduler(sphereTime/*10,10,10*/));
-   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial));
+   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial, 0.03));
    //UBLOG(logINFO, "generating spheres - stop, rank="<<myid);
 
    ////restart
