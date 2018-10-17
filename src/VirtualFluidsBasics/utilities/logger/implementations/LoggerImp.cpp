@@ -65,7 +65,7 @@ logging::Logger& logging::LoggerImp::log(const std::string &message)
         std::string modifiedMessage = message;
         addDebugInformation(modifiedMessage);
         for(auto stream : streams)
-            *stream << modifiedMessage;
+            *stream << modifiedMessage << std::flush;
     }
     std::size_t found = message.find(std::string("\n"));
     if (found != std::string::npos)

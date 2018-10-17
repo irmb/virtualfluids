@@ -53,6 +53,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
 
         nodedatanames.push_back("types");
         nodedatanames.push_back("sparse_id");
+        nodedatanames.push_back("matrix_id");
 
         nodedata.resize(nodedatanames.size());
 
@@ -79,6 +80,7 @@ void GridVTKWriter::writeGridToVTKXML(SPtr<Grid> grid, const std::string& name, 
                     const char type = grid->getFieldEntry(grid->transCoordToIndex(x, y, z));
                     nodedata[0].push_back(type);
                     nodedata[1].push_back(grid->getSparseIndex(index));
+                    nodedata[2].push_back(index);
                 }
             }
         }
