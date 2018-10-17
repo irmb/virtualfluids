@@ -10,10 +10,13 @@
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 #include "core/LbmOrGks.h"
 
-#include "LBM/Simulation.h"
+#include "VirtualFluids_GPU/LBM/Simulation.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 
 #include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
 #include "grid/GridBuilder/LevelGridBuilder.h"
@@ -64,13 +67,17 @@ std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 
 void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input> &input)
 {
-    std::string _path = input->getValue("Path");
+	Communicator* comm = Communicator::getInstanz();
+
+	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
+	para->setNumprocs(comm->getNummberOfProcess());
+	para->setDevices(StringUtil::toVector(input->getValue("Devices")));
+	para->setMyID(comm->getPID());
+	
+	std::string _path = input->getValue("Path");
     std::string _prefix = input->getValue("Prefix");
     std::string _gridpath = input->getValue("GridPath");
-    para->setNumprocs(1);
     std::string gridPath = getGridPath(para, _gridpath);
-    para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-    para->setDevices(StringUtil::toVector(input->getValue("Devices")));
     para->setOutputPath(_path);
     para->setOutputPrefix(_prefix);
     para->setFName(_path + "/" + _prefix);
@@ -370,10 +377,12 @@ void multipleLevel(const std::string& configPath)
         if( testcase == DLC )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
-            real dx = 5.0/30.0;//0.2;
-            real vx = 0.05;
+			real velocityRatio = 594.093427;
 
-            real z0 = 0.265;
+			real dx = 0.2;
+			real vx = 0.065272188;
+
+			real z0 = 0.24395 + 0.5*dx;
 
             std::vector<uint> ignorePatches = { 152, 153, 154 };
 
@@ -431,24 +440,30 @@ void multipleLevel(const std::string& configPath)
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
 
             real wheelsFrontX = -0.081;
-            real wheelsRearX  =  2.5485;
+            real wheelsRearX  =  2.5486;
 
-            real wheelsFrontZ =  0.0515;
-            real wheelsRearZ  =  0.0585;
+            real wheelsFrontZ =  0.0504;
+            real wheelsRearZ  =  0.057;
 
             real wheelsRadius =  0.318;
+
+			real wheelRotationFrequency = 1170.74376 / 60.0;
+
+			real wheelTangentialVelocity = -2.0 * M_PI * wheelsRadius * wheelRotationFrequency / velocityRatio;
 
             std::vector<uint> frontWheelPatches = { 71, 86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97, 159 };
             std::vector<uint> rearWheelPatches  = { 82, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 160 };
 
             for( uint patch : frontWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsFrontX, -2.0, wheelsFrontZ,
-                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ, -vx, wheelsRadius);
+                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ, 
+					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
             }
 
             for( uint patch : rearWheelPatches ){
                 gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsRearX , -2.0, wheelsRearZ ,
-                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ , -vx, wheelsRadius);
+                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ , 
+					                                                                                                                         wheelTangentialVelocity, wheelsRadius);
             }
 
             //////////////////////////////////////////////////////////////////////////
