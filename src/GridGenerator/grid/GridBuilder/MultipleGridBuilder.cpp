@@ -471,13 +471,15 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Done with Q Computation\n";
     }
 
-
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->findGridInterface(grids[i + 1], lbmOrGks);
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
             grids[i]->limitToSubDomain( this->subDomainBox );
+
+    for (size_t i = 0; i < grids.size() - 1; i++)
+        grids[i]->repairGridInterfaceOnMultiGPU(grids[i + 1]);
 
 	if (lbmOrGks == LBM) {
 		for (size_t i = 0; i < grids.size() - 1; i++)
@@ -524,10 +526,12 @@ void MultipleGridBuilder::writeGridsToVtk(const std::string& path) const
         ss << path << level << ".vtk";
 
         GridVTKWriter::writeGridToVTKXML(grids[level], ss.str());
+
         //if( level != 0 )
         //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], grids[level-1], ss.str() + ".InterpolationCells");
         //else
         //    GridVTKWriter::writeInterpolationCellsToVTKXML(grids[level], nullptr       , ss.str() + ".InterpolationCells");
+
         //GridVTKWriter::writeSparseGridToVTK(grids[level], ss.str());
     }
 }

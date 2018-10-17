@@ -81,6 +81,8 @@ public:
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) = 0;
 
+    HOST virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
+
     HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) = 0;
     
     HOST virtual void enableFindSolidBoundaryNodes() = 0;

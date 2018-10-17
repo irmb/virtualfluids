@@ -62,6 +62,8 @@ public:
 
     virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override {}
     
+    virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override {}
+
     virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override {}
 
     virtual void enableFindSolidBoundaryNodes() override {}

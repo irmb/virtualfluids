@@ -492,25 +492,26 @@ void SimulationFileWriter::writeBoundaryQsFile(SPtr<GridBuilder> builder)
             
             auto bc = builder->getBoundaryCondition( sides[side], level );
 
-            if( !bc ){
-                *valueStreams[side] << "noSlip\n" << "0\n" << "0\n";
-                *qStreams[side]     <<               "0\n" << "0\n";
-                continue;
-            }
-
             if( level == 0 ){
             
-                if( bc->getType() == BC_PRESSURE ) *valueStreams[side] << "pressure\n";
-                if( bc->getType() == BC_VELOCITY ) *valueStreams[side] << "velocity\n";
-                if( bc->getType() == BC_SOLID    ) *valueStreams[side] << "noSlip\n";
-                if( bc->getType() == BC_SLIP     ) *valueStreams[side] << "slip\n";
-                if( bc->getType() == BC_OUTFLOW  ) *valueStreams[side] << "outflow\n";
+                if     ( !bc )                          *valueStreams[side] << "noSlip\n";
+                else if( bc->getType() == BC_PRESSURE ) *valueStreams[side] << "pressure\n";
+                else if( bc->getType() == BC_VELOCITY ) *valueStreams[side] << "velocity\n";
+                else if( bc->getType() == BC_SOLID    ) *valueStreams[side] << "noSlip\n";
+                else if( bc->getType() == BC_SLIP     ) *valueStreams[side] << "slip\n";
+                else if( bc->getType() == BC_OUTFLOW  ) *valueStreams[side] << "outflow\n";
 
                 *valueStreams[side] << builder->getNumberOfGridLevels() - 1 << "\n";
                 *qStreams[side]     << builder->getNumberOfGridLevels() - 1 << "\n";
             }
 
-            writeBoundaryShort( builder->getGrid(level), bc, side );
+            if( !bc ){
+                *valueStreams[side] << "0\n";
+                *qStreams[side]     << "0\n";
+            }
+            else{
+                writeBoundaryShort( builder->getGrid(level), bc, side );
+            }
         }
     }
 }
@@ -638,10 +639,12 @@ void SimulationFileWriter::writeCommunicationFiles(SPtr<GridBuilder> builder)
             receiveFiles[direction] << numberOfReceiveNodes << "\n";
 
             for( uint index = 0; index < numberOfSendNodes; index++ )
-                sendFiles[direction]    << builder->getGrid(level)->getSendIndex   (direction, index) << "\n";
+                // + 1 for numbering shift between GridGenerator and VF_GPU
+                sendFiles[direction]    << builder->getGrid(level)->getSparseIndex( builder->getGrid(level)->getSendIndex   (direction, index) ) + 1 << "\n";
 
             for( uint index = 0; index < numberOfReceiveNodes; index++ )
-                receiveFiles[direction] << builder->getGrid(level)->getReceiveIndex(direction, index) << "\n";
+                // + 1 for numbering shift between GridGenerator and VF_GPU
+                receiveFiles[direction] << builder->getGrid(level)->getSparseIndex( builder->getGrid(level)->getReceiveIndex(direction, index) ) + 1 << "\n";
 
         }
     }

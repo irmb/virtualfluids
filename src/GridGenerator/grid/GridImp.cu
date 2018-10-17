@@ -833,7 +833,7 @@ HOSTDEVICE void GridImp::setNeighborIndices(uint index)
         this->setStopperNeighborCoords(index);
         return;
     }
-
+     
     if (this->sparseIndices[index] == -1)
         return;
 
@@ -975,6 +975,11 @@ HOST void GridImp::findGridInterface(SPtr<Grid> finerGrid, LbmOrGks lbmOrGks)
     gridStrategy->findGridInterface(shared_from_this(), std::static_pointer_cast<GridImp>(finerGrid), lbmOrGks);
 }
 
+HOSTDEVICE void GridImp::repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid)
+{
+    this->gridInterface->repairGridInterfaceOnMultiGPU( shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid) );
+}
+
 HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
 {
     for( uint index = 0; index < this->size; index++ ){
@@ -982,13 +987,28 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
         real x, y, z;
         this->transIndexToCoords( index, x, y, z );
 
-        BoundingBox tmpSubDomainBox = *subDomainBox;
+        {
+            BoundingBox tmpSubDomainBox = *subDomainBox;
 
-        tmpSubDomainBox.extend(this->delta);
+            // one layer for receive nodes and one for stoppers
+            tmpSubDomainBox.extend(this->delta);
 
-        if( !tmpSubDomainBox.isInside(x,y,z) )
-            this->setFieldEntry(index, INVALID_OUT_OF_GRID);
+            if (!tmpSubDomainBox.isInside(x, y, z))
+                this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
+        }
+
+        {
+            BoundingBox tmpSubDomainBox = *subDomainBox;
+
+            // one layer for receive nodes and one for stoppers
+            tmpSubDomainBox.extend(2.0 * this->delta);
+
+            if (!tmpSubDomainBox.isInside(x, y, z))
+                this->setFieldEntry(index, INVALID_OUT_OF_GRID);
+        }
     }
+
+    //this->gridStrategy->findEndOfGridStopperNodes(shared_from_this());
 }
 
 HOSTDEVICE void GridImp::findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks)
@@ -1343,7 +1363,11 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
     
         if( this->getFieldEntry(index) == INVALID_OUT_OF_GRID ||
             this->getFieldEntry(index) == INVALID_SOLID ||
-            this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ) continue;
+            this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ||
+            this->getFieldEntry(index) == STOPPER_SOLID ||
+            this->getFieldEntry(index) == STOPPER_OUT_OF_GRID ||
+            this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ||
+            this->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE ) continue;
 
         if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
         if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);
@@ -1361,12 +1385,18 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
 
     if( vf::Math::equal( coordinate, limit + s * 0.5 * this->delta, 0.01 * this->delta ) ){
         this->communicationIndices[direction].receiveIndices.push_back(index);
-        this->setFieldEntry(index, MULTI_GPU_RECIEVE);
+        //this->setFieldEntry(index, MULTI_GPU_RECIEVE);
+        //this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
     }
     if( vf::Math::equal( coordinate, limit - s * 0.5 * this->delta, 0.01 * this->delta ) ){
         this->communicationIndices[direction].sendIndices.push_back(index);
-        this->setFieldEntry(index, MULTI_GPU_SEND);
-    }  
+        //this->setFieldEntry(index, MULTI_GPU_SEND);
+    }    
+
+    //if( vf::Math::equal( coordinate, limit + s * 1.5 * this->delta, 0.01 * this->delta ) ){
+    //    //this->setFieldEntry(index, MULTI_GPU_RECIEVE);
+    //    this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
+    //}
 }
 
 uint GridImp::getNumberOfSendNodes(int direction)

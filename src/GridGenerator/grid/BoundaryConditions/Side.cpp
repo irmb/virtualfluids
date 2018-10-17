@@ -9,9 +9,9 @@
 void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant,
                       real startInner, real endInner, real startOuter, real endOuter)
 {
-    for (real v1 = startInner; v1 <= endInner; v1 += grid->getDelta())
+    for (real v2 = startOuter; v2 <= endOuter; v2 += grid->getDelta())
     {
-        for (real v2 = startOuter; v2 <= endOuter; v2 += grid->getDelta())
+        for (real v1 = startInner; v1 <= endInner; v1 += grid->getDelta())
         {
             const uint index = getIndex(grid, coord, constant, v1, v2);
 

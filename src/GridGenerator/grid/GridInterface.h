@@ -5,7 +5,7 @@
 #include "VirtualFluidsDefinitions.h"
 #include "utilities/cuda/cudaDefines.h"
 
-
+#include "core/PointerDefinitions.h"
 
 class GridImp;
 
@@ -26,6 +26,8 @@ public:
 
     HOSTDEVICE void VF_PUBLIC findForGridInterfaceSparseIndexCF(GridImp* coarseGrid, GridImp* fineGrid, uint index);
     HOSTDEVICE void VF_PUBLIC findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridImp* fineGrid, uint index);
+
+    HOST void VF_PUBLIC repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid);
 
     HOSTDEVICE void VF_PUBLIC print() const;
 

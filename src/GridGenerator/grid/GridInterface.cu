@@ -240,6 +240,71 @@ void GridInterface::findForGridInterfaceSparseIndexFC(GridImp* coarseGrid, GridI
     findSparseIndex(fc.fine, fineGrid, index);
 }
 
+HOST void VF_PUBLIC GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> coarseGrid, SPtr<GridImp> fineGrid)
+{
+    {
+        std::vector<uint> tmpCFC;
+        std::vector<uint> tmpCFF;
+        std::vector<uint> tmpCFOffset;
+
+        for (uint index = 0; index < cf.numberOfEntries; index++) {
+
+            real x, y, z;
+            coarseGrid->transIndexToCoords(this->cf.coarse[index], x, y, z);
+            if (coarseGrid->cellContainsOnly(Cell(x, y, z, coarseGrid->getDelta()), FLUID_CFC)) {
+                tmpCFC.push_back     (this->cf.coarse[index]);
+                tmpCFF.push_back     (this->cf.fine[index]);
+                tmpCFOffset.push_back(this->cf.offset[index]);
+            }
+        }
+
+        delete[] cf.coarse;
+        delete[] cf.fine;
+        delete[] cf.offset;
+
+        cf.numberOfEntries = tmpCFC.size();
+
+        cf.coarse = new uint[cf.numberOfEntries];
+        cf.fine   = new uint[cf.numberOfEntries];
+        cf.offset = new uint[cf.numberOfEntries];
+
+        memcpy(cf.coarse, tmpCFC.data()     , sizeof(uint)*cf.numberOfEntries);
+        memcpy(cf.fine  , tmpCFF.data()     , sizeof(uint)*cf.numberOfEntries);
+        memcpy(cf.offset, tmpCFOffset.data(), sizeof(uint)*cf.numberOfEntries);
+    }
+
+    {
+        std::vector<uint> tmpFCF;
+        std::vector<uint> tmpFCC;
+        std::vector<uint> tmpFCOffset;
+
+        for (uint index = 0; index < fc.numberOfEntries; index++) {
+
+            real x, y, z;
+            fineGrid->transIndexToCoords(this->fc.fine[index], x, y, z);
+            if (fineGrid->cellContainsOnly(Cell(x, y, z, fineGrid->getDelta()), FLUID_FCF)) {
+                tmpFCF.push_back     (this->fc.fine[index]);
+                tmpFCC.push_back     (this->fc.coarse[index]);
+                tmpFCOffset.push_back(this->fc.offset[index]);
+            }
+        }
+        
+        delete[] fc.fine;
+        delete[] fc.coarse;
+        delete[] fc.offset;
+
+        fc.numberOfEntries = tmpFCC.size();
+        
+        fc.fine   = new uint[fc.numberOfEntries];
+        fc.coarse = new uint[fc.numberOfEntries];
+        fc.offset = new uint[fc.numberOfEntries];
+        
+        memcpy(fc.fine  , tmpFCF.data()     , sizeof(uint)*fc.numberOfEntries);
+        memcpy(fc.coarse, tmpFCC.data()     , sizeof(uint)*fc.numberOfEntries);
+        memcpy(fc.offset, tmpFCOffset.data(), sizeof(uint)*fc.numberOfEntries);
+    }
+}
+
 void GridInterface::findSparseIndex(uint* indices, GridImp* grid, uint index)
 {
     const uint matrixIndex = indices[index];

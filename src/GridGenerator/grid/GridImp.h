@@ -107,6 +107,8 @@ public:
 
     HOST virtual void findGridInterface(SPtr<Grid> grid, LbmOrGks lbmOrGks) override;
 
+    HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
+
     HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
 
     HOST void freeMemory() override;
