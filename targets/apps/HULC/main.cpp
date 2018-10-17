@@ -289,495 +289,277 @@ void multipleLevel(const std::string& configPath)
 
     if(useGridGenerator){
 
-        //////////////////////////////////////////////////////////////////////////
-        // DrivAer
-        //////////////////////////////////////////////////////////////////////////
-
-        //real dx = 0.2;
-        //real vx = 0.05;
-
-        //TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
-
-        //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
-
-        //real z0 = 0.318+0.5*dx;
-
-        //gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
-        //                            15.0,  5.0, 5.0 - z0, dx);  // DrivAer
-
-        ////Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
-        ////Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
-
-        ////Conglomerate* refRegion = new Conglomerate();
-
-        ////refRegion->add(floorBox);
-        ////refRegion->add(wakeBox);
-        ////refRegion->add(DrivAerRefBoxSTL);
-
-        //gridBuilder->setNumberOfLayers(4,8);
-        //gridBuilder->addGrid(DrivAerRefBoxSTL, 3);
-        //
-        ////gridBuilder->setNumberOfLayers(10,8);
-        ////gridBuilder->addGrid(DrivAerSTL, 5);
-
-        //gridBuilder->addGeometry(DrivAerSTL);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // DLC - Golf
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 5.0/30.0;//0.2;
-        //real vx = 0.05;
-
-        //real z0 = 0.265;
-
-        //std::vector<uint> ignorePatches = { 152, 153, 154 };
-
-        ////TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
-
-        ////TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
-
-        //////TriangularMesh* DLC_RefBox_1 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
-        //////TriangularMesh* DLC_RefBox_2 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
-        //////TriangularMesh* DLC_RefBox_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
-        ////TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
-
-        //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
-        //TriangularMesh* DLC_RefBox = TriangularMesh::make("stl/DLC_RefBox.lnx.stl");
-        //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
-
-        //gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
-        //                            15.0,  5.0, 5.0 - z0, dx);
-
-        //gridBuilder->setNumberOfLayers(10,8);
-        ////gridBuilder->addGrid(DLC_RefBox_1, 1);
-        ////gridBuilder->addGrid(DLC_RefBox_2, 2);
-        ////gridBuilder->addGrid(DLC_RefBox_3, 3);
-        ////gridBuilder->addGrid(DLC_RefBox_4, 4);
-
-        //gridBuilder->addGrid(DLC_RefBox_4, 4);
-        //
-        //Conglomerate* refinement = new Conglomerate();
-        //refinement->add(DLC_RefBox);
-        //refinement->add(VW370_SERIE_STL);
-
-        //gridBuilder->setNumberOfLayers(10,8);
-        //gridBuilder->addGrid(refinement, 5);
-
-        //gridBuilder->addGeometry(VW370_SERIE_STL);
-
-        //gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-
-        //gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Wall Mounted Cube
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-     //   real dx = 0.2;
-        //real vx = 0.02;
-
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
-        //gridBuilder->addCoarseGrid(-5, -5, -1-dx/2.0, 15, 5, 5-dx/2.0, dx);
-        //gridBuilder->addGrid(new Cuboid(-3, -2, -2, 5, 2, 2), 1);
-        //gridBuilder->addGeometry(triangularMesh);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing layer refinement
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 0.125;
-        //real vx = 0.02;
-
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/Box_2.00.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/STL_Group_Test.stl");
-
-        //gridBuilder->addCoarseGrid(-4, -4, -4,
-        //                           12,  4,  4, dx);
-
-        //gridBuilder->setNumberOfLayers(15, 8);   // this must come before the grids are added!!!
-
-        //gridBuilder->addGrid(triangularMesh, 2);
-
-        ////gridBuilder->addGrid( new Sphere( 0, 0, 0, 0.0005 ), 12 );
-        ////gridBuilder->addGrid( new Cuboid( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 ), 3 );
-
-        //gridBuilder->addGeometry(triangularMesh);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing NeedleCells
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 0.005;
-        //real vx = 0.02;
-
-        ////TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/NeedleCells2.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/NeedleCellsThinWalls.stl");
-        //
-        //gridBuilder->addCoarseGrid(-0.5-0.5*dx, -0.3, -0.3,
-        //                            1.0-0.5*dx,  0.3,  0.3, dx);
-
-        //gridBuilder->addGeometry( triangularMesh );
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing Thin Wall
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 0.0125;
-        //real vx = 0.05;
-
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ThinWallTest2.stl");
-
-        //gridBuilder->addCoarseGrid(-2, -1.5, -0.5, 4, 1.5, 0.5, dx);
-
-        //gridBuilder->addGeometry( triangularMesh );
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing Thin Box
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 0.0125/4;
-        //real vx = 0.05;
-
-        //TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ThinWallBox_rotated.stl");
-
-        //gridBuilder->addCoarseGrid(-0.4-0.5*dx, -0.4-0.5*dx, -0.4-0.5*dx,
-        //                            1.0-0.5*dx,  0.4-0.5*dx,  0.4-0.5*dx, dx);
-
-        //gridBuilder->addGeometry( triangularMesh );
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing Paper Plane
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 0.005;
-        //real vx = 0.05;
-
-        //TriangularMesh* paperPlaneSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/PaperPlane_1.stl");
-
-        //TriangularMesh* paperPlaneRefSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/PaperPlane_1_ref.stl");
-        //
-        //Object* wakeBox = new Cuboid( 0.3, -0.11, -0.06, 0.6, 0.11, -0.02 );
-
-        //Conglomerate* paperPlaneRefSTL_coarse = new Conglomerate();
-        //paperPlaneRefSTL_coarse->add(wakeBox);
-        //paperPlaneRefSTL_coarse->add(paperPlaneRefSTL);
-
-        ////                             x     y     z     x     y      z
-        //gridBuilder->addCoarseGrid(-0.1, -0.2, -0.1,  1.0,  0.2,  0.1, dx);
-
-        //gridBuilder->setNumberOfLayers(10,8);
-
-        //gridBuilder->addGrid(paperPlaneRefSTL_coarse, 2);
-
-        //gridBuilder->setNumberOfLayers(2,8);
-
-        //gridBuilder->addGrid(paperPlaneRefSTL, 3);
-
-        //gridBuilder->addGeometry( paperPlaneSTL );
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing Periodic Cube
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //real dx = 1.0 / 300.0;
-        //real vx = 0.05;
-
-        //gridBuilder->addCoarseGrid(-0.5 - 0.5*dx, -0.5 - 0.5*dx, -0.5 - 0.5*dx,  
-        //                            0.5 + 0.5*dx,  0.5 + 0.5*dx,  0.5 + 0.5*dx, dx);
-
-        //gridBuilder->addGrid(new Cuboid( -0.2, -0.6, -0.2, 0.2, 0.6, 0.2 ), 1);
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Testing Multi GPU grids
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        const uint generatePart = 0;
+        enum testCase{ 
+            DrivAer,
+            DLC,
+            MultiGPU
+        };
+
+        int testcase = DLC;
         
-        std::ofstream logFile2;
-        
-        if( generatePart == 0 )
-            logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/gridGeneratorLog.txt" );
-        
-        if( generatePart == 1 )
-            logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/gridGeneratorLog.txt" );
-
-        logging::Logger::addStream(&logFile2);
-
-        real dx = 1.0 / 10.0;
-        real vx = 0.01;
-
-        TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ShpereNotOptimal.stl");
-        //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
-
-        // all
-        //gridBuilder->addCoarseGrid(-2, -2, -2,  
-        //                            4,  2,  2, dx);
-
-        real overlap = 10.0 * dx;
-
-        if( generatePart == 0 )
-            gridBuilder->addCoarseGrid(-2.0          , -2.0, -2.0,  
-                                        0.5 + overlap,  2.0,  2.0, dx);
-
-        if( generatePart == 1 )
-            gridBuilder->addCoarseGrid( 0.5 - overlap, -2.0, -2.0,  
-                                        4.0          ,  2.0,  2.0, dx);
-
-
-        gridBuilder->setNumberOfLayers(10,8);
-        gridBuilder->addGrid(triangularMesh, 1);
-
-        gridBuilder->addGeometry(triangularMesh);
-        
-        if( generatePart == 0 )
-            gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -2.0, 0.5, 
-                                                                         -2.0, 2.0, 
-                                                                         -2.0, 2.0 ) );
-        
-        if( generatePart == 1 )
-            gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.5, 4.0, 
-                                                                         -2.0, 2.0, 
-                                                                         -2.0, 2.0 ) );
-
-        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-
-        gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
-        
-        if( generatePart == 0 ){
-            gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
-        }
-        
-        if( generatePart == 1 ){
-            gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
-            gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
-        }
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // other tests
+        if( testcase == DrivAer )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //TriangleOffsetSurfaceGeneration::createOffsetTriangularMesh(triangularMesh, 5);
-
-        //TriangularMesh* sphere = TriangularMesh::make("D:/GRIDGENERATION/STL/GTI.stl", DiscretizationMethod::RAYCASTING);
-        //TransformatorImp trans(1.0, Vertex(5.5, 1, 12));
-        //trans.transformWorldToGrid(*sphere);
-        //STLWriter::writeSTL(sphere->triangleVec, "D:/GRIDGENERATION/STL/GTI2.stl", false);
-
-        //real size = 0.02;
-        //gridBuilder->addGrid(new Sphere( 0, 0, 0, 2.5), 1);
-        //gridBuilder->addGrid(new VerticalCylinder( 0, 0, 0, 3, 60), 2);
-        //gridBuilder->addGrid(new Sphere(0, 0, 19.5, 1), 6);//until level 7 works
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        ///////////////////////////////////////////////////////////////////////////
-        //BCs
-        //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.0, 0.0, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::MX, 0.0, 0.0, 0.0);
-
-        gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
-        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
-
-        //gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
-
-        if (generatePart == 0) {
-            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
-        }
-        if (generatePart == 1) {
-            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-        }
-
-        gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
-
-        ////////////////////////////////////////////////////////////////////////////
-
-        //gridBuilder->setNoSlipBoundaryCondition(SideType::MY);
-        //gridBuilder->setNoSlipBoundaryCondition(SideType::PY);
-     //   gridBuilder->setNoSlipBoundaryCondition(SideType::MZ);
-     //   gridBuilder->setNoSlipBoundaryCondition(SideType::PZ);
-
         {
-            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setVelocityForPatch(0, vx, 0.0, 0.0);
+            real dx = 0.2;
+            real vx = 0.05;
+
+            TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+            //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
+            //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+
+            TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+
+            real z0 = 0.318+0.5*dx;
+
+            gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
+                                        15.0,  5.0, 5.0 - z0, dx);  // DrivAer
+
+            //Object* floorBox = new Cuboid( -0.3, -1, -1, 4.0, 1, 0.2 );
+            //Object* wakeBox  = new Cuboid(  3.5, -1, -1, 5.5, 1, 0.8 );
+
+            //Conglomerate* refRegion = new Conglomerate();
+
+            //refRegion->add(floorBox);
+            //refRegion->add(wakeBox);
+            //refRegion->add(DrivAerRefBoxSTL);
+
+            gridBuilder->setNumberOfLayers(10,8);
+            gridBuilder->addGrid(DrivAerRefBoxSTL, 2);
+        
+            //gridBuilder->setNumberOfLayers(10,8);
+            //gridBuilder->addGrid(DrivAerSTL, 5);
+
+            gridBuilder->addGeometry(DrivAerSTL);
+
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+
+            //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+            
+            //////////////////////////////////////////////////////////////////////////
 
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
 
-            // Walze:
-            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch(grid, 1, 0.0, -1.0, 0.0,
-            //    0.0, 1.0, 0.0, -5.0 * vx, 1.0);
+            gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 4, 0.0075, -2.0, 0.0,
+                                                                                                                                     0.0075,  2.0, 0.0, -vx, 0.318);
+            gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 3, 2.793 , -2.0, 0.0,
+                                                                                                                                     2.793 ,  2.0, 0.0, -vx, 0.318);
 
-            // DrivAer
-            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 4, 0.0075, -2.0, 0.0,
-            //                                                                                                                         0.0075,  2.0, 0.0, -vx, 0.318);
-            //gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, 3, 2.793 , -2.0, 0.0,
-            //                                                                                                                         2.793 ,  2.0, 0.0, -vx, 0.318);
+            //////////////////////////////////////////////////////////////////////////
 
-            //real wheelsFrontX = -0.081;
-            //real wheelsRearX  =  2.5485;
+            //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
+            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+            //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
-            //real wheelsFrontZ =  0.0515;
-            //real wheelsRearZ  =  0.0585;
-
-            //real wheelsRadius =  0.318;
-
-            //std::vector<uint> frontWheelPatches = { 71, 86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97, 159 };
-            //std::vector<uint> rearWheelPatches  = { 82, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 160 };
-
-            //for( uint patch : frontWheelPatches ){
-            //    gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsFrontX, -2.0, wheelsFrontZ,
-            //                                                                                                                                 wheelsFrontX,  2.0, wheelsFrontZ, -vx, wheelsRadius);
-            //}
-
-            //for( uint patch : rearWheelPatches ){
-            //    gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsRearX , -2.0, wheelsRearZ ,
-            //                                                                                                                                 wheelsRearX ,  2.0, wheelsRearZ , -vx, wheelsRadius);
-            //}
-
+            gridGenerator = GridGenerator::make(gridBuilder, para);
         }
 
-        //gridBuilder->setVelocityBoundaryCondition(SideType::PX, 0.001, 0.0, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::MY, 0.001, 0.0, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::PY, 0.001, 0.0, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::MZ, 0.001, 0.0, 0.0);
-        //gridBuilder->setVelocityBoundaryCondition(SideType::PZ, 0.001, 0.0, 0.0);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if( testcase == DLC )
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {
+            real dx = 5.0/30.0;//0.2;
+            real vx = 0.05;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            real z0 = 0.265;
+
+            std::vector<uint> ignorePatches = { 152, 153, 154 };
+
+            TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+
+            TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
+
+            //TriangularMesh* DLC_RefBox_1 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
+            //TriangularMesh* DLC_RefBox_2 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
+            //TriangularMesh* DLC_RefBox_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
+            TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
+
+            //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
+            //TriangularMesh* DLC_RefBox = TriangularMesh::make("stl/DLC_RefBox.lnx.stl");
+            //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
+
+            gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
+                                        15.0,  5.0, 5.0 - z0, dx);
+
+            gridBuilder->setNumberOfLayers(10,8);
+            //gridBuilder->addGrid(DLC_RefBox_1, 1);
+            //gridBuilder->addGrid(DLC_RefBox_2, 2);
+            //gridBuilder->addGrid(DLC_RefBox_3, 3);
+            //gridBuilder->addGrid(DLC_RefBox_4, 4);
+
+            gridBuilder->addGrid(DLC_RefBox_4, 2);
         
+            //Conglomerate* refinement = new Conglomerate();
+            //refinement->add(DLC_RefBox);
+            //refinement->add(VW370_SERIE_STL);
 
-        if (generatePart == 0) {
-            gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/Test_");
-            gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/Test_Arrow");
+            //gridBuilder->setNumberOfLayers(10,8);
+            //gridBuilder->addGrid(refinement, 5);
+
+            gridBuilder->addGeometry(VW370_SERIE_STL);
+
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+
+            //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+            
+            //////////////////////////////////////////////////////////////////////////
+
+            SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+
+            real wheelsFrontX = -0.081;
+            real wheelsRearX  =  2.5485;
+
+            real wheelsFrontZ =  0.0515;
+            real wheelsRearZ  =  0.0585;
+
+            real wheelsRadius =  0.318;
+
+            std::vector<uint> frontWheelPatches = { 71, 86, 87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97, 159 };
+            std::vector<uint> rearWheelPatches  = { 82, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 160 };
+
+            for( uint patch : frontWheelPatches ){
+                gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsFrontX, -2.0, wheelsFrontZ,
+                                                                                                                                             wheelsFrontX,  2.0, wheelsFrontZ, -vx, wheelsRadius);
+            }
+
+            for( uint patch : rearWheelPatches ){
+                gridBuilder->getGeometryBoundaryCondition(gridBuilder->getNumberOfLevels() - 1)->setTangentialVelocityForPatch( grid, patch, wheelsRearX , -2.0, wheelsRearZ ,
+                                                                                                                                             wheelsRearX ,  2.0, wheelsRearZ , -vx, wheelsRadius);
+            }
+
+            //////////////////////////////////////////////////////////////////////////
+
+            //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
+            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+            //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
+
+            gridGenerator = GridGenerator::make(gridBuilder, para);
         }
-        if (generatePart == 1) {
-            gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/Test_");
-            gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/Test_Arrow");
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if( testcase == MultiGPU )
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {
+            const uint generatePart = 1;
+            
+            std::ofstream logFile2;
+            
+            if( generatePart == 0 )
+                logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/gridGeneratorLog.txt" );
+            
+            if( generatePart == 1 )
+                logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/gridGeneratorLog.txt" );
+
+            logging::Logger::addStream(&logFile2);
+
+            real dx = 1.0 / 40.0;
+            real vx = 0.05;
+
+            TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ShpereNotOptimal.stl");
+            //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+
+            // all
+            //gridBuilder->addCoarseGrid(-2, -2, -2,  
+            //                            4,  2,  2, dx);
+
+            real overlap = 10.0 * dx;
+
+            if( generatePart == 0 )
+                gridBuilder->addCoarseGrid(-2.0          , -2.0, -2.0,  
+                                            0.5 + overlap,  2.0,  2.0, dx);
+
+            if( generatePart == 1 )
+                gridBuilder->addCoarseGrid( 0.5 - overlap, -2.0, -2.0,  
+                                            4.0          ,  2.0,  2.0, dx);
+
+
+            gridBuilder->setNumberOfLayers(10,8);
+            gridBuilder->addGrid(triangularMesh, 1);
+
+            gridBuilder->addGeometry(triangularMesh);
+            
+            if( generatePart == 0 )
+                gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -2.0, 0.5, 
+                                                                             -2.0, 2.0, 
+                                                                             -2.0, 2.0 ) );
+            
+            if( generatePart == 1 )
+                gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.5, 4.0, 
+                                                                             -2.0, 2.0, 
+                                                                             -2.0, 2.0 ) );
+
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            
+            if( generatePart == 0 ){
+                gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::PX, 1);
+            }
+            
+            if( generatePart == 1 ){
+                gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+                gridBuilder->setCommunicationProcess(CommunicationDirections::MX, 0);
+            }
+
+            //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+
+            if (generatePart == 0) {
+                gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+            }
+            if (generatePart == 1) {
+                gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+            }
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+        
+            //////////////////////////////////////////////////////////////////////////
+
+            if (generatePart == 0) {
+                gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/Test_");
+                gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/Test_Arrow");
+            }
+            if (generatePart == 1) {
+                gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/Test_");
+                gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/Test_Arrow");
+            }
+
+            if (generatePart == 0)
+                SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/", gridBuilder, FILEFORMAT::ASCII);
+            if (generatePart == 1)
+                SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/", gridBuilder, FILEFORMAT::ASCII);
+
+            return;
         }
-
-        //gridBuilder->writeGridsToVtk("M:/TestGridGeneration/results/ConcaveTest_");
-
-        //gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/Test_");
-        //gridBuilder->writeArrows("C:/Users/lenz/Desktop/Work/gridGenerator/gridMultiGPU_Part_2/Test_Arrow");
-
-        //gridBuilder->writeGridsToVtk("grid/Test_");
-        //gridBuilder->writeArrows("grid/Test_Arrow");
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        //{
-        //	SPtr<Grid> grid = gridBuilder->getGrid(2);
-
-        //	uint counter = 0;
-        //	for (uint gridIdx = 0; gridIdx < grid->getSize(); gridIdx++) {
-
-        //		if (grid->getFieldEntry(gridIdx) == BC_GEOMETRY) {
-        //			real x, y, z;
-        //			grid->transIndexToCoords(gridIdx, x, y, z);
-        //			if (fabs(z) > dx) continue;
-        //			std::cout << x << " " << y << " " << z << std::endl;
-        //			for (uint fIdx = 0; fIdx < 27; fIdx++) {
-        //				if (!vf::Math::equal(grid->getDistribution()[fIdx * grid->getSize() + gridIdx], 0.0)) {
-        //					std::cout << fIdx << "\t" << grid->getDistribution()[fIdx * grid->getSize() + gridIdx] << std::endl;
-        //				}
-        //			}
-        //			counter++;
-        //			if (counter > 10) break;
-        //		}
-        //	}
-        //}
-
-        //debug information
-        //{
-     //       uint level = 0;
-
-     //       SPtr<Grid> grid = gridBuilder->getGrid(level);
-
-     //       real* xCoords   = new real [ grid->getSparseSize() ];
-     //       real* yCoords   = new real [ grid->getSparseSize() ];
-     //       real* zCoords   = new real [ grid->getSparseSize() ];
-     //       uint* xNeighbor = new uint [ grid->getSparseSize() ];
-     //       uint* yNeighbor = new uint [ grid->getSparseSize() ];
-     //       uint* zNeighbor = new uint [ grid->getSparseSize() ];
-     //       uint* geo       = new uint [ grid->getSparseSize() ];
-
-     //       gridBuilder->getNodeValues(xCoords, yCoords, zCoords, xNeighbor, yNeighbor, zNeighbor, geo, level);
-
-        //	uint counter = 0;
-        //	for (uint gridIdx = 0; gridIdx < grid->getSize(); gridIdx++) {
-
-        //		////////////////////////////////////////////////////////////////////////////
-        //		if (grid->getFieldEntry(gridIdx) != FLUID_CFC) continue;
-
-        //		real x, y, z;
-        //		grid->transIndexToCoords(gridIdx, x, y, z);
-     //           
-        //		if(level == 0) if ( !vf::Math::equal(y, 4.5   ) && !vf::Math::equal(y, -4.5)) continue;
-        //		if(level == 1) if ( !vf::Math::equal(y, 4.625 ) ) continue;
-        //		if(level == 2) if ( !vf::Math::equal(y, 4.8125/*4.6875*/) ) continue;
-
-     //           if( grid->getSparseIndex( gridIdx ) == -1 ) continue;
-
-     //           std::cout << int( grid->getFieldEntry(gridIdx) ) << " ";
-
-        //		std::cout << grid->getSparseIndex( gridIdx ) << " (" << x << " " << y << " " << z << ") --> ";
-
-     //           uint neighborIndex = grid->getNeighborsZ()[ gridIdx ];
-
-     //           std::cout << neighborIndex << " (" << xCoords[neighborIndex + 1] << " "
-     //                                              << yCoords[neighborIndex + 1] << " "
-     //                                              << zCoords[neighborIndex + 1] << ")" << std::endl;
-
-        //		counter++;
-        //		////if (counter > 1000) break;
-        //		//////////////////////////////////////////////////////////////////////////////
-        //		//real x, y, z;
-        //		//grid->transIndexToCoords(gridIdx, x, y, z);
-
-        //		////one interesting stopper node
-        //		//int stopperOfInterest = 17528;
-        //		//if ((grid->getNeighborsX()[gridIdx] == stopperOfInterest) ||
-        //		//	(grid->getNeighborsY()[gridIdx] == stopperOfInterest) ||
-        //		//	(grid->getNeighborsZ()[gridIdx] == stopperOfInterest))
-        //		//{
-        //		//	std::cout << int(grid->getFieldEntry(gridIdx)) << " ";
-
-        //		//	std::cout << grid->getSparseIndex(gridIdx) << " (" << x << " " << y << " " << z << ") --> ";
-
-
-        //		//	std::cout << stopperOfInterest << " (" << xCoords[stopperOfInterest + 1] << " "
-        //		//		<< yCoords[stopperOfInterest + 1] << " "
-        //		//		<< zCoords[stopperOfInterest + 1] << ")" << std::endl;
-        //		//}
-
-        //		////////////////////////////////////////////////////////////////////////////
-        //	}
-        //}
-
-        //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
-        //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
-        //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
-
-        if (generatePart == 0)
-            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/", gridBuilder, FILEFORMAT::ASCII);
-        if (generatePart == 1)
-            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/", gridBuilder, FILEFORMAT::ASCII);
-
-        return;
-
-        gridGenerator = GridGenerator::make(gridBuilder, para);
     }
     else
     {
