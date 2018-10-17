@@ -553,7 +553,7 @@ extern "C" __global__ void LBCalcMacCompSP27( real* vxD,
 	  vyD[k]    = zero;
 	  vzD[k]    = zero;
 
-      if(geoD[k] == GEO_FLUID || geoD[k] == GEO_PM_0)
+      if(geoD[k] == GEO_FLUID || geoD[k] == GEO_PM_0 || geoD[k] == GEO_PM_1 || geoD[k] == GEO_PM_2)
       {
          rhoD[k]    =   (D.f[dirE   ])[ke  ]+ (D.f[dirW   ])[kw  ]+ 
                         (D.f[dirN   ])[kn  ]+ (D.f[dirS   ])[ks  ]+

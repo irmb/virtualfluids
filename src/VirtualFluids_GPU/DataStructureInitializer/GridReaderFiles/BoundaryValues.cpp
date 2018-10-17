@@ -89,8 +89,10 @@ int BoundaryValues::getNumberOfColumns()
 		return 3;
 	if (boundaryCondition == "pressure")
 		return 2;
-	else
+	if (boundaryCondition == "processor")
 		return 0;
+	else
+		return -1;
 }
 
 
@@ -100,9 +102,9 @@ void BoundaryValues::init()
 	readNumberOfLevels();
 	resizeVectors();
 
-	unsigned int maxColumn = getNumberOfColumns();
+	int maxColumn = getNumberOfColumns();
 
-	if (maxColumn == 0)
+	if (maxColumn == -1)
 		initalVectorsWithSingleZero();
 	else
 		initalVectors(maxColumn);

@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <VirtualFluidsDefinitions.h>
+
 #include <mpi.h>
 
 
@@ -18,7 +20,7 @@
 
 
 
-class Communicator
+class VF_PUBLIC Communicator
 {
 public:
 	static Communicator* getInstanz();

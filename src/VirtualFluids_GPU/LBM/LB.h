@@ -1,3 +1,10 @@
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//
+//////////////////////////////////////////////////////////////////////////
 #ifndef _LB_H_
 #define _LB_H_
 
@@ -96,15 +103,15 @@ typedef struct InitCond{
 
 //Interface Cells
 typedef struct ICellCF{
-   unsigned int* ICellCFF;
-   unsigned int* ICellCFC;
-   unsigned int kCF;
+   uint* ICellCFF;
+   uint* ICellCFC;
+   uint kCF;
 } InterpolationCellCF;
 
 typedef struct ICellFC{
-   unsigned int* ICellFCF;
-   unsigned int* ICellFCC;
-   unsigned int kFC;
+   uint* ICellFCF;
+   uint* ICellFCC;
+   uint kFC;
 } InterpolationCellFC;
 
 //Offset of the interface cells at the wall
@@ -190,7 +197,7 @@ typedef struct TempPressforBC{
 //measurePoints
 typedef struct MeasP{
 	std::string name;
-	unsigned int k;
+	uint k;
 	std::vector<real> Vx;
 	std::vector<real> Vy;
 	std::vector<real> Vz;
@@ -204,26 +211,26 @@ typedef struct MeasP{
 //Process Neighbors
 typedef struct PN27{
 	real* f[27];
-	unsigned int memsizeFs;
+	uint memsizeFs;
 	int* index;
-	unsigned int memsizeIndex;
-	unsigned int rankNeighbor;
+	uint memsizeIndex;
+	uint rankNeighbor;
 	int numberOfNodes;
 	int numberOfFs;
 }ProcessNeighbor27;
 
 //path line particles
 typedef struct PLP{
-	bool    *stuck, *hot;
+	bool *stuck, *hot;
 	real *coordXabsolut, *coordYabsolut, *coordZabsolut;
 	real *coordXlocal,   *coordYlocal,   *coordZlocal;
 	real *veloX,         *veloY,         *veloZ;
 	real *randomLocationInit;
-	unsigned int *timestep;
-	unsigned int *ID;
-	unsigned int *cellBaseID;
-	unsigned int numberOfParticles, numberOfTimestepsParticles;
-	unsigned int memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
+	uint *timestep;
+	uint *ID;
+	uint *cellBaseID;
+	uint numberOfParticles, numberOfTimestepsParticles;
+	uint memSizeID, memSizeTimestep, memSizerealAll, memSizereal, memSizeBool, memSizeBoolBC;
 }PathLineParticles;
 
 //////////////////////////////////////////////////////////////////////////

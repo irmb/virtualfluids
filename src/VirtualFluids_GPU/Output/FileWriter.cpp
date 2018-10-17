@@ -54,9 +54,9 @@ void FileWriter::writeInit(std::shared_ptr<Parameter> para)
 
 		//std::string ffname_bin  = para->getFName()+"_bin_"+StringUtil::toString<int>(lev)+"_"+StringUtil::toString<int>(para->getMyID()) + "_" +StringUtil::toString<int>(para->getTInit()) + ".vtk";
 
-		std::string fname_qs          = para->getFName() + "_Qs_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
-		std::string fname_qs_inflow   = para->getFName() + "_QsInflow_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
-		std::string fname_qs_pressure = para->getFName() + "_QsPressure_Lev_" + StringUtil::toString<int>(lev) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
+		std::string fname_qs          = para->getFName() + "_Qs_Lev_" + StringUtil::toString<int>(lev) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
+		std::string fname_qs_inflow   = para->getFName() + "_QsInflow_Lev_" + StringUtil::toString<int>(lev) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
+		std::string fname_qs_pressure = para->getFName() + "_QsPressure_Lev_" + StringUtil::toString<int>(lev) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_" + StringUtil::toString<int>(para->getMyID()) + ".vtk";
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//////2nd and 3rd Moments
@@ -249,13 +249,13 @@ void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int t)
 
 			if (para->getUseWale())
 			{
-				//UnstructuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para, lev, fname);
+				//UnstructuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosity(para.get(), lev, fname);
 				UnstructuredGridWriter::writeUnstrucuredGridLTwithTurbulentViscosityDebug(para.get(), lev, fname);
 			}
-			//else if (para->getSimulatePorousMedia())
-			//{
-			//	UnstructuredGridWriter::writeUnstrucuredGridPM(para, lev, fname);
-			//}
+			else if (para->getSimulatePorousMedia())
+			{
+				UnstructuredGridWriter::writeUnstrucuredGridPM(para.get(), lev, fname);
+			}
 			else
 			{
 				UnstructuredGridWriter::writeUnstrucuredGridLT(para.get(), lev, fname);
