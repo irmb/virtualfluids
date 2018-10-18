@@ -31,7 +31,7 @@ void WriteDemObjectsCoProcessor::process(double step)
        std::vector<UbTupleFloat3> nodes;
        std::vector<UbTupleInt3>   triangles;
 
-       demCoProcessor->addSurfaceTriangleSet(nodes, triangles);
+       int numObjcts = demCoProcessor->addSurfaceTriangleSet(nodes, triangles);
 
        int istep = static_cast<int>(step);
 
@@ -67,6 +67,7 @@ void WriteDemObjectsCoProcessor::process(double step)
           {
              WbWriterVtkXmlASCII::getInstance()->addFilesToCollection(cfilePath, filenames, istep, false);
           }
+          UBLOG(logINFO, "WriteDemObjectsCoProcessor number of objects: " << numObjcts);
           UBLOG(logINFO, "WriteDemObjectsCoProcessor step: " << istep);
        }
    }
