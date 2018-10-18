@@ -149,17 +149,18 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    return std::make_shared<DemCoProcessor>(grid, peScheduler, comm, forceCalculator, peSolver);
 }
 
-void createSpheres(double radius,  Vector3D origin, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
+void createSpheres(double radius,  Vector3D origin, double maxX2, double maxX3, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
 {
    double d = 2.0*radius;
-   int maxX2 = 5;//5;
-   int maxX3 = 5;//6;
+   double dividerX2 = maxX2/2.0;
+   double dividerX3 = maxX3/2.0;
    for (int x3 = 0; x3 < maxX3; x3++)
       for (int x2 = 0; x2 < maxX2; x2++)
-         for (int x1 = 0; x1 < 1; x1++)
+         //for (int x1 = 0; x1 < 1; x1++)
          {
-            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*(double)x1, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
-            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/2.0*(double)x2, -uLB+uLB/2.5*(double)x3));
+            //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*(double)x1, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
+            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
+            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/dividerX2*(double)x2, -uLB+uLB/dividerX2*(double)x3));
          }
 }
 
@@ -210,10 +211,12 @@ void thermoplast(string configname)
       if (myid==0)
       {
          stringstream logFilename;
-         logFilename<<pathOut+"/logfile"+UbSystem::toString(UbSystem::getTimeStamp())+".txt";
+         logFilename<<pathOut+"/logfile"+UbSystem::getTimeStamp()+".txt";
          UbLog::output_policy::setStream(logFilename.str());
       }
    }
+
+   if (myid==0) UBLOG(logINFO, "BEGIN LOGGING - " << UbSystem::getTimeStamp());
 
    //parameters
    //string          pathOut = "d:/temp/thermoplast3";
@@ -516,7 +519,8 @@ void thermoplast(string configname)
    ////generating spheres 
    //UBLOG(logINFO, "generating spheres - start, rank="<<myid);
    SPtr<UbScheduler> sphereScheduler(new UbScheduler(sphereTime/*10,10,10*/));
-   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial, 0.03));
+   double toleranz = 0.05;
+   SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial, toleranz));
    //UBLOG(logINFO, "generating spheres - stop, rank="<<myid);
 
    ////restart
@@ -549,14 +553,19 @@ void thermoplast(string configname)
    //sphere prototypes
    //UBLOG(logINFO, "sphere prototypes - start, rank="<<myid);
    double d = 2.0*radiusLB;
-   Vector3D origin1(g_minX1+peMinOffset[0]+radiusLB, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
-   createSpheres(radiusLB,origin1,uLB,createSphereCoProcessor);
+   double maxX2 = 5;
+   double maxX3 = 5;
+   //Vector3D origin1(g_minX1+peMinOffset[0]+radiusLB, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
+   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
+   createSpheres(radiusLB,origin1,maxX2,maxX3,uLB,createSphereCoProcessor);
 
-   //Vector3D origin2(g_minX1+peMinOffset[0]+radius, geoInjector4->getX2Minimum()+3.0*d, geoInjector4->getX3Minimum()+2.0*d);
-   //createSpheres(radius, origin2, uLB, createSphereCoProcessor);
+   //Vector3D origin2(g_minX1+peMinOffset[0]+radiusLB, geoInjector4->getX2Minimum()+3.0*d, geoInjector4->getX3Minimum()+2.0*d);
+   //createSpheres(radiusLB, origin2, uLB, createSphereCoProcessor);
 
-   //Vector3D origin3(g_minX1+peMinOffset[0]+radius, geoInjector7->getX2Minimum()+2.0*d, geoInjector7->getX3Minimum()+2.0*d);
-   //createSpheres(radius, origin3, uLB, createSphereCoProcessor);
+   //maxX2 = 7;
+   //maxX3 = 7;
+   //Vector3D origin3(g_minX1+peMinOffset[0]+radiusLB, geoInjector7->getX2Minimum()+2.0*d, geoInjector7->getX3Minimum()+2.0*d);
+   //createSpheres(radiusLB, origin3, uLB, createSphereCoProcessor);
 
    //for (int x3 = 0; x3 < 6; x3++)
    //   for (int x2 = 0; x2 < 5; x2++)
@@ -622,6 +631,7 @@ void thermoplast(string configname)
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
+   if (myid==0) UBLOG(logINFO, "END LOGGING - " << UbSystem::getTimeStamp());
 }
 
 
@@ -633,17 +643,19 @@ int main(int argc, char* argv[])
       //Sleep(30000);
       walberla::Environment env(argc, argv);
 
-      if (argv!=NULL)
-      {
-         if (argv[1]!=NULL)
-         {
-            thermoplast(string(argv[1]));
-         }
-         else
-         {
-            cout<<"Configuration file must be set!: "<<argv[0]<<" <config file>"<<endl<<std::flush;
-         }
-      }
+      //if (argv!=NULL)
+      //{
+      //   if (argv[1]!=NULL)
+      //   {
+            //thermoplast(string(argv[1]));
+      //thermoplast(string("thermoplast.cfg"));
+      thermoplast(string("d:/Projects/VirtualFluidsGit/source/Applications/Thermoplast/config.txt"));
+      //   }
+      //   else
+      //   {
+      //      cout<<"Configuration file must be set!: "<<argv[0]<<" <config file>"<<endl<<std::flush;
+      //   }
+      //}
       return 0;
    }
    catch (std::exception& e)

@@ -50,7 +50,7 @@ public:
     void distributeIDs();
     void setBlockVisitor(std::shared_ptr<BoundaryConditionsBlockVisitor> blockVisitor);
     bool isDemObjectInAABB(std::array<double,6> AABB);
-    void addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
+    int addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles);
     void getObjectsPropertiesVector(std::vector<double>& p);
     void addPeGeo(walberla::pe::RigidBody* peGeo);
     void removePeGeo(walberla::pe::RigidBody* peGeo);

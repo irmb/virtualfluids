@@ -9,16 +9,14 @@ boundingBox = 60 1370 130 190 1530 320 #test bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
-endTime = 3000
-outTime = 3000
 availMem = 25e9
-uLB = 0.1
+#uLB = 0.1
+uLB = 0.03
 
 #PE parameters
 #test pe offset
 peMinOffset = 46 2 2
-#peMaxOffset = -30 -60 -12
-peMaxOffset = -8 -25 -2
+ peMaxOffset = -8 -25 -2
 
 #production pe offset
 #peMinOffset = 46 18 14
@@ -31,14 +29,18 @@ pathGeo = d:/Projects/ThermoPlast/SimGeo
 michel = /michel.stl
 plexiglas = /plexiglas.stl
 
-pathOut = g:/temp/thermoplast2
+pathOut = g:/temp/thermoplast9
 
 logToFile = false
 
 #restart
-cpStart = 3000
-cpStep =  3000
-restart = true
-restartStep = 2000
+restart = false
+restartStep = 5000
 
-nupsTime = 10 10 1000000
+#timing
+nupsTime = 100 100 1000000
+cpStart = 1000
+cpStep =  1000
+outTime = 10
+endTime = 1000
+

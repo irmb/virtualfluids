@@ -341,7 +341,7 @@ bool  DemCoProcessor::isDemObjectInAABB(std::array<double, 6> AABB)
    return result;
 }
 
-void DemCoProcessor::addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles)
+int DemCoProcessor::addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, std::vector<UbTupleInt3>& triangles)
 {
    for (int i = 0; i < interactors.size(); i++)
    {
@@ -350,6 +350,7 @@ void DemCoProcessor::addSurfaceTriangleSet(std::vector<UbTupleFloat3>& nodes, st
          interactors[i]->getGbObject3D()->addSurfaceTriangleSet(nodes, triangles);
       }
    }
+   return (int)interactors.size();
 }
 
 void DemCoProcessor::getObjectsPropertiesVector(std::vector<double>& p)

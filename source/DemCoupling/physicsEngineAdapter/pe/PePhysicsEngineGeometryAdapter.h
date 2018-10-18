@@ -7,7 +7,7 @@
 
 
 #include "PhysicsEngineGeometryAdapter.h"
-#include <core\DataTypes.h>
+#include <core/DataTypes.h>
 
 namespace walberla
 {
