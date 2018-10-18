@@ -230,6 +230,33 @@ void LevelGridBuilder::getOffsetCF(real * xOffCF, real * yOffCF, real * zOffCF, 
     }
 }
 
+VF_PUBLIC uint LevelGridBuilder::getNumberOfSendIndices(int direction, uint level)
+{
+    return this->grids[level]->getNumberOfSendNodes(direction);
+}
+
+VF_PUBLIC uint LevelGridBuilder::getNumberOfReceiveIndices(int direction, uint level)
+{
+    return this->grids[level]->getNumberOfReceiveNodes(direction);
+}
+
+VF_PUBLIC void LevelGridBuilder::getSendIndices(int * sendIndices, int direction, int level)
+{
+    SPtr<Grid> grid = this->grids[level];
+    for( uint i = 0; i < getNumberOfSendIndices(direction, level); i++ )
+    {
+        sendIndices[i] = grid->getSparseIndex( grid->getSendIndex(direction, i) ) + 1;
+    }
+}
+
+VF_PUBLIC void LevelGridBuilder::getReceiveIndices(int * receiveIndices, int direction, int level)
+{
+    SPtr<Grid> grid = this->grids[level];
+    for( uint i = 0; i < getNumberOfReceiveIndices(direction, level); i++ )
+    {
+        receiveIndices[i] = grid->getSparseIndex( grid->getReceiveIndex(direction, i) ) + 1;
+    }
+}
 
 uint LevelGridBuilder::getNumberOfNodes(unsigned int level) const
 {

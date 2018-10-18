@@ -134,7 +134,10 @@ public:
     VF_PUBLIC void getOffsetFC(real* xOffCf, real* yOffCf, real* zOffCf, int level) override;
     VF_PUBLIC void getOffsetCF(real* xOffFc, real* yOffFc, real* zOffFc, int level) override;
 
-    VF_PUBLIC void getSendReceiveIndices( uint* sendIndices, uint* receiveIndices, int level );
+    VF_PUBLIC uint getNumberOfSendIndices( int direction, uint level ) override;
+    VF_PUBLIC uint getNumberOfReceiveIndices( int direction, uint level ) override;
+    VF_PUBLIC void getSendIndices( int* sendIndices, int direction, int level ) override;
+    VF_PUBLIC void getReceiveIndices( int* sendIndices, int direction, int level ) override;
 
 };
 

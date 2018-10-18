@@ -81,6 +81,11 @@ public:
 
     virtual SPtr<GeometryBoundaryCondition> getGeometryBoundaryCondition( uint level ) const = 0;
 
+    virtual uint getNumberOfSendIndices( int direction, uint level ) = 0;
+    virtual uint getNumberOfReceiveIndices( int direction, uint level ) = 0;
+    virtual void getSendIndices( int* sendIndices, int direction, int level ) = 0;
+    virtual void getReceiveIndices( int* sendIndices, int direction, int level ) = 0;
+
 };
 
 #endif

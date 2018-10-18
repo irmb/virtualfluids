@@ -274,6 +274,7 @@ void multipleLevel(const std::string& configPath)
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
+    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
     //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
@@ -302,7 +303,7 @@ void multipleLevel(const std::string& configPath)
             MultiGPU
         };
 
-        int testcase = DLC;
+        int testcase = MultiGPU;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == DrivAer )
@@ -479,7 +480,8 @@ void multipleLevel(const std::string& configPath)
         if( testcase == MultiGPU )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
-            const uint generatePart = 1;
+            //const uint generatePart = 1;
+            const uint generatePart = Communicator::getInstanz()->getPID();
             
             std::ofstream logFile2;
             
@@ -573,7 +575,9 @@ void multipleLevel(const std::string& configPath)
             if (generatePart == 1)
                 SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/", gridBuilder, FILEFORMAT::ASCII);
 
-            return;
+            //return;
+
+            gridGenerator = GridGenerator::make(gridBuilder, para);
         }
     }
     else
