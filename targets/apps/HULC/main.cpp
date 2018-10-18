@@ -267,8 +267,8 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    std::ofstream logFile( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/gridGeneratorLog.txt" );
-    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
+    //std::ofstream logFile( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/gridGeneratorLog.txt" );
+    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
     logging::Logger::addStream(&logFile);
 
     logging::Logger::addStream(&std::cout);
@@ -303,7 +303,7 @@ void multipleLevel(const std::string& configPath)
             MultiGPU
         };
 
-        int testcase = MultiGPU;
+        int testcase = DLC;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == DrivAer )
@@ -315,8 +315,10 @@ void multipleLevel(const std::string& configPath)
             TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
             //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
             //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
+            //TriangularMesh* DrivAerSTL = TriangularMesh::make("stl/DrivAer_Fastback_Coarse.stl");
 
             TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+            //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("stl/DrivAer_REF_BOX_Adrea.stl");
 
             real z0 = 0.318+0.5*dx;
 
@@ -367,6 +369,9 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
+            gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DrivAer_Grid");
+            gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DrivAer_Grid_arrow");
+
             //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
             SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
@@ -387,36 +392,45 @@ void multipleLevel(const std::string& configPath)
 
             std::vector<uint> ignorePatches = { 152, 153, 154 };
 
-            TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+            //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/VW370_SERIE.stl", ignorePatches);
+            TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
 
-            TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
+            //TriangularMesh* DLC_RefBox = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox.stl");
 
             //TriangularMesh* DLC_RefBox_1 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_4m.stl");
             //TriangularMesh* DLC_RefBox_2 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_3m.stl");
             //TriangularMesh* DLC_RefBox_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_2m.stl");
-            TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
+            //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.stl");
+
+            //TriangularMesh* DLC_RefBox_Level_3 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_3.stl");
+            //TriangularMesh* DLC_RefBox_Level_4 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_4.stl");
+            //TriangularMesh* DLC_RefBox_Level_5 = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DLC/DLC_RefBox_Level_5.stl");
+
+            TriangularMesh* DLC_RefBox_Level_3 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_3.stl");
+            TriangularMesh* DLC_RefBox_Level_4 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_4.stl");
+            TriangularMesh* DLC_RefBox_Level_5 = TriangularMesh::make("stl/DLC/DLC_RefBox_Level_5.stl");
 
             //TriangularMesh* VW370_SERIE_STL = TriangularMesh::make("stl/VW370_SERIE.stl", ignorePatches);
             //TriangularMesh* DLC_RefBox = TriangularMesh::make("stl/DLC_RefBox.lnx.stl");
             //TriangularMesh* DLC_RefBox_4 = TriangularMesh::make("stl/DLC_RefBox_withWake/DLC_RefBox_withWake_1m.lnx.stl");
 
-            gridBuilder->addCoarseGrid(- 5.0, -5.0, 0.0 - z0,
-                                        15.0,  5.0, 5.0 - z0, dx);
+            gridBuilder->addCoarseGrid(-30.0, -20.0,  0.0 - z0,
+                                        50.0,  20.0, 25.0 - z0, dx);
+            
+            gridBuilder->setNumberOfLayers(10,8);
+            gridBuilder->addGrid( new Cuboid( - 6.6, -6, -0.7, 20.6 , 6, 5.3  ), 1 );
+            gridBuilder->addGrid( new Cuboid( -3.75, -3, -0.7, 11.75, 3, 2.65 ), 2 );
 
             gridBuilder->setNumberOfLayers(10,8);
-            //gridBuilder->addGrid(DLC_RefBox_1, 1);
-            //gridBuilder->addGrid(DLC_RefBox_2, 2);
-            //gridBuilder->addGrid(DLC_RefBox_3, 3);
-            //gridBuilder->addGrid(DLC_RefBox_4, 4);
-
-            gridBuilder->addGrid(DLC_RefBox_4, 2);
+            gridBuilder->addGrid(DLC_RefBox_Level_3, 3);
+            gridBuilder->addGrid(DLC_RefBox_Level_4, 4);
         
-            //Conglomerate* refinement = new Conglomerate();
-            //refinement->add(DLC_RefBox);
-            //refinement->add(VW370_SERIE_STL);
+            Conglomerate* refinement = new Conglomerate();
+            refinement->add(DLC_RefBox_Level_5);
+            refinement->add(VW370_SERIE_STL);
 
-            //gridBuilder->setNumberOfLayers(10,8);
-            //gridBuilder->addGrid(refinement, 5);
+            gridBuilder->setNumberOfLayers(10,8);
+            gridBuilder->addGrid(refinement, 5);
 
             gridBuilder->addGeometry(VW370_SERIE_STL);
 
@@ -469,9 +483,15 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
+            //gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DLC_Grid");
+            //gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DLC_Grid_arrow");
+
+            gridBuilder->writeGridsToVtk("grid/DLC_Grid");
+            gridBuilder->writeArrows    ("grid/DLC_Grid_arrow");
+
             //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
-            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
-            //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
+            //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+            SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
             gridGenerator = GridGenerator::make(gridBuilder, para);
         }

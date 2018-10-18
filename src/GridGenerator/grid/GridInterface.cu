@@ -188,7 +188,7 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
 
 bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
-    const int neighbor = coarseGrid->transCoordToIndex(x, y, z);
+    const uint neighbor = coarseGrid->transCoordToIndex(x, y, z);
 
     if( neighbor == INVALID_INDEX )
         return false;
@@ -251,7 +251,9 @@ HOST void VF_PUBLIC GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> c
 
             real x, y, z;
             coarseGrid->transIndexToCoords(this->cf.coarse[index], x, y, z);
-            if (coarseGrid->cellContainsOnly(Cell(x, y, z, coarseGrid->getDelta()), FLUID_CFC)) {
+            Cell cell(x, y, z, coarseGrid->getDelta());
+
+            if (coarseGrid->cellContainsOnly(cell, FLUID_CFC)) {
                 tmpCFC.push_back     (this->cf.coarse[index]);
                 tmpCFF.push_back     (this->cf.fine[index]);
                 tmpCFOffset.push_back(this->cf.offset[index]);
@@ -282,7 +284,9 @@ HOST void VF_PUBLIC GridInterface::repairGridInterfaceOnMultiGPU(SPtr<GridImp> c
 
             real x, y, z;
             fineGrid->transIndexToCoords(this->fc.fine[index], x, y, z);
-            if (fineGrid->cellContainsOnly(Cell(x, y, z, fineGrid->getDelta()), FLUID_FCF)) {
+            Cell cell(x, y, z, fineGrid->getDelta());
+
+            if (fineGrid->cellContainsOnly(cell, FLUID_FCF)) {
                 tmpFCF.push_back     (this->fc.fine[index]);
                 tmpFCC.push_back     (this->fc.coarse[index]);
                 tmpFCOffset.push_back(this->fc.offset[index]);
