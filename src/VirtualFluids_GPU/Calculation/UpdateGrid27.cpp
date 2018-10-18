@@ -664,20 +664,21 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 
         if (para->getParD(level)->kInflowQ > 0)
         {
-            //QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx, para->getParD(level)->ny,
-            //    para->getParD(level)->Qinflow.Vx, para->getParD(level)->Qinflow.Vy, para->getParD(level)->Qinflow.Vz,
-            //    para->getParD(level)->d0SP.f[0], para->getParD(level)->Qinflow.k, para->getParD(level)->Qinflow.q27[0],
-            //    para->getParD(level)->kInflowQ, para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
-            //    para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-            //    para->getParD(level)->size_Mat_SP, para->getParD(level)->evenOrOdd);
-            //getLastCudaError("QVelDevCompZeroPress27 execution failed");
-		    QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
-						para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-						para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
-						para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
-						para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-						para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-		    getLastCudaError("QVelDevComp27 execution failed");
+            QVelDevCompZeroPress27(
+				para->getParD(level)->numberofthreads, para->getParD(level)->nx, para->getParD(level)->ny,
+                para->getParD(level)->Qinflow.Vx, para->getParD(level)->Qinflow.Vy, para->getParD(level)->Qinflow.Vz,
+                para->getParD(level)->d0SP.f[0], para->getParD(level)->Qinflow.k, para->getParD(level)->Qinflow.q27[0],
+                para->getParD(level)->kInflowQ, para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
+                para->getParD(level)->neighborX_SP, para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+                para->getParD(level)->size_Mat_SP, para->getParD(level)->evenOrOdd);
+            getLastCudaError("QVelDevCompZeroPress27 execution failed");
+		    //QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+						//para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+						//para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+						//para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+						//para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+						//para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+		    //getLastCudaError("QVelDevComp27 execution failed");
         }
 			//QVelDevCompZeroPress27(  para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
 			//						 para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
@@ -687,22 +688,22 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			//						 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
 			//getLastCudaError("QVelDevCompZeroPress27 execution failed");
 
-		//  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//////Drag and Lift Part I
-		//DragLiftPostD27( para->getParD(level)->d0SP.f[0], 
-		//				 para->getParD(level)->QGeom.k, 
-		//				 para->getParD(level)->QGeom.q27[0],
-		//				 para->getParD(level)->QGeom.kQ, 
-		//				 para->getParD(level)->DragPostX,
-		//				 para->getParD(level)->DragPostY,
-		//				 para->getParD(level)->DragPostZ,
-		//				 para->getParD(level)->neighborX_SP,
-		//				 para->getParD(level)->neighborY_SP,
-		//				 para->getParD(level)->neighborZ_SP,
-		//				 para->getParD(level)->size_Mat_SP, 
-		//				 para->getParD(level)->evenOrOdd,
-		//				 para->getParD(level)->numberofthreads);
-		//getLastCudaError("DragLift27 execution failed"); 
+		  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////Drag and Lift Part I
+		DragLiftPostD27( para->getParD(level)->d0SP.f[0], 
+						 para->getParD(level)->QGeom.k, 
+						 para->getParD(level)->QGeom.q27[0],
+						 para->getParD(level)->QGeom.kQ, 
+						 para->getParD(level)->DragPostX,
+						 para->getParD(level)->DragPostY,
+						 para->getParD(level)->DragPostZ,
+						 para->getParD(level)->neighborX_SP,
+						 para->getParD(level)->neighborY_SP,
+						 para->getParD(level)->neighborZ_SP,
+						 para->getParD(level)->size_Mat_SP, 
+						 para->getParD(level)->evenOrOdd,
+						 para->getParD(level)->numberofthreads);
+		getLastCudaError("DragLift27 execution failed"); 
 		//  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        //   BBDev27( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
        //            para->getParD(level)->d0SP.f[0],             para->getParD(level)->QGeom.k,      para->getParD(level)->QGeom.q27[0], 
@@ -805,27 +806,27 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
          if (para->getParD(level)->evenOrOdd==true)  para->getParD(level)->evenOrOdd=false;
          else                                        para->getParD(level)->evenOrOdd=true;
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		 ////Drag and Lift Part II
-		 //DragLiftPreD27(  para->getParD(level)->d0SP.f[0], 
-			//			  para->getParD(level)->QGeom.k, 
-			//			  para->getParD(level)->QGeom.q27[0],
-			//			  para->getParD(level)->QGeom.kQ, 
-			//			  para->getParD(level)->DragPreX,
-			//			  para->getParD(level)->DragPreY,
-			//			  para->getParD(level)->DragPreZ,
-			//			  para->getParD(level)->neighborX_SP,
-			//			  para->getParD(level)->neighborY_SP,
-			//			  para->getParD(level)->neighborZ_SP,
-			//			  para->getParD(level)->size_Mat_SP, 
-			//			  para->getParD(level)->evenOrOdd,
-			//			  para->getParD(level)->numberofthreads);
-		 //getLastCudaError("DragLift27 execution failed"); 
-		 //////////////////////////////////////////////////////////////////////////////////
-		 ////Calculation of Drag and Lift
-		 //////////////////////////////////////////////////////////////////////////////////
-		 ////if(t>para->getStartTurn())calcDragLift(para, level);
-		 //calcDragLift(para, level);
-		 //////////////////////////////////////////////////////////////////////////////////
+		 //Drag and Lift Part II
+		 DragLiftPreD27(  para->getParD(level)->d0SP.f[0], 
+						  para->getParD(level)->QGeom.k, 
+						  para->getParD(level)->QGeom.q27[0],
+						  para->getParD(level)->QGeom.kQ, 
+						  para->getParD(level)->DragPreX,
+						  para->getParD(level)->DragPreY,
+						  para->getParD(level)->DragPreZ,
+						  para->getParD(level)->neighborX_SP,
+						  para->getParD(level)->neighborY_SP,
+						  para->getParD(level)->neighborZ_SP,
+						  para->getParD(level)->size_Mat_SP, 
+						  para->getParD(level)->evenOrOdd,
+						  para->getParD(level)->numberofthreads);
+		 getLastCudaError("DragLift27 execution failed"); 
+		 ////////////////////////////////////////////////////////////////////////////////
+		 //Calculation of Drag and Lift
+		 ////////////////////////////////////////////////////////////////////////////////
+		 //if(t>para->getStartTurn())calcDragLift(para, level);
+		 calcDragLift(para, level);
+		 ////////////////////////////////////////////////////////////////////////////////
 
 		 ////////////////////////////////////////////////////////////////////////////////
 		  //QPressDevNEQ27( para->getParD(level)->numberofthreads, para->getParD(level)->QPress.RhoBC, 
@@ -1563,20 +1564,20 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 		 //getLastCudaError("QDev27 execution failed");
 		 if (para->getParD(level)->kInflowQ > 0)
 		 {
-		      //QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,             para->getParD(level)->ny,
-								//	 para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
-								//	 para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0], 
-								//	 para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
-								//	 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
-								//	 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-		      //getLastCudaError("QVelDevCompZeroPress27 execution failed");
-		      QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
-							para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
-							para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
-							para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
-							para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-							para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
-		      getLastCudaError("QVelDevComp27 execution failed");
+		      QVelDevCompZeroPress27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,             para->getParD(level)->ny,
+									 para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,     para->getParD(level)->Qinflow.Vz,
+									 para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,      para->getParD(level)->Qinflow.q27[0], 
+									 para->getParD(level)->kInflowQ,        para->getParD(level)->Qinflow.kArray, para->getParD(level)->omega,
+									 para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP,   para->getParD(level)->neighborZ_SP,
+									 para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+		      getLastCudaError("QVelDevCompZeroPress27 execution failed");
+		     // QVelDevComp27(para->getParD(level)->numberofthreads, para->getParD(level)->nx,           para->getParD(level)->ny,
+							//para->getParD(level)->Qinflow.Vx,      para->getParD(level)->Qinflow.Vy,   para->getParD(level)->Qinflow.Vz,
+							//para->getParD(level)->d0SP.f[0],       para->getParD(level)->Qinflow.k,    para->getParD(level)->Qinflow.q27[0], 
+							//para->getParD(level)->kInflowQ,        para->getParD(level)->kInflowQ,     para->getParD(level)->omega,
+							//para->getParD(level)->neighborX_SP,    para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+							//para->getParD(level)->size_Mat_SP,     para->getParD(level)->evenOrOdd);
+		     // getLastCudaError("QVelDevComp27 execution failed");
 		 }
 
 		 //if (para->getParD(level)->QGeom.kQ > 0)
