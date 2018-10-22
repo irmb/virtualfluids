@@ -293,7 +293,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = true;
+    bool useGridGenerator = false;
 
     if(useGridGenerator){
 
@@ -303,7 +303,7 @@ void multipleLevel(const std::string& configPath)
             MultiGPU
         };
 
-        int testcase = DLC;
+        int testcase = DrivAer;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == DrivAer )
@@ -373,8 +373,11 @@ void multipleLevel(const std::string& configPath)
             gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DrivAer_Grid_arrow");
 
             //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
-            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+            //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::BINARY);
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
+
+            return;
 
             gridGenerator = GridGenerator::make(gridBuilder, para);
         }
@@ -602,8 +605,8 @@ void multipleLevel(const std::string& configPath)
     }
     else
     {
-        //gridGenerator = GridReader::make(FileFormat::BINARY, para);
-        gridGenerator = GridReader::make(FileFormat::ASCII, para);
+        gridGenerator = GridReader::make(FileFormat::BINARY, para);
+        //gridGenerator = GridReader::make(FileFormat::ASCII, para);
     }
 
     logFile.close();

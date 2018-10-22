@@ -36,7 +36,7 @@ private:
     static void writeLBMvsSI(SPtr<GridBuilder> builder, uint level);
 
     static void writeLevel(uint numberOfLevels);
-    static void writeLevelSize(uint numberOfNodes);
+    static void writeLevelSize(uint numberOfNodes, FILEFORMAT format);
     static void writeCoordFiles(SPtr<GridBuilder> builder, uint level, FILEFORMAT format);
     static void writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, int index, uint level, FILEFORMAT format);
 

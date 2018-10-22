@@ -74,6 +74,7 @@ void CoordNeighborGeoV::init_Binary(bool isCoord)
 
 	for(unsigned int level = 0; level <= maxLevel; level++) 
 	{
+        //readLevelSize(level);
 		if(isCoord) 
 			readCoordinates(level);
 		else 
@@ -82,7 +83,7 @@ void CoordNeighborGeoV::init_Binary(bool isCoord)
 		if(level == maxLevel) break;
 
 		skipSpace();
-		readLevelSize(level);
+		readLevelSize(level+1);
 	}
 }
 

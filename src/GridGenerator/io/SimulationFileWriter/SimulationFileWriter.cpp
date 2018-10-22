@@ -57,7 +57,7 @@ void SimulationFileWriter::write(SPtr<GridBuilder> builder, FILEFORMAT format)
         writeNumberNodes(builder, level);
         writeLBMvsSI(builder, level);
 
-        writeLevelSize(builder->getNumberOfNodes(level));
+        writeLevelSize(builder->getNumberOfNodes(level), format);
         writeCoordFiles(builder, level, format);
 
         if (level < numberOfLevel - 1)
@@ -197,26 +197,48 @@ void SimulationFileWriter::writeLevel(uint numberOfLevels)
     //}
 }
 
-void SimulationFileWriter::writeLevelSize(uint numberOfNodes)
+void SimulationFileWriter::writeLevelSize(uint numberOfNodes, FILEFORMAT format)
 {
     const std::string zeroIndex = "0 ";
     const std::string zeroGeo = "16 ";
 
-    xCoordFile << numberOfNodes << "\n" << zeroIndex;
-    yCoordFile << numberOfNodes << "\n" << zeroIndex;
-    zCoordFile << numberOfNodes << "\n" << zeroIndex;
-    xNeighborFile << numberOfNodes << "\n" << zeroIndex;
-    yNeighborFile << numberOfNodes << "\n" << zeroIndex;
-    zNeighborFile << numberOfNodes << "\n" << zeroIndex;
-    wsbNeighborFile << numberOfNodes << "\n" << zeroIndex;
-    geoVecFile << numberOfNodes << "\n" << zeroGeo;
+    if (format == FILEFORMAT::BINARY)
+	{
+        //const uint zeroIndex = 0;
+        //const uint zeroGeo   = 16;
 
-    //const std::string geoRB = "noSlip\n";
+        //xCoordFile.write((char*)&zeroIndex, sizeof(double));
+        //yCoordFile.write((char*)&zeroIndex, sizeof(double));
+        //zCoordFile.write((char*)&zeroIndex, sizeof(double));
 
-    //for (int rb = 0; rb < QFILES; rb++) {
-    //    *qStreams[rb] << qFiles[rb].size() << "\n";
-    //    *valueStreams[rb] << geoRB << qFiles[rb].size() << "\n";
-    //}
+        //// + 1 for numbering shift between GridGenerator and VF_GPU
+        //xNeighborFile.write((char*)(&zeroIndex), sizeof(unsigned int));
+        //yNeighborFile.write((char*)(&zeroIndex), sizeof(unsigned int));
+        //zNeighborFile.write((char*)(&zeroIndex), sizeof(unsigned int));
+        //wsbNeighborFile.write((char*)(&zeroIndex), sizeof(unsigned int));
+
+        //geoVecFile.write((char*)&zeroGeo, sizeof(unsigned int));
+        
+        xCoordFile      << numberOfNodes << "\n" << zeroIndex;
+        yCoordFile      << numberOfNodes << "\n" << zeroIndex;
+        zCoordFile      << numberOfNodes << "\n" << zeroIndex;
+        xNeighborFile   << numberOfNodes << "\n" << zeroIndex;
+        yNeighborFile   << numberOfNodes << "\n" << zeroIndex;
+        zNeighborFile   << numberOfNodes << "\n" << zeroIndex;
+        wsbNeighborFile << numberOfNodes << "\n" << zeroIndex;
+        geoVecFile      << numberOfNodes << "\n" << zeroGeo  ;
+    }
+    else 
+	{
+        xCoordFile      << numberOfNodes << "\n" << zeroIndex << "\n";
+        yCoordFile      << numberOfNodes << "\n" << zeroIndex << "\n";
+        zCoordFile      << numberOfNodes << "\n" << zeroIndex << "\n";
+        xNeighborFile   << numberOfNodes << "\n" << zeroIndex << "\n";
+        yNeighborFile   << numberOfNodes << "\n" << zeroIndex << "\n";
+        zNeighborFile   << numberOfNodes << "\n" << zeroIndex << "\n";
+        wsbNeighborFile << numberOfNodes << "\n" << zeroIndex << "\n";
+        geoVecFile      << numberOfNodes << "\n" << zeroGeo   << "\n";
+    }
 }
 
 void SimulationFileWriter::writeLevelSizeGridInterface(uint sizeCF, uint sizeFC)
@@ -269,15 +291,24 @@ void SimulationFileWriter::writeCoordsNeighborsGeo(SPtr<GridBuilder> builder, in
 
     if (format == FILEFORMAT::BINARY)
 	{
-        xCoordFile.write((char*)&x, sizeof(double));
-        yCoordFile.write((char*)&y, sizeof(double));
-        zCoordFile.write((char*)&z, sizeof(double));
+        double tmpX = (double)x;
+        double tmpY = (double)y;
+        double tmpZ = (double)z;
+
+        xCoordFile.write((char*)&tmpX, sizeof(double));
+        yCoordFile.write((char*)&tmpY, sizeof(double));
+        zCoordFile.write((char*)&tmpZ, sizeof(double));
 
         // + 1 for numbering shift between GridGenerator and VF_GPU
-        xNeighborFile.write((char*)(&grid->getNeighborsX()[index] + 1), sizeof(unsigned int));
-        yNeighborFile.write((char*)(&grid->getNeighborsY()[index] + 1), sizeof(unsigned int));
-        zNeighborFile.write((char*)(&grid->getNeighborsZ()[index] + 1), sizeof(unsigned int));
-        wsbNeighborFile.write((char*)(&grid->getNeighborsNegative()[index] + 1), sizeof(unsigned int));
+        int tmpNeighborX        = grid->getNeighborsX()[index]        + 1;
+        int tmpNeighborY        = grid->getNeighborsY()[index]        + 1;
+        int tmpNeighborZ        = grid->getNeighborsZ()[index]        + 1;
+        int tmpNeighborNegative = grid->getNeighborsNegative()[index] + 1;
+
+        xNeighborFile.write  ((char*)(&tmpNeighborX       ), sizeof(unsigned int));
+        yNeighborFile.write  ((char*)(&tmpNeighborY       ), sizeof(unsigned int));
+        zNeighborFile.write  ((char*)(&tmpNeighborZ       ), sizeof(unsigned int));
+        wsbNeighborFile.write((char*)(&tmpNeighborNegative), sizeof(unsigned int));
 
         geoVecFile.write((char*)&type, sizeof(unsigned int));
     }
