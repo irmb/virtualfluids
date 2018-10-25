@@ -147,7 +147,7 @@ void GridReader::allocArrays_BoundaryValues()
 	this->setChannelBoundaryCondition();
 	int maxLevel = BC_Values[0]->getLevel();
 
-	initalValuesDomainDecompostion(maxLevel);
+	//initalValuesDomainDecompostion(maxLevel);
 
 	vector<vector<vector<real> > > pressureV;
 	pressureV.resize(maxLevel + 1);
@@ -723,6 +723,7 @@ void GridReader::allocArrays_BoundaryValues()
 			for (int i = 0; i <= maxLevel; i++) {
 				int tempSend = procNeighborsSendX[j]->getSize(i);
 				int tempRecv = procNeighborsRecvX[j]->getSize(i);
+				cout << "maxlevel domains : " << maxLevel << ", tempsend : " << tempSend << endl;
 				if (tempSend > 0)
 				{
 					////////////////////////////////////////////////////////////////////////////////////////
