@@ -33,12 +33,17 @@ void calcDragLift(Parameter* para, int lev)
 	//double delta_x_F = 0.0045;//[m] fine  12.54MI
 	//double delta_x_F = 0.00359375;//[m] fine  13.54MI
 	///////////////////////////////
-	double delta_x_F = 0.00703125;//[m] fine  16.22MI
-	//double delta_x_F = 0.00625;//[m] fine  16.22MI
-	//double delta_x_F = 0.0046875;//[m] fine  16.43MI
-	//double delta_x_F = 0.003125;//[m] fine  16.117MI
+	//double delta_x_F = 0.00703125;//[m] fine  16.22MI
+	////double delta_x_F = 0.00625;//[m] fine  16.22MI
+	////double delta_x_F = 0.0046875;//[m] fine  16.43MI
+	////double delta_x_F = 0.003125;//[m] fine  16.117MI
+	///////////////////////////////
+	//DLC
+	double delta_x_F = 0.00625;//[m]
+
 	//////////////////////////////////////////////////////////////////////////
-	double A  = 2.16693/(delta_x_F*delta_x_F);// Car 
+	//double A  = 2.16693/(delta_x_F*delta_x_F);// Car 
+	double A  = 2.19/(delta_x_F*delta_x_F);// DLC 
 	//////////////////////////////////////////////////////////////////////////
 
 	//double LBtoSI = 1.0;//Sphere 
