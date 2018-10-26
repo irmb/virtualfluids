@@ -1272,7 +1272,7 @@ void Simulation::run()
 							//para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 		     // getLastCudaError("QVelDevComp27 execution failed");
               //////////////////////////////////////////////////////////////////////////
-		      QVelDevCompThinWalls27(para->getParD(0)->numberofthreads, para->getParD(0)->nx,           para->getParD(0)->ny,
+		      QVelDevCompThinWalls27(para->getParD(0)->numberofthreads,
 							         para->getParD(0)->QGeom.Vx,        para->getParD(0)->QGeom.Vy,     para->getParD(0)->QGeom.Vz,
 							         para->getParD(0)->d0SP.f[0],       para->getParD(0)->QGeom.k,      para->getParD(0)->QGeom.q27[0], 
 							         para->getParD(0)->QGeom.kQ,        para->getParD(0)->QGeom.kQ,     para->getParD(0)->omega,        para->getParD(0)->geoSP,

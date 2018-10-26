@@ -1,3 +1,10 @@
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//
+//////////////////////////////////////////////////////////////////////////
 #ifndef D3Q27_KERNELS_H
 #define D3Q27_KERNELS_H
 
@@ -760,6 +767,7 @@ extern "C" __global__ void LB_BC_Vel_West_27( int nx,
                                               unsigned int grid_ny, 
                                               real om); 
 
+//no Slip BCs
 extern "C" __global__ void QDevice27(int inx,
                                      int iny,
                                      real* DD, 
@@ -788,9 +796,7 @@ extern "C" __global__ void QDeviceComp27(int inx,
 										 unsigned int size_Mat, 
 										 bool evenOrOdd);
 
-extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
-														 int iny,
-														 real* DD, 
+extern "C" __global__ void QDeviceCompThinWallsPartOne27(real* DD, 
 														 int* k_Q, 
 														 real* QQ,
 														 unsigned int sizeQ,
@@ -801,24 +807,6 @@ extern "C" __global__ void QDeviceCompThinWallsPartOne27(int inx,
 														 unsigned int* neighborZ,
 														 unsigned int size_Mat, 
 														 bool evenOrOdd);
-
-extern "C" __global__ void QDeviceCompThinWallsPartTwo27(int inx,
-														 int iny,
-														 real* DD, 
-														 int* k_Q, 
-														 real* QQ,
-														 unsigned int sizeQ,
-														 int kQ, 
-														 real om1, 
-														 unsigned int* geom,
-														 unsigned int* neighborX,
-														 unsigned int* neighborY,
-														 unsigned int* neighborZ,
-														 unsigned int* neighborWSB,
-														 unsigned int size_Mat, 
-														 bool evenOrOdd);
-
-
 
 extern "C" __global__ void QDevice3rdMomentsComp27(  int inx,
 													 int iny,
@@ -862,6 +850,7 @@ extern "C" __global__ void QDeviceCompHighNu27(  int inx,
 												 unsigned int size_Mat, 
 												 bool evenOrOdd);
 
+//Velocity BCs
 extern "C" __global__ void QVelDevPlainBB27(real* vx,
 											real* vy,
 											real* vz,
@@ -966,38 +955,35 @@ extern "C" __global__ void QVelDeviceComp27(int inx,
 											bool evenOrOdd);
 
 
-extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(int inx,
-											                int iny,
-											                real* vx,
-											                real* vy,
-											                real* vz,
-											                real* DD, 
-											                int* k_Q, 
-											                real* QQ,
-											                unsigned int sizeQ,
-											                int kQ, 
-											                real om1, 
-											                unsigned int* neighborX,
-											                unsigned int* neighborY,
-											                unsigned int* neighborZ,
-											                unsigned int size_Mat, 
-											                bool evenOrOdd);
+extern "C" __global__ void QVelDeviceCompThinWallsPartOne27(
+	real* vx,
+	real* vy,
+	real* vz,
+	real* DD,
+	int* k_Q,
+	real* QQ,
+	uint sizeQ,
+	int kQ,
+	real om1,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	uint size_Mat,
+	bool evenOrOdd);
 
-extern "C" __global__ void QVelDeviceCompThinWallsPartTwo27(int inx,
-														    int iny,
-														    real* DD, 
-														    int* k_Q, 
-														    real* QQ,
-														    unsigned int sizeQ,
-														    int kQ, 
-														    real om1, 
-														    unsigned int* geom,
-														    unsigned int* neighborX,
-														    unsigned int* neighborY,
-														    unsigned int* neighborZ,
-														    unsigned int* neighborWSB,
-														    unsigned int size_Mat, 
-														    bool evenOrOdd);
+extern "C" __global__ void QThinWallsPartTwo27(
+	real* DD,
+	int* k_Q,
+	real* QQ,
+	uint sizeQ,
+	int kQ,
+	uint* geom,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	uint* neighborWSB,
+	uint size_Mat,
+	bool evenOrOdd);
 
 extern "C" __global__ void QVelDeviceCompZeroPress27(   int inx,
 														int iny,
@@ -1063,6 +1049,7 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
                                            unsigned int size_Mat, 
                                            bool evenOrOdd);
 
+//Slip BCs
 extern "C" __global__ void QSlipDevice27(real* DD, 
                                          int* k_Q, 
                                          real* QQ,
@@ -1113,6 +1100,7 @@ extern "C" __global__ void QSlipNormDeviceComp27(real* DD,
 												 unsigned int size_Mat, 
 												 bool evenOrOdd);
 
+//Pressure BCs
 extern "C" __global__ void QPressDevice27(int inx,
                                            int iny,
                                            real* rhoBC,
@@ -1286,6 +1274,7 @@ extern "C" __global__ void QPressDevice27_IntBB(real* rho,
 												unsigned int size_Mat, 
 												bool evenOrOdd);
 
+//Schlaffer BCs
 extern "C" __global__ void PressSchlaff27(real* rhoBC,
                                           real* DD,
                                           real* vx0,
@@ -1316,6 +1305,7 @@ extern "C" __global__ void VelSchlaff27(  int t,
                                           unsigned int size_Mat, 
                                           bool evenOrOdd);
 
+//Advection / Diffusion BCs
 extern "C" __global__ void QAD7( int inx,
                                  int iny,
                                  real* DD, 
@@ -1545,6 +1535,7 @@ extern "C" __global__ void QADPressIncomp27(   int inx,
 											   unsigned int size_Mat, 
 											   bool evenOrOdd);
 
+//Propeller BC
 extern "C" __global__ void PropellerBC(unsigned int* neighborX,
                                        unsigned int* neighborY,
                                        unsigned int* neighborZ,

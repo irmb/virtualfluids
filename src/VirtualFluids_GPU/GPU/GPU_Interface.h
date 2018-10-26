@@ -1,3 +1,10 @@
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//
+//////////////////////////////////////////////////////////////////////////
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
@@ -861,37 +868,20 @@ extern "C" void QDevComp27(unsigned int numberOfThreads,
 						   unsigned int size_Mat, 
 						   bool evenOrOdd);
 
-extern "C" void QDevCompThinWallsPartOne27( unsigned int numberOfThreads,
-											int nx,
-											int ny,
-											real* DD, 
-											int* k_Q, 
-											real* QQ,
-											unsigned int sizeQ,
-											unsigned int kQ, 
-											real om1, 
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int size_Mat, 
-											bool evenOrOdd);
-
-extern "C" void QDevCompThinWallsPartTwo27( unsigned int numberOfThreads,
-											int nx,
-											int ny,
-											real* DD, 
-											int* k_Q, 
-											real* QQ,
-											unsigned int sizeQ,
-											unsigned int kQ, 
-											real om1, 
-											unsigned int* geom,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											unsigned int* neighborWSB,
-											unsigned int size_Mat, 
-											bool evenOrOdd);
+extern "C" void QDevCompThinWalls27(unsigned int numberOfThreads,
+									real* DD, 
+									int* k_Q, 
+									real* QQ,
+									unsigned int sizeQ,
+									unsigned int kQ, 
+									real om1, 
+									unsigned int* geom,
+									unsigned int* neighborX,
+									unsigned int* neighborY,
+									unsigned int* neighborZ,
+									unsigned int* neighborWSB,
+									unsigned int size_Mat, 
+									bool evenOrOdd);
 
 extern "C" void QDev3rdMomentsComp27(  unsigned int numberOfThreads,
 									   int nx,
@@ -1048,8 +1038,6 @@ extern "C" void QVelDevComp27(unsigned int numberOfThreads,
 							  bool evenOrOdd);
 
 extern "C" void QVelDevCompThinWalls27(unsigned int numberOfThreads,
-							           int nx,
-							           int ny,
 							           real* vx,
 							           real* vy,
 							           real* vz,
