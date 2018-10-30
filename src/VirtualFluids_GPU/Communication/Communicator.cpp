@@ -152,6 +152,10 @@ void Communicator::barrierGPU()
 	//printf("\n End Waitall \n");
 	//fflush(stdout);
 }
+void Communicator::barrier()
+{
+	MPI_Barrier(commGPU);
+}
 
 //////////////////////////////////////////////////////////////////////////
 void Communicator::exchngDataGeo( int* sbuf_t, int* rbuf_t, int* sbuf_b, int* rbuf_b, int count )

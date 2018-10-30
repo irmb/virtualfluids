@@ -45,6 +45,7 @@ public:
    void waitGPU(int id);
    void resetRequest();
    void barrierGPU();
+   void barrier();
    //////////////////////////////////////////////////////////////////////////
    void exchngDataGeo(int* sbuf_t, int* rbuf_t, int* sbuf_b, int* rbuf_b, int count);
 	MPI_Comm getCommunicator();
