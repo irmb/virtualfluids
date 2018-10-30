@@ -1383,20 +1383,14 @@ void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, i
     // negative direction get a negative sign
     real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );  
 
-    if( vf::Math::equal( coordinate, limit + s * 0.5 * this->delta, 0.01 * this->delta ) ){
-        this->communicationIndices[direction].receiveIndices.push_back(index);
-        //this->setFieldEntry(index, MULTI_GPU_RECIEVE);
-        //this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
-    }
-    if( vf::Math::equal( coordinate, limit - s * 0.5 * this->delta, 0.01 * this->delta ) ){
-        this->communicationIndices[direction].sendIndices.push_back(index);
-        //this->setFieldEntry(index, MULTI_GPU_SEND);
-    }    
 
-    //if( vf::Math::equal( coordinate, limit + s * 1.5 * this->delta, 0.01 * this->delta ) ){
-    //    //this->setFieldEntry(index, MULTI_GPU_RECIEVE);
-    //    this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
-    //}
+	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.01 * this->delta) {
+		this->communicationIndices[direction].receiveIndices.push_back(index);
+	}
+
+	if ( std::abs( coordinate - ( limit - s * 0.5 * this->delta ) ) < 0.01 * this->delta) {
+		this->communicationIndices[direction].sendIndices.push_back(index);
+	}
 }
 
 uint GridImp::getNumberOfSendNodes(int direction)
