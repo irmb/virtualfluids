@@ -32,6 +32,8 @@ public:
    void addGeoObject(SPtr<GbObject3D> geoObjectPrototype, Vector3D  initalVelocity);
    void clearGeoObjects();
    void createGeoObjects();
+   double getToleranz() const { return tolerance; }
+   void   setToleranz(double val) { tolerance = val; }
 protected:
 private:
    SPtr<Communicator> comm;
@@ -42,7 +44,7 @@ private:
    SPtr<BCAdapter> velocityBcParticleAdapter;
    SPtr<Reconstructor> extrapolationReconstructor;
    int demCounter;
-   double toleranz;
+   double tolerance;
 #ifdef TIMING
    UbTimer timer;
 #endif

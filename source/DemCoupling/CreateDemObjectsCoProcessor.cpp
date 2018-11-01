@@ -92,7 +92,7 @@ void CreateDemObjectsCoProcessor::createGeoObjects()
    for (int i = 0; i < size; i++)
    {
       SPtr<GbSphere3D> sphere = std::dynamic_pointer_cast<GbSphere3D>(geoObjectPrototypeVector[i]);
-      if (demCoProcessor->isSpheresIntersection(sphere->getX1Centroid(), sphere->getX2Centroid(), sphere->getX3Centroid(), sphere->getRadius()*2.0*(1.0-toleranz)))
+      if (demCoProcessor->isSpheresIntersection(sphere->getX1Centroid(), sphere->getX2Centroid(), sphere->getX3Centroid(), sphere->getRadius()*2.0*(1.0-tolerance)))
       {
          continue;
       }
