@@ -1,5 +1,5 @@
-#ifndef TEST_PARAMETER_H
-#define TEST_PARAMETER_H
+#ifndef SIMULATION_PARAMETER_H
+#define SIMULATION_PARAMETER_H
 
 #include <memory>
 #include <string>
@@ -9,7 +9,7 @@ class InitialCondition;
 class Calculator;
 class TestResults;
 
-class TestParameter
+class SimulationParameter
 {
 public:
 	virtual double getViscosity() = 0;

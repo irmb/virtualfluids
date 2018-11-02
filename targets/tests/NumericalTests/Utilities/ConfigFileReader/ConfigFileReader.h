@@ -8,7 +8,7 @@
 #include <string>
 
 class TestInformation;
-class TestParameter;
+class SimulationParameter;
 class TestResults;
 class TestCout;
 class TestInformationImp;
@@ -23,14 +23,14 @@ public:
 
 	void readConfigFile(const std::string aFilePath);
 	std::shared_ptr< TestInformation> getTestInformation();
-	std::vector< std::shared_ptr< TestParameter> > getTestParameter();
+	std::vector< std::shared_ptr< SimulationParameter> > getSimulationParameter();
 
 protected:
 	ConfigFileReader();
 	
 private:
 	void makeTestInformation();
-	void makeTestParameter();
+	void makeSimulationParameter();
 	void makeSimulationInfo();
 	void makeLogFileInformation();
 	void makeTestResults();
@@ -49,6 +49,7 @@ private:
 	bool writeFiles;
 	std::string filePath;
 	std::string logFilePath;
+	std::vector< std::string> kernelsToTest;
 	std::vector< std::string> grids;
 	std::vector< real> lx;
 	std::vector< real> lz;
@@ -60,8 +61,10 @@ private:
 
 	std::shared_ptr< TestCout> testOutput;
 	std::shared_ptr< TestInformationImp> testInfo;
+
 	std::vector< std::shared_ptr< PhiAndNuTest> > tests;
-	std::vector< std::shared_ptr< TestParameter> > testParameter;
+
+	std::vector< std::shared_ptr< SimulationParameter> > simParameter;
 	std::vector< std::shared_ptr< SimulationInfo> > simInfo;
 	std::vector< std::shared_ptr< LogFileInformation> > logInfo;
 	std::vector< std::shared_ptr< TestResults> > testResults;

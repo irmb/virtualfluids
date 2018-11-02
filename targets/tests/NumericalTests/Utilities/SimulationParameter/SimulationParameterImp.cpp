@@ -1,8 +1,8 @@
-#include "TestParameterImp.h"
+#include "SimulationParameterImp.h"
 
 #include "Utilities/TestResults/TestResults.h"
 
-TestParameterImp::TestParameterImp(
+SimulationParameterImp::SimulationParameterImp(
 	real viscosity, real lx, real lz, real l0,
 	unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, 
 	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
@@ -24,82 +24,82 @@ TestParameterImp::TestParameterImp(
 
 }
 
-double TestParameterImp::getViscosity()
+double SimulationParameterImp::getViscosity()
 {
 	return viscosity;
 }
 
-std::string TestParameterImp::getGridPath()
+std::string SimulationParameterImp::getGridPath()
 {
 	return gridPath;
 }
 
-std::string TestParameterImp::getFilePath()
+std::string SimulationParameterImp::getFilePath()
 {
 	return filePath;
 }
 
-unsigned int TestParameterImp::getNumberOfGridLevels()
+unsigned int SimulationParameterImp::getNumberOfGridLevels()
 {
 	return numberOfGridLevels;
 }
 
-unsigned int TestParameterImp::getEndTime()
+unsigned int SimulationParameterImp::getEndTime()
 {
 	return endTime;
 }
 
-unsigned int TestParameterImp::getTimeStepLength()
+unsigned int SimulationParameterImp::getTimeStepLength()
 {
 	return timeStepLength;
 }
 
-unsigned int TestParameterImp::getLx()
+unsigned int SimulationParameterImp::getLx()
 {
 	return lx;
 }
 
-unsigned int TestParameterImp::getLz()
+unsigned int SimulationParameterImp::getLz()
 {
 	return lz;
 }
 
-unsigned int TestParameterImp::getYSliceForCalculation()
+unsigned int SimulationParameterImp::getYSliceForCalculation()
 {
 	return ySliceForCalculation;
 }
 
-unsigned int TestParameterImp::getStartTimeCalculation()
+unsigned int SimulationParameterImp::getStartTimeCalculation()
 {
 	return startTimeCalculation;
 }
 
-bool TestParameterImp::getWriteFiles()
+bool SimulationParameterImp::getWriteFiles()
 {
 	return writeFiles;
 }
 
-unsigned int TestParameterImp::getStartTimeDataWriter()
+unsigned int SimulationParameterImp::getStartTimeDataWriter()
 {
 	return startTimeDataWriter;
 }
 
-std::vector<int> TestParameterImp::getDevices()
+std::vector<int> SimulationParameterImp::getDevices()
 {
 	return devices;
 }
 
-std::shared_ptr<InitialCondition> TestParameterImp::getInitialCondition()
+std::shared_ptr<InitialCondition> SimulationParameterImp::getInitialCondition()
 {
 	return initialCondition;
 }
 
-std::shared_ptr<Calculator> TestParameterImp::getCalculator()
+std::shared_ptr<Calculator> SimulationParameterImp::getCalculator()
 {
 	return calculator;
 }
 
-std::shared_ptr<TestResults> TestParameterImp::getTestResults()
+std::shared_ptr<TestResults> SimulationParameterImp::getTestResults()
 {
 	return testResults;
 }

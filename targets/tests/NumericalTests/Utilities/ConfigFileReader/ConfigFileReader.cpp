@@ -10,8 +10,8 @@
 #include "Utilities/TestCout/TestCoutImp.h"
 #include "Utilities/SimulationInfo/SimulationInfoImp.h"
 
-#include "Simulation/TaylorGreenVortex/TestParameter/TaylorGreenTestParameter.h"
-#include "Simulation/ShearWave/TestParameter/ShearWaveTestParameter.h"
+#include "Simulation/TaylorGreenVortex/SimulationParameter/TaylorGreenSimulationParameter.h"
+#include "Simulation/ShearWave/SimulationParameter/ShearWaveSimulationParameter.h"
 #include "Simulation/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
 #include "Simulation/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
 
@@ -47,6 +47,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 
 	devices = StringUtil::toVector(input->getValue("Devices"));
+	kernelsToTest = StringUtil::toStringVector(input->getValue("KernelsToTest"));
 
 	viscosity = StringUtil::toDouble(input->getValue("Viscosity"));
 	minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
@@ -92,7 +93,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	stream.close();
 
 	
-	makeTestParameter();
+	makeSimulationParameter();
 	makeTestInformation();
 }
 
@@ -101,15 +102,15 @@ std::shared_ptr<TestInformation> ConfigFileReader::getTestInformation()
 	return testInfo;
 }
 
-std::vector<std::shared_ptr<TestParameter>> ConfigFileReader::getTestParameter()
+std::vector<std::shared_ptr<SimulationParameter>> ConfigFileReader::getSimulationParameter()
 {
-	return testParameter;
+	return simParameter;
 }
 
 ConfigFileReader::ConfigFileReader()
 {
 	tests.resize(0);
-	testParameter.resize(0);
+	simParameter.resize(0);
 	simInfo.resize(0);
 	logInfo.resize(0);
 	testResults.resize(0);
@@ -131,7 +132,7 @@ ConfigFileReader::ConfigFileReader()
 	l0 = 32.0;
 	rho0 = 1.0;
 
-	maxLevel = 0;
+	maxLevel = 0; //wird nicht benötigt
 	numberOfGridLevels = 1;
 	
 }
@@ -153,7 +154,7 @@ void ConfigFileReader::makeTestInformation()
 	testInfo->setTestResults(testResults);
 }
 
-void ConfigFileReader::makeTestParameter()
+void ConfigFileReader::makeSimulationParameter()
 {
 	testOutput = TestCoutImp::getNewInstance();
 
@@ -162,7 +163,7 @@ void ConfigFileReader::makeTestParameter()
 		tests.push_back(tgvTestResults);
 		for (int i = 0; i < tgv.size(); i++) {
 			if (tgv.at(i)) {
-				testParameter.push_back(TaylorGreenTestParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
+				simParameter.push_back(TaylorGreenSimulationParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
 			}
 		}
 	}
@@ -173,7 +174,7 @@ void ConfigFileReader::makeTestParameter()
 
 		for (int i = 0; i < sw.size(); i++) {
 			if (sw.at(i)) {
-				testParameter.push_back(ShearWaveTestParameter::getNewInstance(u0SW, v0SW, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, swTestResults, devices));
+				simParameter.push_back(ShearWaveSimulationParameter::getNewInstance(u0SW, v0SW, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, swTestResults, devices));
 			}
 		}
 	}

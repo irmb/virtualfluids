@@ -1,13 +1,13 @@
-#ifndef TEST_PARAMETER_IMP_H
-#define TEST_PARAMETER_IMP_H
+#ifndef SIMULATION_PARAMETER_IMP_H
+#define SIMULATION_PARAMETER_IMP_H
 
-#include "TestParameter.h"
+#include "SimulationParameter.h"
 
 #include "LBM\LB.h"
 
 class SimulationResults;
 
-class TestParameterImp: public TestParameter
+class SimulationParameterImp : public SimulationParameter
 {
 public:
 	double getViscosity();
@@ -28,8 +28,8 @@ public:
 	std::shared_ptr< TestResults> getTestResults();
 
 protected:
-	TestParameterImp() {};
-	TestParameterImp(real viscosity, real lx, real lz, real l0,
+	SimulationParameterImp() {};
+	SimulationParameterImp(real viscosity, real lx, real lz, real l0,
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,

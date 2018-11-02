@@ -14,11 +14,11 @@ static void startNumericalTests(const std::string &configFile)
 	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
 	configReader->readConfigFile(configFile);
 
-	std::vector< std::shared_ptr< TestParameter> > testPara = configReader->getTestParameter();
+	std::vector< std::shared_ptr< SimulationParameter> > simPara = configReader->getSimulationParameter();
 	std::shared_ptr< TestInformation> testInfo = configReader->getTestInformation();
 
 	std::shared_ptr< TestConditionFactory> factory = TestConditionFactoryImp::getNewInstance();
-	std::vector< std::shared_ptr< TestCondition> > testConditions = factory->makeTestConditions(testPara);
+	std::vector< std::shared_ptr< TestCondition> > testConditions = factory->makeTestConditions(simPara);
 
 	for (int i = 0; i < testConditions.size(); i++)
 	{
@@ -33,6 +33,7 @@ static void startNumericalTests(const std::string &configFile)
 	}
 
 	testInfo->makeFinalTestOutput();
+
 	testInfo->writeLogFile();
 }
 
@@ -42,6 +43,8 @@ int main(int argc, char **argv)
 
 	if (argc > 1)
 		startNumericalTests(argv[1]);
+	else
+		std::cout << "Configuration file must be set!: lbmgm <config file>" << std::endl << std::flush;
 
     MPI_Finalize();
 

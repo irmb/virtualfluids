@@ -1,6 +1,6 @@
 #include "TestConditionFactoryImp.h"
 
-#include "Utilities\TestParameter\TestParameter.h"
+#include "Utilities\SimulationParameter\SimulationParameter.h"
 #include "Utilities\TestCondition\TestConditionImp.h"
 
 std::shared_ptr<TestConditionFactory> TestConditionFactoryImp::getNewInstance()
@@ -13,20 +13,20 @@ TestConditionFactoryImp::TestConditionFactoryImp()
 
 }
 
-std::vector<std::shared_ptr<TestCondition>> TestConditionFactoryImp::makeTestConditions(std::vector< std::shared_ptr< TestParameter> > testPara)
+std::vector<std::shared_ptr<TestCondition>> TestConditionFactoryImp::makeTestConditions(std::vector< std::shared_ptr< SimulationParameter> > simPara)
 {
 	std::vector< std::shared_ptr<TestCondition> > testConditions;
 
-	for (int i = 0; i < testPara.size(); i++) {
+	for (int i = 0; i < simPara.size(); i++) {
 		std::shared_ptr< TestConditionImp> testCondit = TestConditionImp::getNewInstance();
 
-		testCondit->initParameter(testPara.at(i)->getViscosity(), testPara.at(i)->getGridPath(), testPara.at(i)->getFilePath(), testPara.at(i)->getNumberOfGridLevels(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength(), testPara.at(i)->getDevices(), testPara.at(i)->getMaxVelocity());
-		testCondit->initInitialConditions(testPara.at(i)->getInitialCondition());
+		testCondit->initParameter(simPara.at(i)->getViscosity(), simPara.at(i)->getGridPath(), simPara.at(i)->getFilePath(), simPara.at(i)->getNumberOfGridLevels(), simPara.at(i)->getEndTime(), simPara.at(i)->getTimeStepLength(), simPara.at(i)->getDevices(), simPara.at(i)->getMaxVelocity());
+		testCondit->initInitialConditions(simPara.at(i)->getInitialCondition());
 		testCondit->initGridProvider();
-		testCondit->initCalculator(testPara.at(i)->getCalculator());
-		testCondit->initSimulationResults(testPara.at(i)->getLx(), testPara.at(i)->getLz(), testPara.at(i)->getTimeStepLength());
-		testCondit->setTestResults(testPara.at(i)->getTestResults());
-		testCondit->initDataWriter(testPara.at(i)->getYSliceForCalculation(), testPara.at(i)->getStartTimeCalculation(), testPara.at(i)->getEndTime(), testPara.at(i)->getTimeStepLength(), testPara.at(i)->getWriteFiles(), testPara.at(i)->getStartTimeDataWriter());
+		testCondit->initCalculator(simPara.at(i)->getCalculator());
+		testCondit->initSimulationResults(simPara.at(i)->getLx(), simPara.at(i)->getLz(), simPara.at(i)->getTimeStepLength());
+		testCondit->setTestResults(simPara.at(i)->getTestResults());
+		testCondit->initDataWriter(simPara.at(i)->getYSliceForCalculation(), simPara.at(i)->getStartTimeCalculation(), simPara.at(i)->getEndTime(), simPara.at(i)->getTimeStepLength(), simPara.at(i)->getWriteFiles(), simPara.at(i)->getStartTimeDataWriter());
 		testConditions.push_back(testCondit);
 	}
 

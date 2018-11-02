@@ -5,11 +5,11 @@
 #include <vector>
 
 class TestCondition;
-class TestParameter;
+class SimulationParameter;
 
 class TestConditionFactory
 {
 public:
-	virtual std::vector< std::shared_ptr< TestCondition> > makeTestConditions(std::vector< std::shared_ptr< TestParameter> > testPara) = 0;
+	virtual std::vector< std::shared_ptr< TestCondition> > makeTestConditions(std::vector< std::shared_ptr< SimulationParameter> > testPara) = 0;
 };
 #endif
