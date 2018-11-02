@@ -2716,6 +2716,10 @@ void Parameter::setDiffOn(bool isDiff)
 {
 	diffOn = isDiff;
 }
+void Parameter::setCompOn(bool isComp)
+{
+	compOn = isComp;
+}
 void Parameter::setDiffMod(int DiffMod)
 {
 	diffMod = DiffMod;
@@ -3534,6 +3538,22 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
 	ic.outflowNormalZ = outflowNormalZ;
 }
+void Parameter::setMainKernel(std::string kernelName)
+{
+	this->mainKernelName = kernelName;
+}
+void Parameter::setMultiKernelOn(bool isOn)
+{
+	this->multiKernelOn = isOn;
+}
+void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
+{
+	this->multiKernelLevel = multiKernelLevel;
+}
+void Parameter::setMultiKernelName(std::vector< std::string> kernelName)
+{
+	this->multiKernelName = kernelName;
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3640,6 +3660,10 @@ bool Parameter::getEvenOrOdd(int level)
 bool Parameter::getDiffOn()
 {
 	return diffOn;
+}
+bool Parameter::getCompOn()
+{
+	return compOn;
 }
 int Parameter::getDiffMod()
 {
@@ -4399,6 +4423,23 @@ std::string Parameter::getOutflowBoundaryNormalZ()
 curandState* Parameter::getRandomState()
 {
 	return this->devState;
+}
+
+std::string Parameter::getMainKernelName()
+{
+	return mainKernelName;
+}
+bool Parameter::getMultiKernelOn()
+{
+	return multiKernelOn;
+}
+std::vector< int> Parameter::getMultiKernelLevel()
+{
+	return multiKernelLevel;
+}
+std::vector< std::string> Parameter::getMultiKernelName()
+{
+	return multiKernelName;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

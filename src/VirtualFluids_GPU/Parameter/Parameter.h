@@ -557,6 +557,7 @@ public:
 	void setStartTurn(unsigned int inStartTurn);
 	void setSizeMatSparse(int level);
 	void setDiffOn(bool isDiff);
+	void setCompOn(bool isComp);
 	void setDiffMod(int DiffMod);
 	void setDiffusivity(real Diffusivity);
 	void setD3Qxx(int d3qxx);
@@ -731,6 +732,11 @@ public:
 	void setOutflowBoundaryNormalX(std::string outflowNormalX);
 	void setOutflowBoundaryNormalY(std::string outflowNormalY);
 	void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
+	//Kernel
+	void setMainKernel(std::string kernelName);
+	void setMultiKernelOn(bool isOn);
+	void setMultiKernelLevel(std::vector< int> kernelLevel);
+	void setMultiKernelName(std::vector< std::string> kernelName);
 
 	//getter
 	double* getForcesDouble();
@@ -746,6 +752,7 @@ public:
 	unsigned int getStartTurn();
 	bool getEvenOrOdd(int level);
 	bool getDiffOn();
+	bool getCompOn();
 	bool getPrintFiles();
 	bool getReadGeo();
 	bool getCalcMedian();
@@ -924,7 +931,11 @@ public:
 	std::string getOutflowBoundaryNormalZ();
 	//CUDA random number
 	curandState* getRandomState();
-
+	//Kernel
+	std::string getMainKernelName();
+	bool getMultiKernelOn();
+	std::vector< int> getMultiKernelLevel();
+	std::vector< std::string> getMultiKernelName();
 
     public:
         //Forcing///////////////
@@ -934,6 +945,7 @@ public:
 protected:
 private:
 	static Parameter* instanz;
+	bool compOn;
 	bool diffOn;
 	int diffMod;
 	int coarse, fine, maxlevel;
@@ -943,6 +955,12 @@ private:
 	double memsizeGPU;
 	unsigned int limitOfNodesForVTK;
 	unsigned int outputCount;
+
+	//Kernel
+	std::string mainKernelName;
+	bool multiKernelOn;
+	std::vector< int> multiKernelLevel;
+	std::vector< std::string> multiKernelName;
 
 	//////////////////////////////////////////////////////////////////////////
 	//particles
