@@ -10,6 +10,6 @@ class SimulationParameter;
 class TestConditionFactory
 {
 public:
-	virtual std::vector< std::shared_ptr< TestCondition> > makeTestConditions(std::vector< std::shared_ptr< SimulationParameter> > testPara) = 0;
+	virtual std::vector< std::shared_ptr< TestCondition> > makeTestConditions(std::vector< std::shared_ptr< SimulationParameter> > simPara) = 0;
 };
 #endif

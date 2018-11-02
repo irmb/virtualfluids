@@ -9,7 +9,7 @@
 class InitialCondition;
 class FileWriter;
 class ToVectorWriter;
-class TestParameter;
+class SimulationParameter;
 class Calculator;
 class TestResults;
 class SimulationResults;
@@ -36,7 +36,7 @@ protected:
 	TestConditionImp() {};
 		
 private:
-	std::shared_ptr< TestParameter> testPara;
+	std::shared_ptr< SimulationParameter> simPara;
 	std::shared_ptr< Parameter> para;
 	std::shared_ptr< InitialCondition> initialCondition;
 	std::shared_ptr< GridProvider> grid;
