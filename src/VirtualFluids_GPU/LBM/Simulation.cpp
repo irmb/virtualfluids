@@ -54,6 +54,8 @@
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
+#include "Kernel\KernelFactory.h"
+#include "Kernel\Kernel.h"
 
 Simulation::Simulation()
 {
@@ -67,7 +69,7 @@ Simulation::~Simulation()
 
 void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter)
 {
-    this->dataWriter = dataWriter;
+   this->dataWriter = dataWriter;
    this->gridProvider = gridProvider;
    gridProvider->initalGridInformations();
    comm = Communicator::getInstanz();
@@ -330,6 +332,17 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    output << "used Device Memory: " << para->getMemsizeGPU() / 1000000.0 << " MB\n";
    //////////////////////////////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////////////////////////
+   //Kernel init
+   //////////////////////////////////////////////////////////////////////////
+   std::shared_ptr< KernelFactory> kernelFactory = KernelFactory::getNewInstance(para);
+   kernels = kernelFactory->makeKernels(para->getMaxLevel(), "CumulantOneCompSP27");
+   
+   if(para->getMaxLevel() > 0)
+	   if (para->getMultiKernelOn())
+		   for (int i = 0; i < para->getMultiKernelLevel().size(); i++)
+			   kernelFactory->setKernelAtLevel(kernels, para->getMultiKernelLevel().at(i), para->getMultiKernelName().at(i));
 }
 
 void Simulation::bulk()
@@ -470,19 +483,19 @@ void Simulation::run()
 		 //getLastCudaError("KernelCumulantD3Q27All4 execution failed");
 		 ////////////////////////////////////////////////////////////////////////// 
 		 //F3
-		 //KernelCumulantD3Q27F3( para->getParD(0)->numberofthreads,
-			//					 para->getParD(0)->omega, 
-			//					 para->getParD(0)->geoSP, 
-			//					 para->getParD(0)->neighborX_SP, 
-			//					 para->getParD(0)->neighborY_SP, 
-			//					 para->getParD(0)->neighborZ_SP,
-			//					 para->getParD(0)->d0SP.f[0],    
-			//					 para->getParD(0)->g6.g[0],    
-			//					 para->getParD(0)->size_Mat_SP,
-			//					 0,
-			//					 para->getForcesDev(),
-			//					 para->getParD(0)->evenOrOdd); 
-		 //getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+		 KernelCumulantD3Q27F3( para->getParD(0)->numberofthreads,
+									 para->getParD(0)->omega, 
+									 para->getParD(0)->geoSP, 
+									 para->getParD(0)->neighborX_SP, 
+									 para->getParD(0)->neighborY_SP, 
+									 para->getParD(0)->neighborZ_SP,
+									 para->getParD(0)->d0SP.f[0],    
+									 para->getParD(0)->g6.g[0],    
+									 para->getParD(0)->size_Mat_SP,
+									 0,
+									 para->getForcesDev(),
+									 para->getParD(0)->evenOrOdd); 
+		 getLastCudaError("KernelKumAA2016CompSP27 execution failed");
 		 //////////////////////////////////////////////////////////////////////////
 		 //comp
 		 //KernelKumAA2016CompBulkSP27(para->getParD(0)->numberofthreads,       
@@ -612,36 +625,36 @@ void Simulation::run()
 			//							para->getParD(0)->evenOrOdd); 
 			//getLastCudaError("KernelWaleCumAA2016CompSP27 execution failed");
 
-			KernelWaleCumAA2016DebugCompSP27(
-				para->getParD(0)->numberofthreads,
-				para->getParD(0)->omega,			
-				para->getParD(0)->geoSP, 
-				para->getParD(0)->neighborX_SP, 
-				para->getParD(0)->neighborY_SP, 
-				para->getParD(0)->neighborZ_SP,
-				para->getParD(0)->neighborWSB_SP,
-				para->getParD(0)->vx_SP,        
-				para->getParD(0)->vy_SP,        
-				para->getParD(0)->vz_SP,        
-				para->getParD(0)->d0SP.f[0],
-				para->getParD(0)->turbViscosity,
-				para->getParD(0)->gSij,
-				para->getParD(0)->gSDij,
-				para->getParD(0)->gDxvx,
-				para->getParD(0)->gDyvx,
-				para->getParD(0)->gDzvx,
-				para->getParD(0)->gDxvy,
-				para->getParD(0)->gDyvy,
-				para->getParD(0)->gDzvy,
-				para->getParD(0)->gDxvz,
-				para->getParD(0)->gDyvz,
-				para->getParD(0)->gDzvz,
-				para->getParD(0)->size_Mat_SP,
-				para->getParD(0)->size_Array_SP,
-				0,
-				para->getForcesDev(),
-				para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelWaleCumAA2016DebugCompSP27 execution failed");
+			//KernelWaleCumAA2016DebugCompSP27(
+			//	para->getParD(0)->numberofthreads,
+			//	para->getParD(0)->omega,			
+			//	para->getParD(0)->geoSP, 
+			//	para->getParD(0)->neighborX_SP, 
+			//	para->getParD(0)->neighborY_SP, 
+			//	para->getParD(0)->neighborZ_SP,
+			//	para->getParD(0)->neighborWSB_SP,
+			//	para->getParD(0)->vx_SP,        
+			//	para->getParD(0)->vy_SP,        
+			//	para->getParD(0)->vz_SP,        
+			//	para->getParD(0)->d0SP.f[0],
+			//	para->getParD(0)->turbViscosity,
+			//	para->getParD(0)->gSij,
+			//	para->getParD(0)->gSDij,
+			//	para->getParD(0)->gDxvx,
+			//	para->getParD(0)->gDyvx,
+			//	para->getParD(0)->gDzvx,
+			//	para->getParD(0)->gDxvy,
+			//	para->getParD(0)->gDyvy,
+			//	para->getParD(0)->gDzvy,
+			//	para->getParD(0)->gDxvz,
+			//	para->getParD(0)->gDyvz,
+			//	para->getParD(0)->gDzvz,
+			//	para->getParD(0)->size_Mat_SP,
+			//	para->getParD(0)->size_Array_SP,
+			//	0,
+			//	para->getForcesDev(),
+			//	para->getParD(0)->evenOrOdd); 
+			//getLastCudaError("KernelWaleCumAA2016DebugCompSP27 execution failed");
 
 			//Wale by Soni Malav
 			//KernelWaleBySoniMalavCumOneCompSP27( para->getParD(0)->numberofthreads,
@@ -666,19 +679,7 @@ void Simulation::run()
 		} 
 		else
 		{
-			KernelKumNewCompSP27(para->getParD(0)->numberofthreads,       
-								 para->getParD(0)->omega,			
-								 para->getParD(0)->geoSP, 
-								 para->getParD(0)->neighborX_SP, 
-								 para->getParD(0)->neighborY_SP, 
-								 para->getParD(0)->neighborZ_SP,
-								 para->getParD(0)->d0SP.f[0],    
-								 para->getParD(0)->size_Mat_SP,
-								 para->getParD(0)->size_Array_SP,
-								 0,
-								 para->getForcesDev(),
-								 para->getParD(0)->evenOrOdd); 
-			getLastCudaError("KernelCasSPKum27 execution failed");
+			//kernels.at(0)->run();
 
 			//KernelKumAA2016CompSP27(para->getParD(0)->numberofthreads,       
 			//					 para->getParD(0)->omega, 
@@ -2538,6 +2539,8 @@ void Simulation::run()
          checkCudaErrors( cudaEventRecord(start_t));
       }
 	}
+
+
 	//////////////////////////////////////////////////////////////////////////
 	//Timer SDK
 	sdkStopTimer(&sdkTimer);

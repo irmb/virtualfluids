@@ -79,7 +79,8 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setPressInZ(StringUtil::toInt(input->getValue("PressInZ")));
     para->setPressOutZ(StringUtil::toInt(input->getValue("PressOutZ")));
     //////////////////////////////////////////////////////////////////////////
-    para->setDiffOn(StringUtil::toBool(input->getValue("DiffOn")));
+	para->setCompOn(StringUtil::toBool(input->getValue("CompOn")));
+	para->setDiffOn(StringUtil::toBool(input->getValue("DiffOn")));
     para->setDiffMod(StringUtil::toInt(input->getValue("DiffMod")));
     para->setDiffusivity(StringUtil::toFloat(input->getValue("Diffusivity")));
     para->setTemperatureInit(StringUtil::toFloat(input->getValue("Temp")));
@@ -236,6 +237,14 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));      */            
 
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Kernel
+	para->setMainKernel(input->getValue("MainKernelName"));
+	para->setMultiKernelOn(StringUtil::toBool(input->getValue("multiKernelOn")));
+	para->setMultiKernelLevel(StringUtil::toVector(input->getValue("multiKernelLevel")));
+	para->setMultiKernelName(StringUtil::toStringVector(input->getValue("multiKernelName")));
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 
