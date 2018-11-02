@@ -1,5 +1,8 @@
 // includes, cuda
+#include <cuda_runtime.h>
+#include <helper_functions.h>
 #include <helper_cuda.h>
+
 #include "LBM/LB.h"
 
 // includes, kernels
@@ -20,7 +23,7 @@ extern "C" void KernelCas27( unsigned int grid_nx,
    dim3 threads       ( grid_nx, 1, 1 );
    dim3 grid          ( grid_ny, grid_nz );   // Gitter fuer Kollision und Propagation
 
-      LB_Kernel_Casc27<<< grid, threads >>>( s9,
+      LB_Kernel_Casc27<< < grid, threads >>>( s9,
                                              bcMatD,
                                              neighborX,
                                              neighborY,
@@ -503,45 +506,49 @@ extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelKumAA2016CompSP27(unsigned int numberOfThreads, 
-										real s9,
-										unsigned int* bcMatD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* DD,
-										int size_Mat,
-										int level,
-										real* forces,
-										bool EvenOrOdd)
-{
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	} 
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
 
-		LB_Kernel_Kum_AA2016_Comp_SP_27<<< grid, threads >>>(s9,
-															 bcMatD,
-															 neighborX,
-															 neighborY,
-															 neighborZ,
-															 DD,
-															 size_Mat,
-															 level,
-															 forces,
-															 EvenOrOdd); 
-		getLastCudaError("LB_Kernel_Kum_AA2016_Comp_SP_27 execution failed"); 
-}
+
+//extern "C" void KernelKumAA2016CompSP27(unsigned int numberOfThreads, 
+//										real s9,
+//										unsigned int* bcMatD,
+//										unsigned int* neighborX,
+//										unsigned int* neighborY,
+//										unsigned int* neighborZ,
+//										real* DD,
+//										int size_Mat,
+//										int level,
+//										real* forces,
+//										bool EvenOrOdd)
+//{
+//	int Grid = (size_Mat / numberOfThreads)+1;
+//	int Grid1, Grid2;
+//	if (Grid>512)
+//	{
+//		Grid1 = 512;
+//		Grid2 = (Grid/Grid1)+1;
+//	} 
+//	else
+//	{
+//		Grid1 = 1;
+//		Grid2 = Grid;
+//	}
+//	dim3 grid(Grid1, Grid2);
+//	dim3 threads(numberOfThreads, 1, 1 );
+//
+//		LB_Kernel_Kum_AA2016_Comp_SP_27<<< grid, threads >>>(s9,
+//															 bcMatD,
+//															 neighborX,
+//															 neighborY,
+//															 neighborZ,
+//															 DD,
+//															 size_Mat,
+//															 level,
+//															 forces,
+//															 EvenOrOdd); 
+//		getLastCudaError("LB_Kernel_Kum_AA2016_Comp_SP_27 execution failed"); 
+//}
+
+
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelKumNewCompSpongeSP27(unsigned int numberOfThreads, 
 									       real s9,
@@ -811,17 +818,17 @@ extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
 	dim3 grid(Grid1, Grid2, 1);
 	dim3 threads(numberOfThreads, 1, 1);
 
-		LB_Kernel_Kum_New_Comp_SP_27<<< grid, threads >>>(	s9,
-															bcMatD,
-															neighborX,
-															neighborY,
-															neighborZ,
-															DD,
-															size_Mat,
-															level,
-															forces,
-															EvenOrOdd); 
-		getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed"); 
+		//LB_Kernel_Kum_New_Comp_SP_27<<< grid, threads >>>(	s9,
+		//													bcMatD,
+		//													neighborX,
+		//													neighborY,
+		//													neighborZ,
+		//													DD,
+		//													size_Mat,
+		//													level,
+		//													forces,
+		//													EvenOrOdd); 
+		//getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads, 

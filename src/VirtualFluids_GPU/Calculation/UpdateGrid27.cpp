@@ -113,19 +113,21 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 		 //					   para->getParD(level)->evenOrOdd); 
 		 //getLastCudaError("KernelBGKPlusSP27 execution failed");
 		 //printf("Level: %d \n", level);
-		 KernelKumNewCompSP27(para->getParD(level)->numberofthreads,       
-							  para->getParD(level)->omega, 
-							  para->getParD(level)->geoSP, 
-							  para->getParD(level)->neighborX_SP, 
-							  para->getParD(level)->neighborY_SP, 
-							  para->getParD(level)->neighborZ_SP,
-							  para->getParD(level)->d0SP.f[0],    
-							  para->getParD(level)->size_Mat_SP,  
-							  para->getParD(level)->size_Array_SP,
-							  level,
-							  para->getForcesDev(),
-							  para->getParD(level)->evenOrOdd); 
-		 getLastCudaError("KernelCasSPKum27 execution failed");
+
+
+		//KernelKumNewCompSP27(para->getParD(level)->numberofthreads,       
+		//					  para->getParD(level)->omega, 
+		//					  para->getParD(level)->geoSP, 
+		//					  para->getParD(level)->neighborX_SP, 
+		//					  para->getParD(level)->neighborY_SP, 
+		//					  para->getParD(level)->neighborZ_SP,
+		//					  para->getParD(level)->d0SP.f[0],    
+		//					  para->getParD(level)->size_Mat_SP,  
+		//					  para->getParD(level)->size_Array_SP,
+		//					  level,
+		//					  para->getForcesDev(),
+		//					  para->getParD(level)->evenOrOdd); 
+		//getLastCudaError("KernelCasSPKum27 execution failed");
  			//F3
 			//KernelCumulantD3Q27F3(para->getParD(level)->numberofthreads,
 			//					  para->getParD(level)->omega, 
@@ -1049,19 +1051,19 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			 //					   para->getParD(level)->evenOrOdd); 
 			 //getLastCudaError("KernelBGKPlusSP27 execution failed");
 			 //printf("Level: %d \n", level);
-			 KernelKumNewCompSP27(para->getParD(level)->numberofthreads,       
-								  para->getParD(level)->omega, 
-								  para->getParD(level)->geoSP, 
-								  para->getParD(level)->neighborX_SP, 
-								  para->getParD(level)->neighborY_SP, 
-								  para->getParD(level)->neighborZ_SP,
-								  para->getParD(level)->d0SP.f[0],    
-								  para->getParD(level)->size_Mat_SP,
-								  para->getParD(level)->size_Array_SP,
-								  level,
-								  para->getForcesDev(),
-								  para->getParD(level)->evenOrOdd); 
-			 getLastCudaError("KernelCasSPKum27 execution failed");
+			//KernelKumNewCompSP27(para->getParD(level)->numberofthreads,       
+			//					  para->getParD(level)->omega, 
+			//					  para->getParD(level)->geoSP, 
+			//					  para->getParD(level)->neighborX_SP, 
+			//					  para->getParD(level)->neighborY_SP, 
+			//					  para->getParD(level)->neighborZ_SP,
+			//					  para->getParD(level)->d0SP.f[0],    
+			//					  para->getParD(level)->size_Mat_SP,
+			//					  para->getParD(level)->size_Array_SP,
+			//					  level,
+			//					  para->getForcesDev(),
+			//					  para->getParD(level)->evenOrOdd); 
+			//getLastCudaError("KernelCasSPKum27 execution failed");
 			//KernelCumulantD3Q27F3(para->getParD(level)->numberofthreads,
 			//					  para->getParD(level)->omega, 
 			//					  para->getParD(level)->geoSP, 

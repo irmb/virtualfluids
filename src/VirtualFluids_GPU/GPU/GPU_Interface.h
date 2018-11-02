@@ -2,6 +2,9 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include <DataTypes.h>
+#include "LBM\LB.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -156,17 +159,17 @@ extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads,
 											real* forces,
 											bool EvenOrOdd);
 
-extern "C" void KernelKumAA2016CompSP27(unsigned int numberOfThreads, 
-										real s9,
-										unsigned int* bcMatD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* DD,
-										int size_Mat,
-										int level,
-										real* forces,
-										bool EvenOrOdd);
+//extern "C" void KernelKumAA2016CompSP27(unsigned int numberOfThreads, 
+//										real s9,
+//										unsigned int* bcMatD,
+//										unsigned int* neighborX,
+//										unsigned int* neighborY,
+//										unsigned int* neighborZ,
+//										real* DD,
+//										int size_Mat,
+//										int level,
+//										real* forces,
+//										bool EvenOrOdd);
 
 extern "C" void KernelKumNewCompSpongeSP27(unsigned int numberOfThreads, 
 										   real s9,
@@ -238,18 +241,18 @@ extern "C" void KernelKumNewCompBulkSP27(   unsigned int numberOfThreads,
 											real* forces,
 											bool EvenOrOdd);
 
-extern "C" void KernelKumNewCompSP27(   unsigned int numberOfThreads, 
-										real s9,
-										unsigned int* bcMatD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* DD,
-										int size_Mat,
-										int size_Array,
-										int level,
-										real* forces,
-										bool EvenOrOdd);
+//extern "C" void KernelKumNewCompSP27(   unsigned int numberOfThreads, 
+//										real s9,
+//										unsigned int* bcMatD,
+//										unsigned int* neighborX,
+//										unsigned int* neighborY,
+//										unsigned int* neighborZ,
+//										real* DD,
+//										int size_Mat,
+//										int size_Array,
+//										int level,
+//										real* forces,
+//										bool EvenOrOdd);
 
 extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads, 
 									 real s9,
