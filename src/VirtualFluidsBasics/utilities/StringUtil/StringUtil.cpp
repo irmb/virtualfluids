@@ -99,6 +99,17 @@ std::vector<int> StringUtil::toVector(const std::string& input)
     return v;
 }
 
+std::vector<std::string> StringUtil::toStringVector(const std::string & input)
+{
+	std::vector<std::string> v;
+	std::vector<std::string> inputEntries;
+	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+	BOOST_FOREACH(std::string entry, inputEntries)
+		if (entry != "")
+			v.push_back(toString(entry));
+	return v;
+}
+
 template<typename T>
 std::string StringUtil::toString(const T& t)
 {

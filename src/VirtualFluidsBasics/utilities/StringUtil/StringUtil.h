@@ -26,6 +26,7 @@ public:
     static VF_PUBLIC double toDouble(const std::string &input);
     static VF_PUBLIC bool toBool(const std::string &input);
     static VF_PUBLIC std::vector<int> toVector(const std::string& s);
+	static VF_PUBLIC std::vector<std::string> toStringVector(const std::string& s);
     template<typename T>
     static VF_PUBLIC std::string toString(const T& t);
 
