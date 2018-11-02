@@ -1,7 +1,7 @@
-#ifndef TEST_CONDITION_IMP_H
-#define TEST_CONDITION_IMP_H
+#ifndef VIRTUAL_FLUID_SIMULATION_IMP_H
+#define VIRTUAL_FLUID_SIMULATION_IMP_H
 
-#include "TestCondition.h"
+#include "VirtualFluidSimulation.h"
 
 #include <string>
 #include <memory>
@@ -14,10 +14,10 @@ class Calculator;
 class TestResults;
 class SimulationResults;
 
-class TestConditionImp: public TestCondition
+class VirtualFluidSimulationImp : public VirtualFluidSimulation
 {
 public:
-	static std::shared_ptr< TestConditionImp> getNewInstance();
+	static std::shared_ptr< VirtualFluidSimulationImp> getNewInstance();
 	void initParameter(real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity);
 	void initInitialConditions(std::shared_ptr< InitialCondition> initialCondition);
 	void initGridProvider();
@@ -33,7 +33,7 @@ public:
 	std::shared_ptr< Calculator> getCalculator();
 
 protected:
-	TestConditionImp() {};
+	VirtualFluidSimulationImp() {};
 		
 private:
 	std::shared_ptr< SimulationParameter> simPara;

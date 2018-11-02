@@ -1,4 +1,4 @@
-#include "TestConditionImp.h"
+#include "VirtualFluidSimulationImp.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 #include "VirtualFluids_GPU\Output\FileWriter.h"
@@ -11,32 +11,32 @@
 
 #include <sstream>
 
-std::shared_ptr<Parameter> TestConditionImp::getParameter()
+std::shared_ptr<Parameter> VirtualFluidSimulationImp::getParameter()
 {
 	return para;
 }
 
-std::shared_ptr<GridProvider> TestConditionImp::getGrid()
+std::shared_ptr<GridProvider> VirtualFluidSimulationImp::getGrid()
 {
 	return grid;
 }
 
-std::shared_ptr<DataWriter> TestConditionImp::getDataWriter()
+std::shared_ptr<DataWriter> VirtualFluidSimulationImp::getDataWriter()
 {
 	return writeToVector;
 }
 
-std::shared_ptr<Calculator> TestConditionImp::getCalculator()
+std::shared_ptr<Calculator> VirtualFluidSimulationImp::getCalculator()
 {
 	return calculator;
 }
 
-std::shared_ptr<TestConditionImp> TestConditionImp::getNewInstance()
+std::shared_ptr<VirtualFluidSimulationImp> VirtualFluidSimulationImp::getNewInstance()
 {
-	return std::shared_ptr<TestConditionImp>(new TestConditionImp());
+	return std::shared_ptr<VirtualFluidSimulationImp>(new VirtualFluidSimulationImp());
 }
 
-void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
+void VirtualFluidSimulationImp::initParameter(real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
 {
 	para = Parameter::make();
 
@@ -118,36 +118,36 @@ void TestConditionImp::initParameter(real viscosity, std::string aGridPath, std:
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }
 
-void TestConditionImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition)
+void VirtualFluidSimulationImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition)
 {
 	this->initialCondition = initialCondition;
 	this->initialCondition->setParameter(para);
 }
 
-void TestConditionImp::initGridProvider()
+void VirtualFluidSimulationImp::initGridProvider()
 {
 	grid = std::shared_ptr<GridProvider>(new GridReaderforTesting(para, initialCondition));
 }
 
-void TestConditionImp::initCalculator(std::shared_ptr<Calculator> calc)
+void VirtualFluidSimulationImp::initCalculator(std::shared_ptr<Calculator> calc)
 {
 	this->calculator = calc;
 }
 
 
-void TestConditionImp::setTestResults(std::shared_ptr<TestResults> testResults)
+void VirtualFluidSimulationImp::setTestResults(std::shared_ptr<TestResults> testResults)
 {
 	this->testResults = testResults;
 }
 
 
-void TestConditionImp::initDataWriter(unsigned int ySliceForCalculation, unsigned int startTimeCalculation, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, unsigned int startTimeDataWriter)
+void VirtualFluidSimulationImp::initDataWriter(unsigned int ySliceForCalculation, unsigned int startTimeCalculation, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, unsigned int startTimeDataWriter)
 {
 	fileWriter = std::shared_ptr<FileWriter>(new FileWriter());
 	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, ySliceForCalculation, startTimeCalculation, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter));
 }
 
-void TestConditionImp::initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
+void VirtualFluidSimulationImp::initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
 {
 	simResults = SimulationResults::getNewInstance(lx, lz, timeStepLength);
 	calculator->setSimulationResults(simResults);

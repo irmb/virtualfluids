@@ -4,8 +4,8 @@
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 
 #include "Utilities/ConfigFileReader/ConfigFileReader.h"
-#include "Utilities/TestCondition/TestCondition.h"
-#include "Utilities/TestConditionFactory/TestConditionFactoryImp.h"
+#include "Utilities\VirtualFluidSimulation\VirtualFluidSimulation.h"
+#include "Utilities\VirtualFluidSimulationFactory\VirtualFluidSimulationFactoryImp.h"
 #include "Utilities/Calculator/Calculator.h"
 #include "Utilities/TestInformation/TestInformation.h"
 
@@ -17,19 +17,19 @@ static void startNumericalTests(const std::string &configFile)
 	std::vector< std::shared_ptr< SimulationParameter> > simPara = configReader->getSimulationParameter();
 	std::shared_ptr< TestInformation> testInfo = configReader->getTestInformation();
 
-	std::shared_ptr< TestConditionFactory> factory = TestConditionFactoryImp::getNewInstance();
-	std::vector< std::shared_ptr< TestCondition> > testConditions = factory->makeTestConditions(simPara);
+	std::shared_ptr< VirtualFluidSimulationFactory> factory = VirtualFluidSimulationFactoryImp::getNewInstance();
+	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(simPara);
 
-	for (int i = 0; i < testConditions.size(); i++)
+	for (int i = 0; i < vfSimulations.size(); i++)
 	{
 		testInfo->makeSimulationHeadOutput(i);
 		testInfo->setSimulationStartTime(i);
 		Simulation sim;
-		sim.init(testConditions.at(i)->getParameter(), testConditions.at(i)->getGrid(), testConditions.at(i)->getDataWriter());
+		sim.init(vfSimulations.at(i)->getParameter(), vfSimulations.at(i)->getGrid(), vfSimulations.at(i)->getDataWriter());
 		sim.run();
 		testInfo->setSimulationEndTime(i);
 
-		testConditions.at(i)->getCalculator()->calcAndCopyToTestResults();
+		vfSimulations.at(i)->getCalculator()->calcAndCopyToTestResults();
 	}
 
 	testInfo->makeFinalTestOutput();

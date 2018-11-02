@@ -1,5 +1,5 @@
-#ifndef TEST_CONDITION_H
-#define TEST_CONDITION_H
+#ifndef VIRTUAL_FLUID_SIMULATION_H
+#define VIRTUAL_FLUID_SIMULATION_H
 
 #include "VirtualFluids_GPU/LBM/LB.h"
 
@@ -12,7 +12,7 @@ class DataWriter;
 class Calculator;
 class TestResults;
 
-class TestCondition
+class VirtualFluidSimulation
 {
 public:
 	virtual std::shared_ptr<Parameter> getParameter() = 0;
