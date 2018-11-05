@@ -394,87 +394,11 @@ extern "C" void KernelMRTCompSP27(unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_MRT_Comp_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
-									    real s9,
-									    unsigned int* bcMatD,
-									    unsigned int* neighborX,
-									    unsigned int* neighborY,
-									    unsigned int* neighborZ,
-									    real* DD,
-									    int size_Mat,
-									    int level,
-									    real* forces,
-									    bool EvenOrOdd)
-{
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	} 
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
 
-	LB_Kernel_Cumulant_D3Q27All4 <<< grid, threads >>>(s9,
-													   bcMatD,
-													   neighborX,
-													   neighborY,
-													   neighborZ,
-													   DD,
-													   size_Mat,
-													   level,
-													   forces,
-													   EvenOrOdd); 
-		getLastCudaError("LB_Kernel_Cumulant_D3Q27All4 execution failed"); 
-}
-//////////////////////////////////////////////////////////////////////////
-extern "C" void KernelCumulantD3Q27F3(unsigned int numberOfThreads,
-									  real s9,
-									  unsigned int* bcMatD,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  real* DD,
-									  real* F3,
-									  int size_Mat,
-									  int level,
-									  real* forces,
-									  bool EvenOrOdd)
-{
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	} 
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
 
-	LB_Kernel_Cumulant_D3Q27F3 <<< grid, threads >>>(s9,
-													 bcMatD,
-													 neighborX,
-													 neighborY,
-													 neighborZ,
-													 DD,
-													 F3,
-													 size_Mat,
-													 level,
-													 forces,
-													 EvenOrOdd); 
-		getLastCudaError("LB_Kernel_Cumulant_D3Q27F3 execution failed"); 
-}
+
+
+
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads, 
 											real s9,
