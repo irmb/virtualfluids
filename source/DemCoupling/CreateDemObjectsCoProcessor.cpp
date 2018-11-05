@@ -20,12 +20,12 @@
 
 
 
-CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,  std::shared_ptr<Communicator> comm, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial, double toleranz) : 
+CreateDemObjectsCoProcessor::CreateDemObjectsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,  std::shared_ptr<Communicator> comm, SPtr<DemCoProcessor> demCoProcessor, SPtr<PhysicsEngineMaterialAdapter> demObjectMaterial, double tolerance) : 
    CoProcessor(grid, s),
    comm(comm),
    demCoProcessor(demCoProcessor), 
    demObjectMaterial(demObjectMaterial),
-   toleranz(toleranz)
+   tolerance(tolerance)
 {
    mu::Parser fct;
    fct.SetExpr("U");
