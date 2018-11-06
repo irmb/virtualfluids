@@ -7,10 +7,9 @@
 #ifndef CUBOID_H
 #define CUBOID_H
 
+#include "global.h"
 
-#include "../Object.h"
-#include <VirtualFluidsDefinitions.h>
-#include <core/DataTypes.h>
+#include "geometries/Object.h"
 
 class VF_PUBLIC Cuboid : public Object
 {

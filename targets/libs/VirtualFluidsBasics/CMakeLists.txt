@@ -1,13 +1,13 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
 
 set(linkDirectories "")
-set(libsToLink "")
-set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName} ${CMAKE_SOURCE_DIR}/src/core)
+set(libsToLink Core)
+set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName}
+                       ${CMAKE_SOURCE_DIR}/src
+                       ${CMAKE_SOURCE_DIR}/src/Core )
 
 #glob files and save in MY_SRCS
 include(CMakePackage.cmake)
-
-include(buildInfo.cmake)
 
 buildLib(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
 groupTarget(${targetName} ${libraryFolder})

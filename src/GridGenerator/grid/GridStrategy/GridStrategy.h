@@ -1,9 +1,10 @@
 #ifndef GRID_STRATEGY_H
 #define GRID_STRATEGY_H
 
-#include <VirtualFluidsDefinitions.h>
-#include "core/PointerDefinitions.h"
-#include "core/LbmOrGks.h"
+#include "Core/LbmOrGks.h"
+
+#include "global.h"
+
 #include "grid/Field.h"
 
 struct Vertex;

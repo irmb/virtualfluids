@@ -5,23 +5,19 @@
 #include <iomanip>
 #include <omp.h>
 #include <cmath>
-#include "stdint.h"
+#include <stdint.h>
 
-#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+#include "Core/Timer/Timer.h"
 
-#include "SimulationFileNames.h"
+#include "grid/NodeValues.h"
+#include "grid/Grid.h"
+#include "grid/GridBuilder/GridBuilder.h"
+#include "grid/BoundaryConditions/Side.h"
+#include "grid/BoundaryConditions/BoundaryCondition.h"
 
-#include <GridGenerator/grid/NodeValues.h>
-#include <GridGenerator/grid/Grid.h>
-
-#include <GridGenerator/grid/GridBuilder/GridBuilder.h>
-
-#include <GridGenerator/grid/BoundaryConditions/Side.h>
-#include <GridGenerator/grid/BoundaryConditions/BoundaryCondition.h>
+#include "io/SimulationFileWriter/SimulationFileNames.h"
 
 #include "utilities/communication.h"
-
-#include "core/Timer/Timer.h"
 
 /*#################################################################################*/
 /*---------------------------------public methods----------------------------------*/

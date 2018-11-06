@@ -1,12 +1,13 @@
 #ifndef GRID_H
 #define GRID_H
 
-#include "GridGenerator/global.h"
+#include "Core/LbmOrGks.h"
 
-#include "core/LbmOrGks.h"
+#include "global.h"
 
-#include "Cell.h"
 #include "geometries/Vertex/Vertex.h"
+
+#include "grid/Cell.h"
 
 class TriangularMesh;
 struct Vertex;

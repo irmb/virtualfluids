@@ -1,7 +1,7 @@
 #ifndef INIT_LATTICE_H
 #define INIT_LATTICE_H
 
-#include "core/PointerDefinitions.h"
+#include "Core/PointerDefinitions.h"
 
 class Parameter;
 

@@ -1,11 +1,7 @@
 #ifndef GRID_INTERFACE_H
 #define GRID_INTERFACE_H
 
-#include "core/DataTypes.h"
-#include "VirtualFluidsDefinitions.h"
-#include "utilities/cuda/cudaDefines.h"
-
-#include "core/PointerDefinitions.h"
+#include "global.h"
 
 class GridImp;
 

@@ -9,11 +9,9 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include <GridGenerator/geometries/Vertex/Vertex.h>
-#include <GridGenerator/geometries/Triangle/Triangle.h>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-
-#include <utilities/logger/Logger.h>
+#include "geometries/Vertex/Vertex.h"
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/BoundingBox/BoundingBox.h"
 
 
 std::vector<Triangle> STLReader::readSTL(const std::string& name)

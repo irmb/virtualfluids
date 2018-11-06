@@ -3,14 +3,14 @@
 
 #include <array>
 
-#include "GridGenerator/global.h"
-#include "distributions/Distribution.h"
+#include "Core/LbmOrGks.h"
 
-#include "core/LbmOrGks.h"
+#include "global.h"
 
-#include "Grid.h"
-#include "Cell.h"
-#include "Field.h" 
+#include "grid/distributions/Distribution.h"
+#include "grid/Grid.h"
+#include "grid/Cell.h"
+#include "grid/Field.h" 
 
 class TriangularMesh;
 struct Vertex;

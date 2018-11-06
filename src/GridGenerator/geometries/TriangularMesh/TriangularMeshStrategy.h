@@ -1,9 +1,7 @@
 #ifndef TriangularMeshStrategy_H
 #define TriangularMeshStrategy_H
 
-#include "GridGenerator/global.h"
-
-#include "VirtualFluidsDefinitions.h"
+#include "global.h"
 
 class GridImp;
 class TriangularMesh;

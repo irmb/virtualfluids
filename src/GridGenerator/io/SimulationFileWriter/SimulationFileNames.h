@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <VirtualFluidsDefinitions.h>
+#include "global.h"
 
 struct VF_PUBLIC simulationFileNames
 {

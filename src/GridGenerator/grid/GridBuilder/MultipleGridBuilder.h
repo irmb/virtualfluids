@@ -1,16 +1,15 @@
 #ifndef MULTIPLE_GRID_BUILDER_H
 #define MULTIPLE_GRID_BUILDER_H
 
-#include "GridGenerator/global.h"
-
 #include <vector>
 #include <array>
 
-#include "core/LbmOrGks.h"
+#include "Core/LbmOrGks.h"
 
-#include "LevelGridBuilder.h"
+#include "global.h"
 
-#include "../GridFactory.h"
+#include "grid/GridBuilder/LevelGridBuilder.h"
+#include "grid/GridFactory.h"
 
 class Object;
 class BoundingBox;

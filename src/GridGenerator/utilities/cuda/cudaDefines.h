@@ -1,7 +1,7 @@
 #ifndef CUDA_DEFINES_H
 #define CUDA_DEFINES_H
 
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
 #include <stdio.h>
 
 #define HOST __host__

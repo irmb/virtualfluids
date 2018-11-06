@@ -1,14 +1,13 @@
 #include "Distribution.h"
-  
-#include "D3Q7.h"
-#include "D3Q13.h"
-#include "D3Q19.h"
-#include "D3Q27.h"
+
 #include <stdio.h>
+  
+#include "grid/distributions/D3Q7.h"
+#include "grid/distributions/D3Q13.h"
+#include "grid/distributions/D3Q19.h"
+#include "grid/distributions/D3Q27.h"
 
-#include <GridGenerator/grid/Grid.h>
-
-#include <GridGenerator/geometries/Vertex/Vertex.h>
+#include "grid/Grid.h"
 
 Distribution DistributionHelper::getDistribution7() 
 {

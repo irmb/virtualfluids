@@ -1,17 +1,16 @@
 #ifndef GRID_FACTORY_H
 #define GRID_FACTORY_H
 
-#include <VirtualFluidsDefinitions.h>
-#include <core/PointerDefinitions.h>
+#include "global.h"
 
-#include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
-#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
-#include "distributions/Distribution.h"
-#include "GridImp.h"
-#include "grid/GridMocks.h"
 #include "geometries/Cuboid/Cuboid.h"
 #include "geometries/Sphere/Sphere.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
+
+#include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
+#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
+#include "grid/distributions/Distribution.h"
+#include "grid/GridImp.h"
 
 enum class Device
 {
@@ -22,12 +21,6 @@ enum class TriangularMeshDiscretizationMethod
 {
     RAYCASTING, POINT_IN_OBJECT, POINT_UNDER_TRIANGLE
 };
-
-enum class TestDouble
-{
-    PRODUCTIONCLASS, STUB, SPY
-};
-
 
 class VF_PUBLIC GridFactory
 {
@@ -40,7 +33,6 @@ public:
 private:
     GridFactory()
     {
-        gridType = TestDouble::PRODUCTIONCLASS;
         gridStrategy = SPtr<GridStrategy>(new GridCpuStrategy());
         triangularMeshDiscretizationStrategy = new RayCastingDiscretizationStrategy();
     }
@@ -52,16 +44,7 @@ public:
 
         SPtr<GridImp> grid;
 
-        switch (gridType)
-        {
-        case TestDouble::PRODUCTIONCLASS:
-            grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
-            break;
-        case TestDouble::STUB:
-            return GridStub::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
-        case TestDouble::SPY:
-            return GridSpy::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
-        }
+        grid = GridImp::makeShared(gridShape, startX, startY, startZ, endX, endY, endZ, delta, gridStrategy, distribution, level);
 
         grid->setTriangularMeshDiscretizationStrategy(this->triangularMeshDiscretizationStrategy);
 
@@ -85,11 +68,6 @@ public:
         this->gridStrategy = gridStrategy;
     }
 
-    void setGridType(TestDouble gridType)
-    {
-        this->gridType = gridType;
-    }
-
     void setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod triangularMeshDiscretizationMethod)
     {
         switch (triangularMeshDiscretizationMethod)
@@ -109,7 +87,6 @@ public:
 private:
     TriangularMeshDiscretizationStrategy* triangularMeshDiscretizationStrategy;
     SPtr<GridStrategy> gridStrategy;
-    TestDouble gridType;
 };
 
 

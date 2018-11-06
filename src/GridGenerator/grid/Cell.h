@@ -1,7 +1,8 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include "core/DataTypes.h"
+#include "global.h"
+
 #include "utilities/cuda/cudaDefines.h"
 
 struct Point

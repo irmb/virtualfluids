@@ -7,10 +7,13 @@
 #define DIMENSION 3
 #define MASTERRANK 0
 
-
-#include <GridGenerator/utilities/cuda/cudaDefines.h>
 #include "VirtualFluidsDefinitions.h"
-#include "core/PointerDefinitions.h"
-#include "core/DataTypes.h"
+
+#include "Core/PointerDefinitions.h"
+#include "Core/DataTypes.h"
+
+#include "Core/Logger/Logger.h"
+
+#include "utilities/cuda/cudaDefines.h"
 
 #endif 

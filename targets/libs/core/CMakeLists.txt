@@ -1,5 +1,7 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR})
 
+MESSAGE( STATUS ${CMAKE_CURRENT_LIST_DIR} )
+
 set(linkDirectories "")
 set(libsToLink "")
 set(includeDirectories ${CMAKE_SOURCE_DIR}/src/${targetName})

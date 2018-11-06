@@ -3,7 +3,7 @@
 #include <basics/utilities/UbLogger.h>
 #include <basics/utilities/UbSystem.h>
 
-#include <buildInfo.h>
+#include "Core/buildInfo.h"
 #include <cstring>
 
 using namespace std;

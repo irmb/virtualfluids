@@ -1,14 +1,12 @@
 #ifndef STLWriter_H
 #define STLWriter_H
 
-
-
 #include <vector>
 #include <string>
 #include <memory>
 #include <fstream>
 
-#include <VirtualFluidsDefinitions.h>
+#include "global.h"
 
 class Transformator;
 struct Triangle;

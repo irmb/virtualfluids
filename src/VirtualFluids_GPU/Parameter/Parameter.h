@@ -14,7 +14,7 @@
 //random numbers
 #include <curand.h>
 #include <curand_kernel.h>
-#include "core/PointerDefinitions.h"
+#include "Core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 
 //struct

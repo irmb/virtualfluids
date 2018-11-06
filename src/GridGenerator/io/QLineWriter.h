@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 
-#include <core/PointerDefinitions.h>
+#include "global.h"
 
 class GeometryBoundaryCondition;
 class Grid;

@@ -2,38 +2,30 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <GridGenerator/grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h>
-#include <GridGenerator/grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h>
-#include <GridGenerator/grid/partition/Partition.h>
 
-#include <GridGenerator/geometries/Triangle/Triangle.h>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
-
-
-#include <GridGenerator/io/GridVTKWriter/GridVTKWriter.h>
-#include <GridGenerator/io/SimulationFileWriter/SimulationFileWriter.h>
-#include <GridGenerator/io/VTKWriterWrapper/UnstructuredGridWrapper.h>
-#include <GridGenerator/io/VTKWriterWrapper/PolyDataWriterWrapper.h>
-
-#include <GridGenerator/grid/NodeValues.h>
-
-#include <GridGenerator/geometries/Arrow/ArrowImp.h>
-#include <GridGenerator/utilities/transformator/ArrowTransformator.h>
-
-#include <utilities/logger/Logger.h>
-
-#include <GridGenerator/grid/GridFactory.h>
-#include "grid/GridInterface.h"
-#include "grid/Grid.h"
+#include "geometries/Arrow/ArrowImp.h"
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/BoundingBox/BoundingBox.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
 
 #include "grid/BoundaryConditions/BoundaryCondition.h"
 #include "grid/BoundaryConditions/Side.h"
+#include "grid/GridStrategy/GridGpuStrategy/GridGpuStrategy.h"
+#include "grid/GridStrategy/GridCpuStrategy/GridCpuStrategy.h"
+#include "grid/partition/Partition.h"
+#include "grid/NodeValues.h"
+#include "grid/GridFactory.h"
+#include "grid/GridInterface.h"
+#include "grid/Grid.h"
 
-#include <GridGenerator/io/QLineWriter.h>
+#include "io/GridVTKWriter/GridVTKWriter.h"
+#include "io/SimulationFileWriter/SimulationFileWriter.h"
+#include "io/VTKWriterWrapper/UnstructuredGridWrapper.h"
+#include "io/VTKWriterWrapper/PolyDataWriterWrapper.h"
+#include "io/QLineWriter.h"
 
+#include "utilities/transformator/ArrowTransformator.h"
 #include "utilities/communication.h"
-
 
 #define GEOFLUID 19
 #define GEOSOLID 16

@@ -1,6 +1,6 @@
 #include "PositionReader.h"
 
-#include "basics/utilities/UbFileInputASCII.h"
+#include "VirtualFluidsBasics/basics/utilities/UbFileInputASCII.h"
 
 static const int E    = dirE;		   //static const int E    = 0;
 static const int W    = dirW;		   //static const int W    = 1;

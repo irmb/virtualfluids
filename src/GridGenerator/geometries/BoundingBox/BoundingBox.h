@@ -1,10 +1,10 @@
 #ifndef BoundingBox_h
 #define BoundingBox_h
 
-#include "GridGenerator/global.h"
-
 #include <vector>
-#include "cuda_runtime.h"
+#include <cuda_runtime.h>
+
+#include "global.h"
 
 struct Vertex;
 struct Triangle;

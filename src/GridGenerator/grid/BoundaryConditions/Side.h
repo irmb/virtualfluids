@@ -4,10 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <VirtualFluidsDefinitions.h>
-
-#include <core/PointerDefinitions.h>
-#include <core/DataTypes.h>
+#include "global.h"
 
 #define X_INDEX 0
 #define Y_INDEX 1

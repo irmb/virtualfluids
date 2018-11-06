@@ -1,10 +1,10 @@
 #ifndef ArrowImp_H
 #define ArrowImp_H
 
+#include <memory>
+
 #include "GridGenerator/global.h"
 
-
-#include <memory>
 #include "Arrow.h"
 
 struct Vertex;

@@ -1,11 +1,10 @@
 #include "runGridKernelGPU.cuh"
 
-#include <GridGenerator/utilities/cuda/cudaDefines.h>
-#include <GridGenerator/utilities/cuda/cudaKernelCall.h>
-#include <GridGenerator/utilities/cuda/LaunchParameter.cuh>
-
-#include <GridGenerator/grid/GridImp.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
+#include "utilities/cuda/cudaDefines.h"
+#include "utilities/cuda/cudaKernelCall.h"
+#include "utilities/cuda/LaunchParameter.cuh"
+#include "grid/GridImp.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
 
 GLOBAL void initalField(GridImp grid);
 GLOBAL void runMeshing(GridImp grid, const TriangularMesh geom);

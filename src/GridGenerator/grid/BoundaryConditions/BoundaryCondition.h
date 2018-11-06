@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include <core/PointerDefinitions.h>
-#include <core/DataTypes.h>
+#include "global.h"
+
 #include "grid/NodeValues.h"
 
 class Grid;

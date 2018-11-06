@@ -1,9 +1,11 @@
 #ifndef CudaMath_H
 #define CudaMath_H
 
-#include "GridGenerator/global.h"
-#include <cuda_runtime.h>
-#include "float.h"
+#include <float.h>
+
+#include "global.h"
+
+#include "utilities/cuda/cudaDefines.h"
 
 #define EPSILON FLT_EPSILON
 

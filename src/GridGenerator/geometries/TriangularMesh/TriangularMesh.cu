@@ -1,20 +1,19 @@
 #include "TriangularMesh.h"
 
-#include "io/STLReaderWriter/STLReader.h"
-#include "utilities/transformator/TransformatorImp.h"
-#include "triangleNeighborFinder/TriangleNeighborFinder.h"
+#include "Core/Timer/Timer.h"
 
+#include "VirtualFluidsBasics/numerics/geometry3d/GbTriFaceMesh3D.h"
 
-#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+#include "geometries/TriangularMesh/triangleNeighborFinder/TriangleNeighborFinder.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
-#include "Timer/Timer.h"
-
-#include "numerics/geometry3d/GbTriFaceMesh3D.h"
 #include "io/STLReaderWriter/STLWriter.h"
+#include "io/STLReaderWriter/STLReader.h"
 
 #include "grid/GridImp.h"
-#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 #include "grid/NodeValues.h"
+
+#include "utilities/transformator/TransformatorImp.h"
 
 
 TriangularMesh* TriangularMesh::make(const std::string& fileName, const std::vector<uint> ignorePatches)

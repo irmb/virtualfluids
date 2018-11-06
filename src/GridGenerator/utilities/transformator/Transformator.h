@@ -2,8 +2,8 @@
 #define Transformator_h
 
 #include <memory>
-#include "GridGenerator/global.h"
 
+#include "global.h"
 
 class BoundingBox;
 struct Triangle;

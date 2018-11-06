@@ -68,21 +68,22 @@ ENDIF(MSVC)
 #############################################################
 ###                         OPTIONS                       ###
 #############################################################
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-option(HULC.BUILD_VirtualFluids "Builds virtual Fluids" OFF)
-option(HULC.BUILD_dem_coupling "Builds dem coupling " OFF)
-option(HULC.BUILD_GPU_CODE "Build gpu VirtualFluids" ON)
-option(HULC.BUILD_JSONCPP "Builds json cpp " ON)
-option(HULC.BUILD_TESTS "Build tests" OFF)
-option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests" OFF)
+option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
+option(HULC.BUILD_GPU_CODE      "Build gpu VirtualFluids" ON )
+option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
+option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF)
 
-option(VF_DOUBLE_ACCURACY "Build shared libraries" OFF)
+option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF)
+
+#############################################################
 
 if(HULC.BUILD_GPU_CODE)
   #SET(CMAKE_CUDA_COMPILER $ENV{CUDA_PATH_V9_0}/bin/nvcc.exe)
   enable_language(CUDA)
 endif()
 sharedLibs()
+
+#############################################################
 
 include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FindCompiler.cmake)
 configure_file(src/VirtualFluidsDefinitions.in.h VirtualFluidsDefinitions.h)
@@ -91,36 +92,6 @@ if(MSVC)
 ELSE(MSVC)
   SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
-
-#############################################################
-###                  Virtual Fluids                       ###
-#############################################################
-IF (HULC.BUILD_VirtualFluids)
-  add_definitions(-DVF_METIS)
-  add_definitions(-DVF_MPI)
-  
-  add_subdirectory(3rdParty/MuParser)
-  add_subdirectory(targets/libs/VirtualFluids)
-ELSE()
-  MESSAGE( STATUS "exclude Virtual Fluids." )
-ENDIF()
-
-
-#############################################################
-###                dem_coupling                           ###
-#############################################################
-IF (HULC.BUILD_dem_coupling AND HULC.BUILD_VirtualFluids)
-  link_directories("${PE_BINARY_DIR}/src/pe" "${PE_BINARY_DIR}/src/core" "${PE_BINARY_DIR}/src/blockforest" "${PE_BINARY_DIR}/src/domain_decomposition" )
-IF(MSVC)
-   SET( CMAKE_CXX_FLAGS "/FI ${PE_BINARY_DIR}/src/pe/extern/libccd/ccd/config.h ${CMAKE_CXX_FLAGS}" )
-ELSE(MSVC)
-   SET( CMAKE_CXX_FLAGS "-include ${PE_BINARY_DIR}/src/pe/extern/libccd/ccd/config.h ${CMAKE_CXX_FLAGS}" )
-ENDIF(MSVC)
-   
-   add_subdirectory(targets/libs/dem_coupling)
-ELSE()
-  MESSAGE(STATUS "exclude dem-coupling." )
-ENDIF()
 
 #############################################################
 ###                  Virtual Fluids GPU                   ###
@@ -148,33 +119,7 @@ ENDIF()
 
 add_subdirectory(targets/apps/HULC)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
-add_subdirectory(targets/libs/core)
-
-if(HULC.BUILD_GPU_CODE OR HULC.BUILD_VirtualFluids)
- add_subdirectory(3rdParty/metis/metis-5.1.0)
-endif()
-
-
-if(HULC.BUILD_TESTS)
-  if(VF_DOUBLE_ACCURACY)
-    add_definitions("-DRealEq=testing::DoubleEq")
-  else()
-    add_definitions("-DRealEq=testing::FloatEq")
-  endif()
-
-  add_subdirectory(3rdParty/googletest)
-  if (HULC.BUILD_GPU_CODE)
-    add_subdirectory(targets/tests/GridGeneratorTest)
-	add_subdirectory(targets/tests/VirtualFluids_GPUTest)
-  endif()
-  
-  if (HULC.BUILD_VirtualFluids)
-    add_subdirectory(targets/tests/VirtualFluidsTest)
-  endif()
-  
-  add_subdirectory(targets/tests/coreTest)
-  add_subdirectory(targets/tests/VirtualFluidsBasicsTest)
-endif()
+add_subdirectory(targets/libs/Core)
 
 if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)

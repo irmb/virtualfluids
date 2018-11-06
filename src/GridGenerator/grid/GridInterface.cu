@@ -1,10 +1,9 @@
 #include "GridInterface.h"
 
-#include "GridImp.h"
-#include "Field.h"
-#include "NodeValues.h"
-
-#include "distributions/D3Q27.h"
+#include "grid/distributions/D3Q27.h"
+#include "grid/GridImp.h"
+#include "grid/Field.h"
+#include "grid/NodeValues.h"
 
 GridInterface::GridInterface()
 {

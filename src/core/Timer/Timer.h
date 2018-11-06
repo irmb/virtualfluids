@@ -3,8 +3,9 @@
 
 #include <chrono>
 
-#include <VirtualFluidsDefinitions.h>
-#include <DataTypes.h>
+#include "VirtualFluidsDefinitions.h"
+
+#include "DataTypes.h"
 
 class VF_PUBLIC Timer
 {

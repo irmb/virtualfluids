@@ -2,8 +2,6 @@
 
 #include "../Vertex/Vertex.h"
 
-
-
  std::shared_ptr<Arrow> ArrowImp::make(const Vertex &start, const Vertex &end)
 {
 	return std::shared_ptr<ArrowImp>(new ArrowImp(start, end));

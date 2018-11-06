@@ -7,11 +7,9 @@
 #ifndef VERTICAL_CYLINDER_H
 #define VERTICAL_CYLINDER_H
 
+#include "global.h"
 
-#include "../Object.h"
-#include <VirtualFluidsDefinitions.h>
-#include <core/DataTypes.h>
-#include <core/PointerDefinitions.h>
+#include "geometries/Object.h"
 
 class VF_PUBLIC VerticalCylinder : public Object
 {

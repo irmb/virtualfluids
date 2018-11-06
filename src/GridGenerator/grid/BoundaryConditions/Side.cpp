@@ -1,10 +1,10 @@
 #include "Side.h"
 
-#include "../Grid.h"
-#include "../NodeValues.h"
-#include <GridGenerator/utilities/math/Math.h>
+#include "grid/BoundaryConditions/BoundaryCondition.h"
+#include "grid/Grid.h"
+#include "grid/NodeValues.h"
 
-#include "BoundaryCondition.h"
+#include "utilities/math/Math.h"
 
 void Side::addIndices(SPtr<Grid> grid, SPtr<BoundaryCondition> boundaryCondition, std::string coord, real constant,
                       real startInner, real endInner, real startOuter, real endOuter)

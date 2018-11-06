@@ -1,23 +1,17 @@
 #include "GridGpuStrategy.h"
 
-#include "time.h"
-#include "GridGenerator/global.h"
+#include "Core/Timer/Timer.h"
 
-#include <GridGenerator/utilities/cuda/CudaErrorCheck.cu>
-#include <GridGenerator/utilities/cuda/LaunchParameter.cuh>
+#include "geometries/BoundingBox/BoundingBox.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
 
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
-
-#include <GridGenerator/grid/kernel/runGridKernelGPU.cuh>
-#include <GridGenerator/grid/GridImp.h>
-
-#include <grid/distributions/Distribution.h>
-
-#include <utilities/logger/Logger.h>
-//#include <helper_cuda.h>
+#include "grid/kernel/runGridKernelGPU.cuh"
+#include "grid/distributions/Distribution.h"
+#include "grid/GridImp.h"
 #include "grid/GridInterface.h"
 
+#include "utilities/cuda/CudaErrorCheck.cu"
+#include "utilities/cuda/LaunchParameter.cuh"
 
 void GridGpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {

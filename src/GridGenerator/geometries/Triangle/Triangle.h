@@ -1,14 +1,13 @@
 #ifndef Triangle_h
 #define Triangle_h
 
-#include "GridGenerator/global.h"
-
-#include "../Vertex/Vertex.h"
-
 #include <memory>
 
-class TriangleMemento;
+#include "global.h"
 
+#include "geometries/Vertex/Vertex.h"
+
+class TriangleMemento;
 
 struct VF_PUBLIC Triangle
 {

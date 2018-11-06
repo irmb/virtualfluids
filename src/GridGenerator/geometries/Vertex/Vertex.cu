@@ -1,7 +1,6 @@
 #include "Vertex.h"
 
-#include <GridGenerator/utilities/math/Math.h>
-
+#include "utilities/math/Math.h"
 
 HOSTDEVICE Vertex::Vertex(real x, real y, real z) : x(x), y(y), z(z){}
 HOSTDEVICE Vertex::Vertex() { x = 0.0f; y = 0.0f; z = 0.0f; }

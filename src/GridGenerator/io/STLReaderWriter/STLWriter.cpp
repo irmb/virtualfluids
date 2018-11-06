@@ -1,13 +1,11 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "STLWriter.h"
+
 #include <fstream>
 #include <sstream>
 
-#include <GridGenerator/geometries/Vertex/Vertex.h>
-#include <GridGenerator/geometries/Triangle/Triangle.h>
-
-#include <utilities/logger/Logger.h>
-
+#include "geometries/Vertex/Vertex.h"
+#include "geometries/Triangle/Triangle.h"
 
 void STLWriter::writeSTL(std::vector<Triangle> &vec, const std::string &name, bool writeBinary)
 {

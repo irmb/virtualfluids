@@ -1,8 +1,7 @@
 #include "Field.h"
 
-#include <GridGenerator/grid/NodeValues.h>
-#include <GridGenerator/grid/GridStrategy/GridStrategy.h>
-
+#include "grid/NodeValues.h"
+#include "grid/GridStrategy/GridStrategy.h"
 
 HOST Field::Field(SPtr<GridStrategy> gridStrategy, uint size) : gridStrategy(gridStrategy), size(size)
 {

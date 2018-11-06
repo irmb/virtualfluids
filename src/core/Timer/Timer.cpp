@@ -1,6 +1,4 @@
 #include "Timer.h"
-#include <ctime>
-
 
 Timer::Timer()
 {

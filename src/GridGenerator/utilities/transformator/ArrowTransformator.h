@@ -2,8 +2,8 @@
 #define ArrowTransformator_h
 
 #include <memory>
-#include "GridGenerator/global.h"
 
+#include "global.h"
 
 class Arrow;
 

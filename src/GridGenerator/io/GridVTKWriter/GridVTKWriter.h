@@ -3,8 +3,7 @@
 
 #include <string>
 
-#include <core/PointerDefinitions.h>
-#include <VirtualFluidsDefinitions.h>
+#include "global.h"
 
 enum class WRITING_FORMAT { BINARY, ASCII };
 

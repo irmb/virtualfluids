@@ -1,13 +1,11 @@
 #ifndef GridBuilder_H
 #define GridBuilder_H
 
-#include "GridGenerator/global.h"
-
-
 #include <vector>
 #include <string>
 #include <memory>
 
+#include "GridGenerator/global.h"
 
 #define GEOMQS 6
 #define INLETQS 0

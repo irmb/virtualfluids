@@ -1,11 +1,11 @@
 #ifndef TriangleRefinement_h
 #define TriangleRefinement_h
 
-
 #include <vector>
-#include "GridGenerator/global.h"
 
-#include "../triangleNeighborFinder/TriangleNeighborFinder.h"
+#include "global.h"
+
+#include "geometries/TriangularMesh/triangleNeighborFinder/TriangleNeighborFinder.h"
 
 struct Triangle;
 struct Vertex;

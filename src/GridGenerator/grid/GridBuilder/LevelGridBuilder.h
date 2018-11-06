@@ -1,17 +1,16 @@
 #ifndef LEVEL_GRID_BUILDER_H
 #define LEVEL_GRID_BUILDER_H
 
-#include "GridGenerator/global.h"
-
 #include <vector>
 #include <string>
 #include <memory>
 #include <array>
 
-#include "GridBuilder.h"
-#include "grid/GridInterface.h"
+#include "global.h"
 
+#include "grid/GridBuilder/GridBuilder.h"
 #include "grid/Grid.h"
+#include "grid/GridInterface.h"
 #include "grid/NodeValues.h"
 
 struct Vertex;

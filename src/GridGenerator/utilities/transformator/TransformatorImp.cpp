@@ -1,10 +1,12 @@
 #include "TransformatorImp.h"
+
 #include <memory>
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-#include <GridGenerator/geometries/Triangle/Triangle.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
-#include <GridGenerator/geometries/Vertex/Vertex.h>
-#include <GridGenerator/geometries/Arrow/Arrow.h>
+
+#include "geometries/BoundingBox/BoundingBox.h"
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
+#include "geometries/Vertex/Vertex.h"
+#include "geometries/Arrow/Arrow.h"
 
 TransformatorImp::TransformatorImp() 
 {

@@ -3,17 +3,16 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <basics/utilities/UbTuple.h>
 
-#include <grid/BoundaryConditions/BoundaryCondition.h>
-#include <grid/Grid.h>
-#include <geometries/Vertex/Vertex.h>
+#include "VirtualFluidsBasics/basics/utilities/UbTuple.h"
 
-#include "VirtualFluidsBasics/utilities/logger/Logger.h"
+#include "geometries/Vertex/Vertex.h"
+
+#include "grid/BoundaryConditions/BoundaryCondition.h"
+#include "grid/Grid.h"
 
 using namespace std;
 void writeLines(std::string filename, std::vector<UbTupleFloat3> nodes, std::vector<UbTupleInt2> lines);
-
 
 void QLineWriter::writeArrows(std::string fileName, SPtr<GeometryBoundaryCondition> geometryBoundaryCondition, SPtr<Grid> grid)
 {

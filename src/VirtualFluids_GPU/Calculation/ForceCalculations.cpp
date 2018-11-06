@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <sstream>
-#include "utilities/StringUtil/StringUtil.h"
+#include "Core/StringUtilities/StringUtil.h"
 using namespace std;
 //////////////////////////////////////////////////////////////////////////
 

@@ -1,13 +1,12 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include "GridGenerator/global.h"
-
-
 #include <stdio.h>
 #include <cuda_runtime.h>
 #include <memory>
 #include <ostream>
+
+#include "global.h"
 
 class VertexMemento;
 

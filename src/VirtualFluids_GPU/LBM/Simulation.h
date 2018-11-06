@@ -2,9 +2,9 @@
 #define _SIMULATION_H_
 
 #include <memory>
-#include <core/PointerDefinitions.h>
+#include "Core/PointerDefinitions.h"
 
-#include <VirtualFluidsDefinitions.h>
+#include "VirtualFluidsDefinitions.h"
 
 #include "Output/LogWriter.hpp"
 #include "Utilities/Buffer2D.hpp"

@@ -6,15 +6,16 @@
 #include <cmath>
 
 #include "utilities/math/Math.h"
-#include "../Grid.h"
-#include "../GridFactory.h"
 
-#include <VirtualFluidsBasics/utilities/logger/Logger.h>
+#include "geometries/BoundingBox/BoundingBox.h"
+
+#include "grid/BoundaryConditions/BoundaryCondition.h"
+#include "grid/BoundaryConditions/Side.h"
+#include "grid/Grid.h"
+#include "grid/GridFactory.h"
+
 #include "io/STLReaderWriter/STLWriter.h"
 #include "io/GridVTKWriter/GridVTKWriter.h"
-#include <grid/BoundaryConditions/BoundaryCondition.h>
-#include <grid/BoundaryConditions/Side.h>
-#include "geometries/BoundingBox/BoundingBox.h"
 
 MultipleGridBuilder::MultipleGridBuilder(SPtr<GridFactory> gridFactory, Device device, const std::string &d3qxx) :
     LevelGridBuilder(device, d3qxx), gridFactory(gridFactory), solidObject(nullptr), numberOfLayersFine(12), numberOfLayersBetweenLevels(8), subDomainBox(nullptr)

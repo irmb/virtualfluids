@@ -1,7 +1,7 @@
 #ifndef FIELD_H
 #define FIELD_H
 
-#include "GridGenerator/global.h"
+#include "global.h"
 
 struct Vertex;
 class GridStrategy;

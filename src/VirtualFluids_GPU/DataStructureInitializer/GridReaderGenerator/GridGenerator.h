@@ -7,7 +7,7 @@
 #include <string>
 #include <memory>
 
-#include <core/DataTypes.h>
+#include "Core/DataTypes.h"
 
 class Parameter;
 class GridBuilder;

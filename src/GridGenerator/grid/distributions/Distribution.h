@@ -1,10 +1,10 @@
 #ifndef Distribution_H
 #define Distribution_H
 
-#include "GridGenerator/global.h"
-
 #include <vector>
 #include <string>
+
+#include "global.h"
 
 #define DIR_END_MAX 27
 

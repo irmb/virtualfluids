@@ -1,12 +1,12 @@
 #ifndef kernelHelper_CUH
 #define kernelHelper_CUH
 
-#include "GridGenerator/global.h"
-
-#include "cuda.h"
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <device_launch_parameters.h>
 #include <stdio.h>
+
+#include "global.h"
 
 class LaunchParameter
 {

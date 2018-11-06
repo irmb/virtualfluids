@@ -5,9 +5,7 @@
 #include <vector>
 #include <string>
 
-#include <VirtualFluidsDefinitions.h>
-
-#include "core/DataTypes.h"
+#include "global.h"
 
 struct Triangle;
 struct Vertex;

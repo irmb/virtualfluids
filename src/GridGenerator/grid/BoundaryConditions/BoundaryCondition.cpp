@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-#include "Side.h"
-#include "../Grid.h"
+#include "grid/BoundaryConditions/Side.h"
+#include "grid/Grid.h"
 
 bool BoundaryCondition::isSide( SideType side ) const
 {

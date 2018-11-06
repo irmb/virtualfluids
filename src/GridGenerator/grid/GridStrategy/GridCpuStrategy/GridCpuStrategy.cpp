@@ -1,4 +1,3 @@
-
 #include "GridCpuStrategy.h"
 
 #include <time.h>
@@ -7,15 +6,12 @@
 #include <vector>
 #include <iostream>
 
-#include <GridGenerator/grid/distributions/Distribution.h>
-#include <GridGenerator/grid/GridImp.h>
+#include "geometries/TriangularMesh/TriangularMesh.h"
 
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
-
-#include <utilities/logger/Logger.h>
-#include "grid/NodeValues.h"
-
+#include "grid/distributions/Distribution.h"
 #include "grid/GridInterface.h"
+#include "grid/GridImp.h"
+#include "grid/NodeValues.h"
 
 void GridCpuStrategy::allocateGridMemory(SPtr<GridImp> grid)
 {

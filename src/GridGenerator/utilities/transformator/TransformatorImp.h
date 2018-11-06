@@ -1,18 +1,18 @@
 #ifndef TransformatorImp_h
 #define TransformatorImp_h
 
-
-#include "GridGenerator/global.h"
 #include <exception>
 #include <sstream>
-#include "Transformator.h"
-#include "ArrowTransformator.h"
+
+#include "global.h"
+
+#include "utilities/transformator/Transformator.h"
+#include "utilities/transformator/ArrowTransformator.h"
 
 class BoundingBox;
 struct Triangle;
 class TriangularMesh;
 struct Vertex;
-
 
 class invalidDelta : public std::exception
 {

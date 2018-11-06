@@ -1,11 +1,9 @@
 #ifndef cudaKernelCall_H
 #define cudaKernelCall_H
 
-#include "cudaDefines.h"
-
-
-#include "CudaErrorCheck.cu"
-#include "LaunchParameter.cuh"
+#include "utilities/cuda/cudaDefines.h"
+#include "utilities/cuda/CudaErrorCheck.cu"
+#include "utilities/cuda/LaunchParameter.cuh"
 
 template<typename Functor, typename... TArgs>
 HOST float runKernel(Functor kernel, const LaunchParameter& para, TArgs... args)

@@ -1,6 +1,7 @@
 #include "Triangle.h"
-#include <GridGenerator/utilities/math/Math.h>
 #include "TriangleException.h"
+
+#include "utilities/math/Math.h"
 
 #include "grid/NodeValues.h"
 

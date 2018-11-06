@@ -8,10 +8,9 @@
 #include <vector>
 #include <array>
 
-#include <GridGenerator/global.h>
-#include <core/PointerDefinitions.h>
-#include <core/DataTypes.h>
-#include <core/NonCreatable.h>
+#include "Core/NonCreatable.h"
+
+#include "global.h"
 
 class UnstructuredGridBuilder;
 class GridBuilder;

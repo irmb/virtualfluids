@@ -1,7 +1,5 @@
 #include "Conglomerate.h"
 
-#include <utilities/logger/Logger.h>
-
 Conglomerate::Conglomerate()
 {
     addObjects = new Object*[MAX_NUMBER_OF_OBJECTS];

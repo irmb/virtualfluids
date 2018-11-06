@@ -1,15 +1,17 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "GridVTKWriter.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <memory>
 
-#include <utilities/logger/Logger.h>
-#include <GridGenerator/grid/Grid.h>
-#include <GridGenerator/geometries/Vertex/Vertex.h>
-#include "basics/writer/WbWriterVtkXmlBinary.h"
-#include "basics/container/CbArray3D.h"
+#include "VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h"
+#include "VirtualFluidsBasics/basics/container/CbArray3D.h"
+
+#include "geometries/Vertex/Vertex.h"
+
+#include "grid/Grid.h"
 #include "grid/NodeValues.h"
 #include "grid/Cell.h"
 

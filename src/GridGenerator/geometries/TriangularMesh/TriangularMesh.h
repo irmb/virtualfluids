@@ -1,19 +1,18 @@
 #ifndef Geometry_h
 #define Geometry_h
 
-#include "GridGenerator/global.h"
-
-
 #include <stdio.h>
 #include <cuda_runtime.h>
 #include <vector>
 #include <string>
 #include <memory>
 
-#include "../Triangle/Triangle.h"
-#include "../BoundingBox/BoundingBox.h"
+#include "global.h"
 
-#include "../Object.h"
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/BoundingBox/BoundingBox.h"
+
+#include "geometries/Object.h"
 
 class GeometryMemento;
 class GbTriFaceMesh3D;

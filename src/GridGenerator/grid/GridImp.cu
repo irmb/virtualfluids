@@ -1,36 +1,30 @@
 #include "GridImp.h"
 
-#include "GridGenerator/global.h"
 #include <stdio.h>
 #include <time.h>
 #include <iostream>
 #include <omp.h>
-
 #include <sstream>
 
-#include <GridGenerator/utilities/math/Math.h>
-#include "distributions/Distribution.h"
-
-#include <GridGenerator/geometries/Vertex/Vertex.h>
-#include <GridGenerator/geometries/Triangle/Triangle.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMesh.h>
-#include <GridGenerator/geometries/TriangularMesh/TriangularMeshStrategy.h>
-
-#include <GridGenerator/geometries/BoundingBox/BoundingBox.h>
-
-#include <GridGenerator/grid/NodeValues.h>
-#include <GridGenerator/grid/distributions/Distribution.h>
-
-#include <GridGenerator/grid/GridStrategy/GridStrategy.h>
-#include <utilities/logger/Logger.h>
-#include "GridInterface.h"
+#include "global.h"
 
 #include "geometries/Object.h"
-#include "Field.h"
+#include "geometries/Vertex/Vertex.h"
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
+#include "geometries/TriangularMesh/TriangularMeshStrategy.h"
+#include "geometries/BoundingBox/BoundingBox.h"
+
+#include "grid/GridStrategy/GridStrategy.h"
+#include "grid/distributions/Distribution.h"
+#include "grid/Field.h"
+#include "grid/GridInterface.h"
+#include "grid/NodeValues.h"
 
 #include "io/GridVTKWriter/GridVTKWriter.h"
 
 #include "utilities/communication.h"
+#include "utilities/math/Math.h"
 
 CONSTANT int DIRECTIONS[DIR_END_MAX][DIMENSION];
 

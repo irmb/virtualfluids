@@ -2,6 +2,7 @@
 #define Arrow_H
 
 #include <memory>
+
 struct Vertex;
 
 class Arrow 

@@ -1,10 +1,9 @@
 #ifndef GRID_GPU_STRATEGY_H
 #define GRID_GPU_STRATEGY_H
 
-#include <VirtualFluidsDefinitions.h>
 #include "global.h"
 
-#include "../GridStrategy.h"
+#include "grid/GridStrategy/GridStrategy.h"
 
 class BoundingBox;
 class TriangularMesh;

@@ -1,15 +1,14 @@
 #include "TriangularMeshStrategy.h"
 
-#include "utilities/logger/Logger.h"
+#include "Core/Timer/Timer.h"
 
-#include "../Triangle/Triangle.h"
-#include "TriangularMesh.h"
+#include "VirtualFluidsBasics/numerics/geometry3d/GbTriFaceMesh3D.h"
+
+#include "geometries/Triangle/Triangle.h"
+#include "geometries/TriangularMesh/TriangularMesh.h"
+
 #include "grid/GridImp.h"
-
-#include "numerics/geometry3d/GbTriFaceMesh3D.h"
 #include "grid/NodeValues.h"
-
-#include "core/Timer/Timer.h"
 
 void TriangularMeshDiscretizationStrategy::removeOddBoundaryCellNodes(GridImp* grid)
 {

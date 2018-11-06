@@ -1,12 +1,9 @@
 #ifndef GRID_CPU_STRATEGY_H
 #define GRID_CPU_STRATEGY_H
 
-#include "GridGenerator/global.h"
+#include "global.h"
 
-#include "../GridStrategy.h"
-
-#include "core/PointerDefinitions.h"
-
+#include "grid/GridStrategy/GridStrategy.h"
 
 class GridImp;
 class TriangularMesh;

@@ -7,12 +7,9 @@
 #ifndef CONGLOMERATE_H
 #define CONGLOMERATE_H
 
-
-#include "../Object.h"
-#include <VirtualFluidsDefinitions.h>
-#include <core/DataTypes.h>
 #include "global.h"
-#include "geometries/ObjectMocks.h"
+
+#include "geometries/Object.h"
 
 #define MAX_NUMBER_OF_OBJECTS 20
 

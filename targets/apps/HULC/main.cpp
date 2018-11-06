@@ -13,24 +13,19 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "core/LbmOrGks.h"
+#include "Core/LbmOrGks.h"
+#include "Core/Input/Input.h"
+#include "Core/StringUtilities/StringUtil.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridProvider.h"
+#include "VirtualFluids_GPU/DataStructureInitializer/GridReaderFiles/GridReader.h"
+#include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Output/FileWriter.h"
 
-#include "DataStructureInitializer/GridReaderGenerator/GridGenerator.h"
-#include "grid/GridBuilder/LevelGridBuilder.h"
-
-#include "Parameter/Parameter.h"
-#include "DataStructureInitializer/GridProvider.h"
-#include "VirtualFluidsBasics/utilities/input/Input.h"
-#include "VirtualFluidsBasics/utilities/StringUtil/StringUtil.h"
-#include "utilities/transformator/TransformatorImp.h"
-#include "io/GridVTKWriter/GridVTKWriter.h"
-
-#include "io/SimulationFileWriter/SimulationFileWriter.h"
-#include "grid/GridBuilder/LevelGridBuilder.h"
-#include "grid/GridBuilder/ParallelGridBuilder.h"
+#include "global.h"
 
 #include "geometries/Sphere/Sphere.h"
 #include "geometries/VerticalCylinder/VerticalCylinder.h"
@@ -39,23 +34,20 @@
 #include "geometries/Conglomerate/Conglomerate.h"
 #include "geometries/TriangularMesh/TriangularMeshStrategy.h"
 
-#include "grid/GridFactory.h"
+#include "grid/GridBuilder/LevelGridBuilder.h"
 #include "grid/GridBuilder/MultipleGridBuilder.h"
-//#include "grid/GridMocks.h"
-//#include "grid/GridStrategy/GridStrategyMocks.h"
-#include "VirtualFluidsBasics/utilities/logger/Logger.h"
-//#include "VirtualFluidsBasics/basics/utilities/UbLogger.h"
-#include "io/STLReaderWriter/STLReader.h"
-#include "io/STLReaderWriter/STLWriter.h"
-#include "Output/FileWriter.h"
-#include "DataStructureInitializer/GridReaderFiles/GridReader.h"
-
-#include "utilities/math/Math.h"
-
 #include "grid/BoundaryConditions/Side.h"
 #include "grid/BoundaryConditions/BoundaryCondition.h"
+#include "grid/GridFactory.h"
 
+#include "io/SimulationFileWriter/SimulationFileWriter.h"
+#include "io/GridVTKWriter/GridVTKWriter.h"
+#include "io/STLReaderWriter/STLReader.h"
+#include "io/STLReaderWriter/STLWriter.h"
+
+#include "utilities/math/Math.h"
 #include "utilities/communication.h"
+#include "utilities/transformator/TransformatorImp.h"
 
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
@@ -267,7 +259,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/gridGeneratorLog.txt" );
+    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
     std::ofstream logFile( "grid/gridGeneratorLog.txt" );
     logging::Logger::addStream(&logFile);
 
@@ -293,7 +285,7 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = false;
+    bool useGridGenerator = true;
 
     if(useGridGenerator){
 
@@ -303,7 +295,7 @@ void multipleLevel(const std::string& configPath)
             MultiGPU
         };
 
-        int testcase = DrivAer;
+        int testcase = MultiGPU;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == DrivAer )
@@ -312,12 +304,12 @@ void multipleLevel(const std::string& configPath)
             real dx = 0.2;
             real vx = 0.05;
 
-            TriangularMesh* DrivAerSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
+            TriangularMesh* DrivAerSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/DrivAer_Fastback_Coarse.stl");
             //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_NoSTLGroups.stl");
             //TriangularMesh* triangularMesh = TriangularMesh::make("M:/TestGridGeneration/STL/DrivAer_Coarse.stl");
             //TriangularMesh* DrivAerSTL = TriangularMesh::make("stl/DrivAer_Fastback_Coarse.stl");
 
-            TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
+            TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/DrivAer_REF_BOX_Adrea.stl");
             //TriangularMesh* DrivAerRefBoxSTL = TriangularMesh::make("stl/DrivAer_REF_BOX_Adrea.stl");
 
             real z0 = 0.318+0.5*dx;
@@ -369,12 +361,12 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DrivAer_Grid");
-            gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/DrivAer_Grid_arrow");
+            gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/DrivAer_Grid");
+            gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/DrivAer_Grid_arrow");
 
             //SimulationFileWriter::write("D:/GRIDGENERATION/files/", gridBuilder, FILEFORMAT::ASCII);
             //SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
-            SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/", gridBuilder, FILEFORMAT::BINARY);
+            SimulationFileWriter::write("F:/Work/Computations/gridGenerator/grid/", gridBuilder, FILEFORMAT::BINARY);
             //SimulationFileWriter::write("grid/", gridBuilder, FILEFORMAT::ASCII);
 
             return;
@@ -509,18 +501,20 @@ void multipleLevel(const std::string& configPath)
             std::ofstream logFile2;
             
             if( generatePart == 0 )
-                logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/gridGeneratorLog.txt" );
+                //logFile2.open( "F:/Work/Computations/gridGenerator/grid/0/gridGeneratorLog.txt" );
+                logFile2.open( "grid/0/gridGeneratorLog.txt" );
             
             if( generatePart == 1 )
-                logFile2.open( "C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/gridGeneratorLog.txt" );
+                //logFile2.open( "F:/Work/Computations/gridGenerator/grid/1/gridGeneratorLog.txt" );
+                logFile2.open( "grid/1/gridGeneratorLog.txt" );
 
             logging::Logger::addStream(&logFile2);
 
             real dx = 1.0 / 40.0;
             real vx = 0.05;
 
-            TriangularMesh* triangularMesh = TriangularMesh::make("C:/Users/lenz/Desktop/Work/gridGenerator/stl/ShpereNotOptimal.stl");
-            //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+            //TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+            TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
 
             // all
             //gridBuilder->addCoarseGrid(-2, -2, -2,  
@@ -585,18 +579,20 @@ void multipleLevel(const std::string& configPath)
             //////////////////////////////////////////////////////////////////////////
 
             if (generatePart == 0) {
-                gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/Test_");
-                gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/Test_Arrow");
+                //gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/0/Test_");
+                //gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/0/Test_Arrow");
             }
             if (generatePart == 1) {
-                gridBuilder->writeGridsToVtk("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/Test_");
-                gridBuilder->writeArrows    ("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/Test_Arrow");
+                //gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/1/Test_");
+                //gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/1/Test_Arrow");
             }
 
             if (generatePart == 0)
-                SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/0/", gridBuilder, FILEFORMAT::ASCII);
+                //SimulationFileWriter::write("F:/Work/Computations/gridGenerator/grid/0/", gridBuilder, FILEFORMAT::ASCII);
+                SimulationFileWriter::write("grid/0/", gridBuilder, FILEFORMAT::ASCII);
             if (generatePart == 1)
-                SimulationFileWriter::write("C:/Users/lenz/Desktop/Work/gridGenerator/grid/1/", gridBuilder, FILEFORMAT::ASCII);
+                //SimulationFileWriter::write("F:/Work/Computations/gridGenerator/grid/1/", gridBuilder, FILEFORMAT::ASCII);
+                SimulationFileWriter::write("grid/1/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
 
@@ -662,7 +658,7 @@ int main( int argc, char* argv[])
         {
             try
             {
-                multipleLevel("C:/Users/lenz/Desktop/Work/gridGenerator/inp/configTest.txt");
+                multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
             }
             catch (const std::exception& e)
             {

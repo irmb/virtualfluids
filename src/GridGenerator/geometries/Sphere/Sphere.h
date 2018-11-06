@@ -7,11 +7,9 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+#include "global.h"
 
-#include "../Object.h"
-#include <VirtualFluidsDefinitions.h>
-#include <core/DataTypes.h>
-#include <core/PointerDefinitions.h>
+#include "geometries/Object.h"
 
 class VF_PUBLIC Sphere : public Object
 {
