@@ -149,18 +149,18 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    return std::make_shared<DemCoProcessor>(grid, peScheduler, comm, forceCalculator, peSolver);
 }
 
-void createSpheres(double radius,  Vector3D origin, double maxX2, double maxX3, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
+void createSpheres(double radius,  Vector3D origin, int maxX2, int maxX3, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
 {
    double d = 2.0*radius;
-   double dividerX2 = maxX2/2.0;
-   double dividerX3 = maxX3/2.0;
+   double dividerX2 = (double)maxX2/2.0;
+   double dividerX3 = (double)maxX3/2.0;
    for (int x3 = 0; x3 < maxX3; x3++)
       for (int x2 = 0; x2 < maxX2; x2++)
          //for (int x1 = 0; x1 < 1; x1++)
          {
             //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*(double)x1, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
             SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
-            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/dividerX2*(double)x2, -uLB+uLB/dividerX2*(double)x3));
+            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/dividerX2*(double)x2, -uLB+uLB/dividerX3*(double)x3));
          }
 }
 
@@ -357,25 +357,9 @@ void thermoplast(string configname)
       if (myid==0) UBLOG(logINFO, "Read plexiglasGeo:end");
       if (myid==0) GbSystem3D::writeGeoObject(plexiglasGeo.get(), pathOut+"/geo/plexiglasGeo", WbWriterVtkXmlBinary::getInstance());
 
-      ////Duese
-      //if (myid==0) UBLOG(logINFO, "Read Duese:start");
-      //SPtr<GbTriFaceMesh3D> s1Geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Duese/s1.stl", "plexiglasGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-      //SPtr<GbTriFaceMesh3D> b1Geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Duese/b1.stl", "plexiglasGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-      //SPtr<GbTriFaceMesh3D> p1Geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Duese/p1.stl", "plexiglasGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-      //SPtr<GbTriFaceMesh3D> p2Geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Duese/p2.stl", "plexiglasGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-      //if (myid==0) UBLOG(logINFO, "Read Duese:end");
-
-
-
       //inflow
       GbCuboid3DPtr geoOutflowMichel(new GbCuboid3D(g_minX1-blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1, g_maxX2 + blockLength, g_maxX3 + blockLength));
       if (myid == 0) GbSystem3D::writeGeoObject(geoOutflowMichel.get(), pathOut + "/geo/geoOutflowMichel", WbWriterVtkXmlASCII::getInstance());
-
-      //GbCuboid3DPtr geoInflow3(new GbCuboid3D(g_minX1-blockLength, g_minX2-radius, g_maxX3-4.0*radius-1, g_minX1+1, g_maxX2+radius, g_maxX3-4.0*radius));
-      //if (myid == 0) GbSystem3D::writeGeoObject(geoInflow3.get(), pathOut + "/geo/geoInflow3", WbWriterVtkXmlASCII::getInstance());
-
-      //GbCuboid3DPtr geoInflow4(new GbCuboid3D(g_minX1-blockLength, g_minX2+4.0*radius, g_maxX3-4.0*radius-1.0, g_minX1+1, g_minX2+4.0*radius+1.0, g_maxX3+radius));
-      //if (myid == 0) GbSystem3D::writeGeoObject(geoInflow4.get(), pathOut + "/geo/geoInflow4", WbWriterVtkXmlASCII::getInstance());
 
       //outflow
       GbCuboid3DPtr geoOutflowPlexiglas(new GbCuboid3D(g_maxX1, g_minX2 - blockLength, g_minX3 - blockLength, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
@@ -391,9 +375,6 @@ void thermoplast(string configname)
       
       SPtr<D3Q27Interactor> outflowMichelInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflowMichel, grid, outflowAdapter, Interactor3D::SOLID));
 
-      //SPtr<D3Q27Interactor> inflowInt3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow3, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      //SPtr<D3Q27Interactor> inflowInt4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow4, grid, noSlipBCAdapter, Interactor3D::SOLID));
-
       //outflow
       SPtr<D3Q27Interactor> outflowPlexiglasInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflowPlexiglas, grid, outflowAdapter, Interactor3D::SOLID));
 
@@ -402,12 +383,6 @@ void thermoplast(string configname)
 
       //plexiglas
       SPtr<Interactor3D> plexiglasInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(plexiglasGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
-
-      ////Duese
-      //SPtr<Interactor3D> s1Int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(s1Geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      //SPtr<Interactor3D> b1Int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(b1Geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      //SPtr<Interactor3D> p1Int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(p1Geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
-      //SPtr<Interactor3D> p2Int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(p2Geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
       SPtr<D3Q27Interactor> testWallInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(testWallGeo, grid, inflowAdapter, Interactor3D::SOLID));
 
@@ -418,11 +393,6 @@ void thermoplast(string configname)
       intHelper.addInteractor(boxInt);
       intHelper.addInteractor(michelInt);
       intHelper.addInteractor(plexiglasInt);
-      //addNozzle(grid,comm,noSlipBCAdapter,intHelper);
-      //////intHelper.addInteractor(s1Int);
-      //////intHelper.addInteractor(b1Int);
-      //////intHelper.addInteractor(p1Int);
-      //////intHelper.addInteractor(p2Int);
       intHelper.addInteractor(inflowInjector5Int);
       intHelper.addInteractor(inflowInjector4Int);
       intHelper.addInteractor(inflowInjector7Int);
@@ -519,7 +489,7 @@ void thermoplast(string configname)
    ////generating spheres 
    //UBLOG(logINFO, "generating spheres - start, rank="<<myid);
    SPtr<UbScheduler> sphereScheduler(new UbScheduler(sphereTime/*10,10,10*/));
-   double toleranz = 0.05;
+   double toleranz = 0.0;
    SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial, toleranz));
    //UBLOG(logINFO, "generating spheres - stop, rank="<<myid);
 
@@ -535,9 +505,11 @@ void thermoplast(string configname)
 
    if (restart)
    {
+      createSphereCoProcessor->setToleranz(0.05);
       restartDemObjectsCoProcessor->restart(restartStep);
+      createSphereCoProcessor->setToleranz(toleranz);
    }
-
+ 
    //set connectors
    //UBLOG(logINFO, "set connectors - start, rank="<<myid);
    InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
@@ -553,19 +525,9 @@ void thermoplast(string configname)
    //sphere prototypes
    //UBLOG(logINFO, "sphere prototypes - start, rank="<<myid);
    double d = 2.0*radiusLB;
-   double maxX2 = 5;
-   double maxX3 = 5;
-   //Vector3D origin1(g_minX1+peMinOffset[0]+radiusLB, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
-   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
-   createSpheres(radiusLB,origin1,maxX2,maxX3,uLB,createSphereCoProcessor);
-
-   //Vector3D origin2(g_minX1+peMinOffset[0]+radiusLB, geoInjector4->getX2Minimum()+3.0*d, geoInjector4->getX3Minimum()+2.0*d);
-   //createSpheres(radiusLB, origin2, uLB, createSphereCoProcessor);
-
-   //maxX2 = 7;
-   //maxX3 = 7;
-   //Vector3D origin3(g_minX1+peMinOffset[0]+radiusLB, geoInjector7->getX2Minimum()+2.0*d, geoInjector7->getX3Minimum()+2.0*d);
-   //createSpheres(radiusLB, origin3, uLB, createSphereCoProcessor);
+   int maxX2 = 5;
+   int maxX3 = 5;
+   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);   createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);   Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.2*d, geoInjector4->getX3Minimum()+1.5*d);   createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);   maxX2 = 7;   maxX3 = 7;   Vector3D origin3(g_minX1+peMinOffset[0]-1.5*d, geoInjector7->getX2Minimum()+0.5*d, geoInjector7->getX3Minimum()+0.5*d);   createSpheres(radiusLB, origin3, maxX2, maxX3, uLB, createSphereCoProcessor);
 
    //for (int x3 = 0; x3 < 6; x3++)
    //   for (int x2 = 0; x2 < 5; x2++)
@@ -592,7 +554,7 @@ void thermoplast(string configname)
    //         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
    //      }
 
-   //createSphereCoProcessor->process(0);
+   createSphereCoProcessor->process(0);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));

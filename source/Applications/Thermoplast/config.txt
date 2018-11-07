@@ -29,7 +29,7 @@ pathGeo = d:/Projects/ThermoPlast/SimGeo
 michel = /michel.stl
 plexiglas = /plexiglas.stl
 
-pathOut = g:/temp/thermoplast9
+pathOut = g:/temp/thermoplast10
 
 logToFile = false
 

@@ -52,7 +52,6 @@ protected:
    Communicator(){}
    Communicator( const Communicator& ){}
    static SPtr<Communicator> instance;
-private:
 };
 
 #endif

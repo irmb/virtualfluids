@@ -83,13 +83,17 @@ public:
    bool hasInterpolationFlag(int dir);
    void deleteInterpolationFlag();
 
+   int  getCollectionOfInterpolationFlagCF();
+   void setCollectionOfInterpolationFlagCF(int flags);
+   
    void setInterpolationFlagCF(int dir);
-   int  getInterpolationFlagCF();
    bool hasInterpolationFlagCF(int dir);
    bool hasInterpolationFlagCF();
 
+   int  getCollectionOfInterpolationFlagFC();
+   void setCollectionOfInterpolationFlagFC(int flags);
+   
    void setInterpolationFlagFC(int dir);
-   int  getInterpolationFlagFC();
    bool hasInterpolationFlagFC(int dir);
    bool hasInterpolationFlagFC();
 
@@ -122,9 +126,6 @@ private:
   int part;
   int level;
   static int counter;
-
-  friend class MPIIORestartCoProcessor;
-  friend class MPIIOMigrationCoProcessor;
 
 };
 
