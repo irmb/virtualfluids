@@ -20,6 +20,7 @@ class MPICommunicator : public Communicator
 {
 private:
    MPICommunicator();
+   MPICommunicator( const MPICommunicator& ){}
 public:
    ~MPICommunicator();
    static SPtr<Communicator> getInstance();

@@ -347,8 +347,8 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
          block3dArray[ic].globalID = block->getGlobalID();
          block3dArray[ic].localID = block->getLocalID();
          block3dArray[ic].level = block->getLevel();
-         block3dArray[ic].interpolationFlagCF = block->getInterpolationFlagCF();
-         block3dArray[ic].interpolationFlagFC = block->getInterpolationFlagFC();
+         block3dArray[ic].interpolationFlagCF = block->getCollectionOfInterpolationFlagCF();
+         block3dArray[ic].interpolationFlagFC = block->getCollectionOfInterpolationFlagFC();
          block3dArray[ic].counter = block->getMaxGlobalID();
          block3dArray[ic].active = block->isActive();
 
@@ -1801,8 +1801,8 @@ void MPIIORestartCoProcessor::readBlocks(int step)
       block->setLocalID(block3dArray[n].localID);
       block->setPart(block3dArray[n].part);
       block->setLevel(block3dArray[n].level);
-      block->interpolationFlagCF = block3dArray[n].interpolationFlagCF;
-      block->interpolationFlagFC = block3dArray[n].interpolationFlagFC;
+      block->setCollectionOfInterpolationFlagCF(block3dArray[n].interpolationFlagCF);
+      block->setCollectionOfInterpolationFlagFC(block3dArray[n].interpolationFlagFC);
 
       grid->addBlock(block);
    }
@@ -2053,7 +2053,7 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->kernel->getDataSet()->setAverageDencity(mAverageDensity);
+      block->getKernel()->getDataSet()->setAverageDencity(mAverageDensity);
    }
 
    MPI_Type_free(&dataSetDoubleType);
@@ -2150,7 +2150,7 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->kernel->getDataSet()->setAverageVelocity(mAverageVelocity);
+      block->getKernel()->getDataSet()->setAverageVelocity(mAverageVelocity);
    }
 
    MPI_Type_free(&dataSetDoubleType);
@@ -2247,7 +2247,7 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->kernel->getDataSet()->setAverageFluctuations(mAverageFluktuations);
+      block->getKernel()->getDataSet()->setAverageFluctuations(mAverageFluktuations);
    }
 
    MPI_Type_free(&dataSetDoubleType);
@@ -2344,7 +2344,7 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->kernel->getDataSet()->setAverageTriplecorrelations(mAverageTriplecorrelations);
+      block->getKernel()->getDataSet()->setAverageTriplecorrelations(mAverageTriplecorrelations);
    }
 
    MPI_Type_free(&dataSetDoubleType);
@@ -2441,7 +2441,7 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->kernel->getDataSet()->setShearStressValues(mShearStressValues);
+      block->getKernel()->getDataSet()->setShearStressValues(mShearStressValues);
    }
 
    MPI_Type_free(&dataSetDoubleType);
@@ -2538,7 +2538,7 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->kernel->getDataSet()->setRelaxationFactor(mRelaxationFactor);
+      block->getKernel()->getDataSet()->setRelaxationFactor(mRelaxationFactor);
    }
 
    MPI_Type_free(&dataSetDoubleType);

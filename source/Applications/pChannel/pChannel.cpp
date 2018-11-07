@@ -90,12 +90,20 @@ void run(string configname)
 
       if (myid == 0) UBLOG(logINFO, "Testcase porous channel");
 
-      LBMReal rho_LB = 0.0;
-
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
       const int baseLevel = 0;
       double deltaXcoarse = deltaXfine*(double)(1<<refineLevel);
+
+      LBMReal rho_LB = 0.0;
+      double rhoReal = 1.2041; //(kg/m3)
+      double uReal = 48; //m/s
+      double lReal = 0.008;//m
+      double hLB = lReal / deltaXcoarse;
+      double Ma = 0.13;//Ma-Real!
+      double csReal = uReal / Ma;
+      LBMUnitConverter unitConverter(lReal, csReal, rhoReal, hLB);
+      if (myid==0) UBLOG(logINFO, unitConverter.toString());
 
       //double coord[6];
 
@@ -393,7 +401,7 @@ void run(string configname)
          //Postrozess
          {
             SPtr<UbScheduler> geoSch(new UbScheduler(1));
-            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+            WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
             ppgeo.process(0);
          }
 
