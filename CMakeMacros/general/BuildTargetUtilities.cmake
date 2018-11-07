@@ -15,6 +15,17 @@ macro(sharedLibs)
 		foreach(CompilerFlag ${CompilerFlags})
 			string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
 		endforeach()
+        
+		set(CompilerFlagsCuda
+                CMAKE_CUDA_FLAGS
+                CMAKE_CUDA_FLAGS_DEBUG
+                CMAKE_CUDA_FLAGS_MINSIZEREL
+                CMAKE_CUDA_FLAGS_RELEASE
+                CMAKE_CUDA_FLAGS_RELWITHDEBINFO
+				)
+		foreach(CompilerFlag ${CompilerFlagsCuda})
+			string(REPLACE "-MD" "-MT" ${CompilerFlag} "${${CompilerFlag}}")
+		endforeach()
 	endif()
 endmacro(sharedLibs)
 
