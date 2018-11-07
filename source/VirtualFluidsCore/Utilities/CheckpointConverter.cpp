@@ -5,6 +5,7 @@
 #include "DataSet3D.h"
 #include "Grid3D.h"
 #include "Communicator.h"
+#include "CoordinateTransformation3D.h"
 #include <stdio.h>
 
 #define BLOCK_SIZE 1024
@@ -165,13 +166,68 @@ void CheckpointConverter::convertBlocks(int step, int procCount)
    // clear the grid
    std::vector<SPtr<Block3D>> blocksVector[25];
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   if (minInitLevel > -1)
    {
-      grid->getBlocks(level, blocksVector[level]);
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-         grid->deleteBlock(block);
+      int maxInitLevel = this->grid->getFinestInitializedLevel();
+      for (int level = minInitLevel; level <= maxInitLevel; level++)
+      {
+         grid->getBlocks(level, blocksVector[level]);
+         for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+            grid->deleteBlock(block);
+      }
    }
+
+   // restore the grid
+   SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());
+   trafo->Tx1 = gridParameters->trafoParams[0];
+   trafo->Tx2 = gridParameters->trafoParams[1];
+   trafo->Tx3 = gridParameters->trafoParams[2];
+   trafo->Sx1 = gridParameters->trafoParams[3];
+   trafo->Sx2 = gridParameters->trafoParams[4];
+   trafo->Sx3 = gridParameters->trafoParams[5];
+   trafo->alpha = gridParameters->trafoParams[6];
+   trafo->beta = gridParameters->trafoParams[7];
+   trafo->gamma = gridParameters->trafoParams[8];
+
+   trafo->toX1factorX1 = gridParameters->trafoParams[9];
+   trafo->toX1factorX2 = gridParameters->trafoParams[10];
+   trafo->toX1factorX3 = gridParameters->trafoParams[11];
+   trafo->toX1delta = gridParameters->trafoParams[12];
+   trafo->toX2factorX1 = gridParameters->trafoParams[13];
+   trafo->toX2factorX2 = gridParameters->trafoParams[14];
+   trafo->toX2factorX3 = gridParameters->trafoParams[15];
+   trafo->toX2delta = gridParameters->trafoParams[16];
+   trafo->toX3factorX1 = gridParameters->trafoParams[17];
+   trafo->toX3factorX2 = gridParameters->trafoParams[18];
+   trafo->toX3factorX3 = gridParameters->trafoParams[19];
+   trafo->toX3delta = gridParameters->trafoParams[20];
+
+   trafo->fromX1factorX1 = gridParameters->trafoParams[21];
+   trafo->fromX1factorX2 = gridParameters->trafoParams[22];
+   trafo->fromX1factorX3 = gridParameters->trafoParams[23];
+   trafo->fromX1delta = gridParameters->trafoParams[24];
+   trafo->fromX2factorX1 = gridParameters->trafoParams[25];
+   trafo->fromX2factorX2 = gridParameters->trafoParams[26];
+   trafo->fromX2factorX3 = gridParameters->trafoParams[27];
+   trafo->fromX2delta = gridParameters->trafoParams[28];
+   trafo->fromX3factorX1 = gridParameters->trafoParams[29];
+   trafo->fromX3factorX2 = gridParameters->trafoParams[30];
+   trafo->fromX3factorX3 = gridParameters->trafoParams[31];
+   trafo->fromX3delta = gridParameters->trafoParams[32];
+
+   trafo->active = gridParameters->active;
+   trafo->transformation = gridParameters->transformation;
+
+   grid->setCoordinateTransformator(trafo);
+
+   grid->setDeltaX(gridParameters->deltaX);
+   grid->setBlockNX(gridParameters->blockNx1, gridParameters->blockNx2, gridParameters->blockNx3);
+   grid->setNX1(gridParameters->nx1);
+   grid->setNX2(gridParameters->nx2);
+   grid->setNX3(gridParameters->nx3);
+   grid->setPeriodicX1(gridParameters->periodicX1);
+   grid->setPeriodicX2(gridParameters->periodicX2);
+   grid->setPeriodicX3(gridParameters->periodicX3);
 
    // regenerate blocks
    for (int n = 0; n < blocksCount; n++)

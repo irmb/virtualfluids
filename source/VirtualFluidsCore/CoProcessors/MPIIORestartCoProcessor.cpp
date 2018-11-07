@@ -1730,11 +1730,9 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    // clear the grid
    std::vector<SPtr<Block3D>> blocksVector;
    grid->getBlocks(0, blocksVector);
-   int del = 0;
    for (SPtr<Block3D> block : blocksVector)
    {
       grid->deleteBlock(block);
-      del++;
    }
 
    // restore the grid

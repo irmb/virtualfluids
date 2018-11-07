@@ -265,8 +265,6 @@ void run(string configname)
          //BC
          intHelper.setBC();
 
-
-
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3, inflowProfileRho;
@@ -275,7 +273,8 @@ void run(string configname)
          inflowProfileVx1.DefineConst("h", channel_hight-d_p);
 
          InitDistributionsBlockVisitor initVisitor;
-         initVisitor.setVx1(inflowProfileVx1);
+         //initVisitor.setVx1(inflowProfileVx1);
+         initVisitor.setVx1(0);
          grid->accept(initVisitor);
 
          ////set connectors
@@ -384,8 +383,8 @@ void run(string configname)
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(AdjForcCoProcessor);
-      calculator->addCoProcessor(migCoProcessor);
-      //calculator->addCoProcessor(restartCoProcessor);
+      //calculator->addCoProcessor(migCoProcessor);
+      calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
 
