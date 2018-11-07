@@ -297,8 +297,8 @@ void run(string configname)
       }
       else
       {
-         //restartCoProcessor->restart((int)restartStep);
-         migCoProcessor->restart((int)restartStep);
+         restartCoProcessor->restart((int)restartStep);
+         //migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
@@ -383,8 +383,8 @@ void run(string configname)
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(AdjForcCoProcessor);
-      //calculator->addCoProcessor(migCoProcessor);
-      calculator->addCoProcessor(restartCoProcessor);
+      calculator->addCoProcessor(migCoProcessor);
+      //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
 
