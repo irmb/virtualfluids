@@ -4,6 +4,84 @@
 
 using namespace std;
 
+void generateCubes(double top_porosity, double bottom_porosity, std::array<double,3> dimensions, std::array<double,3> cubes_in_direction, string pathOut, SPtr<Grid3D> grid, SPtr<BCAdapter> noSlipBCAdapter)
+{
+   double x = dimensions[0];
+   double y = dimensions[1];
+   double z = dimensions[2];
+   double num_x_cubes = cubes_in_direction[0];
+   double num_y_cubes = cubes_in_direction[1];
+   double num_z_cubes = cubes_in_direction[2];
+
+   double H = z / 2.;
+
+   double outer_cube_side_length = 20;
+   double inner_cube_side_length = 10;
+
+   double dx = (x - outer_cube_side_length) / (num_x_cubes - 1);
+   double dy = (y - outer_cube_side_length) / (num_y_cubes - 1);
+   double dz = 20; //(z - outer_cube_side_length) / (num_z_cubes - 1);
+
+   double porosity_step_z = (top_porosity - bottom_porosity) / (num_z_cubes - 1);
+   double porosity = float(bottom_porosity);
+   double cube_side_length = pow(1.-porosity, 1. / 3) * outer_cube_side_length;
+   double initial_x = 0. + outer_cube_side_length / 2.;
+   double initial_y = 0. + outer_cube_side_length / 2.;
+   double initial_z = 0. + outer_cube_side_length / 2.;
+
+   double current_z = initial_z;
+   
+   double cube_side_length_temp = 0; 
+
+   SPtr<GbObject3D> cube(new GbCuboid3D(0, 0, 0, inner_cube_side_length, inner_cube_side_length, inner_cube_side_length));
+   double scaleFactor = cube_side_length / inner_cube_side_length;
+   cube->scale(scaleFactor, scaleFactor, scaleFactor);
+
+   std::vector< SPtr<Interactor3D> > interactors;
+
+   SPtr<D3Q27Interactor> cubeInt(new D3Q27Interactor(cube, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
+   int num = 0;
+   for(int k = 0; k < num_z_cubes; k++)
+   {
+      double current_y = initial_y;
+      for(int j = 0; j < num_y_cubes; j++)
+      {
+         double current_x = initial_x;
+         for(int i = 0; i < num_x_cubes; i++)
+         {
+            cube->setCenterCoordinates(current_x, current_y, current_z);
+            //GbSystem3D::writeGeoObject(cube.get(), pathOut + "/cubes/cube"+ UbSystem::toString(num), WbWriterVtkXmlBinary::getInstance());
+            std::vector< std::shared_ptr<Block3D> > blockVector;
+            UbTupleInt3 blockNX=grid->getBlockNX();
+            SPtr<GbObject3D> geoObject(cubeInt->getGbObject3D());
+            double ext = 0.0;
+            std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
+            grid->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
+            cubeInt->getBcNodeIndicesMap();
+            dynamic_pointer_cast<Interactor3D>(cubeInt)->removeBcBlocks();
+            for (std::shared_ptr<Block3D> block : blockVector)
+            {
+               if (block->getKernel())
+               {
+                  cubeInt->setBCBlock(block);
+               }
+            }
+            cubeInt->initInteractor();
+            num ++;
+            current_x += dx;
+         }
+         current_y += dy;
+      }
+      current_z += dz;
+      porosity += porosity_step_z;
+      cube_side_length_temp = cube_side_length;
+      cube_side_length = pow(1.-porosity, 1. / 3) * outer_cube_side_length;
+      scaleFactor = cube_side_length / cube_side_length_temp;
+      cube->scale(scaleFactor, scaleFactor, scaleFactor);
+   }
+}
+
 //////////////////////////////////////////////////////////////////////////
 void run(string configname)
 {
@@ -13,7 +91,7 @@ void run(string configname)
       config.load(configname);
 
       string          pathOut           = config.getValue<string>("pathOut");
-      //string          pathGeo           = config.getValue<string>("pathGeo");
+      string          pathGeo           = config.getValue<string>("pathGeo");
       int             numOfThreads      = config.getValue<int>("numOfThreads");
       vector<int>     blocknx           = config.getVector<int>("blocknx");
       double          u_LB              = config.getValue<double>("u_LB");
@@ -140,9 +218,9 @@ void run(string configname)
          UBLOG(logINFO, "u_LB                = " << u_LB);
          UBLOG(logINFO, "rho_LB              = " << rho_LB);
          UBLOG(logINFO, "nu_LB               = " << nu_LB);
-         UBLOG(logINFO, "dx coarse           = " << deltaXcoarse << " m");
-         UBLOG(logINFO, "dx fine             = " << deltaXfine << " m");
-         UBLOG(logINFO, "channel_high        = " << channel_hight << " m");
+         UBLOG(logINFO, "dx coarse           = " << deltaXcoarse);
+         UBLOG(logINFO, "dx fine             = " << deltaXfine);
+         UBLOG(logINFO, "channel_high        = " << channel_hight);
          UBLOG(logINFO, "channel_high_LB     = " << channel_hight_LB);
          UBLOG(logINFO, "number of levels    = " << refineLevel + 1);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
@@ -215,6 +293,9 @@ void run(string configname)
          InteractorsHelper intHelper(grid, metisVisitor);
          intHelper.addInteractor(addWallZminInt);
          intHelper.addInteractor(addWallZmaxInt);
+         
+
+
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
          //////////////////////////////////////
@@ -261,11 +342,13 @@ void run(string configname)
             grid->accept(undefNodesVisitor);
          }
 
-
          //BC
          intHelper.setBC();
 
-
+         double bottom_porosity = 0.875;
+         double top_porosity = 1 - (1 - bottom_porosity) / 9;
+         generateCubes(top_porosity, bottom_porosity, std::array<double, 3>{600., 400., 400.}, std::array<double, 3>{30., 20., 9.}, pathOut, grid, noSlipBCAdapter, intHelper);
+         //generateCubes(top_porosity, bottom_porosity, std::array<double, 3>{600., 400., 400.}, std::array<double, 3>{2., 1., 1.}, pathOut, grid, noSlipBCAdapter, intHelper);
 
          grid->accept(bcVisitor);
 
@@ -275,7 +358,7 @@ void run(string configname)
          inflowProfileVx1.DefineConst("h", channel_hight-d_p);
 
          InitDistributionsBlockVisitor initVisitor;
-         initVisitor.setVx1(inflowProfileVx1);
+         //initVisitor.setVx1(inflowProfileVx1);
          grid->accept(initVisitor);
 
          ////set connectors
@@ -381,7 +464,7 @@ void run(string configname)
 
       omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
-      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, (int)endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(AdjForcCoProcessor);
       calculator->addCoProcessor(migCoProcessor);

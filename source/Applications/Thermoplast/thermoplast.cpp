@@ -527,7 +527,14 @@ void thermoplast(string configname)
    double d = 2.0*radiusLB;
    int maxX2 = 5;
    int maxX3 = 5;
-   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);   createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);   Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.2*d, geoInjector4->getX3Minimum()+1.5*d);   createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);   maxX2 = 7;   maxX3 = 7;   Vector3D origin3(g_minX1+peMinOffset[0]-1.5*d, geoInjector7->getX2Minimum()+0.5*d, geoInjector7->getX3Minimum()+0.5*d);   createSpheres(radiusLB, origin3, maxX2, maxX3, uLB, createSphereCoProcessor);
+   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
+   createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);
+   Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.2*d, geoInjector4->getX3Minimum()+1.5*d);
+   createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);
+   maxX2 = 7;
+   maxX3 = 7;
+   Vector3D origin3(g_minX1+peMinOffset[0]-1.5*d, geoInjector7->getX2Minimum()+0.5*d, geoInjector7->getX3Minimum()+0.5*d);
+   createSpheres(radiusLB, origin3, maxX2, maxX3, uLB, createSphereCoProcessor);
 
    //for (int x3 = 0; x3 < 6; x3++)
    //   for (int x2 = 0; x2 < 5; x2++)
