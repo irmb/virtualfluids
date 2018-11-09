@@ -358,6 +358,9 @@ void run(string configname)
 
          InitDistributionsBlockVisitor initVisitor;
          //initVisitor.setVx1(inflowProfileVx1);
+         //initVisitor.setVx1(u_LB);
+         //initVisitor.setVx2(u_LB);
+         //initVisitor.setVx3(u_LB);
          grid->accept(initVisitor);
 
          ////set connectors

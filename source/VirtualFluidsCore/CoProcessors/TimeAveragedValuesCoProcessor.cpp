@@ -88,7 +88,7 @@ void TimeAveragedValuesCoProcessor::init(SPtr<UbScheduler> s)
 
             if ((options&Fluctuations) == Fluctuations)
             {
-               SPtr<AverageValuesArray3D> af = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(7, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
+               SPtr<AverageValuesArray3D> af = SPtr<AverageValuesArray3D>(new AverageValuesArray3D(6, val<1>(nx) + 1, val<2>(nx) + 1, val<3>(nx) + 1, 0.0));
                block->getKernel()->getDataSet()->setAverageFluctuations(af);
             }
 
@@ -320,7 +320,7 @@ void TimeAveragedValuesCoProcessor::addData(const SPtr<Block3D> block)
                if ((options&Density) == Density)
                {
                   data[index++].push_back((*ar)(Rho, ix1, ix2, ix3));
-                  data[index++].push_back((*af)(RhoF, ix1, ix2, ix3));
+                  data[index++].push_back((*ar)(RhoF, ix1, ix2, ix3));
                }
 
                if ((options&Velocity) == Velocity)
@@ -437,9 +437,9 @@ void TimeAveragedValuesCoProcessor::calculateAverageValues(double timeSteps)
                         if ((options&Density) == Density)
                         {
                            rho = (*ar)(Rho, ix1, ix2, ix3) / timeSteps;
-                           rhof = (*af)(RhoF, ix1, ix2, ix3) / timeSteps;
+                           rhof = (*ar)(RhoF, ix1, ix2, ix3) / timeSteps;
                            (*ar)(Rho, ix1, ix2, ix3) = rho; 
-                           (*af)(RhoF, ix1, ix2, ix3) = rhof - rho*rho;
+                           (*ar)(RhoF, ix1, ix2, ix3) = rhof - rho*rho;
                         }
 
                         //mean velocity
@@ -570,7 +570,7 @@ void TimeAveragedValuesCoProcessor::calculateSubtotal(double step)
                               if ((options&Density) == Density)
                               {
                                  (*ar)(0, ix1, ix2, ix3) = (*ar)(Rho, ix1, ix2, ix3) + rho;
-                                 (*af)(RhoF, ix1, ix2, ix3) = (*af)(RhoF, ix1, ix2, ix3) + rho*rho;
+                                 (*ar)(RhoF, ix1, ix2, ix3) = (*ar)(RhoF, ix1, ix2, ix3) + rho*rho;
                               }
 
                               //mean velocity
@@ -931,7 +931,6 @@ void TimeAveragedValuesCoProcessor::calculateAverageValuesForPlane(std::vector<I
    values.push_back(lsaVx);
    values.push_back(lsaVy);
    values.push_back(lsaVz);
-   values.push_back(lsaVz);
 
    values.push_back(lsaVxx);
    values.push_back(lsaVyy);
@@ -939,7 +938,6 @@ void TimeAveragedValuesCoProcessor::calculateAverageValuesForPlane(std::vector<I
    values.push_back(lsaVxy);
    values.push_back(lsaVxz);
    values.push_back(lsaVyz);
-
 
    values.push_back(lsaVxxx);
    values.push_back(lsaVxxy);
