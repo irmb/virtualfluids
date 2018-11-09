@@ -23,6 +23,8 @@
 //! structures BoundaryCondition are being written in blocks containing each of them BLOCK_SIZE structures
 #define BLOCK_SIZE 1024
 
+using namespace MPIIODataStructures;
+
 MPIIORestartCoProcessor::MPIIORestartCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path,
    SPtr<Communicator> comm) :
@@ -423,7 +425,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
    }
 
    dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
-   DataSet* dataSetArray = new DataSet[blocksCount];
+   DataSetRestart* dataSetArray = new DataSetRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
 
    if (comm->isRoot())
@@ -558,13 +560,13 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSet) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSet) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -596,7 +598,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + 3 * sizeof(dataSetParam)), dataSetArray, blocksCount, dataSetType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSet)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSetRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -656,7 +658,7 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values of the AverageDensityArray in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -724,13 +726,13 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -760,7 +762,7 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -793,7 +795,7 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -861,13 +863,13 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -897,7 +899,7 @@ void MPIIORestartCoProcessor::writeAverageVelocityArray(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -930,7 +932,7 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -998,13 +1000,13 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -1034,7 +1036,7 @@ void MPIIORestartCoProcessor::writeAverageFluktuationsArray(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -1067,7 +1069,7 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -1135,13 +1137,13 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -1171,7 +1173,7 @@ void MPIIORestartCoProcessor::writeAverageTripleArray(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -1204,7 +1206,7 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -1272,13 +1274,13 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -1308,7 +1310,7 @@ void MPIIORestartCoProcessor::writeShearStressValArray(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -1341,7 +1343,7 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -1409,13 +1411,13 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
    {
       if (rank == 0)
       {
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&write_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_write_offset = write_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank<size - 1)
             MPI_Send(&next_write_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -1445,7 +1447,7 @@ void MPIIORestartCoProcessor::writeRelaxationFactor(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    // each process writes the dataSet arrays
    if (doubleValuesArray.size() > 0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -1487,7 +1489,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   BCAdd* bcAddArray = new BCAdd[blocksCount];
+   BCAddRestart* bcAddArray = new BCAddRestart[blocksCount];
    std::vector<BoundaryCondition> bcVector;
    std::vector<int> bcindexmatrixV;
    std::vector<int> indexContainerV;
@@ -1578,7 +1580,7 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
       bcVector.push_back(*bouCond);
    }
 
-   byteCount = bcBlockCount * BLOCK_SIZE * sizeof(BoundaryCondition) + blocksCount * sizeof(BCAdd) + sizeof(int) * (blocksCount * boundCondParamStr.bcindexmatrixCount + count_indexContainer);
+   byteCount = bcBlockCount * BLOCK_SIZE * sizeof(BoundaryCondition) + blocksCount * sizeof(BCAddRestart) + sizeof(int) * (blocksCount * boundCondParamStr.bcindexmatrixCount + count_indexContainer);
 
    // write to the file
    // all processes calculate their offsets (quantity of bytes that the process is going to write) 
@@ -1639,13 +1641,13 @@ void MPIIORestartCoProcessor::writeBoundaryConds(int step)
    MPI_File_write_at(file_handler, write_offset, bcAddArray, blocksCount, boundCondTypeAdd, MPI_STATUS_IGNORE);
    // each process writes boundary conditions
    if (bcVector.size()>0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + blocksCount * sizeof(BCAdd)), &bcVector[0], bcBlockCount, boundCondType1000, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + blocksCount * sizeof(BCAddRestart)), &bcVector[0], bcBlockCount, boundCondType1000, MPI_STATUS_IGNORE);
    // each process writes bcindexmatrix values
    if (bcindexmatrixV.size()>0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + blocksCount * sizeof(BCAdd) + bcBlockCount*BLOCK_SIZE * sizeof(BoundaryCondition)), &bcindexmatrixV[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + blocksCount * sizeof(BCAddRestart) + bcBlockCount*BLOCK_SIZE * sizeof(BoundaryCondition)), &bcindexmatrixV[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
    // each process writes indexContainer values
    if (indexContainerV.size()>0)
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + blocksCount * sizeof(BCAdd) + bcBlockCount*BLOCK_SIZE * sizeof(BoundaryCondition) + blocksCount*boundCondParamStr.bcindexmatrixCount * sizeof(int)), &indexContainerV[0], count_indexContainer, MPI_INT, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + blocksCount * sizeof(BCAddRestart) + bcBlockCount*BLOCK_SIZE * sizeof(BoundaryCondition) + blocksCount*boundCondParamStr.bcindexmatrixCount * sizeof(int)), &indexContainerV[0], count_indexContainer, MPI_INT, MPI_STATUS_IGNORE);
 
    MPI_File_sync(file_handler);
    MPI_File_close(&file_handler);
@@ -1847,7 +1849,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), &dataSetParamStr2, 1, dataSetParamType, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + 2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSet* dataSetArray = new DataSet[blocksCount];
+   DataSetRestart* dataSetArray = new DataSetRestart[blocksCount];
    double doubleCountInBlock = dataSetParamStr1.nx[0] * dataSetParamStr1.nx[1] * dataSetParamStr1.nx[2] * dataSetParamStr1.nx[3] +
       dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
       dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
@@ -1861,20 +1863,20 @@ void MPIIORestartCoProcessor::readDataSet(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSet) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSet) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + 3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
    }
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam)), dataSetArray, blocksCount, dataSetType, MPI_STATUS_IGNORE);
-   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSet)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSetRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -1993,7 +1995,7 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2009,13 +2011,13 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -2023,7 +2025,7 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    if (doubleCountInBlock > 0)
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -2090,7 +2092,7 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2106,13 +2108,13 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -2120,7 +2122,7 @@ void MPIIORestartCoProcessor::readAverageVelocityArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    if (doubleCountInBlock > 0)
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -2187,7 +2189,7 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2203,13 +2205,13 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -2217,7 +2219,7 @@ void MPIIORestartCoProcessor::readAverageFluktuationsArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    if (doubleCountInBlock > 0)
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -2284,7 +2286,7 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2300,13 +2302,13 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -2314,7 +2316,7 @@ void MPIIORestartCoProcessor::readAverageTripleArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    if (doubleCountInBlock > 0)
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -2381,7 +2383,7 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2397,13 +2399,13 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -2411,7 +2413,7 @@ void MPIIORestartCoProcessor::readShearStressValArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    if (doubleCountInBlock > 0)
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -2478,7 +2480,7 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
    MPI_File_read_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_read_at(file_handler, (MPI_Offset)(size * sizeof(int)), &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallRestart* dataSetSmallArray = new DataSetSmallRestart[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
                                                                            
@@ -2494,13 +2496,13 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+         next_read_offset = read_offset + sizeof(dataSetParam) + blocksCount*(sizeof(DataSetSmallRestart) + doubleCountInBlock * sizeof(double));
          if (rank < size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
@@ -2508,7 +2510,7 @@ void MPIIORestartCoProcessor::readRelaxationFactor(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallArray, blocksCount, dataSetSmallType, MPI_STATUS_IGNORE);
    if (doubleCountInBlock > 0)
-      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmall)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRestart)), &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
    MPI_File_close(&file_handler);
 
    if (comm->isRoot())
@@ -2587,7 +2589,7 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
    MPI_Type_commit(&bcindexmatrixType);
 
    size_t dataCount = dataCount1000 * BLOCK_SIZE;
-   BCAdd* bcAddArray = new BCAdd[blocksCount];
+   BCAddRestart* bcAddArray = new BCAddRestart[blocksCount];
    BoundaryCondition* bcArray = new BoundaryCondition[dataCount];
    BoundaryCondition* nullBouCond = new BoundaryCondition();
    memset(nullBouCond, 0, sizeof(BoundaryCondition));
@@ -2601,22 +2603,22 @@ void MPIIORestartCoProcessor::readBoundaryConds(int step)
    {
       if (rank == 0)
       {
-         next_read_offset = read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition) + (blocksCount * boundCondParamStr.bcindexmatrixCount + dataCount2) * sizeof(int);
+         next_read_offset = read_offset + blocksCount * sizeof(BCAddRestart) + dataCount * sizeof(BoundaryCondition) + (blocksCount * boundCondParamStr.bcindexmatrixCount + dataCount2) * sizeof(int);
          MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, 1, 5, MPI_COMM_WORLD);
       }
       else
       {
          MPI_Recv(&read_offset, 1, MPI_LONG_LONG_INT, rank - 1, 5, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-         next_read_offset = read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition) + (blocksCount * boundCondParamStr.bcindexmatrixCount + dataCount2) * sizeof(int);
+         next_read_offset = read_offset + blocksCount * sizeof(BCAddRestart) + dataCount * sizeof(BoundaryCondition) + (blocksCount * boundCondParamStr.bcindexmatrixCount + dataCount2) * sizeof(int);
          if (rank<size - 1)
             MPI_Send(&next_read_offset, 1, MPI_LONG_LONG_INT, rank + 1, 5, MPI_COMM_WORLD);
       }
    }
 
    MPI_File_read_at(file_handler, read_offset, bcAddArray, blocksCount, boundCondTypeAdd, MPI_STATUS_IGNORE);
-   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAdd)), &bcArray[0], dataCount1000, boundCondType1000, MPI_STATUS_IGNORE);
-   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition)), &intArray1[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
-   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAdd) + dataCount * sizeof(BoundaryCondition) + blocksCount * boundCondParamStr.bcindexmatrixCount * sizeof(int)), &intArray2[0], dataCount2, MPI_INT, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAddRestart)), &bcArray[0], dataCount1000, boundCondType1000, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAddRestart) + dataCount * sizeof(BoundaryCondition)), &intArray1[0], blocksCount, bcindexmatrixType, MPI_STATUS_IGNORE);
+   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + blocksCount * sizeof(BCAddRestart) + dataCount * sizeof(BoundaryCondition) + blocksCount * boundCondParamStr.bcindexmatrixCount * sizeof(int)), &intArray2[0], dataCount2, MPI_INT, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
 
