@@ -104,7 +104,28 @@ CheckpointConverter::CheckpointConverter(SPtr<Grid3D> grid, const std::string& p
    MPI_Type_create_struct(3, blocksDataSetWrite, offsetsDataSetWrite, typesDataSetWrite, &dataSetTypeWrite);
    MPI_Type_commit(&dataSetTypeWrite);
 
+
+   //-----------------------------------------------------------------------
+
+   MPI_Type_contiguous(4, MPI_INT, &dataSetSmallTypeRead);
+   MPI_Type_commit(&dataSetSmallTypeRead);
+
+   MPI_Type_contiguous(1, MPI_INT, &dataSetSmallTypeWrite);
+   MPI_Type_commit(&dataSetSmallTypeWrite);
+
+   //-----------------------------------------------------------------------
+
+   MPI_Type_contiguous(4, MPI_INT, &boundCondParamType);
+   MPI_Type_commit(&boundCondParamType);
+
+   MPI_Type_contiguous(6, MPI_INT, &boundCondTypeAddRead);
+   MPI_Type_commit(&boundCondTypeAddRead);
+  
+   MPI_Type_contiguous(3, MPI_INT, &boundCondTypeAddWrite);
+   MPI_Type_commit(&boundCondTypeAddWrite);
+
 }
+
 //////////////////////////////////////////////////////////////////////////
 CheckpointConverter::~CheckpointConverter()
 {
@@ -115,6 +136,11 @@ CheckpointConverter::~CheckpointConverter()
    MPI_Type_free(&dataSetTypeRead);
    MPI_Type_free(&dataSetTypeWrite);
    MPI_Type_free(&boundCondType1000);
+   MPI_Type_free(&dataSetSmallTypeRead);
+   MPI_Type_free(&dataSetSmallTypeWrite);
+   MPI_Type_free(&boundCondParamType);
+   MPI_Type_free(&boundCondTypeAddRead);
+   MPI_Type_free(&boundCondTypeAddWrite);
 }
 
 //------------------------------------------- READ -----------------------------------------------
@@ -139,7 +165,7 @@ void CheckpointConverter::convertBlocks(int step, int procCount)
    // file to read from
    MPI_File file_handlerR;
    std::string filenameR = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpBlocks.bin";
-   int rcR = MPI_File_open(MPI_COMM_WORLD, filenameR.c_str(), MPI_MODE_RDWR, MPI_INFO_NULL, &file_handlerR);
+   int rcR = MPI_File_open(MPI_COMM_WORLD, filenameR.c_str(), MPI_MODE_RDONLY/*MPI_MODE_RDWR*/, MPI_INFO_NULL, &file_handlerR);
    if (rcR != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filenameR);
 
    // file to write to
@@ -260,6 +286,15 @@ void CheckpointConverter::convertBlocks(int step, int procCount)
 
    // write all data to the file
    MPI_Offset write_offset = read_offset;
+
+   //for (int ic = 0; ic < blocksCount; ic++)
+   //{
+   //   std::cout << "rank=" << 0 << ",ic=" << ic<< ",write_offset=" << write_offset + sizeof(GridParam);
+   //   std::cout << " " << block3dArray[ic].x1 << " " << block3dArray[ic].x2 << " " << block3dArray[ic].x3 << " " << block3dArray[ic].bundle;
+   //   std::cout << " " << block3dArray[ic].rank << " " << block3dArray[ic].lrank << " " << block3dArray[ic].part << " " << block3dArray[ic].globalID;
+   //   std::cout << " " << block3dArray[ic].localID << " " << block3dArray[ic].level << " " << block3dArray[ic].interpolationFlagCF << " " << block3dArray[ic].interpolationFlagFC;
+   //   std::cout << " " << block3dArray[ic].counter << " " << block3dArray[ic].active << std::endl;
+   //}
    MPI_File_write_at(file_handlerW, 0, &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
    MPI_File_write_at(file_handlerW, write_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
    MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
@@ -285,8 +320,15 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
    // file to write to
    MPI_File file_handlerW;
    std::string filenameW = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
-   int rcW = MPI_File_open(MPI_COMM_WORLD, filenameW.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &file_handlerW);
+   int rcW = MPI_File_open(MPI_COMM_WORLD, filenameW.c_str(), MPI_MODE_CREATE | MPI_MODE_WRONLY/*MPI_MODE_RDWR*/, MPI_INFO_NULL, &file_handlerW);
    if (rcW != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filenameW);
+
+   //ßß
+   //MPI_File file_handler7;
+   //std::string filename7 = path + "/mig/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
+   //int rc7 = MPI_File_open(MPI_COMM_WORLD, filename7.c_str(), MPI_MODE_RDONLY, MPI_INFO_NULL, &file_handler7);
+   //if (rc7 != MPI_SUCCESS) throw UbException(UB_EXARGS, "couldn't open file " + filename7);
+   //ßß
 
    double start, finish;
    start = MPI_Wtime();
@@ -314,15 +356,33 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
          dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
          dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
 
+      MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+      MPI_Type_commit(&dataSetDoubleType);
+      //ßß
+      //DataSetWrite* dataSetArray123 = new DataSetWrite[blocksCount];
+      //std::vector<double> doubleValuesArray123(blocksCount * doubleCountInBlock); // double-values in all blocks 
+      //ßß
+
       dataSetReadArray = new DataSetRead[blocksCount];
       dataSetWriteArray = new DataSetWrite[blocksCount];
       doubleValuesArray.resize(blocksCount * doubleCountInBlock);
 
+      //std::cout << "rank=" << pc << ", read_offset=" << read_offset + 3 * sizeof(dataSetParam) << std::endl;
+
       // read data
       MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam)), dataSetReadArray, blocksCount, dataSetTypeRead, MPI_STATUS_IGNORE);
       MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSetRead)), 
-         &doubleValuesArray[0], blocksCount * (int)doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
-     
+         &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+      //MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(dataSetParam) + blocksCount * sizeof(DataSetRead)), 
+      //   &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
+
+      //std::cout << "rank=" << pc << ", doubleValuesArray[0]=" << doubleValuesArray[0] << ", doubleValuesArray[last]=" << doubleValuesArray[blocksCount * (int)doubleCountInBlock - 1] << std::endl;
+      //std::cout << "rank1=" << pc << " " << std::setprecision(15) << doubleValuesArray[3046] << std::endl;
+      //std::cout << "rank2=" << pc << " " << std::setprecision(15) << doubleValuesArray[3047] << std::endl;
+      //std::cout << "rank3=" << pc << " " << std::setprecision(15) << doubleValuesArray[3048] << std::endl;
+      //std::cout << "rank4=" << pc << " " << std::setprecision(15) << doubleValuesArray[3049] << std::endl;
+      //std::cout << "rank5=" << pc << " " << std::setprecision(15) << doubleValuesArray[3050] << std::endl;
+
       // offset to read the data of the next process
       read_offset = read_offset + (MPI_Offset)(3 * sizeof(dataSetParam) + blocksCount * (sizeof(DataSetRead) + doubleCountInBlock * sizeof(double)));
 
@@ -338,6 +398,8 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
       {
          SPtr<Block3D> block = grid->getBlock(dataSetReadArray[nb].x1, dataSetReadArray[nb].x2, dataSetReadArray[nb].x3, dataSetReadArray[nb].level);
          dataSetWriteArray[nb].globalID = block->getGlobalID();
+         //std::cout << "rank=" << pc << ",nb=" << nb << dataSetReadArray[nb].x1 << " " << dataSetReadArray[nb].x2 << " " << dataSetReadArray[nb].x3 << " " << dataSetReadArray[nb].level;
+         //std::cout << ", block="<< block->getGlobalID() <<std::endl;
          dataSetWriteArray[nb].ghostLayerWidth = dataSetReadArray[nb].ghostLayerWidth;
          dataSetWriteArray[nb].collFactor = dataSetReadArray[nb].collFactor;
          dataSetWriteArray[nb].deltaT = dataSetReadArray[nb].deltaT;
@@ -345,15 +407,36 @@ void CheckpointConverter::convertDataSet(int step, int procCount)
          dataSetWriteArray[nb].withForcing = dataSetReadArray[nb].withForcing;
 
          write_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + dataSetWriteArray[nb].globalID * sizeofOneDataSet);
+         //std::cout << "rank=" << pc << ", block->getGlobalID()=" << block->getGlobalID() << ", doubleCountInBlock=" << doubleCountInBlock << std::endl;
          MPI_File_write_at(file_handlerW, write_offset, &dataSetWriteArray[nb], 1, dataSetTypeWrite, MPI_STATUS_IGNORE);
          MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(DataSetWrite)), &doubleValuesArray[nb * doubleCountInBlock], 
             doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+         //MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(DataSetWrite)), &doubleValuesArray[nb * doubleCountInBlock], 
+         //   1, dataSetDoubleType, MPI_STATUS_IGNORE);
+//ßß
+         //MPI_Offset read_offset123 = (MPI_Offset)(3 * sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
+         //MPI_File_read_at(file_handlerW, read_offset123, &dataSetArray123[nb], 1, dataSetTypeWrite, MPI_STATUS_IGNORE);
+         //MPI_File_read_at(file_handlerW, (MPI_Offset)(read_offset123 + sizeof(DataSetWrite)), &doubleValuesArray123[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         //std::cout << ", doubleValuesArray123[0]=" << doubleValuesArray123[0] << ", doubleValuesArray123[last]=" << doubleValuesArray123[doubleCountInBlock - 1] << std::endl;
+        
+         //for (int as = 0; as < doubleCountInBlock; as++)
+         //   if (doubleValuesArray123[nb * doubleCountInBlock + as] != doubleValuesArray[nb * doubleCountInBlock + as])
+         //      std::cout << "nb="<<nb<< ":"<<doubleValuesArray123[nb * doubleCountInBlock + as] << "!=" << doubleValuesArray[nb * doubleCountInBlock + as] << std::endl;
+//ßß
       }
+      //std::cout << "rank11=" << pc << " " << std::setprecision(15) << doubleValuesArray123[3046] << std::endl;
+      //std::cout << "rank22=" << pc << " " << std::setprecision(15) << doubleValuesArray123[3047] << std::endl;
+      //std::cout << "rank33=" << pc << " " << std::setprecision(15) << doubleValuesArray123[3048] << std::endl;
+      //std::cout << "rank44=" << pc << " " << std::setprecision(15) << doubleValuesArray123[3049] << std::endl;
+      //std::cout << "rank55=" << pc << " " << std::setprecision(15) << doubleValuesArray123[3050] << std::endl;
 
+      MPI_Type_free(&dataSetDoubleType);
       delete[] dataSetReadArray;
       delete[] dataSetWriteArray;
    }
-
+//ßß
+   //MPI_File_close(&file_handler7);
+//ßß
    MPI_File_close(&file_handlerR);
 
    MPI_File_sync(file_handlerW);
@@ -436,11 +519,13 @@ void CheckpointConverter::convert___Array(int step, int procCount, std::string f
       dataSetSmallWriteArray = new DataSetSmallWrite[blocksCount];
       doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
       doubleValuesArray.resize(blocksCount * doubleCountInBlock); 
+      MPI_Type_contiguous(doubleCountInBlock, MPI_DOUBLE, &dataSetDoubleType);
+      MPI_Type_commit(&dataSetDoubleType);
 
-      MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallReadArray, blocksCount * 4, MPI_INT, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + sizeof(dataSetParam)), dataSetSmallReadArray, blocksCount, dataSetSmallTypeRead, MPI_STATUS_IGNORE);
       if (doubleCountInBlock > 0)
          MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + sizeof(dataSetParam) + blocksCount * sizeof(DataSetSmallRead)), 
-            &doubleValuesArray[0], blocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            &doubleValuesArray[0], blocksCount, dataSetDoubleType, MPI_STATUS_IGNORE);
 
       read_offset = read_offset + sizeof(dataSetParam) + blocksCount * (sizeof(DataSetSmallRead) + doubleCountInBlock * sizeof(double));
 
@@ -454,11 +539,12 @@ void CheckpointConverter::convert___Array(int step, int procCount, std::string f
          dataSetSmallWriteArray[nb].globalID = block->getGlobalID();    
 
          write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallWriteArray[nb].globalID * sizeofOneDataSet);
-         MPI_File_write_at(file_handlerW, write_offset, &dataSetSmallWriteArray[nb], 1, MPI_INT, MPI_STATUS_IGNORE);
+         MPI_File_write_at(file_handlerW, write_offset, &dataSetSmallWriteArray[nb], 1, dataSetSmallTypeWrite, MPI_STATUS_IGNORE);
          MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(DataSetSmallWrite)), 
-            &doubleValuesArray[nb * doubleCountInBlock], doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
+            &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
       }
 
+      MPI_Type_free(&dataSetDoubleType);
       delete[] dataSetSmallReadArray;
       delete[] dataSetSmallWriteArray;
    }
@@ -519,7 +605,7 @@ void CheckpointConverter::convertBC(int step, int procCount)
       // read count of indexContainer values in all blocks
       MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 2 * sizeof(int)), &dataCount2, 1, MPI_INT, MPI_STATUS_IGNORE);
       // read count of bcindexmatrix values in every block
-      MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(int)), &boundCondParamStr, 4, MPI_INT, MPI_STATUS_IGNORE);
+      MPI_File_read_at(file_handlerR, (MPI_Offset)(read_offset + 3 * sizeof(int)), &boundCondParamStr, 1, boundCondParamType, MPI_STATUS_IGNORE);
 
       bcAddReadArray = new BCAddRead[blocksCount];
       bcAddWriteArray = new BCAddWrite[blocksCount];
@@ -527,6 +613,8 @@ void CheckpointConverter::convertBC(int step, int procCount)
       bcArray = new BoundaryCondition[dataCount];
       intArray1 = new int[blocksCount * boundCondParamStr.bcindexmatrixCount];
       intArray2 = new int[dataCount2];
+      MPI_Type_contiguous(boundCondParamStr.bcindexmatrixCount, MPI_INT, &bcindexmatrixType);
+      MPI_Type_commit(&bcindexmatrixType);
 
       // read data arrays
       MPI_File_read_at(file_handlerR, read_offset1, bcAddReadArray, blocksCount * 6, MPI_INT, MPI_STATUS_IGNORE);
@@ -555,6 +643,7 @@ void CheckpointConverter::convertBC(int step, int procCount)
          write_offsetIndex = (MPI_Offset)(sizeof(boundCondParam) + bcAddWriteArray[nb].globalID * sizeof(size_t));
          MPI_File_write_at(file_handlerW, write_offsetIndex, &write_offset, 1, MPI_LONG_LONG_INT, MPI_STATUS_IGNORE);
 
+         //MPI_File_write_at(file_handlerW, write_offset, &bcAddWriteArray[nb], 1, boundCondTypeAddWrite, MPI_STATUS_IGNORE);
          MPI_File_write_at(file_handlerW, write_offset, &bcAddWriteArray[nb], 3, MPI_INT, MPI_STATUS_IGNORE);
          if (bcAddWriteArray[nb].boundCond_count > 0)
             MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(BCAddWrite)), &bcArray[indexBC], bcAddWriteArray[nb].boundCond_count, boundCondType, MPI_STATUS_IGNORE);
@@ -562,7 +651,7 @@ void CheckpointConverter::convertBC(int step, int procCount)
 
          if (boundCondParamStr.bcindexmatrixCount > 0)
             MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(BCAddWrite) + bcAddWriteArray[nb].boundCond_count * sizeof(BoundaryCondition)),
-               &intArray1[nb * boundCondParamStr.bcindexmatrixCount * sizeof(int)], boundCondParamStr.bcindexmatrixCount, MPI_INT, MPI_STATUS_IGNORE);
+               &intArray1[nb * boundCondParamStr.bcindexmatrixCount], boundCondParamStr.bcindexmatrixCount, MPI_INT, MPI_STATUS_IGNORE);
 
          if (bcAddWriteArray[nb].indexContainer_count > 0)
             MPI_File_write_at(file_handlerW, (MPI_Offset)(write_offset + sizeof(BCAddWrite) + bcAddWriteArray[nb].boundCond_count * sizeof(BoundaryCondition) + boundCondParamStr.bcindexmatrixCount * sizeof(int)),
@@ -572,6 +661,7 @@ void CheckpointConverter::convertBC(int step, int procCount)
          write_offset += sizeof(BCAddWrite) + bcAddWriteArray[nb].boundCond_count * sizeof(BoundaryCondition) + boundCondParamStr.bcindexmatrixCount * sizeof(int) + bcAddWriteArray[nb].indexContainer_count * sizeof(int);
       }
 
+      MPI_Type_free(&bcindexmatrixType);
       delete[] bcAddReadArray;
       delete[] bcAddWriteArray;
       delete[] bcArray;

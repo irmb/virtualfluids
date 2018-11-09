@@ -203,8 +203,9 @@ protected:
    SPtr<Grid3D> grid;
 
 private:
-   MPI_Datatype gridParamType, block3dType, dataSetParamType, boundCondType;
-   MPI_Datatype dataSetTypeRead, dataSetTypeWrite, boundCondType1000;
+   MPI_Datatype gridParamType, block3dType;
+   MPI_Datatype dataSetParamType, dataSetDoubleType, dataSetTypeRead, dataSetTypeWrite, dataSetSmallTypeRead, dataSetSmallTypeWrite;
+   MPI_Datatype boundCondType, boundCondType1000, boundCondParamType, boundCondTypeAddRead, boundCondTypeAddWrite, bcindexmatrixType;
 
    boundCondParam boundCondParamStr;
 };
