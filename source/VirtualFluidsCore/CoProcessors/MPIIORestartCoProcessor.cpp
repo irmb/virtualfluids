@@ -488,7 +488,7 @@ void MPIIORestartCoProcessor::writeDataSet(int step)
                dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
                dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
 
-            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDencity();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
             if (averageDensityArray)
                arrPresence.isAverageDensityArrayPresent = true;
             else
@@ -678,7 +678,7 @@ void MPIIORestartCoProcessor::writeAverageDensityArray(int step)
          dataSetSmallArray[ic].x3 = block->getX3();
          dataSetSmallArray[ic].level = block->getLevel();
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDencity();
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
 
          if (firstBlock) // when first (any) valid block...
          {
@@ -2053,7 +2053,7 @@ void MPIIORestartCoProcessor::readAverageDensityArray(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].x1, dataSetSmallArray[n].x2, dataSetSmallArray[n].x3, dataSetSmallArray[n].level);
-      block->getKernel()->getDataSet()->setAverageDencity(mAverageDensity);
+      block->getKernel()->getDataSet()->setAverageDensity(mAverageDensity);
    }
 
    MPI_Type_free(&dataSetDoubleType);

@@ -483,7 +483,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
                dataSetParamStr2.nx[0] * dataSetParamStr2.nx[1] * dataSetParamStr2.nx[2] * dataSetParamStr2.nx[3] +
                dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
 
-            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDencity();
+            SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
             if (averageDensityArray)
                arrPresence.isAverageDensityArrayPresent = true;
             else
@@ -650,7 +650,7 @@ void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
       {
          dataSetSmallArray[ic].globalID = block->getGlobalID();     // id of the block needed to find it while regenerating the grid
 
-         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDencity();
+         SPtr< CbArray4D<LBMReal, IndexerX4X3X2X1> > averageDensityArray = block->getKernel()->getDataSet()->getAverageDensity();
 
          if (firstBlock) // when first (any) valid block...
          {
@@ -1884,7 +1884,7 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
       //std::cout << "rank=" << rank << ", dataSetArray[n].globalID=" << dataSetSmallArray[n].globalID << std::endl;
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetSmallArray[n].globalID);
-      block->getKernel()->getDataSet()->setAverageDencity(mAverageDensity);
+      block->getKernel()->getDataSet()->setAverageDensity(mAverageDensity);
    }
 
    MPI_Type_free(&dataSetDoubleType);

@@ -347,8 +347,7 @@ void run(string configname)
 
          double bottom_porosity = 0.875;
          double top_porosity = 1 - (1 - bottom_porosity) / 9;
-         generateCubes(top_porosity, bottom_porosity, std::array<double, 3>{600., 400., 400.}, std::array<double, 3>{30., 20., 9.}, pathOut, grid, noSlipBCAdapter, intHelper);
-         //generateCubes(top_porosity, bottom_porosity, std::array<double, 3>{600., 400., 400.}, std::array<double, 3>{2., 1., 1.}, pathOut, grid, noSlipBCAdapter, intHelper);
+         generateCubes(top_porosity, bottom_porosity, std::array<double, 3>{600., 400., 400.}, std::array<double, 3>{30., 20., 9.}, pathOut, grid, noSlipBCAdapter);
 
          grid->accept(bcVisitor);
 
@@ -418,42 +417,28 @@ void run(string configname)
       std::vector<double> levelCoords;
       std::vector<int> levels;
       std::vector<double> bounds;
-      //bounds.push_back(0);
-      //bounds.push_back(0);
-      //bounds.push_back(0);
-      //bounds.push_back(0.004);
-      //bounds.push_back(0.002);
-      //bounds.push_back(0.003);
-      //levels.push_back(1);
-      //levels.push_back(0);
-      //levels.push_back(1);
-      //levelCoords.push_back(0);
-      //levelCoords.push_back(0.0016);
-      //levelCoords.push_back(0.0024);
-      //levelCoords.push_back(0.003);
-      bounds.push_back(0);
-      bounds.push_back(0);
-      bounds.push_back(0);
-      bounds.push_back(0.004);
-      bounds.push_back(0.002);
-      bounds.push_back(0.002);
+
+      bounds.push_back(g_minX1);
+      bounds.push_back(g_minX2);
+      bounds.push_back(g_minX3);
+      bounds.push_back(g_maxX1);
+      bounds.push_back(g_maxX2);
+      bounds.push_back(g_maxX3);
       levels.push_back(0);
-      levelCoords.push_back(0);
-      levelCoords.push_back(0.002);
-      //SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      //SPtr<CoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-      //   TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations,
-      //   levels, levelCoords, bounds));
+      levelCoords.push_back(g_minX3);
+      levelCoords.push_back(g_maxX3);
+      SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      SPtr<CoProcessor> timeAveragingCoProcessor(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm, TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations, levels, levelCoords, bounds));
       
       
       //create line time series
-      SPtr<UbScheduler> tpcSch(new UbScheduler(1,1,3));
+      //SPtr<UbScheduler> tpcSch(new UbScheduler(1,1,3));
       //GbPoint3DPtr p1(new GbPoint3D(0.0,0.005,0.01));
       //GbPoint3DPtr p2(new GbPoint3D(0.064,0.005,0.01));
       //SPtr<GbLine3D> line(new GbLine3D(p1.get(),p2.get()));
-      SPtr<GbLine3D> line(new GbLine3D(new GbPoint3D(0.0,0.005,0.01),new GbPoint3D(0.064,0.005,0.01)));
-      LineTimeSeriesCoProcessor lineTs(grid, tpcSch,pathOut+"/TimeSeries/line1.csv",line, 0,comm);
-      if (myid==0) lineTs.writeLine(pathOut+"/geo/line1");
+      //SPtr<GbLine3D> line(new GbLine3D(new GbPoint3D(0.0,0.005,0.01),new GbPoint3D(0.064,0.005,0.01)));
+      //LineTimeSeriesCoProcessor lineTs(grid, tpcSch,pathOut+"/TimeSeries/line1.csv",line, 0,comm);
+      //if (myid==0) lineTs.writeLine(pathOut+"/geo/line1");
 
       if (myid == 0)
       {
@@ -471,6 +456,7 @@ void run(string configname)
       //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
+      calculator->addCoProcessor(timeAveragingCoProcessor);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

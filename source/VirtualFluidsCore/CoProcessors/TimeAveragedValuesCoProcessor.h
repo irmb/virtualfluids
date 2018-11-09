@@ -7,6 +7,7 @@
 
 #include "CoProcessor.h"
 #include "LBMSystem.h"
+#include "IntegrateValuesHelper.h"
 
 class Communicator;
 class Grid3D;
@@ -62,6 +63,7 @@ protected:
 
    void init(SPtr<UbScheduler> s);
    void planarAverage(double step);
+   void calculateAverageValuesForPlane(std::vector<IntegrateValuesHelper::CalcNodes>& cnodes);
 
 private:
     SPtr<Communicator> comm;
@@ -85,10 +87,15 @@ private:
    SPtr<UbScheduler> resetSchedulerMeans;  //additional scheduler to restart averaging after a given interval
    //labels for the different components, e.g. AvVxx for time averaged RMS: 1/n SUM((U-Umean)^2)
    //you need to calculate a square root before plotting RMS
+   enum Density { Rho, RhoF };
    enum Velocity { Vx, Vy, Vz };
-   enum Fluctuations { Vxx, Vyy, Vzz, Vxy, Vxz, Vyz, Rho };
+   enum Fluctuations { Vxx, Vyy, Vzz, Vxy, Vxz, Vyz };
    enum Triplecorrelations { Vxxx, Vxxy, Vxxz, Vyyy, Vyyx, Vyyz, Vzzz, Vzzx, Vzzy, Vxyz };
-   //enum Pressure { P, Prms };
+
+   double saRho, saRhoF;
+   double saVx, saVy, saVz;
+   double saVxx, saVyy, saVzz, saVxy, saVxz, saVyz;
+   double saVxxx, saVxxy, saVxxz, saVyyy, saVyyx, saVyyz, saVzzz, saVzzx, saVzzy, saVxyz;
 
    int options;
    int lcounter;
