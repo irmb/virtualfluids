@@ -172,7 +172,8 @@ void run(string configname)
       SPtr<BCProcessor> bcProc;
       bcProc = SPtr<BCProcessor>(new BCProcessor());
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
       
       mu::Parser fctForcingX1;
       fctForcingX1.SetExpr("Fx1");
@@ -287,7 +288,7 @@ void run(string configname)
 
          ////////////////////////////////////////////
          //METIS
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, MetisPartitioner::KWAY));
          ////////////////////////////////////////////
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
          InteractorsHelper intHelper(grid, metisVisitor);
@@ -352,19 +353,20 @@ void run(string configname)
          grid->accept(bcVisitor);
 
          mu::Parser inflowProfileVx1, inflowProfileVx2, inflowProfileVx3, inflowProfileRho;
-         inflowProfileVx1.SetExpr("x3 < h ? 0.0 : uLB+1*x1");
+         inflowProfileVx1.SetExpr("x3 < h ? 0.0 : uLB-1e-5*(x1+x2+x3)");
          inflowProfileVx1.DefineConst("uLB", u_LB);
          inflowProfileVx1.DefineConst("h", channel_hight-d_p);
 
          InitDistributionsBlockVisitor initVisitor;
-         //initVisitor.setVx1(inflowProfileVx1);
+         initVisitor.setVx1(inflowProfileVx1);
          //initVisitor.setVx1(u_LB);
          //initVisitor.setVx2(u_LB);
          //initVisitor.setVx3(u_LB);
          grid->accept(initVisitor);
 
          ////set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         //InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
+         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
          grid->accept(setConnsVisitor);
 
@@ -402,6 +404,7 @@ void run(string configname)
       SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      writeMQCoProcessor->process(0);
 
       SPtr<GbObject3D> bbBox(new GbCuboid3D(g_minX1-blockLength, (g_maxX2-g_minX2)/2.0, g_minX3-blockLength, g_maxX1+blockLength, (g_maxX2-g_minX2)/2.0+deltaXcoarse, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(bbBox.get(), pathOut+"/geo/bbBox", WbWriterVtkXmlASCII::getInstance());
@@ -410,7 +413,7 @@ void run(string configname)
 
       SPtr<UbScheduler> AdjForcSch(new UbScheduler());
       AdjForcSch->addSchedule(10, 0, 10000000);
-      SPtr<IntegrateValuesHelper> intValHelp(new IntegrateValuesHelper(grid, comm, g_minX1, g_minX2, channel_hight-d_p, g_maxX1, g_maxX2, g_maxX3));
+      SPtr<IntegrateValuesHelper> intValHelp(new IntegrateValuesHelper(grid, comm, g_minX1, g_minX2, channel_hight, g_maxX1, g_maxX2, g_maxX3));
       if (myid == 0) GbSystem3D::writeGeoObject(intValHelp->getBoundingBox().get(), pathOut + "/geo/IntValHelp", WbWriterVtkXmlBinary::getInstance());
 
       double vxTarget=u_LB;
@@ -431,7 +434,7 @@ void run(string configname)
       levelCoords.push_back(g_minX3);
       levelCoords.push_back(g_maxX3);
       SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      SPtr<CoProcessor> timeAveragingCoProcessor(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm, TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations, levels, levelCoords, bounds));
+      SPtr<CoProcessor> timeAveragingCoProcessor(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,TimeAveragedValuesCoProcessor::Density |  TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations | TimeAveragedValuesCoProcessor::Triplecorrelations, levels, levelCoords, bounds));
       
       
       //create line time series
@@ -454,7 +457,7 @@ void run(string configname)
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, (int)endTime));
       calculator->addCoProcessor(nupsCoProcessor);
-      calculator->addCoProcessor(AdjForcCoProcessor);
+      //calculator->addCoProcessor(AdjForcCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
       //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
@@ -486,6 +489,7 @@ void run(string configname)
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
+   //Sleep(30000);
 
    if (argv != NULL)
    {

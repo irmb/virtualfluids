@@ -61,7 +61,8 @@ protected:
    //! Computes average values of velocity , fluctuations and triple correlations 
    void calculateAverageValues(double timeStep);
 
-   void init(SPtr<UbScheduler> s);
+   void init();
+   void initData();
    void planarAverage(double step);
    void calculateAverageValuesForPlane(std::vector<IntegrateValuesHelper::CalcNodes>& cnodes);
 
@@ -98,13 +99,8 @@ private:
    double saVxxx, saVxxy, saVxxz, saVyyy, saVyyx, saVyyz, saVzzz, saVzzx, saVzzy, saVxyz;
 
    int options;
-   int lcounter;
-   int numberOfFineSteps;
-   int numberOfSteps;
-   int fineStep;
-   int minFineStep;
-   int maxFineStep;
-   int levelFactor;
+   double numberOfSteps;
+   double minStep;
    double maxStep;
 
    int iMinX1, iMinX2, iMinX3;
