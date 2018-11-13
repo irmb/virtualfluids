@@ -292,11 +292,11 @@ void run(string configname)
          
          //DEBUG METIS 
          //////////////////////////////////////////////////////////////////////////
-         dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(2000);
-         grid->accept(metisVisitor);
-         WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-         ppblocks.process(0);
-         return;
+         //dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(2000);
+         //grid->accept(metisVisitor);
+         //WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+         //ppblocks.process(0);
+         //return;
          //////////////////////////////////////////////////////////////////////////
 
          ////////////////////////////////////////////
