@@ -46,6 +46,7 @@ protected:
    bool getPartitionCondition(SPtr<Block3D> block, PartLevel level);
    void distributePartitionData(SPtr<Grid3D> grid, PartLevel level);
    void clear();
+   int getEdgeWeight(int dir);
    int  nofSegments;
    int numOfDirs;
    std::vector<int> blockID;
