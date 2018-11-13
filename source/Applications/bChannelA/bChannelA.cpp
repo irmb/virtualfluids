@@ -457,7 +457,7 @@ void run(string configname)
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, (int)endTime));
       calculator->addCoProcessor(nupsCoProcessor);
-      //calculator->addCoProcessor(AdjForcCoProcessor);
+      calculator->addCoProcessor(AdjForcCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
       //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
