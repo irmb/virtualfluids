@@ -8,7 +8,7 @@ set(includeDirectories "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/Virtua
 include(CMakePackage.cmake)
 
 buildExe(${targetName} "${MY_SRCS}" "${linkDirectories}" "${libsToLink}" "${includeDirectories}")
-groupTarget(${targetName} ${appFolder})
+groupTarget(${targetName} ${lbmAppFolder})
 
 # Specify the linking to 3rdParty libs
 include(3rdPartyLinking.cmake)

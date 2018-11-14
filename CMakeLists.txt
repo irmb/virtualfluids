@@ -55,6 +55,8 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
 set(libraryFolder "libs")
 set(testFolder "tests")
 set(appFolder "apps")
+set(lbmAppFolder "apps/LBM")
+set(gksAppFolder "apps/GKS")
 set(thirdPartyFolder "3rdParty")
 
 IF(MSVC)
@@ -118,8 +120,6 @@ ENDIF()
 #############################################################
 
 add_subdirectory(3rdParty/metis/metis-5.1.0)
-
-add_subdirectory(targets/apps/HULC)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)
 
@@ -127,4 +127,11 @@ if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
 	add_subdirectory(targets/tests/TestingHULC)
 endif()
+
+
+
+add_subdirectory(targets/apps/LBM/lbmTest)
+add_subdirectory(targets/apps/LBM/metisTest)
+
+add_subdirectory(targets/apps/GKS/gksTest)
 
