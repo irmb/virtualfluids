@@ -117,6 +117,8 @@ ENDIF()
 ###                   SUBDIRECTORIES                      ###
 #############################################################
 
+add_subdirectory(3rdParty/metis/metis-5.1.0)
+
 add_subdirectory(targets/apps/HULC)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)

@@ -13,6 +13,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "metis.h"
+
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
@@ -292,10 +294,11 @@ void multipleLevel(const std::string& configPath)
         enum testCase{ 
             DrivAer,
             DLC,
-            MultiGPU
+            MultiGPU,
+            MetisTest
         };
 
-        int testcase = MultiGPU;
+        int testcase = MetisTest;
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == DrivAer )
@@ -595,6 +598,452 @@ void multipleLevel(const std::string& configPath)
                 SimulationFileWriter::write("grid/1/", gridBuilder, FILEFORMAT::ASCII);
 
             //return;
+
+            gridGenerator = GridGenerator::make(gridBuilder, para);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if( testcase == MetisTest )
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {
+            //const uint generatePart = 1;
+            const uint generatePart = Communicator::getInstanz()->getPID();
+            
+            real dx = 1.0 / 20.0;
+            real vx = 0.05;
+
+            TriangularMesh* triangularMesh = TriangularMesh::make("F:/Work/Computations/gridGenerator/stl/ShpereNotOptimal.stl");
+            //TriangularMesh* triangularMesh = TriangularMesh::make("stl/ShpereNotOptimal.lnx.stl");
+
+            // all
+            //gridBuilder->addCoarseGrid(-2, -2, -2,  
+            //                            4,  2,  2, dx);
+
+            real overlap = 10.0 * dx;
+
+            gridBuilder->addCoarseGrid(-2.0, -2.0, -2.0,  
+                                        4.0,  2.0,  2.0, dx);
+
+
+            gridBuilder->setNumberOfLayers(10,8);
+            gridBuilder->addGrid(triangularMesh, 1);
+
+            gridBuilder->addGeometry(triangularMesh);
+
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+
+            //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+        
+            //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/Test_");
+            //gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/Test_Arrow");
+
+            //SimulationFileWriter::write("F:/Work/Computations/gridGenerator/grid/", gridBuilder, FILEFORMAT::ASCII);
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            if(false)
+            {
+
+                auto getParentIndex = [&] (uint index, uint level) -> uint
+                {
+                    SPtr<Grid> grid = gridBuilder->getGrid( level );
+
+                    if( level != 0 )
+                    {
+                        real x, y, z;
+                        grid->transIndexToCoords(index, x, y, z);
+
+                        SPtr<Grid> coarseGrid = gridBuilder->getGrid(level - 1);
+
+                        for (const auto dir : DistributionHelper::getDistribution27())
+                        {
+                            if (std::abs(dir[0]) < 0.5 || std::abs(dir[1]) < 0.5 || std::abs(dir[2]) < 0.5) continue;
+
+                            real coarseX = x + dir[0] * 0.5 * grid->getDelta();
+                            real coarseY = y + dir[1] * 0.5 * grid->getDelta();
+                            real coarseZ = z + dir[2] * 0.5 * grid->getDelta();
+
+                            // check if close enough to coarse grid coordinates
+                            if( 0.01 * grid->getDelta() < std::abs(         (coarseGrid->getStartX() - coarseX) / grid->getDelta() 
+                                                                  - lround( (coarseGrid->getStartX() - coarseX) / grid->getDelta() ) ) ) continue;
+                            if( 0.01 * grid->getDelta() < std::abs(         (coarseGrid->getStartY() - coarseY) / grid->getDelta() 
+                                                                  - lround( (coarseGrid->getStartY() - coarseY) / grid->getDelta() ) ) ) continue;
+                            if( 0.01 * grid->getDelta() < std::abs(         (coarseGrid->getStartZ() - coarseZ) / grid->getDelta() 
+                                                                  - lround( (coarseGrid->getStartZ() - coarseZ) / grid->getDelta() ) ) ) continue;
+
+                            uint parentIndex = coarseGrid->transCoordToIndex( coarseX, coarseY, coarseZ);
+
+                            return parentIndex;
+                        }
+                    }
+
+                    return INVALID_INDEX;
+                };
+
+
+                std::vector<idx_t> xadj;
+                std::vector<idx_t> adjncy;
+
+                std::vector<idx_t> vwgt;
+                std::vector<idx_t> adjwgt;
+
+                idx_t vertexCounter = 0;
+                uint edgeCounter = 0;
+
+                std::cout << "Checkpoint 1:" << std::endl;
+
+                std::vector< std::vector<idx_t> > vertexIndex( gridBuilder->getNumberOfLevels() );
+
+                std::vector< uint > startVerticesPerLevel;;
+
+                for( uint level = 0; level < gridBuilder->getNumberOfLevels(); level++ )
+                {
+                    SPtr<Grid> grid = gridBuilder->getGrid( level );
+
+                    vertexIndex[level].resize( grid->getSize() );
+
+                    startVerticesPerLevel.push_back(vertexCounter);
+
+                    for (uint index = 0; index < grid->getSize(); index++)
+                    {
+                        if (grid->getSparseIndex(index) == INVALID_INDEX)
+                        {
+                            vertexIndex[level][index] = INVALID_INDEX;
+                            continue;
+                        }
+
+                        uint parentIndex = getParentIndex(index, level);
+
+                        if( parentIndex != INVALID_INDEX )
+                        {
+                            SPtr<Grid> coarseGrid = gridBuilder->getGrid(level - 1);
+
+                            if( coarseGrid->getFieldEntry(parentIndex) == FLUID_CFC ||
+                                coarseGrid->getFieldEntry(parentIndex) == FLUID_FCC ||
+                                coarseGrid->getFieldEntry(parentIndex) == STOPPER_COARSE_UNDER_FINE )
+                            {
+                                //vertexIndex[level][index] = INVALID_INDEX;
+                                vertexIndex[level][index] = vertexIndex[level - 1][parentIndex];
+                                continue;
+                            }
+                        }
+
+                        vertexIndex[level][index] = vertexCounter;
+
+                        vwgt.push_back( std::pow(2, level) );
+                        //vwgt.push_back( std::pow(2, 2*level) );
+                        vertexCounter++;
+                    }
+
+                }
+
+                //////////////////////////////////////////////////////////////////////////
+                //for( uint level = 0; level < gridBuilder->getNumberOfLevels(); level++ )
+                //{
+                //    SPtr<Grid> grid = gridBuilder->getGrid( level );
+
+                //    for (uint index = 0; index < grid->getSize(); index++)
+                //    {
+                //        grid->setFieldEntry(index, vertexIndex[level][index] >= startVerticesPerLevel[level] && vertexIndex[level][index] != INVALID_INDEX);
+                //    }
+                //}
+
+                //gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/VertexIndex_");
+
+                //return;
+                //////////////////////////////////////////////////////////////////////////
+
+
+                std::cout << "Checkpoint 2:" << std::endl;
+                
+                for( uint level = 0; level < gridBuilder->getNumberOfLevels(); level++ )
+                {
+                    SPtr<Grid> grid = gridBuilder->getGrid( level );
+
+                    for (uint index = 0; index < grid->getSize(); index++)
+                    {
+                        //if (grid->getSparseIndex(index) == INVALID_INDEX) continue;
+
+                        if( vertexIndex[level][index] == INVALID_INDEX ) continue;
+
+                        if( vertexIndex[level][index] < startVerticesPerLevel[level] ) continue;
+
+                        xadj.push_back(edgeCounter);
+
+                        real x, y, z;
+                        grid->transIndexToCoords(index, x, y, z);
+
+                        for (const auto dir : DistributionHelper::getDistribution27())
+                        {
+                            const uint neighborIndex = grid->transCoordToIndex(x + dir[0] * grid->getDelta(), 
+                                                                               y + dir[1] * grid->getDelta(), 
+                                                                               z + dir[2] * grid->getDelta());
+
+                            if (neighborIndex == INVALID_INDEX) continue;
+
+                            if (neighborIndex == index) continue;
+
+                            if( vertexIndex[level][neighborIndex] == INVALID_INDEX ) continue;
+
+                            adjncy.push_back( vertexIndex[level][neighborIndex] );
+                            adjwgt.push_back( std::pow(2, level) );
+
+                            edgeCounter++;
+                        }
+
+                        if( grid->getFieldEntry(index) == FLUID_CFC ||
+                            grid->getFieldEntry(index) == FLUID_FCC ||
+                            grid->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE )
+
+                        {
+                            SPtr<Grid> fineGrid = gridBuilder->getGrid(level + 1);
+
+                            for (const auto dir : DistributionHelper::getDistribution27())
+                            {
+                                if (std::abs(dir[0]) < 0.5 || std::abs(dir[1]) < 0.5 || std::abs(dir[2]) < 0.5) continue;
+
+                                real fineX = x + dir[0] * 0.25 * grid->getDelta();
+                                real fineY = y + dir[1] * 0.25 * grid->getDelta();
+                                real fineZ = z + dir[2] * 0.25 * grid->getDelta();
+
+                                uint childIndex = fineGrid->transCoordToIndex(fineX, fineY, fineZ);
+
+                                if( fineGrid->getFieldEntry(childIndex) == INVALID_INDEX ) continue;
+                                if( vertexIndex[level + 1][childIndex]  == INVALID_INDEX ) continue;
+
+                                for (const auto dir : DistributionHelper::getDistribution27())
+                                {
+                                    const uint neighborIndex = fineGrid->transCoordToIndex( fineX + dir[0] * fineGrid->getDelta(), 
+                                                                                            fineY + dir[1] * fineGrid->getDelta(), 
+                                                                                            fineZ + dir[2] * fineGrid->getDelta() );
+
+                                    if(neighborIndex == INVALID_INDEX) continue;
+
+                                    if (neighborIndex == childIndex) continue;
+
+                                    if( vertexIndex[level + 1][neighborIndex] == INVALID_INDEX ) continue;
+
+                                    adjncy.push_back( vertexIndex[level + 1][neighborIndex] );
+                                    adjwgt.push_back( std::pow(2, level) );
+
+                                    edgeCounter++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                xadj.push_back( edgeCounter );
+
+                std::cout << "Checkpoint 3:" << std::endl;
+                
+                idx_t nWeights  = 1;
+                idx_t nParts    = 4;
+                idx_t objval    = 0;
+
+                std::vector<idx_t> part( vertexCounter );
+                
+                std::cout << vertexCounter << std::endl;
+                std::cout << edgeCounter << std::endl;
+                std::cout << xadj.size()  << std::endl;
+                std::cout << adjncy.size() << std::endl;
+
+                //int ret = METIS_PartGraphRecursive(&vertexCounter, &nWeights, xadj.data(), adjncy.data(),
+                // 				                   vwgt.data(), NULL, adjwgt.data(), &nParts, 
+                //                                   NULL, NULL, NULL, &objval, part.data());
+
+                int ret = METIS_PartGraphKway(&vertexCounter, &nWeights, xadj.data(), adjncy.data(),
+                 				              vwgt.data(), NULL, NULL/*adjwgt.data()*/, &nParts, 
+                                              NULL, NULL, NULL, &objval, part.data());
+
+                std::cout << "objval:" << objval << std::endl;
+
+                std::cout << "Checkpoint 4:" << std::endl;
+
+                //uint partCounter = 0;
+                
+                for( uint level = 0; level < gridBuilder->getNumberOfLevels(); level++ )
+                {
+                    SPtr<Grid> grid = gridBuilder->getGrid( level );
+
+                    for (uint index = 0; index < grid->getSize(); index++)
+                    {
+                        if (grid->getSparseIndex(index) == INVALID_INDEX) continue;
+
+                        grid->setFieldEntry(index, part[vertexIndex[level][index]]);
+
+                        //partCounter++;
+                    }
+                }
+
+                std::cout << "Checkpoint 5:" << std::endl;
+
+                gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/Partition_");
+
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            {
+
+                for( int level = gridBuilder->getNumberOfLevels()-1; level >= 0 ; level-- )
+                {
+                    std::vector< std::vector<idx_t> > vertexIndex( gridBuilder->getNumberOfLevels() );
+
+                    std::vector<idx_t> xadj;
+                    std::vector<idx_t> adjncy;
+
+                    std::vector<idx_t> vwgt;
+                    std::vector<idx_t> adjwgt;
+
+                    idx_t vertexCounter = 0;
+                    uint edgeCounter = 0;
+
+                    SPtr<Grid> grid = gridBuilder->getGrid( level );
+
+                    vertexIndex[level].resize( grid->getSize() );
+
+                    for (uint index = 0; index < grid->getSize(); index++)
+                    {
+                        if (grid->getSparseIndex(index) == INVALID_INDEX)
+                        {
+                            vertexIndex[level][index] = INVALID_INDEX;
+                            continue;
+                        }
+
+                        vertexIndex[level][index] = vertexCounter;
+
+                        vwgt.push_back( std::pow(2, level) );
+                        //vwgt.push_back( std::pow(2, 2*level) );
+                        vertexCounter++;
+                    }
+
+                    for (uint index = 0; index < grid->getSize(); index++)
+                    {
+                        //if (grid->getSparseIndex(index) == INVALID_INDEX) continue;
+
+                        if( vertexIndex[level][index] == INVALID_INDEX ) continue;
+
+                        xadj.push_back(edgeCounter);
+
+                        real x, y, z;
+                        grid->transIndexToCoords(index, x, y, z);
+
+                        for (const auto dir : DistributionHelper::getDistribution27())
+                        {
+                            const uint neighborIndex = grid->transCoordToIndex(x + dir[0] * grid->getDelta(), 
+                                                                               y + dir[1] * grid->getDelta(), 
+                                                                               z + dir[2] * grid->getDelta());
+
+                            if (neighborIndex == INVALID_INDEX) continue;
+
+                            if (neighborIndex == index) continue;
+
+                            if( vertexIndex[level][neighborIndex] == INVALID_INDEX ) continue;
+
+                            adjncy.push_back( vertexIndex[level][neighborIndex] );
+                            adjwgt.push_back( std::pow(2, level) );
+
+                            edgeCounter++;
+                        }
+                    }
+
+                    xadj.push_back( edgeCounter );
+
+                    std::cout << "Checkpoint 3:" << std::endl;
+                
+                    idx_t nWeights  = 1;
+                    idx_t nParts    = 4;
+                    idx_t objval    = 0;
+
+                    std::vector<idx_t> part( vertexCounter );
+                
+                    std::cout << vertexCounter << std::endl;
+                    std::cout << edgeCounter << std::endl;
+                    std::cout << xadj.size()  << std::endl;
+                    std::cout << adjncy.size() << std::endl;
+
+                    int ret = METIS_PartGraphRecursive(&vertexCounter, &nWeights, xadj.data(), adjncy.data(),
+                     				                   NULL/*vwgt.data()*/, NULL, NULL/*adjwgt.data()*/, &nParts, 
+                                                       NULL, NULL, NULL, &objval, part.data());
+
+                    //int ret = METIS_PartGraphKway(&vertexCounter, &nWeights, xadj.data(), adjncy.data(),
+                 			//	                  NULL/*vwgt.data()*/, NULL, NULL/*adjwgt.data()*/, &nParts, 
+                    //                              NULL, NULL, NULL, &objval, part.data());
+
+                    std::cout << "objval:" << objval << std::endl;
+
+                    std::cout << "Checkpoint 4:" << std::endl;
+
+                    for (uint index = 0; index < grid->getSize(); index++)
+                    {
+                        if (vertexIndex[level][index] == INVALID_INDEX) continue;
+
+                        if( grid->getFieldEntry(index) == FLUID_CFC ||
+                            grid->getFieldEntry(index) == FLUID_FCC ||
+                            grid->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE )
+                        {
+                            SPtr<Grid> fineGrid = gridBuilder->getGrid(level+1);
+                            
+                            real x, y, z;
+                            grid->transIndexToCoords(index, x, y, z);
+
+                            for (const auto dir : DistributionHelper::getDistribution27())
+                            {
+                                if (std::abs(dir[0]) < 0.5 || std::abs(dir[1]) < 0.5 || std::abs(dir[2]) < 0.5) continue;
+
+                                real fineX = x + dir[0] * 0.25 * grid->getDelta();
+                                real fineY = y + dir[1] * 0.25 * grid->getDelta();
+                                real fineZ = z + dir[2] * 0.25 * grid->getDelta();
+
+                                uint childIndex = fineGrid->transCoordToIndex(fineX, fineY, fineZ);
+
+                                if( childIndex == INVALID_INDEX ) continue;
+
+                                fineGrid->setFieldEntry(childIndex, part[vertexIndex[level][index]]);
+                                //fineGrid->setFieldEntry(childIndex, grid->getFieldEntry(index));
+                            }
+                        }
+
+                        grid->setFieldEntry(index, part[vertexIndex[level][index]]);
+                    }
+                }
+
+                gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/Partition_");
+
+            }
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            return;
 
             gridGenerator = GridGenerator::make(gridBuilder, para);
         }
