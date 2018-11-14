@@ -1,5 +1,6 @@
 //#define MPI_LOGGING
 
+// Stephas Branch
 
 #include <mpi.h>
 #if defined( MPI_LOGGING )
