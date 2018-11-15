@@ -2,6 +2,10 @@
 
 #include "ZoltanPartitioningGridVisitor.h"
 #include <vector>
+#include "UbLogger.h"
+#include "UbException.h"
+#include "Grid3D.h"
+#include "Block3D.h"
 
 using namespace std;
 

@@ -237,8 +237,8 @@ void run(string configname)
 
          
 
-         grid->setPeriodicX1(true);
-         grid->setPeriodicX2(true);
+         grid->setPeriodicX1(false);
+         grid->setPeriodicX2(false);
          grid->setPeriodicX3(false);
          grid->setDeltaX(deltaXcoarse);
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
@@ -288,15 +288,19 @@ void run(string configname)
 
          ////////////////////////////////////////////
          //METIS
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, MetisPartitioner::RECURSIVE));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
          
          //DEBUG METIS 
          //////////////////////////////////////////////////////////////////////////
-         //dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(2000);
-         //grid->accept(metisVisitor);
-         //WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-         //ppblocks.process(0);
-         //return;
+         dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(1500);
+         grid->accept(metisVisitor);
+
+         //SPtr<Grid3DVisitor> zoltanVisitor(new ZoltanPartitioningGridVisitor(comm, D3Q27System::BSW));
+         //grid->accept(zoltanVisitor);
+
+         WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+         ppblocks.process(0);
+         return;
          //////////////////////////////////////////////////////////////////////////
 
          ////////////////////////////////////////////
