@@ -1,5 +1,5 @@
-#ifndef Real_CONSTANT_H
-#define Real_CONSTANT_H
+#ifndef REAL_CONSTANT_H
+#define REAL_CONSTANT_H
 
 #include "VirtualFluidsDefinitions.h"
 

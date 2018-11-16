@@ -1,11 +1,12 @@
 //#define MPI_LOGGING
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <string>
 #include <iostream>
 #include <exception>
 #include <fstream>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <memory>
 
 #include "core/Logger/Logger.h"
 
@@ -19,7 +20,13 @@
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
 
-void gksTest()
+#include "GksVtkAdapter/VTKInterface.h"
+
+#include "GksGpu/DataBase/DataBase.h"
+#include "GksGpu/Parameters/Parameters.h"
+#include "GksGpu/Initializer/Initializer.h"
+
+void gksTest( std::string path )
 {
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
@@ -36,14 +43,14 @@ void gksTest()
 
     Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
-    gridBuilder->setNumberOfLayers(10,8);
-    gridBuilder->addGrid( &cube, 1);
+    //gridBuilder->setNumberOfLayers(10,8);
+    //gridBuilder->addGrid( &cube, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(GKS, false);
 
-    gridBuilder->writeGridsToVtk("F:/Work/Computations/gridGenerator/grid/Grid_lev_");
+    gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,13 +78,37 @@ void gksTest()
 
     meshAdapter.generateInterfaceConnectivity();
 
-    meshAdapter.writeMeshVTK( "F:/Work/Computations/gridGenerator/grid/Mesh.vtk" );
+    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    meshAdapter.writeMeshFaceVTK( "F:/Work/Computations/gridGenerator/grid/MeshFaces.vtk" );
+    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Parameters parameters;
+    
+    auto dataBase = std::make_shared<DataBase>( "GPU" );
+    dataBase->setMesh( meshAdapter );
+
+    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
+        
+        real radius = cellCenter.length();
+
+        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 1.0, radius ), parameters.K );
+
+    });
+
+    dataBase->copyDataHostToDevice();
+
+    dataBase->copyDataDeviceToHost();
+
+    writeVtkXML( dataBase, parameters, 0, path + "grid/Test" );
+
+
 }
 
 int main( int argc, char* argv[])
 {
+    std::string path( "F:/Work/Computations/gridGenerator/" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -85,7 +116,7 @@ int main( int argc, char* argv[])
     
     try
     {
-        gksTest();
+        gksTest( path );
     }
     catch (const std::exception& e)
     {     

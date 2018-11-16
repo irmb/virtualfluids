@@ -129,6 +129,8 @@ add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)
 
 add_subdirectory(targets/libs/GksMeshAdapter)
+add_subdirectory(targets/libs/GksVtkAdapter)
+add_subdirectory(targets/libs/GksGpu)
 
 if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
@@ -141,4 +143,3 @@ add_subdirectory(targets/apps/LBM/lbmTest)
 add_subdirectory(targets/apps/LBM/metisTest)
 
 add_subdirectory(targets/apps/GKS/gksTest)
-

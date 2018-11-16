@@ -303,25 +303,29 @@ void GksMeshAdapter::generateNodes(SPtr<MultipleGridBuilder> gridBuilder)
                 cell.cellToNode[idx] = nodes.size()-1;
 
                 // register new node at neighbor cells on same level
-                for( uint idx = 0; idx < 8; idx++ )
+
+                for( uint neighborIdx = 0; neighborIdx < 27; neighborIdx++ )
                 {
-                    if( cell.cellToCell[idx] == INVALID_INDEX ) continue;
+                    if (cell.cellToCell[neighborIdx] == INVALID_INDEX) continue;
 
-                    Distribution dirs = DistributionHelper::getDistribution27();
-
-                    real dxNeighbor = - dirs.directions[idx + 19][0] * d;
-                    real dyNeighbor = - dirs.directions[idx + 19][1] * d;
-                    real dzNeighbor = - dirs.directions[idx + 19][2] * d;
-                    
-                    real xNeighbor = nodes.back().x + dx + dxNeighbor;
-                    real yNeighbor = nodes.back().y + dy + dyNeighbor;
-                    real zNeighbor = nodes.back().z + dz + dzNeighbor;
-
-                    uint neighborGridIdx = grids[cell.level]->transCoordToIndex( xNeighbor, yNeighbor, zNeighbor );
-
-                    if( neighborGridIdx != INVALID_INDEX && gridToMesh[ cell.level ][ neighborGridIdx ] == cell.cellToCell[idx] )
+                    for (uint idx = 0; idx < 8; idx++)
                     {
-                        this->cells[ cell.cellToCell[idx] ].cellToNode[ idx ];
+                        Distribution dirs = DistributionHelper::getDistribution27();
+
+                        real dxNeighbor = -dirs.directions[idx + 19][0] * d;
+                        real dyNeighbor = -dirs.directions[idx + 19][1] * d;
+                        real dzNeighbor = -dirs.directions[idx + 19][2] * d;
+
+                        real xNeighbor = nodes.back().x + dxNeighbor;
+                        real yNeighbor = nodes.back().y + dyNeighbor;
+                        real zNeighbor = nodes.back().z + dzNeighbor;
+
+                        uint neighborGridIdx = grids[cell.level]->transCoordToIndex(xNeighbor, yNeighbor, zNeighbor);
+
+                        if (neighborGridIdx != INVALID_INDEX && gridToMesh[cell.level][neighborGridIdx] == cell.cellToCell[neighborIdx])
+                        {
+                            this->cells[cell.cellToCell[neighborIdx]].cellToNode[idx] = nodes.size() - 1;
+                        }
                     }
                 }
             }
