@@ -52,11 +52,16 @@ include_directories(${CMAKE_BINARY_DIR})
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER ".cmake")
-set(libraryFolder "libs")
+
+set(libraryFolder    "libs")
+set(gksLibraryFolder "libs/GKS")
+
 set(testFolder "tests")
-set(appFolder "apps")
+
+set(appFolder    "apps")
 set(lbmAppFolder "apps/LBM")
 set(gksAppFolder "apps/GKS")
+
 set(thirdPartyFolder "3rdParty")
 
 IF(MSVC)
@@ -122,6 +127,8 @@ ENDIF()
 add_subdirectory(3rdParty/metis/metis-5.1.0)
 add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)
+
+add_subdirectory(targets/libs/GksMeshAdapter)
 
 if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
