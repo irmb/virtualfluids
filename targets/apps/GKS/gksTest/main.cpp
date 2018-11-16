@@ -43,8 +43,8 @@ void gksTest( std::string path )
 
     Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
-    //gridBuilder->setNumberOfLayers(10,8);
-    //gridBuilder->addGrid( &cube, 1);
+    gridBuilder->setNumberOfLayers(10,8);
+    gridBuilder->addGrid( &cube, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 

@@ -117,8 +117,10 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
 struct PerLevelCounts
 {
+    uint numberOfCells;
+    uint startOfCells;
+
     uint numberOfBulkCells;
-    uint startOfBulkCells;
 
     uint numberOfFaces;
 

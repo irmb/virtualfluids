@@ -46,10 +46,12 @@ void DataBase::setMesh(GksMeshAdapter & adapter)
 
     this->perLevelCount.resize( this->numberOfLevels );
 
-    for( uint level = 0; level < this->numberOfLevels; level++ ){
+    for( uint level = 0; level < this->numberOfLevels; level++ )
+    {
+        perLevelCount[ level ].numberOfCells = adapter.numberOfCellsPerLevel[ level ];
+        perLevelCount[ level ].startOfCells  = adapter.startOfCellsPerLevel [ level ];
 
         perLevelCount[ level ].numberOfBulkCells = adapter.numberOfBulkCellsPerLevel[ level ];
-        perLevelCount[ level ].startOfBulkCells  = adapter.startOfCellsPerLevel     [ level ];
 
         perLevelCount[ level ].numberOfFacesX = adapter.numberOfFacesPerLevelXYZ[ 3 * level     ];
         perLevelCount[ level ].startOfFacesX  = adapter.startOfFacesPerLevelXYZ [ 3 * level     ];
@@ -60,9 +62,9 @@ void DataBase::setMesh(GksMeshAdapter & adapter)
         perLevelCount[ level ].numberOfFacesZ = adapter.numberOfFacesPerLevelXYZ[ 3 * level + 2 ];
         perLevelCount[ level ].startOfFacesZ  = adapter.startOfFacesPerLevelXYZ [ 3 * level + 2 ];
 
-        perLevelCount[ level ].numberOfFaces  = perLevelCount[ level ].numberOfFacesX
-                                              + perLevelCount[ level ].numberOfFacesY
-                                              + perLevelCount[ level ].numberOfFacesZ;
+        perLevelCount[ level ].numberOfFaces = perLevelCount[ level ].numberOfFacesX
+                                             + perLevelCount[ level ].numberOfFacesY
+                                             + perLevelCount[ level ].numberOfFacesZ;
 
         perLevelCount[ level ].numberOfFineToCoarse = adapter.numberOfFineToCoarsePerLevel[ level ];
         perLevelCount[ level ].numberOfCoarseToFine = adapter.numberOfCoarseToFinePerLevel[ level ];
@@ -131,8 +133,8 @@ uint DataBase::getCellLevel(uint cellIdx)
 {
     uint level = 0;
 
-    while( cellIdx < this->perLevelCount[level].startOfBulkCells
-                   + this->perLevelCount[level].numberOfBulkCells ) level++;
+    while( cellIdx >= this->perLevelCount[level].startOfCells
+                   + this->perLevelCount[level].numberOfCells ) level++;
 
     return level;
 }
@@ -141,7 +143,7 @@ uint DataBase::getFaceLevel(uint faceIdx)
 {
     uint level = 0;
 
-    while( faceIdx < this->perLevelCount[level].startOfFacesX
+    while( faceIdx >= this->perLevelCount[level].startOfFacesX
                    + this->perLevelCount[level].numberOfFaces ) level++;
 
     return level;
@@ -149,5 +151,8 @@ uint DataBase::getFaceLevel(uint faceIdx)
 
 bool DataBase::isGhostCell(uint cellIdx)
 {
-    return cellIdx < this->perLevelCount[ this->getCellLevel( cellIdx ) ].numberOfBulkCells;
+    uint level = this->getCellLevel( cellIdx );
+
+    return cellIdx >= this->perLevelCount[ level ].startOfCells
+                   + this->perLevelCount[ level ].numberOfBulkCells;
 }
