@@ -1,7 +1,3 @@
-/*
-*  Author: S. Peters
-*  mail: peters@irmb.tu-bs.de
-*/
 #ifndef DATATYPES_H
 #define DATATYPES_H
 

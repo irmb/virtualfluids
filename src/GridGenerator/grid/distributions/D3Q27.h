@@ -115,33 +115,33 @@
 #define DIR_27_TNE_Y  1
 #define DIR_27_TNE_Z  1
 
-#define DIR_27_BNW_X  -1
-#define DIR_27_BNW_Y  1
-#define DIR_27_BNW_Z  -1
-
 #define DIR_27_BNE_X  1
 #define DIR_27_BNE_Y  1
 #define DIR_27_BNE_Z  -1
 
-#define DIR_27_TNW_X  -1
-#define DIR_27_TNW_Y  1
-#define DIR_27_TNW_Z  1
-
-
-#define DIR_27_TSW_X  -1
-#define DIR_27_TSW_Y  -1
-#define DIR_27_TSW_Z  1
+#define DIR_27_TSE_X  1
+#define DIR_27_TSE_Y  -1
+#define DIR_27_TSE_Z  1
 
 #define DIR_27_BSE_X  1
 #define DIR_27_BSE_Y  -1
 #define DIR_27_BSE_Z  -1
 
+
+#define DIR_27_TNW_X  -1
+#define DIR_27_TNW_Y  1
+#define DIR_27_TNW_Z  1
+
+#define DIR_27_BNW_X  -1
+#define DIR_27_BNW_Y  1
+#define DIR_27_BNW_Z  -1
+
+#define DIR_27_TSW_X  -1
+#define DIR_27_TSW_Y  -1
+#define DIR_27_TSW_Z  1
+
 #define DIR_27_BSW_X  -1
 #define DIR_27_BSW_Y  -1
 #define DIR_27_BSW_Z  -1
-
-#define DIR_27_TSE_X  1
-#define DIR_27_TSE_Y  -1
-#define DIR_27_TSE_Z  1
 
 #endif
