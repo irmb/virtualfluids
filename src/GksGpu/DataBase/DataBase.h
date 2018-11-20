@@ -113,6 +113,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     uint getFaceLevel( uint faceIdx );
 
     bool isGhostCell( uint cellIdx );
+
+    std::string getDeviceType();
 };
 
 struct PerLevelCounts

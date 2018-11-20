@@ -1,7 +1,12 @@
 #ifndef  CudaUtilExtern_H
 #define  CudaUtilExtern_H
 
-#include <VirtualFluidsDefinitions.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+
+#include "VirtualFluidsDefinitions.h""
+
+#include "Core/DataTypes.h"
 
 class VF_PUBLIC CudaUtility
 {
@@ -11,6 +16,10 @@ public:
     {
         dim3 threads;
         dim3 blocks;
+
+        uint numberOfEntities;
+
+        CudaGrid( uint numberOfEntities, uint threadsPerBlock );
     };
 
     static void printCudaMemoryUsage();

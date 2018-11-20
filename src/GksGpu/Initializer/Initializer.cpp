@@ -3,16 +3,11 @@
 #include <sstream>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <device_launch_parameters.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
 
 #include "Core/PointerDefinitions.h"
 #include "Core/RealConstants.h"
 
 #include "DataBase/DataBaseStruct.h"
-
-#include <helper_cuda.h>
 
 #include "Definitions/MemoryAccessPattern.h"
 #include "Definitions/PassiveScalar.h"

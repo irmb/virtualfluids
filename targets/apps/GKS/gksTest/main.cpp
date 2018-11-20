@@ -103,6 +103,8 @@ void gksTest( std::string path )
 
     });
 
+    Initializer::initializeDataUpdate(dataBase);
+
     dataBase->copyDataHostToDevice();
 
     dataBase->copyDataDeviceToHost();

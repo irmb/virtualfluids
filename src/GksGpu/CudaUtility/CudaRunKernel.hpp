@@ -1,14 +1,25 @@
 #ifndef  CudaRunKernel_HPP
 #define  CudaRunKernel_HPP
 
-#include <cuda_runtime.h>
+#include <string>
+#include <device_launch_parameters.h>
 
 #include "CudaUtility/CudaUtility.h"
 
-template<typename Functor, typename... TArgs>
-void runKernel(Functor kernel, const CudaUtility::CudaGrid& grid, TArgs... args)
+template<typename KernelFunctor, typename FunctionFunctor, typename... TArgs>
+void runKernel(KernelFunctor kernel, FunctionFunctor function, std::string deviceType, const CudaUtility::CudaGrid& grid, TArgs... args)
 {
-    kernel<<< grid.blocks, grid.threads >>>(args...);
+    if( deviceType == "GPU" )
+    {
+        kernel<<< grid.blocks, grid.threads >>>(args..., grid.numberOfEntities);
+    }
+    else
+    {
+        for( uint index = 0; index < grid.numberOfEntities; index++ )
+        {
+            function( args..., index );
+        }
+    }
 }
 
 #endif

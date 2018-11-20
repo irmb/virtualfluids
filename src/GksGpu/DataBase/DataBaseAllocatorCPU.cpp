@@ -130,3 +130,8 @@ void DataBaseAllocatorCPU::copyDataDeviceToHost(SPtr<DataBase> dataBase, real* h
 {
     memcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells );
 }
+
+std::string DataBaseAllocatorCPU::getDeviceType()
+{
+    return std::string("CPU");
+}

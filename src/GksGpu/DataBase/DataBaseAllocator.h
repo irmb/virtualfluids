@@ -28,6 +28,8 @@ public:
 
     ~DataBaseAllocator();
 
+    virtual std::string getDeviceType() = 0;
+
 protected:
 
     DataBaseAllocator();

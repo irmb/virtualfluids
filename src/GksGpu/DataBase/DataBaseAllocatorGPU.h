@@ -21,6 +21,8 @@ public:
     virtual void copyDataHostToDevice( SPtr<DataBase> dataBase ) override;
     
     virtual void copyDataDeviceToHost( SPtr<DataBase> dataBase, real* dataHost ) override;
+
+    virtual std::string getDeviceType() override;
 };
 
 

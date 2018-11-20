@@ -13,14 +13,15 @@
 #include "DataBase/DataBase.h"
 #include "FlowStateData/FlowStateData.cuh"
 
-struct PrimitiveVariables;
-
 class VF_PUBLIC Initializer
 {
 public:
+
     static void interpret( std::shared_ptr<DataBase> dataBase, std::function<ConservedVariables(Vec3)> initialCondition );
 
     static Vec3 getCellCenter( std::shared_ptr<DataBase> dataBase, uint cellIdx );
+
+    static void initializeDataUpdate( std::shared_ptr<DataBase> dataBase );
 };
 
 #endif

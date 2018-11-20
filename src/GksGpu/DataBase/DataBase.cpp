@@ -156,3 +156,8 @@ bool DataBase::isGhostCell(uint cellIdx)
     return cellIdx >= this->perLevelCount[ level ].startOfCells
                    + this->perLevelCount[ level ].numberOfBulkCells;
 }
+
+std::string DataBase::getDeviceType()
+{
+    return this->myAllocator->getDeviceType();
+}

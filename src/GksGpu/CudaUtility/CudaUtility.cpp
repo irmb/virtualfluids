@@ -5,10 +5,14 @@
 #include <cuda.h>
 #include <helper_cuda.h>
 
+#include "Core/DataTypes.h"
 #include "Core/Logger/Logger.h"
 
-CudaUtility::CudaGrid::CudaGrid() : threads(1), blocks(1)
+CudaUtility::CudaGrid::CudaGrid( uint numberOfEntities, uint threadsPerBlock )
 {
+    this->numberOfEntities = numberOfEntities;
+    this->threads = threadsPerBlock;
+    this->blocks  = ( numberOfEntities + threadsPerBlock - 1 ) / threadsPerBlock;
 }
 
 void CudaUtility::printCudaMemoryUsage()

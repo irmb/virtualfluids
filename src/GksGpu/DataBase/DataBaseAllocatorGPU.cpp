@@ -165,3 +165,8 @@ void DataBaseAllocatorGPU::copyDataDeviceToHost(SPtr<DataBase> dataBase,  real* 
 {
     checkCudaErrors( cudaMemcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
 }
+
+std::string DataBaseAllocatorGPU::getDeviceType()
+{
+    return std::string("GPU");
+}
