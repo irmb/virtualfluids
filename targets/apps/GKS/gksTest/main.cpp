@@ -26,6 +26,8 @@
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
 
+#include "GksGpu/TimeStepping/NestedTimeStep.h"
+
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
 void gksTest( std::string path )
@@ -89,8 +91,10 @@ void gksTest( std::string path )
     CudaUtility::setCudaDevice(0);
 
     Parameters parameters;
+
+    parameters.force.z = -0.01;
     
-    auto dataBase = std::make_shared<DataBase>( "GPU" );
+    auto dataBase = std::make_shared<DataBase>( "CPU" );
     dataBase->setMesh( meshAdapter );
 
     CudaUtility::printCudaMemoryUsage();
@@ -107,9 +111,21 @@ void gksTest( std::string path )
 
     dataBase->copyDataHostToDevice();
 
+    writeVtkXML( dataBase, parameters, 0, path + "grid/Test_0" );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    for( uint iter = 0; iter < 100; iter++ )
+    {
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////
+
     dataBase->copyDataDeviceToHost();
 
-    writeVtkXML( dataBase, parameters, 0, path + "grid/Test" );
+    writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
 
 }

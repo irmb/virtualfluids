@@ -1,11 +1,8 @@
 #include "Initializer.h"
 
-#include <sstream>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <device_launch_parameters.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <helper_cuda.h>
 
 #include "Core/PointerDefinitions.h"
 #include "Core/RealConstants.h"
@@ -23,7 +20,7 @@ __host__ __device__ inline void initializeDataUpdateFunction( DataBaseStruct dat
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Initializer::initializeDataUpdate( std::shared_ptr<DataBase> dataBase )
+void Initializer::initializeDataUpdate( SPtr<DataBase> dataBase )
 {
     CudaUtility::CudaGrid grid( dataBase->numberOfCells, 32 );
 
@@ -31,7 +28,11 @@ void Initializer::initializeDataUpdate( std::shared_ptr<DataBase> dataBase )
                initializeDataUpdateFunction,
                dataBase->getDeviceType(), grid, 
                dataBase->toStruct() );
+
+    getLastCudaError("Initializer::initializeDataUpdate( SPtr<DataBase> dataBase )");
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __global__ void initializeDataUpdateKernel(DataBaseStruct dataBase, uint numberOfEntities)
 {

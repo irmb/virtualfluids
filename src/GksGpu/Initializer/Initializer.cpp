@@ -32,7 +32,7 @@ void Initializer::interpret(SPtr<DataBase> dataBase, std::function<ConservedVari
     return;
 }
 
-Vec3 Initializer::getCellCenter(std::shared_ptr<DataBase> dataBase, uint cellIdx)
+Vec3 Initializer::getCellCenter(SPtr<DataBase> dataBase, uint cellIdx)
 {
     Vec3 cellCenter;
 

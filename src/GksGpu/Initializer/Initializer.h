@@ -7,6 +7,7 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+#include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 
@@ -17,11 +18,11 @@ class VF_PUBLIC Initializer
 {
 public:
 
-    static void interpret( std::shared_ptr<DataBase> dataBase, std::function<ConservedVariables(Vec3)> initialCondition );
+    static void interpret( SPtr<DataBase> dataBase, std::function<ConservedVariables(Vec3)> initialCondition );
 
-    static Vec3 getCellCenter( std::shared_ptr<DataBase> dataBase, uint cellIdx );
+    static Vec3 getCellCenter( SPtr<DataBase> dataBase, uint cellIdx );
 
-    static void initializeDataUpdate( std::shared_ptr<DataBase> dataBase );
+    static void initializeDataUpdate( SPtr<DataBase> dataBase );
 };
 
 #endif

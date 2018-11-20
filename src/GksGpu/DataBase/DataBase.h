@@ -117,7 +117,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     std::string getDeviceType();
 };
 
-struct PerLevelCounts
+struct VF_PUBLIC PerLevelCounts
 {
     uint numberOfCells;
     uint startOfCells;
