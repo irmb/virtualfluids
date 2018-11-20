@@ -26,6 +26,8 @@
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
 
+#include "GksGpu/CudaUtility/CudaUtility.h"
+
 void gksTest( std::string path )
 {
     auto gridFactory = GridFactory::make();
@@ -84,10 +86,14 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    CudaUtility::setCudaDevice(0);
+
     Parameters parameters;
     
     auto dataBase = std::make_shared<DataBase>( "GPU" );
     dataBase->setMesh( meshAdapter );
+
+    CudaUtility::printCudaMemoryUsage();
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
         
