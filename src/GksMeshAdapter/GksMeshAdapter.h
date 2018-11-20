@@ -18,6 +18,8 @@ class VF_PUBLIC GksMeshAdapter{
 
 public:
 
+    SPtr<MultipleGridBuilder> gridBuilder;
+
     uint numberOfLevels;
 
     double dxCoarse;
@@ -94,11 +96,13 @@ public:
 
 public:
 
-    void inputGrid( SPtr<MultipleGridBuilder> gridBuilder );
+    GksMeshAdapter( SPtr<MultipleGridBuilder> gridBuilder );
 
-    void findQuadtreeConnectivity( SPtr<MultipleGridBuilder> gridBuilder );
+    void inputGrid();
 
-    void findCellToCellConnectivity( SPtr<MultipleGridBuilder> gridBuilder );
+    void findQuadtreeConnectivity();
+
+    void findCellToCellConnectivity();
 
     void countCells();
 
@@ -106,31 +110,17 @@ public:
 
     void refreshCellConnectivity(const std::vector<uint>& idxMap);
 
-    void findCornerCells( SPtr<MultipleGridBuilder> gridBuilder, real z0 );
+    void findCornerCells();
 
-    void generateNodes( SPtr<MultipleGridBuilder> gridBuilder );
-
-    void inputQs( SPtr<MultipleGridBuilder> gridBuilder );
-
-    void morphNodes();
-
-    void repairTriangularCells();
+    void generateNodes();
 
     void computeCellGeometry();
 
-    void generateSolidGhostCells();
-
-    void computeGhostCellGeometry();
-
-    void generateFaces( SPtr<MultipleGridBuilder> gridBuilder );
-
-    void generateSolidFaces( SPtr<MultipleGridBuilder> gridBuilder );
+    void generateFaces();
 
     void sortFaces();
 
     void countFaces();
-
-    void findSolidFaces();
 
     void generateInterfaceConnectivity();
 

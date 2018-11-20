@@ -56,35 +56,22 @@ void gksTest( std::string path )
 
     gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
 
+    gridBuilder->setVelocityBoundaryCondition( SideType::MX, 0.0, 0.0, 0.0 );
+    gridBuilder->setVelocityBoundaryCondition( SideType::PX, 0.0, 0.0, 0.0 );
+    gridBuilder->setVelocityBoundaryCondition( SideType::MY, 0.0, 0.0, 0.0 );
+    gridBuilder->setVelocityBoundaryCondition( SideType::PY, 0.0, 0.0, 0.0 );
+    gridBuilder->setVelocityBoundaryCondition( SideType::MZ, 0.0, 0.0, 0.0 );
+    gridBuilder->setVelocityBoundaryCondition( SideType::PZ, 0.0, 0.0, 0.0 );
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    GksMeshAdapter meshAdapter;
+    GksMeshAdapter meshAdapter( gridBuilder );
 
-    meshAdapter.inputGrid( gridBuilder );
+    meshAdapter.inputGrid();
 
-    meshAdapter.findQuadtreeConnectivity( gridBuilder );
+    meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    meshAdapter.findCellToCellConnectivity( gridBuilder );
-
-    meshAdapter.countCells();
-
-    meshAdapter.partitionCells();
-
-    meshAdapter.generateNodes( gridBuilder );
-
-    meshAdapter.computeCellGeometry();
-
-    meshAdapter.generateFaces( gridBuilder );
-
-    meshAdapter.sortFaces();
-
-    meshAdapter.countFaces();
-
-    meshAdapter.generateInterfaceConnectivity();
-
-    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
-
-    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

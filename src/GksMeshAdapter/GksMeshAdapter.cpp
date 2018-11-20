@@ -20,21 +20,25 @@
 #include "MeshCell.h"
 #include "MeshFace.h"
 
-void GksMeshAdapter::inputGrid(SPtr<MultipleGridBuilder> gridBuilder)
+GksMeshAdapter::GksMeshAdapter(SPtr<MultipleGridBuilder> gridBuilder)
+    : gridBuilder(gridBuilder)
+{}
+
+void GksMeshAdapter::inputGrid()
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "inputGrid()" << "\n";
 
-    this->numberOfLevels = gridBuilder->getNumberOfGridLevels();
+    this->numberOfLevels = this->gridBuilder->getNumberOfGridLevels();
 
-    std::vector< SPtr<Grid> > grids = gridBuilder->getGrids();
+    std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
     this->dxCoarse = grids[0]->getDelta();
 
     //////////////////////////////////////////////////////////////////////////
 
-    this->gridToMesh.resize( gridBuilder->getNumberOfGridLevels() );
+    this->gridToMesh.resize( this->gridBuilder->getNumberOfGridLevels() );
 
-    for( uint level = 0; level < gridBuilder->getNumberOfGridLevels(); level++ ){
+    for( uint level = 0; level < this->gridBuilder->getNumberOfGridLevels(); level++ ){
         this->gridToMesh[level].resize( grids[level]->getSize() );
 
         for( auto& cellIdx : this->gridToMesh[level] ) cellIdx = INVALID_INDEX;
@@ -48,7 +52,7 @@ void GksMeshAdapter::inputGrid(SPtr<MultipleGridBuilder> gridBuilder)
 
     uint numberOfCells = 0;
 
-    for( uint level = 0; level < gridBuilder->getNumberOfGridLevels(); level++ ){
+    for( uint level = 0; level < this->gridBuilder->getNumberOfGridLevels(); level++ ){
         for( uint gridIdx = 0; gridIdx < grids[level]->getSize(); gridIdx++ ){
             if (grids[level]->getFieldEntry(gridIdx)  != STOPPER_COARSE_UNDER_FINE &&
                 grids[level]->getFieldEntry(gridIdx)  != STOPPER_SOLID &&
@@ -69,7 +73,7 @@ void GksMeshAdapter::inputGrid(SPtr<MultipleGridBuilder> gridBuilder)
 
     this->cells.resize( numberOfCells );
 
-    for( uint level = 0; level < gridBuilder->getNumberOfGridLevels(); level++ ){
+    for( uint level = 0; level < this->gridBuilder->getNumberOfGridLevels(); level++ ){
         for( uint gridIdx = 0; gridIdx < grids[level]->getSize(); gridIdx++ ){
             if ( this->gridToMesh[level][gridIdx] != INVALID_INDEX ){
 
@@ -86,13 +90,24 @@ void GksMeshAdapter::inputGrid(SPtr<MultipleGridBuilder> gridBuilder)
     }
 
     //////////////////////////////////////////////////////////////////////////
+
+    this->findQuadtreeConnectivity();
+    this->findCellToCellConnectivity();
+    this->countCells();
+    this->partitionCells();
+    this->generateNodes();
+    this->computeCellGeometry();
+    this->generateFaces();
+    this->sortFaces();
+    this->countFaces();
+    this->generateInterfaceConnectivity();
 }
 
-void GksMeshAdapter::findQuadtreeConnectivity(SPtr<MultipleGridBuilder> gridBuilder)
+void GksMeshAdapter::findQuadtreeConnectivity()
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "findQuadtreeConnectivity()" << "\n";
 
-    std::vector< SPtr<Grid> > grids = gridBuilder->getGrids();
+    std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
@@ -131,11 +146,11 @@ void GksMeshAdapter::findQuadtreeConnectivity(SPtr<MultipleGridBuilder> gridBuil
     }
 }
 
-void GksMeshAdapter::findCellToCellConnectivity(SPtr<MultipleGridBuilder> gridBuilder)
+void GksMeshAdapter::findCellToCellConnectivity()
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "findCellToCellConnectivity()" << "\n";
 
-    std::vector< SPtr<Grid> > grids = gridBuilder->getGrids();
+    std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
@@ -257,9 +272,9 @@ void GksMeshAdapter::refreshCellConnectivity(const std::vector<uint>& idxMap)
     }
 }
 
-void GksMeshAdapter::findCornerCells(SPtr<MultipleGridBuilder> gridBuilder, real z0)
+void GksMeshAdapter::findCornerCells()
 {
-    //SPtr<Grid> grid = gridBuilder->getGrids()[0];
+    //SPtr<Grid> grid = this->gridBuilder->getGrids()[0];
     //
     //this->cornerCells[0] = this->gridToMesh[ 0 ][ grid->transCoordToIndex( grid->getStartX(), grid->getStartY(), z0 ) ];
     //this->cornerCells[1] = this->gridToMesh[ 0 ][ grid->transCoordToIndex( grid->getEndX()  , grid->getStartY(), z0 ) ];
@@ -267,7 +282,7 @@ void GksMeshAdapter::findCornerCells(SPtr<MultipleGridBuilder> gridBuilder, real
     //this->cornerCells[3] = this->gridToMesh[ 0 ][ grid->transCoordToIndex( grid->getStartX(), grid->getEndY()  , z0 ) ];
 }
 
-void GksMeshAdapter::generateNodes(SPtr<MultipleGridBuilder> gridBuilder)
+void GksMeshAdapter::generateNodes()
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "generateNodes()" << "\n";
 
@@ -328,198 +343,7 @@ void GksMeshAdapter::generateNodes(SPtr<MultipleGridBuilder> gridBuilder)
                 }
             }
         }
-
-        //////////////////////////////////////////////////////////////////////////
-
-        //if( cell.type == FLUID_FCC || cell.type == FLUID_CFC ){
-
-        //    // register edge nodes at child cells
-        //    this->cells[ cell.children[0] ].cellToNode[0] = cell.cellToNode[0];
-        //    this->cells[ cell.children[1] ].cellToNode[1] = cell.cellToNode[1];
-        //    this->cells[ cell.children[2] ].cellToNode[2] = cell.cellToNode[2];
-        //    this->cells[ cell.children[3] ].cellToNode[3] = cell.cellToNode[3];                    
-
-        //    std::array<arraytypes::Vec2,4> dir;
-
-        //    dir[0] = arraytypes::Vec2( - d, 0.0 );
-        //    dir[1] = arraytypes::Vec2( 0.0, - d );
-        //    dir[2] = arraytypes::Vec2(   d, 0.0 );
-        //    dir[3] = arraytypes::Vec2( 0.0,   d );
-
-        //    // introduce new face nodes
-        //    if( cell.cellToFaceNode[0] == -1 ){
-        //        nodes.push_back( arraytypes::Vec2( x + dir[0].x, y + dir[0].y ) );
-
-        //        cell.cellToFaceNode[0] = nodes.size()-1;
-        //            
-        //        // register face node at adjacent cell
-        //        if( cell.cellToCell[0] != -1 ) this->cells[ cell.cellToCell[0] ].cellToFaceNode[2] = nodes.size()-1;
-
-        //    }
-        //            
-        //    if( cell.cellToFaceNode[1] == -1 ){
-        //        nodes.push_back( arraytypes::Vec2( x + dir[1].x, y + dir[1].y ) );
-
-        //        cell.cellToFaceNode[1] = nodes.size()-1;
-        //            
-        //        // register face node at adjacent cell
-        //        if( cell.cellToCell[1] != -1 ) this->cells[ cell.cellToCell[1] ].cellToFaceNode[3] = nodes.size()-1;
-
-        //    }
-        //            
-        //    if( cell.cellToFaceNode[2] == -1 ){
-        //        nodes.push_back( arraytypes::Vec2( x + dir[2].x, y + dir[2].y ) );
-
-        //        cell.cellToFaceNode[2] = nodes.size()-1;
-        //            
-        //        // register face node at adjacent cell
-        //        if( cell.cellToCell[2] != -1 ) this->cells[ cell.cellToCell[2] ].cellToFaceNode[0] = nodes.size()-1;
-
-        //    }
-        //            
-        //    if( cell.cellToFaceNode[3] == -1 ){
-        //        nodes.push_back( arraytypes::Vec2( x + dir[3].x, y + dir[3].y ) );
-
-        //        cell.cellToFaceNode[3] = nodes.size()-1;
-        //            
-        //        // register face node at adjacent cell
-        //        if( cell.cellToCell[3] != -1 ) this->cells[ cell.cellToCell[3] ].cellToFaceNode[1] = nodes.size()-1;
-
-        //    }
-
-        //    // register face node at child cells
-        //    this->cells[ cell.children[3] ].cellToNode[0] = cell.cellToFaceNode[0];
-        //    this->cells[ cell.children[0] ].cellToNode[3] = cell.cellToFaceNode[0];
-
-        //    this->cells[ cell.children[0] ].cellToNode[1] = cell.cellToFaceNode[1];
-        //    this->cells[ cell.children[1] ].cellToNode[0] = cell.cellToFaceNode[1];
-
-        //    this->cells[ cell.children[1] ].cellToNode[2] = cell.cellToFaceNode[2];
-        //    this->cells[ cell.children[2] ].cellToNode[1] = cell.cellToFaceNode[2];
-
-        //    this->cells[ cell.children[2] ].cellToNode[3] = cell.cellToFaceNode[3];
-        //    this->cells[ cell.children[3] ].cellToNode[2] = cell.cellToFaceNode[3];
-        //}
     }
-}
-
-void GksMeshAdapter::inputQs(SPtr<MultipleGridBuilder> gridBuilder)
-{
-
-    //std::vector< SPtr<Grid> > grids = gridBuilder->getGrids();
-
-    //for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
-
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    if( cell.type != BC_SOLID ) continue;
-
-    //    cell.Qs[0] = grids[cell.level]->getQValue(cell.gridIdx, 7);
-    //    cell.Qs[1] = grids[cell.level]->getQValue(cell.gridIdx, 8);
-    //    cell.Qs[2] = grids[cell.level]->getQValue(cell.gridIdx, 6);
-    //    cell.Qs[3] = grids[cell.level]->getQValue(cell.gridIdx, 9);
-    //}
-}
-
-void GksMeshAdapter::morphNodes()
-{
-    //this->displacement.resize(   this->nodes.size() );
-    //this->nDisplacements.resize( this->nodes.size() );
-
-    //for( uint n : this->nDisplacements ) n = 0;
-
-    //for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
-
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    if( cell.type != BC_SOLID ) continue;
-
-    //    std::array<arraytypes::Vec2,4> dir;
-    //    dir[0] = arraytypes::Vec2( - getDx(cell.level), - getDx(cell.level) );
-    //    dir[1] = arraytypes::Vec2(   getDx(cell.level), - getDx(cell.level) );
-    //    dir[2] = arraytypes::Vec2(   getDx(cell.level),   getDx(cell.level) );
-    //    dir[3] = arraytypes::Vec2( - getDx(cell.level),   getDx(cell.level) );
-
-    //    for( uint idx = 0; idx < 4; idx ++ ){
-    //    
-    //        //if( vf::Math::equal( cell.Qs[idx], 0.0 ) ) continue;
-    //        if( cell.Qs[idx] < 0.0 || cell.Qs[idx] > 1.0 ) continue;
-
-    //        this->displacement[ cell.cellToNode[idx] ].x += ( cell.Qs[idx] - 0.5 ) * dir[idx].x;
-    //        this->displacement[ cell.cellToNode[idx] ].y += ( cell.Qs[idx] - 0.5 ) * dir[idx].y;
-    //    
-    //        this->nDisplacements[ cell.cellToNode[idx] ]++;
-    //    }
-    //}
-
-    //for( uint nodeIdx = 0; nodeIdx < this->nodes.size(); nodeIdx++ ){
-    //
-    //    if( this->nDisplacements[nodeIdx] == 0 ) continue;
-    //
-    //    nodes[ nodeIdx ].x += this->displacement[ nodeIdx ].x / double( this->nDisplacements[ nodeIdx ] );
-    //    nodes[ nodeIdx ].y += this->displacement[ nodeIdx ].y / double( this->nDisplacements[ nodeIdx ] );
-    //}
-}
-
-void GksMeshAdapter::repairTriangularCells()
-{
-    //for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
-
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    if( cell.type != BC_SOLID ) continue;
-
-    //    arraytypes::uint4 cellToNodeTMP = cell.cellToNode;
-
-    //    for( uint idx = 0; idx < 4; idx++ ){
-    //    
-    //        arraytypes::Vec2 v1, v2;
-
-    //        v1.x =   this->nodes[ cell.cellToNode[ idx ] ].x - this->nodes[ cell.cellToNode[ ( idx - 1 ) % 4 ] ].x;
-    //        v1.y =   this->nodes[ cell.cellToNode[ idx ] ].y - this->nodes[ cell.cellToNode[ ( idx - 1 ) % 4 ] ].y;
-    //        v2.x = - this->nodes[ cell.cellToNode[ idx ] ].x + this->nodes[ cell.cellToNode[ ( idx + 1 ) % 4 ] ].x;
-    //        v2.y = - this->nodes[ cell.cellToNode[ idx ] ].y + this->nodes[ cell.cellToNode[ ( idx + 1 ) % 4 ] ].y;
-
-    //        double v1Length = sqrt( v1.x*v1.x + v1.y*v1.y );
-    //        double v2Length = sqrt( v2.x*v2.x + v2.y*v2.y );
-
-    //        double v1DotV2  = v1.x*v2.x + v1.y*v2.y;
-
-    //        bool isConcave = v1.x*v2.y - v1.y*v2.x < 0.0;
-
-    //        double argument = v1DotV2 / ( v1Length * v2Length );
-
-    //        bool isCollinear = false;
-    //        
-    //        // the acos function does not like the argument 1.0, hence the special treatment
-    //        if( fabs( v1DotV2 / ( v1Length * v2Length ) - 1.0 ) < 1.0e-10 )
-    //            isCollinear = true;
-    //        else
-    //            isCollinear = acos( v1DotV2 / ( v1Length * v2Length ) ) < M_PI / 4.0;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        uint neighborIdx1 = cell.cellToCell[   idx           ];
-    //        uint neighborIdx2 = cell.cellToCell[ ( idx + 1 ) % 4 ];
-
-    //        bool neighborCellsExist = ( ( neighborIdx1 != INVALID_IDX && this->cells[ neighborIdx1 ].type != STOPPER_SOLID ) ||
-    //                                    ( neighborIdx2 != INVALID_IDX && this->cells[ neighborIdx2 ].type != STOPPER_SOLID ) );
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        if( isConcave || isCollinear ){
-    //            if( !neighborCellsExist ){
-    //                cellToNodeTMP[idx] = INVALID_IDX;
-    //            }
-    //            else{
-    //                nodes[ cell.cellToNode[ idx ] ].x -= this->displacement[ cell.cellToNode[ idx ] ].x / double( this->nDisplacements[ cell.cellToNode[ idx ] ] );
-    //                nodes[ cell.cellToNode[ idx ] ].y -= this->displacement[ cell.cellToNode[ idx ] ].y / double( this->nDisplacements[ cell.cellToNode[ idx ] ] );
-    //            }
-    //        }
-    //    }
-
-    //    cell.cellToNode = cellToNodeTMP;
-    //}
 }
 
 void GksMeshAdapter::computeCellGeometry()
@@ -537,162 +361,12 @@ void GksMeshAdapter::computeCellGeometry()
         cell.cellCenter.x = cellCenter.x / eight;
         cell.cellCenter.y = cellCenter.y / eight;
         cell.cellCenter.z = cellCenter.z / eight;
-
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    uint nNodes = 0;
-    //    for( uint idx : cell.cellToNode ) if( idx != INVALID_IDX ) nNodes++;
-
-    //    if( nNodes == 3 ){
-    //    
-    //        arraytypes::uint3 cellToNode;
-    //        for( uint idx = 0, counter = 0; idx < 4; idx++ )
-    //            if( cell.cellToNode[idx] != INVALID_IDX ) 
-    //                cellToNode[counter++] = cell.cellToNode[idx];
-    //    
-    //        cell.cellCenter.x = ( this->nodes[ cellToNode[0] ].x
-    //                            + this->nodes[ cellToNode[1] ].x
-    //                            + this->nodes[ cellToNode[2] ].x ) / 3.0;
-    //        cell.cellCenter.y = ( this->nodes[ cellToNode[0] ].y
-    //                            + this->nodes[ cellToNode[1] ].y
-    //                            + this->nodes[ cellToNode[2] ].y ) / 3.0;
-
-    //        cell.cellVolume = 0.5 * ( this->nodes[ cellToNode[0] ].x * ( this->nodes[ cellToNode[1] ].y - this->nodes[ cellToNode[2] ].y )
-    //                                + this->nodes[ cellToNode[1] ].x * ( this->nodes[ cellToNode[2] ].y - this->nodes[ cellToNode[0] ].y )
-    //                                + this->nodes[ cellToNode[2] ].x * ( this->nodes[ cellToNode[0] ].y - this->nodes[ cellToNode[1] ].y ) );
-
-    //    }
-    //    else if( nNodes == 4 ){
-    //        
-    //        arraytypes::Vec2 triCenter[2];
-    //        triCenter[0].x =  (this->nodes[ cell.cellToNode[0] ].x + this->nodes[ cell.cellToNode[1] ].x +                                       this->nodes[ cell.cellToNode[3] ].x) / 3.0;
-    //        triCenter[0].y =  (this->nodes[ cell.cellToNode[0] ].y + this->nodes[ cell.cellToNode[1] ].y +                                       this->nodes[ cell.cellToNode[3] ].y) / 3.0;
-    //        triCenter[1].y =  (                                      this->nodes[ cell.cellToNode[1] ].y + this->nodes[ cell.cellToNode[2] ].y + this->nodes[ cell.cellToNode[3] ].y) / 3.0;
-    //        triCenter[1].x =  (                                      this->nodes[ cell.cellToNode[1] ].x + this->nodes[ cell.cellToNode[2] ].x + this->nodes[ cell.cellToNode[3] ].x) / 3.0;
-
-    //        double triVolume[2];
-    //        triVolume[0] = 0.5 * fabs( this->nodes[ cell.cellToNode[0] ].x * ( this->nodes[ cell.cellToNode[1] ].y - this->nodes[ cell.cellToNode[3] ].y )
-    //                                 + this->nodes[ cell.cellToNode[1] ].x * ( this->nodes[ cell.cellToNode[3] ].y - this->nodes[ cell.cellToNode[0] ].y )
-    //                                 + this->nodes[ cell.cellToNode[3] ].x * ( this->nodes[ cell.cellToNode[0] ].y - this->nodes[ cell.cellToNode[1] ].y ) );
-    //        triVolume[1] = 0.5 * fabs( this->nodes[ cell.cellToNode[2] ].x * ( this->nodes[ cell.cellToNode[3] ].y - this->nodes[ cell.cellToNode[1] ].y )
-    //                                 + this->nodes[ cell.cellToNode[3] ].x * ( this->nodes[ cell.cellToNode[1] ].y - this->nodes[ cell.cellToNode[2] ].y )
-    //                                 + this->nodes[ cell.cellToNode[1] ].x * ( this->nodes[ cell.cellToNode[2] ].y - this->nodes[ cell.cellToNode[3] ].y ) );
-
-    //        cell.cellVolume   = triVolume[0] + triVolume[1];
-    //        cell.cellCenter.x = ( triCenter[0].x * triVolume[0] + triCenter[1].x * triVolume[1] ) / cell.cellVolume;
-    //        cell.cellCenter.y = ( triCenter[0].y * triVolume[0] + triCenter[1].y * triVolume[1] ) / cell.cellVolume;
-    //    }
     }
 }
 
-void GksMeshAdapter::generateSolidGhostCells()
+void GksMeshAdapter::generateFaces()
 {
-    //std::vector<MeshCell> newCells;
-
-    //for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
-
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    if( cell.type != BC_SOLID ) continue;
-    //    
-    //    for( uint idx = 0; idx < 4; idx++ ){
-    //        
-    //        if( cell.cellToCell[ idx ] == INVALID_IDX ){
-    //            
-    //            cell.cellToCell[ idx ] = this->cells.size() + newCells.size();
-
-    //            if( cell.cellToNode[ idx ] == INVALID_IDX )
-    //                cell.cellToCell[ ( idx + 1 ) % 4 ] = this->cells.size() + newCells.size();
-
-    //            if( cell.cellToNode[ ( idx - 1 ) % 4 ] == INVALID_IDX )
-    //                cell.cellToCell[ ( idx - 1 ) % 4 ] = this->cells.size() + newCells.size();
-
-    //            uint neighborIdx = cell.cellToCell[ ( idx + 1 ) % 4 ];
-    //            if( neighborIdx != INVALID_IDX && neighborIdx < this->cells.size() )
-    //                this->cells[ neighborIdx ].cellToCell[ 4 + ( idx - 1 ) % 4 ] = this->cells.size() + newCells.size();
-
-    //            neighborIdx = cell.cellToCell[ ( idx - 1 ) % 4 ];
-    //            if( neighborIdx != INVALID_IDX && neighborIdx < this->cells.size() )
-    //                this->cells[ neighborIdx ].cellToCell[ 4 + ( idx + 0 ) % 4 ] = this->cells.size() + newCells.size();
-
-    //            newCells.push_back( MeshCell() );
-    //            
-    //            newCells.back().isGhostCell = true;
-    //            newCells.back().type        = STOPPER_SOLID;
-    //            newCells.back().level       = cell.level;
-    //        }
-    //    }
-    //}
-
-    //this->cells.insert( this->cells.end(), newCells.begin(), newCells.end() );
-}
-
-void GksMeshAdapter::computeGhostCellGeometry()
-{
-    //for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
-
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    if( cell.type != BC_SOLID ) continue;
-
-    //    for( uint idx = 0; idx < 4; idx++ ){
-    //        
-    //        MeshCell& neighborCell = this->cells[ cell.cellToCell[ idx ] ];
-
-    //        if( neighborCell.type != STOPPER_SOLID ) continue;
-    //    
-    //        arraytypes::Vec2 faceCenter;
-
-    //        uint node0 = cell.cellToNode[ ( idx - 1 ) % 4 ];
-    //        uint node1 = cell.cellToNode[   idx           ];
-
-    //        if( node0 == INVALID_IDX ) continue;
-
-    //        if( node1 == INVALID_IDX ) node1 = cell.cellToNode[ ( idx + 1 ) % 4 ];
-
-    //        faceCenter.x = 0.5 * ( this->nodes[ node0 ].x + this->nodes[ node1 ].x );
-    //        faceCenter.y = 0.5 * ( this->nodes[ node0 ].y + this->nodes[ node1 ].y );
-
-    //        arraytypes::Vec2 newNode;
-
-    //        //newNode.x = 2.0 * faceCenter.x - cell.cellCenter.x;
-    //        //newNode.y = 2.0 * faceCenter.y - cell.cellCenter.y;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        arraytypes::Vec2 v01 ( this->nodes[ node1 ].x - this->nodes[ node0 ].x,
-    //                               this->nodes[ node1 ].y - this->nodes[ node0 ].y );
-
-    //        arraytypes::Vec2 vD0 ( this->nodes[ node0 ].x - cell.cellCenter.x,
-    //                               this->nodes[ node0 ].y - cell.cellCenter.y );
-
-    //        double alpha = - ( vD0.x * v01.x + vD0.y * v01.y ) / ( v01.x * v01.x + v01.y * v01.y );
-
-    //        arraytypes::Vec2 vDP( this->nodes[ node0 ].x + alpha * v01.x - cell.cellCenter.x,
-    //                              this->nodes[ node0 ].y + alpha * v01.y - cell.cellCenter.y );
-
-    //        newNode.x = cell.cellCenter.x + 2.0 * vDP.x;
-    //        newNode.y = cell.cellCenter.y + 2.0 * vDP.y;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        neighborCell.cellCenter = newNode;
-    //        
-    //        neighborCell.cellToNode[0] = node1;
-    //        neighborCell.cellToNode[1] = node0;
-    //        neighborCell.cellToNode[2] = this->nodes.size();
-
-    //        // dummy value to identify it as ghost cell
-    //        neighborCell.cellVolume = -1.0;
-
-    //        this->nodes.push_back( newNode );
-    //    }
-    //}
-}
-
-void GksMeshAdapter::generateFaces(SPtr<MultipleGridBuilder> gridBuilder)
-{
-    std::vector< SPtr<Grid> > grids = gridBuilder->getGrids();
+    std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
     this->faces.reserve( 2 * this->cells.size() );
 
@@ -787,245 +461,6 @@ void GksMeshAdapter::generateFaces(SPtr<MultipleGridBuilder> gridBuilder)
     }
 }
 
-void GksMeshAdapter::generateSolidFaces(SPtr<MultipleGridBuilder> gridBuilder)
-{
-
-    //std::vector< SPtr<Grid> > grids = gridBuilder->getGrids();
-
-    //this->faces.reserve( 2 * this->cells.size() );
-
-    //for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
-    //
-    //    MeshCell& cell = this->cells[ cellIdx ];
-
-    //    if( ! ( cell.type == BC_SOLID ) ) continue;
-
-    //    for( uint neighborIdx = 0; neighborIdx < 4; neighborIdx++ ){
-
-    //        if( cell.faceExists[ neighborIdx ] ) continue;
-
-    //        if( cell.cellToCell[ neighborIdx ] == INVALID_IDX ) continue;
-
-    //        uint neighborCellIdx = cell.cellToCell[ neighborIdx ];
-
-    //        MeshCell& neighborCell = this->cells[ neighborCellIdx ];
-
-    //        if( cell.isGhostCell && neighborCell.isGhostCell ) continue;
-
-    //        if( cell.isCoarseGhostCell() || neighborCell.isCoarseGhostCell() ) continue;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        MeshFace newFace;
-
-    //        newFace.level = cell.level;
-
-    //        uint node0 = cell.cellToNode[ ( neighborIdx - 1 ) % 4 ];
-    //        uint node1 = cell.cellToNode[   neighborIdx           ];
-
-    //        if( node0 == INVALID_IDX ) continue;
-
-    //        if( node1 == INVALID_IDX ) node1 = cell.cellToNode[ ( neighborIdx + 1 ) % 4 ];
-
-    //        newFace.faceToNode[ 0 ] = node0;
-    //        newFace.faceToNode[ 1 ] = node1;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        newFace.orientation = 'a';
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        cell.faceExists[ neighborIdx ] = true;
-
-    //        // register face at neighbor
-    //        for( uint idx = 0; idx < 4; idx++ ){
-    //            if( neighborCell.cellToCell[ idx ] == cellIdx ){
-    //                neighborCell.faceExists[ idx ] = true;
-    //                break;
-    //            }
-    //        }
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        newFace.faceToCell[ 0 ] = cellIdx;
-    //        newFace.faceToCell[ 1 ] = neighborCellIdx;
-    //        
-    //        //////////////////////////////////////////////////////////////////////////
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        if( false )
-    //        {
-    //            if (neighborCell.type != STOPPER_SOLID) {
-    //                newFace.faceToCell[2] = cell.cellToCell[(neighborIdx + 1) % 4];
-    //                newFace.faceToCell[3] = cell.cellToCell[(neighborIdx - 1) % 4];
-
-    //                newFace.faceToCell[4] = cell.cellToCell[neighborIdx + 4];
-    //                newFace.faceToCell[5] = cell.cellToCell[neighborIdx + 3];
-    //            }
-    //            else {
-    //                newFace.faceToCell[2] = cell.cellToCell[(neighborIdx + 1) % 4];
-    //                newFace.faceToCell[3] = cell.cellToCell[(neighborIdx - 1) % 4];
-
-    //                if (newFace.faceToCell[2] == newFace.faceToCell[1])
-    //                    newFace.faceToCell[2] = cell.cellToCell[(neighborIdx + 2) % 4];
-
-    //                if (newFace.faceToCell[3] == newFace.faceToCell[1])
-    //                    newFace.faceToCell[3] = cell.cellToCell[(neighborIdx - 2) % 4];
-    //            }
-
-    //        }
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        if( true )
-    //        {
-    //            // search for suitable cells
-
-    //            std::vector<uint> candidates;
-
-    //            std::function<void(uint)> findCandidates = [&](uint candidateIdx)
-    //            {
-    //                MeshCell candidateCell = this->cells[candidateIdx];
-
-    //                bool sharesNode = false;
-
-    //                for (auto faceNodeIdx : newFace.faceToNode)
-    //                    for (auto candidateNodeIdx : candidateCell.cellToNode)
-    //                        if (faceNodeIdx == candidateNodeIdx)
-    //                            sharesNode = true;
-
-    //                if (!sharesNode) return;
-
-    //                candidates.push_back(candidateIdx);
-
-    //                for (auto candidateCellIdx : candidateCell.cellToCell)
-    //                    if (candidateCellIdx != INVALID_IDX)
-    //                        if (std::find(candidates.begin(), candidates.end(), candidateCellIdx) == candidates.end())
-    //                            findCandidates(candidateCellIdx);
-    //            };
-
-    //            findCandidates(cellIdx);
-
-    //            // https://stackoverflow.com/questions/3385229/c-erase-vector-element-by-value-rather-than-by-position
-    //            candidates.erase(std::remove(candidates.begin(), candidates.end(), cellIdx), candidates.end());
-    //            candidates.erase(std::remove(candidates.begin(), candidates.end(), neighborCellIdx), candidates.end());
-
-    //            //////////////////////////////////////////////////////////////////////////
-
-    //            newFace.faceCenter.x = 0.5 * (this->nodes[newFace.faceToNode[1]].x + this->nodes[newFace.faceToNode[0]].x);
-    //            newFace.faceCenter.y = 0.5 * (this->nodes[newFace.faceToNode[1]].y + this->nodes[newFace.faceToNode[0]].y);
-
-    //            // choose cells
-
-    //            if (candidates.size() <= 4) {
-
-    //                uint j = 2;
-    //                for (uint i = 0; i < candidates.size(); i++) {
-    //                    newFace.faceToCell[j++] = candidates[i];
-    //                }
-    //                while (j < 6) {
-    //                    newFace.faceToCell[j++] = INVALID_IDX;
-    //                }
-    //            }
-    //            else
-    //            {
-    //                uint numberOfPermutations = pow(candidates.size(), (candidates.size() - 4));
-
-    //                uint   minimalPermutation = INVALID_IDX;
-    //                double minimalDeviation = 1.0e99;
-
-    //                for (uint permutation = 0; permutation < numberOfPermutations; permutation++)
-    //                {
-    //                    std::vector<uint> jumpList;
-    //                    uint tmp = permutation;
-    //                    do
-    //                    {
-    //                        jumpList.push_back(tmp % candidates.size());
-    //                        tmp = tmp / candidates.size();
-    //                    } while (tmp > 0);
-
-    //                    std::sort(jumpList.begin(), jumpList.end());
-    //                    jumpList.erase(std::unique(jumpList.begin(), jumpList.end()), jumpList.end());
-
-    //                    if (jumpList.size() != (candidates.size() - 4)) continue;
-
-    //                    arraytypes::Vec2 centroid;
-
-    //                    centroid.x += 1.0 / 6.0 * cell.cellCenter.x;
-    //                    centroid.y += 1.0 / 6.0 * cell.cellCenter.y;
-    //                    centroid.x += 1.0 / 6.0 * neighborCell.cellCenter.x;
-    //                    centroid.y += 1.0 / 6.0 * neighborCell.cellCenter.y;
-
-    //                    for (uint i = 0; i < candidates.size(); i++)
-    //                    {
-    //                        if (std::find(jumpList.begin(), jumpList.end(), i) == jumpList.end())
-    //                        {
-    //                            centroid.x += 1.0 / 6.0 * this->cells[candidates[i]].cellCenter.x;
-    //                            centroid.y += 1.0 / 6.0 * this->cells[candidates[i]].cellCenter.y;
-    //                        }
-    //                    }
-
-    //                    double deviation = sqrt((newFace.faceCenter.x - centroid.x)
-    //                        * (newFace.faceCenter.x - centroid.x)
-    //                        + (newFace.faceCenter.y - centroid.y)
-    //                        * (newFace.faceCenter.y - centroid.y));
-
-    //                    if (deviation < minimalDeviation)
-    //                    {
-    //                        minimalPermutation = permutation;
-    //                        minimalDeviation = deviation;
-    //                    }
-    //                }
-
-    //                std::vector<uint> jumpList;
-    //                uint tmp = minimalPermutation;
-    //                do
-    //                {
-    //                    jumpList.push_back(tmp % candidates.size());
-    //                    tmp = tmp / candidates.size();
-    //                } while (tmp > 0);
-
-    //                uint j = 2;
-    //                for (uint i = 0; i < candidates.size(); i++)
-    //                {
-    //                    if (std::find(jumpList.begin(), jumpList.end(), i) == jumpList.end())
-    //                    {
-    //                        newFace.faceToCell[j++] = candidates[i];
-    //                    }
-    //                }
-    //            }
-    //        }
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        newFace.negCell = cellIdx;
-    //        newFace.posCell = neighborCellIdx;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        if ( cell.type == FLUID_CFF && neighborCell.type == FLUID_FCF ) newFace.negCell = cell.parent;
-    //        if ( cell.type == FLUID_FCF && neighborCell.type == FLUID_CFF ) newFace.posCell = neighborCell.parent;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        arraytypes::Vec2 faceVec( this->nodes[ newFace.faceToNode[ 1 ] ].x - this->nodes[ newFace.faceToNode[ 0 ] ].x,
-    //                                  this->nodes[ newFace.faceToNode[ 1 ] ].y - this->nodes[ newFace.faceToNode[ 0 ] ].y );
-
-    //        newFace.faceArea = sqrt( faceVec.x * faceVec.x + faceVec.y * faceVec.y );
-
-    //        newFace.faceCenter.x = 0.5 * ( this->nodes[ newFace.faceToNode[ 1 ] ].x + this->nodes[ newFace.faceToNode[ 0 ] ].x );
-    //        newFace.faceCenter.y = 0.5 * ( this->nodes[ newFace.faceToNode[ 1 ] ].y + this->nodes[ newFace.faceToNode[ 0 ] ].y );
-
-    //        newFace.faceNormal.x =   faceVec.y / newFace.faceArea;
-    //        newFace.faceNormal.y = - faceVec.x / newFace.faceArea;
-
-    //        //////////////////////////////////////////////////////////////////////////
-
-    //        this->faces.push_back( newFace );
-    //    }
-    //}
-}
-
 void GksMeshAdapter::sortFaces()
 {
     real xMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.x < rhs.faceCenter.x; } ) ).faceCenter.x;
@@ -1079,17 +514,6 @@ void GksMeshAdapter::countFaces()
         this->startOfFacesPerLevelXYZ[level] = this->startOfFacesPerLevelXYZ [level - 1]
                                              + this->numberOfFacesPerLevelXYZ[level - 1];
     }
-}
-
-void GksMeshAdapter::findSolidFaces()
-{
-    //for( uint faceIdx = 0; faceIdx < this->faces.size(); faceIdx++ ){
-
-    //    MeshFace& face = this->faces[ faceIdx ];
-
-    //    if( this->cells[ face.posCell ].type == STOPPER_SOLID )
-    //        this->solidFaces.push_back( faceIdx );
-    //}
 }
 
 void GksMeshAdapter::generateInterfaceConnectivity()
