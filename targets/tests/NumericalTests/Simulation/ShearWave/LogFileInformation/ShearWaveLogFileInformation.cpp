@@ -1,8 +1,8 @@
 #include "ShearWaveLogFileInformation.h"
 
-std::shared_ptr<LogFileInformation> ShearWaveInformation::getNewInstance(double u0, double v0, std::vector< bool> tests, std::vector< real> l)
+std::shared_ptr<ShearWaveInformation> ShearWaveInformation::getNewInstance(double u0, double v0, std::vector< bool> tests, std::vector< real> l, int l0)
 {
-	return std::shared_ptr<LogFileInformation>(new ShearWaveInformation(u0, v0, tests, l));
+	return std::shared_ptr<ShearWaveInformation>(new ShearWaveInformation(u0, v0, tests, l, l0));
 }
 
 std::string ShearWaveInformation::getOutput()
@@ -19,7 +19,14 @@ std::string ShearWaveInformation::getOutput()
 	return oss.str();
 }
 
-ShearWaveInformation::ShearWaveInformation(double u0, double v0, std::vector< bool> tests, std::vector< real> l) : u0(u0), v0(v0), tests(tests), l(l)
+std::string ShearWaveInformation::getFilePathExtension()
 {
-	l0 = 32;
+	std::ostringstream oss;
+	oss << "ShearWave\\u0_" << u0 << "_v0_" << v0;
+	return oss.str();
+}
+
+ShearWaveInformation::ShearWaveInformation(double u0, double v0, std::vector< bool> tests, std::vector< real> l, int l0) : u0(u0), v0(v0), tests(tests), l(l), l0(l0)
+{
+
 }
