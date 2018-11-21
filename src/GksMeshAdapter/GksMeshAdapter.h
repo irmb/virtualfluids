@@ -11,6 +11,7 @@
 #include "MeshCell.h"
 #include "MeshFace.h"
 
+#include "VirtualFluidsDefinitions.h"
 
 class MultipleGridBuilder;
 

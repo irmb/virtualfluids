@@ -8,14 +8,15 @@
 #include <fstream>
 #include <memory>
 
-#include "core/Logger/Logger.h"
+#include "Core/PointerDefinitions.h"
+#include "Core/DataTypes.h"
+#include "Core/VectorTypes.h"
+#include "Core/Logger/Logger.h"
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
-#include "GridGenerator/grid/BoundaryConditions/Side.h"
-#include "GridGenerator/grid/BoundaryConditions/BoundaryCondition.h"
 #include "GridGenerator/grid/GridFactory.h"
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
@@ -25,6 +26,9 @@
 #include "GksGpu/DataBase/DataBase.h"
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
+
+#include "GksGpu/BoundaryConditions/BoundaryCondition.h"
+#include "GksGpu/BoundaryConditions/IsothermalWall.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -40,15 +44,15 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 32.0;
+    real dx = 1.0 / 4.0;
 
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
     Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
-    gridBuilder->setNumberOfLayers(10,8);
-    gridBuilder->addGrid( &cube, 1);
+    //gridBuilder->setNumberOfLayers(10,8);
+    //gridBuilder->addGrid( &cube, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -56,22 +60,15 @@ void gksTest( std::string path )
 
     gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
 
-    gridBuilder->setVelocityBoundaryCondition( SideType::MX, 0.0, 0.0, 0.0 );
-    gridBuilder->setVelocityBoundaryCondition( SideType::PX, 0.0, 0.0, 0.0 );
-    gridBuilder->setVelocityBoundaryCondition( SideType::MY, 0.0, 0.0, 0.0 );
-    gridBuilder->setVelocityBoundaryCondition( SideType::PY, 0.0, 0.0, 0.0 );
-    gridBuilder->setVelocityBoundaryCondition( SideType::MZ, 0.0, 0.0, 0.0 );
-    gridBuilder->setVelocityBoundaryCondition( SideType::PZ, 0.0, 0.0, 0.0 );
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     GksMeshAdapter meshAdapter( gridBuilder );
 
     meshAdapter.inputGrid();
 
-    meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
+    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -79,10 +76,21 @@ void gksTest( std::string path )
 
     Parameters parameters;
 
+    parameters.dx = dx;
     parameters.force.z = -0.01;
     
     auto dataBase = std::make_shared<DataBase>( "CPU" );
     dataBase->setMesh( meshAdapter );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    SPtr<BoundaryCondition> testBC = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0 ,0.0 ), 1.0, 0.0 );
+
+    testBC->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+        return center.x < -0.5;
+    } );
+
+    //////////////////////////////////////////////////////////////////////////
 
     CudaUtility::printCudaMemoryUsage();
 
@@ -91,7 +99,6 @@ void gksTest( std::string path )
         real radius = cellCenter.length();
 
         return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 1.0, radius ), parameters.K );
-
     });
 
     Initializer::initializeDataUpdate(dataBase);
@@ -107,6 +114,8 @@ void gksTest( std::string path )
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
     }
 
+    testBC->runBoundaryConditionKernel( dataBase, parameters, 0 );
+    //testBC->runBoundaryConditionKernel( dataBase, parameters, 1 );
 
     //////////////////////////////////////////////////////////////////////////
 

@@ -12,33 +12,35 @@
 
 #include "DataBase/DataBase.h"
 
+#include "BoundaryConditions/BoundaryCondition.h"
+
 #include "Definitions/MemoryAccessPattern.h"
 
-void DataBaseAllocatorGPU::freeMemory( SPtr<DataBase> dataBase )
+void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
 {
-    dataBase->cellToNode.clear();
-    dataBase->faceToNode.clear();
+    dataBase.cellToNode.clear();
+    dataBase.faceToNode.clear();
 
-    checkCudaErrors( cudaFree ( dataBase->cellToCell ) );
+    checkCudaErrors( cudaFree ( dataBase.cellToCell ) );
 
-    checkCudaErrors( cudaFree ( dataBase->faceToCell ) );
+    checkCudaErrors( cudaFree ( dataBase.faceToCell ) );
 
-    checkCudaErrors( cudaFree ( dataBase->parentCell ) );
+    checkCudaErrors( cudaFree ( dataBase.parentCell ) );
 
-    checkCudaErrors( cudaFree ( dataBase->faceCenter ) );
-    checkCudaErrors( cudaFree ( dataBase->cellCenter ) );
+    checkCudaErrors( cudaFree ( dataBase.faceCenter ) );
+    checkCudaErrors( cudaFree ( dataBase.cellCenter ) );
 
-    checkCudaErrors( cudaFree ( dataBase->faceIsWall ) );
+    checkCudaErrors( cudaFree ( dataBase.faceIsWall ) );
 
-    checkCudaErrors( cudaFree ( dataBase->fineToCoarse ) );
-    checkCudaErrors( cudaFree ( dataBase->coarseToFine ) );
+    checkCudaErrors( cudaFree ( dataBase.fineToCoarse ) );
+    checkCudaErrors( cudaFree ( dataBase.coarseToFine ) );
 
-    checkCudaErrors( cudaFree ( dataBase->data ) );
-    checkCudaErrors( cudaFree ( dataBase->dataUpdate ) );
+    checkCudaErrors( cudaFree ( dataBase.data ) );
+    checkCudaErrors( cudaFree ( dataBase.dataUpdate ) );
 
-    checkCudaErrors( cudaFree ( dataBase->massFlux ) );
+    checkCudaErrors( cudaFree ( dataBase.massFlux ) );
 
-    dataBase->dataHost.clear();
+    dataBase.dataHost.clear();
 }
 
 void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
@@ -164,6 +166,24 @@ void DataBaseAllocatorGPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
 void DataBaseAllocatorGPU::copyDataDeviceToHost(SPtr<DataBase> dataBase,  real* hostData )
 {
     checkCudaErrors( cudaMemcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
+}
+
+void DataBaseAllocatorGPU::freeMemory(BoundaryCondition& boundaryCondition)
+{
+    checkCudaErrors( cudaFree ( boundaryCondition.ghostCells  ) );
+    checkCudaErrors( cudaFree ( boundaryCondition.domainCells ) );
+    checkCudaErrors( cudaFree ( boundaryCondition.secondCells ) );
+}
+
+void DataBaseAllocatorGPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
+{
+    checkCudaErrors( cudaMalloc ( &boundaryCondition->ghostCells , sizeof(uint) * ghostCells.size()  ) );
+    checkCudaErrors( cudaMalloc ( &boundaryCondition->domainCells, sizeof(uint) * domainCells.size() ) );
+    checkCudaErrors( cudaMalloc ( &boundaryCondition->secondCells, sizeof(uint) * secondCells.size() ) );
+
+    checkCudaErrors( cudaMemcpy ( boundaryCondition->ghostCells , ghostCells.data() , sizeof(uint) * ghostCells.size() , cudaMemcpyHostToDevice ) );
+    checkCudaErrors( cudaMemcpy ( boundaryCondition->domainCells, domainCells.data(), sizeof(uint) * domainCells.size(), cudaMemcpyHostToDevice ) );
+    checkCudaErrors( cudaMemcpy ( boundaryCondition->secondCells, secondCells.data(), sizeof(uint) * secondCells.size(), cudaMemcpyHostToDevice ) );
 }
 
 std::string DataBaseAllocatorGPU::getDeviceType()

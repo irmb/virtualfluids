@@ -112,6 +112,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     uint getCellLevel( uint cellIdx );
     uint getFaceLevel( uint faceIdx );
 
+    Vec3 getCellCenter( uint cellIdx );
+
     bool isGhostCell( uint cellIdx );
 
     std::string getDeviceType();

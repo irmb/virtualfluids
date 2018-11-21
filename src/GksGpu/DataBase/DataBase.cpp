@@ -31,7 +31,7 @@ DataBase::DataBase( std::string type )
 
 DataBase::~DataBase()
 {
-    this->myAllocator->freeMemory( shared_from_this() );
+    this->myAllocator->freeMemory( *this );
 }
 
 void DataBase::setMesh(GksMeshAdapter & adapter)
@@ -147,6 +147,22 @@ uint DataBase::getFaceLevel(uint faceIdx)
                    + this->perLevelCount[level].numberOfFaces ) level++;
 
     return level;
+}
+
+Vec3 DataBase::getCellCenter(uint cellIdx)
+{
+    Vec3 cellCenter;
+
+    for( uint node = 0; node < 8; node++ )
+    {
+        cellCenter = cellCenter + this->nodeCoordinates[ this->cellToNode[ cellIdx ][ node ] ];
+    }
+
+    cellCenter.x /= eight;
+    cellCenter.y /= eight;
+    cellCenter.z /= eight;
+
+    return cellCenter;
 }
 
 bool DataBase::isGhostCell(uint cellIdx)

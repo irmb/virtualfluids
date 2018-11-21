@@ -7,35 +7,37 @@
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
 
-#include "DataBase.h"
+#include "DataBase/DataBase.h"
+
+#include "BoundaryConditions/BoundaryCondition.h"
 
 #include "Definitions/MemoryAccessPattern.h"
 
-void DataBaseAllocatorCPU::freeMemory( SPtr<DataBase> dataBase)
+void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 {
-    dataBase->cellToNode.clear();
-    dataBase->faceToNode.clear();
+    dataBase.cellToNode.clear();
+    dataBase.faceToNode.clear();
 
-    delete [] dataBase->cellToCell;
+    delete [] dataBase.cellToCell;
 
-    delete [] dataBase->faceToCell;
+    delete [] dataBase.faceToCell;
 
-    delete [] dataBase->parentCell;
+    delete [] dataBase.parentCell;
 
-    delete [] dataBase->faceCenter;
-    delete [] dataBase->cellCenter;
+    delete [] dataBase.faceCenter;
+    delete [] dataBase.cellCenter;
 
-    delete [] dataBase->faceIsWall;
+    delete [] dataBase.faceIsWall;
 
-    delete [] dataBase->fineToCoarse;
-    delete [] dataBase->coarseToFine;
+    delete [] dataBase.fineToCoarse;
+    delete [] dataBase.coarseToFine;
 
-    delete [] dataBase->data;
-    delete [] dataBase->dataUpdate;
+    delete [] dataBase.data;
+    delete [] dataBase.dataUpdate;
 
-    delete [] dataBase->massFlux;
+    delete [] dataBase.massFlux;
 
-    dataBase->dataHost.clear();
+    dataBase.dataHost.clear();
 }
 
 void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
@@ -129,6 +131,24 @@ void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)
 void DataBaseAllocatorCPU::copyDataDeviceToHost(SPtr<DataBase> dataBase, real* hostData)
 {
     memcpy( hostData, dataBase->data, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells );
+}
+
+void DataBaseAllocatorCPU::freeMemory(BoundaryCondition& boundaryCondition)
+{
+    delete [] boundaryCondition.ghostCells ;
+    delete [] boundaryCondition.domainCells;
+    delete [] boundaryCondition.secondCells;
+}
+
+void DataBaseAllocatorCPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells)
+{
+    boundaryCondition->ghostCells  = new uint[ ghostCells.size()  ];
+    boundaryCondition->domainCells = new uint[ domainCells.size() ];
+    boundaryCondition->secondCells = new uint[ secondCells.size() ];
+
+    memcpy ( boundaryCondition->ghostCells , ghostCells.data() , sizeof(uint) * ghostCells.size()  );
+    memcpy ( boundaryCondition->domainCells, domainCells.data(), sizeof(uint) * domainCells.size() );
+    memcpy ( boundaryCondition->secondCells, secondCells.data(), sizeof(uint) * secondCells.size() );
 }
 
 std::string DataBaseAllocatorCPU::getDeviceType()

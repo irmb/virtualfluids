@@ -20,8 +20,6 @@ public:
 
     static void interpret( SPtr<DataBase> dataBase, std::function<ConservedVariables(Vec3)> initialCondition );
 
-    static Vec3 getCellCenter( SPtr<DataBase> dataBase, uint cellIdx );
-
     static void initializeDataUpdate( SPtr<DataBase> dataBase );
 };
 

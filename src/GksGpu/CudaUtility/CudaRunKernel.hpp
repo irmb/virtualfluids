@@ -9,6 +9,8 @@
 template<typename KernelFunctor, typename FunctionFunctor, typename... TArgs>
 void runKernel(KernelFunctor kernel, FunctionFunctor function, std::string deviceType, const CudaUtility::CudaGrid& grid, TArgs... args)
 {
+    if( grid.numberOfEntities == 0 ) return;
+
     if( deviceType == "GPU" )
     {
         kernel<<< grid.blocks, grid.threads >>>(args..., grid.numberOfEntities);

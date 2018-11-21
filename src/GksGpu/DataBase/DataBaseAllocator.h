@@ -2,19 +2,26 @@
 #define DataBaseAllocator_H
 
 #include <string>
+#include <vector>
 
 #include "Core/DataTypes.h"
 #include "Core/PointerDefinitions.h"
 
-#include <VirtualFluidsDefinitions.h>
+#include "VirtualFluidsDefinitions.h"
 
 class  GksMeshAdapter;
 struct DataBase;
+struct BoundaryCondition;
 
 class VF_PUBLIC DataBaseAllocator {
 
 public:
-    virtual void freeMemory( SPtr<DataBase> dataBase ) = 0;
+
+    static std::shared_ptr<DataBaseAllocator> create( std::string type );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    virtual void freeMemory( DataBase& dataBase ) = 0;
 
     virtual void allocateMemory( SPtr<DataBase> dataBase) = 0;
 
@@ -24,7 +31,13 @@ public:
     
     virtual void copyDataDeviceToHost( SPtr<DataBase> dataBase, real* hostData ) = 0;
 
-    static std::shared_ptr<DataBaseAllocator> create( std::string type );
+    //////////////////////////////////////////////////////////////////////////
+
+    virtual void freeMemory( BoundaryCondition& boundaryCondition ) = 0;
+
+    virtual void allocateMemory( SPtr<BoundaryCondition> boundaryCondition, std::vector<uint> ghostCells, std::vector<uint> domainCells, std::vector<uint> secondCells ) = 0;
+
+    //////////////////////////////////////////////////////////////////////////
 
     ~DataBaseAllocator();
 

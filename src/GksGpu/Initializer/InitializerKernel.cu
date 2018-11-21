@@ -48,6 +48,7 @@ __host__ __device__ inline void initializeDataUpdateFunction(DataBaseStruct data
     dataBase.dataUpdate[ RHO__(index, dataBase.numberOfCells) ] = zero;
     dataBase.dataUpdate[ RHO_U(index, dataBase.numberOfCells) ] = zero;
     dataBase.dataUpdate[ RHO_V(index, dataBase.numberOfCells) ] = zero;
+    dataBase.dataUpdate[ RHO_W(index, dataBase.numberOfCells) ] = zero;
     dataBase.dataUpdate[ RHO_E(index, dataBase.numberOfCells) ] = zero;
 #ifdef USE_PASSIVE_SCALAR
 	dataBase.dataUpdate[ RHO_S(index, dataBase.numberOfCells) ] = zero;
