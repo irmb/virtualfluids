@@ -1,27 +1,31 @@
 #include "SimulationParameterImp.h"
 
-#include "Utilities/TestResults/TestResults.h"
+#include <experimental/filesystem>
 
-SimulationParameterImp::SimulationParameterImp(
-	real viscosity, real lx, real lz, real l0,
+SimulationParameterImp::SimulationParameterImp(std::string simName, real viscosity, real lx, real lz, real l0,
 	unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, 
 	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
 	std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
-	bool writeFiles, unsigned int startStepFileWriter, 
-	std::shared_ptr<TestResults> testResults,
+	bool writeFiles, unsigned int startStepFileWriter,
 	std::vector<int> devices)
-		:viscosity(viscosity), lx(lx), l0(l0), lz(lz),
+		:simName(simName), viscosity(viscosity), lx(lx), l0(l0), lz(lz),
 		numberOfTimeSteps(numberOfTimeSteps), basisTimeStepLength(basisTimeStepLength), 
 		startStepCalculation(startStepCalculation), ySliceForCalculation(ySliceForCalculation), 
 		gridPath(gridPath), maxLevel(maxLevel), numberOfGridLevels(numberOfGridLevels),
-		writeFiles(writeFiles), startStepFileWriter(startStepFileWriter), 
-		testResults(testResults), devices(devices)
+		writeFiles(writeFiles), startStepFileWriter(startStepFileWriter), devices(devices)
 {
 	timeStepLength = basisTimeStepLength*(lx / l0)*(lx / l0);
 	startTimeCalculation = timeStepLength * startStepCalculation;
 	startTimeDataWriter = timeStepLength * startStepFileWriter;
 	endTime = timeStepLength * numberOfTimeSteps;
 
+}
+
+void SimulationParameterImp::generateFilePath(std::string filePath)
+{
+	std::experimental::filesystem::path dir(filePath);
+	if (!(std::experimental::filesystem::exists(dir)))
+		std::experimental::filesystem::create_directories(dir);
 }
 
 double SimulationParameterImp::getViscosity()
@@ -94,12 +98,7 @@ std::shared_ptr<InitialCondition> SimulationParameterImp::getInitialCondition()
 	return initialCondition;
 }
 
-std::shared_ptr<Calculator> SimulationParameterImp::getCalculator()
+std::shared_ptr<KernelConfiguration> SimulationParameterImp::getKernelConfiguration()
 {
-	return calculator;
-}
-
-std::shared_ptr<TestResults> SimulationParameterImp::getTestResults()
-{
-	return testResults;
+	return kernelConfig;
 }

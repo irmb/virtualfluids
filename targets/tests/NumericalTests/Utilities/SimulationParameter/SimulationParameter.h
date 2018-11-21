@@ -6,8 +6,7 @@
 #include <vector>
 
 class InitialCondition;
-class Calculator;
-class TestResults;
+class KernelConfiguration;
 
 class SimulationParameter
 {
@@ -27,8 +26,7 @@ public:
 	virtual std::string getFilePath() = 0;
 	virtual std::vector< int> getDevices() = 0;
 	virtual std::shared_ptr< InitialCondition> getInitialCondition() = 0;
-	virtual std::shared_ptr< Calculator> getCalculator() = 0;
-	virtual std::shared_ptr< TestResults> getTestResults() = 0;
+	virtual std::shared_ptr< KernelConfiguration> getKernelConfiguration() = 0;
 
 private:
 

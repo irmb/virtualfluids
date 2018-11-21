@@ -5,8 +5,6 @@
 
 #include "LBM\LB.h"
 
-class SimulationResults;
-
 class SimulationParameterImp : public SimulationParameter
 {
 public:
@@ -24,18 +22,18 @@ public:
 	unsigned int getStartTimeDataWriter();
 	std::vector< int> getDevices();
 	std::shared_ptr< InitialCondition> getInitialCondition();
-	std::shared_ptr< Calculator> getCalculator();
-	std::shared_ptr< TestResults> getTestResults();
+	std::shared_ptr< KernelConfiguration> getKernelConfiguration();
 
 protected:
 	SimulationParameterImp() {};
-	SimulationParameterImp(real viscosity, real lx, real lz, real l0,
+	SimulationParameterImp(std::string simName, real viscosity, real lx, real lz, real l0,
 		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
 		bool writeFiles, unsigned int startStepFileWriter,
-		std::shared_ptr<TestResults> testResults,
 		std::vector<int> devices);
+
+	void generateFilePath(std::string filePath);
 
 	real viscosity;
 	real lx, l0, lz;
@@ -43,6 +41,7 @@ protected:
 	unsigned int startStepCalculation, startStepFileWriter, ySliceForCalculation;
 	std::string gridPath;
 	std::string filePath;
+	std::string simName;
 	bool writeFiles;
 	std::vector<int> devices;
 
@@ -52,9 +51,7 @@ protected:
 	unsigned int endTime;
 
 	std::shared_ptr< InitialCondition> initialCondition;
-	std::shared_ptr< Calculator> calculator;
-	std::shared_ptr< SimulationResults> simResults;
-	std::shared_ptr< TestResults> testResults;
+	std::shared_ptr< KernelConfiguration> kernelConfig;
 };
 
 #endif
