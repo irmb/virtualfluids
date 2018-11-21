@@ -3,55 +3,82 @@
 #include <iomanip>
 #include <ctime>
 
+#include "Utilities\SimulationInfo\SimulationInfo.h"
+
 
 std::shared_ptr<TestCout> TestCoutImp::getNewInstance()
 {
 	return std::shared_ptr<TestCout>(new TestCoutImp());
 }
 
-void TestCoutImp::makeTestOutput(bool testPassed, std::string testName, int l1, int l2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
+void TestCoutImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
 {
 	setColor(testPassed);
 	printTestStart();
 
-	std::ostringstream oss1;
-	oss1 << testName;
-	print(oss1.str());
+	std::ostringstream oss;
+	oss << "Kernel: " << simInfo1->getKernelName();
+	print(oss.str());
+	oss.str(std::string());
 
-	std::ostringstream oss2;
-	oss2 << "L: " << l1 << "\t" << "\t" << "\t" << "L: " << l2;
-	print(oss2.str());
+	oss << "Viscosity: " << simInfo1->getViscosity();
+	print(oss.str());
+	oss.str(std::string());
 
-	std::ostringstream oss3;
-	oss3 << nameWerte1 << ": " << testWert1 << std::setw(5) << "\t" << nameWerte2 << ": " << testWert2;
-	print(oss3.str());
+	oss << simInfo1->getSimulationName();
+	print(oss.str());
+	oss.str(std::string());
 
-	std::ostringstream oss4;
-	oss4 << nameWerte3 << ": " << testWert3;
-	print(oss4.str());
-	
+	oss << "L: " << simInfo1->getLx() << simInfo1->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << simInfo2->getLx() << simInfo2->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << nameWerte1 << ": " << testWert1 << std::setw(5) << "\t" << nameWerte2 << ": " << testWert2;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << nameWerte3 << ": " << testWert3;
+	print(oss.str());
+	oss.str(std::string());
+
 	printTestEnd(testPassed);
 }
 
-void TestCoutImp::makeSimulationHeadOutput(std::string simName, int l)
+void TestCoutImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
 {
-	std::ostringstream oss1;
-	oss1 << "# SIMULATION: " << std::setfill(' ') << std::left << std::setw(34) << simName << "#";
-	
-	std::ostringstream oss2;
-	oss2 << "# L: " << std::setfill(' ') << std::left << std::setw(43) << l << "#";
+	std::ostringstream ossLine1;
+	ossLine1 << "# Kernel: " << std::setfill(' ') << std::left << std::setw(38) << simInfo->getKernelName() << "#";
 
-	std::ostringstream oss3;
+	std::ostringstream ossLine2;
+	ossLine2 << "# Viscosity: " << std::setfill(' ') << std::left << std::setw(35) << simInfo->getViscosity() << "#";
+
+	std::ostringstream ossLine3;
+	ossLine3 << "# SIMULATION: " << std::setfill(' ') << std::left << std::setw(34) << simInfo->getSimulationName() << "#";
+	
+	std::ostringstream ossLine4;
+	ossLine4 << std::setfill(' ') << std::left << std::setw(14) << "#" << std::setw(34) << simInfo->getSimulationParameterString() << "#";
+
+	std::ostringstream ossLine5;
+	ossLine5 << "# L: " << std::setfill(' ') << std::left << std::setw(43) << simInfo->getLx() << "#";
+
+	std::ostringstream ossLine6;
 	time_t now;
 	struct tm nowLocal;
 	now = time(NULL);
 	nowLocal = *localtime(&now);
-	oss3 << "# DATE: " << std::setfill('0') << std::setw(2) << nowLocal.tm_mday << "." << std::setw(2) << nowLocal.tm_mon + 1 << "." << nowLocal.tm_year + 1900 << "   TIME: " << std::setw(2) << nowLocal.tm_hour << ":" << std::setw(2) << nowLocal.tm_min << ":" << std::setw(2) << nowLocal.tm_sec << "\t" << "\t#";
+	ossLine6 << "# DATE: " << std::setfill('0') << std::setw(2) << nowLocal.tm_mday << "." << std::setw(2) << nowLocal.tm_mon + 1 << "." << nowLocal.tm_year + 1900 << "   TIME: " << std::setw(2) << nowLocal.tm_hour << ":" << std::setw(2) << nowLocal.tm_min << ":" << std::setw(2) << nowLocal.tm_sec << "\t" << "\t#";
 
 	printGreenHashLine();
-	printGreen(oss1.str());
-	printGreen(oss2.str());
-	printGreen(oss3.str());
+	printGreen(ossLine1.str());
+	printGreen(ossLine2.str());
+	printGreen(ossLine3.str());
+	printGreen(ossLine4.str());
+	printGreen(ossLine5.str());
+	printGreen(ossLine6.str());
 	printGreenHashLine();
 }
 
