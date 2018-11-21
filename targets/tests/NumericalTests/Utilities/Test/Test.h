@@ -17,7 +17,7 @@ public:
 	virtual void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo) = 0;
 	virtual std::string getLogFileOutput() = 0;
 	virtual std::vector< bool> getPassedTests() = 0;
-	virtual void makeOutput() = 0;
+	virtual void makeConsoleOutput() = 0;
 
 private:
 
