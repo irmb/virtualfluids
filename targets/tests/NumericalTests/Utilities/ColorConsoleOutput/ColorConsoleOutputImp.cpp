@@ -6,9 +6,12 @@
 #include "Utilities\SimulationInfo\SimulationInfo.h"
 
 
-std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getNewInstance()
+std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getInstance()
 {
-	return std::shared_ptr<ColorConsoleOutput>(new ColorConsoleOutputImp());
+	static std::shared_ptr<ColorConsoleOutput> uniqueInstance;
+	if (!uniqueInstance)
+		uniqueInstance = std::shared_ptr<ColorConsoleOutput>(new ColorConsoleOutputImp());
+	return uniqueInstance;
 }
 
 void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)

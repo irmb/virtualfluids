@@ -22,6 +22,7 @@ class LogFileTimeInformation;
 class TestLogFileInformation;
 class SimulationLogFileInformation;
 class AnalyticalResults;
+class ColorConsoleOutput;
 
 class ConfigFileReader
 {
@@ -79,10 +80,10 @@ private:
 	std::vector< bool> sw;
 	
 	std::vector< std::shared_ptr< LogFileInformation> > logInfo;
-
-	std::shared_ptr< TestQueueImp> testQueue;
 	std::vector< std::shared_ptr< TestSimulation>> testSimulation;
 
+	std::shared_ptr< TestQueueImp> testQueue;
+	std::shared_ptr< ColorConsoleOutput> colorOutput;
 	std::shared_ptr< LogFileQueueImp> logFileWriterQueue;
 
 	int simID;

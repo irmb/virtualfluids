@@ -1,8 +1,8 @@
 #ifndef COLOR_CONSOLE_OUTPUT_H
 #define COLOR_CONSOLE_OUTPUT_H
 
-#include <iostream>
 #include <memory>
+#include <sstream>
 
 class SimulationInfo;
 
@@ -13,6 +13,8 @@ public:
 	virtual void makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo) = 0;
 	virtual void makeFinalTestOutputHead(int numberOfPassedTests, int numberOfTests) = 0;
 	virtual void makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests) = 0;
+
 private:
+
 };
-#endif 
+#endif

@@ -8,6 +8,7 @@
 class TestSimulation;
 class SimulationResults;
 class SimulationInfo;
+class ColorConsoleOutput;
 
 class TestImp : public Test
 {
@@ -23,16 +24,20 @@ public:
 	std::string getSimulationName();
 	
 protected:
-	TestImp();
+	TestImp(std::shared_ptr< ColorConsoleOutput> colorOutput);
 	bool CheckAllSimulationRun();
 
 
 	std::vector< bool> simulationRun;
+	std::shared_ptr< ColorConsoleOutput> colorOutput;
 	std::vector< std::shared_ptr< TestSimulation>> simulations;
 	std::vector< std::shared_ptr< SimulationResults>> simResults;
 	std::vector< std::shared_ptr< SimulationInfo>> simInfos;
 
 	std::string kernelName;
 	std::string simulationName;
+
+private:
+	TestImp() {};
 };
 #endif 

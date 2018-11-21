@@ -3,7 +3,7 @@
 
 #include "ColorConsoleOutput.h"
 
-#include <sstream>
+#include <iostream>
 
 #include <gtest/gtest.h>
 
@@ -31,7 +31,7 @@ namespace testing
 class ColorConsoleOutputImp : public ColorConsoleOutput
 {
 public:
-	static std::shared_ptr<ColorConsoleOutput> getNewInstance();
+	static std::shared_ptr<ColorConsoleOutput> getInstance();
 
 	void makeTestOutput(bool testPassed, std::shared_ptr< SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3);
 	void makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo);

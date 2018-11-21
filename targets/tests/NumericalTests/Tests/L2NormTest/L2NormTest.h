@@ -11,7 +11,7 @@ class AnalyticalResults;
 class L2NormTest : public TestImp
 {
 public:
-	static std::shared_ptr<L2NormTest> getNewInstance(std::shared_ptr< AnalyticalResults> analyticalResult);
+	static std::shared_ptr<L2NormTest> getNewInstance(std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr< ColorConsoleOutput> colorOutput);
 
 	void update();
 	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo);
@@ -21,8 +21,7 @@ public:
 	void makeConsoleOutput();
 
 private:
-	L2NormTest() {};
-	L2NormTest(std::shared_ptr< AnalyticalResults> analyticalResult);
+	L2NormTest(std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr< ColorConsoleOutput> colorOutput);
 
 	std::shared_ptr< L2NormCalculator> calculator;
 	std::shared_ptr< AnalyticalResults> analyticalResult;

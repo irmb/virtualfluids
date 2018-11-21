@@ -7,13 +7,12 @@
 #include <vector>
 #include <iostream>
 
-class ColorConsoleOutput;
 class FFTCalculator;
 
 class PhiAndNuTest : public TestImp 
 {
 public:
-	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
+	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
 	
 	void update();
 	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo);
@@ -23,13 +22,13 @@ public:
 	void makeConsoleOutput();
 
 private:
-	PhiAndNuTest(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
+	PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
 	double calcOrderOfAccuracy(std::vector<double> data);
 	bool checkTestPassed(double orderOfAccuracy);
 	
 
 	std::shared_ptr< FFTCalculator> calculator;
-	std::shared_ptr< ColorConsoleOutput> testOut;
+	
 	std::vector<double> lx;
 	std::vector<double> phiDiff;
 	std::vector<double> nuDiff;
@@ -40,7 +39,6 @@ private:
 
 	bool phiDiffTestPassed;
 	bool nuDiffTestPassed;
-	
 	
 	std::string dataToCalculate;
 };

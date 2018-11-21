@@ -33,7 +33,7 @@ std::string TestImp::getSimulationName()
 	return simulationName;
 }
 
-TestImp::TestImp()
+TestImp::TestImp(std::shared_ptr<ColorConsoleOutput> colorOutput) : colorOutput(colorOutput)
 {
 	simulationRun.resize(0);
 	simulations.resize(0);

@@ -30,6 +30,8 @@
 #include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
 #include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
 
+#include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
+
 std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance()
 {
 	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader());
@@ -58,7 +60,9 @@ ConfigFileReader::ConfigFileReader()
 	l0 = 32.0;
 	rho0 = 1.0;
 
-	testQueue = TestQueueImp::getNewInstance();
+
+	colorOutput = ColorConsoleOutputImp::getInstance();
+	testQueue = TestQueueImp::getNewInstance(colorOutput);
 }
 
 void ConfigFileReader::readConfigFile(const std::string aFilePath)
@@ -167,7 +171,7 @@ std::vector< std::shared_ptr< TestSimulation>> ConfigFileReader::buildTestSimula
 	testSim.resize(0);
 
 	for (int i = 0; i < simPara.size(); i++) {
-		testSim.push_back(TestSimulationImp::getNewInsance(simID, simPara.at(i), simInfo.at(i)));
+		testSim.push_back(TestSimulationImp::getNewInsance(simID, simPara.at(i), simInfo.at(i), colorOutput));
 		simID++;
 	}
 	return testSim;
@@ -252,7 +256,7 @@ std::vector< std::shared_ptr< PhiAndNuTest>> ConfigFileReader::makePhiAndNuTests
 
 	for (int i = 1; i < testSim.size(); i++) {
 		for (int j = 0; j < i; j++) {
-			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(dataToCalcPhiAndNuTest, minOrderOfAccuracy, viscosity);
+			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, dataToCalcPhiAndNuTest, minOrderOfAccuracy, viscosity);
 			test->addSimulation(testSim.at(j), simInfo.at(j));
 			test->addSimulation(testSim.at(i), simInfo.at(i));
 
@@ -270,7 +274,7 @@ std::vector<std::shared_ptr<L2NormTest>> ConfigFileReader::makeL2NormTests(std::
 {
 	std::vector<std::shared_ptr<L2NormTest>> l2Tests;
 	for (int i = 0; i < testSim.size(); i++) {
-		std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(analyticalResults.at(i));
+		std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(analyticalResults.at(i), colorOutput);
 		test->addSimulation(testSim.at(i), simInfo.at(i));
 		testSim.at(i)->registerSimulationObserver(test);
 		l2Tests.push_back(test);

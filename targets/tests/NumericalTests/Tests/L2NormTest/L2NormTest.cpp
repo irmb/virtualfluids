@@ -1,12 +1,13 @@
 #include "L2NormTest.h"
 
+#include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
 #include "Utilities\Calculator\L2NormCalculator\L2NormCalculator.h"
 #include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 
-std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr< AnalyticalResults> analyticalResult)
+std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr< ColorConsoleOutput> colorOutput)
 {
-	return std::shared_ptr<L2NormTest>(new L2NormTest(analyticalResult));
+	return std::shared_ptr<L2NormTest>(new L2NormTest(analyticalResult, colorOutput));
 }
 
 void L2NormTest::update()
@@ -43,7 +44,7 @@ void L2NormTest::makeConsoleOutput()
 
 }
 
-L2NormTest::L2NormTest(std::shared_ptr< AnalyticalResults> analyticalResult) : analyticalResult(analyticalResult)
+L2NormTest::L2NormTest(std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr< ColorConsoleOutput> colorOutput) : TestImp(colorOutput), analyticalResult(analyticalResult)
 {
 	calculator = L2NormCalculator::getNewInstance();
 }

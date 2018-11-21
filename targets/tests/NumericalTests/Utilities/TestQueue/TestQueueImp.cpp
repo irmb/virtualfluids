@@ -1,6 +1,6 @@
 #include "TestQueueImp.h"
 
-#include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
+#include "Utilities\ColorConsoleOutput\ColorConsoleOutput.h"
 #include "Utilities\Test\Test.h"
 
 void TestQueueImp::makeFinalOutput()
@@ -12,9 +12,9 @@ void TestQueueImp::makeFinalOutput()
 	colorOutput->makeFinalTestOutputFoot(numberOfPassedTest, numberOfTests);
 }
 
-std::shared_ptr<TestQueueImp> TestQueueImp::getNewInstance()
+std::shared_ptr<TestQueueImp> TestQueueImp::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput)
 {
-	return std::shared_ptr<TestQueueImp>(new TestQueueImp());
+	return std::shared_ptr<TestQueueImp>(new TestQueueImp(colorOutput));
 }
 
 void TestQueueImp::addTest(std::shared_ptr<Test> test)
@@ -22,10 +22,9 @@ void TestQueueImp::addTest(std::shared_ptr<Test> test)
 	tests.push_back(test);
 }
 
-TestQueueImp::TestQueueImp()
+TestQueueImp::TestQueueImp(std::shared_ptr< ColorConsoleOutput> colorOutput)
 {
 	tests.resize(0);
-	colorOutput = ColorConsoleOutputImp::getNewInstance();
 }
 
 void TestQueueImp::calcNumberOfPassedTest()

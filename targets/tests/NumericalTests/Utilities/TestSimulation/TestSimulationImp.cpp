@@ -7,16 +7,16 @@
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 #include "Utilities\Test\SimulationObserver.h"
 #include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
-#include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
+#include "Utilities\ColorConsoleOutput\ColorConsoleOutput.h"
 #include "Utilities\KernelConfiguration\KernelConfiguration.h"
 
 #include <sstream>
 #include <iomanip>
 
 
-std::shared_ptr<TestSimulation> TestSimulationImp::getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo)
+std::shared_ptr<TestSimulation> TestSimulationImp::getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput)
 {
-	return std::shared_ptr< TestSimulation>(new TestSimulationImp(simID, simPara, simInfo));
+	return std::shared_ptr< TestSimulation>(new TestSimulationImp(simID, simPara, simInfo, colorOutput));
 }
 
 std::shared_ptr<SimulationParameter> TestSimulationImp::getSimulationParameter()
@@ -79,14 +79,13 @@ std::string TestSimulationImp::getSimulationRunTimeOutput()
 	return oss.str();
 }
 
-TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo) : simID(simID)
+TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput) : simID(simID), colorOutput(colorOutput)
 {
 	this->simPara = simPara;
 	this->simInfo = simInfo;
 	simResults = SimulationResults::getNewInstance(simPara->getLx(), 1, simPara->getLz(), simPara->getTimeStepLength());
 	
 	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, simPara->getYSliceForCalculation(), simPara->getStartTimeCalculation(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getWriteFiles(), std::shared_ptr<FileWriter>(new FileWriter()), simPara->getStartTimeDataWriter()));
-	colorOutput = ColorConsoleOutputImp::getNewInstance();
 
 	simObserver.resize(0);
 	simualtionRun = false;
