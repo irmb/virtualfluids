@@ -4,17 +4,17 @@
 #include "math.h"
 #include "GPU/constant.h"
 
-extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
-														unsigned int* bcMatD,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														real* DDStart,
-														real* G6,
-														int size_Mat,
-														int level,
-														real* forces,
-														bool EvenOrOdd)
+extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	real* G6,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd)
 {
 	////////////////////////////////////////////////////////////////////////////////
 	const unsigned  x = threadIdx.x;  // Globaler x-Index 
@@ -147,33 +147,6 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			//unsigned int ktne = k;
 			unsigned int kbsw = neighborZ[ksw];
 
-			//unsigned int kzero= k;
-			//unsigned int ke   = k;
-			//unsigned int kw   = neighborX[k];
-			//unsigned int kn   = k;
-			//unsigned int ks   = neighborY[k];
-			//unsigned int kt   = k;
-			//unsigned int kb   = neighborZ[k];
-			//unsigned int ksw  = neighborY[kw];
-			//unsigned int kne  = k;
-			//unsigned int kse  = ks;
-			//unsigned int knw  = kw;
-			//unsigned int kbw  = neighborZ[kw];
-			//unsigned int kte  = k;
-			//unsigned int kbe  = kb;
-			//unsigned int ktw  = kw;
-			//unsigned int kbs  = neighborZ[ks];
-			//unsigned int ktn  = k;
-			//unsigned int kbn  = kb;
-			//unsigned int kts  = ks;
-			//unsigned int ktse = ks;
-			//unsigned int kbnw = kbw;
-			//unsigned int ktnw = kw;
-			//unsigned int kbse = kbs;
-			//unsigned int ktsw = ksw;
-			//unsigned int kbne = kb;
-			//unsigned int ktne = k;
-			//unsigned int kbsw = neighborZ[ksw];
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			real mgcbb = (G.g[dirE])[k];
 			real mgabb = (G.g[dirW])[kw];
@@ -185,44 +158,40 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			real dyyuy = c1o2 * (-mgbcb + mgbab);
 			real dzzuz = c1o2 * (-mgbbc + mgbba);
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			real mfcbb = (D.f[dirE])[k];//[ke   ];// +  c2over27 ;(D.f[dirE   ])[k  ];//ke
-			real mfabb = (D.f[dirW])[kw];//[kw   ];// +  c2over27 ;(D.f[dirW   ])[kw ];
-			real mfbcb = (D.f[dirN])[k];//[kn   ];// +  c2over27 ;(D.f[dirN   ])[k  ];//kn
-			real mfbab = (D.f[dirS])[ks];//[ks   ];// +  c2over27 ;(D.f[dirS   ])[ks ];
-			real mfbbc = (D.f[dirT])[k];//[kt   ];// +  c2over27 ;(D.f[dirT   ])[k  ];//kt
-			real mfbba = (D.f[dirB])[kb];//[kb   ];// +  c2over27 ;(D.f[dirB   ])[kb ];
-			real mfccb = (D.f[dirNE])[k];//[kne  ];// +  c1over54 ;(D.f[dirNE  ])[k  ];//kne
-			real mfaab = (D.f[dirSW])[ksw];//[ksw  ];// +  c1over54 ;(D.f[dirSW  ])[ksw];
-			real mfcab = (D.f[dirSE])[ks];//[kse  ];// +  c1over54 ;(D.f[dirSE  ])[ks ];//kse
-			real mfacb = (D.f[dirNW])[kw];//[knw  ];// +  c1over54 ;(D.f[dirNW  ])[kw ];//knw
-			real mfcbc = (D.f[dirTE])[k];//[kte  ];// +  c1over54 ;(D.f[dirTE  ])[k  ];//kte
-			real mfaba = (D.f[dirBW])[kbw];//[kbw  ];// +  c1over54 ;(D.f[dirBW  ])[kbw];
-			real mfcba = (D.f[dirBE])[kb];//[kbe  ];// +  c1over54 ;(D.f[dirBE  ])[kb ];//kbe
-			real mfabc = (D.f[dirTW])[kw];//[ktw  ];// +  c1over54 ;(D.f[dirTW  ])[kw ];//ktw
-			real mfbcc = (D.f[dirTN])[k];//[ktn  ];// +  c1over54 ;(D.f[dirTN  ])[k  ];//ktn
-			real mfbaa = (D.f[dirBS])[kbs];//[kbs  ];// +  c1over54 ;(D.f[dirBS  ])[kbs];
-			real mfbca = (D.f[dirBN])[kb];//[kbn  ];// +  c1over54 ;(D.f[dirBN  ])[kb ];//kbn
-			real mfbac = (D.f[dirTS])[ks];//[kts  ];// +  c1over54 ;(D.f[dirTS  ])[ks ];//kts
-			real mfbbb = (D.f[dirZERO])[k];//[kzero];// +  c8over27 ;(D.f[dirZERO])[k  ];//kzero
-			real mfccc = (D.f[dirTNE])[k];//[ktne ];// +  c1over216;(D.f[dirTNE ])[k  ];//ktne
-			real mfaac = (D.f[dirTSW])[ksw];//[ktsw ];// +  c1over216;(D.f[dirTSW ])[ksw];//ktsw
-			real mfcac = (D.f[dirTSE])[ks];//[ktse ];// +  c1over216;(D.f[dirTSE ])[ks ];//ktse
-			real mfacc = (D.f[dirTNW])[kw];//[ktnw ];// +  c1over216;(D.f[dirTNW ])[kw ];//ktnw
-			real mfcca = (D.f[dirBNE])[kb];//[kbne ];// +  c1over216;(D.f[dirBNE ])[kb ];//kbne
-			real mfaaa = (D.f[dirBSW])[kbsw];//[kbsw ];// +  c1over216;(D.f[dirBSW ])[kbsw];
-			real mfcaa = (D.f[dirBSE])[kbs];//[kbse ];// +  c1over216;(D.f[dirBSE ])[kbs];//kbse
-			real mfaca = (D.f[dirBNW])[kbw];//[kbnw ];// +  c1over216;(D.f[dirBNW ])[kbw];//kbnw
-											////////////////////////////////////////////////////////////////////////////////////
+			real mfcbb = (D.f[dirE])[k];
+			real mfabb = (D.f[dirW])[kw];
+			real mfbcb = (D.f[dirN])[k];
+			real mfbab = (D.f[dirS])[ks];
+			real mfbbc = (D.f[dirT])[k];
+			real mfbba = (D.f[dirB])[kb];
+			real mfccb = (D.f[dirNE])[k];
+			real mfaab = (D.f[dirSW])[ksw];
+			real mfcab = (D.f[dirSE])[ks];
+			real mfacb = (D.f[dirNW])[kw];
+			real mfcbc = (D.f[dirTE])[k];
+			real mfaba = (D.f[dirBW])[kbw];
+			real mfcba = (D.f[dirBE])[kb];
+			real mfabc = (D.f[dirTW])[kw];
+			real mfbcc = (D.f[dirTN])[k];
+			real mfbaa = (D.f[dirBS])[kbs];
+			real mfbca = (D.f[dirBN])[kb];
+			real mfbac = (D.f[dirTS])[ks];
+			real mfbbb = (D.f[dirZERO])[k];
+			real mfccc = (D.f[dirTNE])[k];
+			real mfaac = (D.f[dirTSW])[ksw];
+			real mfcac = (D.f[dirTSE])[ks];
+			real mfacc = (D.f[dirTNW])[kw];
+			real mfcca = (D.f[dirBNE])[kb];
+			real mfaaa = (D.f[dirBSW])[kbsw];
+			real mfcaa = (D.f[dirBSE])[kbs];
+			real mfaca = (D.f[dirBNW])[kbw];
+			////////////////////////////////////////////////////////////////////////////////////
 			real drho = ((((mfccc + mfaaa) + (mfaca + mfcac)) + ((mfacc + mfcaa) + (mfaac + mfcca))) +
 				(((mfbac + mfbca) + (mfbaa + mfbcc)) + ((mfabc + mfcba) + (mfaba + mfcbc)) + ((mfacb + mfcab) + (mfaab + mfccb))) +
 				((mfabb + mfcbb) + (mfbab + mfbcb) + (mfbba + mfbbc))) + mfbbb;
 
 			real rho = one + drho;
 			////////////////////////////////////////////////////////////////////////////////////
-			//slow
-			//real oMdrho = one - ((((mfccc+mfaaa) + (mfaca+mfcac)) + ((mfacc+mfcaa) + (mfaac+mfcca))) + 
-			//					   (((mfbac+mfbca) + (mfbaa+mfbcc)) + ((mfabc+mfcba) + (mfaba+mfcbc)) + ((mfacb+mfcab) + (mfaab+mfccb))) +
-			//						((mfabb+mfcbb) + (mfbab+mfbcb)  +  (mfbba+mfbbc)));//fehlt mfbbb
 			real vvx = ((((mfccc - mfaaa) + (mfcac - mfaca)) + ((mfcaa - mfacc) + (mfcca - mfaac))) +
 				(((mfcba - mfabc) + (mfcbc - mfaba)) + ((mfcab - mfacb) + (mfccb - mfaab))) +
 				(mfcbb - mfabb)) / rho;
@@ -245,113 +214,10 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			//fast
 			real oMdrho = one; // comp special
-							   //real oMdrho = one - (mfccc+mfaaa + mfaca+mfcac + mfacc+mfcaa + mfaac+mfcca + 
-							   //					   mfbac+mfbca + mfbaa+mfbcc + mfabc+mfcba + mfaba+mfcbc + mfacb+mfcab + mfaab+mfccb +
-							   //					   mfabb+mfcbb + mfbab+mfbcb + mfbba+mfbbc + mfbbb);//fehlt mfbbb nicht mehr
-							   //real vvx    =mfccc-mfaaa + mfcac-mfaca + mfcaa-mfacc + mfcca-mfaac + 
-							   //				mfcba-mfabc + mfcbc-mfaba + mfcab-mfacb + mfccb-mfaab +
-							   //				mfcbb-mfabb;
-							   //real vvy    =mfccc-mfaaa + mfaca-mfcac + mfacc-mfcaa + mfcca-mfaac + 
-							   //				mfbca-mfbac + mfbcc-mfbaa + mfacb-mfcab + mfccb-mfaab +
-							   //				mfbcb-mfbab;
-							   //real vvz    =mfccc-mfaaa + mfcac-mfaca + mfacc-mfcaa + mfaac-mfcca + 
-							   //				mfbac-mfbca + mfbcc-mfbaa + mfabc-mfcba + mfcbc-mfaba +
-							   //				mfbbc-mfbba;
-							   ////////////////////////////////////////////////////////////////////////////////////
-							   // oMdrho assembler style -------> faaaaaastaaaa
-							   // or much sloooowaaaa ... it depändssssss on sadaku
 			real m0, m1, m2;
-			//real oMdrho;
-			//{
-			//	oMdrho=mfccc+mfaaa;
-			//	m0=mfaca+mfcac;
-			//	m1=mfacc+mfcaa;
-			//	m2=mfaac+mfcca;
-			//	oMdrho+=m0;
-			//	m1+=m2;
-			//	oMdrho+=m1;
-			//	m0=mfbac+mfbca;
-			//	m1=mfbaa+mfbcc;
-			//	m0+=m1;
-			//	m1=mfabc+mfcba;
-			//	m2=mfaba+mfcbc;
-			//	m1+=m2;
-			//	m0+=m1;
-			//	m1=mfacb+mfcab;
-			//	m2=mfaab+mfccb;
-			//	m1+=m2;
-			//	m0+=m1;
-			//	oMdrho+=m0;
-			//	m0=mfabb+mfcbb;
-			//	m1=mfbab+mfbcb;
-			//	m2=mfbba+mfbbc;
-			//	m0+=m1+m2;
-			//	m0+=mfbbb; //hat gefehlt
-			//	oMdrho = one - (oMdrho + m0);
-			//}
-			//real vvx;
 			real vx2;
-			//{
-			//	vvx = mfccc-mfaaa;
-			//	m0  = mfcac-mfaca;
-			//	m1  = mfcaa-mfacc;
-			//	m2  = mfcca-mfaac;
-			//	vvx+= m0;
-			//	m1 += m2;
-			//	vvx+= m1;
-			//	vx2 = mfcba-mfabc;
-			//	m0  = mfcbc-mfaba;
-			//	m1  = mfcab-mfacb;
-			//	m2  = mfccb-mfaab;
-			//	vx2+= m0;
-			//	m1 += m2;
-			//	vx2+= m1;
-			//	vvx+= vx2;
-			//	vx2 = mfcbb-mfabb;
-			//	vvx+= vx2;
-			//}
-			//real vvy;
 			real vy2;
-			//{
-			//	vvy = mfccc-mfaaa;
-			//	m0  = mfaca-mfcac;
-			//	m1  = mfacc-mfcaa;
-			//	m2  = mfcca-mfaac;
-			//	vvy+= m0;
-			//	m1 += m2;
-			//	vvy+= m1;
-			//	vy2 = mfbca-mfbac;
-			//	m0  = mfbcc-mfbaa;
-			//	m1  = mfacb-mfcab;
-			//	m2  = mfccb-mfaab;
-			//	vy2+= m0;
-			//	m1 += m2;
-			//	vy2+= m1;
-			//	vvy+= vy2;
-			//	vy2 = mfbcb-mfbab;
-			//	vvy+= vy2;
-			//}
-			//real vvz;
 			real vz2;
-			//{
-			//	vvz = mfccc-mfaaa;
-			//	m0  = mfcac-mfaca;
-			//	m1  = mfacc-mfcaa;
-			//	m2  = mfaac-mfcca;
-			//	vvz+= m0;
-			//	m1 += m2;
-			//	vvz+= m1;
-			//	vz2 = mfbac-mfbca;
-			//	m0  = mfbcc-mfbaa;
-			//	m1  = mfabc-mfcba;
-			//	m2  = mfcbc-mfaba;
-			//	vz2+= m0;
-			//	m1 += m2;
-			//	vz2+= m1;
-			//	vvz+= vz2;
-			//	vz2 = mfbbc-mfbba;
-			//	vvz+= vz2;
-			//}
 			vx2 = vvx*vvx;
 			vy2 = vvy*vvy;
 			vz2 = vvz*vvz;
@@ -360,12 +226,12 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			real qudricLimitP = 0.01f;// * 0.0001f;
 			real qudricLimitM = 0.01f;// * 0.0001f;
 			real qudricLimitD = 0.01f;// * 0.001f;
-									  ////////////////////////////////////////////////////////////////////////////////////
-									  //Hin
-									  ////////////////////////////////////////////////////////////////////////////////////
-									  // mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
-									  ////////////////////////////////////////////////////////////////////////////////////
-									  // Z - Dir
+										 ////////////////////////////////////////////////////////////////////////////////////
+										 //Hin
+										 ////////////////////////////////////////////////////////////////////////////////////
+										 // mit 1/36, 1/9, 1/36, 1/9, 4/9, 1/9, 1/36, 1/9, 1/36  Konditionieren
+										 ////////////////////////////////////////////////////////////////////////////////////
+										 // Z - Dir
 			m2 = mfaaa + mfaac;
 			m1 = mfaac - mfaaa;
 			m0 = m2 + mfaab;
@@ -595,15 +461,15 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real OxxPyyPzz = one;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
 
-									////////////////////////////////////////////////////////////
-									//3.
-									//////////////////////////////
+										////////////////////////////////////////////////////////////
+										//3.
+										//////////////////////////////
 			real OxyyPxzz = eight*(-two + omega)*(one + two*omega) / (-eight - fourteen*omega + seven*omega*omega);//one;
 			real OxyyMxzz = eight*(-two + omega)*(-seven + four*omega) / (fiftysix - fifty*omega + nine*omega*omega);//one;
 			real Oxyz = twentyfour*(-two + omega)*(-two - seven*omega + three*omega*omega) / (fourtyeight + c152*omega - c130*omega*omega + twentynine*omega*omega*omega);//one;
-																																										  ////////////////////////////////////////////////////////////
-																																										  //4.
-																																										  //////////////////////////////
+																																											 ////////////////////////////////////////////////////////////
+																																											 //4.
+																																											 //////////////////////////////
 			real O4 = one;
 			//////////////////////////////
 			//real O4        = omega;//TRT
@@ -1045,34 +911,34 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 
 			////////////////////////////////////////////////////////////////////////////////////
-			(D.f[dirE])[k] = mfabb;//(D.f[ dirE   ])[ke   ] = mfabb;// -  c2over27 ;  (D.f[ dirE   ])[k   ]                                                                     
-			(D.f[dirW])[kw] = mfcbb;//(D.f[ dirW   ])[kw   ] = mfcbb;// -  c2over27 ;  (D.f[ dirW   ])[kw  ]                                                                   
-			(D.f[dirN])[k] = mfbab;//(D.f[ dirN   ])[kn   ] = mfbab;// -  c2over27 ;	 (D.f[ dirN   ])[k   ]
-			(D.f[dirS])[ks] = mfbcb;//(D.f[ dirS   ])[ks   ] = mfbcb;// -  c2over27 ;	 (D.f[ dirS   ])[ks  ]
-			(D.f[dirT])[k] = mfbba;//(D.f[ dirT   ])[kt   ] = mfbba;// -  c2over27 ;	 (D.f[ dirT   ])[k   ]
-			(D.f[dirB])[kb] = mfbbc;//(D.f[ dirB   ])[kb   ] = mfbbc;// -  c2over27 ;	 (D.f[ dirB   ])[kb  ]
-			(D.f[dirNE])[k] = mfaab;//(D.f[ dirNE  ])[kne  ] = mfaab;// -  c1over54 ;	 (D.f[ dirNE  ])[k   ]
-			(D.f[dirSW])[ksw] = mfccb;//(D.f[ dirSW  ])[ksw  ] = mfccb;// -  c1over54 ;	 (D.f[ dirSW  ])[ksw ]
-			(D.f[dirSE])[ks] = mfacb;//(D.f[ dirSE  ])[kse  ] = mfacb;// -  c1over54 ;	 (D.f[ dirSE  ])[ks  ]
-			(D.f[dirNW])[kw] = mfcab;//(D.f[ dirNW  ])[knw  ] = mfcab;// -  c1over54 ;	 (D.f[ dirNW  ])[kw  ]
-			(D.f[dirTE])[k] = mfaba;//(D.f[ dirTE  ])[kte  ] = mfaba;// -  c1over54 ;	 (D.f[ dirTE  ])[k   ]
-			(D.f[dirBW])[kbw] = mfcbc;//(D.f[ dirBW  ])[kbw  ] = mfcbc;// -  c1over54 ;	 (D.f[ dirBW  ])[kbw ]
-			(D.f[dirBE])[kb] = mfabc;//(D.f[ dirBE  ])[kbe  ] = mfabc;// -  c1over54 ;	 (D.f[ dirBE  ])[kb  ]
-			(D.f[dirTW])[kw] = mfcba;//(D.f[ dirTW  ])[ktw  ] = mfcba;// -  c1over54 ;	 (D.f[ dirTW  ])[kw  ]
-			(D.f[dirTN])[k] = mfbaa;//(D.f[ dirTN  ])[ktn  ] = mfbaa;// -  c1over54 ;	 (D.f[ dirTN  ])[k   ]
-			(D.f[dirBS])[kbs] = mfbcc;//(D.f[ dirBS  ])[kbs  ] = mfbcc;// -  c1over54 ;	 (D.f[ dirBS  ])[kbs ]
-			(D.f[dirBN])[kb] = mfbac;//(D.f[ dirBN  ])[kbn  ] = mfbac;// -  c1over54 ;	 (D.f[ dirBN  ])[kb  ]
-			(D.f[dirTS])[ks] = mfbca;//(D.f[ dirTS  ])[kts  ] = mfbca;// -  c1over54 ;	 (D.f[ dirTS  ])[ks  ]
-			(D.f[dirZERO])[k] = mfbbb;//(D.f[ dirZERO])[kzero] = mfbbb;// -  c8over27 ;	 (D.f[ dirZERO])[k   ]
-			(D.f[dirTNE])[k] = mfaaa;//(D.f[ dirTNE ])[ktne ] = mfaaa;// -  c1over216;	 (D.f[ dirTNE ])[k   ]
-			(D.f[dirTSE])[ks] = mfaca;//(D.f[ dirTSE ])[ktse ] = mfaca;// -  c1over216;	 (D.f[ dirTSE ])[ks  ]
-			(D.f[dirBNE])[kb] = mfaac;//(D.f[ dirBNE ])[kbne ] = mfaac;// -  c1over216;	 (D.f[ dirBNE ])[kb  ]
-			(D.f[dirBSE])[kbs] = mfacc;//(D.f[ dirBSE ])[kbse ] = mfacc;// -  c1over216;	 (D.f[ dirBSE ])[kbs ]
-			(D.f[dirTNW])[kw] = mfcaa;//(D.f[ dirTNW ])[ktnw ] = mfcaa;// -  c1over216;	 (D.f[ dirTNW ])[kw  ]
-			(D.f[dirTSW])[ksw] = mfcca;//(D.f[ dirTSW ])[ktsw ] = mfcca;// -  c1over216;	 (D.f[ dirTSW ])[ksw ]
-			(D.f[dirBNW])[kbw] = mfcac;//(D.f[ dirBNW ])[kbnw ] = mfcac;// -  c1over216;	 (D.f[ dirBNW ])[kbw ]
-			(D.f[dirBSW])[kbsw] = mfccc;//(D.f[ dirBSW ])[kbsw ] = mfccc;// -  c1over216;	 (D.f[ dirBSW ])[kbsw]
-										////////////////////////////////////////////////////////////////////////////////////
+			(D.f[dirE])[k] = mfabb;
+			(D.f[dirW])[kw] = mfcbb;
+			(D.f[dirN])[k] = mfbab;
+			(D.f[dirS])[ks] = mfbcb;
+			(D.f[dirT])[k] = mfbba;
+			(D.f[dirB])[kb] = mfbbc;
+			(D.f[dirNE])[k] = mfaab;
+			(D.f[dirSW])[ksw] = mfccb;
+			(D.f[dirSE])[ks] = mfacb;
+			(D.f[dirNW])[kw] = mfcab;
+			(D.f[dirTE])[k] = mfaba;
+			(D.f[dirBW])[kbw] = mfcbc;
+			(D.f[dirBE])[kb] = mfabc;
+			(D.f[dirTW])[kw] = mfcba;
+			(D.f[dirTN])[k] = mfbaa;
+			(D.f[dirBS])[kbs] = mfbcc;
+			(D.f[dirBN])[kb] = mfbac;
+			(D.f[dirTS])[ks] = mfbca;
+			(D.f[dirZERO])[k] = mfbbb;
+			(D.f[dirTNE])[k] = mfaaa;
+			(D.f[dirTSE])[ks] = mfaca;
+			(D.f[dirBNE])[kb] = mfaac;
+			(D.f[dirBSE])[kbs] = mfacc;
+			(D.f[dirTNW])[kw] = mfcaa;
+			(D.f[dirTSW])[ksw] = mfcca;
+			(D.f[dirBNW])[kbw] = mfcac;
+			(D.f[dirBSW])[kbsw] = mfccc;
+			////////////////////////////////////////////////////////////////////////////////////
 
 			(G.g[dirE])[k] = mgabb;
 			(G.g[dirW])[kw] = mgcbb;
