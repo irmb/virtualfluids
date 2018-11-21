@@ -273,13 +273,14 @@ void GridCpuStrategy::freeMemory(SPtr<GridImp> grid)
     //if(grid->gridInterface)
     //delete grid->gridInterface;
 
-    delete[] grid->neighborIndexX;
-    delete[] grid->neighborIndexY;
-    delete[] grid->neighborIndexZ;
-    delete[] grid->neighborIndexNegative;
-    delete[] grid->sparseIndices;
-	delete[] grid->qIndices;
-	delete[] grid->qValues;
+    if( grid->neighborIndexX        != nullptr ) { delete[] grid->neighborIndexX;        grid->neighborIndexX        = nullptr; }
+    if( grid->neighborIndexY        != nullptr ) { delete[] grid->neighborIndexY;        grid->neighborIndexY        = nullptr; }
+    if( grid->neighborIndexZ        != nullptr ) { delete[] grid->neighborIndexZ;        grid->neighborIndexZ        = nullptr; }
+    if( grid->neighborIndexNegative != nullptr ) { delete[] grid->neighborIndexNegative; grid->neighborIndexNegative = nullptr; }
+    if( grid->sparseIndices         != nullptr ) { delete[] grid->sparseIndices;         grid->sparseIndices         = nullptr; }
+	if( grid->qIndices              != nullptr ) { delete[] grid->qIndices;              grid->qIndices              = nullptr; }
+	if( grid->qValues               != nullptr ) { delete[] grid->qValues;               grid->qValues               = nullptr; }
+	if( grid->qPatches              != nullptr ) { delete[] grid->qPatches;              grid->qPatches              = nullptr; }
 
     //delete[] grid->distribution.f;
 }
