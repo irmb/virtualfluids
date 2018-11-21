@@ -7,34 +7,57 @@
 #include "utilities/StringUtil/StringUtil.h"
 
 #include "Utilities/TestInformation/TestInformationImp.h"
-#include "Utilities/TestCout/TestCoutImp.h"
-#include "Utilities/SimulationInfo/SimulationInfoImp.h"
+#include "Utilities/TestSimulation/TestSimulationImp.h"
+#include "Utilities\TestQueue\TestQueueImp.h"
+
+#include "Utilities\LogFileWriter\LogFileWriter.h"
+#include "Utilities\LogFileQueue\LogFileQueueImp.h"
+
 
 #include "Simulation/TaylorGreenVortex/SimulationParameter/TaylorGreenSimulationParameter.h"
+#include "Simulation/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
+#include "Simulation\TaylorGreenVortex\SimulationInfo\TaylorGreenVortexSimulationInfo.h"
+
 #include "Simulation/ShearWave/SimulationParameter/ShearWaveSimulationParameter.h"
 #include "Simulation/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
-#include "Simulation/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
-
+#include "Simulation\ShearWave\SimulationInfo\ShearWaveSimulationInfo.h"
 
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
+#include "Tests\PhiAndNuTest\LogFileInformation\PhiAndNuLogFileInformation.h"
 
 #include "Utilities/LogFileInformation/LogFileInformation.h"
-#include "Utilities/LogFileInformation/LogFileInformationOutput/LogFileInformationOutput.h"
 #include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
-#include "Utilities/LogFileInformation/SimulationTimeInformation/SimulationTimeInformation.h"
-
-bool ConfigFileReader::testShouldRun(std::vector<bool> test)
-{
-	for (int i = 0; i < test.size(); i++) {
-		if (test.at(i))
-			return true;
-	}
-	return false;
-}
+#include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
 
 std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance()
 {
 	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader());
+}
+
+ConfigFileReader::ConfigFileReader()
+{
+	logInfo.resize(0);
+
+	testSimulation.resize(0);
+
+	lx.resize(5);
+	lx.at(0) = 32.0;
+	lx.at(1) = 64.0;
+	lx.at(2) = 128.0;
+	lx.at(3) = 256.0;
+	lx.at(4) = 512.0;
+
+	lz.resize(5);
+	lz.at(0) = lx.at(0) * 3.0 / 2.0;
+	lz.at(1) = lx.at(1) * 3.0 / 2.0;
+	lz.at(2) = lx.at(2) * 3.0 / 2.0;
+	lz.at(3) = lx.at(3) * 3.0 / 2.0;
+	lz.at(4) = lx.at(4) * 3.0 / 2.0;
+
+	l0 = 32.0;
+	rho0 = 1.0;
+
+	testQueue = TestQueueImp::getNewInstance();
 }
 
 void ConfigFileReader::readConfigFile(const std::string aFilePath)
@@ -46,17 +69,21 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	std::unique_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 
-	devices = StringUtil::toVector(input->getValue("Devices"));
+	devices = StringUtil::toIntVector(input->getValue("Devices"));
 	kernelsToTest = StringUtil::toStringVector(input->getValue("KernelsToTest"));
 
-	viscosity = StringUtil::toDouble(input->getValue("Viscosity"));
+	viscosity = StringUtil::toDoubleVector(input->getValue("Viscosity"));
+
 	minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
+	dataToCalcPhiAndNuTest = StringUtil::toString(input->getValue("DataToCalcPhiAndNuTest"));
 
-	amplitudeTGV = StringUtil::toDouble(input->getValue("Amplitude_TGV"));
-	u0TGV = StringUtil::toDouble(input->getValue("u0_TGV"));
+	amplitudeTGV = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV"));
+	u0TGV = StringUtil::toDoubleVector(input->getValue("u0_TGV"));
+	nuAndPhiTestTGV = StringUtil::toBool(input->getValue("PhiAndNuTest_TGV"));
 
-	v0SW = StringUtil::toDouble(input->getValue("v0_SW"));
-	u0SW = StringUtil::toDouble(input->getValue("u0_SW"));
+	v0SW = StringUtil::toDoubleVector(input->getValue("v0_SW"));
+	u0SW = StringUtil::toDoubleVector(input->getValue("u0_SW"));
+	nuAndPhiTestSW = StringUtil::toBool(input->getValue("PhiAndNuTest_SW"));
 
 	numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
 	basisTimeStepLength = StringUtil::toInt(input->getValue("BasisTimeStepLength"));
@@ -68,6 +95,9 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	grids.at(2) = input->getValue("GridPath128");
 	grids.at(3) = input->getValue("GridPath256");
 	grids.at(4) = input->getValue("GridPath512");
+
+	numberOfGridLevels = StringUtil::toInt(input->getValue("NumberOfGridLevels"));
+	maxLevel = numberOfGridLevels - 1;
 
 	ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
 
@@ -92,129 +122,165 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	stream.close();
 
-	
-	makeSimulationParameter();
-	makeTestInformation();
+	checkConfigFileData();
+	logFileWriterQueue = LogFileQueueImp::getNewInstance(logFilePath);
+	init();
 }
 
-std::shared_ptr<TestInformation> ConfigFileReader::getTestInformation()
+void ConfigFileReader::checkConfigFileData()
 {
-	return testInfo;
+	if (u0TGV.size() != amplitudeTGV.size()) {
+		std::cout << "Length u0_TGV is unequal to Lenght Amplitude_TGV!" << std::endl << std::flush;
+		exit(1);
+	}
+		
+	if (u0SW.size() != v0SW.size()) {
+		std::cout << "Length u0_SW is unequal to Lenght v0_SW!" << std::endl << std::flush;
+		exit(1);
+	}	
 }
 
-std::vector<std::shared_ptr<SimulationParameter>> ConfigFileReader::getSimulationParameter()
+void ConfigFileReader::init()
 {
-	return simParameter;
-}
-
-ConfigFileReader::ConfigFileReader()
-{
-	tests.resize(0);
-	simParameter.resize(0);
-	simInfo.resize(0);
-	logInfo.resize(0);
-	testResults.resize(0);
-
-	lx.resize(5);
-	lx.at(0) = 32.0;	
-	lx.at(1) = 64.0;
-	lx.at(2) = 128.0;
-	lx.at(3) = 256.0;
-	lx.at(4) = 512.0;
-
-	lz.resize(5);
-	lz.at(0) = lx.at(0) * 3.0 / 2.0; 
-	lz.at(1) = lx.at(1) * 3.0 / 2.0;
-	lz.at(2) = lx.at(2) * 3.0 / 2.0;
-	lz.at(3) = lx.at(3) * 3.0 / 2.0;
-	lz.at(4) = lx.at(4) * 3.0 / 2.0;
-
-	l0 = 32.0;
-	rho0 = 1.0;
-
-	maxLevel = 0; //wird nicht benötigt
-	numberOfGridLevels = 1;
-	
-}
-
-void ConfigFileReader::makeTestInformation()
-{
-	testInfo = TestInformationImp::getNewInstance();
-
-	testInfo->setColorOutput(testOutput);
-
-	makeSimulationInfo();
-	testInfo->setSimulationInfo(simInfo);
-
-	makeLogFileInformation();
-	testInfo->setLogFileInformation(logInfo);
-	testInfo->setLogFilePath(logFilePath);
-
-	makeTestResults();
-	testInfo->setTestResults(testResults);
-}
-
-void ConfigFileReader::makeSimulationParameter()
-{
-	testOutput = TestCoutImp::getNewInstance();
-
-	if (testShouldRun(tgv)) {
-		std::shared_ptr< PhiAndNuTest> tgvTestResults = PhiAndNuTest::getNewInstance("TaylorGreenVortex", minOrderOfAccuracy, testOutput);
-		tests.push_back(tgvTestResults);
-		for (int i = 0; i < tgv.size(); i++) {
-			if (tgv.at(i)) {
-				simParameter.push_back(TaylorGreenSimulationParameter::getNewInstance(u0TGV, amplitudeTGV, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, tgvTestResults, devices));
+	for (int i = 0; i < kernelsToTest.size(); i++) {
+		simID = 1;
+		for (int j = 0; j < viscosity.size(); j++) {
+			for (int k = 0; k < u0TGV.size(); k++) {
+				if (shouldSimulationGroupRun(tgv))
+					makeTaylorGreenSimulations(kernelsToTest.at(i), viscosity.at(j), u0TGV.at(k), amplitudeTGV.at(k));
+			}
+			for (int k = 0; k < u0SW.size(); k++) {
+				if (shouldSimulationGroupRun(sw))
+					makeShearWaveSimulations(kernelsToTest.at(i), viscosity.at(j), u0SW.at(k), v0SW.at(k));
 			}
 		}
 	}
-
-	if (testShouldRun(sw)) {
-		std::shared_ptr< PhiAndNuTest> swTestResults = PhiAndNuTest::getNewInstance("ShearWave", minOrderOfAccuracy, testOutput);
-		tests.push_back(swTestResults);
-
-		for (int i = 0; i < sw.size(); i++) {
-			if (sw.at(i)) {
-				simParameter.push_back(ShearWaveSimulationParameter::getNewInstance(u0SW, v0SW, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, swTestResults, devices));
-			}
-		}
-	}
+	
 }
 
-void ConfigFileReader::makeSimulationInfo()
+std::vector< std::shared_ptr< TestSimulation>> ConfigFileReader::buildTestSimulation(std::vector< std::shared_ptr< SimulationParameter>> simPara, std::vector< std::shared_ptr< SimulationInfo>> simInfo)
 {
-	for (int i = 0; i < tgv.size(); i++) {
+	std::vector< std::shared_ptr< TestSimulation>> testSim;
+	testSim.resize(0);
+
+	for (int i = 0; i < simPara.size(); i++) {
+		testSim.push_back(TestSimulationImp::getNewInsance(simID, simPara.at(i), simInfo.at(i)));
+		simID++;
+	}
+	return testSim;
+}
+
+void ConfigFileReader::makeTaylorGreenSimulations(std::string kernelName, double viscosity, double u0, double amplitude)
+{
+	std::vector< std::shared_ptr< SimulationParameter>> simParaTGV;
+	simParaTGV.resize(0);
+	std::vector< std::shared_ptr< SimulationInfo>> simInfoTGV;
+	simInfoTGV.resize(0);
+
+	for (int i = 0; i < tgv.size(); i++)
 		if (tgv.at(i)) {
-			simInfo.push_back(SimulationInfoImp::getNewInstance(testOutput, "TaylorGreenVortex", lx.at(i)));
+			simParaTGV.push_back(TaylorGreenSimulationParameter::getNewInstance(kernelName, u0, amplitude, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
+			simInfoTGV.push_back(TaylorGreenVortexSimulationInfo::getNewInstance(u0, amplitude, l0, lx.at(i), viscosity, kernelName, "TaylorGreenVortex"));
 		}
+
+	std::vector< std::shared_ptr< TestSimulation>> testSimTGV = buildTestSimulation(simParaTGV, simInfoTGV);
+
+	std::vector< std::shared_ptr< TestLogFileInformation>> testLogFileInfo;
+
+	if (nuAndPhiTestTGV) {
+		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSimTGV, simInfoTGV, viscosity);
+		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests);
+		testLogFileInfo.push_back(phiNuLogFileInfo);
 	}
-	for (int i = 0; i < sw.size(); i++) {
-		if (sw.at(i)) {
-			simInfo.push_back(SimulationInfoImp::getNewInstance(testOutput, "ShearWave", lx.at(i)));
-		}
-	}
+		
+
+	for (int i = 0; i < testSimTGV.size(); i++)
+		testSimulation.push_back(testSimTGV.at(i));
+
+	std::shared_ptr< TaylorGreenInformation> tgInfo = TaylorGreenInformation::getNewInstance(u0, amplitude, tgv, lx, l0);
+	std::shared_ptr< LogFileTimeInformation> logFileTimeInfo = LogFileTimeInformation::getNewInstance(testSimTGV, writeFiles);
+
+	makeLogFileWriter(testLogFileInfo, logFileTimeInfo, tgInfo, kernelName, viscosity);
 }
 
-void ConfigFileReader::makeLogFileInformation()
+void ConfigFileReader::makeShearWaveSimulations(std::string kernelName, double viscosity, double u0, double v0)
 {
-	
-	logInfo.push_back(LogFileInformationOutput::getNewInstance(devices));
-	logInfo.push_back(BasicSimulationInfo::getNewInstance(numberOfTimeSteps, basisTimeStepLength, startStepCalculation, viscosity));
+	std::vector< std::shared_ptr< SimulationParameter>> simParaSW;
+	simParaSW.resize(0);
+	std::vector< std::shared_ptr< SimulationInfo>> simInfoSW;
+	simInfoSW.resize(0);
 
-	if (testShouldRun(tgv))
-		logInfo.push_back(TaylorGreenInformation::getNewInstance(u0TGV, amplitudeTGV, tgv, lx));
-	if (testShouldRun(sw))
-		logInfo.push_back(ShearWaveInformation::getNewInstance(u0SW, v0SW, sw, lx));
+	for (int i = 0; i < tgv.size(); i++)
+		if (tgv.at(i)) {
+			simParaSW.push_back(ShearWaveSimulationParameter::getNewInstance(kernelName, u0, v0, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
+			simInfoSW.push_back(ShearWaveSimulationInfo::getNewInstance(u0, v0, l0, lx.at(i), viscosity, kernelName, "ShearWave"));
+		}
 
-	logInfo.push_back(SimulationTimeInformation::getNewInstance(simInfo, writeFiles));
+	std::vector< std::shared_ptr< TestSimulation>> testSimSW = buildTestSimulation(simParaSW, simInfoSW);
 
-	for (int i = 0; i < tests.size(); i++) {
-		logInfo.push_back(tests.at(i));
+	std::vector< std::shared_ptr< TestLogFileInformation>> testLogFileInfo;
+
+	if (nuAndPhiTestSW) {
+		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSimSW, simInfoSW, viscosity);
+		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests);
+		testLogFileInfo.push_back(phiNuLogFileInfo);
 	}
+		
+
+	for (int i = 0; i < testSimSW.size(); i++)
+		testSimulation.push_back(testSimSW.at(i));
+
+	std::shared_ptr< ShearWaveInformation> swInfo = ShearWaveInformation::getNewInstance(u0, v0, sw, lx, l0);
+	std::shared_ptr< LogFileTimeInformation> logFileTimeInfo = LogFileTimeInformation::getNewInstance(testSimSW, writeFiles);
+	makeLogFileWriter(testLogFileInfo, logFileTimeInfo, swInfo, kernelName, viscosity);
 }
 
-void ConfigFileReader::makeTestResults()
+std::vector< std::shared_ptr< PhiAndNuTest>> ConfigFileReader::makePhiAndNuTests(std::vector< std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, double viscosity)
 {
-	for (int i = 0; i < tests.size(); i++) {
-		testResults.push_back(tests.at(i));
+	std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests;
+
+	for (int i = 1; i < testSim.size(); i++) {
+		for (int j = 0; j < i; j++) {
+			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(dataToCalcPhiAndNuTest, minOrderOfAccuracy, viscosity);
+			test->addSimulation(testSim.at(j), simInfo.at(j));
+			test->addSimulation(testSim.at(i), simInfo.at(i));
+
+			testSim.at(j)->registerSimulationObserver(test);
+			testSim.at(i)->registerSimulationObserver(test);
+
+			phiAndNuTests.push_back(test);
+			testQueue->addTest(test);
+		}
 	}
+	return phiAndNuTests;
+}
+
+bool ConfigFileReader::shouldSimulationGroupRun(std::vector<bool> test)
+{
+	for (int i = 0; i < test.size(); i++) {
+		if (test.at(i))
+			return true;
+	}
+	return false;
+}
+
+void ConfigFileReader::makeLogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
+{
+	std::shared_ptr< LogFileWriter> logFileWriter = LogFileWriter::getNewInstance(testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity, devices, numberOfTimeSteps, basisTimeStepLength, startStepCalculation);
+	logFileWriterQueue->addLogFileWriter(logFileWriter);
+}
+
+std::vector<std::shared_ptr<TestSimulation>> ConfigFileReader::getTestSimulations()
+{
+	return testSimulation;
+}
+
+std::shared_ptr<TestQueue> ConfigFileReader::getTestQueue()
+{
+	return testQueue;
+}
+
+std::shared_ptr<LogFileQueue> ConfigFileReader::getLogFileQueue()
+{
+	return logFileWriterQueue;
 }

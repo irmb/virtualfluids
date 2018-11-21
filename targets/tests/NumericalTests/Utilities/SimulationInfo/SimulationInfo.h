@@ -1,16 +1,18 @@
 #ifndef SIMULATION_INFO_H
 #define SIMULATION_INFO_H
 
-#include <iostream>
+#include <string>
 
 class SimulationInfo
 {
 public:
-	virtual void makeSimulationHeadOutput() = 0;
-	virtual void setStartTime() = 0;
-	virtual void setEndTime() = 0;
-	virtual std::string getSimulationRunTimeOutput() = 0;
+	virtual std::string getKernelName() = 0;
+	virtual double getViscosity() = 0;
+	virtual std::string getSimulationName() = 0;
+	virtual std::string getSimulationParameterString() = 0;
+	virtual int getLx() = 0;
+
 private:
 
 };
-#endif
+#endif 

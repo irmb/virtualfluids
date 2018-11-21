@@ -1,40 +1,32 @@
 #include <gmock/gmock.h>
 #include "mpi.h"
 
-#include "VirtualFluids_GPU/LBM/Simulation.h"
-
 #include "Utilities/ConfigFileReader/ConfigFileReader.h"
 #include "Utilities\VirtualFluidSimulation\VirtualFluidSimulation.h"
 #include "Utilities\VirtualFluidSimulationFactory\VirtualFluidSimulationFactoryImp.h"
-#include "Utilities/Calculator/Calculator.h"
-#include "Utilities/TestInformation/TestInformation.h"
+#include "Utilities\TestQueue\TestQueue.h"
+#include "Utilities\LogFileQueue\LogFileQueue.h"
 
 static void startNumericalTests(const std::string &configFile)
 {
 	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
 	configReader->readConfigFile(configFile);
 
-	std::vector< std::shared_ptr< SimulationParameter> > simPara = configReader->getSimulationParameter();
-	std::shared_ptr< TestInformation> testInfo = configReader->getTestInformation();
+	std::vector< std::shared_ptr< TestSimulation> > testSim = configReader->getTestSimulations();
+	std::shared_ptr< TestQueue> testQueue = configReader->getTestQueue();
+	std::shared_ptr< LogFileQueue> logFileQueue = configReader->getLogFileQueue();
 
 	std::shared_ptr< VirtualFluidSimulationFactory> factory = VirtualFluidSimulationFactoryImp::getNewInstance();
-	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(simPara);
+	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(testSim);
 
 	for (int i = 0; i < vfSimulations.size(); i++)
 	{
-		testInfo->makeSimulationHeadOutput(i);
-		testInfo->setSimulationStartTime(i);
-		Simulation sim;
-		sim.init(vfSimulations.at(i)->getParameter(), vfSimulations.at(i)->getGrid(), vfSimulations.at(i)->getDataWriter());
-		sim.run();
-		testInfo->setSimulationEndTime(i);
-
-		vfSimulations.at(i)->getCalculator()->calcAndCopyToTestResults();
+		vfSimulations.at(i)->run();
 	}
 
-	testInfo->makeFinalTestOutput();
+	testQueue->makeFinalOutput();
+	logFileQueue->writeLogFiles();
 
-	testInfo->writeLogFile();
 }
 
 int main(int argc, char **argv)

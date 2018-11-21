@@ -4,30 +4,43 @@
 Devices="1"
 
 ##################################################
+#				  Kernels						 #
+##################################################
+KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
+
+##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
 NumberOfTimeSteps=20
 BasisTimeStepLength=1000
-Viscosity=0.00001
+Viscosity="0.0001 0.00001"
+
+##################################################
+#	    TaylorGreenVortex Parameter				 #
+##################################################
+u0_TGV="0.032 0.016"
+Amplitude_TGV="0.01 0.005"
+
+##################################################
+#	       Shear Wave Parameter					 #
+##################################################
+u0_SW="0.032 0.016"
+v0_SW="0.1 0.05"
 
 ##################################################
 #			   Basic Test Parameter				 #
 ##################################################
 StartStepCalculation=11
 ySliceForCalculation=0
+
+##################################################
+#			PhiAndNu Test Parameter				 #
+##################################################
 MinOrderOfAccuracy=1.95
+DataToCalcPhiAndNuTest="Vx"
 
-##################################################
-#	    TaylorGreenVortex Test Parameter		 #
-##################################################
-u0_TGV=0.032
-Amplitude_TGV=0.01
-
-##################################################
-#	       Shear Wave Test Parameter			 #
-##################################################
-u0_SW=0.032
-v0_SW=0.1
+PhiAndNuTest_TGV=true
+PhiAndNuTest_SW=true
 
 ##################################################
 #			Simulation To Perform				 #
@@ -35,18 +48,20 @@ v0_SW=0.1
 TaylorGreenVortex32=true
 TaylorGreenVortex64=true
 TaylorGreenVortex128=true
-TaylorGreenVortex256=true
-TaylorGreenVortex512=true
+TaylorGreenVortex256=false
+TaylorGreenVortex512=false
 
 ShearWave32=true
 ShearWave64=true
 ShearWave128=true
-ShearWave256=true
-ShearWave512=true
+ShearWave256=false
+ShearWave512=false
 
 ##################################################
 #				Grid Information				 #
 ##################################################
+NumberOfGridLevels=1
+
 GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni32x4x48"
 GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
 GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
