@@ -937,6 +937,8 @@ public:
 	std::vector< int> getMultiKernelLevel();
 	std::vector< std::string> getMultiKernelName();
 
+	~Parameter();
+
     public:
         //Forcing///////////////
         real *forcingH, *forcingD;

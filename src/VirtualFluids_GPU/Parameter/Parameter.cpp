@@ -20,6 +20,9 @@ SPtr<Parameter> Parameter::make()
 Parameter::Parameter()
 {
 }
+Parameter::~Parameter()
+{
+}
 Parameter* Parameter::instanz = 0;
 Parameter* Parameter::getInstanz()
 {

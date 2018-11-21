@@ -28,6 +28,7 @@ public:
 	~Simulation();
 	void run();
 	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter);
+	void free();
 	void bulk();
 	void porousMedia();
 	void definePMarea(PorousMedia* pm);

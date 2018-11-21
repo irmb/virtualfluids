@@ -52,7 +52,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setNumprocs(1);
     std::string gridPath = getGridPath(para, _gridpath);
     para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-    para->setDevices(StringUtil::toVector(input->getValue("Devices")));
+    para->setDevices(StringUtil::toIntVector(input->getValue("Devices")));
     para->setOutputPath(_path);
     para->setOutputPrefix(_prefix);
     para->setFName(_path + "/" + _prefix);
@@ -242,7 +242,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 	// Kernel
 	para->setMainKernel(input->getValue("MainKernelName"));
 	para->setMultiKernelOn(StringUtil::toBool(input->getValue("multiKernelOn")));
-	para->setMultiKernelLevel(StringUtil::toVector(input->getValue("multiKernelLevel")));
+	para->setMultiKernelLevel(StringUtil::toIntVector(input->getValue("multiKernelLevel")));
 	para->setMultiKernelName(StringUtil::toStringVector(input->getValue("multiKernelName")));
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -347,6 +347,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     sim.init(para, gridGenerator, fileWriter);
     sim.run();
+	sim.free();
 }
 
 
