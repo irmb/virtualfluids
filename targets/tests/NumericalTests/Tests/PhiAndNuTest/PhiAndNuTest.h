@@ -1,45 +1,53 @@
-#ifndef PHI_AND_NU_TEST_RESULTS_H
-#define PHI_AND_NU_TEST_RESULTS_H
+#ifndef PHI_AND_NU_TEST_H
+#define PHI_AND_NU_TEST_H
 
-#include "Utilities/TestResults/TestResults.h"
-#include "Utilities/LogFileInformation/LogFileInformation.h"
+#include "Utilities\Test\TestImp.h"
 
 #include <memory>
 #include <vector>
 #include <iostream>
 
 class TestCout;
+class FFTCalculator;
 
-class PhiAndNuTest : public TestResults, public LogFileInformation
+class PhiAndNuTest : public TestImp 
 {
 public:
-	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::string aTestName, double minOrderOfAccuracy, std::shared_ptr<TestCout> testOut);
+	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
+	
+	void update();
+	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo);
 	void evaluate();
-	void makeFinalOutput();
-	int getNumberOfPassedTests();
-	int getNumberOfTests();
+	
+	std::vector< bool> getPassedTests();
+	std::string getSimulationName();
 
-	void add(double phiDiff, double nuDiff, double lx);
-	std::string getOutput();
+	void makeOutput();
+	std::string getLogFileOutput();
 
 private:
-	PhiAndNuTest(std::string aTestName, double minOrderOfAccuracy, std::shared_ptr<TestCout> testOut);
-	void makeLastTestOutput();
-	std::vector<double> calcOrderOfAccuracy(std::vector<double> data);
-	std::vector<bool> checkTestPassed(std::vector<double> orderOfAccuracy);
-	int calcNumberOfPassedTests(std::vector< bool> orderOfAccuracy);
+	PhiAndNuTest(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
+	double calcOrderOfAccuracy(std::vector<double> data);
+	bool checkTestPassed(double orderOfAccuracy);
+	
 
+	std::shared_ptr< FFTCalculator> calculator;
+	std::shared_ptr< TestCout> testOut;
+	std::vector<double> lx;
 	std::vector<double> phiDiff;
 	std::vector<double> nuDiff;
-	std::vector<double> lx;
-	std::vector<double> orderOfAccuracyPhiDiff;
-	std::vector<double> orderOfAccuracyNuDiff;
-	std::vector<bool> phiDiffTestPassed;
-	std::vector<bool> nuDiffTestPassed;
-		
+	double orderOfAccuracyPhiDiff;
+	double orderOfAccuracyNuDiff;
 	double minOrderOfAccuracy;
-	std::string testName;
+	double viscosity;
 
-	std::shared_ptr<TestCout> testOut;
+	bool phiDiffTestPassed;
+	bool nuDiffTestPassed;
+	
+	std::string simulationName;
+	std::string dataToCalculate;
+	std::string kernelName;
+	std::string simulationParameter;
+
 };
 #endif

@@ -1,117 +1,94 @@
 #include "PhiAndNuTest.h"
 
 #include "Utilities/TestCout/TestCoutImp.h"
-#include "PhiAndNuTest.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
+#include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
+#include "Utilities\TestSimulation\TestSimulation.h"
+#include "Utilities\SimulationInfo\SimulationInfo.h"
 
-std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::string aTestName, double minOrderOfAccuracy, std::shared_ptr<TestCout> testOut)
+std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity)
 {
-	return std::shared_ptr<PhiAndNuTest>(new PhiAndNuTest(aTestName, minOrderOfAccuracy, testOut));
+	return std::shared_ptr<PhiAndNuTest>(new PhiAndNuTest(dataToCalculate, minOrderOfAccuracy, viscosity));
 }
 
 void PhiAndNuTest::evaluate()
 {
-	orderOfAccuracyNuDiff = calcOrderOfAccuracy(nuDiff);
-	orderOfAccuracyPhiDiff = calcOrderOfAccuracy(phiDiff);
-
-	nuDiffTestPassed = checkTestPassed(orderOfAccuracyNuDiff);
-	phiDiffTestPassed = checkTestPassed(orderOfAccuracyPhiDiff);
-	
-	if (orderOfAccuracyNuDiff.size() > 0 && orderOfAccuracyPhiDiff.size() > 0)
-		makeLastTestOutput();
-}
-
-void PhiAndNuTest::makeFinalOutput()
-{
-	for (int i = 1; i < lx.size(); i++) {
-		testOut->makeTestOutput(nuDiffTestPassed.at(i - 1), testName, lx.at(i - 1), lx.at(i), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(i - 1), nuDiff.at(i), orderOfAccuracyNuDiff.at(i - 1));
-		testOut->makeTestOutput(phiDiffTestPassed.at(i - 1), testName, lx.at(i - 1), lx.at(i), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(i - 1), phiDiff.at(i), orderOfAccuracyPhiDiff.at(i - 1));
+	for (int i = 0; i < simResults.size(); i++) {
+		lx.push_back(simResults.at(i)->getNumberOfXNodes());
+		calculator->setSimulationResults(simResults.at(i));
+		if (dataToCalculate == "Vx")
+			calculator->setVectorToCalc(simResults.at(i)->getVx());
+		if (dataToCalculate == "Vz")
+			calculator->setVectorToCalc(simResults.at(i)->getVz());
+		calculator->calc();
+		phiDiff.push_back(calculator->getPhiDiff());
+		nuDiff.push_back(calculator->getNuDiff());
 	}
+	orderOfAccuracyPhiDiff = calcOrderOfAccuracy(phiDiff);
+	orderOfAccuracyNuDiff = calcOrderOfAccuracy(nuDiff);
+	phiDiffTestPassed = checkTestPassed(orderOfAccuracyPhiDiff);
+	nuDiffTestPassed = checkTestPassed(orderOfAccuracyNuDiff);
+
+	makeOutput();
 }
 
-int PhiAndNuTest::getNumberOfPassedTests()
-{	
-	return (calcNumberOfPassedTests(nuDiffTestPassed) + calcNumberOfPassedTests(phiDiffTestPassed));
-}
-
-int PhiAndNuTest::getNumberOfTests()
+void PhiAndNuTest::update()
 {
-	return (orderOfAccuracyNuDiff.size()+ orderOfAccuracyPhiDiff.size());
+	TestImp::update();
 }
 
-void PhiAndNuTest::add(double phiDiff, double nuDiff, double lx)
+void PhiAndNuTest::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo)
 {
-	this->nuDiff.push_back(nuDiff);
-	this->phiDiff.push_back(phiDiff);
-	this->lx.push_back(lx);
+	TestImp::addSimulation(sim, simInfo);
 }
 
-std::string PhiAndNuTest::getOutput()
+std::vector<bool> PhiAndNuTest::getPassedTests()
+{
+	std::vector< bool> passed;
+	passed.push_back(phiDiffTestPassed);
+	passed.push_back(nuDiffTestPassed);
+	return passed;
+}
+
+std::string PhiAndNuTest::getSimulationName()
+{
+	return simulationName;
+}
+
+void PhiAndNuTest::makeOutput()
+{
+	testOut->makeTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(0), nuDiff.at(1), orderOfAccuracyNuDiff);
+	testOut->makeTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(0), phiDiff.at(1), orderOfAccuracyPhiDiff);
+}
+
+
+std::string PhiAndNuTest::getLogFileOutput()
 {
 	std::ostringstream oss;
-	oss << "#################################################" << std::endl;
-	oss << "#" << std::setfill(' ') << std::right << std::setw(24 + testName.length() / 2) << testName << std::setw(24 - testName.length() / 2) << "#" << std::endl;
-	oss << "#################################################" << std::endl;
-
-	oss << "L" << "\t" << std::setfill(' ') << std::left << std::setw(15) << "NuDiff" << "Order of Accuracy" << std::endl;
-	oss << lx.at(0) << "\t" << nuDiff.at(0) << std::endl;
-	for (int i = 0; i < nuDiff.size() - 1; i++) {
-		oss << std::setfill(' ') << std::setw(23) << " " << orderOfAccuracyNuDiff.at(i) << std::endl;
-		oss << lx.at(i + 1) << "\t" << nuDiff.at(i + 1) << std::endl;
-	}
-	oss << std::endl;
-
-	oss << "L" << "\t" << std::setfill(' ') << std::left << std::setw(15) << "PhiDiff" << "Order of Accuracy" << std::endl;
-	oss << lx.at(0) << "\t" << phiDiff.at(0) << std::endl;
-	for (int i = 0; i < phiDiff.size() - 1; i++) {
-		oss << std::setfill(' ') << std::setw(23) << " " << orderOfAccuracyPhiDiff.at(i) << std::endl;
-		oss << lx.at(i + 1) << "\t" << phiDiff.at(i + 1) << std::endl;
-	}
-	oss << std::endl;
+	oss << std::setfill(' ') << std::left << std::setw(4) << lx.at(0) << std::setw(45) << nuDiff.at(0) << phiDiff.at(0) << std::endl;
+	oss << std::setfill(' ') << std::left << std::setw(19) << " " << std::setw(45) << orderOfAccuracyNuDiff << orderOfAccuracyPhiDiff << std::endl;
+	oss << std::setfill(' ') << std::left << std::setw(4) << lx.at(1) << std::setw(45) << nuDiff.at(1) << phiDiff.at(1) << std::endl;
 
 	return oss.str();
 }
 
-PhiAndNuTest::PhiAndNuTest(std::string aTestName, double minOrderOfAccuracy, std::shared_ptr<TestCout> testOut) : testName(aTestName), minOrderOfAccuracy(minOrderOfAccuracy), testOut(testOut)
+PhiAndNuTest::PhiAndNuTest(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity) : TestImp(), simulationName(simulationName), minOrderOfAccuracy(minOrderOfAccuracy), viscosity(viscosity), dataToCalculate(dataToCalculate)
 {
+	lx.resize(0);
 	phiDiff.resize(0);
 	nuDiff.resize(0);
-	lx.resize(0);
-	orderOfAccuracyPhiDiff.resize(0);
-	orderOfAccuracyNuDiff.resize(0);
-	nuDiffTestPassed.resize(0);
-	phiDiffTestPassed.resize(0);
+	calculator = FFTCalculator::getNewInstance(viscosity);
+	testOut = TestCoutImp::getNewInstance();
 }
 
-void PhiAndNuTest::makeLastTestOutput()
+double PhiAndNuTest::calcOrderOfAccuracy(std::vector<double> data)
 {
-	testOut->makeTestOutput(nuDiffTestPassed.back(), testName, lx.at(lx.size() - 2), lx.back(), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(nuDiff.size() - 2), nuDiff.back(), orderOfAccuracyNuDiff.back());
-	testOut->makeTestOutput(phiDiffTestPassed.back(), testName, lx.at(lx.size() - 2), lx.back(), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(phiDiff.size() - 2), phiDiff.back(), orderOfAccuracyPhiDiff.back());
+	double ooa = log(data.at(0) / data.at(1)) / log(lx.at(1) / lx.at(0));
+	
+	return ooa;
 }
 
-std::vector<double> PhiAndNuTest::calcOrderOfAccuracy(std::vector<double> data)
+bool PhiAndNuTest::checkTestPassed(double orderOfAccuracy)
 {
-	std::vector<double> result;
-	for (int i = 1; i < lx.size(); i++) {
-		double ooa = log(data.at(i - 1) / data.at(i)) / log(lx.at(i) / lx.at(i - 1));
-		result.push_back(ooa);
-	}
-	return result;
-}
-
-std::vector<bool> PhiAndNuTest::checkTestPassed(std::vector<double> orderOfAccuracy)
-{
-	std::vector<bool> result;
-	for (int i = 0; i < orderOfAccuracy.size(); i++) 
-		result.push_back(orderOfAccuracy.at(i) > minOrderOfAccuracy);
-	return result;
-}
-
-int PhiAndNuTest::calcNumberOfPassedTests(std::vector<bool> orderOfAccuracy)
-{
-	int passed = 0;
-	for (int i = 0; i < orderOfAccuracy.size(); i++) {
-		if (orderOfAccuracy.at(i))
-			passed++;
-	}
-	return passed;
+	return orderOfAccuracy > minOrderOfAccuracy;
 }
