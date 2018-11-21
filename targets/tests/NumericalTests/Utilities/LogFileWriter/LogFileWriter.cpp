@@ -1,28 +1,44 @@
 #include "LogFileWriter.h"
 
-#include <helper_functions.h>
+#include "Utilities\LogFileInformation\SimulationLogFileInformation\SimulationLogFileInformation.h"
+#include "Utilities\LogFileInformation\LogFileHead\LogFileHead.h"
+#include "Utilities\LogFileInformation\BasicSimulationInfo\BasicSimulationInfo.h"
+#include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
+#include "Utilities\LogFileInformation\TestLogFileInformation\TestLogFileInformation.h"
 
+#include <helper_functions.h>
 #include <iomanip>
 #include <ctime>
+#include <experimental/filesystem>
 
-LogFileWriter::LogFileWriter(std::string filePath)
+LogFileWriter::LogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity, std::vector<int> devices, int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation) : kernelName(kernelName), viscosity(viscosity)
 {
-	std::ostringstream oss;
-	oss << filePath << "\\logFile_" << calcDateAndTime() << ".txt";
-	this->logFilePath = oss.str();
+	logFileInfo.push_back(LogFileHead::getNewInstance(devices));
+	logFileInfo.push_back(BasicSimulationInfo::getNewInstance(numberOfTimeSteps, basisTimeStepLength, startStepCalculation, viscosity));
+	this->simLogInfo = simLogInfo;
+	logFileInfo.push_back(this->simLogInfo);
+	logFileInfo.push_back(logFileTimeInfo);
+	for (int i = 0; i < testLogFiles.size(); i++)
+		logFileInfo.push_back(testLogFiles.at(i));
+}
+
+std::shared_ptr<LogFileWriter> LogFileWriter::getNewInstance(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity, std::vector<int> devices, int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation)
+{
+	return std::shared_ptr<LogFileWriter>(new LogFileWriter(testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity, devices, numberOfTimeSteps, basisTimeStepLength, startStepCalculation));
+}
+
+void LogFileWriter::writeLogFile(std::string basicFilePath)
+{
+	logFilePath = buildFilePath(basicFilePath);
 
 	logFile.open(logFilePath, std::ios::out);
+
+	bool test = logFile.is_open();
+
+	for (int i = 0; i < logFileInfo.size(); i++)
+		logFile << logFileInfo.at(i)->getOutput();	
 }
 
-std::shared_ptr<LogFileWriter> LogFileWriter::getNewInstance(std::string filePath)
-{
-	return std::shared_ptr<LogFileWriter>(new LogFileWriter(filePath));
-}
-
-void LogFileWriter::makeOutput(std::string output)
-{
-	logFile << output;
-}
 
 std::string LogFileWriter::calcDateAndTime()
 {
@@ -31,4 +47,17 @@ std::string LogFileWriter::calcDateAndTime()
 	nowLocal = *localtime(&now);
 	oss << std::setfill('0')  << nowLocal.tm_year + 1900 << std::setw(2) << nowLocal.tm_mon + 1 << std::setw(2) << nowLocal.tm_mday << "_" << std::setw(2) << nowLocal.tm_hour << std::setw(2) << nowLocal.tm_min << std::setw(2) << nowLocal.tm_sec;
 	return oss.str();
+}
+
+std::string LogFileWriter::buildFilePath(std::string basicFilePath)
+{
+	std::ostringstream filePath;
+	filePath << basicFilePath << kernelName << "\\viscosity_" << viscosity << "\\" << simLogInfo->getFilePathExtension();
+	
+	std::experimental::filesystem::path dir(filePath.str());
+	if (!(std::experimental::filesystem::exists(dir)))
+		std::experimental::filesystem::create_directories(dir);
+
+	filePath << "\\logfile_" << kernelName << "_vis_" << viscosity << "_" << calcDateAndTime() << ".txt";
+	return filePath.str();
 }

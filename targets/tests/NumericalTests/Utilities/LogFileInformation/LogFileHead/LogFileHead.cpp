@@ -1,4 +1,4 @@
-#include "LogFileInformationOutput.h"
+#include "LogFileHead.h"
 
 #include <iomanip>
 #include <ctime>
@@ -7,12 +7,12 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-std::shared_ptr<LogFileInformation> LogFileInformationOutput::getNewInstance(std::vector<int> devices)
+std::shared_ptr<LogFileInformation> LogFileHead::getNewInstance(std::vector<int> devices)
 {
-	return std::shared_ptr<LogFileInformation>(new LogFileInformationOutput(devices));
+	return std::shared_ptr<LogFileInformation>(new LogFileHead(devices));
 }
 
-std::string LogFileInformationOutput::getOutput()
+std::string LogFileHead::getOutput()
 {
 	calcDateAndTime();
 
@@ -31,13 +31,13 @@ std::string LogFileInformationOutput::getOutput()
 	return oss.str();
 }
 
-void LogFileInformationOutput::calcDateAndTime()
+void LogFileHead::calcDateAndTime()
 {
 	now = time(NULL);
 	nowLocal = *localtime(&now);
 }
 
-LogFileInformationOutput::LogFileInformationOutput(std::vector<int> devices) : devices(devices)
+LogFileHead::LogFileHead(std::vector<int> devices) : devices(devices)
 {
 
 }

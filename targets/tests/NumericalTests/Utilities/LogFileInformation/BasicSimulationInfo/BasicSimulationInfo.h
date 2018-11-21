@@ -8,7 +8,7 @@
 class BasicSimulationInfo : public LogFileInformationImp
 {
 public:
-	static std::shared_ptr<LogFileInformation> getNewInstance(int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation, double viscosity);
+	static std::shared_ptr<BasicSimulationInfo> getNewInstance(int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation, double viscosity);
 	std::string getOutput();
 
 private:

@@ -1,12 +1,12 @@
-#ifndef LOGFILE_INFORMATION_OUTPUT_H
-#define LOGFILE_INFORMATION_OUTPUT_H
+#ifndef LOGFILE_HEAD_H
+#define LOGFILE_HEAD_H
 
 #include "../LogFileInformationImp.h"
 
 #include <memory>
 #include <vector>
 
-class LogFileInformationOutput : public LogFileInformationImp
+class LogFileHead : public LogFileInformationImp
 {
 public:
 	static std::shared_ptr<LogFileInformation> getNewInstance(std::vector<int> devices);
@@ -14,8 +14,8 @@ public:
 
 private:
 	void calcDateAndTime();
-	LogFileInformationOutput() {};
-	LogFileInformationOutput(std::vector<int> devices);
+	LogFileHead() {};
+	LogFileHead(std::vector<int> devices);
 
 	std::vector<int> devices;
 	time_t now;
