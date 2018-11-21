@@ -11,6 +11,7 @@ class SimulationParameter;
 class SimulationInfo;
 class TestCout;
 class PhiAndNuTest;
+class L2NormTest;
 class TestSimulation;
 class TestQueueImp;
 class TestQueue;
@@ -20,6 +21,7 @@ class LogFileInformation;
 class LogFileTimeInformation;
 class TestLogFileInformation;
 class SimulationLogFileInformation;
+class AnalyticalResults;
 
 class ConfigFileReader
 {
@@ -46,13 +48,15 @@ private:
 	void makeShearWaveSimulations(std::string kernelName, double viscosity, double u0, double v0);
 
 	std::vector< std::shared_ptr< PhiAndNuTest>> makePhiAndNuTests(std::vector< std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, double viscosity);
-	
+	std::vector< std::shared_ptr< L2NormTest>> makeL2NormTests(std::vector<std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector<std::shared_ptr< AnalyticalResults>> analyticalResults);
+
 	bool shouldSimulationGroupRun(std::vector<bool> test);
 
 
 	std::vector<double> u0SW, v0SW;
 	std::vector<double> amplitudeTGV, u0TGV;
 	bool nuAndPhiTestTGV, nuAndPhiTestSW;
+	bool l2NormTestTGV, l2NormTestSW;
 	std::string dataToCalcPhiAndNuTest;
 	std::vector<double> viscosity;
 	real rho0;

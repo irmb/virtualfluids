@@ -6,24 +6,25 @@
 #include "utilities/input/Input.h"
 #include "utilities/StringUtil/StringUtil.h"
 
-#include "Utilities/TestInformation/TestInformationImp.h"
 #include "Utilities/TestSimulation/TestSimulationImp.h"
 #include "Utilities\TestQueue\TestQueueImp.h"
 
 #include "Utilities\LogFileWriter\LogFileWriter.h"
 #include "Utilities\LogFileQueue\LogFileQueueImp.h"
 
-
 #include "Simulation/TaylorGreenVortex/SimulationParameter/TaylorGreenSimulationParameter.h"
 #include "Simulation/TaylorGreenVortex/LogFileInformation/TaylorGreenLogFileInformation.h"
 #include "Simulation\TaylorGreenVortex\SimulationInfo\TaylorGreenVortexSimulationInfo.h"
+#include "Simulation\TaylorGreenVortex\AnalyticalResults\TaylorGreenVortexAnalyticalResults.h"
 
 #include "Simulation/ShearWave/SimulationParameter/ShearWaveSimulationParameter.h"
 #include "Simulation/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
 #include "Simulation\ShearWave\SimulationInfo\ShearWaveSimulationInfo.h"
+#include "Simulation\ShearWave\AnalyticalResults\ShearWaveAnalyticalResults.h"
 
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Tests\PhiAndNuTest\LogFileInformation\PhiAndNuLogFileInformation.h"
+#include "Tests\L2NormTest\L2NormTest.h"
 
 #include "Utilities/LogFileInformation/LogFileInformation.h"
 #include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
@@ -80,10 +81,12 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	amplitudeTGV = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV"));
 	u0TGV = StringUtil::toDoubleVector(input->getValue("u0_TGV"));
 	nuAndPhiTestTGV = StringUtil::toBool(input->getValue("PhiAndNuTest_TGV"));
+	l2NormTestTGV = StringUtil::toBool(input->getValue("L2NormTest_TGV"));
 
 	v0SW = StringUtil::toDoubleVector(input->getValue("v0_SW"));
 	u0SW = StringUtil::toDoubleVector(input->getValue("u0_SW"));
 	nuAndPhiTestSW = StringUtil::toBool(input->getValue("PhiAndNuTest_SW"));
+	l2NormTestSW = StringUtil::toBool(input->getValue("L2NormTest_SW"));
 
 	numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
 	basisTimeStepLength = StringUtil::toInt(input->getValue("BasisTimeStepLength"));
@@ -176,11 +179,14 @@ void ConfigFileReader::makeTaylorGreenSimulations(std::string kernelName, double
 	simParaTGV.resize(0);
 	std::vector< std::shared_ptr< SimulationInfo>> simInfoTGV;
 	simInfoTGV.resize(0);
+	std::vector< std::shared_ptr< AnalyticalResults>> analyResultTGV;
+	analyResultTGV.resize(0);
 
 	for (int i = 0; i < tgv.size(); i++)
 		if (tgv.at(i)) {
 			simParaTGV.push_back(TaylorGreenSimulationParameter::getNewInstance(kernelName, u0, amplitude, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
 			simInfoTGV.push_back(TaylorGreenVortexSimulationInfo::getNewInstance(u0, amplitude, l0, lx.at(i), viscosity, kernelName, "TaylorGreenVortex"));
+			analyResultTGV.push_back(TaylorGreenAnalyticalResults::getNewInstance(viscosity, u0, amplitude, l0, rho0));
 		}
 
 	std::vector< std::shared_ptr< TestSimulation>> testSimTGV = buildTestSimulation(simParaTGV, simInfoTGV);
@@ -192,6 +198,11 @@ void ConfigFileReader::makeTaylorGreenSimulations(std::string kernelName, double
 		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests);
 		testLogFileInfo.push_back(phiNuLogFileInfo);
 	}
+
+	if (l2NormTestTGV) {
+		std::vector< std::shared_ptr< L2NormTest>> l2NormTests = makeL2NormTests(testSimTGV, simInfoTGV, analyResultTGV);
+	}
+	
 		
 
 	for (int i = 0; i < testSimTGV.size(); i++)
@@ -253,6 +264,20 @@ std::vector< std::shared_ptr< PhiAndNuTest>> ConfigFileReader::makePhiAndNuTests
 		}
 	}
 	return phiAndNuTests;
+}
+
+std::vector<std::shared_ptr<L2NormTest>> ConfigFileReader::makeL2NormTests(std::vector<std::shared_ptr<TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector<std::shared_ptr< AnalyticalResults>> analyticalResults)
+{
+	std::vector<std::shared_ptr<L2NormTest>> l2Tests;
+	for (int i = 0; i < testSim.size(); i++) {
+		std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(analyticalResults.at(i));
+		test->addSimulation(testSim.at(i), simInfo.at(i));
+		testSim.at(i)->registerSimulationObserver(test);
+		l2Tests.push_back(test);
+		testQueue->addTest(test);
+	}
+
+	return l2Tests;
 }
 
 bool ConfigFileReader::shouldSimulationGroupRun(std::vector<bool> test)

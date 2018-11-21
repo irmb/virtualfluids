@@ -28,6 +28,11 @@ void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr
 	simResults.resize(simResults.size() + 1);
 }
 
+std::string TestImp::getSimulationName()
+{
+	return simulationName;
+}
+
 TestImp::TestImp()
 {
 	simulationRun.resize(0);

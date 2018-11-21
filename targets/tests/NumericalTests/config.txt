@@ -43,6 +43,12 @@ PhiAndNuTest_TGV=true
 PhiAndNuTest_SW=true
 
 ##################################################
+#			L2-Norm Test Parameter				 #
+##################################################
+L2NormTest_TGV=true
+L2NormTest_SW=true
+
+##################################################
 #			Simulation To Perform				 #
 ##################################################
 TaylorGreenVortex32=true
