@@ -7,43 +7,33 @@
 #include <memory>
 
 class InitialCondition;
-class FileWriter;
-class ToVectorWriter;
-class SimulationParameter;
-class Calculator;
-class TestResults;
-class SimulationResults;
+class DataWriter;
+class Parameter;
+class GridProvider;
+class KernelConfiguration;
+class TestSimulation;
 
 class VirtualFluidSimulationImp : public VirtualFluidSimulation
 {
 public:
+	void run();
+
 	static std::shared_ptr< VirtualFluidSimulationImp> getNewInstance();
-	void initParameter(real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity);
+	void initParameter(std::shared_ptr< KernelConfiguration> kernelConfig, real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity);
 	void initInitialConditions(std::shared_ptr< InitialCondition> initialCondition);
 	void initGridProvider();
-	void initCalculator(std::shared_ptr< Calculator> calc);
-	void initDataWriter(unsigned int ySliceForCalculation, unsigned int startTimeCalculation, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, unsigned int startTimeDataWriter);
-	void initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength);
 
-	void setTestResults(std::shared_ptr<TestResults> testResults);
-
-	std::shared_ptr< Parameter> getParameter();
-	std::shared_ptr< GridProvider> getGrid();
-	std::shared_ptr< DataWriter> getDataWriter();
-	std::shared_ptr< Calculator> getCalculator();
+	void setDataWriter(std::shared_ptr< DataWriter> dataWriter);
+	void setTestSimulation(std::shared_ptr< TestSimulation> testSim);
 
 protected:
 	VirtualFluidSimulationImp() {};
 		
 private:
-	std::shared_ptr< SimulationParameter> simPara;
 	std::shared_ptr< Parameter> para;
 	std::shared_ptr< InitialCondition> initialCondition;
 	std::shared_ptr< GridProvider> grid;
-	std::shared_ptr< SimulationResults> simResults;
-	std::shared_ptr< ToVectorWriter> writeToVector;
-	std::shared_ptr< FileWriter> fileWriter;
-	std::shared_ptr< Calculator> calculator;
-	std::shared_ptr< TestResults> testResults;	
+	std::shared_ptr<TestSimulation> testSim;
+	std::shared_ptr<DataWriter> dataWriter;
 };
 #endif

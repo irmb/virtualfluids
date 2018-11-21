@@ -3,17 +3,18 @@
 
 #include "VirtualFluidSimulationFactory.h"
 
+class SimulationParameter;
 
 class VirtualFluidSimulationFactoryImp: public VirtualFluidSimulationFactory
 {
 public:
 	static std::shared_ptr< VirtualFluidSimulationFactory> getNewInstance();
-	std::vector< std::shared_ptr< VirtualFluidSimulation> > makeVirtualFluidSimulations(std::vector< std::shared_ptr< SimulationParameter> > simPara);
+	std::vector< std::shared_ptr< VirtualFluidSimulation> > makeVirtualFluidSimulations(std::vector< std::shared_ptr< TestSimulation> > testSim);
 
 protected:
 	VirtualFluidSimulationFactoryImp();
 
 private:
-	std::vector< std::shared_ptr< SimulationParameter> > simPara;
+
 };
 #endif

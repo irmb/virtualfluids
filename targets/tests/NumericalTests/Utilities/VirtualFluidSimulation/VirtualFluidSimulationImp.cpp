@@ -1,34 +1,27 @@
 #include "VirtualFluidSimulationImp.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU\Output\FileWriter.h"
+#include "VirtualFluids_GPU/LBM/Simulation.h"
 
 #include "Utilities\GridReaderforTesting\GridReaderforTesting.h"
-#include "Utilities/SimulationResults/SimulationResults.h"
-#include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
 #include "Utilities\InitialCondition\InitialCondition.h"
-#include "Utilities\Calculator\Calculator.h"
+#include "Utilities\KernelConfiguration\KernelConfiguration.h"
+
+#include "Utilities\TestSimulation\TestSimulation.h"
 
 #include <sstream>
 
-std::shared_ptr<Parameter> VirtualFluidSimulationImp::getParameter()
+void VirtualFluidSimulationImp::run()
 {
-	return para;
-}
+	testSim->makeSimulationHeadOutput();
+	testSim->setStartTime();
 
-std::shared_ptr<GridProvider> VirtualFluidSimulationImp::getGrid()
-{
-	return grid;
-}
+	Simulation sim;
+	sim.init(para, grid, dataWriter);
+	sim.run();
+	sim.free();
 
-std::shared_ptr<DataWriter> VirtualFluidSimulationImp::getDataWriter()
-{
-	return writeToVector;
-}
-
-std::shared_ptr<Calculator> VirtualFluidSimulationImp::getCalculator()
-{
-	return calculator;
+	testSim->setEndTime();
 }
 
 std::shared_ptr<VirtualFluidSimulationImp> VirtualFluidSimulationImp::getNewInstance()
@@ -36,7 +29,7 @@ std::shared_ptr<VirtualFluidSimulationImp> VirtualFluidSimulationImp::getNewInst
 	return std::shared_ptr<VirtualFluidSimulationImp>(new VirtualFluidSimulationImp());
 }
 
-void VirtualFluidSimulationImp::initParameter(real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
+void VirtualFluidSimulationImp::initParameter(std::shared_ptr< KernelConfiguration> kernelConfig, real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
 {
 	para = Parameter::make();
 
@@ -116,6 +109,11 @@ void VirtualFluidSimulationImp::initParameter(real viscosity, std::string aGridP
 	para->setDistZ(dist);
 
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
+
+	para->setMainKernel(kernelConfig->getMainKernel());
+	para->setMultiKernelOn(kernelConfig->getMultiKernelOn());
+	para->setMultiKernelLevel(kernelConfig->getMultiKernelLevel());
+	para->setMultiKernelName(kernelConfig->getMultiKernelName());
 }
 
 void VirtualFluidSimulationImp::initInitialConditions(std::shared_ptr<InitialCondition> initialCondition)
@@ -129,26 +127,12 @@ void VirtualFluidSimulationImp::initGridProvider()
 	grid = std::shared_ptr<GridProvider>(new GridReaderforTesting(para, initialCondition));
 }
 
-void VirtualFluidSimulationImp::initCalculator(std::shared_ptr<Calculator> calc)
+void VirtualFluidSimulationImp::setDataWriter(std::shared_ptr<DataWriter> dataWriter)
 {
-	this->calculator = calc;
+	this->dataWriter = dataWriter;
 }
 
-
-void VirtualFluidSimulationImp::setTestResults(std::shared_ptr<TestResults> testResults)
+void VirtualFluidSimulationImp::setTestSimulation(std::shared_ptr<TestSimulation> testSim)
 {
-	this->testResults = testResults;
-}
-
-
-void VirtualFluidSimulationImp::initDataWriter(unsigned int ySliceForCalculation, unsigned int startTimeCalculation, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, unsigned int startTimeDataWriter)
-{
-	fileWriter = std::shared_ptr<FileWriter>(new FileWriter());
-	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, ySliceForCalculation, startTimeCalculation, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter));
-}
-
-void VirtualFluidSimulationImp::initSimulationResults(unsigned int lx, unsigned int lz, unsigned int timeStepLength)
-{
-	simResults = SimulationResults::getNewInstance(lx, lz, timeStepLength);
-	calculator->setSimulationResults(simResults);
+	this->testSim = testSim;
 }
