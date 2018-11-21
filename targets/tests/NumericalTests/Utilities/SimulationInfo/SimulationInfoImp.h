@@ -3,30 +3,26 @@
 
 #include "SimulationInfo.h"
 
-#include <memory>
-#include <iostream>
-#include <time.h>
-
-class TestCout;
-
 class SimulationInfoImp : public SimulationInfo
 {
 public:
-	static std::shared_ptr<SimulationInfo> getNewInstance(std::shared_ptr<TestCout> output, std::string simName, int l);
+	std::string getKernelName();
+	double getViscosity();
+	std::string getSimulationName();
+	std::string getSimulationParameterString();
+	int getLx();
 
-	void makeSimulationHeadOutput();
-	void setStartTime();
-	void setEndTime();
-	std::string getSimulationRunTimeOutput();
+protected:
+	SimulationInfoImp() {};
+	SimulationInfoImp(int lx, double viscosity, std::string kernelName, std::string simulationName);
+
+	double viscosity;
+	std::string kernelName;
+	std::string simulationName;
+	std::string simulationParameterString;
+	int lx;
 
 private:
-	SimulationInfoImp(std::shared_ptr<TestCout> output, std::string simName, int l);
-	SimulationInfoImp() {};
-	double getSimTime();
 
-	std::string simName;
-	int l;
-	std::shared_ptr<TestCout> output;
-	time_t startTime, endTime;
 };
-#endif
+#endif 

@@ -1,42 +1,30 @@
 #include "SimulationInfoImp.h"
 
-#include "Utilities\TestCout\TestCout.h"
-
-#include <sstream>
-#include <iomanip>
-
-std::shared_ptr<SimulationInfo> SimulationInfoImp::getNewInstance(std::shared_ptr<TestCout> output, std::string simName, int l)
+std::string SimulationInfoImp::getKernelName()
 {
-	return std::shared_ptr<SimulationInfo>(new SimulationInfoImp(output, simName, l));
+	return kernelName;
 }
 
-void SimulationInfoImp::makeSimulationHeadOutput()
+double SimulationInfoImp::getViscosity()
 {
-	output->makeSimulationHeadOutput(simName, l);
+	return viscosity;
 }
 
-void SimulationInfoImp::setStartTime()
+std::string SimulationInfoImp::getSimulationName()
 {
-	startTime = time(NULL);
+	return simulationName;
 }
 
-void SimulationInfoImp::setEndTime()
+std::string SimulationInfoImp::getSimulationParameterString()
 {
-	endTime = time(NULL);
+	return simulationParameterString;
 }
 
-std::string SimulationInfoImp::getSimulationRunTimeOutput()
+int SimulationInfoImp::getLx()
 {
-	std::ostringstream oss;
-	oss << std::left << std::setfill(' ') << std::setw(17) << simName << "\t" << std::right << std::setw(3) << l << "\t\t" << std::setw(9) << getSimTime() << " sec" << std::endl;
-	return oss.str();
+	return lx;
 }
 
-SimulationInfoImp::SimulationInfoImp(std::shared_ptr<TestCout> output, std::string simName, int l):simName(simName), l(l), output(output)
+SimulationInfoImp::SimulationInfoImp(int lx, double viscosity, std::string kernelName, std::string simulationName): lx(lx), viscosity(viscosity), kernelName(kernelName), simulationName(simulationName)
 {
-}
-
-double SimulationInfoImp::getSimTime()
-{
-	return difftime(endTime, startTime);;
 }
