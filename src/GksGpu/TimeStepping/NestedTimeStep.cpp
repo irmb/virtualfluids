@@ -2,6 +2,8 @@
 
 #include "Core/RealConstants.h"
 
+#include "BoundaryConditions/BoundaryCondition.h"
+
 #include "CellUpdate/CellUpdate.h"
 
 void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase, 
@@ -15,9 +17,9 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
     //    runFineToCoarseKernel( dataBase, level ); getLastCudaError();
     //}
 
-    //for( std::shared_ptr<BoundaryCondition> bc : bcList ){
-    //    bc->runBoundaryConditionKernel( dataBase->toStruct(), parameters, type, level ); getLastCudaError();
-    //}
+    for( SPtr<BoundaryCondition> bc : dataBase->boundaryConditions ){
+        bc->runBoundaryConditionKernel( dataBase, parameters, level );
+    }
 
     if( level != dataBase->numberOfLevels - 1 ){
 

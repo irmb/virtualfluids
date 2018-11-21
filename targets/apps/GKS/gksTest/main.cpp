@@ -44,17 +44,17 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 4.0;
+    real dx = 1.0 / 32.0;
 
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
     Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
-    //gridBuilder->setNumberOfLayers(10,8);
+    //gridBuilder->setNumberOfLayers(6,6);
     //gridBuilder->addGrid( &cube, 1);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(true, false, false);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -84,11 +84,20 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> testBC = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0 ,0.0 ), 1.0, 0.0 );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0 ,0.0 ), 1.0, 0.0 );
 
-    testBC->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.x < -0.5;
     } );
+
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 1.0, 1.0 ,0.0 ), 1.0, 0.0 );
+
+    bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+        return center.z > 0.5;
+    } );
+    
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPZ );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -114,8 +123,11 @@ void gksTest( std::string path )
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
     }
 
-    testBC->runBoundaryConditionKernel( dataBase, parameters, 0 );
+    //testBC->runBoundaryConditionKernel( dataBase, parameters, 0 );
     //testBC->runBoundaryConditionKernel( dataBase, parameters, 1 );
+
+    //testBC2->runBoundaryConditionKernel( dataBase, parameters, 0 );
+    //testBC2->runBoundaryConditionKernel( dataBase, parameters, 1 );
 
     //////////////////////////////////////////////////////////////////////////
 

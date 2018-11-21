@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 #include "Core/ArrayTypes.h"
@@ -13,6 +14,7 @@
 
 class  GksMeshAdapter;
 
+struct BoundaryCondition;
 class  DataBaseAllocator;
 struct DataBase;
 struct PerLevelCounts;
@@ -24,7 +26,9 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     // Management
     //////////////////////////////////////////////////////////////////////////
 
-    std::shared_ptr<DataBaseAllocator> myAllocator;
+    SPtr<DataBaseAllocator> myAllocator;
+
+    std::vector< SPtr<BoundaryCondition> > boundaryConditions;
 
     //////////////////////////////////////////////////////////////////////////
     // Sizes
