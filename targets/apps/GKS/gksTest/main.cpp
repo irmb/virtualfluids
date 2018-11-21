@@ -29,6 +29,7 @@
 
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
+#include "GksGpu/BoundaryConditions/Periodic.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -44,7 +45,7 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 32.0;
+    real dx = 1.0 / 4.0;
 
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
@@ -70,6 +71,8 @@ void gksTest( std::string path )
 
     //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
+    meshAdapter.findPeriodicBoundaryNeighbors();
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     CudaUtility::setCudaDevice(0);
@@ -77,17 +80,17 @@ void gksTest( std::string path )
     Parameters parameters;
 
     parameters.dx = dx;
-    parameters.force.z = -0.01;
+    //parameters.force.z = -0.01;
     
     auto dataBase = std::make_shared<DataBase>( "CPU" );
     dataBase->setMesh( meshAdapter );
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0 ,0.0 ), 1.0, 0.0 );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
 
     bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
-        return center.x < -0.5;
+        return center.x < -0.5 || center.x > 0.5;
     } );
 
     SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 1.0, 1.0 ,0.0 ), 1.0, 0.0 );
@@ -97,7 +100,7 @@ void gksTest( std::string path )
     } );
     
     dataBase->boundaryConditions.push_back( bcMX );
-    dataBase->boundaryConditions.push_back( bcPZ );
+    //dataBase->boundaryConditions.push_back( bcPZ );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -107,7 +110,7 @@ void gksTest( std::string path )
         
         real radius = cellCenter.length();
 
-        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 1.0, radius ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, cellCenter.x, cellCenter.y, cellCenter.z, 1.0, radius ), parameters.K );
     });
 
     Initializer::initializeDataUpdate(dataBase);

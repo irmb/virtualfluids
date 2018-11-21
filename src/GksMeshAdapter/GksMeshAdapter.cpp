@@ -9,6 +9,7 @@
 #include <functional>
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 #include "core/Logger/Logger.h"
 
@@ -586,6 +587,70 @@ void GksMeshAdapter::generateInterfaceConnectivity()
         
         this->startOfCoarseToFinePerLevel[level] = this->startOfCoarseToFinePerLevel [level - 1]
                                                  + this->numberOfCoarseToFinePerLevel[level - 1];
+    }
+}
+
+void GksMeshAdapter::findPeriodicBoundaryNeighbors()
+{
+    for( uint level = 0; level < this->numberOfLevels; level++ )
+    {
+        SPtr<Grid> grid = this->gridBuilder->getGrid(level);
+
+        uint startIdx = startOfCellsPerLevel[ level ] + numberOfBulkCellsPerLevel[ level ];
+
+        uint endIdx   = startOfCellsPerLevel[ level ] + numberOfCellsPerLevel[ level ];
+
+        for( uint cellIdx = startIdx; cellIdx < endIdx; cellIdx++ )
+        {
+            MeshCell cell = this->cells[ cellIdx ];
+
+            Vec3 gridStart ( grid->getStartX() + c1o2 * grid->getDelta(),
+                             grid->getStartX() + c1o2 * grid->getDelta(),
+                             grid->getStartX() + c1o2 * grid->getDelta() );
+
+            Vec3 gridEnd   ( grid->getEndX()   - c1o2 * grid->getDelta(),
+                             grid->getEndX()   - c1o2 * grid->getDelta(),
+                             grid->getEndX()   - c1o2 * grid->getDelta() );
+
+            Vec3 size = gridEnd - gridStart;
+
+            Vec3 delta;
+
+            if( grid->getPeriodicityX() && cell.cellCenter.x < gridStart.x ) delta.x =   size.x;
+            if( grid->getPeriodicityX() && cell.cellCenter.x > gridEnd.x   ) delta.x = - size.x;
+
+            if( grid->getPeriodicityY() && cell.cellCenter.y < gridStart.y ) delta.y =   size.y;
+            if( grid->getPeriodicityY() && cell.cellCenter.y > gridEnd.y   ) delta.y = - size.y;
+
+            if( grid->getPeriodicityZ() && cell.cellCenter.z < gridStart.z ) delta.z =   size.z;
+            if( grid->getPeriodicityZ() && cell.cellCenter.z > gridEnd.z   ) delta.z = - size.z;
+
+            uint neighborGridIdx = grid->transCoordToIndex( cell.cellCenter.x + delta.x,
+                                                            cell.cellCenter.y + delta.y,
+                                                            cell.cellCenter.z + delta.z );
+            
+            if( neighborGridIdx == INVALID_INDEX ) throw std::runtime_error( std::string("No periodic cell found! 1") );
+
+            uint neighborIdx = this->gridToMesh[ level ][ neighborGridIdx ];
+
+            if( neighborIdx == cellIdx ) neighborIdx == INVALID_INDEX;
+
+            if( neighborIdx == INVALID_INDEX )
+            {
+                std::stringstream s;
+
+                s << "No periodic cell found: ";
+                s << "( " << cell.cellCenter.x           << ", " << cell.cellCenter.y           << ", " << cell.cellCenter.z           << " )";
+                s << "( " << cell.cellCenter.x + delta.x << ", " << cell.cellCenter.y + delta.y << ", " << cell.cellCenter.z + delta.z << " )";
+
+                s << "( " << gridStart.x << ", " << gridStart.y << ", " << gridStart.z << " )";
+                s << "( " << gridEnd.x   << ", " << gridEnd.y   << ", " << gridEnd.z   << " )";
+
+                throw std::runtime_error( s.str() );
+            }
+            
+            this->periodicBoundaryNeighbors.push_back( {cellIdx, neighborIdx} );
+        }
     }
 }
 

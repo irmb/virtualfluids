@@ -91,7 +91,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    uint_8 cornerCells;
+    std::vector< uint_2 > periodicBoundaryNeighbors;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -124,6 +124,8 @@ public:
     void countFaces();
 
     void generateInterfaceConnectivity();
+
+    void findPeriodicBoundaryNeighbors();
 
     void writeMeshVTK( std::string filename );
 
