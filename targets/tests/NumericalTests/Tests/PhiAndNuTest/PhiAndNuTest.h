@@ -7,7 +7,7 @@
 #include <vector>
 #include <iostream>
 
-class TestCout;
+class ColorConsoleOutput;
 class FFTCalculator;
 
 class PhiAndNuTest : public TestImp 
@@ -18,12 +18,9 @@ public:
 	void update();
 	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo);
 	void evaluate();
-	
-	std::vector< bool> getPassedTests();
-	std::string getSimulationName();
-
-	void makeOutput();
 	std::string getLogFileOutput();
+	std::vector< bool> getPassedTests();
+	void makeConsoleOutput();
 
 private:
 	PhiAndNuTest(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity);
@@ -32,7 +29,7 @@ private:
 	
 
 	std::shared_ptr< FFTCalculator> calculator;
-	std::shared_ptr< TestCout> testOut;
+	std::shared_ptr< ColorConsoleOutput> testOut;
 	std::vector<double> lx;
 	std::vector<double> phiDiff;
 	std::vector<double> nuDiff;
@@ -44,10 +41,7 @@ private:
 	bool phiDiffTestPassed;
 	bool nuDiffTestPassed;
 	
-	std::string simulationName;
+	
 	std::string dataToCalculate;
-	std::string kernelName;
-	std::string simulationParameter;
-
 };
 #endif

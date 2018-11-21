@@ -7,7 +7,7 @@
 #include <vector>
 
 class Test;
-class TestCout;
+class ColorConsoleOutput;
 
 class TestQueueImp : public TestQueue
 {
@@ -23,7 +23,7 @@ private:
 	void calcNumberOfPassedTest();
 
 	std::vector< std::shared_ptr< Test>> tests;
-	std::shared_ptr< TestCout> colorOutput;
+	std::shared_ptr< ColorConsoleOutput> colorOutput;
 	int numberOfPassedTest;
 	int numberOfTests;
 };

@@ -1,4 +1,4 @@
-#include "TestCoutImp.h"
+#include "ColorConsoleOutputImp.h"
 
 #include <iomanip>
 #include <ctime>
@@ -6,12 +6,12 @@
 #include "Utilities\SimulationInfo\SimulationInfo.h"
 
 
-std::shared_ptr<TestCout> TestCoutImp::getNewInstance()
+std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getNewInstance()
 {
-	return std::shared_ptr<TestCout>(new TestCoutImp());
+	return std::shared_ptr<ColorConsoleOutput>(new ColorConsoleOutputImp());
 }
 
-void TestCoutImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
+void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
 {
 	setColor(testPassed);
 	printTestStart();
@@ -48,7 +48,7 @@ void TestCoutImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo
 	printTestEnd(testPassed);
 }
 
-void TestCoutImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
+void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
 {
 	std::ostringstream ossLine1;
 	ossLine1 << "# Kernel: " << std::setfill(' ') << std::left << std::setw(38) << simInfo->getKernelName() << "#";
@@ -82,14 +82,14 @@ void TestCoutImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simI
 	printGreenHashLine();
 }
 
-void TestCoutImp::makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests)
+void ColorConsoleOutputImp::makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests)
 {
 	setColor(numberOfPassedTests == numberOfTests);
 	printTestPassed(numberOfPassedTests, numberOfTests);
 	printLine();
 }
 
-void TestCoutImp::makeFinalTestOutputHead(int numberOfPassedTests, int numberOfTests)
+void ColorConsoleOutputImp::makeFinalTestOutputHead(int numberOfPassedTests, int numberOfTests)
 {
 	setColor(numberOfPassedTests == numberOfTests);
 	printLine();
@@ -97,7 +97,7 @@ void TestCoutImp::makeFinalTestOutputHead(int numberOfPassedTests, int numberOfT
 	std::cout << std::endl;
 }
 
-void TestCoutImp::printTestStart()
+void ColorConsoleOutputImp::printTestStart()
 {
 	testing::internal::ColoredPrintf(color, "[----------]");
 	std::cout << std::endl;
@@ -107,7 +107,7 @@ void TestCoutImp::printTestStart()
 	std::cout << std::endl;
 }
 
-void TestCoutImp::printTestEnd(bool testPassed)
+void ColorConsoleOutputImp::printTestEnd(bool testPassed)
 {
 	testing::internal::ColoredPrintf(color, "[  TestInfo]");
 	std::cout << std::endl;
@@ -120,14 +120,14 @@ void TestCoutImp::printTestEnd(bool testPassed)
 	std::cout << std::endl << std::endl;
 }
 
-void TestCoutImp::print(std::string output)
+void ColorConsoleOutputImp::print(std::string output)
 {
 	testing::internal::ColoredPrintf(color, "[          ] ");
 	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, output.c_str());
 	std::cout << std::endl;
 }
 
-void TestCoutImp::setColor(bool testPassed)
+void ColorConsoleOutputImp::setColor(bool testPassed)
 {
 	if (testPassed)
 		color = testing::internal::COLOR_GREEN;
@@ -135,7 +135,7 @@ void TestCoutImp::setColor(bool testPassed)
 		color = testing::internal::COLOR_RED;
 }
 
-void TestCoutImp::printTestPassed(int numberOfPassedTests, int numberOfTests)
+void ColorConsoleOutputImp::printTestPassed(int numberOfPassedTests, int numberOfTests)
 {
 	std::ostringstream test;
 	test << "[----------]" << std::endl;
@@ -145,18 +145,18 @@ void TestCoutImp::printTestPassed(int numberOfPassedTests, int numberOfTests)
 	testing::internal::ColoredPrintf(color, test.str().c_str());
 }
 
-void TestCoutImp::printLine()
+void ColorConsoleOutputImp::printLine()
 {
 	testing::internal::ColoredPrintf(color, "----------------------------------------------------------------------\n");
 }
 
-void TestCoutImp::printGreen(std::string output)
+void ColorConsoleOutputImp::printGreen(std::string output)
 {
 	testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, output.c_str());
 	std::cout << std::endl;
 }
 
-void TestCoutImp::printGreenHashLine()
+void ColorConsoleOutputImp::printGreenHashLine()
 {
 	testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "#################################################\n"); 
 }

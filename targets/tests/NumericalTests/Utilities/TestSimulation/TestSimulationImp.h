@@ -7,7 +7,7 @@
 #include <time.h>
 
 class ToVectorWriter;
-class TestCout;
+class ColorConsoleOutput;
 class SimulationInfo;
 
 class TestSimulationImp : public TestSimulation
@@ -36,7 +36,7 @@ private:
 	std::shared_ptr< SimulationInfo> simInfo;
 	std::shared_ptr< SimulationResults> simResults;
 	std::shared_ptr< ToVectorWriter> writeToVector;
-	std::shared_ptr< TestCout> colorOutput;
+	std::shared_ptr< ColorConsoleOutput> colorOutput;
 	std::vector< std::shared_ptr< SimulationObserver>> simObserver;
 
 	bool simualtionRun;

@@ -1,12 +1,12 @@
-#ifndef TEST_COUT_H
-#define TEST_COUT_H
+#ifndef COLOR_CONSOLE_OUTPUT_H
+#define COLOR_CONSOLE_OUTPUT_H
 
 #include <iostream>
 #include <memory>
 
 class SimulationInfo;
 
-class TestCout
+class ColorConsoleOutput
 {
 public:
 	virtual void makeTestOutput(bool testPassed, std::shared_ptr< SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3) = 0;

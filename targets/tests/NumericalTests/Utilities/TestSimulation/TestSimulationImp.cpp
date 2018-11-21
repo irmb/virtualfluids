@@ -7,7 +7,7 @@
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 #include "Utilities\Test\SimulationObserver.h"
 #include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
-#include "Utilities\TestCout\TestCoutImp.h"
+#include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
 #include "Utilities\KernelConfiguration\KernelConfiguration.h"
 
 #include <sstream>
@@ -86,7 +86,7 @@ TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParam
 	simResults = SimulationResults::getNewInstance(simPara->getLx(), 1, simPara->getLz(), simPara->getTimeStepLength());
 	
 	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, simPara->getYSliceForCalculation(), simPara->getStartTimeCalculation(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getWriteFiles(), std::shared_ptr<FileWriter>(new FileWriter()), simPara->getStartTimeDataWriter()));
-	colorOutput = TestCoutImp::getNewInstance();
+	colorOutput = ColorConsoleOutputImp::getNewInstance();
 
 	simObserver.resize(0);
 	simualtionRun = false;

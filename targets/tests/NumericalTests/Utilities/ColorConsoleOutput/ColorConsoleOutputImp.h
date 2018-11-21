@@ -1,8 +1,7 @@
-#ifndef TEST_COUT_IMP_H
-#define TEST_COUT_IMP_H
+#ifndef COLOR_CONSOLE_OUTPUT_IMP_H
+#define COLOR_CONSOLE_OUTPUT_IMP_H
 
-#include "TestCout.h"
-#include "ColorOutput.h"
+#include "ColorConsoleOutput.h"
 
 #include <sstream>
 
@@ -29,10 +28,10 @@ namespace testing
 	}
 }
 
-class TestCoutImp : public TestCout
+class ColorConsoleOutputImp : public ColorConsoleOutput
 {
 public:
-	static std::shared_ptr<TestCout> getNewInstance();
+	static std::shared_ptr<ColorConsoleOutput> getNewInstance();
 
 	void makeTestOutput(bool testPassed, std::shared_ptr< SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3);
 	void makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo);
@@ -40,7 +39,7 @@ public:
 	void makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests);
 
 private:
-	TestCoutImp() {};
+	ColorConsoleOutputImp() {};
 	void printTestStart();
 	void printTestEnd(bool testPassed);
 	void print(std::string output);

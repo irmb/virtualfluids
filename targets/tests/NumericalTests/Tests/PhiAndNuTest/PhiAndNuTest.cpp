@@ -1,6 +1,6 @@
 #include "PhiAndNuTest.h"
 
-#include "Utilities/TestCout/TestCoutImp.h"
+#include "Utilities/ColorConsoleOutput/ColorConsoleOutputImp.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 #include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
 #include "Utilities\TestSimulation\TestSimulation.h"
@@ -29,7 +29,7 @@ void PhiAndNuTest::evaluate()
 	phiDiffTestPassed = checkTestPassed(orderOfAccuracyPhiDiff);
 	nuDiffTestPassed = checkTestPassed(orderOfAccuracyNuDiff);
 
-	makeOutput();
+	makeConsoleOutput();
 }
 
 void PhiAndNuTest::update()
@@ -50,17 +50,11 @@ std::vector<bool> PhiAndNuTest::getPassedTests()
 	return passed;
 }
 
-std::string PhiAndNuTest::getSimulationName()
-{
-	return simulationName;
-}
-
-void PhiAndNuTest::makeOutput()
+void PhiAndNuTest::makeConsoleOutput()
 {
 	testOut->makeTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(0), nuDiff.at(1), orderOfAccuracyNuDiff);
 	testOut->makeTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(0), phiDiff.at(1), orderOfAccuracyPhiDiff);
 }
-
 
 std::string PhiAndNuTest::getLogFileOutput()
 {
@@ -72,13 +66,13 @@ std::string PhiAndNuTest::getLogFileOutput()
 	return oss.str();
 }
 
-PhiAndNuTest::PhiAndNuTest(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity) : TestImp(), simulationName(simulationName), minOrderOfAccuracy(minOrderOfAccuracy), viscosity(viscosity), dataToCalculate(dataToCalculate)
+PhiAndNuTest::PhiAndNuTest(std::string dataToCalculate, double minOrderOfAccuracy, double viscosity) : TestImp(), minOrderOfAccuracy(minOrderOfAccuracy), viscosity(viscosity), dataToCalculate(dataToCalculate)
 {
 	lx.resize(0);
 	phiDiff.resize(0);
 	nuDiff.resize(0);
 	calculator = FFTCalculator::getNewInstance(viscosity);
-	testOut = TestCoutImp::getNewInstance();
+	testOut = ColorConsoleOutputImp::getNewInstance();
 }
 
 double PhiAndNuTest::calcOrderOfAccuracy(std::vector<double> data)

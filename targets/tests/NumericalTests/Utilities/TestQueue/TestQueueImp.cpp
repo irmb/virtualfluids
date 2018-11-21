@@ -1,6 +1,6 @@
 #include "TestQueueImp.h"
 
-#include "Utilities\TestCout\TestCoutImp.h"
+#include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
 #include "Utilities\Test\Test.h"
 
 void TestQueueImp::makeFinalOutput()
@@ -8,7 +8,7 @@ void TestQueueImp::makeFinalOutput()
 	calcNumberOfPassedTest();
 	colorOutput->makeFinalTestOutputHead(numberOfPassedTest, numberOfTests);
 	for (int i = 0; i < tests.size(); i++)
-		tests.at(i)->makeOutput();
+		tests.at(i)->makeConsoleOutput();
 	colorOutput->makeFinalTestOutputFoot(numberOfPassedTest, numberOfTests);
 }
 
@@ -25,7 +25,7 @@ void TestQueueImp::addTest(std::shared_ptr<Test> test)
 TestQueueImp::TestQueueImp()
 {
 	tests.resize(0);
-	colorOutput = TestCoutImp::getNewInstance();
+	colorOutput = ColorConsoleOutputImp::getNewInstance();
 }
 
 void TestQueueImp::calcNumberOfPassedTest()
