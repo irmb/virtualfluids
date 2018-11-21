@@ -1,8 +1,7 @@
 #include "Y2dSliceToResults.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "Utilities/SimulationResults/SimulationResults.h"
-#include "Utilities/TestCondition/TestCondition.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
 
 
 Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter): ToVectorWriter(ySliceForCalculation, startTimeY2dSliceToVector, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter)
@@ -20,8 +19,8 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
 	maxZ = para->getGridZ().at(level);
 
 	int numberNodes = (maxX - 1) * (maxZ - 1);
-	std::vector<double> x(numberNodes), z(numberNodes);
-	std::vector<double> vx(numberNodes), vz(numberNodes);
+	std::vector<double> x(numberNodes), y(numberNodes), z(numberNodes);
+	std::vector<double> vx(numberNodes), vy(numberNodes), vz(numberNodes);
 	std::vector<double> press(numberNodes), rho(numberNodes);
 
 	for (int posZ = 0; posZ < maxZ - 1; posZ++)
@@ -32,14 +31,16 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
 			int posPara = CoordPara3DTo1D(posX, ySliceForCalculation, posZ);
 
 			x.at(posResults) = (double)para->getParH(level)->coordX_SP[posPara] - (double)1.0;
-			z.at(posResults) = (double)para->getParH(level)->coordY_SP[posPara] - (double)1.0;
+			y.at(posResults) = (double)para->getParH(level)->coordY_SP[posPara] - (double)1.0;
+			z.at(posResults) = (double)para->getParH(level)->coordZ_SP[posPara] - (double)1.0;
 			vx.at(posResults) = (double)para->getParH(level)->vx_SP[posPara] * (double)para->getVelocityRatio();
+			vy.at(posResults) = (double)para->getParH(level)->vy_SP[posPara] * (double)para->getVelocityRatio();
 			vz.at(posResults) = (double)para->getParH(level)->vz_SP[posPara] * (double)para->getVelocityRatio();
 			press.at(posResults) = (double)para->getParH(level)->press_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
 			rho.at(posResults) = (double)para->getParH(level)->rho_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
 		}
 	}
-	simResults->addTimeStep(counterTimeSteps, t, x, z, vx, vz, press, rho);
+	simResults->addTimeStep(counterTimeSteps, t, x, y, z, vx, vy, vz, press, rho);
 	counterTimeSteps++;
 }
 
