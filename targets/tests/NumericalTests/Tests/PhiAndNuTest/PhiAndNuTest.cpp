@@ -54,8 +54,8 @@ std::vector<bool> PhiAndNuTest::getPassedTests()
 
 void PhiAndNuTest::makeConsoleOutput()
 {
-	colorOutput->makeTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(0), nuDiff.at(1), orderOfAccuracyNuDiff);
-	colorOutput->makeTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(0), phiDiff.at(1), orderOfAccuracyPhiDiff);
+	colorOutput->makePhiAndNuTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), startStepCalculation, endStepCalculation, "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(0), nuDiff.at(1), orderOfAccuracyNuDiff);
+	colorOutput->makePhiAndNuTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), startStepCalculation, endStepCalculation, "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(0), phiDiff.at(1), orderOfAccuracyPhiDiff);
 }
 
 std::string PhiAndNuTest::getLogFileOutput()

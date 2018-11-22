@@ -33,8 +33,8 @@ class ColorConsoleOutputImp : public ColorConsoleOutput
 public:
 	static std::shared_ptr<ColorConsoleOutput> getInstance();
 
-	void makeTestOutput(bool testPassed, std::shared_ptr< SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3);
-	void makeTestOutput(bool testPassed, std::shared_ptr< SimulationInfo> simInfo, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3);
+	void makePhiAndNuTestOutput(bool testPassed, std::shared_ptr< SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3);
+	void makeL2NormTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, unsigned int basicTimeStep, unsigned int divergentTimeStep, double testWert1, double testWert2, double testWert3);
 	void makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo);
 	void makeFinalTestOutputHead(int numberOfPassedTests, int numberOfTests);
 	void makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests);
@@ -44,6 +44,7 @@ private:
 	void printTestStart();
 	void printTestEnd(bool testPassed);
 	void print(std::string output);
+	void printColor(std::string output);
 	void setColor(bool testPassed);
 	void printTestPassed(int numberOfPassedTests, int numberOfTests);
 	void printLine();

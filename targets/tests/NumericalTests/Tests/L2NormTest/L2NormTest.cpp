@@ -30,7 +30,7 @@ void L2NormTest::evaluate()
 	int divergentTimeStepInResults = calcTimeStepInResults(divergentTimeStep);
 
 	resultBasicTimestep = calcL2NormForTimeStep(basicTimeStepInResults);
-	resultDivergentTimeStep = calcL2NormForTimeStep(divergentTimeStep);
+	resultDivergentTimeStep = calcL2NormForTimeStep(divergentTimeStepInResults);
 
 	diffL2Norm = resultDivergentTimeStep - resultBasicTimestep;
 
@@ -55,7 +55,7 @@ std::vector<bool> L2NormTest::getPassedTests()
 
 void L2NormTest::makeConsoleOutput()
 {
-	colorOutput->makeTestOutput(testPassed, simInfos.at(0), "L2Norm", "L2Norm", "L2NormDiff", resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
+	colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), basicTimeStep, divergentTimeStep, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
 }
 
 int L2NormTest::calcTimeStepInResults(unsigned int timeStep)

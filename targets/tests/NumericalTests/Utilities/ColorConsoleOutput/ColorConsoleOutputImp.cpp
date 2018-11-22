@@ -14,10 +14,14 @@ std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getInstance()
 	return uniqueInstance;
 }
 
-void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
+void ColorConsoleOutputImp::makePhiAndNuTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
 {
 	setColor(testPassed);
 	printTestStart();
+
+	printColor("");
+	printColor("Phi and Nu Test");
+	printColor("");
 
 	std::ostringstream oss;
 	oss << "Kernel: " << simInfo1->getKernelName();
@@ -28,6 +32,7 @@ void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<Simu
 	print(oss.str());
 	oss.str(std::string());
 
+	print(oss.str());
 	oss << simInfo1->getSimulationName();
 	print(oss.str());
 	oss.str(std::string());
@@ -40,6 +45,16 @@ void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<Simu
 	print(oss.str());
 	oss.str(std::string());
 
+	print(oss.str());
+	oss << "StartTimeStep: " << startTimeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "EndTimeStep: " << endTimeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
 	oss << nameWerte1 << ": " << testWert1 << std::setw(5) << "\t" << nameWerte2 << ": " << testWert2;
 	print(oss.str());
 	oss.str(std::string());
@@ -48,13 +63,21 @@ void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<Simu
 	print(oss.str());
 	oss.str(std::string());
 
+	printColor("");
+	printColor("Phi and Nu Test");
+	printColor("");
+
 	printTestEnd(testPassed);
 }
 
-void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
+void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, unsigned int basicTimeStep, unsigned int divergentTimeStep, double testWert1, double testWert2, double testWert3)
 {
 	setColor(testPassed);
 	printTestStart();
+
+	printColor("");
+	printColor("L2 Norm Test");
+	printColor("");
 
 	std::ostringstream oss;
 	oss << "Kernel: " << simInfo->getKernelName();
@@ -65,6 +88,7 @@ void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<Simu
 	print(oss.str());
 	oss.str(std::string());
 
+	print(oss.str());
 	oss << simInfo->getSimulationName();
 	print(oss.str());
 	oss.str(std::string());
@@ -73,13 +97,31 @@ void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<Simu
 	print(oss.str());
 	oss.str(std::string());
 
-	oss << nameWerte1 << ": " << testWert1 << std::setw(5) << "\t" << nameWerte2 << ": " << testWert2;
+	print(oss.str());
+	oss << "BasicTimeStep: " << basicTimeStep;
 	print(oss.str());
 	oss.str(std::string());
 
-	oss << nameWerte3 << ": " << testWert3;
+	oss << "DivergentTimeStep: " << divergentTimeStep;
 	print(oss.str());
 	oss.str(std::string());
+
+	print(oss.str());
+	oss << "L2Norm BasicTimeStep: " << testWert1;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L2Norm DivergentTimeStep: " << testWert2;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L2NormDiff: " << testWert3;
+	print(oss.str());
+	oss.str(std::string());
+
+	printColor("");
+	printColor("L2 Norm Test");
+	printColor("");
 
 	printTestEnd(testPassed);
 }
@@ -160,6 +202,13 @@ void ColorConsoleOutputImp::print(std::string output)
 {
 	testing::internal::ColoredPrintf(color, "[          ] ");
 	testing::internal::ColoredPrintf(testing::internal::COLOR_DEFAULT, output.c_str());
+	std::cout << std::endl;
+}
+
+void ColorConsoleOutputImp::printColor(std::string output)
+{
+	testing::internal::ColoredPrintf(color, "[----------] ");
+	testing::internal::ColoredPrintf(color, output.c_str());
 	std::cout << std::endl;
 }
 

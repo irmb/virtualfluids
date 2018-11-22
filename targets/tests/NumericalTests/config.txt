@@ -40,22 +40,18 @@ MinOrderOfAccuracy=1.95
 DataToCalc_PhiAndNu="Vx"
 StartTimeStepCalculation_PhiNu=11
 EndTimeStepCalculation_PhiNu=20
-
 PhiAndNuTest_TGV=true
 PhiAndNuTest_SW=true
 
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
-MaxL2NormDiff=0.1
+MaxL2NormDiff=0.05
 DataToCalc_L2="Vx"
 BasicTimeStep_L2=0
 DivergentTimeStep_L2=20
-
 L2NormTest_TGV=true
 L2NormTest_SW=true
-
-
 
 ##################################################
 #			Simulation To Perform				 #
