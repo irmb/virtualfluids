@@ -27,7 +27,7 @@ private:
 	void init();
 	double calcNu(unsigned int startStep, unsigned int endStep);
 	double calcNuDiff(double nu);
-	double calcPhi(unsigned int startStep, unsigned int endStep);
+	double calcPhiDiff(unsigned int startStep, unsigned int endStep);
 	std::vector< double> calcPhiForTimeSteps(unsigned int startStep, unsigned int endStep);
 	std::vector< double> calcLinReg(std::vector<double> y);
 	std::vector<double> calcLogAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep);
