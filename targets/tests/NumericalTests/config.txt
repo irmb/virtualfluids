@@ -6,20 +6,21 @@ Devices="1"
 ##################################################
 #				  Kernels						 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantOneCompSP27"
+CumulantAA2016CompSP27 CumulantAll4CompSP27"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
 NumberOfTimeSteps=20
 BasisTimeStepLength=1000
-Viscosity="0.0001 0.00001"
+Viscosity="0.0001"
 
 ##################################################
 #	    TaylorGreenVortex Parameter				 #
 ##################################################
-u0_TGV="0.032 0.016"
-Amplitude_TGV="0.01 0.005"
+u0_TGV="0.032"
+Amplitude_TGV="0.01"
 
 ##################################################
 #	       Shear Wave Parameter					 #
@@ -36,7 +37,7 @@ ySliceForCalculation=0
 #			PhiAndNu Test Parameter				 #
 ##################################################
 MinOrderOfAccuracy=1.95
-DataToCalcPhiAndNuTest="Vx"
+DataToCalc_PhiAndNu="Vx"
 StartTimeStepCalculation_PhiNu=11
 EndTimeStepCalculation_PhiNu=20
 
@@ -46,8 +47,10 @@ PhiAndNuTest_SW=true
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
+MaxL2NormDiff=0.1
+DataToCalc_L2="Vx"
 BasicTimeStep_L2=0
-DivergentDataTimeStep_L2=20
+DivergentTimeStep_L2=20
 
 L2NormTest_TGV=true
 L2NormTest_SW=true
@@ -59,13 +62,13 @@ L2NormTest_SW=true
 ##################################################
 TaylorGreenVortex32=true
 TaylorGreenVortex64=true
-TaylorGreenVortex128=true
+TaylorGreenVortex128=false
 TaylorGreenVortex256=false
 TaylorGreenVortex512=false
 
-ShearWave32=true
-ShearWave64=true
-ShearWave128=true
+ShearWave32=false
+ShearWave64=false
+ShearWave128=false
 ShearWave256=false
 ShearWave512=false
 

@@ -22,7 +22,7 @@ void TestQueueImp::addTest(std::shared_ptr<Test> test)
 	tests.push_back(test);
 }
 
-TestQueueImp::TestQueueImp(std::shared_ptr< ColorConsoleOutput> colorOutput)
+TestQueueImp::TestQueueImp(std::shared_ptr< ColorConsoleOutput> colorOutput) : colorOutput(colorOutput)
 {
 	tests.resize(0);
 }

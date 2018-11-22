@@ -8,22 +8,17 @@ std::shared_ptr<L2NormCalculator> L2NormCalculator::getNewInstance()
 	return std::shared_ptr<L2NormCalculator>(new L2NormCalculator());
 }
 
-std::vector< double> L2NormCalculator::calc(std::vector<std::vector<double>> basicData, std::vector<std::vector<double>> divergentData, std::vector<std::vector<unsigned int>> level)
+double L2NormCalculator::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level)
 {
-	std::vector< double> results;
-
+	double zaehler = 0;
+	double nenner = 0;
 	for (int i = 0; i < basicData.size(); i++) {
-		double zaehler = 0;
-		double nenner = 0;
-		for (int j = 0; j < basicData.at(i).size(); j++) {
-			double flaeche = (1 / pow(2.0, level.at(i).at(j))) * (1 / pow(2.0, level.at(i).at(j)));
-			zaehler += ((divergentData.at(i).at(j) - basicData.at(i).at(j))*(divergentData.at(i).at(j) - basicData.at(i).at(j))) * flaeche;
-			nenner += (basicData.at(i).at(j)*basicData.at(i).at(j)) * flaeche;
-		}
-		results.push_back(sqrt(zaehler/nenner));
+		double flaeche = (1 / pow(2.0, level.at(i))) * (1 / pow(2.0, level.at(i)));
+		zaehler += ((divergentData.at(i) - basicData.at(i))*(divergentData.at(i) - basicData.at(i))) * flaeche;
+		nenner += (basicData.at(i)*basicData.at(i)) * flaeche;
 	}
 	
-	return results;
+	return sqrt(zaehler / nenner);
 }
 
 L2NormCalculator::L2NormCalculator()

@@ -25,6 +25,7 @@
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Tests\PhiAndNuTest\LogFileInformation\PhiAndNuLogFileInformation.h"
 #include "Tests\L2NormTest\L2NormTest.h"
+#include "Tests\L2NormTest\LogFileInformation\L2NormLogFileInformation.h"
 
 #include "Utilities/LogFileInformation/LogFileInformation.h"
 #include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
@@ -60,7 +61,6 @@ ConfigFileReader::ConfigFileReader()
 	l0 = 32.0;
 	rho0 = 1.0;
 
-
 	colorOutput = ColorConsoleOutputImp::getInstance();
 	testQueue = TestQueueImp::getNewInstance(colorOutput);
 }
@@ -80,12 +80,14 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	viscosity = StringUtil::toDoubleVector(input->getValue("Viscosity"));
 
 	minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
-	dataToCalcPhiAndNuTest = StringUtil::toString(input->getValue("DataToCalcPhiAndNuTest"));
+	dataToCalcPhiAndNuTest = StringUtil::toString(input->getValue("DataToCalc_PhiAndNu"));
 	startStepCalculationPhiNu = StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu"));
 	endStepCalculationPhiNu = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
 
+	maxL2NormDiff = StringUtil::toDouble(input->getValue("MaxL2NormDiff"));
+	dataToCalcL2Test = StringUtil::toString(input->getValue("DataToCalc_L2"));
 	basicTimeStepL2Norm = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
-	divergentDataL2Norm = StringUtil::toInt(input->getValue("DivergentDataTimeStep_L2"));
+	divergentTimeStepL2Norm = StringUtil::toInt(input->getValue("DivergentTimeStep_L2"));
 
 	amplitudeTGV = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV"));
 	u0TGV = StringUtil::toDoubleVector(input->getValue("u0_TGV"));
@@ -100,7 +102,6 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
 	basisTimeStepLength = StringUtil::toInt(input->getValue("BasisTimeStepLength"));
 	
-
 	grids.resize(5);
 	grids.at(0) = input->getValue("GridPath32");
 	grids.at(1) = input->getValue("GridPath64");
@@ -203,7 +204,7 @@ void ConfigFileReader::makeTaylorGreenSimulations(std::string kernelName, double
 
 	std::vector< std::shared_ptr< TestLogFileInformation>> testLogFileInfo;
 
-	if (nuAndPhiTestTGV) {
+	if (nuAndPhiTestTGV && checkNuAndPhiTestCouldRun(tgv)) {
 		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSimTGV, simInfoTGV, viscosity);
 		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests);
 		testLogFileInfo.push_back(phiNuLogFileInfo);
@@ -211,9 +212,10 @@ void ConfigFileReader::makeTaylorGreenSimulations(std::string kernelName, double
 
 	if (l2NormTestTGV) {
 		std::vector< std::shared_ptr< L2NormTest>> l2NormTests = makeL2NormTests(testSimTGV, simInfoTGV, analyResultTGV);
+		std::shared_ptr< L2NormInformation> l2NormLogFileInfo = L2NormInformation::getNewInstance(l2NormTests);
+		testLogFileInfo.push_back(l2NormLogFileInfo);
 	}
 	
-		
 
 	for (int i = 0; i < testSimTGV.size(); i++)
 		testSimulation.push_back(testSimTGV.at(i));
@@ -230,23 +232,31 @@ void ConfigFileReader::makeShearWaveSimulations(std::string kernelName, double v
 	simParaSW.resize(0);
 	std::vector< std::shared_ptr< SimulationInfo>> simInfoSW;
 	simInfoSW.resize(0);
+	std::vector< std::shared_ptr< AnalyticalResults>> analyResultSW;
+	analyResultSW.resize(0);
 
-	for (int i = 0; i < tgv.size(); i++)
-		if (tgv.at(i)) {
+	for (int i = 0; i < sw.size(); i++)
+		if (sw.at(i)) {
 			simParaSW.push_back(ShearWaveSimulationParameter::getNewInstance(kernelName, u0, v0, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, calcStartStepForToVectorWriter(), ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
 			simInfoSW.push_back(ShearWaveSimulationInfo::getNewInstance(u0, v0, l0, lx.at(i), viscosity, kernelName, "ShearWave"));
+			analyResultSW.push_back(ShearWaveAnalyticalResults::getNewInstance(viscosity, u0, v0, l0, rho0));
 		}
 
 	std::vector< std::shared_ptr< TestSimulation>> testSimSW = buildTestSimulation(simParaSW, simInfoSW);
 
 	std::vector< std::shared_ptr< TestLogFileInformation>> testLogFileInfo;
 
-	if (nuAndPhiTestSW) {
+	if (nuAndPhiTestSW && checkNuAndPhiTestCouldRun(sw)) {
 		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSimSW, simInfoSW, viscosity);
 		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests);
 		testLogFileInfo.push_back(phiNuLogFileInfo);
 	}
-		
+	
+	if (l2NormTestTGV) {
+		std::vector< std::shared_ptr< L2NormTest>> l2NormTests = makeL2NormTests(testSimSW, simInfoSW, analyResultSW);
+		std::shared_ptr< L2NormInformation> l2NormLogFileInfo = L2NormInformation::getNewInstance(l2NormTests);
+		testLogFileInfo.push_back(l2NormLogFileInfo);
+	}
 
 	for (int i = 0; i < testSimSW.size(); i++)
 		testSimulation.push_back(testSimSW.at(i));
@@ -280,7 +290,7 @@ std::vector<std::shared_ptr<L2NormTest>> ConfigFileReader::makeL2NormTests(std::
 {
 	std::vector<std::shared_ptr<L2NormTest>> l2Tests;
 	for (int i = 0; i < testSim.size(); i++) {
-		std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(analyticalResults.at(i), colorOutput);
+		std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(analyticalResults.at(i), colorOutput, dataToCalcL2Test, maxL2NormDiff, basicTimeStepL2Norm, divergentTimeStepL2Norm);
 		test->addSimulation(testSim.at(i), simInfo.at(i));
 		testSim.at(i)->registerSimulationObserver(test);
 		l2Tests.push_back(test);
@@ -297,6 +307,16 @@ bool ConfigFileReader::shouldSimulationGroupRun(std::vector<bool> test)
 			return true;
 	}
 	return false;
+}
+
+bool ConfigFileReader::checkNuAndPhiTestCouldRun(std::vector<bool> test)
+{
+	int numberOfTestInGroup = 0;
+	for (int i = 0; i < test.size(); i++) {
+		if (test.at(i))
+			numberOfTestInGroup++;
+	}
+	return numberOfTestInGroup > 1;
 }
 
 unsigned int ConfigFileReader::calcStartStepForToVectorWriter()

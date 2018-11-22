@@ -52,7 +52,7 @@ private:
 	std::vector< std::shared_ptr< L2NormTest>> makeL2NormTests(std::vector<std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector<std::shared_ptr< AnalyticalResults>> analyticalResults);
 
 	bool shouldSimulationGroupRun(std::vector<bool> test);
-
+	bool checkNuAndPhiTestCouldRun(std::vector<bool> test);
 	unsigned int calcStartStepForToVectorWriter();
 
 
@@ -60,14 +60,15 @@ private:
 	std::vector<double> amplitudeTGV, u0TGV;
 	bool nuAndPhiTestTGV, nuAndPhiTestSW;
 	bool l2NormTestTGV, l2NormTestSW;
-	std::string dataToCalcPhiAndNuTest;
+	std::string dataToCalcPhiAndNuTest, dataToCalcL2Test;
 	std::vector<double> viscosity;
 	real rho0;
 	real l0;
 	double minOrderOfAccuracy;
+	double maxL2NormDiff;
 	unsigned int numberOfTimeSteps, basisTimeStepLength;
 	unsigned int startStepCalculationPhiNu, endStepCalculationPhiNu;
-	unsigned int basicTimeStepL2Norm, divergentDataL2Norm;
+	unsigned int basicTimeStepL2Norm, divergentTimeStepL2Norm;
 	unsigned int startStepFileWriter;
 	unsigned int ySliceForCalculation;
 	unsigned int maxLevel;

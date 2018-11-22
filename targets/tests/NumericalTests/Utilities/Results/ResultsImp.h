@@ -19,6 +19,8 @@ public:
 	int getTimeStepLength();
 	std::vector<unsigned int> getTimeSteps();
 	std::vector< std::vector< unsigned int> > getLevels();
+	std::vector<std::vector<double>> getPress();
+	std::vector<std::vector<double>> getRho();
 
 protected:
 	ResultsImp() {};

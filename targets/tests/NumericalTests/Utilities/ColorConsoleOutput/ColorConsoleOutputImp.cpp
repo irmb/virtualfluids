@@ -51,6 +51,39 @@ void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<Simu
 	printTestEnd(testPassed);
 }
 
+void ColorConsoleOutputImp::makeTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
+{
+	setColor(testPassed);
+	printTestStart();
+
+	std::ostringstream oss;
+	oss << "Kernel: " << simInfo->getKernelName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "Viscosity: " << simInfo->getViscosity();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << simInfo->getSimulationName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << simInfo->getLx() << simInfo->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << nameWerte1 << ": " << testWert1 << std::setw(5) << "\t" << nameWerte2 << ": " << testWert2;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << nameWerte3 << ": " << testWert3;
+	print(oss.str());
+	oss.str(std::string());
+
+	printTestEnd(testPassed);
+}
+
 void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
 {
 	std::ostringstream ossLine1;

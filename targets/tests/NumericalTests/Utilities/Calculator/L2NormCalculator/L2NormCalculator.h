@@ -9,7 +9,7 @@ class L2NormCalculator
 public:
 	static std::shared_ptr< L2NormCalculator> getNewInstance();
 
-	std::vector< double> calc(std::vector<std::vector<double>> basicData, std::vector<std::vector<double>> divergentData, std::vector<std::vector<unsigned int>> level);
+	double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level);
 
 private:
 	L2NormCalculator();

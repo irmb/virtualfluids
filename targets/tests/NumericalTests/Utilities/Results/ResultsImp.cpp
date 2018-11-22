@@ -64,3 +64,13 @@ std::vector<std::vector<unsigned int>> ResultsImp::getLevels()
 {
 	return level;
 }
+
+std::vector<std::vector<double>> ResultsImp::getPress()
+{
+	return press;
+}
+
+std::vector<std::vector<double>> ResultsImp::getRho()
+{
+	return rho;
+}
