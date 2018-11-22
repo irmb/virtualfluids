@@ -100,6 +100,81 @@ __host__ __device__ inline void computeGradN( const Parameters& parameters,
 #endif // USE_PASSIVE_SCALAR
 }
 
+__host__ __device__ inline void computeGradT( const DataBaseStruct& dataBase,
+                                              const Parameters& parameters,
+                                              const uint posCellIndexT[2],
+                                              const uint negCellIndexT[2],
+                                              const PrimitiveVariables& facePrim,
+                                              ConservedVariables& gradN )
+{
+    ConservedVariables cons;
+
+    //////////////////////////////////////////////////////////////////////////
+    {
+        readCellData(posCellIndexT[0], dataBase, cons);
+
+        gradN.rho  += c1o2 * cons.rho;
+        gradN.rhoU += c1o2 * cons.rhoU;
+        gradN.rhoV += c1o2 * cons.rhoV;
+        gradN.rhoW += c1o2 * cons.rhoW;
+        gradN.rhoE += c1o2 * cons.rhoE;
+    #ifdef USE_PASSIVE_SCALAR
+        gradN.rhoS += c1o2 * cons.rhoS;
+    #endif // USE_PASSIVE_SCALAR
+    }
+    {
+        readCellData(posCellIndexT[1], dataBase, cons);
+
+        gradN.rho  += c1o2 * cons.rho;
+        gradN.rhoU += c1o2 * cons.rhoU;
+        gradN.rhoV += c1o2 * cons.rhoV;
+        gradN.rhoW += c1o2 * cons.rhoW;
+        gradN.rhoE += c1o2 * cons.rhoE;
+    #ifdef USE_PASSIVE_SCALAR
+        gradN.rhoS += c1o2 * cons.rhoS;
+    #endif // USE_PASSIVE_SCALAR
+    }
+    //////////////////////////////////////////////////////////////////////////
+    {
+        readCellData(negCellIndexT[0], dataBase, cons);
+
+        gradN.rho  -= c1o2 * cons.rho;
+        gradN.rhoU -= c1o2 * cons.rhoU;
+        gradN.rhoV -= c1o2 * cons.rhoV;
+        gradN.rhoW -= c1o2 * cons.rhoW;
+        gradN.rhoE -= c1o2 * cons.rhoE;
+    #ifdef USE_PASSIVE_SCALAR
+        gradN.rhoS -= c1o2 * cons.rhoS;
+    #endif // USE_PASSIVE_SCALAR
+    }
+    {
+        readCellData(negCellIndexT[1], dataBase, cons);
+
+        gradN.rho  -= c1o2 * cons.rho;
+        gradN.rhoU -= c1o2 * cons.rhoU;
+        gradN.rhoV -= c1o2 * cons.rhoV;
+        gradN.rhoW -= c1o2 * cons.rhoW;
+        gradN.rhoE -= c1o2 * cons.rhoE;
+    #ifdef USE_PASSIVE_SCALAR
+        gradN.rhoS -= c1o2 * cons.rhoS;
+    #endif // USE_PASSIVE_SCALAR
+    }
+    //////////////////////////////////////////////////////////////////////////
+    {
+        gradN.rho  /= two * parameters.dx * facePrim.rho;
+        gradN.rhoU /= two * parameters.dx * facePrim.rho;
+        gradN.rhoV /= two * parameters.dx * facePrim.rho;
+        gradN.rhoW /= two * parameters.dx * facePrim.rho;
+        gradN.rhoE /= two * parameters.dx * facePrim.rho;
+    #ifdef USE_PASSIVE_SCALAR
+        gradN.rhoS /= two * parameters.dx * facePrim.rho;
+    #endif // USE_PASSIVE_SCALAR
+    }
+    //////////////////////////////////////////////////////////////////////////
+}
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,69 +216,18 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
         if( direction == 'y' ) getCellIndicesTZ(faceIndex, dataBase, posCellIndexN, negCellIndexN, posCellIndexT1, negCellIndexT1);
         if( direction == 'z' ) getCellIndicesTX(faceIndex, dataBase, posCellIndexN, negCellIndexN, posCellIndexT1, negCellIndexT1);
 
-        ConservedVariables cons;
+        computeGradT( dataBase, parameters, posCellIndexT1, negCellIndexT1, facePrim, gradT1 );
+    }
 
-        //////////////////////////////////////////////////////////////////////////
-        {
-            readCellData(posCellIndexT1[0], dataBase, cons);
+    {
+        uint posCellIndexT2[2];
+        uint negCellIndexT2[2];
+    
+        if( direction == 'x' ) getCellIndicesTZ(faceIndex, dataBase, posCellIndexN, negCellIndexN, posCellIndexT2, negCellIndexT2);
+        if( direction == 'y' ) getCellIndicesTX(faceIndex, dataBase, posCellIndexN, negCellIndexN, posCellIndexT2, negCellIndexT2);
+        if( direction == 'z' ) getCellIndicesTY(faceIndex, dataBase, posCellIndexN, negCellIndexN, posCellIndexT2, negCellIndexT2);
 
-            gradN.rho  += c1o2 * cons.rho;
-            gradN.rhoU += c1o2 * cons.rhoU;
-            gradN.rhoV += c1o2 * cons.rhoV;
-            gradN.rhoW += c1o2 * cons.rhoW;
-            gradN.rhoE += c1o2 * cons.rhoE;
-        #ifdef USE_PASSIVE_SCALAR
-            gradN.rhoS += c1o2 * cons.rhoS;
-        #endif // USE_PASSIVE_SCALAR
-        }
-        {
-            readCellData(posCellIndexT1[1], dataBase, cons);
-
-            gradN.rho  += c1o2 * cons.rho;
-            gradN.rhoU += c1o2 * cons.rhoU;
-            gradN.rhoV += c1o2 * cons.rhoV;
-            gradN.rhoW += c1o2 * cons.rhoW;
-            gradN.rhoE += c1o2 * cons.rhoE;
-        #ifdef USE_PASSIVE_SCALAR
-            gradN.rhoS += c1o2 * cons.rhoS;
-        #endif // USE_PASSIVE_SCALAR
-        }
-        //////////////////////////////////////////////////////////////////////////
-        {
-            readCellData(negCellIndexT1[0], dataBase, cons);
-
-            gradN.rho  -= c1o2 * cons.rho;
-            gradN.rhoU -= c1o2 * cons.rhoU;
-            gradN.rhoV -= c1o2 * cons.rhoV;
-            gradN.rhoW -= c1o2 * cons.rhoW;
-            gradN.rhoE -= c1o2 * cons.rhoE;
-        #ifdef USE_PASSIVE_SCALAR
-            gradN.rhoS -= c1o2 * cons.rhoS;
-        #endif // USE_PASSIVE_SCALAR
-        }
-        {
-            readCellData(negCellIndexT1[1], dataBase, cons);
-
-            gradN.rho  -= c1o2 * cons.rho;
-            gradN.rhoU -= c1o2 * cons.rhoU;
-            gradN.rhoV -= c1o2 * cons.rhoV;
-            gradN.rhoW -= c1o2 * cons.rhoW;
-            gradN.rhoE -= c1o2 * cons.rhoE;
-        #ifdef USE_PASSIVE_SCALAR
-            gradN.rhoS -= c1o2 * cons.rhoS;
-        #endif // USE_PASSIVE_SCALAR
-        }
-        //////////////////////////////////////////////////////////////////////////
-        {
-            gradN.rho  /= two * parameters.dx * facePrim.rho;
-            gradN.rhoU /= two * parameters.dx * facePrim.rho;
-            gradN.rhoV /= two * parameters.dx * facePrim.rho;
-            gradN.rhoW /= two * parameters.dx * facePrim.rho;
-            gradN.rhoE /= two * parameters.dx * facePrim.rho;
-        #ifdef USE_PASSIVE_SCALAR
-            gradN.rhoS /= two * parameters.dx * facePrim.rho;
-        #endif // USE_PASSIVE_SCALAR
-        }
+        computeGradT( dataBase, parameters, posCellIndexT2, negCellIndexT2, facePrim, gradT2 );
     }
 }
 
