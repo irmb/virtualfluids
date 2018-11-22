@@ -2,19 +2,21 @@
 #include "mpi.h"
 
 #include "Utilities/ConfigFileReader/ConfigFileReader.h"
+#include "Utilities\LogFileQueue\LogFileQueue.h"
+#include "Utilities\NumericalTestFactory\NumericalTestFactoryImp.h"
+#include "Utilities\TestQueue\TestQueue.h"
 #include "Utilities\VirtualFluidSimulation\VirtualFluidSimulation.h"
 #include "Utilities\VirtualFluidSimulationFactory\VirtualFluidSimulationFactoryImp.h"
-#include "Utilities\TestQueue\TestQueue.h"
-#include "Utilities\LogFileQueue\LogFileQueue.h"
 
 static void startNumericalTests(const std::string &configFile)
 {
-	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
-	configReader->readConfigFile(configFile);
+	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
 
-	std::vector< std::shared_ptr< TestSimulation> > testSim = configReader->getTestSimulations();
-	std::shared_ptr< TestQueue> testQueue = configReader->getTestQueue();
-	std::shared_ptr< LogFileQueue> logFileQueue = configReader->getLogFileQueue();
+	std::shared_ptr< NumericalTestFactoryImp> numericalTestFactory = NumericalTestFactoryImp::getNewInstance(configReader->getConfigData());
+
+	std::vector< std::shared_ptr< TestSimulation> > testSim = numericalTestFactory->getTestSimulations();
+	std::shared_ptr< TestQueue> testQueue = numericalTestFactory->getTestQueue();
+	std::shared_ptr< LogFileQueue> logFileQueue = numericalTestFactory->getLogFileQueue();
 
 	std::shared_ptr< VirtualFluidSimulationFactory> factory = VirtualFluidSimulationFactoryImp::getNewInstance();
 	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(testSim);
