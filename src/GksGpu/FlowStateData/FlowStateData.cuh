@@ -127,7 +127,7 @@ __host__ __device__ inline ConservedVariables toConservedVariables( const Primit
                              ,prim.U * prim.rho
                              ,prim.V * prim.rho
                              ,prim.W * prim.rho
-                             ,( K + two ) / ( four * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
+                             ,( K + three ) / ( four * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
     #ifdef USE_PASSIVE_SCALAR
                              ,prim.S * prim.rho
     #endif
@@ -144,7 +144,7 @@ __host__ __device__ inline PrimitiveVariables toPrimitiveVariables( const Conser
 						     ,cons.rhoU / cons.rho
 						     ,cons.rhoV / cons.rho
 						     ,cons.rhoW / cons.rho
-						     ,( K + two ) * cons.rho / ( four * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
+						     ,( K + three ) * cons.rho / ( four * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
     #ifdef USE_PASSIVE_SCALAR
                              ,cons.rhoS / cons.rho
     #endif
