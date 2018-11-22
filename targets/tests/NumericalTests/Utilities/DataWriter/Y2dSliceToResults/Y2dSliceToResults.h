@@ -19,6 +19,5 @@ private:
 	std::shared_ptr<SimulationResults> simResults;
 	int CoordPara3DTo1D(int x, int y, int z);
 	int CoordResults2DTo1D(int x, int z);
-	int counterTimeSteps;
 };
 #endif

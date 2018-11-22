@@ -7,13 +7,11 @@
 Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter): ToVectorWriter(ySliceForCalculation, startTimeY2dSliceToVector, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter)
 {
 	this->simResults = simResults;
-	counterTimeSteps = 0;
 }
 
 void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned int t, int level)
 {
-	counterTimeSteps++;
-
+	int timestep = t / timeStepLength;
 	maxX = para->getGridX().at(level);
 	maxY = para->getGridY().at(level);
 	maxZ = para->getGridZ().at(level);
@@ -22,6 +20,7 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
 	std::vector<double> x(numberNodes), y(numberNodes), z(numberNodes);
 	std::vector<double> vx(numberNodes), vy(numberNodes), vz(numberNodes);
 	std::vector<double> press(numberNodes), rho(numberNodes);
+	std::vector<unsigned int> levels(numberNodes);
 
 	for (int posZ = 0; posZ < maxZ - 1; posZ++)
 	{
@@ -38,10 +37,10 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
 			vz.at(posResults) = (double)para->getParH(level)->vz_SP[posPara] * (double)para->getVelocityRatio();
 			press.at(posResults) = (double)para->getParH(level)->press_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
 			rho.at(posResults) = (double)para->getParH(level)->rho_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
+			levels.at(posResults) = level;
 		}
 	}
-	simResults->addTimeStep(counterTimeSteps, t, x, y, z, vx, vy, vz, press, rho);
-	counterTimeSteps++;
+	simResults->addTimeStep(timestep, t, levels, x, y, z, vx, vy, vz, press, rho);
 }
 
 int Y2dSliceToResults::CoordPara3DTo1D(int x, int y, int z)

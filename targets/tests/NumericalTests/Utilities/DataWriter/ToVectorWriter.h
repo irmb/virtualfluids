@@ -24,6 +24,7 @@ protected:
 
 	unsigned int ySliceForCalculation;
 	unsigned int counterTimeSteps;
+	unsigned int timeStepLength;
 	unsigned int startTimeY2dSliceToVector, startTimeDataWriter;
 	unsigned int endTime;
 	unsigned int maxX, maxY, maxZ;

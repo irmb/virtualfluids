@@ -59,3 +59,8 @@ std::vector<unsigned int> ResultsImp::getTimeSteps()
 {
 	return timeStep;
 }
+
+std::vector<std::vector<unsigned int>> ResultsImp::getLevels()
+{
+	return level;
+}

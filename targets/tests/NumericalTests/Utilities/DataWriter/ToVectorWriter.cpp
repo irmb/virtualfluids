@@ -11,6 +11,7 @@ ToVectorWriter::ToVectorWriter(unsigned int ySliceForCalculation, unsigned int s
 	this->startTimeY2dSliceToVector = startTimeY2dSliceToVector;
 	this->startTimeDataWriter = startTimeDataWriter;
 	this->endTime = endTime;
+	this->timeStepLength = timeStepLength;
 }
 
 void ToVectorWriter::writeInit(std::shared_ptr<Parameter> para)

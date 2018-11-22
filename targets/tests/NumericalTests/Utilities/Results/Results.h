@@ -18,6 +18,7 @@ public:
 	virtual std::vector<std::vector<double>> getZNodes() = 0;
 	virtual int getTimeStepLength() = 0;
 	virtual std::vector<unsigned int> getTimeSteps() = 0;
+	virtual std::vector < std::vector< unsigned int>> getLevels() = 0;
 
 private:
 

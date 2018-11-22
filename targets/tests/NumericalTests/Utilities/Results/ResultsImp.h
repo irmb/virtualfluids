@@ -18,6 +18,7 @@ public:
 	std::vector<std::vector<double>> getZNodes();
 	int getTimeStepLength();
 	std::vector<unsigned int> getTimeSteps();
+	std::vector< std::vector< unsigned int> > getLevels();
 
 protected:
 	ResultsImp() {};
@@ -33,6 +34,7 @@ protected:
 	std::vector<std::vector<double>> vx, vy, vz;
 	std::vector<std::vector<double>> press;
 	std::vector<std::vector<double>> rho;
+	std::vector<std::vector<unsigned int>> level;
 
 private:
 

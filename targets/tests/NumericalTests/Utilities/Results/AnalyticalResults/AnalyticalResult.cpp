@@ -14,6 +14,7 @@ void AnalyticalResults::init(std::shared_ptr<SimulationResults> simResults)
 	this->x = simResults->getXNodes();
 	this->y = simResults->getYNodes();
 	this->z = simResults->getZNodes();
+	this->level = simResults->getLevels();
 
 	this->vx.resize(numberOfTimeSteps);
 	this->vy.resize(numberOfTimeSteps);

@@ -18,7 +18,7 @@ std::shared_ptr<SimulationResults> SimulationResults::getNewInstance(unsigned in
 	return std::shared_ptr<SimulationResults>(new SimulationResults(lx, ly, lz, timeStepLength));
 }
 
-void SimulationResults::addTimeStep(unsigned int timeStep, unsigned int time, std::vector<double> x, std::vector<double> y, std::vector<double> z, std::vector<double> vx, std::vector<double> vy, std::vector<double> vz, std::vector<double> press, std::vector<double> rho)
+void SimulationResults::addTimeStep(unsigned int timeStep, unsigned int time, std::vector<unsigned int> level, std::vector<double> x, std::vector<double> y, std::vector<double> z, std::vector<double> vx, std::vector<double> vy, std::vector<double> vz, std::vector<double> press, std::vector<double> rho)
 {
 	this->timeStep.push_back(timeStep);
 	this->time.push_back(time);
@@ -30,5 +30,6 @@ void SimulationResults::addTimeStep(unsigned int timeStep, unsigned int time, st
 	this->vz.push_back(vz);
 	this->press.push_back(press);
 	this->rho.push_back(rho);
+	this->level.push_back(level);
 	numberOfTimeSteps++;
 }
