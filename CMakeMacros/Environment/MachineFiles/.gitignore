@@ -1,4 +1,4 @@
-*
-!*/
-!.gitignore
-!computerName
+#*
+#!*/
+#!.gitignore
+#!computerName

@@ -44,7 +44,8 @@ include(${CMAKE_SOURCE_DIR}/${cmakeMacroPath}/general/FileUtilities.cmake)
 #############################################################
 ###                   PROJECT SETTINGS                    ###
 #############################################################
-project(HULC)
+
+project(VirtualFluidsGpuCodes)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -76,7 +77,8 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
-option(HULC.BUILD_GPU_CODE      "Build gpu VirtualFluids" ON )
+option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
+option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" ON )
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
 option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF)
 
@@ -84,10 +86,8 @@ option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF)
 
 #############################################################
 
-if(HULC.BUILD_GPU_CODE)
-  #SET(CMAKE_CUDA_COMPILER $ENV{CUDA_PATH_V9_0}/bin/nvcc.exe)
-  enable_language(CUDA)
-endif()
+enable_language(CUDA)
+
 sharedLibs()
 
 #############################################################
@@ -100,14 +100,48 @@ ELSE(MSVC)
   SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
 
+
+##########################################################################################################################
+###                  Subdirectories                                                                                    ###
+##########################################################################################################################
+
+#############################################################
+###                  Core                                 ###
+#############################################################
+
+add_subdirectory(targets/libs/VirtualFluidsBasics)
+add_subdirectory(targets/libs/Core)
+
+add_subdirectory(targets/libs/GridGenerator)
+
 #############################################################
 ###                  Virtual Fluids GPU                   ###
 #############################################################
-IF (HULC.BUILD_GPU_CODE)
- add_subdirectory(targets/libs/VirtualFluids_GPU)
- add_subdirectory(targets/libs/GridGenerator)
+
+IF (HULC.BUILD_VF_GPU)
+    add_subdirectory(3rdParty/metis/metis-5.1.0)
+	
+    add_subdirectory(targets/libs/VirtualFluids_GPU)
+
+    add_subdirectory(targets/apps/LBM/lbmTest)
+    add_subdirectory(targets/apps/LBM/metisTest)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GPU." )
+ENDIF()
+
+#############################################################
+###                  Virtual Fluids GKS                   ###
+#############################################################
+
+IF (HULC.BUILD_VF_GKS)
+    add_subdirectory(targets/libs/GksMeshAdapter)
+    add_subdirectory(targets/libs/GksVtkAdapter)
+	
+    add_subdirectory(targets/libs/GksGpu)
+
+	add_subdirectory(targets/apps/GKS/gksTest)
+ELSE()
+  MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
 
 #############################################################
@@ -121,25 +155,10 @@ ELSE()
 ENDIF()
 
 #############################################################
-###                   SUBDIRECTORIES                      ###
+###                   Numeric Tests                       ###
 #############################################################
-
-add_subdirectory(3rdParty/metis/metis-5.1.0)
-add_subdirectory(targets/libs/VirtualFluidsBasics)
-add_subdirectory(targets/libs/Core)
-
-add_subdirectory(targets/libs/GksMeshAdapter)
-add_subdirectory(targets/libs/GksVtkAdapter)
-add_subdirectory(targets/libs/GksGpu)
 
 if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
 	add_subdirectory(targets/tests/TestingHULC)
 endif()
-
-
-
-add_subdirectory(targets/apps/LBM/lbmTest)
-add_subdirectory(targets/apps/LBM/metisTest)
-
-add_subdirectory(targets/apps/GKS/gksTest)

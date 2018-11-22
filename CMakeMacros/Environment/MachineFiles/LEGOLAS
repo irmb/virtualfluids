@@ -1,0 +1,4 @@
+SET(BOOST_ROOT  "C:/lib/boost_1_65_1"  CACHE PATH "BOOST_ROOT")
+SET(BOOST_LIBRARYDIR  "C:/lib/boost_1_65_1/stageMSVC64/lib"  CACHE PATH "BOOST_LIBRARYDIR")
+
+SET(VTK_DIR "C:/lib/VTK-8.1.0./bin" CACHE PATH "VTK directory override" FORCE)
