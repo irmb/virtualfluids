@@ -17,7 +17,7 @@
 
 #include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
 #include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
-#include "Utilities\LogFileWriter\LogFileWriter.h"
+#include "Utilities\LogFileWriter\LogFileWriterImp.h"
 #include "Utilities\LogFileQueue\LogFileQueueImp.h"
 #include "Utilities\TestQueue\TestQueueImp.h"
 #include "Utilities/TestSimulation/TestSimulationImp.h"
@@ -178,7 +178,7 @@ std::vector<std::shared_ptr<L2NormTest>> NumericalTestFactoryImp::makeL2NormTest
 
 void NumericalTestFactoryImp::makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation>> testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
 {
-	std::shared_ptr< LogFileWriter> logFileWriter = LogFileWriter::getNewInstance(testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity, cfd->devices, cfd->numberOfTimeSteps, cfd->basisTimeStepLength, calcStartStepForToVectorWriter());
+	std::shared_ptr< LogFileWriterImp> logFileWriter = LogFileWriterImp::getNewInstance(testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity, cfd->devices, cfd->numberOfTimeSteps, cfd->basisTimeStepLength, calcStartStepForToVectorWriter());
 	logFileWriterQueue->addLogFileWriter(logFileWriter);
 }
 
