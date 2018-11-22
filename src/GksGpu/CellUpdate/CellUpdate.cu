@@ -22,7 +22,7 @@ __host__ __device__ inline void cellUpdateFunction( DataBaseStruct dataBase, Par
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void CellUpdate::updateCells( SPtr<DataBase> dataBase, Parameters parameters, uint level )
+void CellUpdate::run( SPtr<DataBase> dataBase, Parameters parameters, uint level )
 {
     CudaUtility::CudaGrid grid( dataBase->perLevelCount[ level ].numberOfBulkCells, 32 );
 
@@ -33,7 +33,7 @@ void CellUpdate::updateCells( SPtr<DataBase> dataBase, Parameters parameters, ui
                parameters,
                dataBase->perLevelCount[ level ].startOfCells );
 
-    getLastCudaError("CellUpdate::updateCells( SPtr<DataBase> dataBase, Parameters parameters, uint level )");
+    getLastCudaError("CellUpdate::run( SPtr<DataBase> dataBase, Parameters parameters, uint level )");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

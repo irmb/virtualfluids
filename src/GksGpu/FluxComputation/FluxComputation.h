@@ -1,5 +1,5 @@
-#ifndef  CellUpdate_H
-#define  CellUpdate_H
+#ifndef  FluxComputation_H
+#define  FluxComputation_H
 
 #include "VirtualFluidsDefinitions.h"
 
@@ -9,7 +9,7 @@
 #include "DataBase/DataBase.h"
 #include "Parameters/Parameters.h"
 
-class VF_PUBLIC CellUpdate
+class VF_PUBLIC FluxComputation
 {
 public:
 

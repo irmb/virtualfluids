@@ -31,6 +31,6 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
 
     //runFluxKernel( dataBase, parameters, type, level ); getLastCudaError();
 
-    CellUpdate::updateCells( dataBase, parameters, level );
+    CellUpdate::run( dataBase, parameters, level );
 }
 
