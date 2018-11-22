@@ -8,10 +8,11 @@
 class TaylorGreenVortexSimulationInfo : public SimulationInfoImp
 {
 public:
-	static std::shared_ptr< SimulationInfo> getNewInstance(double u0, double amplitude, int l0, int lx, double viscosity, std::string kernelName, std::string simulationName);
+	static std::shared_ptr< SimulationInfo> getNewInstance(double u0, double amplitude, int l0, int lx, double viscosity, std::string kernelName);
 
 private:
 	TaylorGreenVortexSimulationInfo() {};
-	TaylorGreenVortexSimulationInfo(double u0, double amplitude, int l0, int lx, double viscosity, std::string kernelName, std::string simulationName);
+	TaylorGreenVortexSimulationInfo(double u0, double amplitude, int l0, int lx, double viscosity, std::string kernelName);
+	
 };
 #endif 

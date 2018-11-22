@@ -25,6 +25,6 @@ int SimulationInfoImp::getLx()
 	return lx;
 }
 
-SimulationInfoImp::SimulationInfoImp(int lx, double viscosity, std::string kernelName, std::string simulationName): lx(lx), viscosity(viscosity), kernelName(kernelName), simulationName(simulationName)
+SimulationInfoImp::SimulationInfoImp(int lx, double viscosity, std::string kernelName) : lx(lx), viscosity(viscosity), kernelName(kernelName)
 {
 }

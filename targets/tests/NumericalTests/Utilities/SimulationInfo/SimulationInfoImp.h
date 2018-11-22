@@ -14,7 +14,7 @@ public:
 
 protected:
 	SimulationInfoImp() {};
-	SimulationInfoImp(int lx, double viscosity, std::string kernelName, std::string simulationName);
+	SimulationInfoImp(int lx, double viscosity, std::string kernelName);
 
 	double viscosity;
 	std::string kernelName;

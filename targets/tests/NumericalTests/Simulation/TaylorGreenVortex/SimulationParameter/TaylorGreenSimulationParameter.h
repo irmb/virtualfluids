@@ -19,7 +19,6 @@ public:
 														bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
 														std::vector<int> devices);
 	double getMaxVelocity();
-	std::string getSimulationParameterString();
 	
 protected:
 	TaylorGreenSimulationParameter(std::string kernelName, real u0, real amplitude,

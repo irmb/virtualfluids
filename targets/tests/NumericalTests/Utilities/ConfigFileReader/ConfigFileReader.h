@@ -47,6 +47,7 @@ private:
 	std::vector< std::shared_ptr< TestSimulation>> buildTestSimulation(std::vector< std::shared_ptr< SimulationParameter>> simPara, std::vector< std::shared_ptr< SimulationInfo>> simInfo);
 	void makeTaylorGreenSimulations(std::string kernelName, double viscosity, double u0, double amplitude);
 	void makeShearWaveSimulations(std::string kernelName, double viscosity, double u0, double v0);
+	void makePeriodicBoundaryConditionSimulationAndTests(std::vector< std::shared_ptr< SimulationParameter>> simPara, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector< std::shared_ptr< AnalyticalResults>> analyResult, std::shared_ptr< SimulationLogFileInformation> simlogFileInfo, std::string kernelName, std::vector< bool> simulationsRun, double viscosity, bool nuAndPhiTest, bool l2NormTest);
 
 	std::vector< std::shared_ptr< PhiAndNuTest>> makePhiAndNuTests(std::vector< std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, double viscosity);
 	std::vector< std::shared_ptr< L2NormTest>> makeL2NormTests(std::vector<std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector<std::shared_ptr< AnalyticalResults>> analyticalResults);
