@@ -113,14 +113,13 @@ add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)
 
 add_subdirectory(targets/libs/GridGenerator)
+add_subdirectory(3rdParty/metis/metis-5.1.0)
 
 #############################################################
 ###                  Virtual Fluids GPU                   ###
 #############################################################
 
 IF (HULC.BUILD_VF_GPU)
-    add_subdirectory(3rdParty/metis/metis-5.1.0)
-	
     add_subdirectory(targets/libs/VirtualFluids_GPU)
 
     add_subdirectory(targets/apps/LBM/lbmTest)
@@ -136,7 +135,7 @@ ENDIF()
 IF (HULC.BUILD_VF_GKS)
     add_subdirectory(targets/libs/GksMeshAdapter)
     add_subdirectory(targets/libs/GksVtkAdapter)
-	
+
     add_subdirectory(targets/libs/GksGpu)
 
 	add_subdirectory(targets/apps/GKS/gksTest)

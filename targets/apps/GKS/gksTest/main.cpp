@@ -45,7 +45,7 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 4.0;
+    real dx = 1.0 / 32.0;
 
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
@@ -79,28 +79,36 @@ void gksTest( std::string path )
 
     Parameters parameters;
 
+    parameters.dt = 0.0001;
     parameters.dx = dx;
     //parameters.force.z = -0.01;
-    
+
     auto dataBase = std::make_shared<DataBase>( "CPU" );
     dataBase->setMesh( meshAdapter );
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
 
-    bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
-        return center.x < -0.5 || center.x > 0.5;
-    } );
+    //bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    //    return center.x < -0.5 || center.x > 0.5;
+    //} );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 1.0, 1.0 ,0.0 ), 1.0, 0.0 );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.01, 0.0 ,0.0 ), 0.1, 0.0 );
 
     bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z > 0.5;
     } );
+
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0 ,0.0 ), 0.1, 0.0 );
+
+    bcWall->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+        return center.z < 0.5;
+    } );
     
-    dataBase->boundaryConditions.push_back( bcMX );
-    //dataBase->boundaryConditions.push_back( bcPZ );
+    //dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPZ );
+    dataBase->boundaryConditions.push_back( bcWall );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +118,7 @@ void gksTest( std::string path )
         
         real radius = cellCenter.length();
 
-        return toConservedVariables( PrimitiveVariables( 1.0, cellCenter.x, cellCenter.y, cellCenter.z, 1.0, radius ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 0.1, radius ), parameters.K );
     });
 
     Initializer::initializeDataUpdate(dataBase);
@@ -121,16 +129,17 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( uint iter = 0; iter < 100; iter++ )
+    for( uint iter = 1; iter < 10000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+
+        if( iter % 100 == 0 )
+        {
+            dataBase->copyDataDeviceToHost();
+
+            writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );
+        }
     }
-
-    //testBC->runBoundaryConditionKernel( dataBase, parameters, 0 );
-    //testBC->runBoundaryConditionKernel( dataBase, parameters, 1 );
-
-    //testBC2->runBoundaryConditionKernel( dataBase, parameters, 0 );
-    //testBC2->runBoundaryConditionKernel( dataBase, parameters, 1 );
 
     //////////////////////////////////////////////////////////////////////////
 

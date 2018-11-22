@@ -5,6 +5,7 @@
 #include "BoundaryConditions/BoundaryCondition.h"
 
 #include "CellUpdate/CellUpdate.h"
+#include "FluxComputation/FluxComputation.h"
 
 void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase, 
                                    Parameters parameters,
@@ -21,15 +22,15 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
         bc->runBoundaryConditionKernel( dataBase, parameters, level );
     }
 
-    if( level != dataBase->numberOfLevels - 1 ){
+    //if( level != dataBase->numberOfLevels - 1 ){
 
-        //runCoarseToFineKernel( dataBase, type, level ); getLastCudaError();
+    //    runCoarseToFineKernel( dataBase, type, level ); getLastCudaError();
 
-        nestedTimeStep( dataBase, parameters, level + 1 );
-        nestedTimeStep( dataBase, parameters, level + 1 );
-    }
+    //    nestedTimeStep( dataBase, parameters, level + 1 );
+    //    nestedTimeStep( dataBase, parameters, level + 1 );
+    //}
 
-    //runFluxKernel( dataBase, parameters, type, level ); getLastCudaError();
+    FluxComputation::run( dataBase, parameters, level );
 
     CellUpdate::run( dataBase, parameters, level );
 }

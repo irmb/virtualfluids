@@ -65,7 +65,7 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
                 {
                     ghostCells.push_back ( cellIdx );
                     domainCells.push_back( neighborCellIdx );
-                
+
                     this->numberOfCellsPerLevel[ level ]++;
 
                     if( this->secondCellsNeeded() )
