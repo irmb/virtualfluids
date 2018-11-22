@@ -58,6 +58,6 @@ std::string LogFileWriter::buildFilePath(std::string basicFilePath)
 	if (!(std::experimental::filesystem::exists(dir)))
 		std::experimental::filesystem::create_directories(dir);
 
-	filePath << "\\logfile_" << kernelName << "_vis_" << viscosity << "_" << calcDateAndTime() << ".txt";
+	filePath << "\\logfile_" << calcDateAndTime() << "_" << kernelName << "_vis_" << viscosity << ".txt";
 	return filePath.str();
 }
