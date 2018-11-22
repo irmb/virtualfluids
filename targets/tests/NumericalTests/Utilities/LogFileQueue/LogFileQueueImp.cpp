@@ -28,7 +28,7 @@ LogFileQueueImp::LogFileQueueImp(std::string basicLogFilePath)
 	logFileWriter.resize(0);
 
 	std::ostringstream oss;
-	oss << basicLogFilePath << "\\NumericalTestLogFiles_" << calcDateAndTime() << "\\";
+	oss << basicLogFilePath << "\\NumericalTestLogFiles\\";
 	this->basicLogFilePath = oss.str();
 }
 
