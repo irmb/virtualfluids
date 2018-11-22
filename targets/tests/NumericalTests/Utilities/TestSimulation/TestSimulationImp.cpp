@@ -13,7 +13,6 @@
 #include <sstream>
 #include <iomanip>
 
-
 std::shared_ptr<TestSimulation> TestSimulationImp::getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput)
 {
 	return std::shared_ptr< TestSimulation>(new TestSimulationImp(simID, simPara, simInfo, colorOutput));
@@ -52,7 +51,12 @@ void TestSimulationImp::notifyObserver()
 
 double TestSimulationImp::calcSimTime()
 {
-	return difftime(endTime, startTime);
+	return difftime(simulationEndTime, simulationStartTime);
+}
+
+double TestSimulationImp::calcTestTime()
+{
+	return difftime(testEndTime, testStartTime);
 }
 
 void TestSimulationImp::makeSimulationHeadOutput()
@@ -60,22 +64,33 @@ void TestSimulationImp::makeSimulationHeadOutput()
 	colorOutput->makeSimulationHeadOutput(simInfo);
 }
 
-void TestSimulationImp::setStartTime()
+void TestSimulationImp::setSimulationStartTime()
 {
-	startTime = time(NULL);
+	simulationStartTime = time(NULL);
 }
 
-void TestSimulationImp::setEndTime()
+void TestSimulationImp::setSimulationEndTimeAndNotifyObserver()
 {
-	endTime = time(NULL);
+	simulationEndTime = time(NULL);
 	simualtionRun = true;
 	notifyObserver();
 }
 
-std::string TestSimulationImp::getSimulationRunTimeOutput()
+void TestSimulationImp::setTestStartTime()
+{
+	testStartTime = time(NULL);
+}
+
+void TestSimulationImp::setTestEndTime()
+{
+	testEndTime = time(NULL);
+}
+
+std::string TestSimulationImp::getRunTimeOutput()
 {
 	std::ostringstream oss;
-	oss << std::left << std::setfill(' ') << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcSimTime() << " sec" << std::endl;
+	oss << std::left << std::setfill(' ') << std::setw(11) << "Simulation" << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcSimTime() << " sec" << std::endl;
+	oss << std::left << std::setfill(' ') << std::setw(11) << "Test" << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcTestTime() << " sec" << std::endl;
 	return oss.str();
 }
 

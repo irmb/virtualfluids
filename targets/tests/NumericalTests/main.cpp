@@ -5,6 +5,7 @@
 #include "Utilities\LogFileQueue\LogFileQueue.h"
 #include "Utilities\NumericalTestFactory\NumericalTestFactoryImp.h"
 #include "Utilities\TestQueue\TestQueue.h"
+#include "Utilities\TestSimulation\TestSimulation.h"
 #include "Utilities\VirtualFluidSimulation\VirtualFluidSimulation.h"
 #include "Utilities\VirtualFluidSimulationFactory\VirtualFluidSimulationFactoryImp.h"
 
@@ -23,8 +24,12 @@ static void startNumericalTests(const std::string &configFile)
 
 	for (int i = 0; i < vfSimulations.size(); i++)
 	{
+		if (i > 0)
+			testSim.at(i)->setTestEndTime();
 		vfSimulations.at(i)->run();
+		testSim.at(i)->setTestStartTime();
 	}
+	testSim.at(testSim.size()-1)->setTestEndTime();
 
 	testQueue->makeFinalOutput();
 	logFileQueue->writeLogFiles();

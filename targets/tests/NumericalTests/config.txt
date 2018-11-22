@@ -57,7 +57,7 @@ L2NormTest_SW=true
 #			Simulation To Perform				 #
 ##################################################
 TaylorGreenVortex32=true
-TaylorGreenVortex64=true
+TaylorGreenVortex64=false
 TaylorGreenVortex128=false
 TaylorGreenVortex256=false
 TaylorGreenVortex512=false

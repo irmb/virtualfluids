@@ -20,13 +20,15 @@ public:
 	
 	virtual std::shared_ptr< SimulationResults> getSimulationResults() = 0;
 	virtual bool getSimulationRun() = 0;
-	virtual std::string getSimulationRunTimeOutput() = 0;
+	virtual std::string getRunTimeOutput() = 0;
 	virtual void registerSimulationObserver(std::shared_ptr< SimulationObserver> simObserver) = 0;
 	
-	
 	virtual void makeSimulationHeadOutput() = 0;
-	virtual void setStartTime() = 0;
-	virtual void setEndTime() = 0;
+	virtual void setSimulationStartTime() = 0;
+	virtual void setSimulationEndTimeAndNotifyObserver() = 0;
+
+	virtual void setTestStartTime() = 0;
+	virtual void setTestEndTime() = 0;
 
 private:
 

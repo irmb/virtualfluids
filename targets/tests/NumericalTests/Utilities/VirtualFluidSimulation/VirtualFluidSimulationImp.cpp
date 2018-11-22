@@ -14,14 +14,14 @@
 void VirtualFluidSimulationImp::run()
 {
 	testSim->makeSimulationHeadOutput();
-	testSim->setStartTime();
+	testSim->setSimulationStartTime();
 
 	Simulation sim;
 	sim.init(para, grid, dataWriter);
 	sim.run();
 	sim.free();
 
-	testSim->setEndTime();
+	testSim->setSimulationEndTimeAndNotifyObserver();
 }
 
 std::shared_ptr<VirtualFluidSimulationImp> VirtualFluidSimulationImp::getNewInstance()
