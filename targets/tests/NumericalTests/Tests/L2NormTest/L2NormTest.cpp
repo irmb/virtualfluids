@@ -24,7 +24,7 @@ void L2NormTest::evaluate()
 {
 	analyticalResult->calc(simResults.at(0));
 
-	std::vector< double> results = calculator->calc(analyticalResult->getVx(), simResults.at(0)->getVx());
+	std::vector< double> results = calculator->calc(analyticalResult->getVx(), simResults.at(0)->getVx(), simResults.at(0)->getLevels());
 
 	makeConsoleOutput();
 }
