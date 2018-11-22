@@ -11,14 +11,16 @@ class L2NormTest;
 class L2NormInformation : public TestLogFileInformation
 {
 public:
-	static std::shared_ptr< L2NormInformation> getNewInstance(std::vector< std::shared_ptr< L2NormTest>> tests);
+	static std::shared_ptr< L2NormInformation> getNewInstance(std::vector< std::shared_ptr< L2NormTest>> tests, unsigned int basicTimeStep, unsigned int divergentTimeStep);
 
 	std::string getOutput();
 
 private:
 	L2NormInformation() {};
-	L2NormInformation(std::vector< std::shared_ptr< L2NormTest>> tests);
+	L2NormInformation(std::vector< std::shared_ptr< L2NormTest>> tests, unsigned int basicTimeStep, unsigned int divergentTimeStep);
 
 	std::vector< std::shared_ptr< L2NormTest>> tests;
+
+	unsigned int basicTimeStep, divergentTimeStep;
 };
 #endif

@@ -113,13 +113,13 @@ void NumericalTestFactoryImp::makePeriodicBoundaryConditionSimulationAndTests(st
 
 	if (nuAndPhiTest && checkNuAndPhiTestCouldRun(simulationsRun)) {
 		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSim, simInfo, viscosity);
-		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests);
+		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests, cfd->startTimeStepCalculationPhiNu, cfd->endTimeStepCalculationPhiNu);
 		testLogFileInfo.push_back(phiNuLogFileInfo);
 	}
 
 	if (l2NormTest) {
 		std::vector< std::shared_ptr< L2NormTest>> l2NormTests = makeL2NormTests(testSim, simInfo, analyResult);
-		std::shared_ptr< L2NormInformation> l2NormLogFileInfo = L2NormInformation::getNewInstance(l2NormTests);
+		std::shared_ptr< L2NormInformation> l2NormLogFileInfo = L2NormInformation::getNewInstance(l2NormTests, cfd->basicTimeStepL2Norm, cfd->divergentTimeStepL2Norm);
 		testLogFileInfo.push_back(l2NormLogFileInfo);
 	}
 
@@ -149,7 +149,7 @@ std::vector<std::shared_ptr<PhiAndNuTest>> NumericalTestFactoryImp::makePhiAndNu
 
 	for (int i = 1; i < testSim.size(); i++) {
 		for (int j = 0; j < i; j++) {
-			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, cfd->dataToCalcPhiAndNuTest, cfd->minOrderOfAccuracy, viscosity, cfd->startStepCalculationPhiNu, cfd->endStepCalculationPhiNu);
+			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, cfd->dataToCalcPhiAndNuTest, cfd->minOrderOfAccuracy, viscosity, cfd->startTimeStepCalculationPhiNu, cfd->endTimeStepCalculationPhiNu);
 			test->addSimulation(testSim.at(j), simInfo.at(j));
 			test->addSimulation(testSim.at(i), simInfo.at(i));
 
@@ -195,7 +195,7 @@ unsigned int NumericalTestFactoryImp::calcStartStepForToVectorWriter()
 {
 	std::vector< unsigned int> startStepsTests;
 	startStepsTests.push_back(cfd->basicTimeStepL2Norm);
-	startStepsTests.push_back(cfd->startStepCalculationPhiNu);
+	startStepsTests.push_back(cfd->startTimeStepCalculationPhiNu);
 
 	std::sort(startStepsTests.begin(), startStepsTests.end());
 

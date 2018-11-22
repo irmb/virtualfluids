@@ -13,7 +13,7 @@ void FFTCalculator::calc(unsigned int startStep, unsigned int endStep)
 
 	nu = calcNu(startStep, endStep);
 	nudiff = calcNuDiff(nu);
-	phidiff = calcPhi(startStep, endStep);
+	phidiff = calcPhiDiff(startStep, endStep);
 }
 
 double FFTCalculator::getNuDiff()
@@ -70,7 +70,7 @@ double FFTCalculator::calcNuDiff(double nu)
 	return nudiff;
 }
 
-double FFTCalculator::calcPhi(unsigned int startStep, unsigned int endStep)
+double FFTCalculator::calcPhiDiff(unsigned int startStep, unsigned int endStep)
 {
 	std::vector<double> phi = calcPhiForTimeSteps(startStep, endStep);
 	std::vector<double> linReg = calcLinReg(phi);

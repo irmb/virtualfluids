@@ -49,8 +49,8 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	configData->viscosity = StringUtil::toDoubleVector(input->getValue("Viscosity"));
 	configData->minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
 	configData->dataToCalcPhiAndNuTest = StringUtil::toString(input->getValue("DataToCalc_PhiAndNu"));
-	configData->startStepCalculationPhiNu = StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu"));
-	configData->endStepCalculationPhiNu = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
+	configData->startTimeStepCalculationPhiNu = StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu"));
+	configData->endTimeStepCalculationPhiNu = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
 	configData->maxL2NormDiff = StringUtil::toDouble(input->getValue("MaxL2NormDiff"));
 	configData->dataToCalcL2Test = StringUtil::toString(input->getValue("DataToCalc_L2"));
 	configData->basicTimeStepL2Norm = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
