@@ -8,9 +8,9 @@
 
 #include <iomanip>
 
-std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity)
+std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation)
 {
-	return std::shared_ptr<PhiAndNuTest>(new PhiAndNuTest(colorOutput, dataToCalculate, minOrderOfAccuracy, viscosity));
+	return std::shared_ptr<PhiAndNuTest>(new PhiAndNuTest(colorOutput, dataToCalculate, minOrderOfAccuracy, viscosity, startStepCalculation, endStepCalculation));
 }
 
 void PhiAndNuTest::evaluate()
@@ -22,7 +22,7 @@ void PhiAndNuTest::evaluate()
 			calculator->setVectorToCalc(simResults.at(i)->getVx());
 		if (dataToCalculate == "Vz")
 			calculator->setVectorToCalc(simResults.at(i)->getVz());
-		calculator->calc();
+		calculator->calc(startStepCalculation, endStepCalculation);
 		phiDiff.push_back(calculator->getPhiDiff());
 		nuDiff.push_back(calculator->getNuDiff());
 	}
@@ -68,7 +68,7 @@ std::string PhiAndNuTest::getLogFileOutput()
 	return oss.str();
 }
 
-PhiAndNuTest::PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity) : TestImp(colorOutput), minOrderOfAccuracy(minOrderOfAccuracy), viscosity(viscosity), dataToCalculate(dataToCalculate)
+PhiAndNuTest::PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation) : TestImp(colorOutput), minOrderOfAccuracy(minOrderOfAccuracy), viscosity(viscosity), dataToCalculate(dataToCalculate), startStepCalculation(startStepCalculation), endStepCalculation(endStepCalculation)
 {
 	lx.resize(0);
 	phiDiff.resize(0);

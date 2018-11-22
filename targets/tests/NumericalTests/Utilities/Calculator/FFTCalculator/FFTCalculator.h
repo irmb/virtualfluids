@@ -17,7 +17,7 @@ public:
 	void setSimulationResults(std::shared_ptr<SimulationResults> simResults);
 	void setVectorToCalc(std::vector<std::vector<double>> data);
 	
-	void calc();
+	void calc(unsigned int startStep, unsigned int endStep);
 	
 	double getNuDiff();
 	double getPhiDiff();
@@ -25,24 +25,23 @@ public:
 private:
 	FFTCalculator(double viscosity);
 	void init();
-	double calcNu();
+	double calcNu(unsigned int startStep, unsigned int endStep);
 	double calcNuDiff(double nu);
-	double calcPhi();
-	std::vector< double> calcPhiForAllTimeSteps();
+	double calcPhi(unsigned int startStep, unsigned int endStep);
+	std::vector< double> calcPhiForTimeSteps(unsigned int startStep, unsigned int endStep);
 	std::vector< double> calcLinReg(std::vector<double> y);
-	void calcLogAmplitudeForAllTimeSteps();
-	void calcAmplitudeForAllTimeSteps();
+	std::vector<double> calcLogAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep);
+	std::vector<double> calcAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep);
 	void calcFFT2D(unsigned int timeStep);
 	void initDataForFFT(fftw_complex* input, unsigned int timeStep);
 	void setFFTResults(fftw_complex* result, unsigned int timeStep);
+	int calcTimeStepInResults(unsigned int timeStep);
 
 	std::shared_ptr<SimulationResults> simResults;
 	std::vector<std::vector<double>> data;
 	std::vector<std::vector<double>> fftResultsIm;
 	std::vector<std::vector<double>> fftResultsRe;
-	std::vector<double> phi;
-	std::vector<double> amplitude;
-	std::vector<double> logAmplitude;
+	
 	bool fftCalculated;
 	double lx, lz;
 	double vis;

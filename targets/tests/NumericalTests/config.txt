@@ -30,7 +30,6 @@ v0_SW="0.1 0.05"
 ##################################################
 #			   Basic Test Parameter				 #
 ##################################################
-StartStepCalculation=11
 ySliceForCalculation=0
 
 ##################################################
@@ -38,6 +37,8 @@ ySliceForCalculation=0
 ##################################################
 MinOrderOfAccuracy=1.95
 DataToCalcPhiAndNuTest="Vx"
+StartTimeStepCalculation_PhiNu=11
+EndTimeStepCalculation_PhiNu=20
 
 PhiAndNuTest_TGV=true
 PhiAndNuTest_SW=true
@@ -45,8 +46,13 @@ PhiAndNuTest_SW=true
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
+BasicTimeStep_L2=0
+DivergentDataTimeStep_L2=20
+
 L2NormTest_TGV=true
 L2NormTest_SW=true
+
+
 
 ##################################################
 #			Simulation To Perform				 #

@@ -53,6 +53,8 @@ private:
 
 	bool shouldSimulationGroupRun(std::vector<bool> test);
 
+	unsigned int calcStartStepForToVectorWriter();
+
 
 	std::vector<double> u0SW, v0SW;
 	std::vector<double> amplitudeTGV, u0TGV;
@@ -63,9 +65,11 @@ private:
 	real rho0;
 	real l0;
 	double minOrderOfAccuracy;
-	unsigned int numberOfTimeSteps, basisTimeStepLength, startStepCalculation;
-	unsigned int ySliceForCalculation;
+	unsigned int numberOfTimeSteps, basisTimeStepLength;
+	unsigned int startStepCalculationPhiNu, endStepCalculationPhiNu;
+	unsigned int basicTimeStepL2Norm, divergentDataL2Norm;
 	unsigned int startStepFileWriter;
+	unsigned int ySliceForCalculation;
 	unsigned int maxLevel;
 	unsigned int numberOfGridLevels;
 	bool writeFiles;

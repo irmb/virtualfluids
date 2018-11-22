@@ -81,6 +81,11 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
 	dataToCalcPhiAndNuTest = StringUtil::toString(input->getValue("DataToCalcPhiAndNuTest"));
+	startStepCalculationPhiNu = StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu"));
+	endStepCalculationPhiNu = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
+
+	basicTimeStepL2Norm = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
+	divergentDataL2Norm = StringUtil::toInt(input->getValue("DivergentDataTimeStep_L2"));
 
 	amplitudeTGV = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV"));
 	u0TGV = StringUtil::toDoubleVector(input->getValue("u0_TGV"));
@@ -94,7 +99,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
 	basisTimeStepLength = StringUtil::toInt(input->getValue("BasisTimeStepLength"));
-	startStepCalculation = StringUtil::toInt(input->getValue("StartStepCalculation"));
+	
 
 	grids.resize(5);
 	grids.at(0) = input->getValue("GridPath32");
@@ -131,6 +136,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	checkConfigFileData();
 	logFileWriterQueue = LogFileQueueImp::getNewInstance(logFilePath);
+
 	init();
 }
 
@@ -188,7 +194,7 @@ void ConfigFileReader::makeTaylorGreenSimulations(std::string kernelName, double
 
 	for (int i = 0; i < tgv.size(); i++)
 		if (tgv.at(i)) {
-			simParaTGV.push_back(TaylorGreenSimulationParameter::getNewInstance(kernelName, u0, amplitude, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
+			simParaTGV.push_back(TaylorGreenSimulationParameter::getNewInstance(kernelName, u0, amplitude, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, calcStartStepForToVectorWriter(), ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
 			simInfoTGV.push_back(TaylorGreenVortexSimulationInfo::getNewInstance(u0, amplitude, l0, lx.at(i), viscosity, kernelName, "TaylorGreenVortex"));
 			analyResultTGV.push_back(TaylorGreenAnalyticalResults::getNewInstance(viscosity, u0, amplitude, l0, rho0));
 		}
@@ -227,7 +233,7 @@ void ConfigFileReader::makeShearWaveSimulations(std::string kernelName, double v
 
 	for (int i = 0; i < tgv.size(); i++)
 		if (tgv.at(i)) {
-			simParaSW.push_back(ShearWaveSimulationParameter::getNewInstance(kernelName, u0, v0, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
+			simParaSW.push_back(ShearWaveSimulationParameter::getNewInstance(kernelName, u0, v0, viscosity, rho0, lx.at(i), lz.at(i), l0, numberOfTimeSteps, basisTimeStepLength, calcStartStepForToVectorWriter(), ySliceForCalculation, grids.at(i), maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
 			simInfoSW.push_back(ShearWaveSimulationInfo::getNewInstance(u0, v0, l0, lx.at(i), viscosity, kernelName, "ShearWave"));
 		}
 
@@ -256,7 +262,7 @@ std::vector< std::shared_ptr< PhiAndNuTest>> ConfigFileReader::makePhiAndNuTests
 
 	for (int i = 1; i < testSim.size(); i++) {
 		for (int j = 0; j < i; j++) {
-			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, dataToCalcPhiAndNuTest, minOrderOfAccuracy, viscosity);
+			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, dataToCalcPhiAndNuTest, minOrderOfAccuracy, viscosity, startStepCalculationPhiNu, endStepCalculationPhiNu);
 			test->addSimulation(testSim.at(j), simInfo.at(j));
 			test->addSimulation(testSim.at(i), simInfo.at(i));
 
@@ -293,9 +299,20 @@ bool ConfigFileReader::shouldSimulationGroupRun(std::vector<bool> test)
 	return false;
 }
 
+unsigned int ConfigFileReader::calcStartStepForToVectorWriter()
+{
+	std::vector< unsigned int> startStepsTests;
+	startStepsTests.push_back(basicTimeStepL2Norm);
+	startStepsTests.push_back(startStepCalculationPhiNu);
+
+	std::sort(startStepsTests.begin(), startStepsTests.end());
+
+	return startStepsTests.at(0);
+}
+
 void ConfigFileReader::makeLogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
 {
-	std::shared_ptr< LogFileWriter> logFileWriter = LogFileWriter::getNewInstance(testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity, devices, numberOfTimeSteps, basisTimeStepLength, startStepCalculation);
+	std::shared_ptr< LogFileWriter> logFileWriter = LogFileWriter::getNewInstance(testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity, devices, numberOfTimeSteps, basisTimeStepLength, calcStartStepForToVectorWriter());
 	logFileWriterQueue->addLogFileWriter(logFileWriter);
 }
 
