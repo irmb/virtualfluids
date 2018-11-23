@@ -81,7 +81,7 @@ public:
 
       if (dim1>x || dim2>y || dim3>z)
       {
-         UB_THROW( UbException(UB_EXARGS,"Patch3DSegmentationHelper::createDimensions: Segmentation fault - bad number of prozess") );
+         UB_THROW( UbException(UB_EXARGS,"SimpleGeometricPartitioner::createDimensions: Segmentation fault - bad number of prozess") );
       }
 
       UbTupleInt3 dims(dim1, dim2, dim3);

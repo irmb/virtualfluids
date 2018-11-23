@@ -237,8 +237,8 @@ void run(string configname)
 
          
 
-         grid->setPeriodicX1(false);
-         grid->setPeriodicX2(false);
+         grid->setPeriodicX1(true);
+         grid->setPeriodicX2(true);
          grid->setPeriodicX3(false);
          grid->setDeltaX(deltaXcoarse);
          grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
@@ -288,10 +288,15 @@ void run(string configname)
 
          ////////////////////////////////////////////
          //METIS
-         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+         SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::RECURSIVE));
          
          //DEBUG METIS 
          //////////////////////////////////////////////////////////////////////////
+         
+         SimpleGeometricPartitioner sgp;
+         UbTupleInt3 dim = sgp.createDimensions(30, 20, 20, 20);
+
+
          dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(1500);
          grid->accept(metisVisitor);
 
