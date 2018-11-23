@@ -101,6 +101,7 @@ TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParam
 {
 	this->simPara = simPara;
 	this->simInfo = simInfo;
+	this->simInfo->setSimulationID(simID);
 	simResults = SimulationResults::getNewInstance(simPara->getLx(), 1, simPara->getLz(), simPara->getTimeStepLength());
 	
 	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, simPara->getYSliceForCalculation(), simPara->getStartTimeCalculation(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getWriteFiles(), std::shared_ptr<FileWriter>(new FileWriter()), simPara->getStartTimeDataWriter()));

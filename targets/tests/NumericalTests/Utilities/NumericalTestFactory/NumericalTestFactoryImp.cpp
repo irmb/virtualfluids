@@ -54,12 +54,14 @@ std::shared_ptr<LogFileQueue> NumericalTestFactoryImp::getLogFileQueue()
 
 void NumericalTestFactoryImp::init()
 {
+	calcNumberOfSimulations();
+	simID = 1;
 	for (int i = 0; i < cfd->kernelsToTest.size(); i++) {
-		simID = 1;
 		for (int j = 0; j < cfd->viscosity.size(); j++) {
 			for (int k = 0; k < cfd->u0TGV.size(); k++) {
-				if (shouldSimulationGroupRun(cfd->tgv))
+				if (shouldSimulationGroupRun(cfd->tgv)) {
 					makeTaylorGreenSimulations(cfd->kernelsToTest.at(i), cfd->viscosity.at(j), cfd->u0TGV.at(k), cfd->amplitudeTGV.at(k));
+				}
 			}
 			for (int k = 0; k < cfd->u0SW.size(); k++) {
 				if (shouldSimulationGroupRun(cfd->sw))
@@ -78,7 +80,7 @@ void NumericalTestFactoryImp::makeTaylorGreenSimulations(std::string kernelName,
 	for (int i = 0; i < cfd->tgv.size(); i++) {
 		if (cfd->tgv.at(i)) {
 			simParaTGV.push_back(TaylorGreenSimulationParameter::getNewInstance(kernelName, u0, amplitude, viscosity, cfd->rho0, cfd->lx.at(i), cfd->lz.at(i), cfd->l0, cfd->numberOfTimeSteps, cfd->basisTimeStepLength, calcStartStepForToVectorWriter(), cfd->ySliceForCalculation, cfd->grids.at(i), cfd->maxLevel, cfd->numberOfGridLevels, cfd->writeFiles, cfd->startStepFileWriter, cfd->filePath, cfd->devices));
-			simInfoTGV.push_back(TaylorGreenVortexSimulationInfo::getNewInstance(u0, amplitude, cfd->l0, cfd->lx.at(i), viscosity, kernelName));
+			simInfoTGV.push_back(TaylorGreenVortexSimulationInfo::getNewInstance(u0, amplitude, cfd->l0, cfd->lx.at(i), viscosity, kernelName, numberOfSimulations));
 			analyResultTGV.push_back(TaylorGreenAnalyticalResults::getNewInstance(viscosity, u0, amplitude, cfd->l0, cfd->rho0));
 		}
 	}
@@ -96,7 +98,7 @@ void NumericalTestFactoryImp::makeShearWaveSimulations(std::string kernelName, d
 	for (int i = 0; i < cfd->sw.size(); i++)
 		if (cfd->sw.at(i)) {
 			simParaSW.push_back(ShearWaveSimulationParameter::getNewInstance(kernelName, u0, v0, viscosity, cfd->rho0, cfd->lx.at(i), cfd->lz.at(i), cfd->l0, cfd->numberOfTimeSteps, cfd->basisTimeStepLength, calcStartStepForToVectorWriter(), cfd->ySliceForCalculation, cfd->grids.at(i), cfd->maxLevel, cfd->numberOfGridLevels, cfd->writeFiles, cfd->startStepFileWriter, cfd->filePath, cfd->devices));
-			simInfoSW.push_back(ShearWaveSimulationInfo::getNewInstance(u0, v0, cfd->l0, cfd->lx.at(i), viscosity, kernelName));
+			simInfoSW.push_back(ShearWaveSimulationInfo::getNewInstance(u0, v0, cfd->l0, cfd->lx.at(i), viscosity, kernelName, numberOfSimulations));
 			analyResultSW.push_back(ShearWaveAnalyticalResults::getNewInstance(viscosity, u0, v0, cfd->l0, cfd->rho0));
 		}
 
@@ -210,4 +212,28 @@ bool NumericalTestFactoryImp::checkNuAndPhiTestCouldRun(std::vector<bool> test)
 			numberOfTestInGroup++;
 	}
 	return numberOfTestInGroup > 1;
+}
+
+void NumericalTestFactoryImp::calcNumberOfSimulations()
+{
+	int counter = 0;
+
+	int tgvCounter = 0;
+	for (int i = 0; i < cfd->tgv.size(); i++)
+		if (cfd->tgv.at(i))
+			tgvCounter++;
+	tgvCounter *= cfd->u0TGV.size();
+	counter += tgvCounter;
+
+	int swCounter = 0;
+	for (int i = 0; i < cfd->sw.size(); i++)
+		if (cfd->sw.at(i))
+			swCounter++;
+	swCounter *= cfd->u0SW.size();
+	counter += swCounter;
+
+	counter *= cfd->viscosity.size();
+	counter *= cfd->kernelsToTest.size();
+
+	numberOfSimulations = counter;
 }

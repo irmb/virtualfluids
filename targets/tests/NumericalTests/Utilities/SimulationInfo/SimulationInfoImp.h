@@ -11,16 +11,20 @@ public:
 	std::string getSimulationName();
 	std::string getSimulationParameterString();
 	int getLx();
+	int getNumberOfSimulations();
+	int getSimulationID();
+	void setSimulationID(int simID);
 
 protected:
 	SimulationInfoImp() {};
-	SimulationInfoImp(int lx, double viscosity, std::string kernelName);
+	SimulationInfoImp(int lx, double viscosity, std::string kernelName, int numberOfSimulations);
 
 	double viscosity;
 	std::string kernelName;
 	std::string simulationName;
 	std::string simulationParameterString;
 	int lx;
+	int numberOfSimulations, simID;
 
 private:
 

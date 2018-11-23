@@ -128,6 +128,9 @@ void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_pt
 
 void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
 {
+	std::ostringstream ossLine0;
+	ossLine0 << "# Simulation Number " << simInfo->getSimulationID() << " of " << std::setfill(' ') << std::left << std::setw(23) << simInfo->getNumberOfSimulations() << "#";
+
 	std::ostringstream ossLine1;
 	ossLine1 << "# Kernel: " << std::setfill(' ') << std::left << std::setw(38) << simInfo->getKernelName() << "#";
 
@@ -151,6 +154,7 @@ void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr< Simulation
 	ossLine6 << "# DATE: " << std::setfill('0') << std::setw(2) << nowLocal.tm_mday << "." << std::setw(2) << nowLocal.tm_mon + 1 << "." << nowLocal.tm_year + 1900 << "   TIME: " << std::setw(2) << nowLocal.tm_hour << ":" << std::setw(2) << nowLocal.tm_min << ":" << std::setw(2) << nowLocal.tm_sec << "\t" << "\t#";
 
 	printGreenHashLine();
+	printGreen(ossLine0.str());
 	printGreen(ossLine1.str());
 	printGreen(ossLine2.str());
 	printGreen(ossLine3.str());

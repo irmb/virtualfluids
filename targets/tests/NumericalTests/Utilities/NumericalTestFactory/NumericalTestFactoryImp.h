@@ -41,6 +41,7 @@ private:
 	bool shouldSimulationGroupRun(std::vector<bool> test);
 	unsigned int calcStartStepForToVectorWriter();
 	bool checkNuAndPhiTestCouldRun(std::vector<bool> test);
+	void calcNumberOfSimulations();
 
 	std::shared_ptr<ConfigDataStruct> cfd;
 	std::vector< std::shared_ptr< TestSimulation>> testSimulations;
@@ -49,5 +50,6 @@ private:
 	std::shared_ptr< ColorConsoleOutput> colorOutput;
 
 	int simID;
+	int numberOfSimulations;
 };
 #endif
