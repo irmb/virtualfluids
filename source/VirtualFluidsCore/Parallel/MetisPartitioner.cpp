@@ -10,6 +10,12 @@ MetisPartitioner::MetisPartitioner()
    vsize = NULL;
    tpwgts = NULL;
    ubvec = NULL;
+
+   options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;
+   //options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_VOL;
+
+   options[METIS_OPTION_CTYPE]  = METIS_CTYPE_SHEM;
+   options[METIS_OPTION_IPTYPE] = METIS_IPTYPE_GROW;
 }
 //////////////////////////////////////////////////////////////////////////
 MetisPartitioner::~MetisPartitioner()
@@ -20,6 +26,10 @@ MetisPartitioner::~MetisPartitioner()
 idx_t* MetisPartitioner::getMetisOptions()
 {
    return options;
+}
+void MetisPartitioner::setMetisOptions(int option, idx_t value)
+{
+   options[option] = value;
 }
 //////////////////////////////////////////////////////////////////////////
 int MetisPartitioner::partition(int nofParts, MetisPartitioner::PartType ptype)

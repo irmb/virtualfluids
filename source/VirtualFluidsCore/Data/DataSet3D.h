@@ -17,8 +17,8 @@ public:
    SPtr<DistributionArray3D> getFdistributions() const;
    void setFdistributions(SPtr<DistributionArray3D> distributions);
 
-   SPtr<AverageValuesArray3D> getAverageDencity() const;
-   void setAverageDencity(SPtr<AverageValuesArray3D> values);
+   SPtr<AverageValuesArray3D> getAverageDensity() const;
+   void setAverageDensity(SPtr<AverageValuesArray3D> values);
 
    SPtr<AverageValuesArray3D> getAverageVelocity() const;
    void setAverageVelocity(SPtr<AverageValuesArray3D> values);
@@ -42,7 +42,7 @@ private:
    SPtr<DistributionArray3D> fdistributions;
    SPtr<AverageValuesArray3D> averageValues;
 
-   SPtr<AverageValuesArray3D> averageDencity;
+   SPtr<AverageValuesArray3D> averageDensity;
    SPtr<AverageValuesArray3D> averageVelocity;
    SPtr<AverageValuesArray3D> averageFluktuations;
    SPtr<AverageValuesArray3D> averageTriplecorrelations;
@@ -73,14 +73,14 @@ inline void DataSet3D::setAverageValues(SPtr<AverageValuesArray3D> values)
    averageValues = values; 
 }
 
-inline SPtr<AverageValuesArray3D> DataSet3D::getAverageDencity() const
+inline SPtr<AverageValuesArray3D> DataSet3D::getAverageDensity() const
 {
-   return averageDencity;
+   return averageDensity;
 }
 
-inline void DataSet3D::setAverageDencity(SPtr<AverageValuesArray3D> values)
+inline void DataSet3D::setAverageDensity(SPtr<AverageValuesArray3D> values)
 {
-   averageDencity = values;
+   averageDensity = values;
 }
 
 inline SPtr<AverageValuesArray3D> DataSet3D::getAverageVelocity() const

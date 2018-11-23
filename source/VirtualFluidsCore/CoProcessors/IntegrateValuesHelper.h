@@ -48,8 +48,6 @@ public:
 
 	void calculateMQ();
 	void calculateAV();
-   void calculateAV2();
-   void prepare2DMatrix(int level);
 	void clearData();
 
 	double getRho() {return sRho;}
@@ -66,29 +64,6 @@ public:
 	double getTSx2(){return sTSx2;}
 	double getTSx3(){return sTSx3;}
 	double getTSx1x3(){return sTSx1x3;}
-
-   double getAVx()   { return saVx  ; }
-   double getAVy()   { return saVy  ; }
-   double getAVz()   { return saVz  ; }
-   
-   double getAVxx()  { return saVxx ; }
-   double getAVyy()  { return saVyy ; }
-   double getAVzz()  { return saVzz ; }
-   double getAVxy()  { return saVxy ; }
-   double getAVxz()  { return saVxz ; }
-   double getAVyz()  { return saVyz ; }
-   
-   double getAVxxx() { return saVxxx; }
-   double getAVxxy() { return saVxxy; }
-   double getAVxxz() { return saVxxz; }
-   double getAVyyy() { return saVyyy; }
-   double getAVyyx() { return saVyyx; }
-   double getAVyyz() { return saVyyz; }
-   double getAVzzz() { return saVzzz; }
-   double getAVzzx() { return saVzzx; }
-   double getAVzzy() { return saVzzy; }
-   double getAVxyz() { return saVxyz; }
-
 
 	LBMReal getNumberOfFluidsNodes();
 	LBMReal getNumberOfSolidNodes();
@@ -109,15 +84,6 @@ private:
 	SPtr<Communicator> comm;
    CbArray2D<Node> cnodes2DMatrix;
 	enum Values{AvVx = 0, AvVy = 1, AvVz = 2, AvVxx = 3, AvVyy = 4, AvVzz = 5, AvVxy = 6, AvVyz = 7, AvVxz = 8};
-
-   double saVx, saVy, saVz;
-   double saVxx, saVyy, saVzz, saVxy, saVxz, saVyz;
-   double saVxxx, saVxxy, saVxxz, saVyyy, saVyyx, saVyyz, saVzzz, saVzzx, saVzzy, saVxyz;
-
-   enum Velocity { Vx, Vy, Vz };
-   enum Fluctuations { Vxx, Vyy, Vzz, Vxy, Vxz, Vyz };
-   enum Triplecorrelations { Vxxx, Vxxy, Vxxz, Vyyy, Vyyx, Vyyz, Vzzz, Vzzx, Vzzy, Vxyz };
-
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "Block3D.h"
 #include "Grid3D.h"
 #include "Communicator.h"
+#include "D3Q27System.h"
 
 using namespace std;
 
@@ -226,7 +227,6 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
 
         const int vertexWeight = 1;
         int edges = 0;
-        const int edgeWeight= 1;
 
         for(SPtr<Block3D> block : tBlockID)
         {
@@ -241,7 +241,7 @@ void MetisPartitioningGridVisitor::buildMetisGraphLevelBased(SPtr<Grid3D> grid, 
                     if (this->getPartitionCondition(neighBlock, level))
                     {
                         edges++;
-                        metis.adjwgt.push_back(edgeWeight);
+                        metis.adjwgt.push_back(getEdgeWeight(dir));
                         metis.adjncy.push_back(neighBlock->getLocalID());
                     }
                 }
@@ -294,6 +294,23 @@ void MetisPartitioningGridVisitor::clear()
 {
     blockID.clear();
     parts.clear();
+}
+//////////////////////////////////////////////////////////////////////////
+int MetisPartitioningGridVisitor::getEdgeWeight(int dir)
+{
+   using namespace D3Q27System;
+   if (dir <= B)
+   {
+      return 100;
+   } 
+   else if (dir >= NE && dir <= TS)
+   {
+      return 10;
+   }
+   else if (dir >= TNE)
+   {
+      return 1;
+   }
 }
 //////////////////////////////////////////////////////////////////////////
 void MetisPartitioningGridVisitor::setNumberOfProcesses(int np)

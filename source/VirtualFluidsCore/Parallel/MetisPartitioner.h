@@ -25,6 +25,7 @@ public:
    MetisPartitioner();
    virtual ~MetisPartitioner();
    idx_t* getMetisOptions();
+   void setMetisOptions(int option, idx_t value);
    int partition(int nofParts, PartType ptype);
 public:
    std::vector<idx_t> xadj;    // adjncy offset of nodes 
