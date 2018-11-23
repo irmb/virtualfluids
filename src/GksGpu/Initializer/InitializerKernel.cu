@@ -38,7 +38,7 @@ __global__ void initializeDataUpdateKernel(DataBaseStruct dataBase, uint numberO
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if( index > numberOfEntities ) return;
+    if( index >= numberOfEntities ) return;
 
     initializeDataUpdateFunction( dataBase, index );
 }

@@ -45,7 +45,7 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 32.0;
+    real dx = 1.0 / 64.0;
 
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
@@ -82,8 +82,9 @@ void gksTest( std::string path )
     parameters.dt = 0.0001;
     parameters.dx = dx;
     //parameters.force.z = -0.01;
+    parameters.mu = 0.0001;
 
-    auto dataBase = std::make_shared<DataBase>( "CPU" );
+    auto dataBase = std::make_shared<DataBase>( "GPU" );
     dataBase->setMesh( meshAdapter );
 
     //////////////////////////////////////////////////////////////////////////
@@ -94,13 +95,13 @@ void gksTest( std::string path )
     //    return center.x < -0.5 || center.x > 0.5;
     //} );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.01, 0.0 ,0.0 ), 0.1, 0.0 );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.1, 0.1, 0.0 ), 0.1, 0.0 );
 
     bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z > 0.5;
     } );
 
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0 ,0.0 ), 0.1, 0.0 );
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), 0.1, 0.0 );
 
     bcWall->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z < 0.5;
@@ -118,23 +119,25 @@ void gksTest( std::string path )
         
         real radius = cellCenter.length();
 
-        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 0.1, radius ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 0.1, 0.0 ), parameters.K );
     });
 
-    Initializer::initializeDataUpdate(dataBase);
-
     dataBase->copyDataHostToDevice();
+
+    Initializer::initializeDataUpdate(dataBase);
 
     writeVtkXML( dataBase, parameters, 0, path + "grid/Test_0" );
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( uint iter = 1; iter < 10000; iter++ )
+    for( uint iter = 1; iter < 1000000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % 100 == 0 )
+        if( iter % 10000 == 0 )
         {
+            std::cout << iter << std::endl;
+
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );
@@ -145,7 +148,7 @@ void gksTest( std::string path )
 
     dataBase->copyDataDeviceToHost();
 
-    writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
+    //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
 
 }

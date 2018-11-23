@@ -22,7 +22,7 @@ __host__ __device__ inline void transformGlobalToLocal(Vec3& vector, const char 
     
         vector.x = tmp.y;
         vector.y = tmp.z;
-        vector.z = tmp.y;
+        vector.z = tmp.x;
 
         return;
     }
@@ -49,7 +49,7 @@ __host__ __device__ inline void transformLocalToGlobal(Vec3& vector, const char 
     
         tmp.y = vector.x;
         tmp.z = vector.y;
-        tmp.y = vector.z;
+        tmp.x = vector.z;
 
         vector = tmp;
 
@@ -93,6 +93,8 @@ __host__ __device__ inline void transformGlobalToLocal(PrimitiveVariables& prim,
     prim.V = vector.y;
     prim.W = vector.z;
 }
+
+//////////////////////////////////////////////////////////////////////////
 
 __host__ __device__ inline void transformLocalToGlobal(ConservedVariables& cons, const char direction)
 {

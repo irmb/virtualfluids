@@ -42,7 +42,7 @@ __global__ void cellUpdateKernel(DataBaseStruct dataBase, Parameters parameters,
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if( index > numberOfEntities ) return;
+    if( index >= numberOfEntities ) return;
 
     cellUpdateFunction( dataBase, parameters, startIndex, index );
 }
@@ -60,7 +60,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     update.rho  = dataBase.dataUpdate[ RHO__(cellIndex, dataBase.numberOfCells) ] / cellVolume;
     update.rhoU = dataBase.dataUpdate[ RHO_U(cellIndex, dataBase.numberOfCells) ] / cellVolume;
     update.rhoV = dataBase.dataUpdate[ RHO_V(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-    update.rhoV = dataBase.dataUpdate[ RHO_W(cellIndex, dataBase.numberOfCells) ] / cellVolume;
+    update.rhoW = dataBase.dataUpdate[ RHO_W(cellIndex, dataBase.numberOfCells) ] / cellVolume;
     update.rhoE = dataBase.dataUpdate[ RHO_E(cellIndex, dataBase.numberOfCells) ] / cellVolume;
 
     dataBase.dataUpdate[ RHO__(cellIndex, dataBase.numberOfCells) ] = zero;

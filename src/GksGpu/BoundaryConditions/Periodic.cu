@@ -71,7 +71,7 @@ __global__ void boundaryConditionKernel(const DataBaseStruct dataBase,
 {
     uint index = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if( index > numberOfEntities ) return;
+    if( index >= numberOfEntities ) return;
 
     boundaryConditionFunction( dataBase, boundaryCondition, parameters, startIndex, index );
 }
