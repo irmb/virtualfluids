@@ -100,6 +100,10 @@ ELSE(MSVC)
   SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
 
+set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+
+set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
+
 
 ##########################################################################################################################
 ###                  Subdirectories                                                                                    ###

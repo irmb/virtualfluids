@@ -1,6 +1,9 @@
 #include "DataBase.h"
 
 #include <string>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
 
 #include "DataBaseAllocator.h"
 #include "DataBaseStruct.h"

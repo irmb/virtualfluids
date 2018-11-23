@@ -41,7 +41,7 @@ void gksTest( std::string path )
 
     real L = 1.0;
 
-    real dx = L / 64.0;
+    real dx = L / 128.0;
 
     real Re  = 2.0e3;
     real U  = 0.1;
@@ -165,11 +165,11 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
 
-    for( uint iter = 1; iter < 1000000; iter++ )
+    for( uint iter = 1; iter < 100000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % 10000 == 0 )
+        if( iter % 1000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 

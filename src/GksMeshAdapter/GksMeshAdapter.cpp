@@ -110,6 +110,8 @@ void GksMeshAdapter::findQuadtreeConnectivity()
 
     std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
+    Distribution dirs = DistributionHelper::getDistribution27();
+
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
         MeshCell& cell = this->cells[ cellIdx ];
@@ -123,7 +125,6 @@ void GksMeshAdapter::findQuadtreeConnectivity()
 
             for( uint idx = 0; idx < 8; idx++ )
             {
-                Distribution dirs = DistributionHelper::getDistribution27();
 
                 real xSign = dirs.directions[idx + 19][0];
                 real ySign = dirs.directions[idx + 19][1];
@@ -153,6 +154,8 @@ void GksMeshAdapter::findCellToCellConnectivity()
 
     std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
+    Distribution dirs = DistributionHelper::getDistribution27();
+
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
         MeshCell& cell = this->cells[ cellIdx ];
@@ -165,8 +168,6 @@ void GksMeshAdapter::findCellToCellConnectivity()
         for( uint idx = 0; idx < 27; idx++ )
         {
             if( idx == DIR_27_ZERO ) continue;
-
-            Distribution dirs = DistributionHelper::getDistribution27();
 
             int xSign = dirs.directions[idx][0];
             int ySign = dirs.directions[idx][1];
@@ -190,6 +191,8 @@ void GksMeshAdapter::findCellToCellConnectivity()
 
 void GksMeshAdapter::countCells()
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "countCells()" << "\n";
+
     this->numberOfCellsPerLevel    .resize( this->numberOfLevels );
     this->numberOfBulkCellsPerLevel.resize( this->numberOfLevels );
     this->startOfCellsPerLevel     .resize( this->numberOfLevels );
@@ -216,6 +219,8 @@ void GksMeshAdapter::countCells()
 
 void GksMeshAdapter::partitionCells()
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "partitionCells()" << "\n";
+
     for( uint level = 0; level < this->numberOfLevels; level++ ){
 
         std::vector<uint> idxMap( this->cells.size() );
@@ -252,6 +257,8 @@ void GksMeshAdapter::partitionCells()
 
 void GksMeshAdapter::refreshCellConnectivity(const std::vector<uint>& idxMap)
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "refreshCellConnectivity()" << "\n";
+
     for( auto& cell : this->cells ){
         for( uint idx = 0; idx < 27; idx++ )
             if( cell.cellToCell[ idx ] != INVALID_INDEX )
@@ -291,6 +298,8 @@ void GksMeshAdapter::generateNodes()
 
     nodes.reserve( 2 * this->cells.size() );
 
+    Distribution dirs = DistributionHelper::getDistribution27();
+
     for( uint cellIdx = 0; cellIdx < this->cells.size(); cellIdx++ ){
     
         MeshCell& cell = this->cells[ cellIdx ];
@@ -308,7 +317,6 @@ void GksMeshAdapter::generateNodes()
         {
             if( cell.cellToNode[idx] == INVALID_INDEX )
             {
-                Distribution dirs = DistributionHelper::getDistribution27();
 
                 real dx = dirs.directions[idx + 19][0] * d;
                 real dy = dirs.directions[idx + 19][1] * d;
@@ -321,8 +329,6 @@ void GksMeshAdapter::generateNodes()
                 //// register new node at neighbor cells on same level
                 for (uint idx = 0; idx < 8; idx++)
                 {
-                    Distribution dirs = DistributionHelper::getDistribution27();
-
                     real dxNeighbor = -dirs.directions[idx + 19][0] * d;
                     real dyNeighbor = -dirs.directions[idx + 19][1] * d;
                     real dzNeighbor = -dirs.directions[idx + 19][2] * d;
@@ -442,8 +448,8 @@ void GksMeshAdapter::generateFaces()
 
             //////////////////////////////////////////////////////////////////////////
 
-            if ( cell.type == FLUID_CFF && neighborCell.type == FLUID_FCF ) newFace.negCellCoarse = cell.parent;
-            if ( cell.type == FLUID_FCF && neighborCell.type == FLUID_CFF ) newFace.posCellCoarse = neighborCell.parent;
+            //if ( cell.type == FLUID_CFF && neighborCell.type == FLUID_FCF ) newFace.negCellCoarse = cell.parent;
+            //if ( cell.type == FLUID_FCF && neighborCell.type == FLUID_CFF ) newFace.posCellCoarse = neighborCell.parent;
 
             //////////////////////////////////////////////////////////////////////////
             
