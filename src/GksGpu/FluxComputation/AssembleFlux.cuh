@@ -357,7 +357,7 @@ __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables&
                    + two * facePrim.lambda * (                momentV[1] *                              facePrim.W -              momentV[1] * momentW[1] ) * force.z ;
                                                                                                          
     timeGrad.rhoV += two * facePrim.lambda * (                             momentW[1] *                 facePrim.U - momentU[1] *              momentW[1] ) * force.x
-                   + two * facePrim.lambda * (                             momentW[1] *                 facePrim.V -              momentV[2] * momentW[1] ) * force.y
+                   + two * facePrim.lambda * (                             momentW[1] *                 facePrim.V -              momentV[1] * momentW[1] ) * force.y
                    + two * facePrim.lambda * (                             momentW[1] *                 facePrim.W -                           momentW[2] ) * force.z ;
 
     timeGrad.rhoE +=       facePrim.lambda * ( ( momentU[2] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.U
@@ -474,12 +474,15 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 {
     ConservedVariables flux_1, flux_2, flux_3;
 
-    flux_1.rho  =  momentU[0+1]             ;
-    flux_1.rhoU =  momentU[1+1]             ;
-    flux_1.rhoV =  momentU[0+1] * momentV[1];
+    flux_1.rho  =           momentU[0+1]                          ;
+    flux_1.rhoU =           momentU[1+1]                          ;
+    flux_1.rhoV =           momentU[0+1] * momentV[1]             ;
+    flux_1.rhoW =           momentU[0+1] *              momentW[1];
+
     flux_1.rhoE =  c1o2 * ( momentU[2+1]             
                           + momentU[0+1] * momentV[2]
-                          + momentU[0+1]              * momentXi[2] );
+                          + momentU[0+1] *              momentW[2]
+                          + momentU[0+1] *                           momentXi[2] );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -572,21 +575,21 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 
     //////////////////////////////////////////////////////////////////////////
 
-    flux_2.rho  += two * facePrim.lambda * (                                                            facePrim.U - momentU[1+1]                           ) * force.x
-                 + two * facePrim.lambda * (                                                            facePrim.V -                momentV[1]              ) * force.y
-                 + two * facePrim.lambda * (                                                            facePrim.W -                             momentW[1] ) * force.z ;
+    flux_2.rho  += two * facePrim.lambda * (   momentU[0+1] *                                           facePrim.U - momentU[1+1]                           ) * force.x
+                 + two * facePrim.lambda * (   momentU[0+1] *                                           facePrim.V - momentU[0+1] * momentV[1]              ) * force.y
+                 + two * facePrim.lambda * (   momentU[0+1] *                                           facePrim.W - momentU[0+1] *              momentW[1] ) * force.z ;
                                                                                                          
     flux_2.rhoU += two * facePrim.lambda * (   momentU[1+1] *                                           facePrim.U - momentU[2+1]                           ) * force.x
                  + two * facePrim.lambda * (   momentU[1+1] *                                           facePrim.V - momentU[1+1] * momentV[1]              ) * force.y
                  + two * facePrim.lambda * (   momentU[1+1] *                                           facePrim.W - momentU[1+1] *              momentW[1] ) * force.z ;
                                                                                                          
-    flux_2.rhoV += two * facePrim.lambda * (                  momentV[1] *                              facePrim.U - momentU[1+1] * momentV[1]              ) * force.x
-                 + two * facePrim.lambda * (                  momentV[1] *                              facePrim.V -                momentV[2]              ) * force.y
-                 + two * facePrim.lambda * (                  momentV[1] *                              facePrim.W -                momentV[1] * momentW[1] ) * force.z ;
+    flux_2.rhoV += two * facePrim.lambda * (   momentU[0+1] * momentV[1] *                              facePrim.U - momentU[1+1] * momentV[1]              ) * force.x
+                 + two * facePrim.lambda * (   momentU[0+1] * momentV[1] *                              facePrim.V - momentU[0+1] * momentV[2]              ) * force.y
+                 + two * facePrim.lambda * (   momentU[0+1] * momentV[1] *                              facePrim.W - momentU[0+1] * momentV[1] * momentW[1] ) * force.z ;
                                                                                                          
-    flux_2.rhoV += two * facePrim.lambda * (                               momentW[1] *                 facePrim.U - momentU[1+1] *              momentW[1] ) * force.x
-                 + two * facePrim.lambda * (                               momentW[1] *                 facePrim.V -                momentV[2] * momentW[1] ) * force.y
-                 + two * facePrim.lambda * (                               momentW[1] *                 facePrim.W -                             momentW[2] ) * force.z ;
+    flux_2.rhoV += two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.U - momentU[1+1] *              momentW[1] ) * force.x
+                 + two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.V - momentU[0+1] * momentV[1] * momentW[1] ) * force.y
+                 + two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.W - momentU[0+1] *              momentW[2] ) * force.z ;
 
     flux_2.rhoE +=       facePrim.lambda * ( ( momentU[2+1] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.U
 
@@ -599,17 +602,17 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
                  +       facePrim.lambda * ( ( momentU[2+1] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.V
 
                                            - ( momentU[2+1] * momentV[1]
-                                             +                momentV[3]
-                                             +                momentV[1] * momentW[2]
-                                             +                momentV[1] *              momentXi[2] )
+                                             + momentU[0+1] * momentV[3]
+                                             + momentU[0+1] * momentV[1] * momentW[2]
+                                             + momentU[0+1] * momentV[1] *              momentXi[2] )
                                            ) * force.y
 
                  +       facePrim.lambda * ( ( momentU[2+1] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.V
 
                                            - ( momentU[2+1] *              momentW[1]
-                                             +                momentV[2] * momentW[1]
-                                             +                             momentW[3]
-                                             +                             momentW[1] * momentXi[2] )
+                                             + momentU[0+1] * momentV[2] * momentW[1]
+                                             + momentU[0+1] *              momentW[3]
+                                             + momentU[0+1] *              momentW[1] * momentXi[2] )
                                            ) * force.z ;
 
     //////////////////////////////////////////////////////////////////////////

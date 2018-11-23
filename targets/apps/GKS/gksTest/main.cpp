@@ -37,6 +37,50 @@
 
 void gksTest( std::string path )
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    real L = 1.0;
+
+    real dx = L / 64.0;
+
+    real Re  = 2.0e3;
+    real U  = 0.1;
+    real Ma = 0.1;
+    
+    real Pr  = 1.0;
+    real K   = 0.0;
+
+    real rho = 1.0;
+
+    real mu = U * rho * L / Re;
+
+    real cs = U / Ma;
+    real lambda = c1o2 * ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( cs * cs );
+
+    real CFL = 0.25;
+
+    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    Parameters parameters;
+
+    parameters.K  = K;
+    parameters.Pr = Pr;
+    parameters.mu = mu;
+
+    parameters.force.x = 0;
+    parameters.force.y = 0;
+
+    parameters.dt = dt;
+    parameters.dx = dx;
+
+    parameters.lambdaRef = lambda;
+
+    parameters.viscosityModel = ViscosityModel::constant;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     auto gridFactory = GridFactory::make();
     gridFactory->setGridStrategy(Device::CPU);
     gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
@@ -45,12 +89,10 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real dx = 1.0 / 64.0;
-
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
-    Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
+    //Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
     //gridBuilder->setNumberOfLayers(6,6);
     //gridBuilder->addGrid( &cube, 1);
@@ -77,13 +119,6 @@ void gksTest( std::string path )
 
     CudaUtility::setCudaDevice(0);
 
-    Parameters parameters;
-
-    parameters.dt = 0.0001;
-    parameters.dx = dx;
-    //parameters.force.z = -0.01;
-    parameters.mu = 0.0001;
-
     auto dataBase = std::make_shared<DataBase>( "GPU" );
     dataBase->setMesh( meshAdapter );
 
@@ -95,13 +130,13 @@ void gksTest( std::string path )
     //    return center.x < -0.5 || center.x > 0.5;
     //} );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.1, 0.1, 0.0 ), 0.1, 0.0 );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( U, U, 0.0 ), lambda, 0.0 );
 
     bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z > 0.5;
     } );
 
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), 0.1, 0.0 );
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0 );
 
     bcWall->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z < 0.5;
@@ -119,7 +154,7 @@ void gksTest( std::string path )
         
         real radius = cellCenter.length();
 
-        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, 0.1, 0.0 ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -136,8 +171,6 @@ void gksTest( std::string path )
 
         if( iter % 10000 == 0 )
         {
-            std::cout << iter << std::endl;
-
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );

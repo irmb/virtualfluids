@@ -11,15 +11,32 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
-struct IsothermalWallStruct : virtual public BoundaryConditionStruct
+//struct IsothermalWallStruct : virtual public BoundaryConditionStruct
+//{
+//    Vec3 velocity;
+//    real lambda;
+//    real S;
+//};
+
+struct IsothermalWallStruct
 {
+    uint  numberOfCells;
+
+    uint* ghostCells;
+    uint* domainCells;
+    uint* secondCells;
+
     Vec3 velocity;
     real lambda;
     real S;
 };
 
-struct VF_PUBLIC IsothermalWall : public BoundaryCondition, public IsothermalWallStruct
+struct VF_PUBLIC IsothermalWall : public BoundaryCondition //, public IsothermalWallStruct
 {
+    Vec3 velocity;
+    real lambda;
+    real S;
+
     IsothermalWall( SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real S );
 
     virtual bool isWall() override;
