@@ -25,15 +25,15 @@ public:
 	void makeSimulationHeadOutput();
 	void setSimulationStartTime();
 	void setSimulationEndTimeAndNotifyObserver();
-	void setTestStartTime();
-	void setTestEndTime();
 	std::string getRunTimeOutput();
 
 private:
 	TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput);
 	void notifyObserver();
+	void setTestStartTime();
+	void setTestEndTime();
 	double calcSimTime();
-	double calcTestTime();
+	float calcTestTime();
 
 	std::shared_ptr< SimulationParameter> simPara;
 	std::shared_ptr< SimulationInfo> simInfo;
@@ -44,7 +44,7 @@ private:
 
 	bool simualtionRun;
 	time_t simulationStartTime, simulationEndTime;
-	time_t testStartTime, testEndTime;
+	clock_t testStartTime, testEndTime;
 	int simID;
 };
 #endif

@@ -54,9 +54,10 @@ double TestSimulationImp::calcSimTime()
 	return difftime(simulationEndTime, simulationStartTime);
 }
 
-double TestSimulationImp::calcTestTime()
+float TestSimulationImp::calcTestTime()
 {
-	return difftime(testEndTime, testStartTime);
+	float timeInMiliSec = ((float)(testEndTime - testStartTime) / CLOCKS_PER_SEC);
+	return timeInMiliSec;
 }
 
 void TestSimulationImp::makeSimulationHeadOutput()
@@ -73,17 +74,19 @@ void TestSimulationImp::setSimulationEndTimeAndNotifyObserver()
 {
 	simulationEndTime = time(NULL);
 	simualtionRun = true;
+	setTestStartTime();
 	notifyObserver();
+	setTestEndTime();
 }
 
 void TestSimulationImp::setTestStartTime()
 {
-	testStartTime = time(NULL);
+	testStartTime = clock();
 }
 
 void TestSimulationImp::setTestEndTime()
 {
-	testEndTime = time(NULL);
+	testEndTime = clock();
 }
 
 std::string TestSimulationImp::getRunTimeOutput()

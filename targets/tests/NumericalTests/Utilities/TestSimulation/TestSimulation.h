@@ -26,10 +26,6 @@ public:
 	virtual void makeSimulationHeadOutput() = 0;
 	virtual void setSimulationStartTime() = 0;
 	virtual void setSimulationEndTimeAndNotifyObserver() = 0;
-
-	virtual void setTestStartTime() = 0;
-	virtual void setTestEndTime() = 0;
-
 private:
 
 };
