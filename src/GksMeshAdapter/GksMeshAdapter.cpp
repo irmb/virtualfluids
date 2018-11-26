@@ -611,12 +611,12 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
             MeshCell cell = this->cells[ cellIdx ];
 
             Vec3 gridStart ( grid->getStartX() + c1o2 * grid->getDelta(),
-                             grid->getStartX() + c1o2 * grid->getDelta(),
-                             grid->getStartX() + c1o2 * grid->getDelta() );
+                             grid->getStartY() + c1o2 * grid->getDelta(),
+                             grid->getStartZ() + c1o2 * grid->getDelta() );
 
             Vec3 gridEnd   ( grid->getEndX()   - c1o2 * grid->getDelta(),
-                             grid->getEndX()   - c1o2 * grid->getDelta(),
-                             grid->getEndX()   - c1o2 * grid->getDelta() );
+                             grid->getEndY()   - c1o2 * grid->getDelta(),
+                             grid->getEndZ()   - c1o2 * grid->getDelta() );
 
             Vec3 size = gridEnd - gridStart;
 

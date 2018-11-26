@@ -57,7 +57,7 @@ void gksTest( std::string path )
     real cs = U / Ma;
     real lambda = c1o2 * ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( cs * cs );
 
-    real CFL = 0.25;
+    real CFL = 0.5;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -71,6 +71,7 @@ void gksTest( std::string path )
 
     parameters.force.x = 0;
     parameters.force.y = 0;
+    parameters.force.z = 0;
 
     parameters.dt = dt;
     parameters.dx = dx;

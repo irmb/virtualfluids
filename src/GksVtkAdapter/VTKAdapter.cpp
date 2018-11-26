@@ -16,6 +16,7 @@
 
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
+#include "Core/Logger/Logger.h"
 
 #include "GksGpu/Definitions/MemoryAccessPattern.h"
 #include "GksGpu/FlowStateData/FlowStateData.cuh"
@@ -325,7 +326,7 @@ void writeVtkXML(std::shared_ptr<DataBase> dataBase,
                  int mode, 
                  std::string filename)
 {
-    std::cout << "Write " << filename << ".vtu" << " ... ";
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".vtu" << " ... \n";
 
     vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
 
@@ -333,7 +334,7 @@ void writeVtkXML(std::shared_ptr<DataBase> dataBase,
 
     writeVtkUnstructuredGrid( grid, vtkXMLWriter::Binary, filename );
 
-    std::cout << "done!"<< std::endl;
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
 void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> target)

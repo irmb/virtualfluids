@@ -143,6 +143,7 @@ IF (HULC.BUILD_VF_GKS)
     add_subdirectory(targets/libs/GksGpu)
 
 	add_subdirectory(targets/apps/GKS/gksTest)
+	add_subdirectory(targets/apps/GKS/ChannelFlow)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
