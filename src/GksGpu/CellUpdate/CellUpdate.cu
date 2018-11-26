@@ -80,10 +80,11 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     update.rhoW += force.z * parameters.dt * rho ;
     update.rhoE += force.x * dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx )
                  + force.y * dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx ) 
-                 + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx ) ;
+                 + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx );
 
     dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
     dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
+    dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
 
     //////////////////////////////////////////////////////////////////////////
 

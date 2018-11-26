@@ -34,313 +34,96 @@ __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables&
                                                        const Vec3& force,
                                                        ConservedVariables& timeGrad )
 {
-    //timeGrad.rho = ax[0] *          momentU[1]             
-    //             + ax[1] *          momentU[2]             
-    //             + ax[2] *          momentU[1] * momentV[1]
-    //             + ax[3] *          momentU[1]              * momentW[1]
+    timeGrad.rho = ax[0]*momentU[1] + ax[1]*momentU[2] + c1o2*ax[4]*momentU[3] + ay[0]*momentV[1] + 
+   ax[2]*momentU[1]*momentV[1] + ay[1]*momentU[1]*momentV[1] + 
+   c1o2*ay[4]*momentU[2]*momentV[1] + ay[2]*momentV[2] + c1o2*ax[4]*momentU[1]*momentV[2] + 
+   c1o2*ay[4]*momentV[3] + az[0]*momentW[1] + ax[3]*momentU[1]*momentW[1] + 
+   az[1]*momentU[1]*momentW[1] + c1o2*az[4]*momentU[2]*momentW[1] + 
+   ay[3]*momentV[1]*momentW[1] + az[2]*momentV[1]*momentW[1] + 
+   c1o2*az[4]*momentV[2]*momentW[1] + az[3]*momentW[2] + c1o2*ax[4]*momentU[1]*momentW[2] + 
+   c1o2*ay[4]*momentV[1]*momentW[2] + c1o2*az[4]*momentW[3] + 
+   c1o2*ax[4]*momentU[1]*momentXi[2] + c1o2*ay[4]*momentV[1]*momentXi[2] + 
+   c1o2*az[4]*momentW[1]*momentXi[2];
 
-    //             + ax[4] * c1o2 * ( momentU[3]              
-    //                              + momentU[1] * momentV[2] 
-    //                              + momentU[1]              * momentW[2] 
-    //                              + momentU[1]                           * momentXi[2] )
+    timeGrad.rhoU = ax[0]*momentU[2] + ax[1]*momentU[3] + c1o2*ax[4]*momentU[4] + 
+   ay[0]*momentU[1]*momentV[1] + ax[2]*momentU[2]*momentV[1] + 
+   ay[1]*momentU[2]*momentV[1] + c1o2*ay[4]*momentU[3]*momentV[1] + 
+   ay[2]*momentU[1]*momentV[2] + c1o2*ax[4]*momentU[2]*momentV[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[3] + az[0]*momentU[1]*momentW[1] + 
+   ax[3]*momentU[2]*momentW[1] + az[1]*momentU[2]*momentW[1] + 
+   c1o2*az[4]*momentU[3]*momentW[1] + ay[3]*momentU[1]*momentV[1]*momentW[1] + 
+   az[2]*momentU[1]*momentV[1]*momentW[1] + c1o2*az[4]*momentU[1]*momentV[2]*momentW[1] + 
+   az[3]*momentU[1]*momentW[2] + c1o2*ax[4]*momentU[2]*momentW[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[1]*momentW[2] + c1o2*az[4]*momentU[1]*momentW[3] + 
+   c1o2*ax[4]*momentU[2]*momentXi[2] + c1o2*ay[4]*momentU[1]*momentV[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[1]*momentW[1]*momentXi[2];
 
-    //             + ay[0] *                       momentV[1]
-    //             + ay[1] *          momentU[1] * momentV[1]
-    //             + ay[2] *                       momentV[2]
-    //             + ay[2] *                       momentV[1] * momentW[1]
+    timeGrad.rhoV = ax[0]*momentU[1]*momentV[1] + ax[1]*momentU[2]*momentV[1] + 
+   c1o2*ax[4]*momentU[3]*momentV[1] + ay[0]*momentV[2] + ax[2]*momentU[1]*momentV[2] + 
+   ay[1]*momentU[1]*momentV[2] + c1o2*ay[4]*momentU[2]*momentV[2] + ay[2]*momentV[3] + 
+   c1o2*ax[4]*momentU[1]*momentV[3] + c1o2*ay[4]*momentV[4] + az[0]*momentV[1]*momentW[1] + 
+   ax[3]*momentU[1]*momentV[1]*momentW[1] + az[1]*momentU[1]*momentV[1]*momentW[1] + 
+   c1o2*az[4]*momentU[2]*momentV[1]*momentW[1] + ay[3]*momentV[2]*momentW[1] + 
+   az[2]*momentV[2]*momentW[1] + c1o2*az[4]*momentV[3]*momentW[1] + 
+   az[3]*momentV[1]*momentW[2] + c1o2*ax[4]*momentU[1]*momentV[1]*momentW[2] + 
+   c1o2*ay[4]*momentV[2]*momentW[2] + c1o2*az[4]*momentV[1]*momentW[3] + 
+   c1o2*ax[4]*momentU[1]*momentV[1]*momentXi[2] + c1o2*ay[4]*momentV[2]*momentXi[2] + 
+   c1o2*az[4]*momentV[1]*momentW[1]*momentXi[2];
 
-    //             + ay[3] * c1o2 * ( momentU[2] * momentV[1] 
-    //                             +               momentV[3] 
-    //                             +               momentV[1] * momentW[2]
-    //                             +               momentV[1]              * momentXi[2] )
-
-    //             + az[0] *                                    momentW[1]
-    //             + az[1] *          momentU[1] *              momentW[1]
-    //             + az[2] *                       momentV[1] * momentW[1]
-    //             + az[2] *                                    momentW[2]
-
-    //             + az[3] * c1o2 * ( momentU[2] *              momentW[1] 
-    //                             +               momentV[2] * momentW[1] 
-    //                             +                            momentW[3]
-    //                             +                            momentW[1] * momentXi[2] )
-    //             ;
-
-    timeGrad.rho = ax[0]*momentU[1] + ax[1]*momentU[2] + c1o2*ax[4]*momentU[3] + ax[0]*momentV[1] + 
-                   ax[2]*momentU[1]*momentV[1] + ay[1]*momentU[1]*momentV[1] + c1o2*ay[4]*momentU[2]*momentV[1] + 
-                   ay[2]*momentV[2] + c1o2*ax[4]*momentU[1]*momentV[2] + c1o2*ay[4]*momentV[3] + 
-                   ax[0]*momentW[1] + ax[3]*momentU[1]*momentW[1] + az[1]*momentU[1]*momentW[1] + 
-                   c1o2*az[4]*momentU[2]*momentW[1] + ay[3]*momentV[1]*momentW[1] + az[2]*momentV[1]*momentW[1] + 
-                   c1o2*az[4]*momentV[2]*momentW[1] + az[3]*momentW[2] + c1o2*ax[4]*momentU[1]*momentW[2] + 
-                   c1o2*ay[4]*momentV[1]*momentW[2] + c1o2*az[4]*momentW[3] + c1o2*ax[4]*momentU[1]*momentXi[2] + 
-                   c1o2*ay[4]*momentV[1]*momentXi[2] + c1o2*az[4]*momentW[1]*momentXi[2];
-
-    //////////////////////////////////////////////////////////////////////////
-
-    //timeGrad.rhoU = ax[0] *          momentU[2]             
-    //              + ax[1] *          momentU[3]             
-    //              + ax[2] *          momentU[2] * momentV[1]
-    //              + ax[3] *          momentU[2] *              momentW[1]
-    //              
-    //              + ax[4] * c1o2 * ( momentU[4]              
-    //                               + momentU[2] * momentV[2] 
-    //                               + momentU[2] *              momentW[2] 
-    //                               + momentU[2] *                           momentXi[2] )
-    //              
-    //              + ay[0] *          momentU[1] * momentV[1]
-    //              + ay[1] *          momentU[2] * momentV[1]
-    //              + ay[2] *          momentU[1] * momentV[2]
-    //              + ay[3] *          momentU[1] * momentV[1] * momentW[1]
-    //              
-    //              + ay[4] * c1o2 * ( momentU[3] * momentV[1] 
-    //                              +  momentU[1] * momentV[3] 
-    //                              +  momentU[1] * momentV[1] * momentW[2]
-    //                              +  momentU[1] * momentV[1]              * momentXi[2] )
-    //              
-    //              + az[0] *          momentU[1] *              momentW[1]
-    //              + az[1] *          momentU[2] *              momentW[1]
-    //              + az[2] *          momentU[1] * momentV[1] * momentW[1]
-    //              + az[3] *          momentU[1] *              momentW[2]
-    //              
-    //              + az[4] * c1o2 * ( momentU[3] *              momentW[1] 
-    //                              +  momentU[1] * momentV[2] * momentW[1] 
-    //                              +  momentU[1] *              momentW[3]
-    //                              +  momentU[1] *              momentW[1] * momentXi[2] )
-    //              ;
-
-    timeGrad.rhoU = ax[0]*momentU[2] + ax[1]*momentU[3] + c1o2*ax[4]*momentU[4] + ax[0]*momentU[1]*momentV[1] + 
-                    ax[2]*momentU[2]*momentV[1] + ay[1]*momentU[2]*momentV[1] + c1o2*ay[4]*momentU[3]*momentV[1] + 
-                    ay[2]*momentU[1]*momentV[2] + c1o2*ax[4]*momentU[2]*momentV[2] + 
-                    c1o2*ay[4]*momentU[1]*momentV[3] + ax[0]*momentU[1]*momentW[1] + 
-                    ax[3]*momentU[2]*momentW[1] + az[1]*momentU[2]*momentW[1] + c1o2*az[4]*momentU[3]*momentW[1] + 
-                    ay[3]*momentU[1]*momentV[1]*momentW[1] + az[2]*momentU[1]*momentV[1]*momentW[1] + 
-                    c1o2*az[4]*momentU[1]*momentV[2]*momentW[1] + az[3]*momentU[1]*momentW[2] + 
-                    c1o2*ax[4]*momentU[2]*momentW[2] + c1o2*ay[4]*momentU[1]*momentV[1]*momentW[2] + 
-                    c1o2*az[4]*momentU[1]*momentW[3] + c1o2*ax[4]*momentU[2]*momentXi[2] + 
-                    c1o2*ay[4]*momentU[1]*momentV[1]*momentXi[2] + c1o2*az[4]*momentU[1]*momentW[1]*momentXi[2];
-
-    //////////////////////////////////////////////////////////////////////////
-
-    //timeGrad.rhoV = ax[0] *          momentU[1] * momentV[1]
-    //              + ax[1] *          momentU[2] * momentV[1]
-    //              + ax[2] *          momentU[1] * momentV[2]
-    //              + ax[3] *          momentU[1] * momentV[1] * momentW[1]
-    //              
-    //              + ax[4] * c1o2 * ( momentU[3] * momentV[1] 
-    //                               + momentU[1] * momentV[3] 
-    //                               + momentU[1] * momentV[1] * momentW[2] 
-    //                               + momentU[1] * momentV[1] *              momentXi[2] )
-    //              
-    //              + ay[0] *                       momentV[2]
-    //              + ay[1] *          momentU[1] * momentV[2]
-    //              + ay[2] *                       momentV[3]
-    //              + ay[3] *                       momentV[2] * momentW[1]
-    //              
-    //              + ay[4] * c1o2 * ( momentU[2] * momentV[2] 
-    //                              +               momentV[4] 
-    //                              +               momentV[2] * momentW[2]
-    //                              +               momentV[2] *              momentXi[2] )
-    //              
-    //              + az[0] *                       momentV[1] * momentW[1]
-    //              + az[1] *          momentU[1] * momentV[1] * momentW[1]
-    //              + az[2] *                       momentV[2] * momentW[1]
-    //              + az[3] *                       momentV[1] * momentW[2]
-    //              
-    //              + az[4] * c1o2 * ( momentU[2] * momentV[1] * momentW[1] 
-    //                              +               momentV[3] * momentW[1] 
-    //                              +               momentV[1] * momentW[3]
-    //                              +               momentV[1] * momentW[1] * momentXi[2] )
-    //              ;
-
-    timeGrad.rhoV = ax[0]*momentU[1]*momentV[1] + ax[1]*momentU[2]*momentV[1] + c1o2*ax[4]*momentU[3]*momentV[1] + 
-                    ax[0]*momentV[2] + ax[2]*momentU[1]*momentV[2] + ay[1]*momentU[1]*momentV[2] + 
-                    c1o2*ay[4]*momentU[2]*momentV[2] + ay[2]*momentV[3] + c1o2*ax[4]*momentU[1]*momentV[3] + 
-                    c1o2*ay[4]*momentV[4] + ax[0]*momentV[1]*momentW[1] + 
-                    ax[3]*momentU[1]*momentV[1]*momentW[1] + az[1]*momentU[1]*momentV[1]*momentW[1] + 
-                    c1o2*az[4]*momentU[2]*momentV[1]*momentW[1] + ay[3]*momentV[2]*momentW[1] + 
-                    az[2]*momentV[2]*momentW[1] + c1o2*az[4]*momentV[3]*momentW[1] + az[3]*momentV[1]*momentW[2] + 
-                    c1o2*ax[4]*momentU[1]*momentV[1]*momentW[2] + c1o2*ay[4]*momentV[2]*momentW[2] + 
-                    c1o2*az[4]*momentV[1]*momentW[3] + c1o2*ax[4]*momentU[1]*momentV[1]*momentXi[2] + 
-                    c1o2*ay[4]*momentV[2]*momentXi[2] + c1o2*az[4]*momentV[1]*momentW[1]*momentXi[2];
-
-    //////////////////////////////////////////////////////////////////////////
-
-    //timeGrad.rhoW = ax[0] *          momentU[1] *              momentW[1]
-    //              + ax[1] *          momentU[2] *              momentW[1]
-    //              + ax[2] *          momentU[1] * momentV[1] * momentW[1]
-    //              + ax[3] *          momentU[1] *              momentW[2]
-    //              
-    //              + ax[4] * c1o2 * ( momentU[3] *              momentW[1]
-    //                               + momentU[1] * momentV[2] * momentW[1]
-    //                               + momentU[1] *              momentW[3] 
-    //                               + momentU[1] *              momentW[1] * momentXi[2] )
-    //              
-    //              + ay[0] *                       momentV[1] * momentW[1]
-    //              + ay[1] *          momentU[1] * momentV[1] * momentW[1]
-    //              + ay[2] *                       momentV[2] * momentW[1]
-    //              + ay[3] *                       momentV[1] * momentW[2]
-    //              
-    //              + ay[4] * c1o2 * ( momentU[2] * momentV[1] * momentW[1]
-    //                              +               momentV[3] * momentW[1]
-    //                              +               momentV[1] * momentW[3]
-    //                              +               momentV[1] * momentW[1] * momentXi[2] )
-    //              
-    //              + az[0] *                                    momentW[2]
-    //              + az[1] *          momentU[1] *              momentW[2]
-    //              + az[2] *                       momentV[1] * momentW[2]
-    //              + az[3] *                                    momentW[3]
-    //              
-    //              + az[4] * c1o2 * ( momentU[2] *              momentW[2] 
-    //                              +               momentV[2] * momentW[2] 
-    //                              +                            momentW[4]
-    //                              +                            momentW[2] * momentXi[2] )
-    //              ;
-
-    timeGrad.rhoW = ax[0]*momentU[1]*momentW[1] + ax[1]*momentU[2]*momentW[1] + c1o2*ax[4]*momentU[3]*momentW[1] + 
-                    ax[0]*momentV[1]*momentW[1] + ax[2]*momentU[1]*momentV[1]*momentW[1] + 
-                    ay[1]*momentU[1]*momentV[1]*momentW[1] + c1o2*ay[4]*momentU[2]*momentV[1]*momentW[1] + 
-                    ay[2]*momentV[2]*momentW[1] + c1o2*ax[4]*momentU[1]*momentV[2]*momentW[1] + 
-                    c1o2*ay[4]*momentV[3]*momentW[1] + ax[0]*momentW[2] + ax[3]*momentU[1]*momentW[2] + 
-                    az[1]*momentU[1]*momentW[2] + c1o2*az[4]*momentU[2]*momentW[2] + ay[3]*momentV[1]*momentW[2] + 
-                    az[2]*momentV[1]*momentW[2] + c1o2*az[4]*momentV[2]*momentW[2] + az[3]*momentW[3] + 
-                    c1o2*ax[4]*momentU[1]*momentW[3] + c1o2*ay[4]*momentV[1]*momentW[3] + c1o2*az[4]*momentW[4] + 
-                    c1o2*ax[4]*momentU[1]*momentW[1]*momentXi[2] + c1o2*ay[4]*momentV[1]*momentW[1]*momentXi[2] + 
-                    c1o2*az[4]*momentW[2]*momentXi[2];
-
-    //////////////////////////////////////////////////////////////////////////
-
-    //timeGrad.rhoE = ax[0] * c1o2 *    (       momentU[3]              
-    //                                  +       momentU[1] * momentV[2] 
-    //                                  +       momentU[1] *              momentW[2] 
-    //                                  +       momentU[1] *                           momentXi[2] )
-    //                                          
-    //              + ax[1] * c1o2 *    (       momentU[4]              
-    //                                  +       momentU[2] * momentV[2] 
-    //                                  +       momentU[2] *              momentW[2] 
-    //                                  +       momentU[2] *                           momentXi[2] )
-    //                                          
-    //              + ax[2] * c1o2 *    (       momentU[3] * momentV[1] 
-    //                                  +       momentU[1] * momentV[3] 
-    //                                  +       momentU[1] * momentV[1] * momentW[2]
-    //                                  +       momentU[1] * momentV[1] *              momentXi[2] )
-    //                                          
-    //              + ax[3] * c1o2 *    (       momentU[3] *              momentW[1]
-    //                                  +       momentU[1] * momentV[2] * momentW[1]
-    //                                  +       momentU[1] *              momentW[3]
-    //                                  +       momentU[1] *              momentW[1] * momentXi[2] )
-
-    //              + ax[4] * c1o4 *    (       momentU[5] 
-    //                                  +       momentU[1] * momentV[4]
-    //                                  +       momentU[1] *              momentW[4]
-    //                                  +       momentU[1] *                           momentXi[4]
-    //                                  + two * momentU[3] * momentV[2]
-    //                                  + two * momentU[3] *              momentW[2]
-    //                                  + two * momentU[3] *                           momentXi[2]
-    //                                  + two * momentU[1] * momentV[2] * momentW[2]
-    //                                  + two * momentU[1] * momentV[2] *              momentXi[2]
-    //                                  + two * momentU[1] *              momentW[2] * momentXi[2]
-    //                                  )
-    //              
-    //              + ay[0] * c1o2 *    (       momentU[2] * momentV[1] 
-    //                                  +                    momentV[3] 
-    //                                  +                    momentV[1] * momentW[2] 
-    //                                  +                    momentV[1] *              momentXi[2] )
-    //                                          
-    //              + ay[1] * c1o2 *    (       momentU[3] * momentV[1] 
-    //                                  +       momentU[1] * momentV[3] 
-    //                                  +       momentU[1] * momentV[1] * momentW[2] 
-    //                                  +       momentU[1] * momentV[1] *              momentXi[2] )
-    //                                          
-    //              + ay[2] * c1o2 *    (       momentU[2] * momentV[2] 
-    //                                  +                    momentV[4] 
-    //                                  +                    momentV[2] * momentW[2]
-    //                                  +                    momentV[2] *              momentXi[2] )
-    //                                          
-    //              + ay[3] * c1o2 *    (       momentU[2] * momentV[1] * momentW[1]
-    //                                  +                    momentV[3] * momentW[1]
-    //                                  +                    momentV[1] * momentW[3]
-    //                                  +                    momentV[1] * momentW[1] * momentXi[2] )
-
-    //              + ay[4] * c1o4 *    (       momentU[4] * momentV[1]
-    //                                  +                    momentV[5]
-    //                                  +                    momentV[1] * momentW[4]
-    //                                  +                    momentV[1] *              momentXi[4]
-    //                                  + two * momentU[2] * momentV[3]
-    //                                  + two * momentU[2] * momentV[1] * momentW[2]
-    //                                  + two * momentU[2] * momentV[1] *              momentXi[2]
-    //                                  + two *              momentV[3] * momentW[2]
-    //                                  + two *              momentV[3] *              momentXi[2]
-    //                                  + two *              momentV[1] * momentW[2] * momentXi[2]
-    //                                  )
-    //              
-    //              + az[0] * c1o2 *    (       momentU[2] *              momentW[1]
-    //                                  +                    momentV[2] * momentW[1]
-    //                                  +                                 momentW[3] 
-    //                                  +                                 momentW[1] * momentXi[2] )
-    //                                          
-    //              + az[1] * c1o2 *    (       momentU[3] *              momentW[1]
-    //                                  +       momentU[1] * momentV[2] * momentW[1]
-    //                                  +       momentU[1] *              momentW[3] 
-    //                                  +       momentU[1] *              momentW[1] * momentXi[2] )
-    //                                          
-    //              + az[2] * c1o2 *    (       momentU[2] * momentV[1] * momentW[1]
-    //                                  +                    momentV[3] * momentW[1]
-    //                                  +                    momentV[1] * momentW[3]
-    //                                  +                    momentV[1] * momentW[1] * momentXi[2] )
-    //                                          
-    //              + az[3] * c1o2 *    (       momentU[2] *              momentW[2]
-    //                                  +                    momentV[2] * momentW[2]
-    //                                  +                                 momentW[4]
-    //                                  +                                 momentW[2] * momentXi[2] )
-
-    //              + az[4] * c1o4 *    (       momentU[4] *              momentW[1]
-    //                                  +                    momentV[4] * momentW[1]
-    //                                  +                                 momentW[5]
-    //                                  +                                 momentW[1] * momentXi[4]
-    //                                  + two * momentU[2] * momentV[2] * momentW[1]
-    //                                  + two * momentU[2] *              momentW[3]
-    //                                  + two * momentU[2] *              momentW[1] * momentXi[2]
-    //                                  + two *              momentV[2] * momentW[3]
-    //                                  + two *              momentV[2] * momentW[1] * momentXi[2]
-    //                                  + two *                           momentW[3] * momentXi[2]
-    //                                  )
-    //              ;
+    timeGrad.rhoW = ax[0]*momentU[1]*momentW[1] + ax[1]*momentU[2]*momentW[1] + 
+   c1o2*ax[4]*momentU[3]*momentW[1] + ay[0]*momentV[1]*momentW[1] + 
+   ax[2]*momentU[1]*momentV[1]*momentW[1] + ay[1]*momentU[1]*momentV[1]*momentW[1] + 
+   c1o2*ay[4]*momentU[2]*momentV[1]*momentW[1] + ay[2]*momentV[2]*momentW[1] + 
+   c1o2*ax[4]*momentU[1]*momentV[2]*momentW[1] + c1o2*ay[4]*momentV[3]*momentW[1] + 
+   az[0]*momentW[2] + ax[3]*momentU[1]*momentW[2] + az[1]*momentU[1]*momentW[2] + 
+   c1o2*az[4]*momentU[2]*momentW[2] + ay[3]*momentV[1]*momentW[2] + 
+   az[2]*momentV[1]*momentW[2] + c1o2*az[4]*momentV[2]*momentW[2] + az[3]*momentW[3] + 
+   c1o2*ax[4]*momentU[1]*momentW[3] + c1o2*ay[4]*momentV[1]*momentW[3] + 
+   c1o2*az[4]*momentW[4] + c1o2*ax[4]*momentU[1]*momentW[1]*momentXi[2] + 
+   c1o2*ay[4]*momentV[1]*momentW[1]*momentXi[2] + c1o2*az[4]*momentW[2]*momentXi[2];
 
     timeGrad.rhoE = c1o2*ax[0]*momentU[3] + c1o2*ax[1]*momentU[4] + c1o4*ax[4]*momentU[5] + 
-                    c1o2*ax[0]*momentU[2]*momentV[1] + c1o2*ax[2]*momentU[3]*momentV[1] + 
-                    c1o2*ay[1]*momentU[3]*momentV[1] + c1o4*ay[4]*momentU[4]*momentV[1] + 
-                    c1o2*ax[0]*momentU[1]*momentV[2] + c1o2*ax[1]*momentU[2]*momentV[2] + 
-                    c1o2*ay[2]*momentU[2]*momentV[2] + c1o2*ax[4]*momentU[3]*momentV[2] + c1o2*ax[0]*momentV[3] + 
-                    c1o2*ax[2]*momentU[1]*momentV[3] + c1o2*ay[1]*momentU[1]*momentV[3] + 
-                    c1o2*ay[4]*momentU[2]*momentV[3] + c1o2*ay[2]*momentV[4] + c1o4*ax[4]*momentU[1]*momentV[4] + 
-                    c1o4*ay[4]*momentV[5] + c1o2*ax[0]*momentU[2]*momentW[1] + c1o2*ax[3]*momentU[3]*momentW[1] + 
-                    c1o2*az[1]*momentU[3]*momentW[1] + c1o4*az[4]*momentU[4]*momentW[1] + 
-                    c1o2*ay[3]*momentU[2]*momentV[1]*momentW[1] + c1o2*az[2]*momentU[2]*momentV[1]*momentW[1] + 
-                    c1o2*ax[0]*momentV[2]*momentW[1] + c1o2*ax[3]*momentU[1]*momentV[2]*momentW[1] + 
-                    c1o2*az[1]*momentU[1]*momentV[2]*momentW[1] + c1o2*az[4]*momentU[2]*momentV[2]*momentW[1] + 
-                    c1o2*ay[3]*momentV[3]*momentW[1] + c1o2*az[2]*momentV[3]*momentW[1] + 
-                    c1o4*az[4]*momentV[4]*momentW[1] + c1o2*ax[0]*momentU[1]*momentW[2] + 
-                    c1o2*ax[1]*momentU[2]*momentW[2] + c1o2*az[3]*momentU[2]*momentW[2] + 
-                    c1o2*ax[4]*momentU[3]*momentW[2] + c1o2*ax[0]*momentV[1]*momentW[2] + 
-                    c1o2*ax[2]*momentU[1]*momentV[1]*momentW[2] + c1o2*ay[1]*momentU[1]*momentV[1]*momentW[2] + 
-                    c1o2*ay[4]*momentU[2]*momentV[1]*momentW[2] + c1o2*ay[2]*momentV[2]*momentW[2] + 
-                    c1o2*az[3]*momentV[2]*momentW[2] + c1o2*ax[4]*momentU[1]*momentV[2]*momentW[2] + 
-                    c1o2*ay[4]*momentV[3]*momentW[2] + c1o2*ax[0]*momentW[3] + c1o2*ax[3]*momentU[1]*momentW[3] + 
-                    c1o2*az[1]*momentU[1]*momentW[3] + c1o2*az[4]*momentU[2]*momentW[3] + 
-                    c1o2*ay[3]*momentV[1]*momentW[3] + c1o2*az[2]*momentV[1]*momentW[3] + 
-                    c1o2*az[4]*momentV[2]*momentW[3] + c1o2*az[3]*momentW[4] + c1o4*ax[4]*momentU[1]*momentW[4] + 
-                    c1o4*ay[4]*momentV[1]*momentW[4] + c1o4*az[4]*momentW[5] + 
-                    c1o2*ax[0]*momentU[1]*momentXi[2] + c1o2*ax[1]*momentU[2]*momentXi[2] + 
-                    c1o2*ax[4]*momentU[3]*momentXi[2] + c1o2*ax[0]*momentV[1]*momentXi[2] + 
-                    c1o2*ax[2]*momentU[1]*momentV[1]*momentXi[2] + c1o2*ay[1]*momentU[1]*momentV[1]*momentXi[2] + 
-                    c1o2*ay[4]*momentU[2]*momentV[1]*momentXi[2] + c1o2*ay[2]*momentV[2]*momentXi[2] + 
-                    c1o2*ax[4]*momentU[1]*momentV[2]*momentXi[2] + c1o2*ay[4]*momentV[3]*momentXi[2] + 
-                    c1o2*ax[0]*momentW[1]*momentXi[2] + c1o2*ax[3]*momentU[1]*momentW[1]*momentXi[2] + 
-                    c1o2*az[1]*momentU[1]*momentW[1]*momentXi[2] + c1o2*az[4]*momentU[2]*momentW[1]*momentXi[2] + 
-                    c1o2*ay[3]*momentV[1]*momentW[1]*momentXi[2] + c1o2*az[2]*momentV[1]*momentW[1]*momentXi[2] + 
-                    c1o2*az[4]*momentV[2]*momentW[1]*momentXi[2] + c1o2*az[3]*momentW[2]*momentXi[2] + 
-                    c1o2*ax[4]*momentU[1]*momentW[2]*momentXi[2] + c1o2*ay[4]*momentV[1]*momentW[2]*momentXi[2] + 
-                    c1o2*az[4]*momentW[3]*momentXi[2] + c1o4*ax[4]*momentU[1]*momentXi[4] + 
-                    c1o4*ay[4]*momentV[1]*momentXi[4] + c1o4*az[4]*momentW[1]*momentXi[4];
+   c1o2*ay[0]*momentU[2]*momentV[1] + c1o2*ax[2]*momentU[3]*momentV[1] + 
+   c1o2*ay[1]*momentU[3]*momentV[1] + c1o4*ay[4]*momentU[4]*momentV[1] + 
+   c1o2*ax[0]*momentU[1]*momentV[2] + c1o2*ax[1]*momentU[2]*momentV[2] + 
+   c1o2*ay[2]*momentU[2]*momentV[2] + c1o2*ax[4]*momentU[3]*momentV[2] + 
+   c1o2*ay[0]*momentV[3] + c1o2*ax[2]*momentU[1]*momentV[3] + 
+   c1o2*ay[1]*momentU[1]*momentV[3] + c1o2*ay[4]*momentU[2]*momentV[3] + 
+   c1o2*ay[2]*momentV[4] + c1o4*ax[4]*momentU[1]*momentV[4] + c1o4*ay[4]*momentV[5] + 
+   c1o2*az[0]*momentU[2]*momentW[1] + c1o2*ax[3]*momentU[3]*momentW[1] + 
+   c1o2*az[1]*momentU[3]*momentW[1] + c1o4*az[4]*momentU[4]*momentW[1] + 
+   c1o2*ay[3]*momentU[2]*momentV[1]*momentW[1] + c1o2*az[2]*momentU[2]*momentV[1]*momentW[1] + 
+   c1o2*az[0]*momentV[2]*momentW[1] + c1o2*ax[3]*momentU[1]*momentV[2]*momentW[1] + 
+   c1o2*az[1]*momentU[1]*momentV[2]*momentW[1] + c1o2*az[4]*momentU[2]*momentV[2]*momentW[1] + 
+   c1o2*ay[3]*momentV[3]*momentW[1] + c1o2*az[2]*momentV[3]*momentW[1] + 
+   c1o4*az[4]*momentV[4]*momentW[1] + c1o2*ax[0]*momentU[1]*momentW[2] + 
+   c1o2*ax[1]*momentU[2]*momentW[2] + c1o2*az[3]*momentU[2]*momentW[2] + 
+   c1o2*ax[4]*momentU[3]*momentW[2] + c1o2*ay[0]*momentV[1]*momentW[2] + 
+   c1o2*ax[2]*momentU[1]*momentV[1]*momentW[2] + c1o2*ay[1]*momentU[1]*momentV[1]*momentW[2] + 
+   c1o2*ay[4]*momentU[2]*momentV[1]*momentW[2] + c1o2*ay[2]*momentV[2]*momentW[2] + 
+   c1o2*az[3]*momentV[2]*momentW[2] + c1o2*ax[4]*momentU[1]*momentV[2]*momentW[2] + 
+   c1o2*ay[4]*momentV[3]*momentW[2] + c1o2*az[0]*momentW[3] + 
+   c1o2*ax[3]*momentU[1]*momentW[3] + c1o2*az[1]*momentU[1]*momentW[3] + 
+   c1o2*az[4]*momentU[2]*momentW[3] + c1o2*ay[3]*momentV[1]*momentW[3] + 
+   c1o2*az[2]*momentV[1]*momentW[3] + c1o2*az[4]*momentV[2]*momentW[3] + 
+   c1o2*az[3]*momentW[4] + c1o4*ax[4]*momentU[1]*momentW[4] + 
+   c1o4*ay[4]*momentV[1]*momentW[4] + c1o4*az[4]*momentW[5] + 
+   c1o2*ax[0]*momentU[1]*momentXi[2] + c1o2*ax[1]*momentU[2]*momentXi[2] + 
+   c1o2*ax[4]*momentU[3]*momentXi[2] + c1o2*ay[0]*momentV[1]*momentXi[2] + 
+   c1o2*ax[2]*momentU[1]*momentV[1]*momentXi[2] + 
+   c1o2*ay[1]*momentU[1]*momentV[1]*momentXi[2] + 
+   c1o2*ay[4]*momentU[2]*momentV[1]*momentXi[2] + c1o2*ay[2]*momentV[2]*momentXi[2] + 
+   c1o2*ax[4]*momentU[1]*momentV[2]*momentXi[2] + c1o2*ay[4]*momentV[3]*momentXi[2] + 
+   c1o2*az[0]*momentW[1]*momentXi[2] + c1o2*ax[3]*momentU[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[1]*momentU[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[2]*momentW[1]*momentXi[2] + 
+   c1o2*ay[3]*momentV[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[2]*momentV[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[4]*momentV[2]*momentW[1]*momentXi[2] + c1o2*az[3]*momentW[2]*momentXi[2] + 
+   c1o2*ax[4]*momentU[1]*momentW[2]*momentXi[2] + 
+   c1o2*ay[4]*momentV[1]*momentW[2]*momentXi[2] + c1o2*az[4]*momentW[3]*momentXi[2] + 
+   c1o4*ax[4]*momentU[1]*momentXi[4] + c1o4*ay[4]*momentV[1]*momentXi[4] + 
+   c1o4*az[4]*momentW[1]*momentXi[4];
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -356,7 +139,7 @@ __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables&
                    + two * facePrim.lambda * (                momentV[1] *                              facePrim.V -              momentV[2]              ) * force.y
                    + two * facePrim.lambda * (                momentV[1] *                              facePrim.W -              momentV[1] * momentW[1] ) * force.z ;
                                                                                                          
-    timeGrad.rhoV += two * facePrim.lambda * (                             momentW[1] *                 facePrim.U - momentU[1] *              momentW[1] ) * force.x
+    timeGrad.rhoW += two * facePrim.lambda * (                             momentW[1] *                 facePrim.U - momentU[1] *              momentW[1] ) * force.x
                    + two * facePrim.lambda * (                             momentW[1] *                 facePrim.V -              momentV[1] * momentW[1] ) * force.y
                    + two * facePrim.lambda * (                             momentW[1] *                 facePrim.W -                           momentW[2] ) * force.z ;
 
@@ -376,7 +159,7 @@ __host__ __device__ inline void computeTimeDerivative( const PrimitiveVariables&
                                                +              momentV[1] *              momentXi[2] )
                                              ) * force.y
 
-                   +       facePrim.lambda * ( ( momentU[2] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.V
+                   +       facePrim.lambda * ( ( momentU[2] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.W
 
                                              - ( momentU[2] *              momentW[1]
                                                +              momentV[2] * momentW[1]
@@ -486,92 +269,109 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 
     //////////////////////////////////////////////////////////////////////////
 
-    flux_2.rho  = ax[0]*momentU[2] + ax[1]*momentU[3] + ax[0]*momentU[1]*momentV[1] + 
-                  ax[2]*momentU[2]*momentV[1] + ay[1]*momentU[2]*momentV[1] + ay[2]*momentU[1]*momentV[2] + 
-                  ax[0]*momentU[1]*momentW[1] + ax[3]*momentU[2]*momentW[1] + az[1]*momentU[2]*momentW[1] + 
-                  ay[3]*momentU[1]*momentV[1]*momentW[1] + az[2]*momentU[1]*momentV[1]*momentW[1] + 
-                  az[3]*momentU[1]*momentW[2] + ax[4]*(c1o2*momentU[4] + c1o2*momentU[2]*momentV[2] + 
-                     c1o2*momentU[2]*momentW[2] + c1o2*momentU[2]*momentXi[2]) + 
-                  ay[4]*(c1o2*momentU[3]*momentV[1] + c1o2*momentU[1]*momentV[3] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[2] + c1o2*momentU[1]*momentV[1]*momentXi[2]) + 
-                  az[4]*(c1o2*momentU[3]*momentW[1] + c1o2*momentU[1]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[1]*momentW[3] + c1o2*momentU[1]*momentW[1]*momentXi[2]);
+    flux_2.rho  = ax[0]*momentU[2] + ax[1]*momentU[3] + c1o2*ax[4]*momentU[4] + 
+   ay[0]*momentU[1]*momentV[1] + ax[2]*momentU[2]*momentV[1] + 
+   ay[1]*momentU[2]*momentV[1] + c1o2*ay[4]*momentU[3]*momentV[1] + 
+   ay[2]*momentU[1]*momentV[2] + c1o2*ax[4]*momentU[2]*momentV[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[3] + az[0]*momentU[1]*momentW[1] + 
+   ax[3]*momentU[2]*momentW[1] + az[1]*momentU[2]*momentW[1] + 
+   c1o2*az[4]*momentU[3]*momentW[1] + ay[3]*momentU[1]*momentV[1]*momentW[1] + 
+   az[2]*momentU[1]*momentV[1]*momentW[1] + c1o2*az[4]*momentU[1]*momentV[2]*momentW[1] + 
+   az[3]*momentU[1]*momentW[2] + c1o2*ax[4]*momentU[2]*momentW[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[1]*momentW[2] + c1o2*az[4]*momentU[1]*momentW[3] + 
+   c1o2*ax[4]*momentU[2]*momentXi[2] + c1o2*ay[4]*momentU[1]*momentV[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[1]*momentW[1]*momentXi[2];
 
-    flux_2.rhoU = ax[0]*momentU[3] + ax[1]*momentU[4] + ax[0]*momentU[2]*momentV[1] + 
-                  ax[2]*momentU[3]*momentV[1] + ay[1]*momentU[3]*momentV[1] + ay[2]*momentU[2]*momentV[2] + 
-                  ax[0]*momentU[2]*momentW[1] + ax[3]*momentU[3]*momentW[1] + az[1]*momentU[3]*momentW[1] + 
-                  ay[3]*momentU[2]*momentV[1]*momentW[1] + az[2]*momentU[2]*momentV[1]*momentW[1] + 
-                  az[3]*momentU[2]*momentW[2] + ax[4]*(c1o2*momentU[5] + c1o2*momentU[3]*momentV[2] + 
-                     c1o2*momentU[3]*momentW[2] + c1o2*momentU[3]*momentXi[2]) + 
-                  ay[4]*(c1o2*momentU[4]*momentV[1] + c1o2*momentU[2]*momentV[3] + 
-                     c1o2*momentU[2]*momentV[1]*momentW[2] + c1o2*momentU[2]*momentV[1]*momentXi[2]) + 
-                  az[4]*(c1o2*momentU[4]*momentW[1] + c1o2*momentU[2]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[2]*momentW[3] + c1o2*momentU[2]*momentW[1]*momentXi[2]);
+    flux_2.rhoU = ax[0]*momentU[3] + ax[1]*momentU[4] + c1o2*ax[4]*momentU[5] + 
+   ay[0]*momentU[2]*momentV[1] + ax[2]*momentU[3]*momentV[1] + 
+   ay[1]*momentU[3]*momentV[1] + c1o2*ay[4]*momentU[4]*momentV[1] + 
+   ay[2]*momentU[2]*momentV[2] + c1o2*ax[4]*momentU[3]*momentV[2] + 
+   c1o2*ay[4]*momentU[2]*momentV[3] + az[0]*momentU[2]*momentW[1] + 
+   ax[3]*momentU[3]*momentW[1] + az[1]*momentU[3]*momentW[1] + 
+   c1o2*az[4]*momentU[4]*momentW[1] + ay[3]*momentU[2]*momentV[1]*momentW[1] + 
+   az[2]*momentU[2]*momentV[1]*momentW[1] + c1o2*az[4]*momentU[2]*momentV[2]*momentW[1] + 
+   az[3]*momentU[2]*momentW[2] + c1o2*ax[4]*momentU[3]*momentW[2] + 
+   c1o2*ay[4]*momentU[2]*momentV[1]*momentW[2] + c1o2*az[4]*momentU[2]*momentW[3] + 
+   c1o2*ax[4]*momentU[3]*momentXi[2] + c1o2*ay[4]*momentU[2]*momentV[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[2]*momentW[1]*momentXi[2];
 
-    flux_2.rhoV = ax[0]*momentU[2]*momentV[1] + ax[1]*momentU[3]*momentV[1] + ax[0]*momentU[1]*momentV[2] + 
-                  ax[2]*momentU[2]*momentV[2] + ay[1]*momentU[2]*momentV[2] + ay[2]*momentU[1]*momentV[3] + 
-                  ax[0]*momentU[1]*momentV[1]*momentW[1] + ax[3]*momentU[2]*momentV[1]*momentW[1] + 
-                  az[1]*momentU[2]*momentV[1]*momentW[1] + ay[3]*momentU[1]*momentV[2]*momentW[1] + 
-                  az[2]*momentU[1]*momentV[2]*momentW[1] + az[3]*momentU[1]*momentV[1]*momentW[2] + 
-                  ax[4]*(c1o2*momentU[4]*momentV[1] + c1o2*momentU[2]*momentV[3] + 
-                     c1o2*momentU[2]*momentV[1]*momentW[2] + c1o2*momentU[2]*momentV[1]*momentXi[2]) + 
-                  ay[4]*(c1o2*momentU[3]*momentV[2] + c1o2*momentU[1]*momentV[4] + 
-                     c1o2*momentU[1]*momentV[2]*momentW[2] + c1o2*momentU[1]*momentV[2]*momentXi[2]) + 
-                  az[4]*(c1o2*momentU[3]*momentV[1]*momentW[1] + c1o2*momentU[1]*momentV[3]*momentW[1] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[3] + c1o2*momentU[1]*momentV[1]*momentW[1]*momentXi[2]);
+    flux_2.rhoV = ax[0]*momentU[2]*momentV[1] + ax[1]*momentU[3]*momentV[1] + 
+   c1o2*ax[4]*momentU[4]*momentV[1] + ay[0]*momentU[1]*momentV[2] + 
+   ax[2]*momentU[2]*momentV[2] + ay[1]*momentU[2]*momentV[2] + 
+   c1o2*ay[4]*momentU[3]*momentV[2] + ay[2]*momentU[1]*momentV[3] + 
+   c1o2*ax[4]*momentU[2]*momentV[3] + c1o2*ay[4]*momentU[1]*momentV[4] + 
+   az[0]*momentU[1]*momentV[1]*momentW[1] + ax[3]*momentU[2]*momentV[1]*momentW[1] + 
+   az[1]*momentU[2]*momentV[1]*momentW[1] + c1o2*az[4]*momentU[3]*momentV[1]*momentW[1] + 
+   ay[3]*momentU[1]*momentV[2]*momentW[1] + az[2]*momentU[1]*momentV[2]*momentW[1] + 
+   c1o2*az[4]*momentU[1]*momentV[3]*momentW[1] + az[3]*momentU[1]*momentV[1]*momentW[2] + 
+   c1o2*ax[4]*momentU[2]*momentV[1]*momentW[2] + c1o2*ay[4]*momentU[1]*momentV[2]*momentW[2] + 
+   c1o2*az[4]*momentU[1]*momentV[1]*momentW[3] + 
+   c1o2*ax[4]*momentU[2]*momentV[1]*momentXi[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[2]*momentXi[2] + 
+   c1o2*az[4]*momentU[1]*momentV[1]*momentW[1]*momentXi[2];
     
     flux_2.rhoW = ax[0]*momentU[2]*momentW[1] + ax[1]*momentU[3]*momentW[1] + 
-                  ax[0]*momentU[1]*momentV[1]*momentW[1] + ax[2]*momentU[2]*momentV[1]*momentW[1] + 
-                  ay[1]*momentU[2]*momentV[1]*momentW[1] + ay[2]*momentU[1]*momentV[2]*momentW[1] + 
-                  ax[0]*momentU[1]*momentW[2] + ax[3]*momentU[2]*momentW[2] + az[1]*momentU[2]*momentW[2] + 
-                  ay[3]*momentU[1]*momentV[1]*momentW[2] + az[2]*momentU[1]*momentV[1]*momentW[2] + 
-                  az[3]*momentU[1]*momentW[3] + ax[4]*(c1o2*momentU[4]*momentW[1] + 
-                     c1o2*momentU[2]*momentV[2]*momentW[1] + c1o2*momentU[2]*momentW[3] + 
-                     c1o2*momentU[2]*momentW[1]*momentXi[2]) + 
-                  ay[4]*(c1o2*momentU[3]*momentV[1]*momentW[1] + c1o2*momentU[1]*momentV[3]*momentW[1] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[3] + c1o2*momentU[1]*momentV[1]*momentW[1]*momentXi[2]) + 
-                  az[4]*(c1o2*momentU[3]*momentW[2] + c1o2*momentU[1]*momentV[2]*momentW[2] + 
-                     c1o2*momentU[1]*momentW[4] + c1o2*momentU[1]*momentW[2]*momentXi[2]);
+   c1o2*ax[4]*momentU[4]*momentW[1] + ay[0]*momentU[1]*momentV[1]*momentW[1] + 
+   ax[2]*momentU[2]*momentV[1]*momentW[1] + ay[1]*momentU[2]*momentV[1]*momentW[1] + 
+   c1o2*ay[4]*momentU[3]*momentV[1]*momentW[1] + ay[2]*momentU[1]*momentV[2]*momentW[1] + 
+   c1o2*ax[4]*momentU[2]*momentV[2]*momentW[1] + c1o2*ay[4]*momentU[1]*momentV[3]*momentW[1] + 
+   az[0]*momentU[1]*momentW[2] + ax[3]*momentU[2]*momentW[2] + 
+   az[1]*momentU[2]*momentW[2] + c1o2*az[4]*momentU[3]*momentW[2] + 
+   ay[3]*momentU[1]*momentV[1]*momentW[2] + az[2]*momentU[1]*momentV[1]*momentW[2] + 
+   c1o2*az[4]*momentU[1]*momentV[2]*momentW[2] + az[3]*momentU[1]*momentW[3] + 
+   c1o2*ax[4]*momentU[2]*momentW[3] + c1o2*ay[4]*momentU[1]*momentV[1]*momentW[3] + 
+   c1o2*az[4]*momentU[1]*momentW[4] + c1o2*ax[4]*momentU[2]*momentW[1]*momentXi[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[1]*momentW[2]*momentXi[2];
 
-    flux_2.rhoE = ax[0]*(c1o2*momentU[4] + c1o2*momentU[2]*momentV[2] + c1o2*momentU[2]*momentW[2] + 
-                     c1o2*momentU[2]*momentXi[2]) + ax[1]*
-                   (c1o2*momentU[5] + c1o2*momentU[3]*momentV[2] + c1o2*momentU[3]*momentW[2] + 
-                     c1o2*momentU[3]*momentXi[2]) + ax[0]*
-                   (c1o2*momentU[3]*momentV[1] + c1o2*momentU[1]*momentV[3] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[2] + c1o2*momentU[1]*momentV[1]*momentXi[2]) + 
-                  ax[2]*(c1o2*momentU[4]*momentV[1] + c1o2*momentU[2]*momentV[3] + 
-                     c1o2*momentU[2]*momentV[1]*momentW[2] + c1o2*momentU[2]*momentV[1]*momentXi[2]) + 
-                  ay[1]*(c1o2*momentU[4]*momentV[1] + c1o2*momentU[2]*momentV[3] + 
-                     c1o2*momentU[2]*momentV[1]*momentW[2] + c1o2*momentU[2]*momentV[1]*momentXi[2]) + 
-                  ay[2]*(c1o2*momentU[3]*momentV[2] + c1o2*momentU[1]*momentV[4] + 
-                     c1o2*momentU[1]*momentV[2]*momentW[2] + c1o2*momentU[1]*momentV[2]*momentXi[2]) + 
-                  ax[0]*(c1o2*momentU[3]*momentW[1] + c1o2*momentU[1]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[1]*momentW[3] + c1o2*momentU[1]*momentW[1]*momentXi[2]) + 
-                  ax[3]*(c1o2*momentU[4]*momentW[1] + c1o2*momentU[2]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[2]*momentW[3] + c1o2*momentU[2]*momentW[1]*momentXi[2]) + 
-                  az[1]*(c1o2*momentU[4]*momentW[1] + c1o2*momentU[2]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[2]*momentW[3] + c1o2*momentU[2]*momentW[1]*momentXi[2]) + 
-                  ay[3]*(c1o2*momentU[3]*momentV[1]*momentW[1] + c1o2*momentU[1]*momentV[3]*momentW[1] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[3] + c1o2*momentU[1]*momentV[1]*momentW[1]*momentXi[2]) + 
-                  az[2]*(c1o2*momentU[3]*momentV[1]*momentW[1] + c1o2*momentU[1]*momentV[3]*momentW[1] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[3] + c1o2*momentU[1]*momentV[1]*momentW[1]*momentXi[2]) + 
-                  az[3]*(c1o2*momentU[3]*momentW[2] + c1o2*momentU[1]*momentV[2]*momentW[2] + 
-                     c1o2*momentU[1]*momentW[4] + c1o2*momentU[1]*momentW[2]*momentXi[2]) + 
-                  ax[4]*(c1o4*momentU[6] + c1o2*momentU[4]*momentV[2] + c1o4*momentU[2]*momentV[4] + 
-                     c1o2*momentU[4]*momentW[2] + c1o2*momentU[2]*momentV[2]*momentW[2] + 
-                     c1o4*momentU[2]*momentW[4] + c1o2*momentU[4]*momentXi[2] + 
-                     c1o2*momentU[2]*momentV[2]*momentXi[2] + c1o2*momentU[2]*momentW[2]*momentXi[2] + 
-                     c1o4*momentU[2]*momentXi[4]) + ay[4]*
-                   (c1o4*momentU[5]*momentV[1] + c1o2*momentU[3]*momentV[3] + c1o4*momentU[1]*momentV[5] + 
-                     c1o2*momentU[3]*momentV[1]*momentW[2] + c1o2*momentU[1]*momentV[3]*momentW[2] + 
-                     c1o4*momentU[1]*momentV[1]*momentW[4] + c1o2*momentU[3]*momentV[1]*momentXi[2] + 
-                     c1o2*momentU[1]*momentV[3]*momentXi[2] + c1o2*momentU[1]*momentV[1]*momentW[2]*momentXi[2] + 
-                     c1o4*momentU[1]*momentV[1]*momentXi[4]) + 
-                  az[4]*(c1o4*momentU[5]*momentW[1] + c1o2*momentU[3]*momentV[2]*momentW[1] + 
-                     c1o4*momentU[1]*momentV[4]*momentW[1] + c1o2*momentU[3]*momentW[3] + 
-                     c1o2*momentU[1]*momentV[2]*momentW[3] + c1o4*momentU[1]*momentW[5] + 
-                     c1o2*momentU[3]*momentW[1]*momentXi[2] + c1o2*momentU[1]*momentV[2]*momentW[1]*momentXi[2] + 
-                     c1o2*momentU[1]*momentW[3]*momentXi[2] + c1o4*momentU[1]*momentW[1]*momentXi[4]);
+    flux_2.rhoE = c1o2*ax[0]*momentU[4] + c1o2*ax[1]*momentU[5] + c1o4*ax[4]*momentU[6] + 
+   c1o2*ay[0]*momentU[3]*momentV[1] + c1o2*ax[2]*momentU[4]*momentV[1] + 
+   c1o2*ay[1]*momentU[4]*momentV[1] + c1o4*ay[4]*momentU[5]*momentV[1] + 
+   c1o2*ax[0]*momentU[2]*momentV[2] + c1o2*ax[1]*momentU[3]*momentV[2] + 
+   c1o2*ay[2]*momentU[3]*momentV[2] + c1o2*ax[4]*momentU[4]*momentV[2] + 
+   c1o2*ay[0]*momentU[1]*momentV[3] + c1o2*ax[2]*momentU[2]*momentV[3] + 
+   c1o2*ay[1]*momentU[2]*momentV[3] + c1o2*ay[4]*momentU[3]*momentV[3] + 
+   c1o2*ay[2]*momentU[1]*momentV[4] + c1o4*ax[4]*momentU[2]*momentV[4] + 
+   c1o4*ay[4]*momentU[1]*momentV[5] + c1o2*az[0]*momentU[3]*momentW[1] + 
+   c1o2*ax[3]*momentU[4]*momentW[1] + c1o2*az[1]*momentU[4]*momentW[1] + 
+   c1o4*az[4]*momentU[5]*momentW[1] + c1o2*ay[3]*momentU[3]*momentV[1]*momentW[1] + 
+   c1o2*az[2]*momentU[3]*momentV[1]*momentW[1] + 
+   c1o2*az[0]*momentU[1]*momentV[2]*momentW[1] + 
+   c1o2*ax[3]*momentU[2]*momentV[2]*momentW[1] + c1o2*az[1]*momentU[2]*momentV[2]*momentW[1] + 
+   c1o2*az[4]*momentU[3]*momentV[2]*momentW[1] + c1o2*ay[3]*momentU[1]*momentV[3]*momentW[1] + 
+   c1o2*az[2]*momentU[1]*momentV[3]*momentW[1] + c1o4*az[4]*momentU[1]*momentV[4]*momentW[1] + 
+   c1o2*ax[0]*momentU[2]*momentW[2] + c1o2*ax[1]*momentU[3]*momentW[2] + 
+   c1o2*az[3]*momentU[3]*momentW[2] + c1o2*ax[4]*momentU[4]*momentW[2] + 
+   c1o2*ay[0]*momentU[1]*momentV[1]*momentW[2] + 
+   c1o2*ax[2]*momentU[2]*momentV[1]*momentW[2] + c1o2*ay[1]*momentU[2]*momentV[1]*momentW[2] + 
+   c1o2*ay[4]*momentU[3]*momentV[1]*momentW[2] + c1o2*ay[2]*momentU[1]*momentV[2]*momentW[2] + 
+   c1o2*az[3]*momentU[1]*momentV[2]*momentW[2] + c1o2*ax[4]*momentU[2]*momentV[2]*momentW[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[3]*momentW[2] + c1o2*az[0]*momentU[1]*momentW[3] + 
+   c1o2*ax[3]*momentU[2]*momentW[3] + c1o2*az[1]*momentU[2]*momentW[3] + 
+   c1o2*az[4]*momentU[3]*momentW[3] + c1o2*ay[3]*momentU[1]*momentV[1]*momentW[3] + 
+   c1o2*az[2]*momentU[1]*momentV[1]*momentW[3] + c1o2*az[4]*momentU[1]*momentV[2]*momentW[3] + 
+   c1o2*az[3]*momentU[1]*momentW[4] + c1o4*ax[4]*momentU[2]*momentW[4] + 
+   c1o4*ay[4]*momentU[1]*momentV[1]*momentW[4] + c1o4*az[4]*momentU[1]*momentW[5] + 
+   c1o2*ax[0]*momentU[2]*momentXi[2] + c1o2*ax[1]*momentU[3]*momentXi[2] + 
+   c1o2*ax[4]*momentU[4]*momentXi[2] + c1o2*ay[0]*momentU[1]*momentV[1]*momentXi[2] + 
+   c1o2*ax[2]*momentU[2]*momentV[1]*momentXi[2] + 
+   c1o2*ay[1]*momentU[2]*momentV[1]*momentXi[2] + 
+   c1o2*ay[4]*momentU[3]*momentV[1]*momentXi[2] + 
+   c1o2*ay[2]*momentU[1]*momentV[2]*momentXi[2] + 
+   c1o2*ax[4]*momentU[2]*momentV[2]*momentXi[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[3]*momentXi[2] + 
+   c1o2*az[0]*momentU[1]*momentW[1]*momentXi[2] + 
+   c1o2*ax[3]*momentU[2]*momentW[1]*momentXi[2] + 
+   c1o2*az[1]*momentU[2]*momentW[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[3]*momentW[1]*momentXi[2] + 
+   c1o2*ay[3]*momentU[1]*momentV[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[2]*momentU[1]*momentV[1]*momentW[1]*momentXi[2] + 
+   c1o2*az[4]*momentU[1]*momentV[2]*momentW[1]*momentXi[2] + 
+   c1o2*az[3]*momentU[1]*momentW[2]*momentXi[2] + 
+   c1o2*ax[4]*momentU[2]*momentW[2]*momentXi[2] + 
+   c1o2*ay[4]*momentU[1]*momentV[1]*momentW[2]*momentXi[2] + 
+   c1o2*az[4]*momentU[1]*momentW[3]*momentXi[2] + c1o4*ax[4]*momentU[2]*momentXi[4] + 
+   c1o4*ay[4]*momentU[1]*momentV[1]*momentXi[4] + c1o4*az[4]*momentU[1]*momentW[1]*momentXi[4];
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -587,7 +387,7 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
                  + two * facePrim.lambda * (   momentU[0+1] * momentV[1] *                              facePrim.V - momentU[0+1] * momentV[2]              ) * force.y
                  + two * facePrim.lambda * (   momentU[0+1] * momentV[1] *                              facePrim.W - momentU[0+1] * momentV[1] * momentW[1] ) * force.z ;
                                                                                                          
-    flux_2.rhoV += two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.U - momentU[1+1] *              momentW[1] ) * force.x
+    flux_2.rhoW += two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.U - momentU[1+1] *              momentW[1] ) * force.x
                  + two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.V - momentU[0+1] * momentV[1] * momentW[1] ) * force.y
                  + two * facePrim.lambda * (   momentU[0+1] *              momentW[1] *                 facePrim.W - momentU[0+1] *              momentW[2] ) * force.z ;
 
@@ -607,7 +407,7 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
                                              + momentU[0+1] * momentV[1] *              momentXi[2] )
                                            ) * force.y
 
-                 +       facePrim.lambda * ( ( momentU[2+1] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.V
+                 +       facePrim.lambda * ( ( momentU[2+1] + momentV[2] + momentW[2] + momentXi[2] ) * facePrim.W
 
                                            - ( momentU[2+1] *              momentW[1]
                                              + momentU[0+1] * momentV[2] * momentW[1]
@@ -617,37 +417,38 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 
     //////////////////////////////////////////////////////////////////////////
 
-    flux_3.rho  = at[0]*momentU[1] + at[1]*momentU[2] + at[2]*momentU[1]*momentV[1] + 
-                  at[3]*momentU[1]*momentW[1] + at[4]*(c1o2*momentU[3] + c1o2*momentU[1]*momentV[2] + 
-                     c1o2*momentU[1]*momentW[2] + c1o2*momentU[1]*momentXi[2]);
+    flux_3.rho  = at[0]*momentU[1] + at[1]*momentU[2] + c1o2*at[4]*momentU[3] + at[2]*momentU[1]*momentV[1] + 
+   c1o2*at[4]*momentU[1]*momentV[2] + at[3]*momentU[1]*momentW[1] + 
+   c1o2*at[4]*momentU[1]*momentW[2] + c1o2*at[4]*momentU[1]*momentXi[2];
 
-    flux_3.rhoU = at[0]*momentU[2] + at[1]*momentU[3] + at[2]*momentU[2]*momentV[1] + 
-                  at[3]*momentU[2]*momentW[1] + at[4]*(c1o2*momentU[4] + c1o2*momentU[2]*momentV[2] + 
-                     c1o2*momentU[2]*momentW[2] + c1o2*momentU[2]*momentXi[2]);
+    flux_3.rhoU = at[0]*momentU[2] + at[1]*momentU[3] + c1o2*at[4]*momentU[4] + at[2]*momentU[2]*momentV[1] + 
+   c1o2*at[4]*momentU[2]*momentV[2] + at[3]*momentU[2]*momentW[1] + 
+   c1o2*at[4]*momentU[2]*momentW[2] + c1o2*at[4]*momentU[2]*momentXi[2];
 
-    flux_3.rhoV = at[0]*momentU[1]*momentV[1] + at[1]*momentU[2]*momentV[1] + at[2]*momentU[1]*momentV[2] + 
-                  at[3]*momentU[1]*momentV[1]*momentW[1] + 
-                  at[4]*(c1o2*momentU[3]*momentV[1] + c1o2*momentU[1]*momentV[3] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[2] + c1o2*momentU[1]*momentV[1]*momentXi[2]);
+    flux_3.rhoV = at[0]*momentU[1]*momentV[1] + at[1]*momentU[2]*momentV[1] + 
+   c1o2*at[4]*momentU[3]*momentV[1] + at[2]*momentU[1]*momentV[2] + 
+   c1o2*at[4]*momentU[1]*momentV[3] + at[3]*momentU[1]*momentV[1]*momentW[1] + 
+   c1o2*at[4]*momentU[1]*momentV[1]*momentW[2] + c1o2*at[4]*momentU[1]*momentV[1]*momentXi[2];
 
     flux_3.rhoW = at[0]*momentU[1]*momentW[1] + at[1]*momentU[2]*momentW[1] + 
-                  at[2]*momentU[1]*momentV[1]*momentW[1] + at[3]*momentU[1]*momentW[2] + 
-                  at[4]*(c1o2*momentU[3]*momentW[1] + c1o2*momentU[1]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[1]*momentW[3] + c1o2*momentU[1]*momentW[1]*momentXi[2]);
+   c1o2*at[4]*momentU[3]*momentW[1] + at[2]*momentU[1]*momentV[1]*momentW[1] + 
+   c1o2*at[4]*momentU[1]*momentV[2]*momentW[1] + at[3]*momentU[1]*momentW[2] + 
+   c1o2*at[4]*momentU[1]*momentW[3] + c1o2*at[4]*momentU[1]*momentW[1]*momentXi[2];
 
-    flux_3.rhoE = at[0]*(c1o2*momentU[3] + c1o2*momentU[1]*momentV[2] + c1o2*momentU[1]*momentW[2] + 
-                     c1o2*momentU[1]*momentXi[2]) + at[1]*
-                   (c1o2*momentU[4] + c1o2*momentU[2]*momentV[2] + c1o2*momentU[2]*momentW[2] + 
-                     c1o2*momentU[2]*momentXi[2]) + at[2]*
-                   (c1o2*momentU[3]*momentV[1] + c1o2*momentU[1]*momentV[3] + 
-                     c1o2*momentU[1]*momentV[1]*momentW[2] + c1o2*momentU[1]*momentV[1]*momentXi[2]) + 
-                  at[3]*(c1o2*momentU[3]*momentW[1] + c1o2*momentU[1]*momentV[2]*momentW[1] + 
-                     c1o2*momentU[1]*momentW[3] + c1o2*momentU[1]*momentW[1]*momentXi[2]) + 
-                  at[4]*(c1o4*momentU[5] + c1o2*momentU[3]*momentV[2] + c1o4*momentU[1]*momentV[4] + 
-                     c1o2*momentU[3]*momentW[2] + c1o2*momentU[1]*momentV[2]*momentW[2] + 
-                     c1o4*momentU[1]*momentW[4] + c1o2*momentU[3]*momentXi[2] + 
-                     c1o2*momentU[1]*momentV[2]*momentXi[2] + c1o2*momentU[1]*momentW[2]*momentXi[2] + 
-                     c1o4*momentU[1]*momentXi[4]);
+    flux_3.rhoE = c1o2*at[0]*momentU[3] + c1o2*at[1]*momentU[4] + c1o4*at[4]*momentU[5] + 
+   c1o2*at[2]*momentU[3]*momentV[1] + c1o2*at[0]*momentU[1]*momentV[2] + 
+   c1o2*at[1]*momentU[2]*momentV[2] + c1o2*at[4]*momentU[3]*momentV[2] + 
+   c1o2*at[2]*momentU[1]*momentV[3] + c1o4*at[4]*momentU[1]*momentV[4] + 
+   c1o2*at[3]*momentU[3]*momentW[1] + c1o2*at[3]*momentU[1]*momentV[2]*momentW[1] + 
+   c1o2*at[0]*momentU[1]*momentW[2] + c1o2*at[1]*momentU[2]*momentW[2] + 
+   c1o2*at[4]*momentU[3]*momentW[2] + c1o2*at[2]*momentU[1]*momentV[1]*momentW[2] + 
+   c1o2*at[4]*momentU[1]*momentV[2]*momentW[2] + c1o2*at[3]*momentU[1]*momentW[3] + 
+   c1o4*at[4]*momentU[1]*momentW[4] + c1o2*at[0]*momentU[1]*momentXi[2] + 
+   c1o2*at[1]*momentU[2]*momentXi[2] + c1o2*at[4]*momentU[3]*momentXi[2] + 
+   c1o2*at[2]*momentU[1]*momentV[1]*momentXi[2] + 
+   c1o2*at[4]*momentU[1]*momentV[2]*momentXi[2] + 
+   c1o2*at[3]*momentU[1]*momentW[1]*momentXi[2] + 
+   c1o2*at[4]*momentU[1]*momentW[2]*momentXi[2] + c1o4*at[4]*momentU[1]*momentXi[4];
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -677,7 +478,7 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 	flux_2.rhoS = flux_2.rho * facePrim.S 
 				+ ( ax[5] * momentU[1+1]                          
 				  + ay[5] * momentU[0+1] * momentV[1]             
-				  + at[5] * momentU[0+1] *              momentW[1]
+				  + az[5] * momentU[0+1] *              momentW[1]
 				  ) / (two * facePrim.lambda);
 
 	flux_3.rhoS = flux_3.rho * facePrim.S

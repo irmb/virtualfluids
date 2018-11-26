@@ -23,7 +23,7 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
     }
 
     //if( level != dataBase->numberOfLevels - 1 ){
-
+    
     //    runCoarseToFineKernel( dataBase, type, level ); getLastCudaError();
 
     //    nestedTimeStep( dataBase, parameters, level + 1 );
