@@ -8,6 +8,7 @@
 #include <fstream>
 #include <memory>
 
+#include "Core/Timer/Timer.h"
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
@@ -32,6 +33,8 @@
 #include "GksGpu/BoundaryConditions/Periodic.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
+
+#include "GksGpu/Analyzer/CupsAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
@@ -166,16 +169,22 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
 
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+
+    cupsAnalyzer.start();
+
     for( uint iter = 1; iter < 100000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % 1000 == 0 )
+        if( iter % 10000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );
         }
+
+        cupsAnalyzer.run( iter );
     }
 
     //////////////////////////////////////////////////////////////////////////

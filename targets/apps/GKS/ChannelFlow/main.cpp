@@ -8,6 +8,7 @@
 #include <fstream>
 #include <memory>
 
+#include "Core/Timer/Timer.h"
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
@@ -33,6 +34,8 @@
 #include "GksGpu/BoundaryConditions/Pressure.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
+
+#include "GksGpu/Analyzer/CupsAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
@@ -215,22 +218,28 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
 
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+
+    cupsAnalyzer.start();
+
     for( uint iter = 1; iter <= 200000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( 
-            //( iter <=     10 && iter %     1 == 0 ) ||
-            //( iter <=    100 && iter %    10 == 0 ) ||
-            //( iter <=   1000 && iter %   100 == 0 ) ||
-            //( iter <=  10000 && iter %  1000 == 0 ) ||
-            ( iter <= 200000 && iter % 10000 == 0 )
-          )
-        {
-            dataBase->copyDataDeviceToHost();
+        //if( 
+        //    //( iter <=     10 && iter %     1 == 0 ) ||
+        //    //( iter <=    100 && iter %    10 == 0 ) ||
+        //    //( iter <=   1000 && iter %   100 == 0 ) ||
+        //    //( iter <=  10000 && iter %  1000 == 0 ) ||
+        //    ( iter <= 200000 && iter % 10000 == 0 )
+        //  )
+        //{
+        //    dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );
-        }
+        //    writeVtkXML( dataBase, parameters, 0, path + "grid/Test_" + std::to_string( iter ) );
+        //}
+
+        cupsAnalyzer.run( iter );
     }
 
     //////////////////////////////////////////////////////////////////////////
