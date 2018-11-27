@@ -17,7 +17,7 @@
 #include "Definitions/PassiveScalar.h"
 
 #include "FlowStateData/FlowStateData.cuh"
-#include "FlowstateData/AccessDeviceData.cuh"
+#include "FlowStateData/AccessDeviceData.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
 

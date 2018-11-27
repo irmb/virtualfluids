@@ -189,7 +189,8 @@ void gksTest( std::string path )
 
 int main( int argc, char* argv[])
 {
-    std::string path( "F:/Work/Computations/gridGenerator/" );
+    //std::string path( "F:/Work/Computations/gridGenerator/" );
+    std::string path( "out/" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);

@@ -42,9 +42,9 @@ void gksTest( std::string path )
 
     real L = 1.0;
 
-    real dx = L / 32.0;
+    real dx = L / 64.0;
 
-    real Re  = 1.0e3;
+    real Re  = 1.0e5;
     real U  = 0.1;
     real Ma = 0.1;
     
@@ -74,7 +74,7 @@ void gksTest( std::string path )
     parameters.Pr = Pr;
     parameters.mu = mu;
 
-    parameters.force.x = 0;
+    parameters.force.x = g;
     parameters.force.y = 0;
     parameters.force.z = 0;
 
@@ -103,7 +103,7 @@ void gksTest( std::string path )
     //gridBuilder->setNumberOfLayers(6,6);
     //gridBuilder->addGrid( &cube, 1);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+    gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -133,15 +133,15 @@ void gksTest( std::string path )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, p0 + 1.5 * g * L );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, p0 + 1.5 * g * L );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
 
     bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.x < -1.5;
     } );
     
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, p0 - 1.5 * g * L );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, p0 - 1.5 * g * L );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
 
     bcPX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.x > 1.5;
@@ -149,13 +149,15 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
+    //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
+    SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
 
     bcMY->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.y < -0.5;
     } );
 
-    SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
+    //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
 
     bcPY->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.y > 0.5;
@@ -163,21 +165,24 @@ void gksTest( std::string path )
 
     //////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
 
     bcMZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z < -0.5;
     } );
     
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
+    //SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
 
     bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
         return center.z > 0.5;
     } );
 
     //////////////////////////////////////////////////////////////////////////
+
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPX );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
@@ -185,22 +190,19 @@ void gksTest( std::string path )
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
 
-    dataBase->boundaryConditions.push_back( bcMX );
-    dataBase->boundaryConditions.push_back( bcPX );
-
-    for( auto bc : dataBase->boundaryConditions )
-        for( auto n : bc->numberOfCellsPerLevel )
-            std::cout << n << std::endl;
-
     //////////////////////////////////////////////////////////////////////////
 
     CudaUtility::printCudaMemoryUsage();
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        real rhoLocal = rho - cellCenter.x * two * lambda * g;
+        //real rhoLocal = rho - cellCenter.x * two * lambda * g;
 
-        real ULocal =0.0;//8.0 * ( ( 0.25 - cellCenter.y * cellCenter.y ) * ( 0.25 - cellCenter.z * cellCenter.z ) ) * U;
+        //real ULocal =0.0;//8.0 * ( ( 0.25 - cellCenter.y * cellCenter.y ) * ( 0.25 - cellCenter.z * cellCenter.z ) ) * U;
+
+        real rhoLocal = rho * ( 1.0 + 0.1 * std::sin( 6 * M_PI * cellCenter.x ) + 0.1 * std::sin( 2 * M_PI * cellCenter.z ) );
+
+        real ULocal = four * ( 0.25 - cellCenter.z * cellCenter.z ) * U;
 
         return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, 0.0, 0.0, lambda, 0.0 ), parameters.K );
     });

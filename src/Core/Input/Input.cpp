@@ -16,7 +16,9 @@ namespace input
             return std::unique_ptr<Input>(new JsonInput(stream));
 #endif
          
-        return std::make_unique<ConfigInput>(stream);
+        // changed by St. Lenz: make_unique<...> is C++ 14 standard!
+        //return std::make_unique<ConfigInput>(stream);
+        return std::unique_ptr<ConfigInput>(new ConfigInput(stream));
     }
 
 }

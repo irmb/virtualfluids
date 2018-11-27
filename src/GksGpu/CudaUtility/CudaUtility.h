@@ -12,7 +12,7 @@ class VF_PUBLIC CudaUtility
 {
 public:
 
-    static struct CudaGrid 
+    struct CudaGrid 
     {
         dim3 threads;
         dim3 blocks;

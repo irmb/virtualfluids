@@ -11,7 +11,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "core/Logger/Logger.h"
+#include "Core/Logger/Logger.h"
 
 #include "GridGenerator/grid/distributions/D3Q27.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"

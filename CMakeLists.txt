@@ -23,7 +23,7 @@ if(POLICY CMP0054)
 endif()
 
 
-if(APPLE)
+if(UNIX)
   set(CMAKE_CXX_STANDARD 11)
 endif()
 
