@@ -1,5 +1,6 @@
 #include "TestImp.h"
 
+#include "Utilities\PostProcessingResults\PostProcessingResults.h"
 #include "Utilities\TestSimulation\TestSimulation.h"
 
 void TestImp::update()
@@ -11,7 +12,7 @@ void TestImp::update()
 			if (simulations.at(i)->getSimulationRun())
 			{
 				simulationRun.at(i) = true;
-				simResults.at(i) = simulations.at(i)->getSimulationResults();
+				postProResults.at(i)->evaluate();
 			}
 		}
 	}
@@ -20,12 +21,12 @@ void TestImp::update()
 		evaluate();				
 }
 
-void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo)
+void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingResults> postProResult)
 {
 	simulations.push_back(sim);
 	simInfos.push_back(simInfo);
+	postProResults.push_back(postProResult);
 	simulationRun.push_back(false);
-	simResults.resize(simResults.size() + 1);
 }
 
 std::string TestImp::getSimulationName()
@@ -37,7 +38,6 @@ TestImp::TestImp(std::shared_ptr<ColorConsoleOutput> colorOutput) : colorOutput(
 {
 	simulationRun.resize(0);
 	simulations.resize(0);
-	simResults.resize(0);
 	simInfos.resize(0);
 }
 

@@ -1,8 +1,7 @@
 #include "PhiAndNuTest.h"
 
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
-#include "Utilities/Results/SimulationResults/SimulationResults.h"
-#include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
+#include "Utilities\PostProcessingResults\PostProcessingResults.h"
 #include "Utilities\TestSimulation\TestSimulation.h"
 #include "Utilities\SimulationInfo\SimulationInfo.h"
 
@@ -15,17 +14,22 @@ std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::shared_ptr< Colo
 
 void PhiAndNuTest::evaluate()
 {
-	for (int i = 0; i < simResults.size(); i++) {
-		lx.push_back(simResults.at(i)->getNumberOfXNodes());
-		calculator->setSimulationResults(simResults.at(i));
-		if (dataToCalculate == "Vx")
-			calculator->setVectorToCalc(simResults.at(i)->getVx());
-		if (dataToCalculate == "Vz")
-			calculator->setVectorToCalc(simResults.at(i)->getVz());
-		calculator->calc(startStepCalculation, endStepCalculation);
-		phiDiff.push_back(calculator->getPhiDiff());
-		nuDiff.push_back(calculator->getNuDiff());
+	for (int i = 0; i < postProResults.size(); i++) {
+		lx.push_back(postProResults.at(i)->getNumberOfXNodes());
+		if (dataToCalculate == "Vx") {
+			nu.push_back(postProResults.at(i)->getNuVx());
+			phiDiff.push_back(postProResults.at(i)->getPhiDiffVx());
+		}
+		if (dataToCalculate == "Vy") {
+			nu.push_back(postProResults.at(i)->getNuVy());
+			phiDiff.push_back(postProResults.at(i)->getPhiDiffVy());
+		}
+		if (dataToCalculate == "Vz") {
+			nu.push_back(postProResults.at(i)->getNuVz());
+			phiDiff.push_back(postProResults.at(i)->getPhiDiffVz());
+		}
 	}
+	nuDiff = calcNuDiff(nu);
 	orderOfAccuracyPhiDiff = calcOrderOfAccuracy(phiDiff);
 	orderOfAccuracyNuDiff = calcOrderOfAccuracy(nuDiff);
 	phiDiffTestPassed = checkTestPassed(orderOfAccuracyPhiDiff);
@@ -39,9 +43,9 @@ void PhiAndNuTest::update()
 	TestImp::update();
 }
 
-void PhiAndNuTest::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo)
+void PhiAndNuTest::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingResults> postProResults)
 {
-	TestImp::addSimulation(sim, simInfo);
+	TestImp::addSimulation(sim, simInfo, postProResults);
 }
 
 std::vector<bool> PhiAndNuTest::getPassedTests()
@@ -54,16 +58,23 @@ std::vector<bool> PhiAndNuTest::getPassedTests()
 
 void PhiAndNuTest::makeConsoleOutput()
 {
-	colorOutput->makePhiAndNuTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), startStepCalculation, endStepCalculation, "NuDiff", "NuDiff", "OrderOfAccuracy", nuDiff.at(0), nuDiff.at(1), orderOfAccuracyNuDiff);
-	colorOutput->makePhiAndNuTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), startStepCalculation, endStepCalculation, "PhiDiff", "PhiDiff", "OrderOfAccuracy", phiDiff.at(0), phiDiff.at(1), orderOfAccuracyPhiDiff);
+	colorOutput->makeNuTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), startStepCalculation, endStepCalculation, dataToCalculate, nu.at(0), nu.at(1), nuDiff.at(0), nuDiff.at(1), orderOfAccuracyNuDiff);
+	colorOutput->makePhiTestOutput(nuDiffTestPassed, simInfos.at(0), simInfos.at(1), startStepCalculation, endStepCalculation, dataToCalculate, phiDiff.at(0), phiDiff.at(1), orderOfAccuracyPhiDiff);
 }
 
 std::string PhiAndNuTest::getLogFileOutput()
 {
 	std::ostringstream oss;
-	oss << std::setfill(' ') << std::left << std::setw(4) << lx.at(0) << std::setw(45) << nuDiff.at(0) << phiDiff.at(0) << std::endl;
-	oss << std::setfill(' ') << std::left << std::setw(19) << " " << std::setw(45) << orderOfAccuracyNuDiff << orderOfAccuracyPhiDiff << std::endl;
-	oss << std::setfill(' ') << std::left << std::setw(4) << lx.at(1) << std::setw(45) << nuDiff.at(1) << phiDiff.at(1) << std::endl;
+
+	oss << "Nu_" << lx.at(0) << "=" << nu.at(0) << std::endl;
+	oss << "NuDiff_" << lx.at(0) << "=" << nuDiff.at(0) << std::endl;
+	oss << "Nu_" << lx.at(1) << "=" << nu.at(1) << std::endl;
+	oss << "NuDiff_" << lx.at(1) << "=" << nuDiff.at(1) << std::endl;
+	oss << "OrderOfAccuracy_NuDiff_" << lx.at(0) << lx.at(1) << "=" << orderOfAccuracyNuDiff << std::endl << std::endl;
+
+	oss << "PhiDiff_" << lx.at(0) << "=" << phiDiff.at(0) << std::endl;
+	oss << "PhiDiff_" << lx.at(1) << "=" << phiDiff.at(1) << std::endl;
+	oss << "OrderOfAccuracy_NuDiff_" << lx.at(0) << lx.at(1) << "=" << orderOfAccuracyPhiDiff << std::endl << std::endl;
 
 	return oss.str();
 }
@@ -73,7 +84,6 @@ PhiAndNuTest::PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std
 	lx.resize(0);
 	phiDiff.resize(0);
 	nuDiff.resize(0);
-	calculator = FFTCalculator::getNewInstance(viscosity);
 }
 
 double PhiAndNuTest::calcOrderOfAccuracy(std::vector<double> data)
@@ -86,4 +96,12 @@ double PhiAndNuTest::calcOrderOfAccuracy(std::vector<double> data)
 bool PhiAndNuTest::checkTestPassed(double orderOfAccuracy)
 {
 	return orderOfAccuracy > minOrderOfAccuracy;
+}
+
+std::vector<double> PhiAndNuTest::calcNuDiff(std::vector<double> nu)
+{
+	std::vector< double> results;
+	for(int i = 0; i < nu.size(); i++)
+		results.push_back((nu.at(i) - viscosity) / viscosity);
+	return results;
 }

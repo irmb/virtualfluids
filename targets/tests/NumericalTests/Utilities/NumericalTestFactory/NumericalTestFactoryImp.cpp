@@ -19,6 +19,8 @@
 #include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
 #include "Utilities\LogFileWriter\LogFileWriterImp.h"
 #include "Utilities\LogFileQueue\LogFileQueueImp.h"
+#include "Utilities\PostProcessingResults\PostProcessingResultsImp.h"
+#include "Utilities\Results\SimulationResults\SimulationResults.h"
 #include "Utilities\TestQueue\TestQueueImp.h"
 #include "Utilities/TestSimulation/TestSimulationImp.h"
 
@@ -109,18 +111,26 @@ void NumericalTestFactoryImp::makeShearWaveSimulations(std::string kernelName, d
 
 void NumericalTestFactoryImp::makePeriodicBoundaryConditionSimulationAndTests(std::vector<std::shared_ptr<SimulationParameter>> simPara, std::vector<std::shared_ptr<SimulationInfo>> simInfo, std::vector<std::shared_ptr<AnalyticalResults>> analyResult, std::shared_ptr<SimulationLogFileInformation> simlogFileInfo, std::string kernelName, std::vector<bool> simulationsRun, double viscosity, bool nuAndPhiTest, bool l2NormTest)
 {
-	std::vector< std::shared_ptr< TestSimulation>> testSim = buildTestSimulation(simPara, simInfo);
+	std::vector< std::shared_ptr< SimulationResults>> simResults;
+	std::vector< std::shared_ptr< PostProcessingResults>> postProResults;
+	for (int i = 0; i < simPara.size(); i++) {
+		std::shared_ptr< SimulationResults> simResult = SimulationResults::getNewInstance(simPara.at(i)->getLx(), 1, simPara.at(i)->getLz(), simPara.at(i)->getTimeStepLength());
+		simResults.push_back(simResult);
+		postProResults.push_back(PostProcessingResultsImp::getNewInstance(simResult, analyResult.at(i), cfd->dataToCalcPhiAndNuTest, cfd->dataToCalcL2Test, cfd->startTimeStepCalculationPhiNu, cfd->endTimeStepCalculationPhiNu, cfd->basicTimeStepL2Norm, cfd->divergentTimeStepL2Norm));
+	}
+
+	std::vector< std::shared_ptr< TestSimulation>> testSim = buildTestSimulation(simPara, simInfo, simResults);
 
 	std::vector< std::shared_ptr< TestLogFileInformation>> testLogFileInfo;
 
 	if (nuAndPhiTest && checkNuAndPhiTestCouldRun(simulationsRun)) {
-		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSim, simInfo, viscosity);
+		std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testSim, simInfo, postProResults, viscosity);
 		std::shared_ptr< PhiAndNuInformation> phiNuLogFileInfo = PhiAndNuInformation::getNewInstance(phiAndNuTests, cfd->startTimeStepCalculationPhiNu, cfd->endTimeStepCalculationPhiNu);
 		testLogFileInfo.push_back(phiNuLogFileInfo);
 	}
 
 	if (l2NormTest) {
-		std::vector< std::shared_ptr< L2NormTest>> l2NormTests = makeL2NormTests(testSim, simInfo, analyResult);
+		std::vector< std::shared_ptr< L2NormTest>> l2NormTests = makeL2NormTests(testSim, simInfo, postProResults);
 		std::shared_ptr< L2NormInformation> l2NormLogFileInfo = L2NormInformation::getNewInstance(l2NormTests, cfd->basicTimeStepL2Norm, cfd->divergentTimeStepL2Norm);
 		testLogFileInfo.push_back(l2NormLogFileInfo);
 	}
@@ -133,47 +143,52 @@ void NumericalTestFactoryImp::makePeriodicBoundaryConditionSimulationAndTests(st
 	makeLogFileWriter(testLogFileInfo, logFileTimeInfo, simlogFileInfo, kernelName, viscosity);
 }
 
-std::vector<std::shared_ptr<TestSimulation>> NumericalTestFactoryImp::buildTestSimulation(std::vector<std::shared_ptr<SimulationParameter>> simPara, std::vector<std::shared_ptr<SimulationInfo>> simInfo)
+std::vector<std::shared_ptr<TestSimulation>> NumericalTestFactoryImp::buildTestSimulation(std::vector< std::shared_ptr< SimulationParameter>> simPara, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector< std::shared_ptr< SimulationResults>> simResults)
 {
 	std::vector< std::shared_ptr< TestSimulation>> testSim;
 	testSim.resize(0);
 
 	for (int i = 0; i < simPara.size(); i++) {
-		testSim.push_back(TestSimulationImp::getNewInsance(simID, simPara.at(i), simInfo.at(i), colorOutput));
+		testSim.push_back(TestSimulationImp::getNewInsance(simID, simPara.at(i), simInfo.at(i), colorOutput, simResults.at(i)));
 		simID++;
 	}
 	return testSim;
 }
 
-std::vector<std::shared_ptr<PhiAndNuTest>> NumericalTestFactoryImp::makePhiAndNuTests(std::vector<std::shared_ptr<TestSimulation>> testSim, std::vector<std::shared_ptr<SimulationInfo>> simInfo, double viscosity)
+std::vector<std::shared_ptr<PhiAndNuTest>> NumericalTestFactoryImp::makePhiAndNuTests(std::vector<std::shared_ptr<TestSimulation>> testSim, std::vector<std::shared_ptr<SimulationInfo>> simInfo, std::vector< std::shared_ptr< PostProcessingResults>> postProResults, double viscosity)
 {
 	std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests;
 
 	for (int i = 1; i < testSim.size(); i++) {
 		for (int j = 0; j < i; j++) {
-			std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, cfd->dataToCalcPhiAndNuTest, cfd->minOrderOfAccuracy, viscosity, cfd->startTimeStepCalculationPhiNu, cfd->endTimeStepCalculationPhiNu);
-			test->addSimulation(testSim.at(j), simInfo.at(j));
-			test->addSimulation(testSim.at(i), simInfo.at(i));
+			for (int k = 0; k < cfd->dataToCalcPhiAndNuTest.size(); k++) {
+				std::shared_ptr< PhiAndNuTest> test = PhiAndNuTest::getNewInstance(colorOutput, cfd->dataToCalcPhiAndNuTest.at(k), cfd->minOrderOfAccuracy, viscosity, cfd->startTimeStepCalculationPhiNu, cfd->endTimeStepCalculationPhiNu);
+				test->addSimulation(testSim.at(j), simInfo.at(j), postProResults.at(j));
+				test->addSimulation(testSim.at(i), simInfo.at(i), postProResults.at(i));
 
-			testSim.at(j)->registerSimulationObserver(test);
-			testSim.at(i)->registerSimulationObserver(test);
+				testSim.at(j)->registerSimulationObserver(test);
+				testSim.at(i)->registerSimulationObserver(test);
 
-			phiAndNuTests.push_back(test);
-			testQueue->addTest(test);
+				phiAndNuTests.push_back(test);
+				testQueue->addTest(test);
+			}
 		}
 	}
 	return phiAndNuTests;
 }
 
-std::vector<std::shared_ptr<L2NormTest>> NumericalTestFactoryImp::makeL2NormTests(std::vector<std::shared_ptr<TestSimulation>> testSim, std::vector<std::shared_ptr<SimulationInfo>> simInfo, std::vector<std::shared_ptr<AnalyticalResults>> analyticalResults)
+std::vector<std::shared_ptr<L2NormTest>> NumericalTestFactoryImp::makeL2NormTests(std::vector<std::shared_ptr<TestSimulation>> testSim, std::vector<std::shared_ptr<SimulationInfo>> simInfo, std::vector< std::shared_ptr< PostProcessingResults>> postProResults)
 {
 	std::vector<std::shared_ptr<L2NormTest>> l2Tests;
 	for (int i = 0; i < testSim.size(); i++) {
-		std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(analyticalResults.at(i), colorOutput, cfd->dataToCalcL2Test, cfd->maxL2NormDiff, cfd->basicTimeStepL2Norm, cfd->divergentTimeStepL2Norm);
-		test->addSimulation(testSim.at(i), simInfo.at(i));
-		testSim.at(i)->registerSimulationObserver(test);
-		l2Tests.push_back(test);
-		testQueue->addTest(test);
+		for (int j = 0; j < cfd->dataToCalcL2Test.size(); j++) {
+			std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(postProResults.at(i), colorOutput, cfd->dataToCalcL2Test.at(j), cfd->maxL2NormDiff, cfd->basicTimeStepL2Norm, cfd->divergentTimeStepL2Norm);
+			test->addSimulation(testSim.at(i), simInfo.at(i), postProResults.at(i));
+			testSim.at(i)->registerSimulationObserver(test);
+			l2Tests.push_back(test);
+			testQueue->addTest(test);
+		}
+		
 	}
 	return l2Tests;
 }

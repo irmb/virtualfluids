@@ -13,9 +13,9 @@
 #include <sstream>
 #include <iomanip>
 
-std::shared_ptr<TestSimulation> TestSimulationImp::getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput)
+std::shared_ptr<TestSimulation> TestSimulationImp::getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr< SimulationResults> simResults)
 {
-	return std::shared_ptr< TestSimulation>(new TestSimulationImp(simID, simPara, simInfo, colorOutput));
+	return std::shared_ptr< TestSimulation>(new TestSimulationImp(simID, simPara, simInfo, colorOutput, simResults));
 }
 
 std::shared_ptr<SimulationParameter> TestSimulationImp::getSimulationParameter()
@@ -97,14 +97,13 @@ std::string TestSimulationImp::getRunTimeOutput()
 	return oss.str();
 }
 
-TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput) : simID(simID), colorOutput(colorOutput)
+TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr< SimulationResults> simResults) : simID(simID), colorOutput(colorOutput), simResults(simResults)
 {
 	this->simPara = simPara;
 	this->simInfo = simInfo;
 	this->simInfo->setSimulationID(simID);
-	simResults = SimulationResults::getNewInstance(simPara->getLx(), 1, simPara->getLz(), simPara->getTimeStepLength());
 	
-	writeToVector = std::shared_ptr<ToVectorWriter>(new Y2dSliceToResults(simResults, simPara->getYSliceForCalculation(), simPara->getStartTimeCalculation(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getWriteFiles(), std::shared_ptr<FileWriter>(new FileWriter()), simPara->getStartTimeDataWriter()));
+	writeToVector = Y2dSliceToResults::getNewInstance(simResults, simPara->getYSliceForCalculation(), simPara->getStartTimeCalculation(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getWriteFiles(), std::shared_ptr<FileWriter>(new FileWriter()), simPara->getStartTimeDataWriter());
 
 	simObserver.resize(0);
 	simualtionRun = false;

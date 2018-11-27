@@ -15,7 +15,7 @@ public:
 	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation);
 	
 	void update();
-	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo);
+	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingResults> postProResults);
 	void evaluate();
 	std::string getLogFileOutput();
 	std::vector< bool> getPassedTests();
@@ -25,12 +25,12 @@ private:
 	PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation);
 	double calcOrderOfAccuracy(std::vector<double> data);
 	bool checkTestPassed(double orderOfAccuracy);
-	
-	std::shared_ptr< FFTCalculator> calculator;
+	std::vector< double> calcNuDiff(std::vector< double> nu);
+
 	unsigned int startStepCalculation, endStepCalculation;
 	std::vector<double> lx;
 	std::vector<double> phiDiff;
-	std::vector<double> nuDiff;
+	std::vector<double> nu, nuDiff;
 	double orderOfAccuracyPhiDiff;
 	double orderOfAccuracyNuDiff;
 	double minOrderOfAccuracy;
@@ -38,5 +38,7 @@ private:
 	bool phiDiffTestPassed;
 	bool nuDiffTestPassed;
 	std::string dataToCalculate;
+
+
 };
 #endif

@@ -48,11 +48,11 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	configData->kernelsToTest = StringUtil::toStringVector(input->getValue("KernelsToTest"));
 	configData->viscosity = StringUtil::toDoubleVector(input->getValue("Viscosity"));
 	configData->minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
-	configData->dataToCalcPhiAndNuTest = StringUtil::toString(input->getValue("DataToCalc_PhiAndNu"));
+	configData->dataToCalcPhiAndNuTest = StringUtil::toStringVector(input->getValue("DataToCalc_PhiAndNu"));
 	configData->startTimeStepCalculationPhiNu = StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu"));
 	configData->endTimeStepCalculationPhiNu = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
 	configData->maxL2NormDiff = StringUtil::toDouble(input->getValue("MaxL2NormDiff"));
-	configData->dataToCalcL2Test = StringUtil::toString(input->getValue("DataToCalc_L2"));
+	configData->dataToCalcL2Test = StringUtil::toStringVector(input->getValue("DataToCalc_L2"));
 	configData->basicTimeStepL2Norm = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
 	configData->divergentTimeStepL2Norm = StringUtil::toInt(input->getValue("DivergentTimeStep_L2"));
 	configData->amplitudeTGV = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV"));

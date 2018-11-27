@@ -14,7 +14,7 @@ class TestImp : public Test
 {
 public:
 	void update();
-	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo);
+	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingResults> postProResult);
 
 	virtual void evaluate() = 0;
 	virtual std::string getLogFileOutput() = 0;
@@ -31,7 +31,7 @@ protected:
 	std::vector< bool> simulationRun;
 	std::shared_ptr< ColorConsoleOutput> colorOutput;
 	std::vector< std::shared_ptr< TestSimulation>> simulations;
-	std::vector< std::shared_ptr< SimulationResults>> simResults;
+	std::vector< std::shared_ptr< PostProcessingResults>> postProResults;
 	std::vector< std::shared_ptr< SimulationInfo>> simInfos;
 
 	std::string kernelName;

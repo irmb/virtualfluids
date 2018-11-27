@@ -11,9 +11,10 @@ class Parameter;
 class Y2dSliceToResults : public ToVectorWriter
 {
 public:
-	Y2dSliceToResults(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter);
+	static std::shared_ptr< Y2dSliceToResults> getNewInstance(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter);
 
 private:
+	Y2dSliceToResults(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter);
 	void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t, int level);
 	
 	std::shared_ptr<SimulationResults> simResults;

@@ -19,14 +19,14 @@ struct ConfigDataStruct
 	unsigned int ySliceForCalculation;
 
 	double minOrderOfAccuracy;
-	std::string dataToCalcPhiAndNuTest;
+	std::vector<std::string> dataToCalcPhiAndNuTest;
 	unsigned int startTimeStepCalculationPhiNu;
 	unsigned int endTimeStepCalculationPhiNu;
 	bool nuAndPhiTestTGV;
 	bool nuAndPhiTestSW;
 
 	double maxL2NormDiff;
-	std::string dataToCalcL2Test;
+	std::vector<std::string> dataToCalcL2Test;
 	unsigned int basicTimeStepL2Norm;
 	unsigned int divergentTimeStepL2Norm;
 	bool l2NormTestTGV;

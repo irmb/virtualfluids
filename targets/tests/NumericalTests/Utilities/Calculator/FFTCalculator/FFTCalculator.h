@@ -13,41 +13,35 @@ class PhiAndNuTest;
 class FFTCalculator
 {
 public:
-	static std::shared_ptr<FFTCalculator> getNewInstance(double viscosity);
-	void setSimulationResults(std::shared_ptr<SimulationResults> simResults);
-	void setVectorToCalc(std::vector<std::vector<double>> data);
+	static std::shared_ptr<FFTCalculator> getNewInstance(int lx, int lz, int timeStepLength);
 	
-	void calc(unsigned int startStep, unsigned int endStep);
+	void calc(std::vector<std::vector<double>> data);
 	
-	double getNuDiff();
+	double getNu();
 	double getPhiDiff();
 
 private:
-	FFTCalculator(double viscosity);
+	FFTCalculator() {};
+	FFTCalculator(int lx, int lz, int timeStepLength);
 	void init();
-	double calcNu(unsigned int startStep, unsigned int endStep);
-	double calcNuDiff(double nu);
-	double calcPhiDiff(unsigned int startStep, unsigned int endStep);
-	std::vector< double> calcPhiForTimeSteps(unsigned int startStep, unsigned int endStep);
+	double calcNu();
+	double calcPhiDiff();
+	std::vector< double> calcPhiForAllSteps();
 	std::vector< double> calcLinReg(std::vector<double> y);
-	std::vector<double> calcLogAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep);
-	std::vector<double> calcAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep);
-	void calcFFT2D(unsigned int timeStep);
-	void initDataForFFT(fftw_complex* input, unsigned int timeStep);
-	void setFFTResults(fftw_complex* result, unsigned int timeStep);
-	int calcTimeStepInResults(unsigned int timeStep);
+	std::vector<double> calcLogAmplitudeForAllSteps();
+	std::vector<double> calcAmplitudeForAllSteps();
+	void calcFFT2D(unsigned int step);
+	void initDataForFFT(fftw_complex* input, unsigned int step);
+	void setFFTResults(fftw_complex* result, unsigned int step);
 
-	std::shared_ptr<SimulationResults> simResults;
 	std::vector<std::vector<double>> data;
 	std::vector<std::vector<double>> fftResultsIm;
 	std::vector<std::vector<double>> fftResultsRe;
 	
 	bool fftCalculated;
 	double lx, lz;
-	double vis;
 	double timeStepLength;
-	int numberOfTimeSteps;
 	double nu;
-	double nudiff, phidiff;
+	double phidiff;
 };
 #endif

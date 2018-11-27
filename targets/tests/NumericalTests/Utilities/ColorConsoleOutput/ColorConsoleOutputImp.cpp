@@ -14,13 +14,13 @@ std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getInstance()
 	return uniqueInstance;
 }
 
-void ColorConsoleOutputImp::makePhiAndNuTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string nameWerte1, std::string nameWerte2, std::string nameWerte3, double testWert1, double testWert2, double testWert3)
+void ColorConsoleOutputImp::makeNuTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string dataToCalc, double nu1, double nu2, double nuDiff1, double nuDiff2, double ooa)
 {
 	setColor(testPassed);
 	printTestStart();
 
 	printColor("");
-	printColor("Phi and Nu Test");
+	printColor("Nu Test");
 	printColor("");
 
 	std::ostringstream oss;
@@ -37,15 +37,19 @@ void ColorConsoleOutputImp::makePhiAndNuTestOutput(bool testPassed, std::shared_
 	print(oss.str());
 	oss.str(std::string());
 
-	oss << "L: " << simInfo1->getLx() << simInfo1->getSimulationParameterString();
+	oss << "L: " << std::setfill(' ') << std::right << std::setw(4) << simInfo1->getLx() << simInfo1->getSimulationParameterString();
 	print(oss.str());
 	oss.str(std::string());
 
-	oss << "L: " << simInfo2->getLx() << simInfo2->getSimulationParameterString();
+	oss << "L: " << std::setfill(' ') << std::right << std::setw(4) << simInfo2->getLx() << simInfo2->getSimulationParameterString();
 	print(oss.str());
 	oss.str(std::string());
 
 	print(oss.str());
+	oss << "DataToCalculate: " << dataToCalc;
+	print(oss.str());
+	oss.str(std::string());
+
 	oss << "StartTimeStep: " << startTimeStep;
 	print(oss.str());
 	oss.str(std::string());
@@ -55,22 +59,92 @@ void ColorConsoleOutputImp::makePhiAndNuTestOutput(bool testPassed, std::shared_
 	oss.str(std::string());
 
 	print(oss.str());
-	oss << nameWerte1 << ": " << testWert1 << std::setw(5) << "\t" << nameWerte2 << ": " << testWert2;
+	oss << "Nu" << simInfo1->getLx() << ": " << nu1;
 	print(oss.str());
 	oss.str(std::string());
-
-	oss << nameWerte3 << ": " << testWert3;
+	oss << "Nu" << simInfo2->getLx() << ": " << nu2;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "NuDiff" << simInfo1->getLx() << ": " << nuDiff1;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "NuDiff" << simInfo2->getLx() << ": " << nuDiff2;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "OrderOfAccuracy: " << ooa;
 	print(oss.str());
 	oss.str(std::string());
 
 	printColor("");
-	printColor("Phi and Nu Test");
+	printColor("Nu Test");
 	printColor("");
 
 	printTestEnd(testPassed);
 }
 
-void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, unsigned int basicTimeStep, unsigned int divergentTimeStep, double testWert1, double testWert2, double testWert3)
+void ColorConsoleOutputImp::makePhiTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string dataToCalc, double phiDiff1, double phiDiff2, double ooa)
+{
+	setColor(testPassed);
+	printTestStart();
+
+	printColor("");
+	printColor("Phi Test");
+	printColor("");
+
+	std::ostringstream oss;
+	oss << "Kernel: " << simInfo1->getKernelName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "Viscosity: " << simInfo1->getViscosity();
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << simInfo1->getSimulationName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << std::setfill(' ') << std::right << std::setw(4) << simInfo1->getLx() << simInfo1->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << std::setfill(' ') << std::right << std::setw(4) << simInfo2->getLx() << simInfo2->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << "DataToCalculate: " << dataToCalc;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "StartTimeStep: " << startTimeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "EndTimeStep: " << endTimeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << "PhiDiff" << simInfo1->getLx() << ": " << phiDiff1;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "PhiDiff" << simInfo2->getLx() << ": " << phiDiff2;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "OrderOfAccuracy: " << ooa;
+	print(oss.str());
+	oss.str(std::string());
+
+	printColor("");
+	printColor("Phi Test");
+	printColor("");
+
+	printTestEnd(testPassed);
+}
+
+void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, unsigned int basicTimeStep, unsigned int divergentTimeStep, std::string dataToCalc, double testWert1, double testWert2, double testWert3)
 {
 	setColor(testPassed);
 	printTestStart();
@@ -98,6 +172,9 @@ void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_pt
 	oss.str(std::string());
 
 	print(oss.str());
+	oss << "DataToCalculate: " << dataToCalc;
+	print(oss.str());
+	oss.str(std::string());
 	oss << "BasicTimeStep: " << basicTimeStep;
 	print(oss.str());
 	oss.str(std::string());

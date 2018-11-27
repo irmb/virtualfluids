@@ -7,7 +7,7 @@ Devices="1"
 #				  Kernels						 #
 ##################################################
 KernelsToTest="CumulantOneCompSP27"
-CumulantAA2016CompSP27 CumulantAll4CompSP27"
+ CumulantAA2016CompSP27 CumulantAll4CompSP27"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
@@ -37,7 +37,7 @@ ySliceForCalculation=0
 #			PhiAndNu Test Parameter				 #
 ##################################################
 MinOrderOfAccuracy=1.95
-DataToCalc_PhiAndNu="Vx"
+DataToCalc_PhiAndNu="Vx Vz"
 StartTimeStepCalculation_PhiNu=11
 EndTimeStepCalculation_PhiNu=20
 PhiAndNuTest_TGV=true
@@ -47,7 +47,7 @@ PhiAndNuTest_SW=true
 #			L2-Norm Test Parameter				 #
 ##################################################
 MaxL2NormDiff=0.05
-DataToCalc_L2="Vx"
+DataToCalc_L2="Vx Vy Vz"
 BasicTimeStep_L2=0
 DivergentTimeStep_L2=20
 L2NormTest_TGV=true
@@ -57,8 +57,8 @@ L2NormTest_SW=true
 #			Simulation To Perform				 #
 ##################################################
 TaylorGreenVortex32=true
-TaylorGreenVortex64=false
-TaylorGreenVortex128=false
+TaylorGreenVortex64=true
+TaylorGreenVortex128=true
 TaylorGreenVortex256=false
 TaylorGreenVortex512=false
 

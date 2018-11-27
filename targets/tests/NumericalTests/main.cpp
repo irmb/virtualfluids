@@ -22,9 +22,7 @@ static void startNumericalTests(const std::string &configFile)
 	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(testSim);
 
 	for (int i = 0; i < vfSimulations.size(); i++)
-	{
 		vfSimulations.at(i)->run();
-	}
 
 	testQueue->makeFinalOutput();
 	logFileQueue->writeLogFiles();

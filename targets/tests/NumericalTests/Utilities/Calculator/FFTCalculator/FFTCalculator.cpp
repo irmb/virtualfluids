@@ -7,72 +7,46 @@
 #include <math.h>
 #include <stdlib.h>
 
-void FFTCalculator::calc(unsigned int startStep, unsigned int endStep)
+std::shared_ptr<FFTCalculator> FFTCalculator::getNewInstance(int lx, int lz, int timeStepLength)
 {
-	init();
-
-	nu = calcNu(startStep, endStep);
-	nudiff = calcNuDiff(nu);
-	phidiff = calcPhiDiff(startStep, endStep);
+	return std::shared_ptr<FFTCalculator>(new FFTCalculator(lx, lz, timeStepLength));
 }
 
-double FFTCalculator::getNuDiff()
+FFTCalculator::FFTCalculator(int lx, int lz, int timeStepLength)
 {
-	return nudiff;
+	this->lx = (double)lx;
+	this->lz = (double)lz;
+	this->timeStepLength = (double)timeStepLength;
 }
 
-double FFTCalculator::getPhiDiff()
-{
-	return phidiff;
-}
-
-std::shared_ptr<FFTCalculator> FFTCalculator::getNewInstance(double viscosity)
-{
-	return std::shared_ptr<FFTCalculator>(new FFTCalculator(viscosity));
-}
-
-void FFTCalculator::setSimulationResults(std::shared_ptr<SimulationResults> simResults)
-{
-	this->simResults = simResults;
-}
-
-void FFTCalculator::setVectorToCalc(std::vector<std::vector<double>> data)
+void FFTCalculator::calc(std::vector<std::vector<double>> data)
 {
 	this->data = data;
+	init();
+
+	nu = calcNu();
+	phidiff = calcPhiDiff();
 }
 
 void FFTCalculator::init()
 {
 	fftResultsIm.clear();
 	fftResultsRe.clear();
-	lz = (double)simResults->getNumberOfZNodes();
-	lx = (double)simResults->getNumberOfXNodes();
-	timeStepLength = simResults->getTimeStepLength();
 	fftCalculated = false;
 }
 
-FFTCalculator::FFTCalculator(double viscosity) : vis(viscosity)
+double FFTCalculator::calcNu()
 {
-}
-
-double FFTCalculator::calcNu(unsigned int startStep, unsigned int endStep)
-{
-	std::vector<double> logAmplitude = calcLogAmplitudeForTimeSteps(startStep, endStep);
+	std::vector<double> logAmplitude = calcLogAmplitudeForAllSteps();
 	std::vector<double> linReg = calcLinReg(logAmplitude);
 	double nu = -(1.0 / (((2.0 * M_PI / lz) * (2.0 * M_PI / lz) + (2.0 * M_PI / lx)*(2.0 * M_PI / lx)) * timeStepLength)) * linReg.at(0);
 
 	return nu;
 }
 
-double FFTCalculator::calcNuDiff(double nu)
+double FFTCalculator::calcPhiDiff()
 {
-	double nudiff = abs((nu - vis) / vis);
-	return nudiff;
-}
-
-double FFTCalculator::calcPhiDiff(unsigned int startStep, unsigned int endStep)
-{
-	std::vector<double> phi = calcPhiForTimeSteps(startStep, endStep);
+	std::vector<double> phi = calcPhiForAllSteps();
 	std::vector<double> linReg = calcLinReg(phi);
 
 	return linReg.at(0);
@@ -117,9 +91,9 @@ std::vector<double> FFTCalculator::calcLinReg(std::vector<double> y)
 	return result;
 }
 
-std::vector<double> FFTCalculator::calcLogAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep)
+std::vector<double> FFTCalculator::calcLogAmplitudeForAllSteps()
 {
-	std::vector<double> amplitude = calcAmplitudeForTimeSteps(startStep, endStep);
+	std::vector<double> amplitude = calcAmplitudeForAllSteps();
 	std::vector<double> logAmplitude;
 	for (int i = 0; i < amplitude.size(); i++)
 		logAmplitude.push_back(log(amplitude.at(i)));
@@ -127,34 +101,32 @@ std::vector<double> FFTCalculator::calcLogAmplitudeForTimeSteps(unsigned int sta
 	return logAmplitude;
 }
 
-std::vector<double> FFTCalculator::calcAmplitudeForTimeSteps(unsigned int startStep, unsigned int endStep)
+std::vector<double> FFTCalculator::calcAmplitudeForAllSteps()
 {
 	std::vector<double> amplitude;
 	if (fftCalculated == false) {
-		for (int timeStep = startStep; timeStep <= endStep; timeStep++)
-			calcFFT2D(timeStep);
+		for (int step = 0; step < data.size(); step++)
+			calcFFT2D(step);
 		fftCalculated = true;
 	}
 	int pos = 2 + (lx - 1);
-	numberOfTimeSteps = endStep - startStep;
-	for (int timeStep = 0; timeStep < numberOfTimeSteps; timeStep++)
-		amplitude.push_back(4.0 / (lx * lz)  * sqrt(fftResultsRe.at(timeStep).at(pos) * fftResultsRe.at(timeStep).at(pos) + fftResultsIm.at(timeStep).at(pos) * fftResultsIm.at(timeStep).at(pos)));
+	for (int step = 0; step < data.size(); step++)
+		amplitude.push_back(4.0 / (lx * lz)  * sqrt(fftResultsRe.at(step).at(pos) * fftResultsRe.at(step).at(pos) + fftResultsIm.at(step).at(pos) * fftResultsIm.at(step).at(pos)));
 
 	return amplitude;
 }
 
-std::vector<double> FFTCalculator::calcPhiForTimeSteps(unsigned int startStep, unsigned int endStep)
+std::vector<double> FFTCalculator::calcPhiForAllSteps()
 {
 	std::vector<double> phi;
 	if (fftCalculated == false) {
-		for (int timeStep = startStep; timeStep <= endStep; timeStep++)
-			calcFFT2D(timeStep);
+		for (int step = 0; step < data.size(); step++)
+			calcFFT2D(step);
 		fftCalculated = true;
 	}
 	int pos = 2 + (lx - 1);
-	numberOfTimeSteps = endStep - startStep;
-	for (int timeStep = 0; timeStep < numberOfTimeSteps; timeStep++)
-		phi.push_back(atan(fftResultsIm.at(timeStep).at(pos) / fftResultsRe.at(timeStep).at(pos)));
+	for (int step = 0; step < data.size(); step++)
+		phi.push_back(atan(fftResultsIm.at(step).at(pos) / fftResultsRe.at(step).at(pos)));
 	return phi;
 }
 
@@ -175,24 +147,23 @@ void FFTCalculator::calcFFT2D(unsigned int timeStep)
 	fftw_free(out);
 }
 
-void FFTCalculator::initDataForFFT(fftw_complex * input, unsigned int timeStep)
+void FFTCalculator::initDataForFFT(fftw_complex * input, unsigned int step)
 {
-	int timeStepInResult = calcTimeStepInResults(timeStep);
 
-	for (int i = 0; i < data.at(timeStepInResult).size(); i++)
+	for (int i = 0; i < data.at(step).size(); i++)
 	{
-		input[i][0] = data.at(timeStepInResult).at(i);
+		input[i][0] = data.at(step).at(i);
 		input[i][1] = 0;
 	}
 }
 
-void FFTCalculator::setFFTResults(fftw_complex * result, unsigned int timeStep)
+void FFTCalculator::setFFTResults(fftw_complex * result, unsigned int step)
 {
 	std::vector<double> fftRe, fftIm;
-	fftRe.resize(data.at(timeStep).size());
-	fftIm.resize(data.at(timeStep).size());
+	fftRe.resize(data.at(step).size());
+	fftIm.resize(data.at(step).size());
 
-	for (int i = 0; i < data.at(timeStep).size(); i++)
+	for (int i = 0; i < data.at(step).size(); i++)
 	{
 		fftRe.at(i) = result[i][0];
 		fftIm.at(i) = result[i][1];
@@ -201,10 +172,12 @@ void FFTCalculator::setFFTResults(fftw_complex * result, unsigned int timeStep)
 	fftResultsRe.push_back(fftRe);
 }
 
-int FFTCalculator::calcTimeStepInResults(unsigned int timeStep)
+double FFTCalculator::getNu()
 {
-	for (int i = 0; i < simResults->getTimeSteps().size(); i++) {
-		if (timeStep == simResults->getTimeSteps().at(i))
-			return simResults->getTimeSteps().at(i);
-	}
+	return nu;
+}
+
+double FFTCalculator::getPhiDiff()
+{
+	return phidiff;
 }

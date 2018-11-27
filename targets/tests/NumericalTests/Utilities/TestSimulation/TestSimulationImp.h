@@ -13,7 +13,7 @@ class SimulationInfo;
 class TestSimulationImp : public TestSimulation
 {
 public:
-	static std::shared_ptr< TestSimulation> getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput);
+	static std::shared_ptr< TestSimulation> getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr< SimulationResults> simResults);
 
 	std::shared_ptr< SimulationParameter> getSimulationParameter();
 	std::shared_ptr< DataWriter> getDataWriter();
@@ -28,7 +28,7 @@ public:
 	std::string getRunTimeOutput();
 
 private:
-	TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput);
+	TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr< SimulationResults> simResults);
 	void notifyObserver();
 	void setTestStartTime();
 	void setTestEndTime();
