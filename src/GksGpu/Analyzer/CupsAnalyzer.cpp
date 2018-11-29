@@ -1,6 +1,8 @@
 #include "CupsAnalyzer.h"
 
 #include <cmath>
+#include <sstream>
+#include <iomanip>
 
 #include "Core/Logger/Logger.h"
 
@@ -40,9 +42,7 @@ void CupsAnalyzer::run( uint iter )
 
         real CUPS = real(numberOfCellUpdates) / currentRuntime;
 
-        *logging::out << logging::Logger::INFO_HIGH << "Iteration:   " << iter << "\n";
-        *logging::out << logging::Logger::INFO_HIGH << "Run time:    " << currentRuntime << " s\n";
-        *logging::out << logging::Logger::INFO_HIGH << "Update rate: " << CUPS / 1.0e6 << " MCUPS\n";
+        this->printCups( iter, currentRuntime, CUPS );
     }
 
     if( checkOutputPerTime(currentRuntime) )
@@ -59,4 +59,24 @@ bool CupsAnalyzer::checkOutputPerTime(real currentRuntime)
 bool CupsAnalyzer::checkOutputPerIter(uint iter)
 {
     return outputPerIter && (iter % outputIter == 0);
+}
+
+void CupsAnalyzer::printCups(uint iter, real currentRunTime, real cups)
+{
+    std::stringstream header;
+    std::stringstream body;
+
+    header << "| ";
+    header << "      Iter" << " | "; 
+    header << " runtime/s" << " | "; 
+    header << "     MCUPS" << " | ";
+
+    body   << "| ";
+    body   << std::setw(10) << std::setprecision(4) << iter  << " | ";
+    body   << std::setw(10) << std::setprecision(4) << currentRunTime << " | ";
+    body   << std::setw(10) << std::setprecision(4) << cups / 1.0e6 << " | ";
+
+    *logging::out << logging::Logger::INFO_HIGH << "Performance:" << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << header.str() << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << body.str()   << "\n";
 }

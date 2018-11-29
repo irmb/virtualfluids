@@ -40,6 +40,7 @@ private:
     bool checkOutputPerTime( real currentRuntime );
     bool checkOutputPerIter( uint iter );
 
+    void printCups(uint iter, real currentRunTime, real cups);
 };
 
 #endif
