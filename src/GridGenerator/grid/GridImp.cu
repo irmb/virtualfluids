@@ -41,6 +41,10 @@ HOST GridImp::GridImp(Object* object, real startX, real startY, real startZ, rea
     gridStrategy(gridStrategy),
     distribution(distribution),
     level(level),
+    periodicityX(false),
+    periodicityY(false),
+    periodicityZ(false),
+    enableFixRefinementIntoTheWall(false),
     gridInterface(nullptr),
     neighborIndexX(nullptr),
     neighborIndexY(nullptr),
@@ -105,8 +109,11 @@ HOST void GridImp::inital(const SPtr<Grid> fineGrid, uint numberOfLayers)
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixOddCells()\n";
     gridStrategy->fixOddCells( shared_from_this() );
     
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
-    gridStrategy->fixRefinementIntoWall(shared_from_this());
+    if( enableFixRefinementIntoTheWall )
+    {
+        *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start fixRefinementIntoWall()\n";
+        gridStrategy->fixRefinementIntoWall(shared_from_this());
+    }
     
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start findEndOfGridStopperNodes()\n";
 	gridStrategy->findEndOfGridStopperNodes(shared_from_this());
@@ -702,6 +709,11 @@ bool GridImp::getPeriodicityY()
 bool GridImp::getPeriodicityZ()
 {
     return this->periodicityZ;
+}
+
+void GridImp::setEnableFixRefinementIntoTheWall(bool enableFixRefinementIntoTheWall)
+{
+    this->enableFixRefinementIntoTheWall = enableFixRefinementIntoTheWall;
 }
 
 HOSTDEVICE uint GridImp::transCoordToIndex(const real &x, const real &y, const real &z) const

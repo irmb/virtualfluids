@@ -85,6 +85,8 @@ private:
 
 	uint numberOfSolidBoundaryNodes;
 
+    bool enableFixRefinementIntoTheWall;
+
 public:
     HOST void inital(const SPtr<Grid> fineGrid, uint numberOfLayers) override;
     HOST void setOddStart( bool xOddStart, bool yOddStart, bool zOddStart ) override;
@@ -98,6 +100,8 @@ public:
     bool getPeriodicityX() override;
     bool getPeriodicityY() override;
     bool getPeriodicityZ() override;
+
+    void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall ) override;
 
     HOSTDEVICE void setCellTo(uint index, char type);
     HOSTDEVICE void setNonStopperOutOfGridCellTo(uint index, char type);

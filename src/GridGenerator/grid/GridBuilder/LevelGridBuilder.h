@@ -47,6 +47,8 @@ public:
     VF_PUBLIC void setPeriodicBoundaryCondition(bool periodic_X, bool periodic_Y, bool periodic_Z);
     VF_PUBLIC void setNoSlipBoundaryCondition(SideType sideType);
 
+    VF_PUBLIC void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall );
+
     VF_PUBLIC void setCommunicationProcess(int direction, uint process);
 
     VF_PUBLIC uint getCommunicationProcess(int direction) override;

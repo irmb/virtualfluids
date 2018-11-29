@@ -106,6 +106,8 @@ public:
     HOST virtual bool getPeriodicityY() = 0;
     HOST virtual bool getPeriodicityZ() = 0;
 
+    HOST virtual void setEnableFixRefinementIntoTheWall( bool enableFixRefinementIntoTheWall ) = 0;
+
     HOST virtual void freeMemory() = 0;
 
 
