@@ -58,6 +58,8 @@ struct VF_PUBLIC MeshCell{
 
     bool isGhostCell;
 
+    bool isWall;
+
     char type;
 
     MeshCell();

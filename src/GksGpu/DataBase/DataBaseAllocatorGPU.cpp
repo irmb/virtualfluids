@@ -30,7 +30,7 @@ void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
     checkCudaErrors( cudaFree ( dataBase.faceCenter ) );
     checkCudaErrors( cudaFree ( dataBase.cellCenter ) );
 
-    checkCudaErrors( cudaFree ( dataBase.faceIsWall ) );
+    checkCudaErrors( cudaFree ( dataBase.cellIsWall ) );
 
     checkCudaErrors( cudaFree ( dataBase.fineToCoarse ) );
     checkCudaErrors( cudaFree ( dataBase.coarseToFine ) );
@@ -55,7 +55,7 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
     checkCudaErrors( cudaMalloc ( &dataBase->faceCenter, sizeof(real) * LENGTH_VECTOR * dataBase->numberOfFaces ) );
     checkCudaErrors( cudaMalloc ( &dataBase->cellCenter, sizeof(real) * LENGTH_VECTOR * dataBase->numberOfCells ) );
 
-    checkCudaErrors( cudaMalloc ( &dataBase->faceIsWall, sizeof(bool) * dataBase->numberOfFaces ) );
+    checkCudaErrors( cudaMalloc ( &dataBase->cellIsWall, sizeof(bool) * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->fineToCoarse, sizeof(uint) * LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ) );
     checkCudaErrors( cudaMalloc ( &dataBase->coarseToFine, sizeof(uint) * LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ) );
@@ -81,7 +81,7 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     std::vector<real> faceCenterBuffer   ( LENGTH_VECTOR * dataBase->numberOfFaces );
     std::vector<real> cellCenterBuffer   ( LENGTH_VECTOR * dataBase->numberOfCells );
 
-    bool* faceIsWallBuffer = new bool[ dataBase->numberOfFaces ];
+    bool* cellIsWallBuffer = new bool[ dataBase->numberOfCells ];
 
     std::vector<uint> fineToCoarseBuffer ( LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells );
     std::vector<uint> coarseToFineBuffer ( LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   );
@@ -106,6 +106,8 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
         cellCenterBuffer[ VEC_X( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.x;
         cellCenterBuffer[ VEC_Y( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.y;
         cellCenterBuffer[ VEC_Z( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.z;
+
+       cellIsWallBuffer[ cellIdx ] = adapter.cells[ cellIdx ].isWall;
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )
@@ -119,8 +121,6 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
         faceCenterBuffer[ VEC_X( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.x;
         faceCenterBuffer[ VEC_Y( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.y;
-
-        faceIsWallBuffer[ faceIdx ] = adapter.faces[ faceIdx ].isWall;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -148,14 +148,14 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     checkCudaErrors( cudaMemcpy ( dataBase->faceCenter, faceCenterBuffer.data(), sizeof(real) * LENGTH_VECTOR * dataBase->numberOfFaces, cudaMemcpyHostToDevice ) );
     checkCudaErrors( cudaMemcpy ( dataBase->cellCenter, cellCenterBuffer.data(), sizeof(real) * LENGTH_VECTOR * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 
-    checkCudaErrors( cudaMemcpy ( dataBase->faceIsWall, faceIsWallBuffer       , sizeof(bool) * dataBase->numberOfFaces, cudaMemcpyHostToDevice ) );
+    checkCudaErrors( cudaMemcpy ( dataBase->cellIsWall, cellIsWallBuffer       , sizeof(bool) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 
     checkCudaErrors( cudaMemcpy ( dataBase->fineToCoarse, fineToCoarseBuffer.data(), sizeof(uint) * LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells, cudaMemcpyHostToDevice ) );
     checkCudaErrors( cudaMemcpy ( dataBase->coarseToFine, coarseToFineBuffer.data(), sizeof(uint) * LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells  , cudaMemcpyHostToDevice ) );
 
     //////////////////////////////////////////////////////////////////////////
     
-    delete [] faceIsWallBuffer;
+    delete [] cellIsWallBuffer;
 }
 
 void DataBaseAllocatorGPU::copyDataHostToDevice(SPtr<DataBase> dataBase)

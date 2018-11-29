@@ -100,21 +100,21 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             }
         }
 
-    //    ghostCellPrim.U      = two * domainCellPrim.U      - secondCellPrim.U;
-    //    ghostCellPrim.V      = two * domainCellPrim.V      - secondCellPrim.V;
-    //    ghostCellPrim.W      = two * domainCellPrim.W      - secondCellPrim.W;
-    //    ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
-    //#ifdef USE_PASSIVE_SCALAR
-    //    ghostCellPrim.S      = two * domainCellPrim.S      - secondCellPrim.S;
-    //#endif // USE_PASSIVE_SCALAR
-
-        ghostCellPrim.U      = domainCellPrim.U     ;
-        ghostCellPrim.V      = domainCellPrim.V     ;
-        ghostCellPrim.W      = domainCellPrim.W     ;
-        ghostCellPrim.lambda = domainCellPrim.lambda;
+        ghostCellPrim.U      = two * domainCellPrim.U      - secondCellPrim.U;
+        ghostCellPrim.V      = two * domainCellPrim.V      - secondCellPrim.V;
+        ghostCellPrim.W      = two * domainCellPrim.W      - secondCellPrim.W;
+        ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S      = domainCellPrim.S     ;
+        ghostCellPrim.S      = two * domainCellPrim.S      - secondCellPrim.S;
     #endif // USE_PASSIVE_SCALAR
+
+    //    ghostCellPrim.U      = domainCellPrim.U     ;
+    //    ghostCellPrim.V      = domainCellPrim.V     ;
+    //    ghostCellPrim.W      = domainCellPrim.W     ;
+    //    ghostCellPrim.lambda = domainCellPrim.lambda;
+    //#ifdef USE_PASSIVE_SCALAR
+    //    ghostCellPrim.S      = domainCellPrim.S     ;
+    //#endif // USE_PASSIVE_SCALAR
 
 
         real rho0 = ( two * boundaryCondition.p0 * c1o2 * ( domainCellPrim.lambda + ghostCellPrim.lambda ) );

@@ -190,14 +190,14 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         {
             uint negCellIdx = dataBase.faceToCell[ NEG_CELL(faceIndex, dataBase.numberOfFaces) ];
-
-            applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters.dt);
-        }
-
-
-        {
             uint posCellIdx = dataBase.faceToCell[ POS_CELL(faceIndex, dataBase.numberOfFaces) ];
 
+            if( dataBase.cellIsWall[ negCellIdx ] || dataBase.cellIsWall[ posCellIdx ] )
+            {
+                flux.rho = zero;
+            }
+
+            applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters.dt);
             applyFluxToPosCell(dataBase, posCellIdx, flux, direction, parameters.dt);
         }
     }

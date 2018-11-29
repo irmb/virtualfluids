@@ -19,6 +19,8 @@ MeshCell::MeshCell(){
     for( bool& flag : this->faceExists    ) flag = false;
 
     isGhostCell = false;
+
+    isWall = false;
 }
 
 bool MeshCell::isCoarseGhostCell()

@@ -60,7 +60,7 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
 
                 MeshCell& neighborCell = adapter.cells[ neighborCellIdx ];
 
-                if( /*!boundaryFinder( neighborCell.cellCenter ) || */
+                if( !boundaryFinder( neighborCell.cellCenter ) || 
                     ( neighborCell.type != STOPPER_OUT_OF_GRID &&
                       neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY ) )
                 {
@@ -73,6 +73,8 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
                     {
                         secondCells.push_back( neighborCell.cellToCell[ idx ] );
                     }
+
+                    cell.isWall = this->isWall();
 
                     break;
                 }

@@ -24,7 +24,7 @@ struct VF_PUBLIC DataBaseStruct
     real* faceCenter;
     real* cellCenter;
 
-    bool* faceIsWall;
+    bool* cellIsWall;
 
     real* data;
     real* dataUpdate;

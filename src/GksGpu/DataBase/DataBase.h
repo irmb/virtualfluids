@@ -70,7 +70,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     real* faceCenter;     // 3
     real* cellCenter;     // 3
 
-    bool* faceIsWall;     // 1
+    bool* cellIsWall;     // 1
 
     uint* fineToCoarse;   // 9
     uint* coarseToFine;   // 15
