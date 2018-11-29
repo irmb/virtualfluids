@@ -102,6 +102,10 @@ void GksMeshAdapter::inputGrid()
     this->sortFaces();
     this->countFaces();
     this->generateInterfaceConnectivity();
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "inputGrid() finished!" << "\n";
 }
 
 void GksMeshAdapter::findQuadtreeConnectivity()
@@ -373,6 +377,8 @@ void GksMeshAdapter::computeCellGeometry()
 
 void GksMeshAdapter::generateFaces()
 {
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "generateFaces()" << "\n";
+
     std::vector< SPtr<Grid> > grids = this->gridBuilder->getGrids();
 
     this->faces.reserve( 2 * this->cells.size() );
@@ -470,34 +476,89 @@ void GksMeshAdapter::generateFaces()
 
 void GksMeshAdapter::sortFaces()
 {
-    real xMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.x < rhs.faceCenter.x; } ) ).faceCenter.x;
-    real yMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.y < rhs.faceCenter.y; } ) ).faceCenter.y;
-    real zMax = ( *std::max_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.z < rhs.faceCenter.z; } ) ).faceCenter.z;
-    
-    real xMin = ( *std::min_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.x < rhs.faceCenter.x; } ) ).faceCenter.x;
-    real yMin = ( *std::min_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.y < rhs.faceCenter.y; } ) ).faceCenter.y;
-    real zMin = ( *std::min_element( this->faces.begin(), this->faces.end(), [this]( MeshFace lhs, MeshFace rhs ){ return lhs.faceCenter.z < rhs.faceCenter.z; } ) ).faceCenter.z;
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "sortFaces()" << "\n";
 
-    real xRange = xMax - xMin;
-    real yRange = yMax - yMin;
-    real zRange = zMax - zMin;
+    std::stable_sort(this->faces.begin(), this->faces.end(),
+            [&, this](MeshFace lhs, MeshFace rhs)
+            {
+                if( lhs.level != rhs.level ) return lhs.level < rhs.level;
 
-    std::sort(  this->faces.begin(), this->faces.end(),
-                [&,this]( MeshFace lhs, MeshFace rhs ){
-
-                    if( lhs.level != rhs.level ) return lhs.level < rhs.level;
-
-                    if( lhs.orientation != rhs.orientation ){
-                        if      ( lhs.orientation == 'x' && rhs.orientation == 'y' ) return true;
-                        else if ( lhs.orientation == 'y' && rhs.orientation == 'z' ) return true;
-                        else if ( lhs.orientation == 'x' && rhs.orientation == 'z' ) return true;
-                        else                                                         return false;
-                    }
-
-                    return ( ten * ten * lhs.faceCenter.z / zRange + ten * lhs.faceCenter.y / yRange + lhs.faceCenter.x / xRange ) < 
-                           ( ten * ten * rhs.faceCenter.z / zRange + ten * rhs.faceCenter.y / yRange + rhs.faceCenter.x / xRange );
+                if (lhs.orientation != rhs.orientation) {
+                    if      (lhs.orientation == 'x' && rhs.orientation == 'y') return true;
+                    else if (lhs.orientation == 'y' && rhs.orientation == 'z') return true;
+                    else if (lhs.orientation == 'x' && rhs.orientation == 'z') return true;
+                    else                                                       return false;
                 }
-             );
+
+                return false;
+            }
+    );
+
+    countFaces();
+
+    std::array<char, 3> orientations = {'x', 'y', 'z'};
+
+    for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
+    {
+        for( uint idx = 0; idx < 3; idx++ )
+        {
+            uint start =         this->startOfFacesPerLevelXYZ [ level + idx];
+            uint end   = start + this->numberOfFacesPerLevelXYZ[ level + idx];
+
+            real xMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
+            real yMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
+            real zMax = (*std::max_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
+
+            real xMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.x < rhs.faceCenter.x; })).faceCenter.x;
+            real yMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.y < rhs.faceCenter.y; })).faceCenter.y;
+            real zMin = (*std::min_element(this->faces.begin() + start, this->faces.begin() + end, [this](MeshFace lhs, MeshFace rhs) { return lhs.faceCenter.z < rhs.faceCenter.z; })).faceCenter.z;
+
+            real xRange = xMax - xMin;
+            real yRange = yMax - yMin;
+            real zRange = zMax - zMin;
+
+            uint blockDim = 8;
+
+            real dx = this->gridBuilder->getGrid(level)->getDelta();
+
+            std::sort(this->faces.begin() + start, this->faces.begin() + end,
+                [&, this](MeshFace lhs, MeshFace rhs)
+            {
+                uint xIdxLhs = lround((lhs.faceCenter.x - xMin) / dx);
+                uint yIdxLhs = lround((lhs.faceCenter.y - yMin) / dx);
+                uint zIdxLhs = lround((lhs.faceCenter.z - zMin) / dx);
+
+                uint xIdxRhs = lround((rhs.faceCenter.x - xMin) / dx);
+                uint yIdxRhs = lround((rhs.faceCenter.y - yMin) / dx);
+                uint zIdxRhs = lround((rhs.faceCenter.z - zMin) / dx);
+
+                real xBlockLhs = xIdxLhs / blockDim;
+                real yBlockLhs = yIdxLhs / blockDim;
+                real zBlockLhs = zIdxLhs / blockDim;
+
+                real xBlockRhs = xIdxRhs / blockDim;
+                real yBlockRhs = yIdxRhs / blockDim;
+                real zBlockRhs = zIdxRhs / blockDim;
+
+                if (zBlockLhs < zBlockRhs) return true;
+                if (zBlockLhs > zBlockRhs) return false;
+                if (yBlockLhs < yBlockRhs) return true;
+                if (yBlockLhs > yBlockRhs) return false;
+                if (xBlockLhs < xBlockRhs) return true;
+                if (xBlockLhs > xBlockRhs) return false;
+
+                if (zIdxLhs < zIdxRhs) return true;
+                if (zIdxLhs > zIdxRhs) return false;
+                if (yIdxLhs < yIdxRhs) return true;
+                if (yIdxLhs > yIdxRhs) return false;
+                if (xIdxLhs < xIdxRhs) return true;
+                if (xIdxLhs > xIdxRhs) return false;
+
+                return true;
+            }
+            );
+        }
+    }
 }
 
 void GksMeshAdapter::countFaces()
