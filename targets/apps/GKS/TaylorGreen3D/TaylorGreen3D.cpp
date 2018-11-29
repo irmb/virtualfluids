@@ -152,14 +152,14 @@ void gksTest( std::string path )
     //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, p0 + 1.5 * g * L );
     SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
 
-    bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.x < -0.5*L*2.0*M_PI;
     } );
     
     //SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, p0 - 1.5 * g * L );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
 
-    bcPX->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.x > 0.5*L*2.0*M_PI;
     } );
 
@@ -168,14 +168,14 @@ void gksTest( std::string path )
     //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
 
-    bcMY->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.y < -0.5*L*2.0*M_PI;
     } );
 
     //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
 
-    bcPY->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.y > 0.5*L*2.0*M_PI;
     } );
 
@@ -184,14 +184,14 @@ void gksTest( std::string path )
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
 
-    bcMZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.z < -0.5*L*2.0*M_PI;
     } );
     
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
 
-    bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ 
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.z > 0.5*L*2.0*M_PI;
     } );
 

@@ -99,7 +99,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-void Periodic::findBoundaryCells(GksMeshAdapter & adapter, std::function<bool(Vec3)> boundaryFinder)
+void Periodic::findBoundaryCells(GksMeshAdapter & adapter, bool allowGhostCells, std::function<bool(Vec3)> boundaryFinder)
 {
     this->myAllocator->freeMemory( *this );
 

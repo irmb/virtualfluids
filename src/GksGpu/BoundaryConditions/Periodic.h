@@ -17,7 +17,7 @@ struct VF_PUBLIC Periodic : public BoundaryCondition
 
     virtual bool isWall();
 
-    virtual void findBoundaryCells( GksMeshAdapter& adapter, std::function<bool(Vec3)> boundaryFinder);
+    virtual void findBoundaryCells( GksMeshAdapter& adapter, bool allowGhostCells, std::function<bool(Vec3)> boundaryFinder) override;
 
     virtual void runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
                                             const Parameters parameters, 

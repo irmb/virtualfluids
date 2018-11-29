@@ -25,7 +25,7 @@ BoundaryCondition::~BoundaryCondition()
     this->myAllocator->freeMemory( *this );
 }
 
-void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::function<bool(Vec3)> boundaryFinder)
+void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGhostCells, std::function<bool(Vec3)> boundaryFinder)
 {
     this->myAllocator->freeMemory( *this );
 
@@ -60,9 +60,12 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, std::functio
 
                 MeshCell& neighborCell = adapter.cells[ neighborCellIdx ];
 
-                if( !boundaryFinder( neighborCell.cellCenter ) || 
-                    ( neighborCell.type != STOPPER_OUT_OF_GRID &&
-                      neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY ) )
+                bool neighborCellIsFluid = neighborCell.type != STOPPER_OUT_OF_GRID && 
+                                           neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY;
+
+                bool neighborCellIsValidGhostCell = allowGhostCells && !boundaryFinder( neighborCell.cellCenter );
+
+                if( neighborCellIsFluid || neighborCellIsValidGhostCell )
                 {
                     ghostCells.push_back ( cellIdx );
                     domainCells.push_back( neighborCellIdx );

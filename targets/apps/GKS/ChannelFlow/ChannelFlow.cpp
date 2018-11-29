@@ -148,8 +148,8 @@ void channelFlow( std::string path, std::string simulationName )
     SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
 
-    bcMX->findBoundaryCells( meshAdapter, [&](Vec3 center){ return center.x < -0.5*L; } );
-    bcPX->findBoundaryCells( meshAdapter, [&](Vec3 center){ return center.x >  0.5*L; } );
+    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
+    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -158,8 +158,8 @@ void channelFlow( std::string path, std::string simulationName )
     //SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
     //SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
 
-    bcMY->findBoundaryCells( meshAdapter, [&](Vec3 center){ return center.y < -0.5*H; } );
-    bcPY->findBoundaryCells( meshAdapter, [&](Vec3 center){ return center.y >  0.5*H; } );
+    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*H; } );
+    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*H; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -168,8 +168,8 @@ void channelFlow( std::string path, std::string simulationName )
     SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
     
-    bcMZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ return center.z < -0.5*dx; } );
-    bcPZ->findBoundaryCells( meshAdapter, [&](Vec3 center){ return center.z >  0.5*dx; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*dx; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*dx; } );
 
     //////////////////////////////////////////////////////////////////////////
 
