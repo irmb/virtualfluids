@@ -31,27 +31,35 @@
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
+#include "GksGpu/BoundaryConditions/Pressure.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
+
+#include "GksGpu/FlowStateData/AccessDeviceData.cuh"
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void drivenCavity( std::string path, std::string simulationName )
+void channelFlow( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint nx = 128;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     real L = 1.0;
+    real H = 1.5;
 
-    real dx = L / 128.0;
+    real dx = L / real(nx);
 
-    real Re  = 2.0e3;
+    real Re  = 1.0e2;
     real U  = 0.1;
     real Ma = 0.1;
     
-    real Pr  = 1.0;
+    real Pr  = 0.1;
     real K   = 2.0;
 
     real rho = 1.0;
@@ -61,9 +69,17 @@ void drivenCavity( std::string path, std::string simulationName )
     real cs = U / Ma;
     real lambda = c1o2 * ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( cs * cs );
 
-    real CFL = 0.5;
+    real g = eight * mu * U / ( H * H );
+
+    real p0 = c1o2 * rho / lambda;
+
+    real CFL = 0.25;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+
+    *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+
+    dt = 0.001 * ( 32.0 / real(nx) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
 
@@ -75,7 +91,7 @@ void drivenCavity( std::string path, std::string simulationName )
     parameters.Pr = Pr;
     parameters.mu = mu;
 
-    parameters.force.x = 0;
+    parameters.force.x = g;
     parameters.force.y = 0;
     parameters.force.z = 0;
 
@@ -96,15 +112,15 @@ void drivenCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
-                                0.5,  0.5,  0.5, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*H, -0.5*dx,  
+                                0.5*L,  0.5*H,  0.5*dx, dx);
 
     //Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
     //gridBuilder->setNumberOfLayers(6,6);
     //gridBuilder->addGrid( &cube, 1);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -132,16 +148,38 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    SPtr<BoundaryCondition> bcPZ   = std::make_shared<IsothermalWall>( dataBase, Vec3( U,   U,   0.0 ), lambda, 0.0 );
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0 );
-
-    bcPZ->findBoundaryCells  ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
-    bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.z < 0.5; } );
     
-    //dataBase->boundaryConditions.push_back( bcMX );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
+
+    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
+    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
+
+    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*H; } );
+    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*H; } );
+
+    //////////////////////////////////////////////////////////////////////////
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
+    
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*dx; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*dx; } );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    dataBase->boundaryConditions.push_back( bcMY );
+    dataBase->boundaryConditions.push_back( bcPY );
+
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPX );
+
+    dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
-    dataBase->boundaryConditions.push_back( bcWall );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,75 +190,87 @@ void drivenCavity( std::string path, std::string simulationName )
 
     CudaUtility::printCudaMemoryUsage();
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
+    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters.K );
+        real ULocal = 0.0;
+        real VLocal = 0.0;
+        real WLocal = U * sin( 2.0 * M_PI * cellCenter.x / L ) * cos( 4.0 / 3.0 * M_PI * cellCenter.y / L );
+
+        return toConservedVariables( PrimitiveVariables( rho, ULocal, VLocal, WLocal, lambda, 0.0 ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
 
     Initializer::initializeDataUpdate(dataBase);
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + ".0." + std::to_string( nx ) );
 
-    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 60.0 );
-
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    for( uint iter = 1; iter < 50000; iter++ )
+    for( uint iter = 1; iter <= 10000 * ( nx / 32 ); iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % 500 == 0 )
-        {
-            dataBase->copyDataDeviceToHost();
+        //if( iter % ( 100 * ( nx / 32 ) ) == 0 )
+        //{
+        //    dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
-        }
+        //    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+        //}
 
         cupsAnalyzer.run( iter );
-
-        convergenceAnalyzer.run( iter );
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
 
     dataBase->copyDataDeviceToHost();
 
-    //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + ".Result." + std::to_string( nx ) );
 
 
+    {
+        real sum1 = 0.0;
+        real sum2 = 0.0;
+    
+        for( uint cellIdx = 0; cellIdx < dataBase->perLevelCount[0].numberOfBulkCells; cellIdx++ )
+        {
+            real velocity = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ] / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells) ];
+
+            sum1 += velocity * U * sin( 2.0 * M_PI * dataBase->getCellCenter(cellIdx).x / L ) * cos( 4.0 / 3.0 * M_PI * dataBase->getCellCenter(cellIdx).y / L ); 
+            sum2 +=            U * sin( 2.0 * M_PI * dataBase->getCellCenter(cellIdx).x / L ) * cos( 4.0 / 3.0 * M_PI * dataBase->getCellCenter(cellIdx).y / L )
+                  *            U * sin( 2.0 * M_PI * dataBase->getCellCenter(cellIdx).x / L ) * cos( 4.0 / 3.0 * M_PI * dataBase->getCellCenter(cellIdx).y / L ); 
+        }
+
+        *logging::out << logging::Logger::INFO_HIGH << sum1 / sum2 << "\n";
+    }
 }
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/out/" );
-    std::string path( "out/" );
-    std::string simulationName ( "DrivenCavity" );
+    std::string path( "F:/Work/Computations/out/" );
+    std::string simulationName ( "ShearWave" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
-    
+
+    if( sizeof(real) == 4 )
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+    else
+        *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
+
     try
     {
-        drivenCavity( path, simulationName );
+        channelFlow( path, simulationName );
     }
     catch (const std::exception& e)
     {     

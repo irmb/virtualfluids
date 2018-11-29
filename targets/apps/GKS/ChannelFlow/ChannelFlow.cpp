@@ -249,6 +249,7 @@ void channelFlow( std::string path, std::string simulationName )
 int main( int argc, char* argv[])
 {
     std::string path( "F:/Work/Computations/out/" );
+    //std::string path( "out/" );
     std::string simulationName ( "ChannelFlow" );
 
     logging::Logger::addStream(&std::cout);
