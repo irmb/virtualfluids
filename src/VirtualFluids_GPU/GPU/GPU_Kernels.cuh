@@ -122,6 +122,18 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														real* forces,
 														bool EvenOrOdd);
 
+extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
+															unsigned int* bcMatD,
+															unsigned int* neighborX,
+															unsigned int* neighborY,
+															unsigned int* neighborZ,
+															real* DDStart,
+															real* F3,
+															int size_Mat,
+															int level,
+															real* forces,
+															bool EvenOrOdd);
+
 extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
 														unsigned int* bcMatD,
 														unsigned int* neighborX,
@@ -252,6 +264,53 @@ extern "C" __global__ void LB_Kernel_Kum_Comp_SP_27(real s9,
 													real* DDStart,
 													int size_Mat,
 													bool EvenOrOdd);
+
+
+extern "C" __global__ void Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27(
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
+
+extern "C" __global__ void Cumulant_One_preconditioned_chim_Comp_SP_27(
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
+	
+extern "C" __global__ void Cumulant_One_chim_Comp_SP_27(
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* DDStart,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
+
+inline __device__ void forwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K);
+
+inline __device__ void forwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2);
+
+inline __device__ void backwardChimera(real &mfa, real &mfb, real &mfc, real vv, real v2);
+
+inline __device__ void backwardChimeraWithK(real &mfa, real &mfb, real &mfc, real vv, real v2, real K);
+
+
 
 extern "C" __global__ void LB_Kernel_Wale_Cum_One_Comp_SP_27(real omega,
 															 unsigned int* bcMatD,
@@ -1713,6 +1772,30 @@ extern "C" __global__ void scaleCF_0817_comp_27(  real* DC,
 												  unsigned int nyF,
 												  OffCF offCF);
 
+extern "C" __global__ void scaleCF_comp_D3Q27F3_2018( real* DC,
+													  real* DF,
+													  real* G6,
+													  unsigned int* neighborCX,
+													  unsigned int* neighborCY,
+													  unsigned int* neighborCZ,
+													  unsigned int* neighborFX,
+													  unsigned int* neighborFY,
+													  unsigned int* neighborFZ,
+													  unsigned int size_MatC, 
+													  unsigned int size_MatF, 
+													  bool evenOrOdd,
+													  unsigned int* posCSWB, 
+													  unsigned int* posFSWB, 
+													  unsigned int kCF, 
+													  real omCoarse, 
+													  real omFine, 
+													  real nu, 
+													  unsigned int nxC, 
+													  unsigned int nyC, 
+													  unsigned int nxF, 
+													  unsigned int nyF,
+													  OffCF offCF);
+
 extern "C" __global__ void scaleCF_comp_D3Q27F3( real* DC,
 												 real* DF,
 												 real* G6,
@@ -2072,6 +2155,30 @@ extern "C" __global__ void scaleFC_0817_comp_27(  real* DC,
 												  unsigned int nxF, 
 												  unsigned int nyF,
 												  OffFC offFC);
+
+extern "C" __global__ void scaleFC_comp_D3Q27F3_2018( real* DC,
+													  real* DF,
+													  real* G6,
+													  unsigned int* neighborCX,
+													  unsigned int* neighborCY,
+													  unsigned int* neighborCZ,
+													  unsigned int* neighborFX,
+													  unsigned int* neighborFY,
+													  unsigned int* neighborFZ,
+													  unsigned int size_MatC, 
+													  unsigned int size_MatF, 
+													  bool evenOrOdd,
+													  unsigned int* posC, 
+													  unsigned int* posFSWB, 
+													  unsigned int kFC, 
+													  real omCoarse, 
+													  real omFine, 
+													  real nu, 
+													  unsigned int nxC, 
+													  unsigned int nyC, 
+													  unsigned int nxF, 
+													  unsigned int nyF,
+													  OffFC offFC);
 
 extern "C" __global__ void scaleFC_comp_D3Q27F3( real* DC,
 												 real* DF,

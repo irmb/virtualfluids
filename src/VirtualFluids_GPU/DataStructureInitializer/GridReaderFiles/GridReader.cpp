@@ -106,12 +106,9 @@ void GridReader::allocArrays_CoordNeighborGeo()
 
         cudaMemoryManager->cudaAllocCoord(level);
 		cudaMemoryManager->cudaAllocSP(level);
-        cudaMemoryManager->cudaAllocNeighborWSB(level);
+		para->cudaAllocF3SP(level);
+		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
-        ///////////////////////////
-        //F3
-        para->cudaAllocF3SP(level);
-        ///////////////////////////
         if (para->getCalcMedian())
             para->cudaAllocMedianSP(level);
         if (para->getCalcParticle() || para->getUseWale())

@@ -62,7 +62,8 @@ void GridGenerator::allocArrays_CoordNeighborGeo()
 	
 		cudaMemoryManager->cudaAllocCoord(level);
         cudaMemoryManager->cudaAllocSP(level);
-        cudaMemoryManager->cudaAllocNeighborWSB(level);
+		para->cudaAllocF3SP(level);
+		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
 		builder->getNodeValues(
 			para->getParH(level)->coordX_SP,

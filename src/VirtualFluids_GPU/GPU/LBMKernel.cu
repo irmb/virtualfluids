@@ -438,6 +438,48 @@ extern "C" void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
 		getLastCudaError("LB_Kernel_Cumulant_D3Q27All4 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void KernelCumulantD3Q27F3_2018( unsigned int numberOfThreads,
+											real s9,
+											unsigned int* bcMatD,
+											unsigned int* neighborX,
+											unsigned int* neighborY,
+											unsigned int* neighborZ,
+											real* DD,
+											real* F3,
+											int size_Mat,
+											int level,
+											real* forces,
+											bool EvenOrOdd)
+{
+	int Grid = (size_Mat / numberOfThreads)+1;
+	int Grid1, Grid2;
+	if (Grid>512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid/Grid1)+1;
+	} 
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1 );
+
+	LB_Kernel_Cumulant_D3Q27F3_2018 <<< grid, threads >>>(  s9,
+															bcMatD,
+															neighborX,
+															neighborY,
+															neighborZ,
+															DD,
+															F3,
+															size_Mat,
+															level,
+															forces,
+															EvenOrOdd); 
+		getLastCudaError("LB_Kernel_Cumulant_D3Q27F3_2018 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void KernelCumulantD3Q27F3(unsigned int numberOfThreads,
 									  real s9,
 									  unsigned int* bcMatD,
@@ -829,6 +871,141 @@ extern "C" void KernelKumNewCompSP27(unsigned int numberOfThreads,
 															forces,
 															EvenOrOdd); 
 		getLastCudaError("LB_Kernel_Kum_New_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(unsigned int numberOfThreads,
+																	real s9,
+																	unsigned int* bcMatD,
+																	unsigned int* neighborX,
+																	unsigned int* neighborY,
+																	unsigned int* neighborZ,
+																	real* DD,
+																	int size_Mat,
+																	int size_Array,
+																	int level,
+																	real* forces,
+																	bool EvenOrOdd)
+{
+	//int Grid = size_Array / numberOfThreads;
+	//dim3 grid(Grid, 1, 1);
+	//dim3 threads(numberOfThreads, 1, 1 );
+
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	Cumulant_One_preconditioned_errorDiffusion_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
+																						bcMatD,
+																						neighborX,
+																						neighborY,
+																						neighborZ,
+																						DD,
+																						size_Mat,
+																						level,
+																						forces,
+																						EvenOrOdd); 
+		getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CumulantOnePreconditionedChimCompSP27(  unsigned int numberOfThreads,
+														real s9,
+														unsigned int* bcMatD,
+														unsigned int* neighborX,
+														unsigned int* neighborY,
+														unsigned int* neighborZ,
+														real* DD,
+														int size_Mat,
+														int size_Array,
+														int level,
+														real* forces,
+														bool EvenOrOdd)
+{
+	//int Grid = size_Array / numberOfThreads;
+	//dim3 grid(Grid, 1, 1);
+	//dim3 threads(numberOfThreads, 1, 1 );
+
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	Cumulant_One_preconditioned_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
+																		bcMatD,
+																		neighborX,
+																		neighborY,
+																		neighborZ,
+																		DD,
+																		size_Mat,
+																		level,
+																		forces,
+																		EvenOrOdd); 
+		getLastCudaError("Cumulant_One_preconditioned_chim_Comp_SP_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void CumulantOneChimCompSP27(unsigned int numberOfThreads,
+										real s9,
+										unsigned int* bcMatD,
+										unsigned int* neighborX,
+										unsigned int* neighborY,
+										unsigned int* neighborZ,
+										real* DD,
+										int size_Mat,
+										int size_Array,
+										int level,
+										real* forces,
+										bool EvenOrOdd)
+{
+	//int Grid = size_Array / numberOfThreads;
+	//dim3 grid(Grid, 1, 1);
+	//dim3 threads(numberOfThreads, 1, 1 );
+
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2, 1);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	Cumulant_One_chim_Comp_SP_27 <<< grid, threads >>>(	s9,
+														bcMatD,
+														neighborX,
+														neighborY,
+														neighborZ,
+														DD,
+														size_Mat,
+														level,
+														forces,
+														EvenOrOdd); 
+		getLastCudaError("Cumulant_One_chim_Comp_SP_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void KernelKumIsoTestSP27(unsigned int numberOfThreads, 
@@ -5514,6 +5691,72 @@ extern "C" void ScaleCF_0817_comp_27(real* DC,
       getLastCudaError("scaleCF_0817_27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void ScaleCF_comp_D3Q27F3_2018(real* DC,
+										  real* DF,
+										  real* G6, 
+										  unsigned int* neighborCX,
+										  unsigned int* neighborCY,
+										  unsigned int* neighborCZ,
+										  unsigned int* neighborFX,
+										  unsigned int* neighborFY,
+										  unsigned int* neighborFZ,
+										  unsigned int size_MatC, 
+										  unsigned int size_MatF, 
+										  bool evenOrOdd,
+										  unsigned int* posCSWB, 
+										  unsigned int* posFSWB, 
+										  unsigned int kCF, 
+										  real omCoarse, 
+										  real omFine, 
+										  real nu, 
+										  unsigned int nxC, 
+										  unsigned int nyC, 
+										  unsigned int nxF, 
+										  unsigned int nyF,
+										  unsigned int numberOfThreads,
+										  OffCF offCF)
+{
+   int Grid = (kCF / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridINT_CF(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+      scaleCF_comp_D3Q27F3_2018 <<< gridINT_CF, threads >>>(DC,
+															DF,
+															G6,
+															neighborCX,
+															neighborCY,
+															neighborCZ,
+															neighborFX,
+															neighborFY,
+															neighborFZ,
+															size_MatC, 
+															size_MatF, 
+															evenOrOdd,
+															posCSWB, 
+															posFSWB, 
+															kCF, 
+															omCoarse, 
+															omFine, 
+															nu, 
+															nxC, 
+															nyC, 
+															nxF, 
+															nyF,
+															offCF);
+      getLastCudaError("scaleCF_comp_D3Q27F3_2018 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 									 real* DF,
 									 real* G6, 
@@ -5577,7 +5820,7 @@ extern "C" void ScaleCF_comp_D3Q27F3(real* DC,
 														nxF, 
 														nyF,
 														offCF);
-      getLastCudaError("scaleCF_0817_27 execution failed"); 
+      getLastCudaError("scaleCF_comp_D3Q27F3 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void ScaleCF_staggered_time_comp_27(  real* DC, 
@@ -6516,6 +6759,72 @@ extern "C" void ScaleFC_0817_comp_27( real* DC,
 													   nyF,
 													   offFC);
       getLastCudaError("scaleFC_0817_27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ScaleFC_comp_D3Q27F3_2018( real* DC,
+										   real* DF,
+										   real* G6,
+										   unsigned int* neighborCX,
+										   unsigned int* neighborCY,
+										   unsigned int* neighborCZ,
+										   unsigned int* neighborFX,
+										   unsigned int* neighborFY,
+										   unsigned int* neighborFZ,
+										   unsigned int size_MatC, 
+										   unsigned int size_MatF, 
+										   bool evenOrOdd,
+										   unsigned int* posC, 
+										   unsigned int* posFSWB, 
+										   unsigned int kFC, 
+										   real omCoarse, 
+										   real omFine, 
+										   real nu, 
+										   unsigned int nxC, 
+										   unsigned int nyC, 
+										   unsigned int nxF, 
+										   unsigned int nyF,
+										   unsigned int numberOfThreads,
+										   OffFC offFC)
+{
+   int Grid = (kFC / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 gridINT_FC(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+     scaleFC_comp_D3Q27F3_2018 <<< gridINT_FC, threads >>> (DC,
+															DF,
+															G6,
+															neighborCX,
+															neighborCY,
+															neighborCZ,
+															neighborFX,
+															neighborFY,
+															neighborFZ,
+															size_MatC, 
+															size_MatF, 
+															evenOrOdd,
+															posC, 
+															posFSWB, 
+															kFC, 
+															omCoarse, 
+															omFine, 
+															nu, 
+															nxC, 
+															nyC, 
+															nxF, 
+															nyF,
+															offFC);
+      getLastCudaError("scaleFC_comp_D3Q27F3_2018 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void ScaleFC_comp_D3Q27F3( real* DC,

@@ -288,18 +288,64 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = true;
+    bool useGridGenerator = false;
 
     if(useGridGenerator){
 
         enum testCase{ 
-            DrivAer,
+			Sphere,
+			DrivAer,
             DLC,
             MultiGPU
         };
 
-        int testcase = MultiGPU;
+        int testcase = Sphere;
         
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if( testcase == Sphere)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {
+            real dx = 0.2;
+            real vx = 0.05;
+
+            TriangularMesh* SphereSTL = TriangularMesh::make("E:/temp/GridSphere/2018/STL/SphereNotOptimal.stl");
+
+            gridBuilder->addCoarseGrid(- 5.0, -5.0, -5.0,
+                                        10.0,  5.0,  5.0, dx);  // DrivAer
+
+            gridBuilder->setNumberOfLayers(10,8);
+            gridBuilder->addGrid(SphereSTL, 2);
+        
+            gridBuilder->addGeometry(SphereSTL);
+
+            gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+
+            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+            //////////////////////////////////////////////////////////////////////////
+            gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+
+            gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+            gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+
+            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+            
+            //////////////////////////////////////////////////////////////////////////
+            SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+            //////////////////////////////////////////////////////////////////////////
+
+            gridBuilder->writeGridsToVtk("E:/temp/GridSphere/2018/grids/outSphere/DrivAer_Grid");
+            gridBuilder->writeArrows    ("E:/temp/GridSphere/2018/grids/outSphere/DrivAer_Grid_arrow");
+
+            SimulationFileWriter::write("E:/temp/GridSphere/2018/grids/gridSphere/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
+
+            //return;
+
+            gridGenerator = GridGenerator::make(gridBuilder, para);
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == DrivAer )
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -662,7 +708,7 @@ int main( int argc, char* argv[])
         {
             try
             {
-                multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
+                multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/Sphere/configSphere.txt");
             }
             catch (const std::exception& e)
             {
