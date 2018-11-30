@@ -185,6 +185,7 @@ void run(string configname)
       restartCoProcessor->setBCProcessor(bcProc);
 
       SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
+      //SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut+"/mig", comm));
       SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut+"/mig", comm));
       migCoProcessor->setLBMKernel(kernel);
       migCoProcessor->setBCProcessor(bcProc);
@@ -649,7 +650,8 @@ void run(string configname)
 
          //return;
 
-         restartCoProcessor->restart((int)restartStep);
+         //restartCoProcessor->restart((int)restartStep);
+         migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
@@ -657,16 +659,16 @@ void run(string configname)
          grid->accept(setConnsVisitor);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-         SPtr<GbTriFaceMesh3D> fngMeshWhole2;
-         if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:start");
-         fngMeshWhole2 = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/"+fngFileWhole2, "fngMeshWhole2", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:end");
-         fngMeshWhole2->rotate(0.0, 0.5, 0.0);
-         if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole2.get(), pathOut+"/geo/fngMeshWhole3", WbWriterVtkXmlBinary::getInstance());
-         SPtr<Interactor3D> fngIntrWhole2 = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(fngMeshWhole2, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy));
-         SetBcBlocksBlockVisitor v(fngIntrWhole2);
-         grid->accept(v);
-         fngIntrWhole2->initInteractor();
+         //SPtr<GbTriFaceMesh3D> fngMeshWhole2;
+         //if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:start");
+         //fngMeshWhole2 = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/"+fngFileWhole2, "fngMeshWhole2", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         //if (myid==0) UBLOG(logINFO, "Read fngFileWhole2:end");
+         //fngMeshWhole2->rotate(0.0, 0.5, 0.0);
+         //if (myid==0) GbSystem3D::writeGeoObject(fngMeshWhole2.get(), pathOut+"/geo/fngMeshWhole3", WbWriterVtkXmlBinary::getInstance());
+         //SPtr<Interactor3D> fngIntrWhole2 = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(fngMeshWhole2, grid, noSlipBCAdapter, Interactor3D::SOLID, (Interactor3D::Accuracy)accuracy));
+         //SetBcBlocksBlockVisitor v(fngIntrWhole2);
+         //grid->accept(v);
+         //fngIntrWhole2->initInteractor();
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
          grid->accept(bcVisitor);
