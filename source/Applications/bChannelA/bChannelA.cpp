@@ -144,7 +144,7 @@ void run(string configname)
       LBMReal rho_LB = 0.0;
       double rhoReal = 1.2041; //(kg/m3)
       double uReal = 48; //m/s
-      double lReal = 0.008;//m
+      double lReal = 0.008/2.0;//m
       double hLB = lReal / deltaXcoarse;
       double Ma = 0.13;//Ma-Real!
       double csReal = uReal / Ma;
