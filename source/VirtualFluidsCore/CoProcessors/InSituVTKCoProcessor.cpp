@@ -2,7 +2,17 @@
 
 #include "InSituVTKCoProcessor.h"
 #include <LBMKernel.h>
-#include <D3Q27ETBCProcessor.h>
+#include <BCProcessor.h>
+#include <Communicator.h>
+#include <UbScheduler.h>
+#include <DistributionArray3D.h>
+#include <D3Q27System.h>
+#include <BoundaryConditions.h>
+#include <Block3D.h>
+#include <LBMKernel.h>
+#include <DataSet3D.h>
+#include <BCArray3D.h>
+
 #include <vector>
 #include <string>
 
@@ -132,7 +142,7 @@ void InSituVTKCoProcessor::addData( SPtr<Block3D> block )
    UbTupleDouble3 nodeOffset   = grid->getNodeOffset(block);
    double         dx           = grid->getDeltaX(block);
 
-   SPtr<LBMKernel> kernel = block->getKernel();
+   SPtr<ILBMKernel> kernel = block->getKernel();
    SPtr<BCArray3D> bcArray = kernel->getBCProcessor()->getBCArray();          
    SPtr<DistributionArray3D> distributions = kernel->getDataSet()->getFdistributions();     
    LBMReal f[D3Q27System::ENDF+1];

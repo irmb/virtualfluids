@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 ########################################################
 ## C++ PROJECT                                       ###
 ########################################################
-PROJECT(bchannel)
+PROJECT(bChannelVA)
 
 INCLUDE(${APPS_ROOT}/IncludsList.cmake) 
 
@@ -22,4 +22,4 @@ SET(CAB_ADDITIONAL_LINK_LIBRARIES VirtualFluids)
 #################################################################
 ###   CREATE PROJECT                                          ###
 #################################################################
-CREATE_CAB_PROJECT(bchannel BINARY)
+CREATE_CAB_PROJECT(bchannelva BINARY)
