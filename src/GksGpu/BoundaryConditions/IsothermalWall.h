@@ -11,13 +11,6 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
-//struct IsothermalWallStruct : virtual public BoundaryConditionStruct
-//{
-//    Vec3 velocity;
-//    real lambda;
-//    real S;
-//};
-
 struct IsothermalWallStruct
 {
     uint  numberOfCells;
@@ -29,6 +22,8 @@ struct IsothermalWallStruct
     Vec3 velocity;
     real lambda;
     real S;
+
+    bool useSecondCells;
 };
 
 struct VF_PUBLIC IsothermalWall : public BoundaryCondition //, public IsothermalWallStruct
@@ -37,7 +32,9 @@ struct VF_PUBLIC IsothermalWall : public BoundaryCondition //, public Isothermal
     real lambda;
     real S;
 
-    IsothermalWall( SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real S );
+    bool useSecondCells;
+
+    IsothermalWall( SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real S, bool useSecondCells );
 
     virtual bool isWall() override;
 
@@ -53,13 +50,15 @@ struct VF_PUBLIC IsothermalWall : public BoundaryCondition //, public Isothermal
 
         boundaryCondition.numberOfCells = this->numberOfCells;
 
-        boundaryCondition.ghostCells    = this->ghostCells;
-        boundaryCondition.domainCells   = this->domainCells;
-        boundaryCondition.secondCells   = this->secondCells;
+        boundaryCondition.ghostCells      = this->ghostCells;
+        boundaryCondition.domainCells     = this->domainCells;
+        boundaryCondition.secondCells     = this->secondCells;
 
-        boundaryCondition.velocity      = this->velocity;
-        boundaryCondition.lambda        = this->lambda;
-        boundaryCondition.S             = this->S;
+        boundaryCondition.velocity        = this->velocity;
+        boundaryCondition.lambda          = this->lambda;
+        boundaryCondition.S               = this->S;
+
+        boundaryCondition.useSecondCells  = this->useSecondCells;
 
         return boundaryCondition;
     }
