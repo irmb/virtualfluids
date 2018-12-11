@@ -53,7 +53,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     //////////////////////////////////////////////////////////////////////////
 
-    real cellVolume = parameters.dx * parameters.dx;
+    real cellVolume = parameters.dx * parameters.dx * parameters.dx;
 
     ConservedVariables update;
 
@@ -78,9 +78,9 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     update.rhoU += force.x * parameters.dt * rho ;
     update.rhoV += force.y * parameters.dt * rho ;
     update.rhoW += force.z * parameters.dt * rho ;
-    update.rhoE += force.x * dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx )
-                 + force.y * dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx ) 
-                 + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx );
+    update.rhoE += force.x * dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx * parameters.dx )
+                 + force.y * dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx * parameters.dx ) 
+                 + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( four * parameters.dx * parameters.dx );
 
     dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
     dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
