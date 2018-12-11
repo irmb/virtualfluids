@@ -51,7 +51,9 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
             MeshCell& cell = adapter.cells[ cellIdx ];
 
             if( !boundaryFinder( cell.cellCenter ) ) continue;
-         
+
+            if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
+
             for( uint idx = 0; idx < 27; idx++ )
             {
                 uint neighborCellIdx = cell.cellToCell[ idx ];
