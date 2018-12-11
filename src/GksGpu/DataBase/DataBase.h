@@ -12,6 +12,8 @@
 
 #include "VirtualFluidsDefinitions.h"
 
+#include "CellProperties/CellProperties.cuh"
+
 class  GksMeshAdapter;
 
 struct BoundaryCondition;
@@ -70,7 +72,7 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     real* faceCenter;     // 3
     real* cellCenter;     // 3
 
-    bool* cellIsWall;     // 1
+    CellProperties* cellProperties;     // 1 x byte
 
     uint* fineToCoarse;   // 9
     uint* coarseToFine;   // 15

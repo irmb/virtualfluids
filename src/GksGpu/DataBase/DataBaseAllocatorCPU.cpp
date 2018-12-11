@@ -9,6 +9,8 @@
 
 #include "DataBase/DataBase.h"
 
+#include "CellProperties/CellProperties.cuh"
+
 #include "BoundaryConditions/BoundaryCondition.h"
 
 #include "Definitions/MemoryAccessPattern.h"
@@ -27,7 +29,7 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
     delete [] dataBase.faceCenter;
     delete [] dataBase.cellCenter;
 
-    delete [] dataBase.cellIsWall;
+    delete [] dataBase.cellProperties;
 
     delete [] dataBase.fineToCoarse;
     delete [] dataBase.coarseToFine;
@@ -49,10 +51,12 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
 
     dataBase->faceToCell = new uint [ LENGTH_FACE_TO_CELL * dataBase->numberOfFaces ];
 
+    dataBase->parentCell = new uint [ dataBase->numberOfCells ];
+
     dataBase->faceCenter = new real [ LENGTH_VECTOR * dataBase->numberOfFaces ];
     dataBase->cellCenter = new real [ LENGTH_VECTOR * dataBase->numberOfCells ];
 
-    dataBase->cellIsWall = new bool [ dataBase->numberOfCells ];
+    dataBase->cellProperties = new CellProperties [ dataBase->numberOfCells ];
 
     dataBase->fineToCoarse = new uint [ LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ];
     dataBase->coarseToFine = new uint [ LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ];
@@ -86,11 +90,17 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
             dataBase->cellToCell[ CELL_TO_CELL( cellIdx, neighbordx, dataBase->numberOfCells ) ] 
                 = adapter.cells[ cellIdx ].cellToCell[ neighbordx ];
 
+        dataBase->parentCell[ cellIdx ] = adapter.cells[ cellIdx ].parent;
+
         dataBase->cellCenter[ VEC_X( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.x;
         dataBase->cellCenter[ VEC_Y( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.y;
         dataBase->cellCenter[ VEC_Z( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.z;
 
-        dataBase->cellIsWall[ cellIdx ] = adapter.cells[ cellIdx ].isWall;
+        dataBase->cellProperties[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
+        if( adapter.cells[ cellIdx ].isWall )
+            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_WALL ); 
+        if( adapter.cells[ cellIdx ].isGhostCell )
+            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_GHOST );
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )

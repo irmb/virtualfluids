@@ -120,7 +120,7 @@ void GksMeshAdapter::findQuadtreeConnectivity()
     
         MeshCell& cell = this->cells[ cellIdx ];
 
-        if( cell.type == FLUID_FCC || cell.type == FLUID_CFC ){
+        if( /*cell.type == FLUID_FCC ||*/ cell.type == FLUID_CFC ){
 
             real x, y, z;
             grids[cell.level]->transIndexToCoords(cell.gridIdx, x, y, z);

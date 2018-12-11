@@ -23,7 +23,7 @@ DataBase::DataBase( std::string type )
           parentCell     (nullptr),
           faceCenter     (nullptr),
           cellCenter     (nullptr),
-          cellIsWall     (nullptr),
+          cellProperties (nullptr),
           fineToCoarse   (nullptr),
           coarseToFine   (nullptr),
           data           (nullptr),
@@ -113,13 +113,15 @@ DataBaseStruct DataBase::toStruct()
     dataBase.cellToCell               = this->cellToCell;
     dataBase.faceToCell               = this->faceToCell;
 
+    dataBase.parentCell               = this->parentCell;
+
     dataBase.fineToCoarse             = this->fineToCoarse;
     dataBase.coarseToFine             = this->coarseToFine;
 
     dataBase.faceCenter               = this->faceCenter;
     dataBase.cellCenter               = this->cellCenter;
 
-    dataBase.cellIsWall               = this->cellIsWall;
+    dataBase.cellProperties           = this->cellProperties;
 
     dataBase.fineToCoarse             = this->fineToCoarse;
     dataBase.coarseToFine             = this->coarseToFine;

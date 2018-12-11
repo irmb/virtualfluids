@@ -22,13 +22,13 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
         bc->runBoundaryConditionKernel( dataBase, parameters, level );
     }
 
-    //if( level != dataBase->numberOfLevels - 1 ){
+    if( level != dataBase->numberOfLevels - 1 ){
     
-    //    runCoarseToFineKernel( dataBase, type, level ); getLastCudaError();
+        //runCoarseToFineKernel( dataBase, type, level ); getLastCudaError();
 
-    //    nestedTimeStep( dataBase, parameters, level + 1 );
-    //    nestedTimeStep( dataBase, parameters, level + 1 );
-    //}
+        nestedTimeStep( dataBase, parameters, level + 1 );
+        nestedTimeStep( dataBase, parameters, level + 1 );
+    }
 
     FluxComputation::run( dataBase, parameters, level );
 

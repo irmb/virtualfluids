@@ -12,6 +12,8 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 
+#include "CellProperties/CellProperties.cuh"
+
 #include "FluxComputation/Moments.cuh"
 #include "FluxComputation/Reconstruction.cuh"
 #include "FluxComputation/Transformation.cuh"
@@ -192,9 +194,33 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             uint negCellIdx = dataBase.faceToCell[ NEG_CELL(faceIndex, dataBase.numberOfFaces) ];
             uint posCellIdx = dataBase.faceToCell[ POS_CELL(faceIndex, dataBase.numberOfFaces) ];
 
-            if( dataBase.cellIsWall[ negCellIdx ] || dataBase.cellIsWall[ posCellIdx ] )
+            CellProperties negCellProperties = dataBase.cellProperties[ negCellIdx ];
+            CellProperties posCellProperties = dataBase.cellProperties[ posCellIdx ];
+
+            if( isCellProperties( negCellProperties, CELL_PROPERTIES_WALL ) || 
+                isCellProperties( posCellProperties, CELL_PROPERTIES_WALL ) )
             {
                 flux.rho = zero;
+            }
+
+            uint negCellParentIdx = dataBase.parentCell[ negCellIdx ];
+            uint posCellParentIdx = dataBase.parentCell[ posCellIdx ];
+
+            if( !( negCellParentIdx != INVALID_INDEX ) != !( posCellParentIdx != INVALID_INDEX ) ) // XOR
+            {
+                if( !isCellProperties( negCellProperties, CELL_PROPERTIES_GHOST ) && 
+                    !isCellProperties( posCellProperties, CELL_PROPERTIES_GHOST ) )
+                {
+                    if (negCellParentIdx != INVALID_INDEX)
+                    {
+                        applyFluxToNegCell(dataBase, negCellParentIdx, flux, direction, parameters.dt);
+                    }
+
+                    if (posCellParentIdx != INVALID_INDEX)
+                    {
+                        applyFluxToPosCell(dataBase, posCellParentIdx, flux, direction, parameters.dt);
+                    }
+                }
             }
 
             applyFluxToNegCell(dataBase, negCellIdx, flux, direction, parameters.dt);

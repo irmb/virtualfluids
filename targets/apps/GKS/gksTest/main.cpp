@@ -44,7 +44,7 @@ void gksTest( std::string path )
 
     real L = 1.0;
 
-    real dx = L / 128.0;
+    real dx = L / 8.0;
 
     real Re  = 2.0e3;
     real U  = 0.1;
@@ -96,10 +96,10 @@ void gksTest( std::string path )
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
-    //Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
+    Cuboid refBox(-1.0, -1.0, 0, 1.0, 1.0, 0.55);
 
-    //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &cube, 1);
+    gridBuilder->setNumberOfLayers(1,1);
+    gridBuilder->addGrid( &refBox, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(true, false, false);
 
@@ -113,11 +113,13 @@ void gksTest( std::string path )
 
     meshAdapter.inputGrid();
 
-    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
+    meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
     meshAdapter.findPeriodicBoundaryNeighbors();
+
+    return;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -134,13 +136,13 @@ void gksTest( std::string path )
     //    return center.x < -0.5 || center.x > 0.5;
     //} );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( U, U, 0.0 ), lambda, 0.0 );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3( U, U, 0.0 ), lambda, 0.0, true );
 
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.z > 0.5;
     } );
 
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0 );
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0, true );
 
     bcWall->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
         return center.z < 0.5;
@@ -198,8 +200,8 @@ void gksTest( std::string path )
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/gridGenerator/" );
-    std::string path( "out/" );
+    std::string path( "F:/Work/Computations/" );
+    //std::string path( "out/" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);

@@ -45,7 +45,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     real L = 1.0;
 
-    real dx = L / 128.0;
+    real dx = L / 32.0;
 
     real Re  = 2.0e3;
     real U  = 0.1;
@@ -99,10 +99,10 @@ void drivenCavity( std::string path, std::string simulationName )
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
-    //Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
+    //Cuboid refBox(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
 
     //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &cube, 1);
+    //gridBuilder->addGrid( &refBox, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -116,9 +116,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
     meshAdapter.inputGrid();
 
-    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
+    //meshAdapter.writeMeshVTK( path + simulationName + "_Mesh.vtk" );
 
-    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    //meshAdapter.writeMeshFaceVTK( path + simulationName + "_MeshFaces.vtk" );
 
     meshAdapter.findPeriodicBoundaryNeighbors();
 
@@ -133,8 +133,8 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcPZ   = std::make_shared<IsothermalWall>( dataBase, Vec3( U,   U,   0.0 ), lambda, 0.0 );
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0 );
+    SPtr<BoundaryCondition> bcPZ   = std::make_shared<IsothermalWall>( dataBase, Vec3( U,   0.0, 0.0 ), lambda, 0.0, false );
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0, false );
 
     bcPZ->findBoundaryCells  ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
     bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.z < 0.5; } );
@@ -150,7 +150,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     dataBase->setMesh( meshAdapter );
 
-    CudaUtility::printCudaMemoryUsage();
+    //CudaUtility::printCudaMemoryUsage();
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
 
@@ -178,11 +178,11 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    for( uint iter = 1; iter < 50000; iter++ )
+    for( uint iter = 1; iter < 100000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % 500 == 0 )
+        if( iter % 10000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
@@ -210,8 +210,8 @@ void drivenCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/out/" );
-    std::string path( "out/" );
+    std::string path( "F:/Work/Computations/out/" );
+    //std::string path( "out/" );
     std::string simulationName ( "DrivenCavity" );
 
     logging::Logger::addStream(&std::cout);
