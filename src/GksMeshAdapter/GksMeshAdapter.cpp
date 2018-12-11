@@ -120,7 +120,7 @@ void GksMeshAdapter::findQuadtreeConnectivity()
     
         MeshCell& cell = this->cells[ cellIdx ];
 
-        if( /*cell.type == FLUID_FCC ||*/ cell.type == FLUID_CFC ){
+        if( cell.type == FLUID_FCC || cell.type == FLUID_CFC ){
 
             real x, y, z;
             grids[cell.level]->transIndexToCoords(cell.gridIdx, x, y, z);
@@ -140,12 +140,13 @@ void GksMeshAdapter::findQuadtreeConnectivity()
             }
 
             // register parent
-            for( uint child = 0; child < 8; child++ )
-                this->cells[ cell.children[child] ].parent = cellIdx;
+            if( cell.type == FLUID_CFC )
+                for (uint child = 0; child < 8; child++)
+                    this->cells[cell.children[child]].parent = cellIdx;
 
             // set correct type for CFF cells
-            for( uint child = 0; child < 8; child++ )
-                if( this->cells[ cell.children[child] ].type != FLUID_FCF ) 
+            if( cell.type == FLUID_CFC )
+                for( uint child = 0; child < 8; child++ )
                     this->cells[ cell.children[child] ].type = FLUID_CFF;
 
         }
@@ -620,35 +621,42 @@ void GksMeshAdapter::generateInterfaceConnectivity()
 
             connectivity[  0 ] = cellIdx;
 
-            connectivity[  1 ] = cell.cellToCell[ 0 ];
-            connectivity[  2 ] = cell.cellToCell[ 1 ];
-            connectivity[  3 ] = cell.cellToCell[ 2 ];
-            connectivity[  4 ] = cell.cellToCell[ 3 ];
-            connectivity[  5 ] = cell.cellToCell[ 4 ];
-            connectivity[  6 ] = cell.cellToCell[ 5 ];
+            //connectivity[  1 ] = cell.cellToCell[ 0 ];
+            //connectivity[  2 ] = cell.cellToCell[ 1 ];
+            //connectivity[  3 ] = cell.cellToCell[ 2 ];
+            //connectivity[  4 ] = cell.cellToCell[ 3 ];
+            //connectivity[  5 ] = cell.cellToCell[ 4 ];
+            //connectivity[  6 ] = cell.cellToCell[ 5 ];
 
-            connectivity[  7 ] = cell.children[ 0 ];
-            connectivity[  8 ] = cell.children[ 1 ];
-            connectivity[  9 ] = cell.children[ 2 ];
-            connectivity[ 10 ] = cell.children[ 3 ];
-            connectivity[ 11 ] = cell.children[ 4 ];
-            connectivity[ 12 ] = cell.children[ 5 ];
-            connectivity[ 13 ] = cell.children[ 6 ];
-            connectivity[ 14 ] = cell.children[ 7 ];
+            //connectivity[  7 ] = cell.children[ 0 ];
+            //connectivity[  8 ] = cell.children[ 1 ];
+            //connectivity[  9 ] = cell.children[ 2 ];
+            //connectivity[ 10 ] = cell.children[ 3 ];
+            //connectivity[ 11 ] = cell.children[ 4 ];
+            //connectivity[ 12 ] = cell.children[ 5 ];
+            //connectivity[ 13 ] = cell.children[ 6 ];
+            //connectivity[ 14 ] = cell.children[ 7 ];
+
+            connectivity[ 1 ] = cell.children[ 0 ];
+            connectivity[ 2 ] = cell.children[ 1 ];
+            connectivity[ 3 ] = cell.children[ 2 ];
+            connectivity[ 4 ] = cell.children[ 3 ];
+            connectivity[ 5 ] = cell.children[ 4 ];
+            connectivity[ 6 ] = cell.children[ 5 ];
+            connectivity[ 7 ] = cell.children[ 6 ];
+            connectivity[ 8 ] = cell.children[ 7 ];
 
             this->coarseToFine.push_back( connectivity );
 
             numberOfCoarseToFinePerLevel[ cell.level ]++;
         }
     }
-
-        std::cout << numberOfCoarseToFinePerLevel[ 0 ] << " " << this->numberOfFineToCoarsePerLevel[ 0 ] << std::endl;
     
     this->startOfFineToCoarsePerLevel[0] = 0;
     this->startOfCoarseToFinePerLevel[0] = 0;
 
-    for( uint level = 1; level < this->numberOfLevels; level++ ){
-        
+    for( uint level = 1; level < this->numberOfLevels; level++ )
+    {
         this->startOfFineToCoarsePerLevel[level] = this->startOfFineToCoarsePerLevel [level - 1]
                                                  + this->numberOfFineToCoarsePerLevel[level - 1];
         

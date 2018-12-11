@@ -45,9 +45,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
     real L = 1.0;
 
-    real dx = L / 32.0;
+    real dx = L / 64.0;
 
-    real Re  = 2.0e3;
+    real Re  = 1.0e3;
     real U  = 0.1;
     real Ma = 0.1;
     
@@ -99,10 +99,10 @@ void drivenCavity( std::string path, std::string simulationName )
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
-    //Cuboid refBox(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
+    Cuboid refBox(-1.0, -1.0, 0.475, 1.0, 1.0, 0.55);
 
-    //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &refBox, 1);
+    gridBuilder->setNumberOfLayers(6,6);
+    gridBuilder->addGrid( &refBox, 2);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -133,7 +133,7 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcPZ   = std::make_shared<IsothermalWall>( dataBase, Vec3( U,   0.0, 0.0 ), lambda, 0.0, false );
+    SPtr<BoundaryCondition> bcPZ   = std::make_shared<IsothermalWall>( dataBase, Vec3( U  , U  , 0.0 ), lambda, 0.0, false );
     SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0, false );
 
     bcPZ->findBoundaryCells  ( meshAdapter, true,  [&](Vec3 center){ return center.z > 0.5; } );
@@ -154,7 +154,13 @@ void drivenCavity( std::string path, std::string simulationName )
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
 
-        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters.K );
+        //real uLocal = U * ( cellCenter.z + 0.5 );
+
+        //if( cellCenter.y )
+
+        real uLocal = 0.0;
+
+        return toConservedVariables( PrimitiveVariables( 1.0, uLocal, 0.0, 0.0, lambda, 0.0 ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -165,9 +171,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 60.0 );
+    CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 1000 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -178,16 +184,16 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    for( uint iter = 1; iter < 100000; iter++ )
+    for( uint iter = 1; iter <= 10000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % 10000 == 0 )
-        {
-            dataBase->copyDataDeviceToHost();
+        //if( iter % 1000 == 0 )
+        //{
+        //    dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
-        }
+        //    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+        //}
 
         cupsAnalyzer.run( iter );
 

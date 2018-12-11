@@ -21,7 +21,7 @@
 
 #define LENGTH_FINE_TO_COARSE 9
 
-#define LENGTH_COARSE_TO_FINE 15
+#define LENGTH_COARSE_TO_FINE 9
 
 //////////////////////////////////////////////////////////////////////////
 
