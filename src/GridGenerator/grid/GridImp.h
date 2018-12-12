@@ -156,6 +156,7 @@ public:
     HOSTDEVICE void findGridInterfaceCF(uint index, GridImp& finerGrid, LbmOrGks lbmOrGks);
     HOSTDEVICE void findGridInterfaceFC(uint index, GridImp& finerGrid);
     HOSTDEVICE void findOverlapStopper(uint index, GridImp& finerGrid);
+    HOSTDEVICE void findInvalidBoundaryNodes(uint index);
 
     HOSTDEVICE void setNodeTo(uint index, char type);
     HOSTDEVICE bool isNode(uint index, char type) const;

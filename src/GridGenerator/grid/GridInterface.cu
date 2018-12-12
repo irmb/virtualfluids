@@ -185,6 +185,16 @@ void GridInterface::findOverlapStopper(const uint& indexOnCoarseGrid, GridImp* c
         coarseGrid->getField().setFieldEntryToInvalidCoarseUnderFine(indexOnCoarseGrid);
 }
 
+ void GridInterface::findInvalidBoundaryNodes(const uint& indexOnCoarseGrid, GridImp* coarseGrid)
+{
+     if( !coarseGrid->getField().is(indexOnCoarseGrid, STOPPER_OUT_OF_GRID_BOUNDARY ) ) return;
+
+     if( !coarseGrid->hasNeighborOfType(indexOnCoarseGrid, FLUID) &&
+         !coarseGrid->hasNeighborOfType(indexOnCoarseGrid, FLUID_CFC) &&
+         !coarseGrid->hasNeighborOfType(indexOnCoarseGrid, FLUID_CFF) )
+         coarseGrid->getField().setFieldEntryToInvalidCoarseUnderFine(indexOnCoarseGrid);
+}
+
 bool GridInterface::isNeighborFineInvalid(real x, real y, real z, const GridImp* coarseGrid, const GridImp* fineGrid)
 {
     const uint neighbor = coarseGrid->transCoordToIndex(x, y, z);

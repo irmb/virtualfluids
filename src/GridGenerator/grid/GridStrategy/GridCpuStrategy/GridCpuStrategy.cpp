@@ -216,9 +216,14 @@ void GridCpuStrategy::findGridInterface(SPtr<GridImp> grid, SPtr<GridImp> fineGr
     for (int index = 0; index < grid->getSize(); index++)
         grid->findGridInterfaceFC(index, *fineGrid);
 
-
     for (int index = 0; index < grid->getSize(); index++)
         grid->findOverlapStopper(index, *fineGrid);
+
+    if( lbmOrGks == GKS )
+    {
+        for (int index = 0; index < grid->getSize(); index++)
+            grid->findInvalidBoundaryNodes(index);
+    }
 
     const uint newGridSize = grid->getSparseSize();
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "  ... done. \n";

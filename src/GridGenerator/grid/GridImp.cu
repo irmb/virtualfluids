@@ -1046,6 +1046,11 @@ HOSTDEVICE void GridImp::findOverlapStopper(uint index, GridImp& finerGrid)
     gridInterface->findOverlapStopper(index, this, &finerGrid);
 }
 
+HOSTDEVICE void GridImp::findInvalidBoundaryNodes(uint index)
+{
+    gridInterface->findInvalidBoundaryNodes(index, this);
+}
+
 // --------------------------------------------------------- //
 //                    Mesh Triangle                          //
 // --------------------------------------------------------- //
