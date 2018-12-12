@@ -52,18 +52,23 @@ vector<double> peMaxOffset;
 string          pathOut;// = "d:/temp/thermoplastCluster";
 string          pathGeo;// = "d:/Projects/ThermoPlast/Geometrie";
 
-void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSlipBCAdapter, InteractorsHelper& intHelper)
+void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSlipBCAdapter/*, InteractorsHelper& intHelper*/)
 {
    int myid = comm->getProcessID();
    if (myid==0) UBLOG(logINFO, "Add nozzles:start");
 
+   SPtr<UbScheduler> sch(new UbScheduler(1));
+   WriteGbObjectsCoProcessor gbObjectsCoProcessor(grid, sch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+
    std::vector< SPtr<Interactor3D> > interactors;
 
-   for (int i = 0; i <= 389; i++)
+   for (int i = 0; i <= 54; i++)
    {
-      SPtr<GbTriFaceMesh3D> bbGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Nozzle/bb"+UbSystem::toString(i)+".stl", "bb", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      SPtr<GbTriFaceMesh3D> bbGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/nn_temp1/bb_new"+UbSystem::toString(i)+".stl", "bb", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> bbInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bbGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+      //GbSystem3D::writeGeoObject(bbGeo.get(), pathOut+"/ns/bbGeo"+UbSystem::toString(i), WbWriterVtkXmlBinary::getInstance());
       //intHelper.addInteractor(bbInt);
+      gbObjectsCoProcessor.addGbObject(bbGeo);
       interactors.push_back(bbInt);
    }
    
@@ -72,6 +77,7 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
       SPtr<GbTriFaceMesh3D> bsGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Nozzle/bs"+UbSystem::toString(i)+".stl", "bs", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> bsInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bsGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //intHelper.addInteractor(bsInt);
+      //gbObjectsCoProcessor.addGbObject(bsGeo);
       interactors.push_back(bsInt);
    }
 
@@ -82,8 +88,11 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
       SPtr<GbTriFaceMesh3D> biGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Nozzle/bi"+UbSystem::toString(n[i])+".stl", "bi", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> biInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(biGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //intHelper.addInteractor(biInt);
+      //gbObjectsCoProcessor.addGbObject(biGeo);
       interactors.push_back(biInt);
    }
+
+   gbObjectsCoProcessor.process(0);
 
 
    for (SPtr<Interactor3D> interactor : interactors)
@@ -315,6 +324,8 @@ void thermoplast(string configname)
    //return;
    //////////////////////////////////////////////////////
 
+   addNozzle(grid, comm, noSlipBCAdapter/*,intHelper*/);
+   return;
 
    if (myid == 0)
    {
@@ -491,7 +502,7 @@ void thermoplast(string configname)
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
       grid->accept(kernelVisitor);
 
-      addNozzle(grid,comm,noSlipBCAdapter,intHelper);
+      addNozzle(grid,comm,noSlipBCAdapter/*,intHelper*/);
 
       intHelper.setBC();
 

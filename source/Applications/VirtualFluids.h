@@ -167,7 +167,8 @@
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MPIIOMigrationCoProcessor.h>
 #include <CoProcessors/PressureCoefficientCoProcessor.h>
-#include <LineTimeSeriesCoProcessor.h>
+#include <CoProcessors/WriteGbObjectsCoProcessor.h>
+#include <CoProcessors/LineTimeSeriesCoProcessor.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>

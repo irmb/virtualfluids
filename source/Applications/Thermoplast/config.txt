@@ -25,15 +25,15 @@ peMaxOffset = -8 -25 -23
 sphereTime = 10
 
 #geometry files
-pathGeo = d:/Projects/ThermoPlast/SimGeoPerf
-michel = /Werkzeug_Michel.stl
+pathGeo = d:/Projects/ThermoPlast/SimPerfMS
+michel = /Werkzeug_Michel_MS.stl
 plexiglas = /plexiglas.stl
 
 #obstacle
 obstacle = true
-obstacleGeo1 = /Quadereinsatz.stl
-obstacleGeo2 = /Kugelausschnitt.stl
-obstacleGeo3 = /Dreieckeinsatz.stl
+obstacleGeo1 = /QuaderMS.stl
+obstacleGeo2 = /KugelMS.stl
+obstacleGeo3 = /DreieckMS.stl
 
 pathOut = g:/temp/thermoplastObst
 
