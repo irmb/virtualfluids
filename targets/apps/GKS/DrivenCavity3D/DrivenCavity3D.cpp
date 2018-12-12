@@ -45,7 +45,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     real L = 1.0;
 
-    real dx = L / 64.0;
+    real dx = L / 16.0;
 
     real Re  = 1.0e3;
     real U  = 0.1;
@@ -100,9 +100,10 @@ void drivenCavity( std::string path, std::string simulationName )
                                 0.5,  0.5,  0.5, dx);
 
     Cuboid refBox(-1.0, -1.0, 0.475, 1.0, 1.0, 0.55);
+    //Cuboid refBox(-1.0, -1.0, -1.0, 1.0, 1.0, -0.475);
 
     gridBuilder->setNumberOfLayers(6,6);
-    gridBuilder->addGrid( &refBox, 2);
+    gridBuilder->addGrid( &refBox, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 

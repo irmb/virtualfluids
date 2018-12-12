@@ -15,6 +15,7 @@
 #include "Core/Logger/Logger.h"
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -45,18 +46,18 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real L = 1.0;
     real H = 0.25;
-    //real H = L / real(nx);;
+    //real H = L / real(nx);
 
     real dx = L / real(nx);
 
 
-    real Ra = 1.0e7;
+    real Ra = 5.0e9;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -116,10 +117,17 @@ void thermalCavity( std::string path, std::string simulationName )
     gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*H,  
                                 0.5*L,  0.5*L,  0.5*H, dx);
 
-    //Cuboid cube(-1.0, -1.0, 0.45, 1.0, 1.0, 0.55);
+    Cuboid* cubeMX = new Cuboid (-1.0  , -1.0, -1.0, 
+                                 -0.475,  1.0,  1.0 );
+    Cuboid* cubePX = new Cuboid ( 0.475, -1.0, -1.0, 
+                                 1.0  ,  1.0,  1.0 );
 
-    //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &cube, 1);
+    Conglomerate refRegion;
+    refRegion.add(cubeMX);
+    refRegion.add(cubePX);
+
+    gridBuilder->setNumberOfLayers(6,6);
+    gridBuilder->addGrid( &refRegion, 2);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
