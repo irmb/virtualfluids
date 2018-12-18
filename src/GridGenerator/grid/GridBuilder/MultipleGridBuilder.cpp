@@ -477,7 +477,7 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->limitToSubDomain( this->subDomainBox );
+            grids[i]->limitToSubDomain( this->subDomainBox, lbmOrGks );
 
     for (size_t i = 0; i < grids.size() - 1; i++)
         grids[i]->repairGridInterfaceOnMultiGPU(grids[i + 1]);

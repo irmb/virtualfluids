@@ -113,7 +113,7 @@ public:
 
     HOST void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) override;
 
-    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) override;
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
 
     HOST void freeMemory() override;
 

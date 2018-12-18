@@ -994,7 +994,7 @@ HOSTDEVICE void GridImp::repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid)
     this->gridInterface->repairGridInterfaceOnMultiGPU( shared_from_this(), std::static_pointer_cast<GridImp>(fineGrid) );
 }
 
-HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
+HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
 {
     for( uint index = 0; index < this->size; index++ ){
 
@@ -1005,7 +1005,8 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
             BoundingBox tmpSubDomainBox = *subDomainBox;
 
             // one layer for receive nodes and one for stoppers
-            tmpSubDomainBox.extend(this->delta);
+            if( lbmOrGks == LBM )
+                tmpSubDomainBox.extend(this->delta);
 
             if (!tmpSubDomainBox.isInside(x, y, z))
                 this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
@@ -1015,7 +1016,10 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox)
             BoundingBox tmpSubDomainBox = *subDomainBox;
 
             // one layer for receive nodes and one for stoppers
-            tmpSubDomainBox.extend(2.0 * this->delta);
+            if( lbmOrGks == LBM )
+                tmpSubDomainBox.extend(2.0 * this->delta);
+            else
+                tmpSubDomainBox.extend(1.0 * this->delta);
 
             if (!tmpSubDomainBox.isInside(x, y, z))
                 this->setFieldEntry(index, INVALID_OUT_OF_GRID);

@@ -84,7 +84,7 @@ public:
 
     HOST virtual void repairGridInterfaceOnMultiGPU(SPtr<Grid> fineGrid) = 0;
 
-    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox) = 0;
+    HOST virtual void limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
     
     HOST virtual void enableFindSolidBoundaryNodes() = 0;
     HOST virtual void enableComputeQs() = 0;
