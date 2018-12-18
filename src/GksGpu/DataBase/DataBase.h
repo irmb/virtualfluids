@@ -74,6 +74,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 
     CellProperties* cellProperties;     // 1 x byte
 
+    char* faceOrientation;
+
     uint* fineToCoarse;   // 9
     uint* coarseToFine;   // 15
 

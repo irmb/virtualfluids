@@ -11,8 +11,8 @@
 CudaUtility::CudaGrid::CudaGrid( uint numberOfEntities, uint threadsPerBlock )
 {
     this->numberOfEntities = numberOfEntities;
-    this->threads = threadsPerBlock;
-    this->blocks  = ( numberOfEntities + threadsPerBlock - 1 ) / threadsPerBlock;
+    this->threads.x = threadsPerBlock;
+    this->blocks.x  = ( numberOfEntities + threadsPerBlock - 1 ) / threadsPerBlock;
 }
 
 void CudaUtility::printCudaMemoryUsage()

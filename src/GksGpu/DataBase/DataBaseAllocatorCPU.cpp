@@ -31,6 +31,8 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 
     delete [] dataBase.cellProperties;
 
+    delete [] dataBase.faceOrientation;
+
     delete [] dataBase.fineToCoarse;
     delete [] dataBase.coarseToFine;
 
@@ -57,6 +59,8 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
     dataBase->cellCenter = new real [ LENGTH_VECTOR * dataBase->numberOfCells ];
 
     dataBase->cellProperties = new CellProperties [ dataBase->numberOfCells ];
+
+    dataBase->faceOrientation = new char [ dataBase->numberOfFaces ];
 
     dataBase->fineToCoarse = new uint [ LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells ];
     dataBase->coarseToFine = new uint [ LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ];
@@ -114,6 +118,8 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
         dataBase->faceCenter[ VEC_X( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.x;
         dataBase->faceCenter[ VEC_Y( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.y;
+
+        dataBase->faceOrientation[ faceIdx ] = adapter.faces[ faceIdx ].orientation;
     }
 
     //////////////////////////////////////////////////////////////////////////

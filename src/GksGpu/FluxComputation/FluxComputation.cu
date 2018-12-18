@@ -31,8 +31,54 @@ __host__ __device__ inline void fluxFunction( DataBaseStruct dataBase, Parameter
 
 void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint level )
 {
+    //{
+    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesX, 128);
+
+    //    runKernel(fluxKernel,
+    //              fluxFunction,
+    //              dataBase->getDeviceType(), grid,
+    //              dataBase->toStruct(),
+    //              parameters,
+    //              'x',
+    //              dataBase->perLevelCount[level].startOfFacesX);
+
+    //    cudaDeviceSynchronize();
+
+    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'x', uint level )");
+    //}
+    //{
+    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesY, 128);
+
+    //    runKernel(fluxKernel,
+    //              fluxFunction,
+    //              dataBase->getDeviceType(), grid,
+    //              dataBase->toStruct(),
+    //              parameters,
+    //              'y',
+    //              dataBase->perLevelCount[level].startOfFacesY);
+
+    //    cudaDeviceSynchronize();
+
+    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'y', uint level )");
+    //}
+    //{
+    //    CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesZ, 128);
+
+    //    runKernel(fluxKernel,
+    //              fluxFunction,
+    //              dataBase->getDeviceType(), grid,
+    //              dataBase->toStruct(),
+    //              parameters,
+    //              'z',
+    //              dataBase->perLevelCount[level].startOfFacesZ);
+
+    //    cudaDeviceSynchronize();
+
+    //    getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'z', uint level )");
+    //}
+    //////////////////////////////////////////////////////////////////////////
     {
-        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesX, 128);
+        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFaces, 64);
 
         runKernel(fluxKernel,
                   fluxFunction,
@@ -45,36 +91,6 @@ void FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, uint 
         cudaDeviceSynchronize();
 
         getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'x', uint level )");
-    }
-    {
-        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesY, 128);
-
-        runKernel(fluxKernel,
-                  fluxFunction,
-                  dataBase->getDeviceType(), grid,
-                  dataBase->toStruct(),
-                  parameters,
-                  'y',
-                  dataBase->perLevelCount[level].startOfFacesY);
-
-        cudaDeviceSynchronize();
-
-        getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'y', uint level )");
-    }
-    {
-        CudaUtility::CudaGrid grid(dataBase->perLevelCount[level].numberOfFacesZ, 128);
-
-        runKernel(fluxKernel,
-                  fluxFunction,
-                  dataBase->getDeviceType(), grid,
-                  dataBase->toStruct(),
-                  parameters,
-                  'z',
-                  dataBase->perLevelCount[level].startOfFacesZ);
-
-        cudaDeviceSynchronize();
-
-        getLastCudaError("FluxComputation::run( SPtr<DataBase> dataBase, Parameters parameters, 'z', uint level )");
     }
 }
 
@@ -92,6 +108,8 @@ __global__ void fluxKernel(DataBaseStruct dataBase, Parameters parameters, char 
 __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters parameters, char direction, uint startIndex, uint index)
 {
     uint faceIndex = startIndex + index;
+
+    direction = dataBase.faceOrientation[ faceIndex ];
 
     //////////////////////////////////////////////////////////////////////////
 

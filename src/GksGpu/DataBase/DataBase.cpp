@@ -24,6 +24,7 @@ DataBase::DataBase( std::string type )
           faceCenter     (nullptr),
           cellCenter     (nullptr),
           cellProperties (nullptr),
+          faceOrientation(nullptr),
           fineToCoarse   (nullptr),
           coarseToFine   (nullptr),
           data           (nullptr),
@@ -122,6 +123,8 @@ DataBaseStruct DataBase::toStruct()
     dataBase.cellCenter               = this->cellCenter;
 
     dataBase.cellProperties           = this->cellProperties;
+
+    dataBase.faceOrientation          = this->faceOrientation;
 
     dataBase.fineToCoarse             = this->fineToCoarse;
     dataBase.coarseToFine             = this->coarseToFine;

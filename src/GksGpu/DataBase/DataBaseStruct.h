@@ -26,6 +26,8 @@ struct VF_PUBLIC DataBaseStruct
 
     CellProperties* cellProperties;
 
+    char* faceOrientation;
+
     real* data;
     real* dataUpdate;
 
