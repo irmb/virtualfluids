@@ -46,7 +46,7 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 256;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -117,17 +117,53 @@ void thermalCavity( std::string path, std::string simulationName )
     gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*H,  
                                 0.5*L,  0.5*L,  0.5*H, dx);
 
-    Cuboid* cubeMX = new Cuboid (-1.0  , -1.0, -1.0, 
-                                 -0.475,  1.0,  1.0 );
-    Cuboid* cubePX = new Cuboid ( 0.475, -1.0, -1.0, 
-                                 1.0  ,  1.0,  1.0 );
+    real L_1 = 0.35;
+    real L_2 = 0.45;
+    real L_3 = 0.475;
+    real L_4 = 0.485;
 
-    Conglomerate refRegion;
-    refRegion.add(cubeMX);
-    refRegion.add(cubePX);
+    Cuboid* cubeMX_1 = new Cuboid (-1.0, -1.0, -1.0, 
+                                   -L_1,  1.0,  1.0 );
+    Cuboid* cubePX_1 = new Cuboid ( L_1, -1.0, -1.0, 
+                                    1.0,  1.0,  1.0 );
+
+    Cuboid* cubeMX_2 = new Cuboid (-1.0, -1.0, -1.0, 
+                                   -L_2,  1.0,  1.0 );
+    Cuboid* cubePX_2 = new Cuboid ( L_2, -1.0, -1.0, 
+                                    1.0,  1.0,  1.0 );
+
+    Cuboid* cubeMX_3 = new Cuboid (-1.0, -1.0, -1.0, 
+                                   -L_3,  1.0,  1.0 );
+    Cuboid* cubePX_3 = new Cuboid ( L_3, -1.0, -1.0, 
+                                    1.0,  1.0,  1.0 );
+
+    Cuboid* cubeMX_4 = new Cuboid (-1.0, -1.0, -1.0, 
+                                   -L_4,  1.0,  1.0 );
+    Cuboid* cubePX_4 = new Cuboid ( L_4, -1.0, -1.0, 
+                                    1.0,  1.0,  1.0 );
+
+    Conglomerate refRegion_1;
+    refRegion_1.add(cubeMX_1);
+    refRegion_1.add(cubePX_1);
+
+    Conglomerate refRegion_2;
+    refRegion_2.add(cubeMX_2);
+    refRegion_2.add(cubePX_2);
+
+    Conglomerate refRegion_3;
+    refRegion_3.add(cubeMX_3);
+    refRegion_3.add(cubePX_3);
+
+    Conglomerate refRegion_4;
+    refRegion_4.add(cubeMX_4);
+    refRegion_4.add(cubePX_4);
 
     gridBuilder->setNumberOfLayers(6,6);
-    gridBuilder->addGrid( &refRegion, 2);
+
+    gridBuilder->addGrid( &refRegion_1, 1);
+    gridBuilder->addGrid( &refRegion_2, 2);
+    gridBuilder->addGrid( &refRegion_3, 3);
+    //gridBuilder->addGrid( &refRegion_4, 4);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 

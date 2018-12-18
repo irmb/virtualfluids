@@ -36,20 +36,26 @@
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
+#include "GksGpu/Analyzer/KineticEnergyAnalyzer.h"
+#include "GksGpu/Analyzer/EnstrophyAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void gksTest( std::string path )
+void writeVelocityFile( SPtr<DataBase> dataBase, std::string filename );
+
+void gksTest( std::string path, uint nx, uint gpuIndex )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 256;
+    //uint nx = 64;
+
+    CudaUtility::setCudaDevice( gpuIndex );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 1.0;
+    real L = 2.0*M_PI;
 
-    real dx = L*2.0*M_PI / real(nx);
+    real dx = L / real(nx);
 
     real Re  = 1.6e3;
     real U  = 1.0;
@@ -64,7 +70,7 @@ void gksTest( std::string path )
 
     real gamma = ( K + 5 ) / ( K + 3 );
 
-    real mu = U * rho * L / Re;
+    real mu = U * rho * 1.0 / Re;
 
     real cs = U / Ma;
     real lambda = c1o2 * ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( cs * cs );
@@ -75,9 +81,12 @@ void gksTest( std::string path )
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
 
-    dt = 0.0025 * ( 32.0 / real(nx) );
+    //dt = 2.0 * M_PI / real(nx);
+    dt = 1.0 / U / 1000.0 * ( 64.0 / real(nx) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+
+    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << "\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -108,8 +117,8 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-0.5*L*2.0*M_PI, -0.5*L*2.0*M_PI, -0.5*L*2.0*M_PI,  
-                                0.5*L*2.0*M_PI,  0.5*L*2.0*M_PI,  0.5*L*2.0*M_PI, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*L,  
+                                0.5*L,  0.5*L,  0.5*L, dx);
 
     //gridBuilder->addCoarseGrid(-2.0 * dx, -0.5*L*2.0*M_PI, -0.5*L*2.0*M_PI,  
     //                            2.0 * dx,  0.5*L*2.0*M_PI,  0.5*L*2.0*M_PI, dx);
@@ -139,8 +148,6 @@ void gksTest( std::string path )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(0);
-
     auto dataBase = std::make_shared<DataBase>( "GPU" );
     dataBase->setMesh( meshAdapter );
 
@@ -149,51 +156,27 @@ void gksTest( std::string path )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, p0 + 1.5 * g * L );
     SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
-
-    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
-        return center.x < -0.5*L*2.0*M_PI;
-    } );
-    
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, p0 - 1.5 * g * L );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
 
-    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
-        return center.x > 0.5*L*2.0*M_PI;
-    } );
+    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
+    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-
-    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
-        return center.y < -0.5*L*2.0*M_PI;
-    } );
-
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
 
-    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
-        return center.y > 0.5*L*2.0*M_PI;
-    } );
+    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
+    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
-        return center.z < -0.5*L*2.0*M_PI;
-    } );
-    
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0 );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
 
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ 
-        return center.z > 0.5*L*2.0*M_PI;
-    } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -212,22 +195,13 @@ void gksTest( std::string path )
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        //real A =  1.0;
-        //real B =  1.0;
-        //real C = -2.0;
-        //real a = 2.0 * M_PI;
-        //real b = 2.0 * M_PI;
-        //real c = 2.0 * M_PI;
-
-        //real ULocal = U * A * cos( a * cellCenter.x ) * sin( b * cellCenter.y ) * sin( c * cellCenter.z );
-        //real VLocal = U * B * sin( a * cellCenter.x ) * cos( b * cellCenter.y ) * sin( c * cellCenter.z );
-        //real WLocal = U * C * sin( a * cellCenter.x ) * sin( b * cellCenter.y ) * cos( c * cellCenter.z );
-
-        real ULocal =   U * sin( cellCenter.x / L ) * cos( cellCenter.y / L ) * cos( cellCenter.z / L );
-        real VLocal = - U * cos( cellCenter.x / L ) * sin( cellCenter.y / L ) * cos( cellCenter.z / L );
+        real ULocal =   U * sin( cellCenter.x ) * cos( cellCenter.y ) * cos( cellCenter.z );
+        real VLocal = - U * cos( cellCenter.x ) * sin( cellCenter.y ) * cos( cellCenter.z );
         real WLocal =   0.0;
 
-        real pLocal = 1.0 / ( Ma * gamma ) + 1.0 / 16.0 * ( cos( 2.0 * cellCenter.x / L ) + cos( 2.0 * cellCenter.y / L ) ) * ( 2.0 + cos( 2.0 * cellCenter.z / L ) );
+        real p0 = 0.5 * rho / lambda;
+
+        real pLocal = p0 + rho * U * U / 16.0 * ( cos( 2.0 * cellCenter.x ) + cos( 2.0 * cellCenter.y ) ) * ( 2.0 + cos( 2.0 * cellCenter.z ) );
 
         real rhoLocal = 2.0 * pLocal * lambda;
 
@@ -238,23 +212,33 @@ void gksTest( std::string path )
 
     Initializer::initializeDataUpdate(dataBase);
 
-    writeVtkXML( dataBase, parameters, 0, path + "out/Test_0" );
+            writeVtkXML( dataBase, parameters, 0, path + "out/TGV_" + std::to_string(nx) + "_"          + std::to_string( 0 ) );
+            writeVelocityFile( dataBase,          path + "out/TGV_" + std::to_string(nx) + "_Velocity_" + std::to_string( 0 ) );
 
     //////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, false, 100 );
+    KineticEnergyAnalyzer kineticEnergyAnalyzer( dataBase,             10 * (nx / 64 ), 10000 );
+    EnstrophyAnalyzer     enstrophyAnalyzer    ( dataBase, parameters, 10 * (nx / 64 ), 10000 );
+
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 60.0, false, 100 );
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 8000 * ( nx / 32 ); iter++ )
+    for( uint iter = 1; iter <= 40000 * (nx / 64 ); iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
-        if( iter % ( 400 * ( nx / 32 ) ) == 0 )
+        kineticEnergyAnalyzer.run( iter );
+        enstrophyAnalyzer.run( iter );
+
+        if( iter % (5000 * ( nx / 64 )) == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + "out/Test_" + std::to_string( iter ) );
+            writeVtkXML( dataBase, parameters, 0, path + "out/TGV_" + std::to_string(nx) + "_"          + std::to_string( iter / 1000 /  ( nx / 64 ) ) );
+            writeVelocityFile( dataBase,          path + "out/TGV_" + std::to_string(nx) + "_Velocity_" + std::to_string( iter / 1000 /  ( nx / 64 ) ) );
+            kineticEnergyAnalyzer.writeToFile(    path + "out/TGV_" + std::to_string(nx) + "_EKin_"     + std::to_string( iter / 1000 /  ( nx / 64 ) ) );
+            enstrophyAnalyzer.writeToFile    (    path + "out/TGV_" + std::to_string(nx) + "_Enstrophy_"+ std::to_string( iter / 1000 /  ( nx / 64 ) ) );
         }
 
         cupsAnalyzer.run( iter );
@@ -277,10 +261,22 @@ int main( int argc, char* argv[])
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    uint gpuIndex = 0;
+
+    if( argc > 1 ) gpuIndex = atoi( argv[1] );
     
+    uint nx = 64;
+
+    if( argc > 2 ) nx = atoi( argv[2] );
+
+    //////////////////////////////////////////////////////////////////////////
+
     try
     {
-        gksTest( path );
+        gksTest( path, nx, gpuIndex );
     }
     catch (const std::exception& e)
     {     
@@ -296,4 +292,30 @@ int main( int argc, char* argv[])
     }
 
    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "FlowStateData/AccessDeviceData.cuh"
+
+void writeVelocityFile( SPtr<DataBase> dataBase, std::string filename )
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "writeVelocityFile( " << filename << " )" << "\n";
+
+    std::ofstream file;
+
+    file.open(filename + ".dat" );
+
+    for( uint cellIndex = 0; cellIndex < dataBase->perLevelCount[0].numberOfBulkCells; cellIndex++ )
+    {
+        real rho = dataBase->dataHost[ RHO__(cellIndex, dataBase->numberOfCells) ];
+
+        file << dataBase->dataHost[ RHO_U(cellIndex, dataBase->numberOfCells) ] / rho << ", ";
+        file << dataBase->dataHost[ RHO_V(cellIndex, dataBase->numberOfCells) ] / rho << ", ";
+        file << dataBase->dataHost[ RHO_W(cellIndex, dataBase->numberOfCells) ] / rho << std::endl;
+    }
+
+    file.close();
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }

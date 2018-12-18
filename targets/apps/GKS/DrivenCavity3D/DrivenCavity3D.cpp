@@ -45,9 +45,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
     real L = 1.0;
 
-    real dx = L / 16.0;
+    real dx = L / 64.0;
 
-    real Re  = 1.0e3;
+    real Re  = 1.0e2;
     real U  = 0.1;
     real Ma = 0.1;
     
@@ -99,11 +99,11 @@ void drivenCavity( std::string path, std::string simulationName )
     gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
                                 0.5,  0.5,  0.5, dx);
 
-    Cuboid refBox(-1.0, -1.0, 0.475, 1.0, 1.0, 0.55);
-    //Cuboid refBox(-1.0, -1.0, -1.0, 1.0, 1.0, -0.475);
+    //Cuboid refBox(-1.0, -1.0, 0.475, 1.0, 1.0, 0.55);
+    ////Cuboid refBox(-1.0, -1.0, -1.0, 1.0, 1.0, -0.475);
 
-    gridBuilder->setNumberOfLayers(6,6);
-    gridBuilder->addGrid( &refBox, 1);
+    //gridBuilder->setNumberOfLayers(6,6);
+    //gridBuilder->addGrid( &refBox, 1);
 
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
@@ -198,7 +198,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
         cupsAnalyzer.run( iter );
 
-        convergenceAnalyzer.run( iter );
+        //convergenceAnalyzer.run( iter );
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
