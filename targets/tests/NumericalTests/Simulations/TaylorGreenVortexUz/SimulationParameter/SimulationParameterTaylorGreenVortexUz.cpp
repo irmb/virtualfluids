@@ -19,7 +19,7 @@ SimulationParameterTaylorGreenUz::SimulationParameterTaylorGreenUz(std::string k
 :SimulationParameterImp("TaylorGreenVortex Uz", viscosity, lx, lz, l0, lz, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, devices), uz(uz), amplitude(amplitude), rho0(rho0)
 {
 	std::ostringstream oss;
-	oss << filePath << "\\TaylorGreenVortex Uz\\viscosity_" << viscosity << "\\uz_" << uz << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lz;
+	oss << filePath << "\\TaylorGreenVortex Uz\\viscosity_" << viscosity << "\\uz_" << uz << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lx;
 	generateFilePath(oss.str());
 	this->filePath = oss.str();
 
