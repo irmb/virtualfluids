@@ -33,9 +33,6 @@ private:
    std::string path;
    WbWriter* writer;
    SPtr<Communicator> comm;
-
-   std::vector<UbTupleFloat3> nodes;
-   std::vector<UbTupleInt3>   triangles;
 };
 
 #endif // WriteGbObjectsCoProcessor_h__

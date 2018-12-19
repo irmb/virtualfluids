@@ -1,11 +1,11 @@
 #simulation parameters
 #boundingBox = 0 0 0 300 1520 2320
 
-#boundingBox = 60 1370 130 190 1530 320 #test bb
+boundingBox = 60 1370 130 190 1530 320 #test bb
 
 #boundingBox = 60 0 10 190 1530 750 #test bb 2
 
-boundingBox = 60 0 10 190 1530 2320  #production bb
+#boundingBox = 60 0 10 190 1530 2320  #production bb
  
 blocknx = 10 10 10 
 #blocknx = 300 420 320
@@ -15,12 +15,12 @@ uLB = 0.03
 
 #PE parameters
 #test pe offset
-#peMinOffset = 46 2 2
-#peMaxOffset = -8 -25 -2
+peMinOffset = 46 2 2
+peMaxOffset = -8 -25 -2
 
 #production pe offset
-peMinOffset = 46 18 14
-peMaxOffset = -8 -25 -23
+#peMinOffset = 46 18 14
+#peMaxOffset = -8 -25 -23
 
 sphereTime = 10
 
@@ -31,8 +31,8 @@ plexiglas = /plexiglas.stl
 
 #obstacle
 obstacle = true
-obstacleGeo1 = /QuaderMS.stl
-obstacleGeo2 = /KugelMS.stl
+obstacleGeo1 = /QuaderMS.stl #/DreieckMS_2.stl # DreieckSchoen.iges.stl #/QuaderMS.stl
+obstacleGeo2 = /KugelMS_2.stl
 obstacleGeo3 = /DreieckMS.stl
 
 pathOut = g:/temp/thermoplastObst

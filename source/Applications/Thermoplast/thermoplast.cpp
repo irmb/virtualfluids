@@ -58,41 +58,51 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
    if (myid==0) UBLOG(logINFO, "Add nozzles:start");
 
    SPtr<UbScheduler> sch(new UbScheduler(1));
-   WriteGbObjectsCoProcessor gbObjectsCoProcessor(grid, sch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+   //WriteGbObjectsCoProcessor gbObjectsCoProcessor(grid, sch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
 
    std::vector< SPtr<Interactor3D> > interactors;
 
-   for (int i = 0; i <= 54; i++)
+   for (int i = 0; i <= 55; i++)
    {
-      SPtr<GbTriFaceMesh3D> bbGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/nn_temp1/bb_new"+UbSystem::toString(i)+".stl", "bb", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      SPtr<GbTriFaceMesh3D> bbGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/n_bb_new/bb_new"+UbSystem::toString(i)+".stl", "bb", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> bbInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bbGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //GbSystem3D::writeGeoObject(bbGeo.get(), pathOut+"/ns/bbGeo"+UbSystem::toString(i), WbWriterVtkXmlBinary::getInstance());
       //intHelper.addInteractor(bbInt);
-      gbObjectsCoProcessor.addGbObject(bbGeo);
+      //if (myid==0) gbObjectsCoProcessor.addGbObject(bbGeo);
       interactors.push_back(bbInt);
    }
-   
+
+   for (int i = 0; i <= 334; i++)
+   {
+      SPtr<GbTriFaceMesh3D> bbGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/n_bb/bb"+UbSystem::toString(i)+".stl", "bb", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      SPtr<Interactor3D> bbInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bbGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+      //GbSystem3D::writeGeoObject(bbGeo.get(), pathOut+"/ns/bbGeo"+UbSystem::toString(i), WbWriterVtkXmlBinary::getInstance());
+      //intHelper.addInteractor(bbInt);
+      //if (myid==0) gbObjectsCoProcessor.addGbObject(bbGeo);
+      interactors.push_back(bbInt);
+   }
+
    for (int i = 0; i <= 51; i++)
    {
-      SPtr<GbTriFaceMesh3D> bsGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Nozzle/bs"+UbSystem::toString(i)+".stl", "bs", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      SPtr<GbTriFaceMesh3D> bsGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/n_bs/bs"+UbSystem::toString(i)+".stl", "bs", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> bsInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bsGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //intHelper.addInteractor(bsInt);
-      //gbObjectsCoProcessor.addGbObject(bsGeo);
+      //if (myid==0) gbObjectsCoProcessor.addGbObject(bsGeo);
       interactors.push_back(bsInt);
    }
 
-   std::array<int,6> n = {0,1,3,4,6,7};
+   std::array<int, 6> n ={ 0,1,3,4,6,7 };
 
    for (int i = 0; i < n.size(); i++)
    {
-      SPtr<GbTriFaceMesh3D> biGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/Nozzle/bi"+UbSystem::toString(n[i])+".stl", "bi", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      SPtr<GbTriFaceMesh3D> biGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/n_bi/bi"+UbSystem::toString(n[i])+".stl", "bi", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> biInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(biGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //intHelper.addInteractor(biInt);
-      //gbObjectsCoProcessor.addGbObject(biGeo);
+      //if (myid==0) gbObjectsCoProcessor.addGbObject(biGeo);
       interactors.push_back(biInt);
    }
 
-   gbObjectsCoProcessor.process(0);
+   //if (myid==0) gbObjectsCoProcessor.process(0);
 
 
    for (SPtr<Interactor3D> interactor : interactors)
@@ -158,7 +168,7 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
    return std::make_shared<DemCoProcessor>(grid, peScheduler, comm, forceCalculator, peSolver);
 }
 
-void createSpheres(double radius,  Vector3D origin, int maxX2, int maxX3, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
+void createSpheres(double radius, Vector3D origin, int maxX2, int maxX3, double uLB, SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor)
 {
    double d = 2.0*radius;
    double dividerX2 = (double)maxX2/2.0;
@@ -166,11 +176,11 @@ void createSpheres(double radius,  Vector3D origin, int maxX2, int maxX3, double
    for (int x3 = 0; x3 < maxX3; x3++)
       for (int x2 = 0; x2 < maxX2; x2++)
          //for (int x1 = 0; x1 < 1; x1++)
-         {
-            //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*(double)x1, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
-            SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
-            createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/dividerX2*(double)x2, -uLB+uLB/dividerX3*(double)x3));
-         }
+      {
+         //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d*(double)x1, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
+         SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+(double)x2*1.0*d, origin[2]+(double)x3*1.0*d, radius));
+         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, -uLB+uLB/dividerX2*(double)x2, -uLB+uLB/dividerX3*(double)x3));
+      }
 }
 
 void thermoplast(string configname)
@@ -188,6 +198,7 @@ void thermoplast(string configname)
    double          outTime = config.getValue<double>("outTime");
    double          availMem = config.getValue<double>("availMem");
    double          uLB = config.getValue<double>("uLB");
+   double          Re = config.getValue<double>("Re");
 
    string          michel = config.getValue<string>("michel");
    string          plexiglas = config.getValue<string>("plexiglas");
@@ -245,7 +256,9 @@ void thermoplast(string configname)
    //double          uLB =  0.1;
    double          radiusLB = 7.5;
    double          radiusWorld = 1.5e-3;
-   double          Re = 900;
+   //double          nuLB = 0.000333333;
+   //double          Re = (uLB*2.0*radiusLB)/nuLB;
+   //double          Re = 900;
    double          nuLB = (uLB*2.0*radiusLB)/Re;
 
    //geometry definition
@@ -307,11 +320,62 @@ void thermoplast(string configname)
    SPtr<BCProcessor> bcProc(new BCProcessor());
    kernel->setBCProcessor(bcProc);
 
+   //if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:start");
+   //SPtr<GbTriFaceMesh3D> obstacleGeo1geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo1, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+   //if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:end");
+   //if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo1geo.get(), pathOut+"/geo/obstacleGeo1", WbWriterVtkXmlBinary::getInstance());
+   //g_minX1 = obstacleGeo1geo->getX1Minimum();
+   //g_minX2 = obstacleGeo1geo->getX2Minimum();
+   //g_minX3 = obstacleGeo1geo->getX3Minimum();
+   //g_maxX1 = obstacleGeo1geo->getX1Maximum();
+   //g_maxX2 = obstacleGeo1geo->getX2Maximum();
+   //g_maxX3 = obstacleGeo1geo->getX3Maximum();
+
+
+
    //blocks generating
    SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
    if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
    GenBlocksGridVisitor genBlocks(gridCube);
    grid->accept(genBlocks);
+
+
+   //{
+     //SPtr<Interactor3D> obstacleGeo1int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(obstacleGeo1geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+     //SPtr<Grid3DVisitor> peVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
+      //InteractorsHelper intHelper(grid, peVisitor, true);
+     //intHelper.addInteractor(obstacleGeo1int);
+     //intHelper.selectBlocks();
+
+     ////create LBM kernel
+      ////SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, 1);
+      ////grid->accept(kernelVisitor);
+
+      ////SPtr<Interactor3D> obstacleGeo1int = SPtr<D3Q27Interactor>(new D3Q27Interactor(obstacleGeo1geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      ////UBLOG(logINFO, "Obst: start");
+      ////std::vector< std::shared_ptr<Block3D> > blockVector;
+      ////UbTupleInt3 blockNX=grid->getBlockNX();
+      ////SPtr<GbObject3D> geoObject(obstacleGeo1int->getGbObject3D());
+      ////double ext = 0.0;
+      ////std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
+      ////grid->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
+      ////for (std::shared_ptr<Block3D> block : blockVector)
+      ////{
+         ////if (block->getKernel())
+         ////{
+            ////obstacleGeo1int->setBCBlock(block);
+         ////}
+      ////}
+      ////UBLOG(logINFO, "Obst: select blocks");
+      ////obstacleGeo1int->initInteractor();
+      ////UBLOG(logINFO, "Obst: end");
+
+      //SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
+      //ppblocks->process(0);
+      //ppblocks.reset();
+   //}
+
+   //return;
 
 
    /////////////////////////////////////////////////////
@@ -324,8 +388,6 @@ void thermoplast(string configname)
    //return;
    //////////////////////////////////////////////////////
 
-   addNozzle(grid, comm, noSlipBCAdapter/*,intHelper*/);
-   return;
 
    if (myid == 0)
    {
@@ -342,22 +404,20 @@ void thermoplast(string configname)
       UBLOG(logINFO, "Preprocess - start");
    }
 
-   //GbCuboid3DPtr geoInflow1(new GbCuboid3D(g_minX1-blockLength, g_maxX2-120.0, g_minX3+190.0, g_minX1+1, g_maxX2+20.0, g_minX3+130.0));
-
    GbCuboid3DPtr geoInjector2(new GbCuboid3D(-12, -5, 1210, 63, 105, 1320));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInjector2.get(), pathOut + "/geo/geoInjector2", WbWriterVtkXmlASCII::getInstance());
 
    GbCuboid3DPtr geoInjector5(new GbCuboid3D(-12, 1415, 205, 63, 1525, 315));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInjector5.get(), pathOut + "/geo/geoInjector5", WbWriterVtkXmlASCII::getInstance());
-   
+
    //GbCuboid3DPtr geoInjector4(new GbCuboid3D(-12, -5, 205, 63, 105, 315));
    //if (myid == 0) GbSystem3D::writeGeoObject(geoInjector4.get(), pathOut + "/geo/geoInjector4", WbWriterVtkXmlASCII::getInstance());
-   
+
    //GbCuboid3DPtr geoInjector7(new GbCuboid3D(28, 705, 542, 103, 815, 652));
    //if (myid == 0) GbSystem3D::writeGeoObject(geoInjector7.get(), pathOut + "/geo/geoInjector7", WbWriterVtkXmlASCII::getInstance());
 
-   //GbCuboid3DPtr testWallGeo(new GbCuboid3D(g_minX1-blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
-   //if (myid == 0) GbSystem3D::writeGeoObject(testWallGeo.get(), pathOut + "/geo/testWallGeo", WbWriterVtkXmlASCII::getInstance());
+   GbCuboid3DPtr testWallGeo(new GbCuboid3D(g_minX1-blockLength, g_minX2 - blockLength, g_maxX3, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3 + blockLength));
+   if (myid == 0) GbSystem3D::writeGeoObject(testWallGeo.get(), pathOut + "/geo/testWallGeo", WbWriterVtkXmlASCII::getInstance());
 
    if (!restart)
    {
@@ -377,30 +437,6 @@ void thermoplast(string configname)
       if (myid==0) UBLOG(logINFO, "Read plexiglasGeo:end");
       if (myid==0) GbSystem3D::writeGeoObject(plexiglasGeo.get(), pathOut+"/geo/plexiglasGeo", WbWriterVtkXmlBinary::getInstance());
 
-      SPtr<Interactor3D> obstacleGeo1int, obstacleGeo2int, obstacleGeo3int;
-      if (obstacle)
-      {
-         //obstacleGeo1
-         if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:start"); 
-         SPtr<GbTriFaceMesh3D> obstacleGeo1geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo1, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:end");
-         if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo1geo.get(), pathOut+"/geo/obstacleGeo1", WbWriterVtkXmlBinary::getInstance());
-         obstacleGeo1int = SPtr<D3Q27Interactor>(new D3Q27Interactor(obstacleGeo1geo, grid, outflowAdapter, Interactor3D::SOLID));
-         //obstacleGeo1
-         if (myid==0) UBLOG(logINFO, "Read obstacleGeo2:start");
-         SPtr<GbTriFaceMesh3D> obstacleGeo2geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo2, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid==0) UBLOG(logINFO, "Read obstacleGeo2:end");
-         if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo2geo.get(), pathOut+"/geo/obstacleGeo2", WbWriterVtkXmlBinary::getInstance());
-         obstacleGeo2int = SPtr<D3Q27Interactor>(new D3Q27Interactor(obstacleGeo2geo, grid, outflowAdapter, Interactor3D::SOLID));
-         //obstacleGeo1
-         if (myid==0) UBLOG(logINFO, "Read obstacleGeo3:start");
-         SPtr<GbTriFaceMesh3D> obstacleGeo3geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo3, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         if (myid==0) UBLOG(logINFO, "Read obstacleGeo3:end");
-         if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo3geo.get(), pathOut+"/geo/obstacleGeo3", WbWriterVtkXmlBinary::getInstance());
-         obstacleGeo3int = SPtr<D3Q27Interactor>(new D3Q27Interactor(obstacleGeo3geo, grid, outflowAdapter, Interactor3D::SOLID));
-      }
-
-
       //inflow
       GbCuboid3DPtr geoOutflowMichel(new GbCuboid3D(g_minX1-blockLength, g_minX2 - blockLength, g_minX3 - blockLength, g_minX1, g_maxX2 + blockLength, g_maxX3 + blockLength));
       if (myid == 0) GbSystem3D::writeGeoObject(geoOutflowMichel.get(), pathOut + "/geo/geoOutflowMichel", WbWriterVtkXmlASCII::getInstance());
@@ -417,7 +453,7 @@ void thermoplast(string configname)
       SPtr<D3Q27Interactor> inflowInjector5Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector5, grid, inflowAdapter, Interactor3D::SOLID));
       //SPtr<D3Q27Interactor> inflowInjector4Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector4, grid, inflowAdapter, Interactor3D::SOLID));
       //SPtr<D3Q27Interactor> inflowInjector7Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector7, grid, inflowAdapter, Interactor3D::SOLID));
-      
+
       SPtr<D3Q27Interactor> outflowMichelInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflowMichel, grid, outflowAdapter, Interactor3D::SOLID));
 
       //outflow
@@ -429,12 +465,38 @@ void thermoplast(string configname)
       //plexiglas
       SPtr<Interactor3D> plexiglasInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(plexiglasGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
-      //SPtr<D3Q27Interactor> testWallInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(testWallGeo, grid, inflowAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> testWallInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(testWallGeo, grid, inflowAdapter, Interactor3D::SOLID));
+
+      SPtr<Interactor3D> obstacleGeo1int, obstacleGeo2int, obstacleGeo3int;
+      if (obstacle)
+      {
+         //obstacleGeo1
+         if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:start");
+         SPtr<GbTriFaceMesh3D> obstacleGeo1geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo1, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:end");
+         if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo1geo.get(), pathOut+"/geo/obstacleGeo1", WbWriterVtkXmlBinary::getInstance());
+         obstacleGeo1int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(obstacleGeo1geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         //obstacleGeo2
+         if (myid==0) UBLOG(logINFO, "Read obstacleGeo2:start");
+         SPtr<GbTriFaceMesh3D> obstacleGeo2geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo2, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         if (myid==0) UBLOG(logINFO, "Read obstacleGeo2:end");
+         if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo2geo.get(), pathOut+"/geo/obstacleGeo2", WbWriterVtkXmlBinary::getInstance());
+         obstacleGeo2int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(obstacleGeo2geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+         //obstacleGeo3
+         if (myid==0) UBLOG(logINFO, "Read obstacleGeo3:start");
+         SPtr<GbTriFaceMesh3D> obstacleGeo3geo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+obstacleGeo3, "michelGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         if (myid==0) UBLOG(logINFO, "Read obstacleGeo3:end");
+         if (myid==0) GbSystem3D::writeGeoObject(obstacleGeo3geo.get(), pathOut+"/geo/obstacleGeo3", WbWriterVtkXmlBinary::getInstance());
+         obstacleGeo3int = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(obstacleGeo3geo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+      }
 
       //////////////////////////////////////////////////////////////////////////
       //SPtr<Grid3DVisitor> peVisitor(new PePartitioningGridVisitor(comm, demCoProcessor));
       SPtr<Grid3DVisitor> peVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::BSW, MetisPartitioner::KWAY));
       InteractorsHelper intHelper(grid, peVisitor, true);
+
+      //intHelper.addInteractor(obstacleGeo1int);
+
       intHelper.addInteractor(boxInt);
       intHelper.addInteractor(michelInt);
       intHelper.addInteractor(plexiglasInt);
@@ -444,34 +506,16 @@ void thermoplast(string configname)
       //intHelper.addInteractor(inflowInjector7Int);
       intHelper.addInteractor(outflowPlexiglasInt);
       intHelper.addInteractor(outflowMichelInt);
+      intHelper.addInteractor(obstacleGeo1int);
+      intHelper.addInteractor(obstacleGeo2int);
+      intHelper.addInteractor(obstacleGeo3int);
       //intHelper.addInteractor(testWallInt);
-      if (obstacle)
-      {
-         intHelper.addInteractor(obstacleGeo1int);
-         intHelper.addInteractor(obstacleGeo2int);
-         intHelper.addInteractor(obstacleGeo3int);
-      }
-
       intHelper.selectBlocks();
 
       //write data for visualization of block grid
       SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
       ppblocks->process(0);
       ppblocks.reset();
-
-      //////////////////////////////////////////////////////////////////////////
-      //TEST PE
-      const int gridNX1 = val<1>(grid->getBlockNX()) * grid->getNX1();
-      const int gridNX2 = val<2>(grid->getBlockNX()) * grid->getNX2();
-      const int gridNX3 = val<3>(grid->getBlockNX()) * grid->getNX3();
-      std::array<double, 6> simulationDomain ={ g_minX1, g_minX2, g_minX3, g_minX1+gridNX1, g_minX2+gridNX2, g_minX3+gridNX3 };
-     // UbTupleInt3 numberOfBlocksT(grid->getNX1(), grid->getNX2(), grid->getNX3());
-      UbTupleBool3 isPeriodic(grid->isPeriodicX1(), grid->isPeriodicX2(), grid->isPeriodicX3());
-      Vector3D minOffset(peMinOffset[0], peMinOffset[1], peMinOffset[2]);
-      Vector3D maxOffset(peMaxOffset[0], peMaxOffset[1], peMaxOffset[2]);
-      SPtr<GbObject3D> boxPE(new GbCuboid3D(simulationDomain[0]+minOffset[0], simulationDomain[1]+minOffset[1], simulationDomain[2]+minOffset[2], simulationDomain[3]+maxOffset[0], simulationDomain[4]+maxOffset[1], simulationDomain[5]+maxOffset[2]));
-      GbSystem3D::writeGeoObject(boxPE.get(), pathOut + "/geo/boxPE", WbWriterVtkXmlBinary::getInstance());
-      //////////////////////////////////////////////////////////////////////////
 
       unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
       int ghostLayer = 3;
@@ -502,24 +546,45 @@ void thermoplast(string configname)
       SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
       grid->accept(kernelVisitor);
 
-      addNozzle(grid,comm,noSlipBCAdapter/*,intHelper*/);
+      addNozzle(grid, comm, noSlipBCAdapter/*,intHelper*/);
 
       intHelper.setBC();
 
 
-      //initialization of distributions
+      ////////////////////////////////////////////////////////////////////////////////////////////////////
+      //{
+         ////UBLOG(logINFO, "Obst: start, rank="<<myid);
+            //std::vector< std::shared_ptr<Block3D> > blockVector;
+            //UbTupleInt3 blockNX=grid->getBlockNX();
+            //SPtr<GbObject3D> geoObject(obstacleGeo3int->getGbObject3D());
+            //double ext = 0.0;
+            //std::array<double, 6> AABB ={ geoObject->getX1Minimum(),geoObject->getX2Minimum(),geoObject->getX3Minimum(),geoObject->getX1Maximum(),geoObject->getX2Maximum(),geoObject->getX3Maximum() };
+            //grid->getBlocksByCuboid(AABB[0]-(double)val<1>(blockNX)*ext, AABB[1]-(double)val<2>(blockNX)*ext, AABB[2]-(double)val<3>(blockNX)*ext, AABB[3]+(double)val<1>(blockNX)*ext, AABB[4]+(double)val<2>(blockNX)*ext, AABB[5]+(double)val<3>(blockNX)*ext, blockVector);
+            //for (std::shared_ptr<Block3D> block : blockVector)
+            //{
+               //if (block->getKernel())
+               //{
+                  //obstacleGeo3int->setBCBlock(block);
+               //}
+            //}
+            //UBLOG(logINFO, "Obst: select blocks, number of blocks="<<blockVector.size()<<", rank="<<myid);
+            //obstacleGeo3int->initInteractor();
+            //UBLOG(logINFO, "Obst: end, rank="<<myid);
+      //}
+      //////////////////////////////////////////////////////////////////////////////////////////////////////
+            //initialization of distributions
       InitDistributionsBlockVisitor initVisitor;
       //initVisitor.setVx1(uLB);
       grid->accept(initVisitor);
 
       //write data for visualization of boundary conditions
       {
-         SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-         ppgeo.process(0);
+         //SPtr<UbScheduler> geoSch(new UbScheduler(1));
+         //WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+         //ppgeo.process(0);
 
-         WriteMacroscopicQuantitiesCoProcessor ppInit(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
-         ppInit.process(0);
+         //WriteMacroscopicQuantitiesCoProcessor ppInit(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+         //ppInit.process(0);
       }
 
       if (myid == 0) UBLOG(logINFO, "Preprocess - end");
@@ -556,7 +621,7 @@ void thermoplast(string configname)
    ////generating spheres 
    //UBLOG(logINFO, "generating spheres - start, rank="<<myid);
    SPtr<UbScheduler> sphereScheduler(new UbScheduler(sphereTime/*10,10,10*/));
-   double toleranz = 0.0;
+   double toleranz = 0.0;//0.05;
    SPtr<CreateDemObjectsCoProcessor> createSphereCoProcessor(new CreateDemObjectsCoProcessor(grid, sphereScheduler, comm, demCoProcessor, sphereMaterial, toleranz));
    //UBLOG(logINFO, "generating spheres - stop, rank="<<myid);
 
@@ -576,7 +641,7 @@ void thermoplast(string configname)
       restartDemObjectsCoProcessor->restart(restartStep);
       createSphereCoProcessor->setToleranz(toleranz);
    }
- 
+
    //set connectors
    //UBLOG(logINFO, "set connectors - start, rank="<<myid);
    InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
@@ -598,37 +663,15 @@ void thermoplast(string configname)
    createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);
    Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector2->getX2Minimum()+2.2*d, geoInjector2->getX3Minimum()+1.5*d);
    createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);
-   //Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.2*d, geoInjector4->getX3Minimum()+1.5*d);
-   //createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);
+
+   //Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.4*d, geoInjector4->getX3Minimum()+1.5*d);
+   //createSpheres(radiusLB,origin2,maxX2,maxX3,uLB,createSphereCoProcessor);
+
    //maxX2 = 7;
    //maxX3 = 7;
    //Vector3D origin3(g_minX1+peMinOffset[0]-1.5*d, geoInjector7->getX2Minimum()+0.5*d, geoInjector7->getX3Minimum()+0.5*d);
-   //createSpheres(radiusLB, origin3, maxX2, maxX3, uLB, createSphereCoProcessor);
+   //createSpheres(radiusLB,origin3,maxX2,maxX3,uLB,createSphereCoProcessor);
 
-   //for (int x3 = 0; x3 < 6; x3++)
-   //   for (int x2 = 0; x2 < 5; x2++)
-   //      for (int x1 = 0; x1 < 1; x1++)
-   //      {
-   //         //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
-   //         SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+2.0*d, origin[1]+x2*1.5*d, origin[2]+x3*1.5*d, radius));
-   //         if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
-   //         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, uLB, uLB));
-   //      }
-
-   
-
-   //UBLOG(logINFO, "sphere prototypes - stop, rank="<<myid);
-
-   //Vector3D origin(106+radius, 1372+radius, 12+radius);
-   //for (int x3 = 0; x3 < 28; x3++)
-   //   for (int x2 = 0; x2 < 12; x2++)
-   //      for (int x1 = 0; x1 < 7; x1++)
-   //      {
-   //         //SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*d, origin[1]+x2*2.0*d, origin[2]+x3*2.0*d, radius));
-   //         SPtr<GbObject3D> sphere(new GbSphere3D(origin[0]+x1*1.1*d, origin[1]+x2*1.1*d, origin[2]+x3*1.1*d, radius));
-   //         //if (myid == 0) GbSystem3D::writeGeoObject(sphere.get(), pathOut + "/geo/sphere"+UbSystem::toString(x1)+UbSystem::toString(x2)+UbSystem::toString(x3), WbWriterVtkXmlASCII::getInstance());
-   //         createSphereCoProcessor->addGeoObject(sphere, Vector3D(uLB, 0.0, 0.0));
-   //      }
 
    createSphereCoProcessor->process(0);
 
@@ -653,14 +696,14 @@ void thermoplast(string configname)
    SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
    //start simulation 
-   omp_set_num_threads(numOfThreads);
+   //omp_set_num_threads(numOfThreads);
    SPtr<UbScheduler> stepGhostLayer(peScheduler);
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
-   calculator->addCoProcessor(npr);
 
+   calculator->addCoProcessor(npr);
    calculator->addCoProcessor(createSphereCoProcessor);
    calculator->addCoProcessor(demCoProcessor);
-   calculator->addCoProcessor(writeBCCoProcessor);
+   ////calculator->addCoProcessor(writeBCCoProcessor);
    calculator->addCoProcessor(writeDemObjectsCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
    calculator->addCoProcessor(restartDemObjectsCoProcessor);
@@ -672,7 +715,6 @@ void thermoplast(string configname)
    if (myid==0) UBLOG(logINFO, "END LOGGING - " << UbSystem::getTimeStamp());
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
@@ -681,19 +723,18 @@ int main(int argc, char* argv[])
       //Sleep(30000);
       walberla::Environment env(argc, argv);
 
-      //if (argv!=NULL)
-      //{
-      //   if (argv[1]!=NULL)
-      //   {
-            //thermoplast(string(argv[1]));
-      //thermoplast(string("thermoplast.cfg"));
-      thermoplast(string("d:/Projects/VirtualFluidsGit/source/Applications/Thermoplast/config.txt"));
-      //   }
-      //   else
-      //   {
-      //      cout<<"Configuration file must be set!: "<<argv[0]<<" <config file>"<<endl<<std::flush;
-      //   }
-      //}
+      if (argv!=NULL)
+      {
+         //if (argv[1]!=NULL)
+         //{
+            //thermoplast(string("thermoplast.cfg"));
+         thermoplast(string("d:/Projects/VirtualFluidsGit/source/Applications/Thermoplast/config.txt"));
+         //}
+         //else
+         //{
+            //cout<<"Configuration file must be set!: "<<argv[0]<<" <config file>"<<endl<<std::flush;
+         //}
+      }
       return 0;
    }
    catch (std::exception& e)
