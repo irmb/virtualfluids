@@ -47,7 +47,7 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, Parameters& parameters, std::string path, std::string simulationName )
+void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, SPtr<Parameters> parameters, std::string path, std::string simulationName )
 {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 64;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -92,20 +92,20 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     //////////////////////////////////////////////////////////////////////////
 
-    parameters.K  = K;
-    parameters.Pr = Pr;
-    parameters.mu = mu;
+    parameters->K  = K;
+    parameters->Pr = Pr;
+    parameters->mu = mu;
 
-    parameters.force.x = 0;
-    parameters.force.y = -g;
-    parameters.force.z = 0;
+    parameters->force.x = 0;
+    parameters->force.y = -g;
+    parameters->force.z = 0;
 
-    parameters.dt = dt;
-    parameters.dx = dx;
+    parameters->dt = dt;
+    parameters->dx = dx;
 
-    parameters.lambdaRef = lambda;
+    parameters->lambdaRef = lambda;
 
-    parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
+    parameters->viscosityModel = ViscosityModel::sutherlandsLaw;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -158,7 +158,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
                                                          1.0,  1.0,  1.0 ) );
 
     gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &refRegion_1, 1);
+    gridBuilder->addGrid( &refRegion_1, 1);
     //gridBuilder->addGrid( &refRegion_2, 2);
     //gridBuilder->addGrid( &refRegion_3, 3);
     //gridBuilder->addGrid( &refRegion_4, 4);
@@ -202,8 +202,10 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda/*Hot */, 0.0, false );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda/*Cold*/, 0.0, false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , 0.0, false );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, 0.0, false );
 
     bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
@@ -231,10 +233,8 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
 
-    if( threadIndex == 0 )
-        dataBase->boundaryConditions.push_back( bcMX );
-    if( threadIndex == 1 )
-        dataBase->boundaryConditions.push_back( bcPX );
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPX );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
@@ -266,13 +266,14 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
         real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
         real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters->K );
     });
 
     dataBase->copyDataHostToDevice();
 
     Initializer::initializeDataUpdate(dataBase);
 
+    //writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +289,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, Parameters& parameters, std::string path, std::string simulationName )
+void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, SPtr<Parameters> parameters, std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -296,9 +297,9 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
+    writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 10.0 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
@@ -306,21 +307,21 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 1000; iter++ )
+    for( uint iter = 1; iter <= 10000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, communicator, 0);
+        TimeStepping::nestedTimeStep(dataBase, *parameters, communicator, 0);
 
         if( 
-            ( iter < 10     && iter % 1     == 0 ) ||
-            ( iter < 100    && iter % 10    == 0 ) ||
-            ( iter < 1000   && iter % 100   == 0 )
-            //( iter < 10000  && iter % 1000  == 0 ) ||
-            //( iter < 10000000 && iter % 10000 == 0 )
+            //( iter < 10     && iter % 1     == 0 ) ||
+            //( iter < 100    && iter % 10    == 0 ) ||
+            //( iter < 1000   && iter % 100   == 0 ) ||
+            //( iter < 10000  && iter % 1000  == 0 ) 
+            ( iter < 10000000 && iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( iter ) );
+            writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( iter ) );
         }
 
         cupsAnalyzer.run( iter );
@@ -359,8 +360,8 @@ int main( int argc, char* argv[])
         communicator_0->opposingCommunicator = communicator_1;
         communicator_1->opposingCommunicator = communicator_0;
 
-        Parameters parameters_0;
-        Parameters parameters_1;
+        auto parameters_0 = std::make_shared<Parameters>();
+        auto parameters_1 = std::make_shared<Parameters>();
 
         {
             std::thread thread_0(init, 0, dataBase_0, communicator_0, parameters_0, path, simulationName);
@@ -377,6 +378,9 @@ int main( int argc, char* argv[])
             thread_0.join();
             thread_1.join();
         }
+
+        //writeVtkXML( dataBase_0, *parameters_0, 0, path + simulationName + "_" + std::to_string( 0 ) + "_" + std::to_string( 1 ) );
+        //writeVtkXML( dataBase_1, *parameters_1, 0, path + simulationName + "_" + std::to_string( 1 ) + "_" + std::to_string( 1 ) );
     }
     catch (const std::exception& e)
     {     

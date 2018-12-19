@@ -27,7 +27,7 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
     }
 
     if( level == 0 ){
-        //communicator->exchangeData( dataBase );
+        communicator->exchangeData( dataBase );
     }
 
     if( level != dataBase->numberOfLevels - 1 ){
