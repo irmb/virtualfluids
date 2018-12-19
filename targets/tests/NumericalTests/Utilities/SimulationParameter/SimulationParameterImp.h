@@ -27,7 +27,7 @@ public:
 protected:
 	SimulationParameterImp() {};
 	SimulationParameterImp(std::string simName, real viscosity, real lx, real lz, real l0,
-		unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
+		real lForTimeStepLength, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
 		unsigned int startStepCalculation, unsigned int ySliceForCalculation,
 		std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
 		bool writeFiles, unsigned int startStepFileWriter,

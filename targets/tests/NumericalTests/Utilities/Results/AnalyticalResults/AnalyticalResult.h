@@ -11,11 +11,7 @@ class AnalyticalResults : public ResultsImp
 {
 public:
 	virtual void calc(std::shared_ptr< SimulationResults> simResults) = 0;
-
-protected:
-	void init(std::shared_ptr< SimulationResults> simResults);
-	
-private:
+	virtual bool isCalculated() = 0;
 	
 };
 #endif 

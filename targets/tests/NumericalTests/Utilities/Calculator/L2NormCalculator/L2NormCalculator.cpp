@@ -3,9 +3,14 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-std::shared_ptr<L2NormCalculator> L2NormCalculator::getNewInstance()
+#include <iostream>
+
+std::shared_ptr<L2NormCalculator> L2NormCalculator::getInstance()
 {
-	return std::shared_ptr<L2NormCalculator>(new L2NormCalculator());
+	static std::shared_ptr<L2NormCalculator> uniqueInstance;
+	if (!uniqueInstance)
+		uniqueInstance = std::shared_ptr<L2NormCalculator>(new L2NormCalculator());
+	return uniqueInstance;
 }
 
 double L2NormCalculator::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level)

@@ -9,6 +9,7 @@ class SimulationParameter;
 class SimulationResults;
 class SimulationObserver;
 class DataWriter;
+class Parameter;
 
 class TestSimulation
 {
@@ -26,6 +27,8 @@ public:
 	virtual void makeSimulationHeadOutput() = 0;
 	virtual void setSimulationStartTime() = 0;
 	virtual void setSimulationEndTimeAndNotifyObserver() = 0;
+
+	virtual void setParameter(std::shared_ptr<Parameter> para) = 0;
 private:
 
 };

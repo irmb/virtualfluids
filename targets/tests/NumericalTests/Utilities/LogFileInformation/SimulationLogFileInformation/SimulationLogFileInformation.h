@@ -8,7 +8,8 @@
 class SimulationLogFileInformation : public LogFileInformation
 {
 public:
-	virtual std::string getFilePathExtension() = 0;
+	virtual std::string getFilePathExtensionOne() = 0;
+	virtual std::string getFilePathExtensionTwo() = 0;
 
 private:
 

@@ -3,6 +3,8 @@
 
 #include <vector>
 
+class SimulationResults;
+
 class PostProcessingResults
 {
 public:

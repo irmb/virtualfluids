@@ -2,7 +2,7 @@
 
 #include <experimental/filesystem>
 
-SimulationParameterImp::SimulationParameterImp(std::string simName, real viscosity, real lx, real lz, real l0,
+SimulationParameterImp::SimulationParameterImp(std::string simName, real viscosity, real lx, real lz, real l0, real lForTimeStepLength,
 	unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, 
 	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
 	std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
@@ -14,7 +14,7 @@ SimulationParameterImp::SimulationParameterImp(std::string simName, real viscosi
 		gridPath(gridPath), maxLevel(maxLevel), numberOfGridLevels(numberOfGridLevels),
 		writeFiles(writeFiles), startStepFileWriter(startStepFileWriter), devices(devices)
 {
-	timeStepLength = basisTimeStepLength*(lx / l0)*(lx / l0);
+	timeStepLength = basisTimeStepLength * (lForTimeStepLength / l0)*(lForTimeStepLength / l0);
 	startTimeCalculation = timeStepLength * startStepCalculation;
 	startTimeDataWriter = timeStepLength * startStepFileWriter;
 	endTime = timeStepLength * numberOfTimeSteps;

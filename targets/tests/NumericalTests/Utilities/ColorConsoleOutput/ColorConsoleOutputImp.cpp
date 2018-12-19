@@ -203,6 +203,64 @@ void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_pt
 	printTestEnd(testPassed);
 }
 
+void ColorConsoleOutputImp::makeL2NormBetweenKernelsTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> basicSimInfo, std::shared_ptr<SimulationInfo> divergentSimInfo, std::string dataToCalc, unsigned int timeStep, double l2NormBasicKernel, double l2NormDivergentKernel, double l2NormBetweenKernel)
+{
+	setColor(testPassed);
+	printTestStart();
+
+	printColor("");
+	printColor("L2 Norm Between Kernels Test");
+	printColor("");
+
+	std::ostringstream oss;
+	oss << "Basic Kernel: " << basicSimInfo->getKernelName();
+	print(oss.str());
+	oss.str(std::string());
+	oss << "Divergent Kernel: " << divergentSimInfo->getKernelName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "Viscosity: " << basicSimInfo->getViscosity();
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << basicSimInfo->getSimulationName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << basicSimInfo->getLx() << basicSimInfo->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << "DataToCalculate: " << dataToCalc;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "TimeStep: " << timeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << "L2Norm BasicKernel: " << l2NormBasicKernel;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L2Norm DivergentKernel: " << l2NormDivergentKernel;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L2NormDiff: " << l2NormBetweenKernel;
+	print(oss.str());
+	oss.str(std::string());
+
+	printColor("");
+	printColor("L2 Norm Between Kernels Test");
+	printColor("");
+
+	printTestEnd(testPassed);
+}
+
 void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
 {
 	std::ostringstream ossLine0;

@@ -10,29 +10,38 @@ struct ConfigDataStruct
 	std::vector< std::string> kernelsToTest;
 
 	unsigned int numberOfTimeSteps;
-	unsigned int basisTimeStepLength;
 	std::vector<double> viscosity;
 
-	std::vector<double> amplitudeTGV, u0TGV;
+	std::vector<double> amplitudeTGVux, u0TGVux;
+	double l0TGVux;
+	std::vector<double> amplitudeTGVuz, v0TGVuz;
+	double l0TGVuz;
+	std::vector<int> basisTimeStepLengthTGVux, basisTimeStepLengthTGVuz;
+
 	std::vector<double> u0SW, v0SW;
-	
+	std::vector<int> basisTimeStepLengthSW;
+	double l0SW;
+
 	unsigned int ySliceForCalculation;
 
 	double minOrderOfAccuracy;
 	std::vector<std::string> dataToCalcPhiAndNuTest;
 	unsigned int startTimeStepCalculationPhiNu;
 	unsigned int endTimeStepCalculationPhiNu;
-	bool nuAndPhiTestTGV;
-	bool nuAndPhiTestSW;
+	bool nuAndPhiTest;
 
 	double maxL2NormDiff;
 	std::vector<std::string> dataToCalcL2Test;
 	unsigned int basicTimeStepL2Norm;
 	unsigned int divergentTimeStepL2Norm;
-	bool l2NormTestTGV;
-	bool l2NormTestSW;
+	bool l2NormTest;
 
-	std::vector< bool> tgv;
+	bool l2NormBetweenKernelTest;
+	std::string basicKernelL2NormTest;
+	std::vector< int> timeStepsL2NormBetweenKernel;
+	std::vector< std::string> dataToCalcL2NormBetweenKernel;
+
+	std::vector< bool> tgvUx, tgvUz;
 	std::vector< bool> sw;
 
 	unsigned int numberOfGridLevels;
@@ -45,9 +54,10 @@ struct ConfigDataStruct
 	std::string logFilePath;
 	
 	double rho0;
-	double l0;
 	std::vector< double> lx;
 	std::vector< double> lz;
+
+	bool writeAnalyticalToVTK;
 
 };
 #endif 

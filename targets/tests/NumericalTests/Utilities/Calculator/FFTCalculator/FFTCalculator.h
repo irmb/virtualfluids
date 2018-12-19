@@ -15,7 +15,7 @@ class FFTCalculator
 public:
 	static std::shared_ptr<FFTCalculator> getNewInstance(int lx, int lz, int timeStepLength);
 	
-	void calc(std::vector<std::vector<double>> data);
+	void calc(std::vector<std::vector<double>> data, bool transposeData);
 	
 	double getNu();
 	double getPhiDiff();
@@ -31,6 +31,7 @@ private:
 	std::vector<double> calcLogAmplitudeForAllSteps();
 	std::vector<double> calcAmplitudeForAllSteps();
 	void calcFFT2D(unsigned int step);
+	std::vector<std::vector<double>> transpose(std::vector<std::vector<double>>);
 	void initDataForFFT(fftw_complex* input, unsigned int step);
 	void setFFTResults(fftw_complex* result, unsigned int step);
 
@@ -39,6 +40,7 @@ private:
 	std::vector<std::vector<double>> fftResultsRe;
 	
 	bool fftCalculated;
+	bool transposeData;
 	double lx, lz;
 	double timeStepLength;
 	double nu;

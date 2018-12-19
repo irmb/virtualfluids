@@ -19,7 +19,7 @@ public:
 	void run();
 
 	static std::shared_ptr< VirtualFluidSimulationImp> getNewInstance();
-	void initParameter(std::shared_ptr< KernelConfiguration> kernelConfig, real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity);
+	void initParameter(std::shared_ptr<Parameter> para, std::shared_ptr< KernelConfiguration> kernelConfig, real viscosity, std::string gridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity);
 	void initInitialConditions(std::shared_ptr< InitialCondition> initialCondition);
 	void initGridProvider();
 

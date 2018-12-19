@@ -1,6 +1,6 @@
 #include "TestImp.h"
 
-#include "Utilities\PostProcessingResults\PostProcessingResults.h"
+#include "Utilities\PostProcessingStrategy\PostProcessingStrategy.h"
 #include "Utilities\TestSimulation\TestSimulation.h"
 
 void TestImp::update()
@@ -12,7 +12,7 @@ void TestImp::update()
 			if (simulations.at(i)->getSimulationRun())
 			{
 				simulationRun.at(i) = true;
-				postProResults.at(i)->evaluate();
+				postProStrategies.at(i)->evaluate();
 			}
 		}
 	}
@@ -21,11 +21,11 @@ void TestImp::update()
 		evaluate();				
 }
 
-void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingResults> postProResult)
+void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingStrategy> postProStrategy)
 {
 	simulations.push_back(sim);
 	simInfos.push_back(simInfo);
-	postProResults.push_back(postProResult);
+	postProStrategies.push_back(postProStrategy);
 	simulationRun.push_back(false);
 }
 

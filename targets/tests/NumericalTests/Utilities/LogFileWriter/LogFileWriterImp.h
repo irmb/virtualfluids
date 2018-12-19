@@ -19,12 +19,12 @@ public:
 														std::shared_ptr< LogFileTimeInformation> logFileTimeInfo,
 														std::shared_ptr< SimulationLogFileInformation> simLogInfo, 
 														std::string kernelName, 
-														double viscosity, std::vector<int> devices, int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation);
+														double viscosity, std::vector<int> devices, int numberOfTimeSteps, int startStepCalculation, int basicTimeStepLength);
 	void writeLogFile(std::string basicFilePath);
 	
 
 private:
-	LogFileWriterImp(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity, std::vector<int> devices, int numberOfTimeSteps, int basisTimeStepLength, int startStepCalculation);
+	LogFileWriterImp(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity, std::vector<int> devices, int numberOfTimeSteps, int startStepCalculation, int basicTimeStepLength);
 	std::string calcDateAndTime();
 	std::string buildFilePath(std::string basicFilePath);
 

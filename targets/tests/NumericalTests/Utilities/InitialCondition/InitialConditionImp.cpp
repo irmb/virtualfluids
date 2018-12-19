@@ -9,9 +9,9 @@ void InitialConditionImp::setParameter(std::shared_ptr<Parameter> para)
 
 void InitialConditionImp::init(const int level)
 {
-	XCoordstopnode = para->getGridX().at(level) - 1.0 + 0.5;
-	YCoordstopnode = para->getGridY().at(level) - 1.0 + 0.5;
-	ZCoordstopnode = para->getGridZ().at(level) - 1.0 + 0.5;
+	XCoordStopNode = para->getGridX().at(level) - 1.0 + 0.5;
+	YCoordStopNode = para->getGridY().at(level) - 1.0 + 0.5;
+	ZCoordStopNode = para->getGridZ().at(level) - 1.0 + 0.5;
 }
 
 real InitialConditionImp::getXCoord(int i, int level)

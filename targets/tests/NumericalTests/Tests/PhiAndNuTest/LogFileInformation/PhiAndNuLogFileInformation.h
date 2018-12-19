@@ -11,15 +11,26 @@ class PhiAndNuTest;
 class PhiAndNuInformation : public TestLogFileInformation
 {
 public:
-	static std::shared_ptr< PhiAndNuInformation> getNewInstance(std::vector< std::shared_ptr< PhiAndNuTest>> tests, unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation);
+	static std::shared_ptr< PhiAndNuInformation> getNewInstance(unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation);
 
 	std::string getOutput();
+	void addTestGroup(std::vector< std::shared_ptr< PhiAndNuTest>> tests);
 
 private:
-	PhiAndNuInformation() {};
-	PhiAndNuInformation(std::vector< std::shared_ptr< PhiAndNuTest>> tests, unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation);
+	void fillMyData(std::vector< std::shared_ptr< PhiAndNuTest>> testGroup);
 
-	std::vector< std::shared_ptr< PhiAndNuTest>> tests;
+	PhiAndNuInformation() {};
+	PhiAndNuInformation(unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation);
+
+	std::vector< std::vector< std::shared_ptr< PhiAndNuTest>>> testGroups;
 	unsigned int startTimeStepCalculation, endTimeStepCalculation;
+
+	std::vector<int> lx;
+	std::vector<int> lxForErase;
+	std::vector<double> phiDiff;
+	std::vector<double> nu, nuDiff;
+	std::vector<double> orderOfAccuracyPhiDiff;
+	std::vector<double> orderOfAccuracyNuDiff;
+	std::vector<std::string> dataToCalc;
 };
 #endif

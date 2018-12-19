@@ -3,8 +3,6 @@
 
 #include "InitialCondition.h"
 
-#include "VirtualFluids_GPU/LBM/LB.h"
-
 #include <vector>
 #include <memory>
 
@@ -28,7 +26,7 @@ protected:
 	real getZCoord(int i, int level);
 
 	std::shared_ptr<Parameter> para;
-	real XCoordstopnode, YCoordstopnode, ZCoordstopnode;
+	real XCoordStopNode, YCoordStopNode, ZCoordStopNode;
 
 };
 #endif

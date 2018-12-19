@@ -1,5 +1,7 @@
+#include <mpi.h>
 #include <gmock/gmock.h>
-#include "mpi.h"
+
+#include "wstp.h"
 
 #include "Utilities/ConfigFileReader/ConfigFileReader.h"
 #include "Utilities\LogFileQueue\LogFileQueue.h"
@@ -26,7 +28,6 @@ static void startNumericalTests(const std::string &configFile)
 
 	testQueue->makeFinalOutput();
 	logFileQueue->writeLogFiles();
-
 }
 
 int main(int argc, char **argv)

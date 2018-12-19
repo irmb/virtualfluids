@@ -6,27 +6,35 @@ Devices="1"
 ##################################################
 #				  Kernels						 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27"
- CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantAA2016CompSP27"
+ CumulantOneCompSP27 CumulantAll4CompSP27"
 
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-NumberOfTimeSteps=20
-BasisTimeStepLength=1000
+NumberOfTimeSteps=200
 Viscosity="0.0001"
 
 ##################################################
 #	    TaylorGreenVortex Parameter				 #
 ##################################################
-u0_TGV="0.032"
-Amplitude_TGV="0.01"
+BasisTimeStepLength_TGV_Ux="100"
+ux_TGV_Ux="0.032"
+Amplitude_TGV_Ux="0.01"
+l0_TGV_Ux=32
+
+BasisTimeStepLength_TGV_Uz="100"
+uz_TGV_Uz="0.048"
+Amplitude_TGV_Uz="0.01"
+l0_TGV_Uz=48
 
 ##################################################
 #	       Shear Wave Parameter					 #
 ##################################################
-u0_SW="0.032 0.016"
-v0_SW="0.1 0.05"
+BasisTimeStepLength_SW="1000 500 250"
+u0_SW="0.032 0.064 0.128"
+v0_SW="0.1 0.1 0.1"
+l0_SW=32
 
 ##################################################
 #			   Basic Test Parameter				 #
@@ -36,31 +44,43 @@ ySliceForCalculation=0
 ##################################################
 #			PhiAndNu Test Parameter				 #
 ##################################################
+PhiAndNuTest=false
 MinOrderOfAccuracy=1.95
 DataToCalc_PhiAndNu="Vx Vz"
 StartTimeStepCalculation_PhiNu=11
 EndTimeStepCalculation_PhiNu=20
-PhiAndNuTest_TGV=true
-PhiAndNuTest_SW=true
 
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
+L2NormTest=true
 MaxL2NormDiff=0.05
-DataToCalc_L2="Vx Vy Vz"
+DataToCalc_L2="Vx Vz"
 BasicTimeStep_L2=0
-DivergentTimeStep_L2=20
-L2NormTest_TGV=true
-L2NormTest_SW=true
+DivergentTimeStep_L2=200
+
+##################################################
+#    L2-Norm Test Between Kernels Parameter		 #
+##################################################
+L2NormBetweenKernelsTest=false
+BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
+Timesteps_L2NormBetweenKernels="0 1 20"
+DataToCalc_L2NormBetweenKernels="Vx Vy Vz"
 
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortex32=true
-TaylorGreenVortex64=true
-TaylorGreenVortex128=true
-TaylorGreenVortex256=false
-TaylorGreenVortex512=false
+TaylorGreenVortexUx32=true
+TaylorGreenVortexUx64=false
+TaylorGreenVortexUx128=false
+TaylorGreenVortexUx256=false
+TaylorGreenVortexUx512=false
+
+TaylorGreenVortexUz32=true
+TaylorGreenVortexUz64=false
+TaylorGreenVortexUz128=false
+TaylorGreenVortexUz256=false
+TaylorGreenVortexUz512=false
 
 ShearWave32=false
 ShearWave64=false
@@ -82,7 +102,9 @@ GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteFiles=true
+WriteVTKFiles=true
+WriteAnalyResultsToVTK=true
+
 PathForFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 

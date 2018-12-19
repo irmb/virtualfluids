@@ -19,9 +19,10 @@ void VirtualFluidSimulationImp::run()
 	Simulation sim;
 	sim.init(para, grid, dataWriter);
 	sim.run();
-	sim.free();
 
 	testSim->setSimulationEndTimeAndNotifyObserver();
+
+	sim.free();
 }
 
 std::shared_ptr<VirtualFluidSimulationImp> VirtualFluidSimulationImp::getNewInstance()
@@ -29,9 +30,9 @@ std::shared_ptr<VirtualFluidSimulationImp> VirtualFluidSimulationImp::getNewInst
 	return std::shared_ptr<VirtualFluidSimulationImp>(new VirtualFluidSimulationImp());
 }
 
-void VirtualFluidSimulationImp::initParameter(std::shared_ptr< KernelConfiguration> kernelConfig, real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
+void VirtualFluidSimulationImp::initParameter(std::shared_ptr<Parameter> para, std::shared_ptr< KernelConfiguration> kernelConfig, real viscosity, std::string aGridPath, std::string filePath, int numberOfGridLevels, unsigned int endTime, unsigned int timeStepLength, std::vector<int> devices, real velocity)
 {
-	para = Parameter::make();
+	this->para = para;
 
 	para->setMaxDev(devices.size());
 	para->setDevices(devices);

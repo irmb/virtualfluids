@@ -7,6 +7,9 @@ class ResultsImp : public Results
 {
 public:
 	int getNumberOfTimeSteps();
+	int getTimeStepLength();
+	std::vector<unsigned int> getTimeSteps();
+	std::vector<int> getTime();
 	std::vector<std::vector<double>> getVx();
 	std::vector<std::vector<double>> getVy();
 	std::vector<std::vector<double>> getVz();
@@ -16,8 +19,6 @@ public:
 	std::vector<std::vector<double>> getXNodes();
 	std::vector<std::vector<double>> getYNodes();
 	std::vector<std::vector<double>> getZNodes();
-	int getTimeStepLength();
-	std::vector<unsigned int> getTimeSteps();
 	std::vector< std::vector< unsigned int> > getLevels();
 	std::vector<std::vector<double>> getPress();
 	std::vector<std::vector<double>> getRho();
@@ -31,7 +32,7 @@ protected:
 	unsigned int numberOfNodes;
 
 	std::vector<unsigned int> timeStep;
-	std::vector<unsigned int> time;
+	std::vector<int> time;
 	std::vector<std::vector<double>> x, y, z;
 	std::vector<std::vector<double>> vx, vy, vz;
 	std::vector<std::vector<double>> press;
