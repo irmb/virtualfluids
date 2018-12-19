@@ -142,7 +142,7 @@ EnstrophyAnalyzer::EnstrophyAnalyzer(SPtr<DataBase> dataBase, Parameters paramet
     this->outputIter  = outputIter;
 }
 
-bool EnstrophyAnalyzer::writeToFile(std::string filename)
+void EnstrophyAnalyzer::writeToFile(std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "EnstrophyAnalyzer::writeToFile( " << filename << " )" << "\n";
 

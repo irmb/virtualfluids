@@ -149,6 +149,8 @@ IF (HULC.BUILD_VF_GKS)
 	add_subdirectory(targets/apps/GKS/TaylorGreen3D)
     add_subdirectory(targets/apps/GKS/DrivenCavity3D)
     add_subdirectory(targets/apps/GKS/ThermalCavity)
+    
+    add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()

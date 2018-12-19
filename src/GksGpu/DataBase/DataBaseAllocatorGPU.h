@@ -30,6 +30,14 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
+    virtual void freeMemory( Communicator& communicator ) override;
+
+    virtual void allocateMemory( Communicator& communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices ) override;
+
+    virtual void copyDataDeviceToDevice( SPtr<Communicator> dst, SPtr<Communicator> src ) override;
+
+    //////////////////////////////////////////////////////////////////////////
+
     virtual std::string getDeviceType() override;
 };
 

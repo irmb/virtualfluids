@@ -91,7 +91,7 @@ KineticEnergyAnalyzer::KineticEnergyAnalyzer(SPtr<DataBase> dataBase, uint analy
     this->outputIter  = outputIter;
 }
 
-bool KineticEnergyAnalyzer::writeToFile(std::string filename)
+void KineticEnergyAnalyzer::writeToFile(std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "KineticEnergyAnalyzer::writeToFile( " << filename << " )" << "\n";
 

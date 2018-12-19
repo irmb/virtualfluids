@@ -35,7 +35,7 @@ public:
 
     bool run( uint iter );
 
-    bool writeToFile( std::string filename );
+    void writeToFile( std::string filename );
 
 };
 

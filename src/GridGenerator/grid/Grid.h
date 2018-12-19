@@ -128,7 +128,7 @@ public:
 
     HOST virtual void setNumberOfLayers( uint numberOfLayers ) = 0;
 
-    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox) = 0;
+    virtual void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) = 0;
 
     virtual uint getNumberOfSendNodes(int direction) = 0;
     virtual uint getNumberOfReceiveNodes(int direction)  = 0;

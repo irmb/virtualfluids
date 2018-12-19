@@ -13,6 +13,8 @@
 
 #include "BoundaryConditions/BoundaryCondition.h"
 
+#include "Communication/Communicator.h"
+
 #include "Definitions/MemoryAccessPattern.h"
 
 void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
@@ -165,6 +167,32 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<BoundaryCondition> boundaryCondit
     memcpy ( boundaryCondition->ghostCells , ghostCells.data() , sizeof(uint) * ghostCells.size()  );
     memcpy ( boundaryCondition->domainCells, domainCells.data(), sizeof(uint) * domainCells.size() );
     memcpy ( boundaryCondition->secondCells, secondCells.data(), sizeof(uint) * secondCells.size() );
+}
+
+void DataBaseAllocatorCPU::freeMemory(Communicator & communicator)
+{
+    delete [] communicator.sendIndices;
+    delete [] communicator.recvIndices;
+    
+    delete [] communicator.sendBuffer;
+    delete [] communicator.recvBuffer;
+}
+
+void DataBaseAllocatorCPU::allocateMemory(Communicator & communicator, std::vector<uint>& sendIndices, std::vector<uint>& recvIndices)
+{
+    communicator.sendIndices = new uint[communicator.numberOfSendNodes];
+    communicator.recvIndices = new uint[communicator.numberOfRecvNodes];
+
+    communicator.sendBuffer  = new real[LENGTH_CELL_DATA * communicator.numberOfSendNodes];
+    communicator.recvBuffer  = new real[LENGTH_CELL_DATA * communicator.numberOfRecvNodes];
+
+    memcpy ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes );
+    memcpy ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes );
+}
+
+void DataBaseAllocatorCPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<Communicator> src)
+{
+    memcpy( dst->recvBuffer, src->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * src->numberOfSendNodes );
 }
 
 std::string DataBaseAllocatorCPU::getDeviceType()

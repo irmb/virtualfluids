@@ -1377,7 +1377,7 @@ HOSTDEVICE bool GridImp::checkIfAtLeastOneValidQ(const uint index, const Vertex 
     return false;
 }
 
-void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox)
+void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks)
 {
     for( uint index = 0; index < this->size; index++ ){
         
@@ -1389,8 +1389,9 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
             this->getFieldEntry(index) == INVALID_COARSE_UNDER_FINE ||
             this->getFieldEntry(index) == STOPPER_SOLID ||
             this->getFieldEntry(index) == STOPPER_OUT_OF_GRID ||
-            this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ||
             this->getFieldEntry(index) == STOPPER_COARSE_UNDER_FINE ) continue;
+
+        if( lbmOrGks == LBM && this->getFieldEntry(index) == STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
 
         if( direction == CommunicationDirections::MX ) findCommunicationIndex( index, x, subDomainBox->minX, direction);
         if( direction == CommunicationDirections::PX ) findCommunicationIndex( index, x, subDomainBox->maxX, direction);

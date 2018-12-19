@@ -508,13 +508,13 @@ void MultipleGridBuilder::emitGridIsNotInCoarseGridWarning()
     *logging::out << logging::Logger::WARNING << "Grid lies not inside of coarse grid. Actual Grid is not added.\n";
 }
 
-void MultipleGridBuilder::findCommunicationIndices(int direction)
+void MultipleGridBuilder::findCommunicationIndices(int direction, LbmOrGks lbmOrGks)
 {
     *logging::out << logging::Logger::INFO_HIGH << "Start findCommunicationIndices()\n";
 
     if( this->subDomainBox )
         for (size_t i = 0; i < grids.size(); i++)
-            grids[i]->findCommunicationIndices(direction, this->subDomainBox);
+            grids[i]->findCommunicationIndices(direction, this->subDomainBox, lbmOrGks);
 
     *logging::out << logging::Logger::INFO_HIGH << "Done with findCommunicationIndices()\n";
 }

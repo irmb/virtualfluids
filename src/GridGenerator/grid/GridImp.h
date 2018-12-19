@@ -277,7 +277,7 @@ private:
 
 public:
 
-    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox);
+    void findCommunicationIndices(int direction, SPtr<BoundingBox> subDomainBox, LbmOrGks lbmOrGks) override;
     void findCommunicationIndex( uint index, real coordinate, real limit, int direction );
 
     uint getNumberOfSendNodes(int direction) override;

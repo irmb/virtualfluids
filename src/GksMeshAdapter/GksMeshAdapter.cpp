@@ -832,6 +832,27 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
     }
 }
 
+void GksMeshAdapter::getCommunicationIndices()
+{
+    SPtr<Grid> grid = this->gridBuilder->getGrid(0);
+    
+    this->sendIndices.resize(6);
+    this->recvIndices.resize(6);
+
+    for( uint direction = 0; direction < 6; direction++ )
+    {
+        for( uint index = 0; index < grid->getNumberOfSendNodes(direction); index++ )
+        {
+            this->sendIndices[direction].push_back( this->gridToMesh[0][ grid->getSendIndex(direction, index) ] );
+        }
+
+        for( uint index = 0; index < grid->getNumberOfReceiveNodes(direction); index++ )
+        {
+            this->recvIndices[direction].push_back( this->gridToMesh[0][ grid->getReceiveIndex(direction, index) ] );
+        }
+    }
+}
+
 void GksMeshAdapter::writeMeshVTK(std::string filename)
 {
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "writeMeshVTK( " << filename << " )" << "\n";

@@ -83,7 +83,7 @@ private:
 
 public:
 
-    VF_PUBLIC void findCommunicationIndices( int direction );
+    VF_PUBLIC void findCommunicationIndices( int direction, LbmOrGks lbmOrGks );
 };
 
 #endif
