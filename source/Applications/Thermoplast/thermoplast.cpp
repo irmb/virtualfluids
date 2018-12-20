@@ -404,10 +404,10 @@ void thermoplast(string configname)
       UBLOG(logINFO, "Preprocess - start");
    }
 
-   GbCuboid3DPtr geoInjector2(new GbCuboid3D(-12, -5, 1210, 63, 105, 1320));
+   GbCuboid3DPtr geoInjector2(new GbCuboid3D(-12, -5, 1210, 64, 105, 1320));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInjector2.get(), pathOut + "/geo/geoInjector2", WbWriterVtkXmlASCII::getInstance());
 
-   GbCuboid3DPtr geoInjector5(new GbCuboid3D(-12, 1415, 205, 63, 1525, 315));
+   GbCuboid3DPtr geoInjector5(new GbCuboid3D(-12, 1415, 205, 64, 1525, 315));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInjector5.get(), pathOut + "/geo/geoInjector5", WbWriterVtkXmlASCII::getInstance());
 
    //GbCuboid3DPtr geoInjector4(new GbCuboid3D(-12, -5, 205, 63, 105, 315));
@@ -659,7 +659,7 @@ void thermoplast(string configname)
    double d = 2.0*radiusLB;
    int maxX2 = 5;
    int maxX3 = 5;
-   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d, geoInjector5->getX3Minimum()+1.5*d);
+   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d-6.0, geoInjector5->getX3Minimum()+1.5*d);
    createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);
    Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector2->getX2Minimum()+2.2*d, geoInjector2->getX3Minimum()+1.5*d);
    createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);

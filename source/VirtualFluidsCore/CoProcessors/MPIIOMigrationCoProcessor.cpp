@@ -1535,8 +1535,8 @@ void MPIIOMigrationCoProcessor::readBlocks(int step)
 
    // read parameters of the grid
    MPI_File_read_at(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
-   // read all the blocks
-   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+   // read all the blocks   if (comm->isRoot())   {      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);   }
+   MPI_Bcast(block3dArray, blocksCount, block3dType, comm->getRoot(), MPI_COMM_WORLD);
 
    MPI_File_close(&file_handler);
 
