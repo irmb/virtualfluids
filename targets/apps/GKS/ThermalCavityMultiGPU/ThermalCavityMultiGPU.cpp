@@ -47,12 +47,15 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
+//uint deviceMap [2] = {2,3};
+uint deviceMap [2] = {0,1};
+
 void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, SPtr<Parameters> parameters, std::string path, std::string simulationName )
 {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(threadIndex);
+    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,7 +68,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     real dx = L / real(nx);
 
-    real Ra = 1.0e6;
+    real Ra = 5.0e9;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -125,7 +128,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
     real L_1 = 0.35;
     real L_2 = 0.45;
     real L_3 = 0.475;
-    real L_4 = 0.485;
+    real L_4 = 0.495;
 
     if( threadIndex == 0 ) gridBuilder->addCoarseGrid(-0.5*L , -0.5*L, -0.5*H,  
                                                        3.0*dx,  0.5*L,  0.5*H, dx);
@@ -159,9 +162,9 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     gridBuilder->setNumberOfLayers(6,6);
     gridBuilder->addGrid( &refRegion_1, 1);
-    //gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
+    gridBuilder->addGrid( &refRegion_2, 2);
+    gridBuilder->addGrid( &refRegion_3, 3);
+    gridBuilder->addGrid( &refRegion_4, 4);
 
     if( threadIndex == 0 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
                                                                                         -1.0, 1.0, 
@@ -293,13 +296,13 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(threadIndex);
+    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 10.0 );
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
