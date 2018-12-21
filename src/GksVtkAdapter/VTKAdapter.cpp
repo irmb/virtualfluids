@@ -352,56 +352,60 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
         return cellIdx;
     } );
 
+    addScalarIntCellData( grid, dataBase->numberOfCells, "GhostCell", [&] (uint cellIdx) -> int {
+        return dataBase->isGhostCell( cellIdx );
+    } );
+
     //////////////////////////////////////////////////////////////////////////
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "U", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_U[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_U[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "V", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_V[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_V[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "W", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_W[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_W[ cellIdx ];
     });
 
     //////////////////////////////////////////////////////////////////////////
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "UU", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_UU[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_UU[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "VV", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_VV[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_VV[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "WW", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_WW[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_WW[ cellIdx ];
     });
 
     //////////////////////////////////////////////////////////////////////////
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "UV", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_UV[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_UV[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "UW", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_UW[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_UW[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "VW", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_VW[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_VW[ cellIdx ];
     });
 
     //////////////////////////////////////////////////////////////////////////
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "T", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_T[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_T[ cellIdx ];
     });
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "p", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_p[ cellIdx ] / real( turbulenceAnalyzer->counter );
+        return turbulenceAnalyzer->h_p[ cellIdx ];
     });
 
     //////////////////////////////////////////////////////////////////////////

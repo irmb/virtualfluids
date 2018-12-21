@@ -36,6 +36,7 @@
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
+#include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
@@ -47,7 +48,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     real dx = L / 128.0;
 
-    real Re  = 2.0e4;
+    real Re  = 1.0e3;
     real U  = 0.1;
     real Ma = 0.1;
     
@@ -175,7 +176,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
         real uLocal = 0.0;
 
-        return toConservedVariables( PrimitiveVariables( 1.0, uLocal, 0.0, 0.0, lambda, 0.0 ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, uLocal, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -189,6 +190,8 @@ void drivenCavity( std::string path, std::string simulationName )
     CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 10000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
+
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 80000 );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -212,7 +215,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
         cupsAnalyzer.run( iter );
 
-        //convergenceAnalyzer.run( iter );
+        turbulenceAnalyzer->run( iter, parameters );
+
+        convergenceAnalyzer.run( iter );
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,6 +230,10 @@ void drivenCavity( std::string path, std::string simulationName )
     dataBase->copyDataDeviceToHost();
 
     //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
+
+    turbulenceAnalyzer->download();
+
+    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
 
 
 }

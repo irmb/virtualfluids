@@ -96,7 +96,7 @@ __host__ __device__ void turbulenceFunction(DataBaseStruct dataBase, TurbulenceA
     turbulenceAnalyzer.VW[ cellIndex ] += prim.V * prim.W;
 
     turbulenceAnalyzer.T [ cellIndex ] += one / prim.lambda;
-    turbulenceAnalyzer.T [ cellIndex ] += c1o2 * prim.rho / prim.lambda;
+    turbulenceAnalyzer.p [ cellIndex ] += c1o2 * prim.rho / prim.lambda;
 
     //////////////////////////////////////////////////////////////////////////
 }
@@ -149,17 +149,17 @@ TurbulenceAnalyzer::TurbulenceAnalyzer(SPtr<DataBase> dataBase, uint analyzeStar
     checkCudaErrors( cudaMalloc ( &this->T , sizeof(real) * dataBase->numberOfCells ) );
     checkCudaErrors( cudaMalloc ( &this->p , sizeof(real) * dataBase->numberOfCells ) );
 
-    h_U.resize( dataBase->numberOfCells );
-    h_V.resize( dataBase->numberOfCells ); 
-    h_W.resize( dataBase->numberOfCells );
+    h_U.resize ( dataBase->numberOfCells );
+    h_V.resize ( dataBase->numberOfCells ); 
+    h_W.resize ( dataBase->numberOfCells );
     h_UU.resize( dataBase->numberOfCells );
     h_VV.resize( dataBase->numberOfCells );
     h_WW.resize( dataBase->numberOfCells );
     h_UV.resize( dataBase->numberOfCells );
     h_UW.resize( dataBase->numberOfCells );
     h_VW.resize( dataBase->numberOfCells );
-    h_T.resize( dataBase->numberOfCells );
-    h_p.resize( dataBase->numberOfCells );
+    h_T.resize ( dataBase->numberOfCells );
+    h_p.resize ( dataBase->numberOfCells );
 }
 
 void TurbulenceAnalyzer::writeToFile(std::string filename)
@@ -202,6 +202,29 @@ void TurbulenceAnalyzer::download()
     checkCudaErrors( cudaMemcpy( this->h_VW.data(), this->VW, sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     checkCudaErrors( cudaMemcpy( this->h_T.data() , this->T , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     checkCudaErrors( cudaMemcpy( this->h_p.data() , this->p , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
+
+    for( uint cellIndex = 0; cellIndex < dataBase->numberOfCells; cellIndex++ )
+    {
+        this->h_U [ cellIndex ] /= real(this->counter);
+        this->h_V [ cellIndex ] /= real(this->counter);
+        this->h_W [ cellIndex ] /= real(this->counter);
+        this->h_UU[ cellIndex ] /= real(this->counter);
+        this->h_VV[ cellIndex ] /= real(this->counter);
+        this->h_WW[ cellIndex ] /= real(this->counter);
+        this->h_UV[ cellIndex ] /= real(this->counter);
+        this->h_UW[ cellIndex ] /= real(this->counter);
+        this->h_VW[ cellIndex ] /= real(this->counter);
+        this->h_T [ cellIndex ] /= real(this->counter);
+        this->h_p [ cellIndex ] /= real(this->counter);
+
+        this->h_UU[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_U[ cellIndex ];
+        this->h_VV[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_V[ cellIndex ];
+        this->h_WW[ cellIndex ] -= this->h_W[ cellIndex ] * this->h_W[ cellIndex ];
+
+        this->h_UV[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_V[ cellIndex ];
+        this->h_UW[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_W[ cellIndex ];
+        this->h_VW[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_W[ cellIndex ];
+    }
 }
 
 

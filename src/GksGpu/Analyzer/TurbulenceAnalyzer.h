@@ -7,8 +7,6 @@
 
 #include "VirtualFluidsDefinitions.h"
 
-#include "Analyzer/TurbulenceAnalyzerStruct.h"
-
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 
@@ -16,6 +14,26 @@
 
 struct DataBase;
 struct Parameters;
+
+struct TurbulenceAnalyzerStruct
+{
+    uint counter;
+
+    real* U ;
+    real* V ;
+    real* W ;
+    
+    real* UU;
+    real* VV;
+    real* WW;
+    
+    real* UV;
+    real* UW;
+    real* VW;
+    
+    real* T ;
+    real* p ;
+};
 
 class VF_PUBLIC TurbulenceAnalyzer
 {
