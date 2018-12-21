@@ -218,7 +218,7 @@ void channelFlow( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 10000 * ( nx / 32 ); iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
         //if( iter % ( 100 * ( nx / 32 ) ) == 0 )
         //{

@@ -26,7 +26,7 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
         bc->runBoundaryConditionKernel( dataBase, parameters, level );
     }
 
-    if( level == 0 ){
+    if( level == 0 && communicator != nullptr){
         communicator->exchangeData( dataBase );
     }
 

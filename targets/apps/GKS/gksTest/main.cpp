@@ -177,7 +177,7 @@ void gksTest( std::string path )
 
     for( uint iter = 1; iter < 100000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
         if( iter % 10000 == 0 )
         {

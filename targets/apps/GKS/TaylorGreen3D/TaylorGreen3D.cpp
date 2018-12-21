@@ -226,7 +226,7 @@ void gksTest( std::string path, uint nx, uint gpuIndex )
 
     for( uint iter = 1; iter <= 40000 * (nx / 64 ); iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
         kineticEnergyAnalyzer.run( iter );
         enstrophyAnalyzer.run( iter );

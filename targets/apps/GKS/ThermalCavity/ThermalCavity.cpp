@@ -39,6 +39,7 @@
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
+#include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
@@ -46,18 +47,18 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 4;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real L = 1.0;
-    real H = 0.25;
-    //real H = L / real(nx);
+    //real H = 0.25;
+    real H = L / real(nx);
 
     real dx = L / real(nx);
 
 
-    real Ra = 5.0e9;
+    real Ra = 2.0e9;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -160,7 +161,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     gridBuilder->setNumberOfLayers(6,6);
 
-    //gridBuilder->addGrid( &refRegion_1, 1);
+    gridBuilder->addGrid( &refRegion_1, 1);
     //gridBuilder->addGrid( &refRegion_2, 2);
     //gridBuilder->addGrid( &refRegion_3, 3);
     //gridBuilder->addGrid( &refRegion_4, 4);
@@ -179,7 +180,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
+    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
     meshAdapter.findPeriodicBoundaryNeighbors();
 
@@ -249,7 +250,7 @@ void thermalCavity( std::string path, std::string simulationName )
         real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
         real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -267,16 +268,18 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 10000000; iter++ )
+    for( uint iter = 1; iter <= 100000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
         if( 
-            ( iter < 10     && iter % 1     == 0 ) ||
+            //( iter < 10     && iter % 1     == 0 ) ||
             //( iter < 100    && iter % 10    == 0 ) ||
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) ||
@@ -291,6 +294,8 @@ void thermalCavity( std::string path, std::string simulationName )
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
+
+        turbulenceAnalyzer->run( iter, parameters );
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -299,7 +304,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
+    turbulenceAnalyzer->download();
 
+    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
 }
 
 int main( int argc, char* argv[])

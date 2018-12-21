@@ -44,6 +44,7 @@
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
+#include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
@@ -163,8 +164,8 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
     gridBuilder->setNumberOfLayers(6,6);
     gridBuilder->addGrid( &refRegion_1, 1);
     gridBuilder->addGrid( &refRegion_2, 2);
-    gridBuilder->addGrid( &refRegion_3, 3);
-    gridBuilder->addGrid( &refRegion_4, 4);
+    //gridBuilder->addGrid( &refRegion_3, 3);
+    //gridBuilder->addGrid( &refRegion_4, 4);
 
     if( threadIndex == 0 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
                                                                                         -1.0, 1.0, 
@@ -269,7 +270,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
         real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
         real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda, 0.0 ), parameters->K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda/*, 0.0*/ ), parameters->K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -306,11 +307,13 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 10000; iter++ )
+    for( uint iter = 1; iter <= 100000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, *parameters, communicator, 0);
 
@@ -330,6 +333,15 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
+
+        turbulenceAnalyzer->run( iter, *parameters );
+
+        if( iter % 50000 == 0 )
+        {
+            turbulenceAnalyzer->download();
+
+            writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ));
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
