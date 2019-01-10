@@ -58,7 +58,7 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
    if (myid==0) UBLOG(logINFO, "Add nozzles:start");
 
    SPtr<UbScheduler> sch(new UbScheduler(1));
-   //WriteGbObjectsCoProcessor gbObjectsCoProcessor(grid, sch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+   WriteGbObjectsCoProcessor gbObjectsCoProcessor(grid, sch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
 
    std::vector< SPtr<Interactor3D> > interactors;
 
@@ -68,7 +68,7 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
       SPtr<Interactor3D> bbInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bbGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //GbSystem3D::writeGeoObject(bbGeo.get(), pathOut+"/ns/bbGeo"+UbSystem::toString(i), WbWriterVtkXmlBinary::getInstance());
       //intHelper.addInteractor(bbInt);
-      //if (myid==0) gbObjectsCoProcessor.addGbObject(bbGeo);
+      if (myid==0) gbObjectsCoProcessor.addGbObject(bbGeo);
       interactors.push_back(bbInt);
    }
 
@@ -78,7 +78,7 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
       SPtr<Interactor3D> bbInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bbGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //GbSystem3D::writeGeoObject(bbGeo.get(), pathOut+"/ns/bbGeo"+UbSystem::toString(i), WbWriterVtkXmlBinary::getInstance());
       //intHelper.addInteractor(bbInt);
-      //if (myid==0) gbObjectsCoProcessor.addGbObject(bbGeo);
+      if (myid==0) gbObjectsCoProcessor.addGbObject(bbGeo);
       interactors.push_back(bbInt);
    }
 
@@ -87,7 +87,7 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
       SPtr<GbTriFaceMesh3D> bsGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/n_bs/bs"+UbSystem::toString(i)+".stl", "bs", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> bsInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(bsGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //intHelper.addInteractor(bsInt);
-      //if (myid==0) gbObjectsCoProcessor.addGbObject(bsGeo);
+      if (myid==0) gbObjectsCoProcessor.addGbObject(bsGeo);
       interactors.push_back(bsInt);
    }
 
@@ -98,11 +98,11 @@ void addNozzle(SPtr<Grid3D> grid, SPtr<Communicator> comm, SPtr<BCAdapter> noSli
       SPtr<GbTriFaceMesh3D> biGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo+"/n_bi/bi"+UbSystem::toString(n[i])+".stl", "bi", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
       SPtr<Interactor3D> biInt = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(biGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
       //intHelper.addInteractor(biInt);
-      //if (myid==0) gbObjectsCoProcessor.addGbObject(biGeo);
+      if (myid==0) gbObjectsCoProcessor.addGbObject(biGeo);
       interactors.push_back(biInt);
    }
 
-   //if (myid==0) gbObjectsCoProcessor.process(0);
+   if (myid==0) gbObjectsCoProcessor.process(0);
 
 
    for (SPtr<Interactor3D> interactor : interactors)
@@ -158,6 +158,15 @@ std::shared_ptr<DemCoProcessor> makePeCoProcessor(SPtr<Grid3D> grid, SPtr<Commun
       planeMaterial, simulationDomain, numberOfBlocks, isPeriodic, minOffset, maxOffset);
    std::shared_ptr<PeLoadBalancerAdapter> loadBalancer(new PeLoadBalancerAdapter(grid, comm->getNumberOfProcesses(), comm->getProcessID()));
    std::shared_ptr<PhysicsEngineSolverAdapter> peSolver = std::make_shared<PePhysicsEngineSolverAdapter>(peParamter, loadBalancer);
+   //create obstacle
+   //test
+   std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(peSolver)->createObstacle(Vector3D( 90, 260, 472), Vector3D( 115, 320, 460));
+   //production
+   //std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(peSolver)->createObstacle(Vector3D( 90, 430, 472), Vector3D( 115, 320, 460));
+   //std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(peSolver)->createObstacle(Vector3D( 100, 430, 1840), Vector3D( 130, 320, 470));
+   //std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(peSolver)->createObstacle(Vector3D( 100, 821, 1159), Vector3D( 125, 625, 625));
+   //walberla::pe::createSphere(*globalBodyStorage, *forest, *storageId, 0, walberla::pe::Vec3( -720, 820, 1150), 900, global, communicating, infiniteMass);
+   //walberla::pe::createSphere(*globalBodyStorage, *forest, *storageId, 0, walberla::pe::Vec3( -720, 220, 472), 900, material, global, communicating, infiniteMass);
 
    SPtr<CoProcessor> peblocks(new WritePeBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm, std::dynamic_pointer_cast<PePhysicsEngineSolverAdapter>(peSolver)->getBlockForest()));
    peblocks->process(0);
@@ -285,7 +294,8 @@ void thermoplast(string configname)
    //boundary conditions definition 
    //////////////////////////////////////////////////////////////////////////////
    SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
-   noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+   //noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
+   noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new ThinWallNoSlipBCAlgorithm()));
 
    mu::Parser fct;
    fct.SetExpr("U");
@@ -317,7 +327,8 @@ void thermoplast(string configname)
    //LBM kernel definition
    SPtr<LBMKernel> kernel;
    kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-   SPtr<BCProcessor> bcProc(new BCProcessor());
+   //SPtr<BCProcessor> bcProc(new BCProcessor());
+   SPtr<BCProcessor> bcProc(new ThinWallBCProcessor());
    kernel->setBCProcessor(bcProc);
 
    //if (myid==0) UBLOG(logINFO, "Read obstacleGeo1:start");
@@ -404,14 +415,14 @@ void thermoplast(string configname)
       UBLOG(logINFO, "Preprocess - start");
    }
 
-   GbCuboid3DPtr geoInjector2(new GbCuboid3D(-12, -5, 1210, 64, 105, 1320));
-   if (myid == 0) GbSystem3D::writeGeoObject(geoInjector2.get(), pathOut + "/geo/geoInjector2", WbWriterVtkXmlASCII::getInstance());
+   //GbCuboid3DPtr geoInjector2(new GbCuboid3D(-12, -5, 1210, 64, 105, 1320));
+   //if (myid == 0) GbSystem3D::writeGeoObject(geoInjector2.get(), pathOut + "/geo/geoInjector2", WbWriterVtkXmlASCII::getInstance());
 
-   GbCuboid3DPtr geoInjector5(new GbCuboid3D(-12, 1415, 205, 64, 1525, 315));
-   if (myid == 0) GbSystem3D::writeGeoObject(geoInjector5.get(), pathOut + "/geo/geoInjector5", WbWriterVtkXmlASCII::getInstance());
+   //GbCuboid3DPtr geoInjector5(new GbCuboid3D(-12, 1415, 205, 64, 1525, 315));
+   //if (myid == 0) GbSystem3D::writeGeoObject(geoInjector5.get(), pathOut + "/geo/geoInjector5", WbWriterVtkXmlASCII::getInstance());
 
-   //GbCuboid3DPtr geoInjector4(new GbCuboid3D(-12, -5, 205, 63, 105, 315));
-   //if (myid == 0) GbSystem3D::writeGeoObject(geoInjector4.get(), pathOut + "/geo/geoInjector4", WbWriterVtkXmlASCII::getInstance());
+   GbCuboid3DPtr geoInjector4(new GbCuboid3D(-12, -5, 205, 64, 105, 315));
+   if (myid == 0) GbSystem3D::writeGeoObject(geoInjector4.get(), pathOut + "/geo/geoInjector4", WbWriterVtkXmlASCII::getInstance());
 
    //GbCuboid3DPtr geoInjector7(new GbCuboid3D(28, 705, 542, 103, 815, 652));
    //if (myid == 0) GbSystem3D::writeGeoObject(geoInjector7.get(), pathOut + "/geo/geoInjector7", WbWriterVtkXmlASCII::getInstance());
@@ -449,9 +460,9 @@ void thermoplast(string configname)
       SPtr<D3Q27Interactor> boxInt(new D3Q27Interactor(box, grid, noSlipBCAdapter, Interactor3D::INVERSESOLID));
 
       //inflow
-      SPtr<D3Q27Interactor> inflowInjector2Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector2, grid, inflowAdapter, Interactor3D::SOLID));
-      SPtr<D3Q27Interactor> inflowInjector5Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector5, grid, inflowAdapter, Interactor3D::SOLID));
-      //SPtr<D3Q27Interactor> inflowInjector4Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector4, grid, inflowAdapter, Interactor3D::SOLID));
+      //SPtr<D3Q27Interactor> inflowInjector2Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector2, grid, inflowAdapter, Interactor3D::SOLID));
+      //SPtr<D3Q27Interactor> inflowInjector5Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector5, grid, inflowAdapter, Interactor3D::SOLID));
+      SPtr<D3Q27Interactor> inflowInjector4Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector4, grid, inflowAdapter, Interactor3D::SOLID));
       //SPtr<D3Q27Interactor> inflowInjector7Int = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInjector7, grid, inflowAdapter, Interactor3D::SOLID));
 
       SPtr<D3Q27Interactor> outflowMichelInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflowMichel, grid, outflowAdapter, Interactor3D::SOLID));
@@ -500,9 +511,9 @@ void thermoplast(string configname)
       intHelper.addInteractor(boxInt);
       intHelper.addInteractor(michelInt);
       intHelper.addInteractor(plexiglasInt);
-      intHelper.addInteractor(inflowInjector2Int);
-      intHelper.addInteractor(inflowInjector5Int);
-      //intHelper.addInteractor(inflowInjector4Int);
+      //intHelper.addInteractor(inflowInjector2Int);
+      //intHelper.addInteractor(inflowInjector5Int);
+      intHelper.addInteractor(inflowInjector4Int);
       //intHelper.addInteractor(inflowInjector7Int);
       intHelper.addInteractor(outflowPlexiglasInt);
       intHelper.addInteractor(outflowMichelInt);
@@ -659,13 +670,13 @@ void thermoplast(string configname)
    double d = 2.0*radiusLB;
    int maxX2 = 5;
    int maxX3 = 5;
-   Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d-6.0, geoInjector5->getX3Minimum()+1.5*d);
-   createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);
-   Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector2->getX2Minimum()+2.2*d, geoInjector2->getX3Minimum()+1.5*d);
-   createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);
+   //Vector3D origin1(g_minX1+peMinOffset[0]-1.5*d, geoInjector5->getX2Minimum()+1.4*d-6.0, geoInjector5->getX3Minimum()+1.5*d);
+   //createSpheres(radiusLB, origin1, maxX2, maxX3, uLB, createSphereCoProcessor);
+   //Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector2->getX2Minimum()+2.2*d, geoInjector2->getX3Minimum()+1.5*d);
+   //createSpheres(radiusLB, origin2, maxX2, maxX3, uLB, createSphereCoProcessor);
 
-   //Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.4*d, geoInjector4->getX3Minimum()+1.5*d);
-   //createSpheres(radiusLB,origin2,maxX2,maxX3,uLB,createSphereCoProcessor);
+   Vector3D origin2(g_minX1+peMinOffset[0]-1.5*d, geoInjector4->getX2Minimum()+2.4*d, geoInjector4->getX3Minimum()+1.5*d);
+   createSpheres(radiusLB,origin2,maxX2,maxX3,uLB,createSphereCoProcessor);
 
    //maxX2 = 7;
    //maxX3 = 7;

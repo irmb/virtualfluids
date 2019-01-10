@@ -1,7 +1,11 @@
 #simulation parameters
+
+#x1min x2min x3min x1max x2max x3max
 #boundingBox = 0 0 0 300 1520 2320
 
-boundingBox = 60 1370 130 190 1530 320 #test bb
+#boundingBox = 60 1370 130 190 1530 320 #test bb
+
+boundingBox = 60 20 130 190 170 320 #test bb
 
 #boundingBox = 60 0 10 190 1530 750 #test bb 2
 
@@ -12,6 +16,7 @@ blocknx = 10 10 10
 availMem = 25e9
 #uLB = 0.1
 uLB = 0.03
+Re = 300
 
 #PE parameters
 #test pe offset
@@ -41,12 +46,12 @@ logToFile = false
 
 #restart
 restart = false
-restartStep = 5000
+restartStep = 1000
 
 #timing
 nupsTime = 100 100 1000000
 cpStart = 1000
 cpStep =  1000
-outTime = 10
-endTime = 1000
+outTime = 1000
+endTime = 100000
 

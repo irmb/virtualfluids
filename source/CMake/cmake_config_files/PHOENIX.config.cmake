@@ -7,9 +7,9 @@ SET(BOOST_VERSION "1.63.0" CACHE STRING "std: 1.63.0")
 #  METIS  
 #################################################################################
 IF(${USE_METIS})
-  SET(METIS_INCLUDEDIR "/cluster/lib/metis/5.1.0/intel/include")
-  SET(METIS_DEBUG_LIBRARY "/cluster/lib/metis/5.1.0/intel/lib/libmetis.a") 
-  SET(METIS_RELEASE_LIBRARY "/cluster/lib/metis/5.1.0/intel/lib/libmetis.a") 
+  SET(METIS_INCLUDEDIR "/cluster/lib/metis/5.1.0/gcc/include")
+  SET(METIS_DEBUG_LIBRARY "/cluster/lib/metis/5.1.0/gcc/lib/libmetis.a") 
+  SET(METIS_RELEASE_LIBRARY "/cluster/lib/metis/5.1.0/gcc/lib/libmetis.a")
 ENDIF()
 
 #################################################################################
@@ -25,6 +25,8 @@ IF(${USE_DEM_COUPLING})
   SET(BLOCKFOREST_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/blockforest/libblockforest.a)
   SET(DOMAIN_DECOMPOSITION_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/domain_decomposition/libdomain_decomposition.a) 
   SET(DOMAIN_DECOMPOSITION_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/domain_decomposition/libdomain_decomposition.a)
+  SET(GEOMETRY_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/geometry/libgeometry.a) 
+  SET(GEOMETRY_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/geometry/libgeometry.a)
   SET(CORE_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/core/libcore.a) 
   SET(CORE_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/core/libcore.a)
   
