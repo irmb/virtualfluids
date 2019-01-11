@@ -32,7 +32,7 @@
 //!float          temperature  = config.getFloat("temperature");
 //!double         epsilon      = config.getDouble("epsilon");
 //!bool           writeLogFile = config.getBool("writeLogFile");
-//!string         errorMessage = config.getString("pathname");
+//!string         errorMessage = config.getString("errorMessage");
 //!vector<double> origin       = config.getVector<double>("origin");
 //!            
 //! \author  Konstantin Kutscher
