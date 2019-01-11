@@ -25,14 +25,14 @@
 //!
 //!Example how to use it:
 //!
-//!Configuration   config;
+//!ConfigurationFile   config;
 //!config.load(configname);
 //!
-//!int            nbDimensions = config.getInt("nbDimensions");
-//!float          temperature  = config.getFloat("temperature");
-//!double         epsilon      = config.getDouble("epsilon");
-//!bool           writeLogFile = config.getBool("writeLogFile");
-//!string         errorMessage = config.getString("errorMessage");
+//!int            nbDimensions = config.getValue<int>("nbDimensions");
+//!float          temperature  = config.getValue<float>("temperature");
+//!double         epsilon      = config.getValue<double>("epsilon");
+//!bool           writeLogFile = config.getValue<bool>("writeLogFile");
+//!string         errorMessage = config.getValue<string>("errorMessage");
 //!vector<double> origin       = config.getVector<double>("origin");
 //!            
 //! \author  Konstantin Kutscher
@@ -40,30 +40,34 @@
 class ConfigurationFile
 {
 public:
-   // clear all values
+   //! clear all values
    void clear();
 
-   // load a configuration file
+   //! load a configuration file
    bool load(const std::string& File);
 
-   // check if value associated with given key exists
+   //! check if value associated with given key exists
    bool contains(const std::string& key) const;
 
-   std::string  getString(const std::string& key) const;
-
+   //! get vector with key
    template<class T>
    std::vector<T> getVector(const std::string& key) const;
 
+   //! get value with key
    template<class T>
    T getValue(const std::string& key) const;
 
 private:
-   // the container
+   //! the container
    std::map<std::string, std::string> data;
 
-   // remove leading and trailing tabs and spaces
+   //! get string with key
+   std::string  getString(const std::string& key) const;
+
+   //! remove leading and trailing tabs and spaces
    static std::string trim(const std::string& str);
 
+   //! convert string to data type T
    template<class T>
    T fromString(const std::string& str) const;
 
