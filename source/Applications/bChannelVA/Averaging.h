@@ -20,6 +20,8 @@ public:
    void initFluctuationsofVolumeAveragingValues();
    void initMeanOfFluctuations();
    void initStresses();
+   void initSumOfStresses();
+   void initMeanOfStresses();
    void initPlanarAveragingMQ();
    void sumOfVolumeAveragingValues();
    void writeVolumeAveragingValuesToBinaryFiles(std::string ffname, int timeStep);

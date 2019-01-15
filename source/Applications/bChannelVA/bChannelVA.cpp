@@ -40,6 +40,8 @@ int main(int argc, char* argv[])
    av.initSumOfFluctuations();
    av.initMeanOfFluctuations();
    av.initStresses();
+   av.initSumOfStresses();
+   av.initMeanOfStresses();
    av.initPlanarAveragingMQ();
    for (int i = 0; i < numberOfTimeSteps; i++)
    {

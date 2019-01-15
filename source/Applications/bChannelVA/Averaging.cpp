@@ -583,6 +583,34 @@ void Averaging::initStresses()
    StressZY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
    StressZZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
 }
+void Averaging::initSumOfStresses()
+{
+   SumStressXX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   SumStressXY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   SumStressXZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   SumStressYX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   SumStressYY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   SumStressYZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   SumStressZX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   SumStressZY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   SumStressZZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+}
+void Averaging::initMeanOfStresses()
+{
+   meanStressXX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanStressXY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanStressXZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   meanStressYX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanStressYY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanStressYZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+
+   meanStressZX.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanStressZY.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+   meanStressZZ.resize(dimensions[0], dimensions[1], dimensions[2], 0);
+}
 void Averaging::initPlanarAveragingMQ()
 {
    PlanarVx.resize(dimensions[2], 0);
