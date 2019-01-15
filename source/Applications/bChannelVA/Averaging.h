@@ -11,11 +11,31 @@ public:
    void writeGeoMatrixToImageFile(std::string output, int geo_extent[6], double geo_origin[3], double geo_spacing[3]);
    void createMQMatrix(std::string dataNameMQ, double deltax, double geo_origin[3]);
    void writeMQMatrixToImageFile(std::string output, int geo_extent[6], double geo_origin[3], double geo_spacing[3]);
-   void averagingWithMPI(double l_real, double l);
-   void Averaging::readGeoMatrix(std::string dataNameG);
+   void volumeAveragingWithMPI(double l_real, double l);
+   void readGeoMatrix(std::string dataNameG);
    void writeGeoMatrixToBinaryFiles(std::string fname);
    void readGeoMatrixFromBinaryFiles(std::string fname);
-
+   void initVolumeAveragingValues();
+   void initMeanVolumeAveragingValues();
+   void initFluctuationsofVolumeAveragingValues();
+   void initMeanOfFluctuations();
+   void initStresses();
+   void initPlanarAveragingMQ();
+   void sumOfVolumeAveragingValues();
+   void writeVolumeAveragingValuesToBinaryFiles(std::string ffname, int timeStep);
+   void meanOfVolumeAveragingValues(int numberOfTimeSteps);
+   void writeMeanVolumeAveragingValuesToBinaryFiles(std::string ffname);
+   void fluctuationsOfVolumeAveragingValue();
+   void sumOfFluctuations();
+   void initSumOfFluctuations();
+   void writeFluctuationsToBinaryFiles(std::string fname, int timeStep);
+   void writeStressesToBinaryFiles(std::string fname, int timeStep);
+   void meanOfFluctuations(int numberOfTimeSteps);
+   void SumOfStresses();
+   void MeanOfStresses(int numberOfTimeSteps);
+   void PlanarAveragingMQ(std::array<int, 3> dimensions);
+   void WriteToCSV(std::string path, double origin, double deltax);
+   void readVolumeAveragingValuesFromBinaryFiles(std::string fname, int timeStep);
 
    std::array<int, 3> getDimensions() const { return dimensions; }
    void setDimensions(std::array<int, 3> val) { dimensions = val; }
@@ -36,15 +56,87 @@ private:
    CbArray3D<double> vzMatrix;
    CbArray3D<double> prMatrix;
 
+   CbArray3D<double> sumVaVxMatrix;
+   CbArray3D<double> sumVaVyMatrix;
+   CbArray3D<double> sumVaVzMatrix;
+   CbArray3D<double> sumVaPrMatrix;
+
    CbArray3D<double> vaVxMatrix;
    CbArray3D<double> vaVyMatrix;
    CbArray3D<double> vaVzMatrix;
    CbArray3D<double> vaPrMatrix;
+
+   CbArray3D<double> meanVxMatrix;
+   CbArray3D<double> meanVyMatrix;
+   CbArray3D<double> meanVzMatrix;
+   CbArray3D<double> meanPrMatrix;
+
+   CbArray3D<double> FlucVxMatrix;
+   CbArray3D<double> FlucVyMatrix;
+   CbArray3D<double> FlucVzMatrix;
+   CbArray3D<double> FlucPrMatrix;
+
+   CbArray3D<double> StressXX;
+   CbArray3D<double> StressXY;
+   CbArray3D<double> StressXZ;
+   CbArray3D<double> StressYX;
+   CbArray3D<double> StressYY;
+   CbArray3D<double> StressYZ;
+   CbArray3D<double> StressZX;
+   CbArray3D<double> StressZY;
+   CbArray3D<double> StressZZ;
+
+   CbArray3D<double> sumFlucVx;
+   CbArray3D<double> sumFlucVy;
+   CbArray3D<double> sumFlucVz;
+   CbArray3D<double> sumFlucPr;
+
+   CbArray3D<double> meanFlucVx;
+   CbArray3D<double> meanFlucVy;
+   CbArray3D<double> meanFlucVz;
+   CbArray3D<double> meanFlucPr;
+
+   CbArray3D<double> SumStressXX;
+   CbArray3D<double> SumStressXY;
+   CbArray3D<double> SumStressXZ;
+   CbArray3D<double> SumStressYX;
+   CbArray3D<double> SumStressYY;
+   CbArray3D<double> SumStressYZ;
+   CbArray3D<double> SumStressZX;
+   CbArray3D<double> SumStressZY;
+   CbArray3D<double> SumStressZZ;
+
+   CbArray3D<double> meanStressXX;
+   CbArray3D<double> meanStressXY;
+   CbArray3D<double> meanStressXZ;
+   CbArray3D<double> meanStressYX;
+   CbArray3D<double> meanStressYY;
+   CbArray3D<double> meanStressYZ;
+   CbArray3D<double> meanStressZX;
+   CbArray3D<double> meanStressZY;
+   CbArray3D<double> meanStressZZ;
+
+   std::vector<double> PlanarVx;
+   std::vector<double> PlanarVy;
+   std::vector<double> PlanarVz;
+   std::vector<double> PlanarPr;
+
+   std::vector<double> PlanarStressXX;
+   std::vector<double> PlanarStressXY;
+   std::vector<double> PlanarStressXZ;
+  
+   std::vector<double> PlanarStressYX;
+   std::vector<double> PlanarStressYY;
+   std::vector<double> PlanarStressYZ;
+   
+   std::vector<double> PlanarStressZX;
+   std::vector<double> PlanarStressZY;
+   std::vector<double> PlanarStressZZ;
 };
 
 //////////////////////////////////////////////////////////////////////////
 template<class T> void Averaging::writeMatrixToBinaryFiles(std::vector<T> &matrix, std::string fname)
-{
+ {
    vtkSmartPointer<vtkTimerLog> timer_write = vtkSmartPointer<vtkTimerLog>::New();
 
    UBLOG(logINFO,"write matrix to " + fname + ": start");
