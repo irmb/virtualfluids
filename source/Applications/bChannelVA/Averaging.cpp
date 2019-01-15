@@ -979,7 +979,7 @@ void Averaging::PlanarAveragingMQ(std::array<int, 3> dimensions)
       for (int i = 0; i < dimensions[2]; i++)
       {
          double z = origin + (deltax*i);
-         ostr << z << ";" << PlanarVx[i] << ";" << PlanarVy[i] << ";" << PlanarVz[i] << ";" << PlanarPr[i] << ";" << PlanarStressXX[i] << ";" << PlanarStressXY[i] << ";" << PlanarStressXZ[i] << ";" << PlanarStressYX[i] << ";" << PlanarStressYY[i] << ";" << PlanarStressYZ[i] << ";" << PlanarStressZX[i] << ";" << PlanarStressZY[i] << ";" << PlanarStressZZ[i];
+         ostr << z << ";" << PlanarVx[i] << ";" << PlanarVy[i] << ";" << PlanarVz[i] << ";" << PlanarPr[i] << ";" << PlanarStressXX[i] << ";" << PlanarStressXY[i] << ";" << PlanarStressXZ[i] << ";" << PlanarStressYX[i] << ";" << PlanarStressYY[i] << ";" << PlanarStressYZ[i] << ";" << PlanarStressZX[i] << ";" << PlanarStressZY[i] << ";" << PlanarStressZZ[i] << "\n";
       }
       ostr.close();
    }
