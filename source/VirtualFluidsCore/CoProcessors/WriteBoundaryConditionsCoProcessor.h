@@ -19,8 +19,7 @@ class WriteBoundaryConditionsCoProcessor : public  CoProcessor
 {
 public:
    WriteBoundaryConditionsCoProcessor();
-   WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
-      const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
+   WriteBoundaryConditionsCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, WbWriter* const writer, SPtr<Communicator> comm);
    ~WriteBoundaryConditionsCoProcessor() {}
 
    void process(double step) override;

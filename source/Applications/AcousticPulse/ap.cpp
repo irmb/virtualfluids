@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void run(string configname)
+void run()
 {
    try
    {
@@ -75,15 +75,6 @@ void run(string configname)
       double blockLength = blocknx[0] * dx;
 
       SPtr<Grid3D> grid(new Grid3D(comm));
-
-      //////////////////////////////////////////////////////////////////////////
-      //restart
-      SPtr<Grid3D> oldGrid(new Grid3D(comm));
-      SPtr<UbScheduler> rSch(new UbScheduler(10));
-      //MPIIORestartCoProcessor rcp(oldGrid, rSch, pathname, comm);
-      //rcp.restart(0);
-      //////////////////////////////////////////////////////////////////////////
-
       grid->setDeltaX(dx);
       grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
       grid->setPeriodicX1(true);
@@ -106,7 +97,7 @@ void run(string configname)
          if (myid==0) UBLOG(logINFO, "Refinement - end");
       }
 
-      WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
       InteractorsHelper intHelper(grid, metisVisitor);
@@ -115,9 +106,9 @@ void run(string configname)
       ppblocks->process(0);
       ppblocks.reset();
 
-      //set connectors
-      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-      InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      //set connectors  
+      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
       dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
@@ -156,7 +147,8 @@ void run(string configname)
       }
 
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
       SPtr<BCProcessor> bcProcessor(new BCProcessor());
@@ -185,18 +177,13 @@ void run(string configname)
       //fctRoh.SetExpr("x1*0.001");
 
       //initialization of distributions
-      InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+      InitDistributionsBlockVisitor initVisitor;
       initVisitor.setRho(fctRoh);
       grid->accept(initVisitor);
 
-      //InitDistributionsWithCoarseGridBlockVisitor initVisitor(oldGrid, grid, iProcessor, nuLB);
-      //grid->accept(initVisitor);
-
-
       //Postrozess
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-         new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
       ppgeo->process(0);
       ppgeo.reset();
 
@@ -210,17 +197,19 @@ void run(string configname)
       }
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      calculator->addCoProcessor(nupsCoProcessor);
+      calculator->addCoProcessor(writeMQCoProcessor);
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
-      if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
-      if (myid == 0) UBLOG(logINFO, "Simulation-end");
+      if (myid==0) UBLOG(logINFO, "Simulation-start");
+      calculator->calculate();
+      if (myid==0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)
    {
@@ -238,18 +227,6 @@ void run(string configname)
 }
 int main(int argc, char* argv[])
 {
-   //if (argv != NULL)
-   //{
-      //if (argv[1] != NULL)
-      //{
-      //   run(string(argv[1]));
-      //}
-      //else
-      //{
-      //   cout << "Configuration file is missing!" << endl;
-      //}
-   //}
-
-   run("hallo");
+   run();
 }
 

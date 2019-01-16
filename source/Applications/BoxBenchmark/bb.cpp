@@ -1,5 +1,9 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <sstream> //istringstream
+#include <iostream> // cout
+#include <fstream> // ifstream
 
 #include "VirtualFluids.h"
 
@@ -13,7 +17,7 @@ void run(string configname)
       ConfigurationFile   config;
       config.load(configname);
 
-      string          pathname = config.getString("pathname");
+      string          pathname = config.getValue<string>("pathname");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       double          uLB = config.getValue<double>("uLB");
@@ -212,7 +216,7 @@ void run(string configname)
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       SPtr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
       SPtr<Calculator> calculator(new BasicCalculator(grid, visSch, (int)endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(mqCoProcessor);
@@ -234,19 +238,83 @@ void run(string configname)
    }
 
 }
+
+/**
+ * Reads csv file into table, exported as a vector of vector of doubles.
+ * @param inputFileName input file name (full path).
+ * @return data as vector of vector of doubles.
+ */
+vector<vector<double>> parse2DCsvFile(string inputFileName) {
+ 
+    vector<vector<double> > data;
+    ifstream inputFile(inputFileName);
+    int l = 0;
+ 
+    while (inputFile) {
+        l++;
+        string s;
+        if (!getline(inputFile, s)) break;
+        if (s[0] != '#') {
+            istringstream ss(s);
+            vector<double> record;
+ 
+            while (ss) {
+                string line;
+                if (!getline(ss, line, ';'))
+                    break;
+                try {
+                    record.push_back(stof(line));
+                }
+                catch (const std::invalid_argument e) {
+                    //cout << "NaN found in file " << inputFileName << " line " << l
+                    //     << endl;
+                    //e.what();
+                }
+            }
+ 
+            data.push_back(record);
+        }
+    }
+ 
+    if (!inputFile.eof()) {
+        cerr << "Could not read file " << inputFileName << "\n";
+        //__throw_invalid_argument("File not found.");
+    }
+ 
+    return data;
+}
+
+void createPoints()
+{
+   string inputFile = "d:/Projects/SFB880/DLR-F16/PIANO/LambVector/grid.csv";
+   vector<vector<double>> data = parse2DCsvFile(inputFile);
+   
+   std::vector<UbTupleFloat3> nodes(data.size());
+   int i = 0;
+   for (auto x : data) 
+   {
+      nodes[i] =(UbTupleFloat3(float(x[0]), float(x[1]), float(x[2])));
+      i++;
+   }
+
+   string file = "d:/Projects/SFB880/DLR-F16/PIANO/LambVector/grid";
+   std::string partName = WbWriterVtkXmlASCII::getInstance()->writeNodes(file,nodes);
+}
+
 int main(int argc, char* argv[])
 {
-   if (argv != NULL)
-   {
-      if (argv[1] != NULL)
-      {
-         run(string(argv[1]));
-      }
-      else
-      {
-         cout << "Configuration file is missing!" << endl;
-      }
-   }
+   //if (argv != NULL)
+   //{
+   //   if (argv[1] != NULL)
+   //   {
+         //run(string(argv[1]));
+         createPoints();
+      //}
+      //else
+      //{
+      //   cout << "Configuration file is missing!" << endl;
+      //}
+   //}
 
 }
 

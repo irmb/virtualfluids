@@ -289,8 +289,20 @@ void run(string configname)
 
             int level;
 
-            //level 1
             level = 1;
+            if (refineLevel - level >= 0)
+            {
+               dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
+            }
+            
+            level = 2;
+            if (refineLevel - level >= 0)
+            {
+               dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
+            }
+
+            //level 1
+            level = 3;
             if (refineLevel - level >= 0)
             {
                //SPtr<GbObject3D> refCylinderL1(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.03));
@@ -308,7 +320,7 @@ void run(string configname)
             }
 
             //level 2
-            level = 2;
+            level = 4;
             if (refineLevel - level >= 0)
             {
                //SPtr<GbObject3D> refCylinderL2(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.03));
@@ -325,7 +337,7 @@ void run(string configname)
             }
 
             //level 3
-            level = 3;
+            level = 5;
             if (refineLevel - level >= 0)
             {
                //SPtr<GbObject3D> refCylinderL3(new GbCylinder3D(0.015, -0.03, 0.0, 0.015, 0.06, 0.0, 0.025));
@@ -342,7 +354,7 @@ void run(string configname)
             }
 
             //level 4
-            level = 4;
+            level = 6;
             if (refineLevel - level >= 0)
             {
                SPtr<GbObject3D> refBoxL4(new GbCuboid3D(0.15, -0.03, -0.005, 0.32, 0.06, 0.01));
@@ -356,7 +368,7 @@ void run(string configname)
 
 
             //level 5
-            level = 5;
+            level = 7;
             if (refineLevel - level >= 0)
             {
                dynamicPointerCast<D3Q27TriFaceMeshInteractor>(fngIntrWhole1)->refineBlockGridToLevel(level, startDistance, refineDistance);
@@ -564,7 +576,7 @@ void run(string configname)
          grid->accept(initVisitor1);
 
          ////set connectors
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+         SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
          SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
          grid->accept(setConnsVisitor);
 
