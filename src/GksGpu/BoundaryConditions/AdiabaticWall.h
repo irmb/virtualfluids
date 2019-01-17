@@ -20,13 +20,17 @@ struct AdiabaticWallStruct
     uint* secondCells;
 
     Vec3 velocity;
+
+    bool useSecondCells;
 };
 
 struct VF_PUBLIC AdiabaticWall : public BoundaryCondition //, public IsothermalWallStruct
 {
     Vec3 velocity;
 
-    AdiabaticWall( SPtr<DataBase> dataBase, Vec3 velocity );
+    bool useSecondCells;
+
+    AdiabaticWall( SPtr<DataBase> dataBase, Vec3 velocity, bool useSecondCells );
 
     virtual bool isWall() override;
 
@@ -47,6 +51,8 @@ struct VF_PUBLIC AdiabaticWall : public BoundaryCondition //, public IsothermalW
         boundaryCondition.secondCells   = this->secondCells;
 
         boundaryCondition.velocity      = this->velocity;
+
+        boundaryCondition.useSecondCells  = this->useSecondCells;
 
         return boundaryCondition;
     }

@@ -110,7 +110,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     #endif // USE_PASSIVE_SCALAR
 
 
-        if( secondCellIdx != INVALID_INDEX ){
+        if( boundaryCondition.useSecondCells && secondCellIdx != INVALID_INDEX ){
             real p1 = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
             real p2 = c1o2 * secondCellPrim.rho / secondCellPrim.lambda;
 
@@ -130,10 +130,11 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     }
 }
 
-AdiabaticWall::AdiabaticWall(SPtr<DataBase> dataBase, Vec3 velocity)
+AdiabaticWall::AdiabaticWall(SPtr<DataBase> dataBase, Vec3 velocity, bool useSecondCells)
     : BoundaryCondition( dataBase )
 {
     this->velocity = velocity;
+    this->useSecondCells = useSecondCells;
 }
 
 bool AdiabaticWall::isWall()
