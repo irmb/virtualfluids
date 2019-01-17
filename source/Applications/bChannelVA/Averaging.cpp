@@ -369,7 +369,7 @@ void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
    //#pragma omp parallel num_threads(4) //private(i)
    {
       int i = 0;
-//#pragma omp parallel for //private(i)//scheduler(dynamic, 1)
+#pragma omp parallel for //private(i)//scheduler(dynamic, 1)
       for (int x3 = 0; x3 < dimensions[2]; x3++)
          for (int x2 = 0; x2 < dimensions[1]; x2++)
             for (int x1 = startX1; x1 < stopX1; x1++)
