@@ -369,7 +369,7 @@ void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
    //#pragma omp parallel num_threads(4) //private(i)
    {
       int i = 0;
-#pragma omp parallel for //private(i)//scheduler(dynamic, 1)
+//#pragma omp parallel for //private(i)//scheduler(dynamic, 1)
       for (int x3 = 0; x3 < dimensions[2]; x3++)
          for (int x2 = 0; x2 < dimensions[1]; x2++)
             for (int x1 = startX1; x1 < stopX1; x1++)
@@ -437,47 +437,46 @@ void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
    }
 
 
-   if (PID == 0)
-   {
-      vector<double> receiveBuffer;
-      for (int i = 1; i < numprocs; i++)
-      {
-         int count, lstartX1, lstopX1;
-         MPI_Status status;
-         MPI_Recv(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-         receiveBuffer.resize(count);
-         MPI_Recv(&receiveBuffer[0], count, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
-         MPI_Recv(&lstartX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-         MPI_Recv(&lstopX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-         int c = 0;
-         for (int x3 = 0; x3 < dimensions[2]; x3++)
-            for (int x2 = 0; x2 < dimensions[1]; x2++)
-               for (int x1 = lstartX1; x1 < lstopX1; x1++)
-               {
-                  vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-                  //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-                  //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-                  //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-                  c++;
-               }
-      }
-   }
-   else
-   {
-      vector<double> sendBuffer;
-      for (int x3 = 0; x3 < dimensions[2]; x3++)
-         for (int x2 = 0; x2 < dimensions[1]; x2++)
-            for (int x1 = startX1; x1 < stopX1; x1++)
-            {
-               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
-            }
-      int count = (int)sendBuffer.size();
-      MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-      MPI_Send(&sendBuffer[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-      MPI_Send(&startX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-      MPI_Send(&stopX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-   }
-
+   //if (PID == 0)
+   //{
+   //   vector<double> receiveBuffer;
+   //   for (int i = 1; i < numprocs; i++)
+   //   {
+   //      int count, lstartX1, lstopX1;
+   //      MPI_Status status;
+   //      MPI_Recv(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+   //      receiveBuffer.resize(count);
+   //      MPI_Recv(&receiveBuffer[0], count, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+   //      MPI_Recv(&lstartX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+   //      MPI_Recv(&lstopX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+   //      int c = 0;
+   //      for (int x3 = 0; x3 < dimensions[2]; x3++)
+   //         for (int x2 = 0; x2 < dimensions[1]; x2++)
+   //            for (int x1 = lstartX1; x1 < lstopX1; x1++)
+   //            {
+   //               vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
+   //               //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
+   //               //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
+   //               //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
+   //               c++;
+   //            }
+   //   }
+   //}
+   //else
+   //{
+   //   vector<double> sendBuffer;
+   //   for (int x3 = 0; x3 < dimensions[2]; x3++)
+   //      for (int x2 = 0; x2 < dimensions[1]; x2++)
+   //         for (int x1 = startX1; x1 < stopX1; x1++)
+   //         {
+   //            sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+   //         }
+   //   int count = (int)sendBuffer.size();
+   //   MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+   //   MPI_Send(&sendBuffer[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+   //   MPI_Send(&startX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+   //   MPI_Send(&stopX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+   //}
 
    timer_averaging->StopTimer();
    UBLOG(logINFO, "volume averaging: end");
@@ -896,22 +895,7 @@ void Averaging::MeanOfStresses(int numberOfTimeSteps)
 }
 void Averaging::PlanarAveragingMQ(std::array<int, 3> dimensions)
 {
-   vector<double>& VxMean = meanVxMatrix.getDataVector();
-   vector<double>& VyMean = meanVyMatrix.getDataVector();
-   vector<double>& VzMean = meanVzMatrix.getDataVector();
-   vector<double>& PrMean = meanPrMatrix.getDataVector();
-
-   vector<double>& XXStress = StressXX.getDataVector();
-   vector<double>& XYStress = StressXY.getDataVector();
-   vector<double>& XZStress = StressXZ.getDataVector();
-
-   vector<double>& YXStress = StressYX.getDataVector();
-   vector<double>& YYStress = StressYY.getDataVector();
-   vector<double>& YZStress = StressYZ.getDataVector();
-
-   vector<double>& ZXStress = StressZX.getDataVector();
-   vector<double>& ZYStress = StressZY.getDataVector();
-   vector<double>& ZZStress = StressZZ.getDataVector();
+   double numberof_XY_points = dimensions[0] * dimensions[1];
 
    for (int z = 0; z < dimensions[2]; z++)
    {
@@ -922,39 +906,39 @@ void Averaging::PlanarAveragingMQ(std::array<int, 3> dimensions)
       for (int y = 0; y < dimensions[1]; y++)
          for (int x = 0; x < dimensions[0]; x++)
          {
-            sumVx += VxMean[x, y, z];
-            sumVy += VyMean[x, y, z];
-            sumVz += VzMean[x, y, z];
-            sumPr += PrMean[x, y, z];
+            sumVx += meanVxMatrix(x, y, z);
+            sumVy += meanVyMatrix(x, y, z);
+            sumVz += meanVzMatrix(x, y, z);
+            sumPr += meanPrMatrix(x, y, z);
 
-            sumStressXX += XXStress[x, y, z];
-            sumStressXY += XYStress[x, y, z];
-            sumStressXZ += XZStress[x, y, z];
+            sumStressXX += StressXX(x, y, z);
+            sumStressXY += StressXY(x, y, z);
+            sumStressXZ += StressXZ(x, y, z);
 
-            sumStressYX += YXStress[x, y, z];
-            sumStressYY += YYStress[x, y, z];
-            sumStressYZ += YZStress[x, y, z];
+            sumStressYX += StressYX(x, y, z);
+            sumStressYY += StressYY(x, y, z);
+            sumStressYZ += StressYZ(x, y, z);
 
-            sumStressZX += ZXStress[x, y, z];
-            sumStressZY += ZYStress[x, y, z];
-            sumStressZZ += ZZStress[x, y, z];
+            sumStressZX += StressZX(x, y, z);
+            sumStressZY += StressZY(x, y, z);
+            sumStressZZ += StressZZ(x, y, z);
          }
-      PlanarVx[z] = sumVx / (dimensions[0] * dimensions[1]);
-      PlanarVy[z] = sumVy / (dimensions[0] * dimensions[1]);
-      PlanarVz[z] = sumVz / (dimensions[0] * dimensions[1]);
-      PlanarPr[z] = sumPr / (dimensions[0] * dimensions[1]);
+      PlanarVx[z] = sumVx / numberof_XY_points;
+      PlanarVy[z] = sumVy / numberof_XY_points;
+      PlanarVz[z] = sumVz / numberof_XY_points;
+      PlanarPr[z] = sumPr / numberof_XY_points;
 
-      PlanarStressXX[z] = sumStressXX / (dimensions[0] * dimensions[1]);
-      PlanarStressXY[z] = sumStressXY / (dimensions[0] * dimensions[1]);
-      PlanarStressXZ[z] = sumStressXZ / (dimensions[0] * dimensions[1]);
-
-      PlanarStressYX[z] = sumStressYX / (dimensions[0] * dimensions[1]);
-      PlanarStressYY[z] = sumStressYY / (dimensions[0] * dimensions[1]);
-      PlanarStressYZ[z] = sumStressYZ / (dimensions[0] * dimensions[1]);
-
-      PlanarStressZX[z] = sumStressZX / (dimensions[0] * dimensions[1]);
-      PlanarStressZY[z] = sumStressZY / (dimensions[0] * dimensions[1]);
-      PlanarStressZZ[z] = sumStressZZ / (dimensions[0] * dimensions[1]);
+      PlanarStressXX[z] = sumStressXX / numberof_XY_points;
+      PlanarStressXY[z] = sumStressXY / numberof_XY_points;
+      PlanarStressXZ[z] = sumStressXZ / numberof_XY_points;
+                                        
+      PlanarStressYX[z] = sumStressYX / numberof_XY_points;
+      PlanarStressYY[z] = sumStressYY / numberof_XY_points;
+      PlanarStressYZ[z] = sumStressYZ / numberof_XY_points;
+                                       
+      PlanarStressZX[z] = sumStressZX / numberof_XY_points;
+      PlanarStressZY[z] = sumStressZY / numberof_XY_points;
+      PlanarStressZZ[z] = sumStressZZ / numberof_XY_points;
 
    }
 }

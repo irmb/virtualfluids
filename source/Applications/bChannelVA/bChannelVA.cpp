@@ -23,12 +23,12 @@ int main(int argc, char* argv[])
    double l = 40;
    av.createGeoMatrix("e:/temp/BreugemChannelAnisotrop/bc/bc0.pvtu", deltax, geo_origin);
    av.writeGeoMatrixToBinaryFiles("e:/temp/BreugemChannelAnisotrop/va/geomatrix.bin");
-   int numberOfTimeSteps = 5;
+   int numberOfTimeSteps = 500;
    int numberOfGridPoints = dimensions[0]* dimensions[1]* dimensions[2];
    av.initVolumeAveragingValues();
-   for (int t = 0; t < numberOfTimeSteps; t++)
+   for (int t = 100; t <= numberOfTimeSteps; t+=100)
    {
-      av.createMQMatrix("e:/temp/BreugemChannelAnisotrop/mq/mq"+UbSystem::toString((t+1)*100)+".pvtu", deltax, geo_origin);
+      av.createMQMatrix("e:/temp/BreugemChannelAnisotrop/mq/mq"+UbSystem::toString(t)+".pvtu", deltax, geo_origin);
       av.volumeAveragingWithMPI(real_l, l);
       av.sumOfVolumeAveragingValues();
       av.writeVolumeAveragingValuesToBinaryFiles("e:/temp/BreugemChannelAnisotrop/va/vav/vav",t);
