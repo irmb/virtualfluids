@@ -1,2 +1,3 @@
 add_subdirectory(Applications/bChannelA)
 add_subdirectory(Applications/bChannelVA)
+add_subdirectory(Applications/OrganPipe)
