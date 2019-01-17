@@ -15,6 +15,7 @@
 #include "Core/Logger/Logger.h"
 
 #include "GridGenerator/geometries/Cuboid/Cuboid.h"
+#include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -30,6 +31,10 @@
 
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
+#include "GksGpu/BoundaryConditions/AdiabaticWall.h"
+#include "GksGpu/BoundaryConditions/Inflow.h"
+#include "GksGpu/BoundaryConditions/Extrapolation.h"
+#include "GksGpu/BoundaryConditions/Pressure.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
@@ -40,15 +45,22 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void drivenCavity( std::string path, std::string simulationName )
+void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 1.0;
+    //uint nx = 128;
 
-    real dx = L / 128.0;
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real Re  = 1.0e3;
+    real dx = 0.2;
+
+    real L = 33.4;
+    real W = 20.0;
+
+    real H = dx;
+
+    real Re  = 1.0e1;
     real U  = 0.1;
     real Ma = 0.1;
     
@@ -67,6 +79,8 @@ void drivenCavity( std::string path, std::string simulationName )
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " s\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -85,6 +99,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
     parameters.lambdaRef = lambda;
 
+    //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     parameters.viscosityModel = ViscosityModel::constant;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,18 +112,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5,  
-                                //0.5,  0.5,  0.5, dx);
-    gridBuilder->addCoarseGrid(-0.5, -0.5, -0.5*dx,  
-                                0.5,  0.5,  0.5*dx, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*W, -0.5*H,  
+                                0.5*L,  0.5*W,  0.5*H, dx);
 
-    //Cuboid refBox(-1.0, -1.0, 0.475, 1.0, 1.0, 0.55);
-    ////Cuboid refBox(-1.0, -1.0, -1.0, 1.0, 1.0, -0.475);
-
-    //gridBuilder->setNumberOfLayers(6,6);
-    //gridBuilder->addGrid( &refBox, 1);
-    
-    //gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
     gridBuilder->buildGrids(GKS, false);
@@ -121,9 +127,9 @@ void drivenCavity( std::string path, std::string simulationName )
 
     meshAdapter.inputGrid();
 
-    //meshAdapter.writeMeshVTK( path + simulationName + "_Mesh.vtk" );
+    //meshAdapter.writeMeshVTK( path + "grid/Mesh.vtk" );
 
-    //meshAdapter.writeMeshFaceVTK( path + simulationName + "_MeshFaces.vtk" );
+    //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
     meshAdapter.findPeriodicBoundaryNeighbors();
 
@@ -138,26 +144,38 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcPY   = std::make_shared<IsothermalWall>( dataBase, Vec3( U  , 0.0, 0.0 ), lambda, 0.0, false );
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0, false );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambda );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambda );
 
-    bcPY->findBoundaryCells  ( meshAdapter, true,  [&](Vec3 center){ return center.y > 0.5; } );
-    bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < 0.5; } );
+    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < - 0.5*L; } );
+    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >   0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
+    
+    SPtr<BoundaryCondition> bcMY = std::make_shared<Inflow>( dataBase, Vec3(0.0,   U, 0.0), lambda, rho, 0.0, 1.0, 0.0, 0.0 );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<Inflow>( dataBase, Vec3(0.0, - U, 0.0), lambda, rho, 0.0, 1.0, 0.0, 0.0 );
 
+    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < - 0.5*W; } );
+    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >   0.5*W; } );
+
+    //////////////////////////////////////////////////////////////////////////
+    
     SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*dx; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*dx; } );
-    
-    //dataBase->boundaryConditions.push_back( bcMX );
-    dataBase->boundaryConditions.push_back( bcPY );
-    dataBase->boundaryConditions.push_back( bcWall );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*H; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
+
+    //////////////////////////////////////////////////////////////////////////
 
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
+
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPX );
+    
+    dataBase->boundaryConditions.push_back( bcMY );
+    dataBase->boundaryConditions.push_back( bcPY );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,48 +184,82 @@ void drivenCavity( std::string path, std::string simulationName )
 
     dataBase->setMesh( meshAdapter );
 
-    //CudaUtility::printCudaMemoryUsage();
+    CudaUtility::printCudaMemoryUsage();
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables {
+    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        //real uLocal = U * ( cellCenter.z + 0.5 );
-
-        //if( cellCenter.y )
-
-        real uLocal = 0.0;
-
-        return toConservedVariables( PrimitiveVariables( 1.0, uLocal, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
 
     Initializer::initializeDataUpdate(dataBase);
 
+    for( uint level = 0; level < dataBase->numberOfLevels; level++ )
+    {
+        for (SPtr<BoundaryCondition> bc : dataBase->boundaryConditions) {
+            bc->runBoundaryConditionKernel(dataBase, parameters, level);
+        }
+    }
+
+    dataBase->copyDataDeviceToHost();
+
     writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
 
-    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, false, 60.0, true, 10000 );
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 80000 );
+    convergenceAnalyzer.setConvergenceThreshold( ConservedVariables( 1.0e-6, 1.0e-6, 1.0e-6, 1.0e6, 1.0e-6 ) );
+
+
+
+    //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     for( uint iter = 1; iter <= 1000000; iter++ )
     {
+        if( iter == 100000 )
+        {
+            parameters.mu = U * rho * L / 3.0e1;
+        }
+        if( iter == 200000 )
+        {
+            parameters.mu = U * rho * L / 1.0e2;
+        }
+        if( iter == 300000 )
+        {
+            parameters.mu = U * rho * L / 3.0e2;
+        }
+        if( iter == 400000 )
+        {
+            parameters.mu = U * rho * L / 1.0e3;
+        }
+
         TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
-        if( iter % 10000 == 0 )
+        if( 
+            //( iter < 10     && iter % 1     == 0 ) ||
+            //( iter < 100    && iter % 10    == 0 ) ||
+            //( iter < 1000   && iter % 100   == 0 ) ||
+            //( iter < 100000  && iter % 1000  == 0 ) ||
+            ( iter < 10000000 && iter % 10000 == 0 )
+          )
         {
+            for( uint level = 0; level < dataBase->numberOfLevels; level++ )
+            {
+                for (SPtr<BoundaryCondition> bc : dataBase->boundaryConditions) {
+                    bc->runBoundaryConditionKernel(dataBase, parameters, level);
+                }
+            }
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
@@ -215,15 +267,10 @@ void drivenCavity( std::string path, std::string simulationName )
 
         cupsAnalyzer.run( iter );
 
-        turbulenceAnalyzer->run( iter, parameters );
+        if( convergenceAnalyzer.run( iter ) ) break;
 
-        convergenceAnalyzer.run( iter );
+        //turbulenceAnalyzer->run( iter, parameters );
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -231,26 +278,29 @@ void drivenCavity( std::string path, std::string simulationName )
 
     //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
-    turbulenceAnalyzer->download();
+    //turbulenceAnalyzer->download();
 
-    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
-
-
+    //writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
 }
 
 int main( int argc, char* argv[])
 {
     std::string path( "F:/Work/Computations/out/" );
     //std::string path( "out/" );
-    std::string simulationName ( "DrivenCavity" );
+    std::string simulationName ( "PropaneFlame" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
-    
+
+    if( sizeof(real) == 4 )
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+    else
+        *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
+
     try
     {
-        drivenCavity( path, simulationName );
+        thermalCavity( path, simulationName );
     }
     catch (const std::exception& e)
     {     

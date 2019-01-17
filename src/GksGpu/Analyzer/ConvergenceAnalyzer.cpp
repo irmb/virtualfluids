@@ -103,6 +103,8 @@ bool ConvergenceAnalyzer::run(uint iter)
     {
         return true;
     }
+
+    return false;
 }
 
 void ConvergenceAnalyzer::printL2Change(ConservedVariables L2Change)
