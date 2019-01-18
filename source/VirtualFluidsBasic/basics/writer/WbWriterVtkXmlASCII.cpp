@@ -87,7 +87,7 @@ std::string WbWriterVtkXmlASCII::writeParallelFile(const string& filename,vector
    out<<"    </PPoints>\n";
    out<<"    <PPointData>\n";
    for(size_t s=0; s<pointDataNames.size(); s++)
-      out<< "      <PDataArray type=\"Float32\" Name=\""<< pointDataNames[s] <<"\"/>\n";
+      out<< "      <PDataArray type=\"Float64\" Name=\""<< pointDataNames[s] <<"\"/>\n";
    out<<"    </PPointData>\n";
    if (cellDataNames.size() > 0)
    {
@@ -875,7 +875,7 @@ std::string WbWriterVtkXmlASCII::writeOctsWithNodeData(const string& filename,ve
    out<<"         <PointData Scalars=\"PScalars\"> \n";
    for(int s=0; s<(int)datanames.size(); ++s)
    {
-      out<< "           <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"ascii\">";
+      out<< "           <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"ascii\">";
 
       for(int d=0; d<(int)nodedata[s].size(); d++)
       {

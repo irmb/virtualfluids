@@ -17,10 +17,10 @@ void run()
       double availMem = 5e9;
 
       //40
-      string  pathname = "d:/temp/AcousticPulse40Cube2y_test";
-      double  endTime = 20;
-      double  outTime = 20;
-      LBMReal dx =  0.05;
+      //string  pathname = "d:/temp/AcousticPulse40Cube2y_test";
+      //double  endTime = 20;
+      //double  outTime = 20;
+      //LBMReal dx =  0.05;
 
       //80
       //string  pathname = "d:/temp/AcousticPulse80Cube2y";
@@ -37,8 +37,35 @@ void run()
       //LBMReal dx = 0.1; 
       //LBMReal dx = 1.66666666667e-2; //120
       
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 3.97e-7;
+
+      //////////////////////////////////////////////////////////////////////////
+      //DLR-F16 test
+      //dx_coarse = 0.003 mm
+      string  pathname = "d:/temp/AcousticPulseXZ-0.003";
+      int     endTime = 20;
+      double  outTime = 20;
+      LBMReal dx =  0.003;
       LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 3.97e-7;
+      LBMReal nuLB = 8.66025e-6;
+      //////////////////////////////////////////////////////////////////////////
+      ////dx_coarse = 0.0015 mm
+      //string  pathname = "d:/temp/AcousticPulseXZ-0.0015";
+      //double  endTime = 40;
+      //double  outTime = 40;
+      //LBMReal dx =  0.0015;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6*2.0;
+      ////////////////////////////////////////////////////////////////////////////
+      //dx_coarse = 0.00075 mm
+      //string  pathname = "d:/temp/AcousticPulseXZ-0.00075";
+      //double  endTime = 80;
+      //double  outTime = 80;
+      //LBMReal dx =  0.00075;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6*4.0;
+      //////////////////////////////////////////////////////////////////////////
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -46,21 +73,21 @@ void run()
       int refineLevel = 1;
 
       //bounding box
-      double g_minX1 = -1.0;
-      double g_minX2 = -1.0;
-      double g_minX3 = -1.0;
+      double g_minX1 = -0.06;
+      double g_minX2 = -0.06;
+      double g_minX3 = -0.06;
 
-      double g_maxX1 = 1.0;
-      double g_maxX2 = 1.0;
-      double g_maxX3 = 1.0;
+      double g_maxX1 = 0.06;
+      double g_maxX2 = 0.06;
+      double g_maxX3 = 0.06;
 
-      //double g_minX1 = 0.0;
-      //double g_minX2 = 0.0;
-      //double g_minX3 = 0.0;
+      //double g_minX1 = -1;
+      //double g_minX2 = -1;
+      //double g_minX3 = -1;
 
-      //double g_maxX1 = 5.0;
-      //double g_maxX2 = 5.0;
-      //double g_maxX3 = dx;
+      //double g_maxX1 = 1;
+      //double g_maxX2 = 1;
+      //double g_maxX3 = 1;
 
       vector<int>  blocknx(3);
       blocknx[0] = 10;
@@ -85,7 +112,7 @@ void run()
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      SPtr<GbObject3D> refCube(new GbCuboid3D(-0.4,-0.4,-0.4,0.4,0.4,0.4));
+      SPtr<GbObject3D> refCube(new GbCuboid3D(-0.02,-0.02,-0.02,0.02,0.02,0.02));
       if (myid==0) GbSystem3D::writeGeoObject(refCube.get(), pathname+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
 
       if (refineLevel>0)
@@ -107,9 +134,9 @@ void run()
       ppblocks.reset();
 
       //set connectors  
-      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
+      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
@@ -147,9 +174,10 @@ void run()
       }
 
 
-      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
-      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(0.9);
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+      //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
       SPtr<BCProcessor> bcProcessor(new BCProcessor());
 
@@ -170,10 +198,12 @@ void run()
       //x
       //fctRoh.SetExpr("epsilon*exp(-alpha*(x3*x3+x2*x2))");
       //y
-      fctRoh.SetExpr("epsilon*exp(-alpha*(x3*x3+x1*x1))");
+      fctRoh.SetExpr("epsilon*exp(-alpha*scaleFactor*(x3*x3+x1*x1))");
+      //fctRoh.SetExpr("epsilon*exp(-alpha*(x3*x3+x1*x1))");
 
       fctRoh.DefineConst("epsilon", 1e-3);
       fctRoh.DefineConst("alpha", log(2.0)/(0.01));
+      fctRoh.DefineConst("scaleFactor", 277.777777779);
       //fctRoh.SetExpr("x1*0.001");
 
       //initialization of distributions
@@ -198,6 +228,7 @@ void run()
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      writeMQCoProcessor->process(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
@@ -206,6 +237,8 @@ void run()
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
+
+      //omp_set_num_threads(1);
 
       if (myid==0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

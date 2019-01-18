@@ -13,7 +13,8 @@
 CompressibleCumulant4thOrderViscosityLBMKernel::CompressibleCumulant4thOrderViscosityLBMKernel()
 {
    this->compressible = true;
-   bulkViscosity = 0;
+   this->bulkViscosity = 0;
+   this->OxxPyyPzz = 1.0;
 }
 //////////////////////////////////////////////////////////////////////////
 CompressibleCumulant4thOrderViscosityLBMKernel::~CompressibleCumulant4thOrderViscosityLBMKernel(void)
@@ -50,6 +51,7 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
    {
       OxxPyyPzz = one;
    }
+
    dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->OxxPyyPzz = this->OxxPyyPzz;
 
    return kernel;
