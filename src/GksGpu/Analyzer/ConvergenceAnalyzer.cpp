@@ -30,7 +30,8 @@ void ConvergenceAnalyzer::setConvergenceThreshold(real convergenceThreshold)
     this->convergenceThreshold.rhoW = convergenceThreshold;
     this->convergenceThreshold.rhoE = convergenceThreshold;
 #ifdef USE_PASSIVE_SCALAR
-    this->convergenceThreshold.rhoS = convergenceThreshold;
+    this->convergenceThreshold.rhoS_1 = convergenceThreshold;
+    this->convergenceThreshold.rhoS_2 = convergenceThreshold;
 #endif //USE_PASSIVE_SCALAR
 }
 
@@ -42,7 +43,8 @@ void ConvergenceAnalyzer::setConvergenceThreshold(ConservedVariables convergence
     this->convergenceThreshold.rhoW = convergenceThreshold.rhoW;
     this->convergenceThreshold.rhoE = convergenceThreshold.rhoE;
 #ifdef USE_PASSIVE_SCALAR
-    this->convergenceThreshold.rhoS = convergenceThreshold.rhoS;
+    this->convergenceThreshold.rhoS_1 = convergenceThreshold.rhoS_1;
+    this->convergenceThreshold.rhoS_2 = convergenceThreshold.rhoS_2;
 #endif //USE_PASSIVE_SCALAR
 }
 

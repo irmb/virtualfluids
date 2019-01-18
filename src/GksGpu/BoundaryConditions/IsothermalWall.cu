@@ -105,7 +105,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         ghostCellPrim.W      = two * boundaryCondition.velocity.z - domainCellPrim.W;
         ghostCellPrim.lambda = two * boundaryCondition.lambda     - domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S      = two * boundaryCondition.S - domainCellPrim.S;
+        ghostCellPrim.S_1    = two * boundaryCondition.S_1 - domainCellPrim.S_1;
+        ghostCellPrim.S_2    = two * boundaryCondition.S_2 - domainCellPrim.S_2;
     #endif // USE_PASSIVE_SCALAR
 
 
@@ -129,12 +130,13 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     }
 }
 
-IsothermalWall::IsothermalWall(SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real S, bool useSecondCells)
+IsothermalWall::IsothermalWall(SPtr<DataBase> dataBase, Vec3 velocity, real lambda, bool useSecondCells, real S_1, real S_2)
     : BoundaryCondition( dataBase )
 {
     this->velocity       = velocity;
     this->lambda         = lambda;
-    this->S              = S;
+    this->S_1            = S_1;
+    this->S_2            = S_2;
     this->useSecondCells = useSecondCells;
 }
 

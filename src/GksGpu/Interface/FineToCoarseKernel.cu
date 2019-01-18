@@ -70,7 +70,8 @@ __host__ __device__ inline void fineToCoarseFunction( DataBaseStruct dataBase, u
         cons.rhoW += c1o8 * dataBase.data[ RHO_W(cellIdx, dataBase.numberOfCells) ];
         cons.rhoE += c1o8 * dataBase.data[ RHO_E(cellIdx, dataBase.numberOfCells) ];
     #ifdef USE_PASSIVE_SCALAR
-	    cons.rhoS += c1o8 * dataBase.data[ RHO_S(cellIdx, dataBase.numberOfCells) ];
+	    cons.rhoS_1 += c1o8 * dataBase.data[ RHO_S_1(cellIdx, dataBase.numberOfCells) ];
+	    cons.rhoS_2 += c1o8 * dataBase.data[ RHO_S_2(cellIdx, dataBase.numberOfCells) ];
     #endif // USE_PASSIVE_SCALAR
     }
 
@@ -82,6 +83,7 @@ __host__ __device__ inline void fineToCoarseFunction( DataBaseStruct dataBase, u
     dataBase.data[ RHO_W(cellIdx, dataBase.numberOfCells) ] = cons.rhoW;
     dataBase.data[ RHO_E(cellIdx, dataBase.numberOfCells) ] = cons.rhoE;
 #ifdef USE_PASSIVE_SCALAR
-	dataBase.data[ RHO_S(cellIdx, dataBase.numberOfCells) ] = cons.rhoS;
+	dataBase.data[ RHO_S_1(cellIdx, dataBase.numberOfCells) ] = cons.rhoS_1;
+	dataBase.data[ RHO_S_2(cellIdx, dataBase.numberOfCells) ] = cons.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
 }

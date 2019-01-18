@@ -22,7 +22,8 @@ struct InflowStruct
     Vec3 velocity;
     real lambda;
     real rho;
-    real S;
+    real S_1;
+    real S_2;
 
     real a0, a1, a2;
 };
@@ -32,7 +33,8 @@ struct VF_PUBLIC Inflow : public BoundaryCondition //, public IsothermalWallStru
     Vec3 velocity;
     real lambda;
     real rho;
-    real S;
+    real S_1;
+    real S_2;
 
     real a0, a1, a2;
 
@@ -59,7 +61,8 @@ struct VF_PUBLIC Inflow : public BoundaryCondition //, public IsothermalWallStru
         boundaryCondition.velocity        = this->velocity;
         boundaryCondition.lambda          = this->lambda;
         boundaryCondition.rho             = this->rho;
-        boundaryCondition.S               = this->S;
+        boundaryCondition.S_1             = this->S_1;
+        boundaryCondition.S_2             = this->S_2;
 
         boundaryCondition.a0              = this->a0;
         boundaryCondition.a1              = this->a1;

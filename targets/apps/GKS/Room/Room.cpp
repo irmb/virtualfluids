@@ -49,7 +49,7 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real dx = H / real(nx);
 
 
-    real Ra = 1.0e9;
+    real Ra = 1.0e10;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -96,7 +96,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     parameters.force.x = 0;
     parameters.force.y = 0;
-    parameters.force.z = -g;
+    parameters.force.z = 0;-g;
 
     parameters.dt = dt;
     parameters.dx = dx;
@@ -193,7 +193,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> hotPlate = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot,  0.0, true );
+    SPtr<BoundaryCondition> hotPlate = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, true );
 
     hotPlate->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         //return center.z < 0.0 && 
@@ -229,7 +229,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
         real rhoLocal = rho * std::exp( - ( 2.0 * g * H * lambdaCold ) * cellCenter.z / H );
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaCold/*, 0.0*/ ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaCold ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -253,7 +253,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -289,7 +289,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
         convergenceAnalyzer.run( iter );
 
-        turbulenceAnalyzer->run( iter, parameters );
+        //turbulenceAnalyzer->run( iter, parameters );
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -298,9 +298,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
 
-    turbulenceAnalyzer->download();
+    //turbulenceAnalyzer->download();
 
-    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
+    //writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
 }
 
 int main( int argc, char* argv[])

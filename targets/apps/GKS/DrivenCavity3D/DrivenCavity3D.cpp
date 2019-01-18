@@ -138,8 +138,8 @@ void drivenCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcPY   = std::make_shared<IsothermalWall>( dataBase, Vec3( U  , 0.0, 0.0 ), lambda, 0.0, false );
-    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, 0.0, false );
+    SPtr<BoundaryCondition> bcPY   = std::make_shared<IsothermalWall>( dataBase, Vec3( U  , 0.0, 0.0 ), lambda, false );
+    SPtr<BoundaryCondition> bcWall = std::make_shared<IsothermalWall>( dataBase, Vec3( 0.0, 0.0, 0.0 ), lambda, false );
 
     bcPY->findBoundaryCells  ( meshAdapter, true,  [&](Vec3 center){ return center.y > 0.5; } );
     bcWall->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < 0.5; } );
@@ -176,7 +176,7 @@ void drivenCavity( std::string path, std::string simulationName )
 
         real uLocal = 0.0;
 
-        return toConservedVariables( PrimitiveVariables( 1.0, uLocal, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, uLocal, 0.0, 0.0, lambda ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();

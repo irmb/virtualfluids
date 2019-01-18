@@ -26,7 +26,8 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
     atomicAdd( &( dataBase.dataUpdate[ RHO_W(negCellIdx, dataBase.numberOfCells) ] ), - flux.rhoW );
     atomicAdd( &( dataBase.dataUpdate[ RHO_E(negCellIdx, dataBase.numberOfCells) ] ), - flux.rhoE );
 #ifdef USE_PASSIVE_SCALAR
-	atomicAdd( &( dataBase.dataUpdate[ RHO_S(negCellIdx, dataBase.numberOfCells) ] ), - flux.rhoS );
+	atomicAdd( &( dataBase.dataUpdate[ RHO_S_1(negCellIdx, dataBase.numberOfCells) ] ), - flux.rhoS_1 );
+	atomicAdd( &( dataBase.dataUpdate[ RHO_S_2(negCellIdx, dataBase.numberOfCells) ] ), - flux.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
     
     if( direction == 'x' )
@@ -48,7 +49,8 @@ __host__ __device__ inline void applyFluxToNegCell( const DataBaseStruct& dataBa
     dataBase.dataUpdate[ RHO_E(negCellIdx, dataBase.numberOfCells) ] -= flux.rhoE;
 #ifdef USE_PASSIVE_SCALAR
 #pragma omp atomic
-	dataBase.dataUpdate[ RHO_S(negCellIdx, dataBase.numberOfCells) ] -= flux.rhoS;
+	dataBase.dataUpdate[ RHO_S_1(negCellIdx, dataBase.numberOfCells) ] -= flux.rhoS_1;
+	dataBase.dataUpdate[ RHO_S_2(negCellIdx, dataBase.numberOfCells) ] -= flux.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
     
     if( direction == 'x' )
@@ -78,7 +80,8 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
     atomicAdd( &( dataBase.dataUpdate[ RHO_W(posCellIdx, dataBase.numberOfCells) ] ),   flux.rhoW );
     atomicAdd( &( dataBase.dataUpdate[ RHO_E(posCellIdx, dataBase.numberOfCells) ] ),   flux.rhoE );
 #ifdef USE_PASSIVE_SCALAR
-	atomicAdd( &( dataBase.dataUpdate[ RHO_S(posCellIdx, dataBase.numberOfCells) ] ),   flux.rhoS );
+	atomicAdd( &( dataBase.dataUpdate[ RHO_S_1(posCellIdx, dataBase.numberOfCells) ] ),   flux.rhoS_1 );
+	atomicAdd( &( dataBase.dataUpdate[ RHO_S_2(posCellIdx, dataBase.numberOfCells) ] ),   flux.rhoS_2 );
 #endif // USE_PASSIVE_SCALAR
     
     if( direction == 'x' )
@@ -100,7 +103,8 @@ __host__ __device__ inline void applyFluxToPosCell( const DataBaseStruct& dataBa
     dataBase.dataUpdate[ RHO_E(posCellIdx, dataBase.numberOfCells) ] += flux.rhoE;
 #ifdef USE_PASSIVE_SCALAR
 #pragma omp atomic
-	dataBase.dataUpdate[ RHO_S(posCellIdx, dataBase.numberOfCells) ] += flux.rhoS;
+	dataBase.dataUpdate[ RHO_S_1(posCellIdx, dataBase.numberOfCells) ] += flux.rhoS_1;
+	dataBase.dataUpdate[ RHO_S_2(posCellIdx, dataBase.numberOfCells) ] += flux.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
     
     if( direction == 'x' )

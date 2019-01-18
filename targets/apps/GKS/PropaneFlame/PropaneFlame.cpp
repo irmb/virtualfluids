@@ -188,7 +188,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();

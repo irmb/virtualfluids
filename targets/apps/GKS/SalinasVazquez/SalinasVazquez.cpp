@@ -209,8 +209,8 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
     
     //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , 0.0, false );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, 0.0, false );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , false );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
 
     bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
@@ -271,7 +271,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
         real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
         real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda/*, 0.0*/ ), parameters->K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters->K );
     });
 
     dataBase->copyDataHostToDevice();

@@ -129,7 +129,8 @@ __host__ __device__ inline void sendBufferFunction( const DataBaseStruct dataBas
     sendBuffer[ RHO_W(index, numberOfSendNodes) ] = dataBase.data[ RHO_W(cellIdx, dataBase.numberOfCells) ];
     sendBuffer[ RHO_E(index, numberOfSendNodes) ] = dataBase.data[ RHO_E(cellIdx, dataBase.numberOfCells) ];
 #ifdef USE_PASSIVE_SCALAR
-    sendBuffer[ RHO_S(index, numberOfSendNodes) ] = dataBase.data[ RHO_S(cellIdx, dataBase.numberOfCells) ];
+    sendBuffer[ RHO_S_1(index, numberOfSendNodes) ] = dataBase.data[ RHO_S_1(cellIdx, dataBase.numberOfCells) ];
+    sendBuffer[ RHO_S_2(index, numberOfSendNodes) ] = dataBase.data[ RHO_S_2(cellIdx, dataBase.numberOfCells) ];
 #endif // USE_PASSIVE_SCALAR
 }
 
@@ -166,6 +167,7 @@ __host__ __device__ inline void recvBufferFunction( const DataBaseStruct dataBas
     dataBase.data[ RHO_W(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO_W(index, numberOfRecvNodes) ] ;
     dataBase.data[ RHO_E(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO_E(index, numberOfRecvNodes) ] ;
 #ifdef USE_PASSIVE_SCALAR
-    dataBase.data[ RHO_S(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO_S(index, numberOfRecvNodes) ] ;
+    dataBase.data[ RHO_S_1(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO_S_1(index, numberOfRecvNodes) ] ;
+    dataBase.data[ RHO_S_2(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO_S_2(index, numberOfRecvNodes) ] ;
 #endif // USE_PASSIVE_SCALAR
 }

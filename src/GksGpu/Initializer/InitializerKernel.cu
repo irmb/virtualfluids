@@ -51,7 +51,8 @@ __host__ __device__ inline void initializeDataUpdateFunction(DataBaseStruct data
     dataBase.dataUpdate[ RHO_W(index, dataBase.numberOfCells) ] = zero;
     dataBase.dataUpdate[ RHO_E(index, dataBase.numberOfCells) ] = zero;
 #ifdef USE_PASSIVE_SCALAR
-	dataBase.dataUpdate[ RHO_S(index, dataBase.numberOfCells) ] = zero;
+	dataBase.dataUpdate[ RHO_S_1(index, dataBase.numberOfCells) ] = zero;
+	dataBase.dataUpdate[ RHO_S_2(index, dataBase.numberOfCells) ] = zero;
 #endif // USE_PASSIVE_SCALAR
 
     dataBase.massFlux[ VEC_X(index, dataBase.numberOfCells) ]   = zero;

@@ -70,14 +70,7 @@ __host__ __device__ void turbulenceFunction(DataBaseStruct dataBase, TurbulenceA
 
     ConservedVariables cons;
 
-    cons.rho  = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ];
-    cons.rhoU = dataBase.data[ RHO_U(cellIndex, dataBase.numberOfCells) ];
-    cons.rhoV = dataBase.data[ RHO_V(cellIndex, dataBase.numberOfCells) ];
-    cons.rhoW = dataBase.data[ RHO_W(cellIndex, dataBase.numberOfCells) ];
-    cons.rhoE = dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ];
-#ifdef USE_PASSIVE_SCALAR
-    cons.rhoS = dataBase.data[ RHO_S(cellIndex, dataBase.numberOfCells) ];
-#endif // USE_PASSIVE_SCALAR
+    readCellData(cellIndex, dataBase, cons);
 
     PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 

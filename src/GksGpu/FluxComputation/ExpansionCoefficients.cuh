@@ -48,7 +48,8 @@ __host__ __device__ inline void computeExpansionCoefficients(const PrimitiveVari
                                            - c1o2 * two_E * expansionCoefficient[4];
 
 #ifdef USE_PASSIVE_SCALAR
-	expansionCoefficient[5] = two * facePrim.lambda * (gradient.rhoS - facePrim.S * gradient.rho);    
+	expansionCoefficient[5] = two * facePrim.lambda * (gradient.rhoS_1 - facePrim.S_1 * gradient.rho);
+	expansionCoefficient[6] = two * facePrim.lambda * (gradient.rhoS_2 - facePrim.S_2 * gradient.rho);
 #endif // USE_PASSIVE_SCALAR
 }
 

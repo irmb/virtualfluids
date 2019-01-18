@@ -191,7 +191,7 @@ void thermalCavity( std::string path, std::string simulationName )
     
     real inletHeight = 0.02;
 
-    SPtr<BoundaryCondition> bcMX_1 = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0, false );
+    SPtr<BoundaryCondition> bcMX_1 = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, false );
     SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Inflow>( dataBase, Vec3(0.2, 0.0, 0.0), lambda, rho, 0.0, 0.0, inletHeight, -1.0 );
     //SPtr<BoundaryCondition> bcMX_3 = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambda );
 
@@ -204,7 +204,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , 0.0, false );
+    SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , false );
     //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, 0.0, false );
     //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, 0.0, false );
 
@@ -258,7 +258,7 @@ void thermalCavity( std::string path, std::string simulationName )
         else
             U_local = 0.0;
 
-        return toConservedVariables( PrimitiveVariables( rho, U_local, 0.0, 0.0, lambda/*, 0.0*/ ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rho, U_local, 0.0, 0.0, lambda ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();

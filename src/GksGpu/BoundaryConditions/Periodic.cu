@@ -84,15 +84,10 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 {
     uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
-
-    dataBase.data[ RHO__(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO__(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_U(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_U(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_V(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_V(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_W(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_W(domainCellIdx, dataBase.numberOfCells) ];
-    dataBase.data[ RHO_E(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_E(domainCellIdx, dataBase.numberOfCells) ];
-#ifdef USE_PASSIVE_SCALAR
-	dataBase.data[ RHO_S(ghostCellIdx, dataBase.numberOfCells) ] = dataBase.data[ RHO_S(domainCellIdx, dataBase.numberOfCells) ];
-#endif // USE_PASSIVE_SCALAR
+    
+    ConservedVariables domainCellData;
+    readCellData ( domainCellIdx, dataBase, domainCellData );
+    writeCellData( ghostCellIdx , dataBase, domainCellData );
 }
 
 //////////////////////////////////////////////////////////////////////////

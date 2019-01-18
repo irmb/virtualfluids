@@ -202,8 +202,12 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
     } );
 
 #ifdef USE_PASSIVE_SCALAR
-	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar", [&] (uint cellIdx) {
-	    return dataBase->dataHost[ RHO_S(cellIdx, dataBase->numberOfCells) ];
+	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar_1", [&] (uint cellIdx) {
+	    return dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+	} );
+
+	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar_2", [&] (uint cellIdx) {
+	    return dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
 	} );
 #endif // USE_PASSIVE_SCALAR
 
@@ -422,11 +426,17 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
 
     //////////////////////////////////////////////////////////////////////////
 
-    vtkSmartPointer<vtkDoubleArray> data = vtkSmartPointer<vtkDoubleArray>::New();
+    vtkSmartPointer<vtkDoubleArray> rho  = vtkSmartPointer<vtkDoubleArray>::New();
+    vtkSmartPointer<vtkDoubleArray> rhoU = vtkSmartPointer<vtkDoubleArray>::New();
+    vtkSmartPointer<vtkDoubleArray> rhoE = vtkSmartPointer<vtkDoubleArray>::New();
             
-    data->SetNumberOfComponents( 4 );
+    rho->SetNumberOfComponents ( 1 );
+    rhoU->SetNumberOfComponents( 3 );
+    rhoE->SetNumberOfComponents( 1 );
 
-    data->SetName( "Cons" );
+    rho->SetName ( "rho"  );
+    rhoU->SetName( "rhoU" );
+    rhoE->SetName( "rhoW" );
 
     for( uint cellIdx = 0; cellIdx < base->numberOfCells; cellIdx++ ){
 
@@ -439,29 +449,38 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
         cons.rhoV = base->dataHost[ RHO_V(cellIdx, base->numberOfCells) ];
         cons.rhoW = base->dataHost[ RHO_W(cellIdx, base->numberOfCells) ];
         cons.rhoE = base->dataHost[ RHO_E(cellIdx, base->numberOfCells) ];
-        data->InsertNextTuple4( cons.rho, cons.rhoU, cons.rhoV, cons.rhoE );
+
+        rho->InsertNextTuple1 ( cons.rho );
+        rhoU->InsertNextTuple3( cons.rhoU, cons.rhoV, cons.rhoW );
+        rhoE->InsertNextTuple1( cons.rhoE );
     }
 
-    gridBase->GetCellData()->AddArray( data );
+    gridBase->GetCellData()->AddArray( rho  );
+    gridBase->GetCellData()->AddArray( rhoU );
+    gridBase->GetCellData()->AddArray( rhoE );
         
 #ifdef USE_PASSIVE_SCALAR
 
-    vtkSmartPointer<vtkDoubleArray> dataS = vtkSmartPointer<vtkDoubleArray>::New();
-            
-    dataS->SetNumberOfComponents( 1 );
+        vtkSmartPointer<vtkDoubleArray> dataS_1 = vtkSmartPointer<vtkDoubleArray>::New();
+        vtkSmartPointer<vtkDoubleArray> dataS_2 = vtkSmartPointer<vtkDoubleArray>::New();
 
-    dataS->SetName( "rhoS" );
+        dataS_1->SetNumberOfComponents(1);
+        dataS_2->SetNumberOfComponents(1);
 
-    for( uint cellIdx = 0; cellIdx < base->numberOfCells; cellIdx++ ){
+        dataS_1->SetName("rhoS_1");
+        dataS_2->SetName("rhoS_2");
 
-        if( base->isGhostCell( cellIdx ) ) continue;
-        
-        ;
-        dataS->InsertNextTuple1( base->dataHost[ RHO_S(cellIdx, base->numberOfCells) ] );
-    }
+        for (uint cellIdx = 0; cellIdx < base->numberOfCells; cellIdx++) {
 
-    gridBase->GetCellData()->AddArray( dataS );
-    
+            if (base->isGhostCell(cellIdx)) continue;
+
+            dataS_1->InsertNextTuple1(base->dataHost[RHO_S_1(cellIdx, base->numberOfCells)]);
+            dataS_2->InsertNextTuple1(base->dataHost[RHO_S_2(cellIdx, base->numberOfCells)]);
+        }
+
+        gridBase->GetCellData()->AddArray(dataS_1);
+        gridBase->GetCellData()->AddArray(dataS_2);
+
 #endif // USE_PASSIVE_SCALAR
 
     //////////////////////////////////////////////////////////////////////////
@@ -495,19 +514,24 @@ void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> targ
 
         if( target->isGhostCell( cellIdx ) ) continue;
 
-        double* cons = gridTarget->GetCellData()->GetArray(1)->GetTuple4(gridCellIdx);
+        double  rho  = gridTarget->GetCellData()->GetArray(1)->GetTuple1(gridCellIdx);
+        double* rhoU = gridTarget->GetCellData()->GetArray(2)->GetTuple3(gridCellIdx);
+        double  rhoE = gridTarget->GetCellData()->GetArray(3)->GetTuple1(gridCellIdx);
 
-        target->dataHost[ RHO__(cellIdx, target->numberOfCells) ] = cons[0];
-        target->dataHost[ RHO_U(cellIdx, target->numberOfCells) ] = cons[1];
-        target->dataHost[ RHO_V(cellIdx, target->numberOfCells) ] = cons[2];
-        target->dataHost[ RHO_E(cellIdx, target->numberOfCells) ] = cons[3];
+        target->dataHost[ RHO__(cellIdx, target->numberOfCells) ] = rho;
+        target->dataHost[ RHO_U(cellIdx, target->numberOfCells) ] = rhoU[0];
+        target->dataHost[ RHO_V(cellIdx, target->numberOfCells) ] = rhoU[1];
+        target->dataHost[ RHO_W(cellIdx, target->numberOfCells) ] = rhoU[2];
+        target->dataHost[ RHO_E(cellIdx, target->numberOfCells) ] = rhoE;
 
 #ifdef USE_PASSIVE_SCALAR
+        {
+            double  rhoS_1 = gridTarget->GetCellData()->GetArray(4)->GetTuple1(gridCellIdx);
+            double  rhoS_2 = gridTarget->GetCellData()->GetArray(5)->GetTuple1(gridCellIdx);
 
-        double  rhoS = gridTarget->GetCellData()->GetArray(2)->GetTuple1(gridCellIdx);
-
-        target->dataHost[ RHO_S(cellIdx, target->numberOfCells) ] = rhoS;
-
+            target->dataHost[RHO_S_1(cellIdx, target->numberOfCells)] = rhoS_1;
+            target->dataHost[RHO_S_2(cellIdx, target->numberOfCells)] = rhoS_2;
+        }
 #endif // USE_PASSIVE_SCALAR
 
         gridCellIdx++;

@@ -95,10 +95,13 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] += update.rhoE;
 
 #ifdef USE_PASSIVE_SCALAR
-	update.rhoS = dataBase.dataUpdate[ RHO_S(cellIndex, dataBase.numberOfCells) ] / cellVolume;
+	update.rhoS_1 = dataBase.dataUpdate[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] / cellVolume;
+	update.rhoS_2 = dataBase.dataUpdate[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] / cellVolume;
 
-    dataBase.dataUpdate[ RHO_S(cellIndex, dataBase.numberOfCells) ] = zero;
+    dataBase.dataUpdate[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] = zero;
+    dataBase.dataUpdate[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] = zero;
 
-    dataBase.data[ RHO_S(cellIndex, dataBase.numberOfCells) ] += update.rhoS;
+    dataBase.data[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] += update.rhoS_1;
+    dataBase.data[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] += update.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
 }

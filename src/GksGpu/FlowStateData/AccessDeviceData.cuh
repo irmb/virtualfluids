@@ -26,7 +26,8 @@ __host__ __device__ inline void readCellData(const uint cellIdx, const DataBaseS
     cellCons.rhoW = dataBase.data[ RHO_W( cellIdx, dataBase.numberOfCells ) ];
     cellCons.rhoE = dataBase.data[ RHO_E( cellIdx, dataBase.numberOfCells ) ];
 #ifdef USE_PASSIVE_SCALAR
-	cellCons.rhoS = dataBase.data[ RHO_S( cellIdx, dataBase.numberOfCells ) ];
+	cellCons.rhoS_1 = dataBase.data[ RHO_S_1( cellIdx, dataBase.numberOfCells ) ];
+	cellCons.rhoS_2 = dataBase.data[ RHO_S_2( cellIdx, dataBase.numberOfCells ) ];
 #endif // USE_PASSIVE_SCALAR
 }
 
@@ -38,7 +39,8 @@ __host__ __device__ inline void writeCellData(const uint cellIdx, const DataBase
     dataBase.data[ RHO_W( cellIdx, dataBase.numberOfCells ) ] = cellCons.rhoW;
     dataBase.data[ RHO_E( cellIdx, dataBase.numberOfCells ) ] = cellCons.rhoE;
 #ifdef USE_PASSIVE_SCALAR
-	dataBase.data[ RHO_S( cellIdx, dataBase.numberOfCells ) ] = cellCons.rhoS;
+	dataBase.data[ RHO_S_1( cellIdx, dataBase.numberOfCells ) ] = cellCons.rhoS_1;
+	dataBase.data[ RHO_S_2( cellIdx, dataBase.numberOfCells ) ] = cellCons.rhoS_2;
 #endif // USE_PASSIVE_SCALAR
 }
 

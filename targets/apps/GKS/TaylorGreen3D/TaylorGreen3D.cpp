@@ -205,7 +205,7 @@ void gksTest( std::string path, uint nx, uint gpuIndex )
 
         real rhoLocal = 2.0 * pLocal * lambda;
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, lambda, 0.0 ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, VLocal, WLocal, lambda ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();

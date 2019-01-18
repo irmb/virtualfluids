@@ -111,7 +111,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         ghostCellPrim.W      = two * factor * boundaryCondition.velocity.z - domainCellPrim.W;
         ghostCellPrim.lambda = two *          boundaryCondition.lambda     - domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S      = two *          boundaryCondition.S          - domainCellPrim.S;
+        ghostCellPrim.S_1    = two *          boundaryCondition.S_1        - domainCellPrim.S_1;
+        ghostCellPrim.S_2    = two *          boundaryCondition.S_2        - domainCellPrim.S_2;
     #endif // USE_PASSIVE_SCALAR
         
         real p = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
@@ -131,7 +132,8 @@ Inflow::Inflow(SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real rho, re
     this->velocity       = velocity;
     this->lambda         = lambda;
     this->rho            = rho;
-    this->S              = S;
+    this->S_1            = S_1;
+    this->S_2            = S_2;
 
     this->a0             = a0;
     this->a1             = a1;

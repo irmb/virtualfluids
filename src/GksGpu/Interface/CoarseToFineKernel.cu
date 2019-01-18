@@ -182,25 +182,49 @@ __host__ __device__ inline void coarseToFineFunction( DataBaseStruct dataBase, u
 
     #ifdef USE_PASSIVE_SCALAR
     {
-        real data [7];
+        {
+            real data[7];
 
-        data[0] = dataBase.data[ RHO_S(cellToCell[0], dataBase.numberOfCells) ];
-        data[1] = dataBase.data[ RHO_S(cellToCell[1], dataBase.numberOfCells) ];
-        data[2] = dataBase.data[ RHO_S(cellToCell[2], dataBase.numberOfCells) ];
-        data[3] = dataBase.data[ RHO_S(cellToCell[3], dataBase.numberOfCells) ];
-        data[4] = dataBase.data[ RHO_S(cellToCell[4], dataBase.numberOfCells) ];
-        data[5] = dataBase.data[ RHO_S(cellToCell[5], dataBase.numberOfCells) ];
-        data[6] = dataBase.data[ RHO_S(cellIndex    , dataBase.numberOfCells) ];
+            data[0] = dataBase.data[RHO_S_1(cellToCell[0], dataBase.numberOfCells)];
+            data[1] = dataBase.data[RHO_S_1(cellToCell[1], dataBase.numberOfCells)];
+            data[2] = dataBase.data[RHO_S_1(cellToCell[2], dataBase.numberOfCells)];
+            data[3] = dataBase.data[RHO_S_1(cellToCell[3], dataBase.numberOfCells)];
+            data[4] = dataBase.data[RHO_S_1(cellToCell[4], dataBase.numberOfCells)];
+            data[5] = dataBase.data[RHO_S_1(cellToCell[5], dataBase.numberOfCells)];
+            data[6] = dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)];
 
-        //                                      PX        PY        PZ            MX        MY        MZ
-        childCons[0].rhoS = data[6] + c1o8 * ( + data[0] + data[2] + data[4]     - data[1] - data[3] - data[5] ); // PX PY PZ
-        childCons[1].rhoS = data[6] + c1o8 * ( + data[0] + data[2] - data[4]     - data[1] - data[3] + data[5] ); // PX PY MZ
-        childCons[2].rhoS = data[6] + c1o8 * ( + data[0] - data[2] + data[4]     - data[1] + data[3] - data[5] ); // PX MY PZ
-        childCons[3].rhoS = data[6] + c1o8 * ( + data[0] - data[2] - data[4]     - data[1] + data[3] + data[5] ); // PX MY MZ
-        childCons[4].rhoS = data[6] + c1o8 * ( - data[0] + data[2] + data[4]     + data[1] - data[3] - data[5] ); // MX PY PZ
-        childCons[5].rhoS = data[6] + c1o8 * ( - data[0] + data[2] - data[4]     + data[1] - data[3] + data[5] ); // MX PY MZ
-        childCons[6].rhoS = data[6] + c1o8 * ( - data[0] - data[2] + data[4]     + data[1] + data[3] - data[5] ); // MX MY PZ
-        childCons[7].rhoS = data[6] + c1o8 * ( - data[0] - data[2] - data[4]     + data[1] + data[3] + data[5] ); // MX MY MZ
+            //                                      PX        PY        PZ            MX        MY        MZ
+            childCons[0].rhoS_1 = data[6] + c1o8 * (+data[0] + data[2] + data[4] - data[1] - data[3] - data[5]); // PX PY PZ
+            childCons[1].rhoS_1 = data[6] + c1o8 * (+data[0] + data[2] - data[4] - data[1] - data[3] + data[5]); // PX PY MZ
+            childCons[2].rhoS_1 = data[6] + c1o8 * (+data[0] - data[2] + data[4] - data[1] + data[3] - data[5]); // PX MY PZ
+            childCons[3].rhoS_1 = data[6] + c1o8 * (+data[0] - data[2] - data[4] - data[1] + data[3] + data[5]); // PX MY MZ
+            childCons[4].rhoS_1 = data[6] + c1o8 * (-data[0] + data[2] + data[4] + data[1] - data[3] - data[5]); // MX PY PZ
+            childCons[5].rhoS_1 = data[6] + c1o8 * (-data[0] + data[2] - data[4] + data[1] - data[3] + data[5]); // MX PY MZ
+            childCons[6].rhoS_1 = data[6] + c1o8 * (-data[0] - data[2] + data[4] + data[1] + data[3] - data[5]); // MX MY PZ
+            childCons[7].rhoS_1 = data[6] + c1o8 * (-data[0] - data[2] - data[4] + data[1] + data[3] + data[5]); // MX MY MZ
+        }
+
+        {
+            real data[7];
+
+            data[0] = dataBase.data[RHO_S_2(cellToCell[0], dataBase.numberOfCells)];
+            data[1] = dataBase.data[RHO_S_2(cellToCell[1], dataBase.numberOfCells)];
+            data[2] = dataBase.data[RHO_S_2(cellToCell[2], dataBase.numberOfCells)];
+            data[3] = dataBase.data[RHO_S_2(cellToCell[3], dataBase.numberOfCells)];
+            data[4] = dataBase.data[RHO_S_2(cellToCell[4], dataBase.numberOfCells)];
+            data[5] = dataBase.data[RHO_S_2(cellToCell[5], dataBase.numberOfCells)];
+            data[6] = dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)];
+
+            //                                      PX        PY        PZ            MX        MY        MZ
+            childCons[0].rhoS_2 = data[6] + c1o8 * (+data[0] + data[2] + data[4] - data[1] - data[3] - data[5]); // PX PY PZ
+            childCons[1].rhoS_2 = data[6] + c1o8 * (+data[0] + data[2] - data[4] - data[1] - data[3] + data[5]); // PX PY MZ
+            childCons[2].rhoS_2 = data[6] + c1o8 * (+data[0] - data[2] + data[4] - data[1] + data[3] - data[5]); // PX MY PZ
+            childCons[3].rhoS_2 = data[6] + c1o8 * (+data[0] - data[2] - data[4] - data[1] + data[3] + data[5]); // PX MY MZ
+            childCons[4].rhoS_2 = data[6] + c1o8 * (-data[0] + data[2] + data[4] + data[1] - data[3] - data[5]); // MX PY PZ
+            childCons[5].rhoS_2 = data[6] + c1o8 * (-data[0] + data[2] - data[4] + data[1] - data[3] + data[5]); // MX PY MZ
+            childCons[6].rhoS_2 = data[6] + c1o8 * (-data[0] - data[2] + data[4] + data[1] + data[3] - data[5]); // MX MY PZ
+            childCons[7].rhoS_2 = data[6] + c1o8 * (-data[0] - data[2] - data[4] + data[1] + data[3] + data[5]); // MX MY MZ
+        }
     }
     #endif // USE_PASSIVE_SCALAR
 
@@ -215,7 +239,8 @@ __host__ __device__ inline void coarseToFineFunction( DataBaseStruct dataBase, u
         dataBase.data[ RHO_W(childCellIndex, dataBase.numberOfCells) ] = childCons[childIndex].rhoW;
         dataBase.data[ RHO_E(childCellIndex, dataBase.numberOfCells) ] = childCons[childIndex].rhoE;
     #ifdef USE_PASSIVE_SCALAR
-	    dataBase.data[ RHO_S(childCellIndex, dataBase.numberOfCells) ] = childCons[childIndex].rhoS;
+	    dataBase.data[ RHO_S_1(childCellIndex, dataBase.numberOfCells) ] = childCons[childIndex].rhoS_1;
+	    dataBase.data[ RHO_S_2(childCellIndex, dataBase.numberOfCells) ] = childCons[childIndex].rhoS_2;
     #endif // USE_PASSIVE_SCALAR
     }
 }
