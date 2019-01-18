@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////////
 #include "Output/MeasurePointWriter.hpp"
 #include "Output/AnalysisData.hpp"
+#include "Output/VeloASCIIWriter.hpp"
 //////////////////////////////////////////////////////////////////////////
 #include "Utilities/Buffer2D.hpp"
 #include "Utilities/StringUtil.hpp"
@@ -159,6 +160,14 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    }
    ////////////////////////////////////////////////////////////////////////////
 
+
+
+   ////////////////////////////////////////////////////////////////////////////
+   uint tAnalyse = 1;
+   kinEnergyWriter = new KineticEnergyAnalyzer(para, tAnalyse);
+   ////////////////////////////////////////////////////////////////////////////
+   enstrophyWriter = new EnstrophyAnalyzer(para, tAnalyse);
+   ////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -709,19 +718,19 @@ void Simulation::run()
 		//					 para->getParD(0)->evenOrOdd); 
 		//getLastCudaError("KernelKumNewCompSP27 execution failed");
 
-		//KernelKumAA2016CompSP27(
-		//	para->getParD(0)->numberofthreads,
-		//	para->getParD(0)->omega,
-		//	para->getParD(0)->geoSP,
-		//	para->getParD(0)->neighborX_SP,
-		//	para->getParD(0)->neighborY_SP,
-		//	para->getParD(0)->neighborZ_SP,
-		//	para->getParD(0)->d0SP.f[0],
-		//	para->getParD(0)->size_Mat_SP,
-		//	0,
-		//	para->getForcesDev(),
-		//	para->getParD(0)->evenOrOdd);
-		//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+		KernelKumAA2016CompSP27(
+			para->getParD(0)->numberofthreads,
+			para->getParD(0)->omega,
+			para->getParD(0)->geoSP,
+			para->getParD(0)->neighborX_SP,
+			para->getParD(0)->neighborY_SP,
+			para->getParD(0)->neighborZ_SP,
+			para->getParD(0)->d0SP.f[0],
+			para->getParD(0)->size_Mat_SP,
+			0,
+			para->getForcesDev(),
+			para->getParD(0)->evenOrOdd);
+		getLastCudaError("KernelKumAA2016CompSP27 execution failed");
 
 		//KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
 		//						 para->getParD(0)->omega, 
@@ -737,19 +746,19 @@ void Simulation::run()
 		//getLastCudaError("KernelCumulantD3Q27All4 execution failed");
 
 		//F3
-		KernelCumulantD3Q27F3_2018( para->getParD(0)->numberofthreads,
-									para->getParD(0)->omega, 
-									para->getParD(0)->geoSP, 
-									para->getParD(0)->neighborX_SP, 
-									para->getParD(0)->neighborY_SP, 
-									para->getParD(0)->neighborZ_SP,
-									para->getParD(0)->d0SP.f[0],    
-									para->getParD(0)->g6.g[0],    
-									para->getParD(0)->size_Mat_SP,
-									0,
-									para->getForcesDev(),
-									para->getParD(0)->evenOrOdd); 
-		getLastCudaError("KernelCumulantD3Q27F3_2018 execution failed");
+		//KernelCumulantD3Q27F3_2018( para->getParD(0)->numberofthreads,
+		//							para->getParD(0)->omega, 
+		//							para->getParD(0)->geoSP, 
+		//							para->getParD(0)->neighborX_SP, 
+		//							para->getParD(0)->neighborY_SP, 
+		//							para->getParD(0)->neighborZ_SP,
+		//							para->getParD(0)->d0SP.f[0],    
+		//							para->getParD(0)->g6.g[0],    
+		//							para->getParD(0)->size_Mat_SP,
+		//							0,
+		//							para->getForcesDev(),
+		//							para->getParD(0)->evenOrOdd); 
+		//getLastCudaError("KernelCumulantD3Q27F3_2018 execution failed");
 
 		//KernelCumulantD3Q27F3( para->getParD(0)->numberofthreads,
 		//					 para->getParD(0)->omega, 
@@ -1568,8 +1577,19 @@ void Simulation::run()
 						    para->getParD(0)->evenOrOdd);
             getLastCudaError("CalcMacSP27 execution failed"); 
 
-		} 
-		  ////////////////////////////////////////////////////////////////////////////////
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		kinEnergyWriter->run(t);
+		////////////////////////////////////////////////////////////////////////////////
+		//printf("Simulation - Before enstrophyWriter run\n");
+		//enstrophyWriter->run(t);
+		//printf("Simulation - after enstrophyWriter run\n");
+		////////////////////////////////////////////////////////////////////////////////
+
+
+
+		////////////////////////////////////////////////////////////////////////////////
 		  ////calculate the new forcing
 		  //if (((t%10) == 0) && (t >= 10)/*((t%para->getTStartOut()) == 0) && (t >= para->getTStartOut())*/)
 		  //{
@@ -2440,6 +2460,26 @@ void Simulation::run()
        //                        para->getParD(lev)->evenOrOdd);
        //            getLastCudaError("CalcMacSP27 execution failed"); 
 
+				//PostProcessorF3_2018Fehlberg(
+				//	para->getParD(lev)->numberofthreads,
+				//	para->getParD(lev)->omega,
+				//	para->getParD(lev)->geoSP,
+				//	para->getParD(lev)->neighborX_SP,
+				//	para->getParD(lev)->neighborY_SP,
+				//	para->getParD(lev)->neighborZ_SP,
+				//	para->getParD(lev)->rho_SP,
+				//	para->getParD(lev)->vx_SP,
+				//	para->getParD(lev)->vy_SP,
+				//	para->getParD(lev)->vz_SP,
+				//	para->getParD(lev)->d0SP.f[0],
+				//	para->getParD(lev)->g6.g[0],
+				//	para->getParD(lev)->size_Mat_SP,
+				//	lev,
+				//	para->getForcesDev(),
+				//	para->getParD(lev)->evenOrOdd);
+
+
+
 				   
 				   CalcMacCompSP27(para->getParD(lev)->vx_SP,       
 								   para->getParD(lev)->vy_SP,        
@@ -2455,6 +2495,7 @@ void Simulation::run()
 								   para->getParD(lev)->d0SP.f[0],    
 								   para->getParD(lev)->evenOrOdd);
                    getLastCudaError("CalcMacSP27 execution failed"); 
+
 
 				   //überschreiben mit Wandknoten
 				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
@@ -2499,12 +2540,20 @@ void Simulation::run()
 
 				 //}
 
+
 			   para->cudaCopyPrint(lev);
 			   if (para->getCalcMedian())
 			   {
 				   para->cudaCopyMedianPrint(lev);
 			   }
 
+			   //////////////////////////////////////////////////////////////////////////
+			   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
+			   //////////////////////////////////////////////////////////////////////////
+			   std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
+			   kinEnergyWriter->writeToFile(fname);
+			   //enstrophyWriter->writeToFile(fname);
+			   //////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                if (para->getDiffOn()==true)

@@ -1924,6 +1924,57 @@ extern "C" void InitIncompAD27(unsigned int numberOfThreads,
       getLastCudaError("LBInitIncompAD27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void PostProcessorF3_2018Fehlberg(
+	unsigned int numberOfThreads,
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* rhoOut,
+	real* vxOut,
+	real* vyOut,
+	real* vzOut,
+	real* DDStart,
+	real* G6,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd)
+{ 
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid>512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	  LB_PostProcessor_F3_2018_Fehlberg <<< grid, threads >>> (   omega,
+																  bcMatD,
+																  neighborX,
+																  neighborY,
+																  neighborZ,
+																  rhoOut,
+																  vxOut,
+																  vyOut,
+																  vzOut,
+																  DDStart,
+																  G6,
+																  size_Mat,
+																  level,
+																  forces,
+																  EvenOrOdd);
+      getLastCudaError("LB_PostProcessor_F3_2018_Fehlberg execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMac27( real* vxD,
                            real* vyD,
                            real* vzD,

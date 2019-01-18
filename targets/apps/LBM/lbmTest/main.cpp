@@ -288,20 +288,94 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = false;
+    bool useGridGenerator = true;
 
     if(useGridGenerator){
 
-        enum testCase{ 
+        enum testCase{
+			TGV,
+			TGV3D,
 			Sphere,
 			DrivAer,
             DLC,
             MultiGPU
         };
 
-        int testcase = Sphere;
+        int testcase = TGV3D;
         
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (testcase == TGV)
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		{
+			real dx = 1.0;
+			real vx = 0.049;
+			//////////////////////////////////////////////////////////////////////////
+			//32
+			gridBuilder->addCoarseGrid(-24, -2, -16,
+										24,  2,  16, dx);
+			//////////////////////////////////////////////////////////////////////////
+			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+			//////////////////////////////////////////////////////////////////////////
+			gridBuilder->buildGrids(LBM, true); 
+			//////////////////////////////////////////////////////////////////////////
+			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+			//////////////////////////////////////////////////////////////////////////
+			gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results/32/TGV32turned_Grid");
+			gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results/32/TGV32turned_Grid_arrow");
+			//////////////////////////////////////////////////////////////////////////
+			SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids/turned/gridUni48x4x32/", gridBuilder, FILEFORMAT::BINARY);
+			//////////////////////////////////////////////////////////////////////////
+			return;
+			gridGenerator = GridGenerator::make(gridBuilder, para);
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (testcase == TGV3D)
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		{
+			const real PI = 3.141592653589793238462643383279;
+
+			real dx = 2.0 * PI / 32.0; // 32^3 nodes
+			//real dx = 2.0 * PI / 64.0; // 64^3 nodes
+			//real dx = 2.0 * PI / 128.0; // 128^3 nodes
+			//real dx = 2.0 * PI / 256.0; // 128^3 nodes
+			real vx = 0.049;
+
+			gridBuilder->addCoarseGrid(-PI, -PI, -PI,
+										PI,  PI,  PI, dx);
+
+			gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+
+			gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+			////////////////////////////////////////////////////////////////////////////
+			//gridBuilder->setVelocityBoundaryCondition(SideType::PY, vx, 0.0, 0.0);
+			//gridBuilder->setVelocityBoundaryCondition(SideType::MY, vx, 0.0, 0.0);
+			//gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
+			//gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
+
+			//gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+			//gridBuilder->setVelocityBoundaryCondition(SideType::MX, vx, 0.0, 0.0);
+
+			//gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+
+			//////////////////////////////////////////////////////////////////////////
+			SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
+			//////////////////////////////////////////////////////////////////////////
+			//32
+			gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results3D/32/TGV3D_Grid");
+			gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results3D/32/TGV3D_Grid_arrow");
+			SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids3D/gridTGV3D/32/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
+			//256
+		    //gridBuilder->writeGridsToVtk("E:/temp/TaylorGreenVortex/results3D/256/TGV3D_Grid");
+			//gridBuilder->writeArrows("E:/temp/TaylorGreenVortex/results3D/256/TGV3D_Grid_arrow");
+			//SimulationFileWriter::write("E:/temp/TaylorGreenVortex/grids3D/gridTGV3D/256/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
+
+			//return;
+
+			gridGenerator = GridGenerator::make(gridBuilder, para);
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if( testcase == Sphere)
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         {
@@ -336,10 +410,10 @@ void multipleLevel(const std::string& configPath)
             SPtr<Grid> grid = gridBuilder->getGrid(gridBuilder->getNumberOfLevels() - 1);
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("E:/temp/GridSphere/2018/grids/outSphere/DrivAer_Grid");
-            gridBuilder->writeArrows    ("E:/temp/GridSphere/2018/grids/outSphere/DrivAer_Grid_arrow");
+            gridBuilder->writeGridsToVtk("E:/temp/GridSphere/2018/grids/outSphere/SphereBig3_Grid");
+            gridBuilder->writeArrows    ("E:/temp/GridSphere/2018/grids/outSphere/SphereBig3_Grid_arrow");
 
-            SimulationFileWriter::write("E:/temp/GridSphere/2018/grids/gridSphere/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
+            SimulationFileWriter::write("E:/temp/GridSphere/2018/grids/gridSphere/3lev_dxC_0_2/", gridBuilder, FILEFORMAT::BINARY); //FILEFORMAT::ASCII
 
             //return;
 
@@ -708,8 +782,9 @@ int main( int argc, char* argv[])
         {
             try
             {
-                multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/Sphere/configSphere.txt");
-            }
+                //multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/Sphere/configSphere.txt");
+				multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/TGV3D/configTGV3D.txt");
+			}
             catch (const std::exception& e)
             {
                 

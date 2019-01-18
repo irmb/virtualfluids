@@ -564,6 +564,23 @@ extern "C" __global__ void LBInitIncompAD27(unsigned int* neighborX,
 										    real* DD27,
 										    bool EvenOrOdd);
 
+extern "C" __global__ void LB_PostProcessor_F3_2018_Fehlberg(
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* rhoOut,
+	real* vxOut,
+	real* vyOut,
+	real* vzOut,
+	real* DDStart,
+	real* G6,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
+
 extern "C" __global__ void LBCalcMac27( real* vxD,
                                         real* vyD,
                                         real* vzD,

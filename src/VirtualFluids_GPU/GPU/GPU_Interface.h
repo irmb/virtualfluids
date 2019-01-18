@@ -611,6 +611,24 @@ extern "C" void InitIncompAD27(   unsigned int numberOfThreads,
 								  real* DD27,
 								  bool EvenOrOdd);
 
+extern "C" void PostProcessorF3_2018Fehlberg(
+	unsigned int numberOfThreads,
+	real omega,
+	unsigned int* bcMatD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	real* rhoOut,
+	real* vxOut,
+	real* vyOut,
+	real* vzOut,
+	real* DDStart,
+	real* G6,
+	int size_Mat,
+	int level,
+	real* forces,
+	bool EvenOrOdd);
+
 extern "C" void CalcMac27( real* vxD,
                           real* vyD,
                           real* vzD,

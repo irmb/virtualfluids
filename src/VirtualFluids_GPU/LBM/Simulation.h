@@ -7,6 +7,8 @@
 #include "VirtualFluidsDefinitions.h"
 
 #include "Output/LogWriter.hpp"
+#include "GPU/KineticEnergyAnalyzer.h"
+#include "GPU/EnstrophyAnalyzer.h"
 #include "Utilities/Buffer2D.hpp"
 #include "LBM/LB.h"
 
@@ -77,5 +79,13 @@ protected:
 	real *VxED,          *VyED,       *VzED,       *deltaVED;
 	real *VxWH,          *VyWH,       *VzWH,       *deltaVWH;
 	real *VxWD,          *VyWD,       *VzWD,       *deltaVWD;
+
+
+	////////////////////////////////////////////////////////////////////////////
+	KineticEnergyAnalyzer *kinEnergyWriter;
+	////////////////////////////////////////////////////////////////////////////
+	EnstrophyAnalyzer *enstrophyWriter;
+	////////////////////////////////////////////////////////////////////////////
+
  };
 #endif
