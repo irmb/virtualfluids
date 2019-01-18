@@ -43,7 +43,7 @@ void run()
       //////////////////////////////////////////////////////////////////////////
       //DLR-F16 test
       //dx_coarse = 0.003 mm
-      string  pathname = "d:/temp/AcousticPulseXZ-0.003";
+      string  pathname = "d:/temp/AcousticPulseXZ-0.003-omega";
       int     endTime = 20;
       double  outTime = 20;
       LBMReal dx =  0.003;
@@ -175,7 +175,7 @@ void run()
 
 
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(0.9);
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(10.0*nuLB);
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //

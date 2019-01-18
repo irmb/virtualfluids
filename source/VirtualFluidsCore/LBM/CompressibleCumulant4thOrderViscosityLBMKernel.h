@@ -22,6 +22,7 @@ public:
    virtual void calculate(int step);
    virtual SPtr<LBMKernel> clone();
    double getCalculationTime() override;
+   //! The value should not be equal to a shear viscosity
    void setBulkViscosity(LBMReal value);
 protected:
    virtual void initDataSet();
