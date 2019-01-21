@@ -327,7 +327,7 @@ void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
    vtkSmartPointer<vtkTimerLog> timer_averaging = vtkSmartPointer<vtkTimerLog>::New();
 
    UBLOG(logINFO, "volume averaging: start");
-   //timer_averaging->StartTimer();
+   timer_averaging->StartTimer();
 
    double l = round(l_real / deltax);
    UBLOG(logINFO, "l = " + UbSystem::toString(l));

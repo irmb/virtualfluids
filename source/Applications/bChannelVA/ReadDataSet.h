@@ -1,5 +1,6 @@
 #include <string>
 #include <vtkDataSet.h>
+#include <vtkSmartPointer.h>
 
 vtkDataSet* ReadDataSet(std::string fileName);
 
