@@ -256,7 +256,7 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 
 	    para->getParH(level)->vx_SP[j] =  velocity * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
 	    para->getParH(level)->vy_SP[j] = -velocity * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
-	    para->getParH(level)->vz_SP[j] =  0.00001 * velocity * sin(4.0 * a * coordX) * cos(4.0 * b * coordY) * cos(4.0 * c * coordZ); //0.0;
+	    para->getParH(level)->vz_SP[j] =  0.0; //0.00001 * velocity * sin(4.0 * a * coordX) * cos(4.0 * b * coordY) * cos(4.0 * c * coordZ); //0.0;
 
 	    if (para->getCalcMedian()) {
 	        para->getParH(level)->vx_SP_Med[j] = 0.0f;

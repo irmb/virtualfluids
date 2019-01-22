@@ -20,9 +20,9 @@
 #include "GPU/GPU_Kernels.cuh"
 #include "GPU/constant.h"
 
-__global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint size_Mat );
+__global__                 void enstrophyKernel  ( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint size_Mat );
 
-__host__ __device__ inline void enstrophyFunction( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, real* enstrophy, uint index );
+__host__ __device__ inline void enstrophyFunction( real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB,            real* enstrophy, uint* isFluid, uint index );
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +33,8 @@ bool EnstrophyAnalyzer::run(uint iter)
 	int lev = 0;
 	int size_Mat = this->para->getParD(lev)->size_Mat_SP;
 	
-	thrust::device_vector<real> enstrophy( size_Mat );
+	thrust::device_vector<real> enstrophy( size_Mat, zero );
+    thrust::device_vector<uint> isFluid  ( size_Mat, 0);
 
 	unsigned int numberOfThreads = 128;
     int Grid = (size_Mat / numberOfThreads)+1;
@@ -51,24 +52,22 @@ bool EnstrophyAnalyzer::run(uint iter)
     dim3 grid(Grid1, Grid2);
     dim3 threads(numberOfThreads, 1, 1 );
 
-	printf("Enstrophy - Before LBCalcMacCompSP27\n");
-     LBCalcMacCompSP27<<< grid, threads >>> (para->getParD(lev)->vx_SP,
-											 para->getParD(lev)->vy_SP,
-											 para->getParD(lev)->vz_SP,
-											 para->getParD(lev)->rho_SP,
-											 para->getParD(lev)->press_SP,
-											 para->getParD(lev)->geoSP,
-											 para->getParD(lev)->neighborX_SP,
-											 para->getParD(lev)->neighborY_SP,
-											 para->getParD(lev)->neighborZ_SP,
-											 para->getParD(lev)->size_Mat_SP,
-											 para->getParD(lev)->d0SP.f[0],
-											 para->getParD(lev)->evenOrOdd); 
-	 //cudaDeviceSynchronize();
-	 getLastCudaError("LBCalcMacSP27 execution failed"); 
+    LBCalcMacCompSP27<<< grid, threads >>> (para->getParD(lev)->vx_SP,
+										    para->getParD(lev)->vy_SP,
+										    para->getParD(lev)->vz_SP,
+										    para->getParD(lev)->rho_SP,
+										    para->getParD(lev)->press_SP,
+										    para->getParD(lev)->geoSP,
+										    para->getParD(lev)->neighborX_SP,
+										    para->getParD(lev)->neighborY_SP,
+										    para->getParD(lev)->neighborZ_SP,
+										    para->getParD(lev)->size_Mat_SP,
+										    para->getParD(lev)->d0SP.f[0],
+										    para->getParD(lev)->evenOrOdd); 
+	//cudaDeviceSynchronize();
+	getLastCudaError("LBCalcMacSP27 execution failed"); 
 
-	 printf("Enstrophy - Before enstrophyKernel\n");
-	 enstrophyKernel <<< grid, threads >>> (para->getParD(lev)->vx_SP,
+	enstrophyKernel <<< grid, threads >>> ( para->getParD(lev)->vx_SP,
 											para->getParD(lev)->vy_SP, 
 											para->getParD(lev)->vz_SP, 
 											para->getParD(lev)->rho_SP, 
@@ -78,51 +77,43 @@ bool EnstrophyAnalyzer::run(uint iter)
 											para->getParD(lev)->neighborWSB_SP,
 											para->getParD(lev)->geoSP,
 											enstrophy.data().get(), 
+                                            isFluid.data().get(),
 											size_Mat);
-	 cudaDeviceSynchronize(); 
-	 getLastCudaError("enstrophyKernel execution failed");
+	cudaDeviceSynchronize(); 
+	getLastCudaError("enstrophyKernel execution failed");
 
-	printf("Enstrophy - before reduce\n");
-	real EnstrophyTmp = thrust::reduce(enstrophy.begin(), enstrophy.end(), zero, thrust::plus<real>());// / real(dataBase->perLevelCount[0].numberOfBulkCells);
-	printf("Enstrophy - after reduce\n");
+	real EnstrophyTmp       = thrust::reduce(enstrophy.begin(), enstrophy.end(), zero, thrust::plus<real>());
+    uint numberOfFluidNodes = thrust::reduce(isFluid.begin(),   isFluid.end(),   0,    thrust::plus<uint>());
 
-	this->enstrophyTimeSeries.push_back( EnstrophyTmp );
-	printf("Enstrophy - after push_back\n");
-
+	this->enstrophyTimeSeries.push_back( EnstrophyTmp / real(numberOfFluidNodes) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void enstrophyKernel(real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint size_Mat)
+__global__ void enstrophyKernel(real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, uint* geo, real* enstrophy, uint* isFluid, uint size_Mat)
 {
-	////////////////////////////////////////////////////////////////////////////////
-	uint index;                // Zugriff auf arrays im device
-							   //
-	uint tx = threadIdx.x;     // Thread index = lokaler i index
-	uint by = blockIdx.x;      // Block index x
-	uint bz = blockIdx.y;      // Block index y
-	uint  x = tx + STARTOFFX;  // Globaler x-Index 
-	uint  y = by + STARTOFFY;  // Globaler y-Index 
-	uint  z = bz + STARTOFFZ;  // Globaler z-Index 
+    //////////////////////////////////////////////////////////////////////////
+    const uint x = threadIdx.x;  // Globaler x-Index 
+    const uint y = blockIdx.x;   // Globaler y-Index 
+    const uint z = blockIdx.y;   // Globaler z-Index 
 
-	const unsigned sizeX = blockDim.x;
-	const unsigned sizeY = gridDim.x;
-	const unsigned nx = sizeX + 2 * STARTOFFX;
-	const unsigned ny = sizeY + 2 * STARTOFFY;
+    const uint nx = blockDim.x;
+    const uint ny = gridDim.x;
 
-	index = nx*(ny*z + y) + x;
+    const uint index = nx*(ny*z + y) + x;
 	////////////////////////////////////////////////////////////////////////////////
-	enstrophy[index] = zero;
+    //printf("%d\n", index);
+
     if( index >= size_Mat) return;
 
 	unsigned int BC;
 	BC = geo[index];
 	if (BC != GEO_FLUID) return;
 
-    enstrophyFunction( veloX, veloY, veloZ, rho, neighborX, neighborY, neighborZ, neighborWSB, enstrophy, index );
+    enstrophyFunction( veloX, veloY, veloZ, rho, neighborX, neighborY, neighborZ, neighborWSB, enstrophy, isFluid, index );
 }
 
-__host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, real* enstrophy, uint index)
+__host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ, real* rho, uint* neighborX, uint* neighborY, uint* neighborZ, uint* neighborWSB, real* enstrophy, uint* isFluid, uint index)
 {
 	//////////////////////////////////////////////////////////////////////////////
 	//neighbor index
@@ -134,6 +125,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	uint kMx = neighborZ[neighborY[kMxyz]];
 	uint kMy = neighborZ[neighborX[kMxyz]];
 	uint kMz = neighborY[neighborX[kMxyz]];
+    //////////////////////////////////////////////////////////////////////////
+
 	//getVeloX//
 	real veloXNeighborPx = veloX[kPx];
 	real veloXNeighborMx = veloX[kMx];
@@ -169,6 +162,7 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real dxvz = zero;
 	real dyvz = zero;
 	real dzvz = zero;
+    //////////////////////////////////////////////////////////////////////////
 
 	dxvy = (veloYNeighborPx - veloYNeighborMx) / two;
 	dxvz = (veloZNeighborPx - veloZNeighborMx) / two;
@@ -183,6 +177,8 @@ __host__ __device__ void enstrophyFunction(real* veloX, real* veloY, real* veloZ
 	real tmpY = dzvx - dxvz;
 	real tmpZ = dxvy - dyvx;
     //////////////////////////////////////////////////////////////////////////
+
+    isFluid[ index ] = 1;
 
     enstrophy[ index ] = c1o2 * (rho[index] + one) * ( tmpX*tmpX + tmpY*tmpY + tmpZ*tmpZ );
 }
