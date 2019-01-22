@@ -914,9 +914,10 @@ HOSTDEVICE real GridImp::getNeighborCoord(bool periodicity, real startCoord, rea
 HOSTDEVICE void GridImp::getNegativeNeighborCoords(real &neighborX, real &neighborY, real &neighborZ, real x, real y, real z) const
 {
     real coords[3] = { x, y, z };
-    neighborX = getNegativeNeighborCoord(periodicityX, startX, coords, 0);
-    neighborY = getNegativeNeighborCoord(periodicityY, startY, coords, 1);
-    neighborZ = getNegativeNeighborCoord(periodicityZ, startZ, coords, 2);
+
+    neighborX = getNegativeNeighborCoord(periodicityX, endX, coords, 0);
+    neighborY = getNegativeNeighborCoord(periodicityY, endY, coords, 1);
+    neighborZ = getNegativeNeighborCoord(periodicityZ, endZ, coords, 2);
 }
 
 HOSTDEVICE real GridImp::getNegativeNeighborCoord(bool periodicity, real startCoord, real coords[3], int direction) const
