@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
    int startTimeStep = 600000;
    int timeStep = 10000;
    int numberOfTimeSteps = 600000;
+   int numberOfSamples = numberOfTimeSteps/startTimeStep;
    int numberOfGridPoints = dimensions[0]* dimensions[1]* dimensions[2];
    av.initVolumeAveragingValues();
 
@@ -41,7 +42,7 @@ int main(int argc, char* argv[])
    }
 
    av.initMeanVolumeAveragingValues();
-   av.meanOfVolumeAveragingValues(numberOfTimeSteps);
+   av.meanOfVolumeAveragingValues(numberOfSamples);
    av.writeMeanVolumeAveragingValuesToBinaryFiles(pathOut + "/va/mean/mean");
    av.initFluctuationsofVolumeAveragingValues();
    av.initSumOfFluctuations();
@@ -61,8 +62,8 @@ int main(int argc, char* argv[])
       av.SumOfStresses();
    }
 
-   av.meanOfFluctuations(numberOfTimeSteps);
-   av.MeanOfStresses(numberOfTimeSteps);
+   av.meanOfFluctuations(numberOfSamples);
+   av.MeanOfStresses(numberOfSamples);
    av.PlanarAveragingMQ(dimensions);
    av.WriteToCSV(pathOut + "/va/av", geo_origin[2], deltax);
 }
