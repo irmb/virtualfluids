@@ -261,7 +261,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 
 
-void multipleLevel(const std::string& configPath)
+void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
 {
     //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
     std::ofstream logFile( "grid/gridGeneratorLog.txt" );
@@ -291,9 +291,9 @@ void multipleLevel(const std::string& configPath)
 
 	const real PI = 3.141592653589793238462643383279;
 
-    const uint nx = 128;
-
     const real Re = 1600;
+
+    //const uint nx = 64;
 
     const real velocity = 64.0 / ( 1000 * 2.0 * PI );
 
@@ -341,12 +341,15 @@ void multipleLevel(const std::string& configPath)
 	std::stringstream _path;
     std::stringstream _prefix;
 
-    _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
+    //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
+    _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_neqInit";
     _prefix << "TGV_3D_" << nx << "_" ;
 
     para->setOutputPath(_path.str());
     para->setOutputPrefix(_prefix.str());
     para->setFName(_path.str() + "/" + _prefix.str());
+
+    //para->setDevices({gpuIndex});
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -372,59 +375,50 @@ void multipleLevel(const std::string& configPath)
 
 int main( int argc, char* argv[])
 {
-     MPI_Init(&argc, &argv);
+    MPI_Init(&argc, &argv);
     std::string str, str2; 
     if ( argv != NULL )
     {
-        str = static_cast<std::string>(argv[0]);
-        if (argc > 1)
+        //str = static_cast<std::string>(argv[0]);
+        
+        try
         {
-            str2 = static_cast<std::string>(argv[1]);
-            try
-            {
-                multipleLevel(str2);
-            }
-            catch (const std::exception& e)
-            {
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
-                //MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-            catch (...)
-            {
-                std::cout << "unknown exeption" << std::endl;
-            }
-        }
-        else
-        {
-            try
-            {
-                //multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/Sphere/configSphere.txt");
-				//multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/TGV3D/configTGV3D.txt");
-				multipleLevel("F:/Work/Computations/inp/configTGV3D.txt");
-			}
-            catch (const std::exception& e)
-            {
-                
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
-                //MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-            catch (const std::bad_alloc e)
-            {
-                
-                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
-                //MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-            catch (...)
-            {
-                *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
-                //std::cout << "unknown exeption" << std::endl;
-            }
+            //////////////////////////////////////////////////////////////////////////
+            
+            uint gpuIndex = 0;
+    
+            uint nx = 64;
 
-            std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+            if( argc > 1 ) gpuIndex = atoi( argv[1] );
+
+            if( argc > 2 ) nx = atoi( argv[2] );
+
+			multipleLevel("F:/Work/Computations/inp/configTGV3D.txt", nx, gpuIndex);
+
+            //////////////////////////////////////////////////////////////////////////
+		}
+        catch (const std::exception& e)
+        {
+                
+            *logging::out << logging::Logger::ERROR << e.what() << "\n";
+            //std::cout << e.what() << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
+        catch (const std::bad_alloc e)
+        {
+                
+            *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+            //std::cout << e.what() << std::flush;
+            //MPI_Abort(MPI_COMM_WORLD, -1);
+        }
+        catch (...)
+        {
+            *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+            //std::cout << "unknown exeption" << std::endl;
+        }
+
+        //std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+        //MPI_Abort(MPI_COMM_WORLD, -1);
     }
 
 
