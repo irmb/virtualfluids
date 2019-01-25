@@ -16,7 +16,7 @@
 
 #include "Core/Logger/Logger.h"
 
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 // includes, kernels
 #include "GPU/GPU_Kernels.cuh"
 #include "GPU/constant.h"

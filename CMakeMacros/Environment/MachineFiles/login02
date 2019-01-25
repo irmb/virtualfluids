@@ -3,6 +3,6 @@ SET(BOOST_LIBRARYDIR  "/cluster/lib/boost/1.63.0/gcc/lib"  CACHE PATH "BOOST_LIB
 
 SET(VTK_DIR "/cluster/lib/vtk/8.1.0/lib/cmake/vtk-8.1" CACHE PATH "VTK directory override" FORCE)
 
-SET(CUDA_CUT_INCLUDE_DIR "/cluster/cuda/9.0/include" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
+SET(CUDA_CUT_INCLUDE_DIR "/cluster/cuda/9.0/include;/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")
 
 SET(CUDA_SAMPLE_INCLUDE_DIR "/cluster/cuda/9.0/samples/common/inc" CACHE PATH "CUDA_CUT_INCLUDE_DIR")

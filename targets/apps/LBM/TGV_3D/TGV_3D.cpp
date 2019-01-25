@@ -264,8 +264,8 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
 {
     //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    logging::Logger::addStream(&logFile);
+    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
+    //logging::Logger::addStream(&logFile);
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -318,7 +318,7 @@ void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
 
 	gridGenerator = GridGenerator::make(gridBuilder, para);
 
-    logFile.close();
+    //logFile.close();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -342,14 +342,20 @@ void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
     std::stringstream _prefix;
 
     //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
-    _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_neqInit";
+    //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_neqInit";
+    _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/Re_1600/AA2016/" << nx << "_FD_O8";
+
+    //_path << "./results/AA2016/" << nx;
+    //_path << "./results/CumOne/" << nx;
+    //_path << "./results/F3_2018/" << nx;
+
     _prefix << "TGV_3D_" << nx << "_" ;
 
     para->setOutputPath(_path.str());
     para->setOutputPrefix(_prefix.str());
     para->setFName(_path.str() + "/" + _prefix.str());
 
-    //para->setDevices({gpuIndex});
+    para->setDevices({gpuIndex});
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -394,6 +400,7 @@ int main( int argc, char* argv[])
             if( argc > 2 ) nx = atoi( argv[2] );
 
 			multipleLevel("F:/Work/Computations/inp/configTGV3D.txt", nx, gpuIndex);
+			//multipleLevel("./inp/configTGV3D.txt", nx, gpuIndex);
 
             //////////////////////////////////////////////////////////////////////////
 		}
