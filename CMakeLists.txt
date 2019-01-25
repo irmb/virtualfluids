@@ -127,6 +127,8 @@ IF (HULC.BUILD_VF_GPU)
     #add_subdirectory(targets/apps/LBM/metisTest)
     
     add_subdirectory(targets/apps/LBM/TGV_3D)
+    
+    add_subdirectory(targets/apps/LBM/streetTest)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GPU." )
 ENDIF()
