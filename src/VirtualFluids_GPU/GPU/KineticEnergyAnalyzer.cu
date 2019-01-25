@@ -134,7 +134,7 @@ void KineticEnergyAnalyzer::writeToFile(std::string filename)
     file.open(filename + "_KineticEnergyData.dat" );
 
     for( auto& EKin : this->kineticEnergyTimeSeries )
-        file << EKin << std::endl;
+        file << std::setprecision(15) << EKin << std::endl;
 
     file.close();
 
