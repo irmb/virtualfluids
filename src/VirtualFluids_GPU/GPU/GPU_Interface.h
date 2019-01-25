@@ -546,6 +546,21 @@ extern "C" void InitSP27(unsigned int numberOfThreads,
                          real* DD,
                          bool EvenOrOdd);
 
+extern "C" void InitNonEqPartSP27(unsigned int numberOfThreads,
+                                  unsigned int* neighborX,
+                                  unsigned int* neighborY,
+                                  unsigned int* neighborZ,
+                                  unsigned int* neighborWSB,
+                                  unsigned int* geoD,
+                                  real* rho,
+                                  real* ux,
+                                  real* uy,
+                                  real* uz,
+                                  unsigned int size_Mat,
+                                  real* DD,
+                                  real omega,
+                                  bool EvenOrOdd);
+
 extern "C" void InitCompSP27(unsigned int numberOfThreads,
 							 unsigned int* neighborX,
 							 unsigned int* neighborY,

@@ -504,6 +504,20 @@ extern "C" __global__ void LBInitSP27( unsigned int* neighborX,
                                        real* DD,
                                        bool EvenOrOdd);
 
+extern "C" __global__ void LBInitNonEqPartSP27(unsigned int* neighborX,
+                                               unsigned int* neighborY,
+                                               unsigned int* neighborZ,
+                                               unsigned int* neighborWSB,
+                                               unsigned int* geoD,
+                                               real* rho,
+                                               real* ux,
+                                               real* uy,
+                                               real* uz,
+                                               unsigned int size_Mat,
+                                               real* DD,
+                                               real omega,
+                                               bool EvenOrOdd);
+
 extern "C" __global__ void LBInitCompSP27( unsigned int* neighborX,
 										   unsigned int* neighborY,
 										   unsigned int* neighborZ,

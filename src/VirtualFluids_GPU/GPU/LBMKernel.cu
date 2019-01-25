@@ -1714,6 +1714,52 @@ extern "C" void InitSP27(   unsigned int numberOfThreads,
       getLastCudaError("LBInitSP27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void InitNonEqPartSP27( unsigned int numberOfThreads,
+                                   unsigned int* neighborX,
+                                   unsigned int* neighborY,
+                                   unsigned int* neighborZ,
+                                   unsigned int* neighborWSB,
+                                   unsigned int* geoD,
+                                   real* rho,
+                                   real* ux,
+                                   real* uy,
+                                   real* uz,
+                                   unsigned int size_Mat,
+                                   real* DD,
+                                   real omega,
+                                   bool EvenOrOdd)
+{
+   int Grid = (size_Mat / numberOfThreads)+1;
+   int Grid1, Grid2;
+   if (Grid>512)
+   {
+      Grid1 = 512;
+      Grid2 = (Grid/Grid1)+1;
+   } 
+   else
+   {
+      Grid1 = 1;
+      Grid2 = Grid;
+   }
+   dim3 grid(Grid1, Grid2);
+   dim3 threads(numberOfThreads, 1, 1 );
+
+      LBInitNonEqPartSP27<<< grid, threads >>>( neighborX,
+                                                neighborY,
+                                                neighborZ,
+                                                neighborWSB,
+                                                geoD,
+                                                rho,
+                                                ux,
+                                                uy,
+                                                uz,
+                                                size_Mat,
+                                                DD,
+                                                omega,
+                                                EvenOrOdd);
+      getLastCudaError("LBInitNonEqPartSP27 execution failed"); 
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void InitCompSP27(   unsigned int numberOfThreads,
 								unsigned int* neighborX,
 								unsigned int* neighborY,
