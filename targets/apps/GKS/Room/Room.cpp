@@ -49,7 +49,7 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 256;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real dx = H / real(nx);
 
 
-    real Ra = 1.0e10;
+    real Ra = 1.0e9;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -73,7 +73,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real lambdaHot  = lambda / ( 1.0 + eps * 0.5 );
     real lambdaCold = lambda / ( 1.0 - eps * 0.5 );
     
-    real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho ;
+    real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
@@ -84,7 +84,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
-    *logging::out << logging::Logger::INFO_HIGH << "nu = " << mu << " m2/s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -96,7 +96,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     parameters.force.x = 0;
     parameters.force.y = 0;
-    parameters.force.z = 0;-g;
+    parameters.force.z = -g;
 
     parameters.dt = dt;
     parameters.dx = dx;
@@ -259,7 +259,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 1000000; iter++ )
+    for( uint iter = 1; iter <= 100000000; iter++ )
     {
         if( iter < 20000 )
         {
@@ -277,7 +277,7 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 100    && iter % 10    == 0 ) ||
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) ||
-            ( iter < 10000000 && iter % 10000 == 0 )
+            ( iter < 10000000 && iter % 100000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -305,8 +305,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
-    std::string path( "F:/Work/Computations/out/" );
-    //std::string path( "out/" );
+    //std::string path( "F:/Work/Computations/out/" );
+    std::string path( "out/" );
     std::string simulationName ( "Room" );
 
     logging::Logger::addStream(&std::cout);
