@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
    av.writeGeoMatrixToBinaryFiles(pathOut + "/va/geomatrix.bin");
    int startTimeStep = 600000;
    int timeStep = 10000;
-   int numberOfTimeSteps = 600000;
+   int numberOfTimeSteps = 1200000;
    int numberOfSamples = numberOfTimeSteps/startTimeStep;
    int numberOfGridPoints = dimensions[0]* dimensions[1]* dimensions[2];
    av.initVolumeAveragingValues();
