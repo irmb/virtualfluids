@@ -43,21 +43,27 @@
 
 void writeVelocityFile( SPtr<DataBase> dataBase, std::string filename );
 
-void gksTest( std::string path, uint nx, uint gpuIndex )
+//////////////////////////////////////////////////////////////////////////
+real Re = 1.6e3;
+
+uint dtPerL = 500;
+
+uint nx = 64;
+uint gpuIndex = 0;
+//////////////////////////////////////////////////////////////////////////
+
+void gksTest( std::string path )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //uint nx = 64;
 
     CudaUtility::setCudaDevice( gpuIndex );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 2.0*M_PI;
+    real L = 1.0;
 
-    real dx = L / real(nx);
+    real dx = 2.0 * M_PI * L / real(nx);
 
-    real Re  = 1.6e3;
     real U  = 1.0;
     real Ma = 0.1;
     
@@ -70,23 +76,22 @@ void gksTest( std::string path, uint nx, uint gpuIndex )
 
     real gamma = ( K + 5 ) / ( K + 3 );
 
-    real mu = U * rho * 1.0 / Re;
+    real mu = U * rho * L / Re;
 
     real cs = U / Ma;
-    real lambda = c1o2 * ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( cs * cs );
+    real lambda = c1o2 * ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( cs * cs );
 
     real CFL = 0.5;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
-    *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "dt(CFL=0.5) = " << dt << " s\n";
 
-    //dt = 2.0 * M_PI / real(nx);
-    dt = 1.0 / U / 1000.0 * ( 64.0 / real(nx) );
+    dt = L / U /  dtPerL * ( 64.0 / real(nx) );
 
-    *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "dt          = " << dt << " s\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "mu          = " << mu << "\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -117,8 +122,8 @@ void gksTest( std::string path, uint nx, uint gpuIndex )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*L,  
-                                0.5*L,  0.5*L,  0.5*L, dx);
+    gridBuilder->addCoarseGrid(-M_PI*L, -M_PI*L, -M_PI*L,  
+                                M_PI*L,  M_PI*L,  M_PI*L, dx);
 
     //gridBuilder->addCoarseGrid(-2.0 * dx, -0.5*L*2.0*M_PI, -0.5*L*2.0*M_PI,  
     //                            2.0 * dx,  0.5*L*2.0*M_PI,  0.5*L*2.0*M_PI, dx);
@@ -212,51 +217,55 @@ void gksTest( std::string path, uint nx, uint gpuIndex )
 
     Initializer::initializeDataUpdate(dataBase);
 
-            writeVtkXML( dataBase, parameters, 0, path + "out/TGV_" + std::to_string(nx) + "_"          + std::to_string( 0 ) );
-            writeVelocityFile( dataBase,          path + "out/TGV_" + std::to_string(nx) + "_Velocity_" + std::to_string( 0 ) );
+    writeVtkXML( dataBase, parameters, 0, path + "TGV_3D_nx_" + std::to_string(nx) + "_dtPerL_" + std::to_string(dtPerL) + "_"          + std::to_string( 0 ) );
+    writeVelocityFile( dataBase,          path + "TGV_3D_nx_" + std::to_string(nx) + "_dtPerL_" + std::to_string(dtPerL) + "_Velocity_" + std::to_string( 0 ) );
 
     //////////////////////////////////////////////////////////////////////////
 
-    KineticEnergyAnalyzer kineticEnergyAnalyzer( dataBase,             10 * (nx / 64 ), 10000 );
-    EnstrophyAnalyzer     enstrophyAnalyzer    ( dataBase, parameters, 10 * (nx / 64 ), 10000 );
+    KineticEnergyAnalyzer kineticEnergyAnalyzer( dataBase,             10, 10000 );
+    EnstrophyAnalyzer     enstrophyAnalyzer    ( dataBase, parameters, 10, 10000 );
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 60.0, false, 100 );
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 40000 * (nx / 64 ); iter++ )
+    for( uint iter = 1; iter <= 40 * lround(L/(U*dt)); iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
         kineticEnergyAnalyzer.run( iter );
         enstrophyAnalyzer.run( iter );
 
-        if( iter % (5000 * ( nx / 64 )) == 0 )
+        if( iter % ( 5 * lround(L/(U*dt)) ) == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + "out/TGV_" + std::to_string(nx) + "_"          + std::to_string( iter / 1000 /  ( nx / 64 ) ) );
-            writeVelocityFile( dataBase,          path + "out/TGV_" + std::to_string(nx) + "_Velocity_" + std::to_string( iter / 1000 /  ( nx / 64 ) ) );
-            kineticEnergyAnalyzer.writeToFile(    path + "out/TGV_" + std::to_string(nx) + "_EKin_"     + std::to_string( iter / 1000 /  ( nx / 64 ) ) );
-            enstrophyAnalyzer.writeToFile    (    path + "out/TGV_" + std::to_string(nx) + "_Enstrophy_"+ std::to_string( iter / 1000 /  ( nx / 64 ) ) );
+            writeVtkXML( dataBase, parameters, 0, path + "TGV_3D_nx_" + std::to_string(nx) + "_dtPerL_" + std::to_string(dtPerL) + "_"          + std::to_string( iter / lround(L/(U*dt)) ) );
+            writeVelocityFile( dataBase,          path + "TGV_3D_nx_" + std::to_string(nx) + "_dtPerL_" + std::to_string(dtPerL) + "_Velocity_" + std::to_string( iter / lround(L/(U*dt)) ) );
+            kineticEnergyAnalyzer.writeToFile(    path + "TGV_3D_nx_" + std::to_string(nx) + "_dtPerL_" + std::to_string(dtPerL) + "_EKin_"     + std::to_string( iter / lround(L/(U*dt)) ) );
+            enstrophyAnalyzer.writeToFile    (    path + "TGV_3D_nx_" + std::to_string(nx) + "_dtPerL_" + std::to_string(dtPerL) + "_Enstrophy_"+ std::to_string( iter / lround(L/(U*dt)) ) );
         }
 
         cupsAnalyzer.run( iter );
     }
 
     //////////////////////////////////////////////////////////////////////////
-
-    dataBase->copyDataDeviceToHost();
-
-    //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
-
-
 }
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/" );
-    std::string path( "./" );
+    if( argc > 1 ) gpuIndex = atoi( argv[1] );
+
+    if( argc > 2 ) Re = atof( argv[2] );
+
+    if( argc > 3 ) nx = atoi( argv[3] );
+
+    if( argc > 4 ) dtPerL = atoi( argv[4] );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    std::string path( "F:/Work/Computations/TaylorGreenVortex_3D/results/GKS/" );
+    //std::string path( "./" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -264,19 +273,14 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
-    uint gpuIndex = 0;
-
-    if( argc > 1 ) gpuIndex = atoi( argv[1] );
-    
-    uint nx = 64;
-
-    if( argc > 2 ) nx = atoi( argv[2] );
-
-    //////////////////////////////////////////////////////////////////////////
+    if( sizeof(real) == 4 )
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+    else
+        *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 
     try
     {
-        gksTest( path, nx, gpuIndex );
+        gksTest( path );
     }
     catch (const std::exception& e)
     {     
