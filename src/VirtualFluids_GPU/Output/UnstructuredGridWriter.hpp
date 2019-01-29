@@ -286,10 +286,9 @@ namespace UnstructuredGridWriter
 					//////////////////////////////////////////////////////////////////////////
 					//if( std::fabs(nodedata[2][dn1]) > std::fabs(vxmax) ) vxmax = nodedata[2][dn1];
 					//////////////////////////////////////////////////////////////////////////
-
 					if (isPeriodicCell(para, level, number2, number1, number3, number5))
 						continue;
-
+					//////////////////////////////////////////////////////////////////////////
 					//counter++;
 					if (neighborsFluid) cells.push_back( makeUbTuple(dn1,dn2,dn3,dn4,dn5,dn6,dn7,dn8) );
 					//////////////////////////////////////////////////////////////////////////
@@ -849,9 +848,12 @@ namespace UnstructuredGridWriter
 					dn7 = number7 - startpos;
 					dn8 = number8 - startpos;
 					//////////////////////////////////////////////////////////////////////////
-					if( std::fabs(nodedata[2][dn1]) > std::fabs(vxmax) ) vxmax = nodedata[2][dn1];
+					//if( std::fabs(nodedata[2][dn1]) > std::fabs(vxmax) ) vxmax = nodedata[2][dn1];
 					//////////////////////////////////////////////////////////////////////////
-					if (neighborsFluid==true) cells.push_back( makeUbTuple(dn1,dn2,dn3,dn4,dn5,dn6,dn7,dn8) );		
+					if (isPeriodicCell(para, level, number2, number1, number3, number5))
+						continue;
+					//////////////////////////////////////////////////////////////////////////
+					if (neighborsFluid) cells.push_back( makeUbTuple(dn1,dn2,dn3,dn4,dn5,dn6,dn7,dn8) );		
 					//////////////////////////////////////////////////////////////////////////
 				}
 			}
