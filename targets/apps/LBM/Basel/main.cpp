@@ -30,6 +30,8 @@
 
 #include "global.h"
 
+#include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
+
 #include "geometries/Sphere/Sphere.h"
 #include "geometries/VerticalCylinder/VerticalCylinder.h"
 #include "geometries/Cuboid/Cuboid.h"
@@ -292,7 +294,7 @@ void multipleLevel(const std::string& configPath)
 
     if(useGridGenerator){
 
-            real dx = 1.0;
+            real dx = 1.2;
             real vx = 0.05;
 
             TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
@@ -316,11 +318,26 @@ void multipleLevel(const std::string& configPath)
             //////////////////////////////////////////////////////////////////////////
 
             gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
-            //gridBuilder->writeArrows    ("F:/Work/Computations/gridGenerator/grid/DrivAer_Grid_arrow");
 
             SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
 
-            return;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			StreetPointFinder finder;
+
+			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+
+			finder.writeVTK("F:/Work/Computations/NagelSchreckenberg/ExampleStreets.vtk");
+
+			finder.findIndicesLB(gridBuilder->getGrid(0));
+
+			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+
+			finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			return;
 
             gridGenerator = GridGenerator::make(gridBuilder, para);
 
