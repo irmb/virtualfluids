@@ -10,7 +10,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 class CompressibleOffsetInterpolationProcessor;
-typedef SPtr<CompressibleOffsetInterpolationProcessor> CompressibleOffsetInterpolationProcessorPtr;
 
 class CompressibleOffsetInterpolationProcessor : public InterpolationProcessor
 {

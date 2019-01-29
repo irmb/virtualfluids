@@ -174,6 +174,7 @@
 #include <LBM/IncompressibleOffsetInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
+#include <LBM/CompressibleOffsetSquarePressureInterpolationProcessor.h>
 #include <LBM/InterpolationHelper.h>
 #include <LBM/InterpolationProcessor.h>
 //#include <LBM/D3Q27OffsetInterpolationProcessor.h>

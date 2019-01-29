@@ -485,6 +485,11 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    LBMReal oP = OxxPyyPzzF;
 
    LBMReal rho  = press ;//+ (2.*axx*x+axy*y+axz*z+axyz*y*z+ax + 2.*byy*y+bxy*x+byz*z+bxyz*x*z+by + 2.*czz*z+cxz*x+cyz*y+cxyz*x*y+cz)/3.;
+
+   LBMReal laplaceRho = (xoff!=0.0 || yoff!=0.0 || zoff!= 0.0) ? 0.0 :(-3.0*(by*by+ax*ax+cz*cz)-6.0*(ay*bx+bz*cy+az*cx))*(1.0+rho);
+
+   rho=rho+laplaceRho*(3.0/16.0);
+
    LBMReal vx1  = a0 + 0.25*( xs*ax + ys*ay + zs*az) + 0.0625*(axx + xs*ys*axy + xs*zs*axz + ayy + ys*zs*ayz + azz) + 0.015625*(xs*ys*zs*axyz);
    LBMReal vx2  = b0 + 0.25*( xs*bx + ys*by + zs*bz) + 0.0625*(bxx + xs*ys*bxy + xs*zs*bxz + byy + ys*zs*byz + bzz) + 0.015625*(xs*ys*zs*bxyz);
    LBMReal vx3  = c0 + 0.25*( xs*cx + ys*cy + zs*cz) + 0.0625*(cxx + xs*ys*cxy + xs*zs*cxz + cyy + ys*zs*cyz + czz) + 0.015625*(xs*ys*zs*cxyz);
@@ -517,7 +522,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    LBMReal mfcaa = zeroReal;
    LBMReal mfaca = zeroReal;
 
-   mfaaa = press; // if drho is interpolated directly
+   mfaaa = rho; // if drho is interpolated directly
 
    LBMReal vx1Sq = vx1*vx1;
    LBMReal vx2Sq = vx2*vx2;
@@ -926,10 +931,15 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    LBMReal vx1  = a0;
    LBMReal vx2  = b0;
    LBMReal vx3  = c0;
-
+  
+   
    LBMReal rho = press ;//+ (ax+by+cz)/3.;
 
-   LBMReal eps_new = 2.;
+   LBMReal laplaceRho = (xoff!=0.0 || yoff!=0.0 || zoff!= 0.0) ? 0.0 :(-3.0*(by*by+ax*ax+cz*cz)-6.0*(ay*bx+bz*cy+az*cx))*(1.0+rho);
+
+   rho=rho-laplaceRho*0.25;
+
+   LBMReal eps_new = 2.0;
    LBMReal o  = omega;
    //bulk viscosity
    LBMReal oP = OxxPyyPzzC;
@@ -962,7 +972,7 @@ void CompressibleOffsetSquarePressureInterpolationProcessor::calcInterpolatedNod
    LBMReal mfcaa = zeroReal;
    LBMReal mfaca = zeroReal;
 
-   mfaaa = press; // if drho is interpolated directly
+   mfaaa = rho; // if drho is interpolated directly
 
    LBMReal vx1Sq = vx1*vx1;
    LBMReal vx2Sq = vx2*vx2;

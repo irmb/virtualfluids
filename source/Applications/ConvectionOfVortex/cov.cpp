@@ -21,7 +21,7 @@ void run()
       //////////////////////////////////////////////////////////////////////////
       //DLR-F16 test
       //dx_coarse = 0.003 mm
-      //string  pathname = "d:/temp/ConvectionOfVortex_0.003";
+      //string  pathname = "d:/temp/ConvectionOfVortex_0.003_square";
       //int     endTime = 20;
       //double  outTime = 10;
       //LBMReal dx =  0.003;
@@ -38,8 +38,8 @@ void run()
       ////////////////////////////////////////////////////////////////////////////
       //dx_coarse = 0.00075 mm
       string  pathname = "d:/temp/ConvectionOfVortex_0.00075_moments";
-      double  endTime = 80;
-      double  outTime = 80;
+      double  endTime = 160;
+      double  outTime = 160;
       LBMReal dx =  0.00075;
       LBMReal rhoLB = 0.0;
       LBMReal nuLB = 8.66025e-6*4.0;
@@ -115,6 +115,7 @@ void run()
       //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
       SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
       //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
+      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetSquarePressureInterpolationProcessor());
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
@@ -226,16 +227,16 @@ void run()
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
       std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      SPtr<UbScheduler> tavSch(new UbScheduler(1, 0, endTime));
-      SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-         TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
-      tav->setWithGhostLayer(true);
+      //SPtr<UbScheduler> tavSch(new UbScheduler(1, 0, endTime));
+      //SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathname, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+      //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      //tav->setWithGhostLayer(true);
 
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
-      calculator->addCoProcessor(tav);
+      //calculator->addCoProcessor(tav);
 
       //omp_set_num_threads(1);
 
