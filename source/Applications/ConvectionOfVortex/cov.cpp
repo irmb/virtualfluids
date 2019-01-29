@@ -21,15 +21,15 @@ void run()
       //////////////////////////////////////////////////////////////////////////
       //DLR-F16 test
       //dx_coarse = 0.003 mm
-      string  pathname = "d:/temp/ConvectionOfVortex_0.003";
-      int     endTime = 1000;
-      double  outTime = 10;
-      LBMReal dx =  0.003;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 8.66025e-6;
+      //string  pathname = "d:/temp/ConvectionOfVortex_0.003";
+      //int     endTime = 20;
+      //double  outTime = 10;
+      //LBMReal dx =  0.003;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6;
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.0015 mm
-      //string  pathname = "d:/temp/AcousticPulseXZ-0.0015";
+      //string  pathname = "d:/temp/ConvectionOfVortex_0.0015";
       //double  endTime = 40;
       //double  outTime = 40;
       //LBMReal dx =  0.0015;
@@ -37,12 +37,20 @@ void run()
       //LBMReal nuLB = 8.66025e-6*2.0;
       ////////////////////////////////////////////////////////////////////////////
       //dx_coarse = 0.00075 mm
-      //string  pathname = "d:/temp/AcousticPulseXZ-0.00075";
+      string  pathname = "d:/temp/ConvectionOfVortex_0.00075_moments";
+      double  endTime = 80;
+      double  outTime = 80;
+      LBMReal dx =  0.00075;
+      LBMReal rhoLB = 0.0;
+      LBMReal nuLB = 8.66025e-6*4.0;
+      //////////////////////////////////////////////////////////////////////////
+      ////dx_coarse = 0.000375 mm
+      //string  pathname = "d:/temp/ConvectionOfVortex_0.000375";
       //double  endTime = 80;
       //double  outTime = 80;
       //LBMReal dx =  0.00075;
       //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6*4.0;
+      //LBMReal nuLB = 8.66025e-6*8.0;
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
@@ -104,8 +112,8 @@ void run()
       ppblocks.reset();
 
       //set connectors  
-      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
-      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
       //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
@@ -162,7 +170,7 @@ void run()
          grid->accept(undefNodesVisitor);
       }
 
-      double Ma = 0.004;
+      double Ma = 0.15;
 
       mu::Parser initRho, initVx1, initVx2; 
       initRho.SetExpr("rhoLB + (-(rho0*epsilon^2)/2) * exp(1-(scaleFactor*(x1^2+x3^2))/R^2) + (1/(2*gamma*rho0)) * ((-(rho0*epsilon^2)/2) * exp(1-(scaleFactor*(x1^2+x3^2))/R^2))^2");
@@ -186,7 +194,7 @@ void run()
       initVx2.DefineConst("scaleFactor1", 16.6666666667);
       initVx2.DefineConst("epsilon", 0.14);
       initVx2.DefineConst("R", 0.1);
-      initVx2.DefineConst("V0", Ma/(1.0/std::sqrt(3.0)));
+      initVx2.DefineConst("V0", -Ma/(1.0/std::sqrt(3.0)));
 
 
       //initialization of distributions
