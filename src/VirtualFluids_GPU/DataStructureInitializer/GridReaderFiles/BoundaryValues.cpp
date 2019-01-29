@@ -91,6 +91,8 @@ int BoundaryValues::getNumberOfColumns()
 		return 2;
 	if (boundaryCondition == "processor")
 		return 0;
+	if (boundaryCondition == "concentration")
+		return 0;
 	else
 		return -1;
 }
