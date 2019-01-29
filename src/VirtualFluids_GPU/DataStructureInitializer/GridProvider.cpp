@@ -32,7 +32,7 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 	{
 		para->getParH(level)->rho_SP[j] = 0.0;
 
-		para->getParH(level)->vx_SP[j] = 0.0;
+		para->getParH(level)->vx_SP[j] = para->getVelocity();// 0.0;
 		para->getParH(level)->vy_SP[j] = 0.0;
 		para->getParH(level)->vz_SP[j] = 0.0;
 
@@ -237,51 +237,51 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 	//////////////////////////////////////////////////////////////////////////
 	// 3D-Taylor-Green Vortex from Paper:"Dynamical selective filtering for the Lattice Boltzmann Method" (Simon Marié, Xavier Gloerfelt)
 	//////////////////////////////////////////////////////////////////////////
-	for (int j = 1; j <= numberOfNodes; j++)
-	{
-	    const real coordX = para->getParH(level)->coordX_SP[j];
-	    const real coordY = para->getParH(level)->coordY_SP[j];
-	    const real coordZ = para->getParH(level)->coordZ_SP[j];
-	    const real velocity = para->getVelocity();
+	//for (int j = 1; j <= numberOfNodes; j++)
+	//{
+	//    const real coordX = para->getParH(level)->coordX_SP[j];
+	//    const real coordY = para->getParH(level)->coordY_SP[j];
+	//    const real coordZ = para->getParH(level)->coordZ_SP[j];
+	//    const real velocity = para->getVelocity();
 
-	    real A = 2.0;//1.0;//
-		real B = 2.0;//1.0;//
-		real C = 2.0;//1.0;//
-		real a = 1.0;//A * PI;//1.0;//
-		real b = 1.0;//B * PI;//1.0;//
-		real c = 1.0;//C * PI;//1.0;//
-		//////////////////////////////////////////////////////////////////////////
+	//    real A = 2.0;//1.0;//
+	//	real B = 2.0;//1.0;//
+	//	real C = 2.0;//1.0;//
+	//	real a = 1.0;//A * PI;//1.0;//
+	//	real b = 1.0;//B * PI;//1.0;//
+	//	real c = 1.0;//C * PI;//1.0;//
+	//	//////////////////////////////////////////////////////////////////////////
 
-	    para->getParH(level)->rho_SP[j] = /*1.0 +*/ 3.0 * ((velocity * velocity) / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 ) );
+	//    para->getParH(level)->rho_SP[j] = /*1.0 +*/ 3.0 * ((velocity * velocity) / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 ) );
 
-	    para->getParH(level)->vx_SP[j] =  velocity * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
-	    para->getParH(level)->vy_SP[j] = -velocity * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
-	    para->getParH(level)->vz_SP[j] =  0.0; //0.00001 * velocity * sin(4.0 * a * coordX) * cos(4.0 * b * coordY) * cos(4.0 * c * coordZ); //0.0;
+	//    para->getParH(level)->vx_SP[j] =  velocity * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
+	//    para->getParH(level)->vy_SP[j] = -velocity * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
+	//    para->getParH(level)->vz_SP[j] =  0.0; //0.00001 * velocity * sin(4.0 * a * coordX) * cos(4.0 * b * coordY) * cos(4.0 * c * coordZ); //0.0;
 
-	    if (para->getCalcMedian()) {
-	        para->getParH(level)->vx_SP_Med[j] = 0.0f;
-	        para->getParH(level)->vy_SP_Med[j] = 0.0f;
-	        para->getParH(level)->vz_SP_Med[j] = 0.0f;
-	        para->getParH(level)->rho_SP_Med[j] = 0.0f;
-	        para->getParH(level)->press_SP_Med[j] = 0.0f;
-	    }
-	    if (para->getUseWale()) {
-	        para->getParH(level)->turbViscosity[j] = 0.0f;
-	        //Debug
-	        para->getParH(level)->gSij[j] = 0.0f;
-	        para->getParH(level)->gSDij[j] = 0.0f;
-	        para->getParH(level)->gDxvx[j] = 0.0f;
-	        para->getParH(level)->gDyvx[j] = 0.0f;
-	        para->getParH(level)->gDzvx[j] = 0.0f;
-	        para->getParH(level)->gDxvy[j] = 0.0f;
-	        para->getParH(level)->gDyvy[j] = 0.0f;
-	        para->getParH(level)->gDzvy[j] = 0.0f;
-	        para->getParH(level)->gDxvz[j] = 0.0f;
-	        para->getParH(level)->gDyvz[j] = 0.0f;
-	        para->getParH(level)->gDzvz[j] = 0.0f;
-	    }
+	//    if (para->getCalcMedian()) {
+	//        para->getParH(level)->vx_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->vy_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->vz_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->rho_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->press_SP_Med[j] = 0.0f;
+	//    }
+	//    if (para->getUseWale()) {
+	//        para->getParH(level)->turbViscosity[j] = 0.0f;
+	//        //Debug
+	//        para->getParH(level)->gSij[j] = 0.0f;
+	//        para->getParH(level)->gSDij[j] = 0.0f;
+	//        para->getParH(level)->gDxvx[j] = 0.0f;
+	//        para->getParH(level)->gDyvx[j] = 0.0f;
+	//        para->getParH(level)->gDzvx[j] = 0.0f;
+	//        para->getParH(level)->gDxvy[j] = 0.0f;
+	//        para->getParH(level)->gDyvy[j] = 0.0f;
+	//        para->getParH(level)->gDzvy[j] = 0.0f;
+	//        para->getParH(level)->gDxvz[j] = 0.0f;
+	//        para->getParH(level)->gDyvz[j] = 0.0f;
+	//        para->getParH(level)->gDzvz[j] = 0.0f;
+	//    }
 
-	}
+	//}
 	//////////////////////////////////////////////////////////////////////////
 }
 
