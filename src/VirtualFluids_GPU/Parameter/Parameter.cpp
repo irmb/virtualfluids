@@ -2074,6 +2074,9 @@ void Parameter::cudaAllocConc(int lev)
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->Conc), parH[lev]->mem_size_real_SP));	
 	//Device
 	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->Conc), parD[lev]->mem_size_real_SP));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)parH[lev]->mem_size_real_SP;
+	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyConcDH(int lev)
 {
@@ -2099,6 +2102,9 @@ void Parameter::cudaAllocTempFs(int lev)
 	{
 		checkCudaErrors( cudaMalloc((void**) &(parD[lev]->d27.f[0]), getDiffMod()*parH[lev]->mem_size_real_SP));
 	}	
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)(getDiffMod()*parH[lev]->mem_size_real_SP);
+	setMemsizeGPU(tmp, false);
 }
 //////////////////////////////////////////////////////////////////////////
 void Parameter::cudaAllocTempPressBC(int lev)
@@ -2150,6 +2156,10 @@ void Parameter::cudaAllocTempVeloBC(int lev)
 	checkCudaErrors( cudaMalloc((void**) &parD[lev]->TempVel.tempPulse, mem_size_TempVel_q));
 	checkCudaErrors( cudaMalloc((void**) &parD[lev]->TempVel.velo,      mem_size_TempVel_q));
 	checkCudaErrors( cudaMalloc((void**) &parD[lev]->TempVel.k,         mem_size_TempVel_k));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)(mem_size_TempVel_q * 3.0 + mem_size_TempVel_k);
+	setMemsizeGPU(tmp, false);
+
 }
 void Parameter::cudaCopyTempVeloBCHD(int lev)
 {
@@ -2182,6 +2192,9 @@ void Parameter::cudaAllocTempNoSlipBC(int lev)
 	// Device Memory
 	checkCudaErrors( cudaMalloc((void**) &parD[lev]->Temp.temp, mem_size_Temp_q));
 	checkCudaErrors( cudaMalloc((void**) &parD[lev]->Temp.k,    mem_size_Temp_k));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = (double)(mem_size_Temp_q + mem_size_Temp_k);
+	setMemsizeGPU(tmp, false);
 
 }
 void Parameter::cudaCopyTempNoSlipBCHD(int lev)
@@ -2261,6 +2274,7 @@ void Parameter::cudaAllocConcFile(int lev)
 {
 	unsigned int mem_size_int    = sizeof(unsigned int) * parH[lev]->numberOfPointsConc;
 
+	printf("numberOfPointsConc = %d \n", mem_size_int);
 	//Host
 	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->concIndex), mem_size_int     ));
 
