@@ -56,6 +56,7 @@ void run()
    double g_maxX1 = 4.096 + offs1;
    double g_maxX2 = 2.048;
    double g_maxX3 = 2.048;
+   double radius_inlet = 0.012;
 
    if (myid == 0)
    {
@@ -78,6 +79,7 @@ void run()
    mu::Parser fct;
    fct.SetExpr("U");
    fct.DefineConst("U", u_LB);
+
    SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
    velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
 
@@ -106,21 +108,18 @@ void run()
    SPtr<GbObject3D> gridCube(new GbCuboid3D(g_minX1, g_minX2, g_minX3, g_maxX1, g_maxX2, g_maxX3));
    if (myid == 0) GbSystem3D::writeGeoObject(gridCube.get(), pathOut + "/geo/gridCube", WbWriterVtkXmlBinary::getInstance());
    GenBlocksGridVisitor genBlocks(gridCube);
+   SPtr<GbObject3D> gridCylinder(new GbCylinder3D(-0.1317,- radius_inlet,- radius_inlet, -0.1107, + radius_inlet, + radius_inlet, radius_inlet));
+   GenBlocksGridVisitor genBlocks(gridCylinder);
    grid->accept(genBlocks);
 
    ////create pseudo pipe
    double offset1 = 30e-3;
    //GbCuboid3DPtr pipe(new GbCuboid3D(g_minX1, g_maxX2*0.5 - offset1, g_maxX3*0.5 - offset1, 270e-3, g_maxX2*0.5 + offset1, g_maxX3*0.5 + offset1));
    //if (myid == 0) GbSystem3D::writeGeoObject(pipe.get(), pathOut + "/geo/pipe", WbWriterVtkXmlASCII::getInstance());
-   
-
-
-
    //////////////////////////////////////////////////////////////////////////
    //refinement
    double blockLengthX3Fine = grid->getDeltaX(refineLevel) * blocknx[2];
-   double refHight = 0.002;
-
+   //double refHight = 0.002;
    //GbCuboid3DPtr refineBoxTop(new GbCuboid3D(g_minX1 - blockLength, g_minX2 - blockLength, g_maxX3 - refHight, g_maxX1 + blockLength, g_maxX2 + blockLength, g_maxX3));
    //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxTop.get(), pathOut + "/geo/refineBoxTop", WbWriterVtkXmlASCII::getInstance());
 
@@ -130,8 +129,16 @@ void run()
 
    SPtr<GbSphere3D> refineSphereL5(new GbSphere3D(g_minX1, 0.0, 0.0, 3.0*L));
    if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL5.get(), pathOut + "/geo/refineSphereL5", WbWriterVtkXmlASCII::getInstance());
-   
-   SPtr<GbSphere3D> refineSphereL9(new GbSphere3D(g_minX1+48e-3, 0.0, 0.0, 24e-3));
+
+   //full pipe refine
+   SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(-0.1107, -0.0165, -0.0165, 0.1317, 0.0165, 0.0165));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refBoxL7", WbWriterVtkXmlASCII::getInstance());
+
+   //refine languid and upperlip
+   SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(-0.1007, -0.0165, -0.0165, -0.0627, 0.0165, 0.0165));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL9.get(), pathOut + "/geo/refBoxL7", WbWriterVtkXmlASCII::getInstance());
+  
+   SPtr<GbSphere3D> refineSphereL9(new GbSphere3D(g_minX1+76e-3, 0.0, g_minX3+15e-3, 24e-3));
    if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL9.get(), pathOut + "/geo/refineSphereL9", WbWriterVtkXmlASCII::getInstance());
 
    if (refineLevel > 0)
@@ -139,6 +146,8 @@ void run()
       if (myid == 0) UBLOG(logINFO, "Refinement - start");
       RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
       refineHelper.addGbObject(refineSphereL5, 5);
+      refineHelper.addGbObject(refineBoxL7, 7);
+      refineHelper.addGbObject(refineBoxL9, 9);
       refineHelper.addGbObject(refineSphereL9, 9);
       refineHelper.refine();
       if (myid == 0) UBLOG(logINFO, "Refinement - end");
@@ -151,9 +160,34 @@ void run()
    }
 
    //interactors
-   SPtr<Interactor3D> opipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(opipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));//, Interactor3D::POINTS));
+   SPtr<Interactor3D> opipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(opipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+  
+   //walls
+   GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1-0.001 , g_minX2-0.001, g_minX3-0.001, g_maxX1+0.001, g_minX2, g_maxX3+0.001));
+   if (myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathOut + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+   GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1-0.001, g_maxX2, g_minX3-0.001, g_maxX1+0.001, g_maxX2+0.001, g_maxX3+0.001));
+   if (myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathOut + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+   GbCuboid3DPtr addWallZmin(new GbCuboid3D(g_minX1-0.001, g_minX2-0.001, g_minX3-0.001, g_maxX1+0.001, g_maxX2+0.001, g_minX3));
+   if (myid == 0) GbSystem3D::writeGeoObject(addWallZmin.get(), pathOut + "/geo/addWallZmin", WbWriterVtkXmlASCII::getInstance());
+   GbCuboid3DPtr addWallZmax(new GbCuboid3D(g_minX1-0.001, g_minX2-0.001, g_maxX3, g_maxX1+0.001, g_maxX2+0.001, g_maxX3+0.001));
+   if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathOut + "/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
 
-   //SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+   //wall interactors
+   SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, velBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, velBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, velBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, velBCAdapter, Interactor3D::SOLID));
+
+   //inflow
+   GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1-0.001, -radius_inlet-0.001, -radius_inlet-0.001, g_minX1+0.001, radius_inlet+0.001, radius_inlet + 0.001, radius_inlet));
+   if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+   //outflow
+   GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-0.001, g_minX3-0.001, g_maxX1+0.001, g_maxX2+0.001, g_maxX3+0.001));
+   if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathOut + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
+   //inflow
+   SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+   //outflow
+   SPtr<D3Q27Interactor> outflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowBCAdapter, Interactor3D::SOLID));
 }
 
 //////////////////////////////////////////////////////////////////////////
