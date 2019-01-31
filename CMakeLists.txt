@@ -157,6 +157,7 @@ IF (HULC.BUILD_VF_GKS)
 
     add_subdirectory(targets/apps/GKS/PropaneFlame)
     add_subdirectory(targets/apps/GKS/Room)
+    add_subdirectory(targets/apps/GKS/ConfinedCombustion)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()

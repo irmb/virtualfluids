@@ -255,17 +255,14 @@ void gksTest( std::string path )
 int main( int argc, char* argv[])
 {
     if( argc > 1 ) gpuIndex = atoi( argv[1] );
-
-    if( argc > 2 ) Re = atof( argv[2] );
-
-    if( argc > 3 ) nx = atoi( argv[3] );
-
-    if( argc > 4 ) dtPerL = atoi( argv[4] );
+    if( argc > 2 ) Re       = atof( argv[2] );
+    if( argc > 3 ) nx       = atoi( argv[3] );
+    if( argc > 4 ) dtPerL   = atoi( argv[4] );
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::string path( "F:/Work/Computations/TaylorGreenVortex_3D/results/GKS/" );
-    //std::string path( "./" );
+    //std::string path( "F:/Work/Computations/TaylorGreenVortex_3D/results/GKS/" );
+    std::string path( "./results/GKS/" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);

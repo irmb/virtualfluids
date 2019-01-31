@@ -49,17 +49,13 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 64;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 4.0;
-    real H = 3.0;
+    real L = 1.0;
 
-    real dx = H / real(nx);
-
-
-    real Ra = 1.0e9;
+    real dx = L / real(nx);
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -69,21 +65,27 @@ void thermalCavity( std::string path, std::string simulationName )
     real g   = 9.81;
     real rho = 1.2;
 
-    real lambda     = Ba / ( 2.0 * g * H );
-    real lambdaHot  = lambda / ( 1.0 + eps * 0.5 );
-    real lambdaCold = lambda / ( 1.0 - eps * 0.5 );
+    real S_1 = 0.3;
+    real S_2 = 0.4;
+
+    real R_Mixture = S_1               * 8.31445984848 / 16.04e-3      // O2
+				   + S_2               * 8.31445984848 / 32.00e-3      // CH4
+		           + (1.0 - S_1 - S_2) * 8.31445984848 / 28.00e-3;     // N2
+
+    real lambdaCold = 0.5 / ( R_Mixture *  300 );
+    real lambdaHot  = 0.5 / ( R_Mixture * 1200 );
     
-    real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
+    real mu = 1.0e-3;
 
-    real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * lambda ) );
-    real U   = sqrt( Ra ) * mu / ( rho * L );
+    //real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * lambda ) );
+    //real U   = cs;
 
-    real CFL = 0.25;
+    //real CFL = 0.8;
 
-    real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = 1.0e-6; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
-    *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
+    //*logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
     //////////////////////////////////////////////////////////////////////////
@@ -94,16 +96,19 @@ void thermalCavity( std::string path, std::string simulationName )
     parameters.Pr = Pr;
     parameters.mu = mu;
 
+    parameters.D  = mu;
+
     parameters.force.x = 0;
     parameters.force.y = 0;
-    parameters.force.z = -g;
+    parameters.force.z = 0;
 
     parameters.dt = dt;
     parameters.dx = dx;
 
-    parameters.lambdaRef = lambda;
+    parameters.lambdaRef = lambdaCold;
 
-    parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
+    //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
+    parameters.viscosityModel = ViscosityModel::constant;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,26 +120,13 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*H,  
-    //                            0.5*L,  0.5*L,  0.5*H, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*dx,  
+                                0.5*L,  0.5*L,  0.5*dx, dx);
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
-                                0.5*L,  0.5*L,  H  , dx);
+    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  -0.5*L,  
+    //                            0.5*L,  0.5*L,   0.5*L, dx);
 
-    Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
-    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 0.6, 2.0*H );
-
-    //gridBuilder->addGrid( &refRegion_1, 1);
-    //gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
-
-    gridBuilder->setNumberOfLayers(0,10);
-
-    gridBuilder->addGrid( &sphere, 2 );
-    //gridBuilder->addGrid( &cylinder, 2 );
-
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -150,7 +142,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
-    //meshAdapter.findPeriodicBoundaryNeighbors();
+    meshAdapter.findPeriodicBoundaryNeighbors();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -165,9 +157,10 @@ void thermalCavity( std::string path, std::string simulationName )
     
     SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
-
+    
+    //bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
 
@@ -183,30 +176,19 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+    //SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, false );
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
+    //bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
+    //bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*dx; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*dx; } );
 
     //////////////////////////////////////////////////////////////////////////
-
-    SPtr<BoundaryCondition> hotPlate = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, true );
-
-    hotPlate->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
-        //return center.z < 0.0 && 
-        //       std::fabs(center.x) < 0.5 && 
-        //       std::fabs(center.y) < 0.5; 
-
-        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
-    } );
-
-    //////////////////////////////////////////////////////////////////////////
-
-    dataBase->boundaryConditions.push_back( bcMX );
-    dataBase->boundaryConditions.push_back( bcPX );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
@@ -214,7 +196,8 @@ void thermalCavity( std::string path, std::string simulationName )
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
 
-    dataBase->boundaryConditions.push_back( hotPlate );
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPX );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,10 +210,29 @@ void thermalCavity( std::string path, std::string simulationName )
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        real rhoLocal = rho * std::exp( - ( 2.0 * g * H * lambdaCold ) * cellCenter.z / H );
+        real rhoLocal = rho;
+        real lambdaLocal = lambdaCold;
+        //real lambdaLocal = lambdaHot;
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaCold ), parameters.K );
+        real radius = sqrt( cellCenter.x*cellCenter.x + cellCenter.y*cellCenter.y + cellCenter.z*cellCenter.z );
+
+        //if( radius < 0.2 )
+        //{
+        //    lambdaLocal = lambdaHot;
+        //}
+
+        //lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * exp( - 10. * ( cellCenter.x*cellCenter.x + cellCenter.y*cellCenter.y + cellCenter.z*cellCenter.z ) );
+
+        //lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * ( 0.5 * M_PI + atan( - 1000.0 * ( radius - 0.1) ) ) / M_PI;
+
+        //rhoLocal = rho * lambdaLocal / lambdaCold;
+
+        lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * exp( - 10. * ( (cellCenter.x-0.5)*(cellCenter.x-0.5) ) );
+
+        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaLocal, S_1, S_2 ), parameters.K );
     });
+
+    std::cout << toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambdaHot, S_1, S_2 ), parameters.K ).rhoE << std::endl;
 
     dataBase->copyDataHostToDevice();
 
@@ -261,24 +263,25 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        if( iter < 20000 )
-        {
-            std::dynamic_pointer_cast<IsothermalWall>(hotPlate)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / 20000.0 );
-        }
-        else
-        {
-            std::dynamic_pointer_cast<IsothermalWall>(hotPlate)->lambda = lambdaHot;
-        }
+        //if( iter < 40000 )
+        //{
+        //    std::dynamic_pointer_cast<IsothermalWall>(bcMX)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / 40000.0 );
+        //}
+        //if( iter == 40000 )
+        //{
+        //    //std::dynamic_pointer_cast<IsothermalWall>(bcMX)->lambda = lambdaHot;
+        //    dataBase->boundaryConditions[4] = bcMX_2;
+        //}
 
         TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
 
         if( 
-            //( iter < 10     && iter % 1     == 0 ) ||
-            //( iter < 100    && iter % 10    == 0 ) ||
-            //( iter < 1000   && iter % 100   == 0 ) ||
-            //( iter < 10000  && iter % 1000  == 0 ) ||
-            //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter >= 10000 && iter % 100000 == 0 )
+            //( iter < 10       && iter % 1     == 0 ) ||
+            //( iter < 100      && iter % 10    == 0 ) ||
+            //( iter < 1000     && iter % 100   == 0 ) ||
+            //( iter < 10000    && iter % 1000  == 0 ) ||
+            ( iter < 1000000   && iter % 10000  == 0 ) ||
+            ( iter < 10000000 && iter % 100000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -306,9 +309,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/out/" );
-    std::string path( "out/" );
-    std::string simulationName ( "Room" );
+    std::string path( "F:/Work/Computations/out/ConfinedCombustion/" );
+    //std::string path( "out/" );
+    std::string simulationName ( "ConfinedCombustion" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
