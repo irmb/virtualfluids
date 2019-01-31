@@ -35,11 +35,7 @@ int SimulationInfoImp::getSimulationID()
 	return simID;
 }
 
-void SimulationInfoImp::setSimulationID(int simID)
-{
-	this->simID = simID;
-}
-
-SimulationInfoImp::SimulationInfoImp(int lx, double viscosity, std::string kernelName, int numberOfSimulations) : lx(lx), viscosity(viscosity), kernelName(kernelName), numberOfSimulations(numberOfSimulations)
+SimulationInfoImp::SimulationInfoImp(int simID, std::string kernelName, double viscosity, int lx, int numberOfSimulations, std::string simulationName)
+	: simID(simID), lx(lx), viscosity(viscosity), kernelName(kernelName), numberOfSimulations(numberOfSimulations), simulationName(simulationName)
 {
 }

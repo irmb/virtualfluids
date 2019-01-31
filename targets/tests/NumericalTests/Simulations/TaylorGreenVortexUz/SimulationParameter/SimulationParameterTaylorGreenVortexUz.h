@@ -6,27 +6,17 @@
 #include <string>
 #include <memory>
 
+struct TaylorGreenVortexUzParameterStruct;
+struct GridInformationStruct;
 
 class SimulationParameterTaylorGreenUz : public SimulationParameterImp
 {
 public:
-	static std::shared_ptr<SimulationParameterTaylorGreenUz> getNewInstance(std::string kernelName, real uz, real amplitude, real viscosity, real rho0,
-														real lx, real lz, real l0,
-														unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
-														unsigned int startStepCalculation, unsigned int ySliceForCalculation,
-														std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
-														bool writeFiles, unsigned int startStepFileWriter, std::string filePath,
-														std::vector<int> devices);
+	static std::shared_ptr<SimulationParameterTaylorGreenUz> getNewInstance(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 	double getMaxVelocity();
 	
 protected:
-	SimulationParameterTaylorGreenUz(std::string kernelName, real uz, real amplitude,
-							real viscosity, real rho0, real lx, real lz, real l0,
-							unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
-							unsigned int startStepCalculation, unsigned int ySliceForCalculation,
-							std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
-							bool writeFiles, unsigned int startStepFileWriter, std::string filePath, 
-							std::vector<int> devices);
+	SimulationParameterTaylorGreenUz(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 
 private:
 	real uz, amplitude, rho0;

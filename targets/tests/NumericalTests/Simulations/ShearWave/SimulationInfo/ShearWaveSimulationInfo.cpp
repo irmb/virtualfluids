@@ -1,17 +1,20 @@
 #include "ShearWaveSimulationInfo.h"
 
+#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
+#include "Utilities\Structs\GridInformationStruct.h"
+
 #include <sstream>
 
-std::shared_ptr<SimulationInfo> ShearWaveSimulationInfo::getNewInstance(double u0, double v0, int l0, int lx, double viscosity, std::string kernelName, int numberOfSimulations)
+std::shared_ptr<SimulationInfo> ShearWaveSimulationInfo::getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
 {
-	return std::shared_ptr<SimulationInfo>(new ShearWaveSimulationInfo(u0, v0, l0, lx, viscosity, kernelName, numberOfSimulations));
+	return std::shared_ptr<SimulationInfo>(new ShearWaveSimulationInfo(simID, kernelName,viscosity, simParaStruct, gridInfoStruct, numberOfSimulations));
 }
 
-ShearWaveSimulationInfo::ShearWaveSimulationInfo(double u0, double v0, int l0, int lx, double viscosity, std::string kernelName, int numberOfSimulations) : SimulationInfoImp(lx, viscosity, kernelName, numberOfSimulations)
+ShearWaveSimulationInfo::ShearWaveSimulationInfo(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
+	: SimulationInfoImp(simID, kernelName, viscosity, gridInfoStruct->lx, numberOfSimulations, "ShearWave")
 {
 	std::ostringstream oss;
-	oss << " u0: " << u0 / (lx / l0) << " v0: " << v0 / (lx / l0);
+	oss << " ux: " << simParaStruct->ux / (gridInfoStruct->lx / simParaStruct->l0) << " uz: " << simParaStruct->uz / (gridInfoStruct->lx / simParaStruct->l0);
 	this->simulationParameterString = oss.str();
 
-	simulationName = "ShearWave";
 }

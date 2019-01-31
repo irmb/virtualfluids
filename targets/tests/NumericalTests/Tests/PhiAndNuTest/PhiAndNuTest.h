@@ -9,11 +9,12 @@
 
 class FFTCalculator;
 class PhiAndNuTestPostProcessingStrategy;
+struct PhiAndNuTestParameterStruct;
 
 class PhiAndNuTest : public TestImp 
 {
 public:
-	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation);
+	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate);
 	
 	void update();
 	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PhiAndNuTestPostProcessingStrategy> postProStrategy);
@@ -32,7 +33,7 @@ public:
 
 
 private:
-	PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation);
+	PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate);
 	double calcOrderOfAccuracy(std::vector<double> data);
 	bool checkTestPassed(double orderOfAccuracy);
 	std::vector< double> calcNuDiff(std::vector< double> nu);

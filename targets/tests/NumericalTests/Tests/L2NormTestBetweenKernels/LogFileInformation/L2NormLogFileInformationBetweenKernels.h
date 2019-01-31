@@ -7,17 +7,18 @@
 #include <vector>
 
 class L2NormTestBetweenKernels;
+struct L2NormTestBetweenKernelsParameterStruct;
 
 class L2NormBetweenKernelsInformation : public TestLogFileInformation
 {
 public:
-	static std::shared_ptr< L2NormBetweenKernelsInformation> getNewInstance(std::vector< std::shared_ptr< L2NormTestBetweenKernels>> tests, std::string basicKernel, std::vector<int> timeSteps, std::vector<std::string> dataToCalc);
+	static std::shared_ptr< L2NormBetweenKernelsInformation> getNewInstance(std::vector< std::shared_ptr< L2NormTestBetweenKernels>> tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara);
 
 	std::string getOutput();
 
 private:
 	L2NormBetweenKernelsInformation() {};
-	L2NormBetweenKernelsInformation(std::vector< std::shared_ptr< L2NormTestBetweenKernels>> tests, std::string basicKernel, std::vector<int> timeSteps, std::vector<std::string> dataToCalc);
+	L2NormBetweenKernelsInformation(std::vector< std::shared_ptr< L2NormTestBetweenKernels>> tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara);
 
 	void deleteLastCharInOss();
 

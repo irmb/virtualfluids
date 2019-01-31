@@ -2,15 +2,33 @@
 #define NUMERICAL_TEST_FACTORY_IMP_H
 
 #include "NumericalTestFactory.h"
-#include "Utilities\ConfigFileReader\ConfigData.h"
 
-class AnalyticalResults;
+struct ConfigDataStruct;
+struct GridInformationStruct;
+struct L2NormTestStruct;
+struct L2NormTestParameterStruct;
+struct L2NormTestBetweenKernelsParameterStruct;
+struct L2NormTestBetweenKernelsStruct;
+struct LogFileParameterStruct;
+struct NumericalTestStruct;
+struct PhiAndNuTestStruct;
+struct PhiAndNuTestParameterStruct;
+struct ShearWaveParameterStruct;
+struct SimulationDataStruct;
+struct TaylorGreenVortexUxParameterStruct;
+struct TaylorGreenVortexUzParameterStruct;
+struct TestSimulationDataStruct;
+struct VectorWriterInformationStruct;
+
 class AnalyticalResults2DToVTKWriter;
 class ColorConsoleOutput;
 class L2NormTest;
+class L2NormPostProcessingStrategy;
+class L2NormBetweenKernelPostProcessingStrategy;
 class L2NormTestBetweenKernels;
 class LogFileTimeInformation;
 class LogFileQueueImp;
+class LogFileWriter;
 class PhiAndNuTest;
 class PhiAndNuTestPostProcessingStrategy;
 class SimulationInfo;
@@ -18,6 +36,8 @@ class SimulationLogFileInformation;
 class SimulationParameter;
 class SimulationResults;
 class TestQueueImp;
+class TestSimulation;
+class TestSimulationImp;
 class TestLogFileInformation;
 
 class NumericalTestFactoryImp : public NumericalTestFactory
@@ -33,34 +53,41 @@ private:
 	NumericalTestFactoryImp() {};
 	NumericalTestFactoryImp(std::shared_ptr<ConfigDataStruct> configFileData);
 
-	void init();
-	void makeTaylorGreenUxSimulations(std::string kernelName, double viscosity, double u0, double amplitude, int basicTimeStepLength);
-	void makeTaylorGreenUzSimulations(std::string kernelName, double viscosity, double u0, double amplitude, int basicTimeStepLength);
-	void makeShearWaveSimulations(std::string kernelName, double viscosity, double u0, double v0, int basicTimeStepLength);
-	void makePeriodicBoundaryConditionSimulationAndTests(std::vector< std::shared_ptr< SimulationParameter>> simPara, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector< std::shared_ptr< AnalyticalResults>> analyResult, std::shared_ptr< SimulationLogFileInformation> simlogFileInfo, std::string kernelName, std::vector< bool> simulationsRun, double viscosity, int basicTimeStepLength);
-	std::vector< std::shared_ptr< TestSimulation>> buildTestSimulation(std::vector< std::shared_ptr< SimulationParameter>> simPara, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector< std::shared_ptr< SimulationResults>> simResults, std::vector< std::shared_ptr< AnalyticalResults>> analyResult);
-	std::vector< std::shared_ptr< PhiAndNuTest>> makePhiAndNuTests(std::vector<std::shared_ptr<TestSimulation>> testSim, std::vector<std::shared_ptr<SimulationInfo>> simInfo, std::vector< std::shared_ptr< PhiAndNuTestPostProcessingStrategy>> phiAndNuPostProStrategy, double viscosity, std::string dataToCalculate);
-	std::vector< std::shared_ptr< L2NormTest>> makeL2NormTests(std::vector<std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector< std::shared_ptr< SimulationResults>> simResults, std::vector<std::shared_ptr<AnalyticalResults>> analyResult);
-	std::vector< std::shared_ptr< L2NormTestBetweenKernels>> makeL2NormTestsBetweenKernels(std::vector<std::shared_ptr< TestSimulation>> testSim, std::vector< std::shared_ptr< SimulationInfo>> simInfo, std::vector< std::shared_ptr< SimulationResults>> simResults, std::vector<std::shared_ptr<AnalyticalResults>> analyResult);
-	void makeLogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity, int basicTimeStepLength);
-	
-	void sortKernels();
-	bool shouldSimulationGroupRun(std::vector<bool> test);
-	unsigned int calcStartStepForToVectorWriter();
-	bool checkNuAndPhiTestCouldRun(std::vector<bool> test);
-	void calcNumberOfSimulations();
+	void init(std::shared_ptr<ConfigDataStruct> configFileData);
 
-	std::shared_ptr<ConfigDataStruct> cfd;
-	std::vector< std::shared_ptr< TestSimulation>> testSimulations;
-	std::shared_ptr< TestQueueImp> testQueue;
-	std::shared_ptr< LogFileQueueImp> logFileWriterQueue;
+	std::shared_ptr<NumericalTestStruct> makeNumericalTestStruct(std::shared_ptr<ConfigDataStruct> configFileData, std::shared_ptr<SimulationDataStruct> simDataStruct, std::string kernel, double viscosity, int basicTimeStepLength);
+	void addNumericalTestStruct(std::shared_ptr<NumericalTestStruct> numericalTestStruct);
+
+	std::shared_ptr<SimulationDataStruct> makeTaylorGreenUxSimulationData(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+	std::shared_ptr<SimulationDataStruct> makeTaylorGreenUzSimulationData(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+	std::shared_ptr<SimulationDataStruct> makeShearWaveSimulationData(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+
+	std::vector<std::shared_ptr<TestSimulationImp> > makeTestSimulations(std::vector<std::shared_ptr<TestSimulationDataStruct> > testSimDataStruct, std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int ySliceForCalculation);
+
+	std::shared_ptr<PhiAndNuTestStruct> makePhiAndNuTestsStructs(std::shared_ptr<PhiAndNuTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations, double viscosity);
+	std::shared_ptr<L2NormTestStruct> makeL2NormTestsStructs(std::shared_ptr<L2NormTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations);
+	std::shared_ptr<L2NormTestBetweenKernelsStruct> makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp>> testSim, std::string kernelName);
+	std::vector<std::shared_ptr<PhiAndNuTest> > makePhiAndNuTests(std::shared_ptr<PhiAndNuTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp>> testSim, std::vector< std::shared_ptr< PhiAndNuTestPostProcessingStrategy>> phiAndNuPostProStrategy, double viscosity, std::string dataToCalculate);
+	std::vector<std::shared_ptr<L2NormTest> > makeL2NormTests(std::vector<std::shared_ptr<TestSimulationImp>> testSim, std::vector< std::shared_ptr< L2NormPostProcessingStrategy>> postProStrategy, std::shared_ptr<L2NormTestParameterStruct> testParameter);
+	std::vector<std::vector<std::shared_ptr<L2NormTestBetweenKernels> > > makeL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
+	
+	std::vector<std::shared_ptr<L2NormTestBetweenKernels> > linkL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector< std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
+
+	std::shared_ptr< LogFileWriter> makeLogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara);
+
+	std::vector< std::shared_ptr< TestSimulation>> myTestSimulations;
+	std::shared_ptr< TestQueueImp> myTestQueue;
+	std::shared_ptr< LogFileQueueImp> myLogFileWriterQueue;
+
+	std::vector<std::vector<std::shared_ptr<L2NormTestBetweenKernels> > > l2NormTestsBetweenKernels;
+
+
 	std::shared_ptr< ColorConsoleOutput> colorOutput;
 	std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter;
 
 	int simID;
 	int numberOfSimulations;
 	int simPerKernel, numberOfTestGroupsBetweenKernels, numberOfTestsForOneSimulation, numberOfTestsBetweenKernels;
-	std::vector< std::shared_ptr< L2NormTestBetweenKernels>> l2KernelTests;
 	int posBasicSimulationForL2Test, posDivergentSimulationForL2Test;
 };
 #endif

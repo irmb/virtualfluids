@@ -7,11 +7,12 @@
 
 class AnalyticalResults;
 class FFTCalculator;
+struct PhiAndNuTestParameterStruct;
 
 class PhiAndNuTestPostProcessingStrategy : public PostProcessingStrategyImp
 {
 public:
-	static std::shared_ptr< PhiAndNuTestPostProcessingStrategy> getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::vector<std::string> dataToCalculatePhiAndNu , unsigned int startTimeStepCalculationPhiNu, unsigned int endTimeStepCalculationPhiNu);
+	static std::shared_ptr< PhiAndNuTestPostProcessingStrategy> getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<PhiAndNuTestParameterStruct> testPara);
 	void evaluate();
 
 	double getNuVx();
@@ -22,7 +23,7 @@ public:
 	double getPhiDiffVz();
 
 private:
-	PhiAndNuTestPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::vector<std::string> dataToCalculatePhiAndNu, unsigned int startTimeStepCalculationPhiNu, unsigned int endTimeStepCalculationPhiNu);
+	PhiAndNuTestPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<PhiAndNuTestParameterStruct> testPara);
 	
 	std::vector<std::vector<double>> reduceDataToTimeSteps(std::vector<std::vector<double>> data, unsigned int startTimeStep, unsigned int endTimeStep);
 

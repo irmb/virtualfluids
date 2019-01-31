@@ -9,10 +9,13 @@
 #include <memory>
 #include <vector>
 
-class ShearWaveInformation : public LogFileInformationImp, public SimulationLogFileInformation
+struct ShearWaveParameterStruct;
+struct GridInformationStruct;
+
+class ShearWaveInformation : public SimulationLogFileInformation
 {
 public:
-	static std::shared_ptr<ShearWaveInformation> getNewInstance(double u0, double v0, std::vector< bool> tests, std::vector< real> l, int l0);
+	static std::shared_ptr<ShearWaveInformation> getNewInstance(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
 	std::string getOutput();
 	std::string getFilePathExtensionOne();
@@ -20,12 +23,11 @@ public:
 
 private:
 	ShearWaveInformation() {};
-	ShearWaveInformation(double u0, double v0, std::vector< bool> tests, std::vector< real> l, int l0);
+	ShearWaveInformation(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
-	double u0;
-	double v0;
-	std::vector< bool> tests;
-	std::vector< real> l;
+	double ux;
+	double uz;
+	std::vector< real> lx;
 	int l0;
 };
 #endif

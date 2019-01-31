@@ -5,12 +5,13 @@
 #include "Utilities\SimulationInfo\SimulationInfo.h"
 
 #include "Tests\PhiAndNuTest\PostProcessingStrategy\PostProcessingStrategyPhiAndNuTest.h"
+#include "Tests\PhiAndNuTest\PhiAndNuTestParameterStruct.h"
 
 #include <iomanip>
 
-std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation)
+std::shared_ptr<PhiAndNuTest> PhiAndNuTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate)
 {
-	return std::shared_ptr<PhiAndNuTest>(new PhiAndNuTest(colorOutput, dataToCalculate, minOrderOfAccuracy, viscosity, startStepCalculation, endStepCalculation));
+	return std::shared_ptr<PhiAndNuTest>(new PhiAndNuTest(colorOutput, viscosity, testPara, dataToCalculate));
 }
 
 void PhiAndNuTest::evaluate()
@@ -102,8 +103,13 @@ double PhiAndNuTest::getOrderOfAccuracyPhiDiff()
 	return orderOfAccuracyPhiDiff;
 }
 
-PhiAndNuTest::PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double minOrderOfAccuracy, double viscosity, unsigned int startStepCalculation, unsigned int endStepCalculation) : TestImp(colorOutput), minOrderOfAccuracy(minOrderOfAccuracy), viscosity(viscosity), dataToCalculate(dataToCalculate), startStepCalculation(startStepCalculation), endStepCalculation(endStepCalculation)
+PhiAndNuTest::PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate)
+	: TestImp(colorOutput), viscosity(viscosity), dataToCalculate(dataToCalculate)
 {
+	minOrderOfAccuracy = testPara->minOrderOfAccuracy;
+	startStepCalculation = testPara->startTimeStepCalculation;
+	endStepCalculation = testPara->endTimeStepCalculation;
+
 	lx.resize(0);
 	phiDiff.resize(0);
 	nuDiff.resize(0);

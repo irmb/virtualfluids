@@ -1,34 +1,37 @@
 #include "ShearWaveSimulationParameter.h"
 
-#include "Simulation/ShearWave/InitialConditions/InitialConditionShearWave.h"
-#include "Utilities\KernelConfiguration\KernelConfigurationImp.h"
+#include "Simulations/ShearWave/InitialConditions/InitialConditionShearWave.h"
+#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
+
+#include "Utilities\Structs\GridInformationStruct.h"
 
 #include <sstream>
 
-std::shared_ptr<SimulationParameter> ShearWaveSimulationParameter::getNewInstance(std::string kernelName, real u0, real v0, real viscosity, real rho0, real lx, real lz, real l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength,
-																		unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels, bool writeFiles,
-																		unsigned int startStepFileWriter, std::string filePath,
-																		std::vector<int> devices)
+std::shared_ptr<SimulationParameter> ShearWaveSimulationParameter::getNewInstance(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
 {
-	return std::shared_ptr<SimulationParameter>(new ShearWaveSimulationParameter(kernelName, u0, v0, viscosity, rho0, lx, lz, l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels,
-																		writeFiles, startStepFileWriter, filePath, devices));
+	return std::shared_ptr<SimulationParameter>(new ShearWaveSimulationParameter(kernelName, viscosity, parameterStruct, gridInfo));
 }
 
 double ShearWaveSimulationParameter::getMaxVelocity()
 {
-	if(u0 > v0)
-		return u0 / (lx / l0);
-	return v0 / (lx / l0);
+	if(ux > uz)
+		return ux / (lx / l0);
+	return uz / (lx / l0);
 }
 
-ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernelName, real u0, real v0, real viscosity, real rho0, real lx, real lz, real l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels, bool writeFiles, unsigned int startStepFileWriter, std::string filePath, std::vector<int> devices)
-:SimulationParameterImp("ShearWave", viscosity, lx, lz, l0, lx, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, devices), u0(u0), v0(v0), rho0(rho0)
+ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
+:SimulationParameterImp(kernelName, viscosity, parameterStruct->basicSimulationParameter, gridInfo)
 {
+	this->ux = parameterStruct->ux;
+	this->uz = parameterStruct->uz;
+	this->l0 = parameterStruct->l0;
+	this->timeStepLength = parameterStruct->basicTimeStepLength * (gridInfo->lx / l0)*(gridInfo->lx / l0);
+	this->rho0 = parameterStruct->rho0;
+
 	std::ostringstream oss;
-	oss << filePath << "\\ShearWave\\viscosity" << viscosity << "\\u0_" << u0 << "_v0_" << v0 << "\\" << kernelName << "\\grid" << lx;
-	generateFilePath(oss.str());
+	oss << parameterStruct->vtkFilePath << "\\ShearWave\\viscosity" << viscosity << "\\ux_" << ux << "_uz_" << uz << "\\" << kernelName << "\\grid" << lx;
+	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
 
-	initialCondition = InitialConditionShearWave::getNewInstance(lx, lz, l0, u0, v0, rho0);
-	kernelConfig = KernelConfigurationImp::getNewInstance(kernelName);
+	initialCondition = InitialConditionShearWave::getNewInstance(lx, lz, l0, ux, uz, rho0);
 }

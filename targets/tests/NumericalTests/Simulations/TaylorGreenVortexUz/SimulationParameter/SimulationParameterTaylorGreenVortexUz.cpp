@@ -1,13 +1,13 @@
 #include "SimulationParameterTaylorGreenVortexUz.h"
 
 #include "Simulations/TaylorGreenVortexUz/InitialConditions/InitialConditionTaylorGreenVortexUz.h"
-#include "Utilities\KernelConfiguration\KernelConfigurationImp.h"
+#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
 
 #include <sstream>
 
-std::shared_ptr<SimulationParameterTaylorGreenUz> SimulationParameterTaylorGreenUz::getNewInstance(std::string kernelName, real uz, real amplitude, real viscosity, real rho0, real lx, real lz, real l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels, bool writeFiles, unsigned int startStepFileWriter, std::string filePath, std::vector<int> devices)
+std::shared_ptr<SimulationParameterTaylorGreenUz> SimulationParameterTaylorGreenUz::getNewInstance(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
 {
-	return std::shared_ptr<SimulationParameterTaylorGreenUz>(new SimulationParameterTaylorGreenUz(kernelName, uz, amplitude, viscosity, rho0, lx, lz, l0, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, filePath, devices));
+	return std::shared_ptr<SimulationParameterTaylorGreenUz>(new SimulationParameterTaylorGreenUz(kernelName, viscosity, tgvParameterStruct, gridInfo));
 }
 
 double SimulationParameterTaylorGreenUz::getMaxVelocity()
@@ -15,14 +15,19 @@ double SimulationParameterTaylorGreenUz::getMaxVelocity()
 	return uz / (lz / l0);
 }
 
-SimulationParameterTaylorGreenUz::SimulationParameterTaylorGreenUz(std::string kernelName, real uz, real amplitude, real viscosity, real rho0, real lx, real lz, real l0, unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, unsigned int startStepCalculation, unsigned int ySliceForCalculation, std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels, bool writeFiles, unsigned int startStepFileWriter, std::string filePath, std::vector<int> devices)
-:SimulationParameterImp("TaylorGreenVortex Uz", viscosity, lx, lz, l0, lz, numberOfTimeSteps, basisTimeStepLength, startStepCalculation, ySliceForCalculation, gridPath, maxLevel, numberOfGridLevels, writeFiles, startStepFileWriter, devices), uz(uz), amplitude(amplitude), rho0(rho0)
+SimulationParameterTaylorGreenUz::SimulationParameterTaylorGreenUz(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
+:SimulationParameterImp(kernelName, viscosity, tgvParameterStruct->basicSimulationParameter, gridInfo)
 {
+	this->uz = tgvParameterStruct->uz;
+	this->amplitude = tgvParameterStruct->amplitude;
+	this->l0 = tgvParameterStruct->l0;
+	this->timeStepLength = tgvParameterStruct->basicTimeStepLength * (gridInfo->lz / l0)*(gridInfo->lz / l0);
+	this->rho0 = tgvParameterStruct->rho0;
+
 	std::ostringstream oss;
-	oss << filePath << "\\TaylorGreenVortex Uz\\viscosity_" << viscosity << "\\uz_" << uz << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lx;
-	generateFilePath(oss.str());
+	oss << tgvParameterStruct->vtkFilePath << "\\TaylorGreenVortex Uz\\viscosity_" << viscosity << "\\uz_" << uz << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lx;
+	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
 
 	initialCondition = InitialConditionTaylorGreenUz::getNewInstance(lx, lz, l0, uz, amplitude, rho0);
-	kernelConfig = KernelConfigurationImp::getNewInstance(kernelName);
 }

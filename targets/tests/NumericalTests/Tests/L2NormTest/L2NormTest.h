@@ -9,10 +9,12 @@ class L2NormCalculator;
 class AnalyticalResults;
 class L2NormPostProcessingStrategy;
 
+struct L2NormTestParameterStruct;
+
 class L2NormTest : public TestImp
 {
 public:
-	static std::shared_ptr<L2NormTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double maxL2NormDiff, unsigned int basicTimeStep, unsigned int divergentTimeStep);
+	static std::shared_ptr<L2NormTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate);
 
 	void update();
 	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormPostProcessingStrategy> postProStrategy);
@@ -22,7 +24,7 @@ public:
 	void makeConsoleOutput();
 
 private:
-	L2NormTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double maxL2NormDiff, unsigned int basicTimeStep, unsigned int divergentTimeStep);
+	L2NormTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate);
 
 	unsigned int basicTimeStep, divergentTimeStep;
 	double resultBasicTimestep, resultDivergentTimeStep;

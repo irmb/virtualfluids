@@ -4,14 +4,16 @@
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 
 
-std::shared_ptr<Y2dSliceToResults> Y2dSliceToResults::getNewInstance(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter)
+std::shared_ptr<Y2dSliceToResults> Y2dSliceToResults::getNewInstance(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation)
 {
-	return std::shared_ptr<Y2dSliceToResults>(new Y2dSliceToResults(simResults, ySliceForCalculation, startTimeY2dSliceToVector, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter));
+	return std::shared_ptr<Y2dSliceToResults>(new Y2dSliceToResults(vectorWriterInfo, timeStepLength, simResults, ySliceForCalculation));
 }
 
-Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation, unsigned int startTimeY2dSliceToVector, unsigned int endTime, unsigned int timeStepLength, bool writeFiles, std::shared_ptr<FileWriter> fileWriter, unsigned int startTimeDataWriter): ToVectorWriter(ySliceForCalculation, startTimeY2dSliceToVector, endTime, timeStepLength, writeFiles, fileWriter, startTimeDataWriter)
+Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation)
+	: ToVectorWriter(vectorWriterInfo, timeStepLength)
 {
 	this->simResults = simResults;
+	this->ySliceForCalculation = ySliceForCalculation;
 }
 
 void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned int t, int level)

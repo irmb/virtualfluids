@@ -16,6 +16,8 @@ public:
 	static std::shared_ptr<FFTCalculator> getNewInstance(int lx, int lz, int timeStepLength);
 	
 	void calc(std::vector<std::vector<double>> data, bool transposeData);
+
+	double calcAmplitudeForTimeStep(std::vector<double> data, bool transposeData);
 	
 	double getNu();
 	double getPhiDiff();

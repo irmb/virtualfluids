@@ -1,8 +1,6 @@
 #include <mpi.h>
 #include <gmock/gmock.h>
 
-#include "wstp.h"
-
 #include "Utilities/ConfigFileReader/ConfigFileReader.h"
 #include "Utilities\LogFileQueue\LogFileQueue.h"
 #include "Utilities\NumericalTestFactory\NumericalTestFactoryImp.h"

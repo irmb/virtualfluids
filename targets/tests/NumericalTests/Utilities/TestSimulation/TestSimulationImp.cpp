@@ -1,23 +1,37 @@
 #include "TestSimulationImp.h"
 
-#include "VirtualFluids_GPU\Output\FileWriter.h"
-
+#include "Utilities\DataWriter\ToVectorWriter.h"
 #include "Utilities\SimulationParameter\SimulationParameter.h"
 #include "Utilities\SimulationInfo\SimulationInfo.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 #include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
 #include "Utilities\Test\SimulationObserver.h"
-#include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
 #include "Utilities\ColorConsoleOutput\ColorConsoleOutput.h"
 #include "Utilities\KernelConfiguration\KernelConfiguration.h"
 #include "Utilities\DataWriter\AnalyticalResults2DToVTKWriter\AnalyticalResults2DToVTKWriter.h"
+#include "Utilities\Structs\TestSimulationDataStruct.h"
+
 
 #include <sstream>
 #include <iomanip>
 
-std::shared_ptr<TestSimulation> TestSimulationImp::getNewInsance(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr< SimulationResults> simResults, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, bool writeAnalyticalResults)
+std::shared_ptr<TestSimulationImp> TestSimulationImp::getNewInsance(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResults, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput)
 {
-	return std::shared_ptr< TestSimulation>(new TestSimulationImp(simID, simPara, simInfo, colorOutput, simResults, analyticalResult, anaResultWriter, writeAnalyticalResults));
+	return std::shared_ptr<TestSimulationImp>(new TestSimulationImp(testSimData, simResults, toVectorWriter, anaResultWriter, colorOutput));
+}
+
+TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResults, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput)
+{
+	this->simPara = testSimData->simParameter;
+	this->simInfo = testSimData->simInformation;
+	this->analyticalResult = testSimData->analyticalResult;
+	this->simResults = simResults;
+	this->anaResultWriter = anaResultWriter;
+	this->toVectorWriter = toVectorWriter;
+	this->colorOutput = colorOutput;
+
+	this->simObserver.resize(0);
+	this->simualtionRun = false;
 }
 
 std::shared_ptr<SimulationParameter> TestSimulationImp::getSimulationParameter()
@@ -30,9 +44,19 @@ std::shared_ptr<SimulationResults> TestSimulationImp::getSimulationResults()
 	return simResults;
 }
 
+std::shared_ptr<AnalyticalResults> TestSimulationImp::getAnalyticalResults()
+{
+	return analyticalResult;
+}
+
 std::shared_ptr<DataWriter> TestSimulationImp::getDataWriter()
 {
-	return writeToVector;
+	return toVectorWriter;
+}
+
+std::shared_ptr<SimulationInfo> TestSimulationImp::getSimulationInfo()
+{
+	return simInfo;
 }
 
 bool TestSimulationImp::getSimulationRun()
@@ -84,11 +108,9 @@ void TestSimulationImp::setSimulationEndTimeAndNotifyObserver()
 	notifyObserver();
 	setTestEndTime();
 
-	if (writeAnalyticalResults) {
-		setAnalyticalResultWriteTimeStartTime();
-		writeAnalyticalResultsToVTK();
-		setAnalyticalResultWriteEndTime();
-	}
+	setAnalyticalResultWriteTimeStartTime();
+	writeAnalyticalResultsToVTK();
+	setAnalyticalResultWriteEndTime();
 }
 
 void TestSimulationImp::setTestStartTime()
@@ -126,27 +148,11 @@ std::string TestSimulationImp::getRunTimeOutput()
 	std::ostringstream oss;
 	oss << std::left << std::setfill(' ') << std::setw(11) << "Simulation" << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcSimTime() << " sec" << std::endl;
 	oss << std::left << std::setfill(' ') << std::setw(11) << "Test" << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcTestTime() << " sec" << std::endl;
-	if (writeAnalyticalResults)
-		oss << std::left << std::setfill(' ') << std::setw(11) << "FileWriting" << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcAnalyticalResultWriteTime() << " sec" << std::endl;
+	oss << std::left << std::setfill(' ') << std::setw(11) << "FileWriting" << std::setw(17) << simInfo->getSimulationName() << "\t" << std::right << std::setw(3) << simPara->getLx() << "\t\t" << std::setw(9) << calcAnalyticalResultWriteTime() << " sec" << std::endl;
 	return oss.str();
 }
 
 void TestSimulationImp::setParameter(std::shared_ptr<Parameter> para)
 {
 	this->para = para;
-}
-
-TestSimulationImp::TestSimulationImp(int simID, std::shared_ptr< SimulationParameter> simPara, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr< SimulationResults> simResults, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, bool writeAnalyticalResults) : simID(simID), colorOutput(colorOutput), simResults(simResults), writeAnalyticalResults(writeAnalyticalResults)
-{
-	this->simPara = simPara;
-	this->simInfo = simInfo;
-	this->simInfo->setSimulationID(simID);
-	this->analyticalResult = analyticalResult;
-	this->anaResultWriter = anaResultWriter;
-
-	
-	writeToVector = Y2dSliceToResults::getNewInstance(simResults, simPara->getYSliceForCalculation(), simPara->getStartTimeCalculation(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getWriteFiles(), std::shared_ptr<FileWriter>(new FileWriter()), simPara->getStartTimeDataWriter());
-
-	simObserver.resize(0);
-	simualtionRun = false;
 }

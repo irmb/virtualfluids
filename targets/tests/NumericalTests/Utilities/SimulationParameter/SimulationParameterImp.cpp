@@ -1,27 +1,28 @@
 #include "SimulationParameterImp.h"
 
+#include "Utilities\KernelConfiguration\KernelConfigurationImp.h"
+
+#include "Utilities\Structs\BasicSimulationParameterStruct.h"
+#include "Utilities\Structs\GridInformationStruct.h"
+
 #include <experimental/filesystem>
 
-SimulationParameterImp::SimulationParameterImp(std::string simName, real viscosity, real lx, real lz, real l0, real lForTimeStepLength,
-	unsigned int numberOfTimeSteps, unsigned int basisTimeStepLength, 
-	unsigned int startStepCalculation, unsigned int ySliceForCalculation, 
-	std::string gridPath, unsigned int maxLevel, unsigned int numberOfGridLevels,
-	bool writeFiles, unsigned int startStepFileWriter,
-	std::vector<int> devices)
-		:simName(simName), viscosity(viscosity), lx(lx), l0(l0), lz(lz),
-		numberOfTimeSteps(numberOfTimeSteps), basisTimeStepLength(basisTimeStepLength), 
-		startStepCalculation(startStepCalculation), ySliceForCalculation(ySliceForCalculation), 
-		gridPath(gridPath), maxLevel(maxLevel), numberOfGridLevels(numberOfGridLevels),
-		writeFiles(writeFiles), startStepFileWriter(startStepFileWriter), devices(devices)
+SimulationParameterImp::SimulationParameterImp(std::string kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
+	: viscosity(viscosity)
 {
-	timeStepLength = basisTimeStepLength * (lForTimeStepLength / l0)*(lForTimeStepLength / l0);
-	startTimeCalculation = timeStepLength * startStepCalculation;
-	startTimeDataWriter = timeStepLength * startStepFileWriter;
-	endTime = timeStepLength * numberOfTimeSteps;
+	kernelConfig = KernelConfigurationImp::getNewInstance(kernelName);
 
+	devices = basicSimPara->devices;
+	numberOfTimeSteps = basicSimPara->numberOfTimeSteps;
+	
+	gridPath = gridInfo->gridPath;
+	lx = gridInfo->lx;
+	lz = gridInfo->lz;
+	maxLevel = gridInfo->maxLevel;
+	numberOfGridLevels = gridInfo->numberOfGridLevels;
 }
 
-void SimulationParameterImp::generateFilePath(std::string filePath)
+void SimulationParameterImp::generateFileDirectionInMyStystem(std::string filePath)
 {
 	std::experimental::filesystem::path dir(filePath);
 	if (!(std::experimental::filesystem::exists(dir)))
@@ -50,7 +51,7 @@ unsigned int SimulationParameterImp::getNumberOfGridLevels()
 
 unsigned int SimulationParameterImp::getEndTime()
 {
-	return endTime;
+	return timeStepLength * numberOfTimeSteps;
 }
 
 unsigned int SimulationParameterImp::getTimeStepLength()
@@ -66,26 +67,6 @@ unsigned int SimulationParameterImp::getLx()
 unsigned int SimulationParameterImp::getLz()
 {
 	return lz;
-}
-
-unsigned int SimulationParameterImp::getYSliceForCalculation()
-{
-	return ySliceForCalculation;
-}
-
-unsigned int SimulationParameterImp::getStartTimeCalculation()
-{
-	return startTimeCalculation;
-}
-
-bool SimulationParameterImp::getWriteFiles()
-{
-	return writeFiles;
-}
-
-unsigned int SimulationParameterImp::getStartTimeDataWriter()
-{
-	return startTimeDataWriter;
 }
 
 std::vector<int> SimulationParameterImp::getDevices()

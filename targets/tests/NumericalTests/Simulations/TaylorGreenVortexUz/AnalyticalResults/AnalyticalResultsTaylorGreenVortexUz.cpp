@@ -1,11 +1,13 @@
 #include "AnalyticalResultsTaylorGreenVortexUz.h"
 
+#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-std::shared_ptr<AnalyticalResults> AnalyticalResultsTaylorGreenUz::getNewInstance(double viscosity, double uz, double amplitude, double l0, double rho0)
+std::shared_ptr<AnalyticalResults> AnalyticalResultsTaylorGreenUz::getNewInstance(double viscosity, std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct)
 {
-	return std::shared_ptr<AnalyticalResults>(new AnalyticalResultsTaylorGreenUz(viscosity, uz, amplitude, l0, rho0));
+	return std::shared_ptr<AnalyticalResults>(new AnalyticalResultsTaylorGreenUz(viscosity, simParaStruct));
 }
 
 void AnalyticalResultsTaylorGreenUz::calc(std::shared_ptr< SimulationResults> simResults)
@@ -24,7 +26,11 @@ void AnalyticalResultsTaylorGreenUz::calc(std::shared_ptr< SimulationResults> si
 	calculated = true;
 }
 
-AnalyticalResultsTaylorGreenUz::AnalyticalResultsTaylorGreenUz(double viscosity, double uz, double amplitude, double l0, double rho0) : AnalyticalResultsImp(), viscosity(viscosity), uz(uz), amplitude(amplitude), l0(l0), rho0(rho0)
+AnalyticalResultsTaylorGreenUz::AnalyticalResultsTaylorGreenUz(double viscosity, std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct) : AnalyticalResultsImp()
 {
-	
+	this->viscosity = viscosity;
+	this->uz = simParaStruct->uz;
+	this->amplitude = simParaStruct->amplitude;
+	this->l0 = simParaStruct->l0;
+	this->rho0 = simParaStruct->rho0;
 }

@@ -5,13 +5,16 @@
 
 #include <memory>
 
+struct ShearWaveParameterStruct;
+struct GridInformationStruct;
+
 class ShearWaveSimulationInfo : public SimulationInfoImp
 {
 public:
-	static std::shared_ptr< SimulationInfo> getNewInstance(double u0, double v0, int l0, int lx, double viscosity, std::string kernelName, int numberOfSimulations);
+	static std::shared_ptr< SimulationInfo> getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
 
 private:
 	ShearWaveSimulationInfo() {};
-	ShearWaveSimulationInfo(double u0, double v0, int l0, int lx, double viscosity, std::string kernelName, int numberOfSimulations);
+	ShearWaveSimulationInfo(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
 };
 #endif 

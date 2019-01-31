@@ -1,21 +1,21 @@
 #include "LogFileInformationTaylorGreenVortexUz.h"
 
-std::shared_ptr<LogFileInformationTaylorGreenUz> LogFileInformationTaylorGreenUz::getNewInstance(double uz, double amplitude, std::vector< bool> tests, std::vector<double> l, int l0)
+#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+
+std::shared_ptr<LogFileInformationTaylorGreenUz> LogFileInformationTaylorGreenUz::getNewInstance(std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct)
 {
-	return std::shared_ptr<LogFileInformationTaylorGreenUz>(new LogFileInformationTaylorGreenUz(uz, amplitude, tests, l, l0));
+	return std::shared_ptr<LogFileInformationTaylorGreenUz>(new LogFileInformationTaylorGreenUz(simParaStruct, gridInfoStruct));
 }
 
 std::string LogFileInformationTaylorGreenUz::getOutput()
 {
 	makeCenterHead("TaylorGreenVortex V0 Information");
-	for (int i = 0; i < tests.size(); i++) {
-		if (tests.at(i)) {
-			oss << "Lx=" << l.at(i) << std::endl;
-			oss << "l0=" << l0 << std::endl;
-			oss << "uz=" << uz / (l.at(i) / l0) << std::endl;
-			oss << "Amplitude=" << amplitude / (l.at(i) / l0) << std::endl;
-			oss << std::endl;
-		}
+	for (int i = 0; i < lz.size(); i++) {
+		oss << "Lz=" << lz.at(i) << std::endl;
+		oss << "l0=" << l0 << std::endl;
+		oss << "uz=" << uz / (lz.at(i) / l0) << std::endl;
+		oss << "Amplitude=" << amplitude / (lz.at(i) / l0) << std::endl;
+		oss << std::endl;
 	}
 	
 	return oss.str();
@@ -35,6 +35,12 @@ std::string LogFileInformationTaylorGreenUz::getFilePathExtensionTwo()
 	return oss.str();
 }
 
-LogFileInformationTaylorGreenUz::LogFileInformationTaylorGreenUz(double uz, double amplitude, std::vector< bool> tests, std::vector< double> l, int l0) : uz(uz), amplitude(amplitude), tests(tests), l(l), l0(l0)
+LogFileInformationTaylorGreenUz::LogFileInformationTaylorGreenUz(std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct)
 {
+	this->uz = simParaStruct->uz;
+	this->amplitude = simParaStruct->amplitude;
+	this->l0 = simParaStruct->l0;
+
+	for (int i = 0; i < gridInfoStruct.size(); i++)
+		lz.push_back(gridInfoStruct.at(i)->lz);
 }

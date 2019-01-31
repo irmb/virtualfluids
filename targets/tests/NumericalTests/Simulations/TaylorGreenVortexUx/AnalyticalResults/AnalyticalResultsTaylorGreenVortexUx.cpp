@@ -1,11 +1,13 @@
 #include "AnalyticalResultsTaylorGreenVortexUx.h"
 
+#include "Simulations\TaylorGreenVortexUx\TaylorGreenVortexUxParameterStruct.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-std::shared_ptr<AnalyticalResults> AnalyticalResultsTaylorGreenUx::getNewInstance(double viscosity, double ux, double amplitude, double l0, double rho0)
+std::shared_ptr<AnalyticalResults> AnalyticalResultsTaylorGreenUx::getNewInstance(double viscosity, std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct)
 {
-	return std::shared_ptr<AnalyticalResults>(new AnalyticalResultsTaylorGreenUx(viscosity, ux, amplitude, l0, rho0));
+	return std::shared_ptr<AnalyticalResults>(new AnalyticalResultsTaylorGreenUx(viscosity, simParaStruct));
 }
 
 void AnalyticalResultsTaylorGreenUx::calc(std::shared_ptr< SimulationResults> simResults)
@@ -24,7 +26,12 @@ void AnalyticalResultsTaylorGreenUx::calc(std::shared_ptr< SimulationResults> si
 	calculated = true;
 }
 
-AnalyticalResultsTaylorGreenUx::AnalyticalResultsTaylorGreenUx(double viscosity, double ux, double amplitude, double l0, double rho0) : AnalyticalResultsImp(), viscosity(viscosity), ux(ux), amplitude(amplitude), l0(l0), rho0(rho0)
+AnalyticalResultsTaylorGreenUx::AnalyticalResultsTaylorGreenUx(double viscosity, std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct)
+	: AnalyticalResultsImp()
 {
-	
+	this->viscosity = viscosity;
+	this->ux = simParaStruct->ux;
+	this->amplitude = simParaStruct->amplitude;
+	this->l0 = simParaStruct->l0;
+	this->rho0 = simParaStruct->rho0;
 }

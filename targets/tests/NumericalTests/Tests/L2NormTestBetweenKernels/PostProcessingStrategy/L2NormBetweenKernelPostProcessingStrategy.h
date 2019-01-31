@@ -7,11 +7,12 @@
 
 class AnalyticalResults;
 class L2NormCalculator;
+struct L2NormTestBetweenKernelsParameterStruct;
 
 class L2NormBetweenKernelPostProcessingStrategy : public PostProcessingStrategyImp
 {
 public:
-	static std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::vector<int> timeSteps, std::vector< std::string> dataToCalculate);
+	static std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara);
 	void evaluate();
 
 	double getL2NormVx(int timeStep);
@@ -23,7 +24,7 @@ public:
 	virtual std::shared_ptr< SimulationResults> getSimulationResult();
 
 private:
-	L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::vector<int> timeSteps, std::vector< std::string> dataToCalculate);
+	L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara);
 
 	int calcPosInTimeStep(int time);
 

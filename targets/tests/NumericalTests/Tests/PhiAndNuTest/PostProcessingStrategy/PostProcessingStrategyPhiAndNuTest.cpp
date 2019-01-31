@@ -4,14 +4,20 @@
 #include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 
-std::shared_ptr<PhiAndNuTestPostProcessingStrategy> PhiAndNuTestPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::vector<std::string> dataToCalculatePhiAndNu, unsigned int startTimeStepCalculationPhiNu, unsigned int endTimeStepCalculationPhiNu)
+#include "Tests\PhiAndNuTest\PhiAndNuTestParameterStruct.h"
+
+std::shared_ptr<PhiAndNuTestPostProcessingStrategy> PhiAndNuTestPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<PhiAndNuTestParameterStruct> testPara)
 {
-	return std::shared_ptr<PhiAndNuTestPostProcessingStrategy>(new PhiAndNuTestPostProcessingStrategy(simResult, analyticalResult, dataToCalculatePhiAndNu, startTimeStepCalculationPhiNu, endTimeStepCalculationPhiNu));
+	return std::shared_ptr<PhiAndNuTestPostProcessingStrategy>(new PhiAndNuTestPostProcessingStrategy(simResult, analyticalResult, testPara));
 }
 
-PhiAndNuTestPostProcessingStrategy::PhiAndNuTestPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::vector<std::string> dataToCalculatePhiAndNu, unsigned int startTimeStepCalculationPhiNu, unsigned int endTimeStepCalculationPhiNu)
-	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult), dataToCalculatePhiAndNu(dataToCalculatePhiAndNu), startTimeStepCalculationPhiNu(startTimeStepCalculationPhiNu), endTimeStepCalculationPhiNu(endTimeStepCalculationPhiNu)
+PhiAndNuTestPostProcessingStrategy::PhiAndNuTestPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<PhiAndNuTestParameterStruct> testPara)
+	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
 {
+	dataToCalculatePhiAndNu = testPara->basicTestParameter->dataToCalc;
+	startTimeStepCalculationPhiNu = testPara->startTimeStepCalculation;
+	endTimeStepCalculationPhiNu = testPara->endTimeStepCalculation;
+
 	isEvaluated = false;
 	fftCalculator = FFTCalculator::getNewInstance(simResult->getNumberOfXNodes(), simResult->getNumberOfZNodes(), simResult->getTimeStepLength());
 }

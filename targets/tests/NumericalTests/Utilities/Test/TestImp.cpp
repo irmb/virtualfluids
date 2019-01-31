@@ -12,7 +12,8 @@ void TestImp::update()
 			if (simulations.at(i)->getSimulationRun())
 			{
 				simulationRun.at(i) = true;
-				postProStrategies.at(i)->evaluate();
+				if (postProStrategies.at(i)->checkEqualSimulationResults(simulations.at(i)->getSimulationResults()))
+					postProStrategies.at(i)->evaluate();
 			}
 		}
 	}

@@ -1,17 +1,19 @@
 #include "SimulationInfoTaylorGreenVortexUz.h"
 
+#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+#include "Utilities\Structs\GridInformationStruct.h"
+
 #include <sstream>
 
-std::shared_ptr<SimulationInfoTaylorGreenUz> SimulationInfoTaylorGreenUz::getNewInstance(double uz, double amplitude, int l0, int lz, double viscosity, std::string kernelName, int numberOfSimulations)
+std::shared_ptr<SimulationInfoTaylorGreenUz> SimulationInfoTaylorGreenUz::getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr< GridInformationStruct> gridInfoStruct, int numberOfSimulations)
 {
-	return std::shared_ptr<SimulationInfoTaylorGreenUz>(new SimulationInfoTaylorGreenUz(uz, amplitude, l0, lz, viscosity, kernelName, numberOfSimulations));
+	return std::shared_ptr<SimulationInfoTaylorGreenUz>(new SimulationInfoTaylorGreenUz(simID, kernelName, viscosity, simParaStruct, gridInfoStruct, numberOfSimulations));
 }
 
-SimulationInfoTaylorGreenUz::SimulationInfoTaylorGreenUz(double uz, double amplitude, int l0, int lz, double viscosity, std::string kernelName, int numberOfSimulations) : SimulationInfoImp(lz, viscosity, kernelName, numberOfSimulations)
+SimulationInfoTaylorGreenUz::SimulationInfoTaylorGreenUz(int simID, std::string kernelName, double viscosity, std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr< GridInformationStruct> gridInfoStruct, int numberOfSimulations)
+	: SimulationInfoImp(simID, kernelName, viscosity, gridInfoStruct->lz, numberOfSimulations, "TaylorGreenVortex Uz")
 {
 	std::ostringstream oss;
-	oss << " uz: " << uz / (lz / l0) << " Amplitude: " << amplitude / (lz / l0);
+	oss << " uz: " << simParaStruct->uz / (gridInfoStruct->lz / simParaStruct->l0) << " Amplitude: " << simParaStruct->amplitude / (gridInfoStruct->lz / simParaStruct->l0);
 	this->simulationParameterString = oss.str();
-
-	simulationName = "TaylorGreenVortex Uz";
 }

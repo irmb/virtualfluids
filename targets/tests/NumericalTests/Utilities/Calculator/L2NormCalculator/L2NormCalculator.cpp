@@ -1,8 +1,9 @@
 #include "L2NormCalculator.h"
 
+#include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
-
 #include <iostream>
 
 std::shared_ptr<L2NormCalculator> L2NormCalculator::getInstance()
@@ -13,8 +14,10 @@ std::shared_ptr<L2NormCalculator> L2NormCalculator::getInstance()
 	return uniqueInstance;
 }
 
-double L2NormCalculator::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level)
+double L2NormCalculator::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength)
 {
+	fftCalc = FFTCalculator::getNewInstance(lx, lz, timeStepLength);
+	double amplitude = fftCalc->calcAmplitudeForTimeStep(basicData, false);
 	double zaehler = 0.0;
 	double nenner = 0.0;
 	for (int i = 0; i < basicData.size(); i++) {
@@ -22,12 +25,10 @@ double L2NormCalculator::calc(std::vector<double> basicData, std::vector<double>
 		zaehler += ((divergentData.at(i) - basicData.at(i))*(divergentData.at(i) - basicData.at(i))) * flaeche;
 		nenner += (basicData.at(i)*basicData.at(i)) * flaeche;
 	}
-	if (nenner == 0.0)
-		return sqrt(zaehler);
-	return sqrt(zaehler / nenner);
+	return sqrt(zaehler / (amplitude * amplitude));
 }
 
 L2NormCalculator::L2NormCalculator()
 {
-
+	
 }

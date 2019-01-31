@@ -5,12 +5,13 @@
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 
 #include "Tests\L2NormTest\PostProcessingStrategy\PostProcessingStrategyL2NormTest.h"
+#include "Tests\L2NormTest\L2NormTestParameterStruct.h"
 
 #include <iomanip>
 
-std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double maxL2NormDiff, unsigned int basicTimeStep, unsigned int divergentTimeStep)
+std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
 {
-	return std::shared_ptr<L2NormTest>(new L2NormTest(colorOutput, dataToCalculate, maxL2NormDiff, basicTimeStep, divergentTimeStep));
+	return std::shared_ptr<L2NormTest>(new L2NormTest(colorOutput, testParameter, dataToCalculate));
 }
 
 void L2NormTest::update()
@@ -67,8 +68,10 @@ void L2NormTest::makeConsoleOutput()
 	colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
 }
 
-L2NormTest::L2NormTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, double maxL2NormDiff, unsigned int basicTimeStep, unsigned int divergentTimeStep)
-	: TestImp(colorOutput), basicTimeStep(basicTimeStep), divergentTimeStep(divergentTimeStep), dataToCalculate(dataToCalculate), maxL2NormDiff(maxL2NormDiff)
+L2NormTest::L2NormTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
+	: TestImp(colorOutput), dataToCalculate(dataToCalculate)
 {
-	
+	basicTimeStep = testParameter->basicTimeStep;
+	divergentTimeStep = testParameter->divergentTimeStep;
+	maxL2NormDiff = testParameter->maxDiff;
 }

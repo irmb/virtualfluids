@@ -12,7 +12,7 @@ std::shared_ptr<LogFileTimeInformation> LogFileTimeInformation::getNewInstance(s
 std::string LogFileTimeInformation::getOutput()
 {
 	makeCenterHead("Simulation Time Information");
-	oss << "FileWriting: " << std::boolalpha << fileWriting <<std::endl;
+	oss << "FileWriting= " << std::boolalpha << fileWriting <<std::endl;
 	oss << std::endl;
 	oss << std::left << std::setfill(' ') << std::setw(11) << "" << "TestName \t \t \t" << " L\t\t" << "Time for Test" << std::endl;
 	oss << std::endl;
@@ -24,4 +24,5 @@ std::string LogFileTimeInformation::getOutput()
 
 LogFileTimeInformation::LogFileTimeInformation(std::vector<std::shared_ptr<TestSimulation>> testSimulation, bool fileWriting) : testSimulation(testSimulation), fileWriting(fileWriting)
 {
+
 }

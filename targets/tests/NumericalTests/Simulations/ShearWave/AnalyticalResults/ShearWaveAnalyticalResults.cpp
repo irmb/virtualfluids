@@ -1,11 +1,13 @@
 #include "ShearWaveAnalyticalResults.h"
 
+#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-std::shared_ptr<AnalyticalResults> ShearWaveAnalyticalResults::getNewInstance(double viscosity, double u0, double v0, double l0, double rho0)
+std::shared_ptr<AnalyticalResults> ShearWaveAnalyticalResults::getNewInstance(double viscosity, std::shared_ptr< ShearWaveParameterStruct> simParaStruct)
 {
-	return std::shared_ptr<AnalyticalResults>(new ShearWaveAnalyticalResults(viscosity, u0, v0, l0, rho0));
+	return std::shared_ptr<AnalyticalResults>(new ShearWaveAnalyticalResults(viscosity,simParaStruct));
 }
 
 void ShearWaveAnalyticalResults::calc(std::shared_ptr<SimulationResults> simResults)
@@ -24,7 +26,12 @@ void ShearWaveAnalyticalResults::calc(std::shared_ptr<SimulationResults> simResu
 	calculated = true;
 }
 
-ShearWaveAnalyticalResults::ShearWaveAnalyticalResults(double viscosity, double u0, double v0, double l0, double rho0) : AnalyticalResultsImp(), viscosity(viscosity), u0(u0), v0(v0), l0(l0), rho0(rho0)
+ShearWaveAnalyticalResults::ShearWaveAnalyticalResults(double viscosity, std::shared_ptr< ShearWaveParameterStruct> simParaStruct)
+	: AnalyticalResultsImp()
 {
-
+	this->viscosity = viscosity;
+	this->u0 = simParaStruct->ux;
+	this->v0 = simParaStruct->uz;
+	this->l0 = simParaStruct->l0;
+	this->rho0 = simParaStruct->rho0;
 }

@@ -7,10 +7,13 @@
 #include <memory>
 #include <vector>
 
-class LogFileInformationTaylorGreenUx : public LogFileInformationImp, public SimulationLogFileInformation
+struct TaylorGreenVortexUxParameterStruct;
+struct GridInformationStruct;
+
+class LogFileInformationTaylorGreenUx : public SimulationLogFileInformation
 {
 public:
-	static std::shared_ptr<LogFileInformationTaylorGreenUx> getNewInstance(double ux, double amplitude, std::vector< bool> tests, std::vector< double> l, int l0);
+	static std::shared_ptr<LogFileInformationTaylorGreenUx> getNewInstance(std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct);
 	
 	std::string getOutput();
 	std::string getFilePathExtensionOne();
@@ -18,12 +21,11 @@ public:
 
 private:
 	LogFileInformationTaylorGreenUx() {};
-	LogFileInformationTaylorGreenUx(double ux, double amplitude, std::vector< bool> tests, std::vector< double> l, int l0);
+	LogFileInformationTaylorGreenUx(std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct);
 
 	double ux;
 	double amplitude;
-	std::vector< bool> tests;
-	std::vector< double> l;
+	std::vector< double> lx;
 	int l0;
 };
 #endif 

@@ -4,9 +4,11 @@
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 #include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
 
-std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::vector<int> timeSteps, std::vector< std::string> dataToCalculate)
+#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
+
+std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 {
-	return std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy>(new L2NormBetweenKernelPostProcessingStrategy(simResult, analyticalResult, timeSteps, dataToCalculate));
+	return std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy>(new L2NormBetweenKernelPostProcessingStrategy(simResult, analyticalResult, testPara));
 }
 
 void L2NormBetweenKernelPostProcessingStrategy::evaluate()
@@ -19,15 +21,15 @@ void L2NormBetweenKernelPostProcessingStrategy::evaluate()
 			for (int i = 0; i < timeSteps.size(); i++) {
 				int time = calcTimeStepInResults(timeSteps.at(i));
 				if (dataToCalculate.at(j) == "Vx")
-					l2Vx.push_back(l2Normcalculator->calc(analyticalResult->getVx().at(time), simResult->getVx().at(time), simResult->getLevels().at(time)));
+					l2Vx.push_back(l2Normcalculator->calc(analyticalResult->getVx().at(time), simResult->getVx().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
 				if (dataToCalculate.at(j) == "Vy")
-					l2Vy.push_back(l2Normcalculator->calc(analyticalResult->getVy().at(time), simResult->getVy().at(time), simResult->getLevels().at(time)));
+					l2Vy.push_back(l2Normcalculator->calc(analyticalResult->getVy().at(time), simResult->getVy().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
 				if (dataToCalculate.at(j) == "Vz")
-					l2Vz.push_back(l2Normcalculator->calc(analyticalResult->getVz().at(time), simResult->getVz().at(time), simResult->getLevels().at(time)));
+					l2Vz.push_back(l2Normcalculator->calc(analyticalResult->getVz().at(time), simResult->getVz().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
 				if (dataToCalculate.at(j) == "Press")
-					l2Press.push_back(l2Normcalculator->calc(analyticalResult->getPress().at(time), simResult->getPress().at(time), simResult->getLevels().at(time)));
+					l2Press.push_back(l2Normcalculator->calc(analyticalResult->getPress().at(time), simResult->getPress().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
 				if (dataToCalculate.at(j) == "Rho")
-					l2Rho.push_back(l2Normcalculator->calc(analyticalResult->getRho().at(time), simResult->getRho().at(time), simResult->getLevels().at(time)));
+					l2Rho.push_back(l2Normcalculator->calc(analyticalResult->getRho().at(time), simResult->getRho().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
 			}
 		}
 		isEvaluated = true;
@@ -64,8 +66,11 @@ std::shared_ptr<SimulationResults> L2NormBetweenKernelPostProcessingStrategy::ge
 	return simResult;
 }
 
-L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::vector<int> timeSteps, std::vector< std::string> dataToCalculate) : PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult), timeSteps(timeSteps), dataToCalculate(dataToCalculate)
+L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
 {
+	timeSteps = testPara->timeSteps;
+	dataToCalculate = testPara->basicTestParameter->dataToCalc;
 	l2Normcalculator = L2NormCalculator::getInstance();
 	isEvaluated = false;
 }

@@ -9,7 +9,7 @@
 class LogFileHead : public LogFileInformationImp
 {
 public:
-	static std::shared_ptr<LogFileInformation> getNewInstance(std::vector<int> devices);
+	static std::shared_ptr<LogFileHead> getNewInstance(std::vector<int> devices);
 	std::string getOutput();
 
 private:

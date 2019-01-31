@@ -179,5 +179,6 @@ endif()
 if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
 	add_subdirectory(targets/tests/NumericalTests)
+	add_subdirectory(targets/tests/NumericalTestPostProcessing)
 endif()
 

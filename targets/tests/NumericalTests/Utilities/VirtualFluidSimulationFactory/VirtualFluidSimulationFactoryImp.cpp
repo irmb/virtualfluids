@@ -26,10 +26,11 @@ std::vector<std::shared_ptr<VirtualFluidSimulation>> VirtualFluidSimulationFacto
 		std::shared_ptr< Parameter> para = Parameter::make();
 
 		testSim.at(i)->setParameter(para);
-		vfSim->initParameter(para, simPara->getKernelConfiguration() ,simPara->getViscosity(), simPara->getGridPath(), simPara->getFilePath(), simPara->getNumberOfGridLevels(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getDevices(), simPara->getMaxVelocity());
+		vfSim->initParameter(para, simPara->getKernelConfiguration(), simPara->getViscosity(), simPara->getGridPath(), simPara->getFilePath(), simPara->getNumberOfGridLevels(), simPara->getEndTime(), simPara->getTimeStepLength(), simPara->getDevices(), simPara->getMaxVelocity());
 		vfSim->initInitialConditions(simPara->getInitialCondition());
 		vfSim->initGridProvider();
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());
+
 		vfSim->setTestSimulation(testSim.at(i));
 		vfSimulations.push_back(vfSim);		
 	}

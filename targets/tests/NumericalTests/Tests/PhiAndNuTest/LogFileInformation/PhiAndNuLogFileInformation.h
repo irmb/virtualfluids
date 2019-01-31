@@ -7,24 +7,24 @@
 #include <vector>
 
 class PhiAndNuTest;
+struct PhiAndNuTestParameterStruct;
 
 class PhiAndNuInformation : public TestLogFileInformation
 {
 public:
-	static std::shared_ptr< PhiAndNuInformation> getNewInstance(unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation);
+	static std::shared_ptr< PhiAndNuInformation> getNewInstance(std::shared_ptr<PhiAndNuTestParameterStruct> testPara);
 
 	std::string getOutput();
 	void addTestGroup(std::vector< std::shared_ptr< PhiAndNuTest>> tests);
 
 private:
-	void fillMyData(std::vector< std::shared_ptr< PhiAndNuTest>> testGroup);
-
 	PhiAndNuInformation() {};
-	PhiAndNuInformation(unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation);
+	PhiAndNuInformation(std::shared_ptr<PhiAndNuTestParameterStruct> testPara);
+
+	void fillMyData(std::vector< std::shared_ptr< PhiAndNuTest>> testGroup);
 
 	std::vector< std::vector< std::shared_ptr< PhiAndNuTest>>> testGroups;
 	unsigned int startTimeStepCalculation, endTimeStepCalculation;
-
 	std::vector<int> lx;
 	std::vector<int> lxForErase;
 	std::vector<double> phiDiff;

@@ -1,13 +1,14 @@
 #include "L2NormLogFileInformationBetweenKernels.h"
 
 #include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernels.h"
+#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>
 
-std::shared_ptr<L2NormBetweenKernelsInformation> L2NormBetweenKernelsInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTestBetweenKernels>> tests, std::string basicKernel, std::vector<int> timeSteps, std::vector<std::string> dataToCalc)
+std::shared_ptr<L2NormBetweenKernelsInformation> L2NormBetweenKernelsInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTestBetweenKernels>> tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 {
-	return std::shared_ptr<L2NormBetweenKernelsInformation>(new L2NormBetweenKernelsInformation(tests, basicKernel, timeSteps, dataToCalc));
+	return std::shared_ptr<L2NormBetweenKernelsInformation>(new L2NormBetweenKernelsInformation(tests, testPara));
 }
 
 std::string L2NormBetweenKernelsInformation::getOutput()
@@ -34,9 +35,12 @@ std::string L2NormBetweenKernelsInformation::getOutput()
 	return oss.str();
 }
 
-L2NormBetweenKernelsInformation::L2NormBetweenKernelsInformation(std::vector<std::shared_ptr<L2NormTestBetweenKernels>> tests, std::string basicKernel, std::vector<int> timeSteps, std::vector<std::string> dataToCalc) : tests(tests), basicKernel(basicKernel), timeSteps(timeSteps), dataToCalc(dataToCalc)
+L2NormBetweenKernelsInformation::L2NormBetweenKernelsInformation(std::vector<std::shared_ptr<L2NormTestBetweenKernels>> tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+	: tests(tests)
 {
-
+	basicKernel = testPara->basicKernel;
+	timeSteps = testPara->timeSteps;
+	dataToCalc = testPara->basicTestParameter->dataToCalc;
 }
 
 void L2NormBetweenKernelsInformation::deleteLastCharInOss()

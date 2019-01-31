@@ -1,11 +1,11 @@
 #ifndef SIMULATION_LOGFILE_INFORMATION_H
 #define SIMULATION_LOGFILE_INFORMATION_H
 
-#include "Utilities\LogFileInformation\LogFileInformation.h"
+#include "Utilities\LogFileInformation\LogFileInformationImp.h"
 
 #include <string>
 
-class SimulationLogFileInformation : public LogFileInformation
+class SimulationLogFileInformation : public LogFileInformationImp
 {
 public:
 	virtual std::string getFilePathExtensionOne() = 0;

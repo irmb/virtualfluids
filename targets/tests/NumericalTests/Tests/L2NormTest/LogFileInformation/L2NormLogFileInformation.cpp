@@ -1,13 +1,14 @@
 #include "L2NormLogFileInformation.h"
 
 #include "Tests\L2NormTest\L2NormTest.h"
+#include "Tests\L2NormTest\L2NormTestParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>
 
-std::shared_ptr<L2NormInformation> L2NormInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTest>> tests, unsigned int basicTimeStep, unsigned int divergentTimeStep)
+std::shared_ptr<L2NormInformation> L2NormInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTest>> tests, std::shared_ptr<L2NormTestParameterStruct> testParameter)
 {
-	return std::shared_ptr<L2NormInformation>(new L2NormInformation(tests, basicTimeStep, divergentTimeStep));
+	return std::shared_ptr<L2NormInformation>(new L2NormInformation(tests, testParameter));
 }
 
 std::string L2NormInformation::getOutput()
@@ -26,7 +27,8 @@ std::string L2NormInformation::getOutput()
 	return oss.str();
 }
 
-L2NormInformation::L2NormInformation(std::vector<std::shared_ptr<L2NormTest>> tests, unsigned int basicTimeStep, unsigned int divergentTimeStep) : tests(tests), basicTimeStep(basicTimeStep), divergentTimeStep(divergentTimeStep)
+L2NormInformation::L2NormInformation(std::vector<std::shared_ptr<L2NormTest>> tests, std::shared_ptr<L2NormTestParameterStruct> testParameter) : tests(tests)
 {
-
+	basicTimeStep = testParameter->basicTimeStep;
+	divergentTimeStep = testParameter->divergentTimeStep;
 }

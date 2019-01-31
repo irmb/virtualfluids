@@ -33,6 +33,16 @@ void FFTCalculator::calc(std::vector<std::vector<double>> data, bool transposeDa
 	phidiff = calcPhiDiff();
 }
 
+double FFTCalculator::calcAmplitudeForTimeStep(std::vector<double> data, bool transposeData)
+{
+	init();
+	this->transposeData = transposeData;
+	this->data.resize(0);
+	this->data.push_back(data);
+	std::vector<double> amplitude = calcAmplitudeForAllSteps();
+	return amplitude.at(0);
+}
+
 void FFTCalculator::init()
 {
 	fftResultsIm.clear();
@@ -209,7 +219,6 @@ std::vector<std::vector<double>> FFTCalculator::transpose(std::vector<std::vecto
 
 void FFTCalculator::initDataForFFT(fftw_complex * input, unsigned int step)
 {
-
 	for (int i = 0; i < data.at(step).size(); i++)
 	{
 		input[i][0] = data.at(step).at(i);

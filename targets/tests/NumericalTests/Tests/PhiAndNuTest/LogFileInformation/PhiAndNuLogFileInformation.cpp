@@ -1,14 +1,15 @@
 #include "PhiAndNuLogFileInformation.h"
 
 #include "Tests\PhiAndNuTest\PhiAndNuTest.h"
+#include "Tests\PhiAndNuTest\PhiAndNuTestParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>
 
 
-std::shared_ptr<PhiAndNuInformation> PhiAndNuInformation::getNewInstance(unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation)
+std::shared_ptr<PhiAndNuInformation> PhiAndNuInformation::getNewInstance(std::shared_ptr<PhiAndNuTestParameterStruct> testPara)
 {
-	return std::shared_ptr<PhiAndNuInformation>(new PhiAndNuInformation(startTimeStepCalculation, endTimeStepCalculation));
+	return std::shared_ptr<PhiAndNuInformation>(new PhiAndNuInformation(testPara));
 }
 
 std::string PhiAndNuInformation::getOutput()
@@ -92,7 +93,8 @@ void PhiAndNuInformation::fillMyData(std::vector<std::shared_ptr<PhiAndNuTest>> 
 	
 }
 
-PhiAndNuInformation::PhiAndNuInformation(unsigned int startTimeStepCalculation, unsigned int endTimeStepCalculation) : startTimeStepCalculation(startTimeStepCalculation), endTimeStepCalculation(endTimeStepCalculation)
+PhiAndNuInformation::PhiAndNuInformation(std::shared_ptr<PhiAndNuTestParameterStruct> testPara)
 {
-
+	startTimeStepCalculation = testPara->startTimeStepCalculation;
+	endTimeStepCalculation = testPara->endTimeStepCalculation;
 }

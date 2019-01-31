@@ -18,31 +18,41 @@
 #include <mpi.h>
 
 
-std::shared_ptr<AnalyticalResults2DToVTKWriterImp> AnalyticalResults2DToVTKWriterImp::getInstance()
+std::shared_ptr<AnalyticalResults2DToVTKWriterImp> AnalyticalResults2DToVTKWriterImp::getInstance(bool writeAnalyticalResults)
 {
 	static std::shared_ptr<AnalyticalResults2DToVTKWriterImp> uniqueInstance;
 	if (!uniqueInstance)
-		uniqueInstance = std::shared_ptr<AnalyticalResults2DToVTKWriterImp>(new AnalyticalResults2DToVTKWriterImp());
+		uniqueInstance = std::shared_ptr<AnalyticalResults2DToVTKWriterImp>(new AnalyticalResults2DToVTKWriterImp(writeAnalyticalResults));
 	return uniqueInstance;
+}
+
+AnalyticalResults2DToVTKWriterImp::AnalyticalResults2DToVTKWriterImp(bool writeAnalyticalResults) : writeAnalyticalResults(writeAnalyticalResults)
+{
+
 }
 
 void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult)
 {
-	std::cout << "Write Analytical Result To VTK-Files" << std::endl;
-	for (int level = para->getCoarse(); level <= para->getFine(); level++) {
+	if (writeAnalyticalResults) {
+		std::cout << "Write Analytical Result To VTK-Files" << std::endl;
+		for (int level = para->getCoarse(); level <= para->getFine(); level++) {
 #pragma omp parallel for
-		for (int timeStep = 0; timeStep < analyticalResult->getNumberOfTimeSteps(); timeStep++) {
-			const unsigned int numberOfParts = para->getParH(level)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
-			std::vector<std::string> fname;
-			unsigned int time = analyticalResult->getTimeSteps().at(timeStep)*analyticalResult->getTimeStepLength();
-			for (int j = 1; j <= numberOfParts; j++)
-				fname.push_back(para->getFName() + "AnalyticalResult\\Analytical_cells_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(j) + "_t_" + StringUtil::toString<int>(time) + ".vtk");
-			std::cout << "\t Write TimeStep=" << timeStep << " t=" << time << "..."; 
-			writeTimeStep(para, analyticalResult, level, fname, timeStep);
-			std::cout << "done." << std::endl;
+			for (int timeStep = 0; timeStep < analyticalResult->getNumberOfTimeSteps(); timeStep++) {
+				const unsigned int numberOfParts = para->getParH(level)->size_Mat_SP / para->getlimitOfNodesForVTK() + 1;
+				std::vector<std::string> fname;
+				unsigned int time = analyticalResult->getTimeSteps().at(timeStep)*analyticalResult->getTimeStepLength();
+				for (int j = 1; j <= numberOfParts; j++) {
+					std::string filePath = para->getFName();
+					filePath.resize(filePath.size() - 5);
+					fname.push_back(filePath + "AnalyticalResult\\Analytical_cells_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(j) + "_t_" + StringUtil::toString<int>(time) + ".vtk");
+				}
+				std::cout << "\t Write TimeStep=" << timeStep << " t=" << time << "...";
+				writeTimeStep(para, analyticalResult, level, fname, timeStep);
+				std::cout << "done." << std::endl;
+			}
 		}
+		std::cout << std::endl;
 	}
-	std::cout << std::endl;
 }
 
 

@@ -13,7 +13,6 @@ public:
 	virtual int getLx() = 0;
 	virtual int getNumberOfSimulations() = 0;
 	virtual int getSimulationID() = 0;
-	virtual void setSimulationID(int simID) = 0;
 
 private:
 

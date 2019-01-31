@@ -3,15 +3,17 @@
 
 #include "Utilities\Results\AnalyticalResults\AnalyticalResultImp.h"
 
+struct ShearWaveParameterStruct;
+
 class ShearWaveAnalyticalResults : public AnalyticalResultsImp
 {
 public:
-	static std::shared_ptr< AnalyticalResults> getNewInstance(double viscosity, double u0, double v0, double l0, double rho0);
+	static std::shared_ptr< AnalyticalResults> getNewInstance(double viscosity, std::shared_ptr< ShearWaveParameterStruct> simParaStruct);
 	void calc(std::shared_ptr< SimulationResults> simResults);
 
 private:
 	ShearWaveAnalyticalResults() {};
-	ShearWaveAnalyticalResults(double viscosity, double u0, double v0, double l0, double rho0);
+	ShearWaveAnalyticalResults(double viscosity, std::shared_ptr< ShearWaveParameterStruct> simParaStruct);
 
 	double viscosity, rho0;
 	double l0;
