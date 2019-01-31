@@ -10,12 +10,12 @@ class InitialCondition;
 class GridReaderforTesting : public GridReader 
 {
 public:
-	
+	static std::shared_ptr<GridReaderforTesting> getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition);
 	void setInitalNodeValues(const int numberOfNodes, const int level) const;
-
-	GridReaderforTesting(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition);
-			
+		
 private:
+	GridReaderforTesting(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition);
+
 	std::shared_ptr<InitialCondition> initialCondition;
 	
 };
