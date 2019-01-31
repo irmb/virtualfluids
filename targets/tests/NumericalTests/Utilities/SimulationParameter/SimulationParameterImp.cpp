@@ -74,11 +74,6 @@ std::vector<int> SimulationParameterImp::getDevices()
 	return devices;
 }
 
-std::shared_ptr<InitialCondition> SimulationParameterImp::getInitialCondition()
-{
-	return initialCondition;
-}
-
 std::shared_ptr<KernelConfiguration> SimulationParameterImp::getKernelConfiguration()
 {
 	return kernelConfig;

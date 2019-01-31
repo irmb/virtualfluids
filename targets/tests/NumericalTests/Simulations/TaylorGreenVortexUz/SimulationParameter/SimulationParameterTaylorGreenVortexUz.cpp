@@ -28,6 +28,4 @@ SimulationParameterTaylorGreenUz::SimulationParameterTaylorGreenUz(std::string k
 	oss << tgvParameterStruct->vtkFilePath << "\\TaylorGreenVortex Uz\\viscosity_" << viscosity << "\\uz_" << uz << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
-
-	initialCondition = InitialConditionTaylorGreenUz::getNewInstance(lx, lz, l0, uz, amplitude, rho0);
 }

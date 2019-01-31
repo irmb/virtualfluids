@@ -19,9 +19,9 @@ public:
 	unsigned int getTimeStepLength();
 	unsigned int getLx();
 	unsigned int getLz();
-	std::vector< int> getDevices();
-	std::shared_ptr< InitialCondition> getInitialCondition();
-	std::shared_ptr< KernelConfiguration> getKernelConfiguration();
+	std::vector<int> getDevices();
+	
+	std::shared_ptr<KernelConfiguration> getKernelConfiguration();
 
 protected:
 	SimulationParameterImp() {};
@@ -39,8 +39,7 @@ protected:
 	unsigned int maxLevel, numberOfGridLevels;
 	unsigned int timeStepLength;
 
-	std::shared_ptr< InitialCondition> initialCondition;
-	std::shared_ptr< KernelConfiguration> kernelConfig;
+	std::shared_ptr<KernelConfiguration> kernelConfig;
 };
 
 #endif

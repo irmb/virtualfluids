@@ -1,8 +1,6 @@
 #include "SimulationParameterTaylorGreenVortexUx.h"
 
-#include "Simulations/TaylorGreenVortexUx/InitialConditions/InitialConditionTaylorGreenVortexUx.h"
 #include "Simulations\TaylorGreenVortexUx\TaylorGreenVortexUxParameterStruct.h"
-
 #include "Utilities\Structs\GridInformationStruct.h"
 
 #include <sstream>
@@ -30,6 +28,4 @@ SimulationParameterTaylorGreenUx::SimulationParameterTaylorGreenUx(std::string k
 	oss << tgvParameterStruct->vtkFilePath << "\\TaylorGreenVortex Ux\\" << viscosity << "\\ux_" << ux << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
-
-	initialCondition = InitialConditionTaylorGreenUx::getNewInstance(lx, lz, l0, ux, amplitude, rho0);
 }

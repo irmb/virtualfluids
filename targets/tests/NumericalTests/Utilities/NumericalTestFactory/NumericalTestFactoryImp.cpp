@@ -6,20 +6,23 @@
 #include "Utilities\Structs\SimulationDataStruct.h"
 #include "Utilities\Structs\TestSimulationDataStruct.h"
 
-#include "Simulations/TaylorGreenVortexUx/SimulationParameter/SimulationParameterTaylorGreenVortexUx.h"
+#include "Simulations\TaylorGreenVortexUx\AnalyticalResults\AnalyticalResultsTaylorGreenVortexUx.h"
+#include "Simulations\TaylorGreenVortexUx\InitialConditions\InitialConditionTaylorGreenVortexUx.h"
 #include "Simulations/TaylorGreenVortexUx/LogFileInformation/LogFileInformationTaylorGreenVortexUx.h"
 #include "Simulations\TaylorGreenVortexUx\SimulationInfo\SimulationInfoTaylorGreenVortexUx.h"
-#include "Simulations\TaylorGreenVortexUx\AnalyticalResults\AnalyticalResultsTaylorGreenVortexUx.h"
+#include "Simulations/TaylorGreenVortexUx/SimulationParameter/SimulationParameterTaylorGreenVortexUx.h"
 
 #include "Simulations/TaylorGreenVortexUz/SimulationParameter/SimulationParameterTaylorGreenVortexUz.h"
 #include "Simulations/TaylorGreenVortexUz/LogFileInformation/LogFileInformationTaylorGreenvortexUz.h"
 #include "Simulations\TaylorGreenVortexUz\SimulationInfo\SimulationInfoTaylorGreenVortexUz.h"
 #include "Simulations\TaylorGreenVortexUz\AnalyticalResults\AnalyticalResultsTaylorGreenVortexUz.h"
+#include "Simulations\TaylorGreenVortexUz\InitialConditions\InitialConditionTaylorGreenVortexUz.h"
 
 #include "Simulations/ShearWave/SimulationParameter/ShearWaveSimulationParameter.h"
 #include "Simulations/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
 #include "Simulations\ShearWave\SimulationInfo\ShearWaveSimulationInfo.h"
 #include "Simulations\ShearWave\AnalyticalResults\ShearWaveAnalyticalResults.h"
+#include "Simulations\ShearWave\InitialConditions\InitialConditionShearWave.h"
 
 #include "Tests/PhiAndNuTest/PhiAndNuTest.h"
 #include "Tests\PhiAndNuTest\LogFileInformation\PhiAndNuLogFileInformation.h"
@@ -167,6 +170,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUx
 	for (int i = 0; i < gridInfoStruct.size(); i++) {
 		std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct> (new TestSimulationDataStruct);
 		aTestSimData->simParameter = SimulationParameterTaylorGreenUx::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
+		aTestSimData->initialCondition = InitialConditionTaylorGreenUx::getNewInstance(simParaStruct, gridInfoStruct.at(i));
 		aTestSimData->simInformation = SimulationInfoTaylorGreenUx::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
 		simID++;
 		aTestSimData->analyticalResult = AnalyticalResultsTaylorGreenUx::getNewInstance(viscosity, simParaStruct);
@@ -184,6 +188,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUz
 	for (int i = 0; i < gridInfoStruct.size(); i++) {
 		std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
 		aTestSimData->simParameter = SimulationParameterTaylorGreenUz::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
+		aTestSimData->initialCondition = InitialConditionTaylorGreenUz::getNewInstance(simParaStruct, gridInfoStruct.at(i));
 		aTestSimData->simInformation = SimulationInfoTaylorGreenUz::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
 		simID++;
 		aTestSimData->analyticalResult = AnalyticalResultsTaylorGreenUz::getNewInstance(viscosity, simParaStruct);
@@ -201,6 +206,7 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeShearWaveSimu
 	for (int i = 0; i < gridInfoStruct.size(); i++) {
 		std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
 		aTestSimData->simParameter = ShearWaveSimulationParameter::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
+		aTestSimData->initialCondition = InitialConditionShearWave::getNewInstance(simParaStruct, gridInfoStruct.at(i));
 		aTestSimData->simInformation = ShearWaveSimulationInfo::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
 		simID++;
 		aTestSimData->analyticalResult = ShearWaveAnalyticalResults::getNewInstance(viscosity, simParaStruct);

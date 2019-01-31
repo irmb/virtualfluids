@@ -21,6 +21,7 @@ public:
 
 	std::shared_ptr< SimulationParameter> getSimulationParameter();
 	std::shared_ptr< DataWriter> getDataWriter();
+	std::shared_ptr<InitialCondition> getInitialCondition();
 	std::shared_ptr<SimulationInfo> getSimulationInfo();
 
 	void registerSimulationObserver(std::shared_ptr< SimulationObserver> simObserver);
@@ -46,6 +47,7 @@ private:
 	double calcAnalyticalResultWriteTime();
 	void writeAnalyticalResultsToVTK();
 
+	std::shared_ptr<InitialCondition> initialCondition;
 	std::shared_ptr<SimulationParameter> simPara;
 	std::shared_ptr<SimulationInfo> simInfo;
 	std::shared_ptr<SimulationResults> simResults;

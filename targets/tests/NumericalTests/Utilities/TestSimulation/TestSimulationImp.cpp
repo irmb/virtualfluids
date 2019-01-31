@@ -25,6 +25,7 @@ TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> t
 	this->simPara = testSimData->simParameter;
 	this->simInfo = testSimData->simInformation;
 	this->analyticalResult = testSimData->analyticalResult;
+	this->initialCondition = testSimData->initialCondition;
 	this->simResults = simResults;
 	this->anaResultWriter = anaResultWriter;
 	this->toVectorWriter = toVectorWriter;
@@ -52,6 +53,11 @@ std::shared_ptr<AnalyticalResults> TestSimulationImp::getAnalyticalResults()
 std::shared_ptr<DataWriter> TestSimulationImp::getDataWriter()
 {
 	return toVectorWriter;
+}
+
+std::shared_ptr<InitialCondition> TestSimulationImp::getInitialCondition()
+{
+	return initialCondition;
 }
 
 std::shared_ptr<SimulationInfo> TestSimulationImp::getSimulationInfo()

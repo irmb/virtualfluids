@@ -131,8 +131,8 @@ std::vector<std::shared_ptr<VirtualFluidSimulation>> VirtualFluidSimulationFacto
 		vfSim->setParameter(para);
 		testSim.at(i)->setParameter(para);
 
-		initInitialConditions(testSim.at(i)->getSimulationParameter()->getInitialCondition(), para);
-		std::shared_ptr<GridReaderforTesting> grid = makeGridReaderForTesting(testSim.at(i)->getSimulationParameter()->getInitialCondition(), para);
+		initInitialConditions(testSim.at(i)->getInitialCondition(), para);
+		std::shared_ptr<GridReaderforTesting> grid = makeGridReaderForTesting(testSim.at(i)->getInitialCondition(), para);
 		vfSim->setGridProvider(grid);
 
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());

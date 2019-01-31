@@ -1,22 +1,25 @@
 #include "InitialConditionShearWave.h"
 
+#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
+#include "Utilities\Structs\GridInformationStruct.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
 
-InitialConditionShearWave::InitialConditionShearWave(real lx, real lz, real l0, real u0, real v0, real rho0)
+InitialConditionShearWave::InitialConditionShearWave(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct)
 {
-	this->l0 = l0;
+	this->l0 = simParaStruct->l0;
 	this->lx = lx;
 	this->lz = lz;
-	this->rho = rho0;
-	this->u0 = u0;
-	this->v0 = v0;
+	this->rho = simParaStruct->rho0;
+	this->u0 = simParaStruct->ux;
+	this->v0 = simParaStruct->uz;
 }
 
-std::shared_ptr<InitialConditionShearWave> InitialConditionShearWave::getNewInstance(real lx, real lz, real l0, real u0, real v0, real rho0)
+std::shared_ptr<InitialConditionShearWave> InitialConditionShearWave::getNewInstance(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct)
 {
-	return std::shared_ptr<InitialConditionShearWave>(new InitialConditionShearWave(lx, lz, l0, u0, v0, rho0));
+	return std::shared_ptr<InitialConditionShearWave>(new InitialConditionShearWave(simParaStruct, gridInfoStruct));
 }
 
 real InitialConditionShearWave::getInitVX(int i, int level)

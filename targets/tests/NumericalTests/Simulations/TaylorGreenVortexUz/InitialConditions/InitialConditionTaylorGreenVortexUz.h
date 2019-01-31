@@ -5,10 +5,13 @@
 
 #include <memory>
 
+struct TaylorGreenVortexUzParameterStruct;
+struct GridInformationStruct;
+
 class InitialConditionTaylorGreenUz :public InitialConditionImp
 {
 public:
-	static std::shared_ptr< InitialConditionTaylorGreenUz> getNewInstance(real lx, real lz, real l0, real uz, real amplitude, real rho0);
+	static std::shared_ptr< InitialConditionTaylorGreenUz> getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct);
 
 	real getInitVX(int i, int level);
 	real getInitVY(int i, int level);
@@ -17,7 +20,7 @@ public:
 	real getInitPRESS(int i, int level);
 
 private:
-	InitialConditionTaylorGreenUz(real lx, real lz, real l0, real u0, real amplitude, real rho0);
+	InitialConditionTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct);
 	InitialConditionTaylorGreenUz() {};
 
 	real Amp;

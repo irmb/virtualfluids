@@ -6,12 +6,12 @@
 #include <memory>
 
 class AnalyticalResults;
+class InitialCondition;
+class DataWriter;
 class SimulationParameter;
 class SimulationResults;
 class SimulationObserver;
-class DataWriter;
 class Parameter;
-class SimulationInfo;
 
 class TestSimulation
 {
@@ -21,6 +21,7 @@ public:
 
 	virtual std::shared_ptr<SimulationParameter> getSimulationParameter() = 0;
 	virtual std::shared_ptr<DataWriter> getDataWriter() = 0;
+	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
 
 	virtual bool getSimulationRun() = 0;
 	virtual std::shared_ptr<SimulationResults> getSimulationResults() = 0;

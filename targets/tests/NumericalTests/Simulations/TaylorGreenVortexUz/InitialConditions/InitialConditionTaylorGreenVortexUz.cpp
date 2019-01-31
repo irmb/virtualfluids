@@ -1,21 +1,24 @@
 #include "InitialConditionTaylorGreenVortexUz.h"
 
+#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+#include "Utilities\Structs\GridInformationStruct.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-InitialConditionTaylorGreenUz::InitialConditionTaylorGreenUz(real lx, real lz, real l0, real uz, real amplitude, real rho0)
+InitialConditionTaylorGreenUz::InitialConditionTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct)
 {
-	this->Amp = amplitude;
-	this->L0 = l0;
-	this->Lx = lx;
-	this->Lz = lz;
-	this->rho = rho0;
-	this->uz = uz;
+	this->Amp = simParaStruct->amplitude;
+	this->L0 = simParaStruct->l0;
+	this->Lx = gridInfoStruct->lx;
+	this->Lz = gridInfoStruct->lz;
+	this->rho = simParaStruct->rho0;
+	this->uz = simParaStruct->uz;
 }
 
-std::shared_ptr<InitialConditionTaylorGreenUz> InitialConditionTaylorGreenUz::getNewInstance(real lx, real lz, real l0, real uz, real amplitude, real rho0)
+std::shared_ptr<InitialConditionTaylorGreenUz> InitialConditionTaylorGreenUz::getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct)
 {
-	return std::shared_ptr<InitialConditionTaylorGreenUz>(new InitialConditionTaylorGreenUz(lx, lz, l0, uz, amplitude, rho0));
+	return std::shared_ptr<InitialConditionTaylorGreenUz>(new InitialConditionTaylorGreenUz(simParaStruct, gridInfoStruct));
 }
 
 real InitialConditionTaylorGreenUz::getInitVX(int i, int level)

@@ -32,6 +32,4 @@ ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernelNam
 	oss << parameterStruct->vtkFilePath << "\\ShearWave\\viscosity" << viscosity << "\\ux_" << ux << "_uz_" << uz << "\\" << kernelName << "\\grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
-
-	initialCondition = InitialConditionShearWave::getNewInstance(lx, lz, l0, ux, uz, rho0);
 }

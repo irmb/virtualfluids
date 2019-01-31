@@ -21,11 +21,8 @@ public:
 	virtual std::vector< int> getDevices() = 0;
 	virtual double getMaxVelocity() = 0;
 
-
-
 	virtual unsigned int getLx() = 0;
 	virtual unsigned int getLz() = 0;
-	virtual std::shared_ptr< InitialCondition> getInitialCondition() = 0;
 };
 
 #endif
