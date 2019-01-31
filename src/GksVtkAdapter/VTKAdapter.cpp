@@ -203,11 +203,13 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 
 #ifdef USE_PASSIVE_SCALAR
 	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar_1", [&] (uint cellIdx) {
-	    return dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+	    return dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
+             / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
 	} );
 
 	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar_2", [&] (uint cellIdx) {
-	    return dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+	    return dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
+             / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
 	} );
 #endif // USE_PASSIVE_SCALAR
 

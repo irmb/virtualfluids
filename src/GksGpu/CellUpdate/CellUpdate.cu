@@ -137,7 +137,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     const real reactionRateCoefficient = 2.119e11;    
     const real activationEnergy        = 2.027e5;
-    const real heatOfReaction		   = 8.0e5;
+    const real heatOfReaction		   = 4.0e5;
 
     const real B = 0.2;
     const real C = 1.3;
