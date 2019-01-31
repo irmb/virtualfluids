@@ -137,8 +137,6 @@ std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestS
 	if (l2NormTestSruct->tests.size() > 0)
 		testLogFileInfo.push_back(l2NormTestSruct->logFileInfo);
 
-	
-
 	std::shared_ptr<L2NormTestBetweenKernelsStruct> l2NormTestBetweenKernelStruct = makeL2NormTestsBetweenKernelsStructs(configFileData->l2NormTestBetweenKernelsParameter, testSim, kernel);
 	for (int i = 0; i < l2NormTestBetweenKernelStruct->tests.size(); i++)
 		numTestStruct->tests.push_back(l2NormTestBetweenKernelStruct->tests.at(i));
@@ -232,11 +230,13 @@ std::shared_ptr<PhiAndNuTestStruct> NumericalTestFactoryImp::makePhiAndNuTestsSt
 	if (testParameter->basicTestParameter->runTest && testSimumlations.size() > 1) {
 		testStruct->logFileInfo = PhiAndNuInformation::getNewInstance(testParameter);
 
+
+		std::vector<std::shared_ptr<PhiAndNuTestPostProcessingStrategy> > postProcessingStrategies;
 		for (int i = 0; i < testSimumlations.size(); i++)
-			testStruct->postProcessingStrategies.push_back(PhiAndNuTestPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter));
+			postProcessingStrategies.push_back(PhiAndNuTestPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter));
 
 		for (int i = 0; i < testParameter->basicTestParameter->dataToCalc.size(); i++) {
-			std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testParameter, testSimumlations, testStruct->postProcessingStrategies, viscosity, testParameter->basicTestParameter->dataToCalc.at(i));
+			std::vector< std::shared_ptr< PhiAndNuTest>> phiAndNuTests = makePhiAndNuTests(testParameter, testSimumlations, postProcessingStrategies, viscosity, testParameter->basicTestParameter->dataToCalc.at(i));
 			testStruct->logFileInfo->addTestGroup(phiAndNuTests);
 			for (int j = 0; j < phiAndNuTests.size(); j++)
 				testStruct->tests.push_back(phiAndNuTests.at(j));
@@ -269,10 +269,11 @@ std::shared_ptr<L2NormTestStruct> NumericalTestFactoryImp::makeL2NormTestsStruct
 	std::shared_ptr<L2NormTestStruct> testStruct = std::shared_ptr<L2NormTestStruct> (new L2NormTestStruct);
 
 	if (testParameter->basicTestParameter->runTest) {
+		std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > postProcessingStrategies;
 		for (int i = 0; i < testSimumlations.size(); i++)
-			testStruct->postProcessingStrategies.push_back(L2NormPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter));
+			postProcessingStrategies.push_back(L2NormPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter));
 
-		testStruct->tests = makeL2NormTests(testSimumlations, testStruct->postProcessingStrategies, testParameter);
+		testStruct->tests = makeL2NormTests(testSimumlations, postProcessingStrategies, testParameter);
 		testStruct->logFileInfo = L2NormInformation::getNewInstance(testStruct->tests, testParameter);
 	}
 	return testStruct;
@@ -369,8 +370,6 @@ std::vector<std::shared_ptr<L2NormTestBetweenKernels>> NumericalTestFactoryImp::
 	}
 	return tests;
 }
-
-
 
 std::shared_ptr<LogFileWriter> NumericalTestFactoryImp::makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation>> testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara)
 {

@@ -12,8 +12,6 @@ class L2NormPostProcessingStrategy;
 struct L2NormTestStruct
 {
 	std::shared_ptr<L2NormInformation> logFileInfo;
-
-	std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > postProcessingStrategies;
 	std::vector<std::shared_ptr<L2NormTest> > tests;
 };
 

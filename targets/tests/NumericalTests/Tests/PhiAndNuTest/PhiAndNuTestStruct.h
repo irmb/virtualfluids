@@ -11,8 +11,6 @@ class PhiAndNuTest;
 struct PhiAndNuTestStruct
 {
 	std::shared_ptr<PhiAndNuInformation> logFileInfo;
-
-	std::vector<std::shared_ptr<PhiAndNuTestPostProcessingStrategy> > postProcessingStrategies;
 	std::vector<std::shared_ptr<PhiAndNuTest> > tests;
 };
 #endif 

@@ -6,8 +6,6 @@
 #include <vector>
 #include <memory>
 
-class LogFileInformationImp;
-
 struct SimulationDataStruct
 {
 	std::vector<std::shared_ptr<TestSimulationDataStruct> > testSimData;
