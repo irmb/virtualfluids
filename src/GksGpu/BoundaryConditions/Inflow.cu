@@ -94,15 +94,23 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
         }
 
-        real factor;
+        real factor = one;
+        //if( fabs(boundaryCondition.a1) > real(1.0e-6) )
         {
             real y = dataBase.cellCenter[ VEC_Y(ghostCellIdx, dataBase.numberOfCells) ];
+            real z = dataBase.cellCenter[ VEC_Z(ghostCellIdx, dataBase.numberOfCells) ];
 
-            factor =  ( boundaryCondition.a0 
-                      + boundaryCondition.a1*y 
-                      + boundaryCondition.a2*y*y  ) * ( four / boundaryCondition.a1 / boundaryCondition.a1 );
+            real r = sqrt( y*y + z*z );
 
-            factor = one;
+            //factor =  ( boundaryCondition.a0 
+            //          + boundaryCondition.a1*y 
+            //          + boundaryCondition.a2*y*y  ) * ( four / boundaryCondition.a1 / boundaryCondition.a1 );
+
+            factor = ( boundaryCondition.a0 
+                      + boundaryCondition.a1*r 
+                      + boundaryCondition.a2*r*r  );
+
+            //factor = one;
         }
 
         //ghostCellPrim.rho    = two *          boundaryCondition.rho        - domainCellPrim.rho;
@@ -126,7 +134,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     }
 }
 
-Inflow::Inflow(SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real rho, real S, real a0, real a1, real a2)
+Inflow::Inflow(SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real rho, real a0, real a1, real a2, real S_1, real S_2)
     : BoundaryCondition( dataBase )
 {
     this->velocity       = velocity;

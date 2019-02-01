@@ -38,7 +38,7 @@ struct VF_PUBLIC Inflow : public BoundaryCondition //, public IsothermalWallStru
 
     real a0, a1, a2;
 
-    Inflow( SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real rho, real S, real a0, real a1, real a2 );
+    Inflow( SPtr<DataBase> dataBase, Vec3 velocity, real lambda, real rho, real a0, real a1, real a2, real S_1 = 0.0, real S_2 = 0.0 );
 
     virtual bool isWall() override;
 

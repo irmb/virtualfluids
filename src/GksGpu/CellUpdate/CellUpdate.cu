@@ -135,6 +135,8 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     // Lindberg, Hermansson, 2004 => Ansys Fluent 13
 
+    real alpha = 1000.0;
+
     const real reactionRateCoefficient = 2.119e11;    
     const real activationEnergy        = 2.027e5;
     const real heatOfReaction		   = 4.0e5;
@@ -166,7 +168,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 				   + updatedPrimitive.S_2                                * Ru / molarMassOxygen
 		           + (1.0 - updatedPrimitive.S_1 - updatedPrimitive.S_2) * Ru / molarMassInert ;
 
-	temp = one / (two * R_Mixture * updatedPrimitive.lambda);
+	temp = alpha / (two * R_Mixture * updatedPrimitive.lambda);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -202,7 +204,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 	//					     * heatOfReaction
 	//					     * updatedPrimitive.rho;
 	
-	updatedConserved.rhoE += reactionRate * dt * heatOfReaction;
+	updatedConserved.rhoE += reactionRate * dt * heatOfReaction / alpha;
 
     //////////////////////////////////////////////////////////////////////////
 
