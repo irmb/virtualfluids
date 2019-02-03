@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-class TestSimulation;
+class NumericalTestSimulation;
 class SimulationResults;
 class SimulationInfo;
 class ColorConsoleOutput;
@@ -16,7 +16,7 @@ class TestImp : public Test
 {
 public:
 	void update();
-	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingStrategy> postProStrategy);
+	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy);
 
 	virtual void evaluate() = 0;
 	virtual std::vector< bool> getPassedTests() = 0;
@@ -28,11 +28,11 @@ protected:
 	TestImp(std::shared_ptr< ColorConsoleOutput> colorOutput);
 	bool CheckAllSimulationRun();
 
-	std::vector< bool> simulationRun;
-	std::shared_ptr< ColorConsoleOutput> colorOutput;
-	std::vector< std::shared_ptr< TestSimulation>> simulations;
-	std::vector< std::shared_ptr< PostProcessingStrategy>> postProStrategies;
-	std::vector< std::shared_ptr< SimulationInfo>> simInfos;
+	std::vector<std::shared_ptr<NumericalTestSimulation> > simulations;
+	std::vector<std::shared_ptr<PostProcessingStrategy> > postProStrategies;
+	std::vector<std::shared_ptr<SimulationInfo> > simInfos;
+	std::vector<bool> simulationRun;
+	std::shared_ptr<ColorConsoleOutput> colorOutput;
 
 	std::string kernelName;
 	std::string simulationName;

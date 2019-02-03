@@ -14,10 +14,10 @@ struct PhiAndNuTestParameterStruct;
 class PhiAndNuTest : public TestImp 
 {
 public:
-	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate);
+	static std::shared_ptr<PhiAndNuTest> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate);
 	
 	void update();
-	void addSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PhiAndNuTestPostProcessingStrategy> postProStrategy);
+	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PhiAndNuTestPostProcessingStrategy> postProStrategy);
 	void evaluate();
 	std::vector< bool> getPassedTests();
 	void makeConsoleOutput();
@@ -33,10 +33,10 @@ public:
 
 
 private:
-	PhiAndNuTest(std::shared_ptr< ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate);
+	PhiAndNuTest(std::shared_ptr<ColorConsoleOutput> colorOutput, double viscosity, std::shared_ptr<PhiAndNuTestParameterStruct> testPara, std::string dataToCalculate);
 	double calcOrderOfAccuracy(std::vector<double> data);
 	bool checkTestPassed(double orderOfAccuracy);
-	std::vector< double> calcNuDiff(std::vector< double> nu);
+	std::vector<double> calcNuDiff(std::vector< double> nu);
 
 	unsigned int startStepCalculation, endStepCalculation;
 	std::vector<double> lx;

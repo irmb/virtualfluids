@@ -1,7 +1,6 @@
 #include "L2NormTest.h"
 
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
-#include "Utilities\PostProcessingResults\PostProcessingResults.h"
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 
 #include "Tests\L2NormTest\PostProcessingStrategy\PostProcessingStrategyL2NormTest.h"
@@ -19,7 +18,7 @@ void L2NormTest::update()
 	TestImp::update();
 }
 
-void L2NormTest::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr< L2NormPostProcessingStrategy> postProStrategy)
+void L2NormTest::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormPostProcessingStrategy> postProStrategy)
 {
 	TestImp::addSimulation(sim, simInfo, postProStrategy);
 	l2NormPostProStrategies.push_back(postProStrategy);

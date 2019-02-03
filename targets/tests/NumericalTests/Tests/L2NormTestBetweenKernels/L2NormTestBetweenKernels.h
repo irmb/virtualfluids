@@ -22,8 +22,8 @@ public:
 	std::vector< bool> getPassedTests();
 	void makeConsoleOutput();
 
-	void setBasicSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
-	void setDivergentKernelSimulation(std::shared_ptr< TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
+	void setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
+	void setDivergentKernelSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
 
 private:
 	L2NormTestBetweenKernels(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
@@ -33,19 +33,19 @@ private:
 	std::string dataToCalculate;
 	bool testPassed;
 
-	std::shared_ptr< TestSimulation> basicSim;
-	std::shared_ptr< SimulationInfo> basicSimInfo;
-	std::shared_ptr< SimulationResults> basicSimResults;
-	std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> basicPostProcessingStrategy;
+	std::shared_ptr<NumericalTestSimulation> basicSim;
+	std::shared_ptr<SimulationInfo> basicSimInfo;
+	std::shared_ptr<SimulationResults> basicSimResults;
+	std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> basicPostProcessingStrategy;
 	double basicL2Result;
 
-	std::shared_ptr< TestSimulation> divergentSim;
-	std::shared_ptr< SimulationInfo> divergentSimInfo;
-	std::shared_ptr< SimulationResults> divergentSimResults;
-	std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> divergentPostProcessingStrategy;
+	std::shared_ptr<NumericalTestSimulation> divergentSim;
+	std::shared_ptr<SimulationInfo> divergentSimInfo;
+	std::shared_ptr<SimulationResults> divergentSimResults;
+	std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> divergentPostProcessingStrategy;
 	double divergentL2Result;
 	
-	std::shared_ptr< L2NormCalculator> l2Normcalculator;
+	std::shared_ptr<L2NormCalculator> l2Normcalculator;
 
 	double resultL2ToBasicKernel;
 };

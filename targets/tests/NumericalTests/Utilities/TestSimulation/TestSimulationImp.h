@@ -2,6 +2,7 @@
 #define TEST_SIMULATION_IMP_H
 
 #include "TestSimulation.h"
+#include "Utilities\NumericalTestSimulation\NumericalTestSimulation.h"
 
 #include <vector>
 #include <time.h>
@@ -16,7 +17,7 @@ class TimeTracking;
 
 struct TestSimulationDataStruct;
 
-class TestSimulationImp : public TestSimulation
+class TestSimulationImp : public TestSimulation, public NumericalTestSimulation
 {
 public:
 	static std::shared_ptr< TestSimulationImp> getNewInsance(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResult, std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput);

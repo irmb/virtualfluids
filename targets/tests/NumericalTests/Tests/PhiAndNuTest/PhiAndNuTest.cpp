@@ -45,7 +45,7 @@ void PhiAndNuTest::update()
 	TestImp::update();
 }
 
-void PhiAndNuTest::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PhiAndNuTestPostProcessingStrategy> postProStrategy)
+void PhiAndNuTest::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PhiAndNuTestPostProcessingStrategy> postProStrategy)
 {
 	TestImp::addSimulation(sim, simInfo, postProStrategy);
 	phiAndNuPostProStrategies.push_back(postProStrategy);

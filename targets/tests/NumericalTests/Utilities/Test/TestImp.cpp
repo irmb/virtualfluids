@@ -1,7 +1,7 @@
 #include "TestImp.h"
 
 #include "Utilities\PostProcessingStrategy\PostProcessingStrategy.h"
-#include "Utilities\TestSimulation\TestSimulation.h"
+#include "Utilities\NumericalTestSimulation\NumericalTestSimulation.h"
 
 void TestImp::update()
 {
@@ -21,7 +21,7 @@ void TestImp::update()
 		evaluate();				
 }
 
-void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy)
+void TestImp::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy)
 {
 	simulations.push_back(sim);
 	simInfos.push_back(simInfo);
