@@ -10,12 +10,21 @@ std::shared_ptr<LogFileInformationTaylorGreenUx> LogFileInformationTaylorGreenUx
 
 std::string LogFileInformationTaylorGreenUx::getOutput()
 {
-	makeCenterHead("TaylorGreenVortex U0 Information");
+	makeCenterHead("TaylorGreenVortex Ux Information");
+	oss << "SimulationName=TaylorGreenVortexUx" << std::endl;
+	oss << "Lx=\"";
 	for (int i = 0; i < lx.size(); i++) {
-		oss << "Lx=" << lx.at(i) << std::endl;
-		oss << "ux=" << ux / (lx.at(i) / l0) << std::endl;
-		oss << "Amplitude= " << amplitude / (lx.at(i) / l0) << std::endl;
-		oss << "l0=" << l0 << std::endl;
+		oss << lx.at(i);
+		if (i < lx.size() - 1)
+			oss << " ";
+		else
+			oss << "\"" << std::endl << std::endl;
+	}
+
+	for (int i = 0; i < lx.size(); i++) {
+		oss << "ux_" << lx.at(i) << "=" << ux / (lx.at(i) / l0) << std::endl;
+		oss << "Amplitude_"<< lx.at(i) << "=" << amplitude / (lx.at(i) / l0) << std::endl;
+		oss << "l0_" << lx.at(i) << "=" << l0 << std::endl;
 		oss << std::endl;
 	}
 	

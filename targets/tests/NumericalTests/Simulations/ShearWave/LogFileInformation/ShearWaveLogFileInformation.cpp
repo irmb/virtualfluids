@@ -11,11 +11,20 @@ std::shared_ptr<ShearWaveInformation> ShearWaveInformation::getNewInstance(std::
 std::string ShearWaveInformation::getOutput()
 {
 	makeCenterHead("ShearWave Information");
+	oss << "SimulationName=ShearWave" << std::endl;
+	oss << "Lx=\"";
 	for (int i = 0; i < lx.size(); i++) {
-			oss << "Lx=" << lx.at(i) << std::endl;
-			oss << "l0=" << l0 << std::endl;
-			oss << "ux=" << ux / (lx.at(i) / l0) << std::endl;
-			oss << "uz=" << uz / (lx.at(i) / l0) << std::endl;
+		oss << lx.at(i);
+		if (i < lx.size() - 1)
+			oss << " ";
+		else
+			oss << "\"" << std::endl << std::endl;
+	}
+
+	for (int i = 0; i < lx.size(); i++) {
+			oss << "l0_" << lx.at(i) << "=" << l0 << std::endl;
+			oss << "ux_" << lx.at(i) << "=" << ux / (lx.at(i) / l0) << std::endl;
+			oss << "uz_" << lx.at(i) << "=" << uz / (lx.at(i) / l0) << std::endl;
 			oss << std::endl;
 	}
 	return oss.str();

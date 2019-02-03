@@ -6,7 +6,8 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantOneCompSP27"
+ CumulantAA2016CompSP27 CumulantAll4CompSP27"
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -19,7 +20,7 @@ ux_TGV_Ux="0.032"
 Amplitude_TGV_Ux="0.01"
 l0_TGV_Ux=32
 
-BasisTimeStepLength_TGV_Uz="100"
+BasisTimeStepLength_TGV_Uz="1000"
 uz_TGV_Uz="0.048"
 Amplitude_TGV_Uz="0.01"
 l0_TGV_Uz=48
@@ -49,7 +50,7 @@ EndTimeStepCalculation_PhiNu=20
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
-L2NormTest=true
+L2NormTest=false
 MaxL2NormDiff=2.5
 DataToCalc_L2="Vx"
 BasicTimeStep_L2=0
@@ -58,7 +59,7 @@ DivergentTimeStep_L2=20
 ##################################################
 #    L2-Norm Test Between Kernels Parameter		 #
 ##################################################
-L2NormBetweenKernelsTest=true
+L2NormBetweenKernelsTest=false
 BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
 Timesteps_L2NormBetweenKernels="0 20"
 DataToCalc_L2NormBetweenKernels="Vx"
@@ -66,8 +67,8 @@ DataToCalc_L2NormBetweenKernels="Vx"
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortexUx32=true
-TaylorGreenVortexUx64=true
+TaylorGreenVortexUx32=false
+TaylorGreenVortexUx64=false
 TaylorGreenVortexUx128=false
 TaylorGreenVortexUx256=false
 TaylorGreenVortexUx512=false
@@ -78,8 +79,8 @@ TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=false
-ShearWave64=false
+ShearWave32=true
+ShearWave64=true
 ShearWave128=false
 ShearWave256=false
 ShearWave512=false

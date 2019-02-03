@@ -10,11 +10,20 @@ std::shared_ptr<LogFileInformationTaylorGreenUz> LogFileInformationTaylorGreenUz
 std::string LogFileInformationTaylorGreenUz::getOutput()
 {
 	makeCenterHead("TaylorGreenVortex V0 Information");
+	oss << "SimulationName=TaylorGreenVortexUz" << std::endl;
+	oss << "Lz=\"";
 	for (int i = 0; i < lz.size(); i++) {
-		oss << "Lz=" << lz.at(i) << std::endl;
-		oss << "l0=" << l0 << std::endl;
-		oss << "uz=" << uz / (lz.at(i) / l0) << std::endl;
-		oss << "Amplitude=" << amplitude / (lz.at(i) / l0) << std::endl;
+		oss << lz.at(i);
+		if (i < lz.size() - 1)
+			oss << " ";
+		else
+			oss << "\"" << std::endl << std::endl;
+	}
+
+	for (int i = 0; i < lz.size(); i++) {
+		oss << "l0_" << lz.at(i) << "=" << l0 << std::endl;
+		oss << "uz_" << lz.at(i) << "=" << uz / (lz.at(i) / l0) << std::endl;
+		oss << "Amplitude_" << lz.at(i) << "=" << amplitude / (lz.at(i) / l0) << std::endl;
 		oss << std::endl;
 	}
 	

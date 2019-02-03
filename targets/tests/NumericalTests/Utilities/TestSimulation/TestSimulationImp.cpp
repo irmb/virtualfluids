@@ -31,7 +31,6 @@ TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> t
 	this->anaResultWriter = anaResultWriter;
 	this->colorOutput = colorOutput;
 	
-
 	this->simObserver.resize(0);
 	this->simualtionRun = false;
 }

@@ -27,7 +27,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 
 	configData->viscosity = StringUtil::toDoubleVector(input->getValue("Viscosity"));
 	configData->kernelsToTest = readKernelList(input);
-	configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteVTKFiles"));
+	configData->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteAnalyResultsToVTK"));
 	configData->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));;
 	configData->logFilePath = input->getValue("PathLogFile");
 	configData->numberOfSimulations = calcNumberOfSimulations(input);
@@ -281,7 +281,7 @@ std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::s
 	std::shared_ptr<LogFileParameterStruct> logFilePara = std::shared_ptr<LogFileParameterStruct>(new LogFileParameterStruct);
 	logFilePara->devices = StringUtil::toIntVector(input->getValue("Devices"));
 	logFilePara->numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
-	logFilePara->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteVTKFiles"));
+	logFilePara->writeAnalyticalToVTK = StringUtil::toBool(input->getValue("WriteAnalyResultsToVTK"));
 
 	return logFilePara;
 }

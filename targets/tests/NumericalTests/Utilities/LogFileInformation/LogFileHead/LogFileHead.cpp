@@ -21,10 +21,15 @@ std::string LogFileHead::getOutput()
 	oss << "Time=" << std::setw(2) << std::setfill('0') << nowLocal.tm_hour << ":" << std::setw(2) << nowLocal.tm_min << ":" << std::setw(2) << nowLocal.tm_sec << std::endl;
 	oss << std::endl;
 
+	oss << "GPU_Devices=\"";
 	for (int i = 0; i < devices.size(); i++) {
 		cudaDeviceProp prop;
 		cudaGetDeviceProperties(&prop, devices.at(i));
-		oss << "GPU_Device" << devices.at(i) << "=" << prop.name << std::endl;
+		oss << prop.name;
+		if (i < devices.size() - 1)
+			oss << " ";
+		else
+			oss << "\"" << std::endl;
 	}
 	oss << std::endl;
 

@@ -10,8 +10,8 @@
 InitialConditionShearWave::InitialConditionShearWave(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct)
 {
 	this->l0 = simParaStruct->l0;
-	this->lx = lx;
-	this->lz = lz;
+	this->lx = gridInfoStruct->lx;
+	this->lz = gridInfoStruct->lz;
 	this->rho = simParaStruct->rho0;
 	this->u0 = simParaStruct->ux;
 	this->v0 = simParaStruct->uz;

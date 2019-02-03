@@ -48,9 +48,9 @@ int SimulationInfoImp::getSimulationID()
 std::string SimulationInfoImp::getRunTimeOutput()
 {
 	std::ostringstream oss;
-	oss << std::left << std::setfill(' ') << std::setw(11) << "Simulation" << std::setw(17) << simulationName << "\t" << std::right << std::setw(3) << lx << "\t\t" << std::setw(9) << timeInfo->getSimulationTime() << std::endl;
-	oss << std::left << std::setfill(' ') << std::setw(11) << "Test" << std::setw(17) << simulationName << "\t" << std::right << std::setw(3) << lx << "\t\t" << std::setw(9) << timeInfo->getTestTime() << std::endl;
-	oss << std::left << std::setfill(' ') << std::setw(11) << "FileWriting" << std::setw(17) << simulationName << "\t" << std::right << std::setw(3) << lx << "\t\t" << std::setw(9) << timeInfo->getAnalyticalResultWriteTime() << std::endl;
+	oss << "SimulationTime_" << lx << "=" << timeInfo->getSimulationTime() << std::endl;
+	oss << "TestTime_" << lx << "=" << timeInfo->getTestTime() << std::endl;
+	oss << "AnalyticalVTKFileWritingTime_" << lx << "=" << timeInfo->getAnalyticalResultWriteTime() << std::endl;
 	return oss.str();
 }
 
