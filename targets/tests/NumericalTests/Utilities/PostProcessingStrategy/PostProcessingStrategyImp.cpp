@@ -2,14 +2,6 @@
 
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 
-bool PostProcessingStrategyImp::checkEqualSimulationResults(std::shared_ptr<SimulationResults> simResultsToCheck)
-{ 
-	if (simResultsToCheck.get() == simResult.get())
-		return true;
-
-	return false;
-}
-
 int PostProcessingStrategyImp::getNumberOfXNodes()
 {
 	return simResult->getNumberOfXNodes();

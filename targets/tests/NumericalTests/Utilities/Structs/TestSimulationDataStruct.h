@@ -5,8 +5,10 @@
 
 class AnalyticalResults;
 class InitialCondition;
-class SimulationInfo;
+class SimulationInfoImp;
 class SimulationParameter;
+class SimulationResults;
+class TimeImp;
 
 struct TestSimulationDataStruct
 {

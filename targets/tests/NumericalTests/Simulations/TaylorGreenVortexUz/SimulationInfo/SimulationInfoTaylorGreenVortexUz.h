@@ -5,6 +5,8 @@
 
 #include <memory>
 
+class TimeInfo;
+
 struct TaylorGreenVortexUzParameterStruct;
 struct GridInformationStruct;
 

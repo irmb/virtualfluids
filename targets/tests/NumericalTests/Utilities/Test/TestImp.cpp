@@ -12,8 +12,7 @@ void TestImp::update()
 			if (simulations.at(i)->getSimulationRun())
 			{
 				simulationRun.at(i) = true;
-				if (postProStrategies.at(i)->checkEqualSimulationResults(simulations.at(i)->getSimulationResults()))
-					postProStrategies.at(i)->evaluate();
+				postProStrategies.at(i)->evaluate();
 			}
 		}
 	}
@@ -22,7 +21,7 @@ void TestImp::update()
 		evaluate();				
 }
 
-void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< PostProcessingStrategy> postProStrategy)
+void TestImp::addSimulation(std::shared_ptr<TestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy)
 {
 	simulations.push_back(sim);
 	simInfos.push_back(simInfo);

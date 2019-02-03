@@ -5,9 +5,9 @@
 
 #include <sstream>
 
-std::shared_ptr<SimulationInfo> ShearWaveSimulationInfo::getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
+std::shared_ptr<ShearWaveSimulationInfo> ShearWaveSimulationInfo::getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
 {
-	return std::shared_ptr<SimulationInfo>(new ShearWaveSimulationInfo(simID, kernelName,viscosity, simParaStruct, gridInfoStruct, numberOfSimulations));
+	return std::shared_ptr<ShearWaveSimulationInfo>(new ShearWaveSimulationInfo(simID, kernelName,viscosity, simParaStruct, gridInfoStruct, numberOfSimulations));
 }
 
 ShearWaveSimulationInfo::ShearWaveSimulationInfo(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)

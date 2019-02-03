@@ -50,10 +50,10 @@
 #include "Utilities\LogFileWriter\LogFileWriterImp.h"
 #include "Utilities\LogFileQueue\LogFileQueueImp.h"
 
-#include "Utilities\PostProcessingResults\PostProcessingResultsImp.h"
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 #include "Utilities\TestQueue\TestQueueImp.h"
 #include "Utilities/TestSimulation/TestSimulationImp.h"
+#include "Utilities\Time\TimeImp.h"
 
 #include <algorithm>
 
@@ -146,7 +146,11 @@ std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestS
 	if (l2NormTestBetweenKernelStruct->tests.size() > 0)
 		testLogFileInfo.push_back(l2NormTestBetweenKernelStruct->logFileInfo);
 
-	std::shared_ptr<LogFileWriter> logFileWriter = makeLogFileWriter(testLogFileInfo, simDataStruct->logFileInformation, testSim, kernel, viscosity, basicTimeStepLength, configFileData->logFilePara);
+	std::vector<std::shared_ptr<SimulationInfo> > simInfo;
+	for (int i = 0; i < simDataStruct->testSimData.size(); i++)
+		simInfo.push_back(simDataStruct->testSimData.at(i)->simInformation);
+
+	std::shared_ptr<LogFileWriter> logFileWriter = makeLogFileWriter(testLogFileInfo, simDataStruct->logFileInformation, simInfo, kernel, viscosity, basicTimeStepLength, configFileData->logFilePara);
 	numTestStruct->logFileWriter = logFileWriter;
 
 	return numTestStruct;
@@ -221,9 +225,12 @@ std::vector<std::shared_ptr<TestSimulationImp> > NumericalTestFactoryImp::makeTe
 {
 	std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations;
 	for (int i = 0; i < testSimDataStruct.size(); i++) {
-		std::shared_ptr< SimulationResults> simResult = SimulationResults::getNewInstance(testSimDataStruct.at(i)->simParameter);
+		std::shared_ptr<TimeImp> time = TimeImp::getNewInstance();
+		testSimDataStruct.at(i)->simInformation->setTimeInfo(time);
+		std::shared_ptr<SimulationResults> simResult = SimulationResults::getNewInstance(testSimDataStruct.at(i)->simParameter);
 		std::shared_ptr<ToVectorWriter> toVectorWriter = Y2dSliceToResults::getNewInstance(vectorWriterInfo, testSimDataStruct.at(i)->simParameter->getTimeStepLength(), simResult, ySliceForCalculation);
-		testSimumlations.push_back(TestSimulationImp::getNewInsance(testSimDataStruct.at(i), simResult, toVectorWriter, anaResultWriter, colorOutput));
+		
+		testSimumlations.push_back(TestSimulationImp::getNewInsance(testSimDataStruct.at(i), simResult, time, toVectorWriter, anaResultWriter, colorOutput));
 	}
 
 	return testSimumlations;
@@ -377,15 +384,12 @@ std::vector<std::shared_ptr<L2NormTestBetweenKernels>> NumericalTestFactoryImp::
 	return tests;
 }
 
-std::shared_ptr<LogFileWriter> NumericalTestFactoryImp::makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation>> testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara)
+std::shared_ptr<LogFileWriter> NumericalTestFactoryImp::makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation>> testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<SimulationInfo> > simInfo, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara)
 {
 	std::shared_ptr<LogFileHead> logFileHead = LogFileHead::getNewInstance(logFilePara->devices);
 	std::shared_ptr<BasicSimulationInfo> basicSimInfo = BasicSimulationInfo::getNewInstance(logFilePara->numberOfTimeSteps, viscosity, basicTimeStepLength, kernelName);
 
-	std::vector<std::shared_ptr<TestSimulation> > testSimCast;
-	for (int i = 0; i < testSim.size(); i++)
-		testSimCast.push_back(testSim.at(i));
-	std::shared_ptr<LogFileTimeInformation> logFileTimeInfo = LogFileTimeInformation::getNewInstance(testSimCast, logFilePara->writeAnalyticalToVTK);
+	std::shared_ptr<LogFileTimeInformation> logFileTimeInfo = LogFileTimeInformation::getNewInstance(simInfo, logFilePara->writeAnalyticalToVTK);
 
 	std::shared_ptr<LogFileWriterImp> logFileWriter = LogFileWriterImp::getNewInstance(logFileHead, basicSimInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity);
 

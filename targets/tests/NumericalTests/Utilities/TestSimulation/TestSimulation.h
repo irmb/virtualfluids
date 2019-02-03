@@ -1,9 +1,10 @@
 #ifndef TEST_SIMULATION_H
 #define TEST_SIMULATION_H
 
-#include "SimulationTime\SimulationTime.h"
+#include "Utilities\NumericalTestSuite\NumericalTestSuite.h"
 
 #include <memory>
+#include <string>
 
 class AnalyticalResults;
 class InitialCondition;
@@ -11,9 +12,10 @@ class DataWriter;
 class SimulationParameter;
 class SimulationResults;
 class SimulationObserver;
+class TimeTracking;
 class Parameter;
 
-class TestSimulation
+class TestSimulation : public NumericalTestSuite
 {
 public:
 	//beachte Interface Segregation
@@ -22,18 +24,12 @@ public:
 	virtual std::shared_ptr<SimulationParameter> getSimulationParameter() = 0;
 	virtual std::shared_ptr<DataWriter> getDataWriter() = 0;
 	virtual std::shared_ptr<InitialCondition> getInitialCondition() = 0;
-
-	virtual bool getSimulationRun() = 0;
-	virtual std::shared_ptr<SimulationResults> getSimulationResults() = 0;
-	virtual std::string getRunTimeOutput() = 0;
-
-
-	virtual void registerSimulationObserver(std::shared_ptr< SimulationObserver> simObserver) = 0;
-	virtual void makeSimulationHeadOutput() = 0;
-	virtual void setSimulationStartTime() = 0;
-	virtual void setSimulationEndTimeAndNotifyObserver() = 0;
-
+	virtual std::shared_ptr<TimeTracking> getTimeTracking() = 0;
 	virtual void setParameter(std::shared_ptr<Parameter> para) = 0;
 
+	virtual bool getSimulationRun() = 0;
+
+	virtual void makeSimulationHeadOutput() = 0;
+	virtual void startPostProcessing() = 0;
 };
 #endif

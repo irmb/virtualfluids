@@ -2,7 +2,6 @@
 
 #include "Utilities\Calculator\L2NormCalculator\L2NormCalculator.h"
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
-#include "Utilities\PostProcessingResults\PostProcessingResults.h"
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 #include "Utilities\TestSimulation\TestSimulation.h"
 #include "Utilities\SimulationInfo\SimulationInfo.h"

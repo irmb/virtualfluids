@@ -10,7 +10,5 @@ class PostProcessingStrategy
 {
 public:
 	virtual void evaluate() = 0;
-	virtual bool checkEqualSimulationResults(std::shared_ptr<SimulationResults> simResultsToCheck) = 0;
-
 };
 #endif

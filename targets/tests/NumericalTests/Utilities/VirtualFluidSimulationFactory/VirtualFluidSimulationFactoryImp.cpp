@@ -105,7 +105,6 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setMultiKernelLevel(simPara->getKernelConfiguration()->getMultiKernelLevel());
 	para->setMultiKernelName(simPara->getKernelConfiguration()->getMultiKernelName());
 
-
 	return para;
 }
 
@@ -120,7 +119,7 @@ void VirtualFluidSimulationFactoryImp::initInitialConditions(std::shared_ptr<Ini
 	initialCondition->setParameter(para);
 }
 
-std::vector<std::shared_ptr<VirtualFluidSimulation>> VirtualFluidSimulationFactoryImp::makeVirtualFluidSimulations(std::vector< std::shared_ptr< TestSimulation> > testSim)
+std::vector<std::shared_ptr<VirtualFluidSimulation>> VirtualFluidSimulationFactoryImp::makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation> > testSim)
 {
 	std::vector< std::shared_ptr< VirtualFluidSimulation>> vfSimulations;
 
@@ -133,11 +132,11 @@ std::vector<std::shared_ptr<VirtualFluidSimulation>> VirtualFluidSimulationFacto
 
 		initInitialConditions(testSim.at(i)->getInitialCondition(), para);
 		std::shared_ptr<GridReaderforTesting> grid = makeGridReaderForTesting(testSim.at(i)->getInitialCondition(), para);
+		
 		vfSim->setGridProvider(grid);
-
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());
-
-		vfSim->setTestSimulation(testSim.at(i));
+		vfSim->setNumericalTestSuite(testSim.at(i));
+		vfSim->setTimeTracking(testSim.at(i)->getTimeTracking());
 		vfSimulations.push_back(vfSim);		
 	}
 

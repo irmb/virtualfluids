@@ -10,13 +10,13 @@
 
 static void startNumericalTests(const std::string &configFile)
 {
-	std::shared_ptr< ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
+	std::shared_ptr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
 
-	std::shared_ptr< NumericalTestFactoryImp> numericalTestFactory = NumericalTestFactoryImp::getNewInstance(configReader->getConfigData());
+	std::shared_ptr<NumericalTestFactoryImp> numericalTestFactory = NumericalTestFactoryImp::getNewInstance(configReader->getConfigData());
 
-	std::vector< std::shared_ptr< TestSimulation> > testSim = numericalTestFactory->getTestSimulations();
-	std::shared_ptr< TestQueue> testQueue = numericalTestFactory->getTestQueue();
-	std::shared_ptr< LogFileQueue> logFileQueue = numericalTestFactory->getLogFileQueue();
+	std::vector<std::shared_ptr<TestSimulation> > testSim = numericalTestFactory->getTestSimulations();
+	std::shared_ptr<TestQueue> testQueue = numericalTestFactory->getTestQueue();
+	std::shared_ptr<LogFileQueue> logFileQueue = numericalTestFactory->getLogFileQueue();
 
 	std::shared_ptr< VirtualFluidSimulationFactory> factory = VirtualFluidSimulationFactoryImp::getNewInstance();
 	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(testSim);

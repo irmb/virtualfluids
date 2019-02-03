@@ -3,9 +3,15 @@
 
 #include "SimulationInfo.h"
 
+#include <memory>
+
+class TimeInfo;
+
 class SimulationInfoImp : public SimulationInfo
 {
 public:
+	void setTimeInfo(std::shared_ptr<TimeInfo> timeInfo);
+
 	std::string getKernelName();
 	double getViscosity();
 	std::string getSimulationName();
@@ -13,6 +19,7 @@ public:
 	int getLx();
 	int getNumberOfSimulations();
 	int getSimulationID();
+	std::string getRunTimeOutput();
 
 protected:
 	SimulationInfoImp() {};
@@ -24,6 +31,7 @@ protected:
 	std::string simulationParameterString;
 	int lx;
 	int numberOfSimulations, simID;
+	std::shared_ptr<TimeInfo> timeInfo;
 
 private:
 

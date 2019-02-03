@@ -1,6 +1,7 @@
 #include "VirtualFluidSimulationImp.h"
 
-#include "Utilities\TestSimulation\TestSimulation.h"
+#include "Utilities\NumericalTestSuite\NumericalTestSuite.h"
+#include "Utilities\Time\TimeTracking.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 
@@ -8,14 +9,16 @@
 
 void VirtualFluidSimulationImp::run()
 {
-	testSim->makeSimulationHeadOutput();
-	testSim->setSimulationStartTime();
+	numericalTestSuite->makeSimulationHeadOutput();
+	timeTracking->setSimulationStartTime();
 
 	Simulation sim;
 	sim.init(para, grid, dataWriter);
 	sim.run();
 
-	testSim->setSimulationEndTimeAndNotifyObserver();
+	timeTracking->setSimulationEndTime();
+
+	numericalTestSuite->startPostProcessing();
 
 	sim.free();
 }
@@ -40,7 +43,12 @@ void VirtualFluidSimulationImp::setDataWriter(std::shared_ptr<DataWriter> dataWr
 	this->dataWriter = dataWriter;
 }
 
-void VirtualFluidSimulationImp::setTestSimulation(std::shared_ptr<TestSimulation> testSim)
+void VirtualFluidSimulationImp::setNumericalTestSuite(std::shared_ptr<NumericalTestSuite> numericalTestSuite)
 {
-	this->testSim = testSim;
+	this->numericalTestSuite = numericalTestSuite;
+}
+
+void VirtualFluidSimulationImp::setTimeTracking(std::shared_ptr<TimeTracking> timeTracking)
+{
+	this->timeTracking = timeTracking;
 }

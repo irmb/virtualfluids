@@ -73,7 +73,7 @@ private:
 	
 	std::vector<std::shared_ptr<L2NormTestBetweenKernels> > linkL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector< std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
 
-	std::shared_ptr< LogFileWriter> makeLogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara);
+	std::shared_ptr< LogFileWriter> makeLogFileWriter(std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<SimulationInfo> > simInfo, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara);
 
 	std::vector< std::shared_ptr< TestSimulation>> myTestSimulations;
 	std::shared_ptr< TestQueueImp> myTestQueue;

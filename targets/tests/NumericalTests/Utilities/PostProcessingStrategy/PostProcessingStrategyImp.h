@@ -11,7 +11,6 @@ class PostProcessingStrategyImp : public PostProcessingStrategy
 {
 public:
 	virtual void evaluate() = 0;
-	bool checkEqualSimulationResults(std::shared_ptr<SimulationResults> simResultsToCheck);
 
 	int getNumberOfXNodes();
 	int getNumberOfYNodes();

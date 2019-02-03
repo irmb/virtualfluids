@@ -6,7 +6,7 @@
 class AnalyticalResultsImp : public AnalyticalResults
 {
 public:
-	virtual void calc(std::shared_ptr< SimulationResults> simResults) = 0;
+	virtual void calc(std::shared_ptr<SimulationResults> simResults) = 0;
 	bool isCalculated();
 
 protected:

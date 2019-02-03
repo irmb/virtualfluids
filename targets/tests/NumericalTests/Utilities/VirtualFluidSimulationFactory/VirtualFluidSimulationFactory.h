@@ -10,6 +10,6 @@ class TestSimulation;
 class VirtualFluidSimulationFactory
 {
 public:
-	virtual std::vector< std::shared_ptr< VirtualFluidSimulation> > makeVirtualFluidSimulations(std::vector< std::shared_ptr< TestSimulation> > testSim) = 0;
+	virtual std::vector<std::shared_ptr<VirtualFluidSimulation> > makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation> > testSim) = 0;
 };
 #endif

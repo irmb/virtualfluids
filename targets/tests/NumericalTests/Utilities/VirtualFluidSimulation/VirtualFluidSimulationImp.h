@@ -12,6 +12,8 @@ class Parameter;
 class GridProvider;
 class KernelConfiguration;
 class TestSimulation;
+class TimeTracking;
+class NumericalTestSuite;
 
 class VirtualFluidSimulationImp : public VirtualFluidSimulation
 {
@@ -23,7 +25,8 @@ public:
 	void setParameter(std::shared_ptr<Parameter> para);
 	void setGridProvider(std::shared_ptr<GridProvider> grid);
 	void setDataWriter(std::shared_ptr< DataWriter> dataWriter);
-	void setTestSimulation(std::shared_ptr< TestSimulation> testSim);
+	void setNumericalTestSuite(std::shared_ptr<NumericalTestSuite> numericalTestSuite);
+	void setTimeTracking(std::shared_ptr<TimeTracking> timeTracking);
 
 protected:
 	VirtualFluidSimulationImp() {};
@@ -32,7 +35,8 @@ private:
 	std::shared_ptr<Parameter> para;
 	std::shared_ptr<InitialCondition> initialCondition;
 	std::shared_ptr<GridProvider> grid;
-	std::shared_ptr<TestSimulation> testSim;
 	std::shared_ptr<DataWriter> dataWriter;
+	std::shared_ptr<NumericalTestSuite> numericalTestSuite;
+	std::shared_ptr<TimeTracking> timeTracking;
 };
 #endif

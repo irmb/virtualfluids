@@ -6,19 +6,19 @@
 #include <memory>
 #include <vector>
 
-class TestSimulation;
+class SimulationInfo;
 
 class LogFileTimeInformation : public LogFileInformationImp
 {
 public:
-	static std::shared_ptr<LogFileTimeInformation> getNewInstance(std::vector<std::shared_ptr<TestSimulation> > testSimulation, bool fileWriting);
+	static std::shared_ptr<LogFileTimeInformation> getNewInstance(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting);
 	std::string getOutput();
 
 private:
 	LogFileTimeInformation();
-	LogFileTimeInformation(std::vector<std::shared_ptr<TestSimulation> > testSimulation, bool fileWriting);
+	LogFileTimeInformation(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting);
 
-	std::vector<std::shared_ptr< TestSimulation> > testSimulation;
+	std::vector<std::shared_ptr<SimulationInfo> > simInfo;
 	bool fileWriting;
 };
 #endif
