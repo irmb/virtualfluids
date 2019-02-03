@@ -70,7 +70,7 @@ bool TestSimulationImp::getSimulationRun()
 	return simualtionRun;
 }
 
-void TestSimulationImp::registerSimulationObserver(std::shared_ptr< SimulationObserver> simObserver)
+void TestSimulationImp::registerSimulationObserver(std::shared_ptr<SimulationObserver> simObserver)
 {
 	this->simObserver.push_back(simObserver);
 }

@@ -14,16 +14,16 @@ class TestQueueImp : public TestQueue
 public:
 	void makeFinalOutput();
 
-	static std::shared_ptr< TestQueueImp> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput);
-	void addTest(std::shared_ptr< Test> test);
+	static std::shared_ptr<TestQueueImp> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput);
+	void addTest(std::shared_ptr<Test> test);
 
 private:
-	TestQueueImp(std::shared_ptr< ColorConsoleOutput> colorOutput);
+	TestQueueImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
 
 	void calcNumberOfPassedTest();
 
-	std::shared_ptr< ColorConsoleOutput> colorOutput;
-	std::vector< std::shared_ptr< Test>> tests;
+	std::shared_ptr<ColorConsoleOutput> colorOutput;
+	std::vector<std::shared_ptr<Test> > tests;
 	int numberOfPassedTest;
 	int numberOfTests;
 };

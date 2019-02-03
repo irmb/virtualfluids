@@ -10,7 +10,7 @@
 #include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
 #include "Tests\L2NormTest\L2NormTestParameterStruct.h"
 #include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
-#include "Tests\PhiAndNuTest\PhiAndNuTestParameterStruct.h"
+#include "Tests\PhiAndNyTest\PhiAndNyTestParameterStruct.h"
 #include "Utilities\Structs\BasicSimulationParameterStruct.h"
 #include "Utilities\Structs\VectorWriterInformationStruct.h"
 #include "Utilities\Structs\GridInformationStruct.h"
@@ -40,7 +40,7 @@ struct ConfigDataStruct
 
 	int numberOfSimulations;
 
-	std::shared_ptr<PhiAndNuTestParameterStruct> phiAndNuTestParameter;
+	std::shared_ptr<PhiAndNyTestParameterStruct> phiAndNuTestParameter;
 	std::shared_ptr<L2NormTestParameterStruct> l2NormTestParameter;
 	std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> l2NormTestBetweenKernelsParameter;
 

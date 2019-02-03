@@ -3,7 +3,7 @@
 #include "Simulations\TaylorGreenVortexUx\TaylorGreenVortexUxParameterStruct.h"
 #include "Utilities\Structs\GridInformationStruct.h"
 
-std::shared_ptr<LogFileInformationTaylorGreenUx> LogFileInformationTaylorGreenUx::getNewInstance(std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct)
+std::shared_ptr<LogFileInformationTaylorGreenUx> LogFileInformationTaylorGreenUx::getNewInstance(std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	return std::shared_ptr<LogFileInformationTaylorGreenUx>(new LogFileInformationTaylorGreenUx(simParaStruct, gridInfoStruct));
 }
@@ -45,7 +45,7 @@ std::string LogFileInformationTaylorGreenUx::getFilePathExtensionOne()
 	return oss.str();
 }
 
-LogFileInformationTaylorGreenUx::LogFileInformationTaylorGreenUx(std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct)
+LogFileInformationTaylorGreenUx::LogFileInformationTaylorGreenUx(std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	this->ux = simParaStruct->ux;
 	this->amplitude = simParaStruct->amplitude;

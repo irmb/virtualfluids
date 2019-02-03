@@ -17,10 +17,10 @@ public:
 	int getNumberOfZNodes();
 
 protected:
-	PostProcessingStrategyImp(std::shared_ptr< SimulationResults> simResult);
+	PostProcessingStrategyImp(std::shared_ptr<SimulationResults> simResult);
 	int calcTimeStepInResults(unsigned int timeStep);
 
-	std::shared_ptr< SimulationResults> simResult;
+	std::shared_ptr<SimulationResults> simResult;
 
 private:
 	PostProcessingStrategyImp() {};

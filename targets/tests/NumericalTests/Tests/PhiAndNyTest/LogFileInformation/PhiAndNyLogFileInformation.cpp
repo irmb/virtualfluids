@@ -1,21 +1,21 @@
-#include "PhiAndNuLogFileInformation.h"
+#include "PhiAndNyLogFileInformation.h"
 
-#include "Tests\PhiAndNuTest\PhiAndNuTest.h"
-#include "Tests\PhiAndNuTest\PhiAndNuTestParameterStruct.h"
+#include "Tests\PhiAndNyTest\PhiAndNyTest.h"
+#include "Tests\PhiAndNyTest\PhiAndNyTestParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>
 
 
-std::shared_ptr<PhiAndNuInformation> PhiAndNuInformation::getNewInstance(std::shared_ptr<PhiAndNuTestParameterStruct> testPara)
+std::shared_ptr<PhiAndNyInformation> PhiAndNyInformation::getNewInstance(std::shared_ptr<PhiAndNyTestParameterStruct> testPara)
 {
-	return std::shared_ptr<PhiAndNuInformation>(new PhiAndNuInformation(testPara));
+	return std::shared_ptr<PhiAndNyInformation>(new PhiAndNyInformation(testPara));
 }
 
-std::string PhiAndNuInformation::getOutput()
+std::string PhiAndNyInformation::getOutput()
 {
 	std::ostringstream headName;
-	headName << testGroups.at(0).at(0)->getSimulationName() <<" Phi And Nu Test";
+	headName << testGroups.at(0).at(0)->getSimulationName() <<" Phi And Ny Test";
 	makeCenterHead(headName.str());
 
 	oss << "StartTimeStepCalculation=" << startTimeStepCalculation << std::endl;
@@ -24,14 +24,14 @@ std::string PhiAndNuInformation::getOutput()
 
 	for (int i = 0; i < testGroups.size(); i++) {
 		fillMyData(testGroups.at(i));
-		for (int j = 0; j < nu.size(); j++)
-			oss << "Nu_" << lxForErase.at(j) << "_" << dataToCalc.at(j) << "=" << nu.at(j) << std::endl;
+		for (int j = 0; j < ny.size(); j++)
+			oss << "Ny_" << lxForErase.at(j) << "_" << dataToCalc.at(j) << "=" << ny.at(j) << std::endl;
 		oss << std::endl;
-		for (int j = 0; j < nuDiff.size(); j++)
-			oss << "NuDiff_" << lxForErase.at(j) << "_" << dataToCalc.at(j) << "=" << nuDiff.at(j) << std::endl;
+		for (int j = 0; j < nyDiff.size(); j++)
+			oss << "NyDiff_" << lxForErase.at(j) << "_" << dataToCalc.at(j) << "=" << nyDiff.at(j) << std::endl;
 		oss << std::endl;
-		for (int j = 0; j < orderOfAccuracyNuDiff.size(); j++)
-			oss << "OrderOfAccuracy_NuDiff_" << lx.at(2*j) << "_" << lx.at(2*j+1) << "_" << dataToCalc.at(j) << "=" << orderOfAccuracyNuDiff.at(j) << std::endl;
+		for (int j = 0; j < orderOfAccuracyNyDiff.size(); j++)
+			oss << "OrderOfAccuracy_NyDiff_" << lx.at(2*j) << "_" << lx.at(2*j+1) << "_" << dataToCalc.at(j) << "=" << orderOfAccuracyNyDiff.at(j) << std::endl;
 		oss << std::endl;
 		for (int j = 0; j < phiDiff.size(); j++)
 			oss << "PhiDiff_" << lxForErase.at(j) << "_" << dataToCalc.at(j) << "=" << phiDiff.at(j) << std::endl;
@@ -44,33 +44,33 @@ std::string PhiAndNuInformation::getOutput()
 	return oss.str();
 }
 
-void PhiAndNuInformation::addTestGroup(std::vector<std::shared_ptr<PhiAndNuTest>> tests)
+void PhiAndNyInformation::addTestGroup(std::vector<std::shared_ptr<PhiAndNyTest> > tests)
 {
 	testGroups.push_back(tests);
 }
 
-void PhiAndNuInformation::fillMyData(std::vector<std::shared_ptr<PhiAndNuTest>> testGroup)
+void PhiAndNyInformation::fillMyData(std::vector<std::shared_ptr<PhiAndNyTest> > testGroup)
 {
 	lxForErase.resize(0);
 	lx.resize(0);
-	nu.resize(0);
-	nuDiff.resize(0);
+	ny.resize(0);
+	nyDiff.resize(0);
 	phiDiff.resize(0);
-	orderOfAccuracyNuDiff.resize(0);
+	orderOfAccuracyNyDiff.resize(0);
 	orderOfAccuracyPhiDiff.resize(0);
 	dataToCalc.resize(0);
 	for (int i = 0; i < testGroup.size(); i++) {
 		std::vector<int> myLx = testGroup.at(i)->getLx();
-		std::vector<double> myNu = testGroup.at(i)->getNu();
-		std::vector<double> myNuDiff = testGroup.at(i)->getNuDiff();
+		std::vector<double> myNy = testGroup.at(i)->getNy();
+		std::vector<double> myNyDiff = testGroup.at(i)->getNyDiff();
 		std::vector<double> myPhiDiff = testGroup.at(i)->getPhiDiff();
 
 		lx.insert(lx.end(), myLx.begin(), myLx.end());
 		lxForErase.insert(lxForErase.end(), myLx.begin(), myLx.end());
-		nu.insert(nu.end(), myNu.begin(), myNu.end());
-		nuDiff.insert(nuDiff.end(), myNuDiff.begin(), myNuDiff.end());
+		ny.insert(ny.end(), myNy.begin(), myNy.end());
+		nyDiff.insert(nyDiff.end(), myNyDiff.begin(), myNyDiff.end());
 		phiDiff.insert(phiDiff.end(), myPhiDiff.begin(), myPhiDiff.end());
-		orderOfAccuracyNuDiff.push_back(testGroup.at(i)->getOrderOfAccuracyNuDiff());
+		orderOfAccuracyNyDiff.push_back(testGroup.at(i)->getOrderOfAccuracyNyDiff());
 		orderOfAccuracyPhiDiff.push_back(testGroup.at(i)->getOrderOfAccuracyPhiDiff());
 		dataToCalc.push_back(testGroup.at(i)->getDataToCalculate());
 		dataToCalc.push_back(testGroup.at(i)->getDataToCalculate());
@@ -83,8 +83,8 @@ void PhiAndNuInformation::fillMyData(std::vector<std::shared_ptr<PhiAndNuTest>> 
 	
 	for (int i = lxForErase.size() - 1; i >= 0; i--) {
 		if (lxForErase.at(i) == -1) {
-			nu.erase(nu.begin() + i);
-			nuDiff.erase(nuDiff.begin() + i);
+			ny.erase(ny.begin() + i);
+			nyDiff.erase(nyDiff.begin() + i);
 			phiDiff.erase(phiDiff.begin() + i);
 			lxForErase.erase(lxForErase.begin() + i);
 		}
@@ -93,7 +93,7 @@ void PhiAndNuInformation::fillMyData(std::vector<std::shared_ptr<PhiAndNuTest>> 
 	
 }
 
-PhiAndNuInformation::PhiAndNuInformation(std::shared_ptr<PhiAndNuTestParameterStruct> testPara)
+PhiAndNyInformation::PhiAndNyInformation(std::shared_ptr<PhiAndNyTestParameterStruct> testPara)
 {
 	startTimeStepCalculation = testPara->startTimeStepCalculation;
 	endTimeStepCalculation = testPara->endTimeStepCalculation;

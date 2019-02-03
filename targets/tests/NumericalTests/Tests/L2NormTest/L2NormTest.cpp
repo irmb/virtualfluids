@@ -8,7 +8,7 @@
 
 #include <iomanip>
 
-std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
+std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
 {
 	return std::shared_ptr<L2NormTest>(new L2NormTest(colorOutput, testParameter, dataToCalculate));
 }
@@ -67,7 +67,7 @@ void L2NormTest::makeConsoleOutput()
 	colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
 }
 
-L2NormTest::L2NormTest(std::shared_ptr< ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
+L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
 	: TestImp(colorOutput), dataToCalculate(dataToCalculate)
 {
 	basicTimeStep = testParameter->basicTimeStep;

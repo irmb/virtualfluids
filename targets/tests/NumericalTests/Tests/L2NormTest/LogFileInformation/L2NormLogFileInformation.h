@@ -12,15 +12,15 @@ struct L2NormTestParameterStruct;
 class L2NormInformation : public TestLogFileInformation
 {
 public:
-	static std::shared_ptr< L2NormInformation> getNewInstance(std::vector< std::shared_ptr< L2NormTest>> tests, std::shared_ptr<L2NormTestParameterStruct> testParameter);
+	static std::shared_ptr<L2NormInformation> getNewInstance(std::vector<std::shared_ptr<L2NormTest> > tests, std::shared_ptr<L2NormTestParameterStruct> testParameter);
 
 	std::string getOutput();
 
 private:
 	L2NormInformation() {};
-	L2NormInformation(std::vector< std::shared_ptr< L2NormTest>> tests, std::shared_ptr<L2NormTestParameterStruct> testParameter);
+	L2NormInformation(std::vector<std::shared_ptr<L2NormTest> > tests, std::shared_ptr<L2NormTestParameterStruct> testParameter);
 
-	std::vector< std::shared_ptr< L2NormTest>> tests;
+	std::vector<std::shared_ptr<L2NormTest> > tests;
 
 	unsigned int basicTimeStep, divergentTimeStep;
 };

@@ -19,7 +19,7 @@ std::string LogFileTimeInformation::getOutput()
 	return oss.str();
 }
 
-LogFileTimeInformation::LogFileTimeInformation(std::vector<std::shared_ptr<SimulationInfo>> simInfo, bool fileWriting) : simInfo(simInfo), fileWriting(fileWriting)
+LogFileTimeInformation::LogFileTimeInformation(std::vector<std::shared_ptr<SimulationInfo> > simInfo, bool fileWriting) : simInfo(simInfo), fileWriting(fileWriting)
 {
 
 }

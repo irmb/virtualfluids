@@ -12,7 +12,7 @@ void TestQueueImp::makeFinalOutput()
 	colorOutput->makeFinalTestOutputFoot(numberOfPassedTest, numberOfTests);
 }
 
-std::shared_ptr<TestQueueImp> TestQueueImp::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput)
+std::shared_ptr<TestQueueImp> TestQueueImp::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput)
 {
 	return std::shared_ptr<TestQueueImp>(new TestQueueImp(colorOutput));
 }
@@ -22,7 +22,7 @@ void TestQueueImp::addTest(std::shared_ptr<Test> test)
 	tests.push_back(test);
 }
 
-TestQueueImp::TestQueueImp(std::shared_ptr< ColorConsoleOutput> colorOutput) : colorOutput(colorOutput)
+TestQueueImp::TestQueueImp(std::shared_ptr<ColorConsoleOutput> colorOutput) : colorOutput(colorOutput)
 {
 	tests.resize(0);
 }

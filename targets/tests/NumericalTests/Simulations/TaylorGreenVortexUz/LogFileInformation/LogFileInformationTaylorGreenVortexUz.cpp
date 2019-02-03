@@ -2,7 +2,7 @@
 
 #include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
 
-std::shared_ptr<LogFileInformationTaylorGreenUz> LogFileInformationTaylorGreenUz::getNewInstance(std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct)
+std::shared_ptr<LogFileInformationTaylorGreenUz> LogFileInformationTaylorGreenUz::getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	return std::shared_ptr<LogFileInformationTaylorGreenUz>(new LogFileInformationTaylorGreenUz(simParaStruct, gridInfoStruct));
 }
@@ -44,7 +44,7 @@ std::string LogFileInformationTaylorGreenUz::getFilePathExtensionTwo()
 	return oss.str();
 }
 
-LogFileInformationTaylorGreenUz::LogFileInformationTaylorGreenUz(std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct)
+LogFileInformationTaylorGreenUz::LogFileInformationTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	this->uz = simParaStruct->uz;
 	this->amplitude = simParaStruct->amplitude;

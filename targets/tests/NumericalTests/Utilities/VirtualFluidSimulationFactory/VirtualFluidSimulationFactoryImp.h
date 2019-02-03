@@ -11,7 +11,7 @@ class SimulationParameter;
 class VirtualFluidSimulationFactoryImp: public VirtualFluidSimulationFactory
 {
 public:
-	static std::shared_ptr< VirtualFluidSimulationFactory> getNewInstance();
+	static std::shared_ptr<VirtualFluidSimulationFactory> getNewInstance();
 	std::vector<std::shared_ptr<VirtualFluidSimulation> > makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation> > testSim);
 
 protected:

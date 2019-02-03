@@ -14,7 +14,7 @@ struct L2NormTestBetweenKernelsParameterStruct
 	std::string basicKernel;
 
 	std::vector<std::string> kernelsToTest;
-	std::vector< int> timeSteps;
+	std::vector<int> timeSteps;
 };
 
 #endif 

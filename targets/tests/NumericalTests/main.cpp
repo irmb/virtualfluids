@@ -18,8 +18,8 @@ static void startNumericalTests(const std::string &configFile)
 	std::shared_ptr<TestQueue> testQueue = numericalTestFactory->getTestQueue();
 	std::shared_ptr<LogFileQueue> logFileQueue = numericalTestFactory->getLogFileQueue();
 
-	std::shared_ptr< VirtualFluidSimulationFactory> factory = VirtualFluidSimulationFactoryImp::getNewInstance();
-	std::vector< std::shared_ptr< VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(testSim);
+	std::shared_ptr<VirtualFluidSimulationFactory> factory = VirtualFluidSimulationFactoryImp::getNewInstance();
+	std::vector<std::shared_ptr<VirtualFluidSimulation> > vfSimulations = factory->makeVirtualFluidSimulations(testSim);
 
 	for (int i = 0; i < vfSimulations.size(); i++)
 		vfSimulations.at(i)->run();

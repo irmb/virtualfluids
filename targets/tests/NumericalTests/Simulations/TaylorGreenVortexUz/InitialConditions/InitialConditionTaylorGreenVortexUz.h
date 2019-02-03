@@ -11,7 +11,7 @@ struct GridInformationStruct;
 class InitialConditionTaylorGreenUz :public InitialConditionImp
 {
 public:
-	static std::shared_ptr< InitialConditionTaylorGreenUz> getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct);
+	static std::shared_ptr<InitialConditionTaylorGreenUz> getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct);
 
 	real getInitVX(int i, int level);
 	real getInitVY(int i, int level);

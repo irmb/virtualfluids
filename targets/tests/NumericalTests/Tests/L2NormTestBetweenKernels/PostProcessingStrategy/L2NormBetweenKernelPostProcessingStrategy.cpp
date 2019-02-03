@@ -6,7 +6,7 @@
 
 #include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
 
-std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 {
 	return std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy>(new L2NormBetweenKernelPostProcessingStrategy(simResult, analyticalResult, testPara));
 }
@@ -66,7 +66,7 @@ std::shared_ptr<SimulationResults> L2NormBetweenKernelPostProcessingStrategy::ge
 	return simResult;
 }
 
-L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
 {
 	timeSteps = testPara->timeSteps;

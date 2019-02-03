@@ -19,13 +19,13 @@ public:
 	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy);
 
 	virtual void evaluate() = 0;
-	virtual std::vector< bool> getPassedTests() = 0;
+	virtual std::vector<bool> getPassedTests() = 0;
 	virtual void makeConsoleOutput() = 0;
 
 	std::string getSimulationName();
 	
 protected:
-	TestImp(std::shared_ptr< ColorConsoleOutput> colorOutput);
+	TestImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
 	bool CheckAllSimulationRun();
 
 	std::vector<std::shared_ptr<NumericalTestSimulation> > simulations;

@@ -13,11 +13,11 @@ struct GridInformationStruct;
 class SimulationInfoTaylorGreenUx : public SimulationInfoImp
 {
 public:
-	static std::shared_ptr<SimulationInfoTaylorGreenUx> getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr< GridInformationStruct> gridInfoStruct, int numberOfSimulations);
+	static std::shared_ptr<SimulationInfoTaylorGreenUx> getNewInstance(int simID, std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
 
 private:
 	SimulationInfoTaylorGreenUx() {};
-	SimulationInfoTaylorGreenUx(int simID, std::string kernelName, double viscosity, std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr< GridInformationStruct> gridInfoStruct, int numberOfSimulations);
+	SimulationInfoTaylorGreenUx(int simID, std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations);
 	
 };
 #endif 

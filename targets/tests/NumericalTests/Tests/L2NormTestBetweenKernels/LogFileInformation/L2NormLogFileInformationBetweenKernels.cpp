@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <sstream>
 
-std::shared_ptr<L2NormBetweenKernelsInformation> L2NormBetweenKernelsInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTestBetweenKernels>> tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+std::shared_ptr<L2NormBetweenKernelsInformation> L2NormBetweenKernelsInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 {
 	return std::shared_ptr<L2NormBetweenKernelsInformation>(new L2NormBetweenKernelsInformation(tests, testPara));
 }
@@ -35,7 +35,7 @@ std::string L2NormBetweenKernelsInformation::getOutput()
 	return oss.str();
 }
 
-L2NormBetweenKernelsInformation::L2NormBetweenKernelsInformation(std::vector<std::shared_ptr<L2NormTestBetweenKernels>> tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+L2NormBetweenKernelsInformation::L2NormBetweenKernelsInformation(std::vector<std::shared_ptr<L2NormTestBetweenKernels> > tests, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 	: tests(tests)
 {
 	basicKernel = testPara->basicKernel;

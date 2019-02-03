@@ -14,7 +14,7 @@ std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getInstance()
 	return uniqueInstance;
 }
 
-void ColorConsoleOutputImp::makeNuTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string dataToCalc, double nu1, double nu2, double nuDiff1, double nuDiff2, double ooa)
+void ColorConsoleOutputImp::makeNyTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string dataToCalc, double nu1, double nu2, double nuDiff1, double nuDiff2, double ooa)
 {
 	setColor(testPassed);
 	printTestStart();
@@ -59,16 +59,16 @@ void ColorConsoleOutputImp::makeNuTestOutput(bool testPassed, std::shared_ptr<Si
 	oss.str(std::string());
 
 	print(oss.str());
-	oss << "Nu" << simInfo1->getLx() << ": " << nu1;
+	oss << "Ny" << simInfo1->getLx() << ": " << nu1;
 	print(oss.str());
 	oss.str(std::string());
-	oss << "Nu" << simInfo2->getLx() << ": " << nu2;
+	oss << "Ny" << simInfo2->getLx() << ": " << nu2;
 	print(oss.str());
 	oss.str(std::string());
-	oss << "NuDiff" << simInfo1->getLx() << ": " << nuDiff1;
+	oss << "NyDiff" << simInfo1->getLx() << ": " << nuDiff1;
 	print(oss.str());
 	oss.str(std::string());
-	oss << "NuDiff" << simInfo2->getLx() << ": " << nuDiff2;
+	oss << "NyDiff" << simInfo2->getLx() << ": " << nuDiff2;
 	print(oss.str());
 	oss.str(std::string());
 	oss << "OrderOfAccuracy: " << ooa;
@@ -261,7 +261,7 @@ void ColorConsoleOutputImp::makeL2NormBetweenKernelsTestOutput(bool testPassed, 
 	printTestEnd(testPassed);
 }
 
-void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr< SimulationInfo> simInfo)
+void ColorConsoleOutputImp::makeSimulationHeadOutput(std::shared_ptr<SimulationInfo> simInfo)
 {
 	std::ostringstream ossLine0;
 	ossLine0 << "# Simulation Number " << simInfo->getSimulationID() << " of " << std::setfill(' ') << std::left << std::setw(23) << simInfo->getNumberOfSimulations() << "#";

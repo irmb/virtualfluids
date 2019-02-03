@@ -21,11 +21,11 @@ public:
 
 private:
 	LogFileInformationTaylorGreenUz() {};
-	LogFileInformationTaylorGreenUz(std::shared_ptr< TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+	LogFileInformationTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
 	double uz;
 	double amplitude;
-	std::vector< double> lz;
+	std::vector<double> lz;
 	int l0;
 };
 #endif 

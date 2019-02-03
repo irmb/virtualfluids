@@ -17,15 +17,15 @@ class TestLogFileInformation;
 class LogFileWriterImp : public LogFileWriter
 {
 public:
-	static std::shared_ptr<LogFileWriterImp> getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles,
-														std::shared_ptr< LogFileTimeInformation> logFileTimeInfo,
-														std::shared_ptr< SimulationLogFileInformation> simLogInfo, 
+	static std::shared_ptr<LogFileWriterImp> getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles,
+														std::shared_ptr<LogFileTimeInformation> logFileTimeInfo,
+														std::shared_ptr<SimulationLogFileInformation> simLogInfo, 
 														std::string kernelName, double viscosity);
 	void writeLogFile(std::string basicFilePath);
 	
 
 private:
-	LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector< std::shared_ptr< TestLogFileInformation>> testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity);
+	LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity);
 	std::string calcDateAndTime();
 	std::string buildFilePath(std::string basicFilePath);
 
@@ -35,7 +35,7 @@ private:
 	struct tm nowLocal;
 	std::string kernelName;
 	double viscosity;
-	std::vector< std::shared_ptr< LogFileInformation>> logFileInfo;
-	std::shared_ptr< SimulationLogFileInformation> simLogInfo;
+	std::vector<std::shared_ptr<LogFileInformation> > logFileInfo;
+	std::shared_ptr<SimulationLogFileInformation> simLogInfo;
 };
 #endif 

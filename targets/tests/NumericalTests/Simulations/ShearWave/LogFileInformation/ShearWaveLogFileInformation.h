@@ -27,7 +27,7 @@ private:
 
 	double ux;
 	double uz;
-	std::vector< real> lx;
+	std::vector<real> lx;
 	int l0;
 };
 #endif

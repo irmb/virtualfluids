@@ -11,7 +11,7 @@
 
 std::shared_ptr<VirtualFluidSimulationFactory> VirtualFluidSimulationFactoryImp::getNewInstance()
 {
-	return std::shared_ptr< VirtualFluidSimulationFactory>(new VirtualFluidSimulationFactoryImp());
+	return std::shared_ptr<VirtualFluidSimulationFactory>(new VirtualFluidSimulationFactoryImp());
 }
 
 VirtualFluidSimulationFactoryImp::VirtualFluidSimulationFactoryImp()
@@ -119,12 +119,12 @@ void VirtualFluidSimulationFactoryImp::initInitialConditions(std::shared_ptr<Ini
 	initialCondition->setParameter(para);
 }
 
-std::vector<std::shared_ptr<VirtualFluidSimulation>> VirtualFluidSimulationFactoryImp::makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation> > testSim)
+std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFactoryImp::makeVirtualFluidSimulations(std::vector<std::shared_ptr<TestSimulation> > testSim)
 {
-	std::vector< std::shared_ptr< VirtualFluidSimulation>> vfSimulations;
+	std::vector<std::shared_ptr<VirtualFluidSimulation> > vfSimulations;
 
 	for (int i = 0; i < testSim.size(); i++) {
-		std::shared_ptr< VirtualFluidSimulationImp> vfSim = VirtualFluidSimulationImp::getNewInstance();
+		std::shared_ptr<VirtualFluidSimulationImp> vfSim = VirtualFluidSimulationImp::getNewInstance();
 		
 		std::shared_ptr<Parameter> para = makeParameter(testSim.at(i)->getSimulationParameter());
 		vfSim->setParameter(para);

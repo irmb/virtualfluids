@@ -1,11 +1,11 @@
-#ifndef PHI_AND_NU_TEST_PARAMETER_STRUCT_H
-#define PHI_AND_NU_TEST_PARAMETER_STRUCT_H
+#ifndef PHI_AND_NY_TEST_PARAMETER_STRUCT_H
+#define PHI_AND_NY_TEST_PARAMETER_STRUCT_H
 
 #include <memory>
 
 #include "Utilities\Structs\BasicTestParameterStruct.h"
 
-struct PhiAndNuTestParameterStruct
+struct PhiAndNyTestParameterStruct
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
 

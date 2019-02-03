@@ -13,20 +13,20 @@ class SimulationResults;
 class L2NormTestBetweenKernels : public TestImp
 {
 public:
-	static std::shared_ptr<L2NormTestBetweenKernels> getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
+	static std::shared_ptr<L2NormTestBetweenKernels> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
 
 	void update();
 	void evaluate();
 	std::string getLogFileOutput();
 	double getBasicL2Result();
-	std::vector< bool> getPassedTests();
+	std::vector<bool> getPassedTests();
 	void makeConsoleOutput();
 
-	void setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
-	void setDivergentKernelSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr< SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
+	void setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
+	void setDivergentKernelSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
 
 private:
-	L2NormTestBetweenKernels(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
+	L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
 	int calcTimeStepInResults(unsigned int timeStep);
 
 	unsigned int timeStep;

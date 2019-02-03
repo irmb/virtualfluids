@@ -5,17 +5,17 @@ int ResultsImp::getNumberOfTimeSteps()
 	return numberOfTimeSteps;
 }
 
-std::vector<std::vector<double>> ResultsImp::getVx()
+std::vector<std::vector<double> > ResultsImp::getVx()
 {
 	return vx;
 }
 
-std::vector<std::vector<double>> ResultsImp::getVy()
+std::vector<std::vector<double> > ResultsImp::getVy()
 {
 	return vy;
 }
 
-std::vector<std::vector<double>> ResultsImp::getVz()
+std::vector<std::vector<double> > ResultsImp::getVz()
 {
 	return vz;
 }
@@ -35,17 +35,17 @@ int ResultsImp::getNumberOfZNodes()
 	return zNodes;
 }
 
-std::vector<std::vector<double>> ResultsImp::getXNodes()
+std::vector<std::vector<double> > ResultsImp::getXNodes()
 {
 	return x;
 }
 
-std::vector<std::vector<double>> ResultsImp::getYNodes()
+std::vector<std::vector<double> > ResultsImp::getYNodes()
 {
 	return y;
 }
 
-std::vector<std::vector<double>> ResultsImp::getZNodes()
+std::vector<std::vector<double> > ResultsImp::getZNodes()
 {
 	return z;
 }
@@ -65,17 +65,17 @@ std::vector<int> ResultsImp::getTime()
 	return time;
 }
 
-std::vector<std::vector<unsigned int>> ResultsImp::getLevels()
+std::vector<std::vector<unsigned int> > ResultsImp::getLevels()
 {
 	return level;
 }
 
-std::vector<std::vector<double>> ResultsImp::getPress()
+std::vector<std::vector<double> > ResultsImp::getPress()
 {
 	return press;
 }
 
-std::vector<std::vector<double>> ResultsImp::getRho()
+std::vector<std::vector<double> > ResultsImp::getRho()
 {
 	return rho;
 }

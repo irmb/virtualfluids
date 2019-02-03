@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <sstream>
 
-std::shared_ptr<L2NormInformation> L2NormInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTest>> tests, std::shared_ptr<L2NormTestParameterStruct> testParameter)
+std::shared_ptr<L2NormInformation> L2NormInformation::getNewInstance(std::vector<std::shared_ptr<L2NormTest> > tests, std::shared_ptr<L2NormTestParameterStruct> testParameter)
 {
 	return std::shared_ptr<L2NormInformation>(new L2NormInformation(tests, testParameter));
 }
@@ -27,7 +27,7 @@ std::string L2NormInformation::getOutput()
 	return oss.str();
 }
 
-L2NormInformation::L2NormInformation(std::vector<std::shared_ptr<L2NormTest>> tests, std::shared_ptr<L2NormTestParameterStruct> testParameter) : tests(tests)
+L2NormInformation::L2NormInformation(std::vector<std::shared_ptr<L2NormTest> > tests, std::shared_ptr<L2NormTestParameterStruct> testParameter) : tests(tests)
 {
 	basicTimeStep = testParameter->basicTimeStep;
 	divergentTimeStep = testParameter->divergentTimeStep;

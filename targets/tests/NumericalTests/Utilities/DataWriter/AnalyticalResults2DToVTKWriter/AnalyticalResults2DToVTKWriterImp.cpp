@@ -58,9 +58,9 @@ void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Pa
 
 void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult, int level, std::vector<std::string> & fname, int timeStep)
 {
-	std::vector< UbTupleFloat3 > nodes;
-    std::vector< UbTupleUInt8 > cells;
-    std::vector< std::string > nodedatanames;
+	std::vector<UbTupleFloat3 > nodes;
+    std::vector<UbTupleUInt8 > cells;
+    std::vector<std::string > nodedatanames;
     nodedatanames.push_back("press");
     nodedatanames.push_back("rho");
     nodedatanames.push_back("vx1");
@@ -73,7 +73,7 @@ void AnalyticalResults2DToVTKWriterImp::writeTimeStep(std::shared_ptr<Parameter>
     unsigned int startpos = 0;
     unsigned int endpos = 0;
     unsigned int sizeOfNodes = 0;
-    std::vector< std::vector< double > > nodedata(nodedatanames.size());
+    std::vector<std::vector<double > > nodedata(nodedatanames.size());
 
 	maxX = para->getGridX().at(level);
 	maxY = para->getGridY().at(level);

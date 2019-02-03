@@ -20,11 +20,11 @@ class VirtualFluidSimulationImp : public VirtualFluidSimulation
 public:
 	void run();
 
-	static std::shared_ptr< VirtualFluidSimulationImp> getNewInstance();
+	static std::shared_ptr<VirtualFluidSimulationImp> getNewInstance();
 
 	void setParameter(std::shared_ptr<Parameter> para);
 	void setGridProvider(std::shared_ptr<GridProvider> grid);
-	void setDataWriter(std::shared_ptr< DataWriter> dataWriter);
+	void setDataWriter(std::shared_ptr<DataWriter> dataWriter);
 	void setNumericalTestSuite(std::shared_ptr<NumericalTestSuite> numericalTestSuite);
 	void setTimeTracking(std::shared_ptr<TimeTracking> timeTracking);
 

@@ -9,7 +9,7 @@
 
 #include <iomanip>
 
-std::shared_ptr<L2NormTestBetweenKernels> L2NormTestBetweenKernels::getNewInstance(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep)
+std::shared_ptr<L2NormTestBetweenKernels> L2NormTestBetweenKernels::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep)
 {
 	return std::shared_ptr<L2NormTestBetweenKernels>(new L2NormTestBetweenKernels(colorOutput, dataToCalculate, timeStep));
 }
@@ -83,7 +83,7 @@ void L2NormTestBetweenKernels::makeConsoleOutput()
 	colorOutput->makeL2NormBetweenKernelsTestOutput(testPassed, basicSimInfo, divergentSimInfo, dataToCalculate, timeStep, basicL2Result, divergentL2Result, resultL2ToBasicKernel);
 }
 
-void L2NormTestBetweenKernels::setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr< L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy)
+void L2NormTestBetweenKernels::setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy)
 {
 	TestImp::addSimulation(sim, simInfo, postProcessingStrategy);
 	this->basicSim = sim;
@@ -101,7 +101,7 @@ void L2NormTestBetweenKernels::setDivergentKernelSimulation(std::shared_ptr<Nume
 	this->divergentSimResults = divergentPostProcessingStrategy->getSimulationResult();
 }
 
-L2NormTestBetweenKernels::L2NormTestBetweenKernels(std::shared_ptr< ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep)
+L2NormTestBetweenKernels::L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep)
 	: TestImp(colorOutput), timeStep(timeStep), dataToCalculate(dataToCalculate)
 {
 	l2Normcalculator = L2NormCalculator::getInstance();

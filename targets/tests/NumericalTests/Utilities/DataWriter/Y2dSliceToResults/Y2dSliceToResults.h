@@ -13,7 +13,7 @@ struct VectorWriterInformationStruct;
 class Y2dSliceToResults : public ToVectorWriter
 {
 public:
-	static std::shared_ptr< Y2dSliceToResults> getNewInstance(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation);
+	static std::shared_ptr<Y2dSliceToResults> getNewInstance(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation);
 
 private:
 	Y2dSliceToResults(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation);

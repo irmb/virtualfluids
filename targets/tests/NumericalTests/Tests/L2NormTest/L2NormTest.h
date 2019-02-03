@@ -20,7 +20,7 @@ public:
 	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormPostProcessingStrategy> postProStrategy);
 	void evaluate();
 	std::string getLogFileOutput();
-	std::vector< bool> getPassedTests();
+	std::vector<bool> getPassedTests();
 	void makeConsoleOutput();
 
 private:

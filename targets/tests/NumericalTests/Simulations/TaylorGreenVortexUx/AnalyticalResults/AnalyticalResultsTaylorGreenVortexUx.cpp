@@ -5,12 +5,12 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-std::shared_ptr<AnalyticalResults> AnalyticalResultsTaylorGreenUx::getNewInstance(double viscosity, std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct)
+std::shared_ptr<AnalyticalResults> AnalyticalResultsTaylorGreenUx::getNewInstance(double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct)
 {
 	return std::shared_ptr<AnalyticalResults>(new AnalyticalResultsTaylorGreenUx(viscosity, simParaStruct));
 }
 
-void AnalyticalResultsTaylorGreenUx::calc(std::shared_ptr< SimulationResults> simResults)
+void AnalyticalResultsTaylorGreenUx::calc(std::shared_ptr<SimulationResults> simResults)
 {
 	AnalyticalResultsImp::init(simResults);
 
@@ -26,7 +26,7 @@ void AnalyticalResultsTaylorGreenUx::calc(std::shared_ptr< SimulationResults> si
 	calculated = true;
 }
 
-AnalyticalResultsTaylorGreenUx::AnalyticalResultsTaylorGreenUx(double viscosity, std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct)
+AnalyticalResultsTaylorGreenUx::AnalyticalResultsTaylorGreenUx(double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct)
 	: AnalyticalResultsImp()
 {
 	this->viscosity = viscosity;

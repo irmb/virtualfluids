@@ -13,7 +13,7 @@ struct GridInformationStruct;
 class LogFileInformationTaylorGreenUx : public SimulationLogFileInformation
 {
 public:
-	static std::shared_ptr<LogFileInformationTaylorGreenUx> getNewInstance(std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct);
+	static std::shared_ptr<LogFileInformationTaylorGreenUx> getNewInstance(std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 	
 	std::string getOutput();
 	std::string getFilePathExtensionOne();
@@ -21,11 +21,11 @@ public:
 
 private:
 	LogFileInformationTaylorGreenUx() {};
-	LogFileInformationTaylorGreenUx(std::shared_ptr< TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector< std::shared_ptr< GridInformationStruct> > gridInfoStruct);
+	LogFileInformationTaylorGreenUx(std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
 	double ux;
 	double amplitude;
-	std::vector< double> lx;
+	std::vector<double> lx;
 	int l0;
 };
 #endif 

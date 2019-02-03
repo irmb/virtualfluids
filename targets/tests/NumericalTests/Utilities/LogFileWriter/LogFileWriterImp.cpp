@@ -11,7 +11,7 @@
 #include <ctime>
 #include <experimental/filesystem>
 
-LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity) : kernelName(kernelName), viscosity(viscosity)
+LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity) : kernelName(kernelName), viscosity(viscosity)
 {
 	logFileInfo.push_back(logFileHead);
 	logFileInfo.push_back(basicSimInfo);
@@ -22,7 +22,7 @@ LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std
 		logFileInfo.push_back(testLogFiles.at(i));
 }
 
-std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector< std::shared_ptr< TestLogFileInformation> > testLogFiles, std::shared_ptr< LogFileTimeInformation> logFileTimeInfo, std::shared_ptr< SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
+std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
 {
 	return std::shared_ptr<LogFileWriterImp>(new LogFileWriterImp(logFileHead, basicSimInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity));
 }

@@ -13,8 +13,8 @@ public:
 	std::vector<int> getMultiKernelLevel();
 	std::vector<std::string> getMultiKernelName();
 
-	static std::shared_ptr< KernelConfigurationImp> getNewInstance(std::string kernelName);
-	static std::shared_ptr< KernelConfigurationImp> getNewInstance(std::string mainKernelName, std::vector<int> multiKernelLevel, std::vector<std::string> multiKernelName);
+	static std::shared_ptr<KernelConfigurationImp> getNewInstance(std::string kernelName);
+	static std::shared_ptr<KernelConfigurationImp> getNewInstance(std::string mainKernelName, std::vector<int> multiKernelLevel, std::vector<std::string> multiKernelName);
 
 private:
 	KernelConfigurationImp(std::string kernelName);

@@ -6,12 +6,12 @@
 #include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
 #include "Utilities\Results\SimulationResults\SimulationResults.h"
 
-std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
+std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
 {
 	return std::shared_ptr<L2NormPostProcessingStrategy>(new L2NormPostProcessingStrategy(simResult, analyticalResult, testPara));
 }
 
-L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr< SimulationResults> simResult, std::shared_ptr< AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
+L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
 	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
 {
 	dataToCalculateL2 = testPara->basicTestParameter->dataToCalc;

@@ -5,7 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-std::shared_ptr<AnalyticalResults> ShearWaveAnalyticalResults::getNewInstance(double viscosity, std::shared_ptr< ShearWaveParameterStruct> simParaStruct)
+std::shared_ptr<AnalyticalResults> ShearWaveAnalyticalResults::getNewInstance(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct)
 {
 	return std::shared_ptr<AnalyticalResults>(new ShearWaveAnalyticalResults(viscosity,simParaStruct));
 }
@@ -26,7 +26,7 @@ void ShearWaveAnalyticalResults::calc(std::shared_ptr<SimulationResults> simResu
 	calculated = true;
 }
 
-ShearWaveAnalyticalResults::ShearWaveAnalyticalResults(double viscosity, std::shared_ptr< ShearWaveParameterStruct> simParaStruct)
+ShearWaveAnalyticalResults::ShearWaveAnalyticalResults(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct)
 	: AnalyticalResultsImp()
 {
 	this->viscosity = viscosity;

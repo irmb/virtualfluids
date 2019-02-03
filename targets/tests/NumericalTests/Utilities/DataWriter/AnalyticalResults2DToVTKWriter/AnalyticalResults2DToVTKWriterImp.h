@@ -9,7 +9,7 @@
 class AnalyticalResults2DToVTKWriterImp : public AnalyticalResults2DToVTKWriter
 {
 public:
-	static std::shared_ptr< AnalyticalResults2DToVTKWriterImp> getInstance(bool writeAnalyticalResults);
+	static std::shared_ptr<AnalyticalResults2DToVTKWriterImp> getInstance(bool writeAnalyticalResults);
 
 	void writeAnalyticalResult(std::shared_ptr<Parameter> para, std::shared_ptr<AnalyticalResults> analyticalResult);
 

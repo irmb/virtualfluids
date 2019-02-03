@@ -1,7 +1,7 @@
 #include "FFTCalculator.h"
 
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
-#include "Tests/PhiAndNuTest/PhiAndNuTest.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTest.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -19,7 +19,7 @@ FFTCalculator::FFTCalculator(int lx, int lz, int timeStepLength)
 	this->timeStepLength = (double)timeStepLength;
 }
 
-void FFTCalculator::calc(std::vector<std::vector<double>> data, bool transposeData)
+void FFTCalculator::calc(std::vector<std::vector<double> > data, bool transposeData)
 {
 	this->transposeData = transposeData;
 	if (!transposeData)
@@ -29,7 +29,7 @@ void FFTCalculator::calc(std::vector<std::vector<double>> data, bool transposeDa
 
 	init();
 
-	nu = calcNu();
+	ny = calcNy();
 	phidiff = calcPhiDiff();
 }
 
@@ -50,7 +50,7 @@ void FFTCalculator::init()
 	fftCalculated = false;
 }
 
-double FFTCalculator::calcNu()
+double FFTCalculator::calcNy()
 {
 	std::vector<double> logAmplitude = calcLogAmplitudeForAllSteps();
 	std::vector<double> linReg = calcLinReg(logAmplitude);
@@ -176,9 +176,9 @@ void FFTCalculator::calcFFT2D(unsigned int timeStep)
 	fftw_free(out);
 }
 
-std::vector<std::vector<double>> FFTCalculator::transpose(std::vector<std::vector<double>> dataToTranspose)
+std::vector<std::vector<double> > FFTCalculator::transpose(std::vector<std::vector<double> > dataToTranspose)
 {
-	std::vector< std::vector< std::vector< double>>> dataInLx;
+	std::vector<std::vector<std::vector<double> >> dataInLx;
 	dataInLx.resize(dataToTranspose.size());
 	for (int i = 0; i < dataInLx.size(); i++) {
 		dataInLx.at(i).resize(lz);
@@ -191,7 +191,7 @@ std::vector<std::vector<double>> FFTCalculator::transpose(std::vector<std::vecto
 				dataInLx.at(timeStep).at(posInLZ).at(posInLX) = dataToTranspose.at(timeStep).at(posInLX + posInLZ*lx);
 	}
 
-	std::vector< std::vector< std::vector< double>>> dataInLz;
+	std::vector<std::vector<std::vector<double> >> dataInLz;
 	dataInLz.resize(dataToTranspose.size());
 	for (int i = 0; i < dataInLx.size(); i++) {
 		dataInLz.at(i).resize(lx);
@@ -205,7 +205,7 @@ std::vector<std::vector<double>> FFTCalculator::transpose(std::vector<std::vecto
 				dataInLz.at(timeStep).at(posInLX).at(posInLZ) = dataInLx.at(timeStep).at(posInLZ).at(posInLX);
 	}
 
-	std::vector< std::vector< double>> result;
+	std::vector<std::vector<double> > result;
 	result.resize(dataToTranspose.size());
 
 	for (int timeStep = 0; timeStep < dataInLz.size(); timeStep++) {
@@ -241,9 +241,9 @@ void FFTCalculator::setFFTResults(fftw_complex * result, unsigned int step)
 	fftResultsRe.push_back(fftRe);
 }
 
-double FFTCalculator::getNu()
+double FFTCalculator::getNy()
 {
-	return nu;
+	return ny;
 }
 
 double FFTCalculator::getPhiDiff()

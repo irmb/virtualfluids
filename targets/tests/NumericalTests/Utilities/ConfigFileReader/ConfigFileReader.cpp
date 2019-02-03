@@ -17,7 +17,7 @@ ConfigFileReader::ConfigFileReader(const std::string aFilePath)
 
 void ConfigFileReader::readConfigFile(const std::string aFilePath)
 {
-	configData = std::shared_ptr< ConfigDataStruct>(new ConfigDataStruct);
+	configData = std::shared_ptr<ConfigDataStruct>(new ConfigDataStruct);
 	std::ifstream stream = openConfigFile(aFilePath);
 
 	std::shared_ptr<input::Input> input = input::Input::makeInput(stream, "config");
@@ -32,7 +32,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	configData->logFilePath = input->getValue("PathLogFile");
 	configData->numberOfSimulations = calcNumberOfSimulations(input);
 
-	std::shared_ptr< BasicSimulationParameterStruct> basicSimPara = makeBasicSimulationParameter(input);
+	std::shared_ptr<BasicSimulationParameterStruct> basicSimPara = makeBasicSimulationParameter(input);
 
 	configData->taylorGreenVortexUxParameter = makeTaylorGreenVortexUxParameter(input, basicSimPara);
 	configData->taylorGreenVortexUxGridInformation = makeGridInformation(input, "TaylorGreenVortexUx");;
@@ -43,7 +43,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	configData->shearWaveParameter = makeShearWaveParameter(input, basicSimPara);
 	configData->shearWaveGridInformation = makeGridInformation(input, "ShearWave");;
 
-	configData->phiAndNuTestParameter = makePhiAndNuTestParameter(input);
+	configData->phiAndNuTestParameter = makePhiAndNyTestParameter(input);
 	configData->l2NormTestParameter = makeL2NormTestParameter(input);
 	configData->l2NormTestBetweenKernelsParameter = makeL2NormTestBetweenKernelsParameter(input);
 
@@ -109,14 +109,14 @@ std::shared_ptr<BasicSimulationParameterStruct> ConfigFileReader::makeBasicSimul
 }
 
 
-std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct>> ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
 	std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Ux"));
 	std::vector<double> amplitude = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Ux"));
 	std::vector<double> u0 = StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux"));
 	int l0 = StringUtil::toInt(input->getValue("l0_TGV_Ux"));
 
-	std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct>> parameter;
+	std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > parameter;
 	for (int i = 0; i < u0.size(); i++) {
 		std::shared_ptr<TaylorGreenVortexUxParameterStruct> aParameter = std::shared_ptr<TaylorGreenVortexUxParameterStruct>(new TaylorGreenVortexUxParameterStruct);
 		aParameter->basicSimulationParameter = basicSimParameter;
@@ -132,7 +132,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct>> ConfigFileReade
 	return parameter;
 }
 
-std::vector< std::shared_ptr< TaylorGreenVortexUzParameterStruct> > ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
 	std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Uz"));
 	std::vector<double> amplitude = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Uz"));
@@ -153,7 +153,7 @@ std::vector< std::shared_ptr< TaylorGreenVortexUzParameterStruct> > ConfigFileRe
 	}
 	return parameter;
 }
-std::vector<std::shared_ptr<ShearWaveParameterStruct>> ConfigFileReader::makeShearWaveParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeShearWaveParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
 	std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_SW"));
 	std::vector<double> uz = StringUtil::toDoubleVector(input->getValue("v0_SW"));
@@ -175,14 +175,14 @@ std::vector<std::shared_ptr<ShearWaveParameterStruct>> ConfigFileReader::makeShe
 	return parameter;
 }
 
-std::shared_ptr<PhiAndNuTestParameterStruct> ConfigFileReader::makePhiAndNuTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<PhiAndNyTestParameterStruct> ConfigFileReader::makePhiAndNyTestParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
 	basicTestParameter->dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_PhiAndNu"));
 	basicTestParameter->runTest= StringUtil::toBool(input->getValue("PhiAndNuTest"));
 	basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
 
-	std::shared_ptr<PhiAndNuTestParameterStruct> testParameter = std::shared_ptr<PhiAndNuTestParameterStruct>(new PhiAndNuTestParameterStruct);
+	std::shared_ptr<PhiAndNyTestParameterStruct> testParameter = std::shared_ptr<PhiAndNyTestParameterStruct>(new PhiAndNyTestParameterStruct);
 	testParameter->basicTestParameter = basicTestParameter;
 	testParameter->endTimeStepCalculation = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
 	testParameter->minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
@@ -223,7 +223,7 @@ std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL
 	return testParameter;
 }
 
-std::vector<std::shared_ptr<GridInformationStruct>> ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::string simName)
+std::vector<std::shared_ptr<GridInformationStruct> > ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::string simName)
 {
 	int number = 32;
 	std::vector<std::string> valueNames;
@@ -253,7 +253,7 @@ std::vector<std::shared_ptr<GridInformationStruct>> ConfigFileReader::makeGridIn
 		}
 	}
 
-	std::vector<std::shared_ptr<GridInformationStruct>> gridInformation;
+	std::vector<std::shared_ptr<GridInformationStruct> > gridInformation;
 	for (int i = 0; i < lx.size(); i++) {
 		std::shared_ptr<GridInformationStruct> aGridInformation = std::shared_ptr<GridInformationStruct> (new GridInformationStruct);
 		aGridInformation->numberOfGridLevels = StringUtil::toInt(input->getValue("NumberOfGridLevels"));
@@ -315,7 +315,7 @@ std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input:
 
 unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<input::Input> input)
 {
-	std::vector< unsigned int> startStepsTests;
+	std::vector<unsigned int> startStepsTests;
 	startStepsTests.push_back(StringUtil::toInt(input->getValue("BasicTimeStep_L2")));
 	startStepsTests.push_back(StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu")));
 	std::sort(startStepsTests.begin(), startStepsTests.end());

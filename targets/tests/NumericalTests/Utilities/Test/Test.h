@@ -10,7 +10,7 @@ class Test : public SimulationObserver
 {
 public:
 	virtual void update() = 0;
-	virtual std::vector< bool> getPassedTests() = 0;
+	virtual std::vector<bool> getPassedTests() = 0;
 	virtual void makeConsoleOutput() = 0;
 
 private:

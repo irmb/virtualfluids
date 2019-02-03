@@ -11,7 +11,7 @@ public:
 
 protected:
 	AnalyticalResultsImp();
-	void init(std::shared_ptr< SimulationResults> simResults);
+	void init(std::shared_ptr<SimulationResults> simResults);
 
 	bool calculated;
 private:
