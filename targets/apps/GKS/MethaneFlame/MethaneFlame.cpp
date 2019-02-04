@@ -18,6 +18,7 @@
 #include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h"
 #include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -51,7 +52,7 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 64;
+    uint nx = 32;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -128,14 +129,20 @@ void thermalCavity( std::string path, std::string simulationName )
     //gridBuilder->addCoarseGrid( 0.0, -0.5*H, -0.5*dx,  
     //                              L,  0.5*H,  0.5*dx, dx );
 
-    gridBuilder->addCoarseGrid( 0.0, -0.5*H, -0.5*H,  
-                                  L,  0.5*H,  0.5*H, dx );
+    gridBuilder->addCoarseGrid( 0.0  , -0.5*H, -0.5*H,  
+                                2.0*L,  0.5*H,  0.5*H, dx );
 
-    Sphere           sphere  ( 0.0, 0.0, 0.0, 0.15 );
+    Cuboid  box  (     -H, -H, -H,
+                    1.1*L,  H,  H );
+    
+    //TriangularMesh* refCylinder = TriangularMesh::make("F:/Work/Computations/out/MethaneFlame/refCylinder.stl");
+    TriangularMesh* refCylinder = TriangularMesh::make("inp/refCylinder.stl");
 
     gridBuilder->setNumberOfLayers(0,10);
 
-    gridBuilder->addGrid( &sphere, 2 );
+    gridBuilder->addGrid( &box, 1 );
+
+    gridBuilder->addGrid( refCylinder, 3 );
 
     gridBuilder->setPeriodicBoundaryCondition(false, true, true);
 
@@ -278,9 +285,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
-
-    //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 5000 );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -288,7 +293,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        uint T = 20000;
+        uint T = 10000;
         if( iter <= T )
         {
             std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
@@ -307,8 +312,8 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 10       && iter % 1      == 0 ) ||
             //( iter < 100      && iter % 10     == 0 ) ||
             //( iter < 1000     && iter % 100    == 0 ) ||
-            ( iter < 20000    && iter % 1000   == 0 ) ||
-            ( iter < 1000000  && iter % 10000  == 0 ) ||
+            //( iter < 10000    && iter % 1000   == 0 ) ||
+            ( iter < 1000000    && iter % 10000  == 0 ) ||
             ( iter < 100000000  && iter % 100000 == 0 )
             //( iter > 18400 && iter % 10 == 0 )
           )
@@ -321,25 +326,17 @@ void thermalCavity( std::string path, std::string simulationName )
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
-
-        //turbulenceAnalyzer->run( iter, parameters );
     }
 
     //////////////////////////////////////////////////////////////////////////
 
     dataBase->copyDataDeviceToHost();
-
-    //writeVtkXML( dataBase, parameters, 0, path + "grid/Test_1" );
-
-    //turbulenceAnalyzer->download();
-
-    //writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence");
 }
 
 int main( int argc, char* argv[])
 {
-    std::string path( "F:/Work/Computations/out/MethaneFlame/" );
-    //std::string path( "out/" );
+    //std::string path( "F:/Work/Computations/out/MethaneFlame/" );
+    std::string path( "out/" );
     std::string simulationName ( "MethaneFlame" );
 
     logging::Logger::addStream(&std::cout);

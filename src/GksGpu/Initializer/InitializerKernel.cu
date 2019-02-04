@@ -29,6 +29,8 @@ void Initializer::initializeDataUpdate( SPtr<DataBase> dataBase )
                dataBase->getDeviceType(), grid, 
                dataBase->toStruct() );
 
+    cudaDeviceSynchronize();
+
     getLastCudaError("Initializer::initializeDataUpdate( SPtr<DataBase> dataBase )");
 }
 

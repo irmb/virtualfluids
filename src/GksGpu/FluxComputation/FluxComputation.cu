@@ -118,16 +118,14 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         real muNew = parameters.mu;
 
-        if( x > two )
+        if( x > three )
         {
-            muNew += ( x - two ) * ten * parameters.mu;
+            muNew += ( x - three ) / three * ten * parameters.mu;
         }
 
         parameters.Pr = muNew / parameters.mu;
 
         parameters.mu = muNew;
-
-
     }
 
     //////////////////////////////////////////////////////////////////////////

@@ -34,6 +34,8 @@ void CellUpdate::run( SPtr<DataBase> dataBase, Parameters parameters, uint level
                parameters,
                dataBase->perLevelCount[ level ].startOfCells );
 
+    cudaDeviceSynchronize();
+
     getLastCudaError("CellUpdate::run( SPtr<DataBase> dataBase, Parameters parameters, uint level )");
 }
 
@@ -139,7 +141,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     const real reactionRateCoefficient = 2.119e11;    
     const real activationEnergy        = 2.027e5;
-    const real heatOfReaction		   = 1.0e5;
+    const real heatOfReaction		   = 2.0e5;
 
     const real B = 0.2;
     const real C = 1.3;
@@ -175,14 +177,14 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     real arrhenius    = exp( -activationEnergy / ( Ru * temp ) );
 
     real reactionRate = reactionRateCoefficient * arrhenius 
-                      * std::pow(initialConcentration[0], B)
-                      * std::pow(initialConcentration[1], C);
+                      * pow(initialConcentration[0], B)
+                      * pow(initialConcentration[1], C);
 
     real dt_lim_0 =       initialConcentration[0] / reactionRate;
     real dt_lim_1 = 0.5 * initialConcentration[1] / reactionRate;
 
-    real dt_lim = std::min( dt_lim_0,      dt_lim_1 );
-    real dt     = std::min( parameters.dt, dt_lim   );
+    real dt_lim = fmin( dt_lim_0,      dt_lim_1 );
+    real dt     = fmin( parameters.dt, dt_lim   );
 
 	finalConcentration[0] = initialConcentration[0] -       reactionRate * dt;
 	finalConcentration[1] = initialConcentration[1] - two * reactionRate * dt;

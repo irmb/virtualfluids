@@ -53,6 +53,8 @@ void IsothermalWall::runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
                parameters,
                this->startOfCellsPerLevel[ level ] );
 
+    cudaDeviceSynchronize();
+
     getLastCudaError("IsothermalWall::runBoundaryConditionKernel( const SPtr<DataBase> dataBase, const Parameters parameters, const uint level )");
 }
 
