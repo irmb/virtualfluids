@@ -25,7 +25,9 @@ std::string LogFileHead::getOutput()
 	for (int i = 0; i < devices.size(); i++) {
 		cudaDeviceProp prop;
 		cudaGetDeviceProperties(&prop, devices.at(i));
-		oss << prop.name;
+		std::string deviceName = prop.name;
+		deviceName.assign(deviceName.begin(), remove_if(deviceName.begin(), deviceName.end(), &isspace));
+		oss << deviceName;
 		if (i < devices.size() - 1)
 			oss << " ";
 		else
