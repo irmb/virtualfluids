@@ -60,7 +60,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real dx = H / real(nx);
 
-    real Re  = 100.0;
+    real Re  = 500.0;
     real Ba  = 0.1;
     real eps = 1.2;
     real Pr  = 0.71;
@@ -72,7 +72,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real rho = 1.2;
 
     real S_1 = 0.0;
-    real S_2 = 0.0;
+    real S_2 = 0.5;
 
     real R_Mixture = S_1               * 8.31445984848 / 16.04e-3      // O2
 				   + S_2               * 8.31445984848 / 32.00e-3      // CH4
@@ -89,9 +89,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
-    *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
-    //*logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
-    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
+    *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt   << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "Ma = " << U/cs << " m/s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu   << " kg/sm\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +101,7 @@ void thermalCavity( std::string path, std::string simulationName )
     parameters.Pr = Pr;
     parameters.mu = mu;
 
-    parameters.D  = mu;
+    parameters.D  = 5.0 * mu;
 
     parameters.force.x = 0;
     parameters.force.y = 0;
@@ -194,12 +194,12 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcJetFuel   = std::make_shared<Inflow>( dataBase, Vec3(U, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 0.8, 0.0 );
+    SPtr<BoundaryCondition> bcJetFuel   = std::make_shared<Inflow>( dataBase, Vec3(U, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 0.0, 0.5 );
     SPtr<BoundaryCondition> bcJetOxygen = std::make_shared<Inflow>( dataBase, Vec3(U, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 0.0, 0.5 );
 
     bcJetFuel->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         return center.x < 0.0 &&
-               std::sqrt(center.y*center.y + center.z*center.z) < 0.125 / 2.0;
+               std::sqrt(center.y*center.y + center.z*center.z) < 0.125 / 4.0;
     } );
 
     bcJetOxygen->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
@@ -288,11 +288,17 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        uint T = 10000;
-        if( iter < T )
+        uint T = 20000;
+        if( iter <= T )
         {
             std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
             std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
+        }
+
+        if( iter == T )
+        {
+            std::dynamic_pointer_cast<Inflow>(bcJetFuel)->S_1 = 1.0;
+            std::dynamic_pointer_cast<Inflow>(bcJetFuel)->S_2 = 0.0;
         }
 
         TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
@@ -302,8 +308,8 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 100      && iter % 10     == 0 ) ||
             //( iter < 1000     && iter % 100    == 0 ) ||
             ( iter < 20000    && iter % 1000   == 0 ) ||
-            ( iter < 100000   && iter % 10000  == 0 ) ||
-            ( iter < 1000000  && iter % 100000 == 0 )
+            ( iter < 1000000  && iter % 10000  == 0 ) ||
+            ( iter < 100000000  && iter % 100000 == 0 )
             //( iter > 18400 && iter % 10 == 0 )
           )
         {
