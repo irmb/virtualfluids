@@ -96,23 +96,27 @@ void NumericalTestFactoryImp::init(std::shared_ptr<ConfigDataStruct> configFileD
 		for (int j = 0; j < configFileData->viscosity.size(); j++) {
 			for (int k = 0; k < configFileData->taylorGreenVortexUxParameter.size(); k++) {
 				std::shared_ptr<SimulationDataStruct> simDataStruct = makeTaylorGreenUxSimulationData(configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUxParameter.at(k), configFileData->taylorGreenVortexUxGridInformation);
-				
-				std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUxParameter.at(k)->basicTimeStepLength);
-				addNumericalTestStruct(numericalTestStruct);
+				if (simDataStruct->simGroupRun) {
+					std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUxParameter.at(k)->basicTimeStepLength);
+					addNumericalTestStruct(numericalTestStruct);
+				}
 			}
 
 			for (int k = 0; k < configFileData->taylorGreenVortexUzParameter.size(); k++) {
 				std::shared_ptr<SimulationDataStruct> simDataStruct = makeTaylorGreenUzSimulationData(configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUzParameter.at(k), configFileData->taylorGreenVortexUzGridInformation);
-				
-				std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUzParameter.at(k)->basicTimeStepLength);
-				addNumericalTestStruct(numericalTestStruct);
+				if (simDataStruct->simGroupRun) {
+					std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->taylorGreenVortexUzParameter.at(k)->basicTimeStepLength);
+					addNumericalTestStruct(numericalTestStruct);
+				}
 			}
 
 			for (int k = 0; k < configFileData->shearWaveParameter.size(); k++) {
 				std::shared_ptr<SimulationDataStruct> simDataStruct = makeShearWaveSimulationData(configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->shearWaveParameter.at(k), configFileData->shearWaveGridInformation);
-				
-				std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->shearWaveParameter.at(k)->basicTimeStepLength);
-				addNumericalTestStruct(numericalTestStruct);
+				if (simDataStruct->simGroupRun) {
+					std::shared_ptr<NumericalTestStruct> numericalTestStruct = makeNumericalTestStruct(configFileData, simDataStruct, configFileData->kernelsToTest.at(i), configFileData->viscosity.at(j), configFileData->shearWaveParameter.at(k)->basicTimeStepLength);
+					addNumericalTestStruct(numericalTestStruct);
+				}
+
 			}
 			
 		}
@@ -171,53 +175,66 @@ std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUx
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
 
-	for (int i = 0; i < gridInfoStruct.size(); i++) {
-		std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct> (new TestSimulationDataStruct);
-		aTestSimData->simParameter = SimulationParameterTaylorGreenUx::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
-		aTestSimData->initialCondition = InitialConditionTaylorGreenUx::getNewInstance(simParaStruct, gridInfoStruct.at(i));
-		aTestSimData->simInformation = SimulationInfoTaylorGreenUx::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
-		simID++;
-		aTestSimData->analyticalResult = AnalyticalResultsTaylorGreenUx::getNewInstance(viscosity, simParaStruct);
-		simDataStruct->testSimData.push_back(aTestSimData);
+	if (gridInfoStruct.size() > 0) {
+		for (int i = 0; i < gridInfoStruct.size(); i++) {
+			std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
+			aTestSimData->simParameter = SimulationParameterTaylorGreenUx::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
+			aTestSimData->initialCondition = InitialConditionTaylorGreenUx::getNewInstance(simParaStruct, gridInfoStruct.at(i));
+			aTestSimData->simInformation = SimulationInfoTaylorGreenUx::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
+			simID++;
+			aTestSimData->analyticalResult = AnalyticalResultsTaylorGreenUx::getNewInstance(viscosity, simParaStruct);
+			simDataStruct->testSimData.push_back(aTestSimData);
+		}
+		simDataStruct->logFileInformation = LogFileInformationTaylorGreenUx::getNewInstance(simParaStruct, gridInfoStruct);
+		simDataStruct->simGroupRun = true;
 	}
-	simDataStruct->logFileInformation = LogFileInformationTaylorGreenUx::getNewInstance(simParaStruct, gridInfoStruct);
-
+	else {
+		simDataStruct->simGroupRun = false;
+	}
 	return simDataStruct;
 }
 
 std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeTaylorGreenUzSimulationData(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
-
-	for (int i = 0; i < gridInfoStruct.size(); i++) {
-		std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
-		aTestSimData->simParameter = SimulationParameterTaylorGreenUz::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
-		aTestSimData->initialCondition = InitialConditionTaylorGreenUz::getNewInstance(simParaStruct, gridInfoStruct.at(i));
-		aTestSimData->simInformation = SimulationInfoTaylorGreenUz::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
-		simID++;
-		aTestSimData->analyticalResult = AnalyticalResultsTaylorGreenUz::getNewInstance(viscosity, simParaStruct);
-		simDataStruct->testSimData.push_back(aTestSimData);
+	if (gridInfoStruct.size() > 0) {
+		for (int i = 0; i < gridInfoStruct.size(); i++) {
+			std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
+			aTestSimData->simParameter = SimulationParameterTaylorGreenUz::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
+			aTestSimData->initialCondition = InitialConditionTaylorGreenUz::getNewInstance(simParaStruct, gridInfoStruct.at(i));
+			aTestSimData->simInformation = SimulationInfoTaylorGreenUz::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
+			simID++;
+			aTestSimData->analyticalResult = AnalyticalResultsTaylorGreenUz::getNewInstance(viscosity, simParaStruct);
+			simDataStruct->testSimData.push_back(aTestSimData);
+		}
+		simDataStruct->logFileInformation = LogFileInformationTaylorGreenUz::getNewInstance(simParaStruct, gridInfoStruct);
+		simDataStruct->simGroupRun = true;
 	}
-	simDataStruct->logFileInformation = LogFileInformationTaylorGreenUz::getNewInstance(simParaStruct, gridInfoStruct);
-
+	else {
+		simDataStruct->simGroupRun = false;
+	}
 	return simDataStruct;
 }
 
 std::shared_ptr<SimulationDataStruct> NumericalTestFactoryImp::makeShearWaveSimulationData(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
 	std::shared_ptr<SimulationDataStruct> simDataStruct = std::shared_ptr<SimulationDataStruct>(new SimulationDataStruct);
-
-	for (int i = 0; i < gridInfoStruct.size(); i++) {
-		std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
-		aTestSimData->simParameter = ShearWaveSimulationParameter::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
-		aTestSimData->initialCondition = InitialConditionShearWave::getNewInstance(simParaStruct, gridInfoStruct.at(i));
-		aTestSimData->simInformation = ShearWaveSimulationInfo::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
-		simID++;
-		aTestSimData->analyticalResult = ShearWaveAnalyticalResults::getNewInstance(viscosity, simParaStruct);
-		simDataStruct->testSimData.push_back(aTestSimData);
+	if (gridInfoStruct.size() > 0) {
+		for (int i = 0; i < gridInfoStruct.size(); i++) {
+			std::shared_ptr<TestSimulationDataStruct> aTestSimData = std::shared_ptr<TestSimulationDataStruct>(new TestSimulationDataStruct);
+			aTestSimData->simParameter = ShearWaveSimulationParameter::getNewInstance(kernelName, viscosity, simParaStruct, gridInfoStruct.at(i));
+			aTestSimData->initialCondition = InitialConditionShearWave::getNewInstance(simParaStruct, gridInfoStruct.at(i));
+			aTestSimData->simInformation = ShearWaveSimulationInfo::getNewInstance(simID, kernelName, viscosity, simParaStruct, gridInfoStruct.at(i), numberOfSimulations);
+			simID++;
+			aTestSimData->analyticalResult = ShearWaveAnalyticalResults::getNewInstance(viscosity, simParaStruct);
+			simDataStruct->testSimData.push_back(aTestSimData);
+		}
+		simDataStruct->logFileInformation = ShearWaveInformation::getNewInstance(simParaStruct, gridInfoStruct);
+		simDataStruct->simGroupRun = true;
+	}		
+	else {
+		simDataStruct->simGroupRun = false;
 	}
-	simDataStruct->logFileInformation = ShearWaveInformation::getNewInstance(simParaStruct, gridInfoStruct);
-
 	return simDataStruct;
 }
 

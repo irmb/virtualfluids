@@ -7,7 +7,7 @@
 
 std::shared_ptr<AnalyticalResults> ShearWaveAnalyticalResults::getNewInstance(double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct)
 {
-	return std::shared_ptr<AnalyticalResults>(new ShearWaveAnalyticalResults(viscosity,simParaStruct));
+	return std::shared_ptr<AnalyticalResults>(new ShearWaveAnalyticalResults(viscosity, simParaStruct));
 }
 
 void ShearWaveAnalyticalResults::calc(std::shared_ptr<SimulationResults> simResults)

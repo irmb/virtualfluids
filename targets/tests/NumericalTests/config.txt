@@ -50,7 +50,7 @@ EndTimeStepCalculation_PhiNu=20
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
-L2NormTest=false
+L2NormTest=true
 MaxL2NormDiff=2.5
 DataToCalc_L2="Vx"
 BasicTimeStep_L2=0
@@ -67,20 +67,20 @@ DataToCalc_L2NormBetweenKernels="Vx"
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortexUx32=false
+TaylorGreenVortexUx32=true
 TaylorGreenVortexUx64=false
 TaylorGreenVortexUx128=false
 TaylorGreenVortexUx256=false
 TaylorGreenVortexUx512=false
 
-TaylorGreenVortexUz32=false
+TaylorGreenVortexUz32=true
 TaylorGreenVortexUz64=false
 TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
 ShearWave32=true
-ShearWave64=true
+ShearWave64=false
 ShearWave128=false
 ShearWave256=false
 ShearWave512=false

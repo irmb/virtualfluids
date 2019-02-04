@@ -11,5 +11,6 @@ struct SimulationDataStruct
 	std::vector<std::shared_ptr<TestSimulationDataStruct> > testSimData;
 
 	std::shared_ptr<SimulationLogFileInformation> logFileInformation;
+	bool simGroupRun;
 };
 #endif 
