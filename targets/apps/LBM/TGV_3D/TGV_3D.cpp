@@ -67,7 +67,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
 	para->setNumprocs(comm->getNummberOfProcess());
-	para->setDevices(StringUtil::toVector(input->getValue("Devices")));
+	para->setDevices(StringUtil::toIntVector(input->getValue("Devices")));
 	para->setMyID(comm->getPID());
 	
 	std::string _path = input->getValue("Path");
@@ -249,12 +249,12 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
-    para->setGridX(StringUtil::toVector(input->getValue("GridX")));                           
-    para->setGridY(StringUtil::toVector(input->getValue("GridY")));                           
-    para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                  
-    para->setDistX(StringUtil::toVector(input->getValue("DistX")));                  
-    para->setDistY(StringUtil::toVector(input->getValue("DistY")));                  
-    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                
+    para->setGridX(StringUtil::toIntVector(input->getValue("GridX")));                           
+    para->setGridY(StringUtil::toIntVector(input->getValue("GridY")));                           
+    para->setGridZ(StringUtil::toIntVector(input->getValue("GridZ")));                  
+    para->setDistX(StringUtil::toIntVector(input->getValue("DistX")));                  
+    para->setDistY(StringUtil::toIntVector(input->getValue("DistY")));                  
+    para->setDistZ(StringUtil::toIntVector(input->getValue("DistZ")));                
 
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
 }

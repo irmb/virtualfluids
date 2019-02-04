@@ -68,7 +68,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
 	para->setNumprocs(comm->getNummberOfProcess());
-	para->setDevices(StringUtil::toVector(input->getValue("Devices")));
+	para->setDevices(StringUtil::toIntVector(input->getValue("Devices")));
 	para->setMyID(comm->getPID());
 	
 	std::string _path = input->getValue("Path");
@@ -101,7 +101,8 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setPressInZ(StringUtil::toInt(input->getValue("PressInZ")));
     para->setPressOutZ(StringUtil::toInt(input->getValue("PressOutZ")));
     //////////////////////////////////////////////////////////////////////////
-    para->setDiffOn(StringUtil::toBool(input->getValue("DiffOn")));
+	para->setCompOn(StringUtil::toBool(input->getValue("CompOn")));
+	para->setDiffOn(StringUtil::toBool(input->getValue("DiffOn")));
     para->setDiffMod(StringUtil::toInt(input->getValue("DiffMod")));
     para->setDiffusivity(StringUtil::toFloat(input->getValue("Diffusivity")));
     para->setTemperatureInit(StringUtil::toFloat(input->getValue("Temp")));
@@ -250,14 +251,22 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
     para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
-    para->setGridX(StringUtil::toVector(input->getValue("GridX")));                           
-    para->setGridY(StringUtil::toVector(input->getValue("GridY")));                           
-    para->setGridZ(StringUtil::toVector(input->getValue("GridZ")));                  
-    para->setDistX(StringUtil::toVector(input->getValue("DistX")));                  
-    para->setDistY(StringUtil::toVector(input->getValue("DistY")));                  
-    para->setDistZ(StringUtil::toVector(input->getValue("DistZ")));                
+    para->setGridX(StringUtil::toIntVector(input->getValue("GridX")));                           
+    para->setGridY(StringUtil::toIntVector(input->getValue("GridY")));                           
+    para->setGridZ(StringUtil::toIntVector(input->getValue("GridZ")));                  
+    para->setDistX(StringUtil::toIntVector(input->getValue("DistX")));                  
+    para->setDistY(StringUtil::toIntVector(input->getValue("DistY")));                  
+    para->setDistZ(StringUtil::toIntVector(input->getValue("DistZ")));                
 
     para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Kernel
+	para->setMainKernel(input->getValue("MainKernelName"));
+	para->setMultiKernelOn(StringUtil::toBool(input->getValue("multiKernelOn")));
+	para->setMultiKernelLevel(StringUtil::toIntVector(input->getValue("multiKernelLevel")));
+	para->setMultiKernelName(StringUtil::toStringVector(input->getValue("multiKernelName")));
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 
@@ -370,6 +379,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     sim.init(para, gridGenerator, fileWriter);
     sim.run();
+	sim.free();
 }
 
 

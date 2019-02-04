@@ -78,11 +78,11 @@ ENDIF(MSVC)
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
 option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
-option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF )
+option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
-option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF)
+option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
 
-option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF)
+option(VF_DOUBLE_ACCURACY       "Build shared libraries"  ON )
 
 #############################################################
 
@@ -167,5 +167,7 @@ ENDIF()
 
 if(HULC.BUILD_NUMERIC_TESTS)
  	add_subdirectory(3rdParty/fftw/fftw-3.3.7)
-	add_subdirectory(targets/tests/TestingHULC)
+	add_subdirectory(3rdParty/googletest)
+	add_subdirectory(targets/tests/NumericalTests)
+	add_subdirectory(targets/tests/NumericalTestPostProcessing)
 endif()

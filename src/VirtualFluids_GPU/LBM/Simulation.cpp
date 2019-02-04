@@ -61,6 +61,8 @@
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
+#include "Kernel\KernelFactory.h"
+#include "Kernel\Kernel.h"
 
 Simulation::Simulation()
 {
@@ -343,6 +345,17 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    output << "used Device Memory: " << para->getMemsizeGPU() / 1000000.0 << " MB\n";
    //////////////////////////////////////////////////////////////////////////
+
+   //////////////////////////////////////////////////////////////////////////
+   //Kernel init
+   //////////////////////////////////////////////////////////////////////////
+   std::shared_ptr< KernelFactory> kernelFactory = KernelFactory::getNewInstance(para);
+   kernels = kernelFactory->makeKernels(para->getMaxLevel(), para->getMainKernelName());
+   
+   if(para->getMaxLevel() > 0)
+	   if (para->getMultiKernelOn())
+		   for (int i = 0; i < para->getMultiKernelLevel().size(); i++)
+			   kernelFactory->setKernelAtLevel(kernels, para->getMultiKernelLevel().at(i), para->getMultiKernelName().at(i));
 }
 
 void Simulation::bulk()
@@ -465,37 +478,9 @@ void Simulation::run()
 			//					para->getParD(0)->size_Mat_SP,     para->getParD(0)->evenOrOdd);
 		 //     getLastCudaError("QVelDev27 execution failed");
 			//  //////////////////////////////////////////////////////////////////////////
-
 		 //}
-		 //////////////////////////////////////////////////////////////////////////
-		 //All 4
-		 //KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
-		 //						 para->getParD(0)->omega, 
-		 //						 para->getParD(0)->geoSP, 
-		 //						 para->getParD(0)->neighborX_SP, 
-		 //						 para->getParD(0)->neighborY_SP, 
-		 //						 para->getParD(0)->neighborZ_SP,
-		 //						 para->getParD(0)->d0SP.f[0],    
-		 //						 para->getParD(0)->size_Mat_SP,
-		 //						 0,
-		 //						 para->getForcesDev(),
-		 //						 para->getParD(0)->evenOrOdd); 
-		 //getLastCudaError("KernelCumulantD3Q27All4 execution failed");
-		 ////////////////////////////////////////////////////////////////////////// 
-		 //F3
-		 //KernelCumulantD3Q27F3( para->getParD(0)->numberofthreads,
-			//					 para->getParD(0)->omega, 
-			//					 para->getParD(0)->geoSP, 
-			//					 para->getParD(0)->neighborX_SP, 
-			//					 para->getParD(0)->neighborY_SP, 
-			//					 para->getParD(0)->neighborZ_SP,
-			//					 para->getParD(0)->d0SP.f[0],    
-			//					 para->getParD(0)->g6.g[0],    
-			//					 para->getParD(0)->size_Mat_SP,
-			//					 0,
-			//					 para->getForcesDev(),
-			//					 para->getParD(0)->evenOrOdd); 
-		 //getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+
+		
 		 //////////////////////////////////////////////////////////////////////////
 		 //comp
 		 //KernelKumAA2016CompBulkSP27(para->getParD(0)->numberofthreads,       
@@ -717,20 +702,24 @@ void Simulation::run()
 		//					 para->getForcesDev(),
 		//					 para->getParD(0)->evenOrOdd); 
 		//getLastCudaError("KernelKumNewCompSP27 execution failed");
+		int level = 0;
+		kernels.at(level)->run();
 
-		KernelKumAA2016CompSP27(
-			para->getParD(0)->numberofthreads,
-			para->getParD(0)->omega,
-			para->getParD(0)->geoSP,
-			para->getParD(0)->neighborX_SP,
-			para->getParD(0)->neighborY_SP,
-			para->getParD(0)->neighborZ_SP,
-			para->getParD(0)->d0SP.f[0],
-			para->getParD(0)->size_Mat_SP,
-			0,
-			para->getForcesDev(),
-			para->getParD(0)->evenOrOdd);
-		getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+		//kann raus///////
+		//KernelKumAA2016CompSP27(
+		//	para->getParD(0)->numberofthreads,
+		//	para->getParD(0)->omega,
+		//	para->getParD(0)->geoSP,
+		//	para->getParD(0)->neighborX_SP,
+		//	para->getParD(0)->neighborY_SP,
+		//	para->getParD(0)->neighborZ_SP,
+		//	para->getParD(0)->d0SP.f[0],
+		//	para->getParD(0)->size_Mat_SP,
+		//	0,
+		//	para->getForcesDev(),
+		//	para->getParD(0)->evenOrOdd);
+		//getLastCudaError("KernelKumAA2016CompSP27 execution failed");
+		//kann raus///////
 
 		//KernelCumulantD3Q27All4(para->getParD(0)->numberofthreads,
 		//						 para->getParD(0)->omega, 
@@ -2517,7 +2506,7 @@ void Simulation::run()
                    getLastCudaError("CalcMacSP27 execution failed"); 
 
 
-				   //überschreiben mit Wandknoten
+				   //ï¿½berschreiben mit Wandknoten
 				   //SetOutputWallVelocitySP27(  para->getParD(lev)->numberofthreads,
 							//				   para->getParD(lev)->vx_SP,       
 							//				   para->getParD(lev)->vy_SP,        
@@ -2570,9 +2559,9 @@ void Simulation::run()
 			   //////////////////////////////////////////////////////////////////////////
 			   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
 			   //////////////////////////////////////////////////////////////////////////
-			   std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
-			   kinEnergyWriter->writeToFile(fname);
-			   enstrophyWriter->writeToFile(fname);
+			   //std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
+			   //kinEnergyWriter->writeToFile(fname);
+			   //enstrophyWriter->writeToFile(fname);
 			   //////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2718,6 +2707,8 @@ void Simulation::run()
          checkCudaErrors( cudaEventRecord(start_t));
       }
 	}
+
+
 	//////////////////////////////////////////////////////////////////////////
 	//Timer SDK
 	sdkStopTimer(&sdkTimer);
@@ -2797,137 +2788,137 @@ void Simulation::run()
    checkCudaErrors( cudaEventDestroy(start_t));
    checkCudaErrors( cudaEventDestroy(stop_t));
    sdkDeleteTimer(&sdkTimer);
-   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-   {
-	  //para->cudaFreeFull(lev);
-	  para->cudaFreeCoord(lev);
-	  para->cudaFreeSP(lev);
-      para->cudaFreeNeighborWSB(lev);
-	  if (para->getCalcMedian())
-	  {
-		  para->cudaFreeMedianSP(lev);
-	  }
-	  //para->cudaFreeVeloBC(lev);
-	  //para->cudaFreeWallBC(lev);
-	  //para->cudaFreeVeloBC(lev); 
-	  //para->cudaFreeInlet(lev);
-	  //para->cudaFreeOutlet(lev);
-	  //para->cudaFreeGeomBC(lev);
-	  //para->cudaFreePress(lev);
-   }
-   if (para->getMaxLevel()>1)
-   {
-      for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
-      {
-		 para->cudaFreeInterfaceCF(lev);
-		 para->cudaFreeInterfaceFC(lev);
-		 para->cudaFreeInterfaceOffCF(lev);
-		 para->cudaFreeInterfaceOffFC(lev);
-		 //para->cudaFreePressX1(lev);
-      }
-   }
-   //para->cudaFreeVeloBC(0); //level = 0
-   //para->cudaFreePressBC();
-   //para->cudaFreeVeloPropeller(para->getFine());
-   //para->cudaFreePressX0(para->getCoarse());
+   //for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+   //{
+	  ////para->cudaFreeFull(lev);
+	  //para->cudaFreeCoord(lev);
+	  //para->cudaFreeSP(lev);
+   //   para->cudaFreeNeighborWSB(lev);
+	  //if (para->getCalcMedian())
+	  //{
+		 // para->cudaFreeMedianSP(lev);
+	  //}
+	  ////para->cudaFreeVeloBC(lev);
+	  ////para->cudaFreeWallBC(lev);
+	  ////para->cudaFreeVeloBC(lev); 
+	  ////para->cudaFreeInlet(lev);
+	  ////para->cudaFreeOutlet(lev);
+	  ////para->cudaFreeGeomBC(lev);
+	  ////para->cudaFreePress(lev);
+   //}
+   //if (para->getMaxLevel()>1)
+   //{
+   //   for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
+   //   {
+		 //para->cudaFreeInterfaceCF(lev);
+		 //para->cudaFreeInterfaceFC(lev);
+		 //para->cudaFreeInterfaceOffCF(lev);
+		 //para->cudaFreeInterfaceOffFC(lev);
+		 ////para->cudaFreePressX1(lev);
+   //   }
+   //}
+   ////para->cudaFreeVeloBC(0); //level = 0
+   ////para->cudaFreePressBC();
+   ////para->cudaFreeVeloPropeller(para->getFine());
+   ////para->cudaFreePressX0(para->getCoarse());
 
-   //////////////////////////////////////////////////////////////////////////
-   //Temp
-   if (para->getDiffOn()==true)
-   {
-      for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
-      {
-         checkCudaErrors( cudaFreeHost(para->getParH(lev)->Conc_Full     ));
-         checkCudaErrors( cudaFreeHost(para->getParH(lev)->Conc          ));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->Temp.temp     ));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->Temp.k        ));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempVel.temp  ));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempVel.velo  ));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempVel.k     ));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempPress.temp));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempPress.velo));
-		 checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempPress.k   ));
-      }
-   }
-   //////////////////////////////////////////////////////////////////////////
-
-
-   //////////////////////////////////////////////////////////////////////////
-   //free second order moments
-   if (para->getCalc2ndOrderMoments())
-   {
-	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-	   {
-		   para->cudaFree2ndMoments(lev);
-	   }
-   }
-   //////////////////////////////////////////////////////////////////////////
-   //free third order moments
-   if (para->getCalc3rdOrderMoments())
-   {
-	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-	   {
-		   para->cudaFree3rdMoments(lev);
-	   }
-   }
-   //////////////////////////////////////////////////////////////////////////
-   //free higher order moments
-   if (para->getCalcHighOrderMoments())
-   {
-	   for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
-	   {
-		   para->cudaFreeHigherMoments(lev);
-	   }
-   }
-   //////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   ////Temp
+   //if (para->getDiffOn()==true)
+   //{
+   //   for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
+   //   {
+   //      checkCudaErrors( cudaFreeHost(para->getParH(lev)->Conc_Full     ));
+   //      checkCudaErrors( cudaFreeHost(para->getParH(lev)->Conc          ));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->Temp.temp     ));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->Temp.k        ));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempVel.temp  ));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempVel.velo  ));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempVel.k     ));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempPress.temp));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempPress.velo));
+		 //checkCudaErrors( cudaFreeHost(para->getParH(lev)->TempPress.k   ));
+   //   }
+   //}
+   ////////////////////////////////////////////////////////////////////////////
 
 
-   //////////////////////////////////////////////////////////////////////////
-   //Multi GPU
-   //////////////////////////////////////////////////////////////////////////
-   ////1D domain decomposition
+   ////////////////////////////////////////////////////////////////////////////
+   ////free second order moments
+   //if (para->getCalc2ndOrderMoments())
+   //{
+	  // for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	  // {
+		 //  para->cudaFree2ndMoments(lev);
+	  // }
+   //}
+   ////////////////////////////////////////////////////////////////////////////
+   ////free third order moments
+   //if (para->getCalc3rdOrderMoments())
+   //{
+	  // for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	  // {
+		 //  para->cudaFree3rdMoments(lev);
+	  // }
+   //}
+   ////////////////////////////////////////////////////////////////////////////
+   ////free higher order moments
+   //if (para->getCalcHighOrderMoments())
+   //{
+	  // for (int lev=para->getCoarse(); lev <= para->getFine(); lev++)
+	  // {
+		 //  para->cudaFreeHigherMoments(lev);
+	  // }
+   //}
+   ////////////////////////////////////////////////////////////////////////////
+
+
+   ////////////////////////////////////////////////////////////////////////////
+   ////Multi GPU
+   ////////////////////////////////////////////////////////////////////////////
+   //////1D domain decomposition
+   ////if (para->getNumprocs() > 1)
+   ////{
+	  //// for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
+	  //// {
+		 ////  for (unsigned int i=0; i < para->getNumberOfProcessNeighbors(lev, "send"); i++)
+		 ////  {
+			////   para->cudaFreeProcessNeighbor(lev, i);
+		 ////  }
+	  //// }
+   ////}
+   ////////////////////////////////////////////////////////////////////////////
+   ////3D domain decomposition
    //if (para->getNumprocs() > 1)
    //{
 	  // for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
 	  // {
-		 //  for (unsigned int i=0; i < para->getNumberOfProcessNeighbors(lev, "send"); i++)
+		 //  //////////////////////////////////////////////////////////////////////////
+		 //  for (unsigned int i=0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++)
 		 //  {
-			//   para->cudaFreeProcessNeighbor(lev, i);
+			//   para->cudaFreeProcessNeighborX(lev, i);
+		 //  }
+		 //  //////////////////////////////////////////////////////////////////////////
+		 //  for (unsigned int i=0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++)
+		 //  {
+			//   para->cudaFreeProcessNeighborY(lev, i);
+		 //  }
+		 //  //////////////////////////////////////////////////////////////////////////
+		 //  for (unsigned int i=0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++)
+		 //  {
+			//   para->cudaFreeProcessNeighborZ(lev, i);
 		 //  }
 	  // }
    //}
-   //////////////////////////////////////////////////////////////////////////
-   //3D domain decomposition
-   if (para->getNumprocs() > 1)
-   {
-	   for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
-	   {
-		   //////////////////////////////////////////////////////////////////////////
-		   for (unsigned int i=0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++)
-		   {
-			   para->cudaFreeProcessNeighborX(lev, i);
-		   }
-		   //////////////////////////////////////////////////////////////////////////
-		   for (unsigned int i=0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++)
-		   {
-			   para->cudaFreeProcessNeighborY(lev, i);
-		   }
-		   //////////////////////////////////////////////////////////////////////////
-		   for (unsigned int i=0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++)
-		   {
-			   para->cudaFreeProcessNeighborZ(lev, i);
-		   }
-	   }
-   }
-   //////////////////////////////////////////////////////////////////////////
-   //Normals
-   if (para->getIsGeoNormal()){
-	   for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
-	   {
-		   para->cudaFreeGeomNormals(lev);
-	   }
-   }
-   //////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   ////Normals
+   //if (para->getIsGeoNormal()){
+	  // for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
+	  // {
+		 //  para->cudaFreeGeomNormals(lev);
+	  // }
+   //}
+   ////////////////////////////////////////////////////////////////////////////
 }
 
 void Simulation::porousMedia()
@@ -3092,4 +3083,147 @@ void Simulation::definePMarea(PorousMedia* pMedia)
 	pMedia->setHostNodeIDsPM(tpmArrayIDs);
 	output << "definePMarea....cuda copy PM \n";
 	para->cudaCopyPorousMedia(pMedia, level);
+}
+
+void Simulation::free()
+{
+	//CudaFreeHostMemory
+	for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+	{
+		//para->cudaFreeFull(lev);
+		para->cudaFreeCoord(lev);
+		para->cudaFreeSP(lev);
+		if (para->getCalcMedian())
+		{
+			para->cudaFreeMedianSP(lev);
+		}
+		//para->cudaFreeVeloBC(lev);
+		//para->cudaFreeWallBC(lev);
+		//para->cudaFreeVeloBC(lev); 
+		//para->cudaFreeInlet(lev);
+		//para->cudaFreeOutlet(lev);
+		//para->cudaFreeGeomBC(lev);
+		//para->cudaFreePress(lev);
+	}
+	if (para->getMaxLevel()>1)
+	{
+		for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
+		{
+			para->cudaFreeInterfaceCF(lev);
+			para->cudaFreeInterfaceFC(lev);
+			para->cudaFreeInterfaceOffCF(lev);
+			para->cudaFreeInterfaceOffFC(lev);
+			//para->cudaFreePressX1(lev);
+		}
+	}
+	//para->cudaFreeVeloBC(0); //level = 0
+	//para->cudaFreePressBC();
+	//para->cudaFreeVeloPropeller(para->getFine());
+	//para->cudaFreePressX0(para->getCoarse());
+
+	//////////////////////////////////////////////////////////////////////////
+	//Temp
+	if (para->getDiffOn() == true)
+	{
+		for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
+		{
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc_Full));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->Conc));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.temp));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->Temp.k));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.temp));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.velo));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempVel.k));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.temp));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.velo));
+			checkCudaErrors(cudaFreeHost(para->getParH(lev)->TempPress.k));
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//free second order moments
+	if (para->getCalc2ndOrderMoments())
+	{
+		for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+		{
+			para->cudaFree2ndMoments(lev);
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+	//free third order moments
+	if (para->getCalc3rdOrderMoments())
+	{
+		for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+		{
+			para->cudaFree3rdMoments(lev);
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+	//free higher order moments
+	if (para->getCalcHighOrderMoments())
+	{
+		for (int lev = para->getCoarse(); lev <= para->getFine(); lev++)
+		{
+			para->cudaFreeHigherMoments(lev);
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//Multi GPU
+	//////////////////////////////////////////////////////////////////////////
+	////1D domain decomposition
+	//if (para->getNumprocs() > 1)
+	//{
+	// for (int lev=para->getCoarse(); lev < para->getFine(); lev++)
+	// {
+	//  for (unsigned int i=0; i < para->getNumberOfProcessNeighbors(lev, "send"); i++)
+	//  {
+	//   para->cudaFreeProcessNeighbor(lev, i);
+	//  }
+	// }
+	//}
+	//////////////////////////////////////////////////////////////////////////
+	//3D domain decomposition
+	if (para->getNumprocs() > 1)
+	{
+		for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
+		{
+			//////////////////////////////////////////////////////////////////////////
+			for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsX(lev, "send"); i++)
+			{
+				para->cudaFreeProcessNeighborX(lev, i);
+			}
+			//////////////////////////////////////////////////////////////////////////
+			for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsY(lev, "send"); i++)
+			{
+				para->cudaFreeProcessNeighborY(lev, i);
+			}
+			//////////////////////////////////////////////////////////////////////////
+			for (unsigned int i = 0; i < para->getNumberOfProcessNeighborsZ(lev, "send"); i++)
+			{
+				para->cudaFreeProcessNeighborZ(lev, i);
+			}
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+	//Normals
+	if (para->getIsGeoNormal()) {
+		for (int lev = para->getCoarse(); lev < para->getFine(); lev++)
+		{
+			para->cudaFreeGeomNormals(lev);
+		}
+	}
+	//////////////////////////////////////////////////////////////////////////
+
+	para->~Parameter();
+	gridProvider->~GridProvider();
+	dataWriter->~DataWriter();
+	comm->~Communicator();
+	for(int i = 0; i < kernels.size(); i++)
+		kernels.at(i)->~Kernel();
+
 }

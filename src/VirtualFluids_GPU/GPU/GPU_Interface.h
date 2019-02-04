@@ -9,7 +9,9 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-//extern "C" int devCheck(  int gpudevice);
+#include <DataTypes.h>
+#include "LBM\LB.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 //Kernel
@@ -138,31 +140,31 @@ extern "C" void KernelCumulantD3Q27All4(unsigned int numberOfThreads,
 									    real* forces,
 									    bool EvenOrOdd);
 
-extern "C" void KernelCumulantD3Q27F3_2018( unsigned int numberOfThreads,
-											real s9,
-											unsigned int* bcMatD,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											real* DD,
-											real* F3,
-											int size_Mat,
-											int level,
-											real* forces,
-											bool EvenOrOdd);
+//extern "C" void KernelCumulantD3Q27F3_2018( unsigned int numberOfThreads,
+//											real s9,
+//											unsigned int* bcMatD,
+//											unsigned int* neighborX,
+//											unsigned int* neighborY,
+//											unsigned int* neighborZ,
+//											real* DD,
+//											real* F3,
+//											int size_Mat,
+//											int level,
+//											real* forces,
+//											bool EvenOrOdd);
 
-extern "C" void KernelCumulantD3Q27F3(unsigned int numberOfThreads,
-									  real s9,
-									  unsigned int* bcMatD,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  real* DD,
-									  real* F3,
-									  int size_Mat,
-									  int level,
-									  real* forces,
-									  bool EvenOrOdd);
+//extern "C" void KernelCumulantD3Q27F3(unsigned int numberOfThreads,
+//									  real s9,
+//									  unsigned int* bcMatD,
+//									  unsigned int* neighborX,
+//									  unsigned int* neighborY,
+//									  unsigned int* neighborZ,
+//									  real* DD,
+//									  real* F3,
+//									  int size_Mat,
+//									  int level,
+//									  real* forces,
+//									  bool EvenOrOdd);
 
 extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads, 
 											real s9,
@@ -177,30 +179,30 @@ extern "C" void KernelKumAA2016CompBulkSP27(unsigned int numberOfThreads,
 											real* forces,
 											bool EvenOrOdd);
 
-extern "C" void KernelKumAA2016CompSP27(unsigned int numberOfThreads, 
-										real s9,
-										unsigned int* bcMatD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* DD,
-										int size_Mat,
-										int level,
-										real* forces,
-										bool EvenOrOdd);
+//extern "C" void KernelKumAA2016CompSP27(unsigned int numberOfThreads, 
+//										real s9,
+//										unsigned int* bcMatD,
+//										unsigned int* neighborX,
+//										unsigned int* neighborY,
+//										unsigned int* neighborZ,
+//										real* DD,
+//										int size_Mat,
+//										int level,
+//										real* forces,
+//										bool EvenOrOdd);
 
-extern "C" void KernelKumNewCompSpongeSP27(unsigned int numberOfThreads, 
-										   real s9,
-										   unsigned int* bcMatD,
-										   unsigned int* neighborX,
-										   unsigned int* neighborY,
-										   unsigned int* neighborZ,
-										   real* coordX,
-										   real* coordY,
-										   real* coordZ,
-										   real* DD,
-										   int size_Mat,
-										   bool EvenOrOdd);
+//extern "C" void KernelKumNewCompSpongeSP27(unsigned int numberOfThreads, 
+//										   real s9,
+//										   unsigned int* bcMatD,
+//										   unsigned int* neighborX,
+//										   unsigned int* neighborY,
+//										   unsigned int* neighborZ,
+//										   real* coordX,
+//										   real* coordY,
+//										   real* coordZ,
+//										   real* DD,
+//										   int size_Mat,
+//										   bool EvenOrOdd);
 
 extern "C" void KernelKum1hSP27(    unsigned int numberOfThreads, 
 									real omega,
@@ -247,30 +249,30 @@ extern "C" void KernelKumNewSP27(   unsigned int numberOfThreads,
 									int size_Mat,
 									bool EvenOrOdd);
 
-extern "C" void KernelKumNewCompBulkSP27(   unsigned int numberOfThreads, 
-											real s9,
-											unsigned int* bcMatD,
-											unsigned int* neighborX,
-											unsigned int* neighborY,
-											unsigned int* neighborZ,
-											real* DD,
-											int size_Mat,
-											int level,
-											real* forces,
-											bool EvenOrOdd);
+//extern "C" void KernelKumNewCompBulkSP27(   unsigned int numberOfThreads, 
+//											real s9,
+//											unsigned int* bcMatD,
+//											unsigned int* neighborX,
+//											unsigned int* neighborY,
+//											unsigned int* neighborZ,
+//											real* DD,
+//											int size_Mat,
+//											int level,
+//											real* forces,
+//											bool EvenOrOdd);
 
-extern "C" void KernelKumNewCompSP27(   unsigned int numberOfThreads, 
-										real s9,
-										unsigned int* bcMatD,
-										unsigned int* neighborX,
-										unsigned int* neighborY,
-										unsigned int* neighborZ,
-										real* DD,
-										int size_Mat,
-										int size_Array,
-										int level,
-										real* forces,
-										bool EvenOrOdd);
+//extern "C" void KernelKumNewCompSP27(   unsigned int numberOfThreads, 
+//										real s9,
+//										unsigned int* bcMatD,
+//										unsigned int* neighborX,
+//										unsigned int* neighborY,
+//										unsigned int* neighborZ,
+//										real* DD,
+//										int size_Mat,
+//										int size_Array,
+//										int level,
+//										real* forces,
+//										bool EvenOrOdd);
 
 extern "C" void CumulantOnePreconditionedErrorDiffusionChimCompSP27(
 	unsigned int numberOfThreads,

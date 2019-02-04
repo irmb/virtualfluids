@@ -1,0 +1,108 @@
+##################################################
+#				 GPU Mapping					 #
+##################################################
+Devices="1"
+
+##################################################
+#	       Basic Simulation Parameter			 #
+##################################################
+KernelsToTest="CumulantOneCompSP27"
+ CumulantAA2016CompSP27 CumulantAll4CompSP27"
+NumberOfTimeSteps=20
+Viscosity="0.001"
+Rho0=1.0
+
+##################################################
+#	    TaylorGreenVortex Parameter				 #
+##################################################
+BasisTimeStepLength_TGV_Ux="1000"
+ux_TGV_Ux="0.032"
+Amplitude_TGV_Ux="0.01"
+l0_TGV_Ux=32
+
+BasisTimeStepLength_TGV_Uz="1000"
+uz_TGV_Uz="0.048"
+Amplitude_TGV_Uz="0.01"
+l0_TGV_Uz=48
+
+##################################################
+#	       Shear Wave Parameter					 #
+##################################################
+BasisTimeStepLength_SW="1000"
+u0_SW="0.032"
+v0_SW="0.1"
+l0_SW=32
+
+##################################################
+#			   Basic Test Parameter				 #
+##################################################
+ySliceForCalculation=0
+
+##################################################
+#			PhiAndNu Test Parameter				 #
+##################################################
+PhiAndNuTest=true
+MinOrderOfAccuracy=1.95
+DataToCalc_PhiAndNu="Vx"
+StartTimeStepCalculation_PhiNu=11
+EndTimeStepCalculation_PhiNu=20
+
+##################################################
+#			L2-Norm Test Parameter				 #
+##################################################
+L2NormTest=true
+MaxL2NormDiff=2.5
+DataToCalc_L2="Vx"
+BasicTimeStep_L2=0
+DivergentTimeStep_L2=20
+
+##################################################
+#    L2-Norm Test Between Kernels Parameter		 #
+##################################################
+L2NormBetweenKernelsTest=false
+BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
+Timesteps_L2NormBetweenKernels="0 20"
+DataToCalc_L2NormBetweenKernels="Vx"
+
+##################################################
+#			Simulation To Perform				 #
+##################################################
+TaylorGreenVortexUx32=true
+TaylorGreenVortexUx64=false
+TaylorGreenVortexUx128=false
+TaylorGreenVortexUx256=false
+TaylorGreenVortexUx512=false
+
+TaylorGreenVortexUz32=true
+TaylorGreenVortexUz64=false
+TaylorGreenVortexUz128=false
+TaylorGreenVortexUz256=false
+TaylorGreenVortexUz512=false
+
+ShearWave32=true
+ShearWave64=false
+ShearWave128=false
+ShearWave256=false
+ShearWave512=false
+
+##################################################
+#				Grid Information				 #
+##################################################
+NumberOfGridLevels=1
+
+GridPath32="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni32x4x48"
+GridPath64="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni64x4x96"
+GridPath128="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni128x4x192"
+GridPath256="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni256x4x384"
+GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
+
+##################################################
+# 			File Writing Information			 #
+##################################################
+WriteVTKFiles=true
+PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
+StartStepFileWriter=0
+
+WriteAnalyResultsToVTK=false
+
+PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
