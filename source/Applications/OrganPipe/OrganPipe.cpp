@@ -33,6 +33,26 @@ void run()
    LBMUnitConverter unitConverter(L, csReal, rhoReal, hLB);
    if (myid == 0) UBLOG(logINFO, unitConverter.toString());
 
+   bool logToFile = true;
+
+   if (logToFile)
+   {
+#if defined(__unix__)
+      if (myid == 0)
+      {
+         const char* str = pathOut.c_str();
+         mkdir(str, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+      }
+#endif 
+
+      if (myid == 0)
+      {
+         stringstream logFilename;
+         logFilename << pathOut + "/logfile" + UbSystem::toString(UbSystem::getTimeStamp()) + ".txt";
+         UbLog::output_policy::setStream(logFilename.str());
+      }
+   }
+
    double nu_LB = nuReal * unitConverter.getFactorViscosityWToLb();
    double u_LB = uReal * unitConverter.getFactorVelocityWToLb();
 
@@ -99,6 +119,15 @@ void run()
    SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
 
    kernel->setBCProcessor(bcProc);
+   //////////////////////////////////////////////////////////////////////////
+   //restart
+   double          cpStep = 100;
+   double          cpStart = 100;
+   SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
+   SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut + "/mig", comm));
+   migCoProcessor->setLBMKernel(kernel);
+   migCoProcessor->setBCProcessor(bcProc);
+   //////////////////////////////////////////////////////////////////////////
 
    grid->setPeriodicX1(false);
    grid->setPeriodicX2(false);
@@ -115,11 +144,16 @@ void run()
 
    //////////////////////////////////////////////////////////////////////////
    //refinement
+
+   //Sphere of Radius 3L  
    SPtr<GbSphere3D> refineSphereL5(new GbSphere3D(g_minX1, 0.0, 0.0, 3.0*L));
    if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL5.get(), pathOut + "/geo/refineSphereL5", WbWriterVtkXmlASCII::getInstance());
 
-   //full pipe refine
-   SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(-0.1132, -0.019, -0.019, 0.1342, 0.019, 0.019));
+   SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(-0.12, -0.023, -0.023, 0.14, 0.023, 0.023));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlASCII::getInstance());
+
+   //full pipe refine 
+   SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(-0.1107, -0.019, -0.019, 0.1342, 0.019, 0.019));
    if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlASCII::getInstance());
 
    //refine languid and upperlip
@@ -134,6 +168,7 @@ void run()
       if (myid == 0) UBLOG(logINFO, "Refinement - start");
       RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
       refineHelper.addGbObject(refineSphereL5, 5);
+      refineHelper.addGbObject(refineBoxL6, 6);
       refineHelper.addGbObject(refineBoxL7, 7);
       refineHelper.addGbObject(refineBoxL9, 9);
       refineHelper.addGbObject(refineSphereL9, 9);
@@ -167,7 +202,7 @@ void run()
    SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, velBCAdapter, Interactor3D::SOLID));
 
    //inflow
-   GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1- deltaXcoarse, 0.0, 0.0, g_minX1 + deltaXcoarse, 0.0, 0.0, radius_inlet));
+   GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1- deltaXcoarse, 0.0, 0.0, g_minX1, 0.0, 0.0, radius_inlet));
    if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
    //outflow
    GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - deltaXcoarse, g_minX3 - deltaXcoarse, g_maxX1 + deltaXcoarse, g_maxX2 + deltaXcoarse, g_maxX3 + deltaXcoarse));
@@ -304,8 +339,8 @@ void run()
 
    vector<double>  nupsStep = { 10,10,100000 };
    int numOfThreads = 1;
-   double outTimeStep = 10;
-   double outTimeStart = 10;
+   double outTimeStep = 100;
+   double outTimeStart = 100;
    double endTime = 100;
 
    SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
@@ -318,7 +353,7 @@ void run()
    SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(nupsCoProcessor);
-   //calculator->addCoProcessor(restartCoProcessor);
+   calculator->addCoProcessor(migCoProcessor);
    calculator->addCoProcessor(writeMQCoProcessor);
    /////////////////////////////////////////////////////////////////////////////////////
 
