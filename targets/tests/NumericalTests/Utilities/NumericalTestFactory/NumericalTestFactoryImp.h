@@ -21,6 +21,7 @@ struct TestSimulationDataStruct;
 struct VectorWriterInformationStruct;
 
 class AnalyticalResults2DToVTKWriter;
+class BasicTestLogFileInformation;
 class ColorConsoleOutput;
 class L2NormTest;
 class L2NormPostProcessingStrategy;
@@ -84,6 +85,7 @@ private:
 
 	std::shared_ptr<ColorConsoleOutput> colorOutput;
 	std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter;
+	std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo;
 
 	int simID;
 	int numberOfSimulations;

@@ -1,59 +1,60 @@
 #include "NumericalTestFactoryImp.h"
 
-#include "Utilities\Structs\ConfigDataStruct.h"
-#include "Utilities\Structs\LogFileParameterStruct.h"
-#include "Utilities\Structs\NumericalTestStruct.h"
-#include "Utilities\Structs\SimulationDataStruct.h"
-#include "Utilities\Structs\TestSimulationDataStruct.h"
+#include "Utilities/Structs/ConfigDataStruct.h"
+#include "Utilities/Structs/LogFileParameterStruct.h"
+#include "Utilities/Structs/NumericalTestStruct.h"
+#include "Utilities/Structs/SimulationDataStruct.h"
+#include "Utilities/Structs/TestSimulationDataStruct.h"
 
-#include "Simulations\TaylorGreenVortexUx\AnalyticalResults\AnalyticalResultsTaylorGreenVortexUx.h"
-#include "Simulations\TaylorGreenVortexUx\InitialConditions\InitialConditionTaylorGreenVortexUx.h"
+#include "Simulations/TaylorGreenVortexUx/AnalyticalResults/AnalyticalResultsTaylorGreenVortexUx.h"
+#include "Simulations/TaylorGreenVortexUx/InitialConditions/InitialConditionTaylorGreenVortexUx.h"
 #include "Simulations/TaylorGreenVortexUx/LogFileInformation/LogFileInformationTaylorGreenVortexUx.h"
-#include "Simulations\TaylorGreenVortexUx\SimulationInfo\SimulationInfoTaylorGreenVortexUx.h"
+#include "Simulations/TaylorGreenVortexUx/SimulationInfo/SimulationInfoTaylorGreenVortexUx.h"
 #include "Simulations/TaylorGreenVortexUx/SimulationParameter/SimulationParameterTaylorGreenVortexUx.h"
 
 #include "Simulations/TaylorGreenVortexUz/SimulationParameter/SimulationParameterTaylorGreenVortexUz.h"
 #include "Simulations/TaylorGreenVortexUz/LogFileInformation/LogFileInformationTaylorGreenvortexUz.h"
-#include "Simulations\TaylorGreenVortexUz\SimulationInfo\SimulationInfoTaylorGreenVortexUz.h"
-#include "Simulations\TaylorGreenVortexUz\AnalyticalResults\AnalyticalResultsTaylorGreenVortexUz.h"
-#include "Simulations\TaylorGreenVortexUz\InitialConditions\InitialConditionTaylorGreenVortexUz.h"
+#include "Simulations/TaylorGreenVortexUz/SimulationInfo/SimulationInfoTaylorGreenVortexUz.h"
+#include "Simulations/TaylorGreenVortexUz/AnalyticalResults/AnalyticalResultsTaylorGreenVortexUz.h"
+#include "Simulations/TaylorGreenVortexUz/InitialConditions/InitialConditionTaylorGreenVortexUz.h"
 
 #include "Simulations/ShearWave/SimulationParameter/ShearWaveSimulationParameter.h"
 #include "Simulations/ShearWave/LogFileInformation/ShearWaveLogFileInformation.h"
-#include "Simulations\ShearWave\SimulationInfo\ShearWaveSimulationInfo.h"
-#include "Simulations\ShearWave\AnalyticalResults\ShearWaveAnalyticalResults.h"
-#include "Simulations\ShearWave\InitialConditions\InitialConditionShearWave.h"
+#include "Simulations/ShearWave/SimulationInfo/ShearWaveSimulationInfo.h"
+#include "Simulations/ShearWave/AnalyticalResults/ShearWaveAnalyticalResults.h"
+#include "Simulations/ShearWave/InitialConditions/InitialConditionShearWave.h"
 
 #include "Tests/PhiAndNyTest/PhiAndNyTest.h"
-#include "Tests\PhiAndNyTest\LogFileInformation\PhiAndNyLogFileInformation.h"
-#include "Tests\PhiAndNyTest\PostProcessingStrategy\PostProcessingStrategyPhiAndNyTest.h"
-#include "Tests\PhiAndNyTest\PhiAndNyTestStruct.h"
+#include "Tests/PhiAndNyTest/LogFileInformation/PhiAndNyLogFileInformation.h"
+#include "Tests/PhiAndNyTest/PostProcessingStrategy/PostProcessingStrategyPhiAndNyTest.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTestStruct.h"
 
-#include "Tests\L2NormTest\L2NormTest.h"
-#include "Tests\L2NormTest\LogFileInformation\L2NormLogFileInformation.h"
-#include "Tests\L2NormTest\PostProcessingStrategy\PostProcessingStrategyL2NormTest.h"
-#include "Tests\L2NormTest\L2NormTestStruct.h"
+#include "Tests/L2NormTest/L2NormTest.h"
+#include "Tests/L2NormTest/LogFileInformation/L2NormLogFileInformation.h"
+#include "Tests/L2NormTest/PostProcessingStrategy/PostProcessingStrategyL2NormTest.h"
+#include "Tests/L2NormTest/L2NormTestStruct.h"
 
-#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernels.h"
-#include "Tests\L2NormTestBetweenKernels\PostProcessingStrategy\L2NormBetweenKernelPostProcessingStrategy.h"
-#include "Tests\L2NormTestBetweenKernels\LogFileInformation\L2NormLogFileInformationBetweenKernels.h"
-#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsStruct.h"
+#include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernels.h"
+#include "Tests/L2NormTestBetweenKernels/PostProcessingStrategy/L2NormBetweenKernelPostProcessingStrategy.h"
+#include "Tests/L2NormTestBetweenKernels/LogFileInformation/L2NormLogFileInformationBetweenKernels.h"
+#include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernelsStruct.h"
 
-#include "Utilities\ColorConsoleOutput\ColorConsoleOutputImp.h"
-#include "Utilities\DataWriter\AnalyticalResults2DToVTKWriter\AnalyticalResults2DToVTKWriterImp.h"
-#include "Utilities\DataWriter\Y2dSliceToResults\Y2dSliceToResults.h"
+#include "Utilities/ColorConsoleOutput/ColorConsoleOutputImp.h"
+#include "Utilities/DataWriter/AnalyticalResults2DToVTKWriter/AnalyticalResults2DToVTKWriterImp.h"
+#include "Utilities/DataWriter/Y2dSliceToResults/Y2dSliceToResults.h"
 
-#include "Utilities\LogFileInformation\LogFileHead\LogFileHead.h"
-#include "Utilities\LogFileInformation\BasicSimulationInfo\BasicSimulationInfo.h"
-#include "Utilities\LogFileInformation\LogFileInformationImp.h"
-#include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
-#include "Utilities\LogFileWriter\LogFileWriterImp.h"
-#include "Utilities\LogFileQueue\LogFileQueueImp.h"
+#include "Utilities/LogFileInformation/LogFileHead/LogFileHead.h"
+#include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
+#include "Utilities/LogFileInformation/BasicTestLogFileInformation/BasicTestLogFileInformation.h"
+#include "Utilities/LogFileInformation/LogFileInformationImp.h"
+#include "Utilities/LogFileInformation/LogFileTimeInformation/LogFileTimeInformation.h"
+#include "Utilities/LogFileWriter/LogFileWriterImp.h"
+#include "Utilities/LogFileQueue/LogFileQueueImp.h"
 
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
-#include "Utilities\TestQueue\TestQueueImp.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
+#include "Utilities/TestQueue/TestQueueImp.h"
 #include "Utilities/TestSimulation/TestSimulationImp.h"
-#include "Utilities\Time\TimeImp.h"
+#include "Utilities/Time/TimeImp.h"
 
 #include <algorithm>
 
@@ -64,6 +65,7 @@ std::shared_ptr<NumericalTestFactoryImp> NumericalTestFactoryImp::getNewInstance
 
 NumericalTestFactoryImp::NumericalTestFactoryImp(std::shared_ptr<ConfigDataStruct> configFileData)
 {
+	basicTestLogFileInfo = BasicTestLogFileInformation::getInstance();
 	colorOutput = ColorConsoleOutputImp::getInstance();
 	myTestQueue = TestQueueImp::getNewInstance(colorOutput);
 	myLogFileWriterQueue = LogFileQueueImp::getNewInstance(configFileData->logFilePath);
@@ -135,20 +137,36 @@ std::shared_ptr<NumericalTestStruct> NumericalTestFactoryImp::makeNumericalTestS
 	std::shared_ptr<PhiAndNyTestStruct> phiAndNyTestStruct = makePhiAndNyTestsStructs(configFileData->phiAndNuTestParameter, testSim, viscosity);
 	for (int i = 0; i < phiAndNyTestStruct->tests.size(); i++)
 		numTestStruct->tests.push_back(phiAndNyTestStruct->tests.at(i));
-	if(phiAndNyTestStruct->tests.size() > 0)
+	if (phiAndNyTestStruct->tests.size() > 0) {
 		testLogFileInfo.push_back(phiAndNyTestStruct->logFileInfo);
+		basicTestLogFileInfo->addTest("PhiAndNyTest", true);
+	}
+	else {
+		basicTestLogFileInfo->addTest("PhiAndNyTest", false);
+	}
+		
 
 	std::shared_ptr<L2NormTestStruct> l2NormTestSruct = makeL2NormTestsStructs(configFileData->l2NormTestParameter, testSim);
 	for (int i = 0; i < l2NormTestSruct->tests.size(); i++)
 		numTestStruct->tests.push_back(l2NormTestSruct->tests.at(i));
-	if (l2NormTestSruct->tests.size() > 0)
+	if (l2NormTestSruct->tests.size() > 0) {
 		testLogFileInfo.push_back(l2NormTestSruct->logFileInfo);
+		basicTestLogFileInfo->addTest("L2NormTest", true);
+	}
+	else {
+		basicTestLogFileInfo->addTest("L2NormTest", false);
+	}
 
 	std::shared_ptr<L2NormTestBetweenKernelsStruct> l2NormTestBetweenKernelStruct = makeL2NormTestsBetweenKernelsStructs(configFileData->l2NormTestBetweenKernelsParameter, testSim, kernel);
 	for (int i = 0; i < l2NormTestBetweenKernelStruct->tests.size(); i++)
 		numTestStruct->tests.push_back(l2NormTestBetweenKernelStruct->tests.at(i));
-	if (l2NormTestBetweenKernelStruct->tests.size() > 0)
+	if (l2NormTestBetweenKernelStruct->tests.size() > 0) {
 		testLogFileInfo.push_back(l2NormTestBetweenKernelStruct->logFileInfo);
+		basicTestLogFileInfo->addTest("L2NormTestBetweenKernel", true);
+	}
+	else {
+		basicTestLogFileInfo->addTest("L2NormTestBetweenKernel", false);
+	}
 
 	std::vector<std::shared_ptr<SimulationInfo> > simInfo;
 	for (int i = 0; i < simDataStruct->testSimData.size(); i++)
@@ -408,7 +426,7 @@ std::shared_ptr<LogFileWriter> NumericalTestFactoryImp::makeLogFileWriter(std::v
 
 	std::shared_ptr<LogFileTimeInformation> logFileTimeInfo = LogFileTimeInformation::getNewInstance(simInfo, logFilePara->writeAnalyticalToVTK);
 
-	std::shared_ptr<LogFileWriterImp> logFileWriter = LogFileWriterImp::getNewInstance(logFileHead, basicSimInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity);
+	std::shared_ptr<LogFileWriterImp> logFileWriter = LogFileWriterImp::getNewInstance(logFileHead, basicSimInfo, basicTestLogFileInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity);
 
 	return logFileWriter;
 }

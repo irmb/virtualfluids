@@ -1,30 +1,32 @@
 #include "LogFileWriterImp.h"
 
-#include "Utilities\LogFileInformation\SimulationLogFileInformation\SimulationLogFileInformation.h"
-#include "Utilities\LogFileInformation\LogFileHead\LogFileHead.h"
-#include "Utilities\LogFileInformation\BasicSimulationInfo\BasicSimulationInfo.h"
-#include "Utilities\LogFileInformation\LogFileTimeInformation\LogFileTimeInformation.h"
-#include "Utilities\LogFileInformation\TestLogFileInformation\TestLogFileInformation.h"
+#include "Utilities/LogFileInformation/SimulationLogFileInformation/SimulationLogFileInformation.h"
+#include "Utilities/LogFileInformation/LogFileHead/LogFileHead.h"
+#include "Utilities/LogFileInformation/BasicSimulationInfo/BasicSimulationInfo.h"
+#include "Utilities/LogFileInformation/BasicTestLogFileInformation/BasicTestLogFileInformation.h"
+#include "Utilities/LogFileInformation/LogFileTimeInformation/LogFileTimeInformation.h"
+#include "Utilities/LogFileInformation/TestLogFileInformation/TestLogFileInformation.h"
 
 #include <helper_functions.h>
 #include <iomanip>
 #include <ctime>
 #include <experimental/filesystem>
 
-LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity) : kernelName(kernelName), viscosity(viscosity)
+LogFileWriterImp::LogFileWriterImp(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity) : kernelName(kernelName), viscosity(viscosity)
 {
 	logFileInfo.push_back(logFileHead);
 	logFileInfo.push_back(basicSimInfo);
 	this->simLogInfo = simLogInfo;
 	logFileInfo.push_back(simLogInfo);
 	logFileInfo.push_back(logFileTimeInfo);
+	logFileInfo.push_back(basicTestInfo);
 	for (int i = 0; i < testLogFiles.size(); i++)
 		logFileInfo.push_back(testLogFiles.at(i));
 }
 
-std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
+std::shared_ptr<LogFileWriterImp> LogFileWriterImp::getNewInstance(std::shared_ptr<LogFileHead> logFileHead, std::shared_ptr<BasicSimulationInfo> basicSimInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestInfo, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<LogFileTimeInformation> logFileTimeInfo, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::string kernelName, double viscosity)
 {
-	return std::shared_ptr<LogFileWriterImp>(new LogFileWriterImp(logFileHead, basicSimInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity));
+	return std::shared_ptr<LogFileWriterImp>(new LogFileWriterImp(logFileHead, basicSimInfo, basicTestInfo, testLogFiles, logFileTimeInfo, simLogInfo, kernelName, viscosity));
 }
 
 void LogFileWriterImp::writeLogFile(std::string basicFilePath)
@@ -51,12 +53,12 @@ std::string LogFileWriterImp::calcDateAndTime()
 std::string LogFileWriterImp::buildFilePath(std::string basicFilePath)
 {
 	std::ostringstream filePath;
-	filePath << basicFilePath << simLogInfo->getFilePathExtensionOne() << "viscosity_" << viscosity << "\\" << simLogInfo->getFilePathExtensionTwo() << kernelName;
+	filePath << basicFilePath << simLogInfo->getFilePathExtensionOne() << "viscosity_" << viscosity << "/" << simLogInfo->getFilePathExtensionTwo() << kernelName;
 	
 	std::experimental::filesystem::path dir(filePath.str());
 	if (!(std::experimental::filesystem::exists(dir)))
 		std::experimental::filesystem::create_directories(dir);
 
-	filePath << "\\logfile_" << calcDateAndTime() << "_" << kernelName << "_vis_" << viscosity << ".txt";
+	filePath << "/logfile_" << calcDateAndTime() << "_" << kernelName << "_vis_" << viscosity << ".txt";
 	return filePath.str();
 }

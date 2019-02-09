@@ -59,7 +59,7 @@ DivergentTimeStep_L2=20
 ##################################################
 #    L2-Norm Test Between Kernels Parameter		 #
 ##################################################
-L2NormBetweenKernelsTest=false
+L2NormBetweenKernelsTest=true
 BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
 Timesteps_L2NormBetweenKernels="0 20"
 DataToCalc_L2NormBetweenKernels="Vx"
@@ -68,19 +68,19 @@ DataToCalc_L2NormBetweenKernels="Vx"
 #			Simulation To Perform				 #
 ##################################################
 TaylorGreenVortexUx32=true
-TaylorGreenVortexUx64=false
+TaylorGreenVortexUx64=true
 TaylorGreenVortexUx128=false
 TaylorGreenVortexUx256=false
 TaylorGreenVortexUx512=false
 
 TaylorGreenVortexUz32=true
-TaylorGreenVortexUz64=false
+TaylorGreenVortexUz64=true
 TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
 ShearWave32=true
-ShearWave64=false
+ShearWave64=true
 ShearWave128=false
 ShearWave256=false
 ShearWave512=false
@@ -103,6 +103,6 @@ WriteVTKFiles=true
 PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 
-WriteAnalyResultsToVTK=false
+WriteAnalyResultsToVTK=true
 
 PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
