@@ -23,5 +23,6 @@ private:
 	std::vector<std::shared_ptr<L2NormTest> > tests;
 
 	unsigned int basicTimeStep, divergentTimeStep;
+	std::vector<std::string> dataToCalc;
 };
 #endif

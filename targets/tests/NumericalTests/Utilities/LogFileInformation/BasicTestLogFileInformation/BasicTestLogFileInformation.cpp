@@ -18,6 +18,7 @@ std::string BasicTestLogFileInformation::getOutput()
 void BasicTestLogFileInformation::addTest(std::string testName, bool testRun)
 {
 	bool isRegistered = false;
+
 	for (int i = 0; i < this->testName.size(); i++) {
 		if (this->testName.at(i) == testName)
 			isRegistered = true;

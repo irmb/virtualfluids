@@ -52,7 +52,7 @@ void L2NormTestBetweenKernels::evaluate()
 		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getRho().at(tS), divergentSimResults->getRho().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
 	}
 
-	if (basicL2Result < divergentL2Result)
+	if (basicL2Result <= divergentL2Result)
 			testPassed = true;
 
 	makeConsoleOutput();
@@ -61,8 +61,8 @@ void L2NormTestBetweenKernels::evaluate()
 std::string L2NormTestBetweenKernels::getLogFileOutput()
 {
 	std::ostringstream oss;
-	oss << "L2Norm_" << dataToCalculate << "_TimeStep_" << timeStep << "=" << divergentL2Result << std::endl;
-	oss << "L2Norm_BasicKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "=" << basicL2Result << std::endl;
+	oss << "L2Norm_BasicKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << basicL2Result << std::endl;
+	oss << "L2Norm_DivergentKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << divergentL2Result << std::endl;
 	oss << "L2Norm_Between_Kernels_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << resultL2ToBasicKernel << std::endl << std::endl;
 	
 	return oss.str();

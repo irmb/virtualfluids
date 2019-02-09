@@ -6,8 +6,7 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27"
- CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -43,7 +42,7 @@ ySliceForCalculation=0
 ##################################################
 PhiAndNuTest=true
 MinOrderOfAccuracy=1.95
-DataToCalc_PhiAndNu="Vx"
+DataToCalc_PhiAndNu="Vx Vz"
 StartTimeStepCalculation_PhiNu=11
 EndTimeStepCalculation_PhiNu=20
 
@@ -99,10 +98,10 @@ GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=true
+WriteVTKFiles=false
 PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 
-WriteAnalyResultsToVTK=true
+WriteAnalyResultsToVTK=false
 
 PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"

@@ -18,7 +18,7 @@ std::string L2NormBetweenKernelsInformation::getOutput()
 	makeCenterHead(headName.str());
 
 	oss << "BasicKernel=" << basicKernel << std::endl;
-	oss << "DataToCalculate=\"";
+	oss << "DataToCalculate_L2Norm_BK=\"";
 	for (int i = 0; i < dataToCalc.size(); i++)
 		oss << dataToCalc.at(i) << " ";
 	deleteLastCharInOss();

@@ -19,6 +19,14 @@ std::string L2NormInformation::getOutput()
 
 	oss << "BasicTimeStep_L2Norm=" << basicTimeStep << std::endl;
 	oss << "DivergentTimeStep_L2Norm=" << divergentTimeStep << std::endl;
+	oss << "DataToCalc_L2Norm=\"";
+	for (int i = 0; i < dataToCalc.size(); i++) {
+		oss << dataToCalc.at(i);
+		if (i < dataToCalc.size() - 1)
+			oss << " ";
+		else
+			oss << "\"" << std::endl;
+	}
 	oss << std::endl;
 
 	for (int i = 0; i < tests.size(); i++)
@@ -31,4 +39,5 @@ L2NormInformation::L2NormInformation(std::vector<std::shared_ptr<L2NormTest> > t
 {
 	basicTimeStep = testParameter->basicTimeStep;
 	divergentTimeStep = testParameter->divergentTimeStep;
+	dataToCalc = testParameter->basicTestParameter->dataToCalc;
 }
