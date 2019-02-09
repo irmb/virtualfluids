@@ -20,6 +20,14 @@ std::string PhiAndNyInformation::getOutput()
 
 	oss << "StartTimeStepCalculation=" << startTimeStepCalculation << std::endl;
 	oss << "EndTimeStepCalculation=" << endTimeStepCalculation << std::endl;
+	oss << "DataToCalc_PhiAndNyTest=\"";
+	for (int i = 0; i < testGroups.size(); i++) {
+		oss << testGroups.at(i).at(0)->getDataToCalculate();
+		if (i < testGroups.size() - 1)
+			oss << " ";
+		else
+			oss << "\"" << std::endl;
+	}
 	oss << std::endl;
 
 	for (int i = 0; i < testGroups.size(); i++) {
