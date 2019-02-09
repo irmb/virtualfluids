@@ -1,8 +1,8 @@
 #ifndef CONFIG_FILE_READER_H
 #define CONFIG_FILE_READER_H
 
-#include "Utilities\input\Input.h"
-#include "Utilities\Structs\ConfigDataStruct.h"
+#include "Utilities/input/Input.h"
+#include "Utilities/Structs/ConfigDataStruct.h"
 
 #include <memory>
 #include <string>

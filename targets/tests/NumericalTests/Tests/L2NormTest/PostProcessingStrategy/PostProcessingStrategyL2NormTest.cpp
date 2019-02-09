@@ -1,10 +1,10 @@
 #include "PostProcessingStrategyL2NormTest.h"
 
-#include "Tests\L2NormTest\L2NormTestParameterStruct.h"
+#include "Tests/L2NormTest/L2NormTestParameterStruct.h"
 
-#include "Utilities\Calculator\L2NormCalculator\L2NormCalculator.h"
-#include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculator.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
 
 std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
 {

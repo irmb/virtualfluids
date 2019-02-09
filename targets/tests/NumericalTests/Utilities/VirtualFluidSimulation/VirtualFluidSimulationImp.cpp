@@ -1,7 +1,7 @@
 #include "VirtualFluidSimulationImp.h"
 
-#include "Utilities\NumericalTestSuite\NumericalTestSuite.h"
-#include "Utilities\Time\TimeTracking.h"
+#include "Utilities/NumericalTestSuite/NumericalTestSuite.h"
+#include "Utilities/Time/TimeTracking.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 

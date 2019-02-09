@@ -2,9 +2,9 @@
 
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU\Output\FileWriter.h"
+#include "VirtualFluids_GPU/Output/FileWriter.h"
 
-#include "Utilities\Structs\VectorWriterInformationStruct.h"
+#include "Utilities/Structs/VectorWriterInformationStruct.h"
 
 ToVectorWriter::ToVectorWriter(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength)
 {

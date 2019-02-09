@@ -1,6 +1,6 @@
 #include "AnalyticalResultsTaylorGreenVortexUz.h"
 
-#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+#include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

@@ -1,7 +1,7 @@
 #ifndef ANALYTICAL_RESULTS_TAYLORGREENVORTEX_Uz_H
 #define ANALYTICAL_RESULTS_TAYLORGREENVORTEX_Uz_H
 
-#include "Utilities\Results\AnalyticalResults\AnalyticalResultImp.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResultImp.h"
 
 struct TaylorGreenVortexUzParameterStruct;
 

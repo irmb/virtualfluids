@@ -1,7 +1,7 @@
 #include "SimulationInfoTaylorGreenVortexUz.h"
 
-#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 #include <sstream>
 

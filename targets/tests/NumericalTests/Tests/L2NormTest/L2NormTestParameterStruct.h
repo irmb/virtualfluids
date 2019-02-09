@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "Utilities\Structs\BasicTestParameterStruct.h"
+#include "Utilities/Structs/BasicTestParameterStruct.h"
 
 struct L2NormTestParameterStruct
 {

@@ -1,11 +1,11 @@
 #include "PhiAndNyTest.h"
 
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
-#include "Utilities\TestSimulation\TestSimulation.h"
-#include "Utilities\SimulationInfo\SimulationInfo.h"
+#include "Utilities/TestSimulation/TestSimulation.h"
+#include "Utilities/SimulationInfo/SimulationInfo.h"
 
-#include "Tests\PhiAndNyTest\PostProcessingStrategy\PostProcessingStrategyPhiAndNyTest.h"
-#include "Tests\PhiAndNyTest\PhiAndNyTestParameterStruct.h"
+#include "Tests/PhiAndNyTest/PostProcessingStrategy/PostProcessingStrategyPhiAndNyTest.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTestParameterStruct.h"
 
 #include <iomanip>
 

@@ -1,7 +1,7 @@
 #include "InitialConditionShearWave.h"
 
-#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Simulations/ShearWave/ShearWaveParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

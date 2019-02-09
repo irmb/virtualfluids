@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "Utilities\Structs\BasicSimulationParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Utilities/Structs/BasicSimulationParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 struct TaylorGreenVortexUzParameterStruct
 {

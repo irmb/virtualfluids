@@ -1,10 +1,10 @@
 #include "PostProcessingStrategyPhiAndNyTest.h"
 
-#include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
-#include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
+#include "Utilities/Calculator/FFTCalculator/FFTCalculator.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
 
-#include "Tests\PhiAndNyTest\PhiAndNyTestParameterStruct.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTestParameterStruct.h"
 
 std::shared_ptr<PhiAndNyTestPostProcessingStrategy> PhiAndNyTestPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<PhiAndNyTestParameterStruct> testPara)
 {

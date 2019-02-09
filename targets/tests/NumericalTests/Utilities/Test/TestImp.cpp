@@ -1,7 +1,7 @@
 #include "TestImp.h"
 
-#include "Utilities\PostProcessingStrategy\PostProcessingStrategy.h"
-#include "Utilities\NumericalTestSimulation\NumericalTestSimulation.h"
+#include "Utilities/PostProcessingStrategy/PostProcessingStrategy.h"
+#include "Utilities/NumericalTestSimulation/NumericalTestSimulation.h"
 
 void TestImp::update()
 {

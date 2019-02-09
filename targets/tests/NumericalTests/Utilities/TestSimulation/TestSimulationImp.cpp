@@ -1,14 +1,14 @@
 #include "TestSimulationImp.h"
 
-#include "Utilities\DataWriter\ToVectorWriter.h"
-#include "Utilities\SimulationInfo\SimulationInfo.h"
-#include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
-#include "Utilities\Test\SimulationObserver.h"
-#include "Utilities\ColorConsoleOutput\ColorConsoleOutput.h"
-#include "Utilities\KernelConfiguration\KernelConfiguration.h"
-#include "Utilities\DataWriter\AnalyticalResults2DToVTKWriter\AnalyticalResults2DToVTKWriter.h"
-#include "Utilities\Structs\TestSimulationDataStruct.h"
-#include "Utilities\Time\TimeTracking.h"
+#include "Utilities/DataWriter/ToVectorWriter.h"
+#include "Utilities/SimulationInfo/SimulationInfo.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
+#include "Utilities/Test/SimulationObserver.h"
+#include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
+#include "Utilities/KernelConfiguration/KernelConfiguration.h"
+#include "Utilities/DataWriter/AnalyticalResults2DToVTKWriter/AnalyticalResults2DToVTKWriter.h"
+#include "Utilities/Structs/TestSimulationDataStruct.h"
+#include "Utilities/Time/TimeTracking.h"
 
 
 std::shared_ptr<TestSimulationImp> TestSimulationImp::getNewInsance(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResult, std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput)

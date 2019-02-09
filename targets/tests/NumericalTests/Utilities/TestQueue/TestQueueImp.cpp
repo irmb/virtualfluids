@@ -1,7 +1,7 @@
 #include "TestQueueImp.h"
 
-#include "Utilities\ColorConsoleOutput\ColorConsoleOutput.h"
-#include "Utilities\Test\Test.h"
+#include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
+#include "Utilities/Test/Test.h"
 
 void TestQueueImp::makeFinalOutput()
 {

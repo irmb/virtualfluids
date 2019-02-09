@@ -1,10 +1,10 @@
 #include "L2NormBetweenKernelPostProcessingStrategy.h"
 
-#include "Utilities\Calculator\L2NormCalculator\L2NormCalculator.h"
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
-#include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculator.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
 
-#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
+#include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernelsParameterStruct.h"
 
 std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
 {

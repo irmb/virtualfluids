@@ -2,7 +2,7 @@
 #define TEST_SIMULATION_IMP_H
 
 #include "TestSimulation.h"
-#include "Utilities\NumericalTestSimulation\NumericalTestSimulation.h"
+#include "Utilities/NumericalTestSimulation/NumericalTestSimulation.h"
 
 #include <vector>
 #include <time.h>

@@ -1,7 +1,7 @@
 #ifndef TEST_IMP_H
 #define TEST_IMP_H
 
-#include "Utilities\Test\Test.h"
+#include "Utilities/Test/Test.h"
 
 #include <vector>
 #include <memory>

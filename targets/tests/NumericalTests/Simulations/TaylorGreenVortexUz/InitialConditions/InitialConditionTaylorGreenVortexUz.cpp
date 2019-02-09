@@ -1,7 +1,7 @@
 #include "InitialConditionTaylorGreenVortexUz.h"
 
-#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Utilities\Structs\BasicTestParameterStruct.h"
+#include "Utilities/Structs/BasicTestParameterStruct.h"
 
 struct L2NormTestBetweenKernelsParameterStruct
 {

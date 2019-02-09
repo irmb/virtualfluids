@@ -1,7 +1,7 @@
 #include "ShearWaveSimulationInfo.h"
 
-#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Simulations/ShearWave/ShearWaveParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 #include <sstream>
 

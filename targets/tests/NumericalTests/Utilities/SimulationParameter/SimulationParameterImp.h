@@ -3,7 +3,7 @@
 
 #include "SimulationParameter.h"
 
-#include "LBM\LB.h"
+#include "LBM/LB.h"
 
 struct GridInformationStruct;
 struct BasicSimulationParameterStruct;

@@ -1,7 +1,7 @@
 #include "L2NormLogFileInformationBetweenKernels.h"
 
-#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernels.h"
-#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
+#include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernels.h"
+#include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernelsParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>

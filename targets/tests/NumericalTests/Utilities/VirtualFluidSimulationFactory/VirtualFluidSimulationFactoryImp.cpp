@@ -1,11 +1,11 @@
 #include "VirtualFluidSimulationFactoryImp.h"
 
-#include "Utilities\GridReaderforTesting\GridReaderforTesting.h"
-#include "Utilities\InitialCondition\InitialCondition.h"
-#include "Utilities\KernelConfiguration\KernelConfiguration.h"
-#include "Utilities\TestSimulation\TestSimulation.h"
-#include "Utilities\SimulationParameter\SimulationParameter.h"
-#include "Utilities\VirtualFluidSimulation\VirtualFluidSimulationImp.h"
+#include "Utilities/GridReaderforTesting/GridReaderforTesting.h"
+#include "Utilities/InitialCondition/InitialCondition.h"
+#include "Utilities/KernelConfiguration/KernelConfiguration.h"
+#include "Utilities/TestSimulation/TestSimulation.h"
+#include "Utilities/SimulationParameter/SimulationParameter.h"
+#include "Utilities/VirtualFluidSimulation/VirtualFluidSimulationImp.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 
@@ -28,7 +28,7 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setNumprocs(1);
 
 	std::string _prefix = "cells";
-	std::string gridPath = simPara->getGridPath() + "\\";
+	std::string gridPath = simPara->getGridPath() + "/";
 	para->setFName(simPara->getFilePath() + "/" + _prefix);
 	para->setPrintFiles(true);
 

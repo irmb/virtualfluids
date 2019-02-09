@@ -1,7 +1,7 @@
 #ifndef L2_NORM_TEST_H
 #define L2_NORM_TEST_H
 
-#include "Utilities\Test\TestImp.h"
+#include "Utilities/Test/TestImp.h"
 
 #include <memory>
 

@@ -1,7 +1,7 @@
 #ifndef L2NORM_BETWEEN_KERNELS_LOGFILE_INFORMATION_H
 #define L2NORM_BETWEEN_KERNELS_LOGFILE_INFORMATION_H
 
-#include "Utilities\LogFileInformation\TestLogFileInformation\TestLogFileInformation.h"
+#include "Utilities/LogFileInformation/TestLogFileInformation/TestLogFileInformation.h"
 
 #include <memory>
 #include <vector>

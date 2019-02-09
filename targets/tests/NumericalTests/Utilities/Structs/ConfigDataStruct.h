@@ -5,16 +5,16 @@
 #include <string>
 #include <vector>
 
-#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
-#include "Simulations\TaylorGreenVortexUx\TaylorGreenVortexUxParameterStruct.h"
-#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
-#include "Tests\L2NormTest\L2NormTestParameterStruct.h"
-#include "Tests\L2NormTestBetweenKernels\L2NormTestBetweenKernelsParameterStruct.h"
-#include "Tests\PhiAndNyTest\PhiAndNyTestParameterStruct.h"
-#include "Utilities\Structs\BasicSimulationParameterStruct.h"
-#include "Utilities\Structs\VectorWriterInformationStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
-#include "Utilities\Structs\LogFileParameterStruct.h"
+#include "Simulations/ShearWave/ShearWaveParameterStruct.h"
+#include "Simulations/TaylorGreenVortexUx/TaylorGreenVortexUxParameterStruct.h"
+#include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
+#include "Tests/L2NormTest/L2NormTestParameterStruct.h"
+#include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernelsParameterStruct.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTestParameterStruct.h"
+#include "Utilities/Structs/BasicSimulationParameterStruct.h"
+#include "Utilities/Structs/VectorWriterInformationStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
+#include "Utilities/Structs/LogFileParameterStruct.h"
 
 struct ConfigDataStruct
 {

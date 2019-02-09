@@ -1,6 +1,6 @@
 #include "L2NormCalculator.h"
 
-#include "Utilities\Calculator\FFTCalculator\FFTCalculator.h"
+#include "Utilities/Calculator/FFTCalculator/FFTCalculator.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

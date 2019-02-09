@@ -1,6 +1,6 @@
 #include "LogFileTimeInformation.h"
 
-#include "Utilities\SimulationInfo\SimulationInfo.h"
+#include "Utilities/SimulationInfo/SimulationInfo.h"
 
 #include <iomanip>
 

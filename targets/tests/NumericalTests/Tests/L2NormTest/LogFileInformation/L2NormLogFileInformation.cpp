@@ -1,7 +1,7 @@
 #include "L2NormLogFileInformation.h"
 
-#include "Tests\L2NormTest\L2NormTest.h"
-#include "Tests\L2NormTest\L2NormTestParameterStruct.h"
+#include "Tests/L2NormTest/L2NormTest.h"
+#include "Tests/L2NormTest/L2NormTestParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>

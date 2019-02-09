@@ -1,7 +1,7 @@
 #ifndef PHI_AND_NY_TEST_H
 #define PHI_AND_NY_TEST_H
 
-#include "Utilities\Test\TestImp.h"
+#include "Utilities/Test/TestImp.h"
 
 #include <memory>
 #include <vector>

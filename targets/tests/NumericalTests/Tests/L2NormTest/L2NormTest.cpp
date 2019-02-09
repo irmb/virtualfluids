@@ -1,10 +1,10 @@
 #include "L2NormTest.h"
 
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
 
-#include "Tests\L2NormTest\PostProcessingStrategy\PostProcessingStrategyL2NormTest.h"
-#include "Tests\L2NormTest\L2NormTestParameterStruct.h"
+#include "Tests/L2NormTest/PostProcessingStrategy/PostProcessingStrategyL2NormTest.h"
+#include "Tests/L2NormTest/L2NormTestParameterStruct.h"
 
 #include <iomanip>
 

@@ -1,11 +1,11 @@
 #include "L2NormTestBetweenKernels.h"
 
-#include "Utilities\Calculator\L2NormCalculator\L2NormCalculator.h"
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculator.h"
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
-#include "Utilities\TestSimulation\TestSimulation.h"
-#include "Utilities\SimulationInfo\SimulationInfo.h"
-#include "Tests\L2NormTestBetweenKernels\PostProcessingStrategy\L2NormBetweenKernelPostProcessingStrategy.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
+#include "Utilities/TestSimulation/TestSimulation.h"
+#include "Utilities/SimulationInfo/SimulationInfo.h"
+#include "Tests/L2NormTestBetweenKernels/PostProcessingStrategy/L2NormBetweenKernelPostProcessingStrategy.h"
 
 #include <iomanip>
 

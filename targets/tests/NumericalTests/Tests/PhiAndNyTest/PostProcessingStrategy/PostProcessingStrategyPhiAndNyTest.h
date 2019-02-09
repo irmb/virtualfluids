@@ -1,7 +1,7 @@
 #ifndef PHIANDNY_TEST_POST_PROCESSING_STRATEGY_H
 #define PHIANDNY_TEST_POST_PROCESSING_STRATEGY_H
 
-#include "Utilities\PostProcessingStrategy\PostProcessingStrategyImp.h"
+#include "Utilities/PostProcessingStrategy/PostProcessingStrategyImp.h"
 
 #include <memory>
 

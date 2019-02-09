@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <ctime>
 
-#include "Utilities\SimulationInfo\SimulationInfo.h"
+#include "Utilities/SimulationInfo/SimulationInfo.h"
 
 
 std::shared_ptr<ColorConsoleOutput> ColorConsoleOutputImp::getInstance()

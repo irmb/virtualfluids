@@ -2,9 +2,9 @@
 #define SHEAR_WAVE_INFORMATION_H
 
 #include "Utilities/LogFileInformation/LogFileInformationImp.h"
-#include "Utilities\LogFileInformation\SimulationLogFileInformation\SimulationLogFileInformation.h"
+#include "Utilities/LogFileInformation/SimulationLogFileInformation/SimulationLogFileInformation.h"
 
-#include "LBM\LB.h"
+#include "LBM/LB.h"
 
 #include <memory>
 #include <vector>

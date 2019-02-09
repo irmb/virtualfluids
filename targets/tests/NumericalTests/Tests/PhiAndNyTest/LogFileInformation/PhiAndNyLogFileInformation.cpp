@@ -1,7 +1,7 @@
 #include "PhiAndNyLogFileInformation.h"
 
-#include "Tests\PhiAndNyTest\PhiAndNyTest.h"
-#include "Tests\PhiAndNyTest\PhiAndNyTestParameterStruct.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTest.h"
+#include "Tests/PhiAndNyTest/PhiAndNyTestParameterStruct.h"
 
 #include <iomanip>
 #include <sstream>

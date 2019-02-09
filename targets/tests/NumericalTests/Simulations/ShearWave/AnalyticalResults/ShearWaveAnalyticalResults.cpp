@@ -1,6 +1,6 @@
 #include "ShearWaveAnalyticalResults.h"
 
-#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
+#include "Simulations/ShearWave/ShearWaveParameterStruct.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

@@ -1,7 +1,7 @@
 #ifndef L2NORM_POST_PROCESSING_STRATEGY_H
 #define L2NORM_POST_PROCESSING_STRATEGY_H
 
-#include "Utilities\PostProcessingStrategy\PostProcessingStrategyImp.h"
+#include "Utilities/PostProcessingStrategy/PostProcessingStrategyImp.h"
 
 #include <memory>
 

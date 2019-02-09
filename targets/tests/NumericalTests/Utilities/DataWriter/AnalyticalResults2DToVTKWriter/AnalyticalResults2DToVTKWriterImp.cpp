@@ -14,7 +14,7 @@
 
 #include <VirtualFluidsBasics/basics/writer/WbWriterVtkXmlBinary.h>
 
-#include "Utilities\Results\AnalyticalResults\AnalyticalResult.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
 #include <mpi.h>
 
 
@@ -44,7 +44,7 @@ void AnalyticalResults2DToVTKWriterImp::writeAnalyticalResult(std::shared_ptr<Pa
 				for (int j = 1; j <= numberOfParts; j++) {
 					std::string filePath = para->getFName();
 					filePath.resize(filePath.size() - 5);
-					fname.push_back(filePath + "AnalyticalResult\\Analytical_cells_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(j) + "_t_" + StringUtil::toString<int>(time) + ".vtk");
+					fname.push_back(filePath + "AnalyticalResult/Analytical_cells_bin_lev_" + StringUtil::toString<int>(level) + "_ID_" + StringUtil::toString<int>(para->getMyID()) + "_Part_" + StringUtil::toString<int>(j) + "_t_" + StringUtil::toString<int>(time) + ".vtk");
 				}
 				std::cout << "\t Write TimeStep=" << timeStep << " t=" << time << "...";
 				writeTimeStep(para, analyticalResult, level, fname, timeStep);
