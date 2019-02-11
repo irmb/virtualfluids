@@ -6,12 +6,12 @@
 #include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 
-std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
+std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculator> l2Normcalculator)
 {
-	return std::shared_ptr<L2NormPostProcessingStrategy>(new L2NormPostProcessingStrategy(simResult, analyticalResult, testPara));
+	return std::shared_ptr<L2NormPostProcessingStrategy>(new L2NormPostProcessingStrategy(simResult, analyticalResult, testPara, l2Normcalculator));
 }
 
-L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara)
+L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculator> l2Normcalculator)
 	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
 {
 	dataToCalculateL2 = testPara->basicTestParameter->dataToCalc;
@@ -19,7 +19,7 @@ L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr<Simul
 	divergentTimeStepL2Norm = testPara->divergentTimeStep;
 	
 	isEvaluated = false;
-	l2Normcalculator = L2NormCalculator::getInstance();
+	this->l2Normcalculator = l2Normcalculator;
 }
 
 void L2NormPostProcessingStrategy::evaluate()
@@ -93,4 +93,9 @@ std::vector<double> L2NormPostProcessingStrategy::getL2NormRho()
 	v.push_back(l2RhoBasic);
 	v.push_back(l2RhoDivergent);
 	return v;
+}
+
+std::string L2NormPostProcessingStrategy::getErrorMessage()
+{
+	return l2Normcalculator->getErrorMessage();
 }

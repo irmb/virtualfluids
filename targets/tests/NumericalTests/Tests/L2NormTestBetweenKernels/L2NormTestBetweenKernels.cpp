@@ -1,6 +1,7 @@
 #include "L2NormTestBetweenKernels.h"
 
 #include "Utilities/Calculator/L2NormCalculator/L2NormCalculator.h"
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculatorFactory/L2NormCalculatorFactory.h"
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 #include "Utilities/TestSimulation/TestSimulation.h"
@@ -9,9 +10,9 @@
 
 #include <iomanip>
 
-std::shared_ptr<L2NormTestBetweenKernels> L2NormTestBetweenKernels::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep)
+std::shared_ptr<L2NormTestBetweenKernels> L2NormTestBetweenKernels::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith)
 {
-	return std::shared_ptr<L2NormTestBetweenKernels>(new L2NormTestBetweenKernels(colorOutput, dataToCalculate, timeStep));
+	return std::shared_ptr<L2NormTestBetweenKernels>(new L2NormTestBetweenKernels(colorOutput, dataToCalculate, timeStep, normalizeWith));
 }
 
 void L2NormTestBetweenKernels::update()
@@ -51,9 +52,14 @@ void L2NormTestBetweenKernels::evaluate()
 		divergentL2Result = divergentPostProcessingStrategy->getL2NormRho(timeStep);
 		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getRho().at(tS), divergentSimResults->getRho().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
 	}
-
-	if (basicL2Result <= divergentL2Result)
-			testPassed = true;
+	if (basicL2Result < 0 || divergentL2Result < 0 || resultL2ToBasicKernel < 0) {
+		testError = true;
+		testPassed = false;
+	}
+	else
+	{
+		testPassed = basicL2Result <= divergentL2Result;
+	}
 
 	makeConsoleOutput();
 }
@@ -61,6 +67,7 @@ void L2NormTestBetweenKernels::evaluate()
 std::string L2NormTestBetweenKernels::getLogFileOutput()
 {
 	std::ostringstream oss;
+	oss << "NormalizeData_L" << "_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << normalizeWith << std::endl;
 	oss << "L2Norm_BasicKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << basicL2Result << std::endl;
 	oss << "L2Norm_DivergentKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << divergentL2Result << std::endl;
 	oss << "L2Norm_Between_Kernels_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << resultL2ToBasicKernel << std::endl << std::endl;
@@ -80,7 +87,10 @@ std::vector<bool> L2NormTestBetweenKernels::getPassedTests()
 
 void L2NormTestBetweenKernels::makeConsoleOutput()
 {
-	colorOutput->makeL2NormBetweenKernelsTestOutput(testPassed, basicSimInfo, divergentSimInfo, dataToCalculate, timeStep, basicL2Result, divergentL2Result, resultL2ToBasicKernel);
+	if (!testError)
+		colorOutput->makeL2NormBetweenKernelsTestOutput(testPassed, basicSimInfo, normalizeWith, divergentSimInfo, dataToCalculate, timeStep, basicL2Result, divergentL2Result, resultL2ToBasicKernel);
+	else
+		colorOutput->makeL2NormBetweenKernelsTestErrorOutput(basicPostProcessingStrategy->getErrorMessage(), basicSimInfo, normalizeWith, divergentSimInfo, dataToCalculate, timeStep);
 }
 
 void L2NormTestBetweenKernels::setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy)
@@ -101,10 +111,12 @@ void L2NormTestBetweenKernels::setDivergentKernelSimulation(std::shared_ptr<Nume
 	this->divergentSimResults = divergentPostProcessingStrategy->getSimulationResult();
 }
 
-L2NormTestBetweenKernels::L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep)
-	: TestImp(colorOutput), timeStep(timeStep), dataToCalculate(dataToCalculate)
+L2NormTestBetweenKernels::L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith)
+	: TestImp(colorOutput), timeStep(timeStep), dataToCalculate(dataToCalculate), normalizeWith(normalizeWith)
 {
-	l2Normcalculator = L2NormCalculator::getInstance();
+	std::shared_ptr<L2NormCalculatorFactory> l2NormCalculatorFactory = L2NormCalculatorFactory::getInstance();
+	l2Normcalculator = l2NormCalculatorFactory->makeL2NormCalculator(normalizeWith);
+	testError = false;
 }
 
 int L2NormTestBetweenKernels::calcTimeStepInResults(unsigned int timeStep)

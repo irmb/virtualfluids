@@ -202,7 +202,20 @@ std::shared_ptr<L2NormTestParameterStruct> ConfigFileReader::makeL2NormTestParam
 	testParameter->basicTestParameter = basicTestParameter;
 	testParameter->basicTimeStep = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
 	testParameter->divergentTimeStep = StringUtil::toInt(input->getValue("DivergentTimeStep_L2"));
-	testParameter->maxDiff = StringUtil::toDouble(input->getValue("MaxL2NormDiff"));
+
+	bool runTest = false;
+	if (StringUtil::toBool(input->getValue("NormalizeWithBasicData"))) {
+		runTest = true;
+		testParameter->normalizeData.push_back("basicData");
+		testParameter->maxDiff.push_back(StringUtil::toDouble(input->getValue("MaxL2NormDiffBasicData")));
+	}
+	if (StringUtil::toBool(input->getValue("NormalizeWithAmplitude"))) {
+		runTest = true;
+		testParameter->normalizeData.push_back("amplitude");
+		testParameter->maxDiff.push_back(StringUtil::toDouble(input->getValue("MaxL2NormDiffAmplitude")));
+	}
+	if (!runTest)
+		basicTestParameter->runTest = false;
 
 	return testParameter;
 }
@@ -219,6 +232,19 @@ std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL
 	testParameter->basicKernel = StringUtil::toString(input->getValue("BasicKernel_L2NormBetweenKernels"));
 	testParameter->kernelsToTest = readKernelList(input);
 	testParameter->timeSteps = StringUtil::toIntVector(input->getValue("Timesteps_L2NormBetweenKernels"));
+	testParameter->normalizeWith = StringUtil::toString(input->getValue("NormalizeWith"));
+
+	bool correct = false;
+
+	if (testParameter->normalizeWith == "amplitude")
+		correct = true;
+	if (testParameter->normalizeWith == "basicData")
+		correct = true;
+
+	if (!correct) {
+		std::cout << "invalid input in ConfigFile." << std::endl << "possible data for NormalizeWith Parameter in L2-Norm Test Between Kernels Parameter:" << std::endl << "amplitude, basicData" << std::endl << std::endl;
+		exit(1);
+	}
 
 	return testParameter;
 }

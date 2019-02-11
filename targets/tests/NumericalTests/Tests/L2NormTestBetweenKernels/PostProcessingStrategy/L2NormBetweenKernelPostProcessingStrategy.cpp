@@ -1,6 +1,7 @@
 #include "L2NormBetweenKernelPostProcessingStrategy.h"
 
 #include "Utilities/Calculator/L2NormCalculator/L2NormCalculator.h"
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculatorFactory/L2NormCalculatorFactory.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 #include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
 
@@ -61,6 +62,11 @@ double L2NormBetweenKernelPostProcessingStrategy::getL2NormRho(int timeStep)
 	return l2Rho.at(calcPosInTimeStep(timeStep));
 }
 
+std::string L2NormBetweenKernelPostProcessingStrategy::getErrorMessage()
+{
+	return l2Normcalculator->getErrorMessage();
+}
+
 std::shared_ptr<SimulationResults> L2NormBetweenKernelPostProcessingStrategy::getSimulationResult()
 {
 	return simResult;
@@ -71,7 +77,8 @@ L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStra
 {
 	timeSteps = testPara->timeSteps;
 	dataToCalculate = testPara->basicTestParameter->dataToCalc;
-	l2Normcalculator = L2NormCalculator::getInstance();
+	std::shared_ptr<L2NormCalculatorFactory> l2NormCalculatorFactory = L2NormCalculatorFactory::getInstance();
+	l2Normcalculator = l2NormCalculatorFactory->makeL2NormCalculator(testPara->normalizeWith);
 	isEvaluated = false;
 }
 

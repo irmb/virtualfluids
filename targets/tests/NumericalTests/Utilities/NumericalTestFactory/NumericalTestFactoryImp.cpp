@@ -40,6 +40,7 @@
 #include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernelsStruct.h"
 
 #include "Utilities/ColorConsoleOutput/ColorConsoleOutputImp.h"
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculatorFactory/L2NormCalculatorFactory.h"
 #include "Utilities/DataWriter/AnalyticalResults2DToVTKWriter/AnalyticalResults2DToVTKWriterImp.h"
 #include "Utilities/DataWriter/Y2dSliceToResults/Y2dSliceToResults.h"
 
@@ -70,6 +71,7 @@ NumericalTestFactoryImp::NumericalTestFactoryImp(std::shared_ptr<ConfigDataStruc
 	myTestQueue = TestQueueImp::getNewInstance(colorOutput);
 	myLogFileWriterQueue = LogFileQueueImp::getNewInstance(configFileData->logFilePath);
 	anaResultWriter = AnalyticalResults2DToVTKWriterImp::getInstance(configFileData->writeAnalyticalToVTK);
+	l2NormCalculatorFactory = L2NormCalculatorFactory::getInstance();
 	l2NormTestsBetweenKernels.resize(0);
 	init(configFileData);
 }
@@ -317,9 +319,15 @@ std::shared_ptr<L2NormTestStruct> NumericalTestFactoryImp::makeL2NormTestsStruct
 	std::shared_ptr<L2NormTestStruct> testStruct = std::shared_ptr<L2NormTestStruct> (new L2NormTestStruct);
 
 	if (testParameter->basicTestParameter->runTest) {
-		std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > postProcessingStrategies;
-		for (int i = 0; i < testSimumlations.size(); i++)
-			postProcessingStrategies.push_back(L2NormPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter));
+		std::vector<std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > > postProcessingStrategies;
+		for (int j = 0; j < testParameter->normalizeData.size(); j++) {
+			std::vector<std::shared_ptr<L2NormPostProcessingStrategy> >  aPostProcessingStrategiesGroup;
+			for (int i = 0; i < testSimumlations.size(); i++) {
+				std::shared_ptr<L2NormCalculator> l2NormCalculator = l2NormCalculatorFactory->makeL2NormCalculator(testParameter->normalizeData.at(j));
+				aPostProcessingStrategiesGroup.push_back(L2NormPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter, l2NormCalculator));
+			}
+			postProcessingStrategies.push_back(aPostProcessingStrategiesGroup);
+		}
 
 		testStruct->tests = makeL2NormTests(testSimumlations, postProcessingStrategies, testParameter);
 		testStruct->logFileInfo = L2NormInformation::getNewInstance(testStruct->tests, testParameter);
@@ -327,15 +335,17 @@ std::shared_ptr<L2NormTestStruct> NumericalTestFactoryImp::makeL2NormTestsStruct
 	return testStruct;
 }
 
-std::vector<std::shared_ptr<L2NormTest> > NumericalTestFactoryImp::makeL2NormTests(std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > postProStrategy, std::shared_ptr<L2NormTestParameterStruct> testParameter)
+std::vector<std::shared_ptr<L2NormTest> > NumericalTestFactoryImp::makeL2NormTests(std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > > postProStrategy, std::shared_ptr<L2NormTestParameterStruct> testParameter)
 {
 	std::vector<std::shared_ptr<L2NormTest> > l2Tests;
-	for (int i = 0; i < testSim.size(); i++) {
-		for (int j = 0; j < testParameter->basicTestParameter->dataToCalc.size(); j++) {
-			std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(colorOutput, testParameter, testParameter->basicTestParameter->dataToCalc.at(j));
-			test->addSimulation(testSim.at(i), testSim.at(i)->getSimulationInfo(), postProStrategy.at(i));
-			testSim.at(i)->registerSimulationObserver(test);
-			l2Tests.push_back(test);
+	for (int k = 0; k < testParameter->normalizeData.size(); k++) {
+		for (int i = 0; i < testSim.size(); i++) {
+			for (int j = 0; j < testParameter->basicTestParameter->dataToCalc.size(); j++) {
+				std::shared_ptr<L2NormTest> test = L2NormTest::getNewInstance(colorOutput, testParameter, testParameter->basicTestParameter->dataToCalc.at(j), testParameter->maxDiff.at(k), testParameter->normalizeData.at(k));
+				test->addSimulation(testSim.at(i), testSim.at(i)->getSimulationInfo(), postProStrategy.at(k).at(i));
+				testSim.at(i)->registerSimulationObserver(test);
+				l2Tests.push_back(test);
+			}
 		}
 	}
 	return l2Tests;
@@ -383,7 +393,7 @@ std::vector<std::vector<std::shared_ptr<L2NormTestBetweenKernels> > >  Numerical
 		for (int k = 0; k < testSim.size(); k++) {
 			for(int j = 0; j < testPara->basicTestParameter->dataToCalc.size(); j++){
 				for (int i = 0; i < testPara->timeSteps.size(); i++) {
-					std::shared_ptr<L2NormTestBetweenKernels> aTest = L2NormTestBetweenKernels::getNewInstance(colorOutput, testPara->basicTestParameter->dataToCalc.at(j), testPara->timeSteps.at(i));
+					std::shared_ptr<L2NormTestBetweenKernels> aTest = L2NormTestBetweenKernels::getNewInstance(colorOutput, testPara->basicTestParameter->dataToCalc.at(j), testPara->timeSteps.at(i), testPara->normalizeWith);
 					aTest->setBasicSimulation(testSim.at(k), testSim.at(k)->getSimulationInfo(), postProcessingStrategies.at(k));
 					testSim.at(k)->registerSimulationObserver(aTest);
 					testForOneKernel.push_back(aTest);

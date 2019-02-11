@@ -9,9 +9,11 @@ struct L2NormTestParameterStruct
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter;
 
-	double maxDiff;
+	std::vector<double> maxDiff;
 	unsigned int basicTimeStep;
 	unsigned int divergentTimeStep;
+	
+	std::vector<std::string> normalizeData;
 };
 
 #endif

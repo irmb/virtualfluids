@@ -8,9 +8,9 @@
 
 #include <iomanip>
 
-std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
+std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate, double maxL2NormDiff, std::string normalizeData)
 {
-	return std::shared_ptr<L2NormTest>(new L2NormTest(colorOutput, testParameter, dataToCalculate));
+	return std::shared_ptr<L2NormTest>(new L2NormTest(colorOutput, testParameter, dataToCalculate, maxL2NormDiff, normalizeData));
 }
 
 void L2NormTest::update()
@@ -59,6 +59,7 @@ void L2NormTest::evaluate()
 std::string L2NormTest::getLogFileOutput()
 {
 	std::ostringstream oss;
+	oss << "NormalizeData_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << normalizeData << std::endl;
 	oss << "L2Norm_BasicTimeStep_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << resultBasicTimestep << std::endl;
 	oss << "L2Norm_DivergentTimeStep_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << resultDivergentTimeStep << std::endl;
 	oss << "L2Norm_Diff_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << diffL2Norm << std::endl << std::endl;
@@ -73,17 +74,17 @@ std::vector<bool> L2NormTest::getPassedTests()
 void L2NormTest::makeConsoleOutput()
 {
 	if (!testError)
-		colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
+		colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), normalizeData, basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
 	else
-		colorOutput->makeL2NormTestErrorOutput("Test could not run. Amplitude is zero. Normalization of the data is not possible.", simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate);
+		colorOutput->makeL2NormTestErrorOutput(l2NormPostProStrategies.at(0)->getErrorMessage(), simInfos.at(0), normalizeData, basicTimeStep, divergentTimeStep, dataToCalculate);
 
 }
 
-L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
-	: TestImp(colorOutput), dataToCalculate(dataToCalculate)
+L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate, double maxL2NormDiff, std::string normalizeData)
+	: TestImp(colorOutput), dataToCalculate(dataToCalculate), normalizeData(normalizeData)
 {
 	basicTimeStep = testParameter->basicTimeStep;
 	divergentTimeStep = testParameter->divergentTimeStep;
-	maxL2NormDiff = testParameter->maxDiff;
+	this->maxL2NormDiff = maxL2NormDiff;
 	testError = false;
 }

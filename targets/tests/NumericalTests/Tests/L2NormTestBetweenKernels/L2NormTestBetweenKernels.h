@@ -13,7 +13,7 @@ class SimulationResults;
 class L2NormTestBetweenKernels : public TestImp
 {
 public:
-	static std::shared_ptr<L2NormTestBetweenKernels> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
+	static std::shared_ptr<L2NormTestBetweenKernels> getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith);
 
 	void update();
 	void evaluate();
@@ -26,12 +26,13 @@ public:
 	void setDivergentKernelSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy);
 
 private:
-	L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep);
+	L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith);
 	int calcTimeStepInResults(unsigned int timeStep);
 
 	unsigned int timeStep;
 	std::string dataToCalculate;
 	bool testPassed;
+	bool testError;
 
 	std::shared_ptr<NumericalTestSimulation> basicSim;
 	std::shared_ptr<SimulationInfo> basicSimInfo;
@@ -46,6 +47,8 @@ private:
 	double divergentL2Result;
 	
 	std::shared_ptr<L2NormCalculator> l2Normcalculator;
+
+	std::string normalizeWith;
 
 	double resultL2ToBasicKernel;
 };

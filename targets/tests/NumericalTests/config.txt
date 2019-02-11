@@ -6,8 +6,7 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27"
- CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -50,8 +49,13 @@ EndTimeStepCalculation_PhiNu=20
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
-L2NormTest=true
-MaxL2NormDiff=2.5
+L2NormTest=false
+
+NormalizeWithBasicData=true
+MaxL2NormDiffBasicData=0.5
+NormalizeWithAmplitude=true
+MaxL2NormDiffAmplitude=2.5
+
 DataToCalc_L2="Vx Vz"
 BasicTimeStep_L2=0
 DivergentTimeStep_L2=20
@@ -59,10 +63,11 @@ DivergentTimeStep_L2=20
 ##################################################
 #    L2-Norm Test Between Kernels Parameter		 #
 ##################################################
-L2NormBetweenKernelsTest=false
+L2NormBetweenKernelsTest=true
 BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
 Timesteps_L2NormBetweenKernels="0 20"
 DataToCalc_L2NormBetweenKernels="Vx Vz"
+NormalizeWith=amplitude
 
 ##################################################
 #			Simulation To Perform				 #
@@ -99,10 +104,10 @@ GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=true
+WriteVTKFiles=false
 PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 
-WriteAnalyResultsToVTK=true
+WriteAnalyResultsToVTK=false
 
 PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"

@@ -23,6 +23,7 @@ struct VectorWriterInformationStruct;
 class AnalyticalResults2DToVTKWriter;
 class BasicTestLogFileInformation;
 class ColorConsoleOutput;
+class L2NormCalculatorFactory;
 class L2NormTest;
 class L2NormPostProcessingStrategy;
 class L2NormBetweenKernelPostProcessingStrategy;
@@ -69,7 +70,7 @@ private:
 	std::shared_ptr<L2NormTestStruct> makeL2NormTestsStructs(std::shared_ptr<L2NormTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations);
 	std::shared_ptr<L2NormTestBetweenKernelsStruct> makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName);
 	std::vector<std::shared_ptr<PhiAndNyTest> > makePhiAndNyTests(std::shared_ptr<PhiAndNyTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<PhiAndNyTestPostProcessingStrategy> > phiAndNuPostProStrategy, double viscosity, std::string dataToCalculate);
-	std::vector<std::shared_ptr<L2NormTest> > makeL2NormTests(std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > postProStrategy, std::shared_ptr<L2NormTestParameterStruct> testParameter);
+	std::vector<std::shared_ptr<L2NormTest> > makeL2NormTests(std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > > postProStrategy, std::shared_ptr<L2NormTestParameterStruct> testParameter);
 	std::vector<std::vector<std::shared_ptr<L2NormTestBetweenKernels> > > makeL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
 	
 	std::vector<std::shared_ptr<L2NormTestBetweenKernels> > linkL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
@@ -86,6 +87,7 @@ private:
 	std::shared_ptr<ColorConsoleOutput> colorOutput;
 	std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter;
 	std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo;
+	std::shared_ptr<L2NormCalculatorFactory> l2NormCalculatorFactory;
 
 	int simID;
 	int numberOfSimulations;

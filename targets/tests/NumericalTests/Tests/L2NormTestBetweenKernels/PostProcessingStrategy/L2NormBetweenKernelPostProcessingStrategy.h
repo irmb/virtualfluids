@@ -21,6 +21,8 @@ public:
 	double getL2NormPress(int timeStep);
 	double getL2NormRho(int timeStep);
 
+	std::string getErrorMessage();
+
 	virtual std::shared_ptr<SimulationResults> getSimulationResult();
 
 private:

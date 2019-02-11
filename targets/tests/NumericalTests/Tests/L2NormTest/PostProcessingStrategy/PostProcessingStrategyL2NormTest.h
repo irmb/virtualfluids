@@ -12,7 +12,7 @@ struct L2NormTestParameterStruct;
 class L2NormPostProcessingStrategy : public PostProcessingStrategyImp
 {
 public:
-	static std::shared_ptr<L2NormPostProcessingStrategy> getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara);
+	static std::shared_ptr<L2NormPostProcessingStrategy> getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculator> l2Normcalculator);
 	void evaluate();
 
 	std::vector<double> getL2NormVx();
@@ -21,8 +21,10 @@ public:
 	std::vector<double> getL2NormPress();
 	std::vector<double> getL2NormRho();
 
+	std::string getErrorMessage();
+
 private:
-	L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara);
+	L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculator> l2Normcalculator);
 	bool isEvaluated;
 
 	std::shared_ptr<L2NormCalculator> l2Normcalculator;
