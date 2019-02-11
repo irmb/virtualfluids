@@ -13,15 +13,18 @@ void run()
 
    SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-   double  deltaXcoarse = 0.064;
+   double  deltaXfine = 0.0000625; //0.000036*2.0;
    const int baseLevel = 0;
-   int refineLevel = 9;
-   double deltaXfine = deltaXcoarse/(double)(1 << refineLevel);
+   int refineLevel = 10;
+   double deltaXcoarse = deltaXfine*(double)(1 << refineLevel);
 
    double availMem = 5e9;
 
    string pathOut = "e:/temp/OrganPipe";
-   string pathGeo = "C:/Users/maini/Desktop/organflute/02_organf_scaled.stl";
+   string pathGeo = "C:/Users/maini/Desktop/organflute";
+   
+   string opipeGeoFile = "/02_organf_scaled.stl";
+   string inPpipeGeoFile = "/pipeScaled.stl";
 
    LBMReal rho_LB = 0.0;
    double rhoReal = 1.2041; //(kg/m3)
@@ -33,7 +36,7 @@ void run()
    LBMUnitConverter unitConverter(L, csReal, rhoReal, hLB);
    if (myid == 0) UBLOG(logINFO, unitConverter.toString());
 
-   bool logToFile = true;
+   bool logToFile = false;
 
    if (logToFile)
    {
@@ -56,17 +59,22 @@ void run()
    double nu_LB = nuReal * unitConverter.getFactorViscosityWToLb();
    double u_LB = uReal * unitConverter.getFactorVelocityWToLb();
 
-   vector<int> blocknx = { 8, 8, 8 };
+   vector<int> blocknx = { 16, 16, 16 };
 
    SPtr<Grid3D> grid(new Grid3D(comm));
 
    if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:start");
-   SPtr<GbTriFaceMesh3D> opipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+   SPtr<GbTriFaceMesh3D> opipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + opipeGeoFile, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
    if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:end");
    opipeGeo->rotate(0, 270, 0);
    opipeGeo->rotate(0, 0, 90);
    opipeGeo->translate(0.0, 0.0, -(0.0952+0.0165));
    if (myid == 0) GbSystem3D::writeGeoObject(opipeGeo.get(), pathOut + "/geo/opipeGeo", WbWriterVtkXmlBinary::getInstance());
+
+   if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:start");
+   SPtr<GbTriFaceMesh3D> inPpipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inPpipeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+   if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:end");
+   if (myid == 0) GbSystem3D::writeGeoObject(inPpipeGeo.get(), pathOut + "/geo/inPpipeGeo", WbWriterVtkXmlBinary::getInstance());
 
    double offs1 = opipeGeo->getX1Minimum();
 
@@ -78,7 +86,7 @@ void run()
    double g_maxX1 = 4.096 + offs1;
    double g_maxX2 = 2.048;
    double g_maxX3 = 2.048;
-   double radius_inlet = 0.006;
+   double radius_inlet = 0.0055;
 
    if (myid == 0)
    {
@@ -88,7 +96,7 @@ void run()
       UBLOG(logINFO, "nu_LB               = " << nu_LB);
       UBLOG(logINFO, "dx coarse           = " << deltaXcoarse);
       UBLOG(logINFO, "dx fine             = " << deltaXfine);
-      UBLOG(logINFO, "number of levels    = " << refineLevel + 1);
+      UBLOG(logINFO, "number of refinement levels    = " << refineLevel);
       UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
       UBLOG(logINFO, "path = " << pathOut);
       UBLOG(logINFO, "Preprocess - start");
@@ -145,33 +153,41 @@ void run()
    //////////////////////////////////////////////////////////////////////////
    //refinement
 
-   //Sphere of Radius 3L  
-   SPtr<GbSphere3D> refineSphereL5(new GbSphere3D(g_minX1, 0.0, 0.0, 3.0*L));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL5.get(), pathOut + "/geo/refineSphereL5", WbWriterVtkXmlASCII::getInstance());
+   ////Sphere of Radius 3L  
+   //SPtr<GbSphere3D> refineSphereL5(new GbSphere3D(g_minX1, 0.0, 0.0, 3.0*L));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL5.get(), pathOut + "/geo/refineSphereL5", WbWriterVtkXmlASCII::getInstance());
 
-   SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(-0.12, -0.023, -0.023, 0.14, 0.023, 0.023));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlASCII::getInstance());
+   //SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(-0.12, -0.023, -0.023, 0.14, 0.023, 0.023));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlASCII::getInstance());
 
-   //full pipe refine 
-   SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(-0.1107, -0.019, -0.019, 0.1342, 0.019, 0.019));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlASCII::getInstance());
+   ////full pipe refine 
+   //SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(-0.1107, -0.019, -0.019, 0.1342, 0.019, 0.019));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlASCII::getInstance());
 
-   //refine languid and upperlip
-   SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(-0.1007, -0.0115, -0.0115, -0.0634, 0.0115, 0.01255));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL9.get(), pathOut + "/geo/refineBoxL9", WbWriterVtkXmlASCII::getInstance());
+   ////refine languid and upperlip
+   //SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(-0.1007, -0.0115, -0.0115, -0.0634, 0.0115, 0.01255));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL9.get(), pathOut + "/geo/refineBoxL9", WbWriterVtkXmlASCII::getInstance());
   
-   SPtr<GbSphere3D> refineSphereL9(new GbSphere3D(g_minX1+75e-3, 0.0, 0.015, 13e-3));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL9.get(), pathOut + "/geo/refineSphereL9", WbWriterVtkXmlASCII::getInstance());
+   //SPtr<GbSphere3D> refineSphereL9(new GbSphere3D(g_minX1+75e-3, 0.0, 0.015, 13e-3));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL9.get(), pathOut + "/geo/refineSphereL9", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(-0.1117, -0.019, -0.019, -0.0483, 0.019, 0.019));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL5.get(), pathOut + "/geo/refineBoxL5", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(-0.15, -0.008, -0.008, -0.1117, 0.008, 0.008));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlASCII::getInstance());
 
    if (refineLevel > 0)
    {
       if (myid == 0) UBLOG(logINFO, "Refinement - start");
       RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
-      refineHelper.addGbObject(refineSphereL5, 5);
-      refineHelper.addGbObject(refineBoxL6, 6);
-      refineHelper.addGbObject(refineBoxL7, 7);
-      refineHelper.addGbObject(refineBoxL9, 9);
-      refineHelper.addGbObject(refineSphereL9, 9);
+      //refineHelper.addGbObject(refineSphereL5, 5);
+      //refineHelper.addGbObject(refineBoxL6, refineLevel - 3);
+      //refineHelper.addGbObject(refineBoxL7, refineLevel - 2);
+      //refineHelper.addGbObject(refineBoxL9, refineLevel);
+      //refineHelper.addGbObject(refineSphereL9, refineLevel);
+      refineHelper.addGbObject(refineBoxL5, refineLevel - 1);
+      refineHelper.addGbObject(refineBoxL6, refineLevel);
       refineHelper.refine();
       if (myid == 0) UBLOG(logINFO, "Refinement - end");
    }
@@ -184,6 +200,7 @@ void run()
 
    //interactors
    SPtr<Interactor3D> opipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(opipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+   SPtr<Interactor3D> InPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inPpipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
   
    //walls
    GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1-0.001 , g_minX2-0.001, g_minX3-0.001, g_maxX1+0.001, g_minX2, g_maxX3+0.001));
@@ -219,13 +236,16 @@ void run()
    /////delete solid blocks
    if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - start");
    InteractorsHelper intHelper(grid, metisVisitor);
-   intHelper.addInteractor(inflowIntr);
+   
    intHelper.addInteractor(outflowIntr);
    intHelper.addInteractor(addWallZminInt);
    intHelper.addInteractor(addWallZmaxInt);
    intHelper.addInteractor(addWallYminInt);
    intHelper.addInteractor(addWallYmaxInt);
    intHelper.addInteractor(opipeInter);
+   intHelper.addInteractor(InPipeInter);
+   intHelper.addInteractor(inflowIntr);
+
    intHelper.selectBlocks();
    if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
 
@@ -357,13 +377,16 @@ void run()
    calculator->addCoProcessor(writeMQCoProcessor);
    /////////////////////////////////////////////////////////////////////////////////////
 
-   SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, 0.1777, -0.004, -0.004, 0.1857, 0.004, 0.004));
-   //for check in paraview
-   if (myid == 0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(),pathOut + "/geo/mic1", WbWriterVtkXmlBinary::getInstance());
-   SPtr<UbScheduler> stepMV(new UbScheduler(1, 0, 1000000));
-   SPtr<TimeseriesCoProcessor> tsp1(new TimeseriesCoProcessor(grid, stepMV, mic1, pathOut + "/mic/mic1", comm));
-   calculator->addCoProcessor(tsp1);
-
+   //SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, - 0.0598, -0.004, -0.004, 0.1857, 0.004, 0.004));
+   //SPtr<IntegrateValuesHelper> mic2(new IntegrateValuesHelper(grid, comm, 0.1777, -0.004, -0.004, 0.1857, 0.004, 0.004));
+   ////for check in paraview
+   //if (myid == 0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(),pathOut + "/geo/mic1", WbWriterVtkXmlBinary::getInstance());
+   //if (myid == 0) GbSystem3D::writeGeoObject(mic2->getBoundingBox().get(), pathOut + "/geo/mic2", WbWriterVtkXmlBinary::getInstance());
+   //SPtr<UbScheduler> stepMV(new UbScheduler(1, 0, 1000000));
+   //SPtr<TimeseriesCoProcessor> tsp1(new TimeseriesCoProcessor(grid, stepMV, mic1, pathOut + "/mic/mic1", comm));
+   //SPtr<TimeseriesCoProcessor> tsp2(new TimeseriesCoProcessor(grid, stepMV, mic1, pathOut + "/mic/mic2", comm));
+   //calculator->addCoProcessor(tsp1);
+   //calculator->addCoProcessor(tsp2);
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
