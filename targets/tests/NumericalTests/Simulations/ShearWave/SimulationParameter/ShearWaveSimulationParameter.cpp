@@ -29,7 +29,7 @@ ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernelNam
 	this->rho0 = parameterStruct->rho0;
 
 	std::ostringstream oss;
-	oss << parameterStruct->vtkFilePath << "/ShearWave/Viscosity" << viscosity << "/ux_" << ux << "_uz_" << uz << "/" << kernelName << "/grid" << lx;
+	oss << parameterStruct->vtkFilePath << "/ShearWave/Viscosity_" << viscosity << "/ux_" << ux << "_uz_" << uz << "/" << kernelName << "/grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
 }
