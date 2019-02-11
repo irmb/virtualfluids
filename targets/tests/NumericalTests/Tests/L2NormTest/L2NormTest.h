@@ -33,6 +33,8 @@ private:
 	double maxL2NormDiff;
 	bool testPassed;
 
+	bool testError;
+
 	std::vector<std::shared_ptr<L2NormPostProcessingStrategy> > l2NormPostProStrategies;
 };
 #endif 

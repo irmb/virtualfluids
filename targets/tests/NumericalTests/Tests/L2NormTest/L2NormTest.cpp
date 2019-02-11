@@ -43,7 +43,15 @@ void L2NormTest::evaluate()
 	resultDivergentTimeStep = results.at(1);
 	diffL2Norm = resultDivergentTimeStep - resultBasicTimestep;
 
-	testPassed = maxL2NormDiff > diffL2Norm;
+	if (resultBasicTimestep < 0 || resultDivergentTimeStep < 0) {
+		testError = true;
+		testPassed = false;
+	}
+	else
+	{
+		testPassed = maxL2NormDiff > diffL2Norm;
+	}
+	
 
 	makeConsoleOutput();
 }
@@ -64,7 +72,11 @@ std::vector<bool> L2NormTest::getPassedTests()
 
 void L2NormTest::makeConsoleOutput()
 {
-	colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
+	if (!testError)
+		colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
+	else
+		colorOutput->makeL2NormTestErrorOutput("Test could not run. Amplitude is zero. Normalization of the data is not possible.", simInfos.at(0), basicTimeStep, divergentTimeStep, dataToCalculate);
+
 }
 
 L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate)
@@ -73,4 +85,5 @@ L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::sha
 	basicTimeStep = testParameter->basicTimeStep;
 	divergentTimeStep = testParameter->divergentTimeStep;
 	maxL2NormDiff = testParameter->maxDiff;
+	testError = false;
 }

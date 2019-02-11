@@ -15,6 +15,7 @@ public:
 
 private:
 	L2NormCalculator();
+	bool equalDouble(double num1, double num2);
 
 	std::shared_ptr<FFTCalculator> fftCalc;
 };

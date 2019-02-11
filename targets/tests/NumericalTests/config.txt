@@ -6,7 +6,8 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantOneCompSP27"
+ CumulantAA2016CompSP27 CumulantAll4CompSP27"
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -14,14 +15,14 @@ Rho0=1.0
 ##################################################
 #	    TaylorGreenVortex Parameter				 #
 ##################################################
-BasisTimeStepLength_TGV_Ux="1000"
-ux_TGV_Ux="0.032"
-Amplitude_TGV_Ux="0.01"
+BasisTimeStepLength_TGV_Ux="1000 2000"
+ux_TGV_Ux="0.032 0.016"
+Amplitude_TGV_Ux="0.01 0.005"
 l0_TGV_Ux=32
 
-BasisTimeStepLength_TGV_Uz="1000"
-uz_TGV_Uz="0.048"
-Amplitude_TGV_Uz="0.01"
+BasisTimeStepLength_TGV_Uz="1000 2000"
+uz_TGV_Uz="0.048 0.024"
+Amplitude_TGV_Uz="0.01 0.005"
 l0_TGV_Uz=48
 
 ##################################################
@@ -40,7 +41,7 @@ ySliceForCalculation=0
 ##################################################
 #			PhiAndNu Test Parameter				 #
 ##################################################
-PhiAndNuTest=true
+PhiAndNuTest=false
 MinOrderOfAccuracy=1.95
 DataToCalc_PhiAndNu="Vx Vz"
 StartTimeStepCalculation_PhiNu=11
@@ -51,35 +52,35 @@ EndTimeStepCalculation_PhiNu=20
 ##################################################
 L2NormTest=true
 MaxL2NormDiff=2.5
-DataToCalc_L2="Vx"
+DataToCalc_L2="Vx Vz"
 BasicTimeStep_L2=0
 DivergentTimeStep_L2=20
 
 ##################################################
 #    L2-Norm Test Between Kernels Parameter		 #
 ##################################################
-L2NormBetweenKernelsTest=true
+L2NormBetweenKernelsTest=false
 BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
 Timesteps_L2NormBetweenKernels="0 20"
-DataToCalc_L2NormBetweenKernels="Vx"
+DataToCalc_L2NormBetweenKernels="Vx Vz"
 
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortexUx32=true
-TaylorGreenVortexUx64=true
+TaylorGreenVortexUx32=false
+TaylorGreenVortexUx64=false
 TaylorGreenVortexUx128=false
 TaylorGreenVortexUx256=false
 TaylorGreenVortexUx512=false
 
-TaylorGreenVortexUz32=true
-TaylorGreenVortexUz64=true
+TaylorGreenVortexUz32=false
+TaylorGreenVortexUz64=false
 TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
 ShearWave32=true
-ShearWave64=true
+ShearWave64=false
 ShearWave128=false
 ShearWave256=false
 ShearWave512=false
@@ -98,10 +99,10 @@ GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=false
+WriteVTKFiles=true
 PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 
-WriteAnalyResultsToVTK=false
+WriteAnalyResultsToVTK=true
 
 PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"

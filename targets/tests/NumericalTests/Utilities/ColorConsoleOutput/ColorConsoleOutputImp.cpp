@@ -203,6 +203,57 @@ void ColorConsoleOutputImp::makeL2NormTestOutput(bool testPassed, std::shared_pt
 	printTestEnd(testPassed);
 }
 
+void ColorConsoleOutputImp::makeL2NormTestErrorOutput(std::string errorMessage, std::shared_ptr<SimulationInfo> simInfo, unsigned int basicTimeStep, unsigned int divergentTimeStep, std::string dataToCalc)
+{
+	color = testing::internal::COLOR_YELLOW;
+	printTestStart();
+
+	printColor("");
+	printColor("L2 Norm Test");
+	printColor("");
+
+	std::ostringstream oss;
+	oss << "Kernel: " << simInfo->getKernelName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "Viscosity: " << simInfo->getViscosity();
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << simInfo->getSimulationName();
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << simInfo->getLx() << simInfo->getSimulationParameterString();
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << "DataToCalculate: " << dataToCalc;
+	print(oss.str());
+	oss.str(std::string());
+	oss << "BasicTimeStep: " << basicTimeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	oss << "DivergentTimeStep: " << divergentTimeStep;
+	print(oss.str());
+	oss.str(std::string());
+
+	print(oss.str());
+	oss << "Error Message: " << errorMessage;
+	print(oss.str());
+	oss.str(std::string());
+
+	printColor("");
+	printColor("L2 Norm Test");
+	printColor("");
+
+	printTestEndError();
+}
+
 void ColorConsoleOutputImp::makeL2NormBetweenKernelsTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> basicSimInfo, std::shared_ptr<SimulationInfo> divergentSimInfo, std::string dataToCalc, unsigned int timeStep, double l2NormBasicKernel, double l2NormDivergentKernel, double l2NormBetweenKernel)
 {
 	setColor(testPassed);
@@ -332,6 +383,16 @@ void ColorConsoleOutputImp::printTestEnd(bool testPassed)
 		testing::internal::ColoredPrintf(testing::internal::COLOR_GREEN, "[    PASSED]");
 	else
 		testing::internal::ColoredPrintf(testing::internal::COLOR_RED, "[    FAILED]");
+	std::cout << std::endl;
+	testing::internal::ColoredPrintf(color, "[----------]");
+	std::cout << std::endl << std::endl;
+}
+
+void ColorConsoleOutputImp::printTestEndError()
+{
+	testing::internal::ColoredPrintf(color, "[  TestInfo]");
+	std::cout << std::endl;
+	testing::internal::ColoredPrintf(color, "[     ERROR]");
 	std::cout << std::endl;
 	testing::internal::ColoredPrintf(color, "[----------]");
 	std::cout << std::endl << std::endl;
