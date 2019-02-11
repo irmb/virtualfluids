@@ -102,7 +102,7 @@ void thermalCavity( std::string path, std::string simulationName )
     parameters.Pr = Pr;
     parameters.mu = mu;
 
-    parameters.D  = 5.0 * mu;
+    parameters.D  = 0.1 * mu;
 
     parameters.force.x = 0;
     parameters.force.y = 0;
@@ -134,6 +134,10 @@ void thermalCavity( std::string path, std::string simulationName )
 
     Cuboid  box  (     -H, -H, -H,
                     1.1*L,  H,  H );
+
+    Sphere  sphere( 0.0, 0.0, 0.0, 0.15 );
+
+    Sphere  sphere2( 0.0, 0.0, 0.0, 0.08 );
     
     //TriangularMesh* refCylinder = TriangularMesh::make("F:/Work/Computations/out/MethaneFlame/refCylinder.stl");
     TriangularMesh* refCylinder = TriangularMesh::make("inp/refCylinder.stl");
@@ -143,6 +147,12 @@ void thermalCavity( std::string path, std::string simulationName )
     gridBuilder->addGrid( &box, 1 );
 
     gridBuilder->addGrid( refCylinder, 3 );
+
+    //gridBuilder->addGrid( &sphere, 3 );
+
+    //gridBuilder->addGrid( &sphere2, 4 );
+
+    gridBuilder->setEnableFixRefinementIntoTheWall(true);
 
     gridBuilder->setPeriodicBoundaryCondition(false, true, true);
 
@@ -285,13 +295,13 @@ void thermalCavity( std::string path, std::string simulationName )
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 5000 );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 100000000; iter++ )
+    for( uint iter = 1; iter <= 100000; iter++ )
     {
         uint T = 10000;
         if( iter <= T )
@@ -299,6 +309,11 @@ void thermalCavity( std::string path, std::string simulationName )
             std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
             std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
         }
+        //else if( iter <= 2*T )
+        //{
+        //    std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaHot - ( lambdaHot - lambdaCold ) * ( real(iter-T) / real(T) );
+        //    std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaHot - ( lambdaHot - lambdaCold ) * ( real(iter-T) / real(T) );
+        //}
 
         if( iter == T )
         {
