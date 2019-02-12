@@ -36,6 +36,9 @@ public:
 
     virtual void copyDataDeviceToDevice( SPtr<Communicator> dst, SPtr<Communicator> src ) override;
 
+    virtual void copyBuffersDeviceToHost( SPtr<Communicator> communicator ) override;
+    virtual void copyBuffersHostToDevice( SPtr<Communicator> communicator ) override;
+
     //////////////////////////////////////////////////////////////////////////
 
     virtual std::string getDeviceType() override;

@@ -4,9 +4,16 @@
 #undef zero
 #endif
 
+#ifdef VF_DOUBLE_ACCURACY
+#define MPI_TYPE_GPU  MPI_DOUBLE
+#else
+#define MPI_TYPE_GPU  MPI_FLOAT
+#endif
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
+
 #include <mutex>
 #include <condition_variable>
 
@@ -16,6 +23,8 @@
 
 #include "DataBase/DataBase.h"
 #include "DataBase/DataBaseAllocator.h"
+
+#include "Definitions/MemoryAccessPattern.h"
 
 // from https://stackoverflow.com/questions/24465533/implementing-boostbarrier-in-c11
 class Barrier
@@ -80,6 +89,8 @@ Communicator::Communicator( SPtr<DataBase> dataBase )
     this->recvBuffer  = nullptr;
 
     this->sendBufferIsFresh = false;
+
+    this->sendBufferIsReady = MPI_REQUEST_NULL;
 }
 
 void Communicator::initialize(GksMeshAdapter & adapter, uint direction)
@@ -90,27 +101,49 @@ void Communicator::initialize(GksMeshAdapter & adapter, uint direction)
     this->numberOfRecvNodes = adapter.recvIndices[direction].size();
 
     this->myAllocator->allocateMemory( *this, adapter.sendIndices[direction], adapter.recvIndices[direction] );
+
+    this->sendBufferHost.resize(numberOfSendNodes * LENGTH_CELL_DATA);
+    this->recvBufferHost.resize(numberOfRecvNodes * LENGTH_CELL_DATA);
 }
 
 void Communicator::exchangeData( SPtr<DataBase> dataBase )
 {
-    while( this->sendBufferIsFresh );
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    MPI_Wait( &this->sendBufferIsReady, MPI_STATUSES_IGNORE );
+    
     this->copyFromMeshToSendBuffer( dataBase );
-
-    this->sendBufferIsFresh = true;
-
-    barrier.Sync();
-
-    //////////////////////////////////////////////////////////////////////////
-
-    while( !this->opposingCommunicator->sendBufferIsFresh );
-
-    this->myAllocator->copyDataDeviceToDevice(shared_from_this(), opposingCommunicator);
-
-    this->opposingCommunicator->sendBufferIsFresh = false;
-
-    //////////////////////////////////////////////////////////////////////////
-
+    
+    this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
+    
+    MPI_Isend( this->sendBufferHost.data(), this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
+    
+    MPI_Recv ( this->recvBufferHost.data(), this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
+    
+    this->myAllocator->copyBuffersHostToDevice( shared_from_this() );
+    
     this->copyFromRecvBufferToMesh( dataBase );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    //while( this->sendBufferIsFresh );
+
+    //this->copyFromMeshToSendBuffer( dataBase );
+
+    //this->sendBufferIsFresh = true;
+
+    //barrier.Sync();
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    //while( !this->opposingCommunicator->sendBufferIsFresh );
+
+    //this->myAllocator->copyDataDeviceToDevice(shared_from_this(), opposingCommunicator);
+
+    //this->opposingCommunicator->sendBufferIsFresh = false;
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    //this->copyFromRecvBufferToMesh( dataBase );
 }

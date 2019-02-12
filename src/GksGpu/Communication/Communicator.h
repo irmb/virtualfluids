@@ -2,6 +2,8 @@
 #define Communicator_H
 
 #include <memory>
+#include <vector>
+#include <mpi.h>
 //#include <mutex>
 
 #include "VirtualFluidsDefinitions.h"
@@ -27,9 +29,18 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
     real* sendBuffer;
     real* recvBuffer;
 
+    std::vector<real> sendBufferHost;
+    std::vector<real> recvBufferHost;
+
+    uint opposingRank;
+
     SPtr<Communicator> opposingCommunicator;
 
     bool sendBufferIsFresh;
+
+    MPI_Request sendBufferIsReady;
+
+    //////////////////////////////////////////////////////////////////////////
 
     Communicator( SPtr<DataBase> dataBase );
 

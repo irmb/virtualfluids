@@ -9,6 +9,8 @@
 #include <memory>
 #include <thread>
 
+#include <mpi.h>
+
 #include "Core/Timer/Timer.h"
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -60,7 +62,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 64;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +71,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     real dx = L / real(nx);
 
-    real Ra = 5.0e9;
+    real Ra = 5.0e8;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -216,8 +218,8 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
+    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
 
     bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
     bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
@@ -322,7 +324,7 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
             //( iter < 100    && iter % 10    == 0 ) ||
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) 
-            ( iter < 10000000 && iter % 10000 == 0 )
+            ( iter < 10000000 && iter % 1000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -349,8 +351,17 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
     dataBase->copyDataDeviceToHost();
 }
 
+
+
 int main( int argc, char* argv[])
 {
+    MPI_Init(&argc, &argv);
+
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    //////////////////////////////////////////////////////////////////////////
+
     std::string path( "F:/Work/Computations/out/" );
     //std::string path( "out/" );
     std::string simulationName ( "ThermalCavity" );
@@ -366,33 +377,17 @@ int main( int argc, char* argv[])
 
     try
     {
-        auto dataBase_0 = std::make_shared<DataBase>( "GPU" );
-        auto dataBase_1 = std::make_shared<DataBase>( "GPU" );
+        auto dataBase = std::make_shared<DataBase>( "GPU" );
 
-        auto communicator_0 = std::make_shared<Communicator>( dataBase_0 );
-        auto communicator_1 = std::make_shared<Communicator>( dataBase_1 );
+        auto communicator = std::make_shared<Communicator>( dataBase );
 
-        communicator_0->opposingCommunicator = communicator_1;
-        communicator_1->opposingCommunicator = communicator_0;
+        if( rank == 0 ) communicator->opposingRank = 1;
+        if( rank == 1 ) communicator->opposingRank = 0;
 
-        auto parameters_0 = std::make_shared<Parameters>();
-        auto parameters_1 = std::make_shared<Parameters>();
+        auto parameters = std::make_shared<Parameters>();
 
-        {
-            std::thread thread_0(init, 0, dataBase_0, communicator_0, parameters_0, path, simulationName);
-            std::thread thread_1(init, 1, dataBase_1, communicator_1, parameters_1, path, simulationName);
-
-            thread_0.join();
-            thread_1.join();
-        }
-
-        {
-            std::thread thread_0(run, 0, dataBase_0, communicator_0, parameters_0, path, simulationName);
-            std::thread thread_1(run, 1, dataBase_1, communicator_1, parameters_1, path, simulationName);
-
-            thread_0.join();
-            thread_1.join();
-        }
+        init( rank, dataBase, communicator, parameters, path, simulationName);
+        run ( rank, dataBase, communicator, parameters, path, simulationName);
 
         //writeVtkXML( dataBase_0, *parameters_0, 0, path + simulationName + "_" + std::to_string( 0 ) + "_" + std::to_string( 1 ) );
         //writeVtkXML( dataBase_1, *parameters_1, 0, path + simulationName + "_" + std::to_string( 1 ) + "_" + std::to_string( 1 ) );
@@ -410,5 +405,7 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
 
-   return 0;
+    MPI_Finalize();
+
+    return 0;
 }

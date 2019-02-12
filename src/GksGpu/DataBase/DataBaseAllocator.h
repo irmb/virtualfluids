@@ -46,6 +46,9 @@ public:
 
     virtual void copyDataDeviceToDevice( SPtr<Communicator> dst, SPtr<Communicator> src ) = 0;
 
+    virtual void copyBuffersDeviceToHost( SPtr<Communicator> communicator ) = 0;
+    virtual void copyBuffersHostToDevice( SPtr<Communicator> communicator ) = 0;
+
     //////////////////////////////////////////////////////////////////////////
 
     ~DataBaseAllocator();

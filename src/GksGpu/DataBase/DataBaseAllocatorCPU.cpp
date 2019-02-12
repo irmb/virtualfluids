@@ -195,6 +195,16 @@ void DataBaseAllocatorCPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<C
     memcpy( dst->recvBuffer, src->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * src->numberOfSendNodes );
 }
 
+void DataBaseAllocatorCPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
+{
+    memcpy( communicator->sendBufferHost.data(), communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes );
+}
+
+void DataBaseAllocatorCPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
+{
+    memcpy( communicator->recvBuffer, communicator->recvBufferHost.data(), LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes );
+}
+
 std::string DataBaseAllocatorCPU::getDeviceType()
 {
     return std::string("CPU");

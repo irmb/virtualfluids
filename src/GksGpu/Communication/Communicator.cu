@@ -119,8 +119,6 @@ __host__ __device__ inline void sendBufferFunction( const DataBaseStruct dataBas
                                                     const uint startIndex,
                                                     const uint index )
 {
-    
-
     uint cellIdx  = sendIndices [ index ];
 
     sendBuffer[ RHO__(index, numberOfSendNodes) ] = dataBase.data[ RHO__(cellIdx, dataBase.numberOfCells) ];
@@ -157,8 +155,6 @@ __host__ __device__ inline void recvBufferFunction( const DataBaseStruct dataBas
                                                     const uint startIndex,
                                                     const uint index )
 {
-    
-
     uint cellIdx  = recvIndices [ index ];
 
     dataBase.data[ RHO__(cellIdx, dataBase.numberOfCells) ] = recvBuffer[ RHO__(index, numberOfRecvNodes) ] ;

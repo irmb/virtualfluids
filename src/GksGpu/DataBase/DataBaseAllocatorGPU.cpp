@@ -225,8 +225,8 @@ void DataBaseAllocatorGPU::allocateMemory(Communicator & communicator, std::vect
     checkCudaErrors( cudaMalloc ( &communicator.sendIndices , sizeof(uint) * communicator.numberOfSendNodes ) );
     checkCudaErrors( cudaMalloc ( &communicator.recvIndices , sizeof(uint) * communicator.numberOfRecvNodes ) );
     
-    checkCudaErrors( cudaMalloc ( &communicator.sendBuffer , LENGTH_CELL_DATA * sizeof(uint) * communicator.numberOfSendNodes ) );
-    checkCudaErrors( cudaMalloc ( &communicator.recvBuffer , LENGTH_CELL_DATA * sizeof(uint) * communicator.numberOfRecvNodes ) );
+    checkCudaErrors( cudaMalloc ( &communicator.sendBuffer , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfSendNodes ) );
+    checkCudaErrors( cudaMalloc ( &communicator.recvBuffer , LENGTH_CELL_DATA * sizeof(real) * communicator.numberOfRecvNodes ) );
 
     checkCudaErrors( cudaMemcpy ( communicator.sendIndices , sendIndices.data() , sizeof(uint) * communicator.numberOfSendNodes, cudaMemcpyHostToDevice ) );
     checkCudaErrors( cudaMemcpy ( communicator.recvIndices , recvIndices.data() , sizeof(uint) * communicator.numberOfRecvNodes, cudaMemcpyHostToDevice ) );
@@ -235,6 +235,16 @@ void DataBaseAllocatorGPU::allocateMemory(Communicator & communicator, std::vect
 void DataBaseAllocatorGPU::copyDataDeviceToDevice(SPtr<Communicator> dst, SPtr<Communicator> src)
 {
     checkCudaErrors( cudaMemcpy ( dst->recvBuffer, src->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * src->numberOfSendNodes, cudaMemcpyDefault ) );
+}
+
+void DataBaseAllocatorGPU::copyBuffersDeviceToHost(SPtr<Communicator> communicator)
+{
+    checkCudaErrors( cudaMemcpy ( communicator->sendBufferHost.data(), communicator->sendBuffer, LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfSendNodes, cudaMemcpyDeviceToHost ) );
+}
+
+void DataBaseAllocatorGPU::copyBuffersHostToDevice(SPtr<Communicator> communicator)
+{
+    checkCudaErrors( cudaMemcpy ( communicator->recvBuffer, communicator->recvBufferHost.data(), LENGTH_CELL_DATA * sizeof(real) * communicator->numberOfRecvNodes, cudaMemcpyHostToDevice ) );
 }
 
 std::string DataBaseAllocatorGPU::getDeviceType()
