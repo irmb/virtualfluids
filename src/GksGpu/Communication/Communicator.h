@@ -23,20 +23,17 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
     uint numberOfSendNodes;
     uint numberOfRecvNodes;
 
-    uint* sendIndices;
-    uint* recvIndices;
+    uint* sendIndices; // device
+    uint* recvIndices; // device
 
-    real* sendBuffer;
-    real* recvBuffer;
+    real* sendBuffer; // device
+    real* recvBuffer; // device
 
     std::vector<real> sendBufferHost;
     std::vector<real> recvBufferHost;
 
+    uint rank;
     uint opposingRank;
-
-    SPtr<Communicator> opposingCommunicator;
-
-    bool sendBufferIsFresh;
 
     MPI_Request sendBufferIsReady;
 
@@ -44,7 +41,7 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
 
     Communicator( SPtr<DataBase> dataBase );
 
-    void initialize( GksMeshAdapter& adapter, uint direction );
+    void initialize( GksMeshAdapter& adapter, uint level, uint direction );
 
     void exchangeData( SPtr<DataBase> dataBase );
 

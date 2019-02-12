@@ -1008,8 +1008,15 @@ HOST void GridImp::limitToSubDomain(SPtr<BoundingBox> subDomainBox, LbmOrGks lbm
             if( lbmOrGks == LBM )
                 tmpSubDomainBox.extend(this->delta);
 
-            if (!tmpSubDomainBox.isInside(x, y, z))
+            if (!tmpSubDomainBox.isInside(x, y, z) 
+                && ( this->getFieldEntry(index) == FLUID ||
+                     this->getFieldEntry(index) == FLUID_CFC ||
+                     this->getFieldEntry(index) == FLUID_CFF ||
+                     this->getFieldEntry(index) == FLUID_FCC ||
+                     this->getFieldEntry(index) == FLUID_FCF ) )
+            {
                 this->setFieldEntry(index, STOPPER_OUT_OF_GRID_BOUNDARY);
+            }
         }
 
         {
@@ -1403,16 +1410,16 @@ void GridImp::findCommunicationIndices(int direction, SPtr<BoundingBox> subDomai
 }
 
 void GridImp::findCommunicationIndex( uint index, real coordinate, real limit, int direction ){
-        
+        //
     // negative direction get a negative sign
     real s = ( direction % 2 == 0 ) ? ( -1.0 ) : ( 1.0 );  
 
 
-	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.01 * this->delta) {
+	if (std::abs(coordinate - (limit + s * 0.5 * this->delta)) < 0.1 * this->delta) {
 		this->communicationIndices[direction].receiveIndices.push_back(index);
 	}
 
-	if ( std::abs( coordinate - ( limit - s * 0.5 * this->delta ) ) < 0.01 * this->delta) {
+	if (std::abs(coordinate - (limit - s * 0.5 * this->delta)) < 0.1 * this->delta) {
 		this->communicationIndices[direction].sendIndices.push_back(index);
 	}
 }

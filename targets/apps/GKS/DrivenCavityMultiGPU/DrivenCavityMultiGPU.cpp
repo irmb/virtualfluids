@@ -50,15 +50,12 @@
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-//uint deviceMap [2] = {2,3};
-uint deviceMap [2] = {0,1};
-
-void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::string path, std::string simulationName )
+void init( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::string path, std::string simulationName )
 {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
+    CudaUtility::setCudaDevice(rank % 2);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,28 +64,27 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real L = 1.0;
-    real H = 0.25;
 
     real dx = L / real(nx);
 
-    real Ra = 5.0e8;
+    real Re = 100.0;
 
-    real Ba  = 0.1;
-    real eps = 1.2;
+    real U  = 1.0;
+    real Ma = 0.1;
+    
     real Pr  = 0.71;
     real K   = 2.0;
-    
-    real g   = 1.0;
+
     real rho = 1.0;
 
-    real lambda     = Ba / ( 2.0 * g * L );
-    real lambdaHot  = lambda / ( 1.0 + eps * 0.5 );
-    real lambdaCold = lambda / ( 1.0 - eps * 0.5 );
-    
-    real mu = sqrt( Pr * eps * g * L * L * L / Ra ) * rho ;
+    //////////////////////////////////////////////////////////////////////////
 
-    real cs  = sqrt( ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( 2.0 * lambda ) );
-    real U   = sqrt( Ra ) * mu / ( rho * L );
+    real gamma = ( K + 5 ) / ( K + 3 );
+
+    real mu = U * rho * L / Re;
+
+    real cs = U / Ma;
+    real lambda = c1o2 * ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( cs * cs );
 
     real CFL = 0.5;
 
@@ -103,7 +99,7 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
     parameters->mu = mu;
 
     parameters->force.x = 0;
-    parameters->force.y = -g;
+    parameters->force.y = 0;
     parameters->force.z = 0;
 
     parameters->dt = dt;
@@ -123,83 +119,174 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Conglomerate refRegion_1;
-    Conglomerate refRegion_2;
-    Conglomerate refRegion_3;
-    Conglomerate refRegion_4;
+    if( rank == 0 ) gridBuilder->addCoarseGrid(-0.5*L , -0.5*L , -0.5*L ,  
+                                                3.0*dx,  3.0*dx,  3.0*dx, dx);
 
-    real L_1 = 0.35;
-    real L_2 = 0.45;
-    real L_3 = 0.475;
-    real L_4 = 0.495;
+    if( rank == 1 ) gridBuilder->addCoarseGrid(-3.0*dx, -0.5*L , -0.5*L ,  
+                                                0.5*L ,  3.0*dx,  3.0*dx, dx);
 
-    if( threadIndex == 0 ) gridBuilder->addCoarseGrid(-0.5*L , -0.5*L, -0.5*H,  
-                                                       3.0*dx,  0.5*L,  0.5*H, dx);
+    if( rank == 2 ) gridBuilder->addCoarseGrid(-0.5*L , -3.0*dx, -0.5*L ,  
+                                                3.0*dx,  0.5*L ,  3.0*dx, dx);
 
-    if( threadIndex == 1 ) gridBuilder->addCoarseGrid(-3.0*dx, -0.5*L, -0.5*H,  
-                                                       0.5*L ,  0.5*L,  0.5*H, dx);
+    if( rank == 3 ) gridBuilder->addCoarseGrid(-3.0*dx, -3.0*dx, -0.5*L ,  
+                                                0.5*L ,  0.5*L ,  3.0*dx, dx);
 
-    if( threadIndex == 0 ) refRegion_1.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_1,  1.0,  1.0 ) );
+    if( rank == 4 ) gridBuilder->addCoarseGrid(-0.5*L , -0.5*L , -3.0*dx,  
+                                                3.0*dx,  3.0*dx,  0.5*L , dx);
 
-    if( threadIndex == 1 ) refRegion_1.add( new Cuboid ( L_1, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
+    if( rank == 5 ) gridBuilder->addCoarseGrid(-3.0*dx, -0.5*L , -3.0*dx,  
+                                                0.5*L ,  3.0*dx,  0.5*L , dx);
 
-    if( threadIndex == 0 ) refRegion_2.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_2,  1.0,  1.0 ) );
+    if( rank == 6 ) gridBuilder->addCoarseGrid(-0.5*L , -3.0*dx, -3.0*dx,  
+                                                3.0*dx,  0.5*L ,  0.5*L , dx);
 
-    if( threadIndex == 1 ) refRegion_2.add( new Cuboid ( L_2, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
+    if( rank == 7 ) gridBuilder->addCoarseGrid(-3.0*dx, -3.0*dx, -3.0*dx,  
+                                                0.5*L ,  0.5*L ,  0.5*L , dx);
 
-    if( threadIndex == 0 ) refRegion_3.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_3,  1.0,  1.0 ) );
+    //////////////////////////////////////////////////////////////////////////
 
-    if( threadIndex == 1 ) refRegion_3.add( new Cuboid ( L_3, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
-
-    if( threadIndex == 0 ) refRegion_4.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_4,  1.0,  1.0 ) );
-
-    if( threadIndex == 1 ) refRegion_4.add( new Cuboid ( L_4, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
-
+    Cuboid cube( -0.1, -0.1, -0.1, 
+                  0.1,  0.1,  0.1 );
+    
     gridBuilder->setNumberOfLayers(6,6);
-    gridBuilder->addGrid( &refRegion_1, 1);
-    gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
 
-    if( threadIndex == 0 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
-                                                                                        -1.0, 1.0, 
-                                                                                        -1.0, 1.0 ) );
+    gridBuilder->addGrid(&cube, 1);
 
-    if( threadIndex == 1 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
-                                                                                        -1.0, 1.0, 
-                                                                                        -1.0, 1.0 ) );
+    //////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+    if( rank == 0 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
+                                                                                 -1.0, 0.0, 
+                                                                                 -1.0, 0.0 ) );
+
+    if( rank == 1 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
+                                                                                 -1.0, 0.0, 
+                                                                                 -1.0, 0.0 ) );
+
+    if( rank == 2 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
+                                                                                  0.0, 1.0, 
+                                                                                 -1.0, 0.0 ) );
+
+    if( rank == 3 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
+                                                                                  0.0, 1.0, 
+                                                                                 -1.0, 0.0 ) );
+
+    if( rank == 4 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
+                                                                                 -1.0, 0.0, 
+                                                                                  0.0, 1.0 ) );
+
+    if( rank == 5 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
+                                                                                 -1.0, 0.0, 
+                                                                                  0.0, 1.0 ) );
+
+    if( rank == 6 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
+                                                                                  0.0, 1.0, 
+                                                                                  0.0, 1.0 ) );
+
+    if( rank == 7 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
+                                                                                  0.0, 1.0, 
+                                                                                  0.0, 1.0 ) );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(GKS, false);
             
-    if( threadIndex == 0 ){
+    if( rank == 0 ){
         gridBuilder->findCommunicationIndices(CommunicationDirections::PX, GKS);
         gridBuilder->setCommunicationProcess (CommunicationDirections::PX, 1);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PY, 2);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PZ, 4);
     }
             
-    if( threadIndex == 1 ){
+    if( rank == 1 ){
         gridBuilder->findCommunicationIndices(CommunicationDirections::MX, GKS);
         gridBuilder->setCommunicationProcess (CommunicationDirections::MX, 0);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PY, 3);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PZ, 5);
+    }
+            
+    if( rank == 2 ){
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PX, 3);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MY, 0);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PZ, 6);
+    }
+            
+    if( rank == 3 ){
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MX, 2);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MY, 1);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PZ, 7);
+    }
+            
+    if( rank == 4 ){
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PX, 5);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PY, 6);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MZ, 0);
+    }
+            
+    if( rank == 5 ){
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MX, 4);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PY, 7);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MZ, 1);
+    }
+            
+    if( rank == 6 ){
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::PX, 7);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MY, 4);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MZ, 2);
+    }
+            
+    if( rank == 7 ){
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MX, 6);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MY, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MY, 5);
+
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MZ, GKS);
+        gridBuilder->setCommunicationProcess (CommunicationDirections::MZ, 3);
     }
 
-    //gridBuilder->writeGridsToVtk(path + "grid/Grid_" + std::to_string( threadIndex ) + "_lev_");
+    gridBuilder->writeGridsToVtk(path + "Grid_" + std::to_string( rank ) + "_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     GksMeshAdapter meshAdapter( gridBuilder );
 
     meshAdapter.inputGrid();
-
-    meshAdapter.findPeriodicBoundaryNeighbors();    
 
     meshAdapter.getCommunicationIndices();
 
@@ -210,31 +297,27 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , false );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, false );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, false );
 
     bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
-
-    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    
+    SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, false );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, false );
 
     bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
     bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
+
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambda, false );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(  U,   U, 0.0), lambda, false );
     
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
-    
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*H; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -259,12 +342,6 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
     CudaUtility::printCudaMemoryUsage();
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
-
-        real Th = 1.0 / lambdaHot;
-        real Tc = 1.0 / lambdaCold;
-        real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
-        real lambdaLocal = 1.0 / T;
-
         return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters->K );
     });
 
@@ -288,21 +365,19 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameter
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::string path, std::string simulationName )
+void run( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
+    CudaUtility::setCudaDevice( rank % 2 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
+    writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( rank ) + "_" + std::to_string( 0 ) );
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0, true, 1000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
-
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -322,21 +397,12 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Parameters> parameters
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( iter ) );
+            writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( rank ) + "_" + std::to_string( iter ) );
         }
 
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
-
-        turbulenceAnalyzer->run( iter, *parameters );
-
-        if( iter % 50000 == 0 )
-        {
-            turbulenceAnalyzer->download();
-
-            writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ));
-        }
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -357,9 +423,16 @@ int main( int argc, char* argv[])
 
     std::string path( "F:/Work/Computations/out/" );
     //std::string path( "out/" );
-    std::string simulationName ( "ThermalCavity" );
+    std::string simulationName ( "DrivenCavity" );
+            
+    std::ofstream logFile;
+            
+    logFile.open( path + simulationName + "_" + std::to_string(rank) + ".log" );
+
+    logging::Logger::addStream(&logFile);
 
     logging::Logger::addStream(&std::cout);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
@@ -375,10 +448,8 @@ int main( int argc, char* argv[])
         auto parameters = std::make_shared<Parameters>();
 
         init( rank, dataBase, parameters, path, simulationName);
-        run ( rank, dataBase, parameters, path, simulationName);
 
-        //writeVtkXML( dataBase_0, *parameters_0, 0, path + simulationName + "_" + std::to_string( 0 ) + "_" + std::to_string( 1 ) );
-        //writeVtkXML( dataBase_1, *parameters_1, 0, path + simulationName + "_" + std::to_string( 1 ) + "_" + std::to_string( 1 ) );
+        run ( rank, dataBase, parameters, path, simulationName);
     }
     catch (const std::exception& e)
     {     
@@ -392,6 +463,8 @@ int main( int argc, char* argv[])
     {
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
+
+    logFile.close();
 
     MPI_Finalize();
 

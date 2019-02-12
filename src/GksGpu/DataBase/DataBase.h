@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -21,6 +22,7 @@ class  DataBaseAllocator;
 struct DataBase;
 struct PerLevelCounts;
 struct DataBaseStruct;
+struct Communicator;
 
 struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
 {
@@ -31,6 +33,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     SPtr<DataBaseAllocator> myAllocator;
 
     std::vector< SPtr<BoundaryCondition> > boundaryConditions;
+
+    std::vector< std::array< SPtr< Communicator >, 6 > > communicators;
 
     //////////////////////////////////////////////////////////////////////////
     // Sizes
@@ -106,6 +110,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     //void setMesh( std::shared_ptr<MeshGeneratorQuadTree> mesh );
 
     void setMesh( GksMeshAdapter& adapter );
+
+    void setCommunicators( GksMeshAdapter& adapter );
 
     void copyDataHostToDevice();
 

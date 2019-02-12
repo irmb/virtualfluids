@@ -1,5 +1,6 @@
 #include "DataBase.h"
 
+#include <iostream>
 #include <string>
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -9,6 +10,7 @@
 #include "DataBaseStruct.h"
 
 #include "GksMeshAdapter/GksMeshAdapter.h"
+#include "Communication/Communicator.h"
 
 DataBase::DataBase( std::string type ) 
         : myAllocator    ( DataBaseAllocator::create( type ) ),
@@ -84,6 +86,35 @@ void DataBase::setMesh(GksMeshAdapter & adapter)
     this->myAllocator->allocateMemory( shared_from_this() );
 
     this->myAllocator->copyMesh( shared_from_this(), adapter );
+}
+
+void DataBase::setCommunicators(GksMeshAdapter & adapter)
+{
+    this->communicators.resize( this->numberOfLevels );
+
+    for( uint level = 0; level < this->numberOfLevels; level++ )
+    {
+        for( uint direction = 0; direction < 6; direction++ )
+        {
+            if( adapter.communicationProcesses[direction] != INVALID_INDEX &&
+                ( 
+                  adapter.communicationIndices[level].sendIndices[direction].size() > 0 ||
+                  adapter.communicationIndices[level].recvIndices[direction].size() > 0
+                )
+              )
+            {
+                this->communicators[level][direction] = std::make_shared<Communicator>( shared_from_this() );
+
+                this->communicators[level][direction]->initialize( adapter, level, direction );
+            }
+            else
+            {
+                this->communicators[level][direction] = nullptr;
+            }
+        }
+
+    
+    }
 }
 
 void DataBase::copyDataHostToDevice()

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <mpi.h>
 
 #include "Core/Logger/Logger.h"
 
@@ -834,23 +835,49 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
 
 void GksMeshAdapter::getCommunicationIndices()
 {
-    SPtr<Grid> grid = this->gridBuilder->getGrid(0);
-    
-    this->sendIndices.resize(6);
-    this->recvIndices.resize(6);
+    this->communicationProcesses[0] = this->gridBuilder->getCommunicationProcess(0);
+    this->communicationProcesses[1] = this->gridBuilder->getCommunicationProcess(1);
+    this->communicationProcesses[2] = this->gridBuilder->getCommunicationProcess(2);
+    this->communicationProcesses[3] = this->gridBuilder->getCommunicationProcess(3);
+    this->communicationProcesses[4] = this->gridBuilder->getCommunicationProcess(4);
+    this->communicationProcesses[5] = this->gridBuilder->getCommunicationProcess(5);
 
-    for( uint direction = 0; direction < 6; direction++ )
+    this->communicationIndices.resize( this->gridBuilder->getNumberOfLevels() );
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    for( int i = 0; i < rank; i++ ) MPI_Barrier(MPI_COMM_WORLD);
+
+    for( uint level = 0; level < this->gridBuilder->getNumberOfLevels(); level++ )
     {
-        for( uint index = 0; index < grid->getNumberOfSendNodes(direction); index++ )
+        //////////////////////////////////////////////////////////////////////////
+
+        SPtr<Grid> grid = this->gridBuilder->getGrid(level);
+
+        for (uint direction = 0; direction < 6; direction++)
         {
-            this->sendIndices[direction].push_back( this->gridToMesh[0][ grid->getSendIndex(direction, index) ] );
+            for (uint index = 0; index < grid->getNumberOfSendNodes(direction); index++)
+            {
+                this->communicationIndices[level].sendIndices[direction].push_back(this->gridToMesh[level][grid->getSendIndex(direction, index)]);
+            }
+
+            for (uint index = 0; index < grid->getNumberOfReceiveNodes(direction); index++)
+            {
+                this->communicationIndices[level].recvIndices[direction].push_back(this->gridToMesh[level][grid->getReceiveIndex(direction, index)]);
+            }
+
+            std::cout << "Rank " << rank << " | Level " << level << " | dir " << direction << " | ";
+            std::cout << "Send " << this->communicationIndices[level].sendIndices[direction].size() << " | ";
+            std::cout << "Recv " << this->communicationIndices[level].recvIndices[direction].size() << std::endl;
         }
 
-        for( uint index = 0; index < grid->getNumberOfReceiveNodes(direction); index++ )
-        {
-            this->recvIndices[direction].push_back( this->gridToMesh[0][ grid->getReceiveIndex(direction, index) ] );
-        }
+        //////////////////////////////////////////////////////////////////////////
     }
+
+    for( int i = rank; i < 8; i++ ) MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void GksMeshAdapter::writeMeshVTK(std::string filename)

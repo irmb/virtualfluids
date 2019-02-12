@@ -95,8 +95,15 @@ public:
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::vector< std::vector< uint > > sendIndices;
-    std::vector< std::vector< uint > > recvIndices;
+    struct CommunicationIndices
+    {
+        std::array< std::vector< uint >, 6 > sendIndices;
+        std::array< std::vector< uint >, 6 > recvIndices;
+    };
+
+    std::vector< CommunicationIndices > communicationIndices;
+
+    std::array<uint, 6> communicationProcesses;
 
 public:
 

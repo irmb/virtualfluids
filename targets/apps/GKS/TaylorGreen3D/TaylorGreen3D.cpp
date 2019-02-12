@@ -231,7 +231,7 @@ void gksTest( std::string path )
 
     for( uint iter = 1; iter <= 40 * lround(L/(U*dt)); iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         kineticEnergyAnalyzer.run( iter );
         enstrophyAnalyzer.run( iter );
