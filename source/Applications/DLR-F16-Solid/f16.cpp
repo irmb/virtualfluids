@@ -171,6 +171,7 @@ void run(string configname)
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setRelaxationParameter(CompressibleCumulantLBMKernel::NORMAL);
 
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(10.0*nuLB);
       //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(nuLB*2.0e3);
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
@@ -493,7 +494,7 @@ void run(string configname)
          ////////////////////////////////////////////
          //METIS
          SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B, MetisPartitioner::RECURSIVE));
-         std::dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(4000);
+         //std::dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(4000);
          ////////////////////////////////////////////
          /////delete solid blocks
          if (myid==0) UBLOG(logINFO, "deleteSolidBlocks - start");
@@ -744,10 +745,10 @@ void run(string configname)
       if (myid==0) GbSystem3D::writeGeoObject(bbBox.get(), pathOut+"/geo/bbBox", WbWriterVtkXmlASCII::getInstance());
       SPtr<WriteMQFromSelectionCoProcessor> writeMQSelectCoProcessor(new WriteMQFromSelectionCoProcessor(grid, stepSch, bbBox, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
-      SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
-         TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
-      tav->setWithGhostLayer(true);
+      //SPtr<UbScheduler> tavSch(new UbScheduler(1, timeAvStart, timeAvStop));
+      //SPtr<TimeAveragedValuesCoProcessor> tav(new TimeAveragedValuesCoProcessor(grid, pathOut, WbWriterVtkXmlBinary::getInstance(), tavSch, comm,
+      //   TimeAveragedValuesCoProcessor::Density | TimeAveragedValuesCoProcessor::Velocity | TimeAveragedValuesCoProcessor::Fluctuations));
+      //tav->setWithGhostLayer(true);
 
       //SPtr<IntegrateValuesHelper> mic1(new IntegrateValuesHelper(grid, comm, 0.3-deltaXfine, 0.015, 0.0005, 0.3, 0.015+deltaXfine, 0.0005+deltaXfine));
       //if (myid==0) GbSystem3D::writeGeoObject(mic1->getBoundingBox().get(), pathOut+"/geo/mic1", WbWriterVtkXmlBinary::getInstance());
@@ -788,43 +789,43 @@ void run(string configname)
       double dist = 0.0744; //0.25c
       SPtr<UbScheduler> stepMV(new UbScheduler(1, 0, 1000000));
       //0.0
-      SPtr<IntegrateValuesHelper> mic0new(new IntegrateValuesHelper(grid, comm, 0.3+deltaXfine, 0.015, 0.000517+0.00037+7.0*deltaXfine, 0.3+2.0*deltaXfine, 0.015+deltaXfine, 0.000517+0.00037+8.0*deltaXfine));
-      if (myid==0) GbSystem3D::writeGeoObject(mic0new->getBoundingBox().get(), pathOut+"/geo/mic0new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp0(new TimeseriesCoProcessor(grid, stepMV, mic0new, pathOut+"/mic/mic0new", comm));
-      //0.25c
-      SPtr<IntegrateValuesHelper> mic1new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist));
-      if (myid==0) GbSystem3D::writeGeoObject(mic1new->getBoundingBox().get(), pathOut+"/geo/mic1new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp1(new TimeseriesCoProcessor(grid, stepMV, mic1new, pathOut+"/mic/mic1new", comm));
-      //0.5c
-      SPtr<IntegrateValuesHelper> mic2new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*2.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*2.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic2new->getBoundingBox().get(), pathOut+"/geo/mic2new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp2(new TimeseriesCoProcessor(grid, stepMV, mic2new, pathOut+"/mic/mic2new", comm));
-      //0.75c
-      SPtr<IntegrateValuesHelper> mic3new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*3.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*3.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic3new->getBoundingBox().get(), pathOut+"/geo/mic3new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp3(new TimeseriesCoProcessor(grid, stepMV, mic3new, pathOut+"/mic/mic3new", comm));
-      //1.0c
-      SPtr<IntegrateValuesHelper> mic4new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*4.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*4.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic4new->getBoundingBox().get(), pathOut+"/geo/mic4new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp4(new TimeseriesCoProcessor(grid, stepMV, mic4new, pathOut+"/mic/mic4new", comm));
-      //1.25c
-      SPtr<IntegrateValuesHelper> mic5new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*5.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*5.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic5new->getBoundingBox().get(), pathOut+"/geo/mic5new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp5(new TimeseriesCoProcessor(grid, stepMV, mic5new, pathOut+"/mic/mic5new", comm));
-      //1.5c
-      SPtr<IntegrateValuesHelper> mic6new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*6.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*6.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic6new->getBoundingBox().get(), pathOut+"/geo/mic6new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp6(new TimeseriesCoProcessor(grid, stepMV, mic6new, pathOut+"/mic/mic6new", comm));
-      //1.75c
-      SPtr<IntegrateValuesHelper> mic7new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*7.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*7.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic7new->getBoundingBox().get(), pathOut+"/geo/mic7new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp7(new TimeseriesCoProcessor(grid, stepMV, mic7new, pathOut+"/mic/mic7new", comm));
-      //2.0c
-      SPtr<IntegrateValuesHelper> mic8new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*8.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*8.0));
-      if (myid==0) GbSystem3D::writeGeoObject(mic8new->getBoundingBox().get(), pathOut+"/geo/mic8new", WbWriterVtkXmlBinary::getInstance());
-      SPtr<TimeseriesCoProcessor> tsp8(new TimeseriesCoProcessor(grid, stepMV, mic8new, pathOut+"/mic/mic8new", comm));
+      //SPtr<IntegrateValuesHelper> mic0new(new IntegrateValuesHelper(grid, comm, 0.3+deltaXfine, 0.015, 0.000517+0.00037+7.0*deltaXfine, 0.3+2.0*deltaXfine, 0.015+deltaXfine, 0.000517+0.00037+8.0*deltaXfine));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic0new->getBoundingBox().get(), pathOut+"/geo/mic0new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp0(new TimeseriesCoProcessor(grid, stepMV, mic0new, pathOut+"/mic/mic0new", comm));
+      ////0.25c
+      //SPtr<IntegrateValuesHelper> mic1new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic1new->getBoundingBox().get(), pathOut+"/geo/mic1new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp1(new TimeseriesCoProcessor(grid, stepMV, mic1new, pathOut+"/mic/mic1new", comm));
+      ////0.5c
+      //SPtr<IntegrateValuesHelper> mic2new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*2.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*2.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic2new->getBoundingBox().get(), pathOut+"/geo/mic2new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp2(new TimeseriesCoProcessor(grid, stepMV, mic2new, pathOut+"/mic/mic2new", comm));
+      ////0.75c
+      //SPtr<IntegrateValuesHelper> mic3new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*3.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*3.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic3new->getBoundingBox().get(), pathOut+"/geo/mic3new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp3(new TimeseriesCoProcessor(grid, stepMV, mic3new, pathOut+"/mic/mic3new", comm));
+      ////1.0c
+      //SPtr<IntegrateValuesHelper> mic4new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*4.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*4.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic4new->getBoundingBox().get(), pathOut+"/geo/mic4new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp4(new TimeseriesCoProcessor(grid, stepMV, mic4new, pathOut+"/mic/mic4new", comm));
+      ////1.25c
+      //SPtr<IntegrateValuesHelper> mic5new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*5.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*5.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic5new->getBoundingBox().get(), pathOut+"/geo/mic5new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp5(new TimeseriesCoProcessor(grid, stepMV, mic5new, pathOut+"/mic/mic5new", comm));
+      ////1.5c
+      //SPtr<IntegrateValuesHelper> mic6new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*6.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*6.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic6new->getBoundingBox().get(), pathOut+"/geo/mic6new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp6(new TimeseriesCoProcessor(grid, stepMV, mic6new, pathOut+"/mic/mic6new", comm));
+      ////1.75c
+      //SPtr<IntegrateValuesHelper> mic7new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*7.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*7.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic7new->getBoundingBox().get(), pathOut+"/geo/mic7new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp7(new TimeseriesCoProcessor(grid, stepMV, mic7new, pathOut+"/mic/mic7new", comm));
+      ////2.0c
+      //SPtr<IntegrateValuesHelper> mic8new(new IntegrateValuesHelper(grid, comm, 0.3, 0.015, -dist*8.0-deltaXcoarse, 0.3+deltaXcoarse, 0.015+deltaXcoarse, -dist*8.0));
+      //if (myid==0) GbSystem3D::writeGeoObject(mic8new->getBoundingBox().get(), pathOut+"/geo/mic8new", WbWriterVtkXmlBinary::getInstance());
+      //SPtr<TimeseriesCoProcessor> tsp8(new TimeseriesCoProcessor(grid, stepMV, mic8new, pathOut+"/mic/mic8new", comm));
 
-      //omp_set_num_threads(numOfThreads);
+      omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);

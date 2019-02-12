@@ -608,7 +608,11 @@ void CompressibleCumulant4thOrderViscosityLBMKernel::calculate(int step)
 
 
                //relax
-               mxxPyyPzz += OxxPyyPzz*(mfaaa-mxxPyyPzz)-three * (one-c1o2 * OxxPyyPzz) * (vx2 * dxux+vy2 * dyuy+vz2 * dzuz);//-magicBulk*OxxPyyPzz;
+
+               wadjust = OxxPyyPzz+(one-OxxPyyPzz)*fabs((mfaaa-mxxPyyPzz))/(fabs((mfaaa-mxxPyyPzz))+qudricLimitD);
+               mxxPyyPzz += wadjust*(mfaaa-mxxPyyPzz)-three * (one-c1o2 * OxxPyyPzz) * (vx2 * dxux+vy2 * dyuy+vz2 * dzuz);
+
+              // mxxPyyPzz += OxxPyyPzz*(mfaaa-mxxPyyPzz)-three * (one-c1o2 * OxxPyyPzz) * (vx2 * dxux+vy2 * dyuy+vz2 * dzuz);//-magicBulk*OxxPyyPzz;
                mxxMyy += omega * (-mxxMyy)-three * (one+c1o2 * (-omega)) * (vx2 * dxux-vy2 * dyuy);
                mxxMzz += omega * (-mxxMzz)-three * (one+c1o2 * (-omega)) * (vx2 * dxux-vz2 * dzuz);
 
