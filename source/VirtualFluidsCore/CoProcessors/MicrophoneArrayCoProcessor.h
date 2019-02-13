@@ -19,7 +19,7 @@ class DistributionArray3D;
 //! \author    Konstantin Kutscher
 //! \date      February 2019
 
-class MicrophoneArrayCoProcessor : CoProcessor
+class MicrophoneArrayCoProcessor : public CoProcessor
 {
 public:
    MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);

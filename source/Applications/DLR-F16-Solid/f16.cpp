@@ -676,8 +676,8 @@ void run(string configname)
 
          //return;
 
-         //restartCoProcessor->restart((int)restartStep);
-         migCoProcessor->restart((int)restartStep);
+         restartCoProcessor->restart((int)restartStep);
+         //migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
@@ -729,7 +729,7 @@ void run(string configname)
       grid->accept(slVisitorX1max);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
-      std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
+      std::shared_ptr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
       SPtr<UbScheduler> stepSch(new UbScheduler(outTimeStep, outTimeStart));
 
@@ -739,7 +739,7 @@ void run(string configname)
          UBLOG(logINFO, "PID = "<<myid<<" Physical Memory currently used by current process: "<<Utilities::getPhysMemUsedByMe()/1073741824.0<<" GB");
       }
 
-      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      SPtr<CoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
       SPtr<GbObject3D> bbBox(new GbCuboid3D(g_minX1-blockLength, (g_maxX2-g_minX2)/2.0, g_minX3-blockLength, g_maxX1+blockLength, (g_maxX2-g_minX2)/2.0+deltaXcoarse, g_maxX3+blockLength));
       if (myid==0) GbSystem3D::writeGeoObject(bbBox.get(), pathOut+"/geo/bbBox", WbWriterVtkXmlASCII::getInstance());
@@ -825,6 +825,9 @@ void run(string configname)
       //if (myid==0) GbSystem3D::writeGeoObject(mic8new->getBoundingBox().get(), pathOut+"/geo/mic8new", WbWriterVtkXmlBinary::getInstance());
       //SPtr<TimeseriesCoProcessor> tsp8(new TimeseriesCoProcessor(grid, stepMV, mic8new, pathOut+"/mic/mic8new", comm));
 
+      SPtr<MicrophoneArrayCoProcessor> micCoProcessor(new MicrophoneArrayCoProcessor(grid, stepSch, pathOut, comm) );
+      micCoProcessor->addMicrophone(Vector3D(0.47, 0.015, -1.0));
+
       omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
@@ -838,9 +841,10 @@ void run(string configname)
       //calculator->addCoProcessor(tsp6);
       //calculator->addCoProcessor(tsp7);
       //calculator->addCoProcessor(tsp8);
-      calculator->addCoProcessor(restartCoProcessor);
+      //calculator->addCoProcessor(micCoProcessor);
+      //calculator->addCoProcessor(restartCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
-      calculator->addCoProcessor(writeMQCoProcessor);
+      //calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(tav);
 
 

@@ -12,6 +12,8 @@
 #include <omp.h>
 #endif 
 
+#include <PointerDefinitions.h>
+
 #include <MuParser/include/muParser.h>
 #include <MuParser/include/muParserBase.h>
 #include <MuParser/include/muParserBytecode.h>
@@ -167,7 +169,8 @@
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MPIIOMigrationCoProcessor.h>
 #include <CoProcessors/PressureCoefficientCoProcessor.h>
-#include <LineTimeSeriesCoProcessor.h>
+#include <CoProcessors/LineTimeSeriesCoProcessor.h>
+#include <CoProcessors/MicrophoneArrayCoProcessor.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
