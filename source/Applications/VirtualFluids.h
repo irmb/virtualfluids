@@ -255,6 +255,7 @@
 #include <Utilities/ConfigurationFile.hpp>
 #include <Utilities/VoxelMatrixUtil.hpp>
 #include <Utilities/ChangeRandomQs.hpp>
+#include <Utilities/CheckpointConverter.h>
 
 #include <Visitors/Block3DVisitor.h>
 #include <Visitors/CreateTransmittersHelper.h>

@@ -378,6 +378,10 @@ void run(string configname)
          //initVisitor.setVx1(u_LB);
          //initVisitor.setVx2(u_LB);
          //initVisitor.setVx3(u_LB);
+
+         //initVisitor.setVx1(inflowProfileVx1);
+         initVisitor.setVx1(0);
+
          grid->accept(initVisitor);
 
          ////set connectors
@@ -401,8 +405,8 @@ void run(string configname)
       }
       else
       {
-         //restartCoProcessor->restart((int)restartStep);
-         migCoProcessor->restart((int)restartStep);
+         restartCoProcessor->restart((int)restartStep);
+         //migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());

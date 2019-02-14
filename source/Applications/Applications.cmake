@@ -60,3 +60,5 @@ add_subdirectory(Applications/teperm)
 add_subdirectory(Applications/Thermoplast)
 add_subdirectory(Applications/bChannelA)
 add_subdirectory(Applications/ConvectionOfVortex)
+add_subdirectory(Applications/CheckpointConverter)
+
