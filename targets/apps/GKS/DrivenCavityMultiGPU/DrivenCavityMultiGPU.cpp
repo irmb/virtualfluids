@@ -55,11 +55,11 @@ void init( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std:
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(rank % 2);
+    CudaUtility::setCudaDevice(rank % 4);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 64;
+    uint nx = 512;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,7 +67,7 @@ void init( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std:
 
     real dx = L / real(nx);
 
-    real Re = 100.0;
+    real Re = 10000.0;
 
     real U  = 1.0;
     real Ma = 0.1;
@@ -150,7 +150,7 @@ void init( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std:
     
     gridBuilder->setNumberOfLayers(6,6);
 
-    gridBuilder->addGrid(&cube, 1);
+    //gridBuilder->addGrid(&cube, 1);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -369,7 +369,7 @@ void run( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice( rank % 2 );
+    CudaUtility::setCudaDevice( rank % 4 );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -392,7 +392,7 @@ void run( uint rank, SPtr<DataBase> dataBase, SPtr<Parameters> parameters, std::
             //( iter < 100    && iter % 10    == 0 ) ||
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) 
-            ( iter < 10000000 && iter % 1000 == 0 )
+            ( iter < 10000000 && iter % 20000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -421,8 +421,8 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
-    std::string path( "F:/Work/Computations/out/" );
-    //std::string path( "out/" );
+    //std::string path( "F:/Work/Computations/out/" );
+    std::string path( "out/" );
     std::string simulationName ( "DrivenCavity" );
             
     std::ofstream logFile;
