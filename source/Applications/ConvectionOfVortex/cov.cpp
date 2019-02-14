@@ -21,12 +21,13 @@ void run()
       //////////////////////////////////////////////////////////////////////////
       //DLR-F16 test
       //dx_coarse = 0.003 mm
-      //string  pathname = "d:/temp/ConvectionOfVortex_0.003";
-      //int     endTime = 20;
-      //double  outTime = 10;
-      //LBMReal dx =  0.003;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6;
+      string  pathname = "d:/temp/ConvectionOfVortex_0.003_4th";
+      int     endTime = 10000;
+      double  outTime = 10;
+      LBMReal dx =  0.003;
+      LBMReal rhoLB = 0.0;
+      LBMReal nuLB = 8.66025e-6;
+      double yFactor = 1.0;
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.0015 mm
       //string  pathname = "d:/temp/ConvectionOfVortex_0.0015";
@@ -37,12 +38,13 @@ void run()
       //LBMReal nuLB = 8.66025e-6*2.0;
       ////////////////////////////////////////////////////////////////////////////
       //dx_coarse = 0.00075 mm
-      string  pathname = "d:/temp/ConvectionOfVortex_0.00075_moments";
-      double  endTime = 80;
-      double  outTime = 80;
-      LBMReal dx =  0.00075;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 8.66025e-6*4.0;
+      //string  pathname = "d:/temp/ConvectionOfVortex_0.00075_4th_moments";
+      //double  endTime = 2000;
+      //double  outTime = 10;
+      //LBMReal dx =  0.00075;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6*4.0;
+      //double yFactor = 4.0;
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.000375 mm
       //string  pathname = "d:/temp/ConvectionOfVortex_0.000375";
@@ -60,11 +62,11 @@ void run()
 
       //bounding box
       double g_minX1 = -0.045;
-      double g_minX2 = -0.015;
+      double g_minX2 = -0.015/yFactor;
       double g_minX3 = -0.06;
 
       double g_maxX1 = 0.045;
-      double g_maxX2 = 0.015;
+      double g_maxX2 = 0.015/yFactor;
       double g_maxX3 = 0.06;
 
       vector<int>  blocknx(3);
@@ -90,6 +92,15 @@ void run()
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
+      SPtr<BCAdapter> outflowBCAdapter(new DensityBCAdapter(rhoLB));
+      outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
+
+      BoundaryConditionsBlockVisitor bcVisitor;
+      bcVisitor.addBC(outflowBCAdapter);
+
+      SPtr<BCProcessor> bcProc;
+      bcProc = SPtr<BCProcessor>(new BCProcessor());
+
       SPtr<GbObject3D> refCube(new GbCuboid3D(g_minX1-blockLength,-0.02,-0.02,g_maxX1+blockLength,0.02,0.02));
       if (myid==0) GbSystem3D::writeGeoObject(refCube.get(), pathname+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
 
@@ -104,8 +115,29 @@ void run()
 
       SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
+      //outflow
+      GbCuboid3DPtr geoOutflow1(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_minX1, g_maxX2+blockLength, g_maxX3+blockLength));
+      if (myid==0) GbSystem3D::writeGeoObject(geoOutflow1.get(), pathname+"/geo/geoOutflow1", WbWriterVtkXmlASCII::getInstance());
+      SPtr<D3Q27Interactor> outflowIntr1 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow1, grid, outflowBCAdapter, Interactor3D::SOLID));
+
+      GbCuboid3DPtr geoOutflow2(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+      if (myid==0) GbSystem3D::writeGeoObject(geoOutflow2.get(), pathname+"/geo/geoOutflow2", WbWriterVtkXmlASCII::getInstance());
+      SPtr<D3Q27Interactor> outflowIntr2 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow2, grid, outflowBCAdapter, Interactor3D::SOLID));
+      
+      GbCuboid3DPtr geoOutflow3(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_minX3));
+      if (myid==0) GbSystem3D::writeGeoObject(geoOutflow3.get(), pathname+"/geo/geoOutflow3", WbWriterVtkXmlASCII::getInstance());
+      SPtr<D3Q27Interactor> outflowIntr3 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow3, grid, outflowBCAdapter, Interactor3D::SOLID));
+
+      GbCuboid3DPtr geoOutflow4(new GbCuboid3D(g_minX1-blockLength, g_minX2-blockLength, g_maxX3, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
+      if (myid==0) GbSystem3D::writeGeoObject(geoOutflow4.get(), pathname+"/geo/geoOutflow4", WbWriterVtkXmlASCII::getInstance());
+      SPtr<D3Q27Interactor> outflowIntr4 = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow4, grid, outflowBCAdapter, Interactor3D::SOLID));
+
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
       InteractorsHelper intHelper(grid, metisVisitor);
+      //intHelper.addInteractor(outflowIntr1);
+      //intHelper.addInteractor(outflowIntr2);
+      //intHelper.addInteractor(outflowIntr3);
+      //intHelper.addInteractor(outflowIntr4);
       intHelper.selectBlocks();
 
       ppblocks->process(0);
@@ -120,11 +152,6 @@ void run()
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
       grid->accept(setConnsVisitor);
       UBLOG(logINFO, "SetConnectorsBlockVisitor:end");
-
-      //domain decomposition for threads
-      PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-      grid->accept(pqPartVisitor);
-
 
       unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
       int ghostLayer = 3;
@@ -170,7 +197,9 @@ void run()
          grid->accept(undefNodesVisitor);
       }
 
-      double Ma = 0.15;
+      intHelper.setBC();
+
+      double Ma = 0.005;
 
       mu::Parser initRho, initVx1, initVx2; 
       initRho.SetExpr("rhoLB + (-(rho0*epsilon^2)/2) * exp(1-(scaleFactor*(x1^2+x3^2))/R^2) + (1/(2*gamma*rho0)) * ((-(rho0*epsilon^2)/2) * exp(1-(scaleFactor*(x1^2+x3^2))/R^2))^2");
@@ -203,6 +232,8 @@ void run()
       initVisitor.setVx1(initVx1);
       initVisitor.setVx3(initVx2);
       grid->accept(initVisitor);
+
+      grid->accept(bcVisitor);
 
       //Postrozess
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
