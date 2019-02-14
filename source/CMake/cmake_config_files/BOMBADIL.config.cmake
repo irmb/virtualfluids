@@ -58,6 +58,8 @@ IF(${USE_DEM_COUPLING})
   SET(BLOCKFOREST_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/blockforest/Release/blockforest.lib)
   SET(DOMAIN_DECOMPOSITION_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/domain_decomposition/Debug/domain_decomposition.lib) 
   SET(DOMAIN_DECOMPOSITION_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/domain_decomposition/Release/domain_decomposition.lib)
+  SET(GEOMETRY_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/geometry/Debug/geometry.lib) 
+  SET(GEOMETRY_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/geometry/Release/geometry.lib)
   SET(CORE_DEBUG_LIBRARY ${PE_BINARY_DIR}/src/core/Debug/core.lib) 
   SET(CORE_RELEASE_LIBRARY ${PE_BINARY_DIR}/src/core/Release/core.lib)
 

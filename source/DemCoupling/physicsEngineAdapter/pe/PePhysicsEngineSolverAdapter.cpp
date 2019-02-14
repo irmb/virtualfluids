@@ -3,6 +3,11 @@
 #include <exception>
 
 #include <pe/basic.h>
+#include <pe/rigidbody/UnionFactory.h>
+#include "pe/rigidbody/BoxFactory.h"
+#include "pe/rigidbody/SphereFactory.h"
+#include "pe/rigidbody/PlaneFactory.h"
+//#include "geometry/GeometricalFunctions.h"
 #include "PeAdapter.h"
 #include "PePhysicsEngineGeometryAdapter.h"
 #include "PePhysicsEngineMaterialAdapter.h"
@@ -14,8 +19,10 @@
 #include "UbSystem.h"
 #include <memory>
 
-typedef boost::tuple<walberla::pe::Sphere, walberla::pe::Plane> BodyTypeTuple;
+using namespace walberla;
+using namespace walberla::pe;
 
+typedef boost::tuple<walberla::pe::Box, walberla::pe::Sphere, walberla::pe::Plane> BodyTypeTuple;
 
 PePhysicsEngineSolverAdapter::PePhysicsEngineSolverAdapter(std::shared_ptr<PeParameter> peParameter, std::shared_ptr<PeLoadBalancerAdapter> loadBalancer) : peParameter(peParameter), loadBalancer(loadBalancer)
 {
@@ -205,4 +212,14 @@ std::shared_ptr<walberla::domain_decomposition::BlockDataID> PePhysicsEngineSolv
 std::shared_ptr<walberla::pe::BodyStorage> PePhysicsEngineSolverAdapter::getGlobalBodyStorage()
 {
    return globalBodyStorage;
+}
+
+void PePhysicsEngineSolverAdapter::createObstacle(const Vector3D & center, const Vector3D & lengths)
+{
+   const walberla::pe::MaterialID material = peParameter->planes->getPeMaterial();
+   bool global = true;
+   bool communicating = false;
+   bool infiniteMass = true;
+
+   walberla::pe::createBox(*globalBodyStorage, *forest, *storageId, 0, PeConverter::convert(center), PeConverter::convert(lengths), material, global, communicating, infiniteMass);
 }

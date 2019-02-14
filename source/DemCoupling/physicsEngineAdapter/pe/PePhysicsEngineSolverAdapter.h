@@ -77,6 +77,7 @@ public:
     std::shared_ptr<walberla::blockforest::BlockForest> getBlockForest();
     std::shared_ptr<walberla::domain_decomposition::BlockDataID> getStorageId();
     std::shared_ptr<walberla::pe::BodyStorage> getGlobalBodyStorage();
+    void createObstacle(const Vector3D& center, const Vector3D& lengths);
 
 private:
     void initalizePeEnvironment();
@@ -87,7 +88,6 @@ private:
     void initalPeIntegrator();
     static void executePeBodyTypeTuple();
     void initialPeChannel() const;
-    
 
 private:
     std::shared_ptr<PeParameter> peParameter;
