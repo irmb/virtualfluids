@@ -120,5 +120,5 @@ void MicrophoneArrayCoProcessor::writeFile(double step)
 
    ostr.close();
    count = 0;
-   UBLOG(logINFO,"MicrophoneArrayCoProcessor step: " << static_cast<int>(step));
+   //UBLOG(logINFO,"MicrophoneArrayCoProcessor step: " << static_cast<int>(step));
 }

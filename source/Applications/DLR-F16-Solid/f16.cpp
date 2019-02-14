@@ -827,6 +827,12 @@ void run(string configname)
 
       SPtr<MicrophoneArrayCoProcessor> micCoProcessor(new MicrophoneArrayCoProcessor(grid, stepSch, pathOut, comm) );
       micCoProcessor->addMicrophone(Vector3D(0.47, 0.015, -1.0));
+      micCoProcessor->addMicrophone(Vector3D(0.47, 0.015, -0.5));
+      micCoProcessor->addMicrophone(Vector3D(0.47, 0.015, 0.0));
+      micCoProcessor->addMicrophone(Vector3D(0.47, 0.015, 0.5));
+      micCoProcessor->addMicrophone(Vector3D(0.47, 0.015, 1.0));
+
+
 
       omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
@@ -841,9 +847,9 @@ void run(string configname)
       //calculator->addCoProcessor(tsp6);
       //calculator->addCoProcessor(tsp7);
       //calculator->addCoProcessor(tsp8);
-      //calculator->addCoProcessor(micCoProcessor);
+      calculator->addCoProcessor(micCoProcessor);
       //calculator->addCoProcessor(restartCoProcessor);
-      calculator->addCoProcessor(writeMQSelectCoProcessor);
+      //calculator->addCoProcessor(writeMQSelectCoProcessor);
       //calculator->addCoProcessor(writeMQCoProcessor);
       //calculator->addCoProcessor(tav);
 
