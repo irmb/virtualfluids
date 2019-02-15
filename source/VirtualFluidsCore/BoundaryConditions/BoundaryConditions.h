@@ -260,10 +260,9 @@ protected:
    char algorithmType;
 
 private:
-   friend class MPIIORestart1CoProcessor;
-   friend class MPIIORestart2CoProcessor;
    friend class MPIIORestartCoProcessor;
    friend class MPIIOMigrationCoProcessor;
+   friend class MPIIOMigrationBECoProcessor;
 
 };
 

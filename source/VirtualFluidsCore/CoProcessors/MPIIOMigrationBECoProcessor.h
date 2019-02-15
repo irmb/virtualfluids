@@ -1,8 +1,9 @@
-#ifndef _MPIIOMigrationCoProcessor_H_
-#define _MPIIOMigrationCoProcessor_H_
+#ifndef _MPIIOMigrationBECoProcessor_H_
+#define _MPIIOMigrationBECoProcessor_H_
 
 #include <mpi.h>
 #include <string>
+#include <vector>
 
 #include "CoProcessor.h"
 #include "MPIIODataStructures.h"
@@ -13,13 +14,13 @@ class Communicator;
 class BCProcessor;
 class LBMKernel;
 
-//! \class MPIWriteBlocksCoProcessor 
+//! \class MPIWriteBlocksBECoProcessor 
 //! \brief Writes the grid each timestep into the files and reads the grip from the files before regenerating  
-class MPIIOMigrationCoProcessor : public CoProcessor
+class MPIIOMigrationBECoProcessor : public CoProcessor
 {
 public:
-   MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
-   virtual ~MPIIOMigrationCoProcessor();
+   MPIIOMigrationBECoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string& path, SPtr<Communicator> comm);
+   virtual ~MPIIOMigrationBECoProcessor();
    //! Each timestep writes the grid into the files
    void process(double step);
    //! Reads the grid from the files before grid reconstruction
@@ -55,11 +56,13 @@ public:
    void setBCProcessor(SPtr<BCProcessor> bcProcessor);
    //!The function truncates the data files
    void clearAllFiles(int step);
-   //void setNu(double nu);
+   void setNu(double nu);
    //!The function write a time step of last check point
    void writeCpTimeStep(int step);
    //!The function read a time step of last check point
    int readCpTimeStep();
+
+   void blocksExchange(int tagN, int ind1, int ind2, int doubleCountInBlock, std::vector<double>& pV, std::vector<double>* rawDataReceive);
 
 protected:
    std::string path;
@@ -69,11 +72,13 @@ private:
    MPI_Datatype gridParamType, block3dType, arrayPresenceType;
    MPI_Datatype dataSetParamType, dataSetType, dataSetSmallType, dataSetDoubleType;
    MPI_Datatype boundCondParamType, boundCondType, boundCondTypeAdd, bcindexmatrixType;
+   MPI_Datatype sendBlockDoubleType, sendBlockIntType;
 
    MPIIODataStructures::boundCondParam boundCondParamStr;
    SPtr<LBMKernel> lbmKernel;
    SPtr<BCProcessor> bcProcessor;
-   //double nue;
+   double nue;
+
 };
 
 #endif 

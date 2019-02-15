@@ -14,10 +14,10 @@ void pf1()
    string          pathOut = "d:/temp/pflow_pipe_forcing";
    int             numOfThreads = 1;
    int             blocknx[3] ={ 10,10,10 };
-   double          endTime = 300;
-   double          cpStart = 300;
-   double          cpStep = 300;
-   double          outTime = 300;
+   double          endTime = 200;
+   double          cpStart = 100;
+   double          cpStep = 100;
+   double          outTime = 100;
    double          availMem = 8e9;
    double          deltax = 1;
    double          rhoLB = 0.0;
@@ -146,9 +146,14 @@ void pf1()
    //restartCoProcessor->setLBMKernel(kernel);
    //restartCoProcessor->setBCProcessor(bcProc);
 
-   SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut + "/mig", comm));
+   /*SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathOut + "/mig", comm));
+   migCoProcessor->setLBMKernel(kernel);
+   migCoProcessor->setBCProcessor(bcProc);*/
+
+   SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
    migCoProcessor->setLBMKernel(kernel);
    migCoProcessor->setBCProcessor(bcProc);
+   migCoProcessor->setNu(nuLB);
 
    //SPtr<UtilConvertor> convertProcessor(new UtilConvertor(grid, pathOut, comm));
    //convertProcessor->convert(300, 4);
@@ -157,15 +162,15 @@ void pf1()
    //write data for visualization of boundary conditions
    {
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), SPtr<LBMUnitConverter>(new LBMUnitConverter()), comm);
+      WriteBoundaryConditionsCoProcessor ppgeo(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), /*SPtr<LBMUnitConverter>(new LBMUnitConverter()),*/ comm);
       ppgeo.process(0);
    }
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
    //restartCoProcessor->restart(200);
-   migCoProcessor->restart(300);
-   grid->setTimeStep(100);
+   migCoProcessor->restart(200);
+   //grid->setTimeStep(100);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));

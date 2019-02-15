@@ -152,6 +152,7 @@ private:
 
    friend class MPIIORestartCoProcessor;
    friend class MPIIOMigrationCoProcessor;
+   friend class MPIIOMigrationBECoProcessor;
 };
 
 #endif //COORDINATETRANSFORMATION3D_H
