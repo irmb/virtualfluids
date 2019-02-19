@@ -10,13 +10,13 @@ std::shared_ptr<L2NormCalculator> L2CalculatorNormalizeWithAmplitude::getInstanc
 	return uniqueInstance;
 }
 
-double L2CalculatorNormalizeWithAmplitude::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength)
+double L2CalculatorNormalizeWithAmplitude::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz)
 {
-	std::shared_ptr<FFTCalculator> fftCalc = FFTCalculator::getNewInstance(lx, lz, timeStepLength);
-	double amplitude = fftCalc->calcAmplitudeForTimeStep(basicData, false);
+	std::shared_ptr<FFTCalculator> fftCalc = FFTCalculator::getInstance();
+	double amplitude = fftCalc->calcAmplitudeForTimeStep(basicData, false, lx, lz);
 	if (equalDouble(amplitude, 0.0))
 		return -1.0;
-	double counter = calcCounter(basicData, divergentData, level, lx, lz, timeStepLength);
+	double counter = calcCounter(basicData, divergentData, level, lx, lz);
 	return sqrt(counter / (amplitude * amplitude));
 }
 

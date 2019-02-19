@@ -11,7 +11,7 @@ std::shared_ptr<SimulationInfoTaylorGreenUx> SimulationInfoTaylorGreenUx::getNew
 }
 
 SimulationInfoTaylorGreenUx::SimulationInfoTaylorGreenUx(int simID, std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
-	: SimulationInfoImp(simID, kernelName, viscosity, gridInfoStruct->lx, numberOfSimulations, "TaylorGreenVortex Ux")
+	: SimulationInfoImp(simID, kernelName, viscosity, gridInfoStruct->lx, numberOfSimulations, "TaylorGreenVortex Ux", simParaStruct->dataToCalcTests)
 {
 	std::ostringstream oss;
 	oss << " ux: " << simParaStruct->ux / (gridInfoStruct->lx / simParaStruct->l0) << " Amplitude: " << simParaStruct->amplitude / (gridInfoStruct->lx / simParaStruct->l0);

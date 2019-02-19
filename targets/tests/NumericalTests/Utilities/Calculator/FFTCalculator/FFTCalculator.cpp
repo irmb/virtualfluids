@@ -1,26 +1,25 @@
 #include "FFTCalculator.h"
 
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
-#include "Tests/PhiAndNyTest/PhiAndNyTest.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdlib.h>
+#include <fstream>
 
-std::shared_ptr<FFTCalculator> FFTCalculator::getNewInstance(int lx, int lz, int timeStepLength)
+std::shared_ptr<FFTCalculator> FFTCalculator::getInstance()
 {
-	return std::shared_ptr<FFTCalculator>(new FFTCalculator(lx, lz, timeStepLength));
+	static std::shared_ptr<FFTCalculator> uniqueInstance;
+	if (!uniqueInstance)
+		uniqueInstance = std::shared_ptr<FFTCalculator>(new FFTCalculator());
+	return uniqueInstance;
 }
 
-FFTCalculator::FFTCalculator(int lx, int lz, int timeStepLength)
+double FFTCalculator::calcNy(std::vector<std::vector<double>> data, bool transposeData, int lx, int lz, int timeStepLength)
 {
 	this->lx = (double)lx;
 	this->lz = (double)lz;
 	this->timeStepLength = (double)timeStepLength;
-}
-
-void FFTCalculator::calc(std::vector<std::vector<double> > data, bool transposeData)
-{
 	this->transposeData = transposeData;
 	if (!transposeData)
 		this->data = data;
@@ -29,12 +28,36 @@ void FFTCalculator::calc(std::vector<std::vector<double> > data, bool transposeD
 
 	init();
 
-	ny = calcNy();
-	phidiff = calcPhiDiff();
+	double ny = calcNy();
+	return ny;
 }
 
-double FFTCalculator::calcAmplitudeForTimeStep(std::vector<double> data, bool transposeData)
+double FFTCalculator::calcPhiDiff(std::vector<std::vector<double>> data, bool transposeData, int lx, int lz, int timeStepLength)
 {
+	this->lx = (double)lx;
+	this->lz = (double)lz;
+	this->timeStepLength = (double)timeStepLength;
+	this->transposeData = transposeData;
+	if (!transposeData)
+		this->data = data;
+	else
+		this->data = transpose(data);
+
+	init();
+
+	double phidiff = calcPhiDiff();
+	return abs(phidiff);
+}
+
+FFTCalculator::FFTCalculator()
+{
+
+}
+
+double FFTCalculator::calcAmplitudeForTimeStep(std::vector<double> data, bool transposeData, int lx, int lz)
+{
+	this->lx = (double)lx;
+	this->lz = (double)lz;
 	init();
 	this->transposeData = transposeData;
 	this->data.resize(0);
@@ -150,8 +173,10 @@ std::vector<double> FFTCalculator::calcPhiForAllSteps()
 	else
 		pos = 2 + (lz - 1);
 
-	for (int step = 0; step < data.size(); step++)
+	for (int step = 0; step < data.size(); step++) {
 		phi.push_back(atan(fftResultsIm.at(step).at(pos) / fftResultsRe.at(step).at(pos)));
+	}
+		
 	return phi;
 }
 
@@ -239,14 +264,4 @@ void FFTCalculator::setFFTResults(fftw_complex * result, unsigned int step)
 	}
 	fftResultsIm.push_back(fftIm);
 	fftResultsRe.push_back(fftRe);
-}
-
-double FFTCalculator::getNy()
-{
-	return ny;
-}
-
-double FFTCalculator::getPhiDiff()
-{
-	return phidiff;
 }

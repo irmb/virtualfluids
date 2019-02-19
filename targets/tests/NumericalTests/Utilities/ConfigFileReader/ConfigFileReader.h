@@ -30,7 +30,8 @@ private:
 	std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter);
 	std::vector<std::shared_ptr<ShearWaveParameterStruct> > makeShearWaveParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter);
 
-	std::shared_ptr<PhiAndNyTestParameterStruct> makePhiAndNyTestParameter(std::shared_ptr<input::Input> input);
+	std::shared_ptr<NyTestParameterStruct> makeNyTestParameter(std::shared_ptr<input::Input> input);
+	std::shared_ptr<PhiTestParameterStruct> makePhiTestParameter(std::shared_ptr<input::Input> input);
 	std::shared_ptr<L2NormTestParameterStruct> makeL2NormTestParameter(std::shared_ptr<input::Input> input);
 	std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> makeL2NormTestBetweenKernelsParameter(std::shared_ptr<input::Input> input);
 

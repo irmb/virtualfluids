@@ -16,5 +16,6 @@ struct TaylorGreenVortexUzParameterStruct
 	double l0;
 	double rho0;
 	std::string vtkFilePath;
+	std::vector<std::string> dataToCalcTests;
 };
 #endif

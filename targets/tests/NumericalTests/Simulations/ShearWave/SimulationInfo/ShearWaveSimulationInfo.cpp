@@ -11,7 +11,7 @@ std::shared_ptr<ShearWaveSimulationInfo> ShearWaveSimulationInfo::getNewInstance
 }
 
 ShearWaveSimulationInfo::ShearWaveSimulationInfo(int simID, std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct, int numberOfSimulations)
-	: SimulationInfoImp(simID, kernelName, viscosity, gridInfoStruct->lx, numberOfSimulations, "ShearWave")
+	: SimulationInfoImp(simID, kernelName, viscosity, gridInfoStruct->lx, numberOfSimulations, "ShearWave", simParaStruct->dataToCalcTests)
 {
 	std::ostringstream oss;
 	oss << " ux: " << simParaStruct->ux / (gridInfoStruct->lx / simParaStruct->l0) << " uz: " << simParaStruct->uz / (gridInfoStruct->lx / simParaStruct->l0);

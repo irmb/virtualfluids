@@ -31,9 +31,15 @@ void ToVectorWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int
 	{
 		for (int level = para->getCoarse(); level <= para->getFine(); level++)
 		{
+			if(t==0)
+				para->cudaCopyPrint(level);
 			writeTimestep(para, t, level);
 		}
 	}
 	if (writeVTKFiles && startTimeVTKWriter < t)
 		vtkFileWriter->writeTimestep(para, t);
+}
+
+ToVectorWriter::ToVectorWriter()
+{
 }

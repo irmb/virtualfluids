@@ -26,6 +26,7 @@ private:
 	double uz;
 	double amplitude;
 	std::vector<double> lz;
+	std::vector<double> lx;
 	int l0;
 };
 #endif 

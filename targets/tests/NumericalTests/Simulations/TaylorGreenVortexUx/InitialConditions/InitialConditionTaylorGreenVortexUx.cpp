@@ -8,10 +8,10 @@
 
 InitialConditionTaylorGreenUx::InitialConditionTaylorGreenUx(std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct>  gridInfoStruct)
 {
-	this->Amp = simParaStruct->amplitude;
-	this->L0 = simParaStruct->l0;
-	this->Lx = gridInfoStruct->lx;
-	this->Lz = gridInfoStruct->lz;
+	this->amp = simParaStruct->amplitude;
+	this->l0 = simParaStruct->l0;
+	this->lx = gridInfoStruct->lx;
+	this->lz = gridInfoStruct->lz;
 	this->rho = simParaStruct->rho0;
 	this->ux = simParaStruct->ux;
 }
@@ -28,7 +28,7 @@ real InitialConditionTaylorGreenUx::getInitVX(int i, int level)
 	real z = getZCoord(i, level);
 	if ((i != 0) && (x != XCoordStopNode) && (y != YCoordStopNode) && (z != ZCoordStopNode))
 	{
-		real vx = (ux* L0 / Lx + (Amp * L0 * cos((real)2.0 * M_PI * z / Lz) * sin((real)2.0 * M_PI * x / Lx) / Lx));
+		real vx = (ux* l0 / lx + (amp * l0 * cos((real)2.0 * M_PI * z / lz) * sin((real)2.0 * M_PI * x / lx) / lx));
 		return vx;
 	}
 	else
@@ -48,7 +48,7 @@ real InitialConditionTaylorGreenUx::getInitVZ(int i, int level)
 	real z = getZCoord(i, level);
 	if ((i != 0) && (x != XCoordStopNode) && (y != YCoordStopNode) && (z != ZCoordStopNode))
 	{
-		real vz = (-Amp * L0 * Lz * cos((real)2.0 * M_PI * x / Lx) * sin((real)2.0 * M_PI * z / Lz) / (Lx*Lx));
+		real vz = (-amp * l0 * lz * cos((real)2.0 * M_PI * x / lx) * sin((real)2.0 * M_PI * z / lz) / (lx*lx));
 		return vz;
 	}
 	else
@@ -62,8 +62,9 @@ real InitialConditionTaylorGreenUx::getInitROH(int i, int level)
 	real z = getZCoord(i, level);
 	if ((i != 0) && (x != XCoordStopNode) && (y != YCoordStopNode) && (z != ZCoordStopNode))
 	{
-		real press = (Amp*Amp * L0*L0 * rho * ((Lx*Lx * cos((real)4.0 * M_PI * x / Lx)) + (Lz*Lz * cos((real)4.0 * M_PI * z / Lz))) / ((real)4.0 * Lx*Lx*Lx*Lx));
-		return press;
+		real press = (amp*pow(l0, (real)2.0)*rho*(amp*pow(lz, (real)2.0)*pow(cos(((real)2.0 * M_PI*z) / lz), (real)2.0) - (real)4.0 * (pow(lx, (real)2.0) - pow(lz, (real)2.0))*ux*cos(((real)2.0 * M_PI*z) / lz)*sin(((real)2.0 * M_PI*x) / lx) - amp*pow(lx, (real)2.0)*pow(sin(((real)2.0 * M_PI*x) / lx), (real)2.0))) / ((real)2.0*pow(lx, (real)4.0));
+		real rho = (real)3.0 * press;
+		return rho;
 	}
 	else
 		return (real) 0.0;

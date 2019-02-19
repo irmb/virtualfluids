@@ -39,21 +39,21 @@ real InitialConditionShearWave::getInitVX(int i, int level)
 
 real InitialConditionShearWave::getInitVY(int i, int level)
 {
-	return (real) 0.0;
-}
-
-real InitialConditionShearWave::getInitVZ(int i, int level)
-{
 	real x = getXCoord(i, level);
 	real y = getYCoord(i, level);
 	real z = getZCoord(i, level);
 	if ((i != 0) && (x != XCoordStopNode) && (y != YCoordStopNode) && (z != ZCoordStopNode))
 	{
-		real vz = v0 * l0 / lx * cos((real)2.0 * M_PI * z /lz) * sin((real)2.0 * M_PI * x / lx);
-		return vz;
+		real vy = v0 * l0 / lx * cos((real)2.0 * M_PI * z / lz) * sin((real)2.0 * M_PI * x / lx);
+		return vy;
 	}
 	else
 		return (real) 0.0;
+}
+
+real InitialConditionShearWave::getInitVZ(int i, int level)
+{
+	return (real) 0.0;
 }
 
 real InitialConditionShearWave::getInitROH(int i, int level)
@@ -63,8 +63,9 @@ real InitialConditionShearWave::getInitROH(int i, int level)
 	real z = getZCoord(i, level);
 	if ((i != 0) && (x != XCoordStopNode) && (y != YCoordStopNode) && (z != ZCoordStopNode))
 	{
-		real press = (l0*l0 * v0 * rho * sin(((real)2.0 * M_PI * z) / lz) * ((real)-4.0 * lz * u0 * cos((2 * M_PI * x) / lx) + lx * v0 * sin(((real)2.0 * M_PI * x) / lx)*sin(((real)2.0 * M_PI * x) / lx) * sin(((real)2.0 * M_PI * z) / lz))) / ((real)2.0 * lx*lx*lx);
-		return press;
+		real press = (l0*l0 * v0 * rho * sin(((real)2.0 * M_PI * z) / lz) * ((real)-4.0 * lz * u0 * cos(((real)2.0 * M_PI * x) / lx) + lx * v0 * sin(((real)2.0 * M_PI * x) / lx)*sin(((real)2.0 * M_PI * x) / lx) * sin(((real)2.0 * M_PI * z) / lz))) / ((real)2.0 * lx*lx*lx);
+		real rho = (real)3.0 * press;
+		return 0.0;
 	}
 	else
 		return (real) 0.0;

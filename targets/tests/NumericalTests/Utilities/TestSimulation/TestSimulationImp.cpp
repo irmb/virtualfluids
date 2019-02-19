@@ -9,6 +9,7 @@
 #include "Utilities/DataWriter/AnalyticalResults2DToVTKWriter/AnalyticalResults2DToVTKWriter.h"
 #include "Utilities/Structs/TestSimulationDataStruct.h"
 #include "Utilities/Time/TimeTracking.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
 
 
 std::shared_ptr<TestSimulationImp> TestSimulationImp::getNewInsance(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResult, std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput)
@@ -33,6 +34,7 @@ TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> t
 	
 	this->simObserver.resize(0);
 	this->simualtionRun = false;
+	this->dataToCalcTests = simInfo->getDataToCalcTests();
 }
 
 std::shared_ptr<SimulationParameter> TestSimulationImp::getSimulationParameter()
@@ -75,10 +77,21 @@ void TestSimulationImp::registerSimulationObserver(std::shared_ptr<SimulationObs
 	this->simObserver.push_back(simObserver);
 }
 
+std::vector<std::string> TestSimulationImp::getDataToCalcTests()
+{
+	return dataToCalcTests;
+}
+
 void TestSimulationImp::notifyObserver()
 {
 	for (int i = 0; i < simObserver.size(); i++)
 		simObserver.at(i)->update();
+}
+
+void TestSimulationImp::notifyObserverSimulationCrashed()
+{
+	for (int i = 0; i < simObserver.size(); i++)
+		simObserver.at(i)->setSimulationCrashed();
 }
 
 void TestSimulationImp::writeAnalyticalResultsToVTK()
@@ -98,8 +111,15 @@ void TestSimulationImp::startPostProcessing()
 {
 	simualtionRun = true;
 
+	timeTracking->setResultCheckStartTime();
+	bool dataOkay = simResult->checkYourData();
+	timeTracking->setResultCheckEndTime();
+
 	timeTracking->setTestStartTime();
-	notifyObserver();
+	if (dataOkay)
+		notifyObserver();
+	else
+		notifyObserverSimulationCrashed();
 	timeTracking->setTestEndTime();
 
 	timeTracking->setAnalyticalResultWriteStartTime();

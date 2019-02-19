@@ -15,7 +15,9 @@ class Y2dSliceToResults : public ToVectorWriter
 public:
 	static std::shared_ptr<Y2dSliceToResults> getNewInstance(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation);
 
+	
 private:
+	Y2dSliceToResults();
 	Y2dSliceToResults(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation);
 	
 	void writeTimestep(std::shared_ptr<Parameter> para, unsigned int t, int level);

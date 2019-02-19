@@ -6,7 +6,9 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantAll4CompSP27"
+KernelsToTest="CumulantF32018CompSP27 CumulantF3CompSP27"
+#CumulantAll4CompSP27 CumulantOneCompSP27
+#  CumulantAA2016CompSP27   CumulantF32018CompSP27"
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -14,15 +16,17 @@ Rho0=1.0
 ##################################################
 #	    TaylorGreenVortex Parameter				 #
 ##################################################
-BasisTimeStepLength_TGV_Ux="1000 2000"
-ux_TGV_Ux="0.032 0.016"
-Amplitude_TGV_Ux="0.01 0.005"
+BasisTimeStepLength_TGV_Ux="1000"
+ux_TGV_Ux="0.032"
+Amplitude_TGV_Ux="0.01"
 l0_TGV_Ux=32
+DataToCalcTests_TGV_Ux="Vx Vz"
 
-BasisTimeStepLength_TGV_Uz="1000 2000"
-uz_TGV_Uz="0.048 0.024"
-Amplitude_TGV_Uz="0.01 0.005"
+BasisTimeStepLength_TGV_Uz="1000"
+uz_TGV_Uz="0.048"
+Amplitude_TGV_Uz="0.01"
 l0_TGV_Uz=48
+DataToCalcTests_TGV_Uz="Vx Vz"
 
 ##################################################
 #	       Shear Wave Parameter					 #
@@ -31,6 +35,7 @@ BasisTimeStepLength_SW="1000"
 u0_SW="0.032"
 v0_SW="0.1"
 l0_SW=32
+DataToCalcTests_SW="Vy"
 
 ##################################################
 #			   Basic Test Parameter				 #
@@ -38,25 +43,31 @@ l0_SW=32
 ySliceForCalculation=0
 
 ##################################################
-#			PhiAndNu Test Parameter				 #
+#			Phi Test Parameter					 #
 ##################################################
-PhiAndNuTest=false
-MinOrderOfAccuracy=1.95
-DataToCalc_PhiAndNu="Vx Vz"
-StartTimeStepCalculation_PhiNu=11
-EndTimeStepCalculation_PhiNu=20
+PhiTest=true
+
+MinOrderOfAccuracy_Phi=1.95
+StartTimeStepCalculation_Phi=11
+EndTimeStepCalculation_Phi=20
+
+##################################################
+#			Ny Test Parameter					 #
+##################################################
+NyTest=true
+
+MinOrderOfAccuracy_Ny=1.95
+StartTimeStepCalculation_Ny=11
+EndTimeStepCalculation_Ny=20
 
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
-L2NormTest=false
+L2NormTest=true
 
-NormalizeWithBasicData=true
-MaxL2NormDiffBasicData=0.5
-NormalizeWithAmplitude=true
-MaxL2NormDiffAmplitude=2.5
+NormalizeData_L2Norm="Amplitude BasicData"
+MaxL2NormDiff="4.5 0.5"
 
-DataToCalc_L2="Vx Vz"
 BasicTimeStep_L2=0
 DivergentTimeStep_L2=20
 
@@ -64,30 +75,30 @@ DivergentTimeStep_L2=20
 #    L2-Norm Test Between Kernels Parameter		 #
 ##################################################
 L2NormBetweenKernelsTest=true
-BasicKernel_L2NormBetweenKernels=CumulantOneCompSP27
-Timesteps_L2NormBetweenKernels="0 20"
-DataToCalc_L2NormBetweenKernels="Vx Vz"
+
+BasicKernel_L2NormBetweenKernels=CumulantF32018CompSP27
+Timesteps_L2NormBetweenKernels="0 10 20"
 NormalizeWith=amplitude
 
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortexUx32=false
-TaylorGreenVortexUx64=false
-TaylorGreenVortexUx128=false
-TaylorGreenVortexUx256=false
+TaylorGreenVortexUx32=true
+TaylorGreenVortexUx64=true
+TaylorGreenVortexUx128=true
+TaylorGreenVortexUx256=true
 TaylorGreenVortexUx512=false
 
-TaylorGreenVortexUz32=false
-TaylorGreenVortexUz64=false
-TaylorGreenVortexUz128=false
-TaylorGreenVortexUz256=false
+TaylorGreenVortexUz32=true
+TaylorGreenVortexUz64=true
+TaylorGreenVortexUz128=true
+TaylorGreenVortexUz256=true
 TaylorGreenVortexUz512=false
 
 ShearWave32=true
-ShearWave64=false
-ShearWave128=false
-ShearWave256=false
+ShearWave64=true
+ShearWave128=true
+ShearWave256=true
 ShearWave512=false
 
 ##################################################
@@ -104,10 +115,10 @@ GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=false
+WriteVTKFiles=true
 PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 
-WriteAnalyResultsToVTK=false
+WriteAnalyResultsToVTK=true
 
 PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"

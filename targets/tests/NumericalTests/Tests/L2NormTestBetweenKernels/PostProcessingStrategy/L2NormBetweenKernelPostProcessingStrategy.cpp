@@ -7,9 +7,9 @@
 
 #include "Tests/L2NormTestBetweenKernels/L2NormTestBetweenKernelsParameterStruct.h"
 
-std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
+std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> L2NormBetweenKernelPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests)
 {
-	return std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy>(new L2NormBetweenKernelPostProcessingStrategy(simResult, analyticalResult, testPara));
+	return std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy>(new L2NormBetweenKernelPostProcessingStrategy(simResult, analyticalResult, testPara, factory, dataToCalcTests));
 }
 
 void L2NormBetweenKernelPostProcessingStrategy::evaluate()
@@ -17,54 +17,56 @@ void L2NormBetweenKernelPostProcessingStrategy::evaluate()
 	if (!isEvaluated) {
 		analyticalResult->calc(simResult);
 
-		l2Norm.resize(timeSteps.size());
-		for (int j = 0; j < dataToCalculate.size(); j++) {
-			for (int i = 0; i < timeSteps.size(); i++) {
-				int time = calcTimeStepInResults(timeSteps.at(i));
-				if (dataToCalculate.at(j) == "Vx")
-					l2Vx.push_back(l2Normcalculator->calc(analyticalResult->getVx().at(time), simResult->getVx().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
-				if (dataToCalculate.at(j) == "Vy")
-					l2Vy.push_back(l2Normcalculator->calc(analyticalResult->getVy().at(time), simResult->getVy().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
-				if (dataToCalculate.at(j) == "Vz")
-					l2Vz.push_back(l2Normcalculator->calc(analyticalResult->getVz().at(time), simResult->getVz().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
-				if (dataToCalculate.at(j) == "Press")
-					l2Press.push_back(l2Normcalculator->calc(analyticalResult->getPress().at(time), simResult->getPress().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
-				if (dataToCalculate.at(j) == "Rho")
-					l2Rho.push_back(l2Normcalculator->calc(analyticalResult->getRho().at(time), simResult->getRho().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength()));
+		l2Norm.resize(dataToCalculate.size());
+		for (int i = 0; i < dataToCalculate.size(); i++) {
+			l2Norm.at(i).resize(normalizeData.size());
+			for (int j = 0; j < normalizeData.size(); j++) {
+				l2Norm.at(i).at(j).resize(timeSteps.size());
+			}
+		}
+
+		for (int i = 0; i < dataToCalculate.size(); i++) {
+			for (int j = 0; j < normalizeData.size(); j++) {
+				for (int k = 0; k < timeSteps.size(); k++) {
+					int time = calcTimeStepInResults(timeSteps.at(k));
+					if (dataToCalculate.at(i) == "Vx")
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVx().at(time), simResult->getVx().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					if (dataToCalculate.at(i) == "Vy")
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVy().at(time), simResult->getVy().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					if (dataToCalculate.at(i) == "Vz")
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVz().at(time), simResult->getVz().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					if (dataToCalculate.at(i) == "Press")
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getPress().at(time), simResult->getPress().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					if (dataToCalculate.at(i) == "Rho")
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getRho().at(time), simResult->getRho().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+				}
 			}
 		}
 		isEvaluated = true;
 	}	
 }
 
-double L2NormBetweenKernelPostProcessingStrategy::getL2NormVx(int timeStep)
+double L2NormBetweenKernelPostProcessingStrategy::getL2Norm(std::string aDataToCalc, std::string aNormalizeData, int aTimeStep)
 {
-	return l2Vx.at(calcPosInTimeStep(timeStep));
+	for (int i = 0; i < dataToCalculate.size(); i++) {
+		for (int j = 0; j < normalizeData.size(); j++) {
+			for (int k = 0; k < timeSteps.size(); k++) {
+				if (aDataToCalc == dataToCalculate.at(i) && aNormalizeData == normalizeData.at(j) && aTimeStep == timeSteps.at(k))
+					return l2Norm.at(i).at(j).at(k);
+			}
+		}
+	}
+
+	return 0.0;
 }
 
-double L2NormBetweenKernelPostProcessingStrategy::getL2NormVy(int timeStep)
+std::string L2NormBetweenKernelPostProcessingStrategy::getErrorMessage(std::string aNormalizeData)
 {
-	return l2Vy.at(calcPosInTimeStep(timeStep));
-}
-
-double L2NormBetweenKernelPostProcessingStrategy::getL2NormVz(int timeStep)
-{
-	return l2Vz.at(calcPosInTimeStep(timeStep));
-}
-
-double L2NormBetweenKernelPostProcessingStrategy::getL2NormPress(int timeStep)
-{
-	return l2Press.at(calcPosInTimeStep(timeStep));
-}
-
-double L2NormBetweenKernelPostProcessingStrategy::getL2NormRho(int timeStep)
-{
-	return l2Rho.at(calcPosInTimeStep(timeStep));
-}
-
-std::string L2NormBetweenKernelPostProcessingStrategy::getErrorMessage()
-{
-	return l2Normcalculator->getErrorMessage();
+	for (int i = 0; i < normalizeData.size(); i++) {
+		if (aNormalizeData == normalizeData.at(i))
+			return l2Normcalculator.at(i)->getErrorMessage();
+	}
+	return std::string();
 }
 
 std::shared_ptr<SimulationResults> L2NormBetweenKernelPostProcessingStrategy::getSimulationResult()
@@ -72,14 +74,25 @@ std::shared_ptr<SimulationResults> L2NormBetweenKernelPostProcessingStrategy::ge
 	return simResult;
 }
 
-L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara)
-	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
+L2NormBetweenKernelPostProcessingStrategy::L2NormBetweenKernelPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests)
+	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult), dataToCalculate(dataToCalcTests)
 {
-	timeSteps = testPara->timeSteps;
-	dataToCalculate = testPara->basicTestParameter->dataToCalc;
-	std::shared_ptr<L2NormCalculatorFactory> l2NormCalculatorFactory = L2NormCalculatorFactory::getInstance();
-	l2Normcalculator = l2NormCalculatorFactory->makeL2NormCalculator(testPara->normalizeWith);
 	isEvaluated = false;
+	normalizeData = testPara->normalizeData;
+	timeSteps = testPara->timeSteps;
+
+	l2Norm.resize(dataToCalculate.size());
+	for (int i = 0; i < dataToCalculate.size(); i++) {
+		l2Norm.at(i).resize(normalizeData.size());
+		for (int j = 0; j < normalizeData.size(); j++) {
+			l2Norm.at(i).at(j).resize(timeSteps.size());
+		}
+	}
+
+
+	for (int i = 0; i < normalizeData.size(); i++)
+		l2Normcalculator.push_back(factory->makeL2NormCalculator(normalizeData.at(i)));
+	
 }
 
 int L2NormBetweenKernelPostProcessingStrategy::calcPosInTimeStep(int time)

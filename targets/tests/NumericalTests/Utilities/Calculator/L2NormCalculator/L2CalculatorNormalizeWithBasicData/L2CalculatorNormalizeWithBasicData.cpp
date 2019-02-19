@@ -8,9 +8,9 @@ std::shared_ptr<L2NormCalculator> L2CalculatorNormalizeWithBasicData::getInstanc
 	return uniqueInstance;
 }
 
-double L2CalculatorNormalizeWithBasicData::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength)
+double L2CalculatorNormalizeWithBasicData::calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz)
 {
-	double counter = calcCounter(basicData, divergentData, level, lx, lz, timeStepLength);
+	double counter = calcCounter(basicData, divergentData, level, lx, lz);
 	double denominator = 0.0;
 	for (int i = 0; i < basicData.size(); i++) {
 		double area = (1 / pow(2.0, level.at(i))) * (1 / pow(2.0, level.at(i)));

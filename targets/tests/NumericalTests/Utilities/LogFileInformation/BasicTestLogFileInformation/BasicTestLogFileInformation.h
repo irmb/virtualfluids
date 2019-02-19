@@ -10,7 +10,7 @@
 class BasicTestLogFileInformation : public LogFileInformationImp
 {
 public:
-	static std::shared_ptr<BasicTestLogFileInformation> getInstance();
+	static std::shared_ptr<BasicTestLogFileInformation> getNewInstance();
 
 	std::string getOutput();
 	void addTest(std::string testName, bool testRun);

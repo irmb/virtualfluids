@@ -1,32 +1,23 @@
 #include "BasicTestLogFileInformation.h"
 
-std::shared_ptr<BasicTestLogFileInformation> BasicTestLogFileInformation::getInstance()
+std::shared_ptr<BasicTestLogFileInformation> BasicTestLogFileInformation::getNewInstance()
 {
-	static std::shared_ptr<BasicTestLogFileInformation> uniqueInstance;
-	if (!uniqueInstance)
-		uniqueInstance = std::shared_ptr<BasicTestLogFileInformation>(new BasicTestLogFileInformation());
-	return uniqueInstance;
+	return std::shared_ptr<BasicTestLogFileInformation>(new BasicTestLogFileInformation());;
 }
 
 std::string BasicTestLogFileInformation::getOutput()
 {
-	if (!outputBuild)
+	if (!outputBuild) {
 		buildOutput();
+		outputBuild = true;
+	}
 	return oss.str();
 }
 
 void BasicTestLogFileInformation::addTest(std::string testName, bool testRun)
 {
-	bool isRegistered = false;
-
-	for (int i = 0; i < this->testName.size(); i++) {
-		if (this->testName.at(i) == testName)
-			isRegistered = true;
-	}
-	if (!isRegistered) {
-		this->testName.push_back(testName);
-		this->testRun.push_back(testRun);
-	}
+	this->testName.push_back(testName);
+	this->testRun.push_back(testRun);
 }
 
 BasicTestLogFileInformation::BasicTestLogFileInformation()

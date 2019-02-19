@@ -49,12 +49,18 @@ std::string SimulationInfoImp::getRunTimeOutput()
 {
 	std::ostringstream oss;
 	oss << "SimulationTime_" << lx << "=" << timeInfo->getSimulationTime() << std::endl;
+	oss << "ResultsCheckTime_" << lx << "=" << timeInfo->getResultCheckTime() << std::endl;
 	oss << "TestTime_" << lx << "=" << timeInfo->getTestTime() << std::endl;
 	oss << "AnalyticalVTKFileWritingTime_" << lx << "=" << timeInfo->getAnalyticalResultWriteTime() << std::endl;
 	return oss.str();
 }
 
-SimulationInfoImp::SimulationInfoImp(int simID, std::string kernelName, double viscosity, int lx, int numberOfSimulations, std::string simulationName)
-	: simID(simID), lx(lx), viscosity(viscosity), kernelName(kernelName), numberOfSimulations(numberOfSimulations), simulationName(simulationName)
+std::vector<std::string> SimulationInfoImp::getDataToCalcTests()
+{
+	return dataToCalcTests;
+}
+
+SimulationInfoImp::SimulationInfoImp(int simID, std::string kernelName, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests)
+	: simID(simID), lx(lx), viscosity(viscosity), kernelName(kernelName), numberOfSimulations(numberOfSimulations), simulationName(simulationName), dataToCalcTests(dataToCalcTests)
 {
 }

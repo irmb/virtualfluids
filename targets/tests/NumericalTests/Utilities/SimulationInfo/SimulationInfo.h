@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 class TimeInfo;
 
@@ -17,6 +18,7 @@ public:
 	virtual int getNumberOfSimulations() = 0;
 	virtual int getSimulationID() = 0;
 	virtual std::string getRunTimeOutput() = 0;
+	virtual std::vector<std::string> getDataToCalcTests() = 0; 
 
 	virtual void setTimeInfo(std::shared_ptr<TimeInfo> timeInfo) = 0;
 };

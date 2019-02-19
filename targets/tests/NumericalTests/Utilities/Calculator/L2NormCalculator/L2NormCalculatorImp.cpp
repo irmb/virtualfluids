@@ -19,7 +19,7 @@ bool L2NormCalculatorImp::equalDouble(double num1, double num2)
 	return false;
 }
 
-double L2NormCalculatorImp::calcCounter(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength)
+double L2NormCalculatorImp::calcCounter(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz)
 {
 	double counter = 0.0;
 	for (int i = 0; i < basicData.size(); i++) {

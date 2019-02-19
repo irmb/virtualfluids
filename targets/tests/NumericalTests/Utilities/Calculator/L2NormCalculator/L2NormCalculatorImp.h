@@ -10,14 +10,14 @@ class FFTCalculator;
 class L2NormCalculatorImp : public L2NormCalculator
 {
 public:
-	virtual double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength) = 0;
+	virtual double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz) = 0;
 	std::string getErrorMessage();
 
 protected:
 	L2NormCalculatorImp(std::string errorMessage);
 
 	bool equalDouble(double num1, double num2);
-	double calcCounter(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength);
+	double calcCounter(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz);
 
 	std::string errorMessage;
 

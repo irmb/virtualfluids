@@ -1,12 +1,13 @@
 #include "L2NormTest.h"
 
-#include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
+#include "Utilities/SimulationInfo/SimulationInfo.h"
 
 #include "Tests/L2NormTest/PostProcessingStrategy/PostProcessingStrategyL2NormTest.h"
 #include "Tests/L2NormTest/L2NormTestParameterStruct.h"
 
 #include <iomanip>
+#include <sstream>
 
 std::shared_ptr<L2NormTest> L2NormTest::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate, double maxL2NormDiff, std::string normalizeData)
 {
@@ -26,58 +27,41 @@ void L2NormTest::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std
 
 void L2NormTest::evaluate()
 {
-	std::vector<double> results;
-
-	if (dataToCalculate == "Vx")
-		results = l2NormPostProStrategies.at(0)->getL2NormVx();
-	if (dataToCalculate == "Vy")
-		results = l2NormPostProStrategies.at(0)->getL2NormVy();
-	if (dataToCalculate == "Vz")
-		results = l2NormPostProStrategies.at(0)->getL2NormVz();
-	if (dataToCalculate == "Press")
-		results = l2NormPostProStrategies.at(0)->getL2NormPress();
-	if (dataToCalculate == "Rho")
-		results = l2NormPostProStrategies.at(0)->getL2NormRho();
+	std::vector<double> results = l2NormPostProStrategies.at(0)->getL2Norm(dataToCalculate, normalizeData);
 		
 	resultBasicTimestep = results.at(0);
 	resultDivergentTimeStep = results.at(1);
 	diffL2Norm = resultDivergentTimeStep - resultBasicTimestep;
 
 	if (resultBasicTimestep < 0 || resultDivergentTimeStep < 0) {
-		testError = true;
-		testPassed = false;
+		testStatus = error;
 	}
 	else
 	{
 		testPassed = maxL2NormDiff > diffL2Norm;
+		if (testPassed)
+			testStatus = passed;
+		else
+			testStatus = failed;
 	}
 	
-
 	makeConsoleOutput();
 }
 
 std::string L2NormTest::getLogFileOutput()
 {
 	std::ostringstream oss;
-	oss << "NormalizeData_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << normalizeData << std::endl;
-	oss << "L2Norm_BasicTimeStep_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << resultBasicTimestep << std::endl;
-	oss << "L2Norm_DivergentTimeStep_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << resultDivergentTimeStep << std::endl;
-	oss << "L2Norm_Diff_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "=" << diffL2Norm << std::endl << std::endl;
+	oss << "L2Norm_BasicTimeStep_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "_" << normalizeData << "=" << resultBasicTimestep << std::endl;
+	oss << "L2Norm_DivergentTimeStep_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "_" << normalizeData << "=" << resultDivergentTimeStep << std::endl;
+	oss << "L2Norm_Diff_L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "_" << normalizeData << "=" << diffL2Norm << std::endl << std::endl;
 	return oss.str();
 }
 
-std::vector<bool> L2NormTest::getPassedTests()
+std::string L2NormTest::getErrorLogFileOutput()
 {
-	return std::vector<bool>(1, testPassed);
-}
-
-void L2NormTest::makeConsoleOutput()
-{
-	if (!testError)
-		colorOutput->makeL2NormTestOutput(testPassed, simInfos.at(0), normalizeData, basicTimeStep, divergentTimeStep, dataToCalculate, resultBasicTimestep, resultDivergentTimeStep, diffL2Norm);
-	else
-		colorOutput->makeL2NormTestErrorOutput(l2NormPostProStrategies.at(0)->getErrorMessage(), simInfos.at(0), normalizeData, basicTimeStep, divergentTimeStep, dataToCalculate);
-
+	std::ostringstream oss;
+	oss << "L" << l2NormPostProStrategies.at(0)->getNumberOfXNodes() << "_" << dataToCalculate << "_" << normalizeData;
+	return oss.str();
 }
 
 L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::shared_ptr<L2NormTestParameterStruct> testParameter, std::string dataToCalculate, double maxL2NormDiff, std::string normalizeData)
@@ -86,5 +70,86 @@ L2NormTest::L2NormTest(std::shared_ptr<ColorConsoleOutput> colorOutput, std::sha
 	basicTimeStep = testParameter->basicTimeStep;
 	divergentTimeStep = testParameter->divergentTimeStep;
 	this->maxL2NormDiff = maxL2NormDiff;
-	testError = false;
+}
+
+std::vector<std::string> L2NormTest::buildTestOutput()
+{
+	std::vector<std::string> output = buildBasicTestOutput();
+	std::ostringstream oss;
+
+	oss << "L2Norm BasicTimeStep: " << resultBasicTimestep;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "L2Norm DivergentTimeStep: " << resultDivergentTimeStep;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "L2NormDiff: " << diffL2Norm;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	return output;
+}
+
+std::vector<std::string> L2NormTest::buildBasicTestOutput()
+{
+	std::vector<std::string> output;
+	std::ostringstream oss;
+
+	output.push_back("L2 Norm Test");
+
+	oss << "Kernel: " << simInfos.at(0)->getKernelName();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "Viscosity: " << simInfos.at(0)->getViscosity();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	oss << simInfos.at(0)->getSimulationName();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << simInfos.at(0)->getLx() << simInfos.at(0)->getSimulationParameterString();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	oss << "DataToCalculate: " << dataToCalculate;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "NormalizeData: " << normalizeData;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	oss << "BasicTimeStep: " << basicTimeStep;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "DivergentTimeStep: " << divergentTimeStep;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	return output;
+}
+
+std::vector<std::string> L2NormTest::buildErrorTestOutput()
+{
+	std::vector<std::string> output = buildBasicTestOutput();
+	std::ostringstream oss;
+
+	oss << "Error Message: " << l2NormPostProStrategies.at(0)->getErrorMessage(normalizeData);
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	return output;
 }

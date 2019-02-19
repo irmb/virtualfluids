@@ -5,8 +5,7 @@ class SimulationObserver
 {
 public:
 	virtual void update() = 0;
-
-private:
+	virtual void setSimulationCrashed() = 0;
 
 };
 #endif 

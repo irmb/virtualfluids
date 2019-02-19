@@ -1,24 +1,23 @@
 #include "TestImp.h"
 
+#include "Utilities/ColorConsoleOutput/ColorConsoleOutput.h"
 #include "Utilities/PostProcessingStrategy/PostProcessingStrategy.h"
 #include "Utilities/NumericalTestSimulation/NumericalTestSimulation.h"
 
 void TestImp::update()
 {
-	for (int i = 0; i < simulations.size(); i++)
-	{
-		if(simulationRun.at(i) == false)
-		{
-			if (simulations.at(i)->getSimulationRun())
-			{
-				simulationRun.at(i) = true;
-				postProStrategies.at(i)->evaluate();
+	if (testStatus != simulationCrashed) {
+		for (int i = 0; i < simulations.size(); i++){
+			if (simulationRun.at(i) == false){
+				if (simulations.at(i)->getSimulationRun()){
+					simulationRun.at(i) = true;
+					postProStrategies.at(i)->evaluate();
+				}
 			}
 		}
-	}
-
-	if (CheckAllSimulationRun())
-		evaluate();				
+		if (CheckAllSimulationRun())
+			evaluate();
+	}			
 }
 
 void TestImp::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy)
@@ -29,9 +28,37 @@ void TestImp::addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::s
 	simulationRun.push_back(false);
 }
 
-std::string TestImp::getSimulationName()
+void TestImp::setSimulationCrashed()
 {
-	return simulationName;
+	testStatus = simulationCrashed;
+	for (int i = 0; i < simulations.size(); i++)
+		if (simulationRun.at(i) == false)
+			if (simulations.at(i)->getSimulationRun())
+				simulationRun.at(i) = true;
+	if (CheckAllSimulationRun())
+		makeConsoleOutput();
+}
+
+TestStatus TestImp::getTestStatus()
+{
+	return testStatus;
+}
+
+void TestImp::makeConsoleOutput()
+{
+	switch (testStatus)
+	{
+	case passed: colorOutput->makeTestOutput(buildTestOutput(), testStatus);
+		break;
+	case failed: colorOutput->makeTestOutput(buildTestOutput(), testStatus);
+		break;
+	case error: colorOutput->makeTestOutput(buildErrorTestOutput(), testStatus);
+		break;
+	case simulationCrashed: colorOutput->makeTestOutput(buildSimulationFailedTestOutput(), testStatus);
+		break;
+	default:
+		break;
+	}
 }
 
 TestImp::TestImp(std::shared_ptr<ColorConsoleOutput> colorOutput) : colorOutput(colorOutput)
@@ -48,4 +75,16 @@ bool TestImp::CheckAllSimulationRun()
 			return false;
 	
 	return true;
+}
+
+std::vector<std::string> TestImp::buildSimulationFailedTestOutput()
+{
+	std::vector<std::string> output = buildBasicTestOutput();
+	std::ostringstream oss;
+
+	oss << "Simulation crashed!";
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	return output;
 }

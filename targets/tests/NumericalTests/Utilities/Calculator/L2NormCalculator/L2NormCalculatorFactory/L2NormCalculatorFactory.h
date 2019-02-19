@@ -9,11 +9,7 @@ class L2NormCalculator;
 class L2NormCalculatorFactory
 {
 public:
-	static std::shared_ptr<L2NormCalculatorFactory> getInstance();
+	virtual std::shared_ptr<L2NormCalculator> makeL2NormCalculator(std::string type) = 0;
 
-	std::shared_ptr<L2NormCalculator> makeL2NormCalculator(std::string type);
-
-private:
-	L2NormCalculatorFactory();
 };
 #endif 

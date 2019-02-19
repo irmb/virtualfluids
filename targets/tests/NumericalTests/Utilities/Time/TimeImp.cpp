@@ -42,10 +42,27 @@ void TimeImp::setAnalyticalResultWriteEndTime()
 	analyticalResultWriteEndTime = time(NULL);
 }
 
+void TimeImp::setResultCheckStartTime()
+{
+	resultCheckStartTime = clock();
+}
+
+void TimeImp::setResultCheckEndTime()
+{
+	resultCheckEndTime = clock();
+}
+
 std::string TimeImp::getSimulationTime()
 {
 	std::ostringstream oss;
 	oss << calcSimulationTime() << "sec";
+	return oss.str();
+}
+
+std::string TimeImp::getResultCheckTime()
+{
+	std::ostringstream oss;
+	oss << calcResultCheckTime() << "sec";
 	return oss.str();
 }
 
@@ -66,6 +83,12 @@ std::string TimeImp::getAnalyticalResultWriteTime()
 double TimeImp::calcSimulationTime()
 {
 	return difftime(simulationEndTime, simulationStartTime);
+}
+
+float TimeImp::calcResultCheckTime()
+{
+	float timeInMiliSec = ((float)(resultCheckEndTime - resultCheckStartTime) / CLOCKS_PER_SEC);
+	return timeInMiliSec;
 }
 
 float TimeImp::calcTestTime()

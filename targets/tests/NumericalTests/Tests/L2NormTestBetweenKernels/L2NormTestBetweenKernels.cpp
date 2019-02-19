@@ -10,9 +10,9 @@
 
 #include <iomanip>
 
-std::shared_ptr<L2NormTestBetweenKernels> L2NormTestBetweenKernels::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith)
+std::shared_ptr<L2NormTestBetweenKernels> L2NormTestBetweenKernels::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith, std::shared_ptr<L2NormCalculatorFactory> factory)
 {
-	return std::shared_ptr<L2NormTestBetweenKernels>(new L2NormTestBetweenKernels(colorOutput, dataToCalculate, timeStep, normalizeWith));
+	return std::shared_ptr<L2NormTestBetweenKernels>(new L2NormTestBetweenKernels(colorOutput, dataToCalculate, timeStep, normalizeWith, factory));
 }
 
 void L2NormTestBetweenKernels::update()
@@ -27,39 +27,28 @@ void L2NormTestBetweenKernels::evaluate()
 
 	int tS = calcTimeStepInResults(timeStep);
 
-	if (dataToCalculate == "Vx") {
-		basicL2Result = basicPostProcessingStrategy->getL2NormVx(timeStep);
-		divergentL2Result = divergentPostProcessingStrategy->getL2NormVx(timeStep);
-		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getVx().at(tS), divergentSimResults->getVx().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
-	}	
-	if (dataToCalculate == "Vy") {
-		basicL2Result = basicPostProcessingStrategy->getL2NormVy(timeStep);
-		divergentL2Result = divergentPostProcessingStrategy->getL2NormVy(timeStep);
-		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getVy().at(tS), divergentSimResults->getVy().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
-	}
-	if (dataToCalculate == "Vz") {
-		basicL2Result = basicPostProcessingStrategy->getL2NormVz(timeStep);
-		divergentL2Result = divergentPostProcessingStrategy->getL2NormVz(timeStep);
-		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getVz().at(tS), divergentSimResults->getVz().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
-	}	
-	if (dataToCalculate == "Press") {
-		basicL2Result = basicPostProcessingStrategy->getL2NormPress(timeStep);
-		divergentL2Result = divergentPostProcessingStrategy->getL2NormPress(timeStep);
-		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getPress().at(tS), divergentSimResults->getPress().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
-	}	
-	if (dataToCalculate == "Rho") {
-		basicL2Result = basicPostProcessingStrategy->getL2NormRho(timeStep);
-		divergentL2Result = divergentPostProcessingStrategy->getL2NormRho(timeStep);
-		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getRho().at(tS), divergentSimResults->getRho().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes(), basicSimResults->getTimeStepLength());
-	}
-	if (basicL2Result < 0 || divergentL2Result < 0 || resultL2ToBasicKernel < 0) {
-		testError = true;
-		testPassed = false;
-	}
+	basicL2Result = basicPostProcessingStrategy->getL2Norm(dataToCalculate, normalizeData, timeStep);
+	divergentL2Result = divergentPostProcessingStrategy->getL2Norm(dataToCalculate, normalizeData, timeStep);
+
+	if (dataToCalculate == "Vx") 
+		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getVx().at(tS), divergentSimResults->getVx().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes());
+	if (dataToCalculate == "Vy") 
+		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getVy().at(tS), divergentSimResults->getVy().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes());
+	if (dataToCalculate == "Vz")
+		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getVz().at(tS), divergentSimResults->getVz().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes());
+	if (dataToCalculate == "Press")
+		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getPress().at(tS), divergentSimResults->getPress().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes());	
+	if (dataToCalculate == "Rho")
+		resultL2ToBasicKernel = l2Normcalculator->calc(basicSimResults->getRho().at(tS), divergentSimResults->getRho().at(tS), basicSimResults->getLevels().at(tS), basicSimResults->getNumberOfXNodes(), basicSimResults->getNumberOfZNodes());
+	
+	
+	
+	if (basicL2Result < 0 || divergentL2Result < 0 || resultL2ToBasicKernel < 0)
+		testStatus = error;
+	else if (basicL2Result <= divergentL2Result)
+		testStatus = passed;
 	else
-	{
-		testPassed = basicL2Result <= divergentL2Result;
-	}
+		testStatus = failed;
 
 	makeConsoleOutput();
 }
@@ -67,30 +56,22 @@ void L2NormTestBetweenKernels::evaluate()
 std::string L2NormTestBetweenKernels::getLogFileOutput()
 {
 	std::ostringstream oss;
-	oss << "NormalizeData_L" << "_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << normalizeWith << std::endl;
-	oss << "L2Norm_BasicKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << basicL2Result << std::endl;
-	oss << "L2Norm_DivergentKernel_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << divergentL2Result << std::endl;
-	oss << "L2Norm_Between_Kernels_" << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "=" << resultL2ToBasicKernel << std::endl << std::endl;
-	
+	oss << "L2Norm_BasicKernel_"     << "L" << basicPostProcessingStrategy->getNumberOfXNodes() << "_"<< dataToCalculate << "_TimeStep_" << timeStep << "_" << normalizeData << "=" << basicL2Result << std::endl;
+	oss << "L2Norm_DivergentKernel_" << "L" << basicPostProcessingStrategy->getNumberOfXNodes() << "_"<< dataToCalculate << "_TimeStep_" << timeStep << "_" << normalizeData << "=" << divergentL2Result << std::endl;
+	oss << "L2Norm_Between_Kernels_" << "L" << basicPostProcessingStrategy->getNumberOfXNodes() << "_"<< dataToCalculate << "_TimeStep_" << timeStep << "_" << normalizeData << "=" << resultL2ToBasicKernel << std::endl << std::endl;
+	return oss.str();
+}
+
+std::string L2NormTestBetweenKernels::getErrorLogFileOutput()
+{
+	std::ostringstream oss;
+	oss << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "_" << normalizeData;
 	return oss.str();
 }
 
 double L2NormTestBetweenKernels::getBasicL2Result()
 {
 	return basicL2Result;
-}
-
-std::vector<bool> L2NormTestBetweenKernels::getPassedTests()
-{
-	return std::vector<bool>(1, testPassed);
-}
-
-void L2NormTestBetweenKernels::makeConsoleOutput()
-{
-	if (!testError)
-		colorOutput->makeL2NormBetweenKernelsTestOutput(testPassed, basicSimInfo, normalizeWith, divergentSimInfo, dataToCalculate, timeStep, basicL2Result, divergentL2Result, resultL2ToBasicKernel);
-	else
-		colorOutput->makeL2NormBetweenKernelsTestErrorOutput(basicPostProcessingStrategy->getErrorMessage(), basicSimInfo, normalizeWith, divergentSimInfo, dataToCalculate, timeStep);
 }
 
 void L2NormTestBetweenKernels::setBasicSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> postProcessingStrategy)
@@ -111,12 +92,10 @@ void L2NormTestBetweenKernels::setDivergentKernelSimulation(std::shared_ptr<Nume
 	this->divergentSimResults = divergentPostProcessingStrategy->getSimulationResult();
 }
 
-L2NormTestBetweenKernels::L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith)
-	: TestImp(colorOutput), timeStep(timeStep), dataToCalculate(dataToCalculate), normalizeWith(normalizeWith)
+L2NormTestBetweenKernels::L2NormTestBetweenKernels(std::shared_ptr<ColorConsoleOutput> colorOutput, std::string dataToCalculate, unsigned int timeStep, std::string normalizeWith, std::shared_ptr<L2NormCalculatorFactory> factory)
+	: TestImp(colorOutput), timeStep(timeStep), dataToCalculate(dataToCalculate), normalizeData(normalizeWith)
 {
-	std::shared_ptr<L2NormCalculatorFactory> l2NormCalculatorFactory = L2NormCalculatorFactory::getInstance();
-	l2Normcalculator = l2NormCalculatorFactory->makeL2NormCalculator(normalizeWith);
-	testError = false;
+	l2Normcalculator = factory->makeL2NormCalculator(normalizeWith);
 }
 
 int L2NormTestBetweenKernels::calcTimeStepInResults(unsigned int timeStep)
@@ -125,4 +104,84 @@ int L2NormTestBetweenKernels::calcTimeStepInResults(unsigned int timeStep)
 		if (timeStep == basicSimResults->getTimeSteps().at(i))
 			return basicSimResults->getTimeSteps().at(i);
 	}
+}
+
+std::vector<std::string> L2NormTestBetweenKernels::buildTestOutput()
+{
+	std::vector<std::string> output = buildBasicTestOutput();
+	std::ostringstream oss;
+
+	oss << "L2Norm BasicKernel: " << basicL2Result;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "L2Norm DivergentKernel: " << divergentL2Result;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "L2NormDiff: " << resultL2ToBasicKernel;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	return output;
+}
+
+std::vector<std::string> L2NormTestBetweenKernels::buildBasicTestOutput()
+{
+	std::vector<std::string> output;
+	std::ostringstream oss;
+
+	output.push_back("L2 Norm Between Kernels Test");
+
+	oss << "Basic Kernel: " << basicSimInfo->getKernelName();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "Divergent Kernel: " << divergentSimInfo->getKernelName();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "Viscosity: " << basicSimInfo->getViscosity();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	oss << basicSimInfo->getSimulationName();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "L: " << basicSimInfo->getLx() << basicSimInfo->getSimulationParameterString();
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	oss << "DataToCalculate: " << dataToCalculate;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "NormalizeData: " << normalizeData;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	oss << "TimeStep: " << timeStep;
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	output.push_back(oss.str());
+
+	return output;
+}
+
+std::vector<std::string> L2NormTestBetweenKernels::buildErrorTestOutput()
+{
+	std::vector<std::string> output = buildBasicTestOutput();
+	std::ostringstream oss;
+
+	oss << "Error Message: " << basicPostProcessingStrategy->getErrorMessage(normalizeData);
+	output.push_back(oss.str());
+	oss.str(std::string());
+
+	return output;
 }

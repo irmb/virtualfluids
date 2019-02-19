@@ -43,7 +43,8 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	configData->shearWaveParameter = makeShearWaveParameter(input, basicSimPara);
 	configData->shearWaveGridInformation = makeGridInformation(input, "ShearWave");;
 
-	configData->phiAndNuTestParameter = makePhiAndNyTestParameter(input);
+	configData->phiTestParameter = makePhiTestParameter(input);
+	configData->nyTestParameter = makeNyTestParameter(input);
 	configData->l2NormTestParameter = makeL2NormTestParameter(input);
 	configData->l2NormTestBetweenKernelsParameter = makeL2NormTestBetweenKernelsParameter(input);
 
@@ -127,6 +128,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileRead
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
 		aParameter->vtkFilePath = StringUtil::toString(input->getValue("PathForVTKFileWriting"));
+		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Ux"));
 		parameter.push_back(aParameter);
 	}
 	return parameter;
@@ -149,6 +151,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileRead
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
 		aParameter->vtkFilePath = StringUtil::toString(input->getValue("PathForVTKFileWriting"));
+		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_TGV_Uz"));
 		parameter.push_back(aParameter);
 	}
 	return parameter;
@@ -170,23 +173,38 @@ std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeSh
 		aParameter->l0 = l0;
 		aParameter->rho0 = StringUtil::toDouble(input->getValue("Rho0"));
 		aParameter->vtkFilePath = StringUtil::toString(input->getValue("PathForVTKFileWriting"));
+		aParameter->dataToCalcTests = StringUtil::toStringVector(input->getValue("DataToCalcTests_SW"));
 		parameter.push_back(aParameter);
 	}
 	return parameter;
 }
 
-std::shared_ptr<PhiAndNyTestParameterStruct> ConfigFileReader::makePhiAndNyTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-	basicTestParameter->dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_PhiAndNu"));
-	basicTestParameter->runTest= StringUtil::toBool(input->getValue("PhiAndNuTest"));
+	basicTestParameter->runTest = StringUtil::toBool(input->getValue("NyTest"));
 	basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
 
-	std::shared_ptr<PhiAndNyTestParameterStruct> testParameter = std::shared_ptr<PhiAndNyTestParameterStruct>(new PhiAndNyTestParameterStruct);
+	std::shared_ptr<NyTestParameterStruct> testParameter = std::shared_ptr<NyTestParameterStruct>(new NyTestParameterStruct);
 	testParameter->basicTestParameter = basicTestParameter;
-	testParameter->endTimeStepCalculation = StringUtil::toInt(input->getValue("EndTimeStepCalculation_PhiNu"));
-	testParameter->minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy"));
-	testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu"));
+	testParameter->endTimeStepCalculation = StringUtil::toInt(input->getValue("EndTimeStepCalculation_Ny"));
+	testParameter->minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy_Ny"));
+	testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue("StartTimeStepCalculation_Ny"));
+
+	return testParameter;
+}
+
+std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(std::shared_ptr<input::Input> input)
+{
+	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
+	basicTestParameter->runTest = StringUtil::toBool(input->getValue("PhiTest"));
+	basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
+
+	std::shared_ptr<PhiTestParameterStruct> testParameter = std::shared_ptr<PhiTestParameterStruct>(new PhiTestParameterStruct);
+	testParameter->basicTestParameter = basicTestParameter;
+	testParameter->endTimeStepCalculation = StringUtil::toInt(input->getValue("EndTimeStepCalculation_Phi"));
+	testParameter->minOrderOfAccuracy = StringUtil::toDouble(input->getValue("MinOrderOfAccuracy_Phi"));
+	testParameter->startTimeStepCalculation = StringUtil::toInt(input->getValue("StartTimeStepCalculation_Phi"));
 
 	return testParameter;
 }
@@ -194,7 +212,6 @@ std::shared_ptr<PhiAndNyTestParameterStruct> ConfigFileReader::makePhiAndNyTestP
 std::shared_ptr<L2NormTestParameterStruct> ConfigFileReader::makeL2NormTestParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-	basicTestParameter->dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_L2"));
 	basicTestParameter->runTest = StringUtil::toBool(input->getValue("L2NormTest"));
 	basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
 
@@ -202,20 +219,8 @@ std::shared_ptr<L2NormTestParameterStruct> ConfigFileReader::makeL2NormTestParam
 	testParameter->basicTestParameter = basicTestParameter;
 	testParameter->basicTimeStep = StringUtil::toInt(input->getValue("BasicTimeStep_L2"));
 	testParameter->divergentTimeStep = StringUtil::toInt(input->getValue("DivergentTimeStep_L2"));
-
-	bool runTest = false;
-	if (StringUtil::toBool(input->getValue("NormalizeWithBasicData"))) {
-		runTest = true;
-		testParameter->normalizeData.push_back("basicData");
-		testParameter->maxDiff.push_back(StringUtil::toDouble(input->getValue("MaxL2NormDiffBasicData")));
-	}
-	if (StringUtil::toBool(input->getValue("NormalizeWithAmplitude"))) {
-		runTest = true;
-		testParameter->normalizeData.push_back("amplitude");
-		testParameter->maxDiff.push_back(StringUtil::toDouble(input->getValue("MaxL2NormDiffAmplitude")));
-	}
-	if (!runTest)
-		basicTestParameter->runTest = false;
+	testParameter->normalizeData = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
+	testParameter->maxDiff = StringUtil::toDoubleVector(input->getValue("MaxL2NormDiff"));
 
 	return testParameter;
 }
@@ -223,7 +228,6 @@ std::shared_ptr<L2NormTestParameterStruct> ConfigFileReader::makeL2NormTestParam
 std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
-	basicTestParameter->dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_L2NormBetweenKernels"));
 	basicTestParameter->runTest = StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"));
 	basicTestParameter->ySliceForCalculation = StringUtil::toInt(input->getValue("ySliceForCalculation"));
 
@@ -232,17 +236,16 @@ std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL
 	testParameter->basicKernel = StringUtil::toString(input->getValue("BasicKernel_L2NormBetweenKernels"));
 	testParameter->kernelsToTest = readKernelList(input);
 	testParameter->timeSteps = StringUtil::toIntVector(input->getValue("Timesteps_L2NormBetweenKernels"));
-	testParameter->normalizeWith = StringUtil::toString(input->getValue("NormalizeWith"));
+	testParameter->normalizeData = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
 
 	bool correct = false;
-
-	if (testParameter->normalizeWith == "amplitude")
-		correct = true;
-	if (testParameter->normalizeWith == "basicData")
-		correct = true;
+	for (int i = 0; i < testParameter->normalizeData.size(); i++)
+		if (testParameter->normalizeData.at(i) == "Amplitude" || testParameter->normalizeData.at(i) == "BasicData")
+			correct = true;
+	
 
 	if (!correct) {
-		std::cout << "invalid input in ConfigFile." << std::endl << "possible data for NormalizeWith Parameter in L2-Norm Test Between Kernels Parameter:" << std::endl << "amplitude, basicData" << std::endl << std::endl;
+		std::cout << "invalid input in ConfigFile." << std::endl << "possible data for NormalizeWith Parameter in L2-Norm Test Between Kernels Parameter:" << std::endl << "Amplitude, BasicData" << std::endl << std::endl;
 		exit(1);
 	}
 
@@ -343,7 +346,8 @@ unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<in
 {
 	std::vector<unsigned int> startStepsTests;
 	startStepsTests.push_back(StringUtil::toInt(input->getValue("BasicTimeStep_L2")));
-	startStepsTests.push_back(StringUtil::toInt(input->getValue("StartTimeStepCalculation_PhiNu")));
+	startStepsTests.push_back(StringUtil::toInt(input->getValue("StartTimeStepCalculation_Ny")));
+	startStepsTests.push_back(StringUtil::toInt(input->getValue("StartTimeStepCalculation_Phi")));
 	std::sort(startStepsTests.begin(), startStepsTests.end());
 
 	return startStepsTests.at(0);

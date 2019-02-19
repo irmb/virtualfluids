@@ -23,10 +23,10 @@ private:
 	InitialConditionTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::shared_ptr<GridInformationStruct> gridInfoStruct);
 	InitialConditionTaylorGreenUz() {};
 
-	real Amp;
+	real amp;
 	real rho;
-	real L0;
-	real Lx, Lz;
+	real l0;
+	real lx, lz;
 	real uz;
 };
 

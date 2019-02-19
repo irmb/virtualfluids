@@ -2,100 +2,93 @@
 
 #include "Tests/L2NormTest/L2NormTestParameterStruct.h"
 
+#include "Utilities/Calculator/L2NormCalculator/L2NormCalculatorFactory/L2NormCalculatorFactory.h"
 #include "Utilities/Calculator/L2NormCalculator/L2NormCalculator.h"
+
 #include "Utilities/Results/AnalyticalResults/AnalyticalResult.h"
 #include "Utilities/Results/SimulationResults/SimulationResults.h"
 
-std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculator> l2Normcalculator)
+std::shared_ptr<L2NormPostProcessingStrategy> L2NormPostProcessingStrategy::getNewInstance(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests)
 {
-	return std::shared_ptr<L2NormPostProcessingStrategy>(new L2NormPostProcessingStrategy(simResult, analyticalResult, testPara, l2Normcalculator));
+	return std::shared_ptr<L2NormPostProcessingStrategy>(new L2NormPostProcessingStrategy(simResult, analyticalResult, testPara, factory, dataToCalcTests));
 }
 
-L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculator> l2Normcalculator)
-	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult)
+L2NormPostProcessingStrategy::L2NormPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<L2NormTestParameterStruct> testPara, std::shared_ptr<L2NormCalculatorFactory> factory, std::vector<std::string> dataToCalcTests)
+	: PostProcessingStrategyImp(simResult), analyticalResult(analyticalResult), dataToCalculate(dataToCalcTests)
 {
-	dataToCalculateL2 = testPara->basicTestParameter->dataToCalc;
-	basicTimeStepL2Norm = testPara->basicTimeStep;
-	divergentTimeStepL2Norm = testPara->divergentTimeStep;
-	
 	isEvaluated = false;
-	this->l2Normcalculator = l2Normcalculator;
+	basicTimeStep = testPara->basicTimeStep;
+	divergentTimeStep = testPara->divergentTimeStep;
+	normalizeData = testPara->normalizeData;
+
+	l2NormBasic.resize(dataToCalculate.size());
+	l2NormDivergent.resize(dataToCalculate.size());
+	for (int i = 0; i < l2NormBasic.size(); i++) {
+		l2NormBasic.at(i).resize(normalizeData.size());
+		l2NormDivergent.at(i).resize(normalizeData.size());
+	}
+	
+	for (int i = 0; i < normalizeData.size(); i++)
+		l2Normcalculator.push_back(factory->makeL2NormCalculator(normalizeData.at(i)));
 }
 
 void L2NormPostProcessingStrategy::evaluate()
 {
 	if (!isEvaluated) {
 		analyticalResult->calc(simResult);
-		int bS = calcTimeStepInResults(basicTimeStepL2Norm);
-		int dS = calcTimeStepInResults(divergentTimeStepL2Norm);
+		int bS = calcTimeStepInResults(basicTimeStep);
+		int dS = calcTimeStepInResults(divergentTimeStep);
 
-		for (int i = 0; i < dataToCalculateL2.size(); i++) {
-			if (dataToCalculateL2.at(i) == "Vx") {
-				l2VxBasic = l2Normcalculator->calc(analyticalResult->getVx().at(bS), simResult->getVx().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-				l2VxDivergent = l2Normcalculator->calc(analyticalResult->getVx().at(dS), simResult->getVx().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-			}
-			if (dataToCalculateL2.at(i) == "Vy") {
-				l2VyBasic = l2Normcalculator->calc(analyticalResult->getVy().at(bS), simResult->getVy().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-				l2VyDivergent = l2Normcalculator->calc(analyticalResult->getVy().at(dS), simResult->getVy().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-			}
-			if (dataToCalculateL2.at(i) == "Vz") {
-				l2VzBasic = l2Normcalculator->calc(analyticalResult->getVz().at(bS), simResult->getVz().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-				l2VzDivergent = l2Normcalculator->calc(analyticalResult->getVz().at(dS), simResult->getVz().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-			}
-			if (dataToCalculateL2.at(i) == "Press") {
-				l2PressBasic = l2Normcalculator->calc(analyticalResult->getPress().at(bS), simResult->getPress().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-				l2PressDivergent = l2Normcalculator->calc(analyticalResult->getPress().at(dS), simResult->getPress().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-			}
-			if (dataToCalculateL2.at(i) == "Rho") {
-				l2RhoBasic = l2Normcalculator->calc(analyticalResult->getRho().at(bS), simResult->getRho().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
-				l2RhoDivergent = l2Normcalculator->calc(analyticalResult->getRho().at(dS), simResult->getRho().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getTimeStepLength());
+		for (int i = 0; i < dataToCalculate.size(); i++) {
+			for (int j = 0; j < normalizeData.size(); j++) {
+				if (dataToCalculate.at(i) == "Vx") {
+					l2NormBasic.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getVx().at(bS), simResult->getVx().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					l2NormDivergent.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getVx().at(dS), simResult->getVx().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+				}
+				if (dataToCalculate.at(i) == "Vy") {
+					l2NormBasic.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getVy().at(bS), simResult->getVy().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					l2NormDivergent.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getVy().at(dS), simResult->getVy().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+				}
+				if (dataToCalculate.at(i) == "Vz") {
+					l2NormBasic.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getVz().at(bS), simResult->getVz().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					l2NormDivergent.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getVz().at(dS), simResult->getVz().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+				}
+				if (dataToCalculate.at(i) == "Press") {
+					l2NormBasic.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getPress().at(bS), simResult->getPress().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					l2NormDivergent.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getPress().at(dS), simResult->getPress().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+				}
+				if (dataToCalculate.at(i) == "Rho") {
+					l2NormBasic.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getRho().at(bS), simResult->getRho().at(bS), simResult->getLevels().at(bS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+					l2NormDivergent.at(i).at(j) = l2Normcalculator.at(j)->calc(analyticalResult->getRho().at(dS), simResult->getRho().at(dS), simResult->getLevels().at(dS), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+				}
 			}
 		}
 		isEvaluated = true;
 	}
 }
 
-std::vector<double> L2NormPostProcessingStrategy::getL2NormVx()
+std::vector<double> L2NormPostProcessingStrategy::getL2Norm(std::string aDataToCalc, std::string aNormalizeData)
 {
-	std::vector<double> v;
-	v.push_back(l2VxBasic);
-	v.push_back(l2VxDivergent);
-	return v;
+	for (int i = 0; i < dataToCalculate.size(); i++) {
+		for (int j = 0; j < normalizeData.size(); j++) {
+			if (aDataToCalc == dataToCalculate.at(i) && aNormalizeData == normalizeData.at(j)) {
+				std::vector<double> v;
+				v.push_back(l2NormBasic.at(i).at(j));
+				v.push_back(l2NormDivergent.at(i).at(j));
+				return v;
+			}
+		}
+	}
+
+	return std::vector<double>();
 }
 
-std::vector<double> L2NormPostProcessingStrategy::getL2NormVy()
+std::string L2NormPostProcessingStrategy::getErrorMessage(std::string aNormalizeData)
 {
-	std::vector<double> v;
-	v.push_back(l2VyBasic);
-	v.push_back(l2VyDivergent);
-	return v;
-}
-
-std::vector<double> L2NormPostProcessingStrategy::getL2NormVz()
-{
-	std::vector<double> v;
-	v.push_back(l2VzBasic);
-	v.push_back(l2VzDivergent);
-	return v;
-}
-
-std::vector<double> L2NormPostProcessingStrategy::getL2NormPress()
-{
-	std::vector<double> v;
-	v.push_back(l2PressBasic);
-	v.push_back(l2PressDivergent);
-	return v;
-}
-
-std::vector<double> L2NormPostProcessingStrategy::getL2NormRho()
-{
-	std::vector<double> v;
-	v.push_back(l2RhoBasic);
-	v.push_back(l2RhoDivergent);
-	return v;
-}
-
-std::string L2NormPostProcessingStrategy::getErrorMessage()
-{
-	return l2Normcalculator->getErrorMessage();
+	for (int i = 0; i < normalizeData.size(); i++) {
+		if (aNormalizeData == normalizeData.at(i))
+			return l2Normcalculator.at(i)->getErrorMessage();
+	}
+	
+	return std::string();
 }

@@ -5,11 +5,11 @@
 
 void TestQueueImp::makeFinalOutput()
 {
-	calcNumberOfPassedTest();
-	colorOutput->makeFinalTestOutputHead(numberOfPassedTest, numberOfTests);
+	calcTestNumbers();
+	colorOutput->makeFinalTestOutputHead(numberOfTests, numberOfExecutedTest, numberOfPassedTest, numberOfFailedTest, numberOfErrorTest, numberOfNotExecutedTest);
 	for (int i = 0; i < tests.size(); i++)
 		tests.at(i)->makeConsoleOutput();
-	colorOutput->makeFinalTestOutputFoot(numberOfPassedTest, numberOfTests);
+	colorOutput->makeFinalTestOutputFoot(numberOfTests, numberOfExecutedTest, numberOfPassedTest, numberOfFailedTest, numberOfErrorTest, numberOfNotExecutedTest);
 }
 
 std::shared_ptr<TestQueueImp> TestQueueImp::getNewInstance(std::shared_ptr<ColorConsoleOutput> colorOutput)
@@ -27,22 +27,35 @@ TestQueueImp::TestQueueImp(std::shared_ptr<ColorConsoleOutput> colorOutput) : co
 	tests.resize(0);
 }
 
-void TestQueueImp::calcNumberOfPassedTest()
+void TestQueueImp::calcTestNumbers()
 {
+	numberOfTests = tests.size();
+	numberOfExecutedTest = 0;
 	numberOfPassedTest = 0;
-	numberOfTests = 0;
+	numberOfFailedTest = 0;
+	numberOfErrorTest = 0;
+	numberOfNotExecutedTest = 0;
 
 	for (int i = 0; i < tests.size(); i++) {
-		for (int j = 0; j < tests.at(i)->getPassedTests().size(); j++) {
-			if (tests.at(i)->getPassedTests().at(j)) {
-				numberOfPassedTest++;
-				numberOfTests++;
-			}
-			else
-			{
-				numberOfTests++;
-			}
+		switch (tests.at(i)->getTestStatus())
+		{
+		case passed:
+			numberOfPassedTest++;
+			numberOfExecutedTest++;
+			break;
+		case failed:
+			numberOfFailedTest++;
+			numberOfExecutedTest++;
+			break;
+		case error: 
+			numberOfErrorTest++;
+			break;
+		case simulationCrashed:
+			numberOfNotExecutedTest++;
+			break;
+		default:
+			break;
 		}
-			
 	}
+			
 }

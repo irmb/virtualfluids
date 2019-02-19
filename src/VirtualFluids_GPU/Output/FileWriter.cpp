@@ -17,8 +17,12 @@
 void FileWriter::writeInit(std::shared_ptr<Parameter> para)
 {
     unsigned int timestep = para->getTInit();
-    for (int level = para->getCoarse(); level <= para->getFine(); level++)
-        writeTimestep(para, timestep, level);
+	for (int level = para->getCoarse(); level <= para->getFine(); level++) {
+		para->cudaCopyPrint(level);
+		writeTimestep(para, timestep, level);
+
+	}
+        
 }
 
 void FileWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int timestep)
