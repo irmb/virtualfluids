@@ -1,2 +1,19 @@
 pathOut = e:/temp/OrganPipe
 pathGeo = C:/Users/maini/Desktop/organflute
+
+availMem = 2e9
+
+logToFile = false
+
+newStart = true
+restartStep = 250000
+
+cpStep = 8000
+cpStart = 258000
+
+outTimeStep = 1
+outTimeStart = 1
+
+nupsStep = 1000 1000 10000000
+
+endTime = 10
