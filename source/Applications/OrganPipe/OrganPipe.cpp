@@ -4,7 +4,7 @@
 
 
 using namespace std;
-void run()
+void run(string configname)
 {
    SPtr<Communicator> comm = MPICommunicator::getInstance();
    int myid = comm->getProcessID();
@@ -13,15 +13,21 @@ void run()
 
    SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
-   double  deltaXfine = 0.0000625; //0.000036*2.0;
+   ConfigurationFile   config;
+   config.load(configname);
+
+   string          pathOut = config.getValue<string>("pathOut");
+   string          pathGeo = config.getValue<string>("pathGeo");
+
+   double  deltaXfine = 0.000125; //0.000036*2.0;
    const int baseLevel = 0;
-   int refineLevel = 10;
+   int refineLevel = 9;
    double deltaXcoarse = deltaXfine*(double)(1 << refineLevel);
 
    double availMem = 5e9;
 
-   string pathOut = "e:/temp/OrganPipe";
-   string pathGeo = "C:/Users/maini/Desktop/organflute";
+   //string pathOut = "e:/temp/OrganPipe";
+   //string pathGeo = "C:/Users/maini/Desktop/organflute";
    
    string opipeGeoFile = "/02_organf_scaled.stl";
    string inPpipeGeoFile = "/pipeScaled.stl";
@@ -106,6 +112,9 @@ void run()
    SPtr<BCAdapter> noSlipBCAdapter(new NoSlipBCAdapter());
    noSlipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NoSlipBCAlgorithm()));
 
+   SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
+   slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SlipBCAlgorithm()));
+
    mu::Parser fct;
    fct.SetExpr("U");
    fct.DefineConst("U", u_LB);
@@ -171,23 +180,56 @@ void run()
    //SPtr<GbSphere3D> refineSphereL9(new GbSphere3D(g_minX1+75e-3, 0.0, 0.015, 13e-3));
    //if (myid == 0) GbSystem3D::writeGeoObject(refineSphereL9.get(), pathOut + "/geo/refineSphereL9", WbWriterVtkXmlASCII::getInstance());
 
-   SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(-0.1117, -0.019, -0.019, -0.0483, 0.019, 0.019));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL5.get(), pathOut + "/geo/refineBoxL5", WbWriterVtkXmlASCII::getInstance());
+   //SPtr<GbObject3D> refineBoxL1(new GbCuboid3D(-0.14, -2.048, -2.048, 3.9643, 2.048, 2.048));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL1.get(), pathOut + "/geo/refineBoxL1", WbWriterVtkXmlASCII::getInstance());
 
-   SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(-0.15, -0.008, -0.008, -0.1117, 0.008, 0.008));
-   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlASCII::getInstance());
+   //SPtr<GbObject3D> refineBoxL2(new GbCuboid3D(-0.14, -0.683, -0.683, 3.32, 0.683, 0.683));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL2.get(), pathOut + "/geo/refineBoxL2", WbWriterVtkXmlASCII::getInstance());
+
+   //SPtr<GbObject3D> refineBoxL3(new GbCuboid3D(-0.14, -0.6, -0.6, 2.5, 0.6, 0.6));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL3.get(), pathOut + "/geo/refineBoxL3", WbWriterVtkXmlASCII::getInstance());
+
+   //SPtr<GbObject3D> refineBoxL4(new GbCuboid3D(-0.14, -0.4315, -0.4315, 2.05, 0.4315, 0.4315));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL4.get(), pathOut + "/geo/refineBoxL4", WbWriterVtkXmlASCII::getInstance());
+
+   //SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(-0.1317, -0.0635, -0.0635, 0.1815, 0.0635, 0.0635));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL5.get(), pathOut + "/geo/refineBoxL5", WbWriterVtkXmlASCII::getInstance());
+
+   //SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(-0.1317, -0.0235, -0.0235, 0.1442, 0.0235, 0.028));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(-0.1317, -0.027, -0.027, 0.1322, 0.027, 0.027));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL8(new GbCuboid3D(-0.1317, -0.022, -0.022, -0.04355, 0.022, 0.022));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL8.get(), pathOut + "/geo/refineBoxL8", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL93(new GbCuboid3D(-0.0623, -0.0165, -0.0165, -0.0473, 0.0165, 0.02125));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL93.get(), pathOut + "/geo/refineBoxL93", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL92(new GbCuboid3D(-0.1107, -0.0165, -0.0165, -0.0623, 0.0165, 0.0165 ));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL92.get(), pathOut + "/geo/refineBoxL92", WbWriterVtkXmlASCII::getInstance());
+
+   SPtr<GbObject3D> refineBoxL91(new GbCuboid3D(-0.1317, -0.0062, -0.0062, -0.1107, 0.0062, 0.0062));
+   if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL91.get(), pathOut + "/geo/refineBoxL91", WbWriterVtkXmlASCII::getInstance());
+
+   //SPtr<GbObject3D> refineBoxL10(new GbCuboid3D(-0.14, -0.0026, -0.0026, -0.12, 0.0026, 0.0026));
+   //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL10.get(), pathOut + "/geo/refineBoxL10", WbWriterVtkXmlASCII::getInstance());
 
    if (refineLevel > 0)
    {
       if (myid == 0) UBLOG(logINFO, "Refinement - start");
       RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
-      //refineHelper.addGbObject(refineSphereL5, 5);
+      //refineHelper.addGbObject(refineBoxL3, refineLevel - 6);
+      //refineHelper.addGbObject(refineBoxL4, refineLevel - 5);
+      //refineHelper.addGbObject(refineBoxL5, refineLevel - 4);
       //refineHelper.addGbObject(refineBoxL6, refineLevel - 3);
-      //refineHelper.addGbObject(refineBoxL7, refineLevel - 2);
-      //refineHelper.addGbObject(refineBoxL9, refineLevel);
-      //refineHelper.addGbObject(refineSphereL9, refineLevel);
-      refineHelper.addGbObject(refineBoxL5, refineLevel - 1);
-      refineHelper.addGbObject(refineBoxL6, refineLevel);
+      refineHelper.addGbObject(refineBoxL7, refineLevel - 2);
+      refineHelper.addGbObject(refineBoxL8, refineLevel - 1);
+      refineHelper.addGbObject(refineBoxL93, refineLevel);
+      refineHelper.addGbObject(refineBoxL92, refineLevel);
+      refineHelper.addGbObject(refineBoxL91, refineLevel);
+      //refineHelper.addGbObject(refineBoxL10, refineLevel);
       refineHelper.refine();
       if (myid == 0) UBLOG(logINFO, "Refinement - end");
    }
@@ -203,6 +245,8 @@ void run()
    SPtr<Interactor3D> InPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inPpipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
   
    //walls
+   GbCuboid3DPtr addWallXmin(new GbCuboid3D(g_minX1 - deltaXcoarse, g_minX2 - deltaXcoarse, g_minX3 - deltaXcoarse, g_minX1, g_maxX2 + deltaXcoarse, g_maxX3 + deltaXcoarse));
+   if (myid == 0) GbSystem3D::writeGeoObject(addWallXmin.get(), pathOut + "/geo/addWallXmin", WbWriterVtkXmlASCII::getInstance());
    GbCuboid3DPtr addWallYmin(new GbCuboid3D(g_minX1-0.001 , g_minX2-0.001, g_minX3-0.001, g_maxX1+0.001, g_minX2, g_maxX3+0.001));
    if (myid == 0) GbSystem3D::writeGeoObject(addWallYmin.get(), pathOut + "/geo/addWallYmin", WbWriterVtkXmlASCII::getInstance());
    GbCuboid3DPtr addWallYmax(new GbCuboid3D(g_minX1-0.001, g_maxX2, g_minX3-0.001, g_maxX1+0.001, g_maxX2+0.001, g_maxX3+0.001));
@@ -213,10 +257,11 @@ void run()
    if (myid == 0) GbSystem3D::writeGeoObject(addWallZmax.get(), pathOut + "/geo/addWallZmax", WbWriterVtkXmlASCII::getInstance());
 
    //wall interactors
-   SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, velBCAdapter, Interactor3D::SOLID));
-   SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, velBCAdapter, Interactor3D::SOLID));
-   SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, velBCAdapter, Interactor3D::SOLID));
-   SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, velBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallXminInt(new D3Q27Interactor(addWallXmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallYminInt(new D3Q27Interactor(addWallYmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallYmaxInt(new D3Q27Interactor(addWallYmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallZminInt(new D3Q27Interactor(addWallZmin, grid, noSlipBCAdapter, Interactor3D::SOLID));
+   SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
    //inflow
    GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1- deltaXcoarse, 0.0, 0.0, g_minX1, 0.0, 0.0, radius_inlet));
@@ -238,6 +283,7 @@ void run()
    InteractorsHelper intHelper(grid, metisVisitor);
    
    intHelper.addInteractor(outflowIntr);
+   intHelper.addInteractor(addWallXminInt);
    intHelper.addInteractor(addWallZminInt);
    intHelper.addInteractor(addWallZmaxInt);
    intHelper.addInteractor(addWallYminInt);
@@ -396,5 +442,15 @@ void run()
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-   run();
+   if (argv != NULL)
+   {
+      if (argv[1] != NULL)
+      {
+         run(string(argv[1]));
+      }
+      else
+      {
+         cout << "Configuration file must be set!: " << argv[0] << " <config file>" << endl << std::flush;
+      }
+   }
 }

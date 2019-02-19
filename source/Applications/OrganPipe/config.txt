@@ -1,0 +1,2 @@
+pathOut = e:/temp/OrganPipe
+pathGeo = C:/Users/maini/Desktop/organflute
