@@ -12,6 +12,8 @@
 #include <omp.h>
 #endif 
 
+#include <PointerDefinitions.h>
+
 #include <MuParser/include/muParser.h>
 #include <MuParser/include/muParserBase.h>
 #include <MuParser/include/muParserBytecode.h>
@@ -167,13 +169,15 @@
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MPIIOMigrationCoProcessor.h>
 #include <CoProcessors/PressureCoefficientCoProcessor.h>
-#include <LineTimeSeriesCoProcessor.h>
+#include <CoProcessors/LineTimeSeriesCoProcessor.h>
+#include <CoProcessors/MicrophoneArrayCoProcessor.h>
 
 #include <IntegrateValuesHelper.h>
 //#include <LBM/D3Q27CompactInterpolationProcessor.h>
 #include <LBM/IncompressibleOffsetInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetInterpolationProcessor.h>
 #include <LBM/CompressibleOffsetMomentsInterpolationProcessor.h>
+#include <LBM/CompressibleOffsetSquarePressureInterpolationProcessor.h>
 #include <LBM/InterpolationHelper.h>
 #include <LBM/InterpolationProcessor.h>
 //#include <LBM/D3Q27OffsetInterpolationProcessor.h>
@@ -252,6 +256,7 @@
 #include <Utilities/ConfigurationFile.hpp>
 #include <Utilities/VoxelMatrixUtil.hpp>
 #include <Utilities/ChangeRandomQs.hpp>
+#include <Utilities/CheckpointConverter.h>
 
 #include <Visitors/Block3DVisitor.h>
 #include <Visitors/CreateTransmittersHelper.h>

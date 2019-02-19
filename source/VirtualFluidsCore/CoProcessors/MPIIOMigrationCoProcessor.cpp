@@ -21,6 +21,8 @@
 #include "UbFileOutputASCII.h"
 #include "UbFileInputASCII.h"
 
+using namespace MPIIODataStructures;
+
 MPIIOMigrationCoProcessor::MPIIOMigrationCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s,
    const std::string& path,
    SPtr<Communicator> comm) :
@@ -420,7 +422,7 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
    }
 
    dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
-   DataSet* dataSetArray = new DataSet[blocksCount];
+   DataSetMigration* dataSetArray = new DataSetMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks
 
    if (comm->isRoot())
@@ -564,13 +566,13 @@ void MPIIOMigrationCoProcessor::writeDataSet(int step)
    MPI_File_write_at(file_handler, (MPI_Offset)(2 * sizeof(dataSetParam)), &dataSetParamStr3, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSet) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + dataSetArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetArray[nb], 1, dataSetType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSet)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -631,7 +633,7 @@ void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values of the AverageDensityArray in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -700,13 +702,13 @@ void MPIIOMigrationCoProcessor::writeAverageDensityArray(int step)
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmall)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -740,7 +742,7 @@ void MPIIOMigrationCoProcessor::writeAverageVelocityArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -809,13 +811,13 @@ void MPIIOMigrationCoProcessor::writeAverageVelocityArray(int step)
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmall)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -849,7 +851,7 @@ void MPIIOMigrationCoProcessor::writeAverageFluktuationsArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -923,13 +925,13 @@ void MPIIOMigrationCoProcessor::writeAverageFluktuationsArray(int step)
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmall)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -963,7 +965,7 @@ void MPIIOMigrationCoProcessor::writeAverageTripleArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -1038,13 +1040,13 @@ void MPIIOMigrationCoProcessor::writeAverageTripleArray(int step)
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmall)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -1078,7 +1080,7 @@ void MPIIOMigrationCoProcessor::writeShearStressValArray(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -1153,13 +1155,13 @@ void MPIIOMigrationCoProcessor::writeShearStressValArray(int step)
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmall)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -1193,7 +1195,7 @@ void MPIIOMigrationCoProcessor::writeRelaxationFactor(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    std::vector<double> doubleValuesArray; // double-values (arrays of f's) in all blocks 
    dataSetParam dataSetParamStr;
 
@@ -1268,13 +1270,13 @@ void MPIIOMigrationCoProcessor::writeRelaxationFactor(int step)
    MPI_File_write_at(file_handler, 0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
    MPI_Offset write_offset;
-   size_t sizeofOneDataSet = sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double);
+   size_t sizeofOneDataSet = sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double);
 
    for (int nb = 0; nb < blocksCount; nb++)
    {
       write_offset = (MPI_Offset)(sizeof(dataSetParam) + dataSetSmallArray[nb].globalID * sizeofOneDataSet);
       MPI_File_write_at(file_handler, write_offset, &dataSetSmallArray[nb], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmall)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[nb * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
    }
 
    MPI_File_sync(file_handler);
@@ -1317,7 +1319,7 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   BCAdd* bcAddArray = new BCAdd[blocksCount];
+   BCAddMigration* bcAddArray = new BCAddMigration[blocksCount];
    size_t* bytesCount = new size_t[blocksCount];  // quantity of bytes, that each block writes to the file
    std::vector<BoundaryCondition>* bcVector = new std::vector<BoundaryCondition>[blocksCount];
    std::vector<int>* bcindexmatrixVector = new std::vector<int>[blocksCount];
@@ -1334,7 +1336,7 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
          bcAddArray[ic].globalID = block->getGlobalID(); // id of the block needed to find it while regenerating the grid
          bcAddArray[ic].boundCond_count = 0;             // how many BoundaryConditions in this block
          bcAddArray[ic].indexContainer_count = 0;        // how many indexContainer-values in this block
-         bytesCount[ic] = sizeof(BCAdd);
+         bytesCount[ic] = sizeof(BCAddMigration);
          bcVector[ic].resize(0);
          bcindexmatrixVector[ic].resize(0);
          indexContainerVector[ic].resize(0);
@@ -1450,14 +1452,14 @@ void MPIIOMigrationCoProcessor::writeBoundaryConds(int step)
 
       MPI_File_write_at(file_handler, write_offset, &bcAddArray[nb], 1, boundCondTypeAdd, MPI_STATUS_IGNORE);
       if (bcVector[nb].size() > 0)
-         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(BCAdd)), &bcVector[nb][0], bcAddArray[nb].boundCond_count, boundCondType, MPI_STATUS_IGNORE);
+         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(BCAddMigration)), &bcVector[nb][0], bcAddArray[nb].boundCond_count, boundCondType, MPI_STATUS_IGNORE);
 
       if (bcindexmatrixVector[nb].size() > 0)
-         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(BCAdd) + bcAddArray[nb].boundCond_count * sizeof(BoundaryCondition)),
+         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(BCAddMigration) + bcAddArray[nb].boundCond_count * sizeof(BoundaryCondition)),
             &bcindexmatrixVector[nb][0], 1, bcindexmatrixType, MPI_STATUS_IGNORE);
 
       if (indexContainerVector[nb].size() > 0)
-         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(BCAdd) + bcAddArray[nb].boundCond_count * sizeof(BoundaryCondition) + boundCondParamStr.bcindexmatrixCount * sizeof(int)),
+         MPI_File_write_at(file_handler, (MPI_Offset)(write_offset + sizeof(BCAddMigration) + bcAddArray[nb].boundCond_count * sizeof(BoundaryCondition) + boundCondParamStr.bcindexmatrixCount * sizeof(int)),
             &indexContainerVector[nb][0], bcAddArray[nb].indexContainer_count, MPI_INT, MPI_STATUS_IGNORE);
 
       write_offset += bytesCount[nb];
@@ -1674,7 +1676,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   DataSet* dataSetArray = new DataSet[blocksCount];
+   DataSetMigration* dataSetArray = new DataSetMigration[blocksCount];
 
    MPI_File file_handler;
    std::string filename = path + "/mpi_io_cp/mpi_io_cp_" + UbSystem::toString(step) + "/cpDataSet.bin";
@@ -1696,7 +1698,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSet) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -1704,7 +1706,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
       {
          read_offset = (MPI_Offset)(3 * sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetArray[ic], 1, dataSetType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSet)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -1838,7 +1840,7 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -1848,7 +1850,7 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -1856,7 +1858,7 @@ void MPIIOMigrationCoProcessor::readAverageDensityArray(int step)
       {
          read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmall)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -1939,7 +1941,7 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -1949,7 +1951,7 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -1957,7 +1959,7 @@ void MPIIOMigrationCoProcessor::readAverageVelocityArray(int step)
       {
          read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmall)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -2039,7 +2041,7 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2049,7 +2051,7 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -2057,7 +2059,7 @@ void MPIIOMigrationCoProcessor::readAverageFluktuationsArray(int step)
       {
          read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmall)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -2139,7 +2141,7 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2149,7 +2151,7 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -2157,7 +2159,7 @@ void MPIIOMigrationCoProcessor::readAverageTripleArray(int step)
       {
          read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmall)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -2239,7 +2241,7 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2249,7 +2251,7 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -2257,7 +2259,7 @@ void MPIIOMigrationCoProcessor::readShearStressValArray(int step)
       {
          read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmall)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -2339,7 +2341,7 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
 
    MPI_File_read_at(file_handler, (MPI_Offset)0, &dataSetParamStr, 1, dataSetParamType, MPI_STATUS_IGNORE);
 
-   DataSetSmall* dataSetSmallArray = new DataSetSmall[blocksCount];
+   DataSetSmallMigration* dataSetSmallArray = new DataSetSmallMigration[blocksCount];
    int doubleCountInBlock = dataSetParamStr.nx[0] * dataSetParamStr.nx[1] * dataSetParamStr.nx[2] * dataSetParamStr.nx[3];
    std::vector<double> doubleValuesArray(blocksCount * doubleCountInBlock); // double-values in all blocks
 
@@ -2349,7 +2351,7 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
 
    int ic = 0;
    MPI_Offset read_offset;
-   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmall) + doubleCountInBlock * sizeof(double));
+   size_t sizeofOneDataSet = size_t(sizeof(DataSetSmallMigration) + doubleCountInBlock * sizeof(double));
 
    for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
@@ -2357,7 +2359,7 @@ void MPIIOMigrationCoProcessor::readRelaxationFactor(int step)
       {
          read_offset = (MPI_Offset)(sizeof(dataSetParam) + block->getGlobalID() * sizeofOneDataSet);
          MPI_File_read_at(file_handler, read_offset, &dataSetSmallArray[ic], 1, dataSetSmallType, MPI_STATUS_IGNORE);
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmall)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(DataSetSmallMigration)), &doubleValuesArray[ic * doubleCountInBlock], 1, dataSetDoubleType, MPI_STATUS_IGNORE);
          ic++;
       }
    }
@@ -2435,7 +2437,7 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
       blocksCount += static_cast<int>(blocksVector[level].size());
    }
 
-   BCAdd* bcAddArray = new BCAdd[blocksCount];
+   BCAddMigration* bcAddArray = new BCAddMigration[blocksCount];
    BoundaryCondition* nullBouCond = new BoundaryCondition();
    memset(nullBouCond, 0, sizeof(BoundaryCondition));
    BoundaryCondition* bcArray;
@@ -2474,13 +2476,13 @@ void MPIIOMigrationCoProcessor::readBoundaryConds(int step)
 
          if (bcAddArray[ic].boundCond_count > 0)
          {
-            MPI_File_read_at(file_handler, (MPI_Offset)(read_offset2 + sizeof(BCAdd)), &bcArray[0], bcAddArray[ic].boundCond_count, boundCondType, MPI_STATUS_IGNORE);
+            MPI_File_read_at(file_handler, (MPI_Offset)(read_offset2 + sizeof(BCAddMigration)), &bcArray[0], bcAddArray[ic].boundCond_count, boundCondType, MPI_STATUS_IGNORE);
          }
-         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset2 + sizeof(BCAdd) + bcAddArray[ic].boundCond_count * sizeof(BoundaryCondition)),
+         MPI_File_read_at(file_handler, (MPI_Offset)(read_offset2 + sizeof(BCAddMigration) + bcAddArray[ic].boundCond_count * sizeof(BoundaryCondition)),
             &intArray1[0], 1, bcindexmatrixType, MPI_STATUS_IGNORE);
          if (bcAddArray[ic].indexContainer_count > 0)
          {
-            MPI_File_read_at(file_handler, (MPI_Offset)(read_offset2 + sizeof(BCAdd) + bcAddArray[ic].boundCond_count * sizeof(BoundaryCondition) + boundCondParamStr.bcindexmatrixCount * sizeof(int)),
+            MPI_File_read_at(file_handler, (MPI_Offset)(read_offset2 + sizeof(BCAddMigration) + bcAddArray[ic].boundCond_count * sizeof(BoundaryCondition) + boundCondParamStr.bcindexmatrixCount * sizeof(int)),
                &intArray2[0], bcAddArray[ic].indexContainer_count, MPI_INT, MPI_STATUS_IGNORE);
          }
 

@@ -695,7 +695,7 @@ string WbWriterVtkXmlBinary::writeQuadsWithNodeData(const string& filename,vecto
    out<<"         <PointData>\n";
    for(size_t s=0; s<datanames.size(); ++s)
    {
-      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+      out<< "            <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
       offset += (bytesPerByteVal + bytesScalarData);
    }
    out<<"         </PointData>\n";
@@ -1180,11 +1180,11 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
    int bytesCellConnectivty = 8 /*nodes per oct */ * nofCells * sizeof(int  );
    int bytesCellOffsets     = 1 /*offset per oct*/ * nofCells * sizeof(int  );
    int bytesCellTypes       = 1 /*type of oct   */ * nofCells * sizeof(unsigned char);
-   int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(float); 
+   int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(double); 
 
    int offset = 0;
    //VTK FILE
-   out<<"<?xml version=\"1.0\"?>\n";
+   out<<"<?xml version=\"2.0\"?>\n";
    out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
    out<<"   <UnstructuredGrid>"<<"\n";
    out<<"      <Piece NumberOfPoints=\""<<nofNodes<<"\" NumberOfCells=\""<<nofCells<<"\">\n";
@@ -1209,7 +1209,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
    out<<"         <PointData>\n";
    for(size_t s=0; s<datanames.size(); ++s)
    {
-      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+      out<< "            <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
       offset += (bytesPerByteVal + bytesScalarData);
    }
    out<<"         </PointData>\n";
@@ -1270,8 +1270,10 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
       for(size_t d=0; d<nodedata[s].size(); ++d)
       {
          //loake kopie machen, da in nodedata "doubles" sind
-         float tmp = (float)nodedata[s][d];
-         out.write((char*)&tmp,sizeof(float));
+         //float tmp = (float)nodedata[s][d];
+         //out.write((char*)&tmp,sizeof(float));
+         double tmp = nodedata[s][d];
+         out.write((char*)&tmp,sizeof(double));
       }
    }
    out<<"\n</AppendedData>\n";

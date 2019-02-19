@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void run(string configname)
+void run()
 {
    try
    {
@@ -17,10 +17,10 @@ void run(string configname)
       double availMem = 5e9;
 
       //40
-      string  pathname = "d:/temp/AcousticPulse40Cube2y_test";
-      double  endTime = 20;
-      double  outTime = 20;
-      LBMReal dx =  0.05;
+      //string  pathname = "d:/temp/AcousticPulse40Cube2y_test";
+      //double  endTime = 20;
+      //double  outTime = 20;
+      //LBMReal dx =  0.05;
 
       //80
       //string  pathname = "d:/temp/AcousticPulse80Cube2y";
@@ -37,8 +37,35 @@ void run(string configname)
       //LBMReal dx = 0.1; 
       //LBMReal dx = 1.66666666667e-2; //120
       
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 3.97e-7;
+
+      //////////////////////////////////////////////////////////////////////////
+      //DLR-F16 test
+      //dx_coarse = 0.003 mm
+      string  pathname = "d:/temp/AcousticPulseXZ-0.003-omega";
+      int     endTime = 20;
+      double  outTime = 20;
+      LBMReal dx =  0.003;
       LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 3.97e-7;
+      LBMReal nuLB = 8.66025e-6;
+      //////////////////////////////////////////////////////////////////////////
+      ////dx_coarse = 0.0015 mm
+      //string  pathname = "d:/temp/AcousticPulseXZ-0.0015";
+      //double  endTime = 40;
+      //double  outTime = 40;
+      //LBMReal dx =  0.0015;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6*2.0;
+      ////////////////////////////////////////////////////////////////////////////
+      //dx_coarse = 0.00075 mm
+      //string  pathname = "d:/temp/AcousticPulseXZ-0.00075";
+      //double  endTime = 80;
+      //double  outTime = 80;
+      //LBMReal dx =  0.00075;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6*4.0;
+      //////////////////////////////////////////////////////////////////////////
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
 
@@ -46,21 +73,21 @@ void run(string configname)
       int refineLevel = 1;
 
       //bounding box
-      double g_minX1 = -1.0;
-      double g_minX2 = -1.0;
-      double g_minX3 = -1.0;
+      double g_minX1 = -0.06;
+      double g_minX2 = -0.06;
+      double g_minX3 = -0.06;
 
-      double g_maxX1 = 1.0;
-      double g_maxX2 = 1.0;
-      double g_maxX3 = 1.0;
+      double g_maxX1 = 0.06;
+      double g_maxX2 = 0.06;
+      double g_maxX3 = 0.06;
 
-      //double g_minX1 = 0.0;
-      //double g_minX2 = 0.0;
-      //double g_minX3 = 0.0;
+      //double g_minX1 = -1;
+      //double g_minX2 = -1;
+      //double g_minX3 = -1;
 
-      //double g_maxX1 = 5.0;
-      //double g_maxX2 = 5.0;
-      //double g_maxX3 = dx;
+      //double g_maxX1 = 1;
+      //double g_maxX2 = 1;
+      //double g_maxX3 = 1;
 
       vector<int>  blocknx(3);
       blocknx[0] = 10;
@@ -75,15 +102,6 @@ void run(string configname)
       double blockLength = blocknx[0] * dx;
 
       SPtr<Grid3D> grid(new Grid3D(comm));
-
-      //////////////////////////////////////////////////////////////////////////
-      //restart
-      SPtr<Grid3D> oldGrid(new Grid3D(comm));
-      SPtr<UbScheduler> rSch(new UbScheduler(10));
-      //MPIIORestartCoProcessor rcp(oldGrid, rSch, pathname, comm);
-      //rcp.restart(0);
-      //////////////////////////////////////////////////////////////////////////
-
       grid->setDeltaX(dx);
       grid->setBlockNX(blocknx[0], blocknx[1], blocknx[2]);
       grid->setPeriodicX1(true);
@@ -94,7 +112,7 @@ void run(string configname)
       GenBlocksGridVisitor genBlocks(gridCube);
       grid->accept(genBlocks);
 
-      SPtr<GbObject3D> refCube(new GbCuboid3D(-0.4,-0.4,-0.4,0.4,0.4,0.4));
+      SPtr<GbObject3D> refCube(new GbCuboid3D(-0.02,-0.02,-0.02,0.02,0.02,0.02));
       if (myid==0) GbSystem3D::writeGeoObject(refCube.get(), pathname+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
 
       if (refineLevel>0)
@@ -106,7 +124,7 @@ void run(string configname)
          if (myid==0) UBLOG(logINFO, "Refinement - end");
       }
 
-      WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
+      SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathname, WbWriterVtkXmlBinary::getInstance(), comm));
 
       SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
       InteractorsHelper intHelper(grid, metisVisitor);
@@ -115,10 +133,10 @@ void run(string configname)
       ppblocks->process(0);
       ppblocks.reset();
 
-      //set connectors
-      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-      InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
+      //set connectors  
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
+      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkOmegaToOmega(true);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");
@@ -156,8 +174,10 @@ void run(string configname)
       }
 
 
-      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel(blocknx[0], blocknx[1], blocknx[2], CompressibleCumulantLBMKernel::NORMAL));
-      dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(10.0*nuLB);
+      //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
+      //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
       SPtr<BCProcessor> bcProcessor(new BCProcessor());
 
@@ -178,25 +198,22 @@ void run(string configname)
       //x
       //fctRoh.SetExpr("epsilon*exp(-alpha*(x3*x3+x2*x2))");
       //y
-      fctRoh.SetExpr("epsilon*exp(-alpha*(x3*x3+x1*x1))");
+      fctRoh.SetExpr("epsilon*exp(-alpha*scaleFactor*(x3*x3+x1*x1))");
+      //fctRoh.SetExpr("epsilon*exp(-alpha*(x3*x3+x1*x1))");
 
       fctRoh.DefineConst("epsilon", 1e-3);
       fctRoh.DefineConst("alpha", log(2.0)/(0.01));
+      fctRoh.DefineConst("scaleFactor", 277.777777779);
       //fctRoh.SetExpr("x1*0.001");
 
       //initialization of distributions
-      InitDistributionsBlockVisitor initVisitor(nuLB, rhoLB);
+      InitDistributionsBlockVisitor initVisitor;
       initVisitor.setRho(fctRoh);
       grid->accept(initVisitor);
 
-      //InitDistributionsWithCoarseGridBlockVisitor initVisitor(oldGrid, grid, iProcessor, nuLB);
-      //grid->accept(initVisitor);
-
-
       //Postrozess
       SPtr<UbScheduler> geoSch(new UbScheduler(1));
-      WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-         new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      SPtr<CoProcessor> ppgeo(new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathname, WbWriterVtkXmlBinary::getInstance(), comm));
       ppgeo->process(0);
       ppgeo.reset();
 
@@ -210,17 +227,22 @@ void run(string configname)
       }
 
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+      writeMQCoProcessor->process(0);
 
       SPtr<UbScheduler> nupsSch(new UbScheduler(10, 30, 100));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      std::shared_ptr<NUPSCounterCoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
+      SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+      SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+      calculator->addCoProcessor(nupsCoProcessor);
+      calculator->addCoProcessor(writeMQCoProcessor);
 
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::MPI));
-      if (myid == 0) UBLOG(logINFO, "Simulation-start");
-      calculation->calculate();
-      if (myid == 0) UBLOG(logINFO, "Simulation-end");
+      //omp_set_num_threads(1);
+
+      if (myid==0) UBLOG(logINFO, "Simulation-start");
+      calculator->calculate();
+      if (myid==0) UBLOG(logINFO, "Simulation-end");
    }
    catch (std::exception& e)
    {
@@ -238,18 +260,6 @@ void run(string configname)
 }
 int main(int argc, char* argv[])
 {
-   //if (argv != NULL)
-   //{
-      //if (argv[1] != NULL)
-      //{
-      //   run(string(argv[1]));
-      //}
-      //else
-      //{
-      //   cout << "Configuration file is missing!" << endl;
-      //}
-   //}
-
-   run("hallo");
+   run();
 }
 
