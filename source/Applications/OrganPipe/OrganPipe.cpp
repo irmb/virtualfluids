@@ -31,11 +31,12 @@ void run(string configname)
       string          pathOut = config.getValue<string>("pathOut");
       string          pathGeo = config.getValue<string>("pathGeo");
 
-      string          opipeGeoFile = "/OrganPipeTransformed.stl";      string          inletTubeGeoFile = "/tubeTransformed.stl";
+      string          opipeGeoFile = "/OrganPipeTransformed.stl";
+      string          inletTubeGeoFile = "/tubeTransformed.stl";
 
       double  deltaXfine = 0.000125;
       const int baseLevel = 0;
-      int refineLevel = 9;
+      int refineLevel = 8;
       double deltaXcoarse = deltaXfine*(double)(1 << refineLevel);
 
       LBMReal rho_LB = 0.0;
@@ -134,6 +135,7 @@ void run(string configname)
       outflowBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new NonReflectingOutflowBCAlgorithm()));
 
       BoundaryConditionsBlockVisitor bcVisitor;
+      bcVisitor.addBC(noSlipBCAdapter);
       bcVisitor.addBC(slipBCAdapter);
       bcVisitor.addBC(velBCAdapter);
       bcVisitor.addBC(outflowBCAdapter);
@@ -168,19 +170,42 @@ void run(string configname)
 
          grid->accept(genBlocks);
 
+         //geometry
+         if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:start");
+         SPtr<GbTriFaceMesh3D> organPipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + opipeGeoFile, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         organPipeGeo->translate(1.37, 0.0, 0.0);
+         if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:end");
+         if (myid == 0) GbSystem3D::writeGeoObject(organPipeGeo.get(), pathOut + "/geo/organPipeGeo", WbWriterVtkXmlBinary::getInstance());
+
+         if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:start");
+         SPtr<GbTriFaceMesh3D> inletTubeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         inletTubeGeo->translate(1.37, 0.0, 0.0);
+         if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:end");
+         if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<Interactor3D> organPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(organPipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
+         SPtr<Interactor3D> inletTubeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inletTubeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
+         double op_offset = organPipeGeo->getX1Minimum()-inletTubeGeo->getX1Minimum();
+         double startX1it = inletTubeGeo->getX1Minimum();
+
          //////////////////////////////////////////////////////////////////////////
          //refinement
 
-         SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(g_minX1, -0.0165, -0.0165, g_minX1+0.2634, 0.0165, 0.0165));
-         if (myid==0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut+"/geo/refCube", WbWriterVtkXmlBinary::getInstance());
+         SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(startX1it, -0.0165, -0.0165, startX1it+0.2634+op_offset, 0.0165, 0.0165));
+         if (myid==0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut+"/geo/refineBoxL7", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL8(new GbCuboid3D(g_minX1, -0.024, -0.024, g_minX1+0.0869, 0.024, 0.024));         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL8.get(), pathOut + "/geo/refineBoxL8", WbWriterVtkXmlASCII::getInstance());
+         SPtr<GbObject3D> refineBoxL8(new GbCuboid3D(startX1it, -0.024, -0.024, startX1it+0.09+op_offset, 0.024, 0.024));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL8.get(), pathOut + "/geo/refineBoxL8", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL91(new GbCuboid3D(g_minX1, -0.005, -0.005, g_minX1+0.02, 0.005, 0.005));         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL91.get(), pathOut + "/geo/refineBoxL91", WbWriterVtkXmlASCII::getInstance());
+         SPtr<GbObject3D> refineBoxL91(new GbCuboid3D(startX1it, -0.005, -0.005, startX1it+0.02+op_offset, 0.005, 0.005));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL91.get(), pathOut + "/geo/refineBoxL91", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL92(new GbCuboid3D(g_minX1+0.02, -0.0165, -0.0165, g_minX1+0.06, 0.0165, 0.0165));         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL92.get(), pathOut + "/geo/refineBoxL92", WbWriterVtkXmlASCII::getInstance());
+         SPtr<GbObject3D> refineBoxL92(new GbCuboid3D(startX1it+0.02, -0.0165, -0.0165, startX1it+0.06+op_offset, 0.0165, 0.0165));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL92.get(), pathOut + "/geo/refineBoxL92", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL93(new GbCuboid3D(g_minX1+0.06, -0.0165, -0.0165, g_minX1+0.09, 0.0165, 0.024));         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL93.get(), pathOut + "/geo/refineBoxL93", WbWriterVtkXmlASCII::getInstance());
+         SPtr<GbObject3D> refineBoxL93(new GbCuboid3D(startX1it+0.06, -0.0165, -0.0165, startX1it+0.09+op_offset, 0.0165, 0.024));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL93.get(), pathOut + "/geo/refineBoxL93", WbWriterVtkXmlBinary::getInstance());
 
          if (refineLevel>0)
          {
@@ -217,20 +242,19 @@ void run(string configname)
          SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          //inflow
-         
-         GbCylinder3DPtr geoInflow(new GbCylinder3D(g_minX1-deltaXcoarse, 0.0, 0.0, g_minX1, 0.0, 0.0, radius_inlet));
+         GbCylinder3DPtr geoInflow(new GbCylinder3D(startX1it-deltaXfine*3.0, 0.0, 0.0, startX1it+deltaXfine*3.0, 0.0, 0.0, radius_inlet));
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
+         SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
+
+         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-deltaXfine*5.0, 0.0, 0.0, startX1it, 0.0, 0.0, radius_inlet+deltaXfine*2.0));
+         if (myid == 0) GbSystem3D::writeGeoObject(geoInflowCover.get(), pathOut + "/geo/geoInflowCover", WbWriterVtkXmlASCII::getInstance());
+         SPtr<D3Q27Interactor> inflowCoverIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflowCover, grid, noSlipBCAdapter, Interactor3D::SOLID));
+
          //outflow
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2 - deltaXcoarse, g_minX3 - deltaXcoarse, g_maxX1 + deltaXcoarse, g_maxX2 + deltaXcoarse, g_maxX3 + deltaXcoarse));
          if (myid == 0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathOut + "/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
-         //inflow
-         SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
-         //outflow
          SPtr<D3Q27Interactor> outflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, outflowBCAdapter, Interactor3D::SOLID));
 
-         if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:start");         SPtr<GbTriFaceMesh3D> organPipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + opipeGeoFile, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));         if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:end");         if (myid == 0) GbSystem3D::writeGeoObject(organPipeGeo.get(), pathOut + "/geo/organPipeGeo", WbWriterVtkXmlBinary::getInstance());         if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:start");         SPtr<GbTriFaceMesh3D> inletTubeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));         if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:end");         if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
-
-         SPtr<Interactor3D> organPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(organPipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));         SPtr<Interactor3D> inletTubeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inletTubeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
          ////////////////////////////////////////////
          //METIS
@@ -248,6 +272,7 @@ void run(string configname)
          intHelper.addInteractor(inflowIntr);
          intHelper.addInteractor(organPipeInter);
          intHelper.addInteractor(inletTubeInter);
+         intHelper.addInteractor(inflowCoverIntr);
          intHelper.selectBlocks();
          if (myid == 0) UBLOG(logINFO, "deleteSolidBlocks - end");
 
