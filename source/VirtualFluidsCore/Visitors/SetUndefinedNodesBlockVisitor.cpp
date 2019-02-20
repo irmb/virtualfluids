@@ -10,8 +10,7 @@
 #include "ILBMKernel.h"
 
 
-SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor() : 
-                                    Block3DVisitor(0, Grid3DSystem::MAXLEVEL) 
+SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor(bool twoTypeOfConectorsCheck) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck) 
 {
 
 }
@@ -634,18 +633,18 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
    //invert scaleCF blocks
    if(block->hasInterpolationFlagCF())
    {
-      //if(block->hasInterpolationFlagFC()) 
-      //{
-      //   for (int i = D3Q27System::E; i <= D3Q27System::BSW; i++)
-      //   {
-      //       UBLOG(logINFO, "FC in dir="<<i<<" "<<block->hasInterpolationFlagFC(i));
-      //   }
-      //   for (int i = D3Q27System::E; i<=D3Q27System::BSW; i++)
-      //   {
-      //      UBLOG(logINFO, "CF in dir="<<i<<" "<<block->hasInterpolationFlagCF(i));
-      //   }
-      //   throw UbException(UB_EXARGS, "block "+block->toString()+" has CF and FC");
-      //}
+      if(block->hasInterpolationFlagFC() && twoTypeOfConnectorsCheck) 
+      {
+         for (int i = D3Q27System::E; i <= D3Q27System::BSW; i++)
+         {
+             UBLOG(logINFO, "FC in dir="<<i<<" "<<block->hasInterpolationFlagFC(i));
+         }
+         for (int i = D3Q27System::E; i<=D3Q27System::BSW; i++)
+         {
+            UBLOG(logINFO, "CF in dir="<<i<<" "<<block->hasInterpolationFlagCF(i));
+         }
+         throw UbException(UB_EXARGS, "block "+block->toString()+" has CF and FC");
+      }
 
       minX1 = gl;
       minX2 = gl;

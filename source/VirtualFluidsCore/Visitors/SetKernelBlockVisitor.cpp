@@ -7,23 +7,8 @@
 #include "Block3D.h"
 #include "LBMKernel.h"
 
-//SetKernelBlockVisitor::SetKernelBlockVisitor(LBMKernel3DPtr kernel, LBMReal nue) : 
-//                        Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue)
-//{
-//
-//}
 //////////////////////////////////////////////////////////////////////////
-//SetKernelBlockVisitor::SetKernelBlockVisitor( LBMKernel3DPtr kernel, LBMReal nue, double availMem, double needMem ) : 
-//                                              Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue)
-//{
-//   if (needMem > availMem)
-//   {
-//      throw UbException(UB_EXARGS,"SetKernelBlockVisitor: Not enough memory!!!");
-//   }
-//}
-//////////////////////////////////////////////////////////////////////////
-SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action /*= SetKernelBlockVisitor::New*/) :
-                                             Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue), action(action), dataSetFlag(true)
+SetKernelBlockVisitor::SetKernelBlockVisitor(SPtr<LBMKernel> kernel, LBMReal nue, double availMem, double needMem, SetKernelBlockVisitor::Action action) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), kernel(kernel), nue(nue), action(action), dataSetFlag(true)
 {
    if (needMem > availMem)
    {
