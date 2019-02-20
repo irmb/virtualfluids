@@ -11,7 +11,7 @@
 #include <vtkDataArray.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkPointData.h>
-#include <vtkTimerLog.h>
+
 #include <vtkProbeFilter.h>
 #include <vtkImageData.h>
 #include <vtkXMLImageDataWriter.h>

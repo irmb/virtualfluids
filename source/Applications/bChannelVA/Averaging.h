@@ -1,7 +1,8 @@
 #include <array>
 #include "CbArray3D.h"
 #include "UbSystem.h"
-#include <vtkTimerLog.h>#include <vtkSmartPointer.h>
+#include <vtkTimerLog.h>
+#include <vtkSmartPointer.h>
 
 
 class Averaging
