@@ -21,7 +21,7 @@ public:
 	void setBasicGridLengths(std::vector<double> basicGridLengths);
 	void setStartTimeStepCalculation(int startTimeStepCalculation);
 	void setEndTimeStepCalculation(int endTimeStepCalculation);
-	void setDataToCalcPhiAndNu(std::string dataToCalcPhiAndNu);
+	void setDataToCalc(std::string dataToCalcPhiAndNu);
 	void setNy(std::vector<double> ny);
 	void setNyDiff(std::vector<double> nyDiff);
 	void setOrderOfAccuracy(std::vector<std::vector<double> > orderOfAccuracy);

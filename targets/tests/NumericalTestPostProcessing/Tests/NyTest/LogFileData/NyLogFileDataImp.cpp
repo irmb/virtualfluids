@@ -55,7 +55,7 @@ void NyLogFileDataImp::setEndTimeStepCalculation(int endTimeStepCalculation)
 	this->endTimeStepCalculation = endTimeStepCalculation;
 }
 
-void NyLogFileDataImp::setDataToCalcPhiAndNu(std::string dataToCalc)
+void NyLogFileDataImp::setDataToCalc(std::string dataToCalc)
 {
 	this->dataToCalc = dataToCalc;
 }

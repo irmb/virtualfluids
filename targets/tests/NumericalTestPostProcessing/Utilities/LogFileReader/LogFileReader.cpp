@@ -158,6 +158,9 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 	logFileData->setL2NormTestBetweenKernelRun(StringUtil::toBool(input->getValue("L2NormTestBetweenKernel")));
 
 	if (logFileData->getPhiTestRun()) {
+		std::vector<std::string> failPhi = StringUtil::toStringVector(input->getValue("FailTests_Phi_PhiTest"));
+		std::vector<std::string> failOOA = StringUtil::toStringVector(input->getValue("FailTests_OOA_PhiTest"));
+
 		std::vector<std::string> dataToCalc = StringUtil::toStringVector(input->getValue("DataToCalc_PhiTest"));
 		std::vector<std::shared_ptr<PhiLogFileData> > aPhiLogGroup;
 		for (int i = 0; i < dataToCalc.size(); i++) {
@@ -170,24 +173,47 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 			std::vector<double> phiDiff;
 			std::vector<std::vector<double> > orderOfAccuracy;
 			for (int j = 0; j < logFileData->getBasicGridLengths().size(); j++) {
-				std::ostringstream phiDiffString;
-				phiDiffString << "PhiDiff_" << logFileData->getBasicGridLengths().at(j) << "_" << dataToCalc.at(i);
-				phiDiff.push_back(StringUtil::toDouble(input->getValue(phiDiffString.str())));
-
-				std::vector<double> aOrderOfAccuracyGroup;
-				for (int k = j + 1; k < logFileData->getBasicGridLengths().size(); k++) {
-					std::ostringstream phiDiff;
-					phiDiff << "OrderOfAccuracy_PhiDiff_" << logFileData->getBasicGridLengths().at(j) << "_" << logFileData->getBasicGridLengths().at(k) << "_" << dataToCalc.at(i);
-					aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue(phiDiff.str())));
+				std::ostringstream phiBasicString, phiString, phiDiffString;
+				phiBasicString << logFileData->getBasicGridLengths().at(j) << "_" << dataToCalc.at(i);
+				bool failData = false;
+				for (int k = 0; k < failPhi.size(); k++) {
+					if (phiBasicString.str() == failPhi.at(k))
+						failData = true;
 				}
-				if(aOrderOfAccuracyGroup.size() > 0)
-					orderOfAccuracy.push_back(aOrderOfAccuracyGroup);
+				if (!failData) {
+					phiDiffString << "PhiDiff_" << logFileData->getBasicGridLengths().at(j) << "_" << dataToCalc.at(i);
+					phiDiff.push_back(StringUtil::toDouble(input->getValue(phiDiffString.str())));
+				}
+
+
+				for (int k = j + 1; k < logFileData->getBasicGridLengths().size(); k++) {
+					std::vector<double> aOrderOfAccuracyGroup;
+					std::ostringstream phiDiffOOA, phiDiffBasicOOA;
+					phiDiffBasicOOA << logFileData->getBasicGridLengths().at(j) << "_" << logFileData->getBasicGridLengths().at(k) << "_" << dataToCalc.at(i);
+					bool failData = false;
+					for (int k = 0; k < failOOA.size(); k++) {
+						if (phiDiffBasicOOA.str() == failOOA.at(k))
+							failData = true;
+					}
+					if (!failData) {
+						phiDiffOOA << "OrderOfAccuracy_PhiDiff_" << phiDiffBasicOOA.str();
+						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(j));
+						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(k));
+						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue(phiDiffOOA.str())));
+					}
+					if (aOrderOfAccuracyGroup.size() > 0)
+						orderOfAccuracy.push_back(aOrderOfAccuracyGroup);
+
+				}
+
+
 			}
-			if(phiDiff.size() > 0)
+			if (phiDiff.size() > 0) {
 				phiLog->setPhiDiff(phiDiff);
-			if(orderOfAccuracy.size() > 0)
+			}
+			if (orderOfAccuracy.size() > 0)
 				phiLog->setOrderOfAccuracy(orderOfAccuracy);
-			if(phiDiff.size() > 0 || orderOfAccuracy.size() > 0)
+			if (phiDiff.size() > 0 || orderOfAccuracy.size() > 0)
 				aPhiLogGroup.push_back(phiLog);
 		}
 		if (aPhiLogGroup.size() > 0)
@@ -195,6 +221,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		else
 			logFileData->setPhiTestRun(false);
 	}
+
 
 	if (logFileData->getNyTestRun()) {
 		std::vector<std::string> failNy = StringUtil::toStringVector(input->getValue("FailTests_Ny_NyTest"));
@@ -205,7 +232,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		for (int i = 0; i < dataToCalc.size(); i++) {
 			std::shared_ptr<NyLogFileDataImp> nyLog = NyLogFileDataImp::getNewInstance();
 			nyLog->setBasicGridLengths(logFileData->getBasicGridLengths());
-			nyLog->setDataToCalcPhiAndNu(dataToCalc.at(i));
+			nyLog->setDataToCalc(dataToCalc.at(i));
 			nyLog->setStartTimeStepCalculation(StringUtil::toInt(input->getValue("StartTimeStepCalculation_NyTest")));
 			nyLog->setEndTimeStepCalculation(StringUtil::toInt(input->getValue("EndTimeStepCalculation_NyTest")));
 
@@ -226,22 +253,27 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 					nyDiff.push_back(StringUtil::toDouble(input->getValue(nyDiffString.str())));
 				}			
 
-				std::vector<double> aOrderOfAccuracyGroup;
+				
 				for (int k = j + 1; k < logFileData->getBasicGridLengths().size(); k++) {
-					std::ostringstream nyDiff, nyDiffBasic;
-					nyDiffBasic << logFileData->getBasicGridLengths().at(j) << "_" << logFileData->getBasicGridLengths().at(k) << "_" << dataToCalc.at(i);
+					std::vector<double> aOrderOfAccuracyGroup;
+					std::ostringstream nyDiffOOA, nyDiffBasicOOA;
+					nyDiffBasicOOA << logFileData->getBasicGridLengths().at(j) << "_" << logFileData->getBasicGridLengths().at(k) << "_" << dataToCalc.at(i);
 					bool failData = false;
 					for (int k = 0; k < failOOA.size(); k++) {
-						if (nyDiffBasic.str() == failOOA.at(k))
+						if (nyDiffBasicOOA.str() == failOOA.at(k))
 							failData = true;
 					}
 					if (!failData) {
-						nyDiff << "OrderOfAccuracy_NyDiff_" << nyDiffBasic.str();
-						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue(nyDiff.str())));
+						nyDiffOOA << "OrderOfAccuracy_NyDiff_" << nyDiffBasicOOA.str();
+						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(j));
+						aOrderOfAccuracyGroup.push_back(logFileData->getBasicGridLengths().at(k));
+						aOrderOfAccuracyGroup.push_back(StringUtil::toDouble(input->getValue(nyDiffOOA.str())));
 					}
+					if (aOrderOfAccuracyGroup.size() > 0)
+						orderOfAccuracy.push_back(aOrderOfAccuracyGroup);
+						
 				}
-				if(aOrderOfAccuracyGroup.size() > 0)
-					orderOfAccuracy.push_back(aOrderOfAccuracyGroup);
+				
 
 			}
 			if (ny.size() > 0) {
