@@ -1,6 +1,6 @@
 #include "ShearWaveAnalyticalResults.h"
 
-#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
+#include "Simulations/ShearWave/ShearWaveParameterStruct.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -17,10 +17,10 @@ void ShearWaveAnalyticalResults::calc(std::shared_ptr<SimulationResults> simResu
 	for (int i = 0; i < numberOfTimeSteps; i++) {
 		for (int j = 0; j < numberOfNodes; j++) {
 			vx.at(i).at(j) = (l0*u0) / xNodes;
-			vy.at(i).at(j) = (double)0.0;
-			vz.at(i).at(j) = (l0*v0*cos(((double)2.0 * M_PI*z.at(i).at(j)) / zNodes) * sin(((double)2.0 * M_PI*(x.at(i).at(j) + (l0*time.at(i)*u0) / xNodes)) / xNodes)) / (exp(time.at(i)*viscosity*(((double)4.0 * M_PI*M_PI) / xNodes*xNodes + ((double)4.0 * M_PI*M_PI) / zNodes*zNodes))*xNodes);
-			press.at(i).at(j) = (double)0.0;
-			rho.at(i).at(j) = (l0*l0 * rho0*v0*sin(((double)2.0 * M_PI*z.at(i).at(j)) / zNodes) * ((double)-4.0 * exp(((double)4.0 * M_PI*M_PI * time.at(i)*viscosity*(xNodes*xNodes + zNodes*zNodes)) / (xNodes*xNodes * zNodes*zNodes))*u0*zNodes*cos(((double)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / (xNodes*xNodes)) + v0*xNodes*sin(((double)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / (xNodes*xNodes))*sin(((double)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / (xNodes*xNodes)) * sin((2 * M_PI*z.at(i).at(j)) / zNodes))) / ((double)2.0 * exp(((double)8.0 * M_PI*M_PI * time.at(i)*viscosity*(xNodes*xNodes + zNodes*zNodes)) / (xNodes*xNodes * zNodes*zNodes))*xNodes*xNodes*xNodes);
+			vy.at(i).at(j) = (l0*v0*cos(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)*sin(((real)2.0 * M_PI*(x.at(i).at(j) + (l0*time.at(i)*u0) / xNodes)) / xNodes)) / (exp(time.at(i)*viscosity*(((real)4.0 * pow(M_PI, (real)2.0)) / pow(xNodes, (real)2.0) + ((real)4.0 * pow(M_PI, (real)2.0)) / pow(zNodes, (real)2.0)))*xNodes);
+			vz.at(i).at(j) = (real)0.0;
+			press.at(i).at(j) = (pow(l0, (real)2.0)*rho0*v0*sin(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)*(-(real)4.0 * exp(((real)4.0 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*u0*zNodes*cos(((real)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)) + v0*xNodes*pow(sin(((real)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)), (real)2.0)*sin(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes))) / ((real)2.0*exp(((real)8.0 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*pow(xNodes, (real)3.0));
+			rho.at(i).at(j) = (pow(l0, (real)2.0)*rho0*v0*sin(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)*(-(real)4.0 * exp(((real)4.0 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*u0*zNodes*cos(((real)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)) + v0*xNodes*pow(sin(((real)2.0 * M_PI*(l0*time.at(i)*u0 + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)), (real)2.0)*sin(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes))) / ((real)2.0*exp(((real)8.0 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*pow(xNodes, (real)3.0));
 		}
 	}
 	calculated = true;

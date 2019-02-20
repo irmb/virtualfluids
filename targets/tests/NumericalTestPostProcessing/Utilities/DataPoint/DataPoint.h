@@ -6,7 +6,7 @@
 class DataPoint
 {
 public:
-	std::shared_ptr<DataPoint> getNewInstance(double x, double y);
+	static std::shared_ptr<DataPoint> getNewInstance(double x, double y);
 	double getX();
 	double getY();
 

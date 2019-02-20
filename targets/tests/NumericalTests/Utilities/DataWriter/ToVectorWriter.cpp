@@ -2,9 +2,9 @@
 
 #include "VirtualFluids_GPU/Output/FileWriter.h"
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
-#include "VirtualFluids_GPU\Output\FileWriter.h"
+#include "VirtualFluids_GPU/Output/FileWriter.h"
 
-#include "Utilities\Structs\VectorWriterInformationStruct.h"
+#include "Utilities/Structs/VectorWriterInformationStruct.h"
 
 ToVectorWriter::ToVectorWriter(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength)
 {
@@ -31,9 +31,15 @@ void ToVectorWriter::writeTimestep(std::shared_ptr<Parameter> para, unsigned int
 	{
 		for (int level = para->getCoarse(); level <= para->getFine(); level++)
 		{
+			if(t==0)
+				para->cudaCopyPrint(level);
 			writeTimestep(para, t, level);
 		}
 	}
 	if (writeVTKFiles && startTimeVTKWriter < t)
 		vtkFileWriter->writeTimestep(para, t);
+}
+
+ToVectorWriter::ToVectorWriter()
+{
 }

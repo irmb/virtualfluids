@@ -61,8 +61,8 @@
 //////////////////////////////////////////////////////////////////////////
 #include "DataStructureInitializer/GridProvider.h"
 #include "Output/DataWriter.h"
-#include "Kernel\KernelFactory.h"
-#include "Kernel\Kernel.h"
+#include "Kernel/KernelFactory/KernelFactory.h"
+#include "Kernel/Kernel.h"
 
 Simulation::Simulation()
 {

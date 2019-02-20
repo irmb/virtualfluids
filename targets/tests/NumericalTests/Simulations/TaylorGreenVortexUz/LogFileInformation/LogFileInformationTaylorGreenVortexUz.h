@@ -2,7 +2,7 @@
 #define LOGFILE_INFORMATION_TAYLOR_GREEN_UZ_H
 
 #include "Utilities/LogFileInformation/LogFileInformationImp.h"
-#include "Utilities\LogFileInformation\SimulationLogFileInformation\SimulationLogFileInformation.h"
+#include "Utilities/LogFileInformation/SimulationLogFileInformation/SimulationLogFileInformation.h"
 
 #include <memory>
 #include <vector>
@@ -26,6 +26,7 @@ private:
 	double uz;
 	double amplitude;
 	std::vector<double> lz;
+	std::vector<double> lx;
 	int l0;
 };
 #endif 

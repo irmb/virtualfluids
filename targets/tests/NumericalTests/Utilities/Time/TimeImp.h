@@ -18,18 +18,23 @@ public:
 	void setTestEndTime();
 	void setAnalyticalResultWriteStartTime();
 	void setAnalyticalResultWriteEndTime();
+	void setResultCheckStartTime();
+	void setResultCheckEndTime();
 
 	std::string getSimulationTime();
+	std::string getResultCheckTime();
 	std::string getTestTime();
 	std::string getAnalyticalResultWriteTime();
 
 private:
 	TimeImp();
 	double calcSimulationTime();
+	float calcResultCheckTime();
 	float calcTestTime();
 	double calcAnalyticalResultWriteTime();
 
 	time_t simulationStartTime, simulationEndTime;
+	clock_t resultCheckStartTime, resultCheckEndTime;
 	clock_t testStartTime, testEndTime;
 	time_t analyticalResultWriteStartTime, analyticalResultWriteEndTime;
 };

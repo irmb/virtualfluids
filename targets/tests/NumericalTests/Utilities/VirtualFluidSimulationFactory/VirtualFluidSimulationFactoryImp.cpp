@@ -1,12 +1,11 @@
 #include "VirtualFluidSimulationFactoryImp.h"
 
-#include "Utilities\GridReaderforTesting\GridReaderforTesting.h"
-#include "Utilities\InitialCondition\InitialCondition.h"
-#include "Utilities\KernelConfiguration\KernelConfiguration.h"
-#include "Utilities\TestSimulation\TestSimulation.h"
-#include "Utilities\SimulationParameter\SimulationParameter.h"
-#include "Utilities\VirtualFluidSimulation\VirtualFluidSimulationImp.h"
-#include "VirtualFluids_GPU/Communication/Communicator.h"
+#include "Utilities/GridReaderforTesting/GridReaderforTesting.h"
+#include "Utilities/InitialCondition/InitialCondition.h"
+#include "Utilities/KernelConfiguration/KernelConfiguration.h"
+#include "Utilities/TestSimulation/TestSimulation.h"
+#include "Utilities/SimulationParameter/SimulationParameter.h"
+#include "Utilities/VirtualFluidSimulation/VirtualFluidSimulationImp.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 
@@ -23,15 +22,13 @@ VirtualFluidSimulationFactoryImp::VirtualFluidSimulationFactoryImp()
 std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::shared_ptr<SimulationParameter> simPara)
 {
 	std::shared_ptr<Parameter> para = Parameter::make();
-	Communicator* comm = Communicator::getInstanz();
-	para->setNumprocs(comm->getNummberOfProcess());
-	para->setMyID(comm->getPID());
 
 	para->setMaxDev(simPara->getDevices().size());
 	para->setDevices(simPara->getDevices());
+	para->setNumprocs(1);
 
 	std::string _prefix = "cells";
-	std::string gridPath = simPara->getGridPath() + "\\";
+	std::string gridPath = simPara->getGridPath() + "/";
 	para->setFName(simPara->getFilePath() + "/" + _prefix);
 	para->setPrintFiles(true);
 
@@ -56,7 +53,6 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setneighborX(gridPath + "neighborX.dat");
 	para->setneighborY(gridPath + "neighborY.dat");
 	para->setneighborZ(gridPath + "neighborZ.dat");
-	para->setneighborWSB(gridPath + "neighborWSB.dat");
 	para->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
 	para->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
 	para->setinletBcQs(gridPath + "inletBoundaryQs.dat");

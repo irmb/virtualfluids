@@ -1,7 +1,7 @@
 #include "ShearWaveLogFileInformation.h"
 
-#include "Simulations\ShearWave\ShearWaveParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Simulations/ShearWave/ShearWaveParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 std::shared_ptr<ShearWaveInformation> ShearWaveInformation::getNewInstance(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
@@ -33,14 +33,14 @@ std::string ShearWaveInformation::getOutput()
 std::string ShearWaveInformation::getFilePathExtensionOne()
 {
 	std::ostringstream oss;
-	oss << "ShearWave\\";
+	oss << "ShearWave/";
 	return oss.str();
 }
 
 std::string ShearWaveInformation::getFilePathExtensionTwo()
 {
 	std::ostringstream oss;
-	oss << "ux_" << ux << "_uz_" << uz << "\\";
+	oss << "ux_" << ux << "_uz_" << uz << "/";
 	return oss.str();
 }
 

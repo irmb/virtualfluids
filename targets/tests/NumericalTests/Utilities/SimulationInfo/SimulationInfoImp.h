@@ -20,10 +20,11 @@ public:
 	int getNumberOfSimulations();
 	int getSimulationID();
 	std::string getRunTimeOutput();
+	std::vector<std::string> getDataToCalcTests();
 
 protected:
 	SimulationInfoImp() {};
-	SimulationInfoImp(int simID, std::string kernelName, double viscosity, int lx, int numberOfSimulations, std::string simulationName);
+	SimulationInfoImp(int simID, std::string kernelName, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests);
 
 	double viscosity;
 	std::string kernelName;
@@ -32,6 +33,7 @@ protected:
 	int lx;
 	int numberOfSimulations, simID;
 	std::shared_ptr<TimeInfo> timeInfo;
+	std::vector<std::string> dataToCalcTests;
 
 private:
 

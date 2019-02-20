@@ -1,6 +1,6 @@
 #include "LogFileInformationTaylorGreenVortexUz.h"
 
-#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+#include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
 
 std::shared_ptr<LogFileInformationTaylorGreenUz> LogFileInformationTaylorGreenUz::getNewInstance(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)
 {
@@ -11,19 +11,19 @@ std::string LogFileInformationTaylorGreenUz::getOutput()
 {
 	makeCenterHead("TaylorGreenVortex V0 Information");
 	oss << "SimulationName=TaylorGreenVortexUz" << std::endl;
-	oss << "Lz=\"";
-	for (int i = 0; i < lz.size(); i++) {
-		oss << lz.at(i);
-		if (i < lz.size() - 1)
+	oss << "Lx=\"";
+	for (int i = 0; i < lx.size(); i++) {
+		oss << lx.at(i);
+		if (i < lx.size() - 1)
 			oss << " ";
 		else
 			oss << "\"" << std::endl << std::endl;
 	}
 
 	for (int i = 0; i < lz.size(); i++) {
-		oss << "l0_" << lz.at(i) << "=" << l0 << std::endl;
-		oss << "uz_" << lz.at(i) << "=" << uz / (lz.at(i) / l0) << std::endl;
-		oss << "Amplitude_" << lz.at(i) << "=" << amplitude / (lz.at(i) / l0) << std::endl;
+		oss << "l0_" << lx.at(i) << "=" << l0 << std::endl;
+		oss << "uz_" << lx.at(i) << "=" << uz / (lz.at(i) / l0) << std::endl;
+		oss << "Amplitude_" << lx.at(i) << "=" << amplitude / (lz.at(i) / l0) << std::endl;
 		oss << std::endl;
 	}
 	
@@ -33,14 +33,14 @@ std::string LogFileInformationTaylorGreenUz::getOutput()
 std::string LogFileInformationTaylorGreenUz::getFilePathExtensionOne()
 {
 	std::ostringstream oss;
-	oss << "TaylorGreenVortexUz\\";
+	oss << "TaylorGreenVortexUz/";
 	return oss.str();
 }
 
 std::string LogFileInformationTaylorGreenUz::getFilePathExtensionTwo()
 {
 	std::ostringstream oss;
-	oss << "uz_ " << uz << "_Amplitude_ " << amplitude << "\\";
+	oss << "uz_ " << uz << "_Amplitude_ " << amplitude << "/";
 	return oss.str();
 }
 
@@ -52,4 +52,6 @@ LogFileInformationTaylorGreenUz::LogFileInformationTaylorGreenUz(std::shared_ptr
 
 	for (int i = 0; i < gridInfoStruct.size(); i++)
 		lz.push_back(gridInfoStruct.at(i)->lz);
+	for (int i = 0; i < gridInfoStruct.size(); i++)
+		lx.push_back(gridInfoStruct.at(i)->lx);
 }

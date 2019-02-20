@@ -1,7 +1,7 @@
 #ifndef TEST_SIMULATION_H
 #define TEST_SIMULATION_H
 
-#include "Utilities\NumericalTestSuite\NumericalTestSuite.h"
+#include "Utilities/NumericalTestSuite/NumericalTestSuite.h"
 
 #include <memory>
 #include <string>

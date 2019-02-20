@@ -8,11 +8,14 @@
 class CumulantAA2016CompSP27 : public Kernel
 {
 public:
-	static std::shared_ptr< Kernel> getNewInstance(std::shared_ptr< Parameter> para, int level);
+	static std::shared_ptr<Kernel> getNewInstance(std::shared_ptr< Parameter> para, int level);
 	void run();
 	bool checkParameter();
 
+	
+
 private:
+	CumulantAA2016CompSP27();
 	CumulantAA2016CompSP27(std::shared_ptr< Parameter> para, int level);
 	std::shared_ptr< Parameter> para;
 	int level;

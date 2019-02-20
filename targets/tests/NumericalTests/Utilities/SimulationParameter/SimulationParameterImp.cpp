@@ -1,9 +1,9 @@
 #include "SimulationParameterImp.h"
 
-#include "Utilities\KernelConfiguration\KernelConfigurationImp.h"
+#include "Utilities/KernelConfiguration/KernelConfigurationImp.h"
 
-#include "Utilities\Structs\BasicSimulationParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Utilities/Structs/BasicSimulationParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 #include <experimental/filesystem>
 

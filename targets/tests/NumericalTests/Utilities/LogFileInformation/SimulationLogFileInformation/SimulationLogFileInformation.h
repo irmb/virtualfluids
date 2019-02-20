@@ -1,7 +1,7 @@
 #ifndef SIMULATION_LOGFILE_INFORMATION_H
 #define SIMULATION_LOGFILE_INFORMATION_H
 
-#include "Utilities\LogFileInformation\LogFileInformationImp.h"
+#include "Utilities/LogFileInformation/LogFileInformationImp.h"
 
 #include <string>
 

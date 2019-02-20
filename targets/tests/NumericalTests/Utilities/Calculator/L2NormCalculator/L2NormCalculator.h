@@ -2,20 +2,14 @@
 #define L2NORM_CALCULATOR_H
 
 #include <vector>
-#include <memory>
+#include <string>
 
-class FFTCalculator;
 
 class L2NormCalculator
 {
 public:
-	static std::shared_ptr<L2NormCalculator> getInstance();
+	virtual double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz) = 0;
+	virtual std::string getErrorMessage() = 0;
 
-	double calc(std::vector<double> basicData, std::vector<double> divergentData, std::vector<unsigned int> level, double lx, double lz, double timeStepLength);
-
-private:
-	L2NormCalculator();
-
-	std::shared_ptr<FFTCalculator> fftCalc;
 };
 #endif

@@ -1,6 +1,6 @@
 #include "AnalyticalResultsTaylorGreenVortexUx.h"
 
-#include "Simulations\TaylorGreenVortexUx\TaylorGreenVortexUxParameterStruct.h"
+#include "Simulations/TaylorGreenVortexUx/TaylorGreenVortexUxParameterStruct.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -16,11 +16,11 @@ void AnalyticalResultsTaylorGreenUx::calc(std::shared_ptr<SimulationResults> sim
 
 	for (int i = 0; i < numberOfTimeSteps; i++) {
 		for (int j = 0; j < numberOfNodes; j++) {
-			vx.at(i).at(j) = (l0*ux) / xNodes + (amplitude*exp(time.at(i)*viscosity*((-(double)4.0 * pow(M_PI, (double)2.0)) / pow(xNodes, (double)2.0) - ((double)4.0 * pow(M_PI, (double)2.0)) / pow(zNodes, (double)2.0)))*l0*cos(((double)2.0 * M_PI*z.at(i).at(j)) / zNodes)*sin(((double)2.0 * M_PI*(x.at(i).at(j) + (l0*time.at(i)*ux) / xNodes)) / xNodes)) / xNodes;
-			vy.at(i).at(j) = (double)0.0;
-			vz.at(i).at(j) = -((amplitude*exp(time.at(i)*viscosity*((-(double)4.0 * pow(M_PI, (double)2.0)) / pow(xNodes, (double)2.0) - ((double)4.0 * pow(M_PI, (double)2.0)) / pow(zNodes, (double)2.0)))*l0*zNodes*cos(((double)2.0 * M_PI*(x.at(i).at(j) + (l0*time.at(i)*ux) / xNodes)) / xNodes)*sin(((double)2.0 * M_PI*z.at(i).at(j)) / zNodes)) / pow(xNodes, (double)2.0));
-			press.at(i).at(j) = (double)0.0;
-			rho.at(i).at(j) = (amplitude*pow(l0, (double)2.0)*rho0*(amplitude*pow(zNodes, (double)2.0)*pow(cos(((double)2.0 * M_PI*z.at(i).at(j)) / zNodes), (double)2.0) - (double)4.0 * exp(((double)4.0 * pow(M_PI, (double)2.0)*time.at(i)*viscosity*(pow(xNodes, (double)2.0) + pow(zNodes, (double)2.0))) / (pow(xNodes, (double)2.0)*pow(zNodes, (double)2.0)))*ux*(pow(xNodes, (double)2.0) - pow(zNodes, (double)2.0)) * cos(((double)2.0 * M_PI*z.at(i).at(j)) / zNodes)*sin(((double)2.0 * M_PI*(l0*time.at(i)*ux + x.at(i).at(j)*xNodes)) / pow(xNodes, (double)2.0)) - amplitude*pow(xNodes, (double)2.0)*pow(sin(((double)2.0 * M_PI*(l0*time.at(i)*ux + x.at(i).at(j)*xNodes)) / pow(xNodes, (double)2.0)), (double)2.0))) / ((double)2.0*exp((8 * pow(M_PI, (double)2.0)*time.at(i)*viscosity*(pow(xNodes, (double)2.0) + pow(zNodes, (double)2.0))) / (pow(xNodes, (double)2.0)*pow(zNodes, (double)2.0)))*pow(xNodes, (double)4.0));
+			vx.at(i).at(j) = (l0*ux) / xNodes + (amplitude*exp(time.at(i)*viscosity*((-(real)4.0 * pow(M_PI, (real)2.0)) / pow(xNodes, (real)2.0) - ((real)4.0 * pow(M_PI, (real)2.0)) / pow(zNodes, (real)2.0)))*l0*cos(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)*sin(((real)2.0 * M_PI*(x.at(i).at(j) + (l0*time.at(i)*ux) / xNodes)) / xNodes)) / xNodes;
+			vy.at(i).at(j) = (real)0.0;
+			vz.at(i).at(j) = -((amplitude*exp(time.at(i)*viscosity*((-(real)4.0 * pow(M_PI, (real)2.0)) / pow(xNodes, (real)2.0) - ((real)4.0 * pow(M_PI, (real)2.0)) / pow(zNodes, (real)2.0)))*l0*zNodes*cos(((real)2.0 * M_PI*(x.at(i).at(j) + (l0*time.at(i)*ux) / xNodes)) / xNodes)*sin(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)) / pow(xNodes, (real)2.0));
+			press.at(i).at(j) = (amplitude*pow(l0, (real)2.0)*rho0*(amplitude*pow(zNodes, (real)2.0)*pow(cos(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes), (real)2.0) - (real)4.0 * exp(((real)4.0 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*ux*(pow(xNodes, (real)2.0) - pow(zNodes, (real)2.0)) * cos(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)*sin(((real)2.0 * M_PI*(l0*time.at(i)*ux + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)) - amplitude*pow(xNodes, (real)2.0)*pow(sin(((real)2.0 * M_PI*(l0*time.at(i)*ux + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)), (real)2.0))) / ((real)2.0*exp((8 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*pow(xNodes, (real)4.0));
+			rho.at(i).at(j) = (amplitude*pow(l0, (real)2.0)*rho0*(amplitude*pow(zNodes, (real)2.0)*pow(cos(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes), (real)2.0) - (real)4.0 * exp(((real)4.0 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*ux*(pow(xNodes, (real)2.0) - pow(zNodes, (real)2.0)) * cos(((real)2.0 * M_PI*z.at(i).at(j)) / zNodes)*sin(((real)2.0 * M_PI*(l0*time.at(i)*ux + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)) - amplitude*pow(xNodes, (real)2.0)*pow(sin(((real)2.0 * M_PI*(l0*time.at(i)*ux + x.at(i).at(j)*xNodes)) / pow(xNodes, (real)2.0)), (real)2.0))) / ((real)2.0*exp((8 * pow(M_PI, (real)2.0)*time.at(i)*viscosity*(pow(xNodes, (real)2.0) + pow(zNodes, (real)2.0))) / (pow(xNodes, (real)2.0)*pow(zNodes, (real)2.0)))*pow(xNodes, (real)4.0));
 		}
 	}
 	calculated = true;

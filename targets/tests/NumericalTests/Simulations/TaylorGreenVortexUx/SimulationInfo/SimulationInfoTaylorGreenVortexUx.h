@@ -1,7 +1,7 @@
 #ifndef SIMULATION_INFO_TAYLORGREENVORTEX_UX_H
 #define SIMULATION_INFO_TAYLORGREENVORTEX_UX_H
 
-#include "Utilities\SimulationInfo\SimulationInfoImp.h"
+#include "Utilities/SimulationInfo/SimulationInfoImp.h"
 
 #include <memory>
 

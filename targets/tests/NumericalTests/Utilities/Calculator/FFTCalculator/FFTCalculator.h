@@ -13,18 +13,15 @@ class PhiAndNuTest;
 class FFTCalculator
 {
 public:
-	static std::shared_ptr<FFTCalculator> getNewInstance(int lx, int lz, int timeStepLength);
+	static std::shared_ptr<FFTCalculator> getInstance();
 	
-	void calc(std::vector<std::vector<double> > data, bool transposeData);
+	double calcNy(std::vector<std::vector<double> > data, bool transposeData, int lx, int lz, int timeStepLength);
+	double calcPhiDiff(std::vector<std::vector<double> > data, bool transposeData, int lx, int lz, int timeStepLength);
 
-	double calcAmplitudeForTimeStep(std::vector<double> data, bool transposeData);
-	
-	double getNy();
-	double getPhiDiff();
+	double calcAmplitudeForTimeStep(std::vector<double> data, bool transposeData, int lx, int lz);
 
 private:
-	FFTCalculator() {};
-	FFTCalculator(int lx, int lz, int timeStepLength);
+	FFTCalculator();
 	void init();
 	double calcNy();
 	double calcPhiDiff();
@@ -45,7 +42,5 @@ private:
 	bool transposeData;
 	double lx, lz;
 	double timeStepLength;
-	double ny;
-	double phidiff;
 };
 #endif

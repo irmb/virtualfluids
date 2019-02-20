@@ -23,6 +23,8 @@ public:
 	std::vector<std::vector<double> > getPress();
 	std::vector<std::vector<double> > getRho();
 
+	bool checkYourData();
+
 protected:
 	ResultsImp() {};
 

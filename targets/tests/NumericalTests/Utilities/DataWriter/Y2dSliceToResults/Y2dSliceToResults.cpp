@@ -9,6 +9,11 @@ std::shared_ptr<Y2dSliceToResults> Y2dSliceToResults::getNewInstance(std::shared
 	return std::shared_ptr<Y2dSliceToResults>(new Y2dSliceToResults(vectorWriterInfo, timeStepLength, simResults, ySliceForCalculation));
 }
 
+Y2dSliceToResults::Y2dSliceToResults()
+{
+
+}
+
 Y2dSliceToResults::Y2dSliceToResults(std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int timeStepLength, std::shared_ptr<SimulationResults> simResults, unsigned int ySliceForCalculation)
 	: ToVectorWriter(vectorWriterInfo, timeStepLength)
 {
@@ -45,6 +50,9 @@ void Y2dSliceToResults::writeTimestep(std::shared_ptr<Parameter> para, unsigned 
 			press.at(posResults) = (double)para->getParH(level)->press_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
 			rho.at(posResults) = (double)para->getParH(level)->rho_SP[posPara] / (double)3.0 * (double)para->getDensityRatio() * (double)para->getVelocityRatio() * (double)para->getVelocityRatio();
 			levels.at(posResults) = level;
+
+			if (vx.at(posResults) != vx.at(posResults))
+				int t = 1;
 		}
 	}
 	simResults->addTimeStep(timestep, t, levels, x, y, z, vx, vy, vz, press, rho);

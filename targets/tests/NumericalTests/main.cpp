@@ -2,11 +2,11 @@
 #include <gmock/gmock.h>
 
 #include "Utilities/ConfigFileReader/ConfigFileReader.h"
-#include "Utilities\LogFileQueue\LogFileQueue.h"
-#include "Utilities\NumericalTestFactory\NumericalTestFactoryImp.h"
-#include "Utilities\TestQueue\TestQueue.h"
-#include "Utilities\VirtualFluidSimulation\VirtualFluidSimulation.h"
-#include "Utilities\VirtualFluidSimulationFactory\VirtualFluidSimulationFactoryImp.h"
+#include "Utilities/LogFileQueue/LogFileQueue.h"
+#include "Utilities/NumericalTestFactory/NumericalTestFactoryImp.h"
+#include "Utilities/TestQueue/TestQueue.h"
+#include "Utilities/VirtualFluidSimulation/VirtualFluidSimulation.h"
+#include "Utilities/VirtualFluidSimulationFactory/VirtualFluidSimulationFactoryImp.h"
 
 static void startNumericalTests(const std::string &configFile)
 {

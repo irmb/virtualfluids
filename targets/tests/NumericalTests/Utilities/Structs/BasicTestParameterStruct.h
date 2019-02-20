@@ -8,6 +8,5 @@ struct BasicTestParameterStruct
 {
 	unsigned int ySliceForCalculation;
 	bool runTest;
-	std::vector<std::string> dataToCalc;
 };
 #endif 

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Utilities\Structs\BasicTestParameterStruct.h"
+#include "Utilities/Structs/BasicTestParameterStruct.h"
 
 struct L2NormTestBetweenKernelsParameterStruct
 {
@@ -15,6 +15,8 @@ struct L2NormTestBetweenKernelsParameterStruct
 
 	std::vector<std::string> kernelsToTest;
 	std::vector<int> timeSteps;
+
+	std::vector<std::string> normalizeData;
 };
 
 #endif 

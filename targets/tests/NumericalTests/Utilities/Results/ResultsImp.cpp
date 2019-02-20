@@ -1,5 +1,7 @@
 #include "ResultsImp.h"
 
+#include <iostream>
+
 int ResultsImp::getNumberOfTimeSteps()
 {
 	return numberOfTimeSteps;
@@ -78,4 +80,46 @@ std::vector<std::vector<double> > ResultsImp::getPress()
 std::vector<std::vector<double> > ResultsImp::getRho()
 {
 	return rho;
+}
+
+bool ResultsImp::checkYourData()
+{
+	std::cout << "checking Simulation Results Data...";
+	for (int i = 0; i < vx.size(); i++) {
+		for (int j = 0; j < vx.at(i).size(); j++) {
+			if (vx.at(i).at(j) != vx.at(i).at(j)) {
+				std::cout << "done." << std::endl;
+				std::cout << "Simulation Result Data contains failure data." << std::endl;
+				std::cout << "Testing not possible." << std::endl;
+				return false;
+			}
+			if (vy.at(i).at(j) != vy.at(i).at(j)) {
+				std::cout << "done." << std::endl;
+				std::cout << "Simulation Result Data contains failure data." << std::endl;
+				std::cout << "Testing not possible." << std::endl;
+				return false;
+			}
+			if (vz.at(i).at(j) != vz.at(i).at(j)) {
+				std::cout << "done." << std::endl;
+				std::cout << "Simulation Result Data contains failure data." << std::endl;
+				std::cout << "Testing not possible." << std::endl;
+				return false;
+			}
+			if (rho.at(i).at(j) != rho.at(i).at(j)) {
+				std::cout << "done." << std::endl;
+				std::cout << "Simulation Result Data contains failure data." << std::endl;
+				std::cout << "Testing not possible." << std::endl;
+				return false;
+			}
+			if (press.at(i).at(j) != press.at(i).at(j)) {
+				std::cout << "done." << std::endl;
+				std::cout << "Simulation Result Data contains failure data." << std::endl;
+				std::cout << "Testing not possible." << std::endl;
+				return false;
+			}
+		}
+	}
+	std::cout << "done." << std::endl;
+	std::cout << "Simulation Result Data contains no failure data." << std::endl;
+	return true;
 }

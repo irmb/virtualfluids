@@ -1,7 +1,7 @@
 #ifndef SHEARWAVE_ANALYTICAL_RESULTS_H
 #define SHEARWAVE_ANALYTICAL_RESULTS_H
 
-#include "Utilities\Results\AnalyticalResults\AnalyticalResultImp.h"
+#include "Utilities/Results/AnalyticalResults/AnalyticalResultImp.h"
 
 struct ShearWaveParameterStruct;
 

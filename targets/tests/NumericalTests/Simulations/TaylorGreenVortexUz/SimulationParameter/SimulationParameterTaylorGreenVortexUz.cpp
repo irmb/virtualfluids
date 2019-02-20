@@ -1,7 +1,7 @@
 #include "SimulationParameterTaylorGreenVortexUz.h"
 
 #include "Simulations/TaylorGreenVortexUz/InitialConditions/InitialConditionTaylorGreenVortexUz.h"
-#include "Simulations\TaylorGreenVortexUz\TaylorGreenVortexUzParameterStruct.h"
+#include "Simulations/TaylorGreenVortexUz/TaylorGreenVortexUzParameterStruct.h"
 
 #include <sstream>
 
@@ -25,7 +25,7 @@ SimulationParameterTaylorGreenUz::SimulationParameterTaylorGreenUz(std::string k
 	this->rho0 = tgvParameterStruct->rho0;
 
 	std::ostringstream oss;
-	oss << tgvParameterStruct->vtkFilePath << "\\TaylorGreenVortex Uz\\viscosity_" << viscosity << "\\uz_" << uz << "_amplitude_" << amplitude << "\\" << kernelName << "\\grid" << lx;
+	oss << tgvParameterStruct->vtkFilePath << "/TaylorGreenVortex Uz/Viscosity_" << viscosity << "/uz_" << uz << "_amplitude_" << amplitude << "/" << kernelName << "/grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());
 	this->filePath = oss.str();
 }

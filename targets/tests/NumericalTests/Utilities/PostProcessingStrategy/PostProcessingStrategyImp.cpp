@@ -1,6 +1,6 @@
 #include "PostProcessingStrategyImp.h"
 
-#include "Utilities\Results\SimulationResults\SimulationResults.h"
+#include "Utilities/Results/SimulationResults/SimulationResults.h"
 
 int PostProcessingStrategyImp::getNumberOfXNodes()
 {

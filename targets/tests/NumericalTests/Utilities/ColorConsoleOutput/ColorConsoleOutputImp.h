@@ -33,22 +33,20 @@ class ColorConsoleOutputImp : public ColorConsoleOutput
 public:
 	static std::shared_ptr<ColorConsoleOutput> getInstance();
 
-	void makeNyTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string dataToCalc, double nu1, double nu2, double nuDiff1, double nuDiff2, double ooa);
-	void makePhiTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo1, std::shared_ptr<SimulationInfo> simInfo2, unsigned int startTimeStep, unsigned int endTimeStep, std::string dataToCalc, double phiDiff1, double phiDiff2, double ooa);
-	void makeL2NormTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> simInfo, unsigned int basicTimeStep, unsigned int divergentTimeStep, std::string dataToCalc, double testWert1, double testWert2, double testWert3);
-	void makeL2NormBetweenKernelsTestOutput(bool testPassed, std::shared_ptr<SimulationInfo> basicSimInfo, std::shared_ptr<SimulationInfo> divergentSimInfo, std::string dataToCalc, unsigned int timeStep, double l2NormBasicKernel, double l2NormDivergentKernel, double l2NormBetweenKernel);
 	void makeSimulationHeadOutput(std::shared_ptr<SimulationInfo> simInfo);
-	void makeFinalTestOutputHead(int numberOfPassedTests, int numberOfTests);
-	void makeFinalTestOutputFoot(int numberOfPassedTests, int numberOfTests);
+	void makeTestOutput(std::vector<std::string> testOutput, TestStatus status);
+	void makeFinalTestOutputHead(int numberOfTests, int numberOfExecutedTest, int numberOfPassedTest, int numberOfFailedTest, int numberOfErrorTest, int numberOfNotExecutedTest);
+	void makeFinalTestOutputFoot(int numberOfTests, int numberOfExecutedTest, int numberOfPassedTest, int numberOfFailedTest, int numberOfErrorTest, int numberOfNotExecutedTest);
 
 private:
 	ColorConsoleOutputImp() {};
 	void printTestStart();
-	void printTestEnd(bool testPassed);
+	void printTestEnd(TestStatus status);
 	void print(std::string output);
 	void printColor(std::string output);
-	void setColor(bool testPassed);
-	void printTestPassed(int numberOfPassedTests, int numberOfTests);
+	void setColor(TestStatus status);
+	void setColor(bool passed);
+	void printTestPassed(int numberOfTests, int numberOfExecutedTest, int numberOfPassedTest, int numberOfFailedTest, int numberOfErrorTest, int numberOfNotExecutedTest);
 	void printLine();
 
 	void printGreen(std::string output);

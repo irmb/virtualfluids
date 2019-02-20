@@ -20,11 +20,17 @@ public:
 private:
 	TestQueueImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
 
-	void calcNumberOfPassedTest();
+	void calcTestNumbers();
 
 	std::shared_ptr<ColorConsoleOutput> colorOutput;
 	std::vector<std::shared_ptr<Test> > tests;
+	
 	int numberOfPassedTest;
+	int numberOfFailedTest;
+	int numberOfErrorTest;
+	int numberOfExecutedTest;
+	int numberOfNotExecutedTest;
+
 	int numberOfTests;
 };
 #endif

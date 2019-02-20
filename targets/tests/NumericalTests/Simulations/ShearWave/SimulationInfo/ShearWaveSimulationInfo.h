@@ -1,7 +1,7 @@
 #ifndef SHEARWAVE_SIMULATION_INFO_H
 #define SHEARWAVE_SIMULATION_INFO_H
 
-#include "Utilities\SimulationInfo\SimulationInfoImp.h"
+#include "Utilities/SimulationInfo/SimulationInfoImp.h"
 
 #include <memory>
 

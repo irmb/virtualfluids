@@ -20,7 +20,7 @@ public:
 	virtual std::vector<unsigned int> getTimeSteps() = 0;
 	virtual std::vector < std::vector<unsigned int> > getLevels() = 0;
 
-private:
+	virtual bool checkYourData() = 0;
 
 };
 #endif

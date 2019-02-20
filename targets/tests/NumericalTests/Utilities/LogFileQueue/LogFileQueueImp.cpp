@@ -1,6 +1,6 @@
 #include "LogFileQueueImp.h"
 
-#include "Utilities\LogFileWriter\LogFileWriter.h"
+#include "Utilities/LogFileWriter/LogFileWriter.h"
 
 #include <helper_functions.h>
 #include <iomanip>
@@ -28,7 +28,7 @@ LogFileQueueImp::LogFileQueueImp(std::string basicLogFilePath)
 	logFileWriter.resize(0);
 
 	std::ostringstream oss;
-	oss << basicLogFilePath << "\\NumericalTestLogFiles\\";
+	oss << basicLogFilePath << "/NumericalTestLogFiles/";
 	this->basicLogFilePath = oss.str();
 }
 

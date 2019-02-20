@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "Utilities\Structs\BasicSimulationParameterStruct.h"
-#include "Utilities\Structs\GridInformationStruct.h"
+#include "Utilities/Structs/BasicSimulationParameterStruct.h"
+#include "Utilities/Structs/GridInformationStruct.h"
 
 struct TaylorGreenVortexUzParameterStruct
 {
@@ -16,5 +16,6 @@ struct TaylorGreenVortexUzParameterStruct
 	double l0;
 	double rho0;
 	std::string vtkFilePath;
+	std::vector<std::string> dataToCalcTests;
 };
 #endif

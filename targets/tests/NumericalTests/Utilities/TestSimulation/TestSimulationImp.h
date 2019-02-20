@@ -2,7 +2,7 @@
 #define TEST_SIMULATION_IMP_H
 
 #include "TestSimulation.h"
-#include "Utilities\NumericalTestSimulation\NumericalTestSimulation.h"
+#include "Utilities/NumericalTestSimulation/NumericalTestSimulation.h"
 
 #include <vector>
 #include <time.h>
@@ -38,10 +38,12 @@ public:
 	std::shared_ptr<SimulationResults> getSimulationResults();
 	std::shared_ptr<AnalyticalResults> getAnalyticalResults();
 	void registerSimulationObserver(std::shared_ptr<SimulationObserver> simObserver);
+	std::vector<std::string> getDataToCalcTests();
 
 private:
 	TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResult, std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput);
 	void notifyObserver();
+	void notifyObserverSimulationCrashed();
 
 	void writeAnalyticalResultsToVTK();
 
@@ -59,6 +61,7 @@ private:
 	std::shared_ptr<Parameter> para;
 	std::vector<std::shared_ptr<SimulationObserver> > simObserver;
 	
+	std::vector<std::string> dataToCalcTests;
 	bool simualtionRun;
 };
 #endif
