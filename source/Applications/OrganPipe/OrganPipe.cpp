@@ -41,7 +41,7 @@ void run(string configname)
 
       LBMReal rho_LB = 0.0;
       double rhoReal = 1.2041; //(kg/m3)
-      double uReal = 3.0; //m/s
+      double uReal = 33.9; //m/s
       double L = 0.195; //m
       double hLB = L / deltaXcoarse;
       double csReal = 343.3;
@@ -96,12 +96,15 @@ void run(string configname)
       if (myid == 0)
       {
          UBLOG(logINFO, "Parameters:");
-         UBLOG(logINFO, "u_LB                = " << u_LB);
-         UBLOG(logINFO, "rho_LB              = " << rho_LB);
-         UBLOG(logINFO, "nu_LB               = " << nu_LB);
+         UBLOG(logINFO, "u_Real              = " << uReal   << " [m/s]");
+         UBLOG(logINFO, "rho_Real            = " << rhoReal << " [kg/m^3]");
+         UBLOG(logINFO, "nu_Real             = " << nuReal  << " [m^2/s]");
+         UBLOG(logINFO, "u_LB                = " << u_LB    << " [dx/dt]");
+         UBLOG(logINFO, "rho_LB              = " << rho_LB  << " [mass/dx^3]");
+         UBLOG(logINFO, "nu_LB               = " << nu_LB   << " [dx^2/dt]");
          UBLOG(logINFO, "dx coarse           = " << deltaXcoarse);
          UBLOG(logINFO, "dx fine             = " << deltaXfine);
-         UBLOG(logINFO, "number of refinement levels    = " << refineLevel);
+         UBLOG(logINFO, "number of refinement levels = " << refineLevel);
          UBLOG(logINFO, "number of processes = " << comm->getNumberOfProcesses());
          UBLOG(logINFO, "path = " << pathOut);
          UBLOG(logINFO, "Preprocess - start");
@@ -114,7 +117,7 @@ void run(string configname)
       SPtr<BCAdapter> slipBCAdapter(new SlipBCAdapter());
       slipBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new SlipBCAlgorithm()));
 
-      double radius_inlet = 0.0055;
+      double diameter_inlet = 0.0055;
       double cx1 = g_minX1;
       double cx2 = 0.0;
       double cx3 = 0.0;
@@ -125,7 +128,7 @@ void run(string configname)
       fct.DefineConst("x0", cx1);
       fct.DefineConst("y0", cx2);
       fct.DefineConst("z0", cx3);
-      fct.DefineConst("R", radius_inlet);
+      fct.DefineConst("R", diameter_inlet/2.0);
       fct.DefineConst("U", u_LB);
 
       SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
@@ -242,11 +245,11 @@ void run(string configname)
          SPtr<D3Q27Interactor> addWallZmaxInt(new D3Q27Interactor(addWallZmax, grid, slipBCAdapter, Interactor3D::SOLID));
 
          //inflow
-         GbCylinder3DPtr geoInflow(new GbCylinder3D(startX1it-deltaXfine*3.0, 0.0, 0.0, startX1it+deltaXfine*3.0, 0.0, 0.0, radius_inlet));
+         GbCylinder3DPtr geoInflow(new GbCylinder3D(startX1it-deltaXfine*3.0, 0.0, 0.0, startX1it+deltaXfine*3.0, 0.0, 0.0, diameter_inlet));
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
          SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 
-         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-deltaXfine*5.0, 0.0, 0.0, startX1it, 0.0, 0.0, radius_inlet+deltaXfine*2.0));
+         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-deltaXfine*5.0, 0.0, 0.0, startX1it, 0.0, 0.0, diameter_inlet+deltaXfine*2.0));
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflowCover.get(), pathOut + "/geo/geoInflowCover", WbWriterVtkXmlASCII::getInstance());
          SPtr<D3Q27Interactor> inflowCoverIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflowCover, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
