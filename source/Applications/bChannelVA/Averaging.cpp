@@ -324,6 +324,16 @@ void Averaging::writeMQMatrixToImageFile(std::string output, int geo_extent[6], 
 //////////////////////////////////////////////////////////////////////////
 void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
 {
+   //////////////////////////////////////////////////////////////////////////
+   //DEBUG
+   //////////////////////////////////////////////////////////////////////////
+   vaVxMatrix = vxMatrix;
+   vaVyMatrix = vyMatrix;
+   vaVzMatrix = vzMatrix;
+   vaPrMatrix = prMatrix;
+   return;
+   //////////////////////////////////////////////////////////////////////////
+
    vtkSmartPointer<vtkTimerLog> timer_averaging = vtkSmartPointer<vtkTimerLog>::New();
 
    UBLOG(logINFO, "volume averaging: start");

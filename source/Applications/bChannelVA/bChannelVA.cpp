@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
    SPtr<Communicator> comm = MPICommunicator::getInstance();
 
    string pathIn  = "/work/koskuche/BreugemChannelIsotropic";
-   string pathOut = "/work/i5042202/BreugemChannelIsotropic";
+   string pathOut = "/work/irmb/BreugemChannelIsotropic";
 
    std::array<int, 3> dimensions ={ 600,400,400 };
    Averaging av;
