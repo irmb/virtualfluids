@@ -10,6 +10,9 @@
 #include "Utilities/MathematicaAssistant/MathematicaAssistantFactory/MathematicaAssistantFactoryImp.h"
 #include "Utilities/MathematicaAssistant/MathematicaAssistant.h"
 
+#include "Utilities/PostProcessingConfigFileReader/PostProcessingConfigFileReaderImp.h"
+#include "Utilities/PostProcessingConfigData/PostProcessingConfigData.h"
+
 #include <memory>
 #include <cfloat>
 #include <cstdio>
@@ -22,22 +25,9 @@
 
 int main(int argc, char **argv)
 {
-	std::vector<BasicSimulation> simulation;
-	simulation.push_back(ShearWave);
-	//simulation.push_back(TaylorGreenVortexUx);
-	//simulation.push_back(TaylorGreenVortexUz);
+	std::shared_ptr<PostProcessingConfigFileReader> reader = PostProcessingConfigFileReaderImp::getNewInstance();
 
-	std::vector<Assistant> assistants;
-	//assistants.push_back(Phi);
-	//assistants.push_back(Ny);
-	//assistants.push_back(L2Norm);
-	//assistants.push_back(L2NormBetweenKernels);
-	assistants.push_back(Time);
-
-	std::vector<DataCombination> combination;
-	combination.push_back(EqualSimulationsForDifferentKernels);
-	//combination.push_back(EqualKernelSimulationsForDifferentViscosities);
-
+	std::shared_ptr<PostProcessingConfigData> configData =  reader->readConfigFile(argv[1]);
 
 	std::shared_ptr<LogFileReader> logFileReader = LogFileReader::getInstance();
 	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData("C:/Users/Timon/Documents/studienarbeitIRMB/logFiles");
@@ -48,11 +38,11 @@ int main(int argc, char **argv)
 
 	std::shared_ptr<MathematicaFunctionFactory> functionFactory = MathematicaFunctionFactoryImp::getNewInstance();
 	std::shared_ptr<MathematicaAssistantFactory> assistantFactory = MathematicaAssistantFactoryImp::getNewInstance();
-	std::vector<std::shared_ptr<MathematicaAssistant> > mathematicaAssistants = assistantFactory->makeMathematicaAssistants(assistants, functionFactory);
+	std::vector<std::shared_ptr<MathematicaAssistant> > mathematicaAssistants = assistantFactory->makeMathematicaAssistants(configData->getAssistants(), functionFactory);
 
-	for (int sim = 0; sim < simulation.size(); sim++) {
-		for (int comb = 0; comb < combination.size(); comb++) {
-			std::vector<std::shared_ptr<LogFileDataGroup> > logFileDataSorted = assistentLogFile->findDataCombination(logFileDataVector, simulation.at(sim), combination.at(comb));
+	for (int sim = 0; sim < configData->getSimulations().size(); sim++) {
+		for (int comb = 0; comb < configData->getDataCombinations().size(); comb++) {
+			std::vector<std::shared_ptr<LogFileDataGroup> > logFileDataSorted = assistentLogFile->findDataCombination(logFileDataVector, configData->getSimulations().at(sim), configData->getDataCombinations().at(comb));
 			for (int i = 0; i < logFileDataSorted.size(); i++) {
 				for (int j = 0; j < mathematicaAssistants.size(); j++)
 					mathematicaAssistants.at(j)->makeMathematicaOutput(logFileDataSorted.at(i), aMathmaticaFile);
