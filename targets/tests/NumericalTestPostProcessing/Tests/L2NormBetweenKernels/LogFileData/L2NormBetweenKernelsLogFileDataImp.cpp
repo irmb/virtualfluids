@@ -15,6 +15,11 @@ std::string L2NormBetweenKernelsLogFileDataImp::getBasicKernel()
 	return basicKernel;
 }
 
+std::string L2NormBetweenKernelsLogFileDataImp::getDivergentKernel()
+{
+	return divergentKernel;
+}
+
 std::string L2NormBetweenKernelsLogFileDataImp::getDataToCalculate()
 {
 	return dataToCalc;
@@ -53,6 +58,11 @@ void L2NormBetweenKernelsLogFileDataImp::setBasicGridLengths(std::vector<double>
 void L2NormBetweenKernelsLogFileDataImp::setBasicKernel(std::string basicKernel)
 {
 	this->basicKernel = basicKernel;
+}
+
+void L2NormBetweenKernelsLogFileDataImp::setDivergentKernel(std::string divergentKernel)
+{
+	this->divergentKernel = divergentKernel;
 }
 
 void L2NormBetweenKernelsLogFileDataImp::setDataToCalculate(std::string dataToCalc)

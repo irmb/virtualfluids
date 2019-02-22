@@ -11,13 +11,17 @@ class LogFileDataAssistantImp : public LogFileDataAssistant
 public:
 	static std::shared_ptr<LogFileDataAssistant> getNewInstance();
 
-	std::vector<std::shared_ptr<LogFileDataGroup> > findEqualSimulationsForDifferentKernels(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation);
-	std::vector<std::shared_ptr<LogFileDataGroup> > findEqualKernelSimulationsForDifferentViscosities(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation);
+
+	std::vector<std::shared_ptr<LogFileDataGroup> > findDataCombination(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation, DataCombination combination);
+	
 
 
 protected:
 	LogFileDataAssistantImp();
 	
+	std::vector<std::shared_ptr<LogFileDataGroup> > findEqualSimulationsForDifferentKernels(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation);
+	std::vector<std::shared_ptr<LogFileDataGroup> > findEqualKernelSimulationsForDifferentViscosities(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation);
+
 	std::vector<std::shared_ptr<LogFileData> > getSimulationGroupLogFileData(std::string simName, std::vector<std::shared_ptr<LogFileData> > allLogFileData);
 	std::vector<std::vector<std::shared_ptr<LogFileData> > > sortLogFileDataAfterKernels(std::vector<std::shared_ptr<LogFileData> > logFileData);
 	

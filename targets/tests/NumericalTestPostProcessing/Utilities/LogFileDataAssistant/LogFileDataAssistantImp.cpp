@@ -96,6 +96,25 @@ std::shared_ptr<LogFileDataAssistant> LogFileDataAssistantImp::getNewInstance()
 	return std::shared_ptr<LogFileDataAssistant>(new LogFileDataAssistantImp());
 }
 
+std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findDataCombination(std::vector<std::shared_ptr<LogFileData>> allLogFileData, BasicSimulation simulation, DataCombination combination)
+{
+	std::vector<std::shared_ptr<LogFileDataGroup>> myLogFileDataGroup;
+
+	switch (combination)
+	{
+	case EqualSimulationsForDifferentKernels:
+		myLogFileDataGroup = findEqualSimulationsForDifferentKernels(allLogFileData, simulation);
+		break;
+	case EqualKernelSimulationsForDifferentViscosities:
+		myLogFileDataGroup = findEqualKernelSimulationsForDifferentViscosities(allLogFileData, simulation);
+		break;
+	default:
+		break;
+	}
+
+	return myLogFileDataGroup;
+}
+
 std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findEqualSimulationsForDifferentKernels(std::vector<std::shared_ptr<LogFileData>> allLogFileData, BasicSimulation simulation)
 {
 	std::shared_ptr<LogFileDataAssistantStrategy> strategy = assistentStrategyFactory->makeLogFileDataAssistantStrategy(simulation);

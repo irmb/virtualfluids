@@ -17,16 +17,16 @@ MathematicaListOfListsImp::MathematicaListOfListsImp(std::string listName, std::
 	mathematicaFunction << std::fixed << std::setprecision(std::numeric_limits<double>::digits10 + 1);
 	mathematicaFunction << listName << "= {";
 
-	for (int i = 0; listOfLists.size(); i++) {
+	for (int i = 0; i < listOfLists.size(); i++) {
 		mathematicaFunction << "{";
-		if (i > 0)
-			mathematicaFunction << ", ";
 		for (int j = 0; j < listOfLists.at(i).size(); j++){
-			if (i > 0)
+			if (j > 0)
 				mathematicaFunction << ", ";
 			mathematicaFunction << listOfLists.at(i).at(j);
 		}
 		mathematicaFunction << "}";
+		if(i < listOfLists.size() - 1)
+			mathematicaFunction << ", ";
 	}
 	mathematicaFunction << "};";
 }

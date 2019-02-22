@@ -25,10 +25,9 @@ private:
 
 	bool checkTestParameter(std::shared_ptr<NyLogFileData> logFileData1, std::shared_ptr<NyLogFileData> logFileData2);
 	std::shared_ptr<SortedDataNy> sortLogFileData(std::shared_ptr<LogFileDataGroup> logFileData);
-	void addListLogLogPlotToMathematicaFile(std::shared_ptr<MathematicaFile> aMathmaticaFile, std::vector<std::string> listNames, std::vector<std::vector<double> > xAxesData, std::vector<std::vector<double> > yAxesData, std::string labelXAxes, std::string labelYAxes);
-	std::vector<std::string> finalizeListNames(std::vector<std::string> basicListNames, std::string dataToCalc, std::string testName);
-	void makeNyDiffMathematicaOutput(std::shared_ptr<MathematicaFile> aMathmaticaFile, std::shared_ptr<SortedDataNy> sortedData);
 
-	std::shared_ptr<MathematicaFunctionFactory> functionFactory;
+	void makeNyDiffMathematicaOutput(std::shared_ptr<MathematicaFile> aMathmaticaFile, std::shared_ptr<SortedDataNy> sortedData);
+	void makeOrderOfAccuracyMathematicaOutput(std::shared_ptr<MathematicaFile> aMathmaticaFile, std::shared_ptr<SortedDataNy> sortedData);
+
 };
 #endif 

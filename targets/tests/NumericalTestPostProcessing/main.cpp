@@ -1,7 +1,5 @@
 #include "Simulation/BasicSimulation.h"
 
-#include "Tests/PhiTest/MathematicaAssistant/PhiMathematicaAssistant.h"
-#include "Tests/NyTest/MathematicaAssistant/NyMathematicaAssistant.h"
 
 #include "Utilities/LogFileData/LogFileData.h"
 #include "Utilities/LogFileData/LogFileDataGroup/LogFileDataGroup.h"
@@ -9,6 +7,8 @@
 #include "Utilities/LogFileDataAssistant/LogFileDataAssistantImp.h"
 #include "Utilities/MathematicaFile/MathematicaFile.h"
 #include "Utilities/MathematicaFunctionFactory/MathematicaFunctionFactoryImp.h"
+#include "Utilities/MathematicaAssistant/MathematicaAssistantFactory/MathematicaAssistantFactoryImp.h"
+#include "Utilities/MathematicaAssistant/MathematicaAssistant.h"
 
 #include <memory>
 #include <cfloat>
@@ -22,28 +22,44 @@
 
 int main(int argc, char **argv)
 {
-	BasicSimulation simulation = ShearWave;
-	//BasicSimulation simulation = TaylorGreenVortexUx;
-	//BasicSimulation simulation = TaylorGreenVortexUz;
+	std::vector<BasicSimulation> simulation;
+	simulation.push_back(ShearWave);
+	//simulation.push_back(TaylorGreenVortexUx);
+	//simulation.push_back(TaylorGreenVortexUz);
+
+	std::vector<Assistant> assistants;
+	//assistants.push_back(Phi);
+	//assistants.push_back(Ny);
+	//assistants.push_back(L2Norm);
+	//assistants.push_back(L2NormBetweenKernels);
+	assistants.push_back(Time);
+
+	std::vector<DataCombination> combination;
+	combination.push_back(EqualSimulationsForDifferentKernels);
+	//combination.push_back(EqualKernelSimulationsForDifferentViscosities);
+
 
 	std::shared_ptr<LogFileReader> logFileReader = LogFileReader::getInstance();
-	//std::shared_ptr<LogFileData> logFileData = logFileReader->readLogFileToLogFileData("C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/TaylorGreenVortexUx/viscosity_0.001/ux_ 0.016_Amplitude_ 0.005/CumulantAA2016CompSP27/logfile_20190211_153133_CumulantAA2016CompSP27_vis_0.001.txt");
-	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData("C:/Users/Timon/Desktop/logFiles");
-
-	std::shared_ptr<LogFileDataAssistant> assistent = LogFileDataAssistantImp::getNewInstance();
-	std::vector<std::shared_ptr<LogFileDataGroup> > logFileDataSorted = assistent->findEqualSimulationsForDifferentKernels(logFileDataVector, simulation);
-	//std::vector<std::vector<std::shared_ptr<LogFileData> > > logFileDataSorted = assistent->findEqualKernelSimulationsForDifferentViscosities(logFileDataVector, simulation);
+	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData("C:/Users/Timon/Documents/studienarbeitIRMB/logFiles");
 
 	std::shared_ptr<MathematicaFile> aMathmaticaFile = MathematicaFile::getNewInstance("C:/Users/Timon/Desktop");
-	std::shared_ptr<MathematicaFunctionFactory> functionFactory = MathematicaFunctionFactoryImp::getNewInstance();
 
-	std::shared_ptr<PhiMathematicaAssistant> mathematicaAssistantPhi = PhiMathematicaAssistant::getNewInstance(functionFactory);
-	std::shared_ptr<NyMathematicaAssistant> mathematicaAssistantNy = NyMathematicaAssistant::getNewInstance(functionFactory);
-	
-	for (int i = 0; i < logFileDataSorted.size(); i++) {
-		mathematicaAssistantPhi->makeMathematicaOutput(logFileDataSorted.at(i), aMathmaticaFile);
-		mathematicaAssistantNy->makeMathematicaOutput(logFileDataSorted.at(i), aMathmaticaFile);
+	std::shared_ptr<LogFileDataAssistant> assistentLogFile = LogFileDataAssistantImp::getNewInstance();
+
+	std::shared_ptr<MathematicaFunctionFactory> functionFactory = MathematicaFunctionFactoryImp::getNewInstance();
+	std::shared_ptr<MathematicaAssistantFactory> assistantFactory = MathematicaAssistantFactoryImp::getNewInstance();
+	std::vector<std::shared_ptr<MathematicaAssistant> > mathematicaAssistants = assistantFactory->makeMathematicaAssistants(assistants, functionFactory);
+
+	for (int sim = 0; sim < simulation.size(); sim++) {
+		for (int comb = 0; comb < combination.size(); comb++) {
+			std::vector<std::shared_ptr<LogFileDataGroup> > logFileDataSorted = assistentLogFile->findDataCombination(logFileDataVector, simulation.at(sim), combination.at(comb));
+			for (int i = 0; i < logFileDataSorted.size(); i++) {
+				for (int j = 0; j < mathematicaAssistants.size(); j++)
+					mathematicaAssistants.at(j)->makeMathematicaOutput(logFileDataSorted.at(i), aMathmaticaFile);
+			}
+		}
 	}
+	
 		
 	aMathmaticaFile->finishFile();
 	return 0;

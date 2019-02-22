@@ -52,6 +52,8 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 	logFileData->setSimName(StringUtil::toString(input->getValue("SimulationName")));
 
 
+
+
 	std::ostringstream simSigniture;
 	if (logFileData->getSimName() == "ShearWave") {
 		std::vector<double> shearWaveLx = StringUtil::toDoubleVector(input->getValue("Lx"));
@@ -143,7 +145,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		simTime.push_back(StringUtil::toInt(simTimeString));
 		resultsCheckTime.push_back(StringUtil::toDouble(resultCheckTimeString));
 		testTime.push_back(StringUtil::toDouble(testTimeString));
-		analyticalVTKWritingTimeString.push_back(StringUtil::toInt(analyticalVTKWritingTimeString));
+		analyticalVTKWritingTime.push_back(StringUtil::toInt(analyticalVTKWritingTimeString));
 	}
 
 	logFileData->setVTKFileWriting(StringUtil::toBool(input->getValue("VTKFileWriting")));
@@ -184,7 +186,6 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 					phiDiffString << "PhiDiff_" << logFileData->getBasicGridLengths().at(j) << "_" << dataToCalc.at(i);
 					phiDiff.push_back(StringUtil::toDouble(input->getValue(phiDiffString.str())));
 				}
-
 
 				for (int k = j + 1; k < logFileData->getBasicGridLengths().size(); k++) {
 					std::vector<double> aOrderOfAccuracyGroup;
@@ -346,14 +347,16 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		std::vector<std::string> normalizeData = StringUtil::toStringVector(input->getValue("NormalizeWith_L2Norm_BK"));
 		std::vector<std::string> failL2Norm = StringUtil::toStringVector(input->getValue("FailTests_L2Norm_BK"));
 
-		std::vector<double> l2NormBasicKernel;
-		std::vector<double> l2NormDivergentKernel;
-		std::vector<double> l2NormBetweenKernels;
+
 		for (int i = 0; i < dataToCalc.size(); i++) {
 			for (int j = 0; j < timeSteps.size(); j++) {
 				for (int k = 0; k < normalizeData.size(); k++) {
+					std::vector<double> l2NormBasicKernel;
+					std::vector<double> l2NormDivergentKernel;
+					std::vector<double> l2NormBetweenKernels;
 					std::shared_ptr<L2NormBetweenKernelsLogFileDataImp> aL2NormLogFileData = L2NormBetweenKernelsLogFileDataImp::getNewInstance();
 					aL2NormLogFileData->setBasicKernel(StringUtil::toString(input->getValue("BasicKernel_L2Norm_BK")));
+					aL2NormLogFileData->setDivergentKernel(logFileData->getKernel());
 					aL2NormLogFileData->setDataToCalculate(dataToCalc.at(i));
 					aL2NormLogFileData->setTimeStep(timeSteps.at(j));
 					aL2NormLogFileData->setNormalizeData(normalizeData.at(k));
