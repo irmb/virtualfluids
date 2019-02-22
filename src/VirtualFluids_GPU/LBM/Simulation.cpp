@@ -87,7 +87,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    gridProvider->setBoundingBox();
 
    para->initParameter();
-   para->setRe(para->getVelocity() * (real)1.0 / para->getViscosity());
+   para->setRe(para->getVelocity() * (real)1.2 / para->getViscosity());
    para->setPhi((real) 0.0);
    para->setlimitOfNodesForVTK(30000000); //max 30 Million nodes per VTK file
    if (para->getDoRestart())
@@ -163,10 +163,10 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
 
    ////////////////////////////////////////////////////////////////////////////
-   uint tAnalyse = 100;
-   kinEnergyWriter = new KineticEnergyAnalyzer(para, tAnalyse);
+   //uint tAnalyse = 100;
+   //kinEnergyWriter = new KineticEnergyAnalyzer(para, tAnalyse);
    ////////////////////////////////////////////////////////////////////////////
-   enstrophyWriter = new EnstrophyAnalyzer(para, tAnalyse);
+   //enstrophyWriter = new EnstrophyAnalyzer(para, tAnalyse);
    ////////////////////////////////////////////////////////////////////////////
 
 
@@ -1600,10 +1600,10 @@ void Simulation::run()
 		}
 
 		////////////////////////////////////////////////////////////////////////////////
-		kinEnergyWriter->run(t);
+		//kinEnergyWriter->run(t);
 		////////////////////////////////////////////////////////////////////////////////
 		//printf("Simulation - Before enstrophyWriter run\n");
-		enstrophyWriter->run(t);
+		//enstrophyWriter->run(t);
 		//printf("Simulation - after enstrophyWriter run\n");
 		////////////////////////////////////////////////////////////////////////////////
 
@@ -2568,11 +2568,11 @@ void Simulation::run()
 			   }
 
 			   //////////////////////////////////////////////////////////////////////////
-			   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
+			   //VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
 			   //////////////////////////////////////////////////////////////////////////
-			   std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
-			   kinEnergyWriter->writeToFile(fname);
-			   enstrophyWriter->writeToFile(fname);
+			   //std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
+			   //kinEnergyWriter->writeToFile(fname);
+			   //enstrophyWriter->writeToFile(fname);
 			   //////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
