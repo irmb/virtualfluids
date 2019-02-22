@@ -231,6 +231,55 @@ void writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename )
     writer->Write();
 }
 
+void VF_PUBLIC writeVtkParallelUnstructuredGridSummaryFile(vtkGridPtr grid, std::string filename, uint mpiWorldSize)
+{
+    uint numberOfArrays = grid->GetCellData()->GetNumberOfArrays();
+
+    const auto filenameWithoutPath=filename.substr( filename.find_last_of('/') + 1 );
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PCellData>" << std::endl;
+
+    for( uint i = 0; i < numberOfArrays; i++ )
+    {
+        int typeID( grid->GetCellData()->GetArray(i)->GetDataType() );
+        std::string name( grid->GetCellData()->GetArray(i)->GetName() );
+
+        uint numberOfComponents = grid->GetCellData()->GetArray(i)->GetNumberOfComponents();
+
+        std::string type;
+        if( typeID == VTK_INT    ) type = "Int32";
+        if( typeID == VTK_FLOAT  ) type = "Float32";
+        if( typeID == VTK_DOUBLE ) type = "Float64";
+
+        file << "      <PDataArray type=\"" << type << "\" Name=\"" << name << "\" NumberOfComponents=\"" << numberOfComponents << "\"/>" << std::endl;
+    }
+
+    file << "    </PCellData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( uint rank = 0; rank < mpiWorldSize; rank++ )
+    {
+        file << "    <Piece Source=\"" << filenameWithoutPath << "_rank_" << rank << ".vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+}
+
 rgbColor colorMapCoolToWarmExtended( double value, double min, double max )
 {    
     // Color map exported from Paraview
@@ -341,6 +390,19 @@ void writeVtkXML(std::shared_ptr<DataBase> dataBase,
     addBaseData( grid, dataBase, parameters );
 
     writeVtkUnstructuredGrid( grid, vtkXMLWriter::Binary, filename );
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void VF_PUBLIC writeVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, Parameters parameters, std::string filename, uint mpiWorldSize)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
+
+    vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
+
+    addBaseData( grid, dataBase, parameters );
+
+    writeVtkParallelUnstructuredGridSummaryFile( grid, filename, mpiWorldSize );
 
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }

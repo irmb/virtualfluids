@@ -13,6 +13,11 @@ void VF_PUBLIC writeVtkXML(std::shared_ptr<DataBase> dataBase,
                            int mode, 
                            std::string filename);
 
+void VF_PUBLIC writeVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, 
+                                              Parameters parameters, 
+                                              std::string filename,
+                                              uint mpiWorldSize);
+
 void VF_PUBLIC writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase, 
                                      std::shared_ptr<TurbulenceAnalyzer> turbulenceAnalyzer,
                                      int mode, 

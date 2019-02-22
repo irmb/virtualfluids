@@ -77,6 +77,9 @@ void thermalCavity( std::string path, std::string simulationName )
     int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    int mpiWorldSize;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+
     uint gpuPerNode = 2;
     CudaUtility::setCudaDevice(rank % gpuPerNode);
 
@@ -296,7 +299,7 @@ void thermalCavity( std::string path, std::string simulationName )
         gridBuilder->setCommunicationProcess (CommunicationDirections::MZ, 3);
     }
 
-    gridBuilder->writeGridsToVtk(path + "grid/Grid_rank_" + std::to_string(rank) + "_lev_");
+    //gridBuilder->writeGridsToVtk(path + "grid/Grid_rank_" + std::to_string(rank) + "_lev_");
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -315,8 +318,6 @@ void thermalCavity( std::string path, std::string simulationName )
     //meshAdapter.findPeriodicBoundaryNeighbors();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    CudaUtility::setCudaDevice(0);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -406,7 +407,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
     dataBase->copyDataDeviceToHost();
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_rank_" + std::to_string(rank) + "_0" );
+    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
+
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,12 +445,14 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) ||
             //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter >= 10000 && iter % 100000 == 0 )
+            ( iter >= 10000 && iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_rank_" + std::to_string(rank) + "_" + std::to_string( iter ) );
+            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
+
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
         cupsAnalyzer.run( iter );
@@ -475,8 +480,8 @@ int main( int argc, char* argv[])
     int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    std::string path( "F:/Work/Computations/out/RoomMultiGPU/" );
-    //std::string path( "out/" );
+    //std::string path( "F:/Work/Computations/out/RoomMultiGPU/" );
+    std::string path( "out/" );
     std::string simulationName ( "Room" );
 
     logging::Logger::addStream(&std::cout);

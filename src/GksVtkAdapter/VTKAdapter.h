@@ -62,6 +62,8 @@ void VF_PUBLIC addBaseData( vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters
 
 void VF_PUBLIC writeVtkUnstructuredGrid( vtkGridPtr grid, int mode, std::string filename );
 
+void VF_PUBLIC writeVtkParallelUnstructuredGridSummaryFile( vtkGridPtr grid, std::string filename, uint mpiWorldSize );
+
 rgbColor VF_PUBLIC colorMapCoolToWarmExtended( double value, double min, double max );
 
 void VF_PUBLIC writePNG( vtkDataObject* inputData, int nx, int ny, double L, double H, std::string filename );
