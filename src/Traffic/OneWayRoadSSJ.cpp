@@ -1,8 +1,8 @@
 #include "OneWayRoadSSJ.h"
 
-OneWayRoadSSJ::OneWayRoadSSJ(shared_ptr<RoadNetworkData> road, const float dawdlePossibility) 
+OneWayRoadSSJ::OneWayRoadSSJ(unique_ptr<RoadNetworkData> road, const float dawdlePossibility) 
 {
-	this->road = road;
+	this->road = move(road);
 
 	pcurrent = &this->road->current;
 	pnext = &(this->road->next);
@@ -41,6 +41,7 @@ void OneWayRoadSSJ::calculateTimestep(unsigned int step)
 	switchCurrentNext();
 
 	putCurrentIntoResults(step);
+	currentStep += 1;
 }
 
 
@@ -192,7 +193,12 @@ const unsigned int OneWayRoadSSJ::getNumberOfCars() const
 
 void OneWayRoadSSJ::dispResults()
 {
-	visualizeSafetyDistance();
+	if (!saveResults) {
+		std::cout << "No results were saved" << std::endl;
+		return;
+	}
+
+	visualizeSafetyDistanceForConsole();
 	reverse(results.begin(), results.end());
 
 	for (unsigned int i = 0; i < results.size(); i++) {
@@ -212,7 +218,7 @@ void OneWayRoadSSJ::dispResults()
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // set output default white 7;
 }
 
-void OneWayRoadSSJ::visualizeSafetyDistance() {
+void OneWayRoadSSJ::visualizeSafetyDistanceForConsole() {
 	if (road->safetyDistance != 0) {
 		int neighbor;
 		for (unsigned int step = 0; step <= timeSteps; step++) {

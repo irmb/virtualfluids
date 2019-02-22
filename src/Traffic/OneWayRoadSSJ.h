@@ -8,9 +8,11 @@ class VF_PUBLIC OneWayRoadSSJ :
 {
 	
 public:
-	OneWayRoadSSJ(shared_ptr<RoadNetworkData> road, const float dawdlePossibility);
+	OneWayRoadSSJ(unique_ptr<RoadNetworkData> road, const float dawdlePossibility);
 	OneWayRoadSSJ();
 	virtual ~OneWayRoadSSJ();
+
+	virtual void calculateTimestep(unsigned int step);
 
 	unsigned int getGapAfterOutCell(unsigned int outCellIndex, unsigned int speed);
 	void moveJunctionCar(unsigned int outCellIndex, unsigned int remainingDistance, unsigned int speed);
@@ -21,7 +23,6 @@ public:
 
 private:
 
-	virtual void calculateTimestep(unsigned int step);
 	void calculateSourceStep();
 
 	virtual unsigned int getGapAfterCar(unsigned int carIndex, unsigned int speed, int neighbor);
@@ -33,7 +34,7 @@ private:
 	shared_ptr<Junction>& getJunctionFromNeighbor(int neighbor);
 	shared_ptr<Sink>& getSinkFromNeighbor(int neighbor);
 
-	virtual void visualizeSafetyDistance();
+	virtual void visualizeSafetyDistanceForConsole();
 	void dispJunctionsAtCell(unsigned int index) const;
 	void dispSinksAtCell(unsigned int index) const;
 	void dispSourcesAtCell(unsigned int index) const;

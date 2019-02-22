@@ -24,6 +24,7 @@ public:
 	unsigned int safetyDistance;
 
 	std::vector<int> current;
+	std::vector<int> currentWithLongVehicles;
 	std::vector<int> next;					//for temporary calculations
 	std::vector<int> neighbors;
 

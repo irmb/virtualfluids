@@ -2,6 +2,8 @@
 #include <vector>
 #include <memory>
 
+#include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
+
 #include "Traffic/RoadMaker.h"
 #include "Traffic/OneWayRoad.h"
 #include "Traffic/OneWayRoadSSJ.h"
@@ -12,86 +14,127 @@
 #include "Traffic/SinkSimple.h"
 #include "Traffic/ConcentrationByPosition.h"
 
-
-using namespace std;
-
-//static void junctionTest(unsigned int maxVelocity, unsigned int vehicleLength) {
-//	{
-//		float dawdlePossibility = 0.5;
-//		vector<int> fiveCars = { 1, -1,-1, 1, -1, -1, -1, 2, -1, -1,-1,0,-1,-1,-1,-1,1,-1,-1,-1 };
-//
-//		OneWayRoadSSJ* junctionTest = new OneWayRoadSSJ(fiveCars, maxVelocity, dawdlePossibility, vehicleLength);
-//
-//		vector <unsigned int> in4 = { 9 };
-//		vector<unsigned int> out4 = { 10 };
-//		vector<Junction*> junctions4 = { new JunctionSimple(in4, out4, junctionTest) };
-//		junctionTest->setJunctions(junctions4);
-//
-//		junctionTest->calculateResults(10);
-//		junctionTest->dispResults();
-//
-//		cout << "Number of Cars" << junctionTest->getNumberOfCars() << endl;
-//	}
-//}
-//
-//static void junctionTestCrossRoads(unsigned int maxVelocity, unsigned int vehicleLength) {
-//	{
-//		float dawdlePossibility = 0.5;
-//		vector<int> fiveCars = { 1, -1,-1, 1, -1, -1, -1, 2, -1, -1,-1,0,-1,-1,-1,-1,1,-1,-1,-1 };
-//		OneWayRoadSSJ* junctionTestCrossRoads = new OneWayRoadSSJ(fiveCars, maxVelocity, dawdlePossibility, vehicleLength);
-//
-//		vector <unsigned int> in5 = { 6,9 };
-//		vector<unsigned int> out5 = { 10, 14 };
-//		vector<Junction*> junctions5 = {new JunctionSimple(in5, out5, junctionTestCrossRoads) };
-//		junctionTestCrossRoads->setJunctions(junctions5);
-//		junctionTestCrossRoads->setNeighbor(13, 7);
-//
-//		junctionTestCrossRoads->calculateResults(10);
-//		junctionTestCrossRoads->dispResults();
-//
-//		cout << "Number of Cars" << junctionTestCrossRoads->getNumberOfCars() << endl;
-//	}
-//}
+//using namespace std;
 
 
 int main()
 {
-	int roadLength = 20;
+	//Logger
+
+	logging::Logger::addStream(&std::cout);
+	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+	logging::Logger::timeStamp(logging::Logger::ENABLE);
+	logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+
+
+
+
+	//Variables
+
+	int numberOfTimesteps = 100;
+	float vehicleDensity = 0.05;
+
 	const unsigned int maxVelocity = 5;
-	float vehicleDensity = 0.5;
 	float dawdlePossibility = 0.5;//typical value: 0.2
-	int numberOfTimesteps = 25;
-	unsigned int vehicleLength = 3;
-	vector<int> initialDistribution = { 1,-1,-1,1,-1,-1,1,-1,-1,1,-1,-1,1,-1,-1,1,-1,-1,-1,-1 };
-	vector<int> oneCar = { 1,-1,-1,-1,-1,-1 };
-	vector<int> fiveCars = { 1, -1,-1, 1, -1, -1, -1, 2, -1, -1,-1,0,-1,-1,-1,-1,1,-1,-1,-1 };
+	unsigned int vehicleLength = 7;
 
-	//OneWay random 
+
+
+
+	//StreetPointFinder
+
+	StreetPointFinder finder;
+
+	finder.readStreets("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+	finder.writeVTK("C:/Users/hiwi/Desktop/Basel_Ergebnisse/ExampleStreets.vtk");
+
+
+
+
+
+	//One RandomRoad 
+
 	{
-		cout << "OneWay random" << endl;
+		std::cout << "OneWay random" << std::endl;
 
 
-		auto r = make_shared<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
-		auto road = make_shared<OneWayRoad>(r ,dawdlePossibility);
 
-		//auto writer = make_unique<ConcentrationByPosition>(ConcentrationByPosition(road->getRoadLength()));
-		//road->setConcentrationOutwriter(move(writer));
+		unsigned int roadLength = 0;
+		for (unsigned int i = 0; i < 2; i++) {
+			roadLength += finder.streets[i].numberOfCells;
+		}
 
-		road->calculateResults(numberOfTimesteps);
-		road->dispResults();
 
-		cout << endl << endl;
+		auto roadNetwork = std::make_unique<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
+		auto simulator = std::make_shared<OneWayRoad>(move(roadNetwork), dawdlePossibility);
+		simulator->initCalculation(numberOfTimesteps);
+
+		//unique_ptr<ConcentrationOutwriter> writer = make_unique<ConcentrationByPosition>(ConcentrationByPosition(simulator->getRoadLength()));
+		//simulator->setConcentrationOutwriter(move(writer));
+
+
+
+
+		std::string outputPath("C:/Users/hiwi/Desktop/Basel_Ergebnisse/");
+		std::string outputFilename("ExampleStreets");
+
+		auto& cars = simulator->getVehiclesForVTK();
+
+		for (int step = 1; step < numberOfTimesteps + 1; step++) {
+			simulator->calculateTimestep(step);
+			simulator->visualizeVehicleLengthForVTK();
+			finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(step) + ".vtk", cars);
+		}
+	
+
+		std::cout << std::endl << std::endl;
 
 	}
+
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	std::vector<int> initialDistribution = { 1,-1,-1,1,-1,-1,1,-1,-1,1,-1,-1,1,-1,-1,1,-1,-1,-1,-1 };
+	std::vector<int> oneCar = { 1,-1,-1,-1,-1,-1 };
+	std::vector<int> fiveCars = { 1, -1,-1, 1, -1, -1, -1, 2, -1, -1,-1,0,-1,-1,-1,-1,1,-1,-1,-1 };
+	int roadLength = 20;
+	vehicleLength = 3;
+
+
+
+	////OneWay random 
+	//{
+	//	std::cout << "OneWay random" << std::endl;
+
+
+	//	auto roadNetwork    = std::make_unique<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
+	//	auto simulator = std::make_shared<OneWayRoad>(move(roadNetwork) ,dawdlePossibility);
+
+	//	//auto writer = make_unique<ConcentrationByPosition>(ConcentrationByPosition(simulator->getRoadLength()));
+	//	//simulator->setConcentrationOutwriter(writer);
+
+	//	simulator->initCalculation(numberOfTimesteps);
+	//simulator->loopTroughTimesteps();
+	//	simulator->dispResults();
+
+	//	std::cout << std::endl << std::endl;
+
+	//}
 
 
 	////OneWay initial distribution
 	//{
 	//	cout << "OneWay initial distribution" << endl;
-	//	unique_ptr<RoadNetworkData> r = make_unique<RoadMaker>(initialDistribution, maxVelocity, vehicleLength);
-	//	shared_ptr<OneWayRoad> road = make_shared<OneWayRoad>(move(r), dawdlePossibility);
-	//	road->calculateResults(numberOfTimesteps);
-	//	road->dispResults();	
+	//	unique_ptr<RoadNetworkData> roadNetwork = make_unique<RoadMaker>(initialDistribution, maxVelocity, vehicleLength);
+	//	shared_ptr<OneWayRoad> simulator = make_shared<OneWayRoad>(move(roadNetwork), dawdlePossibility);
+	//	simulator->initCalculation(numberOfTimesteps);
+	//simulator->loopTroughTimesteps();
+	//	simulator->dispResults();	
 	//	cout << endl << endl;
 	//}
 
@@ -102,11 +145,12 @@ int main()
 	//	cout << "OneWay slowToStart" << endl;
 	//	vector<int> initialDist = { -1,1,5,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,0,-1,-1,-1,-1,-1 };
 
-	//	unique_ptr<RoadNetworkData> r = make_unique<RoadMaker>(initialDist, maxVelocity, 1);
-	//	shared_ptr<OneWayRoad> road = make_shared<OneWayRoad>(move(r), dawdlePossibility);
-	//	road->setSlowToStart(static_cast<float>(0.9999));
-	//	road->calculateResults(numberOfTimesteps);
-	//	road->dispResults();
+	//	unique_ptr<RoadNetworkData> roadNetwork = make_unique<RoadMaker>(initialDist, maxVelocity, 1);
+	//	shared_ptr<OneWayRoad> simulator = make_shared<OneWayRoad>(move(roadNetwork), dawdlePossibility);
+	//	simulator->setSlowToStart(static_cast<float>(0.9999));
+	//	simulator->initCalculation(numberOfTimesteps);
+	//simulator->loopTroughTimesteps();
+	//	simulator->dispResults();
 	//	cout << endl << endl;
 	//}
 
@@ -114,51 +158,53 @@ int main()
 
 	////sources and sinks
 	//{
-	//cout << "sources and sinks" << endl;
+	//	cout << "sources and sinks" << endl;
 
-	//vector< unique_ptr<Sink> > sinks;
-	//sinks.push_back( make_unique <SinkSimple>(5, static_cast<float>(0.5)));
+	//	vector< unique_ptr<Sink> > sinks;
+	//	sinks.push_back(make_unique <SinkSimple>(5, static_cast<float>(0.5)));
 
-	//unique_ptr<RoadMaker> r = make_unique<RoadMaker>(oneCar, maxVelocity, vehicleLength);
+	//	unique_ptr<RoadMaker> roadNetwork = make_unique<RoadMaker>(oneCar, maxVelocity, vehicleLength);
 
-	//vector< unique_ptr<Source> > sources;
-	//sources.push_back( make_unique <SourceTerm>(0, static_cast<float>(1.0), r->getMaxVelocity()) );
+	//	vector< unique_ptr<Source> > sources;
+	//	sources.push_back(make_unique <SourceTerm>(0, static_cast<float>(1.0), roadNetwork->getMaxVelocity()));
 
-	//r->setSources(sources);
-	//r->setSinks(sinks);
+	//	roadNetwork->setSources(move(sources));
+	//	roadNetwork->setSinks(move(sinks));
 
-	//shared_ptr<OneWayRoadSSJ> roadSource = make_shared<OneWayRoadSSJ>(move(r), static_cast<float>(0.0));
+	//	shared_ptr<OneWayRoadSSJ> roadSource = make_shared<OneWayRoadSSJ>(move(roadNetwork), static_cast<float>(0.0));
 
-	//roadSource->calculateResults(numberOfTimesteps);
-	//roadSource->dispResults();
-	//cout << endl << endl;
+	//	roadSource->initCalculation(numberOfTimesteps);
+	//	roadSource->loopTroughTimesteps();
+	//	roadSource->dispResults();
+	//	cout << endl << endl;
 	//}
 
 
 
 	////mergingRoad
 	//{
-	//	unique_ptr<RoadMaker> r = make_unique<RoadMaker>(25, maxVelocity, vehicleLength);
-	//	
+	//	unique_ptr<RoadMaker> roadNetwork = make_unique<RoadMaker>(25, maxVelocity, vehicleLength);
+
 	//	vector< unique_ptr<Source> > sources;
-	//	sources.push_back(make_unique <SourceTerm>(0, static_cast<float>(0.5), r->getMaxVelocity()));
-	//	sources.push_back(make_unique <SourceTerm>(10, static_cast<float>(0.5), r->getMaxVelocity()));
-	//	r->setSources(sources);
+	//	sources.push_back(make_unique <SourceTerm>(0, static_cast<float>(1), roadNetwork->getMaxVelocity()));
+	//	sources.push_back(make_unique <SourceTerm>(10, static_cast<float>(1), roadNetwork->getMaxVelocity()));
+	//	roadNetwork->setSources(move(sources));
 
 	//	unique_ptr<Sink> s = make_unique <SinkSimple>(SinkSimple(24, static_cast<float>(0.0)));
-	//	r->addSink(s);
+	//	roadNetwork->addSink(move(s));
 
 	//	vector< unique_ptr<Junction> > junctions;
 	//	vector<unsigned int> in = { 9,20 };
 	//	vector<unsigned int> out = { 21 };
 	//	junctions.push_back(make_unique <JunctionSimple>(JunctionSimple(in, out)));
 
-	//	r->setJunctions(junctions);
+	//	roadNetwork->setJunctions(junctions);
 
-	//	shared_ptr<OneWayRoadSSJ> mergingRoad = make_shared<OneWayRoadSSJ>(move(r), dawdlePossibility);
+	//	shared_ptr<OneWayRoadSSJ> mergingRoad = make_shared<OneWayRoadSSJ>(move(roadNetwork), dawdlePossibility);
 
 
-	//	mergingRoad->calculateResults(numberOfTimesteps);
+	//	mergingRoad->initCalculation(numberOfTimesteps);
+	//	mergingRoad->loopTroughTimesteps();
 	//	mergingRoad->dispResults();
 	//	cout << endl << endl;
 	//}
@@ -182,7 +228,8 @@ int main()
 	//	vector<Junction*> junctions2 = { new  JunctionSimple(in, out, splittingRoad) };
 	//	splittingRoad->setJunctions(junctions2);
 
-	//	splittingRoad->calculateResults(numberOfTimesteps);
+	//	splittingRoad->initCalculation(numberOfTimesteps);
+	//splittingRoad->loopTroughTimesteps();
 	//	splittingRoad->dispResults();
 	//	cout << endl << endl;
 	//}
@@ -212,7 +259,8 @@ int main()
 	//	vector<Junction*> junctions3 = { new JunctionSimple(in3, out3, crossRoads) };
 	//	crossRoads->setJunctions(junctions3);
 
-	//	crossRoads->calculateResults(numberOfTimesteps);
+	//	crossRoads->initCalculation(numberOfTimesteps);
+	//crossRoads->loopTroughTimesteps();
 	//	crossRoads->dispResults();
 	//	cout << endl << endl;
 	//}

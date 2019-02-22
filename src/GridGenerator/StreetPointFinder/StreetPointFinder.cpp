@@ -3,31 +3,48 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <cmath>
+#include <algorithm>
+#include <numeric>
 
 #include "grid/Grid.h"
 #include "grid/NodeValues.h"
 
-Street::Street(real xStart, real yStart, real xEnd, real yEnd, real dx)
+Street::Street(real xStartCell, real yStartCell, real xEndCell, real yEndCell, real dx)
 {
-    real length = sqrt( (xEnd - xStart)*(xEnd - xStart) + (yEnd - yStart)*(yEnd - yStart) );
+    real length = std::sqrt( (xEndCell - xStartCell)*(xEndCell - xStartCell) 
+                           + (yEndCell - yStartCell)*(yEndCell - yStartCell) );
 
-    this->xStart = xStart + dx * (xEnd - xStart) / length;
-    this->yStart = yStart + dx * (yEnd - yStart) / length;
-    
-    this->xEnd   = xEnd   - dx * (xEnd - xStart) / length;
-    this->yEnd   = yEnd   - dx * (yEnd - yStart) / length;
+    this->numberOfCells = std::floor( length / dx );
 
-    this->numberOfCells = lround( length / dx ) + 1;
+    real realLength = dx * ( this->numberOfCells );
+
+    real vectorX = (xEndCell - xStartCell) / length;
+    real vectorY = (yEndCell - yStartCell) / length;
+
+    this->xStart = xStartCell - 0.5 * (realLength - length) * vectorX + 0.5 * dx  * vectorX;
+    this->yStart = yStartCell - 0.5 * (realLength - length) * vectorY + 0.5 * dx  * vectorY;
+                                                                 
+    this->xEnd   = xEndCell   + 0.5 * (realLength - length) * vectorX - 0.5 * dx  * vectorX;
+    this->yEnd   = yEndCell   + 0.5 * (realLength - length) * vectorY - 0.5 * dx  * vectorY;
+
+    //this->xStart = xStart + dx * (xEnd - xStart) / length;
+    //this->yStart = yStart + dx * (yEnd - yStart) / length;
+    //
+    //this->xEnd   = xEnd   - dx * (xEnd - xStart) / length;
+    //this->yEnd   = yEnd   - dx * (yEnd - yStart) / length;
+
+    //this->numberOfCells = std::lround( length / dx ) + 1;
 }
 
 real Street::getCoordinateX(int cellIndex)
 {
-    return xStart + real(cellIndex) / real(numberOfCells) * (xEnd - xStart);
+    return xStart + real(cellIndex) / real(numberOfCells-1) * (xEnd - xStart);
 }
 
 real Street::getCoordinateY(int cellIndex)
 {
-    return yStart + real(cellIndex) / real(numberOfCells) * (yEnd - yStart);
+    return yStart + real(cellIndex) / real(numberOfCells-1) * (yEnd - yStart);
 }
 
 void Street::findIndicesLB( SPtr<Grid> grid )
@@ -59,6 +76,81 @@ void Street::findIndicesLB( SPtr<Grid> grid )
         this->matrixIndicesLB.push_back( matrixIndex );
         this->sparseIndicesLB.push_back( grid->getSparseIndex(matrixIndex) );
     }
+}
+
+void StreetPointFinder::prepareSimulationFileData()
+{
+    //////////////////////////////////////////////////////////////////////////
+    // Concatenate sparseIndicesLB
+
+    for( auto& street : this->streets ) this->sparseIndicesLB.insert( this->sparseIndicesLB.end(), street.sparseIndicesLB.begin(), street.sparseIndicesLB.end() );
+
+    //////////////////////////////////////////////////////////////////////////
+    // prepare vectors
+
+    uint numberOfCells = this->sparseIndicesLB.size();
+
+    mapNashToConc.resize( numberOfCells );
+
+    std::vector<uint> indexMap( numberOfCells );
+    std::iota( indexMap.begin(), indexMap.end(), 0 );
+
+    //////////////////////////////////////////////////////////////////////////
+    // sort vectors
+
+    std::stable_sort( indexMap.begin(), 
+                      indexMap.end(),
+                      [&](uint lhs, uint rhs){ 
+                          return this->sparseIndicesLB[lhs] <= this->sparseIndicesLB[rhs];
+                      } );
+
+    std::stable_sort( this->sparseIndicesLB.begin(), 
+                      this->sparseIndicesLB.end(),
+                      [](uint lhs, uint rhs){ 
+                          return lhs <= rhs;
+                      } );
+    //////////////////////////////////////////////////////////////////////////
+    // invert idxMap
+
+    {
+        std::vector<uint> buffer = indexMap;
+        for( uint idx = 0; idx < indexMap.size(); idx ++ )
+            indexMap[ buffer[idx] ] = idx;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // identify duplicates and find correct mapping indices
+
+    std::vector<uint> reducedIndexMap( numberOfCells );
+
+    uint currentSparseIndex = this->sparseIndicesLB[0];
+    uint reducedIndex = 0;
+    for( uint index = 1; index < numberOfCells; index++ )
+    {
+        if( this->sparseIndicesLB[index] == currentSparseIndex )
+        {
+            reducedIndexMap[index] = reducedIndex;
+        }
+        else
+        {
+            currentSparseIndex = this->sparseIndicesLB[index];
+            reducedIndexMap[index] = ++reducedIndex;
+        }
+    }
+
+    for( uint index = 0; index < numberOfCells; index++ )
+    {
+        mapNashToConc[index] = reducedIndexMap[ indexMap[ index ] ];
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    // erase duplicated
+
+    auto newEnd = std::unique( this->sparseIndicesLB.begin(), this->sparseIndicesLB.end() );
+
+    this->sparseIndicesLB.resize( std::distance(this->sparseIndicesLB.begin(),newEnd) );
+
+    //////////////////////////////////////////////////////////////////////////
 }
 
 void StreetPointFinder::readStreets(std::string filename)
@@ -98,7 +190,7 @@ void StreetPointFinder::findIndicesLB( SPtr<Grid> grid )
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void StreetPointFinder::writeVTK(std::string filename)
+void StreetPointFinder::writeVTK(std::string filename, const std::vector<int>& cars)
 {
     uint numberOfCells = 0;
     uint numberOfNodes = 0;
@@ -158,7 +250,7 @@ void StreetPointFinder::writeVTK(std::string filename)
 
     file << "\nCELL_DATA " << numberOfCells << std::endl;
 
-    file << "FIELD Label " << 2 << std::endl;
+    file << "FIELD Label " << 3 << std::endl;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -182,10 +274,27 @@ void StreetPointFinder::writeVTK(std::string filename)
     {
         for( uint i = 0; i < street.numberOfCells; i++ )
         {
-            real length = sqrt( ( street.getCoordinateX(i) - street.getCoordinateX(0) ) * ( street.getCoordinateX(i) - street.getCoordinateX(0) )
-                              + ( street.getCoordinateY(i) - street.getCoordinateY(0) ) * ( street.getCoordinateY(i) - street.getCoordinateY(0) ) );
+            real length = std::sqrt( ( street.getCoordinateX(i) - street.getCoordinateX(0) ) * ( street.getCoordinateX(i) - street.getCoordinateX(0) )
+                                   + ( street.getCoordinateY(i) - street.getCoordinateY(0) ) * ( street.getCoordinateY(i) - street.getCoordinateY(0) ) );
 
             file << length << std::endl;
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+	file << "Cars 1 " << numberOfCells << " float" << std::endl;
+
+	uint index = 0;
+    for( auto& street : streets )
+    {
+        for( uint i = 0; i < street.numberOfCells; i++ )
+        {
+			if( index < cars.size() )
+				file << cars[ index ] << std::endl;
+			else
+				file << -1 << std::endl;
+			index++;
         }
     }
 
@@ -298,6 +407,61 @@ void StreetPointFinder::writeSimulationFile(std::string gridPath, real concentra
         {
             file << "0\n";
         }
+    }
+
+    file.close();
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void StreetPointFinder::writeSimulationFileSorted(std::string gridPath, real concentration, uint numberOfLevels, uint level)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::writeSimulationFile( " << gridPath << "concSorted.dat )" << "\n";
+
+    std::ofstream file;
+
+    file.open(gridPath + "concSorted.dat");
+
+    file << "concentration\n";
+
+    file << numberOfLevels - 1 << "\n";
+
+    for( uint currentLevel = 0; currentLevel < numberOfLevels; currentLevel++ )
+    {
+        if( currentLevel == level )
+        {
+            file << this->sparseIndicesLB.size() << "\n";
+
+            for( auto& sparseIndexLB : this->sparseIndicesLB )
+            {
+                // + 1 for numbering shift between GridGenerator and VF_GPU
+                file << sparseIndexLB + 1 << "\n";
+            }
+        }
+        else
+        {
+            file << "0\n";
+        }
+    }
+
+    file.close();
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void StreetPointFinder::writeMappingFile(std::string gridPath)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::writeMappingFile( " << gridPath << "mappingNashToConc.dat )" << "\n";
+
+    std::ofstream file;
+
+    file.open(gridPath + "mappingNashToConc.dat");
+
+    file << this->mapNashToConc.size() << "\n";
+
+    for( auto& index : this->mapNashToConc )
+    {
+        file << index << "\n";
     }
 
     file.close();

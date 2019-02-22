@@ -1,14 +1,14 @@
 #include "OneWayRoad.h"
 #include <stdexcept>
 
-OneWayRoad::OneWayRoad() 
+OneWayRoad::OneWayRoad()
 {
 }
 
 
-OneWayRoad::OneWayRoad(shared_ptr<RoadNetworkData> road, const float dawdlePossibility)
+OneWayRoad::OneWayRoad(unique_ptr<RoadNetworkData> road, const float dawdlePossibility)
 {
-	this->road = road;
+	this->road = move(road);
 
 	pcurrent = &this->road->current;
 	pnext = &(this->road->next);
@@ -28,8 +28,10 @@ OneWayRoad::~OneWayRoad()
 
 void OneWayRoad::initResults()
 {
-	results.resize(road->roadLength, vector<int>(1));
-	VectorHelper::fillVector(results, -10);
+	if (saveResults) {
+		results.resize(road->roadLength, vector<int>(1));
+		VectorHelper::fillVector(results, -10);
+	}
 }
 
 
@@ -57,7 +59,7 @@ void OneWayRoad::setSlowToStart(const float slowStartPossibility)
 		if (slowStartPossibility >= 0 && slowStartPossibility < 1) {
 
 			this->slowStartPossibility = slowStartPossibility;
-			useSlowToStart=true;
+			useSlowToStart = true;
 
 		}
 		else {
@@ -66,8 +68,8 @@ void OneWayRoad::setSlowToStart(const float slowStartPossibility)
 	}
 	catch (const exception& e) {
 		cerr << e.what() << endl;
-		cin.get(); 
-		exit(EXIT_FAILURE);		
+		cin.get();
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -75,6 +77,12 @@ void OneWayRoad::setSlowToStart(const float slowStartPossibility)
 void OneWayRoad::setConcentrationOutwriter(unique_ptr<ConcentrationOutwriter> writer)
 {
 	this->concWriter = move(writer);
+}
+
+
+void OneWayRoad::setSaveResults(bool saveResults)
+{
+	saveResults = true;
 }
 
 
@@ -98,33 +106,38 @@ unsigned int OneWayRoad::getMaxVelocity() const
 	return road->maxVelocity;
 }
 
-void OneWayRoad::calculateResults(int timeSteps)
+void OneWayRoad::initCalculation(int timeSteps)
 {
 	this->timeSteps = timeSteps;
 
 	initResultsForCalculation();
 
 	putCurrentIntoResults(0);
-
-	//iterate through timesteps
-	for (int step = 1; step < timeSteps + 1; step++) {
-		currentStep += 1;
-		calculateTimestep(step);
-	}
 }
 
 void OneWayRoad::initResultsForCalculation()
 {
+	if (!saveResults) return;
+
 	for (unsigned int i = 0; i < road->roadLength; i++) {
 		results[i].resize(timeSteps + 1);
 	}
 	VectorHelper::fillVector(results, -1);
 }
 
+
+void OneWayRoad::loopTroughTimesteps()
+{
+	for (int step = 1; step < timeSteps + 1; step++) {
+		calculateTimestep(step);
+	}
+}
+
+
 void OneWayRoad::calculateTimestep(unsigned int step)
 {
-	dispCurrentRoad();
-	writeConcentration();	
+	//	dispCurrentRoad();
+	writeConcentration();
 
 	VectorHelper::fillVector(*pnext, -1);
 	vector<unsigned int> cars = findCarIndicesInCurrent();
@@ -135,6 +148,7 @@ void OneWayRoad::calculateTimestep(unsigned int step)
 
 	switchCurrentNext();
 	putCurrentIntoResults(step);
+	currentStep += 1;
 }
 
 void OneWayRoad::switchCurrentNext()
@@ -174,9 +188,9 @@ void OneWayRoad::dawdleCar(unsigned int carIndex, unsigned int & speed)
 	randomNumber = distFloat(engine);
 
 	//Barlovic / SlowToStart
-	if ( (*pcurrent)[carIndex] == 0 && useSlowToStart == true) {
+	if ((*pcurrent)[carIndex] == 0 && useSlowToStart == true) {
 		if (randomNumber < slowStartPossibility) {
-			speed=0;
+			speed = 0;
 		}
 		return;
 	}
@@ -242,6 +256,8 @@ vector<unsigned int> OneWayRoad::findCarIndicesInCurrent() const
 
 void OneWayRoad::putCurrentIntoResults(unsigned int step)
 {
+	if (!saveResults) return;
+
 	for (unsigned int i = 0; i < road->roadLength; i++) {
 		results[i][step] = (*pcurrent)[i];
 	}
@@ -296,14 +312,19 @@ void OneWayRoad::dispCurrentRoad() const
 
 void OneWayRoad::dispResults()
 {
+	if (!saveResults) {
+		std::cout << "No results were saved" << std::endl;
+		return;
+	}
+
 	cout << "results:" << endl;
 
-	visualizeSafetyDistance();
+	visualizeSafetyDistanceForConsole();
 	reverse(results.begin(), results.end());
 	VectorHelper::dispVectorColour(results);
 }
 
-void OneWayRoad::visualizeSafetyDistance()
+void OneWayRoad::visualizeSafetyDistanceForConsole()
 {
 	if (road->safetyDistance != 0) {
 		for (unsigned int step = 0; step <= timeSteps; step++) {
@@ -323,4 +344,33 @@ void OneWayRoad::visualizeSafetyDistance()
 			}
 		}
 	}
+}
+
+
+const std::vector<int>& OneWayRoad::getVehiclesForVTK()
+{
+	return road->currentWithLongVehicles;
+}
+
+void OneWayRoad::visualizeVehicleLengthForVTK()
+{
+	road->currentWithLongVehicles = *pcurrent;
+
+	if (road->safetyDistance != 0) {
+		for (unsigned int i = 0; i < road->roadLength; i++) {
+			if ((*pcurrent)[i] > -1) {
+				int neighbor = road->neighbors[i];
+				for (unsigned int j = 1; j <= road->safetyDistance; j++) {
+					if ((*pcurrent)[neighbor] > -1) {
+						cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << endl;
+						break;
+					}
+					else
+						(road->currentWithLongVehicles)[neighbor] = (*pcurrent)[i];
+					neighbor = road->neighbors[neighbor];
+				}
+			}
+		}
+	}
+
 }

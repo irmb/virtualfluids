@@ -20,7 +20,7 @@ using namespace std;
 class VF_PUBLIC OneWayRoad //Periodic BC
 {
 protected:
-	shared_ptr<RoadNetworkData> road;
+	unique_ptr<RoadNetworkData> road;
 
 	float dawdlePossibility;
 	unsigned int timeSteps;
@@ -36,20 +36,24 @@ protected:
 	vector<int> *pnext;
 	vector<int> *pdummy;
 
+	bool saveResults = false;
 	vector<vector<int> > results;		//saves the results of the calculation; x-axis = timesteps, y axis = positions
 
 	unique_ptr<ConcentrationOutwriter> concWriter = nullptr;
 
 public:
-	OneWayRoad(shared_ptr<RoadNetworkData> road, const float dawdlePossibility);
+	OneWayRoad(unique_ptr<RoadNetworkData> road, const float dawdlePossibility);
 	OneWayRoad();
 	OneWayRoad(const OneWayRoad&) = delete;
 	virtual ~OneWayRoad();
 
 	void setSlowToStart(const float slowStartPossibility);
 	void setConcentrationOutwriter(unique_ptr<ConcentrationOutwriter> writer);
+	void setSaveResults(bool saveResults);
 
-	virtual void calculateResults(int timeSteps);
+	virtual void initCalculation(int timeSteps);
+	virtual void calculateTimestep(unsigned int step);
+	void loopTroughTimesteps();
 
 	virtual const unsigned int getNumberOfCars() const;			//only use for testing
 	const int getSpeedAtPosition(unsigned int pos) const;       //only use for testing
@@ -60,6 +64,8 @@ public:
 	virtual void dispResults();
 	void writeResultsToFile() const;
 
+	virtual void visualizeVehicleLengthForVTK();
+	virtual const std::vector<int>& getVehiclesForVTK();
 
 protected:
 	void initDawdle(const float dawdlePossibility);
@@ -67,7 +73,7 @@ protected:
 
 	void initResultsForCalculation();
 
-	virtual void calculateTimestep(unsigned int step);
+
 	void putCurrentIntoResults(unsigned int step);
 	void writeConcentration();
 	void switchCurrentNext();
@@ -82,7 +88,7 @@ protected:
 	void dawdleCar(unsigned int carIndex, unsigned int &speed);
 	virtual void moveCar(unsigned int carIndex, unsigned int speed);
 
-	virtual void visualizeSafetyDistance();
+	virtual void visualizeSafetyDistanceForConsole();
 
 protected:
 	//temporary varables for calculation
