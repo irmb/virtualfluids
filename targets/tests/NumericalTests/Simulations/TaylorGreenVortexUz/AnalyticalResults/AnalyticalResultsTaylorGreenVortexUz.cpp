@@ -26,7 +26,7 @@ void AnalyticalResultsTaylorGreenUz::calc(std::shared_ptr<SimulationResults> sim
 	calculated = true;
 }
 
-AnalyticalResultsTaylorGreenUz::AnalyticalResultsTaylorGreenUz(double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct) : AnalyticalResultsImp()
+AnalyticalResultsTaylorGreenUz::AnalyticalResultsTaylorGreenUz(double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct) : AnalyticalResultsImp(simParaStruct->l0)
 {
 	this->viscosity = viscosity;
 	this->uz = simParaStruct->uz;

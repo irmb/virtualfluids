@@ -30,15 +30,15 @@ void L2NormBetweenKernelPostProcessingStrategy::evaluate()
 				for (int k = 0; k < timeSteps.size(); k++) {
 					int time = calcTimeStepInResults(timeSteps.at(k));
 					if (dataToCalculate.at(i) == "Vx")
-						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVx().at(time), simResult->getVx().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVx().at(time), simResult->getVx().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getL0());
 					if (dataToCalculate.at(i) == "Vy")
-						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVy().at(time), simResult->getVy().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVy().at(time), simResult->getVy().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getL0());
 					if (dataToCalculate.at(i) == "Vz")
-						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVz().at(time), simResult->getVz().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getVz().at(time), simResult->getVz().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getL0());
 					if (dataToCalculate.at(i) == "Press")
-						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getPress().at(time), simResult->getPress().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getPress().at(time), simResult->getPress().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getL0());
 					if (dataToCalculate.at(i) == "Rho")
-						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getRho().at(time), simResult->getRho().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes());
+						l2Norm.at(i).at(j).at(k) = l2Normcalculator.at(j)->calc(analyticalResult->getRho().at(time), simResult->getRho().at(time), simResult->getLevels().at(time), analyticalResult->getNumberOfXNodes(), analyticalResult->getNumberOfZNodes(), analyticalResult->getL0());
 				}
 			}
 		}

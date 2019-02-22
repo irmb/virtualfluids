@@ -341,7 +341,6 @@ std::shared_ptr<L2NormTestStruct> NumericalTestFactoryImp::makeL2NormTestsStruct
 		for (int i = 0; i < testSimumlations.size(); i++)
 			postProcessingStrategies.push_back(L2NormPostProcessingStrategy::getNewInstance(testSimumlations.at(i)->getSimulationResults(), testSimumlations.at(i)->getAnalyticalResults(), testParameter, l2NormCalculatorFactory, testSimumlations.at(i)->getDataToCalcTests()));
 
-
 		testStruct->tests = makeL2NormTests(testSimumlations, postProcessingStrategies, testParameter);
 		testStruct->logFileInfo = L2NormInformation::getNewInstance(testStruct->tests, testParameter, testSimumlations.at(0)->getDataToCalcTests());
 	}

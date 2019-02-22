@@ -19,6 +19,7 @@ public:
 	unsigned int getTimeStepLength();
 	unsigned int getLx();
 	unsigned int getLz();
+	unsigned int getL0();
 	std::vector<int> getDevices();
 	
 	std::shared_ptr<KernelConfiguration> getKernelConfiguration();

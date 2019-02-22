@@ -18,6 +18,7 @@ SimulationParameterImp::SimulationParameterImp(std::string kernelName, double vi
 	gridPath = gridInfo->gridPath;
 	lx = gridInfo->lx;
 	lz = gridInfo->lz;
+	l0 = basicSimPara->l0;
 	maxLevel = gridInfo->maxLevel;
 	numberOfGridLevels = gridInfo->numberOfGridLevels;
 }
@@ -67,6 +68,11 @@ unsigned int SimulationParameterImp::getLx()
 unsigned int SimulationParameterImp::getLz()
 {
 	return lz;
+}
+
+unsigned int SimulationParameterImp::getL0()
+{
+	return l0;
 }
 
 std::vector<int> SimulationParameterImp::getDevices()

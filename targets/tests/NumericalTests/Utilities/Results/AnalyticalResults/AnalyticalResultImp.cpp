@@ -7,8 +7,19 @@ bool AnalyticalResultsImp::isCalculated()
 	return calculated;
 }
 
+int AnalyticalResultsImp::getL0()
+{
+	return l0;
+}
+
 AnalyticalResultsImp::AnalyticalResultsImp()
 {
+	calculated = false;
+}
+
+AnalyticalResultsImp::AnalyticalResultsImp(int l0)
+{
+	this->l0 = l0;
 	calculated = false;
 }
 
@@ -26,6 +37,7 @@ void AnalyticalResultsImp::init(std::shared_ptr<SimulationResults> simResults)
 	this->y = simResults->getYNodes();
 	this->z = simResults->getZNodes();
 	this->level = simResults->getLevels();
+	this->l0 = simResults->getL0();
 
 	this->vx.resize(numberOfTimeSteps);
 	this->vy.resize(numberOfTimeSteps);

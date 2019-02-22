@@ -13,7 +13,7 @@ public:
 
 
 private:
-	AnalyticalResultsTaylorGreenUz() {};
+	AnalyticalResultsTaylorGreenUz();
 	AnalyticalResultsTaylorGreenUz(double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct);
 
 	double viscosity, rho0;

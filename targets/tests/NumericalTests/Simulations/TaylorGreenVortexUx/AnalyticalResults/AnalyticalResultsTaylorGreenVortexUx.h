@@ -12,7 +12,7 @@ public:
 	void calc(std::shared_ptr<SimulationResults> simResults);
 
 private:
-	AnalyticalResultsTaylorGreenUx() {};
+	AnalyticalResultsTaylorGreenUx();
 	AnalyticalResultsTaylorGreenUx(double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct);
 
 	double viscosity, rho0;

@@ -116,6 +116,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileRead
 	std::vector<double> amplitude = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Ux"));
 	std::vector<double> u0 = StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux"));
 	int l0 = StringUtil::toInt(input->getValue("l0_TGV_Ux"));
+	basicSimParameter->l0 = l0;
 
 	std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > parameter;
 	for (int i = 0; i < u0.size(); i++) {
@@ -140,6 +141,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileRead
 	std::vector<double> amplitude = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Uz"));
 	std::vector<double> uz = StringUtil::toDoubleVector(input->getValue("uz_TGV_Uz"));
 	int l0 = StringUtil::toInt(input->getValue("l0_TGV_Uz"));
+	basicSimParameter->l0 = l0;
 
 	std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > parameter;
 	for (int i = 0; i < uz.size(); i++) {
@@ -162,6 +164,7 @@ std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeSh
 	std::vector<double> uz = StringUtil::toDoubleVector(input->getValue("v0_SW"));
 	std::vector<double> ux = StringUtil::toDoubleVector(input->getValue("u0_SW"));
 	int l0 = StringUtil::toInt(input->getValue("l0_SW"));
+	basicSimParameter->l0 = l0;
 
 	std::vector<std::shared_ptr<ShearWaveParameterStruct> > parameter;
 	for (int i = 0; i < uz.size(); i++) {

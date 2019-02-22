@@ -22,11 +22,13 @@ public:
 	std::vector<std::vector<unsigned int> > getLevels();
 	std::vector<std::vector<double> > getPress();
 	std::vector<std::vector<double> > getRho();
+	int getL0();
 
 	bool checkYourData();
 
 protected:
-	ResultsImp() {};
+	ResultsImp(int l0);
+	ResultsImp();
 
 	unsigned int numberOfTimeSteps;
 	unsigned int timeStepLength;
@@ -40,6 +42,8 @@ protected:
 	std::vector<std::vector<double> > press;
 	std::vector<std::vector<double> > rho;
 	std::vector<std::vector<unsigned int> > level;
+
+	int l0;
 
 private:
 
