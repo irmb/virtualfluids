@@ -34,10 +34,10 @@ void LogFileWriterImp::writeLogFile(std::string basicFilePath)
 	logFilePath = buildFilePath(basicFilePath);
 	logFile.open(logFilePath, std::ios::out);
 
-	bool open = logFile.is_open();
-
 	for (int i = 0; i < logFileInfo.size(); i++)
 		logFile << logFileInfo.at(i)->getOutput();	
+
+	logFile.close();
 }
 
 
