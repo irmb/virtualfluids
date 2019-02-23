@@ -51,6 +51,7 @@ std::string PhiTestLogFileInformation::getOutput()
 			else
 				failMessageOOA << lx.at(2 * j) << "_" << lx.at(2 * j + 1) << "_" << dataToCalc.at(j) << " ";
 		}
+		oss << std::endl;
 			
 	}
 	std::string failPhi = failMessagePhi.str();
