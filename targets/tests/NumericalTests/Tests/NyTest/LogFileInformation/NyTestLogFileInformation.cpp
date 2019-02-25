@@ -86,9 +86,24 @@ void NyTestLogFileInformation::fillMyData(std::vector<std::shared_ptr<NyTest> > 
 	dataToCalc.resize(0);
 	status.resize(0);
 	for (int i = 0; i < testGroup.size(); i++) {
+		status.push_back(testGroup.at(i)->getTestStatus());
+		status.push_back(testGroup.at(i)->getTestStatus());
+
 		std::vector<int> myLx = testGroup.at(i)->getLx();
-		std::vector<double> myNy = testGroup.at(i)->getNy();
-		std::vector<double> myNyDiff = testGroup.at(i)->getNyDiff();
+		std::vector<double> myNy;
+		std::vector<double> myNyDiff;
+
+		if (testGroup.at(i)->getTestStatus() == simulationCrashed || testGroup.at(i)->getTestStatus() == error) {
+			for (int i = 0; i < myLx.size(); i++) {
+				myNy.push_back((double)0.0);
+				myNyDiff.push_back((double)0.0);
+			}
+				
+		}
+		else {
+			myNy = testGroup.at(i)->getNy();
+			myNyDiff = testGroup.at(i)->getNyDiff();
+		}
 		lx.insert(lx.end(), myLx.begin(), myLx.end());
 		lxForErase.insert(lxForErase.end(), myLx.begin(), myLx.end());
 		ny.insert(ny.end(), myNy.begin(), myNy.end());
@@ -96,8 +111,6 @@ void NyTestLogFileInformation::fillMyData(std::vector<std::shared_ptr<NyTest> > 
 		orderOfAccuracyNyDiff.push_back(testGroup.at(i)->getOrderOfAccuracyNyDiff());
 		dataToCalc.push_back(testGroup.at(i)->getDataToCalculate());
 		dataToCalc.push_back(testGroup.at(i)->getDataToCalculate());
-		status.push_back(testGroup.at(i)->getTestStatus());
-		status.push_back(testGroup.at(i)->getTestStatus());
 	}
 
 	for (int i = 0; i < lxForErase.size(); i++) 
