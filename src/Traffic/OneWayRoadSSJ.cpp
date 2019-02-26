@@ -7,9 +7,8 @@ OneWayRoadSSJ::OneWayRoadSSJ(unique_ptr<RoadNetworkData> road, const float dawdl
 	pcurrent = &this->road->current;
 	pnext = &(this->road->next);
 
-	checkCurrentForSafetyDistance();
-
 	initDawdle(dawdlePossibility);
+	initResults();
 }
 
 OneWayRoadSSJ::OneWayRoadSSJ()
@@ -29,9 +28,8 @@ void OneWayRoadSSJ::calculateTimestep(unsigned int step)
 	VectorHelper::fillVector(*pnext, -1);
 	vector<unsigned int> cars = findCarIndicesInCurrent();
 
-	for (auto &car : cars) {
+	for (auto &car : cars)
 		applyRules(car);
-	}
 
 	for (auto &junction : road->junctions) {
 		junction->updateJunction();
@@ -94,6 +92,7 @@ unsigned int OneWayRoadSSJ::iterateNeighborsInMove(unsigned int &currentCell, un
 		else
 			break;
 	}
+
 	return numberOfCellsMoved;
 }
 
@@ -228,8 +227,9 @@ void OneWayRoadSSJ::visualizeSafetyDistanceForConsole() {
 					neighbor = road->neighbors[i];
 					for (unsigned int j = 1; j <= road->safetyDistance; j++) {
 						//junction or sink
-						if (neighbor <= -1000) 
+						if (neighbor <= -1000) {
 							break;
+						}
 						if (results[neighbor][step] > -1) {
 							cerr << "safetyDistance was violated: timestep: " << step << "\t carIndex: " << i << endl;
 							break;
@@ -244,33 +244,6 @@ void OneWayRoadSSJ::visualizeSafetyDistanceForConsole() {
 	}
 
 }
-
-
-void OneWayRoadSSJ::visualizeVehicleLengthForVTK()
-{
-	road->currentWithLongVehicles = *pcurrent;
-
-	if (road->safetyDistance != 0) {
-		for (unsigned int i = 0; i < road->roadLength; i++) {
-			if ((*pcurrent)[i] > -1) {
-				int neighbor = road->neighbors[i];
-				for (unsigned int j = 1; j <= road->safetyDistance; j++) {
-					if (neighbor <= -1000) 
-						break;
-					if ((*pcurrent)[neighbor] > -1) {
-						cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << endl;
-						break;
-					}
-					else
-						(road->currentWithLongVehicles)[neighbor] = (*pcurrent)[i];
-					neighbor = road->neighbors[neighbor];
-				}
-			}
-		}
-	}
-}
-
-
 
 void OneWayRoadSSJ::dispJunctionsAtCell(unsigned int index)  const
 {

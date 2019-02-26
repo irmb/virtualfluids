@@ -14,8 +14,6 @@ public:
 
 	virtual void checkOutCellIndices(unsigned int roadLength) = 0;
 
-	virtual void setCellIndexForNoUTurn(std::vector<int> carCanNotEnterThisOutCell) = 0;
-
 	virtual bool acceptsCar(unsigned int cellIndex) = 0; //determines if a car can enter the junction
 	virtual void registerCar(unsigned int cellIndex, unsigned int numberOfCellsAlreadyMoved, unsigned int speed) = 0; //registers all cars entering the junction
 	virtual void calculateTimeStep(OneWayRoadSSJ& road) = 0;

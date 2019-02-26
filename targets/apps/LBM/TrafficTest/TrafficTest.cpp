@@ -2,22 +2,17 @@
 #include <vector>
 #include <memory>
 
-#include "Core/DataTypes.h"
-
 #include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
-#include "GridGenerator/StreetPointFinder/JunctionReader.h"
-#include "GridGenerator/StreetPointFinder/SourceReader.h"
-#include "GridGenerator/StreetPointFinder/SinkReader.h"
 
-#include "Traffic/RoadNetwork/RoadMaker.h"
+#include "Traffic/RoadMaker.h"
 #include "Traffic/OneWayRoad.h"
 #include "Traffic/OneWayRoadSSJ.h"
-#include "Traffic/Source/SourceTerm.h"
-#include "Traffic/Junction/Junction.h"
-#include "Traffic/Junction/JunctionSimple.h"
-#include "Traffic/Sink/Sink.h"
-#include "Traffic/Sink/SinkSimple.h"
-#include "Traffic/Output/ConcentrationByPosition.h"
+#include "Traffic/SourceTerm.h"
+#include "Traffic/Junction.h"
+#include "Traffic/JunctionSimple.h"
+#include "Traffic/Sink.h"
+#include "Traffic/SinkSimple.h"
+#include "Traffic/ConcentrationByPosition.h"
 
 //using namespace std;
 
@@ -36,13 +31,15 @@ int main()
 
 	//Variables
 
-	int numberOfTimesteps = 10;
-	float vehicleDensity = 0.005;
+	int numberOfTimesteps = 100;
+	float vehicleDensity = 0.05;
 
 	const unsigned int maxVelocity = 5;
 	float dawdlePossibility = 0.5;//typical value: 0.2
 	unsigned int vehicleLength = 7;
-		
+
+
+
 
 	//StreetPointFinder
 
@@ -51,53 +48,31 @@ int main()
 	finder.readStreets("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 	finder.writeVTK("C:/Users/hiwi/Desktop/Basel_Ergebnisse/ExampleStreets.vtk");
 
-	JunctionReader junctionReader;
-	junctionReader.readJunctions("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/Junctions.txt", finder);
-
-	SinkReader sinkReader;
-	sinkReader.readSinks("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/Sinks.txt", finder);
-
-	SourceReader sourceReader;
-	sourceReader.readSources("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/Sources.txt", finder);
 
 
-	////RandomRoad 
+
+
+	//One RandomRoad 
 
 	{
+		std::cout << "OneWay random" << std::endl;
+
+
+
 		unsigned int roadLength = 0;
-		for (unsigned int i = 0; i < finder.streets.size(); i++) {
+		for (unsigned int i = 0; i < 2; i++) {
 			roadLength += finder.streets[i].numberOfCells;
 		}
 
 
 		auto roadNetwork = std::make_unique<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
-
-		vector< unique_ptr<Source> > sources;
-		for (uint i = 0; i < sourceReader.sources.size(); i++)
-			sources.push_back(make_unique <SourceTerm>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity()));
-		roadNetwork->setSources(move(sources));
-
-
-		vector< unique_ptr<Sink> > sinks;
-		for (uint i = 0; i < sinkReader.sinks.size(); i++)
-			sinks.push_back(make_unique <SinkSimple>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility));
-		roadNetwork->setSinks(move(sinks));
-
-
-		vector <unique_ptr<Junction> > junctions;
-		for (uint i = 0; i < junctionReader.junctions.size(); i++) {
-			junctions.push_back(make_unique <JunctionSimple>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells));
-			junctions[i]->setCellIndexForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
-		}
-		roadNetwork->setJunctions(move(junctions));
-
-
-		auto simulator = std::make_shared<OneWayRoadSSJ>(move(roadNetwork), dawdlePossibility);
+		auto simulator = std::make_shared<OneWayRoad>(move(roadNetwork), dawdlePossibility);
 		simulator->initCalculation(numberOfTimesteps);
 
+		//unique_ptr<ConcentrationOutwriter> writer = make_unique<ConcentrationByPosition>(ConcentrationByPosition(simulator->getRoadLength()));
+		//simulator->setConcentrationOutwriter(move(writer));
 
-		unique_ptr<ConcentrationOutwriter> writer = make_unique<ConcentrationByPosition>(ConcentrationByPosition(simulator->getRoadLength()));
-		simulator->setConcentrationOutwriter(move(writer));
+
 
 
 		std::string outputPath("C:/Users/hiwi/Desktop/Basel_Ergebnisse/");
@@ -110,8 +85,10 @@ int main()
 			simulator->visualizeVehicleLengthForVTK();
 			finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(step) + ".vtk", cars);
 		}
+	
 
 		std::cout << std::endl << std::endl;
+
 	}
 
 
@@ -128,52 +105,6 @@ int main()
 	int roadLength = 20;
 	vehicleLength = 3;
 
-
-
-	////JunctionTest
-	//{
-	//	auto roadNetwork = std::make_unique<RoadMaker>(fiveCars, maxVelocity, vehicleLength);
-
-	//	vector <unsigned int> in4 = { 9 };
-	//	vector<unsigned int> out4 = { 10 };
-	//	std::unique_ptr<Junction>  j = std::make_unique<JunctionSimple>(in4, out4);
-	//	j->setCellIndexForNoUTurn({ 10 });
-	//	roadNetwork->addJunction(j);
-
-	//	std::shared_ptr<OneWayRoadSSJ> simulator = std::make_shared<OneWayRoadSSJ>(move(roadNetwork), dawdlePossibility);
-	//	simulator->setSaveResults(true);
-	//	simulator->initCalculation(numberOfTimesteps);
-
-	//	for (int step = 1; step < numberOfTimesteps + 1; step++) {
-	//		simulator->calculateTimestep(step);
-	//	}
-
-	//	std::cout << "Number of Cars: " << simulator->getNumberOfCars() << std::endl;
-	//	simulator->dispResults();
-	//}
-
-	//{
-	//	dawdlePossibility = 0;
-	//	vector<int> car = { -1,-1,-1,4,-1,-1,-1,-1,-1 };
-
-	//	unique_ptr<RoadMaker> r = make_unique<RoadMaker>(car, 5, 2);
-
-	//	vector <unsigned int> in = { 4 };
-	//	vector <unsigned int> out = { 5 };
-	//	unique_ptr<Junction>  j = make_unique<JunctionSimple>(JunctionSimple(in, out));
-	//	r->addJunction(j);
-
-	//	shared_ptr<OneWayRoadSSJ> simulator = make_shared<OneWayRoadSSJ>(move(r), dawdlePossibility);
-	//	simulator->setSaveResults(true);
-	//	simulator->initCalculation(1);
-
-	//	simulator->calculateTimestep(1);
-
-	//	bool success = false;
-	//	if (simulator->getSpeedAtPosition(7) == 5) success = true;
-	//	std::cout << success << std::endl;
-	//	simulator->dispResults();
-	//}
 
 
 	////OneWay random 
@@ -336,5 +267,10 @@ int main()
 
 
 
+	//junctionTest(maxVelocity, vehicleLength);
+
+	//junctionTestCrossRoads(maxVelocity, vehicleLength);
+
+	std::cin.get();
 }
 

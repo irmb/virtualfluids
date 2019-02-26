@@ -269,3 +269,21 @@ unsigned int RoadMaker::getMaxVelocity()
 	return maxVelocity;
 }
 
+void RoadMaker::checkCurrentForSafetyDistance()
+{
+	if (safetyDistance > 0) {
+		unsigned int neighbor;
+		for (unsigned int i = 0; i < roadLength; i++) {
+			if (current[i] > -1) {
+				neighbor = neighbors[i];
+				for (unsigned int j = 1; j <= safetyDistance; j++) {
+					if ((current)[neighbor] > -1) {
+						std::cerr << "timestep 0: safetyDistance was violated: carIndex: " << i << std::endl;
+						break;
+					}
+					neighbor = neighbors[neighbor];
+				}
+			}
+		}
+	}
+}

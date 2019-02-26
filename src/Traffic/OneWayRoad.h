@@ -9,11 +9,11 @@
 #include <iomanip>	//formatting output streams
 #include <windows.h> //for colourful console output
 
-#include "Utilities/invalidInput_error.h"
-#include "Utilities/VectorHelper.h"
-#include "Utilities/RandomHelper.h"
-#include "RoadNetwork/RoadNetworkData.h"
-#include "Output/ConcentrationOutwriter.h"
+#include "invalidInput_error.h"
+#include "VectorHelper.h"
+#include "RandomHelper.h"
+#include "RoadNetworkData.h"
+#include "ConcentrationOutwriter.h"
 
 using namespace std;
 
@@ -87,8 +87,7 @@ protected:
 	void breakCar(unsigned int carIndex, unsigned int &speed);
 	void dawdleCar(unsigned int carIndex, unsigned int &speed);
 	virtual void moveCar(unsigned int carIndex, unsigned int speed);
-	
-	void checkCurrentForSafetyDistance();
+
 	virtual void visualizeSafetyDistanceForConsole();
 
 protected:

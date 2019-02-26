@@ -2,14 +2,14 @@
 #include <memory>
 #include <vector>
 
-#include "Utilities/VectorHelper.h"
-#include "Utilities/invalidInput_error.h"
+#include "VectorHelper.h"
+#include "invalidInput_error.h"
 
 #include <VirtualFluidsDefinitions.h>
 
-#include "Source/Source.h"
-#include "Sink/Sink.h"
-#include "Junction/Junction.h"
+#include "Source.h"
+#include "Sink.h"
+#include "Junction.h"
 
 
 struct VF_PUBLIC RoadNetworkData
