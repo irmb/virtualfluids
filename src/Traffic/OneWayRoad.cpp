@@ -13,8 +13,9 @@ OneWayRoad::OneWayRoad(unique_ptr<RoadNetworkData> road, const float dawdlePossi
 	pcurrent = &this->road->current;
 	pnext = &(this->road->next);
 
+	checkCurrentForSafetyDistance();
+
 	initDawdle(dawdlePossibility);
-	initResults();
 }
 
 
@@ -28,10 +29,8 @@ OneWayRoad::~OneWayRoad()
 
 void OneWayRoad::initResults()
 {
-	if (saveResults) {
-		results.resize(road->roadLength, vector<int>(1));
-		VectorHelper::fillVector(results, -10);
-	}
+	results.resize(road->roadLength, vector<int>(1));
+	VectorHelper::fillVector(results, -10);
 }
 
 
@@ -82,7 +81,10 @@ void OneWayRoad::setConcentrationOutwriter(unique_ptr<ConcentrationOutwriter> wr
 
 void OneWayRoad::setSaveResults(bool saveResults)
 {
-	saveResults = true;
+	if (saveResults) {
+		this->saveResults = true;
+		initResults();
+	}
 }
 
 
@@ -128,7 +130,7 @@ void OneWayRoad::initResultsForCalculation()
 
 void OneWayRoad::loopTroughTimesteps()
 {
-	for (int step = 1; step < timeSteps + 1; step++) {
+	for (unsigned int step = 1; step < timeSteps + 1; step++) {
 		calculateTimestep(step);
 	}
 }
@@ -296,9 +298,13 @@ void OneWayRoad::writeResultsToFile() const
 	}
 	catch (const exception& e) {
 		cerr << e.what() << endl;
+		cin.get();
+		exit(EXIT_FAILURE);
 	}
 	catch (...) {
 		cerr << "unknown exception while writing to file" << endl;
+		cin.get();
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -323,6 +329,27 @@ void OneWayRoad::dispResults()
 	reverse(results.begin(), results.end());
 	VectorHelper::dispVectorColour(results);
 }
+
+
+void OneWayRoad::checkCurrentForSafetyDistance()
+{
+	if (road->safetyDistance > 0) {
+		unsigned int neighbor;
+		for (unsigned int i = 0; i < road->roadLength; i++) {
+			if ((*pcurrent)[i] > -1) {
+				neighbor = road->neighbors[i];
+				for (unsigned int j = 1; j <= road->safetyDistance; j++) {
+					if ((*pcurrent)[neighbor] > -1) {
+						std::cerr << "timestep 0: safetyDistance was violated: carIndex: " << i << std::endl;
+						break;
+					}
+					neighbor = road->neighbors[neighbor];
+				}
+			}
+		}
+	}
+}
+
 
 void OneWayRoad::visualizeSafetyDistanceForConsole()
 {
@@ -372,5 +399,4 @@ void OneWayRoad::visualizeVehicleLengthForVTK()
 			}
 		}
 	}
-
 }

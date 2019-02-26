@@ -20,6 +20,7 @@ public:
 	virtual void dispResults();
 
 	virtual const unsigned int getNumberOfCars() const; //only use for testing
+	virtual void visualizeVehicleLengthForVTK();
 
 private:
 

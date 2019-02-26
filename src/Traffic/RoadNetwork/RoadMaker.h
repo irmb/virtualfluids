@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 #include "RoadNetworkData.h"
-#include "RandomHelper.h"
+#include "Utilities/RandomHelper.h"
 #include <VirtualFluidsDefinitions.h>
 
 struct VF_PUBLIC RoadMaker :
@@ -22,8 +22,6 @@ public:
 	void addSource(std::unique_ptr<Source> & source);
 
 	void setNeighbor(unsigned int index, unsigned int neighbor); // don't use it for setting sinks or junctions!
-
-	void checkCurrentForSafetyDistance();
 
 	unsigned int getMaxVelocity();
 
