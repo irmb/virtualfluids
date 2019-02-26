@@ -28,7 +28,7 @@ struct VF_PUBLIC Street
     std::vector<uint> matrixIndicesLB;
     std::vector<uint> sparseIndicesLB;
 
-    // The constructor expect star and end for cells
+    // The constructor expect start and end for cells
     Street( real xStartCell, real yStartCell, real xEndCell, real yEndCell, real dx );
 
     real getCoordinateX( int cellIndex );

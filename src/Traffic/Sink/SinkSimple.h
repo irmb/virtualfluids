@@ -5,9 +5,9 @@
 #include <iostream>
 #include <random>
 
-#include "RandomHelper.h"
+#include "Utilities/RandomHelper.h"
 #include "Sink.h"
-#include "invalidInput_error.h"
+#include "Utilities/invalidInput_error.h"
 
 using namespace std;
 
