@@ -1494,7 +1494,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string& file
    int bytesCellConnectivty = 1 /*nodes per cell */ * nofNodes * sizeof(int  );
    int bytesCellOffsets     = 1 /*offset per cell*/ * nofNodes * sizeof(int  );
    int bytesCellTypes       = 1 /*type of oct    */ * nofNodes * sizeof(unsigned char);
-   int bytesScalarData      = 1 /*scalar         */ * nofNodes * sizeof(float); 
+   int bytesScalarData      = 1 /*scalar         */ * nofNodes * sizeof(double); 
 
    int offset = 0;
    //VTK FILE
@@ -1523,7 +1523,7 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string& file
    out<<"         <PointData>\n";
    for(size_t s=0; s<datanames.size(); ++s)
    {
-      out<< "            <DataArray type=\"Float32\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
+      out<< "            <DataArray type=\"Float64\" Name=\""<< datanames[s] <<"\" format=\"appended\" offset=\""<< offset <<"\" /> \n";
       offset += (bytesPerByteVal + bytesScalarData);
    }
    out<<"         </PointData>\n";
@@ -1569,8 +1569,10 @@ std::string WbWriterVtkXmlBinary::writeNodesWithNodeData(const std::string& file
       for(size_t d=0; d<nodedata[s].size(); ++d)
       {
          //loake kopie machen, da in nodedata "doubles" sind
-         float tmp = (float)nodedata[s][d];
-         out.write((char*)&tmp,sizeof(float));
+         //float tmp = (float)nodedata[s][d];
+         //out.write((char*)&tmp,sizeof(float));
+         double tmp = nodedata[s][d];
+         out.write((char*)&tmp, sizeof(double));
       }
    }
    out<<"\n</AppendedData>\n";

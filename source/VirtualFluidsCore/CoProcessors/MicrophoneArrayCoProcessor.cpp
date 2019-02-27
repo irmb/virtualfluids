@@ -8,6 +8,8 @@
 #include "DataSet3D.h"
 #include "D3Q27System.h"
 #include "UbScheduler.h"
+#include "BCProcessor.h"
+#include "BCArray3D.h"
 
 MicrophoneArrayCoProcessor::MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string & path, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path), comm(comm)
 {
@@ -48,32 +50,38 @@ void MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
          SPtr<ILBMKernel> kernel = block->getKernel();
          if (kernel)
          {
-            if (kernel->getCompressible())
+            SPtr<BCArray3D> bcarray = kernel->getBCProcessor()->getBCArray();
+            UbTupleInt3 nodes = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
+            if (!bcarray->isUndefined(val<1>(nodes), val<2>(nodes), val<3>(nodes)))
             {
-               calcMacros = &D3Q27System::calcCompMacroscopicValues;
-            }
-            else
-            {
-               calcMacros = &D3Q27System::calcIncompMacroscopicValues;
-            }
-            SPtr<Mic> mic(new Mic);
-            mic->distridution = kernel->getDataSet()->getFdistributions();
-            mic->nodeIndexes = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
-            microphones.push_back(mic);
-            values.resize((microphones.size()+1)*static_cast<int>(scheduler->getMinStep()));
 
-            std::string fname = path+"/mic/mic_"+UbSystem::toString(comm->getProcessID())+".csv";
-            std::ofstream ostr;
-            ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
-            if (!ostr)
-            {
-               ostr.clear();
-               std::string path = UbSystem::getPathFromString(fname);
-               if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
-               if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
+               if (kernel->getCompressible())
+               {
+                  calcMacros = &D3Q27System::calcCompMacroscopicValues;
+               }
+               else
+               {
+                  calcMacros = &D3Q27System::calcIncompMacroscopicValues;
+               }
+               SPtr<Mic> mic(new Mic);
+               mic->distridution = kernel->getDataSet()->getFdistributions();
+               mic->nodeIndexes = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
+               microphones.push_back(mic);
+               values.resize((microphones.size()+1)*static_cast<int>(scheduler->getMinStep()));
+
+               std::string fname = path+"/mic/mic_"+UbSystem::toString(comm->getProcessID())+".csv";
+               std::ofstream ostr;
+               ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
+               if (!ostr)
+               {
+                  ostr.clear();
+                  std::string path = UbSystem::getPathFromString(fname);
+                  if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
+                  if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
+               }
+               ostr << "#microphone position: " << coords[0] << "; " << coords[1] << "; " << coords[2] << "; " << "\n";
+               return;
             }
-            ostr << "#microphone position: " << coords[0] << "; " << coords[1] << "; " << coords[2] << "; " << "\n";
-            return;
          }
       }
    }
