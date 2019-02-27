@@ -43,15 +43,15 @@ void run()
       //////////////////////////////////////////////////////////////////////////
       //DLR-F16 test
       ////dx_coarse = 0.003 mm
-      //string  pathname = "d:/temp/AcousticPulseXZ-BV10nuLB-0.003";
-      //int     endTime = 20;
-      //double  outTime = 20;
-      //LBMReal dx =  0.003;
-      //LBMReal rhoLB = 0.0;
-      //LBMReal nuLB = 8.66025e-6;
+      string  pathname = "d:/temp/AcousticPulseXZ-4th-0.003";
+      int     endTime = 20;
+      double  outTime = 20;
+      LBMReal dx =  0.003;
+      LBMReal rhoLB = 0.0;
+      LBMReal nuLB = 8.66025e-6;
       //////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.0015 mm
-      //string  pathname = "d:/temp/AcousticPulseXZ-BV10nuLB-0.0015";
+      //string  pathname = "d:/temp/AcousticPulseXZ-4th-0.0015";
       //double  endTime = 40;
       //double  outTime = 40;
       //LBMReal dx =  0.0015;
@@ -59,12 +59,12 @@ void run()
       //LBMReal nuLB = 8.66025e-6*2.0;
       ////////////////////////////////////////////////////////////////////////////
       ////dx_coarse = 0.00075 mm
-      string  pathname = "d:/temp/AcousticPulseXZ-BV10nuLB-0.00075";
-      double  endTime = 80;
-      double  outTime = 80;
-      LBMReal dx =  0.00075;
-      LBMReal rhoLB = 0.0;
-      LBMReal nuLB = 8.66025e-6*4.0;
+      //string  pathname = "d:/temp/AcousticPulseXZ-4th-0.00075";
+      //double  endTime = 80;
+      //double  outTime = 80;
+      //LBMReal dx =  0.00075;
+      //LBMReal rhoLB = 0.0;
+      //LBMReal nuLB = 8.66025e-6*4.0;
       //////////////////////////////////////////////////////////////////////////
 
       SPtr<LBMUnitConverter> conv = SPtr<LBMUnitConverter>(new LBMUnitConverter());
@@ -161,7 +161,7 @@ void run()
 
       double bulckViscosity = 10.0*nuLB;
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
+      //dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       //dynamicPointerCast<CompressibleCumulantLBMKernel>(kernel)->setBulkOmegaToOmega(true);
       //
@@ -181,7 +181,7 @@ void run()
       //set connectors  
      //SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetInterpolationProcessor());
       SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
+      //dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
 
       UBLOG(logINFO, "SetConnectorsBlockVisitor:start");

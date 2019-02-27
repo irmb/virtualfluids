@@ -6,6 +6,8 @@
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
    : omegaC(0.0), omegaF(0.0)
 {
+   this->bulkViscosity = 0.0;
+   this->shearViscosity = 0.0;
    this->OxxPyyPzzC = one;
    this->OxxPyyPzzF = one;
 }
@@ -13,6 +15,8 @@ CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterp
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
+   this->bulkViscosity = 0.0;
+   this->shearViscosity = 0.0;
    this->OxxPyyPzzC = one;
    this->OxxPyyPzzF = one;
 }
