@@ -244,11 +244,11 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         real Y_N2_ambient = 0.767;
         real Y_O2_ambient = 0.233;
 
-        real m_CH4 = 16.0;
-        real m_O2  = 32.0;
-        real m_N2  = 28.0;
-        real m_H2O = 34.0;
-        real m_CO2 = 44.0;
+        real m_CH4 = 16.0;  // g / mol
+        real m_O2  = 32.0;  // g / mol
+        real m_N2  = 28.0;  // g / mol
+        real m_H2O = 34.0;  // g / mol
+        real m_CO2 = 44.0;  // g / mol
 
         ///////////////////////////////////////////////////////////////////////////////
 
@@ -268,45 +268,23 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
         real Y_S;   // currently not modeled
 
-        //if( Z1 < 0.0 ) Z1 = 0.0;
-        //if( Z2 < 0.0 ) Z2 = 0.0;
-
         //////////////////////////////////////////////////////////////////////////
 
-        if( Y_CH4 > 1.0e-6 && Y_O2 > 1.0e-6 )
-
         {
-            const real heatOfReaction = 2.0e3;
+            const real heatOfReaction = 8.0e8;
 
             real s = m_CH4 / (2.0 * m_O2);      // refers to page 49 in FDS technical reference guide
 
-            real releasedHeat = rho * fminf(Y_CH4, s * Y_O2) * heatOfReaction;
+            real releasedHeat = rho * fminf(Y_CH4, s * Y_O2) / m_CH4 * heatOfReaction;
 
-            if (Y_CH4 < s * Y_O2)
-            {
-                Y_CH4 = 0.0;
-                //Y_O2  = Y_O2  - Y_CH4 / s;
-            }
-            else
-            {
-                Y_CH4 = Y_CH4 - s * Y_O2;
-                //Y_O2  = 0.0;
-            }
-
-            //if( Z2 < 0.0 ) printf( "%f, %f, %f \n", Z2, Y_O2_ambient, Y_O2 );
-
-            //Y_CH4 = Y_CH4 - fminf( Y_CH4    , s * Y_O2 );
-            //Y_O2  = Y_O2  - fminf( Y_CH4 / s,     Y_O2 );
+            if (Y_CH4 < s * Y_O2) Y_CH4 = 0.0;
+            else                  Y_CH4 = Y_CH4 - s * Y_O2;
 
             ///////////////////////////////////////////////////////////////////////////////
 
             real dZ1 = Z1 - Y_CH4 / Y_CH4_Inflow;
 
-            //if( dZ1 < 0.0 ) printf( "%f, %f, %f \n", Z1, Y_CH4, Y_CH4_Inflow );
-
             Z1 = Y_CH4 / Y_CH4_Inflow;
-
-            //Z2 = ( ( 1.0 - Z1 ) * Y_O2_ambient - Y_O2 ) / ( 1.0 + 2.0 * ( m_O2  / m_CH4 ) * Y_CH4_Inflow );
 
             Z2 = Z2 + dZ1;
 
@@ -315,7 +293,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)] = Z1 * updatedConserved.rho;
             dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)] = Z2 * updatedConserved.rho;
 
-            //dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] += releasedHeat;
+            dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] = updatedConserved.rhoE + releasedHeat;
         }
     }
 

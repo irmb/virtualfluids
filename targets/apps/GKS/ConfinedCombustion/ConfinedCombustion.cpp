@@ -60,7 +60,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real Ba  = 0.1;
     real eps = 1.2;
     real Pr  = 0.71;
-    real K   = 8.0;
+    real K   = 3.0;
     
     real g   = 9.81;
     real rho = 1.2;
@@ -72,8 +72,8 @@ void thermalCavity( std::string path, std::string simulationName )
 				   + S_2               * 8.31445984848 / 32.00e-3      // CH4
 		           + (1.0 - S_1 - S_2) * 8.31445984848 / 28.00e-3;     // N2
 
-    real lambdaCold = 0.5 / ( R_Mixture *  300 );
-    real lambdaHot  = 0.5 / ( R_Mixture * 1200 );
+    real lambdaCold = 0.5 / ( 287 *  300 );
+    real lambdaHot  = 0.5 / ( 287 * 1200 );
     
     real mu = 1.0e-1;
 
@@ -82,7 +82,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //real CFL = 0.8;
 
-    real dt  = 1.0e-4; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = 5.0e-6; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     //*logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
@@ -159,6 +159,8 @@ void thermalCavity( std::string path, std::string simulationName )
     SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambdaCold );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambdaCold );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
@@ -273,7 +275,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 100000000; iter++ )
+    for( uint iter = 1; iter <= 400000; iter++ )
     {
         //if( iter < 100000 )
         //{
@@ -294,7 +296,7 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 10000    && iter % 1000  == 0 ) ||
             //( iter < 1000000   && iter % 10000  == 0 ) ||
             //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter < 20000 && iter % 100 == 0 )
+            ( iter <= 400000 && iter % 1000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
