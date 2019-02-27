@@ -82,7 +82,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //real CFL = 0.8;
 
-    real dt  = 1.0e-6; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = 1.0e-4; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     //*logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
@@ -120,13 +120,13 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*dx,  
-                                0.5*L,  0.5*L,  0.5*dx, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx, -0.5*dx,  
+                                0.5*L,  0.5*dx,  0.5*dx, dx);
 
     //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  -0.5*L,  
     //                            0.5*L,  0.5*L,   0.5*L, dx);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+    gridBuilder->setPeriodicBoundaryCondition(false, true, true);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -155,9 +155,9 @@ void thermalCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
@@ -168,13 +168,16 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    //SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    //SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
     //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
 
-    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
-    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
+    SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
+
+    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
+    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -229,9 +232,16 @@ void thermalCavity( std::string path, std::string simulationName )
 
         //rhoLocal = rho * lambdaLocal / lambdaCold;
 
+        
+        
         //lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * exp( - 10. * ( (cellCenter.x-0.5)*(cellCenter.x-0.5) ) );
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaLocal, S_1, S_2 ), parameters.K );
+        real S_1_local;
+
+        if(fabs(cellCenter.x) < 0.5*0.05478) S_1_local = 1.0;
+        else                                 S_1_local = 0.0;
+
+        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaLocal, S_1_local, 0.0 ), parameters.K );
     });
 
     std::cout << toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambdaHot, S_1, S_2 ), parameters.K ).rhoE << std::endl;
@@ -265,17 +275,17 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        if( iter < 100000 )
-        {
-            std::dynamic_pointer_cast<IsothermalWall>(bcMX)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / 100000.0 );
-        }
-        if( iter == 100000 )
-        {
-            //std::dynamic_pointer_cast<IsothermalWall>(bcMX)->lambda = lambdaHot;
-            dataBase->boundaryConditions[4] = bcMX_2;
-        }
+        //if( iter < 100000 )
+        //{
+        //    std::dynamic_pointer_cast<IsothermalWall>(bcMX)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / 100000.0 );
+        //}
+        //if( iter == 100000 )
+        //{
+        //    //std::dynamic_pointer_cast<IsothermalWall>(bcMX)->lambda = lambdaHot;
+        //    dataBase->boundaryConditions[4] = bcMX_2;
+        //}
 
-        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
             //( iter < 10       && iter % 1     == 0 ) ||
@@ -284,7 +294,7 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 10000    && iter % 1000  == 0 ) ||
             //( iter < 1000000   && iter % 10000  == 0 ) ||
             //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter > 50000 && iter % 1000 == 0 )
+            ( iter < 20000 && iter % 100 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();

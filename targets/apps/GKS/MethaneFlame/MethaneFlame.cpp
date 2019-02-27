@@ -61,7 +61,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real dx = H / real(nx);
 
-    real Re  = 500.0;
+    real Re  = 100.0;
     real Ba  = 0.1;
     real eps = 1.2;
     real Pr  = 0.71;
@@ -86,7 +86,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * lambdaCold ) );
 
-    real CFL = 0.25;
+    real CFL = 0.025;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -102,7 +102,7 @@ void thermalCavity( std::string path, std::string simulationName )
     parameters.Pr = Pr;
     parameters.mu = mu;
 
-    parameters.D  = 0.1 * mu;
+    parameters.D  = mu;
 
     parameters.force.x = 0;
     parameters.force.y = 0;
@@ -139,14 +139,14 @@ void thermalCavity( std::string path, std::string simulationName )
 
     Sphere  sphere2( 0.0, 0.0, 0.0, 0.08 );
     
-    //TriangularMesh* refCylinder = TriangularMesh::make("F:/Work/Computations/out/MethaneFlame/refCylinder.stl");
-    TriangularMesh* refCylinder = TriangularMesh::make("inp/refCylinder.stl");
+    TriangularMesh* refCylinder = TriangularMesh::make("F:/Work/Computations/out/MethaneFlame/refCylinder.stl");
+    //TriangularMesh* refCylinder = TriangularMesh::make("inp/refCylinder.stl");
 
     gridBuilder->setNumberOfLayers(0,10);
 
-    gridBuilder->addGrid( &box, 1 );
+    //gridBuilder->addGrid( &box, 1 );
 
-    gridBuilder->addGrid( refCylinder, 3 );
+    //gridBuilder->addGrid( refCylinder, 2 );
 
     //gridBuilder->addGrid( &sphere, 3 );
 
@@ -183,7 +183,8 @@ void thermalCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false, 1.0, 0.0 );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Extrapolation>( dataBase );
 
 
@@ -211,8 +212,10 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcJetFuel   = std::make_shared<Inflow>( dataBase, Vec3(U, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 0.0, 0.5 );
-    SPtr<BoundaryCondition> bcJetOxygen = std::make_shared<Inflow>( dataBase, Vec3(U, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 0.0, 0.5 );
+    SPtr<BoundaryCondition> bcJetFuel   = std::make_shared<Inflow>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 1.0, 0.0 );
+    SPtr<BoundaryCondition> bcJetOxygen = std::make_shared<Inflow>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, rho, 1.0, 0.0, -64.0, 0.0, 0.0 );
+
+
 
     bcJetFuel->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
         return center.x < 0.0 &&
@@ -235,8 +238,8 @@ void thermalCavity( std::string path, std::string simulationName )
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
 
-    dataBase->boundaryConditions.push_back( bcJetOxygen );
-    dataBase->boundaryConditions.push_back( bcJetFuel );
+    //dataBase->boundaryConditions.push_back( bcJetOxygen );
+    //dataBase->boundaryConditions.push_back( bcJetFuel );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +276,7 @@ void thermalCavity( std::string path, std::string simulationName )
         real factor = 0.0;
         //if( radius < 0.125 ) factor = ( 1.0 - 64.0 * radius * radius  );
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, factor * U, 0.0, 0.0, lambdaLocal, S_1, S_2 ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( rhoLocal, factor * U, 0.0, 0.0, lambdaLocal, 0.0, 0.0 ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -303,25 +306,25 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000; iter++ )
     {
-        uint T = 10000;
-        if( iter <= T )
-        {
-            std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
-            std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
-        }
-        //else if( iter <= 2*T )
+        //uint T = 10000;
+        //if( iter <= T )
         //{
-        //    std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaHot - ( lambdaHot - lambdaCold ) * ( real(iter-T) / real(T) );
-        //    std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaHot - ( lambdaHot - lambdaCold ) * ( real(iter-T) / real(T) );
+        //    std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
+        //    std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaCold + ( lambdaHot - lambdaCold ) * ( real(iter) / real(T) );
+        //}
+        ////else if( iter <= 2*T )
+        ////{
+        ////    std::dynamic_pointer_cast<Inflow>(bcJetFuel  )->lambda = lambdaHot - ( lambdaHot - lambdaCold ) * ( real(iter-T) / real(T) );
+        ////    std::dynamic_pointer_cast<Inflow>(bcJetOxygen)->lambda = lambdaHot - ( lambdaHot - lambdaCold ) * ( real(iter-T) / real(T) );
+        ////}
+
+        //if( iter == T )
+        //{
+        //    std::dynamic_pointer_cast<Inflow>(bcJetFuel)->S_1 = 1.0;
+        //    std::dynamic_pointer_cast<Inflow>(bcJetFuel)->S_2 = 0.0;
         //}
 
-        if( iter == T )
-        {
-            std::dynamic_pointer_cast<Inflow>(bcJetFuel)->S_1 = 1.0;
-            std::dynamic_pointer_cast<Inflow>(bcJetFuel)->S_2 = 0.0;
-        }
-
-        TimeStepping::nestedTimeStep(dataBase, parameters, nullptr, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
             //( iter < 10       && iter % 1      == 0 ) ||
@@ -350,8 +353,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/out/MethaneFlame/" );
-    std::string path( "out/" );
+    std::string path( "F:/Work/Computations/out/MethaneFlame/" );
+    //std::string path( "out/" );
     std::string simulationName ( "MethaneFlame" );
 
     logging::Logger::addStream(&std::cout);

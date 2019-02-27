@@ -58,7 +58,7 @@ uint nx = 64;
 real L = 4.0;
 real H = 3.0;
 
-real Ra = 1.0e9;
+real Ra = 1.0e10;
 
 real Ba  = 0.1;
 real eps = 1.2;
@@ -418,7 +418,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    //ConvergenceAnalyzer convergenceAnalyzer( dataBase );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
@@ -457,7 +457,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
         cupsAnalyzer.run( iter );
 
-        //convergenceAnalyzer.run( iter );
+        convergenceAnalyzer.run( iter );
 
         //turbulenceAnalyzer->run( iter, parameters );
     }
