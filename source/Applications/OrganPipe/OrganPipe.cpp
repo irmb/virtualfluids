@@ -154,7 +154,8 @@ void run(string configname)
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-
+      double bulckViscosity = 10.0*nu_LB;
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       kernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
       //restart
@@ -352,7 +353,9 @@ void run(string configname)
          grid->setTimeStep(restartStep);
       }
       ////set connectors
-      InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+      //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nu_LB, bulckViscosity);
       SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nu_LB, iProcessor);
       grid->accept(setConnsVisitor);
 
