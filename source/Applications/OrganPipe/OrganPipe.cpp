@@ -70,6 +70,12 @@ void run(string configname)
       double nu_LB = nuReal * unitConverter.getFactorViscosityWToLb();
       double u_LB = uReal * unitConverter.getFactorVelocityWToLb();
 
+      if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:start");
+      SPtr<GbTriFaceMesh3D> organPipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + opipeGeoFile, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+      organPipeGeo->translate(1.37, 0.0, 0.0);
+      if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:end");
+      if (myid == 0) GbSystem3D::writeGeoObject(organPipeGeo.get(), pathOut + "/geo/organPipeGeo", WbWriterVtkXmlBinary::getInstance());
+
       vector<int> blocknx ={ 16, 16, 16 };
 
       SPtr<Grid3D> grid(new Grid3D(comm));
@@ -174,12 +180,6 @@ void run(string configname)
          grid->accept(genBlocks);
 
          //geometry
-         if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:start");
-         SPtr<GbTriFaceMesh3D> organPipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + opipeGeoFile, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         organPipeGeo->translate(1.37, 0.0, 0.0);
-         if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:end");
-         if (myid == 0) GbSystem3D::writeGeoObject(organPipeGeo.get(), pathOut + "/geo/organPipeGeo", WbWriterVtkXmlBinary::getInstance());
-
          if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:start");
          SPtr<GbTriFaceMesh3D> inletTubeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
          inletTubeGeo->translate(1.37, 0.0, 0.0);
@@ -406,9 +406,19 @@ void run(string configname)
 
       SPtr<WriteMacroscopicQuantitiesCoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
+      SPtr<UbScheduler> stepMV(new UbScheduler(1, 0, 1000000));
+      SPtr<MicrophoneArrayCoProcessor> micCoProcessor(new MicrophoneArrayCoProcessor(grid, stepSch, pathOut, comm));
+      std::vector<UbTupleFloat3> nodes;
+      micCoProcessor->addMicrophone(Vector3D(1.43865003014, 0.0, organPipeGeo->getX3Maximum()+0.05));
+      nodes.push_back(UbTupleFloat3(float(1.43865003014), float(0.0), float(organPipeGeo->getX3Maximum()+0.05)));
+      micCoProcessor->addMicrophone(Vector3D(organPipeGeo->getX1Maximum()+0.05, 0.0, organPipeGeo->getX3Centroid()));
+      nodes.push_back(UbTupleFloat3(float(organPipeGeo->getX1Maximum()+0.05), float(0.0), float(organPipeGeo->getX3Centroid())));
+      if (myid==0) WbWriterVtkXmlBinary::getInstance()->writeNodes(pathOut+"/geo/mic", nodes);
+
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
+      calculator->addCoProcessor(micCoProcessor);
       calculator->addCoProcessor(migCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
       /////////////////////////////////////////////////////////////////////////////////////
