@@ -23,7 +23,7 @@ public:
    void interpolateCoarseToFine(D3Q27ICell& icellC, D3Q27ICell& icellF, LBMReal xoff, LBMReal yoff, LBMReal zoff);
    void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC); 
    void interpolateFineToCoarse(D3Q27ICell& icellF, LBMReal* icellC, LBMReal xoff, LBMReal yoff, LBMReal zoff); 
-   void setBulkOmegaToOmega(bool value);
+   void setBulkViscosity(LBMReal shearViscosity, LBMReal bulkViscosity);
 protected:   
 private:
    LBMReal omegaC, omegaF;
@@ -45,7 +45,8 @@ private:
    LBMReal a,b,c;
 
    // bulk viscosity
-   bool bulkOmegaToOmega;
+   LBMReal shearViscosity;
+   LBMReal bulkViscosity;
    LBMReal OxxPyyPzzC;
    LBMReal OxxPyyPzzF;
 
