@@ -1,6 +1,6 @@
 #include "VirtualFluidSimulationFactoryImp.h"
 
-#include "Utilities/GridReaderforTesting/GridReaderforTesting.h"
+#include "Utilities/NumericalTestGridReader/NumericalTestGridReader.h"
 #include "Utilities/InitialCondition/InitialCondition.h"
 #include "Utilities/KernelConfiguration/KernelConfiguration.h"
 #include "Utilities/TestSimulation/TestSimulation.h"
@@ -108,9 +108,9 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	return para;
 }
 
-std::shared_ptr<GridReaderforTesting> VirtualFluidSimulationFactoryImp::makeGridReaderForTesting(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
+std::shared_ptr<NumericalTestGridReader> VirtualFluidSimulationFactoryImp::makeGridReader(std::shared_ptr<InitialCondition> initialCondition, std::shared_ptr<Parameter> para)
 {
-	std::shared_ptr<GridReaderforTesting> grid = GridReaderforTesting::getNewInstance(para, initialCondition);
+	std::shared_ptr<NumericalTestGridReader> grid = NumericalTestGridReader::getNewInstance(para, initialCondition);
 	return grid;
 }
 
@@ -131,7 +131,7 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 		testSim.at(i)->setParameter(para);
 
 		initInitialConditions(testSim.at(i)->getInitialCondition(), para);
-		std::shared_ptr<GridReaderforTesting> grid = makeGridReaderForTesting(testSim.at(i)->getInitialCondition(), para);
+		std::shared_ptr<NumericalTestGridReader> grid = makeGridReader(testSim.at(i)->getInitialCondition(), para);
 		
 		vfSim->setGridProvider(grid);
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());

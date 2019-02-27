@@ -1,4 +1,4 @@
-#include "gridReaderforTesting.h"
+#include "NumericalTestGridReader.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
 
@@ -8,12 +8,12 @@
 #include <math.h>
 
 
-std::shared_ptr<GridReaderforTesting> GridReaderforTesting::getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition)
+std::shared_ptr<NumericalTestGridReader> NumericalTestGridReader::getNewInstance(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition)
 {
-	return std::shared_ptr<GridReaderforTesting>(new GridReaderforTesting(para, initialCondition));
+	return std::shared_ptr<NumericalTestGridReader>(new NumericalTestGridReader(para, initialCondition));
 }
 
-void GridReaderforTesting::setInitalNodeValues(const int numberOfNodes, const int level) const
+void NumericalTestGridReader::setInitalNodeValues(const int numberOfNodes, const int level) const
 {
 	initialCondition->init(level);
 	for (int j = 0; j <= numberOfNodes; j++){
@@ -25,7 +25,7 @@ void GridReaderforTesting::setInitalNodeValues(const int numberOfNodes, const in
 	}
 }
 
-GridReaderforTesting::GridReaderforTesting(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition) :GridReader(true, para), initialCondition(initialCondition)
+NumericalTestGridReader::NumericalTestGridReader(std::shared_ptr<Parameter> para, std::shared_ptr<InitialCondition> initialCondition) : GridReader(true, para), initialCondition(initialCondition)
 {
 
 }
