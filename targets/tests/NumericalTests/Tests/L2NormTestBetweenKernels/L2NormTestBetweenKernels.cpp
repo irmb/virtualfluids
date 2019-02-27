@@ -65,7 +65,7 @@ std::string L2NormTestBetweenKernels::getLogFileOutput()
 std::string L2NormTestBetweenKernels::getErrorLogFileOutput()
 {
 	std::ostringstream oss;
-	oss << dataToCalculate << "_TimeStep_" << timeStep << "_L" << basicPostProcessingStrategy->getNumberOfXNodes() << "_" << normalizeData;
+	oss << "L" << basicPostProcessingStrategy->getNumberOfXNodes() << "_"<< dataToCalculate << "_TimeStep_" << timeStep << "_" << normalizeData;
 	return oss.str();
 }
 
