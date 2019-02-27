@@ -6,7 +6,6 @@
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor()
    : omegaC(0.0), omegaF(0.0)
 {
-   this->bulkOmegaToOmega = false;
    this->OxxPyyPzzC = one;
    this->OxxPyyPzzF = one;
 }
@@ -14,7 +13,6 @@ CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterp
 CompressibleOffsetMomentsInterpolationProcessor::CompressibleOffsetMomentsInterpolationProcessor(LBMReal omegaC, LBMReal omegaF)
    : omegaC(omegaC), omegaF(omegaF)
 {
-   this->bulkOmegaToOmega = false;
    this->OxxPyyPzzC = one;
    this->OxxPyyPzzF = one;
 }
@@ -27,16 +25,10 @@ CompressibleOffsetMomentsInterpolationProcessor::~CompressibleOffsetMomentsInter
 InterpolationProcessorPtr CompressibleOffsetMomentsInterpolationProcessor::clone()
 {
    InterpolationProcessorPtr iproc = InterpolationProcessorPtr (new CompressibleOffsetMomentsInterpolationProcessor(this->omegaC, this->omegaF));
-   if (bulkOmegaToOmega)
-   {
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = omegaC;
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = omegaF;
-   }
-   else
-   {
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = one;
-      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = one;
-   }
+
+   dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzC = this->OxxPyyPzzC;
+   dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iproc)->OxxPyyPzzF = this->OxxPyyPzzF;
+
    return iproc;
 }
 //////////////////////////////////////////////////////////////////////////
@@ -44,6 +36,20 @@ void CompressibleOffsetMomentsInterpolationProcessor::setOmegas( LBMReal omegaC,
 {
    this->omegaC = omegaC;
    this->omegaF = omegaF;
+
+   LBMReal dtC = (3.0*shearViscosity)/((1/omegaC)-0.5);
+   LBMReal dtF = (3.0*shearViscosity)/((1/omegaF)-0.5);
+
+   if (bulkViscosity != 0)
+   {
+      this->OxxPyyPzzC = 1.0/(3.0*bulkViscosity/dtC+0.5);
+      this->OxxPyyPzzF = 1.0/(3.0*bulkViscosity/dtF+0.5);
+   }
+   else
+   {
+      this->OxxPyyPzzC = one;
+      this->OxxPyyPzzF = one;
+   }
 }
 //////////////////////////////////////////////////////////////////////////
 void CompressibleOffsetMomentsInterpolationProcessor::setOffsets(LBMReal xoff, LBMReal yoff, LBMReal zoff)
@@ -1271,8 +1277,9 @@ void CompressibleOffsetMomentsInterpolationProcessor::calcInterpolatedShearStres
 	tauyz=0.5*((bz+2.0*bzz*z+bxz*x+byz*y+bxyz*x*y)+(cy+2.0*cyy*y+cxy*x+cyz*z+cxyz*x*z));
 }
 //////////////////////////////////////////////////////////////////////////
-void CompressibleOffsetMomentsInterpolationProcessor::setBulkOmegaToOmega(bool value)
+void CompressibleOffsetMomentsInterpolationProcessor::setBulkViscosity(LBMReal shearViscosity, LBMReal bulkViscosity)
 {
-   bulkOmegaToOmega = value;
+   this->shearViscosity = shearViscosity;
+   this->bulkViscosity  = bulkViscosity;
 }
 
