@@ -16,22 +16,23 @@ class TestImp : public Test
 {
 public:
 	void update();
-	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy);
 	void setSimulationCrashed();
 	TestStatus getTestStatus();
-
 	virtual void makeConsoleOutput();
-	virtual void evaluate() = 0;	
-	
-protected:
-	TestImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
-	bool CheckAllSimulationRun();
 
+	void addSimulation(std::shared_ptr<NumericalTestSimulation> sim, std::shared_ptr<SimulationInfo> simInfo, std::shared_ptr<PostProcessingStrategy> postProStrategy);
+		
+protected:
+	virtual void evaluate() = 0;
 	virtual std::vector<std::string> buildTestOutput() = 0;
 	virtual std::vector<std::string> buildBasicTestOutput() = 0;
 	virtual std::vector<std::string> buildErrorTestOutput() = 0;
-	std::vector<std::string> buildSimulationFailedTestOutput();
 
+	TestImp(std::shared_ptr<ColorConsoleOutput> colorOutput);
+	bool CheckAllSimulationRun();
+
+
+	std::vector<std::string> buildSimulationFailedTestOutput();
 	std::vector<std::shared_ptr<NumericalTestSimulation> > simulations;
 	std::vector<std::shared_ptr<PostProcessingStrategy> > postProStrategies;
 	std::vector<std::shared_ptr<SimulationInfo> > simInfos;

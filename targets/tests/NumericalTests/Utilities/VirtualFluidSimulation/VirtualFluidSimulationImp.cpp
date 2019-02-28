@@ -10,12 +10,11 @@
 void VirtualFluidSimulationImp::run()
 {
 	numericalTestSuite->makeSimulationHeadOutput();
-	timeTracking->setSimulationStartTime();
-
 	Simulation sim;
 	sim.init(para, grid, dataWriter);
-	sim.run();
 
+	timeTracking->setSimulationStartTime();
+	sim.run();
 	timeTracking->setSimulationEndTime();
 
 	numericalTestSuite->startPostProcessing();
