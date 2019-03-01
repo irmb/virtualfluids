@@ -22,6 +22,7 @@
 
 #include "GksGpu/Definitions/MemoryAccessPattern.h"
 #include "GksGpu/FlowStateData/FlowStateData.cuh"
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
 
 vtkGridPtr getVtkUnstructuredOctGrid( SPtr<DataBase> dataBase, bool excludeGhostCells )
 {
@@ -142,10 +143,14 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoV = dataBase->dataHost[ RHO_V(cellIdx, dataBase->numberOfCells) ];
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+#ifdef USE_PASSIVE_SCALAR
+        cons.rhoS_1 = dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+        cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+#endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
-        return 1.0 / prim.lambda;
+        return getT(prim);
     } );
 
     addScalarRealCellData( grid, dataBase->numberOfCells, "lambda", [&] (uint cellIdx) {
@@ -157,6 +162,10 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoV = dataBase->dataHost[ RHO_V(cellIdx, dataBase->numberOfCells) ];
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+#ifdef USE_PASSIVE_SCALAR
+        cons.rhoS_1 = dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+        cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+#endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 
@@ -172,6 +181,10 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
         cons.rhoV = dataBase->dataHost[ RHO_V(cellIdx, dataBase->numberOfCells) ];
         cons.rhoW = dataBase->dataHost[ RHO_W(cellIdx, dataBase->numberOfCells) ];
         cons.rhoE = dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+#ifdef USE_PASSIVE_SCALAR
+        cons.rhoS_1 = dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ];
+        cons.rhoS_2 = dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ];
+#endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
 

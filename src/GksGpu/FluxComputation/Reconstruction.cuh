@@ -9,7 +9,9 @@
 #include "Parameters/Parameters.h"
 
 #include "FlowStateData/FlowStateData.cuh"
+#include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
+#include "FlowStateData/ThermalDependencies.cuh"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,14 +201,14 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
                                                               ConservedVariables& gradN,
                                                               ConservedVariables& gradT1,
                                                               ConservedVariables& gradT2,
-                                                              PrimitiveVariables& facePrim )
+                                                              PrimitiveVariables& facePrim,
+                                                              real& K )
 {
     uint posCellIndexN, negCellIndexN;
 
     getCellIndicesN( faceIndex, dataBase, posCellIndexN, negCellIndexN );
     
     {
-
         ConservedVariables posCons, negCons, faceCons;
 
         readCellData(posCellIndexN, dataBase, posCons);
@@ -214,7 +216,11 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
         
         computeFaceCons(posCons, negCons, faceCons);
 
-        facePrim = toPrimitiveVariables( faceCons, parameters.K );
+    #ifdef USE_PASSIVE_SCALAR
+        K = getK( faceCons );
+    #endif
+
+        facePrim = toPrimitiveVariables( faceCons, K, false );
 
         computeGradN( parameters, posCons, negCons, facePrim, gradN );
     }

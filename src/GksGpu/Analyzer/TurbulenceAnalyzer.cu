@@ -20,6 +20,8 @@
 
 #include "Parameters/Parameters.h"
 
+#include "FlowStateData/FlowStateData.cuh"
+#include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"

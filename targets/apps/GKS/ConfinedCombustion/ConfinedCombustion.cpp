@@ -31,6 +31,9 @@
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
 
+#include "GksGpu/FlowStateData/FlowStateData.cuh"
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
@@ -65,16 +68,11 @@ void thermalCavity( std::string path, std::string simulationName )
     real g   = 9.81;
     real rho = 1.2;
 
-    real S_1 = 0.3;
-    real S_2 = 0.4;
-
-    real R_Mixture = S_1               * 8.31445984848 / 16.04e-3      // O2
-				   + S_2               * 8.31445984848 / 32.00e-3      // CH4
-		           + (1.0 - S_1 - S_2) * 8.31445984848 / 28.00e-3;     // N2
-
     real lambdaCold = 0.5 / ( 287 *  300 );
     real lambdaHot  = 0.5 / ( 287 * 1200 );
     
+    real T = 300.0;
+
     real mu = 1.0e-1;
 
     //real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * lambda ) );
@@ -243,10 +241,14 @@ void thermalCavity( std::string path, std::string simulationName )
         if(fabs(cellCenter.x) < 0.5*0.05478) S_1_local = 1.0;
         else                                 S_1_local = 0.0;
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, 0.0, 0.0, 0.0, lambdaLocal, S_1_local, 0.0 ), parameters.K );
+        PrimitiveVariables prim ( rhoLocal, 0.0, 0.0, 0.0, lambdaLocal, S_1_local, 0.0 );
+
+        setLambdaFromT(prim, T);
+
+        return toConservedVariables( prim, parameters.K );
     });
 
-    std::cout << toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambdaHot, S_1, S_2 ), parameters.K ).rhoE << std::endl;
+    //std::cout << toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambdaHot, S_1, S_2 ), parameters.K ).rhoE << std::endl;
 
     dataBase->copyDataHostToDevice();
 

@@ -109,24 +109,26 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 {
     uint faceIndex = startIndex + index;
 
+    real K = parameters.K;
+
     direction = dataBase.faceOrientation[ faceIndex ];
 
     //////////////////////////////////////////////////////////////////////////
 
-    {   // SpongeLayer
-        real x = dataBase.faceCenter[ VEC_X(faceIndex, dataBase.numberOfFaces) ];
+    //{   // SpongeLayer
+    //    real x = dataBase.faceCenter[ VEC_X(faceIndex, dataBase.numberOfFaces) ];
 
-        real muNew = parameters.mu;
+    //    real muNew = parameters.mu;
 
-        if( x > three )
-        {
-            muNew += ( x - three ) / three * ten * parameters.mu;
-        }
+    //    if( x > three )
+    //    {
+    //        muNew += ( x - three ) / three * ten * parameters.mu;
+    //    }
 
-        parameters.Pr = muNew / parameters.mu;
+    //    parameters.Pr = muNew / parameters.mu;
 
-        parameters.mu = muNew;
-    }
+    //    parameters.mu = muNew;
+    //}
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -160,7 +162,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
                                      gradN,
                                      gradT1,
                                      gradT2,
-                                     facePrim);
+                                     facePrim,
+                                     K);
 
         transformGlobalToLocal( gradN , direction );
         transformGlobalToLocal( gradT1, direction );
@@ -168,9 +171,9 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         transformGlobalToLocal( facePrim, direction );
 
-        computeExpansionCoefficients(facePrim, gradN , parameters.K, ax);
-        computeExpansionCoefficients(facePrim, gradT1, parameters.K, ay);
-        computeExpansionCoefficients(facePrim, gradT2, parameters.K, az);
+        computeExpansionCoefficients(facePrim, gradN , K, ax);
+        computeExpansionCoefficients(facePrim, gradT1, K, ay);
+        computeExpansionCoefficients(facePrim, gradT2, K, az);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -186,7 +189,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             real momentW [ NUMBER_OF_MOMENTS ]; 
             real momentXi[ NUMBER_OF_MOMENTS ];
 
-            computeMoments( facePrim, parameters.K, momentU, momentV, momentW, momentXi );
+            computeMoments( facePrim, K, momentU, momentV, momentW, momentXi );
 
             Vec3 force = parameters.force;
 
@@ -203,7 +206,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
                                        force,
                                        timeGrad );
 
-                computeExpansionCoefficients( facePrim, timeGrad, parameters.K, at );
+                computeExpansionCoefficients( facePrim, timeGrad, K, at );
             }
             {
                 real timeCoefficients[4];
