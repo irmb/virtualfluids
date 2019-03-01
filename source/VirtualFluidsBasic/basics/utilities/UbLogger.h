@@ -12,7 +12,6 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <PointerDefinitions.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)  || defined(_WIN64)  || defined(__WIN64__)
    #include <windows.h>
