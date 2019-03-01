@@ -33,8 +33,9 @@ void run(string configname)
 
       string          opipeGeoFile = "/OrganPipeTransformed.stl";
       string          inletTubeGeoFile = "/tubeTransformed.stl";
+      //string          extendedGeoFile = "/FluteExtension.stl";
 
-      double  deltaXfine = 0.000125;
+      double  deltaXfine = 0.000125*1.5625;
       const int baseLevel = 0;
       int refineLevel = 8;
       double deltaXcoarse = deltaXfine*(double)(1 << refineLevel);
@@ -70,7 +71,7 @@ void run(string configname)
       double nu_LB = nuReal * unitConverter.getFactorViscosityWToLb();
       double u_LB = uReal * unitConverter.getFactorVelocityWToLb();
 
-      vector<int> blocknx ={ 16, 16, 16 };
+      vector<int> blocknx ={ 25, 25, 25 };
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
@@ -184,7 +185,13 @@ void run(string configname)
          SPtr<GbTriFaceMesh3D> inletTubeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
          inletTubeGeo->translate(1.37, 0.0, 0.0);
          if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:end");
-         if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
+         //if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
+         //
+         //if (myid == 0) UBLOG(logINFO, "Read Flute Extension geometry:start");
+         //SPtr<GbTriFaceMesh3D> FluteExtensionGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", //GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
+         //FluteExtensionGeo->translate(1.37 - 29e-3, 0.0, 0.0);
+         //if (myid == 0) UBLOG(logINFO, "Read Flute Extension geometry:end");
+         //if (myid == 0) GbSystem3D::writeGeoObject(FluteExtensionGeo.get(), pathOut + "/geo/FluteExtensionGeo", WbWriterVtkXmlBinary::getInstance());
 
          SPtr<Interactor3D> organPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(organPipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
          SPtr<Interactor3D> inletTubeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inletTubeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
