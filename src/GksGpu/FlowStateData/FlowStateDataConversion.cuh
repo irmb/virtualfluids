@@ -23,7 +23,7 @@
 __host__ __device__ inline ConservedVariables toConservedVariables( const PrimitiveVariables& prim, real K, bool overrideK = true )
 {
     #ifdef USE_PASSIVE_SCALAR
-    //if( overrideK ) K = getK(prim);
+    if( overrideK ) K = getK(prim);
     #endif
 
     return ConservedVariables(prim.rho
@@ -45,7 +45,7 @@ __host__ __device__ inline ConservedVariables toConservedVariables( const Primit
 __host__ __device__ inline PrimitiveVariables toPrimitiveVariables( const ConservedVariables& cons, real K, bool overrideK = true )
 {
     #ifdef USE_PASSIVE_SCALAR
-    //if( overrideK ) K = getK(cons);
+    if( overrideK ) K = getK(cons);
     #endif
 
 	return PrimitiveVariables(cons.rho

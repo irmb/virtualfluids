@@ -156,7 +156,7 @@ __host__ __device__ inline real getK( const ConservedVariables& cons )
 
     //////////////////////////////////////////////////////////////////////////
 
-    uint nIter = 10;
+    uint nIter = 5;
     uint iAitkenStart = nIter - 3;
 
 #pragma unroll

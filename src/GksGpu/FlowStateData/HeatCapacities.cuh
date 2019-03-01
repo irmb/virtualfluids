@@ -55,6 +55,9 @@ __host__ __device__ inline real getCpO2( real T )
 
     int i = int( ( T - T0 ) / dT );
 
+    //if( i < 0  ) i = 0;
+    //if( i > 19 ) i = 19;
+
     real CpLow  = CpData[i];
     real CpHigh = CpData[i+1];
 
@@ -92,6 +95,9 @@ __host__ __device__ inline real getCpN2( real T )
     real dT = 200.0;
 
     int i = int( ( T - T0 ) / dT );
+
+    //if( i < 0  ) i = 0;
+    //if( i > 19 ) i = 19;
 
     real CpLow  = CpData[i];
     real CpHigh = CpData[i+1];
@@ -131,6 +137,9 @@ __host__ __device__ inline real getCpCH4( real T )
 
     int i = int( ( T - T0 ) / dT );
 
+    //if( i < 0  ) i = 0;
+    //if( i > 19 ) i = 19;
+
     real CpLow  = CpData[i];
     real CpHigh = CpData[i+1];
 
@@ -169,6 +178,9 @@ __host__ __device__ inline real getCpH2O( real T )
 
     int i = int( ( T - T0 ) / dT );
 
+    //if( i < 0  ) i = 0;
+    //if( i > 19 ) i = 19;
+
     real CpLow  = CpData[i];
     real CpHigh = CpData[i+1];
 
@@ -206,6 +218,9 @@ __host__ __device__ inline real getCpCO2( real T )
     real dT = 200.0;
 
     int i = int( ( T - T0 ) / dT );
+
+    //if( i < 0  ) i = 0;
+    //if( i > 19 ) i = 19;
 
     real CpLow  = CpData[i];
     real CpHigh = CpData[i+1];
