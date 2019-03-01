@@ -11,7 +11,7 @@ TaylorGreenVortexUz=false
 Phi=true
 Ny=true
 L2Norm=false
-L2Norm_BetweenKernels=true
+L2Norm_BetweenKernels=false
 
 ##################################################
 #					 	Time					 #
@@ -21,5 +21,5 @@ TimeOutput=false
 ##################################################
 #				Data Combination				 #
 ##################################################
-EqualSimulationsForDifferentKernels=false
-EqualKernelSimulationsForDifferentViscosities=true
+EqualSimulationsForDifferentKernels=true
+EqualKernelSimulationsForDifferentViscosities=false

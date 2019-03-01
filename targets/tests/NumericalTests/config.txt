@@ -6,9 +6,8 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantF32018CompSP27 CumulantF3CompSP27"
-#CumulantAll4CompSP27 CumulantOneCompSP27
-#  CumulantAA2016CompSP27   CumulantF32018CompSP27"
+KernelsToTest="CumulantAA2016CompSP27 "
+#  CumulantAll4CompSP27 CumulantOneCompSP27 CumulantF32018CompSP27 CumulantF3CompSP27
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -74,9 +73,9 @@ DivergentTimeStep_L2=20
 ##################################################
 #    L2-Norm Test Between Kernels Parameter		 #
 ##################################################
-L2NormBetweenKernelsTest=true
+L2NormBetweenKernelsTest=false
 
-BasicKernel_L2NormBetweenKernels=CumulantF32018CompSP27
+BasicKernel_L2NormBetweenKernels=CumulantF3CompSP27
 Timesteps_L2NormBetweenKernels="0 10 20"
 NormalizeWith=amplitude
 
@@ -89,16 +88,16 @@ TaylorGreenVortexUx128=true
 TaylorGreenVortexUx256=true
 TaylorGreenVortexUx512=false
 
-TaylorGreenVortexUz32=true
-TaylorGreenVortexUz64=true
-TaylorGreenVortexUz128=true
-TaylorGreenVortexUz256=true
+TaylorGreenVortexUz32=false
+TaylorGreenVortexUz64=false
+TaylorGreenVortexUz128=false
+TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=true
-ShearWave64=true
-ShearWave128=true
-ShearWave256=true
+ShearWave32=false
+ShearWave64=false
+ShearWave128=false
+ShearWave256=false
 ShearWave512=false
 
 ##################################################
