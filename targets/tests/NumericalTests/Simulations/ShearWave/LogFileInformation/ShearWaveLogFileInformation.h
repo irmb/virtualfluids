@@ -18,8 +18,7 @@ public:
 	static std::shared_ptr<ShearWaveInformation> getNewInstance(std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
 	std::string getOutput();
-	std::string getFilePathExtensionOne();
-	std::string getFilePathExtensionTwo();
+	std::vector<std::string> getFilePathExtension();
 
 private:
 	ShearWaveInformation() {};

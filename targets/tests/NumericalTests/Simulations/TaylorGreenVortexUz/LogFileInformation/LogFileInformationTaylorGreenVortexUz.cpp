@@ -30,18 +30,14 @@ std::string LogFileInformationTaylorGreenUz::getOutput()
 	return oss.str();
 }
 
-std::string LogFileInformationTaylorGreenUz::getFilePathExtensionOne()
+std::vector<std::string> LogFileInformationTaylorGreenUz::getFilePathExtension()
 {
+	std::vector<std::string> myFilePath;
+	myFilePath.push_back("TaylorGreenVortexUz");
 	std::ostringstream oss;
-	oss << "TaylorGreenVortexUz/";
-	return oss.str();
-}
-
-std::string LogFileInformationTaylorGreenUz::getFilePathExtensionTwo()
-{
-	std::ostringstream oss;
-	oss << "uz_ " << uz << "_Amplitude_ " << amplitude << "/";
-	return oss.str();
+	oss << "uz_ " << uz << "_Amplitude_ " << amplitude;
+	myFilePath.push_back(oss.str());
+	return myFilePath;
 }
 
 LogFileInformationTaylorGreenUz::LogFileInformationTaylorGreenUz(std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct)

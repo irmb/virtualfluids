@@ -53,7 +53,7 @@ std::string LogFileWriterImp::calcDateAndTime()
 std::string LogFileWriterImp::buildFilePath(std::string basicFilePath)
 {
 	std::ostringstream filePath;
-	filePath << basicFilePath << simLogInfo->getFilePathExtensionOne() << "viscosity_" << viscosity << "/" << simLogInfo->getFilePathExtensionTwo() << kernelName;
+	filePath << basicFilePath << simLogInfo->getFilePathExtension().at(0) << "/viscosity_" << viscosity << "/" << simLogInfo->getFilePathExtension().at(1) << "/" << kernelName;
 	
 	std::experimental::filesystem::path dir(filePath.str());
 	if (!(std::experimental::filesystem::exists(dir)))
