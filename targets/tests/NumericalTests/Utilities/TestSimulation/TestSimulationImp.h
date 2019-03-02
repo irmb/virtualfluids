@@ -28,7 +28,7 @@ public:
 	std::shared_ptr<SimulationInfo> getSimulationInfo();
 	std::shared_ptr<TimeTracking> getTimeTracking();
 
-	bool getSimulationRun();
+	SimulationStatus getSimulationStatus();
 	
 	void makeSimulationHeadOutput();
 	void startPostProcessing();
@@ -43,9 +43,9 @@ public:
 private:
 	TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> testSimData, std::shared_ptr<SimulationResults> simResult, std::shared_ptr<TimeTracking> timeTracking, std::shared_ptr<ToVectorWriter> toVectorWriter, std::shared_ptr<AnalyticalResults2DToVTKWriter> anaResultWriter, std::shared_ptr<ColorConsoleOutput> colorOutput);
 	void notifyObserver();
-	void notifyObserverSimulationCrashed();
 
 	void writeAnalyticalResultsToVTK();
+	void checkSimulationResults();
 
 	std::shared_ptr<SimulationParameter> simPara;
 	std::shared_ptr<ToVectorWriter> toVectorWriter;
@@ -62,6 +62,6 @@ private:
 	std::vector<std::shared_ptr<SimulationObserver> > simObserver;
 	
 	std::vector<std::string> dataToCalcTests;
-	bool simualtionRun;
+	SimulationStatus status;
 };
 #endif

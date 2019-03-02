@@ -10,7 +10,6 @@ class Test : public SimulationObserver
 {
 public:
 	virtual void update() = 0;
-	virtual void setSimulationCrashed() = 0;
 
 	virtual TestStatus getTestStatus() = 0;
 	virtual void makeConsoleOutput() = 0;

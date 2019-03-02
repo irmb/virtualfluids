@@ -33,8 +33,8 @@ TestSimulationImp::TestSimulationImp(std::shared_ptr<TestSimulationDataStruct> t
 	this->colorOutput = colorOutput;
 	
 	this->simObserver.resize(0);
-	this->simualtionRun = false;
 	this->dataToCalcTests = simInfo->getDataToCalcTests();
+	this->status = initialized;
 }
 
 std::shared_ptr<SimulationParameter> TestSimulationImp::getSimulationParameter()
@@ -67,9 +67,9 @@ std::shared_ptr<TimeTracking> TestSimulationImp::getTimeTracking()
 	return timeTracking;
 }
 
-bool TestSimulationImp::getSimulationRun()
+SimulationStatus TestSimulationImp::getSimulationStatus()
 {
-	return simualtionRun;
+	return status;
 }
 
 void TestSimulationImp::registerSimulationObserver(std::shared_ptr<SimulationObserver> simObserver)
@@ -88,18 +88,19 @@ void TestSimulationImp::notifyObserver()
 		simObserver.at(i)->update();
 }
 
-void TestSimulationImp::notifyObserverSimulationCrashed()
-{
-	for (int i = 0; i < simObserver.size(); i++)
-		simObserver.at(i)->setSimulationCrashed();
-}
-
 void TestSimulationImp::writeAnalyticalResultsToVTK()
 {
 	if (!analyticalResult->isCalculated())
 		analyticalResult->calc(simResult);
 
 	anaResultWriter->writeAnalyticalResult(para, analyticalResult);
+}
+
+void TestSimulationImp::checkSimulationResults()
+{
+	bool dataOkay = simResult->checkYourData();
+	if (!dataOkay)
+		status = crashed;
 }
 
 void TestSimulationImp::makeSimulationHeadOutput()
@@ -109,17 +110,14 @@ void TestSimulationImp::makeSimulationHeadOutput()
 
 void TestSimulationImp::startPostProcessing()
 {
-	simualtionRun = true;
+	status = executed;
 
 	timeTracking->setResultCheckStartTime();
-	bool dataOkay = simResult->checkYourData();
+	checkSimulationResults();
 	timeTracking->setResultCheckEndTime();
 
 	timeTracking->setTestStartTime();
-	if (dataOkay)
-		notifyObserver();
-	else
-		notifyObserverSimulationCrashed();
+	notifyObserver();
 	timeTracking->setTestEndTime();
 
 	timeTracking->setAnalyticalResultWriteStartTime();
