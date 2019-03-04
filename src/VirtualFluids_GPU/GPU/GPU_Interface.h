@@ -71,15 +71,15 @@ extern "C" void KernelBGKPlusSP27(unsigned int numberOfThreads,
 								  int size_Mat,
 								  bool EvenOrOdd);
 
-extern "C" void KernelBGKPlusCompSP27(unsigned int numberOfThreads, 
-									  real s9,
-									  unsigned int* bcMatD,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  real* DD,
-									  int size_Mat,
-									  bool EvenOrOdd);
+//extern "C" void KernelBGKPlusCompSP27(unsigned int numberOfThreads, 
+//									  real s9,
+//									  unsigned int* bcMatD,
+//									  unsigned int* neighborX,
+//									  unsigned int* neighborY,
+//									  unsigned int* neighborZ,
+//									  real* DD,
+//									  int size_Mat,
+//									  bool EvenOrOdd);
 
 extern "C" void KernelBGKCompSP27(unsigned int numberOfThreads, 
 								  real s9,

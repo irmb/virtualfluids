@@ -213,43 +213,45 @@ extern "C" void KernelBGKPlusSP27(unsigned int numberOfThreads,
 													EvenOrOdd); 
 	getLastCudaError("LB_Kernel_BGK_Plus_SP_27 execution failed"); 
 }
-//////////////////////////////////////////////////////////////////////////
-extern "C" void KernelBGKPlusCompSP27(unsigned int numberOfThreads, 
-									  real s9,
-									  unsigned int* bcMatD,
-									  unsigned int* neighborX,
-									  unsigned int* neighborY,
-									  unsigned int* neighborZ,
-									  real* DD,
-									  int size_Mat,
-									  bool EvenOrOdd)
-{
-	int Grid = (size_Mat / numberOfThreads)+1;
-	int Grid1, Grid2;
-	if (Grid>512)
-	{
-		Grid1 = 512;
-		Grid2 = (Grid/Grid1)+1;
-	} 
-	else
-	{
-		Grid1 = 1;
-		Grid2 = Grid;
-	}
-	dim3 grid(Grid1, Grid2);
-	dim3 threads(numberOfThreads, 1, 1 );
 
-	LB_Kernel_BGK_Plus_Comp_SP_27<<< grid, threads >>>( s9,
-														bcMatD,
-														neighborX,
-														neighborY,
-														neighborZ,
-														DD,
-														size_Mat,
-														EvenOrOdd); 
-	getLastCudaError("LB_Kernel_BGK_Plus_Comp_SP_27 execution failed"); 
-}
 //////////////////////////////////////////////////////////////////////////
+//extern "C" void KernelBGKPlusCompSP27(unsigned int numberOfThreads, 
+//									  real s9,
+//									  unsigned int* bcMatD,
+//									  unsigned int* neighborX,
+//									  unsigned int* neighborY,
+//									  unsigned int* neighborZ,
+//									  real* DD,
+//									  int size_Mat,
+//									  bool EvenOrOdd)
+//{
+//	int Grid = (size_Mat / numberOfThreads)+1;
+//	int Grid1, Grid2;
+//	if (Grid>512)
+//	{
+//		Grid1 = 512;
+//		Grid2 = (Grid/Grid1)+1;
+//	} 
+//	else
+//	{
+//		Grid1 = 1;
+//		Grid2 = Grid;
+//	}
+//	dim3 grid(Grid1, Grid2);
+//	dim3 threads(numberOfThreads, 1, 1 );
+//
+//	LB_Kernel_BGK_Plus_Comp_SP_27<<< grid, threads >>>( s9,
+//														bcMatD,
+//														neighborX,
+//														neighborY,
+//														neighborZ,
+//														DD,
+//														size_Mat,
+//														EvenOrOdd); 
+//	getLastCudaError("LB_Kernel_BGK_Plus_Comp_SP_27 execution failed"); 
+//}
+////////////////////////////////////////////////////////////////////////////
+
 extern "C" void KernelBGKCompSP27(unsigned int numberOfThreads, 
 								  real s9,
 								  unsigned int* bcMatD,
