@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	std::shared_ptr<PostProcessingConfigData> configData =  reader->readConfigFile(argv[1]);
 
 	std::shared_ptr<LogFileReader> logFileReader = LogFileReader::getInstance();
-	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData("C:/Users/Timon/Documents/studienarbeitIRMB/logFiles");
+	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData("C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/TaylorGreenVortexUx/viscosity_0.001/ux_ 0.096_Amplitude_ 0.001");
 
 	std::shared_ptr<MathematicaFile> aMathmaticaFile = MathematicaFile::getNewInstance("C:/Users/Timon/Desktop");
 

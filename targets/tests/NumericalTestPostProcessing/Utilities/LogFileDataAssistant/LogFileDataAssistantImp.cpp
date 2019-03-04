@@ -99,19 +99,24 @@ std::shared_ptr<LogFileDataAssistant> LogFileDataAssistantImp::getNewInstance()
 std::vector<std::shared_ptr<LogFileDataGroup>> LogFileDataAssistantImp::findDataCombination(std::vector<std::shared_ptr<LogFileData>> allLogFileData, BasicSimulation simulation, DataCombination combination)
 {
 	std::vector<std::shared_ptr<LogFileDataGroup>> myLogFileDataGroup;
-
-	switch (combination)
-	{
-	case EqualSimulationsForDifferentKernels:
-		myLogFileDataGroup = findEqualSimulationsForDifferentKernels(allLogFileData, simulation);
-		break;
-	case EqualKernelSimulationsForDifferentViscosities:
-		myLogFileDataGroup = findEqualKernelSimulationsForDifferentViscosities(allLogFileData, simulation);
-		break;
-	default:
-		break;
+	if (allLogFileData.size() > 1) {
+		switch (combination)
+		{
+		case EqualSimulationsForDifferentKernels:
+			myLogFileDataGroup = findEqualSimulationsForDifferentKernels(allLogFileData, simulation);
+			break;
+		case EqualKernelSimulationsForDifferentViscosities:
+			myLogFileDataGroup = findEqualKernelSimulationsForDifferentViscosities(allLogFileData, simulation);
+			break;
+		default:
+			break;
+		}
 	}
-
+	else {
+		std::shared_ptr<LogFileDataGroupImp> newGroup = LogFileDataGroupImp::getNewInstance();
+		newGroup->addLogFileData(allLogFileData.at(0));
+		myLogFileDataGroup.push_back(newGroup);
+	}
 	return myLogFileDataGroup;
 }
 

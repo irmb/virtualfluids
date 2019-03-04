@@ -24,7 +24,7 @@ protected:
 
 	std::vector<std::shared_ptr<LogFileData> > getSimulationGroupLogFileData(std::string simName, std::vector<std::shared_ptr<LogFileData> > allLogFileData);
 	std::vector<std::vector<std::shared_ptr<LogFileData> > > sortLogFileDataAfterKernels(std::vector<std::shared_ptr<LogFileData> > logFileData);
-	
+
 	bool checkEqualSimulationData(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
 	bool checkEqualViscosity(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
 	bool checkEqualKernel(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
