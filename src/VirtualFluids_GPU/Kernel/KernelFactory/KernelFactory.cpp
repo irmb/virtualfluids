@@ -1,5 +1,7 @@
 #include "KernelFactory.h"
 
+#include "Kernel/Advection/Compressible/BGK/BGKCompSP27.h"
+#include "Kernel/Advection/Compressible/BGKPlus/BGKPlusCompSP27.h"
 #include "Kernel/Advection/Compressible/CumulantOne/CumulantOneCompSP27.h"
 #include "Kernel/Advection/Compressible/CumulantAA2016/CumulantAA2016CompSP27.h"
 #include "Kernel/Advection/Compressible/CumulantAll4/CumulantAll4CompSP27.h"
@@ -28,6 +30,10 @@ void KernelFactory::setKernelAtLevel(std::vector<std::shared_ptr<Kernel>> kernel
 
 std::shared_ptr<Kernel> KernelFactory::makeKernel(std::string kernelName, int level)
 {
+	if (kernelName == "BGKCompSP27")
+		return BGKCompSP27::getNewInstance(para, level);
+	if (kernelName == "BGKPlusCompSP27")
+		return BGKPlusCompSP27::getNewInstance(para, level);
 	if (kernelName == "CumulantOneCompSP27")
 		return CumulantOneCompSP27::getNewInstance(para, level);
 	if (kernelName == "CumulantAA2016CompSP27")
