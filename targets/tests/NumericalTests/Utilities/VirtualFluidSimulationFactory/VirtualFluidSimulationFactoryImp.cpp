@@ -53,6 +53,7 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setneighborX(gridPath + "neighborX.dat");
 	para->setneighborY(gridPath + "neighborY.dat");
 	para->setneighborZ(gridPath + "neighborZ.dat");
+	para->setneighborWSB(gridPath + "neighborWSB.dat");
 	para->setgeomBoundaryBcQs(gridPath + "geomBoundaryQs.dat");
 	para->setgeomBoundaryBcValues(gridPath + "geomBoundaryValues.dat");
 	para->setinletBcQs(gridPath + "inletBoundaryQs.dat");

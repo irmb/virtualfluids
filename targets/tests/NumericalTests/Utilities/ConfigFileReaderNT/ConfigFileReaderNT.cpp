@@ -1,21 +1,21 @@
-#include "ConfigFileReader.h"
+#include "ConfigFileReaderNT.h"
 
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
 
 #include <fstream>
 
-std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
+std::shared_ptr<ConfigFileReaderNT> ConfigFileReaderNT::getNewInstance(const std::string aFilePath)
 {
-	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader(aFilePath));
+	return std::shared_ptr<ConfigFileReaderNT>(new ConfigFileReaderNT(aFilePath));
 }
 
-ConfigFileReader::ConfigFileReader(const std::string aFilePath)
+ConfigFileReaderNT::ConfigFileReaderNT(const std::string aFilePath)
 {
 	readConfigFile(aFilePath);
 }
 
-void ConfigFileReader::readConfigFile(const std::string aFilePath)
+void ConfigFileReaderNT::readConfigFile(const std::string aFilePath)
 {
 	configData = std::shared_ptr<ConfigDataStruct>(new ConfigDataStruct);
 	std::ifstream stream = openConfigFile(aFilePath);
@@ -55,7 +55,7 @@ void ConfigFileReader::readConfigFile(const std::string aFilePath)
 	stream.close();
 }
 
-std::ifstream ConfigFileReader::openConfigFile(const std::string aFilePath)
+std::ifstream ConfigFileReaderNT::openConfigFile(const std::string aFilePath)
 {
 	std::ifstream stream;
 	stream.open(aFilePath.c_str(), std::ios::in);
@@ -65,12 +65,12 @@ std::ifstream ConfigFileReader::openConfigFile(const std::string aFilePath)
 	return stream;
 }
 
-std::shared_ptr<ConfigDataStruct> ConfigFileReader::getConfigData()
+std::shared_ptr<ConfigDataStruct> ConfigFileReaderNT::getConfigData()
 {
 	return configData;
 }
 
-bool ConfigFileReader::checkConfigFile(std::shared_ptr<input::Input> input)
+bool ConfigFileReaderNT::checkConfigFile(std::shared_ptr<input::Input> input)
 {
 	std::vector<double> u0TGVux = StringUtil::toDoubleVector(input->getValue("ux_TGV_Ux"));
 	std::vector<double> amplitudeTGVux = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Ux"));
@@ -100,17 +100,17 @@ bool ConfigFileReader::checkConfigFile(std::shared_ptr<input::Input> input)
 	}
 }
 
-std::shared_ptr<BasicSimulationParameterStruct> ConfigFileReader::makeBasicSimulationParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<BasicSimulationParameterStruct> ConfigFileReaderNT::makeBasicSimulationParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicSimulationParameterStruct> basicSimPara = std::shared_ptr<BasicSimulationParameterStruct>(new BasicSimulationParameterStruct);
 
 	basicSimPara->numberOfTimeSteps = StringUtil::toInt(input->getValue("NumberOfTimeSteps"));
-	basicSimPara->devices = StringUtil::toIntVector(input->getValue("Devices"));
+	basicSimPara->devices = StringUtil::toUintVector(input->getValue("Devices"));
 	return basicSimPara;
 }
 
 
-std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileReader::makeTaylorGreenVortexUxParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileReaderNT::makeTaylorGreenVortexUxParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
 	std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Ux"));
 	std::vector<double> amplitude = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Ux"));
@@ -134,7 +134,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUxParameterStruct> > ConfigFileRead
 	return parameter;
 }
 
-std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileReader::makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileReaderNT::makeTaylorGreenVortexUzParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
 	std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_TGV_Uz"));
 	std::vector<double> amplitude = StringUtil::toDoubleVector(input->getValue("Amplitude_TGV_Uz"));
@@ -156,7 +156,7 @@ std::vector<std::shared_ptr<TaylorGreenVortexUzParameterStruct> > ConfigFileRead
 	}
 	return parameter;
 }
-std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeShearWaveParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
+std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReaderNT::makeShearWaveParameter(std::shared_ptr<input::Input> input, std::shared_ptr<BasicSimulationParameterStruct> basicSimParameter)
 {
 	std::vector<int> basisTimeStepLength = StringUtil::toIntVector(input->getValue("BasisTimeStepLength_SW"));
 	std::vector<double> uz = StringUtil::toDoubleVector(input->getValue("v0_SW"));
@@ -179,7 +179,7 @@ std::vector<std::shared_ptr<ShearWaveParameterStruct> > ConfigFileReader::makeSh
 	return parameter;
 }
 
-std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<NyTestParameterStruct> ConfigFileReaderNT::makeNyTestParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
 	basicTestParameter->runTest = StringUtil::toBool(input->getValue("NyTest"));
@@ -194,7 +194,7 @@ std::shared_ptr<NyTestParameterStruct> ConfigFileReader::makeNyTestParameter(std
 	return testParameter;
 }
 
-std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<PhiTestParameterStruct> ConfigFileReaderNT::makePhiTestParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
 	basicTestParameter->runTest = StringUtil::toBool(input->getValue("PhiTest"));
@@ -209,7 +209,7 @@ std::shared_ptr<PhiTestParameterStruct> ConfigFileReader::makePhiTestParameter(s
 	return testParameter;
 }
 
-std::shared_ptr<L2NormTestParameterStruct> ConfigFileReader::makeL2NormTestParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<L2NormTestParameterStruct> ConfigFileReaderNT::makeL2NormTestParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
 	basicTestParameter->runTest = StringUtil::toBool(input->getValue("L2NormTest"));
@@ -225,7 +225,7 @@ std::shared_ptr<L2NormTestParameterStruct> ConfigFileReader::makeL2NormTestParam
 	return testParameter;
 }
 
-std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<input::Input> input)
+std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReaderNT::makeL2NormTestBetweenKernelsParameter(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<BasicTestParameterStruct> basicTestParameter = std::shared_ptr<BasicTestParameterStruct>(new BasicTestParameterStruct);
 	basicTestParameter->runTest = StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"));
@@ -252,7 +252,7 @@ std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL
 	return testParameter;
 }
 
-std::vector<std::shared_ptr<GridInformationStruct> > ConfigFileReader::makeGridInformation(std::shared_ptr<input::Input> input, std::string simName)
+std::vector<std::shared_ptr<GridInformationStruct> > ConfigFileReaderNT::makeGridInformation(std::shared_ptr<input::Input> input, std::string simName)
 {
 	int number = 32;
 	std::vector<std::string> valueNames;
@@ -295,7 +295,7 @@ std::vector<std::shared_ptr<GridInformationStruct> > ConfigFileReader::makeGridI
 	return gridInformation;
 }
 
-std::shared_ptr<VectorWriterInformationStruct> ConfigFileReader::makeVectorWriterInformationStruct(std::shared_ptr<input::Input> input)
+std::shared_ptr<VectorWriterInformationStruct> ConfigFileReaderNT::makeVectorWriterInformationStruct(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<VectorWriterInformationStruct> vectorWriter = std::shared_ptr<VectorWriterInformationStruct>(new VectorWriterInformationStruct);
 	vectorWriter->startTimeVectorWriter = calcStartStepForToVectorWriter(input);
@@ -305,7 +305,7 @@ std::shared_ptr<VectorWriterInformationStruct> ConfigFileReader::makeVectorWrite
 	return vectorWriter;
 }
 
-std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::shared_ptr<input::Input> input)
+std::shared_ptr<LogFileParameterStruct> ConfigFileReaderNT::makeLogFilePara(std::shared_ptr<input::Input> input)
 {
 	std::shared_ptr<LogFileParameterStruct> logFilePara = std::shared_ptr<LogFileParameterStruct>(new LogFileParameterStruct);
 	logFilePara->devices = StringUtil::toIntVector(input->getValue("Devices"));
@@ -315,7 +315,7 @@ std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::s
 	return logFilePara;
 }
 
-std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input::Input> input)
+std::vector<std::string> ConfigFileReaderNT::readKernelList(std::shared_ptr<input::Input> input)
 {
 	if (StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"))) {
 		std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue("KernelsToTest"));
@@ -342,7 +342,7 @@ std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input:
 	}	
 }
 
-unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<input::Input> input)
+unsigned int ConfigFileReaderNT::calcStartStepForToVectorWriter(std::shared_ptr<input::Input> input)
 {
 	std::vector<unsigned int> startStepsTests;
 	startStepsTests.push_back(StringUtil::toInt(input->getValue("BasicTimeStep_L2")));
@@ -353,7 +353,7 @@ unsigned int ConfigFileReader::calcStartStepForToVectorWriter(std::shared_ptr<in
 	return startStepsTests.at(0);
 }
 
-int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<input::Input> input)
+int ConfigFileReaderNT::calcNumberOfSimulations(std::shared_ptr<input::Input> input)
 {
 	int counter = 0;
 
@@ -375,7 +375,7 @@ int ConfigFileReader::calcNumberOfSimulations(std::shared_ptr<input::Input> inpu
 	return counter;
 }
 
-int ConfigFileReader::calcNumberOfSimulationGroup(std::shared_ptr<input::Input> input, std::string simName)
+int ConfigFileReaderNT::calcNumberOfSimulationGroup(std::shared_ptr<input::Input> input, std::string simName)
 {
 	int counter = 0;
 	int number = 32;

@@ -5,7 +5,7 @@
 
 struct BasicSimulationParameterStruct
 {
-	std::vector<int> devices;
+	std::vector<unsigned int> devices;
 	unsigned int numberOfTimeSteps;
 };
 

@@ -19,7 +19,7 @@ public:
 	unsigned int getTimeStepLength();
 	unsigned int getLx();
 	unsigned int getLz();
-	std::vector<int> getDevices();
+	std::vector<unsigned int> getDevices();
 	
 	std::shared_ptr<KernelConfiguration> getKernelConfiguration();
 
@@ -34,7 +34,7 @@ protected:
 	unsigned int numberOfTimeSteps, basisTimeStepLength;
 	std::string gridPath;
 	std::string filePath;
-	std::vector<int> devices;
+	std::vector<unsigned int> devices;
 
 	unsigned int maxLevel, numberOfGridLevels;
 	unsigned int timeStepLength;

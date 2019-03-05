@@ -1,21 +1,22 @@
-#ifndef CONFIG_FILE_READER_H
-#define CONFIG_FILE_READER_H
+#include "..\..\..\..\..\src\Core\Input\ConfigFileReader\ConfigFileReader.h"
+#ifndef CONFIG_FILE_READER_NT_H
+#define CONFIG_FILE_READER_NT_H
 
-#include "Utilities/input/Input.h"
+#include "Core/Input/Input.h"
 #include "Utilities/Structs/ConfigDataStruct.h"
 
 #include <memory>
 #include <string>
 
-class ConfigFileReader
+class ConfigFileReaderNT
 {
 public:
-	static std::shared_ptr<ConfigFileReader> getNewInstance(const std::string aFilePath);
+	static std::shared_ptr<ConfigFileReaderNT> getNewInstance(const std::string aFilePath);
 	std::shared_ptr<ConfigDataStruct> getConfigData();
 	
 private:
-	ConfigFileReader() {};
-	ConfigFileReader(const std::string aFilePath);
+	ConfigFileReaderNT() {};
+	ConfigFileReaderNT(const std::string aFilePath);
 	void readConfigFile(const std::string aFilePath);
 
 	std::ifstream openConfigFile(const std::string aFilePath);

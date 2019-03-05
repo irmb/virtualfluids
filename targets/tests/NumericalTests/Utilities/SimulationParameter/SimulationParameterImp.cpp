@@ -69,7 +69,7 @@ unsigned int SimulationParameterImp::getLz()
 	return lz;
 }
 
-std::vector<int> SimulationParameterImp::getDevices()
+std::vector<unsigned int> SimulationParameterImp::getDevices()
 {
 	return devices;
 }

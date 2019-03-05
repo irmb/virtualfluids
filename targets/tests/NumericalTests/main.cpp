@@ -1,7 +1,7 @@
 #include <mpi.h>
 #include <gmock/gmock.h>
 
-#include "Utilities/ConfigFileReader/ConfigFileReader.h"
+#include "Utilities/ConfigFileReaderNT/ConfigFileReaderNT.h"
 #include "Utilities/LogFileQueue/LogFileQueue.h"
 #include "Utilities/NumericalTestFactory/NumericalTestFactoryImp.h"
 #include "Utilities/TestQueue/TestQueue.h"
@@ -10,7 +10,7 @@
 
 static void startNumericalTests(const std::string &configFile)
 {
-	std::shared_ptr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
+	std::shared_ptr<ConfigFileReaderNT> configReader = ConfigFileReaderNT::getNewInstance(configFile);
 
 	std::shared_ptr<NumericalTestFactoryImp> numericalTestFactory = NumericalTestFactoryImp::getNewInstance(configReader->getConfigData());
 
