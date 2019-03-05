@@ -65,7 +65,7 @@ void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input
 
 	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
 	para->setNumprocs(comm->getNummberOfProcess());
-	para->setDevices(StringUtil::toIntVector(input->getValue("Devices")));
+	para->setDevices(StringUtil::toUintVector(input->getValue("Devices")));
 	para->setMyID(comm->getPID());
 	
 	std::string _path = input->getValue("Path");

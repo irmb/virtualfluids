@@ -19,6 +19,7 @@
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
+#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -54,222 +55,6 @@
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
 
-std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
-{
-    if (para->getNumprocs() == 1)
-        return Gridpath + "/";
-    
-    return Gridpath + "/" + StringUtil::toString(para->getMyID()) + "/";
-}
-
-void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input> &input)
-{
-	Communicator* comm = Communicator::getInstanz();
-
-	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-	para->setNumprocs(comm->getNummberOfProcess());
-	para->setDevices(StringUtil::toIntVector(input->getValue("Devices")));
-	para->setMyID(comm->getPID());
-	
-	std::string _path = input->getValue("Path");
-    std::string _prefix = input->getValue("Prefix");
-    std::string _gridpath = input->getValue("GridPath");
-    std::string gridPath = getGridPath(para, _gridpath);
-    para->setOutputPath(_path);
-    para->setOutputPrefix(_prefix);
-    para->setFName(_path + "/" + _prefix);
-    para->setPrintFiles(false);
-    para->setPrintFiles(StringUtil::toBool(input->getValue("WriteGrid")));
-    para->setGeometryValues(StringUtil::toBool(input->getValue("GeometryValues")));
-    para->setCalc2ndOrderMoments(StringUtil::toBool(input->getValue("calc2ndOrderMoments")));
-    para->setCalc3rdOrderMoments(StringUtil::toBool(input->getValue("calc3rdOrderMoments")));
-    para->setCalcHighOrderMoments(StringUtil::toBool(input->getValue("calcHigherOrderMoments")));
-    para->setReadGeo(StringUtil::toBool(input->getValue("ReadGeometry")));
-    para->setCalcMedian(StringUtil::toBool(input->getValue("calcMedian")));
-    para->setConcFile(StringUtil::toBool(input->getValue("UseConcFile")));
-    para->setUseMeasurePoints(StringUtil::toBool(input->getValue("UseMeasurePoints")));
-    para->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
-    para->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
-    para->setD3Qxx(StringUtil::toInt(input->getValue("D3Qxx")));
-    para->setTEnd(StringUtil::toInt(input->getValue("TimeEnd")));
-    para->setTOut(StringUtil::toInt(input->getValue("TimeOut")));
-    para->setTStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
-    para->setTimeCalcMedStart(StringUtil::toInt(input->getValue("TimeStartCalcMedian")));
-    para->setTimeCalcMedEnd(StringUtil::toInt(input->getValue("TimeEndCalcMedian")));
-    para->setPressInID(StringUtil::toInt(input->getValue("PressInID")));
-    para->setPressOutID(StringUtil::toInt(input->getValue("PressOutID")));
-    para->setPressInZ(StringUtil::toInt(input->getValue("PressInZ")));
-    para->setPressOutZ(StringUtil::toInt(input->getValue("PressOutZ")));
-    //////////////////////////////////////////////////////////////////////////
-	para->setCompOn(StringUtil::toBool(input->getValue("CompOn")));
-	para->setDiffOn(StringUtil::toBool(input->getValue("DiffOn")));
-    para->setDiffMod(StringUtil::toInt(input->getValue("DiffMod")));
-    para->setDiffusivity(StringUtil::toFloat(input->getValue("Diffusivity")));
-    para->setTemperatureInit(StringUtil::toFloat(input->getValue("Temp")));
-    para->setTemperatureBC(StringUtil::toFloat(input->getValue("TempBC")));
-    //////////////////////////////////////////////////////////////////////////
-    para->setViscosity(StringUtil::toFloat(input->getValue("Viscosity_LB")));
-    para->setVelocity(StringUtil::toFloat(input->getValue("Velocity_LB")));
-    para->setViscosityRatio(StringUtil::toFloat(input->getValue("Viscosity_Ratio_World_to_LB")));
-    para->setVelocityRatio(StringUtil::toFloat(input->getValue("Velocity_Ratio_World_to_LB")));
-    para->setDensityRatio(StringUtil::toFloat(input->getValue("Density_Ratio_World_to_LB")));
-    para->setPressRatio(StringUtil::toFloat(input->getValue("Delta_Press")));
-    para->setRealX(StringUtil::toFloat(input->getValue("SliceRealX")));
-    para->setRealY(StringUtil::toFloat(input->getValue("SliceRealY")));
-    para->setFactorPressBC(StringUtil::toFloat(input->getValue("dfpbc")));
-    para->setGeometryFileC(input->getValue("GeometryC"));
-    para->setGeometryFileM(input->getValue("GeometryM"));
-    para->setGeometryFileF(input->getValue("GeometryF"));
-    //////////////////////////////////////////////////////////////////////////
-    para->setgeoVec(gridPath + input->getValue("geoVec"));
-    para->setcoordX(gridPath + input->getValue("coordX"));
-    para->setcoordY(gridPath + input->getValue("coordY"));
-    para->setcoordZ(gridPath + input->getValue("coordZ"));
-    para->setneighborX(gridPath + input->getValue("neighborX"));
-    para->setneighborY(gridPath + input->getValue("neighborY"));
-    para->setneighborZ(gridPath + input->getValue("neighborZ"));
-    para->setscaleCFC(gridPath + input->getValue("scaleCFC"));
-    para->setscaleCFF(gridPath + input->getValue("scaleCFF"));
-    para->setscaleFCC(gridPath + input->getValue("scaleFCC"));
-    para->setscaleFCF(gridPath + input->getValue("scaleFCF"));
-    para->setscaleOffsetCF(gridPath + input->getValue("scaleOffsetCF"));
-    para->setscaleOffsetFC(gridPath + input->getValue("scaleOffsetFC"));
-    para->setgeomBoundaryBcQs(gridPath + input->getValue("geomBoundaryBcQs"));
-    para->setgeomBoundaryBcValues(gridPath + input->getValue("geomBoundaryBcValues"));
-    para->setinletBcQs(gridPath + input->getValue("inletBcQs"));
-    para->setinletBcValues(gridPath + input->getValue("inletBcValues"));
-    para->setoutletBcQs(gridPath + input->getValue("outletBcQs"));
-    para->setoutletBcValues(gridPath + input->getValue("outletBcValues"));
-    para->settopBcQs(gridPath + input->getValue("topBcQs"));
-    para->settopBcValues(gridPath + input->getValue("topBcValues"));
-    para->setbottomBcQs(gridPath + input->getValue("bottomBcQs"));
-    para->setbottomBcValues(gridPath + input->getValue("bottomBcValues"));
-    para->setfrontBcQs(gridPath + input->getValue("frontBcQs"));
-    para->setfrontBcValues(gridPath + input->getValue("frontBcValues"));
-    para->setbackBcQs(gridPath + input->getValue("backBcQs"));
-    para->setbackBcValues(gridPath + input->getValue("backBcValues"));
-    para->setnumberNodes(gridPath + input->getValue("numberNodes"));
-    para->setLBMvsSI(gridPath + input->getValue("LBMvsSI"));
-    //////////////////////////////gridPath + ////////////////////////////////////////////
-    para->setmeasurePoints(gridPath + input->getValue("measurePoints"));
-    para->setpropellerValues(gridPath + input->getValue("propellerValues"));
-    para->setclockCycleForMP(StringUtil::toFloat(input->getValue("measureClockCycle")));
-    para->settimestepForMP(StringUtil::toInt(input->getValue("measureTimestep")));
-    para->setcpTop(gridPath + input->getValue("cpTop"));
-    para->setcpBottom(gridPath + input->getValue("cpBottom"));
-    para->setcpBottom2(gridPath + input->getValue("cpBottom2"));
-    para->setConcentration(gridPath + input->getValue("Concentration"));
-    //////////////////////////////////////////////////////////////////////////
-    //Normals - Geometry
-    para->setgeomBoundaryNormalX(gridPath + input->getValue("geomBoundaryNormalX"));
-    para->setgeomBoundaryNormalY(gridPath + input->getValue("geomBoundaryNormalY"));
-    para->setgeomBoundaryNormalZ(gridPath + input->getValue("geomBoundaryNormalZ"));
-    //Normals - Inlet
-    para->setInflowBoundaryNormalX(gridPath + input->getValue("inletBoundaryNormalX"));
-    para->setInflowBoundaryNormalY(gridPath + input->getValue("inletBoundaryNormalY"));
-    para->setInflowBoundaryNormalZ(gridPath + input->getValue("inletBoundaryNormalZ"));
-    //Normals - Outlet
-    para->setOutflowBoundaryNormalX(gridPath + input->getValue("outletBoundaryNormalX"));
-    para->setOutflowBoundaryNormalY(gridPath + input->getValue("outletBoundaryNormalY"));
-    para->setOutflowBoundaryNormalZ(gridPath + input->getValue("outletBoundaryNormalZ"));
-    //////////////////////////////////////////////////////////////////////////
-    //Forcing
-    para->setForcing(StringUtil::toFloat(input->getValue("ForcingX")), StringUtil::toFloat(input->getValue("ForcingY")), StringUtil::toFloat(input->getValue("ForcingZ")));
-    //////////////////////////////////////////////////////////////////////////
-    //Particles
-    para->setCalcParticles(StringUtil::toBool(input->getValue("calcParticles")));
-    para->setParticleBasicLevel(StringUtil::toInt(input->getValue("baseLevel")));
-    para->setParticleInitLevel(StringUtil::toInt(input->getValue("initLevel")));
-    para->setNumberOfParticles(StringUtil::toInt(input->getValue("numberOfParticles")));
-    para->setneighborWSB(gridPath + input->getValue("neighborWSB"));
-    para->setStartXHotWall(StringUtil::toDouble(input->getValue("startXHotWall")));
-    para->setEndXHotWall(StringUtil::toDouble(input->getValue("endXHotWall")));
-    //////////////////////////////////////////////////////////////////////////
-    //for Multi GPU
-    if (para->getNumprocs() > 1)
-    {
-        ////////////////////////////////////////////////////////////////////////////
-        ////1D domain decomposition
-        //std::vector<std::string> sendProcNeighbors;
-        //std::vector<std::string> recvProcNeighbors;
-        //for (int i = 0; i<para->getNumprocs();i++)
-        //{
-        // sendProcNeighbors.push_back(gridPath + StringUtil::toString(i) + "s.dat");
-        // recvProcNeighbors.push_back(gridPath + StringUtil::toString(i) + "r.dat");
-        //}
-        //para->setPossNeighborFiles(sendProcNeighbors, "send");
-        //para->setPossNeighborFiles(recvProcNeighbors, "recv");
-        //////////////////////////////////////////////////////////////////////////
-        //3D domain decomposition
-        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
-        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
-        for (int i = 0; i < para->getNumprocs(); i++)
-        {
-            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
-            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
-            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
-            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
-            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
-            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
-        }
-        para->setPossNeighborFilesX(sendProcNeighborsX, "send");
-        para->setPossNeighborFilesY(sendProcNeighborsY, "send");
-        para->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
-        para->setPossNeighborFilesX(recvProcNeighborsX, "recv");
-        para->setPossNeighborFilesY(recvProcNeighborsY, "recv");
-        para->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-    }
-    //////////////////////////////////////////////////////////////////////////
-    //para->setkFull(             input->getValue( "kFull" ));
-    //para->setgeoFull(           input->getValue( "geoFull" ));
-    //para->setnoSlipBcPos(       input->getValue( "noSlipBcPos" ));
-    //para->setnoSlipBcQs(          input->getValue( "noSlipBcQs" ));
-    //para->setnoSlipBcValues(      input->getValue( "noSlipBcValues" ));
-    //para->setnoSlipBcValue(     input->getValue( "noSlipBcValue" ));
-    //para->setslipBcPos(         input->getValue( "slipBcPos" ));
-    //para->setslipBcQs(          input->getValue( "slipBcQs" ));
-    //para->setslipBcValue(       input->getValue( "slipBcValue" ));
-    //para->setpressBcPos(        input->getValue( "pressBcPos" ));
-    //para->setpressBcQs(           input->getValue( "pressBcQs" ));
-    //para->setpressBcValues(       input->getValue( "pressBcValues" ));
-    //para->setpressBcValue(      input->getValue( "pressBcValue" ));
-    //para->setvelBcQs(             input->getValue( "velBcQs" ));
-    //para->setvelBcValues(         input->getValue( "velBcValues" ));
-    //para->setpropellerCylinder( input->getValue( "propellerCylinder" ));
-    //para->setpropellerQs(		 input->getValue( "propellerQs"      ));
-    //para->setwallBcQs(            input->getValue( "wallBcQs"         ));
-    //para->setwallBcValues(        input->getValue( "wallBcValues"     ));
-    //para->setperiodicBcQs(        input->getValue( "periodicBcQs"     ));
-    //para->setperiodicBcValues(    input->getValue( "periodicBcValues" ));
-    //cout << "Try this: " << para->getgeomBoundaryBcValues() << endl;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Restart
-    para->setTimeDoCheckPoint(StringUtil::toInt(input->getValue("TimeDoCheckPoint")));
-    para->setTimeDoRestart(StringUtil::toInt(input->getValue("TimeDoRestart")));
-    para->setDoCheckPoint(StringUtil::toBool(input->getValue("DoCheckPoint")));
-    para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
-    para->setGridX(StringUtil::toIntVector(input->getValue("GridX")));                           
-    para->setGridY(StringUtil::toIntVector(input->getValue("GridY")));                           
-    para->setGridZ(StringUtil::toIntVector(input->getValue("GridZ")));                  
-    para->setDistX(StringUtil::toIntVector(input->getValue("DistX")));                  
-    para->setDistY(StringUtil::toIntVector(input->getValue("DistY")));                  
-    para->setDistZ(StringUtil::toIntVector(input->getValue("DistZ")));                
-
-    para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Kernel
-	para->setMainKernel(input->getValue("MainKernelName"));
-	para->setMultiKernelOn(StringUtil::toBool(input->getValue("multiKernelOn")));
-	para->setMultiKernelLevel(StringUtil::toIntVector(input->getValue("multiKernelLevel")));
-	para->setMultiKernelName(StringUtil::toStringVector(input->getValue("multiKernelName")));
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-}
-
-
 
 void multipleLevel(const std::string& configPath)
 {
@@ -291,8 +76,12 @@ void multipleLevel(const std::string& configPath)
     //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
-    
-    SPtr<Parameter> para = Parameter::make();
+
+	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
+	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
+	Communicator* comm = Communicator::getInstanz();
+
+    SPtr<Parameter> para = Parameter::make(configData, comm);
     SPtr<GridProvider> gridGenerator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -306,7 +95,7 @@ void multipleLevel(const std::string& configPath)
             real dx = 1.2;
             real vx = 0.05;
 
-            TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+            TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
 
             gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
                                         256.0,  256.0,  160.0, dx);  
@@ -326,23 +115,23 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
+            gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
 
-            SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+            SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			StreetPointFinder finder;
 
-			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+			finder.readStreets("C:/Users/schoen/Desktop/git/MS/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 
-			finder.writeVTK("F:/Work/Computations/NagelSchreckenberg/ExampleStreets.vtk");
+			finder.writeVTK("E:/temp/Basel2019/results/ExampleStreets.vtk");
 
 			finder.findIndicesLB(gridBuilder->getGrid(0));
 
-			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeConnectionVTK("E:/temp/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 
-			finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			finder.writeSimulationFile("E:/temp/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -366,14 +155,12 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    std::ifstream stream;
-    stream.open(configPath.c_str(), std::ios::in);
-    if (stream.fail())
-        throw std::runtime_error("can not open config file!");
+    //std::ifstream stream;
+    //stream.open(configPath.c_str(), std::ios::in);
+    //if (stream.fail())
+    //    throw std::runtime_error("can not open config file!");
 
-    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
-
-    setParameters(para, input);
+    //UPtr<input::Input> input = input::Input::makeInput(stream, "config");
 
     Simulation sim;
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
@@ -411,7 +198,7 @@ int main( int argc, char* argv[])
         {
             try
             {
-				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt");
+				multipleLevel("E:/temp/Basel2019/config/configBasel.txt");
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
             }
             catch (const std::exception& e)

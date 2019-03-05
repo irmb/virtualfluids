@@ -7,18 +7,508 @@
 #include <stdlib.h>
 #include <math.h>
 
+
+#include "Core/Input/ConfigData/ConfigData.h"
+#include "Core/StringUtilities/StringUtil.h"
+#include "VirtualFluids_GPU/Communication/Communicator.h"
 //#ifdef WIN32
 //   #include <Winsock2.h>
 //#endif
 //lib for windows Ws2_32.lib
+
 
 SPtr<Parameter> Parameter::make()
 {
     return SPtr<Parameter>(new Parameter());
 }
 
+SPtr<Parameter> Parameter::make(SPtr<ConfigData> configData, Communicator* comm)
+{
+	return SPtr<Parameter>(new Parameter(configData, comm));
+}
+
 Parameter::Parameter()
 {
+}
+Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
+{
+	//////////////////////////////////////////////////////////////////////////
+	this->setNumprocs(comm->getNummberOfProcess());
+	this->setMyID(comm->getPID());
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isNumberOfDevicesInConfigFile())
+		this->setMaxDev(configData->getNumberOfDevices());
+	else
+		this->setMaxDev((int)1);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isDevicesInConfigFile())
+		this->setDevices(configData->getDevices());
+	else
+		this->setDevices(std::vector<uint>{(uint)0});
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isOutputPathInConfigFile())
+		this->setOutputPath(configData->getOutputPath());
+	else
+		this->setOutputPath("C:/Output/");
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPrefixInConfigFile())
+		this->setOutputPrefix(configData->getPrefix());
+	else
+		this->setOutputPrefix("MyFile");
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPrintOutputFilesInConfigFile())
+		this->setPrintFiles(configData->getPrintOutputFiles());
+	else
+		this->setPrintFiles(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isGeometryValuesInConfigFile())
+		this->setGeometryValues(configData->getGeometryValues());
+	else
+		this->setGeometryValues(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalc2ndOrderMomentsInConfigFile())
+		this->setCalc2ndOrderMoments(configData->getCalc2ndOrderMoments());
+	else
+		this->setCalc2ndOrderMoments(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalc3rdOrderMomentsInConfigFile())
+		this->setCalc3rdOrderMoments(configData->getCalc3rdOrderMoments());
+	else
+		this->setCalc3rdOrderMoments(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcHighOrderMomentsInConfigFile())
+		this->setCalcHighOrderMoments(configData->getCalcHighOrderMoments());
+	else
+		this->setCalcHighOrderMoments(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isCalcMedianInConfigFile())
+		this->setCalcMedian(configData->getCalcMedian());
+	else
+		this->setCalcMedian(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isConcFileInConfigFile())
+		this->setConcFile(configData->getConcFile());
+	else
+		this->setConcFile(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isUseMeasurePointsInConfigFile())
+		this->setUseMeasurePoints(configData->getUseMeasurePoints());
+	else
+		this->setUseMeasurePoints(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isUseWaleInConfigFile())
+		this->setUseWale(configData->getUseWale());
+	else
+		this->setUseWale(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isSimulatePorousMediaInConfigFile())
+		this->setSimulatePorousMedia(configData->getSimulatePorousMedia());
+	else
+		this->setSimulatePorousMedia(false);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isD3QxxInConfigFile())
+		this->setD3Qxx(configData->getD3Qxx());
+	else
+		this->setD3Qxx((int)27);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isTEndInConfigFile())
+		this->setTEnd(configData->getTEnd());
+	else
+		this->setTEnd((uint)10);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isTOutInConfigFile())
+		this->setTOut(configData->getTOut());
+	else
+		this->setTOut((uint)1);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isTStartOutInConfigFile())
+		this->setTStartOut(configData->getTStartOut());
+	else
+		this->setTStartOut((uint)0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isTimeCalcMedStartInConfigFile())
+		this->setTimeCalcMedStart(configData->getTimeCalcMedStart());
+	else
+		this->setTimeCalcMedStart((int)0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isTimeCalcMedEndInConfigFile())
+		this->setTimeCalcMedEnd(configData->getTimeCalcMedEnd());
+	else
+		this->setTimeCalcMedEnd((int)10);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPressInIDInConfigFile())
+		this->setPressInID(configData->getPressInID());
+	else
+		this->setPressInID((uint)0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPressOutIDInConfigFile())
+		this->setPressOutID(configData->getPressOutID());
+	else
+		this->setPressOutID((uint)0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPressInZInConfigFile())
+		this->setPressInZ(configData->getPressInZ());
+	else
+		this->setPressInZ((uint)1);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPressOutZInConfigFile())
+		this->setPressOutZ(configData->getPressOutZ());
+	else
+		this->setPressOutZ((uint)2);
+	//////////////////////////////////////////////////////////////////////////
+	//second component
+	if (configData->isDiffOnInConfigFile())
+		this->setDiffOn(configData->getDiffOn());
+	else
+		this->setDiffOn(false);
+
+	if (configData->isDiffModInConfigFile())
+		this->setDiffMod(configData->getDiffMod());
+	else
+		this->setDiffMod((int)27);
+
+	if (configData->isDiffusivityInConfigFile())
+		this->setDiffusivity(configData->getDiffusivity());
+	else
+		this->setDiffusivity((real)0.001);
+
+	if (configData->isTemperatureInitInConfigFile())
+		this->setTemperatureInit(configData->getTemperatureInit());
+	else
+		this->setTemperatureInit((real)0.0);
+
+	if (configData->isTemperatureBCInConfigFile())
+		this->setTemperatureBC(configData->getTemperatureBC());
+	else
+		this->setTemperatureBC((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isViscosityInConfigFile())
+		this->setViscosity(configData->getViscosity());
+	else
+		this->setViscosity((real)0.001);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isVelocityInConfigFile())
+		this->setVelocity(configData->getVelocity());
+	else
+		this->setVelocity((real)0.01);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isViscosityRatioInConfigFile())
+		this->setViscosityRatio(configData->getViscosityRatio());
+	else
+		this->setViscosityRatio((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isVelocityRatioInConfigFile())
+		this->setVelocityRatio(configData->getVelocityRatio());
+	else
+		this->setVelocityRatio((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isDensityRatioInConfigFile())
+		this->setDensityRatio(configData->getDensityRatio());
+	else
+		this->setDensityRatio((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isPressRatioInConfigFile())
+		this->setPressRatio(configData->getPressRatio());
+	else
+		this->setPressRatio((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isRealXInConfigFile())
+		this->setRealX(configData->getRealX());
+	else
+		this->setRealX((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isRealYInConfigFile())
+		this->setRealY(configData->getRealY());
+	else
+		this->setRealY((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isFactorPressBCInConfigFile())
+		this->setFactorPressBC(configData->getFactorPressBC());
+	else
+		this->setFactorPressBC((real)1.0);
+	//////////////////////////////////////////////////////////////////////////
+	//read Geometry (STL)
+	if (configData->isReadGeoInConfigFile())
+		this->setReadGeo(configData->getReadGeo());
+	else
+		this->setReadGeo(false);
+
+	if (configData->isGeometryFileCInConfigFile())
+		this->setGeometryFileC(configData->getGeometryFileC());
+	else if (this->getReadGeo())
+	{
+		std::cout << "GeometryFileC has to be defined!" << std::endl;
+		exit(1);
+	}
+	else
+		this->setGeometryFileC("");
+
+	if (configData->isGeometryFileMInConfigFile())
+		this->setGeometryFileM(configData->getGeometryFileM());
+	else if (this->getReadGeo())
+	{
+		std::cout << "GeometryFileM has to be defined!" << std::endl;
+		exit(1);
+	}
+	else
+		this->setGeometryFileM("");
+
+	if (configData->isGeometryFileFInConfigFile())
+		this->setGeometryFileF(configData->getGeometryFileF());
+	else if (this->getReadGeo())
+	{
+		std::cout << "GeometryFileF has to be defined!" << std::endl;
+		exit(1);
+	}
+	else
+		this->setGeometryFileF("");
+	//////////////////////////////////////////////////////////////////////////
+	if (configData->isClockCycleForMPInConfigFile())
+		this->setclockCycleForMP(configData->getClockCycleForMP());
+	else
+		this->setclockCycleForMP((real)1.0);
+
+	if (configData->isTimestepForMPInConfigFile())
+		this->settimestepForMP(configData->getTimestepForMP());
+	else
+		this->settimestepForMP((uint)10);
+	//////////////////////////////////////////////////////////////////////////
+	std::string gridPath = "";
+	if (configData->isGridPathInConfigFile())
+		gridPath = configData->getGridPath();
+	else
+	{
+		std::cout << "GridPath has to be defined!" << std::endl;
+		exit(1);
+	}
+
+	if (this->getNumprocs() == 1)
+		gridPath += "/";
+	else
+		gridPath += "/" + StringUtil::toString(this->getMyID()) + "/";
+	//////////////////////////////////////////////////////////////////////////
+	this->setFName(this->getOutputPath() + "/" + this->getOutputPrefix());
+	//////////////////////////////////////////////////////////////////////////
+	this->setgeoVec(				gridPath + "geoVec.dat");
+	this->setcoordX(				gridPath + "coordX.dat");
+	this->setcoordY(				gridPath + "coordY.dat");
+	this->setcoordZ(				gridPath + "coordZ.dat");
+	this->setneighborX(				gridPath + "neighborX.dat");
+	this->setneighborY(				gridPath + "neighborY.dat");
+	this->setneighborZ(				gridPath + "neighborZ.dat");
+	this->setneighborWSB(			gridPath + "neighborWSB.dat");
+	this->setscaleCFC(				gridPath + "scaleCFC.dat");
+	this->setscaleCFF(				gridPath + "scaleCFF.dat");
+	this->setscaleFCC(				gridPath + "scaleFCC.dat");
+	this->setscaleFCF(				gridPath + "scaleFCF.dat");
+	this->setscaleOffsetCF(			gridPath + "offsetVecCF.dat");
+	this->setscaleOffsetFC(			gridPath + "offsetVecFC.dat");
+	this->setgeomBoundaryBcQs(		gridPath + "geomBoundaryQs.dat");
+	this->setgeomBoundaryBcValues(	gridPath + "geomBoundaryValues.dat");
+	this->setinletBcQs(				gridPath + "inletBoundaryQs.dat");
+	this->setinletBcValues(			gridPath + "inletBoundaryValues.dat");
+	this->setoutletBcQs(			gridPath + "outletBoundaryQs.dat");
+	this->setoutletBcValues(		gridPath + "outletBoundaryValues.dat");
+	this->settopBcQs(				gridPath + "topBoundaryQs.dat");
+	this->settopBcValues(			gridPath + "topBoundaryValues.dat");
+	this->setbottomBcQs(			gridPath + "bottomBoundaryQs.dat");
+	this->setbottomBcValues(		gridPath + "bottomBoundaryValues.dat");
+	this->setfrontBcQs(				gridPath + "frontBoundaryQs.dat");
+	this->setfrontBcValues(			gridPath + "frontBoundaryValues.dat");
+	this->setbackBcQs(				gridPath + "backBoundaryQs.dat");
+	this->setbackBcValues(			gridPath + "backBoundaryValues.dat");
+	this->setnumberNodes(			gridPath + "numberNodes.dat");
+	this->setLBMvsSI(				gridPath + "LBMvsSI.dat");
+	this->setmeasurePoints(			gridPath + "measurePoints.dat");
+	this->setpropellerValues(		gridPath + "propellerValues.dat");
+	this->setcpTop(					gridPath + "cpTop.dat");
+	this->setcpBottom(				gridPath + "cpBottom.dat");
+	this->setcpBottom2(				gridPath + "cpBottom2.dat");
+	this->setConcentration(			gridPath + "conc.dat");
+	//////////////////////////////////////////////////////////////////////////
+	//Normals - Geometry
+	this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
+	this->setgeomBoundaryNormalY(gridPath + "geomBoundaryNormalY.dat");
+	this->setgeomBoundaryNormalZ(gridPath + "geomBoundaryNormalZ.dat");
+	//Normals - Inlet
+	this->setInflowBoundaryNormalX(gridPath + "inletBoundaryNormalX.dat");
+	this->setInflowBoundaryNormalY(gridPath + "inletBoundaryNormalY.dat");
+	this->setInflowBoundaryNormalZ(gridPath + "inletBoundaryNormalZ.dat");
+	//Normals - Outlet
+	this->setOutflowBoundaryNormalX(gridPath + "outletBoundaryNormalX.dat");
+	this->setOutflowBoundaryNormalY(gridPath + "outletBoundaryNormalY.dat");
+	this->setOutflowBoundaryNormalZ(gridPath + "outletBoundaryNormalZ.dat");
+	//////////////////////////////////////////////////////////////////////////
+	//Forcing
+	real forcingX = 0.0;
+	real forcingY = 0.0;
+	real forcingZ = 0.0;
+
+	if (configData->isForcingXInConfigFile())
+		forcingX = configData->getForcingX();
+	if (configData->isForcingYInConfigFile())
+		forcingY = configData->getForcingY();
+	if (configData->isForcingZInConfigFile())
+		forcingZ = configData->getForcingZ();
+
+	this->setForcing(forcingX, forcingY, forcingZ);
+	//////////////////////////////////////////////////////////////////////////
+	//Particles
+	if (configData->isCalcParticlesInConfigFile())
+		this->setCalcParticles(configData->getCalcParticles());
+	else
+		this->setCalcParticles(false);
+
+	if (configData->isParticleBasicLevelInConfigFile())
+		this->setParticleBasicLevel(configData->getParticleBasicLevel());
+	else
+		this->setParticleBasicLevel((int)0);
+
+	if (configData->isParticleInitLevelInConfigFile())
+		this->setParticleInitLevel(configData->getParticleInitLevel());
+	else
+		this->setParticleInitLevel((int)0);
+
+	if (configData->isNumberOfParticlesInConfigFile())
+		this->setNumberOfParticles(configData->getNumberOfParticles());
+	else
+		this->setNumberOfParticles((int)0);
+
+	if (configData->isStartXHotWallInConfigFile())
+		this->setStartXHotWall(configData->getStartXHotWall());
+	else
+		this->setStartXHotWall((real)0);
+
+	if (configData->isEndXHotWallInConfigFile())
+		this->setEndXHotWall(configData->getEndXHotWall());
+	else
+		this->setEndXHotWall((real)0);
+	//////////////////////////////////////////////////////////////////////////
+	//for Multi GPU
+	if (this->getNumprocs() > 1)
+	{
+		//////////////////////////////////////////////////////////////////////////
+		//3D domain decomposition
+		std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
+		std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
+		for (int i = 0; i < this->getNumprocs(); i++)
+		{
+			sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
+			sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
+			sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
+			recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
+			recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
+			recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
+		}
+		this->setPossNeighborFilesX(sendProcNeighborsX, "send");
+		this->setPossNeighborFilesY(sendProcNeighborsY, "send");
+		this->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
+		this->setPossNeighborFilesX(recvProcNeighborsX, "recv");
+		this->setPossNeighborFilesY(recvProcNeighborsY, "recv");
+		this->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Restart
+	if (configData->isTimeDoCheckPointInConfigFile())
+		this->setTimeDoCheckPoint(configData->getTimeDoCheckPoint());
+	else
+		this->setTimeDoCheckPoint((uint)0);
+
+	if (configData->isTimeDoRestartInConfigFile())
+		this->setTimeDoRestart(configData->getTimeDoRestart());
+	else
+		this->setTimeDoRestart((uint)0);
+
+	if (configData->isDoCheckPointInConfigFile())
+		this->setDoCheckPoint(configData->getDoCheckPoint());
+	else
+		this->setDoCheckPoint(false);
+
+	if (configData->isDoRestartInConfigFile())
+		this->setDoRestart(configData->getDoRestart());
+	else
+		this->setDoRestart(false);
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	if (configData->isMaxLevelInConfigFile())
+		this->setMaxLevel(configData->getMaxLevel());
+	else
+		this->setMaxLevel((int)1);
+
+	if (configData->isGridXInConfigFile())
+		this->setGridX(configData->getGridX());
+	else
+		this->setGridX(std::vector<int>(this->getMaxLevel()+1, 32));
+
+	if (configData->isGridYInConfigFile())
+		this->setGridY(configData->getGridY());
+	else
+		this->setGridY(std::vector<int>(this->getMaxLevel()+1, 32));
+
+	if (configData->isGridZInConfigFile())
+		this->setGridZ(configData->getGridZ());
+	else
+		this->setGridZ(std::vector<int>(this->getMaxLevel()+1, 32));
+
+	if (configData->isDistXInConfigFile())
+		this->setDistX(configData->getDistX());
+	else
+		this->setDistX(std::vector<int>(this->getMaxLevel()+1, 32));
+
+	if (configData->isDistYInConfigFile())
+		this->setDistY(configData->getDistY());
+	else
+		this->setDistY(std::vector<int>(this->getMaxLevel()+1, 32));
+
+	if (configData->isDistZInConfigFile())
+		this->setDistZ(configData->getDistZ());
+	else
+		this->setDistZ(std::vector<int>(this->getMaxLevel()+1, 32));
+
+	if (configData->isNeedInterfaceInConfigFile())
+		this->setNeedInterface(configData->getNeedInterface());
+	else
+		this->setNeedInterface(std::vector<bool>(6, true));
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Kernel
+	if (configData->isMainKernelInConfigFile())
+		this->setMainKernel(configData->getMainKernel());
+	else
+		this->setMainKernel("CumulantOneCompSP27");
+
+	if (configData->isMultiKernelOnInConfigFile())
+		this->setMultiKernelOn(configData->getMultiKernelOn());
+	else
+		this->setMultiKernelOn(false);
+
+	if (configData->isMultiKernelLevelInConfigFile())
+		this->setMultiKernelLevel(configData->getMultiKernelLevel());
+	else if (this->getMultiKernelOn())
+	{
+		std::vector<int> tmp;
+		for (int i = 0; i < this->getMaxLevel()+1; i++)
+		{
+			tmp.push_back(i);
+		}
+		this->setMultiKernelLevel(tmp);
+	} 
+	else
+		this->setMultiKernelLevel(std::vector<int>(0));
+
+	if (configData->isMultiKernelNameInConfigFile())
+		this->setMultiKernelName(configData->getMultiKernelName());
+	else if (this->getMultiKernelOn())
+	{
+		std::vector<std::string> tmp;
+		for (int i = 0; i < this->getMaxLevel()+1; i++)
+		{
+			tmp.push_back("CumulantOneCompSP27");
+		}
+		this->setMultiKernelName(tmp);
+	}
+	else
+		this->setMultiKernelName(std::vector<std::string>(0));
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 Parameter::~Parameter()
 {
@@ -59,10 +549,10 @@ void Parameter::initParameter()
 		parH[i]->sizePlaneXY           = parH[i]->nx * parH[i]->ny;
 		parH[i]->sizePlaneYZ           = parH[i]->ny * parH[i]->nz;
 		parH[i]->sizePlaneXZ           = parH[i]->nx * parH[i]->nz;
-		parH[i]->mem_size_real      = sizeof(real     ) * parH[i]->size_Mat;
+		parH[i]->mem_size_real         = sizeof(real     ) * parH[i]->size_Mat;
 		parH[i]->mem_size_int          = sizeof(unsigned int) * parH[i]->size_Mat;
 		parH[i]->mem_size_bool         = sizeof(bool        ) * parH[i]->size_Mat;
-		parH[i]->mem_size_real_yz   = sizeof(real     ) * parH[i]->ny * parH[i]->nz;
+		parH[i]->mem_size_real_yz      = sizeof(real     ) * parH[i]->ny * parH[i]->nz;
 		parH[i]->evenOrOdd             = true;
 		parH[i]->startz                = parH[i]->gridNZ * ic.myid;
 		parH[i]->endz                  = parH[i]->gridNZ * ic.myid + parH[i]->gridNZ;
@@ -137,10 +627,10 @@ void Parameter::initParameter()
 		parD[i]->sizePlaneXY           = parH[i]->sizePlaneXY;
 		parD[i]->sizePlaneYZ           = parH[i]->sizePlaneYZ;
 		parD[i]->sizePlaneXZ           = parH[i]->sizePlaneXZ;
-		parD[i]->mem_size_real      = sizeof(real     ) * parD[i]->size_Mat;
+		parD[i]->mem_size_real         = sizeof(real     ) * parD[i]->size_Mat;
 		parD[i]->mem_size_int          = sizeof(unsigned int) * parD[i]->size_Mat;
 		parD[i]->mem_size_bool         = sizeof(bool        ) * parD[i]->size_Mat;
-		parD[i]->mem_size_real_yz   = sizeof(real     ) * parD[i]->ny * parD[i]->nz;
+		parD[i]->mem_size_real_yz      = sizeof(real     ) * parD[i]->ny * parD[i]->nz;
 		parD[i]->evenOrOdd             = parH[i]->evenOrOdd;
 		parD[i]->startz                = parH[i]->startz;
 		parD[i]->endz                  = parH[i]->endz;
@@ -2891,7 +3381,7 @@ void Parameter::setNumprocs(int numprocs)
 {
 	ic.numprocs = numprocs;
 }
-void Parameter::setDevices(std::vector<int> devices)
+void Parameter::setDevices(std::vector<uint> devices)
 {
 	ic.devices = devices;
 }
@@ -3840,7 +4330,7 @@ int Parameter::getNumprocs()
 {
 	return ic.numprocs;
 }
-std::vector<int> Parameter::getDevices()
+std::vector<uint> Parameter::getDevices()
 {
 	return ic.devices;
 }

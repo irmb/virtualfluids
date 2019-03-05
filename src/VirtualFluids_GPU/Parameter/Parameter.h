@@ -17,6 +17,9 @@
 #include "Core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 
+class ConfigData;
+class Communicator;
+
 //struct
 struct ParameterStruct{
 	bool evenOrOdd;
@@ -275,6 +278,7 @@ public:
 	//Parameter();
 	////////////////////////////////////////////////////////////////////////////
     static SPtr<Parameter> make();
+	static SPtr<Parameter> make(SPtr<ConfigData> configData, Communicator* comm);
 
 
 	static Parameter* getInstanz();
@@ -670,7 +674,7 @@ public:
 	void setUseWale(bool useWale);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
 	void setclockCycleForMP(real clockCycleForMP);
-	void setDevices(std::vector<int> devices);
+	void setDevices(std::vector<uint> devices);
 	void setGridX(std::vector<int> GridX);
 	void setGridY(std::vector<int> GridY);
 	void setGridZ(std::vector<int> GridZ);
@@ -863,7 +867,7 @@ public:
 	real getRe();
 	real getFactorPressBC();
 	real getclockCycleForMP();
-	std::vector<int> getDevices();
+	std::vector<uint> getDevices();
 	std::vector<int> getGridX();
 	std::vector<int> getGridY();
 	std::vector<int> getGridZ();
@@ -995,6 +999,7 @@ private:
 	//LogWriter output;
 
 	Parameter();
+	Parameter(SPtr<ConfigData> configData, Communicator* comm);
 	Parameter(const Parameter&);
 	void initInterfaceParameter(int level);
 	real TrafoXtoWorld(int CoordX, int level);

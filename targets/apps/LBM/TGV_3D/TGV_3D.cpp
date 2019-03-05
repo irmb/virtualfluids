@@ -20,6 +20,7 @@
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
 #include "Core/StringUtilities/StringUtil.h"
+#include "Core/Input/ConfigFileReader/ConfigFileReader.h"
 
 #include "VirtualFluids_GPU/LBM/Simulation.h"
 #include "VirtualFluids_GPU/Communication/Communicator.h"
@@ -53,215 +54,7 @@
 #include "utilities/communication.h"
 #include "utilities/transformator/TransformatorImp.h"
 
-std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
-{
-    if (para->getNumprocs() == 1)
-        return Gridpath + "/";
-    
-    return Gridpath + "/" + StringUtil::toString(para->getMyID()) + "/";
-}
-
-void setParameters(std::shared_ptr<Parameter> para, std::unique_ptr<input::Input> &input)
-{
-	Communicator* comm = Communicator::getInstanz();
-
-	para->setMaxDev(StringUtil::toInt(input->getValue("NumberOfDevices")));
-	para->setNumprocs(comm->getNummberOfProcess());
-	para->setDevices(StringUtil::toIntVector(input->getValue("Devices")));
-	para->setMyID(comm->getPID());
-	
-	std::string _path = input->getValue("Path");
-    std::string _prefix = input->getValue("Prefix");
-    std::string _gridpath = input->getValue("GridPath");
-    std::string gridPath = getGridPath(para, _gridpath);
-    para->setOutputPath(_path);
-    para->setOutputPrefix(_prefix);
-    para->setFName(_path + "/" + _prefix);
-    para->setPrintFiles(false);
-    para->setPrintFiles(StringUtil::toBool(input->getValue("WriteGrid")));
-    para->setGeometryValues(StringUtil::toBool(input->getValue("GeometryValues")));
-    para->setCalc2ndOrderMoments(StringUtil::toBool(input->getValue("calc2ndOrderMoments")));
-    para->setCalc3rdOrderMoments(StringUtil::toBool(input->getValue("calc3rdOrderMoments")));
-    para->setCalcHighOrderMoments(StringUtil::toBool(input->getValue("calcHigherOrderMoments")));
-    para->setReadGeo(StringUtil::toBool(input->getValue("ReadGeometry")));
-    para->setCalcMedian(StringUtil::toBool(input->getValue("calcMedian")));
-    para->setConcFile(StringUtil::toBool(input->getValue("UseConcFile")));
-    para->setUseMeasurePoints(StringUtil::toBool(input->getValue("UseMeasurePoints")));
-    para->setUseWale(StringUtil::toBool(input->getValue("UseWale")));
-    para->setSimulatePorousMedia(StringUtil::toBool(input->getValue("SimulatePorousMedia")));
-    para->setD3Qxx(StringUtil::toInt(input->getValue("D3Qxx")));
-    para->setTEnd(StringUtil::toInt(input->getValue("TimeEnd")));
-    para->setTOut(StringUtil::toInt(input->getValue("TimeOut")));
-    para->setTStartOut(StringUtil::toInt(input->getValue("TimeStartOut")));
-    para->setTimeCalcMedStart(StringUtil::toInt(input->getValue("TimeStartCalcMedian")));
-    para->setTimeCalcMedEnd(StringUtil::toInt(input->getValue("TimeEndCalcMedian")));
-    para->setPressInID(StringUtil::toInt(input->getValue("PressInID")));
-    para->setPressOutID(StringUtil::toInt(input->getValue("PressOutID")));
-    para->setPressInZ(StringUtil::toInt(input->getValue("PressInZ")));
-    para->setPressOutZ(StringUtil::toInt(input->getValue("PressOutZ")));
-    //////////////////////////////////////////////////////////////////////////
-    para->setDiffOn(StringUtil::toBool(input->getValue("DiffOn")));
-    para->setDiffMod(StringUtil::toInt(input->getValue("DiffMod")));
-    para->setDiffusivity(StringUtil::toFloat(input->getValue("Diffusivity")));
-    para->setTemperatureInit(StringUtil::toFloat(input->getValue("Temp")));
-    para->setTemperatureBC(StringUtil::toFloat(input->getValue("TempBC")));
-    //////////////////////////////////////////////////////////////////////////
-    para->setViscosity(StringUtil::toFloat(input->getValue("Viscosity_LB")));
-    para->setVelocity(StringUtil::toFloat(input->getValue("Velocity_LB")));
-    para->setViscosityRatio(StringUtil::toFloat(input->getValue("Viscosity_Ratio_World_to_LB")));
-    para->setVelocityRatio(StringUtil::toFloat(input->getValue("Velocity_Ratio_World_to_LB")));
-    para->setDensityRatio(StringUtil::toFloat(input->getValue("Density_Ratio_World_to_LB")));
-    para->setPressRatio(StringUtil::toFloat(input->getValue("Delta_Press")));
-    para->setRealX(StringUtil::toFloat(input->getValue("SliceRealX")));
-    para->setRealY(StringUtil::toFloat(input->getValue("SliceRealY")));
-    para->setFactorPressBC(StringUtil::toFloat(input->getValue("dfpbc")));
-    para->setGeometryFileC(input->getValue("GeometryC"));
-    para->setGeometryFileM(input->getValue("GeometryM"));
-    para->setGeometryFileF(input->getValue("GeometryF"));
-    //////////////////////////////////////////////////////////////////////////
-    para->setgeoVec(gridPath + input->getValue("geoVec"));
-    para->setcoordX(gridPath + input->getValue("coordX"));
-    para->setcoordY(gridPath + input->getValue("coordY"));
-    para->setcoordZ(gridPath + input->getValue("coordZ"));
-    para->setneighborX(gridPath + input->getValue("neighborX"));
-    para->setneighborY(gridPath + input->getValue("neighborY"));
-    para->setneighborZ(gridPath + input->getValue("neighborZ"));
-    para->setscaleCFC(gridPath + input->getValue("scaleCFC"));
-    para->setscaleCFF(gridPath + input->getValue("scaleCFF"));
-    para->setscaleFCC(gridPath + input->getValue("scaleFCC"));
-    para->setscaleFCF(gridPath + input->getValue("scaleFCF"));
-    para->setscaleOffsetCF(gridPath + input->getValue("scaleOffsetCF"));
-    para->setscaleOffsetFC(gridPath + input->getValue("scaleOffsetFC"));
-    para->setgeomBoundaryBcQs(gridPath + input->getValue("geomBoundaryBcQs"));
-    para->setgeomBoundaryBcValues(gridPath + input->getValue("geomBoundaryBcValues"));
-    para->setinletBcQs(gridPath + input->getValue("inletBcQs"));
-    para->setinletBcValues(gridPath + input->getValue("inletBcValues"));
-    para->setoutletBcQs(gridPath + input->getValue("outletBcQs"));
-    para->setoutletBcValues(gridPath + input->getValue("outletBcValues"));
-    para->settopBcQs(gridPath + input->getValue("topBcQs"));
-    para->settopBcValues(gridPath + input->getValue("topBcValues"));
-    para->setbottomBcQs(gridPath + input->getValue("bottomBcQs"));
-    para->setbottomBcValues(gridPath + input->getValue("bottomBcValues"));
-    para->setfrontBcQs(gridPath + input->getValue("frontBcQs"));
-    para->setfrontBcValues(gridPath + input->getValue("frontBcValues"));
-    para->setbackBcQs(gridPath + input->getValue("backBcQs"));
-    para->setbackBcValues(gridPath + input->getValue("backBcValues"));
-    para->setnumberNodes(gridPath + input->getValue("numberNodes"));
-    para->setLBMvsSI(gridPath + input->getValue("LBMvsSI"));
-    //////////////////////////////gridPath + ////////////////////////////////////////////
-    para->setmeasurePoints(gridPath + input->getValue("measurePoints"));
-    para->setpropellerValues(gridPath + input->getValue("propellerValues"));
-    para->setclockCycleForMP(StringUtil::toFloat(input->getValue("measureClockCycle")));
-    para->settimestepForMP(StringUtil::toInt(input->getValue("measureTimestep")));
-    para->setcpTop(gridPath + input->getValue("cpTop"));
-    para->setcpBottom(gridPath + input->getValue("cpBottom"));
-    para->setcpBottom2(gridPath + input->getValue("cpBottom2"));
-    para->setConcentration(gridPath + input->getValue("Concentration"));
-    //////////////////////////////////////////////////////////////////////////
-    //Normals - Geometry
-    para->setgeomBoundaryNormalX(gridPath + input->getValue("geomBoundaryNormalX"));
-    para->setgeomBoundaryNormalY(gridPath + input->getValue("geomBoundaryNormalY"));
-    para->setgeomBoundaryNormalZ(gridPath + input->getValue("geomBoundaryNormalZ"));
-    //Normals - Inlet
-    para->setInflowBoundaryNormalX(gridPath + input->getValue("inletBoundaryNormalX"));
-    para->setInflowBoundaryNormalY(gridPath + input->getValue("inletBoundaryNormalY"));
-    para->setInflowBoundaryNormalZ(gridPath + input->getValue("inletBoundaryNormalZ"));
-    //Normals - Outlet
-    para->setOutflowBoundaryNormalX(gridPath + input->getValue("outletBoundaryNormalX"));
-    para->setOutflowBoundaryNormalY(gridPath + input->getValue("outletBoundaryNormalY"));
-    para->setOutflowBoundaryNormalZ(gridPath + input->getValue("outletBoundaryNormalZ"));
-    //////////////////////////////////////////////////////////////////////////
-    //Forcing
-    para->setForcing(StringUtil::toFloat(input->getValue("ForcingX")), StringUtil::toFloat(input->getValue("ForcingY")), StringUtil::toFloat(input->getValue("ForcingZ")));
-    //////////////////////////////////////////////////////////////////////////
-    //Particles
-    para->setCalcParticles(StringUtil::toBool(input->getValue("calcParticles")));
-    para->setParticleBasicLevel(StringUtil::toInt(input->getValue("baseLevel")));
-    para->setParticleInitLevel(StringUtil::toInt(input->getValue("initLevel")));
-    para->setNumberOfParticles(StringUtil::toInt(input->getValue("numberOfParticles")));
-    para->setneighborWSB(gridPath + input->getValue("neighborWSB"));
-    para->setStartXHotWall(StringUtil::toDouble(input->getValue("startXHotWall")));
-    para->setEndXHotWall(StringUtil::toDouble(input->getValue("endXHotWall")));
-    //////////////////////////////////////////////////////////////////////////
-    //for Multi GPU
-    if (para->getNumprocs() > 1)
-    {
-        ////////////////////////////////////////////////////////////////////////////
-        ////1D domain decomposition
-        //std::vector<std::string> sendProcNeighbors;
-        //std::vector<std::string> recvProcNeighbors;
-        //for (int i = 0; i<para->getNumprocs();i++)
-        //{
-        // sendProcNeighbors.push_back(gridPath + StringUtil::toString(i) + "s.dat");
-        // recvProcNeighbors.push_back(gridPath + StringUtil::toString(i) + "r.dat");
-        //}
-        //para->setPossNeighborFiles(sendProcNeighbors, "send");
-        //para->setPossNeighborFiles(recvProcNeighbors, "recv");
-        //////////////////////////////////////////////////////////////////////////
-        //3D domain decomposition
-        std::vector<std::string> sendProcNeighborsX, sendProcNeighborsY, sendProcNeighborsZ;
-        std::vector<std::string> recvProcNeighborsX, recvProcNeighborsY, recvProcNeighborsZ;
-        for (int i = 0; i < para->getNumprocs(); i++)
-        {
-            sendProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xs.dat");
-            sendProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Ys.dat");
-            sendProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zs.dat");
-            recvProcNeighborsX.push_back(gridPath + StringUtil::toString(i) + "Xr.dat");
-            recvProcNeighborsY.push_back(gridPath + StringUtil::toString(i) + "Yr.dat");
-            recvProcNeighborsZ.push_back(gridPath + StringUtil::toString(i) + "Zr.dat");
-        }
-        para->setPossNeighborFilesX(sendProcNeighborsX, "send");
-        para->setPossNeighborFilesY(sendProcNeighborsY, "send");
-        para->setPossNeighborFilesZ(sendProcNeighborsZ, "send");
-        para->setPossNeighborFilesX(recvProcNeighborsX, "recv");
-        para->setPossNeighborFilesY(recvProcNeighborsY, "recv");
-        para->setPossNeighborFilesZ(recvProcNeighborsZ, "recv");
-    }
-    //////////////////////////////////////////////////////////////////////////
-    //para->setkFull(             input->getValue( "kFull" ));
-    //para->setgeoFull(           input->getValue( "geoFull" ));
-    //para->setnoSlipBcPos(       input->getValue( "noSlipBcPos" ));
-    //para->setnoSlipBcQs(          input->getValue( "noSlipBcQs" ));
-    //para->setnoSlipBcValues(      input->getValue( "noSlipBcValues" ));
-    //para->setnoSlipBcValue(     input->getValue( "noSlipBcValue" ));
-    //para->setslipBcPos(         input->getValue( "slipBcPos" ));
-    //para->setslipBcQs(          input->getValue( "slipBcQs" ));
-    //para->setslipBcValue(       input->getValue( "slipBcValue" ));
-    //para->setpressBcPos(        input->getValue( "pressBcPos" ));
-    //para->setpressBcQs(           input->getValue( "pressBcQs" ));
-    //para->setpressBcValues(       input->getValue( "pressBcValues" ));
-    //para->setpressBcValue(      input->getValue( "pressBcValue" ));
-    //para->setvelBcQs(             input->getValue( "velBcQs" ));
-    //para->setvelBcValues(         input->getValue( "velBcValues" ));
-    //para->setpropellerCylinder( input->getValue( "propellerCylinder" ));
-    //para->setpropellerQs(		 input->getValue( "propellerQs"      ));
-    //para->setwallBcQs(            input->getValue( "wallBcQs"         ));
-    //para->setwallBcValues(        input->getValue( "wallBcValues"     ));
-    //para->setperiodicBcQs(        input->getValue( "periodicBcQs"     ));
-    //para->setperiodicBcValues(    input->getValue( "periodicBcValues" ));
-    //cout << "Try this: " << para->getgeomBoundaryBcValues() << endl;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Restart
-    para->setTimeDoCheckPoint(StringUtil::toInt(input->getValue("TimeDoCheckPoint")));
-    para->setTimeDoRestart(StringUtil::toInt(input->getValue("TimeDoRestart")));
-    para->setDoCheckPoint(StringUtil::toBool(input->getValue("DoCheckPoint")));
-    para->setDoRestart(StringUtil::toBool(input->getValue("DoRestart")));
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    para->setMaxLevel(StringUtil::toInt(input->getValue("NOGL")));
-    para->setGridX(StringUtil::toIntVector(input->getValue("GridX")));                           
-    para->setGridY(StringUtil::toIntVector(input->getValue("GridY")));                           
-    para->setGridZ(StringUtil::toIntVector(input->getValue("GridZ")));                  
-    para->setDistX(StringUtil::toIntVector(input->getValue("DistX")));                  
-    para->setDistY(StringUtil::toIntVector(input->getValue("DistY")));                  
-    para->setDistZ(StringUtil::toIntVector(input->getValue("DistZ")));                
-
-    para->setNeedInterface(std::vector<bool>{true, true, true, true, true, true});
-}
-
-
-
-void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
+void multipleLevel(const std::string& configPath, uint nx, uint gpuIndex)
 {
     //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
     //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
@@ -282,7 +75,10 @@ void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
 
     auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
     
-    SPtr<Parameter> para = Parameter::make();
+	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
+	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
+	Communicator* comm = Communicator::getInstanz();
+    SPtr<Parameter> para = Parameter::make(configData, comm);
     SPtr<GridProvider> gridGenerator;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -323,39 +119,25 @@ void multipleLevel(const std::string& configPath, uint nx, int gpuIndex)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+	//std::stringstream _path;
+ //   std::stringstream _prefix;
 
+ //   //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
+ //   //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_neqInit";
+ //   _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/Re_1600/AA2016/" << nx << "_FD_O8";
 
-    std::ifstream stream;
-    stream.open(configPath.c_str(), std::ios::in);
-    if (stream.fail())
-        throw std::runtime_error("can not open config file!");
+ //   //_path << "./results/AA2016/" << nx;
+ //   //_path << "./results/CumOne/" << nx;
+ //   //_path << "./results/F3_2018/" << nx;
 
-    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
+ //   _prefix << "TGV_3D_" << nx << "_" ;
 
-    setParameters(para, input);
+ //   para->setOutputPath(_path.str());
+ //   para->setOutputPrefix(_prefix.str());
+ //   para->setFName(_path.str() + "/" + _prefix.str());
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-	std::stringstream _path;
-    std::stringstream _prefix;
-
-    //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_Re_1.6e4";
-    //_path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/" << nx << "_neqInit";
-    _path << "F:/Work/Computations/TaylorGreenVortex_3D/TGV_LBM/Re_1600/AA2016/" << nx << "_FD_O8";
-
-    //_path << "./results/AA2016/" << nx;
-    //_path << "./results/CumOne/" << nx;
-    //_path << "./results/F3_2018/" << nx;
-
-    _prefix << "TGV_3D_" << nx << "_" ;
-
-    para->setOutputPath(_path.str());
-    para->setOutputPrefix(_prefix.str());
-    para->setFName(_path.str() + "/" + _prefix.str());
-
-    para->setDevices({gpuIndex});
+ //   para->setDevices(std::vector<uint>{gpuIndex});
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -391,7 +173,7 @@ int main( int argc, char* argv[])
         {
             //////////////////////////////////////////////////////////////////////////
             
-            uint gpuIndex = 0;
+            uint gpuIndex = 2;
     
             uint nx = 64;
 
@@ -399,8 +181,7 @@ int main( int argc, char* argv[])
 
             if( argc > 2 ) nx = atoi( argv[2] );
 
-			multipleLevel("F:/Work/Computations/inp/configTGV3D.txt", nx, gpuIndex);
-			//multipleLevel("./inp/configTGV3D.txt", nx, gpuIndex);
+			multipleLevel("C:/Users/schoen/Desktop/bin/3D/VirtualFluidsGpuCodes/TGV3D/configTGV3D.txt", nx, gpuIndex);
 
             //////////////////////////////////////////////////////////////////////////
 		}
