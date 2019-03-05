@@ -99,6 +99,32 @@ std::vector<int> StringUtil::toIntVector(const std::string& input)
     return v;
 }
 
+std::vector<unsigned int> StringUtil::toUintVector(const std::string & input)
+{
+	std::vector<unsigned int> v;
+	std::vector<std::string> inputEntries;
+	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+	BOOST_FOREACH(std::string entry, inputEntries)
+		if (entry != "")
+			v.push_back(toInt(entry));
+	return v;
+}
+
+std::vector<bool> StringUtil::toBoolVector(const std::string & input)
+{
+	std::vector<bool> v;
+	std::vector<std::string> inputEntries;
+	boost::algorithm::split(inputEntries, input, boost::is_any_of("\t\n "));
+	BOOST_FOREACH(std::string entry, inputEntries)
+	{
+		bool b = 0;
+		std::string trimmedInput = trim(input);
+		if (toBool(b, trimmedInput, std::noboolalpha))
+			v.push_back(b);
+	}
+	return v;
+}
+
 std::vector<std::string> StringUtil::toStringVector(const std::string & input)
 {
 	std::vector<std::string> v;
