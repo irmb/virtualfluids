@@ -52,7 +52,7 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 64;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,14 +63,12 @@ void thermalCavity( std::string path, std::string simulationName )
     real Ba  = 0.1;
     real eps = 1.2;
     real Pr  = 0.71;
-    real K   = 3.0;
+    real K   = 5.5;
     
     real g   = 9.81;
     real rho = 1.2;
-
-    real lambdaCold = 0.5 / ( 287 *  300 );
-    real lambdaHot  = 0.5 / ( 287 * 1200 );
     
+    real p = 101325.0;
     real T = 300.0;
 
     real mu = 1.0e-1;
@@ -80,7 +78,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //real CFL = 0.8;
 
-    real dt  = 5.0e-6; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = 1.0e-5; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     //*logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
@@ -103,8 +101,6 @@ void thermalCavity( std::string path, std::string simulationName )
     parameters.dt = dt;
     parameters.dx = dx;
 
-    parameters.lambdaRef = lambdaCold;
-
     //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     parameters.viscosityModel = ViscosityModel::constant;
 
@@ -124,7 +120,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  -0.5*L,  
     //                            0.5*L,  0.5*L,   0.5*L, dx);
 
-    gridBuilder->setPeriodicBoundaryCondition(false, true, true);
+    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -153,18 +149,17 @@ void thermalCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambdaCold );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambdaCold );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
-    
-    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -215,37 +210,35 @@ void thermalCavity( std::string path, std::string simulationName )
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
 
-        real rhoLocal = rho;
-        real lambdaLocal = lambdaCold;
-        //real lambdaLocal = lambdaHot;
+        PrimitiveVariables primFuel;
 
-        real radius = sqrt( cellCenter.x*cellCenter.x + cellCenter.y*cellCenter.y + cellCenter.z*cellCenter.z );
+        primFuel.S_1 = 1.0;
 
-        //if( radius < 0.2 )
-        //{
-        //    lambdaLocal = lambdaHot;
-        //}
+        setLambdaFromT(primFuel, T);
 
-        //lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * exp( - 10. * ( cellCenter.x*cellCenter.x + cellCenter.y*cellCenter.y + cellCenter.z*cellCenter.z ) );
+        //////////////////////////////////////////////////////////////////////////
 
-        //lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * ( 0.5 * M_PI + atan( - 1000.0 * ( radius - 0.1) ) ) / M_PI;
+        PrimitiveVariables primAir;
 
-        //rhoLocal = rho * lambdaLocal / lambdaCold;
+        setLambdaFromT(primAir, T);
 
+        //////////////////////////////////////////////////////////////////////////
+
+        primFuel.rho = 2.0 * primFuel.lambda * p;
+        primAir.rho  = 2.0 * primAir.lambda * p;
+
+        //////////////////////////////////////////////////////////////////////////
+
+        real massFuel = 1.0; 
+        real massAir  = 2 * 32.0/16.0 + 2 * 0.767 / 0.233 * 32.0/16.0;
+
+        real volumeFuel = massFuel / primFuel.rho;
+        real volumeAir  = massAir  / primAir.rho;
         
-        
-        //lambdaLocal = lambdaCold + ( lambdaHot - lambdaCold ) * exp( - 10. * ( (cellCenter.x-0.5)*(cellCenter.x-0.5) ) );
+        real volumeRatioFuel = volumeFuel / ( volumeFuel + volumeAir );
 
-        real S_1_local;
-
-        if(fabs(cellCenter.x) < 0.5*0.05478) S_1_local = 1.0;
-        else                                 S_1_local = 0.0;
-
-        PrimitiveVariables prim ( rhoLocal, 0.0, 0.0, 0.0, lambdaLocal, S_1_local, 0.0 );
-
-        setLambdaFromT(prim, T);
-
-        return toConservedVariables( prim, parameters.K );
+        if(fabs(cellCenter.x) < 0.5 * volumeRatioFuel ) return toConservedVariables( primFuel, parameters.K );
+        else                                            return toConservedVariables( primAir , parameters.K );
     });
 
     //std::cout << toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambdaHot, S_1, S_2 ), parameters.K ).rhoE << std::endl;

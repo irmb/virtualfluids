@@ -248,11 +248,11 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         real Y_N2_ambient = 0.767;
         real Y_O2_ambient = 0.233;
 
-        real m_CH4 = 16.0;  // g / mol
-        real m_O2  = 32.0;  // g / mol
-        real m_N2  = 28.0;  // g / mol
-        real m_H2O = 18.0;  // g / mol
-        real m_CO2 = 44.0;  // g / mol
+        real M_CH4 = 16.0;  // g / mol
+        real M_O2  = 32.0;  // g / mol
+        real M_N2  = 28.0;  // g / mol
+        real M_H2O = 18.0;  // g / mol
+        real M_CO2 = 44.0;  // g / mol
 
         ///////////////////////////////////////////////////////////////////////////////
 
@@ -262,11 +262,11 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         real Y_CH4 = Y_CH4_Inflow * Z1;
 
         //           <--  non burned part -->   <------------  reacted part ------------->
-        real Y_O2  = (1.0 - Z) * Y_O2_ambient - 2.0 * ( m_O2  / m_CH4 ) * Y_CH4_Inflow * Z2;
+        real Y_O2  = (1.0 - Z) * Y_O2_ambient - 2.0 * ( M_O2  / M_CH4 ) * Y_CH4_Inflow * Z2;
 
-        real Y_CO2 =                                  ( m_CO2 / m_CH4 ) * Y_CH4_Inflow * Z2;
+        real Y_CO2 =                                  ( M_CO2 / M_CH4 ) * Y_CH4_Inflow * Z2;
 
-        real Y_H2O =                            2.0 * ( m_H2O / m_CH4 ) * Y_CH4_Inflow * Z2;
+        real Y_H2O =                            2.0 * ( M_H2O / M_CH4 ) * Y_CH4_Inflow * Z2;
 
         real Y_CO;  // currently not modeled
 
@@ -277,9 +277,9 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         {
             const real heatOfReaction = 8.0e8;
 
-            real s = m_CH4 / (2.0 * m_O2);      // refers to page 49 in FDS technical reference guide
+            real s = M_CH4 / (2.0 * M_O2);      // refers to page 49 in FDS technical reference guide
 
-            real releasedHeat = rho * fminf(Y_CH4, s * Y_O2) / m_CH4 * heatOfReaction;
+            real releasedHeat = rho * fminf(Y_CH4, s * Y_O2) / M_CH4 * heatOfReaction;
 
             if (Y_CH4 < s * Y_O2) Y_CH4 = 0.0;
             else                  Y_CH4 = Y_CH4 - s * Y_O2;
@@ -297,10 +297,9 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)] = Z1 * updatedConserved.rho;
             dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)] = Z2 * updatedConserved.rho;
 
-            dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] = updatedConserved.rhoE + releasedHeat;
+            dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
         }
     }
-
 
 #endif // USE_PASSIVE_SCALAR
 }
