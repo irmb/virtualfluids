@@ -4,7 +4,8 @@
 #include "math.h"
 #include "GPU/constant.h"
 
-extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(real omega,
+extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(
+	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,
@@ -457,15 +458,18 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(real omega,
 			////////////////////////////////////////////////////////////////////////////////////
 			real OxxPyyPzz = one;	//set the bulk viscosity one is high / two is very low and zero is (too) high ... (also called omega 2)
 
-										////////////////////////////////////////////////////////////
-										//3.
-										//////////////////////////////
+			////////////////////////////////////////////////////////////
+			//3.
+			//////////////////////////////
+			//real OxyyPxzz = one;
+			//real OxyyMxzz = one;
+			//real Oxyz = one;
+			////////////////////////////////////////////////////////////
 			real OxyyPxzz = eight*(-two + omega)*(one + two*omega) / (-eight - fourteen*omega + seven*omega*omega);//one;
 			real OxyyMxzz = eight*(-two + omega)*(-seven + four*omega) / (fiftysix - fifty*omega + nine*omega*omega);//one;
 			real Oxyz = twentyfour*(-two + omega)*(-two - seven*omega + three*omega*omega) / (fourtyeight + c152*omega - c130*omega*omega + twentynine*omega*omega*omega);//one;
-																																											 ////////////////////////////////////////////////////////////
-																																											 //4.
-																																											 //////////////////////////////
+			//4.
+			//////////////////////////////
 			real O4 = one;
 			//////////////////////////////
 			//real O4        = omega;//TRT
@@ -636,6 +640,13 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(real omega,
 			//CUMbbc += O4 * (-CUMbbc);
 			//CUMbcb += O4 * (-CUMbcb);
 			//CUMcbb += O4 * (-CUMcbb);
+
+			//Dxy = zero;
+			//	Dxz = zero;
+			//	Dyz = zero;
+			//	dxux = zero;
+			//	dyuy = zero;
+			//	dzuz = zero;
 			CUMacc = -O4*(one / omega - c1o2)*(dyuy + dzuz)*c2o3 *(four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega) + (one - O4) * (CUMacc);
 			CUMcac = -O4*(one / omega - c1o2)*(dxux + dzuz)*c2o3 *(four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega) + (one - O4) * (CUMcac);
 			CUMcca = -O4*(one / omega - c1o2)*(dyuy + dxux)*c2o3 *(four + two*omega - three*omega*omega) / (two - seven*omega + five*omega*omega) + (one - O4) * (CUMcca);

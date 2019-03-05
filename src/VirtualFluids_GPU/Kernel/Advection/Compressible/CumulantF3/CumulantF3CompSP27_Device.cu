@@ -4,7 +4,8 @@
 #include "math.h"
 #include "GPU/constant.h"
 
-extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(real omega,
+extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(
+	real omega,
 	unsigned int* bcMatD,
 	unsigned int* neighborX,
 	unsigned int* neighborY,
