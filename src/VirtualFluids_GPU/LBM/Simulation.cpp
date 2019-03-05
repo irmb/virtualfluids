@@ -165,10 +165,10 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
 
 
    ////////////////////////////////////////////////////////////////////////////
-   uint tAnalyse = 100;
-   kinEnergyWriter = new KineticEnergyAnalyzer(para, tAnalyse);
+   //uint tAnalyse = 100;
+   //kinEnergyWriter = new KineticEnergyAnalyzer(para, tAnalyse);
    ////////////////////////////////////////////////////////////////////////////
-   enstrophyWriter = new EnstrophyAnalyzer(para, tAnalyse);
+   //enstrophyWriter = new EnstrophyAnalyzer(para, tAnalyse);
    ////////////////////////////////////////////////////////////////////////////
 
 
@@ -1589,10 +1589,10 @@ void Simulation::run()
 		}
 
 		////////////////////////////////////////////////////////////////////////////////
-		kinEnergyWriter->run(t);
+		//kinEnergyWriter->run(t);
 		////////////////////////////////////////////////////////////////////////////////
 		//printf("Simulation - Before enstrophyWriter run\n");
-		enstrophyWriter->run(t);
+		//enstrophyWriter->run(t);
 		//printf("Simulation - after enstrophyWriter run\n");
 		////////////////////////////////////////////////////////////////////////////////
 
@@ -2557,7 +2557,7 @@ void Simulation::run()
 			   }
 
 			   //////////////////////////////////////////////////////////////////////////
-			   VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
+			   //VeloASCIIWriter::writeVelocitiesAsTXT(para.get(), lev, t);
 			   //////////////////////////////////////////////////////////////////////////
 			   //std::string fname = para->getFName() + StringUtil::toString<int>(t) + "_t_";
 			   //kinEnergyWriter->writeToFile(fname);

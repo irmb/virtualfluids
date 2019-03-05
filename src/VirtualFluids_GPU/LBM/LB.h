@@ -65,7 +65,7 @@ typedef struct InitCond{
    unsigned int tend, tout, tStartOut, tCalcMedStart, tCalcMedEnd, tDoCheckPoint, tDoRestart;
    unsigned int PressInID, PressOutID;
    unsigned int PressInZ, PressOutZ;
-   std::vector<int> devices;
+   std::vector<uint> devices;
    std::vector<int> GridX, GridY, GridZ, DistX, DistY, DistZ;
    std::vector<real> scaleLBMtoSI, translateLBMtoSI;
    std::vector<real> minCoordX, minCoordY, minCoordZ, maxCoordX, maxCoordY, maxCoordZ;
