@@ -52,7 +52,7 @@ public:
 	void startTimer();
 	void stopTimer();
 	double getTime();
-	int mapCudaDevice(const int &rank, const int &size, const std::vector<int> &devices, const int &maxdev);
+	int mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev);
 protected:
 private:
    static Communicator* instanz;
