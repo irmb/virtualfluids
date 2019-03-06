@@ -5,6 +5,7 @@
 #include "Utilities/MathematicaAssistant/MathematicaAssistant.h"
 #include "Utilities/LogFileDataAssistant/LogFileDataAssistant.h"
 
+#include <string>
 #include <vector>
 
 class PostProcessingConfigData
@@ -14,5 +15,7 @@ public:
 	virtual std::vector<Assistant> getAssistants() = 0;
 	virtual std::vector<DataCombination> getDataCombinations() = 0;
 
+	virtual std::string getMathematicaFilePath() = 0;
+	virtual std::string getLogFilesPath() = 0;
 };
 #endif

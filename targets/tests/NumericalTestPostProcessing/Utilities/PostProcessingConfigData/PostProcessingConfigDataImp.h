@@ -11,10 +11,14 @@ public:
 	std::vector<BasicSimulation> getSimulations();
 	std::vector<Assistant> getAssistants();
 	std::vector<DataCombination> getDataCombinations();
+	std::string getMathematicaFilePath();
+	std::string getLogFilesPath();
 
 	void setSimulations(std::vector<BasicSimulation> simulations);
 	void setAssistants(std::vector<Assistant> assis);
 	void setDataCombinations(std::vector<DataCombination> dataComb);
+	void setMathematicaFilePath(std::string mathematicaFilePath);
+	void setLogFilesPath(std::string logFilesPath);
 
 private:
 	PostProcessingConfigDataImp();
@@ -22,6 +26,7 @@ private:
 	std::vector<BasicSimulation> simulations;
 	std::vector<Assistant> assistants;
 	std::vector<DataCombination> dataCombinations;
-
+	std::string mathematicaFilePath;
+	std::string logFilesPath;
 };
 #endif

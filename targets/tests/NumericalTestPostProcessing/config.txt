@@ -23,3 +23,9 @@ TimeOutput=false
 ##################################################
 EqualSimulationsForDifferentKernels=true
 EqualKernelSimulationsForDifferentViscosities=false
+
+##################################################
+#					FilePaths					 #
+##################################################
+MathematicaFilePath="C:/Users/Timon/Desktop"
+LogFilesPath="C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/TaylorGreenVortexUx/viscosity_0.001/ux_0.096_Amplitude_0.001"

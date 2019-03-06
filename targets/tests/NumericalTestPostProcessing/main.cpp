@@ -1,6 +1,5 @@
 #include "Simulation/BasicSimulation.h"
 
-
 #include "Utilities/LogFileData/LogFileData.h"
 #include "Utilities/LogFileData/LogFileDataGroup/LogFileDataGroup.h"
 #include "Utilities/LogFileReader/LogFileReader.h"
@@ -26,13 +25,12 @@
 int main(int argc, char **argv)
 {
 	std::shared_ptr<PostProcessingConfigFileReader> reader = PostProcessingConfigFileReaderImp::getNewInstance();
-
 	std::shared_ptr<PostProcessingConfigData> configData =  reader->readConfigFile(argv[1]);
 
 	std::shared_ptr<LogFileReader> logFileReader = LogFileReader::getInstance();
-	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData("C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/TaylorGreenVortexUx/viscosity_0.001/ux_ 0.096_Amplitude_ 0.001");
+	std::vector<std::shared_ptr<LogFileData> > logFileDataVector = logFileReader->readLogFilesInDirectoryToLogFileData(configData->getLogFilesPath());
 
-	std::shared_ptr<MathematicaFile> aMathmaticaFile = MathematicaFile::getNewInstance("C:/Users/Timon/Desktop");
+	std::shared_ptr<MathematicaFile> aMathmaticaFile = MathematicaFile::getNewInstance(configData->getLogFilesPath());
 
 	std::shared_ptr<LogFileDataAssistant> assistentLogFile = LogFileDataAssistantImp::getNewInstance();
 

@@ -64,6 +64,9 @@ std::shared_ptr<PostProcessingConfigData> PostProcessingConfigFileReaderImp::rea
 	data->setAssistants(assistants);
 	data->setSimulations(simulation);
 	data->setDataCombinations(combination);
+
+	data->setLogFilesPath(input->getValue("LogFilesPath"));
+	data->setMathematicaFilePath(input->getValue("MathematicaFilePath"));
 	
 	return data;
 }
