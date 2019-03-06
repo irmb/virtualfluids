@@ -304,7 +304,7 @@ void GridReader::allocArrays_BoundaryValues()
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			for (int m = 0; m < temp1; m++)
 			{
-				para->getParH(i)->QPress.RhoBC[m] = (para->getParH(i)->QPress.RhoBC[m] / para->getFactorPressBC() * (real)0.0);
+				para->getParH(i)->QPress.RhoBC[m] = (para->getParH(i)->QPress.RhoBC[m] * para->getFactorPressBC() * (real)0.0);
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			para->cudaCopyPress(i);
@@ -474,7 +474,7 @@ void GridReader::allocArrays_BoundaryValues()
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			for (int m = 0; m < temp; m++)
 			{
-				para->getParH(i)->Qoutflow.RhoBC[m] = (para->getParH(i)->Qoutflow.RhoBC[m] / para->getFactorPressBC()) * (real)0.0;
+				para->getParH(i)->Qoutflow.RhoBC[m] = (para->getParH(i)->Qoutflow.RhoBC[m] * para->getFactorPressBC()) * (real)0.0;
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			para->cudaCopyOutflowBC(i);
@@ -1171,7 +1171,7 @@ void GridReader::setPressRhoBC(int sizePerLevel, int level, int channelSide) con
 {
 	BC_Values[channelSide]->setPressValues(para->getParH(level)->QPress.RhoBC, para->getParH(level)->QPress.kN, level);
 	for (int m = 0; m < sizePerLevel; m++)
-		para->getParH(level)->QPress.RhoBC[m] = (para->getParH(level)->QPress.RhoBC[m] / para->getFactorPressBC());
+		para->getParH(level)->QPress.RhoBC[m] = (para->getParH(level)->QPress.RhoBC[m] * para->getFactorPressBC());
 }
 
 
@@ -1234,7 +1234,7 @@ void GridReader::setOutflow(int level, int sizePerLevel, int channelSide) const
 {
 	BC_Values[channelSide]->setOutflowValues(para->getParH(level)->Qoutflow.RhoBC, para->getParH(level)->Qoutflow.kN, level);
 	for (int index = 0; index < sizePerLevel; index++)
-		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] / para->getFactorPressBC()) * (real)0.0;
+		para->getParH(level)->Qoutflow.RhoBC[index] = (para->getParH(level)->Qoutflow.RhoBC[index] * para->getFactorPressBC()) * (real)0.0;
 }
 
 
@@ -2126,7 +2126,7 @@ void GridReader::allocArrays_BoundaryQs()
 			if (temp4 > 0)
 			{
 				cout << "Groesse der Daten GeomBoundaryQs, Level " << i << " : " << temp4 << endl;
-				cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << temp4 << "MyID: " << para->getMyID() << endl;
+				//cout << "Groesse der Daten GeomBoundaryQs, Level:  " << i << " : " << temp4 << "MyID: " << para->getMyID() << endl;
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//para->getParH(i)->QGeom.kQ = temp4;
 				//para->getParD(i)->QGeom.kQ = para->getParH(i)->QGeom.kQ;

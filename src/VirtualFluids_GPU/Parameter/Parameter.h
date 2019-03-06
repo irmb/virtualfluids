@@ -17,6 +17,9 @@
 #include "Core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 
+class ConfigData;
+class Communicator;
+
 //struct
 struct ParameterStruct{
 	bool evenOrOdd;
@@ -275,6 +278,7 @@ public:
 	//Parameter();
 	////////////////////////////////////////////////////////////////////////////
     static SPtr<Parameter> make();
+	static SPtr<Parameter> make(SPtr<ConfigData> configData, Communicator* comm);
 
 
 	static Parameter* getInstanz();
@@ -557,6 +561,7 @@ public:
 	void setStartTurn(unsigned int inStartTurn);
 	void setSizeMatSparse(int level);
 	void setDiffOn(bool isDiff);
+	void setCompOn(bool isComp);
 	void setDiffMod(int DiffMod);
 	void setDiffusivity(real Diffusivity);
 	void setD3Qxx(int d3qxx);
@@ -669,7 +674,7 @@ public:
 	void setUseWale(bool useWale);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
 	void setclockCycleForMP(real clockCycleForMP);
-	void setDevices(std::vector<int> devices);
+	void setDevices(std::vector<uint> devices);
 	void setGridX(std::vector<int> GridX);
 	void setGridY(std::vector<int> GridY);
 	void setGridZ(std::vector<int> GridZ);
@@ -731,6 +736,11 @@ public:
 	void setOutflowBoundaryNormalX(std::string outflowNormalX);
 	void setOutflowBoundaryNormalY(std::string outflowNormalY);
 	void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
+	//Kernel
+	void setMainKernel(std::string kernelName);
+	void setMultiKernelOn(bool isOn);
+	void setMultiKernelLevel(std::vector< int> kernelLevel);
+	void setMultiKernelName(std::vector< std::string> kernelName);
 
 	//getter
 	double* getForcesDouble();
@@ -746,6 +756,7 @@ public:
 	unsigned int getStartTurn();
 	bool getEvenOrOdd(int level);
 	bool getDiffOn();
+	bool getCompOn();
 	bool getPrintFiles();
 	bool getReadGeo();
 	bool getCalcMedian();
@@ -856,7 +867,7 @@ public:
 	real getRe();
 	real getFactorPressBC();
 	real getclockCycleForMP();
-	std::vector<int> getDevices();
+	std::vector<uint> getDevices();
 	std::vector<int> getGridX();
 	std::vector<int> getGridY();
 	std::vector<int> getGridZ();
@@ -924,7 +935,13 @@ public:
 	std::string getOutflowBoundaryNormalZ();
 	//CUDA random number
 	curandState* getRandomState();
+	//Kernel
+	std::string getMainKernelName();
+	bool getMultiKernelOn();
+	std::vector< int> getMultiKernelLevel();
+	std::vector< std::string> getMultiKernelName();
 
+	~Parameter();
 
     public:
         //Forcing///////////////
@@ -934,6 +951,7 @@ public:
 protected:
 private:
 	static Parameter* instanz;
+	bool compOn;
 	bool diffOn;
 	int diffMod;
 	int coarse, fine, maxlevel;
@@ -943,6 +961,12 @@ private:
 	double memsizeGPU;
 	unsigned int limitOfNodesForVTK;
 	unsigned int outputCount;
+
+	//Kernel
+	std::string mainKernelName;
+	bool multiKernelOn;
+	std::vector< int> multiKernelLevel;
+	std::vector< std::string> multiKernelName;
 
 	//////////////////////////////////////////////////////////////////////////
 	//particles
@@ -975,6 +999,7 @@ private:
 	//LogWriter output;
 
 	Parameter();
+	Parameter(SPtr<ConfigData> configData, Communicator* comm);
 	Parameter(const Parameter&);
 	void initInterfaceParameter(int level);
 	real TrafoXtoWorld(int CoordX, int level);

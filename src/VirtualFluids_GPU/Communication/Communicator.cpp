@@ -202,11 +202,11 @@ void Communicator::distributeGeometry(unsigned int* dataRoot, unsigned int* data
 {
    MPI_Scatter(dataRoot, dataSizePerNode, MPI_UNSIGNED, dataNode, dataSizePerNode, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 }
-int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vector<int> &devices, const int &maxdev)
+int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vector<unsigned int> &devices, const int &maxdev)
 {
    int device = -1;
    char *host = (char*)malloc(sizeof(char)*size*255);
-   int *map = (int*)malloc(sizeof(int)*size);
+   unsigned int *map = (unsigned int*)malloc(sizeof(unsigned int)*size);
 
    char hostname[255];
    gethostname(hostname, 254);
@@ -234,7 +234,7 @@ int Communicator::mapCudaDevice(const int &rank, const int &size, const std::vec
       }
    }
 
-   MPI_Scatter(map, 1, MPI_INT, &device, 1, MPI_INT, 0, MPI_COMM_WORLD);
+   MPI_Scatter(map, 1, MPI_UNSIGNED, &device, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
    printf("Rank: %d runs on host: %s with GPU: %d\n", rank, hostname, device);
 

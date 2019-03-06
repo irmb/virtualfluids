@@ -12,6 +12,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+#include "LBM\LB.h"
+
 extern "C" __global__ void LB_Kernel_Casc27(real s9,
                                             unsigned int* bcMatD,
                                             unsigned int* neighborX,
@@ -122,29 +124,29 @@ extern "C" __global__ void LB_Kernel_Cumulant_D3Q27All4(real omega,
 														real* forces,
 														bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
-															unsigned int* bcMatD,
-															unsigned int* neighborX,
-															unsigned int* neighborY,
-															unsigned int* neighborZ,
-															real* DDStart,
-															real* F3,
-															int size_Mat,
-															int level,
-															real* forces,
-															bool EvenOrOdd);
+//extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3_2018(	real omega,
+//															unsigned int* bcMatD,
+//															unsigned int* neighborX,
+//															unsigned int* neighborY,
+//															unsigned int* neighborZ,
+//															real* DDStart,
+//															real* F3,
+//															int size_Mat,
+//															int level,
+//															real* forces,
+//															bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
-														unsigned int* bcMatD,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														real* DDStart,
-														real* F3,
-														int size_Mat,
-														int level,
-														real* forces,
-														bool EvenOrOdd);
+//extern "C" __global__ void LB_Kernel_Cumulant_D3Q27F3(	real omega,
+//														unsigned int* bcMatD,
+//														unsigned int* neighborX,
+//														unsigned int* neighborY,
+//														unsigned int* neighborZ,
+//														real* DDStart,
+//														real* F3,
+//														int size_Mat,
+//														int level,
+//														real* forces,
+//														bool EvenOrOdd);
 
 	
 extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
@@ -158,28 +160,19 @@ extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_Bulk_SP_27(real omega,
 																real* forces,
 																bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_AA2016_Comp_SP_27(real omega,
-														   unsigned int* bcMatD,
-														   unsigned int* neighborX,
-														   unsigned int* neighborY,
-														   unsigned int* neighborZ,
-														   real* DDStart,
-														   int size_Mat,
-														   int level,
-														   real* forces,
-														   bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_New_Comp_Sponge_SP_27(real omega,
-														       unsigned int* bcMatD,
-														       unsigned int* neighborX,
-														       unsigned int* neighborY,
-														       unsigned int* neighborZ,
-													           real* coordX,
-													           real* coordY,
-													           real* coordZ,
-														       real* DDStart,
-														       int size_Mat,
-														       bool EvenOrOdd);
+
+//extern "C" __global__ void LB_Kernel_Kum_New_Comp_Sponge_SP_27(real omega,
+//														       unsigned int* bcMatD,
+//														       unsigned int* neighborX,
+//														       unsigned int* neighborY,
+//														       unsigned int* neighborZ,
+//													           real* coordX,
+//													           real* coordY,
+//													           real* coordZ,
+//														       real* DDStart,
+//														       int size_Mat,
+//														       bool EvenOrOdd);
 
 extern "C" __global__ void LB_Kernel_Kum_1h_SP_27(  real omega,
 													real deltaPhi,
@@ -222,27 +215,27 @@ extern "C" __global__ void LB_Kernel_Kum_New_SP_27( real s9,
 													int size_Mat,
 													bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_New_Comp_Bulk_SP_27(real omega,
-															 unsigned int* bcMatD,
-															 unsigned int* neighborX,
-															 unsigned int* neighborY,
-															 unsigned int* neighborZ,
-															 real* DDStart,
-															 int size_Mat,
-															 int level,
-															 real* forces,
-															 bool EvenOrOdd);
+//extern "C" __global__ void LB_Kernel_Kum_New_Comp_Bulk_SP_27(real omega,
+//															 unsigned int* bcMatD,
+//															 unsigned int* neighborX,
+//															 unsigned int* neighborY,
+//															 unsigned int* neighborZ,
+//															 real* DDStart,
+//															 int size_Mat,
+//															 int level,
+//															 real* forces,
+//															 bool EvenOrOdd);
 
-extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(real omega,
-														unsigned int* bcMatD,
-														unsigned int* neighborX,
-														unsigned int* neighborY,
-														unsigned int* neighborZ,
-														real* DDStart,
-														int size_Mat,
-														int level,
-														real* forces,
-														bool EvenOrOdd);
+//extern "C" __global__ void LB_Kernel_Kum_New_Comp_SP_27(real omega,
+//														unsigned int* bcMatD,
+//														unsigned int* neighborX,
+//														unsigned int* neighborY,
+//														unsigned int* neighborZ,
+//														real* DDStart,
+//														int size_Mat,
+//														int level,
+//														real* forces,
+//														bool EvenOrOdd);
 
 extern "C" __global__ void LB_Kernel_Kum_IsoTest_SP_27( real omega,
 														unsigned int* bcMatD,

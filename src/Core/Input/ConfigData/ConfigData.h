@@ -1,0 +1,167 @@
+#ifndef CONFIGDATA_H
+#define CONFIGDATA_H
+
+#include "../../DataTypes.h"
+
+#include <memory>
+#include <vector>
+
+class ConfigData
+{
+public:
+	virtual real getViscosity() = 0;
+	virtual uint getNumberOfDevices() = 0;
+	virtual std::vector<uint> getDevices() = 0;
+	virtual std::string getOutputPath() = 0;
+	virtual std::string getPrefix() = 0;
+	virtual std::string getGridPath() = 0;
+	virtual bool getPrintOutputFiles() = 0;
+	virtual bool getGeometryValues() = 0;
+	virtual bool getCalc2ndOrderMoments() = 0;
+	virtual bool getCalc3rdOrderMoments() = 0;
+	virtual bool getCalcHighOrderMoments() = 0;
+	virtual bool getReadGeo() = 0;
+	virtual bool getCalcMedian() = 0;
+	virtual bool getConcFile() = 0;
+	virtual bool getUseMeasurePoints() = 0;
+	virtual bool getUseWale() = 0;
+	virtual bool getSimulatePorousMedia() = 0;
+	virtual uint getD3Qxx() = 0;
+	virtual uint getTEnd() = 0;
+	virtual uint getTOut() = 0;
+	virtual uint getTStartOut() = 0;
+	virtual uint getTimeCalcMedStart() = 0;
+	virtual uint getTimeCalcMedEnd() = 0;
+	virtual uint getPressInID() = 0;
+	virtual uint getPressOutID() = 0;
+	virtual uint getPressInZ() = 0;
+	virtual uint getPressOutZ() = 0;
+	virtual bool getDiffOn() = 0;
+	virtual uint getDiffMod() = 0;
+	virtual real getDiffusivity() = 0;
+	virtual real getTemperatureInit() = 0;
+	virtual real getTemperatureBC() = 0;
+	virtual real getVelocity() = 0;
+	virtual real getViscosityRatio() = 0;
+	virtual real getVelocityRatio() = 0;
+	virtual real getDensityRatio() = 0;
+	virtual real getPressRatio() = 0;
+	virtual real getRealX() = 0;
+	virtual real getRealY() = 0;
+	virtual real getFactorPressBC() = 0;
+	virtual std::string getGeometryFileC() = 0;
+	virtual std::string getGeometryFileM() = 0;
+	virtual std::string getGeometryFileF() = 0;
+	virtual uint getClockCycleForMP() = 0;
+	virtual uint getTimestepForMP() = 0;
+	virtual real getForcingX() = 0;
+	virtual real getForcingY() = 0;
+	virtual real getForcingZ() = 0;
+	virtual bool getCalcParticles() = 0;
+	virtual int getParticleBasicLevel() = 0;
+	virtual int getParticleInitLevel() = 0;
+	virtual int getNumberOfParticles() = 0;
+	virtual real getStartXHotWall() = 0;
+	virtual real getEndXHotWall() = 0;
+	virtual std::vector<std::string> getPossNeighborFilesX() = 0;
+	virtual std::vector<std::string> getPossNeighborFilesY() = 0;
+	virtual std::vector<std::string> getPossNeighborFilesZ() = 0;
+	//virtual std::vector<std::string> getPossNeighborFilesX() = 0;
+	//virtual std::vector<std::string> getPossNeighborFilesY() = 0;
+	//virtual std::vector<std::string> getPossNeighborFilesZ() = 0;
+	virtual int getTimeDoCheckPoint() = 0;
+	virtual int getTimeDoRestart() = 0;
+	virtual bool getDoCheckPoint() = 0;
+	virtual bool getDoRestart() = 0;
+	virtual uint getMaxLevel() = 0;
+	virtual std::vector<int> getGridX() = 0;
+	virtual std::vector<int> getGridY() = 0;
+	virtual std::vector<int> getGridZ() = 0;
+	virtual std::vector<int> getDistX() = 0;
+	virtual std::vector<int> getDistY() = 0;
+	virtual std::vector<int> getDistZ() = 0;
+	virtual std::vector<bool> getNeedInterface() = 0;
+	virtual std::string getMainKernel() = 0;
+	virtual bool getMultiKernelOn() = 0;
+	virtual std::vector<int> getMultiKernelLevel() = 0;
+	virtual std::vector<std::string>getMultiKernelName() = 0;
+
+	virtual bool isViscosityInConfigFile() = 0;
+	virtual bool isNumberOfDevicesInConfigFile() = 0;
+	virtual bool isDevicesInConfigFile() = 0;
+	virtual bool isOutputPathInConfigFile() = 0;
+	virtual bool isPrefixInConfigFile() = 0;
+	virtual bool isGridPathInConfigFile() = 0;
+	virtual bool isPrintOutputFilesInConfigFile() = 0;
+	virtual bool isGeometryValuesInConfigFile() = 0;
+	virtual bool isCalc2ndOrderMomentsInConfigFile() = 0;
+	virtual bool isCalc3rdOrderMomentsInConfigFile() = 0;
+	virtual bool isCalcHighOrderMomentsInConfigFile() = 0;
+	virtual bool isReadGeoInConfigFile() = 0;
+	virtual bool isCalcMedianInConfigFile() = 0;
+	virtual bool isConcFileInConfigFile() = 0;
+	virtual bool isUseMeasurePointsInConfigFile() = 0;
+	virtual bool isUseWaleInConfigFile() = 0;
+	virtual bool isSimulatePorousMediaInConfigFile() = 0;
+	virtual bool isD3QxxInConfigFile() = 0;
+	virtual bool isTEndInConfigFile() = 0;
+	virtual bool isTOutInConfigFile() = 0;
+	virtual bool isTStartOutInConfigFile() = 0;
+	virtual bool isTimeCalcMedStartInConfigFile() = 0;
+	virtual bool isTimeCalcMedEndInConfigFile() = 0;
+	virtual bool isPressInIDInConfigFile() = 0;
+	virtual bool isPressOutIDInConfigFile() = 0;
+	virtual bool isPressInZInConfigFile() = 0;
+	virtual bool isPressOutZInConfigFile() = 0;
+	virtual bool isDiffOnInConfigFile() = 0;
+	virtual bool isDiffModInConfigFile() = 0;
+	virtual bool isDiffusivityInConfigFile() = 0;
+	virtual bool isTemperatureInitInConfigFile() = 0;
+	virtual bool isTemperatureBCInConfigFile() = 0;
+	//virtual bool isViscosityInConfigFile() = 0;
+	virtual bool isVelocityInConfigFile() = 0;
+	virtual bool isViscosityRatioInConfigFile() = 0;
+	virtual bool isVelocityRatioInConfigFile() = 0;
+	virtual bool isDensityRatioInConfigFile() = 0;
+	virtual bool isPressRatioInConfigFile() = 0;
+	virtual bool isRealXInConfigFile() = 0;
+	virtual bool isRealYInConfigFile() = 0;
+	virtual bool isFactorPressBCInConfigFile() = 0;
+	virtual bool isGeometryFileCInConfigFile() = 0;
+	virtual bool isGeometryFileMInConfigFile() = 0;
+	virtual bool isGeometryFileFInConfigFile() = 0;
+	virtual bool isClockCycleForMPInConfigFile() = 0;
+	virtual bool isTimestepForMPInConfigFile() = 0;
+	virtual bool isForcingXInConfigFile() = 0;
+	virtual bool isForcingYInConfigFile() = 0;
+	virtual bool isForcingZInConfigFile() = 0;
+	virtual bool isCalcParticlesInConfigFile() = 0;
+	virtual bool isParticleBasicLevelInConfigFile() = 0;
+	virtual bool isParticleInitLevelInConfigFile() = 0;
+	virtual bool isNumberOfParticlesInConfigFile() = 0;
+	virtual bool isNeighborWSBInConfigFile() = 0;
+	virtual bool isStartXHotWallInConfigFile() = 0;
+	virtual bool isEndXHotWallInConfigFile() = 0;
+	virtual bool isPossNeighborFilesXInConfigFile() = 0;
+	virtual bool isPossNeighborFilesYInConfigFile() = 0;
+	virtual bool isPossNeighborFilesZInConfigFile() = 0;
+	virtual bool isTimeDoCheckPointInConfigFile() = 0;
+	virtual bool isTimeDoRestartInConfigFile() = 0;
+	virtual bool isDoCheckPointInConfigFile() = 0;
+	virtual bool isDoRestartInConfigFile() = 0;
+	virtual bool isMaxLevelInConfigFile() = 0;
+	virtual bool isGridXInConfigFile() = 0;
+	virtual bool isGridYInConfigFile() = 0;
+	virtual bool isGridZInConfigFile() = 0;
+	virtual bool isDistXInConfigFile() = 0;
+	virtual bool isDistYInConfigFile() = 0;
+	virtual bool isDistZInConfigFile() = 0;
+	virtual bool isNeedInterfaceInConfigFile() = 0;
+	virtual bool isMainKernelInConfigFile() = 0;
+	virtual bool isMultiKernelOnInConfigFile() = 0;
+	virtual bool isMultiKernelLevelInConfigFile() = 0;
+	virtual bool isMultiKernelNameInConfigFile() = 0;
+
+
+};
+#endif

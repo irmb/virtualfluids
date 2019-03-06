@@ -20,6 +20,7 @@ class RestartObject;
 class RestartPostprocessor;
 class ForceCalculations;
 class DataWriter;
+class Kernel;
 
 
 class VF_PUBLIC Simulation
@@ -29,6 +30,7 @@ public:
 	~Simulation();
 	void run();
 	void init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std::shared_ptr<DataWriter> dataWriter);
+	void free();
 	void bulk();
 	void porousMedia();
 	void definePMarea(PorousMedia* pm);
@@ -51,6 +53,7 @@ protected:
     SPtr<Parameter> para;
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;
+	std::vector < SPtr< Kernel>> kernels;
 
 	//Restart object
 	RestartObject* restObj;
