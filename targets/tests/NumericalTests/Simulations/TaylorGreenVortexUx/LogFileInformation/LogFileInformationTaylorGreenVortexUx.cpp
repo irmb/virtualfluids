@@ -36,7 +36,7 @@ std::vector<std::string> LogFileInformationTaylorGreenUx::getFilePathExtension()
 	std::vector<std::string> myFilePath;
 	myFilePath.push_back("TaylorGreenVortexUx");
 	std::ostringstream oss;
-	oss << "ux_ " << ux << "_Amplitude_ " << amplitude;
+	oss << "ux_" << ux << "_Amplitude_" << amplitude;
 	myFilePath.push_back(oss.str());
 	return myFilePath;
 }

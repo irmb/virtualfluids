@@ -35,7 +35,7 @@ std::vector<std::string> LogFileInformationTaylorGreenUz::getFilePathExtension()
 	std::vector<std::string> myFilePath;
 	myFilePath.push_back("TaylorGreenVortexUz");
 	std::ostringstream oss;
-	oss << "uz_ " << uz << "_Amplitude_ " << amplitude;
+	oss << "uz_" << uz << "_Amplitude_" << amplitude;
 	myFilePath.push_back(oss.str());
 	return myFilePath;
 }
