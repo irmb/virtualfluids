@@ -22,18 +22,17 @@ void SourceReader::readSources(std::string filename, StreetPointFinder streetPoi
 	file >> numberOfSources;
 
 	uint streetIndex;
-	char startOrEnd;
 	float sourcePossibility;
 
 
 	for (uint i = 0; i < numberOfSources; i++) {
-		file >> streetIndex >> startOrEnd >> sourcePossibility;
-		sources.push_back(SourceInReader(getCellIndex(streetIndex, startOrEnd), sourcePossibility));
+		file >> streetIndex  >> sourcePossibility;
+		sources.push_back(SourceInReader(getCellIndexStart(streetIndex), sourcePossibility));
 	}
 }
 
 
-unsigned int SourceReader::getCellIndex(unsigned int streetIndex, char startOrEnd)
+unsigned int SourceReader::getCellIndexStart(unsigned int streetIndex)
 {
 	uint i = 0;
 	unsigned int cellIndex = 0;
@@ -41,8 +40,7 @@ unsigned int SourceReader::getCellIndex(unsigned int streetIndex, char startOrEn
 		cellIndex += streetPointFinder.streets[i].numberOfCells;
 		++i;
 	}
-	if (startOrEnd == 's') {
-		return cellIndex;
-	}
-	return cellIndex + streetPointFinder.streets[streetIndex].numberOfCells - 1;
+	return cellIndex;
 }
+	
+	

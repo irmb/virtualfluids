@@ -178,7 +178,7 @@ if(HULC.BUILD_NUMERIC_TESTS)
 endif()
 
 #############################################################
-###					Annas Traffis Sim				      ###
+###					Annas Traffic Sim				      ###
 #############################################################
 
 add_subdirectory(targets/libs/Traffic)

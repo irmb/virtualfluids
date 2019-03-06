@@ -9,23 +9,21 @@
 #include "Sink.h"
 #include "Utilities/invalidInput_error.h"
 
-using namespace std;
-
-class VF_PUBLIC SinkSimple:
+class VF_PUBLIC SinkRandom:
 	public Sink
 {
 private:
 	SinkData data;
 
-	mt19937 engine = RandomHelper::make_engine();
-	uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
+	std::mt19937 engine = RandomHelper::make_engine();
+	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
 
 public:
-	SinkSimple(unsigned int sinkIndex, float sinkBlockedPossibility);
-	~SinkSimple() {};
+	SinkRandom(uint sinkIndex, float sinkBlockedPossibility);
+	~SinkRandom() {};
 
 	float getPossibilityBeingBlocked() const;
 	bool carCanEnter();
-	unsigned int getIndex() const;
+	uint getIndex() const;
 };
 

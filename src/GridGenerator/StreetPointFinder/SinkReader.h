@@ -24,7 +24,7 @@ struct VF_PUBLIC SinkReader
 	void readSinks(std::string filename, StreetPointFinder streetPointFinder);
 
 private:
-	unsigned int getCellIndex(unsigned int streetIndex, char startOrEnd);
+	unsigned int getCellIndexEnd(unsigned int streetIndex);
 };
 
 

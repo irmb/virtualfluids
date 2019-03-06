@@ -5,7 +5,7 @@ void VectorHelper::fillVector(std::vector<int> &vector, int insertNumber) {
 }
 
 void VectorHelper::fillVector(std::vector<std::vector<int> > &vector, int insertNumber) {
-	for (unsigned int i = 0; i < vector.size(); i++) {
+	for (uint i = 0; i < vector.size(); i++) {
 		fill(vector[i].begin(), vector[i].end(), insertNumber);
 	}
 }
@@ -20,8 +20,8 @@ void VectorHelper::dispVector(const std::vector<int> &vector)
 
 void VectorHelper::dispVector(const std::vector<std::vector<int> > &vector)
 {
-	for (unsigned int i = 0; i < vector.size(); i++) {
-		for (unsigned int j = 0; j < vector[i].size(); j++) {
+	for (uint i = 0; i < vector.size(); i++) {
+		for (uint j = 0; j < vector[i].size(); j++) {
 			std::cout << std::setw(4) << vector[i][j];
 		}
 		std::cout << std::endl;
@@ -41,8 +41,8 @@ void VectorHelper::dispVectorColour(const std::vector<int> &vector)
 
 void VectorHelper::dispVectorColour(const std::vector<std::vector<int>>& vector)
 {
-	for (unsigned int i = 0; i < vector.size(); i++) {
-		for (unsigned int j = 0; j < vector[i].size(); j++) {
+	for (uint i = 0; i < vector.size(); i++) {
+		for (uint j = 0; j < vector[i].size(); j++) {
 			makeVectorOutputColourful(vector[i][j]);
 			std::cout << std::setw(4) << vector[i][j];
 		}

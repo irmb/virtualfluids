@@ -8,19 +8,19 @@
 struct VF_PUBLIC JunctionData
 {
 public:
-	std::vector<unsigned int> inCellIndices;
-	std::vector<unsigned int> outCellIndices; 
+	std::vector<uint> inCellIndices;
+	std::vector<uint> outCellIndices; 
 	std::vector<int> carCanNotEnterThisOutCell; //no such inCell: -2
 
-	std::vector<unsigned int> freeOutCells;
+	std::vector<uint> possibleOutCells;
 
 	std::vector<bool> carCanEnter;
 	std::vector<int> carsOnJunction;
-	std::vector<unsigned int> alreadyMoved;
+	std::vector<uint> alreadyMoved;
 
 	std::mt19937 engine = RandomHelper::make_engine();
-	uniform_int_distribution<unsigned int> distInt2{ 0, 1 };
-	uniform_int_distribution<unsigned int> distInt3{ 0, 2 };
-	uniform_int_distribution<unsigned int> distInt4{ 0, 3 };
+	std::uniform_int_distribution<uint> distInt2{ 0, 1 };
+	std::uniform_int_distribution<uint> distInt3{ 0, 2 };
+	std::uniform_int_distribution<uint> distInt4{ 0, 3 };
 };
 

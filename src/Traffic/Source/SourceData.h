@@ -1,12 +1,13 @@
 #pragma once
 #include <VirtualFluidsDefinitions.h>
+#include "Core/DataTypes.h"
 
 #include <memory>
 #include <vector>
 
 
 struct VF_PUBLIC SourceData {
-	unsigned int sourceIndex;
+	uint sourceIndex;
 	float sourcePossibility;
-	unsigned int maxVelocity;
+	uint maxVelocity;
 };

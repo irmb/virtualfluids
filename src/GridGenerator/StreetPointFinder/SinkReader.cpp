@@ -21,17 +21,16 @@ void SinkReader::readSinks(std::string filename, StreetPointFinder streetPointFi
 	file >> numberOfSinks;
 
 	uint streetIndex;
-	char startOrEnd;
 	float sinkBlockedPossibility;
 
 
 	for (uint i = 0; i < numberOfSinks; i++) {
-		file >> streetIndex >> startOrEnd >> sinkBlockedPossibility;
-		sinks.push_back(SinkInReader(getCellIndex(streetIndex, startOrEnd), sinkBlockedPossibility));
+		file >> streetIndex >> sinkBlockedPossibility;
+		sinks.push_back(SinkInReader(getCellIndexEnd(streetIndex), sinkBlockedPossibility));
 	}
 }
 
-unsigned int SinkReader::getCellIndex(unsigned int streetIndex, char startOrEnd)
+unsigned int SinkReader::getCellIndexEnd(unsigned int streetIndex)
 {
 	uint i = 0;
 	unsigned int cellIndex = 0;
@@ -39,8 +38,6 @@ unsigned int SinkReader::getCellIndex(unsigned int streetIndex, char startOrEnd)
 		cellIndex += streetPointFinder.streets[i].numberOfCells;
 		++i;
 	}
-	if (startOrEnd == 's') {
-		return cellIndex;
-	}
+	
 	return cellIndex + streetPointFinder.streets[streetIndex].numberOfCells - 1;
 }

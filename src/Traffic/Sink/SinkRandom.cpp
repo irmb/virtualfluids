@@ -1,8 +1,8 @@
-#include "SinkSimple.h"
+#include "SinkRandom.h"
 
 
 
-SinkSimple::SinkSimple(unsigned int sinkIndex, float sinkBlockedPossibility)
+SinkRandom::SinkRandom(uint sinkIndex, float sinkBlockedPossibility)
 {
 	data.sinkIndex = sinkIndex;
 
@@ -14,27 +14,27 @@ SinkSimple::SinkSimple(unsigned int sinkIndex, float sinkBlockedPossibility)
 			throw invalidInput_error("possibility of the sink being blocked should be between 0 and 1");
 		}
 	}
-	catch (const exception& e) { 
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	};
 }
 
 
-bool SinkSimple::carCanEnter()
+bool SinkRandom::carCanEnter()
 {	
 	return  !(distFloat(engine) < data.sinkBlockedPossibility);
 }
 
 
-float SinkSimple::getPossibilityBeingBlocked() const
+float SinkRandom::getPossibilityBeingBlocked() const
 {
 	return data.sinkBlockedPossibility;
 }
 
 
-unsigned int SinkSimple::getIndex() const
+uint SinkRandom::getIndex() const
 {
 	return data.sinkIndex;
 }

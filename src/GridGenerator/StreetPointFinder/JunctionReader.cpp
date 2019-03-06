@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 
 
 JunctionInReader::JunctionInReader(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell) :
@@ -20,26 +21,28 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 	uint numberOfJunctions;
 	file >> numberOfJunctions;
 
+	std::string inOutDummy;
 	int streetIndex;
-	char startOrEnd;
 
 	for (uint i = 0; i < numberOfJunctions; i++) {
 		std::vector<uint> inCells, outCells;
 		std::vector<int> carCanNotEnterThisOutCell;
 
 		//inCells
+		file >> inOutDummy;
 		for (uint i = 0; i < 4; i++) {
-			file >> streetIndex >> startOrEnd;
+			file >> streetIndex;
 			if (streetIndex >= 0)
-				inCells.push_back(getCellIndex(streetIndex, startOrEnd));
+				inCells.push_back(getCellIndex(streetIndex, 'e'));
 		}
 
 		//outCells
+		file >> inOutDummy;
 		for (uint i = 0; i < 4; i++) {
-			file >> streetIndex >> startOrEnd;
+			file >> streetIndex;
 			if (streetIndex >= 0) {
-				outCells.push_back(getCellIndex(streetIndex, startOrEnd));
-				carCanNotEnterThisOutCell.push_back(getCellIndex(streetIndex, startOrEnd));
+				outCells.push_back(getCellIndex(streetIndex, 's'));
+				carCanNotEnterThisOutCell.push_back(getCellIndex(streetIndex, 's'));
 			}else if(streetIndex == -2) //allow u-turn
 				carCanNotEnterThisOutCell.push_back(-2);
 		}

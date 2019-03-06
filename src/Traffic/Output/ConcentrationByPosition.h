@@ -7,15 +7,12 @@ class VF_PUBLIC ConcentrationByPosition:
 	public ConcentrationOutwriter
 {
 public:
-	ConcentrationByPosition(unsigned int roadlength);
-	~ConcentrationByPosition();
+	ConcentrationByPosition(uint roadlength, uint maxSpeed = 0, uint maxAcceleration = 0);
+	~ConcentrationByPosition() {};
 
-	virtual void writeToArray(const std::vector<int> & currentCarDistribution);
+	virtual void calculateConcForSingleCar(uint index, uint speed = 0, uint acceleration = 0);
+	virtual void setMaxSpeedAndAcceleration(uint maxSpeed, uint maxAcceleration) {};
 
-private:
-	void dispConcentration();
 
-private:
-	std::vector<double> concentration;
 };
 

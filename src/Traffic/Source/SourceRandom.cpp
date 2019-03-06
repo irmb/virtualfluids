@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SourceTerm.h"
+#include "SourceRandom.h"
 
 
-SourceTerm::SourceTerm(const unsigned int sourceIndex, const float sourcePossibility, unsigned int maxVelocity) 
+SourceRandom::SourceRandom(const uint sourceIndex, const float sourcePossibility, uint maxVelocity) 
 {
 	data.sourceIndex = sourceIndex;
 	data.maxVelocity = maxVelocity;
@@ -11,38 +11,38 @@ SourceTerm::SourceTerm(const unsigned int sourceIndex, const float sourcePossibi
 	try {
 		if (sourcePossibility >= 0 && sourcePossibility <= 1) {
 			data.sourcePossibility = sourcePossibility;
-			uniform_int_distribution<unsigned int> distInt2{ 0, maxVelocity };
+			std::uniform_int_distribution<uint> distInt2{ 0, maxVelocity };
 			distInt = distInt2;
 		}
 		else {
 			throw invalidInput_error("possibility of a car leaving the sink should be between 0 and 1");
 		}
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	};
 }
 
 
 
-SourceTerm::~SourceTerm()
+SourceRandom::~SourceRandom()
 {
 }
 
-unsigned int SourceTerm::getIndex() const
+uint SourceRandom::getIndex() const
 {
 	return data.sourceIndex;
 }
 
-float SourceTerm::getPossibility() const
+float SourceRandom::getPossibility() const
 {
 	return data.sourcePossibility;
 }
 
 
-unsigned int SourceTerm::getSourceCar()
+uint SourceRandom::getSourceCar()
 {
 	randomNumber = distFloat(engine);
 	if (randomNumber < data.sourcePossibility) {
@@ -52,7 +52,7 @@ unsigned int SourceTerm::getSourceCar()
 }
 
 
-unsigned int SourceTerm::randomSpeed()
+uint SourceRandom::randomSpeed()
 {
 	return distInt(engine);
 }

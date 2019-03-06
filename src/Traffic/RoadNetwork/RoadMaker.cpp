@@ -2,9 +2,9 @@
 
 
 //random vehicle Distribution
-RoadMaker::RoadMaker(const unsigned int roadLength, const unsigned int maxVelocity, unsigned int vehicleLength, const float vehicleDensity)
+RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const float vehicleDensity)
 {
-	uniform_int_distribution<unsigned int> distInt2{ 0, maxVelocity };
+	std::uniform_int_distribution<uint> distInt2{ 0, maxVelocity };
 	distInt = distInt2;
 
 	this->roadLength = roadLength;
@@ -22,7 +22,7 @@ RoadMaker::RoadMaker(const unsigned int roadLength, const unsigned int maxVeloci
 
 
 //given vehicle distribution
-RoadMaker::RoadMaker(const std::vector<int> vehicleDistribution, const unsigned int maxVelocity, unsigned int vehicleLength)
+RoadMaker::RoadMaker(const std::vector<int> vehicleDistribution, const uint maxVelocity, uint vehicleLength)
 {
 	this->roadLength = vehicleDistribution.size();
 
@@ -38,7 +38,7 @@ RoadMaker::RoadMaker(const std::vector<int> vehicleDistribution, const unsigned 
 
 
 //empty road
-RoadMaker::RoadMaker(const unsigned int roadLength, const unsigned int maxVelocity, unsigned int vehicleLength)
+RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength)
 {
 	this->roadLength = roadLength;
 	this->maxVelocity = maxVelocity;
@@ -66,7 +66,7 @@ void RoadMaker::initNext()
 void RoadMaker::initNeighbors()
 {
 	neighbors.resize(roadLength);
-	for (unsigned int i = 0; i < roadLength - 1; i++) {
+	for (uint i = 0; i < roadLength - 1; i++) {
 		neighbors[i] = i + 1;
 	}
 	neighbors[roadLength - 1] = 0;
@@ -78,6 +78,7 @@ void RoadMaker::initCurrentAsEmpty()
 	current.resize(roadLength);
 	VectorHelper::fillVector(current, -1);
 }
+
 
 void RoadMaker::initCurrentWithLongVehicles()
 {
@@ -95,9 +96,9 @@ void RoadMaker::initVehicleDensity(const float vehicleDensity)
 			throw invalidInput_error("The vehicleDensity should be between 0 and 1");
 		}
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
@@ -106,9 +107,9 @@ void RoadMaker::initVehicleDensity(const float vehicleDensity)
 void RoadMaker::initRandomCars(const float vehicleDensity)
 {
 	//this method doesn't fill the first cells, so that the safetyDistance isn't violated in a periodic road
-	for (unsigned int i = safetyDistance; i < roadLength; i++) {
+	for (uint i = safetyDistance; i < roadLength; i++) {
 		double randomNumber = distFloat(engine);
-		if (randomNumber <= vehicleDensity) {
+		if (randomNumber <= (vehicleDensity/vehicleLength)) {
 			current[i] = randomSpeed();
 			i += safetyDistance;
 		}
@@ -122,16 +123,16 @@ int RoadMaker::randomSpeed()
 }
 
 
-void RoadMaker::initVehicleLength(const unsigned int vehicleLength)
+void RoadMaker::initVehicleLength(const uint vehicleLength)
 {
 	try {
 		if (vehicleLength == 0) throw  invalidInput_error("The vehicleLength has to be greater than 0");
 		this->vehicleLength = vehicleLength;
 		this->safetyDistance = vehicleLength - 1;
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
@@ -152,12 +153,12 @@ void RoadMaker::addJunction(std::unique_ptr<Junction>& junction)
 		setJunctionAsNeighbor(junction);
 		this->junctions.push_back(move(junction));
 
-		if (junctions.size() > 999) throw runtime_error("too many junctions");
+		if (junctions.size() > 999) throw std::runtime_error("too many junctions");
 
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
@@ -168,22 +169,22 @@ void RoadMaker::setJunctionAsNeighbor(std::unique_ptr<Junction> & junction)
 	//set the junction as neighbor of the incoming cells
 
 	int junctionIndex = -1000 - junctions.size(); //value range: -1000 to -1999
-	vector<unsigned int> inCells = junction->getInCellIndices();
+	std::vector<uint> inCells = junction->getInCellIndices();
 
 	try {
 
 		for (auto cell : inCells) {
 			if (cell >= roadLength) throw invalidInput_error("The index of an incoming cell to a junction ist greater than the roadLength.");
 			if (neighbors[cell] < 0)				
-				cout << "The neighboring cell of cell " << cell << " was already definded as sink or junction, no new junction added." << endl;
+				std::cout << "The neighboring cell of cell " << cell << " was already definded as sink or junction, no new junction added." << std::endl;
 			else
 				neighbors[cell] = junctionIndex;
 		}
 
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
@@ -203,13 +204,13 @@ void RoadMaker::addSink(std::unique_ptr<Sink>& sink)
 
 		setSinkAsNeighbor(sink);
 		this->sinks.push_back(move(sink));
-		if (sinks.size() > 999) throw runtime_error("too many sinks");
+		if (sinks.size() > 999) throw std::runtime_error("too many sinks");
 
 
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 
@@ -221,12 +222,12 @@ void RoadMaker::setSinkAsNeighbor(std::unique_ptr<Sink> & sink)
 	//set the sink as neighbor of the incoming cell
 
 	int sinkIndex = -2000 - sinks.size(); //value range: -2000 to -2999
-	unsigned int sinkCell = sink->getIndex();
+	uint sinkCell = sink->getIndex();
 
 	if (sinkCell >= roadLength) throw invalidInput_error("The index of a sink ist greater than the roadLength.");
 
 	if (neighbors[sinkCell] < 0) {
-		cout << "The neighboring cell of cell " << sinkCell << " was already definded as sink or junction, no new sink added." << endl;
+		std::cout << "The neighboring cell of cell " << sinkCell << " was already definded as sink or junction, no new sink added." << std::endl;
 	}
 	else
 	{
@@ -250,21 +251,21 @@ void RoadMaker::addSource(std::unique_ptr<Source>& source)
 		this->sources.push_back(move(source));
 	}
 
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
 
 
-void RoadMaker::setNeighbor(unsigned int index, unsigned int neighbor)
+void RoadMaker::setNeighbor(uint index, uint neighbor)
 {
 	this->neighbors[index] = neighbor;
 }
 
 
-unsigned int RoadMaker::getMaxVelocity()
+uint RoadMaker::getMaxVelocity()
 {
 	return maxVelocity;
 }

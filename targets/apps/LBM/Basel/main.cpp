@@ -317,9 +317,9 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("C:/Users/hiwi/Desktop/Basel_Ergebnisse/grids/BaselUni/Basel_Grid");
+            gridBuilder->writeGridsToVtk("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/grids/BaselUni/Basel_Grid");
 
-            SimulationFileWriter::write("C:/Users/hiwi/Desktop/Basel_Ergebnisse/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+            SimulationFileWriter::write("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -327,13 +327,13 @@ void multipleLevel(const std::string& configPath)
 
 			finder.readStreets("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 
-			finder.writeVTK("C:/Users/hiwi/Desktop/Basel_Ergebnisse/ExampleStreets.vtk");
+			finder.writeVTK("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/ExampleStreets.vtk");
 
 			finder.findIndicesLB(gridBuilder->getGrid(0));
 
-			finder.writeConnectionVTK("C:/Users/hiwi/Desktop/Basel_Ergebnisse/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeConnectionVTK("C:/Users/hiwi/BaselDokumente//Basel_Ergebnisse/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 
-			finder.writeSimulationFile("C:/Users/hiwi/Desktop/Basel_Ergebnisse/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			finder.writeSimulationFile("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -401,7 +401,7 @@ int main( int argc, char* argv[])
         {
             try
             {
-				multipleLevel("C:/Users/hiwi/Desktop/MS/configBasel.txt");
+				multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt");
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
             }
             catch (const std::exception& e)

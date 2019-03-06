@@ -24,7 +24,7 @@ struct VF_PUBLIC SourceReader
 	void readSources(std::string filename, StreetPointFinder streetPointFinder);
 
 private:
-	unsigned int getCellIndex(unsigned int streetIndex, char startOrEnd);
+	unsigned int getCellIndexStart(unsigned int streetIndex);
 };
 
 

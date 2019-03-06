@@ -2,8 +2,6 @@
 #include <random>
 #include <VirtualFluidsDefinitions.h>
 
-using namespace std;
-
 class VF_PUBLIC RandomHelper
 {
 public:

@@ -1,26 +1,26 @@
-#include "JunctionSimple.h"
+#include "JunctionRandom.h"
 
 
 
-JunctionSimple::JunctionSimple(const vector<unsigned int> &inCellIndices, const vector<unsigned int> &outCellIndices)
+JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices)
 {
 	data.inCellIndices = inCellIndices;
 	data.outCellIndices = outCellIndices;
 
-	unsigned int inRoads = inCellIndices.size();
+	uint inRoads = inCellIndices.size();
 
 	data.carCanEnter.resize(inRoads);
-	fill(data.carCanEnter.begin(), data.carCanEnter.end(), true);
+	std::fill(data.carCanEnter.begin(), data.carCanEnter.end(), true);
 
 	data.carsOnJunction.resize(inRoads);
-	fill(data.carsOnJunction.begin(), data.carsOnJunction.end(), -1);
+	std::fill(data.carsOnJunction.begin(), data.carsOnJunction.end(), -1);
 
 	data.alreadyMoved.resize(inRoads);
-	fill(data.alreadyMoved.begin(), data.alreadyMoved.end(), 0);
+	std::fill(data.alreadyMoved.begin(), data.alreadyMoved.end(), 0);
 }
 
 
-void JunctionSimple::setCellIndexForNoUTurn(std::vector<int> carCanNotEnterThisOutCell)
+void JunctionRandom::setCellIndexForNoUTurn(std::vector<int> carCanNotEnterThisOutCell)
 {
 	try {
 
@@ -28,30 +28,30 @@ void JunctionSimple::setCellIndexForNoUTurn(std::vector<int> carCanNotEnterThisO
 		data.carCanNotEnterThisOutCell = carCanNotEnterThisOutCell;
 
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
 
 
-bool JunctionSimple::acceptsCar(unsigned int cellIndex)
+bool JunctionRandom::acceptsCar(uint cellIndex)
 {
 	return data.carCanEnter[getInCellsVectorIndex(cellIndex)];
 }
 
 
-void JunctionSimple::registerCar(unsigned int cellIndex, unsigned int numberOfCellsAlreadyMoved, unsigned int speed)
+void JunctionRandom::registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved, uint speed)
 {
-	unsigned int index = getInCellsVectorIndex(cellIndex);
+	uint index = getInCellsVectorIndex(cellIndex);
 	data.carsOnJunction[index] = speed;
 	data.carCanEnter[index] = false;
 	data.alreadyMoved[index] = numberOfCellsAlreadyMoved;
 }
 
 
-unsigned int JunctionSimple::getInCellsVectorIndex(unsigned int cellIndex)
+uint JunctionRandom::getInCellsVectorIndex(uint cellIndex)
 {
 	try {
 		auto it = find(data.inCellIndices.begin(), data.inCellIndices.end(), cellIndex);
@@ -61,23 +61,23 @@ unsigned int JunctionSimple::getInCellsVectorIndex(unsigned int cellIndex)
 			return distance(data.inCellIndices.begin(), it);
 		}
 
-		throw runtime_error("The passed cell is not an incoming cell to this junction.");
+		throw std::runtime_error("The passed cell is not an incoming cell to this junction.");
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
 
 
-void JunctionSimple::updateJunction()
+void JunctionRandom::updateJunction()
 {
-	data.freeOutCells = data.outCellIndices;
+	data.possibleOutCells = data.outCellIndices;
 }
 
 
-void JunctionSimple::calculateTimeStep(OneWayRoadSSJ& road)
+void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 {
 	index = 0;
 	for (int carSpeed : data.carsOnJunction) {
@@ -85,7 +85,7 @@ void JunctionSimple::calculateTimeStep(OneWayRoadSSJ& road)
 		if (carSpeed >= 0) { //check if there is a car on the junction
 
 			if (carSpeed == 0)
-				cerr << "speed on junction was 0" << endl;
+				std::cerr << "speed on junction was 0" << std::endl;
 			else
 				applyRules(carSpeed, index, road);
 			data.alreadyMoved[index] = 0;
@@ -96,9 +96,9 @@ void JunctionSimple::calculateTimeStep(OneWayRoadSSJ& road)
 }
 
 
-void JunctionSimple::applyRules(int & carSpeed, const int & index, OneWayRoadSSJ& road)
+void JunctionRandom::applyRules(int & carSpeed, const int & index, TrafficMovement& road)
 {
-	remainingDistance = static_cast<unsigned int>(carSpeed) - data.alreadyMoved[index];
+	remainingDistance = static_cast<uint>(carSpeed) - data.alreadyMoved[index];
 
 	if (remainingDistance > 0) {
 		outCell = chooseOutCell(index);
@@ -116,7 +116,7 @@ void JunctionSimple::applyRules(int & carSpeed, const int & index, OneWayRoadSSJ
 }
 
 
-void JunctionSimple::breakCar(unsigned int outCellIndex, int &speed, unsigned int &remainingDistance, OneWayRoadSSJ& road)
+void JunctionRandom::breakCar(uint outCellIndex, int &speed, uint &remainingDistance, TrafficMovement& road)
 {
 	gap = road.getGapAfterOutCell(outCellIndex, remainingDistance);
 	if (gap < remainingDistance) {
@@ -126,7 +126,7 @@ void JunctionSimple::breakCar(unsigned int outCellIndex, int &speed, unsigned in
 }
 
 
-void JunctionSimple::moveCar(unsigned int outCell, int & carSpeed, const int & index, OneWayRoadSSJ& road)
+void JunctionRandom::moveCar(uint outCell, int & carSpeed, const int & index, TrafficMovement& road)
 {
 	road.moveJunctionCar(outCell, remainingDistance, carSpeed);
 	data.carsOnJunction[index] = -1;
@@ -134,21 +134,21 @@ void JunctionSimple::moveCar(unsigned int outCell, int & carSpeed, const int & i
 }
 
 
-int JunctionSimple::chooseOutCell(const int & index)
+int JunctionRandom::chooseOutCell(const int & index)
 {
-	vector<unsigned int> freeOutCellsTemp;
+	std::vector<uint> outCellsTemp;
 
 	if (data.carCanNotEnterThisOutCell.size() > 0 && data.carCanNotEnterThisOutCell[index]) {
-		for (unsigned int cell : data.freeOutCells) {
+		for (uint cell : data.possibleOutCells) {
 			if (cell != data.carCanNotEnterThisOutCell[index])
-				freeOutCellsTemp.push_back(cell);
+				outCellsTemp.push_back(cell);
 		}
 	}
 	else
-		freeOutCellsTemp = data.freeOutCells;
+		outCellsTemp = data.possibleOutCells;
 
 
-	switch (freeOutCellsTemp.size()) {
+	switch (outCellsTemp.size()) {
 	case 0:
 		return -1;
 	case 1:
@@ -165,33 +165,33 @@ int JunctionSimple::chooseOutCell(const int & index)
 		break;
 	}
 
-	outCell = freeOutCellsTemp[random];
-	data.freeOutCells.erase(std::remove(data.freeOutCells.begin(), data.freeOutCells.end(), outCell), data.freeOutCells.end());
+	outCell = outCellsTemp[random];
+	data.possibleOutCells.erase(std::remove(data.possibleOutCells.begin(), data.possibleOutCells.end(), outCell), data.possibleOutCells.end());
 	return outCell;
 }
 
 
-const vector<unsigned int>& JunctionSimple::getInCellIndices() const
+const std::vector<uint>& JunctionRandom::getInCellIndices() const
 {
 	return data.inCellIndices;
 }
 
-void JunctionSimple::dispJunction(const unsigned int index, unsigned int roadLength) const
+void JunctionRandom::dispJunction(const uint index, uint roadLength) const
 {
 	if (find(data.inCellIndices.begin(), data.inCellIndices.end(), (roadLength - index - 1)) != data.inCellIndices.end()) {
-		cout << setw(4) << "in";
+		std::cout << std::setw(4) << "in";
 	}
 	else if (find(data.outCellIndices.begin(), data.outCellIndices.end(), (roadLength - index - 1)) != data.outCellIndices.end()) {
-		cout << setw(4) << "out";
+		std::cout << std::setw(4) << "out";
 	}
 	else {
-		cout << setw(4) << " ";
+		std::cout << std::setw(4) << " ";
 	}
 }
 
-const unsigned int JunctionSimple::getNumCarsOnJunction() const
+const uint JunctionRandom::getNumCarsOnJunction() const
 {
-	unsigned int num = 0;
+	uint num = 0;
 	for (auto car : data.carsOnJunction) {
 		if (car >= 0)
 			++num;
@@ -200,15 +200,15 @@ const unsigned int JunctionSimple::getNumCarsOnJunction() const
 }
 
 
-void JunctionSimple::checkOutCellIndices(unsigned int roadLength)
+void JunctionRandom::checkOutCellIndices(uint roadLength)
 {
 	try {
-		for (unsigned int cell : data.outCellIndices)
+		for (uint cell : data.outCellIndices)
 			if (cell >= roadLength) throw invalidInput_error("The indices of incoming cells to a junction are greater than the roadLength.");
 	}
-	catch (const exception& e) {
-		cerr << e.what() << endl;
-		cin.get();
+	catch (const std::exception& e) {
+		std::cerr << e.what() << std::endl;
+		std::cin.get();
 		exit(EXIT_FAILURE);
 	}
 }
