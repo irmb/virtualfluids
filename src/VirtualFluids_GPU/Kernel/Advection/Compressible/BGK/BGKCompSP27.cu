@@ -5,7 +5,7 @@
 
 std::shared_ptr<Kernel> BGKCompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {
-	return std::shared_ptr<Kernel>(new BGKCompSP27(para, level);
+	return std::shared_ptr<Kernel>(new BGKCompSP27(para, level));
 }
 
 void BGKCompSP27::run()
