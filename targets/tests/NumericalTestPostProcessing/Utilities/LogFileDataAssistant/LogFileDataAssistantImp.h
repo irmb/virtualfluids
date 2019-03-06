@@ -29,6 +29,8 @@ protected:
 	bool checkEqualViscosity(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
 	bool checkEqualKernel(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
 
+	bool checkBasicSimulationIsInLogFiles(std::vector<std::shared_ptr<LogFileData> > allLogFileData, BasicSimulation simulation);
+
 	std::vector<std::shared_ptr<LogFileDataGroup>> castToLogFileDataGroup(std::vector<std::shared_ptr<LogFileDataGroupImp>> data);
 
 	bool equalDouble(double num1, double num2);

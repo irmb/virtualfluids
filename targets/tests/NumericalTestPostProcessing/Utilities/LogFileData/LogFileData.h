@@ -1,6 +1,8 @@
 #ifndef LOGFILE_DATA_H
 #define LOGFILE_DATA_H
 
+#include "Simulation/BasicSimulation.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -47,6 +49,10 @@ public:
 	virtual std::shared_ptr<TaylorGreenVortexUxLogFileData> getTaylorGreenVortexUxLogFileData() = 0;
 	virtual std::shared_ptr<TaylorGreenVortexUzLogFileData> getTaylorGreenVortexUzLogFileData() = 0;
 	virtual std::shared_ptr<ShearWaveLogFileData> getShearWaveLogFileData() = 0;
+
+	virtual BasicSimulation getBasicSimulation() = 0;
+
+
 	
 };
 #endif

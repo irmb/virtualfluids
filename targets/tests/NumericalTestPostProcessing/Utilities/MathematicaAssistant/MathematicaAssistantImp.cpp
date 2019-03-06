@@ -130,14 +130,12 @@ void MathematicaAssistantImp::addFourthOrderOfAccuracyRef(std::vector<std::vecto
 	}
 	std::vector<double> x = xAxesData.at(maxLengthAtNumber);
 
-	double maxData = 0.0;
-	for (int i = 0; i < yAxesData.size(); i++) {
-		for (int j = 0; j < yAxesData.at(i).size(); j++) {
-			if (yAxesData.at(i).at(j) > maxData)
-				maxData = yAxesData.at(i).at(j);
-		}
+	double minData = yAxesData.at(0).at(0);
+	for (int i = 1; i < yAxesData.size(); i++) {
+			if (yAxesData.at(i).at(0) < minData)
+				minData = yAxesData.at(i).at(0);
 	}
-	std::vector<double> fourth = { maxData / 100.0 };
+	std::vector<double> fourth = { minData / 10.0 };
 	for (int l = 1; l < x.size(); l++) 
 		fourth.push_back(fourth.at(l - 1) / exp(-4.0 * log(x.at(l - 1) / x.at(l))));
 

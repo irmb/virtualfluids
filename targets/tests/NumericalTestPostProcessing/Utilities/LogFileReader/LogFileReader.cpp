@@ -78,6 +78,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		swLogFileData->setUz(shearWaveUz);
 		logFileData->setShearWaveLogFileData(swLogFileData);
 		simSigniture << logFileData->getKernel() << "ShearWaveViscosity" << logFileData->getViscosity() << "ux" << shearWaveUx.at(0) << "uz" << shearWaveUz.at(0);
+		logFileData->setBasicSimulation(ShearWave);
 	}
 	if (logFileData->getSimName() == "TaylorGreenVortexUx") {
 		std::vector<double> tgvUxLx = StringUtil::toDoubleVector(input->getValue("Lx"));
@@ -100,6 +101,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		tgvUxLogFileData->setAmplitude(tgvUxAmp);
 		logFileData->setTaylorGreenVortexUxLogFileData(tgvUxLogFileData);
 		simSigniture << logFileData->getKernel() << "TaylorGreenVortexUxViscosity" << logFileData->getViscosity() << "Ux" << tgvUxUx.at(0) << "Amp" << tgvUxAmp.at(0);
+		logFileData->setBasicSimulation(TaylorGreenVortexUx);
 	}
 	if (logFileData->getSimName() == "TaylorGreenVortexUz") {
 		std::vector<double> tgvUzLz = StringUtil::toDoubleVector(input->getValue("Lx"));
@@ -122,6 +124,7 @@ std::shared_ptr<LogFileData> LogFileReader::readLogFileToLogFileData(std::string
 		tgvUzLogFileData->setAmplitude(tgvUzAmp);
 		logFileData->setTaylorGreenVortexUzLogFileData(tgvUzLogFileData);
 		simSigniture << logFileData->getKernel() << "TaylorGreenVortexUzViscosity" << logFileData->getViscosity() << "Uz" << tgvUzUz.at(0) << "Amp" << tgvUzAmp.at(0);
+		logFileData->setBasicSimulation(TaylorGreenVortexUz);
 	}
 	std::string compatibleString = removeCharsFromString(simSigniture.str(), ".-");
 	logFileData->setSimulationSigniture(compatibleString);

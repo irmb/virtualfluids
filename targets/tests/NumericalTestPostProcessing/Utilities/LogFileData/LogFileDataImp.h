@@ -39,6 +39,7 @@ public:
 	std::shared_ptr<TaylorGreenVortexUxLogFileData> getTaylorGreenVortexUxLogFileData();
 	std::shared_ptr<TaylorGreenVortexUzLogFileData> getTaylorGreenVortexUzLogFileData();
 	std::shared_ptr<ShearWaveLogFileData> getShearWaveLogFileData();
+	BasicSimulation getBasicSimulation();
 
 	void setAnalyticalVTKWritingTime(std::vector<int> analyticalVTKWritingTime);
 	void setBasicGridLengths(std::vector<double> basicGridLenghts);
@@ -69,6 +70,7 @@ public:
 	void setTaylorGreenVortexUxLogFileData(std::shared_ptr<TaylorGreenVortexUxLogFileData> data);
 	void setTaylorGreenVortexUzLogFileData(std::shared_ptr<TaylorGreenVortexUzLogFileData> data);
 	void setShearWaveLogFileData(std::shared_ptr<ShearWaveLogFileData> data);
+	void setBasicSimulation(BasicSimulation sim);
 
 	~LogFileDataImp();
 
@@ -104,5 +106,7 @@ private:
 	std::shared_ptr<ShearWaveLogFileData> shearWaveLogFileData;
 	std::shared_ptr<TaylorGreenVortexUxLogFileData> tgvUxLogFileData;
 	std::shared_ptr<TaylorGreenVortexUzLogFileData> tgvUzLogFileData;
+
+	BasicSimulation sim;
 };
 #endif
