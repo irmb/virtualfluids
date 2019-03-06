@@ -21,6 +21,7 @@ public:
 	unsigned int getLz();
 	unsigned int getL0();
 	std::vector<int> getDevices();
+	double getMaxVelocity();
 	
 	std::shared_ptr<KernelConfiguration> getKernelConfiguration();
 
@@ -30,16 +31,17 @@ protected:
 
 	void generateFileDirectionInMyStystem(std::string filePath);
 
-	real viscosity;
+	unsigned int timeStepLength;
+	std::string filePath;
+	double maxVelocity;
 	real lx, l0, lz;
+
+private:
+	real viscosity;
 	unsigned int numberOfTimeSteps, basisTimeStepLength;
 	std::string gridPath;
-	std::string filePath;
 	std::vector<int> devices;
-
 	unsigned int maxLevel, numberOfGridLevels;
-	unsigned int timeStepLength;
-
 	std::shared_ptr<KernelConfiguration> kernelConfig;
 };
 

@@ -80,6 +80,11 @@ std::vector<int> SimulationParameterImp::getDevices()
 	return devices;
 }
 
+double SimulationParameterImp::getMaxVelocity()
+{
+	return maxVelocity;
+}
+
 std::shared_ptr<KernelConfiguration> SimulationParameterImp::getKernelConfiguration()
 {
 	return kernelConfig;

@@ -12,12 +12,10 @@ class SimulationParameterTaylorGreenUx : public SimulationParameterImp
 {
 public:
 	static std::shared_ptr<SimulationParameter> getNewInstance(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
-	double getMaxVelocity();
+
 	
 protected:
 	SimulationParameterTaylorGreenUx(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> tgvParameterStruct, std::shared_ptr<GridInformationStruct> gridInfo);
 
-private:
-	real ux, amplitude, rho0;
 };
 #endif 
