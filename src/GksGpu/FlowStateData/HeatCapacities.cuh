@@ -25,6 +25,51 @@
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
+__host__ __device__ inline real getCp( real T, real* CpData )
+{
+    real T0 = 100.0;
+    real dT = 200.0;
+
+    int i = int( ( T - T0 ) / dT );
+
+    real CpLow  = CpData[i];
+    real CpHigh = CpData[i+1];
+
+    real x = (T - T0 - i * dT) / dT;
+
+    return CpLow + x * ( CpHigh - CpLow );
+}
+
+__host__ __device__ inline real getCp( real T, real* CpData )
+{
+    real T0 = 100.0;
+    real dT = 200.0;
+
+    int i = int( ( T - T0 ) / dT );
+
+    real CpLow  = CpData[i];
+    real CpHigh = CpData[i+1];
+
+    real x = (T - T0 - i * dT) / dT;
+
+    real CpAtT = CpLow + x * ( CpHigh - CpLow );
+
+    real sum = dT * c1o2 * ( CpData[0] + CpLow );
+
+    for( int j = 0; j < i; j++ )
+    {
+        sum += dT * CpData[i];
+    }
+
+    sum += (T - T0 - i * dT) * c1o2 * ( CpLow + CpAtT );
+
+    return sum;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
 __host__ __device__ inline real getCpO2( real T )
 {
     real CpData [] = {
@@ -50,20 +95,7 @@ __host__ __device__ inline real getCpO2( real T )
                         41.289
                      };
 
-    real T0 = 100.0;
-    real dT = 200.0;
-
-    int i = int( ( T - T0 ) / dT );
-
-    //if( i < 0  ) i = 0;
-    //if( i > 19 ) i = 19;
-
-    real CpLow  = CpData[i];
-    real CpHigh = CpData[i+1];
-
-    real x = (T - T0 - i * dT) / dT;
-
-    return CpLow + x * ( CpHigh - CpLow );
+    return getCp( T, CpData);
 }
 
 __host__ __device__ inline real getCpN2( real T )
@@ -91,24 +123,12 @@ __host__ __device__ inline real getCpN2( real T )
                         37.508
                      };
 
-    real T0 = 100.0;
-    real dT = 200.0;
-
-    int i = int( ( T - T0 ) / dT );
-
-    //if( i < 0  ) i = 0;
-    //if( i > 19 ) i = 19;
-
-    real CpLow  = CpData[i];
-    real CpHigh = CpData[i+1];
-
-    real x = (T - T0 - i * dT) / dT;
-
-    return CpLow + x * ( CpHigh - CpLow );
+    return getCp( T, CpData);
 }
 
 __host__ __device__ inline real getCpCH4( real T )
 {
+
     real CpData [] = {
                          33.258,
                          35.708,
@@ -132,24 +152,12 @@ __host__ __device__ inline real getCpCH4( real T )
                         103.990 
                      };
 
-    real T0 = 100.0;
-    real dT = 200.0;
-
-    int i = int( ( T - T0 ) / dT );
-
-    //if( i < 0  ) i = 0;
-    //if( i > 19 ) i = 19;
-
-    real CpLow  = CpData[i];
-    real CpHigh = CpData[i+1];
-
-    real x = (T - T0 - i * dT) / dT;
-
-    return CpLow + x * ( CpHigh - CpLow );
+    return getCp( T, CpData);
 }
 
 __host__ __device__ inline real getCpH2O( real T )
 {
+
     real CpData [] = {
                         33.299,
                         33.596,
@@ -173,24 +181,12 @@ __host__ __device__ inline real getCpH2O( real T )
                         57.859
                      };
 
-    real T0 = 100.0;
-    real dT = 200.0;
-
-    int i = int( ( T - T0 ) / dT );
-
-    //if( i < 0  ) i = 0;
-    //if( i > 19 ) i = 19;
-
-    real CpLow  = CpData[i];
-    real CpHigh = CpData[i+1];
-
-    real x = (T - T0 - i * dT) / dT;
-
-    return CpLow + x * ( CpHigh - CpLow );
+    return getCp( T, CpData);
 }
 
 __host__ __device__ inline real getCpCO2( real T )
 {
+
     real CpData [] = {
                         29.208,
                         37.221,
@@ -214,22 +210,8 @@ __host__ __device__ inline real getCpCO2( real T )
                         63.166
                      };
 
-    real T0 = 100.0;
-    real dT = 200.0;
-
-    int i = int( ( T - T0 ) / dT );
-
-    //if( i < 0  ) i = 0;
-    //if( i > 19 ) i = 19;
-
-    real CpLow  = CpData[i];
-    real CpHigh = CpData[i+1];
-
-    real x = (T - T0 - i * dT) / dT;
-
-    return CpLow + x * ( CpHigh - CpLow );
+    return getCp( T, CpData);
 }
-
 
 
 #endif

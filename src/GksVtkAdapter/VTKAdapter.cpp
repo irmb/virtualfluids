@@ -224,6 +224,10 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 	    return dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
              / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
 	} );
+
+	addScalarRealCellData( grid, dataBase->numberOfCells, "rhoE", [&] (uint cellIdx) {
+	    return dataBase->dataHost[ RHO_E(cellIdx, dataBase->numberOfCells) ];
+	} );
 #endif // USE_PASSIVE_SCALAR
 
 }

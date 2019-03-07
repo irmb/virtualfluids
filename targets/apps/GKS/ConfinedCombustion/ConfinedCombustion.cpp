@@ -69,7 +69,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real rho = 1.2;
     
     real p = 101325.0;
-    real T = 300.0;
+    real T = 298.0;
 
     real mu = 1.0e-1;
 
@@ -225,12 +225,12 @@ void thermalCavity( std::string path, std::string simulationName )
         //////////////////////////////////////////////////////////////////////////
 
         primFuel.rho = 2.0 * primFuel.lambda * p;
-        primAir.rho  = 2.0 * primAir.lambda * p;
+        primAir.rho  = 2.0 * primAir.lambda  * p;
 
         //////////////////////////////////////////////////////////////////////////
 
         real massFuel = 1.0; 
-        real massAir  = 2 * 32.0/16.0 + 2 * 0.767 / 0.233 * 32.0/16.0;
+        real massAir  = 2.0 * 32.0/16.0 + 2.0 * 0.767 / 0.233 * 32.0/16.0;
 
         real volumeFuel = massFuel / primFuel.rho;
         real volumeAir  = massAir  / primAir.rho;

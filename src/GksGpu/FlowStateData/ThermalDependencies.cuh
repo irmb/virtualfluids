@@ -35,16 +35,16 @@ __host__ __device__ inline void getMolarMasses( real& M_O2,
                                                 real& M_H2O, 
                                                 real& M_CO2 )
 {
-    M_O2  = 32.00e-3;
-    M_N2  = 28.00e-3;
-    M_CH4 = 16.00e-3;
-    M_H2O = 18.00e-3;
-    M_CO2 = 44.00e-3;
+    M_O2  = real(32.00e-3);    // kg / mol
+    M_N2  = real(28.00e-3);    // kg / mol
+    M_CH4 = real(16.00e-3);    // kg / mol
+    M_H2O = real(18.00e-3);    // kg / mol
+    M_CO2 = real(44.00e-3);    // kg / mol
 }
 
 __host__ __device__ inline real getRu()
 {
-    return 8.31445984848;
+    return real(8.31445984848);    // J / (mol K)
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -63,18 +63,18 @@ __host__ __device__ inline void getMassFractions( real Z1, real Z2,
 
     getMolarMasses(M_O2, M_N2, M_CH4, M_H2O, M_CO2);
 
-    const real Y_CH4_Inflow = 1.0;
-    const real Y_N2_ambient = 0.767;
-    const real Y_O2_ambient = 0.233;
+    const real Y_CH4_Inflow = real(1.0  );
+    const real Y_N2_ambient = real(0.767);
+    const real Y_O2_ambient = real(0.233);
 
     //////////////////////////////////////////////////////////////////////////
 
     const real Z = Z1 + Z2;
     
     Y_CH4 = Y_CH4_Inflow * Z1;
-    Y_N2  = (1.0 - Z) * Y_N2_ambient;
-    Y_O2  = (1.0 - Z) * Y_O2_ambient - 2.0  * ( M_O2  / M_CH4 ) * Y_CH4_Inflow * Z2;
-    Y_H2O =                            2.0  * ( M_H2O / M_CH4 ) * Y_CH4_Inflow * Z2;
+    Y_N2  = (one - Z) * Y_N2_ambient;
+    Y_O2  = (one - Z) * Y_O2_ambient - two  * ( M_O2  / M_CH4 ) * Y_CH4_Inflow * Z2;
+    Y_H2O =                            two  * ( M_H2O / M_CH4 ) * Y_CH4_Inflow * Z2;
     Y_CO2 =                                   ( M_CO2 / M_CH4 ) * Y_CH4_Inflow * Z2;
     
     M = one / ( Y_O2  / M_O2
@@ -222,7 +222,7 @@ __host__ __device__ inline real getK( const real T,
                                       const real X_H2O, 
                                       const real X_CO2 )
 {
-    return 2.0 * getCp( T, X_O2, X_N2, X_CH4, X_H2O, X_CO2 ) / getRu() - 5.0;
+    return two * getCp( T, X_O2, X_N2, X_CH4, X_H2O, X_CO2 ) / getRu() - five;
 }
 
 __host__ __device__ inline real getK( const ConservedVariables& cons )
@@ -232,11 +232,13 @@ __host__ __device__ inline real getK( const ConservedVariables& cons )
 
     getMoleFractions(cons, X_O2, X_N2, X_CH4, X_H2O, X_CO2, M);
 
-    real Eint = ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) / cons.rho;
+    real Eint = ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) / cons.rho; // J / kg
+
+    //////////////////////////////////////////////////////////////////////////
 
     real TAitken[3];
 
-    real T0 = 600.0;
+    real T0 = real(600.0);
     real T  = T0;
 
     //////////////////////////////////////////////////////////////////////////
@@ -249,7 +251,7 @@ __host__ __device__ inline real getK( const ConservedVariables& cons )
     {
         real Cp = getCp( T, X_O2, X_N2, X_CH4, X_H2O, X_CO2 );
     
-        T = 0.5 * ( T + ( Eint * M ) / ( Cp - getRu() ) );
+        T = c1o2 * ( T + ( Eint * M ) / ( Cp - getRu() ) );
         //T = ( Eint * M ) / ( Cp - Ru);
 
         if( i >= iAitkenStart ) TAitken[i - iAitkenStart] = T;

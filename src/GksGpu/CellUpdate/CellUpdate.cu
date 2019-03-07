@@ -244,29 +244,29 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
         real Z = Z1 + Z2;
 
-        real Y_CH4_Inflow = 1.0;
-        real Y_N2_ambient = 0.767;
-        real Y_O2_ambient = 0.233;
+        real Y_CH4_Inflow = real(1.0  );
+        real Y_N2_ambient = real(0.767);
+        real Y_O2_ambient = real(0.233);
 
-        real M_CH4 = 16.0;  // g / mol
-        real M_O2  = 32.0;  // g / mol
-        real M_N2  = 28.0;  // g / mol
-        real M_H2O = 18.0;  // g / mol
-        real M_CO2 = 44.0;  // g / mol
+        real M_CH4 = real(16.0e-3);  // kg / mol
+        real M_O2  = real(32.0e-3);  // kg / mol
+        real M_N2  = real(28.0e-3);  // kg / mol
+        real M_H2O = real(18.0e-3);  // kg / mol
+        real M_CO2 = real(44.0e-3);  // kg / mol
 
         ///////////////////////////////////////////////////////////////////////////////
 
 
-        real Y_N2  = (1.0 - Z) * Y_N2_ambient;
+        real Y_N2  = (one - Z) * Y_N2_ambient;
 
         real Y_CH4 = Y_CH4_Inflow * Z1;
 
         //           <--  non burned part -->   <------------  reacted part ------------->
-        real Y_O2  = (1.0 - Z) * Y_O2_ambient - 2.0 * ( M_O2  / M_CH4 ) * Y_CH4_Inflow * Z2;
+        real Y_O2  = (one - Z) * Y_O2_ambient - two * ( M_O2  / M_CH4 ) * Y_CH4_Inflow * Z2;
 
         real Y_CO2 =                                  ( M_CO2 / M_CH4 ) * Y_CH4_Inflow * Z2;
 
-        real Y_H2O =                            2.0 * ( M_H2O / M_CH4 ) * Y_CH4_Inflow * Z2;
+        real Y_H2O =                            two * ( M_H2O / M_CH4 ) * Y_CH4_Inflow * Z2;
 
         real Y_CO;  // currently not modeled
 
@@ -274,23 +274,37 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
         //////////////////////////////////////////////////////////////////////////
 
+        //if( Y_CH4 < zero ) Y_CH4 = zero;
+        //if( Y_O2  < zero ) Y_O2  = zero;
+
+        //if( Z1 < zero && Z2 < zero ) { Z1 = zero; Z2 = zero; }
+
+        //if( Z1 < zero ) { Z2 += Z1; Z1 = zero; }
+        //if( Z2 < zero ) { Z1 += Z2; Z2 = zero; }
+
         {
-            const real heatOfReaction = 8.0e8;
+            const real heatOfReaction = real(802310.0); // kJ / kmol
 
-            real s = M_CH4 / (2.0 * M_O2);      // refers to page 49 in FDS technical reference guide
+            //real s = M_CH4 / (two * M_O2);      // refers to page 49 in FDS technical reference guide
 
-            real releasedHeat = rho * fminf(Y_CH4, s * Y_O2) / M_CH4 * heatOfReaction;
+            //real releasedHeat = updatedConserved.rho * fminf(Y_CH4, s * Y_O2) * heatOfReaction / M_CH4;
 
-            if (Y_CH4 < s * Y_O2) Y_CH4 = 0.0;
-            else                  Y_CH4 = Y_CH4 - s * Y_O2;
+            real releasedHeat = updatedConserved.rho * fminf(Y_CH4 / M_CH4, c1o2 * Y_O2 / M_O2) * heatOfReaction;
+
+            if (Y_CH4 / M_CH4 < c1o2 * Y_O2 / M_O2) Y_CH4 = zero;
+            else                                    Y_CH4 = Y_CH4 - M_CH4 / (two * M_O2) * Y_O2;
 
             ///////////////////////////////////////////////////////////////////////////////
 
-            real dZ1 = Z1 - Y_CH4 / Y_CH4_Inflow;
+            //real dZ1 = Z1 - Y_CH4 / Y_CH4_Inflow;
 
             Z1 = Y_CH4 / Y_CH4_Inflow;
 
-            Z2 = Z2 + dZ1;
+            //Z2 = Z2 + dZ1;
+
+            Z2 = Z - Z1;
+
+            //if(Z2 < zero) abort();
 
             ///////////////////////////////////////////////////////////////////////////////
 
