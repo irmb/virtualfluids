@@ -14,6 +14,7 @@
 MicrophoneArrayCoProcessor::MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string & path, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path), comm(comm)
 {
    count = 0;
+   micID = 0;
 }
 
 MicrophoneArrayCoProcessor::~MicrophoneArrayCoProcessor()
@@ -33,11 +34,11 @@ void MicrophoneArrayCoProcessor::process(double step)
    UBLOG(logDEBUG3, "MicrophoneArrayCoProcessor::process:" << step);
 }
 
-void MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
+bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
 {
+   micID++;
    UbTupleInt3 blockIndexes = grid->getBlockIndexes(coords[0], coords[1], coords[2]);
 
-   //int gridRank = comm->getProcessID();
    int minInitLevel = this->grid->getCoarsestInitializedLevel();
    int maxInitLevel = this->grid->getFinestInitializedLevel();
 
@@ -64,12 +65,14 @@ void MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
                   calcMacros = &D3Q27System::calcIncompMacroscopicValues;
                }
                SPtr<Mic> mic(new Mic);
+               mic->id = micID;
                mic->distridution = kernel->getDataSet()->getFdistributions();
                mic->nodeIndexes = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
                microphones.push_back(mic);
-               values.resize((microphones.size()+1)*static_cast<int>(scheduler->getMinStep()));
 
-               std::string fname = path+"/mic/mic_"+UbSystem::toString(comm->getProcessID())+".csv";
+               strVector.resize(microphones.size());
+
+               std::string fname = path+"/mic/mic_"+UbSystem::toString(micID)+".csv";
                std::ofstream ostr;
                ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
                if (!ostr)
@@ -80,53 +83,42 @@ void MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
                   if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
                }
                ostr << "#microphone position: " << coords[0] << "; " << coords[1] << "; " << coords[2] << "; " << "\n";
-               return;
+               ostr.close();
+               return true;
             }
          }
       }
    }
+   return false;
 }
 
 void MicrophoneArrayCoProcessor::collectData(double step)
 {
-   values[count++] = step;
-   for (SPtr<Mic> mic : microphones)
+   for (int i = 0; i < microphones.size(); i++ )
    {
       LBMReal f[D3Q27System::ENDF+1];
-      mic->distridution->getDistribution(f, val<1>(mic->nodeIndexes), val<2>(mic->nodeIndexes), val<3>(mic->nodeIndexes));
+      microphones[i]->distridution->getDistribution(f, val<1>(microphones[i]->nodeIndexes), val<2>(microphones[i]->nodeIndexes), val<3>(microphones[i]->nodeIndexes));
       LBMReal vx1, vx2, vx3, rho;
       calcMacros(f, rho, vx1, vx2, vx3);
-      values[count++] = rho;
+      strVector[i] << step << ';' << rho << '\n';
    }
 }
 
 void MicrophoneArrayCoProcessor::writeFile(double step)
 {
-   std::string fname = path+"/mic/mic_"+UbSystem::toString(comm->getProcessID())+".csv";
-   std::ofstream ostr;
-   ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
-   if (!ostr)
+   for (int i = 0; i < microphones.size(); i++)
    {
-      ostr.clear();
-      std::string path = UbSystem::getPathFromString(fname);
-      if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
-      if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
-   }
-
-   int line_size = static_cast<int>(microphones.size()+1);
-   int total_size = static_cast<int>(values.size());
-
-   for (int i = 0; i < total_size; i+=line_size)
-   {
-      int index = 0;
-      for (int j = 0; j < line_size; j++)
+      std::string fname = path+"/mic/mic_"+UbSystem::toString(microphones[i]->id)+".csv";
+      std::ofstream ostr;
+      ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app);
+      if (!ostr)
       {
-         ostr << values[i+j] << ";";
+         ostr.clear();
+         std::string path = UbSystem::getPathFromString(fname);
+         if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
+         if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
       }
-      ostr << "\n";
+      ostr << strVector[i].str();
+      ostr.close();
    }
-
-   ostr.close();
-   count = 0;
-   //UBLOG(logINFO,"MicrophoneArrayCoProcessor step: " << static_cast<int>(step));
 }

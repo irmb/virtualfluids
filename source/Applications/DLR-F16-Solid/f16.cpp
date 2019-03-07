@@ -654,8 +654,8 @@ void run(string configname)
       }
       else
       {
-         restartCoProcessor->restart((int)restartStep);
-         //migCoProcessor->restart((int)restartStep);
+         //restartCoProcessor->restart((int)restartStep);
+         migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
          ////////////////////////////////////////////////////////////////////////////
          InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
@@ -700,8 +700,8 @@ void run(string configname)
       std::vector<UbTupleFloat3> nodes;
       for (int i = 0; i <= 10; i++)
       {
-         micCoProcessor->addMicrophone(Vector3D(0.31+offsetX1*double(i), 0.015, 0.0-offsetZ1*double(i)));
-         nodes.push_back(UbTupleFloat3(float(0.31+offsetX1*float(i)), float(0.015), float(0.0-offsetZ1*float(i))));
+         micCoProcessor->addMicrophone(Vector3D(0.3+deltaXcoarse+offsetX1*double(i), 0.015, 0.0-offsetZ1*double(i)));
+         nodes.push_back(UbTupleFloat3(float(0.3+deltaXcoarse+offsetX1*float(i)), float(0.015), float(0.0-offsetZ1*float(i))));
       }
       double offsetX2 = 0.1;
       for (int i = 0; i <= 6; i++)
@@ -712,12 +712,13 @@ void run(string configname)
       
       if (myid==0) WbWriterVtkXmlBinary::getInstance()->writeNodes(pathOut+"/geo/mic", nodes);
 
-      omp_set_num_threads(numOfThreads);
+      //omp_set_num_threads(numOfThreads);
       SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(nupsCoProcessor);
       calculator->addCoProcessor(micCoProcessor);
-      calculator->addCoProcessor(restartCoProcessor);
+      //calculator->addCoProcessor(restartCoProcessor);
+      calculator->addCoProcessor(migCoProcessor);
       calculator->addCoProcessor(writeMQSelectCoProcessor);
       calculator->addCoProcessor(writeMQCoProcessor);
       calculator->addCoProcessor(tav);
