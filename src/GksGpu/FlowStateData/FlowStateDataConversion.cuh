@@ -22,20 +22,27 @@
 
 __host__ __device__ inline ConservedVariables toConservedVariables( const PrimitiveVariables& prim, real K, bool overrideK = true )
 {
-    #ifdef USE_PASSIVE_SCALAR
-    if( overrideK ) K = getK(prim);
-    #endif
+    //#ifdef USE_PASSIVE_SCALAR
+    //if( overrideK ) K = getK(prim);
+    //#endif
 
+#ifdef USE_PASSIVE_SCALAR
+    return ConservedVariables(prim.rho
+                             ,prim.U * prim.rho
+                             ,prim.V * prim.rho
+                             ,prim.W * prim.rho
+                             ,getEint(prim) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
+                             ,prim.S_1 * prim.rho
+                             ,prim.S_2 * prim.rho
+    );
+#else
     return ConservedVariables(prim.rho
                              ,prim.U * prim.rho
                              ,prim.V * prim.rho
                              ,prim.W * prim.rho
                              ,( K + three ) / ( four * prim.lambda ) * prim.rho + c1o2 * prim.rho * ( prim.U * prim.U + prim.V * prim.V + prim.W * prim.W )
-    #ifdef USE_PASSIVE_SCALAR
-                             ,prim.S_1 * prim.rho
-                             ,prim.S_2 * prim.rho
-    #endif
     );
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,20 +51,27 @@ __host__ __device__ inline ConservedVariables toConservedVariables( const Primit
 
 __host__ __device__ inline PrimitiveVariables toPrimitiveVariables( const ConservedVariables& cons, real K, bool overrideK = true )
 {
-    #ifdef USE_PASSIVE_SCALAR
-    if( overrideK ) K = getK(cons);
-    #endif
+    //#ifdef USE_PASSIVE_SCALAR
+    //if( overrideK ) K = getK(cons);
+    //#endif
 
+#ifdef USE_PASSIVE_SCALAR
+	return PrimitiveVariables(cons.rho
+						     ,cons.rhoU / cons.rho
+						     ,cons.rhoV / cons.rho
+						     ,cons.rhoW / cons.rho
+						     ,getlambda(cons)
+                             ,cons.rhoS_1 / cons.rho
+                             ,cons.rhoS_2 / cons.rho
+	);
+#else
 	return PrimitiveVariables(cons.rho
 						     ,cons.rhoU / cons.rho
 						     ,cons.rhoV / cons.rho
 						     ,cons.rhoW / cons.rho
 						     ,( K + three ) * cons.rho / ( four * ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) )
-    #ifdef USE_PASSIVE_SCALAR
-                             ,cons.rhoS_1 / cons.rho
-                             ,cons.rhoS_2 / cons.rho
-    #endif
 	);
+#endif
 }
 
 #endif

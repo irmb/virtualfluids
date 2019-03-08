@@ -217,7 +217,9 @@ __host__ __device__ inline void reconstructFiniteDifferences( const uint faceInd
         computeFaceCons(posCons, negCons, faceCons);
 
     #ifdef USE_PASSIVE_SCALAR
-        K = getK( faceCons );
+        {
+            K = getK(faceCons);
+        }
     #endif
 
         facePrim = toPrimitiveVariables( faceCons, K, false );
