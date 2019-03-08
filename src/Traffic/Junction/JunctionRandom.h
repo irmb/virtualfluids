@@ -26,7 +26,7 @@ public:
 	virtual void setCellIndexForNoUTurn(std::vector<int> carCanNotEnterThisOutCell);
 
 	virtual bool acceptsCar(uint cellIndex); //determines if a car can enter the junction
-	virtual void registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved,  uint speed); //registers all cars entering the junction
+	virtual void registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved,  uint speed, uint oldSpeed); //registers all cars entering the junction
 	virtual void calculateTimeStep(TrafficMovement& road);
 	virtual void updateJunction();
 
@@ -41,10 +41,11 @@ private:
 	uint getInCellsVectorIndex(uint cellIndex);
 
 	void applyRules(int &carSpeed,const int &index, TrafficMovement& road);
-	void breakCar(uint outCellIndex, int &speed, uint &remainingDistance, TrafficMovement& road);
+	void breakCar(uint outCellIndex, int &speed, uint &remainingDistance, const int & index, TrafficMovement& road);
 	void moveCar(uint outCell, int & carSpeed, const int & index, TrafficMovement& road);
 	int chooseOutCell(const int & index);
 
+	void writeConcentrations(TrafficMovement& road);
 
 private:
 	//variables for temporaray calculations

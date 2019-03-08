@@ -82,7 +82,7 @@ option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
 option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
 
-option(VF_DOUBLE_ACCURACY       "Build shared libraries"  ON )
+option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF )
 
 #############################################################
 

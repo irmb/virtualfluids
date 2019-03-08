@@ -27,11 +27,10 @@ public:
 	//setUp
 	void setSlowToStart(const float slowStartPossibility);
 	void setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer);
-	void setSaveResultsTrue();
-	void initCalculation(uint timeSteps);
+	void setSaveResultsTrue(uint timeSteps);
 
 	//timpestep
-	void loopTroughTimesteps();
+	void loopTroughTimesteps(uint numberOfTimesteps);
 	void calculateTimestep(uint step);
 
 	//get
@@ -40,19 +39,14 @@ public:
 	const uint getNumberOfCars() const;			//only use for testing
 	const int getSpeedAtPosition(uint pos) const;       //only use for testing
 
-	//methods used by junctions and sinks
+	//methods used by junctions and sources
 	uint getGapAfterOutCell(uint outCellIndex, uint speed);
-	void moveJunctionCar(uint outCellIndex, uint remainingDistance, uint speed);
-
-	//disp
-	void dispResults();
+	void moveJunctionCar(uint outCellIndex, uint remainingDistance, uint speed, uint oldSpeed);
+	void writeConcentrationForJunction(uint inCellIndex, uint oldSpeed, uint speed);
 
 	//vtk
 	void visualizeVehicleLengthForVTK();
 	const std::vector<int>& getVehiclesForVTK();
-
-	//pollution
-	const std::vector<float>& getConcentrations();
 
 
 private:
@@ -61,7 +55,6 @@ private:
 	void checkCurrentForSafetyDistance();
 
 	//calculate timestep
-	std::vector<uint> findCarIndicesInCurrent() const;
 	void calculateSourceStep();
 	void switchCurrentNext();
 
@@ -80,10 +73,14 @@ private:
 	void accelerateCar(uint &speed);
 	void breakCar(uint carIndex, uint &speed);
 	void dawdleCar(uint carIndex, uint &speed);
-	void moveCar(uint carIndex, uint speed);
+	void moveCar(const uint carIndex, uint speed);
 	uint iterateNeighborsInMove(uint &currentCell, uint speed, int &neighbor);
 
-	void writeConcentration(uint index);
+	//disp
+	void dispResults();
+
+	//pollution
+	void writeConcentration(uint index, uint oldSpeed);
 
 
 private:
@@ -100,14 +97,13 @@ private:
 	bool useSlowToStart = false;
 	float slowStartPossibility;
 
-	uint timeSteps;
 	uint currentStep;
 
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
 
 private:
-	//temporary varables for calculation
+	//temporary variables for calculation
 	uint gap;
 	double randomNumber;
 };

@@ -14,8 +14,8 @@
 
 struct VF_PUBLIC RoadNetworkData
 {
-public:
-	//friend class TrafficMovement;
+protected:
+	friend class TrafficMovement;
 
 	uint roadLength;
 	uint maxVelocity;

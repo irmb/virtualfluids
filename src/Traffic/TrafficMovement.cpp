@@ -40,16 +40,6 @@ void TrafficMovement::initDawdle(const float dawdlePossibility)
 }
 
 
-
-void TrafficMovement::initCalculation(uint timeSteps)
-{
-	this->timeSteps = timeSteps;
-
-	if (display != nullptr) display->initResults(timeSteps);
-}
-
-
-
 void TrafficMovement::setSlowToStart(const float slowStartPossibility)
 {
 	try {
@@ -57,7 +47,7 @@ void TrafficMovement::setSlowToStart(const float slowStartPossibility)
 			if (slowStartPossibility > 0) {
 				this->slowStartPossibility = slowStartPossibility;
 				useSlowToStart = true;
-			}	
+			}
 		}
 		else {
 			throw invalidInput_error("The slowStartPossibility should be between 0 and 1.");
@@ -77,9 +67,10 @@ void TrafficMovement::setConcentrationOutwriter(std::unique_ptr<ConcentrationOut
 }
 
 
-void TrafficMovement::setSaveResultsTrue()
+void TrafficMovement::setSaveResultsTrue(uint timeSteps)
 {
 	this->display = std::make_unique<CarDisplay>(&pcurrent, road->safetyDistance);
+	if (display != nullptr) display->initResults(timeSteps);
 }
 
 
@@ -90,7 +81,10 @@ const uint TrafficMovement::getNumberOfCars() const
 		num += junc->getNumCarsOnJunction();
 	}
 
-	return findCarIndicesInCurrent().size() + num;
+	for (auto cell : *pcurrent) {
+		if (cell >= 0) ++num;
+	}
+	return num;
 }
 
 
@@ -112,7 +106,7 @@ const uint TrafficMovement::getMaxVelocity() const
 }
 
 
-void TrafficMovement::loopTroughTimesteps()
+void TrafficMovement::loopTroughTimesteps(uint timeSteps)
 {
 	for (uint step = 1; step < timeSteps + 1; step++) {
 		calculateTimestep(step);
@@ -123,16 +117,17 @@ void TrafficMovement::loopTroughTimesteps()
 
 void TrafficMovement::calculateTimestep(uint step)
 {
-	//if(display != nullptr)	display->dispCurrentRoad();
-	//if(concWriter != nullptr) concWriter->dispConcentration();
+	//if (display != nullptr)	display->dispCurrentRoad();
+	//if (concWriter != nullptr) concWriter->dispConcentrations();
 
 	VectorHelper::fillVector(*pnext, -1);
-	if (concWriter != nullptr) concWriter->resetConcVector();
+	if (concWriter != nullptr) concWriter->resetConcentrations();
 
-	std::vector<uint> cars = findCarIndicesInCurrent();
-
-	for (auto &car : cars) {
-		applyRules(car);
+	//apply rules on all cars
+	for (uint i = 0; i < road->roadLength; i++) {
+		if ((*pcurrent)[i] > -1) {
+			applyRules(i);
+		}
 	}
 
 	for (auto &junction : road->junctions) {
@@ -153,12 +148,15 @@ void TrafficMovement::calculateTimestep(uint step)
 void TrafficMovement::calculateSourceStep()
 {
 	uint sourceIndex;
-	uint maxSpeed;
+	uint gap;
 	for (auto &source : road->sources) {
 		sourceIndex = source->getIndex();
-		maxSpeed = getGapAfterOutCell(sourceIndex, road->maxVelocity);
-		if (maxSpeed > 0)
-			(*pnext)[sourceIndex] = source->getSourceCar();
+		gap = getGapAfterOutCell(sourceIndex, road->maxVelocity);
+		if (gap > 0) {
+			uint speed = source->getSourceCar();
+			(*pnext)[sourceIndex] = speed;
+			writeConcentration(sourceIndex, speed);
+		}
 	}
 }
 
@@ -182,7 +180,7 @@ void TrafficMovement::applyRules(uint carIndex)
 void TrafficMovement::accelerateCar(uint & speed)
 {
 	if (speed < road->maxVelocity) {
-		speed += 1;
+		speed += 2; //speed += 1; --> dawdle
 	}
 }
 
@@ -209,20 +207,20 @@ void TrafficMovement::dawdleCar(uint carIndex, uint & speed)
 
 	//Standard NaSch
 	if (randomNumber < dawdlePossibility) {
-		if ((speed) > 0) {
+		if (speed > 1) 
+			speed -= 2; //for acceleration +2
+		if (speed > 0)
 			speed -= 1;
-		}
-		else {
+		else
 			speed = 0;
-		}
 	}
 }
 
-void TrafficMovement::moveCar(uint carIndex, uint speed)
+void TrafficMovement::moveCar(const uint carIndex, uint speed)
 {
 	if (speed == 0) {
 		(*pnext)[carIndex] = 0;
-		writeConcentration(carIndex);
+		writeConcentration(carIndex, (*pcurrent)[carIndex]);
 		return;
 	}
 
@@ -232,22 +230,22 @@ void TrafficMovement::moveCar(uint carIndex, uint speed)
 	uint numberOfCellsMoved = iterateNeighborsInMove(currentCell, speed, neighbor);
 
 	if (neighbor <= -1000 && neighbor > -2000) {
-		getJunctionFromNeighbor(neighbor)->registerCar(currentCell, numberOfCellsMoved, speed);
+		getJunctionFromNeighbor(neighbor)->registerCar(currentCell, numberOfCellsMoved, speed, (*pcurrent)[carIndex]);
 		return;
 	}
 
 	if (neighbor >= 0) {
 		(*pnext)[neighbor] = speed;
-		writeConcentration(neighbor);
-	}		
+		writeConcentration(neighbor, (*pcurrent)[carIndex]);
+	}
 }
 
 
-void TrafficMovement::moveJunctionCar(uint outCellIndex, uint remainingDistance, uint speed)
+void TrafficMovement::moveJunctionCar(uint outCellIndex, uint remainingDistance, uint speed, uint oldSpeed)
 {
 	if (remainingDistance == 1) {
 		(*pnext)[outCellIndex] = speed;
-		writeConcentration(outCellIndex);
+		writeConcentration(outCellIndex, oldSpeed);
 		return;
 	}
 
@@ -256,17 +254,12 @@ void TrafficMovement::moveJunctionCar(uint outCellIndex, uint remainingDistance,
 
 	uint numberOfCellsMoved = iterateNeighborsInMove(currentCell, remainingDistance, neighbor);
 
-	if (neighbor <= -1000 && neighbor > -2000) {
-		(*pnext)[currentCell] = speed; // car can't enter more than one junction in one timestep 
-		writeConcentration(currentCell);
-		return;
-	}
 
 	if (neighbor >= 0) {
 		(*pnext)[neighbor] = speed;
-		writeConcentration(neighbor);
+		writeConcentration(neighbor, oldSpeed);
 	}
-		
+
 }
 
 
@@ -325,6 +318,37 @@ uint TrafficMovement::getGapAfterCar(uint carIndex, uint speed, int neighbor)
 }
 
 
+uint TrafficMovement::getGapAfterOutCell(uint outCellIndex, uint speed)
+{
+	if ((*pcurrent)[outCellIndex] > -1)
+		return 0;
+
+
+	uint currentCell = outCellIndex;
+	int neighbor = outCellIndex;
+
+	for (uint i = 0; i < (speed + road->safetyDistance); i++) {
+
+		if (neighbor <= -2000)
+			return getGapToSink(neighbor, i, speed);
+		if (neighbor <= -1000)
+			return i;
+
+		//car in Cell
+		if ((*pcurrent)[neighbor] > -1)
+			return adjustGapToSafetyDist(i);
+
+		//empty cell -> get next neighbor, update currentCell
+		currentCell = neighbor;
+		neighbor = road->neighbors[neighbor];
+	}
+	return speed;
+
+	//return getGapAfterCar(outCellIndex, speed, outCellIndex);
+
+}
+
+
 uint TrafficMovement::getGapToSink(int neighbor, uint i, uint speed)
 {
 	if (getSinkFromNeighbor(neighbor)->carCanEnter())
@@ -341,14 +365,6 @@ uint TrafficMovement::getGapToJunction(int neighbor, uint i, uint speed, uint cu
 }
 
 
-uint TrafficMovement::getGapAfterOutCell(uint outCellIndex, uint speed)
-{
-	if ((*pcurrent)[outCellIndex] > -1)
-		return 0;
-	gap = getGapAfterCar(outCellIndex, speed, outCellIndex);
-	return  gap;
-}
-
 uint TrafficMovement::adjustGapToSafetyDist(uint speed)
 {
 	if (speed <= road->safetyDistance)
@@ -357,24 +373,18 @@ uint TrafficMovement::adjustGapToSafetyDist(uint speed)
 		return speed - road->safetyDistance;
 }
 
-
-std::vector<uint> TrafficMovement::findCarIndicesInCurrent() const
+void TrafficMovement::writeConcentration(uint index, uint oldSpeed)
 {
-	std::vector<uint> cars;
-	for (uint i = 0; i < road->roadLength; i++) {
-		if ((*pcurrent)[i] > -1) {
-			cars.push_back(i);
-		}
+	if (concWriter != nullptr) {
+		concWriter->calculateConcForSingleCar(index, oldSpeed, (*pnext)[index]);
 	}
-	return cars;
 }
 
 
-
-void TrafficMovement::writeConcentration(uint index)
+void TrafficMovement::writeConcentrationForJunction(uint inCellIndex, uint oldSpeed, uint speed)
 {
 	if (concWriter != nullptr) {
-		concWriter->calculateConcForSingleCar(index, (*pnext)[index]);
+		concWriter->calculateConcForJunctionCar(inCellIndex, oldSpeed, speed);
 	}
 }
 
@@ -441,11 +451,4 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 	}
 }
 
-
-const std::vector<float>& TrafficMovement::getConcentrations()
-{
-	if (concWriter != nullptr) return concWriter->getConcentrations();
-	std::cerr << "No concentrations were calculated." << std::endl;
-	return {};
-}
 

@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <memory>
+
 #include "Utilities\RandomHelper.h"
+
 
 struct VF_PUBLIC JunctionData
 {
@@ -17,6 +19,7 @@ public:
 	std::vector<bool> carCanEnter;
 	std::vector<int> carsOnJunction;
 	std::vector<uint> alreadyMoved;
+	std::vector<uint> oldSpeeds;
 
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_int_distribution<uint> distInt2{ 0, 1 };

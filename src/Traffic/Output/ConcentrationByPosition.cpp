@@ -2,11 +2,17 @@
 
 
 
-ConcentrationByPosition::ConcentrationByPosition(uint roadlength, uint maxSpeed, uint maxAcceleration)
+ConcentrationByPosition::ConcentrationByPosition(uint roadlength, uint maxSpeed)
 {
 	concentration.resize(roadlength);
 }
 
+ConcentrationByPosition::ConcentrationByPosition(uint roadlength, float * concArrayStart, uint concArraySize, uint maxSpeed)
+{
+	useLBMConcArray = true;
+	this->concArraySize = concArraySize;
+	this->concArrayStart = concArrayStart;
+}
 
 //void ConcentrationByPosition::calculateConcFromCarDistribution(const std::vector<int>& currentCarDistribution)
 //{
@@ -21,10 +27,14 @@ ConcentrationByPosition::ConcentrationByPosition(uint roadlength, uint maxSpeed,
 //}
 
 
-void ConcentrationByPosition::calculateConcForSingleCar(uint index, uint speed, uint acceleration)
+void ConcentrationByPosition::calculateConcForSingleCar(uint index, uint oldSpeed, uint speed)
 {
-	concentration[index] = 1.0;
+	putConcIntoArrayOrVector(index, 1.0);
 }
 
+void ConcentrationByPosition::calculateConcForJunctionCar(uint index, uint oldSpeed, uint speed)
+{
+	addConcToArrayOrVector(index, 1.0);
+}
 
 

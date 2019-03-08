@@ -155,14 +155,12 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    std::ifstream stream;
-    stream.open(configPath.c_str(), std::ios::in);
-    //if (stream.fail())
-        throw std::runtime_error("can not open config file!");
+    //std::ifstream stream;
+    //stream.open(configPath.c_str(), std::ios::in);
+    ////if (stream.fail())
+    //    throw std::runtime_error("can not open config file!");
 
-    UPtr<input::Input> input = input::Input::makeInput(stream, "config");
-
-    setParameters(para, input);
+    //UPtr<input::Input> input = input::Input::makeInput(stream, "config");
 
     Simulation sim;
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());

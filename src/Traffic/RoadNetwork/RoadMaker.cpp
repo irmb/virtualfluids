@@ -109,7 +109,7 @@ void RoadMaker::initRandomCars(const float vehicleDensity)
 	//this method doesn't fill the first cells, so that the safetyDistance isn't violated in a periodic road
 	for (uint i = safetyDistance; i < roadLength; i++) {
 		double randomNumber = distFloat(engine);
-		if (randomNumber <= (vehicleDensity/vehicleLength)) {
+		if (randomNumber <= vehicleDensity) {
 			current[i] = randomSpeed();
 			i += safetyDistance;
 		}

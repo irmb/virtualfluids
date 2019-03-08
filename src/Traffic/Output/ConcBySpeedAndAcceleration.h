@@ -7,10 +7,16 @@ class VF_PUBLIC ConcBySpeedAndAcceleration :
 	public ConcentrationOutwriter
 {
 public:
-	ConcBySpeedAndAcceleration(uint roadlength, uint maxSpeed, uint maxAcceleration);
+	ConcBySpeedAndAcceleration(uint roadlength, uint maxSpeed);
+	ConcBySpeedAndAcceleration(uint roadlength, float* concArrayStart, uint concArraySize, uint maxSpeed);	
 	~ConcBySpeedAndAcceleration() {};
 
-	virtual void calculateConcForSingleCar(uint index, uint speed, uint acceleration);
+	virtual void calculateConcForSingleCar(uint index, uint oldSpeed, uint speed);
+	virtual void calculateConcForJunctionCar(uint index, uint oldSpeed, uint speed);
+
+
+private:
+	float chooseConc(uint oldSpeed, uint speed);
 
 private:
 	float maxSpeed = 0;
