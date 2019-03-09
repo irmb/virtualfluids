@@ -20,7 +20,7 @@ public:
 private:
 	PhiTestPostProcessingStrategy(std::shared_ptr<SimulationResults> simResult, std::shared_ptr<AnalyticalResults> analyticalResult, std::shared_ptr<PhiTestParameterStruct> testPara, std::vector<std::string> dataToCalcTests);
 	
-	std::vector<std::vector<double> > reduceDataToTimeSteps(std::vector<std::vector<double> > data, unsigned int startTimeStep, unsigned int endTimeStep);
+	std::vector<std::vector<double> > reduceDataToTimeSteps(std::vector<std::vector<double> > data);
 
 	std::shared_ptr<AnalyticalResults> analyticalResult;
 	std::vector<std::string> dataToCalculate;
