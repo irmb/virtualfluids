@@ -82,6 +82,16 @@ void TimeAveragedValuesCoProcessor::init()
    {
       initData();
    }
+   else
+   {
+      blockVector.clear();
+      blockVector.resize(maxInitLevel + 1);
+      for (int level = minInitLevel; level <= maxInitLevel; level++)
+      {
+         grid->getBlocks(level, gridRank, true, blockVector[level]);
+         if (blockVector[level].size() > 0) compressible = blockVector[level][0]->getKernel()->getCompressible();
+      }
+   }
 }
 //////////////////////////////////////////////////////////////////////////
 void TimeAveragedValuesCoProcessor::initData()

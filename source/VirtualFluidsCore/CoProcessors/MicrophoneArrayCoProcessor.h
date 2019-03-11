@@ -29,24 +29,26 @@ public:
    void process(double step) override;
 
    //! add microphone
-   void addMicrophone(Vector3D coords);
+   bool addMicrophone(Vector3D coords);
 protected:
    void collectData(double step);
    void writeFile(double step);
 private:
-   std::string path; //! output filename, e.g.  pathname + "/steps/timeseries"
+   std::string path; 
    SPtr<Communicator> comm;
 
    struct Mic
    {
+      unsigned int id;
       SPtr<DistributionArray3D> distridution;
       UbTupleInt3 nodeIndexes;
    };
    std::vector< SPtr<Mic> > microphones;
 
-   std::vector< double > values;
+   std::vector<std::stringstream* > strVector;
 
    int count;
+   int micID;
 
    typedef void(*CalcMacrosFct)(const LBMReal* const& /*feq[27]*/, LBMReal& /*(d)rho*/, LBMReal& /*vx1*/, LBMReal& /*vx2*/, LBMReal& /*vx3*/);
    CalcMacrosFct calcMacros;
