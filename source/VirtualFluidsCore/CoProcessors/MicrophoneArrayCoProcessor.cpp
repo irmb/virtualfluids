@@ -10,6 +10,7 @@
 #include "UbScheduler.h"
 #include "BCProcessor.h"
 #include "BCArray3D.h"
+#include <sstream>
 
 MicrophoneArrayCoProcessor::MicrophoneArrayCoProcessor(SPtr<Grid3D> grid, SPtr<UbScheduler> s, const std::string & path, SPtr<Communicator> comm) : CoProcessor(grid, s), path(path), comm(comm)
 {
@@ -70,7 +71,7 @@ bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
                mic->nodeIndexes = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
                microphones.push_back(mic);
 
-               strVector.resize(microphones.size());
+               strVector.push_back(new std::stringstream);
 
                std::string fname = path+"/mic/mic_"+UbSystem::toString(micID)+".csv";
                std::ofstream ostr;
@@ -100,7 +101,7 @@ void MicrophoneArrayCoProcessor::collectData(double step)
       microphones[i]->distridution->getDistribution(f, val<1>(microphones[i]->nodeIndexes), val<2>(microphones[i]->nodeIndexes), val<3>(microphones[i]->nodeIndexes));
       LBMReal vx1, vx2, vx3, rho;
       calcMacros(f, rho, vx1, vx2, vx3);
-      strVector[i] << step << ';' << rho << '\n';
+      *strVector[i] << step << ';' << rho << '\n';
    }
 }
 
@@ -118,7 +119,7 @@ void MicrophoneArrayCoProcessor::writeFile(double step)
          if (path.size()>0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::ios_base::app); }
          if (!ostr) throw UbException(UB_EXARGS, "couldn't open file "+fname);
       }
-      ostr << strVector[i].str();
+      ostr << strVector[i]->str();
       ostr.close();
    }
 }

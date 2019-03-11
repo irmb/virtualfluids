@@ -45,7 +45,7 @@ private:
    };
    std::vector< SPtr<Mic> > microphones;
 
-   std::vector<std::stringstream > strVector;
+   std::vector<std::stringstream* > strVector;
 
    int count;
    int micID;
