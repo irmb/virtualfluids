@@ -1,8 +1,8 @@
 #pragma once
-#include <VirtualFluidsDefinitions.h>
-
 #include <random> 
 #include <vector>
+
+#include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"
 
 #include "Junction.h"

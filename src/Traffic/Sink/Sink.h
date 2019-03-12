@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SinkData.h"
-#include <VirtualFluidsDefinitions.h>
 
 class VF_PUBLIC Sink
 {

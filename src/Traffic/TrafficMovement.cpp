@@ -1,5 +1,13 @@
 #include "TrafficMovement.h"
 
+#include <iostream>
+#include <stdexcept>
+
+#include "Utilities/invalidInput_error.h"
+#include "Utilities/VectorHelper.h"
+#include "Utilities/RandomHelper.h"
+#include "Output/ConcentrationOutwriter.h"
+#include "Output/CarDisplay.h"
 
 TrafficMovement::TrafficMovement(std::unique_ptr<RoadNetworkData> road, const real dawdlePossibility)
 {

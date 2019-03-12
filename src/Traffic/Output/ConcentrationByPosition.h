@@ -1,5 +1,4 @@
 #pragma once
-#include <VirtualFluidsDefinitions.h>
 
 #include "ConcentrationOutwriter.h"
 

@@ -1,7 +1,6 @@
 # pragma once
 //#include <VirtualFluidsDefinitions.h>
 
-#include <iostream>
 #include <vector>
 #include <memory>
 
@@ -15,8 +14,8 @@ class VF_PUBLIC TrafficMovementFactory {
 public:
 	TrafficMovementFactory();
 	~TrafficMovementFactory() {};
-	void initTrafficMovement(real * pconcArrayStart = nullptr, uint concArraySize = 0);
-	void calculateTimestep(uint step);
+	void initTrafficMovement(real * pconcArrayStart = nullptr);
+	void calculateTimestep(uint step, uint stepForVTK);
 
 
 private:

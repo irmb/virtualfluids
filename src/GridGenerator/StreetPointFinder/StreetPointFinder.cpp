@@ -471,7 +471,3 @@ void StreetPointFinder::writeMappingFile(std::string gridPath)
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void StreetPointFinder::dummy()
-{
-	int a = 5;
-}

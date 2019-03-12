@@ -1,12 +1,12 @@
 #pragma once
-#include <VirtualFluidsDefinitions.h>
-#include "Core/DataTypes.h"
-
 #include <vector>
 #include <iostream>
 
 #include <windows.h> //for colourful console output
 #include <iomanip>	//formatting output streams
+
+#include <VirtualFluidsDefinitions.h>
+#include "Core/DataTypes.h"
 
 class VF_PUBLIC VectorHelper
 {

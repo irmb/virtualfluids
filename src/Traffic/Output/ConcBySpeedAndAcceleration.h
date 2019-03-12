@@ -1,5 +1,4 @@
 #pragma once
-#include <VirtualFluidsDefinitions.h>
 
 #include "ConcentrationOutwriter.h"
 
@@ -20,6 +19,5 @@ private:
 
 private:
 	real maxSpeed = 0;
-	real maxAcceleration;
 };
 

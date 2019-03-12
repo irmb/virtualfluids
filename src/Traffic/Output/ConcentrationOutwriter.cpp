@@ -1,5 +1,8 @@
 #include "ConcentrationOutwriter.h"
 
+#include <iostream>
+#include <iomanip>	//formatting output streams
+#include <windows.h> //for colourful console output
 
 void ConcentrationOutwriter::resetConcentrations()
 {
@@ -7,7 +10,7 @@ void ConcentrationOutwriter::resetConcentrations()
 		for (real* p = concArrayStart; p < concArrayStart + roadLength; ++p)
 			*p = 0.0;
 	else
-		std::fill(concentration.begin(), concentration.end(), 0.0);
+		std::fill(concentration.begin(), concentration.end(), 0.0f);
 }
 
 

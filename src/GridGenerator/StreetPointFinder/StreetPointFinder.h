@@ -6,8 +6,6 @@
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
 
-//#include "Core/Logger/Logger.h"
-
 #include <VirtualFluidsDefinitions.h>
 
 class Grid;
@@ -59,10 +57,6 @@ struct VF_PUBLIC StreetPointFinder
     void writeSimulationFileSorted( std::string gridPath, real concentration, uint numberOfLevels, uint level );
 
     void writeMappingFile( std::string gridPath );
-
-
-
-	void dummy();
 };
 
 

@@ -1,7 +1,7 @@
 #include "TrafficMovementFactory.h"
 
+#include <iostream>
 
-//#include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
 #include "GridGenerator/StreetPointFinder/JunctionReader.h"
 #include "GridGenerator/StreetPointFinder/SourceReader.h"
 #include "GridGenerator/StreetPointFinder/SinkReader.h"
@@ -13,13 +13,14 @@
 #include "Sink/SinkRandom.h"
 #include "Output/ConcentrationByPosition.h"
 #include "Output/ConcBySpeedAndAcceleration.h"
+#include "Utilities/safe_casting.h"
 
 
 TrafficMovementFactory::TrafficMovementFactory()
 {
 }
 
-void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart, uint concArraySize)
+void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart)
 {
 	//Variables
 
@@ -47,7 +48,7 @@ void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart, uint co
 
 	//calculate RoadLength
 	uint roadLength = 0;
-	uint numberOfStreets = finder.streets.size();
+	uint numberOfStreets = castSizeT_Uint(finder.streets.size());
 	for (uint i = 0; i < numberOfStreets; i++) {
 		roadLength += finder.streets[i].numberOfCells;
 	}
@@ -86,8 +87,7 @@ void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart, uint co
 
 
 	//init ConcentrationOutwriter
-	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), simulator->getMaxVelocity()));
-	//std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcentrationByPosition>(ConcentrationByPosition(simulator->getRoadLength()), pconcArrayStart, concArraySize);
+	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
 	simulator->setConcentrationOutwriter(move(writer));
 
 	//prepare writing to vtk
@@ -99,9 +99,9 @@ void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart, uint co
 
 }
 
-void TrafficMovementFactory::calculateTimestep(uint step)
+void TrafficMovementFactory::calculateTimestep(uint step, uint stepForVTK)
 {
 	simulator->calculateTimestep(step);
 	simulator->visualizeVehicleLengthForVTK();
-	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(step) + ".vtk", *cars);
+	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }

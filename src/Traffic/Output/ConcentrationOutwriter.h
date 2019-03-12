@@ -1,9 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
-#include <iomanip>	//formatting output streams
-#include <windows.h> //for colourful console output
 
 #include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"

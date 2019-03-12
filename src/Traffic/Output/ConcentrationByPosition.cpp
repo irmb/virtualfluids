@@ -1,17 +1,26 @@
 #include "ConcentrationByPosition.h"
 
-
+#include <iostream>
 
 ConcentrationByPosition::ConcentrationByPosition(uint roadlength, uint maxSpeed)
 {
+	std::cout << "using ConcentrationByPosition::concentration for concentrations" << std::endl;
 	concentration.resize(roadlength);
 }
 
 ConcentrationByPosition::ConcentrationByPosition(uint roadlength, real * concArrayStart, uint maxSpeed)
 {
-	useLBMConcArray = true;
-	this->roadLength = roadLength;
-	this->concArrayStart = concArrayStart;
+	if (concArrayStart == nullptr) {
+		std::cout << "using ConcentrationByPosition::concentration for concentrations" << std::endl;
+		concentration.resize(roadlength);
+	}
+	else {
+		std::cout << "using passed array for concentrations" << std::endl;
+		useLBMConcArray = true;
+		this->roadLength = roadLength;
+		this->concArrayStart = concArrayStart;
+	}
+
 }
 
 //void ConcentrationByPosition::calculateConcFromCarDistribution(const std::vector<int>& currentCarDistribution)

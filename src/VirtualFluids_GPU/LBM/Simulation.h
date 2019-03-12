@@ -21,6 +21,7 @@ class RestartPostprocessor;
 class ForceCalculations;
 class DataWriter;
 class Kernel;
+class TrafficMovementFactory;
 
 
 class VF_PUBLIC Simulation
@@ -89,6 +90,7 @@ protected:
 	////////////////////////////////////////////////////////////////////////////
 	EnstrophyAnalyzer *enstrophyWriter;
 	////////////////////////////////////////////////////////////////////////////
+	TrafficMovementFactory *factory;
 
  };
 #endif

@@ -1,11 +1,13 @@
 #include "JunctionRandom.h"
 
-//#include <iostream>
+#include <iostream>
 #include <algorithm>
 
 #include "TrafficMovement.h"
-//#include "Utilities/invalidInput_error.h"
-//#include "Utilities/VectorHelper.h"
+
+#include "Utilities/invalidInput_error.h"
+#include "Utilities/VectorHelper.h"
+#include "Utilities/safe_casting.h"
 
 
 JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices)
@@ -13,7 +15,7 @@ JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std
 	data.inCellIndices = inCellIndices;
 	data.outCellIndices = outCellIndices;
 
-	uint inRoads = inCellIndices.size();
+	uint inRoads = castSizeT_Uint(inCellIndices.size());
 
 	data.carCanEnter.resize(inRoads);
 	std::fill(data.carCanEnter.begin(), data.carCanEnter.end(), true);
@@ -69,7 +71,7 @@ uint JunctionRandom::getInCellsVectorIndex(uint cellIndex)
 
 		if (it != data.inCellIndices.end())
 		{
-			return distance(data.inCellIndices.begin(), it);
+			return static_cast <uint> (distance(data.inCellIndices.begin(), it));
 		}
 
 		throw std::runtime_error("The passed cell is not an incoming cell to this junction.");

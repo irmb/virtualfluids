@@ -1,19 +1,13 @@
 #pragma once
 #include <VirtualFluidsDefinitions.h>
 
-#include <fstream>
-#include <iostream>
 #include <vector>
 #include <memory>
-#include <iomanip>	//formatting output streams
-#include <windows.h> //for colourful console output
-#include <stdexcept>
 
 #include "Sink/Sink.h"
 #include "Source/Source.h"
 #include "Junction/Junction.h"
 
-#include "Utilities/VectorHelper.h"
 
 class VF_PUBLIC CarDisplay {
 public:

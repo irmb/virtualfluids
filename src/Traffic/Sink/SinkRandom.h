@@ -1,13 +1,11 @@
 #pragma once
 
-#include <VirtualFluidsDefinitions.h>
-
 #include <iostream>
 #include <random>
 
-#include "Utilities/RandomHelper.h"
 #include "Sink.h"
-#include "Utilities/invalidInput_error.h"
+
+#include "Utilities/RandomHelper.h"
 
 class VF_PUBLIC SinkRandom:
 	public Sink

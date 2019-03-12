@@ -12,21 +12,21 @@
 
 int main()
 {
-		uint numberOfTimesteps = 50;
+		uint numberOfTimesteps = 5;
 
 
 		//Logger
+		logging::Logger::addStream(&std::cout);
+		logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+		logging::Logger::timeStamp(logging::Logger::ENABLE);
+		logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-		//logging::Logger::addStream(&std::cout);
-		//logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-		//logging::Logger::timeStamp(logging::Logger::ENABLE);
-		//logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
 		TrafficMovementFactory factory = TrafficMovementFactory();
 		factory.initTrafficMovement();
 
 		for (uint step = 1; step <= numberOfTimesteps; step++) {
-			factory.calculateTimestep(step);
+			factory.calculateTimestep(step,step);
 		}
 
 		std::cout << std::endl << std::endl;

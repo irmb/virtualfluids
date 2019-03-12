@@ -1,22 +1,18 @@
 #pragma once
-#include <VirtualFluidsDefinitions.h>
-
-#include <iostream>
 
 #include <vector>
 #include <random> 
 #include <memory>
-#include <stdexcept>
 
-#include "Utilities/invalidInput_error.h"
-#include "Utilities/VectorHelper.h"
-#include "Utilities/RandomHelper.h"
+#include <VirtualFluidsDefinitions.h>
+#include "Core/DataTypes.h"
+
 #include "RoadNetwork/RoadNetworkData.h"
-#include "Output/ConcentrationOutwriter.h"
-#include "Output/CarDisplay.h"
 
+class ConcentrationOutwriter;
+class CarDisplay;
 
-class VF_PUBLIC TrafficMovement 
+class VF_PUBLIC TrafficMovement
 {
 public:
 	TrafficMovement(std::unique_ptr<RoadNetworkData> road, const real dawdlePossibility);
@@ -90,7 +86,7 @@ private:
 
 	std::vector<int> *pcurrent;
 	std::vector<int> *pnext;
-	std::vector<int> *pdummy; 
+	std::vector<int> *pdummy;
 
 	real dawdlePossibility;
 

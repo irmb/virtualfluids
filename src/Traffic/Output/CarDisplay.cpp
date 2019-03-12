@@ -1,10 +1,19 @@
 #include "CarDisplay.h"
 
+#include <fstream>
+#include <iostream>
+#include <iomanip>	//formatting output streams
+#include <windows.h> //for colourful console output
+#include <stdexcept>
+
+#include "Utilities/VectorHelper.h"
+#include "Utilities/safe_casting.h"
+
 CarDisplay::CarDisplay(std::vector<int> **pcurrent, const uint safetyDistance):
 	safetyDistance{ safetyDistance }
 {
 	this->ppcurrent = pcurrent;
-	roadLength = (*pcurrent)->size();
+	roadLength = castSizeT_Uint((*pcurrent)->size());
 }
 
 

@@ -1,5 +1,8 @@
 #include "RoadMaker.h"
 
+#include "Utilities/VectorHelper.h"
+#include "Utilities/invalidInput_error.h"
+#include "Utilities/safe_casting.h"
 
 //random vehicle Distribution
 RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const real vehicleDensity)
@@ -24,7 +27,7 @@ RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicle
 //given vehicle distribution
 RoadMaker::RoadMaker(const std::vector<int> vehicleDistribution, const uint maxVelocity, uint vehicleLength)
 {
-	this->roadLength = vehicleDistribution.size();
+	this->roadLength = castSizeT_Uint(vehicleDistribution.size());
 
 	this->maxVelocity = maxVelocity;
 	initVehicleLength(vehicleLength);
@@ -168,7 +171,7 @@ void RoadMaker::setJunctionAsNeighbor(std::unique_ptr<Junction> & junction)
 {
 	//set the junction as neighbor of the incoming cells
 
-	int junctionIndex = -1000 - junctions.size(); //value range: -1000 to -1999
+	int junctionIndex = -1000 - castSizeT_Int(junctions.size()); //value range: -1000 to -1999
 	std::vector<uint> inCells = junction->getInCellIndices();
 
 	try {
@@ -221,7 +224,7 @@ void RoadMaker::setSinkAsNeighbor(std::unique_ptr<Sink> & sink)
 {
 	//set the sink as neighbor of the incoming cell
 
-	int sinkIndex = -2000 - sinks.size(); //value range: -2000 to -2999
+	int sinkIndex = -2000 - castSizeT_Int(sinks.size()); //value range: -2000 to -2999
 	uint sinkCell = sink->getIndex();
 
 	if (sinkCell >= roadLength) throw invalidInput_error("The index of a sink ist greater than the roadLength.");

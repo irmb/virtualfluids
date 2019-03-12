@@ -2,10 +2,8 @@
 #include <memory>
 #include <vector>
 
-#include "Utilities/VectorHelper.h"
-#include "Utilities/invalidInput_error.h"
-
 #include <VirtualFluidsDefinitions.h>
+
 
 #include "Source/Source.h"
 #include "Sink/Sink.h"
