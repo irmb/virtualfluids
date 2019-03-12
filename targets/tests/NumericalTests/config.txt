@@ -6,8 +6,8 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantAA2016CompSP27 "
-#  CumulantAll4CompSP27 CumulantOneCompSP27 CumulantF32018CompSP27 CumulantF3CompSP27
+KernelsToTest="CumulantF3CompSP27 BGKCompSP27 BGKPlusCompSP27"
+#BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
 Viscosity="0.001"
 Rho0=1.0
@@ -16,14 +16,14 @@ Rho0=1.0
 #	    TaylorGreenVortex Parameter				 #
 ##################################################
 BasisTimeStepLength_TGV_Ux="1000"
-ux_TGV_Ux="0.032"
-Amplitude_TGV_Ux="0.01"
+ux_TGV_Ux="0.096"
+Amplitude_TGV_Ux="0.001"
 l0_TGV_Ux=32
 DataToCalcTests_TGV_Ux="Vx Vz"
 
 BasisTimeStepLength_TGV_Uz="1000"
 uz_TGV_Uz="0.048"
-Amplitude_TGV_Uz="0.01"
+Amplitude_TGV_Uz="0.001"
 l0_TGV_Uz=48
 DataToCalcTests_TGV_Uz="Vx Vz"
 
@@ -31,7 +31,7 @@ DataToCalcTests_TGV_Uz="Vx Vz"
 #	       Shear Wave Parameter					 #
 ##################################################
 BasisTimeStepLength_SW="1000"
-u0_SW="0.032"
+u0_SW="0.096"
 v0_SW="0.1"
 l0_SW=32
 DataToCalcTests_SW="Vy"
@@ -82,10 +82,10 @@ NormalizeWith=amplitude
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortexUx32=true
-TaylorGreenVortexUx64=true
-TaylorGreenVortexUx128=true
-TaylorGreenVortexUx256=true
+TaylorGreenVortexUx32=false
+TaylorGreenVortexUx64=false
+TaylorGreenVortexUx128=false
+TaylorGreenVortexUx256=false
 TaylorGreenVortexUx512=false
 
 TaylorGreenVortexUz32=false
@@ -94,10 +94,10 @@ TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=false
-ShearWave64=false
-ShearWave128=false
-ShearWave256=false
+ShearWave32=true
+ShearWave64=true
+ShearWave128=true
+ShearWave256=true
 ShearWave512=false
 
 ##################################################
@@ -114,10 +114,10 @@ GridPath512="C:\Users\Timon\Documents\studienarbeitIRMB\grids\gridUni512x4x768"
 ##################################################
 # 			File Writing Information			 #
 ##################################################
-WriteVTKFiles=true
+WriteVTKFiles=false
 PathForVTKFileWriting="C:\Users\Timon\Documents\studienarbeitIRMB\Output"
 StartStepFileWriter=0
 
 WriteAnalyResultsToVTK=true
 
-PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
+PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles\KleinerTest"

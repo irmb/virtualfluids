@@ -47,18 +47,20 @@ void PhiTestPostProcessingStrategy::evaluate()
 		int zNodes = simResult->getNumberOfZNodes();
 		int timeStepLength = simResult->getTimeStepLength();
 		for (int i = 0; i < dataToCalculate.size(); i++) {
-			std::vector<std::vector<double>> dataForCalculation;
+			std::vector<std::vector<double>> basicData;
 			if (dataToCalculate.at(i) == "Vx")
-				dataForCalculation = reduceDataToTimeSteps(simResult->getVx());
+				basicData = simResult->getVx();
 			if (dataToCalculate.at(i) == "Vy")
-				dataForCalculation = reduceDataToTimeSteps(simResult->getVy());
+				basicData = simResult->getVy();
 			if (dataToCalculate.at(i) == "Vz") 
-				dataForCalculation = reduceDataToTimeSteps(simResult->getVz());
+				basicData = simResult->getVz();
 			if (dataToCalculate.at(i) == "Press")
-				dataForCalculation = reduceDataToTimeSteps(simResult->getPress());
+				basicData = simResult->getPress();
 			if (dataToCalculate.at(i) == "Rho")
-				dataForCalculation = reduceDataToTimeSteps(simResult->getRho());
+				basicData = simResult->getRho();
 
+			std::vector<std::vector<double>> dataForCalculation;
+			dataForCalculation = reduceDataToTimeSteps(basicData);
 			phiDiff.at(i) = fftCalculator->calcPhiDiff(dataForCalculation, transpose, xNodes, zNodes, timeStepLength);
 		}
 		isEvaluated = true;
