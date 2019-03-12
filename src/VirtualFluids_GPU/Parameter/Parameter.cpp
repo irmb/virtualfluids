@@ -2765,28 +2765,33 @@ void Parameter::cudaFreePlaneConc(int lev)
 //concentration file
 void Parameter::cudaAllocConcFile(int lev)
 {
-	unsigned int mem_size_int    = sizeof(unsigned int) * parH[lev]->numberOfPointsConc;
+	unsigned int mem_size_int  = sizeof(unsigned int) * parH[lev]->numberOfPointsConc;
+	unsigned int mem_size_real = sizeof(real)         * parH[lev]->numberOfPointsConc;
 
-	printf("numberOfPointsConc = %d \n", mem_size_int);
 	//Host
-	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->concIndex), mem_size_int     ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->concIndex),     mem_size_int  ));
+	checkCudaErrors( cudaMallocHost((void**) &(parH[lev]->concentration), mem_size_real ));
 
 	//Device
-	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->concIndex), mem_size_int         ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->concIndex),     mem_size_int  ));
+	checkCudaErrors( cudaMalloc((void**) &(parD[lev]->concentration), mem_size_real ));
 
 	//////////////////////////////////////////////////////////////////////////
-	double tmp = (double)mem_size_int;
+	double tmp = (double)mem_size_int + (double)mem_size_real;
 	setMemsizeGPU(tmp, false);
 }
 void Parameter::cudaCopyConcFile(int lev)
 {
-	unsigned int mem_size_int    = sizeof(unsigned int) * parH[lev]->numberOfPointsConc;
+	unsigned int mem_size_int  = sizeof(unsigned int) * parH[lev]->numberOfPointsConc;
+	unsigned int mem_size_real = sizeof(real)         * parH[lev]->numberOfPointsConc;
 
-	checkCudaErrors( cudaMemcpy(parD[lev]->concIndex, parH[lev]->concIndex, mem_size_int,    cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->concIndex,     parH[lev]->concIndex,     mem_size_int,  cudaMemcpyHostToDevice));
+	checkCudaErrors( cudaMemcpy(parD[lev]->concentration, parH[lev]->concentration, mem_size_real, cudaMemcpyHostToDevice));
 }
 void Parameter::cudaFreeConcFile(int lev)
 {
-	checkCudaErrors( cudaFreeHost(parH[lev]->concIndex));
+	checkCudaErrors( cudaFreeHost(parH[lev]->concIndex     ));
+	checkCudaErrors( cudaFreeHost(parH[lev]->concentration ));
 }
 //////////////////////////////////////////////////////////////////////////
 

@@ -2781,7 +2781,7 @@ extern "C" __global__ void QADDirichlet27(	 int inx,
       real feq27_BSE  =   c1over216*ConcD*(one+three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cu_sq);
       real feq27_TNW  =   c1over216*ConcD*(one+three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cu_sq);
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      real TempD = one;//temp[k];
+      real TempD = temp[k];//one;//temp[k];
 
       //real feqW27_ZERO =   c8over27* TempD*(one-cu_sq);
       real feqW27_E    =   c2over27* TempD*(one+three*( vx1        )+c9over2*( vx1        )*( vx1        )-cu_sq);
