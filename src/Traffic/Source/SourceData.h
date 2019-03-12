@@ -8,6 +8,6 @@
 
 struct VF_PUBLIC SourceData {
 	uint sourceIndex;
-	float sourcePossibility;
+	real sourcePossibility;
 	uint maxVelocity;
 };

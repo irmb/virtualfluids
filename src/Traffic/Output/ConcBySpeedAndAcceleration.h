@@ -8,7 +8,7 @@ class VF_PUBLIC ConcBySpeedAndAcceleration :
 {
 public:
 	ConcBySpeedAndAcceleration(uint roadlength, uint maxSpeed);
-	ConcBySpeedAndAcceleration(uint roadlength, float* concArrayStart, uint concArraySize, uint maxSpeed);	
+	ConcBySpeedAndAcceleration(uint roadlength, real* concArrayStart, uint maxSpeed=0);	
 	~ConcBySpeedAndAcceleration() {};
 
 	virtual void calculateConcForSingleCar(uint index, uint oldSpeed, uint speed);
@@ -16,10 +16,10 @@ public:
 
 
 private:
-	float chooseConc(uint oldSpeed, uint speed);
+	real chooseConc(uint oldSpeed, uint speed);
 
 private:
-	float maxSpeed = 0;
-	float maxAcceleration;
+	real maxSpeed = 0;
+	real maxAcceleration;
 };
 

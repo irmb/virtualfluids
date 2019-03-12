@@ -2,7 +2,7 @@
 
 
 
-SinkRandom::SinkRandom(uint sinkIndex, float sinkBlockedPossibility)
+SinkRandom::SinkRandom(uint sinkIndex, real sinkBlockedPossibility)
 {
 	data.sinkIndex = sinkIndex;
 
@@ -28,7 +28,7 @@ bool SinkRandom::carCanEnter()
 }
 
 
-float SinkRandom::getPossibilityBeingBlocked() const
+real SinkRandom::getPossibilityBeingBlocked() const
 {
 	return data.sinkBlockedPossibility;
 }

@@ -6,7 +6,7 @@
 class VF_PUBLIC Sink
 {
 public:
-	virtual float getPossibilityBeingBlocked() const = 0;
+	virtual real getPossibilityBeingBlocked() const = 0;
 	virtual bool carCanEnter() = 0;
 	virtual uint getIndex() const = 0;
 };

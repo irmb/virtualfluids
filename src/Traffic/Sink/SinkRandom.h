@@ -19,10 +19,10 @@ private:
 	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
 
 public:
-	SinkRandom(uint sinkIndex, float sinkBlockedPossibility);
+	SinkRandom(uint sinkIndex, real sinkBlockedPossibility);
 	~SinkRandom() {};
 
-	float getPossibilityBeingBlocked() const;
+	real getPossibilityBeingBlocked() const;
 	bool carCanEnter();
 	uint getIndex() const;
 };

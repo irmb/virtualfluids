@@ -1,7 +1,7 @@
 setTargetNameToFolderName(${CMAKE_CURRENT_LIST_DIR}) 
 
 set(linkDirectories "")
-set(libsToLink Traffic GridGenerator Core)
+set(libsToLink Traffic)
 set(includeDirectories "${CMAKE_SOURCE_DIR}/src" 
                        "${CMAKE_SOURCE_DIR}/src/Traffic"
                        "${CMAKE_SOURCE_DIR}/src/GridGenerator"

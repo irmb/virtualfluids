@@ -8,7 +8,7 @@ struct VF_PUBLIC RoadMaker :
 	public RoadNetworkData
 {
 public:
-	RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const float vehicleDensity); //random vehicle Distribution
+	RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const real vehicleDensity); //random vehicle Distribution
 	RoadMaker(const std::vector<int> vehicleDistribution, const uint maxVelocity, uint vehicleLength); //given vehicle distribution
 	RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength);//empty road
 
@@ -27,7 +27,7 @@ public:
 
 private:
 	std::mt19937 engine = RandomHelper::make_engine();
-	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
+	std::uniform_real_distribution<real> distFloat{ 0.0, 1.0 };
 	std::uniform_int_distribution<uint> distInt{ 0, maxVelocity };
 
 private:
@@ -35,8 +35,8 @@ private:
 	void initNeighbors();
 	void initCurrentAsEmpty();
 	void initCurrentWithLongVehicles();
-	void initVehicleDensity(const float vehicleDensity);
-	void initRandomCars(const float vehicleDensity);
+	void initVehicleDensity(const real vehicleDensity);
+	void initRandomCars(const real vehicleDensity);
 	void initVehicleLength(const uint vehicleLength);
 	int randomSpeed();
 

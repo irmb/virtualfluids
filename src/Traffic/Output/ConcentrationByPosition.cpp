@@ -7,10 +7,10 @@ ConcentrationByPosition::ConcentrationByPosition(uint roadlength, uint maxSpeed)
 	concentration.resize(roadlength);
 }
 
-ConcentrationByPosition::ConcentrationByPosition(uint roadlength, float * concArrayStart, uint concArraySize, uint maxSpeed)
+ConcentrationByPosition::ConcentrationByPosition(uint roadlength, real * concArrayStart, uint maxSpeed)
 {
 	useLBMConcArray = true;
-	this->concArraySize = concArraySize;
+	this->roadLength = roadLength;
 	this->concArrayStart = concArrayStart;
 }
 

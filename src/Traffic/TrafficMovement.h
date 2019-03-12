@@ -16,16 +16,16 @@
 #include "Output/CarDisplay.h"
 
 
-class VF_PUBLIC TrafficMovement //Periodic BC
+class VF_PUBLIC TrafficMovement 
 {
 public:
-	TrafficMovement(std::unique_ptr<RoadNetworkData> road, const float dawdlePossibility);
+	TrafficMovement(std::unique_ptr<RoadNetworkData> road, const real dawdlePossibility);
 	//TrafficMovement() {};
 	TrafficMovement(const TrafficMovement&) = delete;
 	~TrafficMovement();
 
 	//setUp
-	void setSlowToStart(const float slowStartPossibility);
+	void setSlowToStart(const real slowStartPossibility);
 	void setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer);
 	void setSaveResultsTrue(uint timeSteps);
 
@@ -46,12 +46,12 @@ public:
 
 	//vtk
 	void visualizeVehicleLengthForVTK();
-	const std::vector<int>& getVehiclesForVTK();
+	const std::vector<int> & getVehiclesForVTK();
 
 
 private:
 	//init
-	void initDawdle(const float dawdlePossibility);
+	void initDawdle(const real dawdlePossibility);
 	void checkCurrentForSafetyDistance();
 
 	//calculate timestep
@@ -92,15 +92,15 @@ private:
 	std::vector<int> *pnext;
 	std::vector<int> *pdummy; 
 
-	float dawdlePossibility;
+	real dawdlePossibility;
 
 	bool useSlowToStart = false;
-	float slowStartPossibility;
+	real slowStartPossibility;
 
 	uint currentStep;
 
 	std::mt19937 engine = RandomHelper::make_engine();
-	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
+	std::uniform_real_distribution<real> distFloat{ 0.0, 1.0 };
 
 private:
 	//temporary variables for calculation

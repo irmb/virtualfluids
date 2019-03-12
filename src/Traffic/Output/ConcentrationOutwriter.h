@@ -8,8 +8,6 @@
 #include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"
 
-#include "DrivingStates.h"
-
 class VF_PUBLIC ConcentrationOutwriter
 {
 public:
@@ -20,18 +18,17 @@ public:
 	void dispConcentrations();
 
 protected:
-	void putConcIntoArrayOrVector(uint index, float conc);
-	void addConcToArrayOrVector(uint index, float conc);
+	void putConcIntoArrayOrVector(uint index, real conc);
+	void addConcToArrayOrVector(uint index, real conc);
 
 protected:
-	std::vector<float> concentration;
+	std::vector<real> concentration;
 	bool useLBMConcArray = false;
-	float* concArrayStart;
-	uint concArraySize;
-
+	real* concArrayStart;
+	uint roadLength;
 
 private:
-	void dispSingleConcentration(float conc);
+	void dispSingleConcentration(real conc);
 	
 };
 

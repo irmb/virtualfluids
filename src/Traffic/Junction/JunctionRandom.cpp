@@ -1,5 +1,11 @@
 #include "JunctionRandom.h"
 
+//#include <iostream>
+#include <algorithm>
+
+#include "TrafficMovement.h"
+//#include "Utilities/invalidInput_error.h"
+//#include "Utilities/VectorHelper.h"
 
 
 JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices)

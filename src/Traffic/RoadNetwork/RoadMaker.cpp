@@ -2,7 +2,7 @@
 
 
 //random vehicle Distribution
-RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const float vehicleDensity)
+RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const real vehicleDensity)
 {
 	std::uniform_int_distribution<uint> distInt2{ 0, maxVelocity };
 	distInt = distInt2;
@@ -86,7 +86,7 @@ void RoadMaker::initCurrentWithLongVehicles()
 }
 
 
-void RoadMaker::initVehicleDensity(const float vehicleDensity)
+void RoadMaker::initVehicleDensity(const real vehicleDensity)
 {
 	try {
 		if (vehicleDensity > 0 && vehicleDensity < 1) {
@@ -104,7 +104,7 @@ void RoadMaker::initVehicleDensity(const float vehicleDensity)
 }
 
 
-void RoadMaker::initRandomCars(const float vehicleDensity)
+void RoadMaker::initRandomCars(const real vehicleDensity)
 {
 	//this method doesn't fill the first cells, so that the safetyDistance isn't violated in a periodic road
 	for (uint i = safetyDistance; i < roadLength; i++) {

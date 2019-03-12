@@ -1,7 +1,7 @@
 #include "TrafficMovement.h"
 
 
-TrafficMovement::TrafficMovement(std::unique_ptr<RoadNetworkData> road, const float dawdlePossibility)
+TrafficMovement::TrafficMovement(std::unique_ptr<RoadNetworkData> road, const real dawdlePossibility)
 {
 	this->road = std::move(road);
 
@@ -22,7 +22,7 @@ TrafficMovement::~TrafficMovement()
 }
 
 
-void TrafficMovement::initDawdle(const float dawdlePossibility)
+void TrafficMovement::initDawdle(const real dawdlePossibility)
 {
 	try {
 		if (dawdlePossibility >= 0 && dawdlePossibility < 1) {
@@ -40,7 +40,7 @@ void TrafficMovement::initDawdle(const float dawdlePossibility)
 }
 
 
-void TrafficMovement::setSlowToStart(const float slowStartPossibility)
+void TrafficMovement::setSlowToStart(const real slowStartPossibility)
 {
 	try {
 		if (slowStartPossibility >= 0 && slowStartPossibility < 1) {
@@ -420,7 +420,7 @@ void TrafficMovement::checkCurrentForSafetyDistance()
 }
 
 
-const std::vector<int>& TrafficMovement::getVehiclesForVTK()
+const std::vector<int> & TrafficMovement::getVehiclesForVTK()
 {
 	return road->currentWithLongVehicles;
 }

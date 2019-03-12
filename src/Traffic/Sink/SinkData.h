@@ -7,5 +7,5 @@
 
 struct VF_PUBLIC SinkData {
 	uint sinkIndex;
-	float sinkBlockedPossibility;
+	real sinkBlockedPossibility;
 };

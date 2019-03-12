@@ -1,16 +1,13 @@
 #pragma once
 #include <VirtualFluidsDefinitions.h>
 
-#include <vector>
-#include <iostream>
 #include <random> 
-#include <algorithm>
+#include <vector>
+#include "Core/DataTypes.h"
 
-#include "Utilities/invalidInput_error.h"
-#include "Utilities/VectorHelper.h"
 #include "Junction.h"
-#include "TrafficMovement.h"
 
+class TrafficMovement;
 
 class VF_PUBLIC JunctionRandom :
 	public Junction

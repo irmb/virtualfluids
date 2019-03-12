@@ -3,7 +3,7 @@
 #include "SourceRandom.h"
 
 
-SourceRandom::SourceRandom(const uint sourceIndex, const float sourcePossibility, uint maxVelocity) 
+SourceRandom::SourceRandom(const uint sourceIndex, const real sourcePossibility, uint maxVelocity) 
 {
 	data.sourceIndex = sourceIndex;
 	data.maxVelocity = maxVelocity;
@@ -36,7 +36,7 @@ uint SourceRandom::getIndex() const
 	return data.sourceIndex;
 }
 
-float SourceRandom::getPossibility() const
+real SourceRandom::getPossibility() const
 {
 	return data.sourcePossibility;
 }

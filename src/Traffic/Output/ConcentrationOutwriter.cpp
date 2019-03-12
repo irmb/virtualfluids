@@ -4,17 +4,17 @@
 void ConcentrationOutwriter::resetConcentrations()
 {
 	if (useLBMConcArray)
-		for (float* p = concArrayStart; p < concArrayStart + concArraySize; ++p)
+		for (real* p = concArrayStart; p < concArrayStart + roadLength; ++p)
 			*p = 0.0;
 	else
 		std::fill(concentration.begin(), concentration.end(), 0.0);
 }
 
 
-void ConcentrationOutwriter::putConcIntoArrayOrVector(uint index, float conc)
+void ConcentrationOutwriter::putConcIntoArrayOrVector(uint index, real conc)
 {
 	if (useLBMConcArray) {
-		float *pos = concArrayStart + index;
+		real *pos = concArrayStart + index;
 		*pos = conc;
 	}
 	else
@@ -22,10 +22,10 @@ void ConcentrationOutwriter::putConcIntoArrayOrVector(uint index, float conc)
 }
 
 
-void ConcentrationOutwriter::addConcToArrayOrVector(uint index, float conc)
+void ConcentrationOutwriter::addConcToArrayOrVector(uint index, real conc)
 {
 	if (useLBMConcArray) {
-		float *pos = concArrayStart + index;
+		real *pos = concArrayStart + index;
 		//if ((*pos + conc) > 1.0) *pos = 1.0;
 		//else
 		*pos += conc;
@@ -40,7 +40,7 @@ void ConcentrationOutwriter::addConcToArrayOrVector(uint index, float conc)
 void ConcentrationOutwriter::dispConcentrations()
 {
 	if (useLBMConcArray)
-		for (float* p = concArrayStart; p < concArrayStart + concArraySize; ++p)
+		for (real* p = concArrayStart; p < concArrayStart + roadLength; ++p)
 			dispSingleConcentration(*p);
 	else
 		for (auto cell : concentration)
@@ -53,7 +53,7 @@ void ConcentrationOutwriter::dispConcentrations()
 
 
 
-void ConcentrationOutwriter::dispSingleConcentration(float conc)
+void ConcentrationOutwriter::dispSingleConcentration(real conc)
 {
 	if (conc > 0)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);

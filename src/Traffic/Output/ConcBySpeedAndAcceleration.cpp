@@ -3,29 +3,29 @@
 ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, uint maxSpeed)
 {
 	concentration.resize(roadlength);
-	this->maxAcceleration = static_cast<float>(maxAcceleration);
-	this->maxSpeed = static_cast<float>(maxSpeed);
+	this->maxAcceleration = static_cast<real>(maxAcceleration);
+	this->maxSpeed = static_cast<real>(maxSpeed);
 }
 
 
-ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, float * concArrayStart, uint concArraySize, uint maxSpeed)
+ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, real * concArrayStart, uint maxSpeed)
 {
 	useLBMConcArray = true;
-	this->concArraySize = concArraySize;
+	this->roadLength = roadlength;
 	this->concArrayStart = concArrayStart;
-	this->maxAcceleration = static_cast<float>(maxAcceleration);
-	this->maxSpeed = static_cast<float>(maxSpeed);
+	this->maxAcceleration = static_cast<real>(maxAcceleration);
+	this->maxSpeed = static_cast<real>(maxSpeed);
 }
 
 //
 //void ConcBySpeedAndAcceleration::calculateConcForSingleCar(uint index, DrivingStates state, uint speed, uint acceleration)
 //{	
 //	if (useLBMConcArray) {
-//		float *pos = concArrayStart + index;
-//		*pos = static_cast<float>(speed) / maxSpeed;
+//		real *pos = concArrayStart + index;
+//		*pos = static_cast<real>(speed) / maxSpeed;
 //	}
 //	else
-//		concentration[index] = static_cast<float>(speed) / maxSpeed;	
+//		concentration[index] = static_cast<real>(speed) / maxSpeed;	
 //}
 
 
@@ -41,7 +41,7 @@ void ConcBySpeedAndAcceleration::calculateConcForJunctionCar(uint index, uint ol
 
 }
 
-float ConcBySpeedAndAcceleration::chooseConc(uint oldSpeed, uint speed)
+real ConcBySpeedAndAcceleration::chooseConc(uint oldSpeed, uint speed)
 {
 	if (oldSpeed == 0 && speed > 0) //Start
 		return 1.0f;

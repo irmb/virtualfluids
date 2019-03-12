@@ -19,11 +19,11 @@ private:
 	std::uniform_int_distribution<uint> distInt{ 0, 1 };
 
 public:
-	SourceRandom(const uint sourceIndex, const float sourcePossibility, uint maxVelocity);
+	SourceRandom(const uint sourceIndex, const real sourcePossibility, uint maxVelocity);
 	~SourceRandom();
 
 	virtual uint getIndex() const;
-	virtual float getPossibility() const;
+	virtual real getPossibility() const;
 	virtual uint getSourceCar();
 
 private:
@@ -31,6 +31,6 @@ private:
 
 private:
 	//variables for temporaray calculations
-	float randomNumber;
+	real randomNumber;
 };
 

@@ -7,7 +7,7 @@ class VF_PUBLIC Source
 {
 public:
 	virtual uint getIndex() const = 0;
-	virtual float getPossibility() const = 0;
+	virtual real getPossibility() const = 0;
 	virtual uint getSourceCar() = 0;
 };
 
