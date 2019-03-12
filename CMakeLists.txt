@@ -82,7 +82,7 @@ option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
 option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     ON )
 
-option(VF_DOUBLE_ACCURACY       "Build shared libraries"  ON )
+option(VF_DOUBLE_ACCURACY       "Build shared libraries"  OFF )
 
 #############################################################
 
@@ -100,6 +100,10 @@ ELSE(MSVC)
   SET( CMAKE_CXX_FLAGS "-include ${CMAKE_BINARY_DIR}/VirtualFluidsDefinitions.h ${CMAKE_CXX_FLAGS}" )
 ENDIF(MSVC)
 
+set(CMAKE_CUDA_FLAGS " -arch=sm_60" CACHE STRING "" FORCE)
+
+set(CMAKE_CUDA_FLAGS_DEBUG " -G" CACHE STRING "" FORCE)
+
 
 ##########################################################################################################################
 ###                  Subdirectories                                                                                    ###
@@ -113,24 +117,17 @@ add_subdirectory(targets/libs/VirtualFluidsBasics)
 add_subdirectory(targets/libs/Core)
 
 add_subdirectory(targets/libs/GridGenerator)
+add_subdirectory(3rdParty/metis/metis-5.1.0)
 
 #############################################################
 ###                  Virtual Fluids GPU                   ###
 #############################################################
 
 IF (HULC.BUILD_VF_GPU)
-    add_subdirectory(3rdParty/metis/metis-5.1.0)
-	
     add_subdirectory(targets/libs/VirtualFluids_GPU)
 
     add_subdirectory(targets/apps/LBM/lbmTest)
-    
     add_subdirectory(targets/apps/LBM/metisTest)
-    
-    add_subdirectory(targets/apps/LBM/TGV_3D)
-    
-    add_subdirectory(targets/apps/LBM/streetTest)
-    
     add_subdirectory(targets/apps/LBM/Basel)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GPU." )
@@ -143,10 +140,20 @@ ENDIF()
 IF (HULC.BUILD_VF_GKS)
     add_subdirectory(targets/libs/GksMeshAdapter)
     add_subdirectory(targets/libs/GksVtkAdapter)
-	
+
     add_subdirectory(targets/libs/GksGpu)
 
-	add_subdirectory(targets/apps/GKS/gksTest)
+	#add_subdirectory(targets/apps/GKS/gksTest)
+	#add_subdirectory(targets/apps/GKS/ChannelFlow)
+    #add_subdirectory(targets/apps/GKS/ShearWave)
+
+	add_subdirectory(targets/apps/GKS/TaylorGreen3D)
+    add_subdirectory(targets/apps/GKS/DrivenCavity3D)
+    add_subdirectory(targets/apps/GKS/ThermalCavity)
+
+    add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
+
+    add_subdirectory(targets/apps/GKS/SalinasVazquez)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
@@ -171,3 +178,11 @@ if(HULC.BUILD_NUMERIC_TESTS)
 	add_subdirectory(targets/tests/NumericalTests)
 	add_subdirectory(targets/tests/NumericalTestPostProcessing)
 endif()
+
+#############################################################
+###					Annas Traffic Sim				      ###
+#############################################################
+
+add_subdirectory(targets/libs/Traffic)
+
+add_subdirectory(targets/apps/LBM/TrafficTest)
