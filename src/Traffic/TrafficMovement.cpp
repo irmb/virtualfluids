@@ -68,6 +68,10 @@ void TrafficMovement::setSlowToStart(const real slowStartPossibility)
 	}
 }
 
+void TrafficMovement::setMaxAcceleration(uint maxAcceleration)
+{
+	this->maxAcceleration = maxAcceleration;
+}
 
 void TrafficMovement::setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer)
 {
@@ -138,7 +142,7 @@ void TrafficMovement::calculateTimestep(uint step)
 		}
 	}
 
-	calculateJunctionStep();
+	calculateJunctionStep(); 
 
 	calculateSourceStep();
 
@@ -192,7 +196,7 @@ void TrafficMovement::applyRules(uint carIndex)
 void TrafficMovement::accelerateCar(uint & speed)
 {
 	if (speed < road->maxVelocity) {
-		speed += 2; //speed += 1; --> dawdle
+		speed += maxAcceleration;
 	}
 }
 
@@ -218,11 +222,9 @@ void TrafficMovement::dawdleCar(uint carIndex, uint & speed)
 	}
 
 	//Standard NaSch
-	if (randomNumber < dawdlePossibility) {
-		if (speed > 1) 
-			speed -= 2; //for acceleration +2
-		if (speed > 0)
-			speed -= 1;
+	if (randomNumber < dawdlePossibility) { 
+		if (speed >= maxAcceleration) 
+			speed -= maxAcceleration;
 		else
 			speed = 0;
 	}

@@ -22,6 +22,7 @@ public:
 
 	//setUp
 	void setSlowToStart(const real slowStartPossibility);
+	void setMaxAcceleration(uint maxAcceleration);
 	void setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer);
 	void setSaveResultsTrue(uint timeSteps);
 
@@ -95,6 +96,8 @@ private:
 	real slowStartPossibility;
 
 	uint currentStep;
+
+	uint maxAcceleration = 1;
 
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_real_distribution<real> distFloat{ 0.0, 1.0 };

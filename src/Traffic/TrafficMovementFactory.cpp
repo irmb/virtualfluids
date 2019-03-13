@@ -84,6 +84,7 @@ void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart)
 	//init TrafficMovement
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
 	simulator->setSlowToStart(slowToStartPossibility);
+	simulator->setMaxAcceleration(2);
 
 
 	//init ConcentrationOutwriter
