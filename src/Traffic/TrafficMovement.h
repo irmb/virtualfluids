@@ -52,6 +52,7 @@ private:
 
 	//calculate timestep
 	void calculateSourceStep();
+	void calculateJunctionStep();
 	void switchCurrentNext();
 
 	//gap

@@ -131,17 +131,14 @@ void TrafficMovement::calculateTimestep(uint step)
 	VectorHelper::fillVector(*pnext, -1);
 	if (concWriter != nullptr) concWriter->resetConcentrations();
 
-	//apply rules on all cars
+	//apply rules on all cars  
 	for (uint i = 0; i < road->roadLength; i++) {
 		if ((*pcurrent)[i] > -1) {
 			applyRules(i);
 		}
 	}
 
-	for (auto &junction : road->junctions) {
-		junction->updateJunction();
-		junction->calculateTimeStep(*this);
-	}
+	calculateJunctionStep();
 
 	calculateSourceStep();
 
@@ -168,6 +165,13 @@ void TrafficMovement::calculateSourceStep()
 	}
 }
 
+void TrafficMovement::calculateJunctionStep()
+{
+	for (auto &junction : road->junctions) {
+		junction->updateJunction();
+		junction->calculateTimeStep(*this);
+	}
+}
 
 void TrafficMovement::switchCurrentNext()
 {
