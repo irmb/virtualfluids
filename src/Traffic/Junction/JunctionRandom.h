@@ -38,18 +38,12 @@ private:
 	uint getInCellsVectorIndex(uint cellIndex);
 
 	void applyRules(int &carSpeed,const int &index, TrafficMovement& road);
-	void breakCar(uint outCellIndex, int &speed, uint &remainingDistance, const int & index, TrafficMovement& road);
-	void moveCar(uint outCell, int & carSpeed, const int & index, TrafficMovement& road);
+	void breakCar(uint outCellIndex, int &speed, int &remainingDistance, const int & index, TrafficMovement& road);
+	void moveCar(uint outCell, int & carSpeed, const int & index, int remainingDistance, TrafficMovement& road);
 	int chooseOutCell(const int & index);
+	int generateRandomOutCellIndex(uint outCellsTempSize);
 
 	void writeConcentrations(TrafficMovement& road);
 
-private:
-	//variables for temporaray calculations
-	uint remainingDistance;
-	int outCell;
-	uint random;
-	uint gap;
-	int index;
 };
 

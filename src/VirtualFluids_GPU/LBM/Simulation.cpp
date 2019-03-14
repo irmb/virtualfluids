@@ -177,8 +177,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
-   factory = new TrafficMovementFactory();
-   factory->initTrafficMovement(para->getParH(0)->concentration);
+   trafficFactory = new TrafficMovementFactory();
+   trafficFactory->initTrafficMovement(para->getParH(0)->concentration);
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -1068,7 +1068,7 @@ void Simulation::run()
 				//Calculate Traffic by Anna
 				if (t % 100 == 0)
 				{
-					factory->calculateTimestep(t / 100, t);
+					trafficFactory->calculateTimestep(t / 100, t);
 					para->cudaCopyConcFile(0);
 				}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

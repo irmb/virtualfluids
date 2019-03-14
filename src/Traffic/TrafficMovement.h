@@ -45,6 +45,8 @@ public:
 	void visualizeVehicleLengthForVTK();
 	const std::vector<int> & getVehiclesForVTK();
 
+	//for debugging
+	void checkSpeed(uint speed);
 
 private:
 	//init
@@ -79,7 +81,6 @@ private:
 
 	//pollution
 	void writeConcentration(uint index, uint oldSpeed);
-
 
 private:
 	std::unique_ptr<RoadNetworkData> road;

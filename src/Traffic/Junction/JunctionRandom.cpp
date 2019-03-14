@@ -92,9 +92,8 @@ void JunctionRandom::updateJunction()
 
 void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 {
-	index = 0;
+	uint index = 0;
 	for (int carSpeed : data.carsOnJunction) {
-
 		if (carSpeed >= 0) { //check if there is a car on the junction
 			if (carSpeed == 0)
 				carSpeed += 1;
@@ -103,27 +102,21 @@ void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 		}
 		++index;
 	}
-
 	writeConcentrations(road);
 }
 
 
 void JunctionRandom::applyRules(int & carSpeed, const int & index, TrafficMovement& road)
 {
-	remainingDistance = static_cast<uint>(carSpeed) - data.alreadyMoved[index];
-
+	int remainingDistance = static_cast<uint>(carSpeed) - data.alreadyMoved[index];
 	if (remainingDistance > 0) {
-		outCell = chooseOutCell(index);
+		int outCell = chooseOutCell(index);
 		if (outCell >= 0) {
 			breakCar(outCell, carSpeed, remainingDistance, index, road);
-
 			if (remainingDistance > 0) {
-				moveCar(outCell, carSpeed, index, road);
+				moveCar(outCell, carSpeed, index, remainingDistance, road);
+				return;
 			}
-			else {
-				data.carsOnJunction[index] = 0;
-			}
-			return;
 		}
 	}
 	data.carsOnJunction[index] = 0;				//cars, which can't cross the junctionin one timestep, because they already moved to many cells, loose their speed.
@@ -131,9 +124,9 @@ void JunctionRandom::applyRules(int & carSpeed, const int & index, TrafficMoveme
 }
 
 
-void JunctionRandom::breakCar(uint outCellIndex, int &speed, uint &remainingDistance, const int & index, TrafficMovement& road)
+void JunctionRandom::breakCar(uint outCellIndex, int &speed, int &remainingDistance, const int & index, TrafficMovement& road)
 {
-	gap = road.getGapAfterOutCell(outCellIndex, remainingDistance);
+	int gap = road.getGapAfterOutCell(outCellIndex, remainingDistance);
 	if (gap < remainingDistance) {
 		speed = speed - remainingDistance + gap;
 		remainingDistance = gap;
@@ -141,7 +134,7 @@ void JunctionRandom::breakCar(uint outCellIndex, int &speed, uint &remainingDist
 }
 
 
-void JunctionRandom::moveCar(uint outCell, int & carSpeed, const int & index, TrafficMovement& road)
+void JunctionRandom::moveCar(uint outCell, int & carSpeed, const int & index, int remainingDistance, TrafficMovement& road)
 {
 	road.moveJunctionCar(outCell, remainingDistance, carSpeed, data.oldSpeeds[index]);
 	data.carsOnJunction[index] = -1;
@@ -153,7 +146,7 @@ int JunctionRandom::chooseOutCell(const int & index)
 {
 	std::vector<uint> outCellsTemp;
 
-	if (data.carCanNotEnterThisOutCell.size() > 0 && data.carCanNotEnterThisOutCell[index]) {
+	if (data.carCanNotEnterThisOutCell.size() > 0 && data.carCanNotEnterThisOutCell[index] >= 0) {
 		for (uint cell : data.possibleOutCells) {
 			if (cell != data.carCanNotEnterThisOutCell[index])
 				outCellsTemp.push_back(cell);
@@ -162,10 +155,23 @@ int JunctionRandom::chooseOutCell(const int & index)
 	else
 		outCellsTemp = data.possibleOutCells;
 
+	int random = generateRandomOutCellIndex(castSizeT_Uint(outCellsTemp.size()));
+	if (random < 0) return -1;
 
-	switch (outCellsTemp.size()) {
+	int outCell = outCellsTemp[random];
+	data.possibleOutCells.erase(std::remove(data.possibleOutCells.begin(), data.possibleOutCells.end(), outCell), data.possibleOutCells.end());
+	return outCell;
+}
+
+
+int JunctionRandom::generateRandomOutCellIndex(uint outCellsTempSize)
+{
+	int random = 1000;
+
+	switch (outCellsTempSize) {
 	case 0:
-		return -1;
+		random = -1;
+		break;
 	case 1:
 		random = 0;
 		break;
@@ -180,11 +186,10 @@ int JunctionRandom::chooseOutCell(const int & index)
 		break;
 	default:
 		std::cerr << "default in JunctionRandom::chooseOutCell()" << std::endl;
+		break;
 	}
 
-	outCell = outCellsTemp[random];
-	data.possibleOutCells.erase(std::remove(data.possibleOutCells.begin(), data.possibleOutCells.end(), outCell), data.possibleOutCells.end());
-	return outCell;
+	return random;
 }
 
 void JunctionRandom::writeConcentrations(TrafficMovement& road)
@@ -198,7 +203,6 @@ void JunctionRandom::writeConcentrations(TrafficMovement& road)
 		++i;
 	}
 }
-
 
 const std::vector<uint>& JunctionRandom::getInCellIndices() const
 {

@@ -142,7 +142,7 @@ void TrafficMovement::calculateTimestep(uint step)
 		}
 	}
 
-	calculateJunctionStep(); 
+	calculateJunctionStep();
 
 	calculateSourceStep();
 
@@ -195,7 +195,7 @@ void TrafficMovement::applyRules(uint carIndex)
 
 void TrafficMovement::accelerateCar(uint & speed)
 {
-	if (speed < road->maxVelocity) {
+	if (speed <= road->maxVelocity - maxAcceleration) {
 		speed += maxAcceleration;
 	}
 }
@@ -222,8 +222,8 @@ void TrafficMovement::dawdleCar(uint carIndex, uint & speed)
 	}
 
 	//Standard NaSch
-	if (randomNumber < dawdlePossibility) { 
-		if (speed >= maxAcceleration) 
+	if (randomNumber < dawdlePossibility) {
+		if (speed >= maxAcceleration)
 			speed -= maxAcceleration;
 		else
 			speed = 0;
@@ -447,16 +447,18 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 	if (road->safetyDistance != 0) {
 		for (uint i = 0; i < road->roadLength; i++) {
 			if ((*pcurrent)[i] > -1) {
+				checkSpeed((*pcurrent)[i]);
 				int neighbor = road->neighbors[i];
 
 				for (uint j = 1; j <= road->safetyDistance; j++) {
+					
 					if (neighbor <= -1000)
 						break;
 					if ((*pcurrent)[neighbor] > -1) {
 						std::cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << std::endl;
 						break;
 					}
-					else
+					else 						
 						(road->currentWithLongVehicles)[neighbor] = (*pcurrent)[i];
 					neighbor = road->neighbors[neighbor];
 				}
@@ -466,3 +468,9 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 }
 
 
+void TrafficMovement::checkSpeed(uint speed)
+{
+	if (speed > road->maxVelocity){
+		std::cerr << "Speed is greater than allowed maxSpeed" << std::endl;
+	}
+}
