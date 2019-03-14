@@ -178,7 +178,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
    factory = new TrafficMovementFactory();
-   factory->initTrafficMovement(/*para->getParH(0)->c*/);
+   factory->initTrafficMovement(para->getParH(0)->concentration);
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -1067,7 +1067,10 @@ void Simulation::run()
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//Calculate Traffic by Anna
 				if (t % 100 == 0)
-					factory->calculateTimestep(t/100, t);
+				{
+					factory->calculateTimestep(t / 100, t);
+					para->cudaCopyConcFile(0);
+				}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1096,7 +1099,7 @@ void Simulation::run()
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //Street Manhattan - never use again, please
                QADDirichletDev27( para->getParD(0)->numberofthreads,      para->getParD(0)->nx,					para->getParD(0)->ny,
-								  para->getParD(0)->d0SP.f[0],            para->getParD(0)->d27.f[0],			para->getParD(0)->TempVel.tempPulse,  
+								  para->getParD(0)->d0SP.f[0],            para->getParD(0)->d27.f[0],           para->getParD(0)->concentration, //para->getParD(0)->TempVel.tempPulse,
 								  para->getParD(0)->diffusivity,          para->getParD(0)->concIndex,			para->getParD(0)->QGeom.q27[0], 
 								  para->getParD(0)->QGeom.kQ,             para->getParD(0)->numberOfPointsConc, para->getParD(0)->omega,
 								  para->getParD(0)->neighborX_SP,         para->getParD(0)->neighborY_SP,		para->getParD(0)->neighborZ_SP,

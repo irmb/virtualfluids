@@ -95,7 +95,7 @@ void multipleLevel(const std::string& configPath)
             real dx = 1.2;
             real vx = 0.05;
 
-            TriangularMesh* BaselSTL = TriangularMesh::make("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+            TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
 
             gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
                                         256.0,  256.0,  160.0, dx);  
@@ -115,23 +115,23 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/grids/BaselUni/Basel_Grid");
+            gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
 
-            SimulationFileWriter::write("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+            SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			StreetPointFinder finder;
 
-			finder.readStreets("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+			finder.readStreets("C:/Users/schoen/Desktop/git/MS/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 
-			finder.writeVTK("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/ExampleStreets.vtk");
+			finder.writeVTK("E:/temp/Basel2019/results/ExampleStreets.vtk");
 
 			finder.findIndicesLB(gridBuilder->getGrid(0));
 
-			finder.writeConnectionVTK("C:/Users/hiwi/BaselDokumente//Basel_Ergebnisse/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeConnectionVTK("E:/temp/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 
-			finder.writeSimulationFile("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			finder.writeSimulationFile("E:/temp/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -157,7 +157,7 @@ void multipleLevel(const std::string& configPath)
 
     //std::ifstream stream;
     //stream.open(configPath.c_str(), std::ios::in);
-    ////if (stream.fail())
+    //if (stream.fail())
     //    throw std::runtime_error("can not open config file!");
 
     //UPtr<input::Input> input = input::Input::makeInput(stream, "config");
@@ -166,6 +166,7 @@ void multipleLevel(const std::string& configPath)
     SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     sim.init(para, gridGenerator, fileWriter);
     sim.run();
+	sim.free();
 }
 
 
@@ -197,7 +198,8 @@ int main( int argc, char* argv[])
         {
             try
             {
-				multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt");
+				//multipleLevel("E:/temp/Basel2019/config/configBasel.txt"); //Tesla03
+				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
             }
             catch (const std::exception& e)
@@ -220,7 +222,7 @@ int main( int argc, char* argv[])
                 //std::cout << "unknown exeption" << std::endl;
             }
 
-            //std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+            std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
             //MPI_Abort(MPI_COMM_WORLD, -1);
         }
     }

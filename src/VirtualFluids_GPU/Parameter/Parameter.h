@@ -216,6 +216,7 @@ struct ParameterStruct{
 
 	//Concentration////////
 	int *concIndex;
+	real *concentration;
 	unsigned int numberOfPointsConc;
 
 	//deltaPhi
