@@ -6,7 +6,7 @@
 #include "Core\Logger\Logger.h"
 
 
-#include "Traffic/TrafficMovementFactory.h"
+#include "Traffic/TrafficMovementFactoryImpl.h"
 
 
 
@@ -22,11 +22,11 @@ int main()
 		logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
 
-		TrafficMovementFactory factory = TrafficMovementFactory();
-		factory.initTrafficMovement();
+		TrafficMovementFactory * factory = new TrafficMovementFactoryImpl();
+		factory->initTrafficMovement();
 
 		for (uint step = 1; step <= numberOfTimesteps; step++) {
-			factory.calculateTimestep(step,step);
+			factory->calculateTimestep(step,step);
 		}
 
 		std::cout << std::endl << std::endl;

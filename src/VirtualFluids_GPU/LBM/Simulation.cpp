@@ -64,7 +64,7 @@
 #include "Kernel/KernelFactory/KernelFactory.h"
 #include "Kernel/Kernel.h"
 //////////////////////////////////////////////////////////////////////////
-#include "Traffic/TrafficMovementFactory.h"
+#include "Traffic/TrafficMovementFactoryImpl.h"
 
 Simulation::Simulation()
 {
@@ -177,7 +177,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
-   trafficFactory = new TrafficMovementFactory();
+   trafficFactory = new TrafficMovementFactoryImpl();
    trafficFactory->initTrafficMovement(para->getParH(0)->concentration);
 
 
