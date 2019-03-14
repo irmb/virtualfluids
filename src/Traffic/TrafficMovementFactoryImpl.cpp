@@ -102,8 +102,9 @@ void TrafficMovementFactoryImpl::initTrafficMovement(real * pconcArrayStart)
 	this->outputFilename = "ExampleStreets";
 	this->cars = &(simulator->getVehiclesForVTK());
 
-
-
+	//write initial Timestep
+	simulator->visualizeVehicleLengthForVTK();
+	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
 }
 
 void TrafficMovementFactoryImpl::calculateTimestep(uint step, uint stepForVTK)
