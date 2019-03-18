@@ -71,7 +71,7 @@ bool MicrophoneArrayCoProcessor::addMicrophone(Vector3D coords)
                mic->nodeIndexes = grid->getNodeIndexes(block, coords[0], coords[1], coords[2]);
                microphones.push_back(mic);
 
-               strVector.push_back(new std::stringstream);
+               strVector.push_back(SPtr<std::stringstream>(new std::stringstream));
 
                std::string fname = path+"/mic/mic_"+UbSystem::toString(micID)+".csv";
                std::ofstream ostr;
@@ -121,5 +121,6 @@ void MicrophoneArrayCoProcessor::writeFile(double step)
       }
       ostr << strVector[i]->str();
       ostr.close();
+      strVector[i] = SPtr<std::stringstream>(new std::stringstream);
    }
 }
