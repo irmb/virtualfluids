@@ -19,8 +19,7 @@ public:
 	virtual void initTrafficMovement(real * pconcArrayStart = nullptr);
 	virtual void calculateTimestep(uint step, uint stepForVTK);
 
-
-private:
+protected:
 	StreetPointFinder finder;
 	std::shared_ptr<TrafficMovement> simulator;
 	std::string outputPath;

@@ -52,15 +52,15 @@ bool JunctionRandom::acceptsCar(uint cellIndex)
 }
 
 
-void JunctionRandom::registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved, uint speed, uint oldSpeed)
+void JunctionRandom::registerCar(uint cellIndex, uint alreadyMoved, uint speed, uint oldSpeed)
 {
 	uint index = getInCellsVectorIndex(cellIndex);
 
-	//data.carsOnJunction[index] = speed - 1; //all cars, which enter the junction have to slow down by one increment
-	data.carsOnJunction[index] = 0; //all cars, which enter the junction go really slow
+	data.carsOnJunction[index] = speed - 1; //all cars, which enter the junction have to slow down by one increment
+	//data.carsOnJunction[index] = 0; //all cars, which enter the junction have to stop
 	data.oldSpeeds[index] = oldSpeed;
 	data.carCanEnter[index] = false;
-	data.alreadyMoved[index] = numberOfCellsAlreadyMoved;
+	data.alreadyMoved[index] = alreadyMoved;
 }
 
 
@@ -95,8 +95,6 @@ void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 	uint index = 0;
 	for (int carSpeed : data.carsOnJunction) {
 		if (carSpeed >= 0) { //check if there is a car on the junction
-			if (carSpeed == 0)
-				carSpeed += 1;
 			applyRules(carSpeed, index, road);
 			data.alreadyMoved[index] = 0;
 		}
@@ -106,13 +104,16 @@ void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 }
 
 
-void JunctionRandom::applyRules(int & carSpeed, const int & index, TrafficMovement& road)
+void JunctionRandom::applyRules(int & carSpeed, int index, TrafficMovement& road)
 {
+	if (carSpeed == 0 && data.alreadyMoved[index] == 0)
+		carSpeed += 1;
+
 	int remainingDistance = static_cast<uint>(carSpeed) - data.alreadyMoved[index];
 	if (remainingDistance > 0) {
 		int outCell = chooseOutCell(index);
 		if (outCell >= 0) {
-			breakCar(outCell, carSpeed, remainingDistance, index, road);
+			brakeCar(outCell, carSpeed, remainingDistance, road);
 			if (remainingDistance > 0) {
 				moveCar(outCell, carSpeed, index, remainingDistance, road);
 				return;
@@ -124,17 +125,18 @@ void JunctionRandom::applyRules(int & carSpeed, const int & index, TrafficMoveme
 }
 
 
-void JunctionRandom::breakCar(uint outCellIndex, int &speed, int &remainingDistance, const int & index, TrafficMovement& road)
+void JunctionRandom::brakeCar(uint outCellIndex, int &speed, int &remainingDistance, TrafficMovement& road)
 {
 	int gap = road.getGapAfterOutCell(outCellIndex, remainingDistance);
 	if (gap < remainingDistance) {
+		if (gap > speed) gap = speed;
 		speed = speed - remainingDistance + gap;
 		remainingDistance = gap;
 	}
 }
 
 
-void JunctionRandom::moveCar(uint outCell, int & carSpeed, const int & index, int remainingDistance, TrafficMovement& road)
+void JunctionRandom::moveCar(uint outCell, int carSpeed, int index, int remainingDistance, TrafficMovement& road)
 {
 	road.moveJunctionCar(outCell, remainingDistance, carSpeed, data.oldSpeeds[index]);
 	data.carsOnJunction[index] = -1;
@@ -142,7 +144,7 @@ void JunctionRandom::moveCar(uint outCell, int & carSpeed, const int & index, in
 }
 
 
-int JunctionRandom::chooseOutCell(const int & index)
+int JunctionRandom::chooseOutCell(int index)
 {
 	std::vector<uint> outCellsTemp;
 
@@ -209,7 +211,7 @@ const std::vector<uint>& JunctionRandom::getInCellIndices() const
 	return data.inCellIndices;
 }
 
-void JunctionRandom::dispJunction(const uint index, uint roadLength) const
+void JunctionRandom::dispJunction(const uint index, const uint roadLength) const
 {
 	if (find(data.inCellIndices.begin(), data.inCellIndices.end(), (roadLength - index - 1)) != data.inCellIndices.end()) {
 		std::cout << std::setw(4) << "in";
@@ -233,7 +235,7 @@ const uint JunctionRandom::getNumCarsOnJunction() const
 }
 
 
-void JunctionRandom::checkOutCellIndices(uint roadLength)
+void JunctionRandom::checkOutCellIndices(const uint roadLength) const
 {
 	try {
 		for (uint cell : data.outCellIndices)

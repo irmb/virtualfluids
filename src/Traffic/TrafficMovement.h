@@ -62,7 +62,7 @@ private:
 	uint getGapAfterCar(uint carIndex, uint speed, int neighbor);
 	uint getGapToSink(int neighbor, uint i, uint speed);
 	uint getGapToJunction(int neighbor, uint i, uint speed, uint currentCell);
-	uint adjustGapToSafetyDist(uint speed);
+	uint adjustGapToSafetyDist(uint gap);
 
 	//getVectorIndex
 	std::shared_ptr<Junction>& getJunctionFromNeighbor(int neighbor);
@@ -71,7 +71,7 @@ private:
 	//apply rules
 	void applyRules(uint carIndex);
 	void accelerateCar(uint &speed);
-	void breakCar(uint carIndex, uint &speed);
+	void brakeCar(uint carIndex, uint &speed);
 	void dawdleCar(uint carIndex, uint &speed);
 	void moveCar(const uint carIndex, uint speed);
 	uint iterateNeighborsInMove(uint &currentCell, uint speed, int &neighbor);

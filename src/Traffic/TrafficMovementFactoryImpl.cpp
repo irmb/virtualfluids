@@ -113,3 +113,4 @@ void TrafficMovementFactoryImpl::calculateTimestep(uint step, uint stepForVTK)
 	simulator->visualizeVehicleLengthForVTK();
 	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
+

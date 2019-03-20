@@ -7,32 +7,40 @@
 
 
 #include "Traffic/TrafficMovementFactoryImpl.h"
+#include "TrafficMovementFactoryTest.h"
 
 
 
 int main()
 {
-		uint numberOfTimesteps = 5;
+	//{uint numberOfTimesteps = 30;
 
 
-		//Logger
-		logging::Logger::addStream(&std::cout);
-		logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-		logging::Logger::timeStamp(logging::Logger::ENABLE);
-		logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+		////Logger
+		//logging::Logger::addStream(&std::cout);
+		//logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+		//logging::Logger::timeStamp(logging::Logger::ENABLE);
+		//logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
 
-		TrafficMovementFactory * factory = new TrafficMovementFactoryImpl();
+		//TrafficMovementFactory * factory = new TrafficMovementFactoryImpl();
+		//factory->initTrafficMovement();
+
+		//for (uint step = 1; step <= numberOfTimesteps; step++) {
+		//	factory->calculateTimestep(step,step);
+		//}
+
+		//std::cout << std::endl << std::endl;}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		{uint numberOfTimesteps = 20;
+
+
+		TrafficMovementFactoryTest * factory = new TrafficMovementFactoryTest();
 		factory->initTrafficMovement();
+		factory->loopThroughTimesteps(numberOfTimesteps);
 
-		for (uint step = 1; step <= numberOfTimesteps; step++) {
-			factory->calculateTimestep(step,step);
-		}
-
-		std::cout << std::endl << std::endl;
-
-	
-
+		std::cout << std::endl << std::endl; }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

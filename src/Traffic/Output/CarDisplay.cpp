@@ -85,6 +85,8 @@ void CarDisplay::dispCurrentRoad() const
 
 void CarDisplay::dispResults(const std::vector<int> * neighbors, const std::vector<std::shared_ptr<Sink> > & sinks, const  std::vector<std::shared_ptr<Junction> > & junctions, const  std::vector<std::shared_ptr<Source> > & sources)
 {
+	writeResultsToFile();
+
 	visualizeSafetyDistanceForConsole(neighbors);
 	reverse(results.begin(), results.end());
 
