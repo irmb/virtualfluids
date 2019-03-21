@@ -8,15 +8,15 @@ TaylorGreenVortexUz=false
 ##################################################
 #					 	Tests					 #
 ##################################################
-Phi=true
-Ny=true
+Phi=false
+Ny=false
 L2Norm=false
 L2Norm_BetweenKernels=false
 
 ##################################################
 #					 	Time					 #
 ##################################################
-TimeOutput=false
+TimeOutput=true
 
 ##################################################
 #				Data Combination				 #
@@ -28,4 +28,6 @@ EqualKernelSimulationsForDifferentViscosities=false
 #					FilePaths					 #
 ##################################################
 MathematicaFilePath="C:/Users/Timon/Desktop"
-LogFilesPath="C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/TaylorGreenVortexUx/viscosity_0.001/ux_0.096_Amplitude_0.001"
+#LogFilesPath="C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/ShearWave/viscosity_0.001/ux_0.096_uz_0.1"
+#LogFilesPath="C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles/TaylorGreenVortexUx/viscosity_0.001/ux_0.096_Amplitude_0.001"
+LogFilesPath="C:/Users/Timon/Documents/studienarbeitIRMB/logFiles/NumericalTestLogFiles"

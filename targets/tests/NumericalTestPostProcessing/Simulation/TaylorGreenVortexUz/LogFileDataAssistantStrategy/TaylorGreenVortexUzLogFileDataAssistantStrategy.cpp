@@ -13,7 +13,7 @@ std::string TaylorGreenVortexUzLogFileDataAssistantStrategy::getSimulationName()
 	return simName;
 }
 
-bool TaylorGreenVortexUzLogFileDataAssistantStrategy::checkSimulationParamerer(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2)
+bool TaylorGreenVortexUzLogFileDataAssistantStrategy::checkSimulationParameter(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2)
 {
 	if (!equalDouble(logFileData1->getTaylorGreenVortexUzLogFileData()->getUz().at(0), logFileData2->getTaylorGreenVortexUzLogFileData()->getUz().at(0)))
 		return false;

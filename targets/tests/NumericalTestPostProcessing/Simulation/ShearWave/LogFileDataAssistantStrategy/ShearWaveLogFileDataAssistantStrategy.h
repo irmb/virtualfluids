@@ -9,7 +9,7 @@ public:
 	static std::shared_ptr<LogFileDataAssistantStrategy> getNewInstance();
 
 	std::string getSimulationName();
-	bool checkSimulationParamerer(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
+	bool checkSimulationParameter(std::shared_ptr<LogFileData> logFileData1, std::shared_ptr<LogFileData> logFileData2);
 
 private:
 	ShearWaveLogFileDataAssistantStrategy();
