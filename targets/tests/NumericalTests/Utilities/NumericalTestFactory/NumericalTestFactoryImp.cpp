@@ -372,6 +372,7 @@ std::vector<std::shared_ptr<L2NormTest> > NumericalTestFactoryImp::makeL2NormTes
 std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName)
 {
 	std::shared_ptr<TestStruct> testStruct = std::shared_ptr<TestStruct>(new TestStruct);
+	testStruct->testName = "L2NormTestBetweenKernel";
 
 	if (testPara->basicTestParameter->runTest) {
 
@@ -396,7 +397,6 @@ std::shared_ptr<TestStruct> NumericalTestFactoryImp::makeL2NormTestsBetweenKerne
 			for (int i = 0; i < tests.size(); i++)
 				testStruct->tests.push_back(tests.at(i));
 			testStruct->logFileInfo = L2NormBetweenKernelsInformation::getNewInstance(tests, testPara, testSim.at(0)->getDataToCalcTests());
-			testStruct->testName = "L2NormTestBetweenKernel";
 		}
 	}
 	return testStruct;	
@@ -452,7 +452,7 @@ std::vector<std::shared_ptr<L2NormTestBetweenKernels> > NumericalTestFactoryImp:
 	return tests;
 }
 
-void NumericalTestFactoryImp::initTestStruct(std::shared_ptr<TestStruct> testStruct, std::shared_ptr<NumericalTestStruct> numericalTestStruct, std::vector<std::shared_ptr<TestLogFileInformation> > testLogFileInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo)
+void NumericalTestFactoryImp::initTestStruct(std::shared_ptr<TestStruct> testStruct, std::shared_ptr<NumericalTestStruct> numericalTestStruct, std::vector<std::shared_ptr<TestLogFileInformation> > &testLogFileInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo)
 {
 	for (int i = 0; i < testStruct->tests.size(); i++)
 		numericalTestStruct->tests.push_back(testStruct->tests.at(i));

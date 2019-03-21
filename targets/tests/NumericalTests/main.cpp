@@ -20,7 +20,7 @@ static void validateTestSuite()
 	const int end = 20;
 	const int l0 = 32;
 	const double viscosity = 0.001;
-	std::string kernelName = "TGV";
+	std::string kernelName = "Cum";
 
 	std::vector<int> xLength{32,64,128,256,512};
 	std::vector<int> zLength(xLength.size());

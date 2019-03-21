@@ -6,7 +6,7 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="CumulantF3CompSP27 BGKCompSP27 BGKPlusCompSP27"
+KernelsToTest="BGKCompSP27 BGKPlusCompSP27 CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantF3CompSP27"
 #BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
 Viscosity="0.001"
@@ -120,4 +120,4 @@ StartStepFileWriter=0
 
 WriteAnalyResultsToVTK=true
 
-PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles\KleinerTest"
+PathLogFile="C:\Users\Timon\Documents\studienarbeitIRMB\logFiles"
