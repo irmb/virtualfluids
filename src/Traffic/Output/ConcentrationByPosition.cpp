@@ -2,12 +2,6 @@
 
 #include <iostream>
 
-ConcentrationByPosition::ConcentrationByPosition(uint roadlength, uint maxSpeed)
-{
-	std::cout << "using ConcentrationByPosition::concentration for concentrations" << std::endl;
-	concentration.resize(roadlength);
-}
-
 ConcentrationByPosition::ConcentrationByPosition(uint roadlength, real * concArrayStart, uint maxSpeed)
 {
 	if (concArrayStart == nullptr) {

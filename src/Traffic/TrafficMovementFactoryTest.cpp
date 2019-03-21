@@ -28,7 +28,7 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pconcArrayStart)
 
 	uint vehicleLength = 7;
 
-	getRoadLength = 10;
+	uint roadLength = 10;
 
 
 	//make RoadNetwork
@@ -36,46 +36,33 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pconcArrayStart)
 
 
 	//Sources
-	unique_ptr<Source> s = make_unique <SourceRandom>(SourceRandom(9, 0.5f))
+	std::unique_ptr<Source> source = std::make_unique <SourceRandom>(SourceRandom(0, 0.7f, maxVelocity));
 	roadNetwork->addSource(source);
 
 
 	//Sinks
-	unique_ptr<Sink> s = make_unique <SinkRandom>(SinkRandom(9, 0.5f));
-	/ roadNetwork->addSink(move(s));
+	std::unique_ptr<Sink> s = std::make_unique <SinkRandom>(SinkRandom(9, 0.5f));
+	roadNetwork->addSink(move(s));
 
 
 	//init TrafficMovement
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
 	simulator->setSlowToStart(slowToStartPossibility);
 	simulator->setMaxAcceleration(2);
-	simulator->se
 
 
-	//init ConcentrationOutwriter
-	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
-	simulator->setConcentrationOutwriter(move(writer));
-
-	//prepare writing to vtk
-	//this->outputPath = "M:/Basel2019/results/";
-	this->outputPath = "C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/";
-	this->outputFilename = "ExampleStreets";
-	this->cars = &(simulator->getVehiclesForVTK());
-
-	//write initial Timestep
-	simulator->visualizeVehicleLengthForVTK();
-	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
+	////init ConcentrationOutwriter
+	//std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
+	//simulator->setConcentrationOutwriter(move(writer));
 }
 
 void TrafficMovementFactoryTest::calculateTimestep(uint step, uint stepForVTK)
 {
 	simulator->calculateTimestep(step);
-	simulator->visualizeVehicleLengthForVTK();
-	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
 
 void TrafficMovementFactoryTest::loopThroughTimesteps(uint timeSteps)
 {
 	simulator->setSaveResultsTrue(timeSteps);
-	calculateTimeStep;
+	simulator->loopTroughTimesteps(timeSteps);
 }

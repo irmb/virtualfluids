@@ -2,14 +2,6 @@
 
 #include <iostream>
 
-ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, uint maxSpeed)
-{
-	std::cout << "using ConcBySpeedAndAcceleration::concentration for concentrations" << std::endl;
-	concentration.resize(roadlength);
-	this->maxSpeed = static_cast<real>(maxSpeed);
-}
-
-
 ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, real * concArrayStart, uint maxSpeed)
 {
 	if (concArrayStart == nullptr) {
@@ -26,18 +18,6 @@ ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, real * c
 	}
 
 }
-
-//
-//void ConcBySpeedAndAcceleration::calculateConcForSingleCar(uint index, DrivingStates state, uint speed, uint acceleration)
-//{	
-//	if (useLBMConcArray) {
-//		real *pos = concArrayStart + index;
-//		*pos = static_cast<real>(speed) / maxSpeed;
-//	}
-//	else
-//		concentration[index] = static_cast<real>(speed) / maxSpeed;	
-//}
-
 
 void ConcBySpeedAndAcceleration::calculateConcForSingleCar(uint index, uint oldSpeed, uint speed)
 {
