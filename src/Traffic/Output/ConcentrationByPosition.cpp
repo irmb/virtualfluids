@@ -2,11 +2,12 @@
 
 #include <iostream>
 
-ConcentrationByPosition::ConcentrationByPosition(uint roadlength, real * concArrayStart, uint maxSpeed)
+ConcentrationByPosition::ConcentrationByPosition(uint roadLength, real * concArrayStart, uint maxSpeed)
 {
 	if (concArrayStart == nullptr) {
-		std::cout << "using ConcentrationByPosition::concentration for concentrations" << std::endl;
-		concentration.resize(roadlength);
+		std::cout << "using ConcentrationByPosition::concentration-vector for concentrations" << std::endl;
+		concentration.resize(roadLength);
+		this->roadLength = roadLength;
 	}
 	else {
 		std::cout << "using passed array for concentrations" << std::endl;
@@ -38,6 +39,13 @@ void ConcentrationByPosition::calculateConcForSingleCar(uint index, uint oldSpee
 void ConcentrationByPosition::calculateConcForJunctionCar(uint index, uint oldSpeed, uint speed)
 {
 	addConcToArrayOrVector(index, 1.0);
+}
+
+void ConcentrationByPosition::calculateConcForAllCars(const std::vector<int> oldSpeeds, const std::vector<int> newSpeeds)
+{
+	for (uint i = 0; i < roadLength; i++) 
+		if (newSpeeds[i] >= 0)
+			putConcIntoArrayOrVector(i, 1.0);
 }
 
 

@@ -70,9 +70,7 @@ uint JunctionRandom::getInCellsVectorIndex(uint cellIndex)
 		auto it = find(data.inCellIndices.begin(), data.inCellIndices.end(), cellIndex);
 
 		if (it != data.inCellIndices.end())
-		{
 			return static_cast <uint> (distance(data.inCellIndices.begin(), it));
-		}
 
 		throw std::runtime_error("The passed cell is not an incoming cell to this junction.");
 	}
@@ -121,7 +119,7 @@ void JunctionRandom::applyRules(int & carSpeed, int index, TrafficMovement& road
 		}
 	}
 	data.carsOnJunction[index] = 0;				//cars, which can't cross the junctionin one timestep, because they already moved to many cells, loose their speed.
-	//data.carsOnJunction[index] = carSpeed;	//cars, which can't cross the junction in one timestep, because they already moved to many cells, keep their speed.
+	//data.getCarsOnJunction[index] = carSpeed;	//cars, which can't cross the junction in one timestep, because they already moved to many cells, keep their speed.
 }
 
 
@@ -211,6 +209,26 @@ const std::vector<uint>& JunctionRandom::getInCellIndices() const
 	return data.inCellIndices;
 }
 
+const std::vector<bool>& JunctionRandom::getCarCanEnter() const
+{
+	return data.carCanEnter;
+}
+
+const std::vector<int>& JunctionRandom::getCarsOnJunction() const
+{
+	return data.carsOnJunction;
+}
+
+const std::vector<uint>& JunctionRandom::getAlreadyMoved() const
+{
+	return data.alreadyMoved;
+}
+
+const std::vector<uint>& JunctionRandom::getOldSpeeds() const
+{
+	return data.oldSpeeds;
+}
+
 void JunctionRandom::dispJunction(const uint index, const uint roadLength) const
 {
 	if (find(data.inCellIndices.begin(), data.inCellIndices.end(), (roadLength - index - 1)) != data.inCellIndices.end()) {
@@ -224,7 +242,7 @@ void JunctionRandom::dispJunction(const uint index, const uint roadLength) const
 	}
 }
 
-const uint JunctionRandom::getNumCarsOnJunction() const
+uint JunctionRandom::getNumCarsOnJunction() const
 {
 	uint num = 0;
 	for (auto car : data.carsOnJunction) {

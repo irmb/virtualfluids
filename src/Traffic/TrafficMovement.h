@@ -8,14 +8,16 @@
 #include "Core/DataTypes.h"
 
 #include "RoadNetwork/RoadNetworkData.h"
+#include "Utilities/RandomHelper.h"
 
 class ConcentrationOutwriter;
 class CarDisplay;
+class TrafficTimestep;
 
 class VF_PUBLIC TrafficMovement
 {
 public:
-	TrafficMovement(std::unique_ptr<RoadNetworkData> road, const real dawdlePossibility);
+	TrafficMovement(std::shared_ptr<RoadNetworkData> road, const real dawdlePossibility);
 	//TrafficMovement() {};
 	TrafficMovement(const TrafficMovement&) = delete;
 	~TrafficMovement();
@@ -25,16 +27,22 @@ public:
 	void setMaxAcceleration(uint maxAcceleration);
 	void setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer);
 	void setSaveResultsTrue(uint timeSteps);
+	void setUseGPU();
 
 	//timpestep
 	void loopTroughTimesteps(uint numberOfTimesteps);
 	void calculateTimestep(uint step);
 
 	//get
-	const uint getRoadLength() const;
-	const uint getMaxVelocity() const;
-	const uint getNumberOfCars() const;			//only use for testing
-	const int getSpeedAtPosition(uint pos) const;       //only use for testing
+	uint getRoadLength() const;
+	uint getMaxVelocity() const;
+	uint getNumberOfCars() const;			//only use for testing
+	int getSpeedAtPosition(uint pos) const;       //only use for testing
+	real getDawdlePossibility();
+	bool getUseSlowToStart();
+	real getSlowToStartPossibility();
+	uint getMaxAcceleration();
+
 
 	//methods used by junctions and sources
 	uint getGapAfterOutCell(uint outCellIndex, uint speed);
@@ -83,13 +91,12 @@ private:
 	void writeConcentration(uint index, uint oldSpeed);
 
 private:
-	std::unique_ptr<RoadNetworkData> road;
+	std::shared_ptr<RoadNetworkData> road;
 	std::unique_ptr<ConcentrationOutwriter> concWriter = nullptr;
 	std::unique_ptr<CarDisplay> display = nullptr;
 
-	std::vector<int> *pcurrent;
-	std::vector<int> *pnext;
-	std::vector<int> *pdummy;
+	bool useGPU = false;
+	std::unique_ptr<TrafficTimestep> gpuCalculation;
 
 	real dawdlePossibility;
 
@@ -106,6 +113,6 @@ private:
 private:
 	//temporary variables for calculation
 	uint gap;
-	double randomNumber;
+	float randomNumber;
 };
 

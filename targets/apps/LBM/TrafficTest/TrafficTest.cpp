@@ -7,42 +7,58 @@
 
 
 #include "Traffic/TrafficMovementFactoryImpl.h"
-#include "TrafficMovementFactoryTest.h"
+//#include "Traffic/TrafficMovementFactoryTest.h"
 
 
 
 int main()
 {
-	//{uint numberOfTimesteps = 30;
+	{uint numberOfTimesteps = 2;
+
+	//Logger
+	logging::Logger::addStream(&std::cout);
+	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+	logging::Logger::timeStamp(logging::Logger::ENABLE);
+	logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
 
-		////Logger
-		//logging::Logger::addStream(&std::cout);
-		//logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-		//logging::Logger::timeStamp(logging::Logger::ENABLE);
-		//logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+	TrafficMovementFactory * factory = new TrafficMovementFactoryImpl();
+	factory->initTrafficMovement();
+
+	for (uint step = 1; step <= numberOfTimesteps; step++) {
+		factory->calculateTimestep(step, step);
+	}
+
+	std::cout << std::endl << std::endl; }
 
 
-		//TrafficMovementFactory * factory = new TrafficMovementFactoryImpl();
-		//factory->initTrafficMovement();
 
-		//for (uint step = 1; step <= numberOfTimesteps; step++) {
-		//	factory->calculateTimestep(step,step);
-		//}
 
-		//std::cout << std::endl << std::endl;}
+
+
+
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		{uint numberOfTimesteps = 20;
+	//{uint numberOfTimesteps = 20;
 
 
-		TrafficMovementFactoryTest * factory = new TrafficMovementFactoryTest();
-		factory->initTrafficMovement();
-		factory->loopThroughTimesteps(numberOfTimesteps);
+	//TrafficMovementFactoryTest * factory = new TrafficMovementFactoryTest();
+	//factory->initTrafficMovement();
+	//factory->loopThroughTimesteps(numberOfTimesteps);
 
-		std::cout << std::endl << std::endl; }
+	//std::cout << std::endl << std::endl; }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
 
 
 	//std::vector<int> oneCar = { -1,1,-1,-1,-1,-1 };

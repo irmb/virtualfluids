@@ -20,7 +20,9 @@ public:
 	virtual void updateJunction() = 0;
 
 	virtual const std::vector<uint>& getInCellIndices() const  = 0;
+	virtual const std::vector<bool>& getCarCanEnter() const = 0;
+	virtual const std::vector<int>& getCarsOnJunction()const = 0;
 
 	virtual void dispJunction(const uint index, const uint roadLength) const = 0;
-	virtual const uint getNumCarsOnJunction() const = 0;
+	virtual uint getNumCarsOnJunction() const = 0;
 };

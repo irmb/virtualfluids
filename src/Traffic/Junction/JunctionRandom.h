@@ -28,9 +28,13 @@ public:
 	virtual void updateJunction();
 
 	virtual const std::vector<uint>& getInCellIndices() const;
+	virtual const std::vector<bool>& getCarCanEnter() const;
+	virtual const std::vector<int>& getCarsOnJunction()const;
+	virtual const std::vector<uint>& getAlreadyMoved()const;
+	virtual const std::vector<uint>& getOldSpeeds()const;
 	
 	virtual void dispJunction(const uint index, const uint roadLength) const;
-	virtual const uint getNumCarsOnJunction() const; 
+	virtual uint getNumCarsOnJunction() const; 
 
 	virtual void checkOutCellIndices(const uint roadLength) const; 
 

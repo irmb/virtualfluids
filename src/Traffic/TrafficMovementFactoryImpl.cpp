@@ -90,7 +90,7 @@ void TrafficMovementFactoryImpl::initTrafficMovement(real * pconcArrayStart)
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
 	simulator->setSlowToStart(slowToStartPossibility);
 	simulator->setMaxAcceleration(2);
-
+	simulator->setUseGPU();
 
 	//init ConcentrationOutwriter
 	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));

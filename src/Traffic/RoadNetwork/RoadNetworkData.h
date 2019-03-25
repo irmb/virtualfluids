@@ -12,7 +12,7 @@
 
 struct VF_PUBLIC RoadNetworkData
 {
-protected:
+public:
 	friend class TrafficMovement;
 
 	uint roadLength;
@@ -28,5 +28,11 @@ protected:
 	std::vector<std::shared_ptr<Sink> > sinks; 
 	std::vector<std::shared_ptr<Junction> > junctions;
 	std::vector<std::shared_ptr<Source> > sources;
+
+	std::vector<int> *pcurrent;
+	std::vector<int> *pnext;
+	std::vector<int> *pdummy;
+
+	std::vector<int> oldSpeeds;
 };
 

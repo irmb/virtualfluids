@@ -2,17 +2,18 @@
 
 #include <iostream>
 
-ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadlength, real * concArrayStart, uint maxSpeed)
+ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadLength, real * concArrayStart, uint maxSpeed)
 {
 	if (concArrayStart == nullptr) {
-		std::cout << "using ConcBySpeedAndAcceleration::concentration for concentrations" << std::endl;
-		concentration.resize(roadlength);
+		std::cout << "using ConcBySpeedAndAcceleration::concentration-vector for concentrations" << std::endl;
+		concentration.resize(roadLength);
+		this->roadLength = roadLength;
 		this->maxSpeed = static_cast<real>(maxSpeed);
 	}
 	else {
 		std::cout << "using passed array for concentrations" << std::endl;
 		useLBMConcArray = true;
-		this->roadLength = roadlength;
+		this->roadLength = roadLength;
 		this->concArrayStart = concArrayStart;
 		this->maxSpeed = static_cast<real>(maxSpeed);
 	}
@@ -24,6 +25,14 @@ void ConcBySpeedAndAcceleration::calculateConcForSingleCar(uint index, uint oldS
 	putConcIntoArrayOrVector(index, chooseConc(oldSpeed, speed));
 }
 
+
+void ConcBySpeedAndAcceleration::calculateConcForAllCars(const std::vector<int> oldSpeeds, const std::vector<int> newSpeeds)
+{
+	for (uint i = 0; i < roadLength; i++) {
+		if (newSpeeds[i] > -1)
+			putConcIntoArrayOrVector(i, chooseConc(oldSpeeds[i], newSpeeds[i]));
+	}
+}
 
 void ConcBySpeedAndAcceleration::calculateConcForJunctionCar(uint index, uint oldSpeed, uint speed)
 {
