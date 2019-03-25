@@ -164,7 +164,6 @@ void TrafficMovement::calculateTimestep(uint step)
 	//if (display != nullptr)	display->dispCurrentRoad();
 	//if (concWriter != nullptr) concWriter->dispConcentrations();
 
-	VectorHelper::fillVector(*(road->pnext), -1);
 	if (concWriter != nullptr) concWriter->resetConcentrations();
 
 	//apply rules on all cars

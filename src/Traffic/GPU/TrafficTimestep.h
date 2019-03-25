@@ -53,24 +53,31 @@ private:
 	thrust::device_vector<bool> sinkCarCanEnter;
 
 	thrust::device_vector<float> sourcePossibilities;
+	thrust::device_vector<uint> sourceIndices;
 
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
-public:
 
+public:
 
 	TrafficTimestep(std::shared_ptr<RoadNetworkData> road);
 	//TrafficTimestep(RoadNetworkData* road, TrafficMovement* traffic);
 	void run(std::shared_ptr<RoadNetworkData> road);
 
+private:
+	void callTrafficMovementKernel();
+	void callSourceKernel();
+
 	void combineJunctionInCellIndices(std::vector<std::shared_ptr<Junction> > junctions);
 	void combineJunctionCarCanEnter(std::vector<std::shared_ptr<Junction> > junctions);
 	void combineJunctionCarsOnJunction(std::vector<std::shared_ptr<Junction> > junctions);
-	void combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink> > sinks);
-	void combineSourcePossibilities(std::vector<std::shared_ptr<Source>> sources);
 	void combineJunctionAlreadyMoved(std::vector<std::shared_ptr<Junction> > junctions);
 	void combineJunctionOldSpeeds(std::vector<std::shared_ptr<Junction> > junctions);
 
+	void combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink> > sinks);
+
+	void combineSourcePossibilities(std::vector<std::shared_ptr<Source>> sources);
+	void combineSourceIndices(std::vector<std::shared_ptr<Source>> sources);
 };
 
 #endif
