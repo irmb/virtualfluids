@@ -21,18 +21,20 @@
 #include "Junction/Junction.h"
 #include "Sink/Sink.h"
 #include "Source/Source.h"
+#include "Utilities/safe_casting.h"
+#include "Utilities/invalidInput_error.h"
 
-__global__   void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* junctionInCellIndices, bool* junctionCarCanEnter, int* junctionCarsOnJunction, uint* junctionAlreadyMoved, uint* JunctionOldSpeeds, bool* sinkCarCanEnter,
+__global__   void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
 	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility);
 
-__device__ inline void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* junctionInCellIndices, bool* junctionCarCanEnter, int* junctionCarsOnJunction, uint* junctionAlreadyMoved, uint* JunctionOldSpeeds, bool* sinkCarCanEnter,
+__device__ inline void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
 	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility, uint index);
 
 
 __global__	void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, uint* sourceIndices, bool* sinkCarCanEnter, float* sourcePossibilities, int* oldSpeeds, uint maxVelocity, uint safetyDistance, uint size_sources);
 
 
-__device__ inline uint getJunctionInCellsVectorIndex(uint * junctionInCellIndices, uint size_road, uint cell);
+__device__ inline uint getJunctionInCellsVectorIndex(uint * juncInCellIndices, uint size_road, uint cell);
 __device__ inline uint getGapAfterOutCell(int* roadCurrent, int* neighbors, bool* sinkCarCanEnter, int sourceIndex, uint speed, uint safetyDistance);
 
 
@@ -43,18 +45,17 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road)
 {
 	//calculate sizes
 	size_roads = road->roadLength;
-	size_junctions = road->junctions.size();
-	size_sources = road->sources.size();
-	size_sinks = road->sinks.size();
+	size_junctions = castSizeT_Uint(road->junctions.size());
+	size_sources = castSizeT_Uint(road->sources.size());
+	size_sinks = castSizeT_Uint(road->sinks.size());
 
 	//set attributes
 	maxVelocity = road->maxVelocity;
 	safetyDistance = road->safetyDistance;
-
-	dawdlePossibility = 0.5f;
-	useSlowToStart = false;
-	slowStartPossibility = 0.1f;
-	maxAcceleration = 2;
+	dawdlePossibility = road->dawdlePossibility;
+	useSlowToStart = road->useSlowToStart;
+	slowStartPossibility = road->slowStartPossibility;
+	maxAcceleration = road->maxAcceleration;
 
 	//prepare road
 	this->neighbors.resize(size_roads);
@@ -64,11 +65,16 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road)
 	oldSpeeds.resize(size_roads);
 
 	//prepare junctions
-	combineJunctionInCellIndices(road->junctions);
-	junctionCarCanEnter.resize(junctionInCellIndices.size());
-	junctionCarsOnJunction.resize(junctionInCellIndices.size());
-	junctionAlreadyMoved.resize(junctionInCellIndices.size());
-	JunctionOldSpeeds.resize(junctionInCellIndices.size());
+	combineJuncInCellIndices(road->junctions);
+	combineJuncCarCanEnter(road->junctions);
+	combineJuncCarsOnJunction(road->junctions);
+	combineJuncAlreadyMoved(road->junctions);
+	combineJuncOldSpeeds(road->junctions);
+
+	combineJuncCarCanNotEnterThisOutCell(road->junctions);
+	combineJuncOutCellIndices(road->junctions);
+	juncOutCellIsOpen.resize(juncOutCellIndices.size());
+	resetOutCellIsOpen();
 
 	//prepare sinks
 	sinkCarCanEnter.resize(size_sinks);
@@ -88,17 +94,19 @@ void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
 	//reset oldSpeeds
 	std::fill(oldSpeeds.begin(), oldSpeeds.end(), -1);
 
-	//copy junctions an sinks to device
-	combineJunctionCarCanEnter(road->junctions);
-	combineJunctionCarsOnJunction(road->junctions);
-	combineJunctionAlreadyMoved(road->junctions);
-	combineJunctionOldSpeeds(road->junctions);
+	//copy junctions to device
+	combineJuncCarCanEnter(road->junctions);
+	combineJuncCarsOnJunction(road->junctions);
+	combineJuncAlreadyMoved(road->junctions);
+	combineJuncOldSpeeds(road->junctions);
+
+	//copy sinks to device
 	combineSinkCarCanEnterSink(road->sinks);
 
 	callTrafficMovementKernel();
 	//cudaDeviceSynchronize();
 	getLastCudaError("trafficTimestepKernel execution failed");
-	
+
 	callSourceKernel();
 	cudaDeviceSynchronize();
 	getLastCudaError("sourceTimestepKernel execution failed");
@@ -106,11 +114,6 @@ void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
 	thrust::copy(roadNext.begin(), roadNext.end(), (*(road->pnext)).begin());
 	thrust::copy(roadCurrent.begin(), roadCurrent.end(), (*(road->pcurrent)).begin());
 	thrust::copy(oldSpeeds.begin(), oldSpeeds.end(), road->oldSpeeds.begin());
-
-	//combineJunctionCarCanEnter(road->junctions);
-	//combineJunctionCarsOnJunction(road->junctions);
-	//combineJunctionAlreadyMoved(road->junctions);
-	//combineJunctionOldSpeeds(road->junctions);
 }
 
 void TrafficTimestep::callTrafficMovementKernel()
@@ -136,11 +139,11 @@ void TrafficTimestep::callTrafficMovementKernel()
 		roadNext.data().get(),
 		neighbors.data().get(),
 		oldSpeeds.data().get(),
-		junctionInCellIndices.data().get(),
-		junctionCarCanEnter.data().get(),
-		junctionCarsOnJunction.data().get(),
-		junctionAlreadyMoved.data().get(),
-		JunctionOldSpeeds.data().get(),
+		juncInCellIndices.data().get(),
+		juncCarCanEnter.data().get(),
+		juncCarsOnJunction.data().get(),
+		juncAlreadyMoved.data().get(),
+		juncOldSpeeds.data().get(),
 		sinkCarCanEnter.data().get(),
 		size_roads,
 		maxVelocity,
@@ -171,9 +174,9 @@ void TrafficTimestep::callSourceKernel()
 	dim3 grid(Grid1, Grid2);
 	dim3 threads(numberOfThreads, 1, 1);
 
-	sourceTimestepKernel << < grid, threads >> > ( 
+	sourceTimestepKernel << < grid, threads >> > (
 		roadCurrent.data().get(),
-		roadNext.data().get(), 
+		roadNext.data().get(),
 		neighbors.data().get(),
 		sourceIndices.data().get(),
 		sinkCarCanEnter.data().get(),
@@ -187,7 +190,7 @@ void TrafficTimestep::callSourceKernel()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* junctionInCellIndices, bool* junctionCarCanEnter, int* junctionCarsOnJunction, uint* junctionAlreadyMoved, uint* JunctionOldSpeeds, bool* sinkCarCanEnter,
+__global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
 	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility)
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -204,11 +207,11 @@ __global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neig
 	if (index >= size_road) return;
 
 
-	trafficTimestepFunction(roadCurrent, roadNext, neighbors, oldSpeeds, junctionInCellIndices, junctionCarCanEnter, junctionCarsOnJunction, junctionAlreadyMoved, JunctionOldSpeeds, sinkCarCanEnter,
+	trafficTimestepFunction(roadCurrent, roadNext, neighbors, oldSpeeds, juncInCellIndices, juncCarCanEnter, juncCarsOnJunction, juncAlreadyMoved, juncOldSpeeds, sinkCarCanEnter,
 		size_road, maxVelocity, maxAcceleration, safetyDistance, useSlowToStart, slowStartPossibility, dawdlePossibility, index);
 }
 
-__device__ void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* junctionInCellIndices, bool* junctionCarCanEnter, int* junctionCarsOnJunction, uint* junctionAlreadyMoved, uint* JunctionOldSpeeds, bool* sinkCarCanEnter,
+__device__ void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
 	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility, uint index)
 {
 	if (roadCurrent[index] < 0) return;
@@ -240,7 +243,7 @@ __device__ void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* ne
 
 		//junction
 		if (neighbor <= -1000) {
-			if (junctionCarCanEnter[getJunctionInCellsVectorIndex(junctionInCellIndices, size_road, currentCell)] && i <= speed) gap = speed;
+			if (juncCarCanEnter[getJunctionInCellsVectorIndex(juncInCellIndices, size_road, currentCell)] && i <= speed) gap = speed;
 			else gap = i;
 			break;
 		}
@@ -306,12 +309,12 @@ __device__ void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* ne
 
 	if (neighbor <= -1000 && neighbor > -2000) {
 		//registerCar
-		uint index = getJunctionInCellsVectorIndex(junctionInCellIndices, size_road, currentCell);
-		junctionCarsOnJunction[index] = speed - 1; //all cars, which enter the junction have to slow down by one increment
+		uint index = getJunctionInCellsVectorIndex(juncInCellIndices, size_road, currentCell);
+		juncCarsOnJunction[index] = speed - 1; //all cars, which enter the junction have to slow down by one increment
 		//getCarsOnJunction[index] = 0; //all cars, which enter the junction have to stop
-		JunctionOldSpeeds[index] = roadCurrent[index];
-		junctionCarCanEnter[index] = false;
-		junctionAlreadyMoved[index] = numberOfCellsMoved;
+		juncOldSpeeds[index] = roadCurrent[index];
+		juncCarCanEnter[index] = false;
+		juncAlreadyMoved[index] = numberOfCellsMoved;
 		return;
 	}
 
@@ -386,9 +389,9 @@ inline __device__ uint getGapAfterOutCell(int* roadCurrent, int* neighbors, bool
 	return speed;
 }
 
-__device__ uint getJunctionInCellsVectorIndex(uint* junctionInCellIndices, uint size_road, uint cell) {
+__device__ uint getJunctionInCellsVectorIndex(uint* juncInCellIndices, uint size_road, uint cell) {
 	for (uint i = 0; i < size_road; i++)
-		if (junctionInCellIndices[i] == cell)
+		if (juncInCellIndices[i] == cell)
 			return i;
 	// Error: "no matching incoming cell to a junction found in: getJunctionInCellsVectorIndex()";
 	return 65000;
@@ -410,36 +413,31 @@ __device__ uint getJunctionInCellsVectorIndex(uint* junctionInCellIndices, uint 
 
 
 
-void TrafficTimestep::combineJunctionInCellIndices(std::vector<std::shared_ptr<Junction>> junctions)
+void TrafficTimestep::combineJuncInCellIndices(std::vector<std::shared_ptr<Junction>> &junctions)
 {
-	for (auto& j : junctions)
+	for (auto& j : junctions) {
+		juncStartInIncells.push_back(juncInCellIndices.size());
 		for (uint i : j->getInCellIndices())
-			this->junctionInCellIndices.push_back(i);
+			this->juncInCellIndices.push_back(i);
+	}
 }
 
-void TrafficTimestep::combineJunctionCarCanEnter(std::vector<std::shared_ptr<Junction>> junctions)
+void TrafficTimestep::combineJuncCarCanEnter(std::vector<std::shared_ptr<Junction>> &junctions)
 {
-	uint it = 0;
 	for (auto& j : junctions)
-		for (bool i : j->getCarCanEnter()) {
-			this->junctionCarCanEnter[it] = i;
-			it++;
-		}
-
+		for (bool i : j->getCarCanEnter())
+			this->juncCarCanEnter.push_back(i);
 }
 
-void TrafficTimestep::combineJunctionCarsOnJunction(std::vector<std::shared_ptr<Junction>> junctions)
+void TrafficTimestep::combineJuncCarsOnJunction(std::vector<std::shared_ptr<Junction>> &junctions)
 {
-	uint it = 0;
 	for (auto& j : junctions)
-		for (int i : j->getCarsOnJunction()) {
-			this->junctionCarsOnJunction[it] = i;
-			it++;
-		}
+		for (int i : j->getCarsOnJunction())
+			this->juncCarsOnJunction.push_back(i);
 }
 
 
-void TrafficTimestep::combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink>> sinks)
+void TrafficTimestep::combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink>> &sinks)
 {
 	uint it = 0;
 	for (auto& s : sinks) {
@@ -449,34 +447,59 @@ void TrafficTimestep::combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sin
 }
 
 
-void TrafficTimestep::combineSourcePossibilities(std::vector<std::shared_ptr<Source>> sources) {
+void TrafficTimestep::combineSourcePossibilities(std::vector<std::shared_ptr<Source>> &sources) {
 	for (auto& s : sources)
 		this->sourcePossibilities.push_back(s->getPossibility());
 }
 
-void TrafficTimestep::combineSourceIndices(std::vector<std::shared_ptr<Source>> sources)
+void TrafficTimestep::combineSourceIndices(std::vector<std::shared_ptr<Source>> &sources)
 {
 	for (auto& s : sources)
 		this->sourceIndices.push_back(s->getIndex());
 }
 
 
-void TrafficTimestep::combineJunctionAlreadyMoved(std::vector<std::shared_ptr<Junction>> junctions)
+void TrafficTimestep::combineJuncAlreadyMoved(std::vector<std::shared_ptr<Junction>> &junctions)
 {
-	uint it = 0;
 	for (auto& j : junctions)
-		for (int i : j->getCarsOnJunction()) {
-			this->junctionAlreadyMoved[it] = i;
-			it++;
-		}
+		for (int i : j->getCarsOnJunction())
+			this->juncAlreadyMoved.push_back(i);
 }
 
-void TrafficTimestep::combineJunctionOldSpeeds(std::vector<std::shared_ptr<Junction>> junctions)
+void TrafficTimestep::combineJuncOldSpeeds(std::vector<std::shared_ptr<Junction>> &junctions)
 {
-	uint it = 0;
 	for (auto& j : junctions)
-		for (int i : j->getCarsOnJunction()) {
-			this->JunctionOldSpeeds[it] = i;
-			it++;
-		}
+		for (int i : j->getCarsOnJunction())
+			this->juncOldSpeeds.push_back(i);
+}
+
+void TrafficTimestep::combineJuncOutCellIndices(std::vector<std::shared_ptr<Junction>> &junctions)
+{
+	for (auto& j : junctions) {
+		juncStartInOutcells.push_back(juncOutCellIndices.size());
+		for (uint i : j->getOutCellIndices())
+			this->juncOutCellIndices.push_back(i);
+	}
+
+}
+
+void TrafficTimestep::combineJuncCarCanNotEnterThisOutCell(std::vector<std::shared_ptr<Junction>>& junctions)
+{
+	for (auto& j : junctions)
+		for (int i : j->getCarCanNotEnterThisOutCell())
+			this->juncCarCanNotEnterThisOutCell.push_back(i);
+}
+
+uint TrafficTimestep::getNumCarsOnJunctions()
+{
+	uint num = 0;
+	for (int car : juncCarsOnJunction)
+		if (car >= 0) ++num;
+	return num;
+}
+
+void TrafficTimestep::resetOutCellIsOpen()
+{
+	for (auto i : juncOutCellIsOpen)
+		i = true;
 }

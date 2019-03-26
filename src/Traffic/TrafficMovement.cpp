@@ -36,7 +36,7 @@ void TrafficMovement::initDawdle(const real dawdlePossibility)
 {
 	try {
 		if (dawdlePossibility >= 0 && dawdlePossibility < 1) {
-			this->dawdlePossibility = dawdlePossibility;
+			this->road->dawdlePossibility = dawdlePossibility;
 		}
 		else {
 			throw invalidInput_error("The dawdlePossibility should be between 0 and 1.");
@@ -55,8 +55,8 @@ void TrafficMovement::setSlowToStart(const real slowStartPossibility)
 	try {
 		if (slowStartPossibility >= 0 && slowStartPossibility < 1) {
 			if (slowStartPossibility > 0) {
-				this->slowStartPossibility = slowStartPossibility;
-				useSlowToStart = true;
+				this->road->slowStartPossibility = slowStartPossibility;
+				road->useSlowToStart = true;
 			}
 		}
 		else {
@@ -80,7 +80,7 @@ void TrafficMovement::setUseGPU()
 
 void TrafficMovement::setMaxAcceleration(uint maxAcceleration)
 {
-	this->maxAcceleration = maxAcceleration;
+	this->road->maxAcceleration = maxAcceleration;
 }
 
 void TrafficMovement::setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer)
@@ -99,13 +99,14 @@ void TrafficMovement::setSaveResultsTrue(uint timeSteps)
 uint TrafficMovement::getNumberOfCars() const
 {
 	uint num = 0;
-	for (auto& junc : road->junctions) {
-		num += junc->getNumCarsOnJunction();
-	}
+	if (useGPU) num = gpuCalculation->getNumCarsOnJunctions();
+	else
+		for (auto& junc : road->junctions)
+			num += junc->getNumCarsOnJunction();
 
-	for (auto cell : *(road->pcurrent)) {
+	for (auto cell : *(road->pcurrent))
 		if (cell >= 0) ++num;
-	}
+
 	return num;
 }
 
@@ -130,22 +131,22 @@ uint TrafficMovement::getMaxVelocity() const
 
 real TrafficMovement::getDawdlePossibility()
 {
-	return dawdlePossibility;
+	return road->dawdlePossibility;
 }
 
 bool TrafficMovement::getUseSlowToStart()
 {
-	return useSlowToStart;
+	return road->useSlowToStart;
 }
 
 real TrafficMovement::getSlowToStartPossibility()
 {
-	return slowStartPossibility;
+	return road->slowStartPossibility;
 }
 
 uint TrafficMovement::getMaxAcceleration()
 {
-	return maxAcceleration;
+	return road->maxAcceleration;
 }
 
 
@@ -182,7 +183,7 @@ void TrafficMovement::calculateTimestep(uint step)
 
 		calculateSourceStep();
 	}
-		
+
 	switchCurrentNext();
 
 	if (display != nullptr)  display->putCurrentIntoResults(step);
@@ -232,8 +233,8 @@ void TrafficMovement::applyRules(uint carIndex)
 
 void TrafficMovement::accelerateCar(uint & speed)
 {
-	if (speed <= road->maxVelocity - maxAcceleration)
-		speed += maxAcceleration;
+	if (speed <= road->maxVelocity - road->maxAcceleration)
+		speed += road->maxAcceleration;
 }
 
 void TrafficMovement::brakeCar(uint carIndex, uint &speed)
@@ -249,17 +250,17 @@ void TrafficMovement::dawdleCar(uint carIndex, uint & speed)
 	randomNumber = distFloat(engine);
 
 	//Barlovic / SlowToStart
-	if (useSlowToStart == true && (*(road->pcurrent))[carIndex] == 0) {
-		if (randomNumber < slowStartPossibility) {
+	if (road->useSlowToStart == true && (*(road->pcurrent))[carIndex] == 0) {
+		if (randomNumber < road->slowStartPossibility) {
 			speed = 0;
 		}
 		return;
 	}
 
 	//Standard NaSch
-	if (randomNumber < dawdlePossibility) {
-		if (speed >= maxAcceleration)
-			speed -= maxAcceleration;
+	if (randomNumber < road->dawdlePossibility) {
+		if (speed >= road->maxAcceleration)
+			speed -= road->maxAcceleration;
 		else
 			speed = 0;
 	}

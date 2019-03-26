@@ -12,8 +12,9 @@
 
 struct VF_PUBLIC RoadNetworkData
 {
-public:
+protected:
 	friend class TrafficMovement;
+	friend class TrafficTimestep;
 
 	uint roadLength;
 	uint maxVelocity;
@@ -34,5 +35,10 @@ public:
 	std::vector<int> *pdummy;
 
 	std::vector<int> oldSpeeds;
+
+	real dawdlePossibility;
+	bool useSlowToStart = false;
+	real slowStartPossibility;
+	uint maxAcceleration = 1;
 };
 

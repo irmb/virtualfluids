@@ -25,7 +25,7 @@ class VF_PUBLIC TrafficTimestep
 private:
 
 	//std::vector<real> kineticEnergyTimeSeries;
-	int size_roads;
+	uint size_roads;
 	uint maxVelocity;
 	uint safetyDistance;
 
@@ -34,9 +34,9 @@ private:
 	real slowStartPossibility;
 	uint maxAcceleration;
 
-	int size_junctions;
-	int size_sources;
-	int size_sinks;
+	uint size_junctions;
+	uint size_sources;
+	uint size_sinks;
 
 	thrust::device_vector<int> neighbors;
 
@@ -44,11 +44,17 @@ private:
 	thrust::device_vector<int> roadNext;
 	thrust::device_vector<int> oldSpeeds;
 
-	thrust::device_vector<uint> junctionInCellIndices;
-	thrust::device_vector<bool> junctionCarCanEnter;
-	thrust::device_vector<int> junctionCarsOnJunction;	
-	thrust::device_vector<uint> junctionAlreadyMoved;
-	thrust::device_vector<uint> JunctionOldSpeeds;
+	thrust::device_vector<uint> juncInCellIndices;
+	thrust::device_vector<bool> juncCarCanEnter;
+	thrust::device_vector<int> juncCarsOnJunction;	
+	thrust::device_vector<uint> juncAlreadyMoved;
+	thrust::device_vector<uint> juncOldSpeeds;
+
+	thrust::device_vector<int> juncOutCellIndices;
+	thrust::device_vector<int> juncCarCanNotEnterThisOutCell; //no such inCell: -2
+	thrust::device_vector<bool> juncOutCellIsOpen;
+	thrust::device_vector<uint> juncStartInIncells;
+	thrust::device_vector<uint> juncStartInOutcells;
 
 	thrust::device_vector<bool> sinkCarCanEnter;
 
@@ -61,23 +67,27 @@ private:
 public:
 
 	TrafficTimestep(std::shared_ptr<RoadNetworkData> road);
-	//TrafficTimestep(RoadNetworkData* road, TrafficMovement* traffic);
 	void run(std::shared_ptr<RoadNetworkData> road);
+	uint getNumCarsOnJunctions(); //only used for debugging
 
 private:
 	void callTrafficMovementKernel();
 	void callSourceKernel();
 
-	void combineJunctionInCellIndices(std::vector<std::shared_ptr<Junction> > junctions);
-	void combineJunctionCarCanEnter(std::vector<std::shared_ptr<Junction> > junctions);
-	void combineJunctionCarsOnJunction(std::vector<std::shared_ptr<Junction> > junctions);
-	void combineJunctionAlreadyMoved(std::vector<std::shared_ptr<Junction> > junctions);
-	void combineJunctionOldSpeeds(std::vector<std::shared_ptr<Junction> > junctions);
+	void combineJuncInCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineJuncCarCanEnter(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineJuncCarsOnJunction(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineJuncAlreadyMoved(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineJuncOldSpeeds(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineJuncOutCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineJuncCarCanNotEnterThisOutCell(std::vector<std::shared_ptr<Junction> > &junctions);
 
-	void combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink> > sinks);
+	void combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink> > &sinks);
 
-	void combineSourcePossibilities(std::vector<std::shared_ptr<Source>> sources);
-	void combineSourceIndices(std::vector<std::shared_ptr<Source>> sources);
+	void combineSourcePossibilities(std::vector<std::shared_ptr<Source> > &sources);
+	void combineSourceIndices(std::vector<std::shared_ptr<Source> > &sources);
+
+	void resetOutCellIsOpen();
 };
 
 #endif

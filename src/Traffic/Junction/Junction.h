@@ -1,7 +1,8 @@
 #pragma once
-#include <VirtualFluidsDefinitions.h>
-
 #include <vector>
+
+#include <VirtualFluidsDefinitions.h>
+#include "Core/DataTypes.h"
 
 #include "JunctionData.h"
 
@@ -19,9 +20,13 @@ public:
 	virtual void calculateTimeStep(TrafficMovement &road) = 0;
 	virtual void updateJunction() = 0;
 
-	virtual const std::vector<uint>& getInCellIndices() const  = 0;
+	virtual const std::vector<uint>& getInCellIndices()const = 0;
+	virtual const std::vector<uint>& getOutCellIndices() const = 0;
 	virtual const std::vector<bool>& getCarCanEnter() const = 0;
 	virtual const std::vector<int>& getCarsOnJunction()const = 0;
+	virtual const std::vector<uint>& getAlreadyMoved()const = 0;
+	virtual const std::vector<uint>& getOldSpeeds()const = 0;
+	virtual const std::vector<int>& getCarCanNotEnterThisOutCell() const = 0;
 
 	virtual void dispJunction(const uint index, const uint roadLength) const = 0;
 	virtual uint getNumCarsOnJunction() const = 0;

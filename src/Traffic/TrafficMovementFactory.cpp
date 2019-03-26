@@ -118,5 +118,6 @@ void TrafficMovementFactory::calculateTimestep(uint step, uint stepForVTK)
 	simulator->calculateTimestep(step);
 	simulator->visualizeVehicleLengthForVTK();
 	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	//std::cout << "Number of Cars: " << simulator->getNumberOfCars() << std::endl;
 }
 

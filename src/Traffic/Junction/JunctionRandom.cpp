@@ -209,6 +209,11 @@ const std::vector<uint>& JunctionRandom::getInCellIndices() const
 	return data.inCellIndices;
 }
 
+const std::vector<uint>& JunctionRandom::getOutCellIndices() const
+{
+	return data.outCellIndices;
+}
+
 const std::vector<bool>& JunctionRandom::getCarCanEnter() const
 {
 	return data.carCanEnter;
@@ -229,6 +234,11 @@ const std::vector<uint>& JunctionRandom::getOldSpeeds() const
 	return data.oldSpeeds;
 }
 
+const std::vector<int>& JunctionRandom::getCarCanNotEnterThisOutCell() const
+{
+	return data.carCanNotEnterThisOutCell;
+}
+
 void JunctionRandom::dispJunction(const uint index, const uint roadLength) const
 {
 	if (find(data.inCellIndices.begin(), data.inCellIndices.end(), (roadLength - index - 1)) != data.inCellIndices.end()) {
@@ -245,13 +255,11 @@ void JunctionRandom::dispJunction(const uint index, const uint roadLength) const
 uint JunctionRandom::getNumCarsOnJunction() const
 {
 	uint num = 0;
-	for (auto car : data.carsOnJunction) {
+	for (auto car : data.carsOnJunction)
 		if (car >= 0)
 			++num;
-	}
 	return num;
 }
-
 
 void JunctionRandom::checkOutCellIndices(const uint roadLength) const
 {

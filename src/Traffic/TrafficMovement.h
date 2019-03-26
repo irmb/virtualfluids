@@ -98,14 +98,10 @@ private:
 	bool useGPU = false;
 	std::unique_ptr<TrafficTimestep> gpuCalculation;
 
-	real dawdlePossibility;
 
-	bool useSlowToStart = false;
-	real slowStartPossibility;
 
+	
 	uint currentStep = 0;
-
-	uint maxAcceleration = 1;
 
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_real_distribution<real> distFloat{ 0.0, 1.0 };
