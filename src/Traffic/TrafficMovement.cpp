@@ -171,16 +171,16 @@ void TrafficMovement::calculateTimestep(uint step)
 		this->gpuCalculation->run(road);
 		if (concWriter != nullptr) concWriter->calculateConcForAllCars(road->oldSpeeds, *(road->pcurrent));
 	}
-	else 
-		for (uint i = 0; i < road->roadLength; i++) 
-			if ((*road->pcurrent)[i] > -1) 
+	else {
+		for (uint i = 0; i < road->roadLength; i++)
+			if ((*road->pcurrent)[i] > -1)
 				applyRules(i);
-	
 
-	calculateJunctionStep();
+		calculateJunctionStep();
 
-	calculateSourceStep();
-
+		calculateSourceStep();
+	}
+		
 	switchCurrentNext();
 
 	if (display != nullptr)  display->putCurrentIntoResults(step);

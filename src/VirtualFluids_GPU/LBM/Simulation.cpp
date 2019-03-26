@@ -178,7 +178,8 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
    trafficFactory = new TrafficMovementFactory();
-   trafficFactory->initTrafficMovement(para->getParH(0)->concentration);
+   std::string path = "C:/Users/hiwi/BaselDokumente/";
+   trafficFactory->initTrafficMovement(path, para->getParH(0)->concentration);
 
 
    //////////////////////////////////////////////////////////////////////////

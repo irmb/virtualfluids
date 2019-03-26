@@ -15,12 +15,13 @@ class VF_PUBLIC TrafficMovementFactory
 public:
 	TrafficMovementFactory();
 	~TrafficMovementFactory() {};
-	virtual void initTrafficMovement(real * pconcArrayStart = nullptr);
+	virtual void initTrafficMovement(std::string path, real * pconcArrayStart = nullptr);
 	virtual void calculateTimestep(uint step, uint stepForVTK);
 
 protected:
 	StreetPointFinder finder;
 	std::shared_ptr<TrafficMovement> simulator;
+	std::string inputPath;
 	std::string outputPath;
 	std::string outputFilename;
 	const std::vector<int>* cars;

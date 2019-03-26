@@ -103,7 +103,7 @@ private:
 	bool useSlowToStart = false;
 	real slowStartPossibility;
 
-	uint currentStep;
+	uint currentStep = 0;
 
 	uint maxAcceleration = 1;
 

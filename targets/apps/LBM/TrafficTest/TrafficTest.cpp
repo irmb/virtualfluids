@@ -23,7 +23,8 @@ int main()
 
 
 	TrafficMovementFactory * factory = new TrafficMovementFactory();
-	factory->initTrafficMovement();
+	std::string path = "C:/Users/hiwi/BaselDokumente/";
+	factory->initTrafficMovement(path);
 
 	for (uint step = 1; step <= numberOfTimesteps; step++) {
 		factory->calculateTimestep(step, step);

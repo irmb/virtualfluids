@@ -20,36 +20,44 @@ TrafficMovementFactory::TrafficMovementFactory()
 {
 }
 
-void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart)
+void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcArrayStart)
 {
 	//Variables
 
 	real vehicleDensity = 0.1f;
 
-	const uint maxVelocity = 14;
+	uint vehicleLength = 7;
+	uint maxVelocity = 14;
+	uint maxAcceleration = 2;
+
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.4;
 
-	uint vehicleLength = 7;
+	bool useGPU = true;
+	bool useSlowToStart = true;
+
+	inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
+	outputPath = path + "Basel_Ergebnisse/";
+	outputFilename = "ExampleStreets";
 
 
 	//StreetPointFinder M:\Basel2019  C:\Users\schoen\Desktop\git\MS2
 	//finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 	//finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
-	finder.readStreets("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
-	finder.writeVTK("C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/ExampleStreets.vtk");
+	finder.readStreets(inputPath + "ExampleStreets.txt");
+	finder.writeVTK(outputPath + outputFilename + ".vtk");
 
 	JunctionReader junctionReader;
 	//junctionReader.readJunctions("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Junctions.txt", finder);
-	junctionReader.readJunctions("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/Junctions.txt", finder);
+	junctionReader.readJunctions(inputPath + "Junctions.txt", finder);
 
 	SinkReader sinkReader;
 	//sinkReader.readSinks("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Sinks.txt", finder);
-	sinkReader.readSinks("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/Sinks.txt", finder);
+	sinkReader.readSinks(inputPath + "Sinks.txt", finder);
 
 	SourceReader sourceReader;
 	//sourceReader.readSources("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Sources.txt", finder);
-	sourceReader.readSources("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/Sources.txt", finder);
+	sourceReader.readSources(inputPath + "Sources.txt", finder);
 
 	//calculate RoadLength
 	uint roadLength = 0;
@@ -88,9 +96,9 @@ void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart)
 
 	//init TrafficMovement
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
-	simulator->setSlowToStart(slowToStartPossibility);
-	simulator->setMaxAcceleration(2);
-	simulator->setUseGPU();
+	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
+	simulator->setMaxAcceleration(maxAcceleration);
+	if (useGPU) simulator->setUseGPU();
 
 	//init ConcentrationOutwriter
 	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
@@ -98,8 +106,6 @@ void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart)
 
 	//prepare writing to vtk
 	//this->outputPath = "M:/Basel2019/results/";
-	this->outputPath = "C:/Users/hiwi/BaselDokumente/Basel_Ergebnisse/";
-	this->outputFilename = "ExampleStreets";
 	this->cars = &(simulator->getVehiclesForVTK());
 
 	//write initial Timestep
