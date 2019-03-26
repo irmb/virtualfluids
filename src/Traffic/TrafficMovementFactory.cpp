@@ -1,4 +1,4 @@
-#include "TrafficMovementFactoryImpl.h"
+#include "TrafficMovementFactory.h"
 
 #include <iostream>
 
@@ -16,11 +16,11 @@
 #include "Utilities/safe_casting.h"
 
 
-TrafficMovementFactoryImpl::TrafficMovementFactoryImpl()
+TrafficMovementFactory::TrafficMovementFactory()
 {
 }
 
-void TrafficMovementFactoryImpl::initTrafficMovement(real * pconcArrayStart)
+void TrafficMovementFactory::initTrafficMovement(real * pconcArrayStart)
 {
 	//Variables
 
@@ -107,7 +107,7 @@ void TrafficMovementFactoryImpl::initTrafficMovement(real * pconcArrayStart)
 	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
 }
 
-void TrafficMovementFactoryImpl::calculateTimestep(uint step, uint stepForVTK)
+void TrafficMovementFactory::calculateTimestep(uint step, uint stepForVTK)
 {
 	simulator->calculateTimestep(step);
 	simulator->visualizeVehicleLengthForVTK();
