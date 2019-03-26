@@ -6,12 +6,8 @@
 #include "Core\Logger\Logger.h"
 
 
-<<<<<<< HEAD
 #include "Traffic/TrafficMovementFactoryImpl.h"
 //#include "Traffic/TrafficMovementFactoryTest.h"
-=======
-#include "Traffic/TrafficMovementFactory.h"
->>>>>>> parent of afbc15a... added Interface to TrafficMovementFactory
 
 
 
@@ -29,20 +25,11 @@ int main()
 	TrafficMovementFactory * factory = new TrafficMovementFactoryImpl();
 	factory->initTrafficMovement();
 
-<<<<<<< HEAD
 	for (uint step = 1; step <= numberOfTimesteps; step++) {
 		factory->calculateTimestep(step, step);
 	}
 
 	std::cout << std::endl << std::endl; }
-=======
-		TrafficMovementFactory factory = TrafficMovementFactory();
-		factory.initTrafficMovement();
-
-		for (uint step = 1; step <= numberOfTimesteps; step++) {
-			factory.calculateTimestep(step,step);
-		}
->>>>>>> parent of afbc15a... added Interface to TrafficMovementFactory
 
 
 
