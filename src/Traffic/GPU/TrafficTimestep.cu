@@ -82,7 +82,7 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road)
 void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
 {
 	//copy road to device, reset next
-	this->roadCurrent = *road->pcurrent;
+	this->roadCurrent = *(road->pcurrent);
 	std::fill(roadNext.begin(), roadNext.end(), -1);
 
 	//reset oldSpeeds
@@ -103,8 +103,8 @@ void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
 	cudaDeviceSynchronize();
 	getLastCudaError("sourceTimestepKernel execution failed");
 
-	thrust::copy(roadNext.begin(), roadNext.end(), (*road->pnext).begin());
-	thrust::copy(roadCurrent.begin(), roadCurrent.end(), (*road->pcurrent).begin());
+	thrust::copy(roadNext.begin(), roadNext.end(), (*(road->pnext)).begin());
+	thrust::copy(roadCurrent.begin(), roadCurrent.end(), (*(road->pcurrent)).begin());
 	thrust::copy(oldSpeeds.begin(), oldSpeeds.end(), road->oldSpeeds.begin());
 
 	//combineJunctionCarCanEnter(road->junctions);

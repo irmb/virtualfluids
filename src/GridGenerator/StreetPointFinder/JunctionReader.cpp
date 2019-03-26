@@ -42,8 +42,9 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 			file >> streetIndex;
 			if (streetIndex >= 0) {
 				outCells.push_back(getCellIndex(streetIndex, 's'));
-				carCanNotEnterThisOutCell.push_back(getCellIndex(streetIndex, 's'));
-			}else if(streetIndex == -2) //allow u-turn
+				if (carCanNotEnterThisOutCell.size() < inCells.size())
+					carCanNotEnterThisOutCell.push_back(getCellIndex(streetIndex, 's'));
+			}else if(streetIndex == -2) //no prohibited outCell
 				carCanNotEnterThisOutCell.push_back(-2);
 		}
 
