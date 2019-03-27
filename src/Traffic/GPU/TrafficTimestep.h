@@ -70,7 +70,7 @@ public:
 	uint getNumCarsOnJunctions(); //only used for debugging
 
 private:
-	void callTrafficMovementKernel();
+	void callTrafficTimestepKernel();
 	void callSourceKernel();
 	void callJunctionKernel();
 

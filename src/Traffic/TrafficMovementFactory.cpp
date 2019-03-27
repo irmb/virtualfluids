@@ -24,16 +24,16 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcA
 {
 	//Variables
 
-	real vehicleDensity = 0.1f;
+	real vehicleDensity = 0.01f;
 
 	uint vehicleLength = 7;
 	uint maxVelocity = 14;
 	uint maxAcceleration = 2;
 
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
-	real slowToStartPossibility = (real) 0.4;
+	real slowToStartPossibility = (real) 0.3;
 
-	bool useGPU = true;
+	bool useGPU = false;
 	bool useSlowToStart = true;
 
 	inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";

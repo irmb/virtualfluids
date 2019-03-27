@@ -233,8 +233,12 @@ void TrafficMovement::applyRules(uint carIndex)
 
 void TrafficMovement::accelerateCar(uint & speed)
 {
-	if (speed <= road->maxVelocity - road->maxAcceleration)
-		speed += road->maxAcceleration;
+	if (speed < road->maxVelocity) {
+		if (speed <= road->maxVelocity - road->maxAcceleration)
+			speed += road->maxAcceleration;
+		else
+			speed = road->maxVelocity;
+	}
 }
 
 void TrafficMovement::brakeCar(uint carIndex, uint &speed)
@@ -508,5 +512,6 @@ void TrafficMovement::checkSpeed(uint speed)
 {
 	if (speed > road->maxVelocity) {
 		std::cerr << "Speed is greater than allowed maxSpeed" << std::endl;
+		std::cin.get();
 	}
 }

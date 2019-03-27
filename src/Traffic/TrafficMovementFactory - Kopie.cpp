@@ -36,8 +36,13 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pconcArrayStart)
 
 
 	//make RoadNetwork
-	auto roadNetwork = std::make_unique<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
-
+	std::vector<int> road(20);
+	std::fill(road.begin(), road.end(), -1);
+	road[9] = 5;
+	auto roadNetwork = std::make_unique<RoadMaker>(road, maxVelocity, vehicleLength);
+	//RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const real vehicleDensity); //random vehicle Distribution
+	//RoadMaker(const std::vector<int> vehicleDistribution, const uint maxVelocity, uint vehicleLength); //given vehicle distribution
+	//RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength);//empty road
 
 	//Sources
 	std::unique_ptr<Source> source = std::make_unique <SourceRandom>(SourceRandom(0, 0.7f, maxVelocity));
