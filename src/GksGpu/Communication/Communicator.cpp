@@ -22,6 +22,7 @@
 #include "DataBase/DataBaseAllocator.h"
 
 #include "Definitions/MemoryAccessPattern.h"
+#include "Definitions/CudaAwareMpi.h"
 
 Communicator::Communicator( SPtr<DataBase> dataBase )
     : myAllocator ( dataBase->myAllocator )
@@ -59,7 +60,19 @@ void Communicator::exchangeData( SPtr<DataBase> dataBase )
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     MPI_Wait( &this->sendBufferIsReady, MPI_STATUSES_IGNORE );
+
+#ifdef USE_CUDA_AWARE_MPI
+
+    this->copyFromMeshToSendBuffer( dataBase );
     
+    MPI_Isend( this->sendBuffer, this->numberOfSendNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, &this->sendBufferIsReady );
+    
+    MPI_Recv ( this->recvBuffer, this->numberOfRecvNodes * LENGTH_CELL_DATA, MPI_TYPE_GPU, this->opposingRank, 0, MPI_COMM_WORLD, MPI_STATUSES_IGNORE );
+    
+    this->copyFromRecvBufferToMesh( dataBase );
+
+#else // USE_CUDA_AWARE_MPI
+
     this->copyFromMeshToSendBuffer( dataBase );
     
     this->myAllocator->copyBuffersDeviceToHost( shared_from_this() );
@@ -71,4 +84,6 @@ void Communicator::exchangeData( SPtr<DataBase> dataBase )
     this->myAllocator->copyBuffersHostToDevice( shared_from_this() );
     
     this->copyFromRecvBufferToMesh( dataBase );
+
+#endif // USE_CUDA_AWARE_MPI
 }
