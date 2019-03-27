@@ -68,9 +68,13 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    real H = 1.0;
+
     real L = 1.0;
 
-    real dx = L / real(nx);
+    if( strongScaling ) L = H / double( mpiWorldSize );
+
+    real dx = H / real(nx);
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -99,20 +103,24 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( decompositionDimension == 1 )
+    if( decompositionDimension == 1 && mpiWorldSize > 1 )
     {
-        gridBuilder->addCoarseGrid( rank*L - 0.5*L - 5.0*dx, -0.5*L, -0.5*L,  
-                                    rank*L + 0.5*L + 5.0*dx,  0.5*L,  0.5*L, dx);
+        gridBuilder->addCoarseGrid( rank*L - 0.5*L - 5.0*dx, -0.5*H, -0.5*H,  
+                                    rank*L + 0.5*L + 5.0*dx,  0.5*H,  0.5*H, dx);
 
         gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( rank*L - 0.5*L, rank*L + 0.5*L, 
-                                                                         -L        ,      L,
-                                                                         -L        ,      L ) );
+                                                                         -H        ,      H,
+                                                                         -H        ,      H ) );
+    }else
+    {
+        gridBuilder->addCoarseGrid( -0.5*H, -0.5*H, -0.5*H,  
+                                     0.5*H,  0.5*H,  0.5*H, dx);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //gridBuilder->setPeriodicBoundaryCondition(false, true, true);
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->setPeriodicBoundaryCondition(true, false, false);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -120,7 +128,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( decompositionDimension == 1 )
+    if( decompositionDimension == 1 && mpiWorldSize > 1 )
     {
         gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
         gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, (rank + 1 + mpiWorldSize) % mpiWorldSize );
@@ -139,7 +147,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     meshAdapter.getCommunicationIndices();
 
-    //meshAdapter.findPeriodicBoundaryNeighbors();
+    meshAdapter.findPeriodicBoundaryNeighbors();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -150,13 +158,23 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.1, 0.0), false );
+
+    bcMX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x < -0.5*L; } );
+    bcPX->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.x >  0.5*L; } );
+
+    //////////////////////////////////////////////////////////////////////////
+
     //SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
     //SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
 
-    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
-    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
+    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*H; } );
+    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*H; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -165,16 +183,30 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*H; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
 
     //////////////////////////////////////////////////////////////////////////
+    
+    dataBase->boundaryConditions.push_back( bcMX );
+    dataBase->boundaryConditions.push_back( bcPX );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
 
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_HIGH << "bcMX ==> " << bcMX->numberOfCellsPerLevel[0] << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "bcPX ==> " << bcPX->numberOfCellsPerLevel[0] << "\n";
+
+    *logging::out << logging::Logger::INFO_HIGH << "bcMY ==> " << bcMY->numberOfCellsPerLevel[0] << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "bcPY ==> " << bcPY->numberOfCellsPerLevel[0] << "\n";
+
+    *logging::out << logging::Logger::INFO_HIGH << "bcMZ ==> " << bcMZ->numberOfCellsPerLevel[0] << "\n";
+    *logging::out << logging::Logger::INFO_HIGH << "bcPZ ==> " << bcPZ->numberOfCellsPerLevel[0] << "\n";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -251,9 +283,13 @@ int main( int argc, char* argv[])
 
     int mpiWorldSize = 1;
     MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
-
-    //std::string path( "F:/Work/Computations/out/MultiGPU/" );
+    
+#ifdef _WIN32
+    std::string path( "F:/Work/Computations/out/MultiGPU/" );
+#else
     std::string path( "out/" );
+#endif
+
     std::string simulationName ( "MultiGPU_np_" + std::to_string(mpiWorldSize) );
 
     logging::Logger::addStream(&std::cout);
@@ -271,7 +307,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        performanceTest( path, simulationName, 1, 128, false, 4 );
+        performanceTest( path, simulationName, 1, 64, false, 2 );
+        //performanceTest( path, simulationName, 1, 64, true, 2 );
     }
     catch (const std::exception& e)
     {     
