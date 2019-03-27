@@ -90,7 +90,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     parameters.K  = K;
     parameters.Pr = Pr;
-    parameters.mu = mu;
+    parameters.mu = 10*mu;
 
     parameters.D  = mu;
 

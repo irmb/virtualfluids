@@ -149,8 +149,12 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
 #endif // USE_PASSIVE_SCALAR
 
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
-
+        
+#ifdef USE_PASSIVE_SCALAR
         return getT(prim);
+#else // USE_PASSIVE_SCALAR
+        return 1.0 / prim.lambda;
+#endif // USE_PASSIVE_SCALAR
     } );
 
     addScalarRealCellData( grid, dataBase->numberOfCells, "lambda", [&] (uint cellIdx) {

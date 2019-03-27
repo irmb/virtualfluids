@@ -77,8 +77,8 @@ ENDIF(MSVC)
 ###                         OPTIONS                       ###
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
-option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" ON )
-option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" ON )
+option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" OFF)
+option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
 option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF)
 
@@ -146,22 +146,24 @@ IF (HULC.BUILD_VF_GKS)
 	#add_subdirectory(targets/apps/GKS/ChannelFlow)
     #add_subdirectory(targets/apps/GKS/ShearWave)
 
-	add_subdirectory(targets/apps/GKS/TaylorGreen3D)
+	#add_subdirectory(targets/apps/GKS/TaylorGreen3D)
     #add_subdirectory(targets/apps/GKS/DrivenCavity3D)
     #add_subdirectory(targets/apps/GKS/ThermalCavity)
 
-    add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
-    add_subdirectory(targets/apps/GKS/DrivenCavityMultiGPU)
+    #add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
+    #add_subdirectory(targets/apps/GKS/DrivenCavityMultiGPU)
 
     #add_subdirectory(targets/apps/GKS/SalinasVazquez)
     #add_subdirectory(targets/apps/GKS/BoundaryJet)
 
     #add_subdirectory(targets/apps/GKS/PropaneFlame)
     add_subdirectory(targets/apps/GKS/ConfinedCombustion)
-    add_subdirectory(targets/apps/GKS/MethaneFlame)
+    #add_subdirectory(targets/apps/GKS/MethaneFlame)
     
-    add_subdirectory(targets/apps/GKS/Room)
-    add_subdirectory(targets/apps/GKS/RoomMultiGPU)
+    #add_subdirectory(targets/apps/GKS/Room)
+    #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
+    
+    add_subdirectory(targets/apps/GKS/MultiGPU)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )
 ENDIF()
