@@ -82,19 +82,14 @@ uint JunctionRandom::getInCellsVectorIndex(uint cellIndex)
 }
 
 
-void JunctionRandom::updateJunction()
-{
-	data.possibleOutCells = data.outCellIndices;
-}
-
-
 void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 {
+	data.possibleOutCells = data.outCellIndices;
+
 	uint index = 0;
 	for (int carSpeed : data.carsOnJunction) {
 		if (carSpeed >= 0) { //check if there is a car on the junction
 			applyRules(carSpeed, index, road);
-			data.alreadyMoved[index] = 0;
 		}
 		++index;
 	}
@@ -107,7 +102,7 @@ void JunctionRandom::applyRules(int & carSpeed, int index, TrafficMovement& road
 	if (carSpeed == 0 && data.alreadyMoved[index] == 0)
 		carSpeed += 1;
 
-	int remainingDistance = static_cast<uint>(carSpeed) - data.alreadyMoved[index];
+	int remainingDistance = carSpeed - static_cast<int>(data.alreadyMoved[index]);
 	if (remainingDistance > 0) {
 		int outCell = chooseOutCell(index);
 		if (outCell >= 0) {
@@ -118,6 +113,7 @@ void JunctionRandom::applyRules(int & carSpeed, int index, TrafficMovement& road
 			}
 		}
 	}
+	data.alreadyMoved[index] = 0;
 	data.carsOnJunction[index] = 0;				//cars, which can't cross the junctionin one timestep, because they already moved to many cells, loose their speed.
 	//data.getCarsOnJunction[index] = carSpeed;	//cars, which can't cross the junction in one timestep, because they already moved to many cells, keep their speed.
 }

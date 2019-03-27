@@ -171,6 +171,7 @@ void TrafficMovement::calculateTimestep(uint step)
 	if (useGPU) {
 		this->gpuCalculation->run(road);
 		if (concWriter != nullptr) concWriter->calculateConcForAllCars(road->oldSpeeds, *(road->pcurrent));
+
 	}
 	else {
 		VectorHelper::fillVector(*(road->pnext), -1);
@@ -210,7 +211,6 @@ void TrafficMovement::calculateSourceStep()
 void TrafficMovement::calculateJunctionStep()
 {
 	for (auto &junction : road->junctions) {
-		junction->updateJunction();
 		junction->calculateTimeStep(*this);
 	}
 }

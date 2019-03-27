@@ -93,12 +93,10 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcA
 	}
 	roadNetwork->setJunctions(move(junctions));
 
-
 	//init TrafficMovement
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
 	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
 	simulator->setMaxAcceleration(maxAcceleration);
-	if (useGPU) simulator->setUseGPU();
 
 	//init ConcentrationOutwriter
 	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
@@ -108,10 +106,14 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcA
 	//this->outputPath = "M:/Basel2019/results/";
 	this->cars = &(simulator->getVehiclesForVTK());
 
+	//GPU
+	if (useGPU) simulator->setUseGPU();
+
 	//write initial Timestep
 	simulator->visualizeVehicleLengthForVTK();
 	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
 }
+
 
 void TrafficMovementFactory::calculateTimestep(uint step, uint stepForVTK)
 {

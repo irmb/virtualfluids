@@ -98,9 +98,6 @@ private:
 	bool useGPU = false;
 	std::unique_ptr<TrafficTimestep> gpuCalculation;
 
-
-
-	
 	uint currentStep = 0;
 
 	std::mt19937 engine = RandomHelper::make_engine();

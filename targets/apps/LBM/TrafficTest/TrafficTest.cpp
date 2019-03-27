@@ -7,30 +7,30 @@
 
 
 #include "Traffic/TrafficMovementFactory.h"
-//#include "Traffic/TrafficMovementFactoryTest.h"
+#include "Traffic/TrafficMovementFactory - Kopie.h"
 
 
 
 int main()
 {
-	{uint numberOfTimesteps = 100;
+	//{uint numberOfTimesteps = 100;
 
-	//Logger
-	logging::Logger::addStream(&std::cout);
-	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-	logging::Logger::timeStamp(logging::Logger::ENABLE);
-	logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+	////Logger
+	//logging::Logger::addStream(&std::cout);
+	//logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+	//logging::Logger::timeStamp(logging::Logger::ENABLE);
+	//logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
 
-	TrafficMovementFactory * factory = new TrafficMovementFactory();
-	std::string path = "C:/Users/hiwi/BaselDokumente/";
-	factory->initTrafficMovement(path);
+	//TrafficMovementFactory * factory = new TrafficMovementFactory();
+	//std::string path = "C:/Users/hiwi/BaselDokumente/";
+	//factory->initTrafficMovement(path);
 
-	for (uint step = 1; step <= numberOfTimesteps; step++) {
-		factory->calculateTimestep(step, step);
-	}
+	//for (uint step = 1; step <= numberOfTimesteps; step++) {
+	//	factory->calculateTimestep(step, step);
+	//}
 
-	std::cout << std::endl << std::endl; }
+	//std::cout << std::endl << std::endl; }
 
 
 
@@ -40,14 +40,14 @@ int main()
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//{uint numberOfTimesteps = 20;
+	{uint numberOfTimesteps = 20;
 
 
-	//TrafficMovementFactoryTest * factory = new TrafficMovementFactoryTest();
-	//factory->initTrafficMovement();
-	//factory->loopThroughTimesteps(numberOfTimesteps);
+	TrafficMovementFactoryTest * factory = new TrafficMovementFactoryTest();
+	factory->initTrafficMovement();
+	factory->loopThroughTimesteps(numberOfTimesteps);
 
-	//std::cout << std::endl << std::endl; }
+	std::cout << std::endl << std::endl; }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

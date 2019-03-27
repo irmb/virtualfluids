@@ -25,7 +25,6 @@ public:
 	virtual bool acceptsCar(uint cellIndex); //determines if a car can enter the junction
 	virtual void registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved,  uint speed, uint oldSpeed); //registers all cars entering the junction
 	virtual void calculateTimeStep(TrafficMovement &road);
-	virtual void updateJunction();
 
 	virtual const std::vector<uint>& getInCellIndices() const;
 	virtual const std::vector<uint>& getOutCellIndices() const;

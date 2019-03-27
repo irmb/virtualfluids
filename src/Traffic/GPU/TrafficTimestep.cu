@@ -24,17 +24,20 @@
 #include "Utilities/safe_casting.h"
 #include "Utilities/invalidInput_error.h"
 
-__global__   void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
+__global__   void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter,
+	int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
 	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility);
 
-__device__ inline void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
-	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility, uint index);
+__global__	void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, uint* sourceIndices, bool* sinkCarCanEnter,
+	float* sourcePossibilities, int* oldSpeeds, uint maxVelocity, uint safetyDistance, uint size_sources);
 
-
-__global__	void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, uint* sourceIndices, bool* sinkCarCanEnter, float* sourcePossibilities, int* oldSpeeds, uint maxVelocity, uint safetyDistance, uint size_sources);
-
+__global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCellIndices, uint* juncStartInIncells, uint* juncStartInOutcells,
+	uint* juncAlreadyMoved, int* juncCarCanNotEnterThisOutCell, bool* juncOutCellIsOpen, uint* juncOldSpeeds, bool* juncCarCanEnter,
+	int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, bool* sinkCarCanEnter, uint safetyDistance,
+	uint size_juncInCells, uint size_juncOutCells, uint size_junctions);
 
 __device__ inline uint getJunctionInCellsVectorIndex(uint * juncInCellIndices, uint size_road, uint cell);
+
 __device__ inline uint getGapAfterOutCell(int* roadCurrent, int* neighbors, bool* sinkCarCanEnter, int sourceIndex, uint speed, uint safetyDistance);
 
 
@@ -66,15 +69,16 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road)
 
 	//prepare junctions
 	combineJuncInCellIndices(road->junctions);
-	combineJuncCarCanEnter(road->junctions);
-	combineJuncCarsOnJunction(road->junctions);
-	combineJuncAlreadyMoved(road->junctions);
-	combineJuncOldSpeeds(road->junctions);
-
-	combineJuncCarCanNotEnterThisOutCell(road->junctions);
 	combineJuncOutCellIndices(road->junctions);
-	juncOutCellIsOpen.resize(juncOutCellIndices.size());
-	resetOutCellIsOpen();
+	combineJuncCarCanNotEnterThisOutCell(road->junctions);
+
+	initJuncCarCanEnter();
+	initJuncCarsOnJunction();
+	initJuncAlreadyMoved();
+	initJuncOldSpeeds();
+	initjuncOutCellIsOpen();
+
+
 
 	//prepare sinks
 	sinkCarCanEnter.resize(size_sinks);
@@ -91,22 +95,20 @@ void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
 	this->roadCurrent = *(road->pcurrent);
 	std::fill(roadNext.begin(), roadNext.end(), -1);
 
-	//reset oldSpeeds
-	std::fill(oldSpeeds.begin(), oldSpeeds.end(), -1);
+	////reset oldSpeeds
+	//std::fill(oldSpeeds.begin(), oldSpeeds.end(), -1);
 
-	//copy junctions to device
-	combineJuncCarCanEnter(road->junctions);
-	combineJuncCarsOnJunction(road->junctions);
-	combineJuncAlreadyMoved(road->junctions);
-	combineJuncOldSpeeds(road->junctions);
+	//reset Junction open outcells
+	resetOutCellIsOpen();
 
 	//copy sinks to device
 	combineSinkCarCanEnterSink(road->sinks);
 
 	callTrafficMovementKernel();
-	//cudaDeviceSynchronize();
+	cudaDeviceSynchronize();
 	getLastCudaError("trafficTimestepKernel execution failed");
-
+	callJunctionKernel();
+	getLastCudaError("junctionTimestepKernel execution failed");
 	callSourceKernel();
 	cudaDeviceSynchronize();
 	getLastCudaError("sourceTimestepKernel execution failed");
@@ -188,6 +190,47 @@ void TrafficTimestep::callSourceKernel()
 }
 
 
+void TrafficTimestep::callJunctionKernel()
+{
+	//calculate	grid and threads
+	unsigned int numberOfThreads = 128;
+	int Grid = (size_junctions / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+
+	junctionTimestepKernel << < grid, threads >> > (
+		juncCarsOnJunction.data().get(),
+		juncOutCellIndices.data().get(),
+		juncStartInIncells.data().get(),
+		juncStartInOutcells.data().get(),
+		juncAlreadyMoved.data().get(),
+		juncCarCanNotEnterThisOutCell.data().get(),
+		juncOutCellIsOpen.data().get(),
+		juncOldSpeeds.data().get(),
+		juncCarCanEnter.data().get(),
+		roadCurrent.data().get(),
+		roadNext.data().get(),
+		neighbors.data().get(),
+		oldSpeeds.data().get(),
+		sinkCarCanEnter.data().get(),
+		safetyDistance,
+		size_juncInCells,
+		size_juncOutCells,
+		size_junctions);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 __global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
@@ -205,15 +248,8 @@ __global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neig
 	////////////////////////////////////////////////////////////////////////////////
 
 	if (index >= size_road) return;
+	////////////////////////////////////////////////////////////////////////////////
 
-
-	trafficTimestepFunction(roadCurrent, roadNext, neighbors, oldSpeeds, juncInCellIndices, juncCarCanEnter, juncCarsOnJunction, juncAlreadyMoved, juncOldSpeeds, sinkCarCanEnter,
-		size_road, maxVelocity, maxAcceleration, safetyDistance, useSlowToStart, slowStartPossibility, dawdlePossibility, index);
-}
-
-__device__ void trafficTimestepFunction(int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, bool* sinkCarCanEnter,
-	uint size_road, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility, uint index)
-{
 	if (roadCurrent[index] < 0) return;
 
 	uint speed = roadCurrent[index];
@@ -341,6 +377,7 @@ __global__ void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neigh
 	////////////////////////////////////////////////////////////////////////////////
 
 	if (index >= size_sources) return;
+	////////////////////////////////////////////////////////////////////////////////
 
 	int sourceIndex = sourceIndices[index];
 	uint gap = getGapAfterOutCell(roadCurrent, neighbors, sinkCarCanEnter, sourceIndex, maxVelocity, safetyDistance);
@@ -351,13 +388,139 @@ __global__ void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neigh
 			index,   /* the sequence number should be different for each core */
 			0,    /* the offset is how much extra we advance in the sequence for each call, can be 0 */
 			&state);
-		unsigned int speed = ceilf(curand_uniform(&state) * maxVelocity);
 
-		roadNext[sourceIndex] = speed;
-		oldSpeeds[sourceIndex] = speed;
+		if (curand_uniform_double(&state) < sourcePossibilities[index]) {
+			unsigned int speed = ceilf(curand_uniform(&state) * (maxVelocity + 1)) - 1;
+			roadNext[sourceIndex] = speed;
+			oldSpeeds[sourceIndex] = speed;
+		}
 	}
 }
 
+
+__global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCellIndices, uint* juncStartInIncells, uint* juncStartInOutcells,
+	uint* juncAlreadyMoved, int* juncCarCanNotEnterThisOutCell, bool* juncOutCellIsOpen, uint* juncOldSpeeds, bool* juncCarCanEnter,
+	int* roadCurrent, int* roadNext, int* neighbors, int* oldSpeeds, bool* sinkCarCanEnter, uint safetyDistance,
+	uint size_juncInCells, uint size_juncOutCells, uint size_junctions) {
+	//////////////////////////////////////////////////////////////////////////
+	const uint x = threadIdx.x;  // Globaler x-Index 
+	const uint y = blockIdx.x;   // Globaler y-Index 
+	const uint z = blockIdx.y;   // Globaler z-Index 
+
+	const uint nx = blockDim.x;
+	const uint ny = gridDim.x;
+
+	const uint index = nx*(ny*z + y) + x;
+	////////////////////////////////////////////////////////////////////////////////
+
+	if (index >= size_junctions) return;
+	////////////////////////////////////////////////////////////////////////////////
+
+	uint inCellsSize = 0;
+	uint firstInCellIndex = juncStartInIncells[index];
+	if (index < size_junctions - 1) inCellsSize = juncStartInIncells[index + 1] - firstInCellIndex;
+	else inCellsSize = size_juncInCells - firstInCellIndex;
+
+	uint outCellSize = 0;
+	uint firstOutCellIndex = juncStartInOutcells[index];
+	if (index < size_junctions - 1) outCellSize = juncStartInOutcells[index + 1] - firstOutCellIndex;
+	else outCellSize = size_juncOutCells - firstOutCellIndex;
+
+	curandState state;
+	curand_init((unsigned long long)clock(), index, 0, &state);
+
+	//loop through all cars
+	for (uint inCellVectorIndex = firstInCellIndex; inCellVectorIndex < firstInCellIndex + inCellsSize; inCellVectorIndex++) {
+
+		if (juncCarsOnJunction[inCellVectorIndex] > 0) {
+
+			//applyRules
+			uint speed = juncCarsOnJunction[inCellVectorIndex];
+			if (speed == 0 && juncAlreadyMoved[inCellVectorIndex] == 0) speed += 1;
+			int remainingDist = speed - static_cast<int>(juncAlreadyMoved[inCellVectorIndex]);
+
+			if (remainingDist > 0) {
+
+				//calc numberOfPossibleOutCells
+				uint numberOfPossibleOutCells = 0;
+				for (uint outCellIndex = firstOutCellIndex; outCellIndex < firstOutCellIndex + outCellSize; outCellIndex++)
+					if (juncCarCanNotEnterThisOutCell[inCellVectorIndex] != juncOutCellIndices[outCellIndex] && juncOutCellIsOpen[outCellIndex] == true)
+						numberOfPossibleOutCells++;
+
+				if (numberOfPossibleOutCells == 0)  //car can't leave the junction
+				{
+					juncCarsOnJunction[inCellVectorIndex] = 0;
+					juncAlreadyMoved[inCellVectorIndex] = 0;
+					juncOldSpeeds[inCellVectorIndex] = 0;
+					continue;
+				}
+
+				//choose outcell
+				int chosenCell = -1;
+				curandState state;
+				unsigned int random = ceilf(curand_uniform(&state) * numberOfPossibleOutCells);
+				for (uint outCellVectorIndex = firstOutCellIndex; outCellVectorIndex < firstOutCellIndex + outCellSize; outCellVectorIndex++) {
+					if (juncCarCanNotEnterThisOutCell[inCellVectorIndex] != juncOutCellIndices[outCellVectorIndex] && juncOutCellIsOpen[outCellVectorIndex] == true) {
+						if (random == 1) {
+							chosenCell = juncOutCellIndices[outCellVectorIndex];
+							juncOutCellIsOpen[outCellVectorIndex] = false;
+							break;
+						}
+						random--;
+					}
+				}
+
+				//brakeCar
+				if (chosenCell < 0); //TODO cerr
+				uint gap = getGapAfterOutCell(roadCurrent, neighbors, sinkCarCanEnter, chosenCell, speed, safetyDistance);
+				if (gap < remainingDist) {
+					if (gap > speed) gap = speed;
+					speed = speed - remainingDist + gap;
+					remainingDist = gap;
+				}
+
+				//moveCar
+				if (remainingDist <= 0) { //car can't leave the junction
+					juncCarsOnJunction[inCellVectorIndex] = 0;
+					juncAlreadyMoved[inCellVectorIndex] = 0;
+					juncOldSpeeds[inCellVectorIndex] = 0;
+					continue;
+				}
+
+				if (remainingDist > 0) {
+
+					if (remainingDist == 1) {
+						roadNext[chosenCell] = speed;
+						oldSpeeds[chosenCell] = juncOldSpeeds[inCellVectorIndex];
+						return;
+					}
+
+					//iterate through neighbors
+					int neighbor = chosenCell;
+					for (uint i = 2; i <= remainingDist; i++) {
+						if (neighbor >= 0) {
+							chosenCell = neighbor;
+							neighbor = neighbors[neighbor];
+						}
+						else
+							break;
+					}
+
+					if (neighbor >= 0) {
+						roadNext[neighbor] = speed;
+						oldSpeeds[neighbor] = juncOldSpeeds[inCellVectorIndex];
+					}
+
+					juncCarsOnJunction[inCellVectorIndex] = -1;
+					juncCarCanEnter[inCellVectorIndex] = true;
+				}
+			}
+
+		}
+	}
+	//TODO writeConc
+
+}
 
 
 
@@ -393,47 +556,34 @@ __device__ uint getJunctionInCellsVectorIndex(uint* juncInCellIndices, uint size
 	for (uint i = 0; i < size_road; i++)
 		if (juncInCellIndices[i] == cell)
 			return i;
-	// Error: "no matching incoming cell to a junction found in: getJunctionInCellsVectorIndex()";
+	// TODO Error: "no matching incoming cell to a junction found in: getJunctionInCellsVectorIndex()";
 	return 65000;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//TrafficTimestep::TrafficTimestep(RoadNetworkData* road, TrafficMovement* traffic)
-//{
-//	maxVelocity = road->maxVelocity;
-//	vehicleLength = road->vehicleLength;
-//	safetyDistance = road->safetyDistance;
-//
-//	dawdlePossibility = traffic->getDawdlePossibility();
-//	useSlowToStart = traffic->getUseSlowToStart();
-//	slowStartPossibility = traffic->getSlowToStartPossibility();
-//	maxAcceleration = traffic->getMaxAcceleration();
-//}
 
 
 
 void TrafficTimestep::combineJuncInCellIndices(std::vector<std::shared_ptr<Junction>> &junctions)
 {
 	for (auto& j : junctions) {
-		juncStartInIncells.push_back(juncInCellIndices.size());
+		juncStartInIncells.push_back(castSizeT_Uint(juncInCellIndices.size()));
 		for (uint i : j->getInCellIndices())
 			this->juncInCellIndices.push_back(i);
 	}
+	size_juncInCells = castSizeT_Uint(juncInCellIndices.size());
 }
 
-void TrafficTimestep::combineJuncCarCanEnter(std::vector<std::shared_ptr<Junction>> &junctions)
+void TrafficTimestep::initJuncCarCanEnter()
 {
-	for (auto& j : junctions)
-		for (bool i : j->getCarCanEnter())
-			this->juncCarCanEnter.push_back(i);
+	juncCarCanEnter.resize(size_juncInCells);
+	std::fill(juncCarCanEnter.begin(), juncCarCanEnter.end(), true);
 }
 
-void TrafficTimestep::combineJuncCarsOnJunction(std::vector<std::shared_ptr<Junction>> &junctions)
+void TrafficTimestep::initJuncCarsOnJunction()
 {
-	for (auto& j : junctions)
-		for (int i : j->getCarsOnJunction())
-			this->juncCarsOnJunction.push_back(i);
+	juncCarsOnJunction.resize(size_juncInCells);
+	std::fill(juncCarsOnJunction.begin(), juncCarsOnJunction.end(), -1);
 }
 
 
@@ -459,27 +609,32 @@ void TrafficTimestep::combineSourceIndices(std::vector<std::shared_ptr<Source>> 
 }
 
 
-void TrafficTimestep::combineJuncAlreadyMoved(std::vector<std::shared_ptr<Junction>> &junctions)
+void TrafficTimestep::initJuncAlreadyMoved()
 {
-	for (auto& j : junctions)
-		for (int i : j->getCarsOnJunction())
-			this->juncAlreadyMoved.push_back(i);
+	juncAlreadyMoved.resize(size_juncInCells);
+	std::fill(juncAlreadyMoved.begin(), juncAlreadyMoved.end(), 0);
 }
 
-void TrafficTimestep::combineJuncOldSpeeds(std::vector<std::shared_ptr<Junction>> &junctions)
+void TrafficTimestep::initJuncOldSpeeds()
 {
-	for (auto& j : junctions)
-		for (int i : j->getCarsOnJunction())
-			this->juncOldSpeeds.push_back(i);
+	juncOldSpeeds.resize(size_juncInCells);
+	std::fill(juncOldSpeeds.begin(), juncOldSpeeds.end(), 0);
+}
+
+void TrafficTimestep::initjuncOutCellIsOpen()
+{
+	juncOutCellIsOpen.resize(juncOutCellIndices.size());
+	resetOutCellIsOpen();
 }
 
 void TrafficTimestep::combineJuncOutCellIndices(std::vector<std::shared_ptr<Junction>> &junctions)
 {
 	for (auto& j : junctions) {
-		juncStartInOutcells.push_back(juncOutCellIndices.size());
+		juncStartInOutcells.push_back(castSizeT_Uint(juncOutCellIndices.size()));
 		for (uint i : j->getOutCellIndices())
 			this->juncOutCellIndices.push_back(i);
 	}
+	size_juncOutCells = castSizeT_Uint(juncOutCellIndices.size());
 
 }
 
@@ -500,6 +655,5 @@ uint TrafficTimestep::getNumCarsOnJunctions()
 
 void TrafficTimestep::resetOutCellIsOpen()
 {
-	for (auto i : juncOutCellIsOpen)
-		i = true;
+	std::fill(juncOutCellIsOpen.begin(), juncOutCellIsOpen.end(), true);
 }

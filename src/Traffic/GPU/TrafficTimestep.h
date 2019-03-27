@@ -35,6 +35,8 @@ private:
 	uint maxAcceleration;
 
 	uint size_junctions;
+	uint size_juncInCells;
+	uint size_juncOutCells;
 	uint size_sources;
 	uint size_sinks;
 
@@ -61,9 +63,6 @@ private:
 	thrust::device_vector<float> sourcePossibilities;
 	thrust::device_vector<uint> sourceIndices;
 
-	std::mt19937 engine = RandomHelper::make_engine();
-	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
-
 public:
 
 	TrafficTimestep(std::shared_ptr<RoadNetworkData> road);
@@ -73,14 +72,16 @@ public:
 private:
 	void callTrafficMovementKernel();
 	void callSourceKernel();
+	void callJunctionKernel();
 
 	void combineJuncInCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
-	void combineJuncCarCanEnter(std::vector<std::shared_ptr<Junction> > &junctions);
-	void combineJuncCarsOnJunction(std::vector<std::shared_ptr<Junction> > &junctions);
-	void combineJuncAlreadyMoved(std::vector<std::shared_ptr<Junction> > &junctions);
-	void combineJuncOldSpeeds(std::vector<std::shared_ptr<Junction> > &junctions);
 	void combineJuncOutCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
 	void combineJuncCarCanNotEnterThisOutCell(std::vector<std::shared_ptr<Junction> > &junctions);
+	void initjuncOutCellIsOpen();
+	void initJuncCarCanEnter();
+	void initJuncCarsOnJunction();
+	void initJuncAlreadyMoved();
+	void initJuncOldSpeeds();
 
 	void combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink> > &sinks);
 
