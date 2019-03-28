@@ -6,6 +6,7 @@
 #include <iostream>
 #include <exception>
 #include <fstream>
+#include <sstream>
 #include <memory>
 
 #include "Core/Timer/Timer.h"
@@ -51,20 +52,21 @@
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
+#include "GksGpu/Communication/MpiUtility.h"
 
 //////////////////////////////////////////////////////////////////////////
 
-void performanceTest( std::string path, std::string simulationName, uint decompositionDimension, uint nx, bool strongScaling, int devicesPerNode )
+void performanceTest( std::string path, std::string simulationName, uint decompositionDimension, uint nx, bool strongScaling )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     int mpiWorldSize = 1;
     MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
 
-    CudaUtility::setCudaDevice(rank % devicesPerNode);
+    //CudaUtility::setCudaDevice(rank % devicesPerNode);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -137,7 +139,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
         gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, (rank - 1 + mpiWorldSize) % mpiWorldSize );
     }
 
-    gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");
+    //gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -253,7 +255,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 200000; iter++ )
+    for( uint iter = 1; iter <= 100000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
@@ -276,21 +278,23 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
 int main( int argc, char* argv[])
 {
-    MPI_Init(&argc, &argv);
+    //////////////////////////////////////////////////////////////////////////
 
-    int rank = 0;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int rank         = MpiUtility::getMpiRankBeforeInit();
+    int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
 
-    int mpiWorldSize = 1;
-    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
-    
+    //////////////////////////////////////////////////////////////////////////
+
 #ifdef _WIN32
     std::string path( "F:/Work/Computations/out/MultiGPU/" );
 #else
+    //std::string path( "/home/stephan/Computations/out/" );
     std::string path( "out/" );
 #endif
 
     std::string simulationName ( "MultiGPU_np_" + std::to_string(mpiWorldSize) );
+
+    //////////////////////////////////////////////////////////////////////////
 
     logging::Logger::addStream(&std::cout);
     
@@ -300,15 +304,39 @@ int main( int argc, char* argv[])
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
+    //////////////////////////////////////////////////////////////////////////
+
+    // Important: for Cuda-Aware MPI the device must be set before MPI_Init()
+    int deviceCount = CudaUtility::getCudaDeviceCount();
+
+    if(deviceCount == 0)
+    {
+        std::stringstream msg;
+        msg << "No devices devices found!" << std::endl;
+        *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
+    }
+
+    CudaUtility::setCudaDevice( rank % deviceCount );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    MPI_Init(&argc, &argv);
+    
+    //////////////////////////////////////////////////////////////////////////
+
     if( sizeof(real) == 4 )
         *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+
     try
     {
-        performanceTest( path, simulationName, 1, 64, false, 2 );
-        //performanceTest( path, simulationName, 1, 64, true, 2 );
+        //performanceTest( path, simulationName, 1, 64, false );
+        performanceTest( path, simulationName, 1, 128, true );
     }
     catch (const std::exception& e)
     {     
@@ -322,6 +350,10 @@ int main( int argc, char* argv[])
     {
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
 
     logFile.close();
 

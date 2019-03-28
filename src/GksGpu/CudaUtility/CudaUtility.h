@@ -24,6 +24,8 @@ public:
 
     static void printCudaMemoryUsage();
 
+    static int getCudaDeviceCount();
+
     static void setCudaDevice( int device );
 };
 

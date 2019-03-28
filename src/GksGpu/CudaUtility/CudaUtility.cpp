@@ -32,6 +32,13 @@ void CudaUtility::printCudaMemoryUsage()
     *logging::out << logging::Logger::INFO_HIGH << "    total = " << total_db/1024.0/1024.0/1024.0 << " GB\n";
 }
 
+int CudaUtility::getCudaDeviceCount()
+{    
+    int deviceCount = 0;
+    checkCudaErrors( cudaGetDeviceCount(&deviceCount) );
+    return deviceCount;
+}
+
 void CudaUtility::setCudaDevice(int device)
 {    
     checkCudaErrors( cudaSetDevice( device ) );

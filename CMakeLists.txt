@@ -78,7 +78,7 @@ ENDIF(MSVC)
 #############################################################
 option(BUILD_SHARED_LIBS        "Build shared libraries"  ON )
 option(HULC.BUILD_VF_GPU        "Build VirtualFluids GPU" OFF)
-option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" OFF)
+option(HULC.BUILD_VF_GKS        "Build VirtualFluids GKS" ON )
 option(HULC.BUILD_JSONCPP       "Builds json cpp "        ON )
 option(HULC.BUILD_NUMERIC_TESTS "Build numeric tests"     OFF)
 

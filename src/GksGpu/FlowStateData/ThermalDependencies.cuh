@@ -8,7 +8,7 @@
 #define __device__
 #endif
 
-#include <Math.h>
+#include <math.h>
 
 #include "Core/DataTypes.h"
 #include "Core/RealConstants.h"
