@@ -37,11 +37,25 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
     
     if( !dataBase->communicators.empty() )
     {
+        //for( uint direction = 0; direction < 6; direction++ )
+        //{
+        //    if( dataBase->communicators[level][direction] != nullptr )
+        //    {
+        //        dataBase->communicators[level][direction]->exchangeData(dataBase);
+        //    }
+        //}
         for( uint direction = 0; direction < 6; direction++ )
         {
             if( dataBase->communicators[level][direction] != nullptr )
             {
-                dataBase->communicators[level][direction]->exchangeData(dataBase);
+                dataBase->communicators[level][direction]->sendData(dataBase);
+            }
+        }
+        for( uint direction = 0; direction < 6; direction++ )
+        {
+            if( dataBase->communicators[level][direction] != nullptr )
+            {
+                dataBase->communicators[level][direction]->recvData(dataBase);
             }
         }
     }

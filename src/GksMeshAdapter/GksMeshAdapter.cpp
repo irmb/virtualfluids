@@ -844,8 +844,11 @@ void GksMeshAdapter::getCommunicationIndices()
 
     this->communicationIndices.resize( this->gridBuilder->getNumberOfLevels() );
 
-    int rank;
+    int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -869,15 +872,19 @@ void GksMeshAdapter::getCommunicationIndices()
                 this->communicationIndices[level].recvIndices[direction].push_back(this->gridToMesh[level][grid->getReceiveIndex(direction, index)]);
             }
 
-            std::cout << "Rank " << rank << " | Level " << level << " | dir " << direction << " | ";
-            std::cout << "Send " << this->communicationIndices[level].sendIndices[direction].size() << " | ";
-            std::cout << "Recv " << this->communicationIndices[level].recvIndices[direction].size() << std::endl;
+            std::stringstream msg;
+
+            msg << "Rank " << rank << " | Level " << level << " | dir " << direction << " | ";
+            msg << "Send " << this->communicationIndices[level].sendIndices[direction].size() << " | ";
+            msg << "Recv " << this->communicationIndices[level].recvIndices[direction].size() << std::endl;
+
+            *logging::out << logging::Logger::INFO_INTERMEDIATE << msg.str();
         }
 
         //////////////////////////////////////////////////////////////////////////
     }
 
-    for( int i = rank; i < 8; i++ ) MPI_Barrier(MPI_COMM_WORLD);
+    for( int i = rank; i < mpiWorldSize; i++ ) MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void GksMeshAdapter::writeMeshVTK(std::string filename)

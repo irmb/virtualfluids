@@ -48,6 +48,9 @@ struct VF_PUBLIC Communicator : public std::enable_shared_from_this<Communicator
     void copyFromMeshToSendBuffer( SPtr<DataBase> dataBase );
 
     void copyFromRecvBufferToMesh( SPtr<DataBase> dataBase );
+
+    void sendData( SPtr<DataBase> dataBase );
+    void recvData( SPtr<DataBase> dataBase );
 };
 
 #endif

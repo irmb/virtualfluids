@@ -189,9 +189,11 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
 
     //////////////////////////////////////////////////////////////////////////
-    
-    dataBase->boundaryConditions.push_back( bcMX );
-    dataBase->boundaryConditions.push_back( bcPX );
+    if( mpiWorldSize > 1 )
+    {
+        dataBase->boundaryConditions.push_back( bcMX );
+        dataBase->boundaryConditions.push_back( bcPX );
+    }
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
