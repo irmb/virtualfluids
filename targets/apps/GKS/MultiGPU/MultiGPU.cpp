@@ -298,6 +298,15 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
+    bool strongScaling = false;
+    uint nx = 64;
+
+    if( argc > 1 ) path += argv[1]; path += "/";
+    if( argc > 2 ) nx = atoi( argv[2] );
+    if( argc > 3 ) strongScaling = true;
+
+    //////////////////////////////////////////////////////////////////////////
+
     logging::Logger::addStream(&std::cout);
     
     std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(rank) + ".log" );
@@ -337,8 +346,7 @@ int main( int argc, char* argv[])
 
     try
     {
-        //performanceTest( path, simulationName, 1, 64, false );
-        performanceTest( path, simulationName, 1, 128, true );
+        performanceTest( path, simulationName, 1, nx, strongScaling );
     }
     catch (const std::exception& e)
     {     
