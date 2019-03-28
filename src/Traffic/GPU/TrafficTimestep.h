@@ -11,6 +11,10 @@
 #include "Utilities/RandomHelper.h"
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
+#include <curand_kernel.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <helper_cuda.h>
 
 //#include "TrafficMovement.h"
 
@@ -40,10 +44,21 @@ private:
 	uint size_sources;
 	uint size_sinks;
 
+	dim3 gridRoad;
+	dim3 threadsRoads;
+	dim3 gridJunctions;
+	dim3 threadsJunctions;
+	dim3 gridSources;
+	dim3 threadsSources;
+
 	thrust::device_vector<int> neighbors;
 
 	thrust::device_vector<int> roadCurrent;
 	thrust::device_vector<int> roadNext;
+	thrust::device_vector<int>* pRoadCurrent;
+	thrust::device_vector<int>* pRoadNext;
+	thrust::device_vector<int>* pDummy;
+
 	thrust::device_vector<int> oldSpeeds;
 
 	thrust::device_vector<uint> juncInCellIndices;
@@ -58,10 +73,15 @@ private:
 	thrust::device_vector<uint> juncStartInIncells;
 	thrust::device_vector<uint> juncStartInOutcells;
 
-	thrust::device_vector<bool> sinkCarCanEnter;
+	thrust::device_vector<real> sinkCarBlockedPossibilities;
+	//thrust::device_vector<bool> sinkCarCanEnter;
 
 	thrust::device_vector<float> sourcePossibilities;
 	thrust::device_vector<uint> sourceIndices;
+
+	curandState *statesJunctions;
+	curandState *statesSources;
+	curandState *statesRoad;
 
 public:
 
@@ -70,6 +90,10 @@ public:
 	uint getNumCarsOnJunctions(); //only used for debugging
 
 private:
+	void calculateTrafficTimestepKernelDimensions();
+	void calculateJunctionKernelDimensions();
+	void calculateSourceKernelDimensions();
+
 	void callTrafficTimestepKernel();
 	void callSourceKernel();
 	void callJunctionKernel();
@@ -83,7 +107,7 @@ private:
 	void initJuncAlreadyMoved();
 	void initJuncOldSpeeds();
 
-	void combineSinkCarCanEnterSink(std::vector<std::shared_ptr<Sink> > &sinks);
+	void combineSinkBlockedPossibilities(std::vector<std::shared_ptr<Sink>>& sinks);
 
 	void combineSourcePossibilities(std::vector<std::shared_ptr<Source> > &sources);
 	void combineSourceIndices(std::vector<std::shared_ptr<Source> > &sources);

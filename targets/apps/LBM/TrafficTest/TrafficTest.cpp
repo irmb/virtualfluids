@@ -13,7 +13,7 @@
 
 int main()
 {
-	{uint numberOfTimesteps = 100;
+	{uint numberOfTimesteps = 50;
 
 	//Logger
 	logging::Logger::addStream(&std::cout);

@@ -33,7 +33,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcA
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.3;
 
-	bool useGPU = false;
+	bool useGPU = true;
 	bool useSlowToStart = true;
 
 	inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";

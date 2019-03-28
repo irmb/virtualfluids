@@ -515,3 +515,4 @@ void TrafficMovement::checkSpeed(uint speed)
 		std::cin.get();
 	}
 }
+
