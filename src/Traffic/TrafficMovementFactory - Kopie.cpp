@@ -16,7 +16,7 @@
 #include "Utilities/safe_casting.h"
 
 
-void TrafficMovementFactoryTest::initTrafficMovement(real * pconcArrayStart)
+void TrafficMovementFactoryTest::initTrafficMovement(real * pConcArray)
 {
 	//Variables
 
@@ -63,9 +63,10 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pconcArrayStart)
 	this->simulator = std::make_shared<TrafficMovement>(std::move(roadNetwork), dawdlePossibility);
 	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);	
 	simulator->setMaxAcceleration(maxAcceleration);
-	if (useGPU) simulator->setUseGPU();
+	if (useGPU) simulator->setUseGPU(pConcArray);
+
 	////init ConcentrationOutwriter
-	//std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
+	//std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
 	//simulator->setConcentrationOutwriter(move(writer));
 	//Variables
 

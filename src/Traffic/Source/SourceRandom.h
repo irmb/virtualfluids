@@ -4,8 +4,8 @@
 #include <iostream>
 #include <random>
 #include "Source.h"
-#include "Utilities\RandomHelper.h"
-#include "Utilities\invalidInput_error.h"
+#include "Utilities/RandomHelper.h"
+#include "Utilities/invalidInput_error.h"
 
 
 class VF_PUBLIC SourceRandom:

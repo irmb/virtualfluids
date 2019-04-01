@@ -40,7 +40,7 @@ void ConcentrationOutwriter::addConcToArrayOrVector(uint index, real conc)
 }
 
 
-void ConcentrationOutwriter::dispConcentrations()
+void ConcentrationOutwriter::dispCurrentConcentrations()
 {
 	if (useLBMConcArray)
 		for (real* p = concArrayStart; p < concArrayStart + roadLength; ++p)

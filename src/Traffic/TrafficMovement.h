@@ -27,7 +27,7 @@ public:
 	void setMaxAcceleration(uint maxAcceleration);
 	void setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer);
 	void setSaveResultsTrue(uint timeSteps);
-	void setUseGPU();
+	void setUseGPU(real * pConcArray = nullptr);
 
 	//timpestep
 	void loopTroughTimesteps(uint numberOfTimesteps);
@@ -90,6 +90,9 @@ private:
 	//pollution
 	void writeConcentration(uint index, uint oldSpeed);
 
+	//gpu
+	void copyDevToHost();
+
 private:
 	std::shared_ptr<RoadNetworkData> road;
 	std::unique_ptr<ConcentrationOutwriter> concWriter = nullptr;
@@ -97,6 +100,7 @@ private:
 
 	bool useGPU = false;
 	std::unique_ptr<TrafficTimestep> gpuCalculation;
+	bool copiedDevToHost = false;
 
 	uint currentStep = 0;
 

@@ -15,7 +15,7 @@ class VF_PUBLIC TrafficMovementFactory
 public:
 	TrafficMovementFactory();
 	~TrafficMovementFactory() {};
-	virtual void initTrafficMovement(std::string path, real * pconcArrayStart = nullptr);
+	virtual void initTrafficMovement(std::string path, real * pConcArray = nullptr);
 	virtual void calculateTimestep(uint step, uint stepForVTK);
 
 protected:

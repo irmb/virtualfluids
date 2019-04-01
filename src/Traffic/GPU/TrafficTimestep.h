@@ -2,12 +2,11 @@
 #define  TrafficTimestep_H
 
 #include <vector>
-//#include <string>
 #include <memory>
 #include <random>
 #include <thrust/device_vector.h>
 
-#include "VirtualFluidsDefinitions.h"
+#include <VirtualFluidsDefinitions.h>
 #include "Utilities/RandomHelper.h"
 #include "Core/PointerDefinitions.h"
 #include "Core/DataTypes.h"
@@ -16,10 +15,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-//#include "TrafficMovement.h"
-
 struct RoadNetworkData;
-//class TrafficMovement;
 class Sink;
 class Junction;
 class Source;
@@ -27,12 +23,11 @@ class Source;
 class VF_PUBLIC TrafficTimestep
 {
 private:
+	bool timestepIsEven = true;
 
-	//std::vector<real> kineticEnergyTimeSeries;
 	uint size_roads;
 	uint maxVelocity;
 	uint safetyDistance;
-
 	real dawdlePossibility;
 	bool useSlowToStart;
 	real slowStartPossibility;
@@ -55,11 +50,6 @@ private:
 
 	thrust::device_vector<int> roadCurrent;
 	thrust::device_vector<int> roadNext;
-	thrust::device_vector<int>* pRoadCurrent;
-	thrust::device_vector<int>* pRoadNext;
-	thrust::device_vector<int>* pDummy;
-
-	thrust::device_vector<int> oldSpeeds;
 
 	thrust::device_vector<uint> juncInCellIndices;
 	thrust::device_vector<bool> juncCarCanEnter;
@@ -73,8 +63,7 @@ private:
 	thrust::device_vector<uint> juncStartInIncells;
 	thrust::device_vector<uint> juncStartInOutcells;
 
-	thrust::device_vector<real> sinkCarBlockedPossibilities;
-	//thrust::device_vector<bool> sinkCarCanEnter;
+	thrust::device_vector<real> sinkCarBlockedPossibilities;;
 
 	thrust::device_vector<float> sourcePossibilities;
 	thrust::device_vector<uint> sourceIndices;
@@ -83,20 +72,30 @@ private:
 	curandState *statesSources;
 	curandState *statesRoad;
 
+	real * pConcArray;
+
 public:
 
-	TrafficTimestep(std::shared_ptr<RoadNetworkData> road);
+	TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * pConcArray);
 	void run(std::shared_ptr<RoadNetworkData> road);
+	void cleanUp();
 	uint getNumCarsOnJunctions(); //only used for debugging
+	void copyCurrentDeviceToHost(std::shared_ptr<RoadNetworkData> road);
 
 private:
-	void calculateTrafficTimestepKernelDimensions();
-	void calculateJunctionKernelDimensions();
-	void calculateSourceKernelDimensions();
+;
+	//timestep
+	void switchCurrentNext();
+	void resetOutCellIsOpen();
 
 	void callTrafficTimestepKernel();
 	void callSourceKernel();
 	void callJunctionKernel();
+
+	//init
+	void calculateTrafficTimestepKernelDimensions();
+	void calculateJunctionKernelDimensions();
+	void calculateSourceKernelDimensions();
 
 	void combineJuncInCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
 	void combineJuncOutCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
@@ -112,7 +111,8 @@ private:
 	void combineSourcePossibilities(std::vector<std::shared_ptr<Source> > &sources);
 	void combineSourceIndices(std::vector<std::shared_ptr<Source> > &sources);
 
-	void resetOutCellIsOpen();
+
+	
 };
 
 #endif

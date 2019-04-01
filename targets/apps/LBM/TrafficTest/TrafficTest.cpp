@@ -1,36 +1,47 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <ctime>
 
 #include "Core/DataTypes.h"
-#include "Core\Logger\Logger.h"
-
+#include "Core/Logger/Logger.h"
 
 #include "Traffic/TrafficMovementFactory.h"
 #include "Traffic/TrafficMovementFactory - Kopie.h"
 
-
-
 int main()
 {
-	{uint numberOfTimesteps = 50;
+	{
+		std::clock_t start;
+		double duration;
 
-	//Logger
-	logging::Logger::addStream(&std::cout);
-	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-	logging::Logger::timeStamp(logging::Logger::ENABLE);
-	logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+		start = std::clock();
 
 
-	TrafficMovementFactory * factory = new TrafficMovementFactory();
-	std::string path = "C:/Users/hiwi/BaselDokumente/";
-	factory->initTrafficMovement(path);
 
-	for (uint step = 1; step <= numberOfTimesteps; step++) {
-		factory->calculateTimestep(step, step);
+		uint numberOfTimesteps = 50;
+
+		//Logger
+		logging::Logger::addStream(&std::cout);
+		logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+		logging::Logger::timeStamp(logging::Logger::ENABLE);
+		logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+
+
+		TrafficMovementFactory * factory = new TrafficMovementFactory();
+		std::string path = "C:/Users/hiwi/BaselDokumente/";
+		factory->initTrafficMovement(path);
+
+		for (uint step = 1; step <= numberOfTimesteps; step++) {
+			factory->calculateTimestep(step, step);
+		}
+			
+	
+		duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+
+		std::cout << "Dauer: " << duration << '\n';
+	
 	}
-
-	std::cout << std::endl << std::endl; }
 
 
 
@@ -85,9 +96,9 @@ int main()
 
 
 	//	real concArray[10];
-	//	real * pconcArrayStart = &concArray[0];
+	//	real * pConcArray = &concArray[0];
 
-	//	auto writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart, 10, maxVelocity));
+	//	auto writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray, 10, maxVelocity));
 	//	simulator->setSaveResultsTrue(numberOfTimesteps);
 	//	simulator->setConcentrationOutwriter(move(writer));
 

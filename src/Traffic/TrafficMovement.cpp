@@ -26,6 +26,7 @@ TrafficMovement::TrafficMovement(std::shared_ptr<RoadNetworkData> road, const re
 
 TrafficMovement::~TrafficMovement()
 {
+	gpuCalculation->cleanUp();
 	road->pcurrent = NULL;
 	road->pnext = NULL;
 	road->pdummy = NULL;
@@ -70,12 +71,13 @@ void TrafficMovement::setSlowToStart(const real slowStartPossibility)
 	}
 }
 
-void TrafficMovement::setUseGPU()
+void TrafficMovement::setUseGPU(real * pConcArray)
 {
+	std::cout << "usingGPU for calculation" << std::endl;
 	useGPU = true;
 	this->road->oldSpeeds.resize(this->road->roadLength);
 	VectorHelper::fillVector(this->road->oldSpeeds, -1);
-	gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road));
+	gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road, pConcArray));
 }
 
 void TrafficMovement::setMaxAcceleration(uint maxAcceleration)
@@ -162,18 +164,20 @@ void TrafficMovement::loopTroughTimesteps(uint timeSteps)
 
 void TrafficMovement::calculateTimestep(uint step)
 {
-	//if (display != nullptr)	display->dispCurrentRoad();
-	//if (concWriter != nullptr) concWriter->dispConcentrations();
-
-	if (concWriter != nullptr) concWriter->resetConcentrations();
-
-	//apply rules on all cars
+	
 	if (useGPU) {
-		this->gpuCalculation->run(road);
-		if (concWriter != nullptr) concWriter->calculateConcForAllCars(road->oldSpeeds, *(road->pcurrent));
 
+		//GPU
+
+		copiedDevToHost = false;
+		this->gpuCalculation->run(road);
 	}
 	else {
+
+		//CPU
+
+		if (concWriter != nullptr) concWriter->resetConcentrations();
+
 		VectorHelper::fillVector(*(road->pnext), -1);
 
 		for (uint i = 0; i < road->roadLength; i++)
@@ -183,11 +187,24 @@ void TrafficMovement::calculateTimestep(uint step)
 		calculateJunctionStep();
 
 		calculateSourceStep();
+
+		switchCurrentNext();
+
+		//if (concWriter != nullptr) concWriter->dispCurrentConcentrations();
 	}
 
-	switchCurrentNext();
 
-	if (display != nullptr)  display->putCurrentIntoResults(step);
+	if (display != nullptr) {
+		if (useGPU) copyDevToHost();
+		display->putCurrentIntoResults(step);
+	}
+
+	//if (display != nullptr) {
+	//	if (useGPU) copyDevToHost();
+	//	display->dispCurrentRoad();
+	//}
+
+
 
 	currentStep += 1;
 }
@@ -434,6 +451,14 @@ void TrafficMovement::writeConcentration(uint index, uint oldSpeed)
 	}
 }
 
+void TrafficMovement::copyDevToHost()
+{
+	if (copiedDevToHost == false) {
+		gpuCalculation->copyCurrentDeviceToHost(road);
+		copiedDevToHost = true;
+	}
+}
+
 
 void TrafficMovement::writeConcentrationForJunction(uint inCellIndex, uint oldSpeed, uint speed)
 {
@@ -482,6 +507,8 @@ const std::vector<int> & TrafficMovement::getVehiclesForVTK()
 
 void TrafficMovement::visualizeVehicleLengthForVTK()
 {
+	if (useGPU) copyDevToHost();
+
 	road->currentWithLongVehicles = *(road->pcurrent);
 
 	if (road->safetyDistance != 0) {

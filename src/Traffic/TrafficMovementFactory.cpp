@@ -20,7 +20,7 @@ TrafficMovementFactory::TrafficMovementFactory()
 {
 }
 
-void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcArrayStart)
+void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcArray)
 {
 	//Variables
 
@@ -99,19 +99,19 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pconcA
 	simulator->setMaxAcceleration(maxAcceleration);
 
 	//init ConcentrationOutwriter
-	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pconcArrayStart));
+	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
 	simulator->setConcentrationOutwriter(move(writer));
 
 	//prepare writing to vtk
 	//this->outputPath = "M:/Basel2019/results/";
 	this->cars = &(simulator->getVehiclesForVTK());
 
-	//GPU
-	if (useGPU) simulator->setUseGPU();
-
-	//write initial Timestep
+	////write initial Timestep
 	simulator->visualizeVehicleLengthForVTK();
 	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
+
+	//GPU
+	if (useGPU) simulator->setUseGPU(pConcArray);
 }
 
 
