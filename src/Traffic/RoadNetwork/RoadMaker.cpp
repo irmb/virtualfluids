@@ -15,6 +15,7 @@ RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicle
 	initVehicleLength(vehicleLength);
 
 	//init vectors
+	//this->conc.resize(this->roadLength);
 	initCurrentAsEmpty();
 	initNext();
 	initNeighbors();
@@ -33,6 +34,7 @@ RoadMaker::RoadMaker(const std::vector<int> vehicleDistribution, const uint maxV
 	initVehicleLength(vehicleLength);
 
 	//init vectors
+	//this->conc.resize(this->roadLength);
 	current = vehicleDistribution;
 	initNext();
 	initNeighbors();
@@ -47,6 +49,8 @@ RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicle
 	this->maxVelocity = maxVelocity;
 	initVehicleLength(vehicleLength);
 
+	//init vectors
+	//this->conc.resize(this->roadLength);
 	initCurrentAsEmpty();
 	initNext();
 	initNeighbors();

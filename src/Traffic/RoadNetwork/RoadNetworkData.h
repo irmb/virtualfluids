@@ -40,5 +40,7 @@ protected:
 	bool useSlowToStart = false;
 	real slowStartPossibility;
 	uint maxAcceleration = 1;
+
+	//std::vector<real> conc;
 };
 

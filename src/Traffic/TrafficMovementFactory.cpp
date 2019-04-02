@@ -99,8 +99,10 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	simulator->setMaxAcceleration(maxAcceleration);
 
 	//init ConcentrationOutwriter
-	std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
-	simulator->setConcentrationOutwriter(move(writer));
+	if (!useGPU) {
+		std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
+		simulator->setConcentrationOutwriter(move(writer));
+	}
 
 	//prepare writing to vtk
 	//this->outputPath = "M:/Basel2019/results/";

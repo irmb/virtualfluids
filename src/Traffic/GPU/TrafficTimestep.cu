@@ -30,7 +30,7 @@ __global__   void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* ne
 __global__	void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, uint* sourceIndices, real* sinkCarBlockedPossibilities,
 	float* sourcePossibilities, real * pConcArray, uint maxVelocity, uint safetyDistance, uint size_sources, curandState *state);
 
-__global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCellIndices, uint* juncStartInIncells, uint* juncStartInOutcells,
+__global__ void junctionTimestepKernel(int* juncCarsOnJunction, uint* juncInCellIndices, int* juncOutCellIndices, uint* juncStartInIncells, uint* juncStartInOutcells,
 	uint* juncAlreadyMoved, int* juncCarCanNotEnterThisOutCell, bool* juncOutCellIsOpen, uint* juncOldSpeeds, bool* juncCarCanEnter,
 	int* roadCurrent, int* roadNext, int* neighbors, real * pConcArray, real* sinkCarBlockedPossibilities, uint safetyDistance,
 	uint size_juncInCells, uint size_juncOutCells, uint size_junctions, curandState *state);
@@ -44,9 +44,13 @@ __device__ inline uint getGapAfterOutCell(int* roadCurrent, int* neighbors, real
 __device__ inline void moveCar(uint speed, uint index, int* roadCurrent, int* roadNext, int* neighbors, real * pConcArray, uint* juncInCellIndices, bool* juncCarCanEnter, int* juncCarsOnJunction,
 	uint* juncAlreadyMoved, uint* juncOldSpeeds, int neighbor, uint size_juncInCells);
 
-__device__ inline void carStaysOnJunction(int* juncCarsOnJunction, uint* juncAlreadyMoved, uint*juncOldSpeeds, uint inCellVectorIndex);
+__device__ inline void carStaysOnJunction(int* juncCarsOnJunction, uint* juncInCellIndices, uint* juncAlreadyMoved, uint*juncOldSpeeds, real* pConcArray, uint inCellVectorIndex);
 
-__device__ inline void calcConcentration(real * pConcArray, uint oldSpeed, uint newSpeed, uint newIndex);
+__device__ inline real calcConcentration(uint oldSpeed, uint newSpeed);
+
+__device__ inline void putConcIntoArray(real * pConcArray, uint oldSpeed, uint newSpeed, uint newIndex);
+
+__device__ inline void addConcToArray(real * pConcArray, uint oldSpeed, uint newSpeed, uint newIndex);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -163,6 +167,8 @@ void TrafficTimestep::copyCurrentDeviceToHost(std::shared_ptr<RoadNetworkData> r
 {
 	if (timestepIsEven)	thrust::copy(roadCurrent.begin(), roadCurrent.end(), road->pcurrent->begin());
 	else thrust::copy(roadNext.begin(), roadNext.end(), road->pcurrent->begin());
+
+	//checkCudaErrors(cudaMemcpy(&(road->conc[0]), pConcArray, size_roads * sizeof(real), cudaMemcpyDeviceToHost));
 }
 
 
@@ -241,6 +247,7 @@ void TrafficTimestep::callJunctionKernel()
 
 	junctionTimestepKernel << < gridJunctions, threadsJunctions >> > (
 		juncCarsOnJunction.data().get(),
+		juncInCellIndices.data().get(),
 		juncOutCellIndices.data().get(),
 		juncStartInIncells.data().get(),
 		juncStartInOutcells.data().get(),
@@ -363,7 +370,7 @@ __device__ inline void moveCar(uint speed, uint index, int* roadCurrent, int* ro
 	//printf("indexMove %d ", index);
 	if (speed == 0) {
 		(roadNext)[index] = 0;
-		calcConcentration(pConcArray, roadCurrent[index], speed, index);
+		putConcIntoArray(pConcArray, roadCurrent[index], speed, index);
 		return;
 	}
 
@@ -397,7 +404,7 @@ __device__ inline void moveCar(uint speed, uint index, int* roadCurrent, int* ro
 
 	if (neighbor >= 0) {
 		roadNext[neighbor] = speed;
-		calcConcentration(pConcArray, roadCurrent[index], speed, neighbor);
+		putConcIntoArray(pConcArray, roadCurrent[index], speed, neighbor);
 	}
 }
 
@@ -428,14 +435,14 @@ __global__ void sourceTimestepKernel(int* roadCurrent, int* roadNext, int* neigh
 		if (curand_uniform(&localState) < sourcePossibilities[index]) {
 			unsigned int speed = ceilf(curand_uniform(&localState) * (maxVelocity + 1)) - 1;
 			roadNext[sourceIndex] = speed;
-			calcConcentration(pConcArray, speed, speed, sourceIndex);
+			putConcIntoArray(pConcArray, speed, speed, sourceIndex);
 		}
 		state[index] = localState;
 	}
 }
 
 
-__global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCellIndices, uint* juncStartInIncells, uint* juncStartInOutcells,
+__global__ void junctionTimestepKernel(int* juncCarsOnJunction, uint* juncInCellIndices, int* juncOutCellIndices, uint* juncStartInIncells, uint* juncStartInOutcells,
 	uint* juncAlreadyMoved, int* juncCarCanNotEnterThisOutCell, bool* juncOutCellIsOpen, uint* juncOldSpeeds, bool* juncCarCanEnter,
 	int* roadCurrent, int* roadNext, int* neighbors, real* pConcArray, real* sinkCarBlockedPossibilities, uint safetyDistance,
 	uint size_juncInCells, uint size_juncOutCells, uint size_junctions, curandState* state) {
@@ -482,7 +489,7 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCell
 			//printf(" incell %d, speed %d, remainingDist %d, alreadyMoved %d ", inCellVectorIndex, speed, remainingDist, juncAlreadyMoved[inCellVectorIndex]);
 
 			if (remainingDist == 0) { //car can't leave the junction
-				carStaysOnJunction(juncCarsOnJunction, juncAlreadyMoved, juncOldSpeeds, inCellVectorIndex);
+				carStaysOnJunction(juncCarsOnJunction, juncInCellIndices, juncAlreadyMoved, juncOldSpeeds, pConcArray, inCellVectorIndex);
 				continue;
 			}
 
@@ -499,7 +506,7 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCell
 
 				if (numberOfPossibleOutCells == 0)  //car can't leave the junction
 				{
-					carStaysOnJunction(juncCarsOnJunction, juncAlreadyMoved, juncOldSpeeds, inCellVectorIndex);
+					carStaysOnJunction(juncCarsOnJunction, juncInCellIndices, juncAlreadyMoved, juncOldSpeeds, pConcArray, inCellVectorIndex);
 					continue;
 				}
 
@@ -530,7 +537,7 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCell
 
 				//// moveCar /////////////////////////////////////////////////////////////////////////////////////
 				if (remainingDist <= 0) { //car can't leave the junction
-					carStaysOnJunction(juncCarsOnJunction, juncAlreadyMoved, juncOldSpeeds, inCellVectorIndex);
+					carStaysOnJunction(juncCarsOnJunction, juncInCellIndices, juncAlreadyMoved, juncOldSpeeds, pConcArray, inCellVectorIndex);
 					continue;
 				}
 
@@ -538,7 +545,7 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCell
 
 					if (remainingDist == 1) {
 						roadNext[chosenCell] = speed;
-						calcConcentration(pConcArray, juncOldSpeeds[inCellVectorIndex], speed, chosenCell);
+						putConcIntoArray(pConcArray, juncOldSpeeds[inCellVectorIndex], speed, chosenCell);
 						juncCarsOnJunction[inCellVectorIndex] = -1;
 						juncCarCanEnter[inCellVectorIndex] = true;
 						return;
@@ -557,25 +564,23 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, int* juncOutCell
 
 					if (neighbor >= 0) {
 						roadNext[neighbor] = speed;
-						calcConcentration(pConcArray, juncOldSpeeds[inCellVectorIndex], speed, neighbor);
+						putConcIntoArray(pConcArray, juncOldSpeeds[inCellVectorIndex], speed, neighbor);
 					}
 
 					juncCarsOnJunction[inCellVectorIndex] = -1;
 					juncCarCanEnter[inCellVectorIndex] = true;
 				}
 			}
-
 		}
 	}
-	//TODO writeConc
-
 }
 
 
-__device__ inline void carStaysOnJunction(int* juncCarsOnJunction, uint* juncAlreadyMoved, uint*juncOldSpeeds, uint inCellVectorIndex) {
+__device__ inline void carStaysOnJunction(int* juncCarsOnJunction, uint* juncInCellIndices, uint* juncAlreadyMoved, uint*juncOldSpeeds, real* pConcArray, uint inCellVectorIndex) {
+	addConcToArray(pConcArray, juncOldSpeeds[inCellVectorIndex], 0, juncInCellIndices[inCellVectorIndex]);
 	juncCarsOnJunction[inCellVectorIndex] = 0;
 	juncAlreadyMoved[inCellVectorIndex] = 0;
-	juncOldSpeeds[inCellVectorIndex] = 0;
+	juncOldSpeeds[inCellVectorIndex] = 0;	
 }
 
 
@@ -622,8 +627,6 @@ inline __device__ uint getJunctionInCellsVectorIndex(uint* juncInCellIndices, ui
 }
 
 
-
-
 __global__ void randomSetupKernel(curandState *state, uint size) {
 	const uint x = threadIdx.x;  // Globaler x-Index 
 	const uint y = blockIdx.x;   // Globaler y-Index 
@@ -637,26 +640,38 @@ __global__ void randomSetupKernel(curandState *state, uint size) {
 	if (index >= size) return;
 
 	//// Each thread gets same seed, a different sequencenumber, no offset 
-	curand_init(1234, index, 0, &state[index]);
+	curand_init((unsigned long long)clock() + index, index, 0, &state[index]);
 }
 
 
-__device__ void calcConcentration(real * pConcArray, uint oldSpeed, uint newSpeed, uint newIndex)
+__device__ real calcConcentration(uint oldSpeed, uint newSpeed)
 {
 	//printf("newIndex %d ", newIndex );
 	if (oldSpeed == 0 && newSpeed > 0) //Start
-		pConcArray[newIndex] = 1.0f;
+		return 1.0f;
 	else if (oldSpeed == 0 && newSpeed == 0) //Idle
-		pConcArray[newIndex] = 0.25f;
+		return 0.25f;
 	else if (newSpeed == oldSpeed) //Drive
-		pConcArray[newIndex] = 0.5f;
+		return 0.5f;
 	else if (newSpeed > oldSpeed) //Accelerate
-		pConcArray[newIndex] = 0.75f;
+		return 0.75f;
 	else if (newSpeed < oldSpeed) //Brake
-		pConcArray[newIndex] = 0.45f;
+		return 0.45f;
 	else
 		printf("couldn't choose driving state in calcConcentration");
 
+}
+
+
+__device__ void putConcIntoArray(real * pConcArray,  uint oldSpeed, uint newSpeed, uint newIndex)
+{
+	pConcArray[newIndex] = calcConcentration(oldSpeed,newSpeed);
+}
+
+
+__device__ void addConcToArray(real * pConcArray, uint oldSpeed, uint newSpeed, uint newIndex)
+{
+	pConcArray[newIndex] += calcConcentration(oldSpeed, newSpeed);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

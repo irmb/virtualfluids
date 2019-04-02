@@ -65,11 +65,11 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pConcArray)
 	simulator->setMaxAcceleration(maxAcceleration);
 	if (useGPU) simulator->setUseGPU(pConcArray);
 
-	////init ConcentrationOutwriter
-	//std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
-	//simulator->setConcentrationOutwriter(move(writer));
-	//Variables
-
+	//init ConcentrationOutwriter
+	if (!useGPU) {
+		std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
+		simulator->setConcentrationOutwriter(move(writer));
+	}
 }
 
 
