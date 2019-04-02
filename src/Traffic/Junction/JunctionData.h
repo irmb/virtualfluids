@@ -24,8 +24,6 @@ public:
 	uint trafficLightSwitchTime; //no TrafficLight: 0
 
 	std::mt19937 engine = RandomHelper::make_engine();
-	std::uniform_int_distribution<uint> distInt2{ 0, 1 };
-	std::uniform_int_distribution<uint> distInt3{ 0, 2 };
-	std::uniform_int_distribution<uint> distInt4{ 0, 3 };
+	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };
 };
 

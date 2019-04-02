@@ -2,20 +2,18 @@
 
 #include <iostream>
 
-ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadLength, real * concArrayStart, uint maxSpeed)
+ConcBySpeedAndAcceleration::ConcBySpeedAndAcceleration(uint roadLength, real * concArrayStart)
 {
 	if (concArrayStart == nullptr) {
 		std::cout << "using ConcBySpeedAndAcceleration::concentration-vector for concentrations" << std::endl;
 		concentration.resize(roadLength);
 		this->roadLength = roadLength;
-		this->maxSpeed = static_cast<real>(maxSpeed);
 	}
 	else {
 		std::cout << "using passed array for concentrations" << std::endl;
 		useLBMConcArray = true;
 		this->roadLength = roadLength;
 		this->concArrayStart = concArrayStart;
-		this->maxSpeed = static_cast<real>(maxSpeed);
 	}
 
 }

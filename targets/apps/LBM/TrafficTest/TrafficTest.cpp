@@ -21,7 +21,7 @@ int main()
 
 
 
-		uint numberOfTimesteps = 1000;
+		uint numberOfTimesteps = 100;
 
 		//Logger
 		logging::Logger::addStream(&std::cout);

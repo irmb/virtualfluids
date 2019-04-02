@@ -523,7 +523,7 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 	if (road->safetyDistance != 0) {
 		for (uint i = 0; i < road->roadLength; i++) {
 			if ((*(road->pcurrent))[i] > -1) {
-				checkSpeed((*(road->pcurrent))[i]);
+				//checkSpeed((*(road->pcurrent))[i]);
 				int neighbor = road->neighbors[i];
 
 				for (uint j = 1; j <= road->safetyDistance; j++) {

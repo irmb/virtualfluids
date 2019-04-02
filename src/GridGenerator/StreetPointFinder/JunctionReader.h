@@ -15,8 +15,9 @@ struct VF_PUBLIC JunctionInReader
 	std::vector<uint> inCells;
 	std::vector<uint> outCells;
 	std::vector<int> carCanNotEnterThisOutCell;
+	uint trafficLightSwitchTime;
 
-	JunctionInReader(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell);
+	JunctionInReader(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell, uint trafficLightSwitchTime);
 };
 
 

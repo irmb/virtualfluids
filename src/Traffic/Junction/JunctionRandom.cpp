@@ -211,18 +211,8 @@ int JunctionRandom::generateRandomOutCellIndex(uint outCellsTempSize)
 	case 1:
 		random = 0;
 		break;
-	case 2:
-		random = data.distInt2(data.engine);
-		break;
-	case 3:
-		random = data.distInt3(data.engine);
-		break;
-	case 4:
-		random = data.distInt4(data.engine);
-		break;
 	default:
-		std::cerr << "default in JunctionRandom::chooseOutCell()" << std::endl;
-		break;
+		random = static_cast<int>(std::floor(data.distFloat(data.engine) * outCellsTempSize));
 	}
 
 	return random;
