@@ -1,7 +1,8 @@
 #include "JunctionRandom.h"
 
 #include <iostream>
-#include <algorithm>
+#include <algorithm> //used for find()
+#include <math.h> //used for floor()
 
 #include "TrafficMovement.h"
 
@@ -10,8 +11,10 @@
 #include "Utilities/safe_casting.h"
 
 
-JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices)
+JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices, uint trafficLightSwitchTime)
 {
+	this->data.trafficLightSwitchTime = trafficLightSwitchTime;
+
 	data.inCellIndices = inCellIndices;
 	data.outCellIndices = outCellIndices;
 
@@ -82,7 +85,7 @@ uint JunctionRandom::getInCellsVectorIndex(uint cellIndex)
 }
 
 
-void JunctionRandom::calculateTimeStep(TrafficMovement& road)
+void JunctionRandom::calculateTimeStep(TrafficMovement& road, uint currentTimestep)
 {
 	data.possibleOutCells = data.outCellIndices;
 
@@ -94,6 +97,43 @@ void JunctionRandom::calculateTimeStep(TrafficMovement& road)
 		++index;
 	}
 	writeConcentrations(road);
+
+	generateRedTrafficLights(currentTimestep);
+}
+
+
+void JunctionRandom::generateRedTrafficLights(uint currentTimestep)
+{
+	if (data.trafficLightSwitchTime > 0) {
+		uint halfNumStreets = static_cast<uint>(std::floor(static_cast<float>(data.inCellIndices.size()) * 0.5f));
+
+		if (static_cast<uint>(std::floor(static_cast<float>(currentTimestep) / static_cast<float>(data.trafficLightSwitchTime))) % 2 == 0)
+			turnFirstHalfRed(currentTimestep, halfNumStreets);
+		else
+			turnSecondHalfRed(currentTimestep, halfNumStreets);
+	}
+}
+
+void JunctionRandom::turnFirstHalfRed(uint currentTimestep, uint halfNumStreets)
+{
+	for (uint i = 0; i < halfNumStreets; i++)
+		data.carCanEnter[i] = false;
+
+	if (currentTimestep % data.trafficLightSwitchTime == 0) //first timestep with green light --> open the streets that were closed before
+		for (uint i = halfNumStreets; i < data.inCellIndices.size(); i++)
+			if (data.carsOnJunction[i] == -1)
+				data.carCanEnter[i] = true;
+}
+
+void JunctionRandom::turnSecondHalfRed(uint currentTimestep, uint halfNumStreets)
+{
+	for (uint i = halfNumStreets; i < data.inCellIndices.size(); i++)
+		data.carCanEnter[i] = false;
+
+	if (currentTimestep % data.trafficLightSwitchTime == 0) //first timestep with green light --> open the streets that were closed before
+		for (uint i = 0; i < halfNumStreets; i++)
+			if (data.carsOnJunction[i] == -1)
+				data.carCanEnter[i] = true;
 }
 
 
@@ -233,6 +273,11 @@ const std::vector<uint>& JunctionRandom::getOldSpeeds() const
 const std::vector<int>& JunctionRandom::getCarCanNotEnterThisOutCell() const
 {
 	return data.carCanNotEnterThisOutCell;
+}
+
+uint JunctionRandom::getTrafficLightSwitchTime() const
+{
+	return data.trafficLightSwitchTime;
 }
 
 void JunctionRandom::dispJunction(const uint index, const uint roadLength) const

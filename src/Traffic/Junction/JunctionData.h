@@ -21,6 +21,8 @@ public:
 	std::vector<uint> alreadyMoved;
 	std::vector<uint> oldSpeeds;
 
+	uint trafficLightSwitchTime; //no TrafficLight: 0
+
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_int_distribution<uint> distInt2{ 0, 1 };
 	std::uniform_int_distribution<uint> distInt3{ 0, 2 };

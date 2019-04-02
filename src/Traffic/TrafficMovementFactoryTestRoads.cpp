@@ -20,7 +20,7 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pConcArray)
 {
 	//Variables
 
-	uint roadLength = 40;
+	uint roadLength = 20;
 
 	real vehicleDensity = 0.1f;
 
@@ -36,7 +36,7 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pConcArray)
 
 
 	//make RoadNetwork
-	std::vector<int> road(40);
+	std::vector<int> road(20);
 	std::fill(road.begin(), road.end(), -1);
 	road[9] = 5;
 	auto roadNetwork = std::make_unique<RoadMaker>(road, maxVelocity, vehicleLength);
@@ -45,22 +45,18 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pConcArray)
 	//RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength);//empty road
 
 	//Sources
-	std::unique_ptr<Source> source = std::make_unique <SourceRandom>(SourceRandom(0, 0.9f, maxVelocity));
-	std::unique_ptr<Source> source1 = std::make_unique <SourceRandom>(SourceRandom(11, 0.9f, maxVelocity));
+	std::unique_ptr<Source> source = std::make_unique <SourceRandom>(SourceRandom(0, 0.7f, maxVelocity));
 	roadNetwork->addSource(source);
-	roadNetwork->addSource(source1);
 
 	//Sinks
 	std::unique_ptr<Sink> s = std::make_unique <SinkRandom>(SinkRandom(roadLength-1, 0.5f));
-	std::unique_ptr<Sink> s1 = std::make_unique <SinkRandom>(SinkRandom(29, 0.5f));
 	roadNetwork->addSink(move(s));
-	roadNetwork->addSink(move(s1));
 
 	//Junctions
-	std::vector<uint> inCellIndices = { 9,19 };
-	std::vector<uint> outCellIndices = { 21,31 };
+	std::vector<uint> inCellIndices = { 9 };
+	std::vector<uint> outCellIndices = { 11 };
 	
-	std::unique_ptr<Junction> j = std::make_unique<JunctionRandom>(JunctionRandom(inCellIndices, outCellIndices,5));
+	std::unique_ptr<Junction> j = std::make_unique<JunctionRandom>(JunctionRandom(inCellIndices, outCellIndices));
 	roadNetwork->addJunction(std::move(j));
 
 	//init TrafficMovement

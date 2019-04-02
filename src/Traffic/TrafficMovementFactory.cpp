@@ -24,7 +24,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 {
 	//Variables
 
-	real vehicleDensity = 0.01f;
+	real vehicleDensity = 0.05f;
 
 	uint vehicleLength = 7;
 	uint maxVelocity = 14;
@@ -88,7 +88,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	//Junctions
 	std::vector <std::unique_ptr<Junction> > junctions;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
-		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells));
+		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, 60));
 		junctions[i]->setCellIndexForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
 	}
 	roadNetwork->setJunctions(move(junctions));
