@@ -11,7 +11,7 @@
 #include <vtkDataArray.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkPointData.h>
-#include <vtkTimerLog.h>
+
 #include <vtkProbeFilter.h>
 #include <vtkImageData.h>
 #include <vtkXMLImageDataWriter.h>
@@ -324,10 +324,20 @@ void Averaging::writeMQMatrixToImageFile(std::string output, int geo_extent[6], 
 //////////////////////////////////////////////////////////////////////////
 void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
 {
+   //////////////////////////////////////////////////////////////////////////
+   //DEBUG
+   //////////////////////////////////////////////////////////////////////////
+   vaVxMatrix = vxMatrix;
+   vaVyMatrix = vyMatrix;
+   vaVzMatrix = vzMatrix;
+   vaPrMatrix = prMatrix;
+   return;
+   //////////////////////////////////////////////////////////////////////////
+
    vtkSmartPointer<vtkTimerLog> timer_averaging = vtkSmartPointer<vtkTimerLog>::New();
 
    UBLOG(logINFO, "volume averaging: start");
-   //timer_averaging->StartTimer();
+   timer_averaging->StartTimer();
 
    double l = round(l_real / deltax);
    UBLOG(logINFO, "l = " + UbSystem::toString(l));
