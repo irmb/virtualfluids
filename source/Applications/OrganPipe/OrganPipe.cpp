@@ -156,7 +156,7 @@ void run(string configname)
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      double bulckViscosity = 10.0*nu_LB;
+      double bulckViscosity = 3400.0*nu_LB;
       dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       kernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////

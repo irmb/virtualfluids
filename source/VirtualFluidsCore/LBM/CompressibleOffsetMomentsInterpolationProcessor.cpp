@@ -46,8 +46,8 @@ void CompressibleOffsetMomentsInterpolationProcessor::setOmegas( LBMReal omegaC,
 
    if (bulkViscosity != 0)
    {
-      this->OxxPyyPzzC = 1.0/(3.0*bulkViscosity/dtC+0.5);
-      this->OxxPyyPzzF = 1.0/(3.0*bulkViscosity/dtF+0.5);
+      this->OxxPyyPzzC = LBMSystem::calcOmega2(bulkViscosity, dtC);
+      this->OxxPyyPzzF = LBMSystem::calcOmega2(bulkViscosity, dtF);
    }
    else
    {

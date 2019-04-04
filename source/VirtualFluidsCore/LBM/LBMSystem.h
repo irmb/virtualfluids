@@ -70,6 +70,17 @@ namespace LBMSystem
       //return REAL_CAST(1.0/(3.0*viscosity/deltaT+0.5));
       return REAL_CAST(1.0/(3.0*viscosity/(1.0/REAL_CAST(1<<level))+0.5));
    }
+
+   //bulk viscosity
+   static real calcOmega2(real viscosity, int level)
+   {
+      return REAL_CAST(1.0/(4.5*viscosity/(1.0/REAL_CAST(1<<level))+0.5));
+   }
+
+   static real calcOmega2(real viscosity, real deltaT)
+   {
+      return REAL_CAST(1.0/(4.5*viscosity/deltaT+0.5));
+   }
 }
 
 //some typedefs for global namespace

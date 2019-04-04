@@ -45,7 +45,7 @@ SPtr<LBMKernel> CompressibleCumulant4thOrderViscosityLBMKernel::clone()
 
    if (bulkViscosity != 0)
    {
-      OxxPyyPzz = 1.0/(3.0*bulkViscosity/deltaT+0.5);
+      OxxPyyPzz = LBMSystem::calcOmega2(bulkViscosity, block.lock()->getLevel());
    } 
    else
    {
