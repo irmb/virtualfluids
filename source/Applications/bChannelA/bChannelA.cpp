@@ -293,19 +293,19 @@ void run(string configname)
          //DEBUG METIS 
          //////////////////////////////////////////////////////////////////////////
          
-         SimpleGeometricPartitioner sgp;
-         UbTupleInt3 dim = sgp.createDimensions(30, 20, 20, 20);
+         //SimpleGeometricPartitioner sgp;
+         //UbTupleInt3 dim = sgp.createDimensions(30, 20, 20, 20);
 
 
-         dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(1500);
-         grid->accept(metisVisitor);
+         //dynamic_pointer_cast<MetisPartitioningGridVisitor>(metisVisitor)->setNumberOfProcesses(1500);
+         //grid->accept(metisVisitor);
 
          //SPtr<Grid3DVisitor> zoltanVisitor(new ZoltanPartitioningGridVisitor(comm, D3Q27System::BSW));
          //grid->accept(zoltanVisitor);
 
-         WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
-         ppblocks.process(0);
-         return;
+         //WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);
+         //ppblocks.process(0);
+         //return;
          //////////////////////////////////////////////////////////////////////////
 
          ////////////////////////////////////////////

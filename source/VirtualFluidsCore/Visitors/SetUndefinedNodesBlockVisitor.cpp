@@ -10,8 +10,7 @@
 #include "ILBMKernel.h"
 
 
-SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor() : 
-                                    Block3DVisitor(0, Grid3DSystem::MAXLEVEL) 
+SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor(bool twoTypeOfConectorsCheck) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck) 
 {
 
 }
@@ -634,7 +633,7 @@ void SetUndefinedNodesBlockVisitor::visit(SPtr<Grid3D> grid, SPtr<Block3D> block
    //invert scaleCF blocks
    if(block->hasInterpolationFlagCF())
    {
-      if(block->hasInterpolationFlagFC()) 
+      if(block->hasInterpolationFlagFC() && twoTypeOfConnectorsCheck) 
       {
          for (int i = D3Q27System::E; i <= D3Q27System::BSW; i++)
          {
