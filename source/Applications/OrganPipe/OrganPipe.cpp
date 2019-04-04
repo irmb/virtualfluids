@@ -187,7 +187,8 @@ void run(string configname)
          SPtr<GbTriFaceMesh3D> inletTubeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
          inletTubeGeo->translate(1.37, 0.0, 0.0);
          if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:end");
-         if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
+         if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
+
          SPtr<Interactor3D> organPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(organPipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
          SPtr<Interactor3D> inletTubeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inletTubeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
@@ -195,9 +196,14 @@ void run(string configname)
          double startX1it = inletTubeGeo->getX1Minimum();
          //////////////////////////////////////////////////////////////////////////
          //refinement
+         SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(startX1it, -0.028, -0.028, startX1it + 0.2654 + op_offset, 0.04, 0.06));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL5.get(), pathOut + "/geo/refineBoxL5", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(startX1it, -0.0165, -0.0165, startX1it+0.2634+op_offset, 0.0165, 0.0165));
-         if (myid==0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut+"/geo/refineBoxL6", WbWriterVtkXmlBinary::getInstance());
+         SPtr<GbObject3D> refineBoxL61(new GbCuboid3D(startX1it, -0.0165, -0.0165, startX1it + 0.2634 + op_offset, 0.0165, 0.0165));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL61.get(), pathOut + "/geo/refineBoxL61", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineBoxL62(new GbCuboid3D(startX1it + 0.1016 + op_offset, -0.0165, 0.0165, startX1it + 0.2634 + op_offset, 0.0165, 0.0365));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL62.get(), pathOut + "/geo/refineBoxL62", WbWriterVtkXmlBinary::getInstance());
 
          SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(startX1it, -0.024, -0.024, startX1it+0.09+op_offset, 0.024, 0.024));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlBinary::getInstance());
@@ -208,7 +214,7 @@ void run(string configname)
          SPtr<GbObject3D> refineBoxL82(new GbCuboid3D(startX1it+0.02, -0.0165, -0.0165, startX1it+0.06+op_offset, 0.0165, 0.0165));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL82.get(), pathOut + "/geo/refineBoxL82", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL83(new GbCuboid3D(startX1it+0.06, -0.0165, -0.0165, startX1it+0.09+op_offset, 0.0165, 0.024));
+         SPtr<GbObject3D> refineBoxL83(new GbCuboid3D(startX1it+0.06, -0.0165, -0.0165, startX1it+0.1016+op_offset, 0.0165, 0.024));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL83.get(), pathOut + "/geo/refineBoxL83", WbWriterVtkXmlBinary::getInstance());
 
          SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(startX1it + 0.06, -0.0165, 0.01, startX1it + 0.09 + op_offset, 0.0165, 0.013));
@@ -218,7 +224,9 @@ void run(string configname)
          {
             if (myid==0) UBLOG(logINFO, "Refinement - start");
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
-            refineHelper.addGbObject(refineBoxL6, refineLevel-3);
+            refineHelper.addGbObject(refineBoxL5, refineLevel-4);
+            refineHelper.addGbObject(refineBoxL61, refineLevel-3);
+            refineHelper.addGbObject(refineBoxL62, refineLevel-3);
             refineHelper.addGbObject(refineBoxL7, refineLevel-2);
             refineHelper.addGbObject(refineBoxL81, refineLevel-1);
             refineHelper.addGbObject(refineBoxL82, refineLevel-1);
