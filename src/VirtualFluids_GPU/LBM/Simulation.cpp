@@ -1069,7 +1069,8 @@ void Simulation::run()
 				//Calculate Traffic by Anna
 				if (t % 100 == 0)
 				{
-					trafficFactory->calculateTimestep(t / 100, t);
+					trafficFactory->calculateTimestep(t / 100);
+					trafficFactory->writeTimestep(t);
 					para->cudaCopyConcFile(0);
 				}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

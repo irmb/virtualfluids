@@ -59,7 +59,7 @@ void JunctionRandom::registerCar(uint cellIndex, uint alreadyMoved, uint speed, 
 {
 	uint index = getInCellsVectorIndex(cellIndex);
 
-	data.carsOnJunction[index] = speed - 1; //all cars, which enter the junction have to slow down by one increment
+	data.carsOnJunction[index] = speed;
 	//data.carsOnJunction[index] = 0; //all cars, which enter the junction have to stop
 	data.oldSpeeds[index] = oldSpeed;
 	data.carCanEnter[index] = false;

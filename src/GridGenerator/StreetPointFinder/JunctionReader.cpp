@@ -64,6 +64,8 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 			trafficLightTime = std::stoi(inOutDummy);
 			file >> inOutDummy;
 		}
+		else
+			trafficLightTime = 0;
 
 		//make Junction
 		junctions.push_back(JunctionInReader(inCells, outCells, carCanNotEnterThisOutCell, trafficLightTime));

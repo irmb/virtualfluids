@@ -21,9 +21,9 @@ int main()
 
 
 
-		uint numberOfTimesteps = 100;
+		uint numberOfTimesteps = 1000;
 
-		//Logger
+		//TrafficLogger
 		logging::Logger::addStream(&std::cout);
 		logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
 		logging::Logger::timeStamp(logging::Logger::ENABLE);
@@ -35,19 +35,18 @@ int main()
 		factory->initTrafficMovement(path);
 
 		for (uint step = 1; step <= numberOfTimesteps; step++) {
-			factory->calculateTimestep(step, step);
+			factory->calculateTimestep(step);
+			factory->writeTimestep(step);
 		}
 			
 	
 		duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 
+		factory->endSimulation(numberOfTimesteps, duration);
+
 		std::cout << "Dauer: " << duration << '\n';
 	
 	}
-
-
-
-
 
 
 

@@ -8,6 +8,7 @@
 #include "Utilities/RandomHelper.h"
 #include "Output/ConcentrationOutwriter.h"
 #include "Output/CarDisplay.h"
+#include "Utilities/Logger.h"
 
 #include "GPU/TrafficTimestep.h"
 
@@ -74,10 +75,10 @@ void TrafficMovement::setSlowToStart(const real slowStartPossibility)
 void TrafficMovement::setUseGPU(real * pConcArray)
 {
 	std::cout << "usingGPU for calculation" << std::endl;
-	useGPU = true;
+	this->useGPU = true;
 	this->road->oldSpeeds.resize(this->road->roadLength);
 	VectorHelper::fillVector(this->road->oldSpeeds, -1);
-	gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road, pConcArray));
+	this->gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road, pConcArray));
 }
 
 void TrafficMovement::setMaxAcceleration(uint maxAcceleration)
@@ -498,6 +499,7 @@ void TrafficMovement::checkCurrentForSafetyDistance()
 						break;
 					if ((*(road->pcurrent))[neighbor] > -1) {
 						std::cerr << "timestep 0: safetyDistance was violated: carIndex: " << i << std::endl;
+						if (useLogger) TrafficLogger::writeError("safetyDistance was violated : carIndex: " + i, 0);
 						break;
 					}
 					neighbor = road->neighbors[neighbor];
@@ -532,6 +534,7 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 						break;
 					if ((*(road->pcurrent))[neighbor] > -1) {
 						std::cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << std::endl;
+						if (useLogger) TrafficLogger::writeError("safetyDistance was violated : carIndex: " + i, currentStep);
 						break;
 					}
 					else
@@ -548,7 +551,12 @@ void TrafficMovement::checkSpeed(uint speed)
 {
 	if (speed > road->maxVelocity) {
 		std::cerr << "Speed is greater than allowed maxSpeed" << std::endl;
-		std::cin.get();
+		if (useLogger) TrafficLogger::writeError("Speed is greater than allowed maxSpeed", currentStep);
 	}
 }
 
+
+void TrafficMovement::setUseLogger()
+{
+	this->useLogger = true;
+}

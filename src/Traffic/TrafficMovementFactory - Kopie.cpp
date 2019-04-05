@@ -80,6 +80,7 @@ void TrafficMovementFactoryTest::initTrafficMovement(real * pConcArray)
 void TrafficMovementFactoryTest::calculateTimestep(uint step, uint stepForVTK)
 {
 	simulator->calculateTimestep(step);
+	writeTimestep(step);
 }
 
 void TrafficMovementFactoryTest::loopThroughTimesteps(uint timeSteps)

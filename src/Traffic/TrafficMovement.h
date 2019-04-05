@@ -10,6 +10,7 @@
 #include "RoadNetwork/RoadNetworkData.h"
 #include "Utilities/RandomHelper.h"
 
+class TrafficLogger;
 class ConcentrationOutwriter;
 class CarDisplay;
 class TrafficTimestep;
@@ -28,6 +29,7 @@ public:
 	void setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer);
 	void setSaveResultsTrue(uint timeSteps);
 	void setUseGPU(real * pConcArray = nullptr);
+	void setUseLogger();
 
 	//timpestep
 	void loopTroughTimesteps(uint numberOfTimesteps);
@@ -101,6 +103,8 @@ private:
 	bool useGPU = false;
 	std::unique_ptr<TrafficTimestep> gpuCalculation;
 	bool copiedDevToHost = false;
+
+	bool useLogger = false;
 
 	uint currentStep = 0;
 

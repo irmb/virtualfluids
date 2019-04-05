@@ -14,6 +14,7 @@
 #include "Output/ConcentrationByPosition.h"
 #include "Output/ConcBySpeedAndAcceleration.h"
 #include "Utilities/safe_casting.h"
+#include "Utilities/Logger.h"
 
 
 TrafficMovementFactory::TrafficMovementFactory()
@@ -24,7 +25,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 {
 	//Variables
 
-	real vehicleDensity = 0.05f;
+	real vehicleDensity = 0.01f;
 
 	uint vehicleLength = 7;
 	uint maxVelocity = 14;
@@ -33,12 +34,28 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.3;
 
-	bool useGPU = false;
+	bool useGPU = true;
 	bool useSlowToStart = true;
+	useLogger = true;
+
+	std::string info = "Basel, without writing vtk";
+	
+
+
+	//Paths
 
 	inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
 	outputPath = path + "Basel_Ergebnisse/";
 	outputFilename = "Basel_Traffic";
+	std::string logfile = outputPath + "TrafficLog.txt";
+
+
+
+	//TrafficLogger	
+	if (useLogger) {
+		TrafficLogger::startLogger(logfile);
+		TrafficLogger::writeSimulationStart(info, useGPU);
+	}
 
 
 	//StreetPointFinder M:\Basel2019  C:\Users\schoen\Desktop\git\MS2
@@ -100,8 +117,9 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 
 	//init TrafficMovement
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
-	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
 	simulator->setMaxAcceleration(maxAcceleration);
+	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
+	if(useLogger) simulator->setUseLogger();
 
 
 	//init ConcentrationOutwriter
@@ -126,11 +144,24 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 }
 
 
-void TrafficMovementFactory::calculateTimestep(uint step, uint stepForVTK)
+void TrafficMovementFactory::calculateTimestep(uint step)
 {
 	simulator->calculateTimestep(step);
-	simulator->visualizeVehicleLengthForVTK();
-	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+
 	//std::cout << "Number of Cars: " << simulator->getNumberOfCars() << std::endl;
 }
+
+void TrafficMovementFactory::writeTimestep(uint stepForVTK)
+{
+	simulator->visualizeVehicleLengthForVTK();
+	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+}
+
+void TrafficMovementFactory::endSimulation(uint numTimesteps, double duration)
+{
+	if (!useLogger) return;
+	TrafficLogger::writeSimulationEnd(simulator->getRoadLength(), numTimesteps, duration);
+}
+
+
 

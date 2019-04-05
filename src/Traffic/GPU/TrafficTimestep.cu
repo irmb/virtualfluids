@@ -400,8 +400,8 @@ __device__ inline void moveCar(uint speed, uint index, int* roadCurrent, int* ro
 	if (neighbor <= -1000 && neighbor > -2000) {
 		//registerCar
 		uint idx = getJunctionInCellsVectorIndex(juncInCellIndices, size_juncInCells, currentCell1);
-		juncCarsOnJunction[idx] = speed - 1; //all cars, which enter the junction have to slow down by one increment
-											 //getCarsOnJunction[index] = 0; //all cars, which enter the junction have to stop
+		juncCarsOnJunction[idx] = speed;
+											 //getCarsOnJunction[index] = speed -2; //all cars, which enter the junction have to slow down
 		juncOldSpeeds[idx] = roadCurrent[index];
 		juncCarCanEnter[idx] = false;
 		juncAlreadyMoved[idx] = numberOfCellsMoved;
