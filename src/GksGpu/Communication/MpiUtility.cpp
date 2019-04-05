@@ -2,7 +2,7 @@
 
 #include <exception>
 
-#define ENV_LOCAL_RANK	     "OMPI_COMM_WORLD_LOCAL_RANK"
+#define ENV_LOCAL_RANK	     "OMPI_COMM_WORLD_RANK"
 #define ENV_COMM_WORLD_SIZE  "OMPI_COMM_WORLD_SIZE"
 
 int MpiUtility::getMpiRankBeforeInit()

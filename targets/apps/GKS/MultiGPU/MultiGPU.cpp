@@ -261,6 +261,8 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
+        cupsAnalyzer.run( iter );
+
         if( iter % 100000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
@@ -269,8 +271,6 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
-
-        cupsAnalyzer.run( iter );
     }
 
     //////////////////////////////////////////////////////////////////////////
