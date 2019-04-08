@@ -196,45 +196,61 @@ void run(string configname)
          double startX1it = inletTubeGeo->getX1Minimum();
          //////////////////////////////////////////////////////////////////////////
          //refinement
-         SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(startX1it, -0.028, -0.028, startX1it + 0.2654 + op_offset, 0.04, 0.06));
+         //SPtr<GbObject3D> refineBoxL1(new GbCuboid3D(startX1it-0.8, -1.0, -1.0, startX1it + 1.75 + op_offset, 1.0, 1.0));
+         //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL1.get(), pathOut + "/geo/refineBoxL1", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineBoxL2(new GbCuboid3D(startX1it-0.38, -0.55, -0.55, startX1it+1.25+op_offset, 0.55, 0.55));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL2.get(), pathOut + "/geo/refineBoxL2", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineBoxL3(new GbCuboid3D(startX1it-0.25, -0.28, -0.28, startX1it+0.8+op_offset, 0.28, 0.28));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL3.get(), pathOut + "/geo/refineBoxL3", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineBoxL4(new GbCuboid3D(startX1it-0.13, -0.15, -0.15, startX1it + 0.52 + op_offset, 0.15, 0.15));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL4.get(), pathOut + "/geo/refineBoxL4", WbWriterVtkXmlBinary::getInstance());
+
+         SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(startX1it-0.0633, -0.08, -0.08, startX1it + 0.3267 + op_offset, 0.08, 0.08));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL5.get(), pathOut + "/geo/refineBoxL5", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL61(new GbCuboid3D(startX1it, -0.0165, -0.0165, startX1it + 0.2634 + op_offset, 0.0165, 0.0165));
-         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL61.get(), pathOut + "/geo/refineBoxL61", WbWriterVtkXmlBinary::getInstance());
+         SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(startX1it, -0.042, -0.042, startX1it + 0.2634 + op_offset, 0.042, 0.042));
+         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL62(new GbCuboid3D(startX1it + 0.1016 + op_offset, -0.0165, 0.0165, startX1it + 0.2634 + op_offset, 0.0165, 0.0365));
-         if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL62.get(), pathOut + "/geo/refineBoxL62", WbWriterVtkXmlBinary::getInstance());
+         //SPtr<GbObject3D> refineBoxL62(new GbCuboid3D(startX1it + 0.1016 + op_offset, -0.0165, 0.0165, startX1it + 0.2634 + op_offset, 0.0165, 0.0365));
+         //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL62.get(), pathOut + "/geo/refineBoxL62", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(startX1it, -0.024, -0.024, startX1it+0.09+op_offset, 0.024, 0.024));
+         SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(startX1it, -0.03, -0.03, startX1it + 0.1516 + op_offset, 0.03, 0.03));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL81(new GbCuboid3D(startX1it, -0.005, -0.005, startX1it+0.02+op_offset, 0.005, 0.005));
+         SPtr<GbObject3D> refineBoxL81(new GbCuboid3D(startX1it, -0.005, -0.005, startX1it + 0.02 + op_offset, 0.005, 0.005));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL81.get(), pathOut + "/geo/refineBoxL81", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL82(new GbCuboid3D(startX1it+0.02, -0.0165, -0.0165, startX1it+0.06+op_offset, 0.0165, 0.0165));
+         SPtr<GbObject3D> refineBoxL82(new GbCuboid3D(startX1it + 0.02, -0.0165, -0.0165, startX1it + 0.06 + op_offset, 0.0165, 0.0165));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL82.get(), pathOut + "/geo/refineBoxL82", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL83(new GbCuboid3D(startX1it+0.06, -0.0165, -0.0165, startX1it+0.1016+op_offset, 0.0165, 0.024));
+         SPtr<GbObject3D> refineBoxL83(new GbCuboid3D(startX1it+0.06, -0.0165, -0.0165, startX1it + 0.1016 + op_offset, 0.0165, 0.024));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL83.get(), pathOut + "/geo/refineBoxL83", WbWriterVtkXmlBinary::getInstance());
 
-         SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(startX1it + 0.06, -0.0165, 0.01, startX1it + 0.09 + op_offset, 0.0165, 0.013));
+         SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(startX1it+0.06, -0.0165, 0.01, startX1it + 0.09 + op_offset, 0.0165, 0.013));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL9.get(), pathOut + "/geo/refineBoxL9", WbWriterVtkXmlBinary::getInstance());
-
-         if (refineLevel>0)
+         if (refineLevel > 0)
          {
-            if (myid==0) UBLOG(logINFO, "Refinement - start");
+            if (myid == 0) UBLOG(logINFO, "Refinement - start");
             RefineCrossAndInsideGbObjectHelper refineHelper(grid, refineLevel, comm);
-            refineHelper.addGbObject(refineBoxL5, refineLevel-4);
-            refineHelper.addGbObject(refineBoxL61, refineLevel-3);
-            refineHelper.addGbObject(refineBoxL62, refineLevel-3);
-            refineHelper.addGbObject(refineBoxL7, refineLevel-2);
-            refineHelper.addGbObject(refineBoxL81, refineLevel-1);
-            refineHelper.addGbObject(refineBoxL82, refineLevel-1);
-            refineHelper.addGbObject(refineBoxL83, refineLevel-1);
+            //refineHelper.addGbObject(refineBoxL1, refineLevel - 8);
+            refineHelper.addGbObject(refineBoxL2, refineLevel - 7);
+            refineHelper.addGbObject(refineBoxL3, refineLevel - 6);
+            refineHelper.addGbObject(refineBoxL4, refineLevel - 5);
+            refineHelper.addGbObject(refineBoxL5, refineLevel - 4);
+            refineHelper.addGbObject(refineBoxL6, refineLevel - 3);
+            //refineHelper.addGbObject(refineBoxL62, refineLevel-3);
+            refineHelper.addGbObject(refineBoxL7, refineLevel - 2);
+            refineHelper.addGbObject(refineBoxL81, refineLevel - 1);
+            refineHelper.addGbObject(refineBoxL82, refineLevel - 1);
+            refineHelper.addGbObject(refineBoxL83, refineLevel - 1);
             refineHelper.addGbObject(refineBoxL9, refineLevel);
             refineHelper.refine();
-            if (myid==0) UBLOG(logINFO, "Refinement - end");
+            if (myid == 0) UBLOG(logINFO, "Refinement - end");
          }
+
          //////////////////////////////////////////////////////////////////////////
 
          //walls
@@ -262,7 +278,8 @@ void run(string configname)
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflow.get(), pathOut + "/geo/geoInflow", WbWriterVtkXmlASCII::getInstance());
          SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 
-         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-deltaXfine*5.0, 0.0, 0.0, startX1it, 0.0, 0.0, diameter_inlet+deltaXfine*2.0));
+         //GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-deltaXfine*5.0, 0.0, 0.0, startX1it, 0.0, 0.0, diameter_inlet+deltaXfine*6.0));
+         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it - 0.05, 0.0, 0.0, startX1it, 0.0, 0.0, diameter_inlet + deltaXfine*6.0));
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflowCover.get(), pathOut + "/geo/geoInflowCover", WbWriterVtkXmlASCII::getInstance());
          SPtr<D3Q27Interactor> inflowCoverIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflowCover, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
