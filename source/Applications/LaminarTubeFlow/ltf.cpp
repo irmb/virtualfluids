@@ -13,7 +13,7 @@ void run(string configname)
       ConfigurationFile   config;
       config.load(configname);
 
-      string          pathname = config.getString("pathname");
+      string          pathname = config.getValue<string>("pathname");
       int             numOfThreads = config.getValue<int>("numOfThreads");
       vector<int>     blocknx = config.getVector<int>("blocknx");
       double          uLB = config.getValue<double>("uLB");
@@ -90,11 +90,21 @@ void run(string configname)
 
       SPtr<Grid3D> grid(new Grid3D(comm));
 
+      SPtr<BCProcessor> bcProc;
+      bcProc = SPtr<BCProcessor>(new BCProcessor());
+
+      SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
+      double bulckViscosity = 3700*nuLB;
+      dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
+      kernel->setBCProcessor(bcProc);
+      kernel->setBCProcessor(bcProc);
+
       //////////////////////////////////////////////////////////////////////////
       //restart
-      SPtr<UbScheduler> rSch(new UbScheduler(cpStep, cpStart));
-      //RestartCoProcessor rp(grid, rSch, comm, pathname, RestartCoProcessor::TXT);
-      MPIIORestartCoProcessor rcp(grid, rSch, pathname, comm);
+      SPtr<UbScheduler> mSch(new UbScheduler(cpStep, cpStart));
+      SPtr<MPIIOMigrationCoProcessor> migCoProcessor(new MPIIOMigrationCoProcessor(grid, mSch, pathname + "/mig", comm));
+      migCoProcessor->setLBMKernel(kernel);
+      migCoProcessor->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
 
       if (newStart)
@@ -187,13 +197,10 @@ void run(string configname)
          SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter(true, false, false, fct, 0, BCFunction::INFCONST));
          velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
          //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-
-
          SPtr<D3Q27Interactor> inflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 
          //outflow
          SPtr<D3Q27Interactor> outflowInt = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoOutflow, grid, denBCAdapter, Interactor3D::SOLID));
-
 
          SPtr<Grid3DVisitor> metisVisitor(new MetisPartitioningGridVisitor(comm, MetisPartitioningGridVisitor::LevelBased, D3Q27System::B));
          InteractorsHelper intHelper(grid, metisVisitor);
@@ -201,7 +208,6 @@ void run(string configname)
          intHelper.addInteractor(inflowInt);
          intHelper.addInteractor(outflowInt);
          intHelper.selectBlocks();
-
 
          ppblocks->process(0);
          ppblocks.reset();
@@ -231,17 +237,6 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = " << availMem << " bytes");
          }
 
-         SPtr<LBMKernel> kernel;
-
-         kernel = SPtr<LBMKernel>(new IncompressibleCumulantLBMKernel());
-         //kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
-
-         //
-         SPtr<BCProcessor> bcProc(new BCProcessor());
-         //SPtr<BCProcessor> bcProc(new ThinWallBCProcessor());
-
-         kernel->setBCProcessor(bcProc);
-
          SetKernelBlockVisitor kernelVisitor(kernel, nuLB, availMem, needMem);
          grid->accept(kernelVisitor);
 
@@ -261,18 +256,6 @@ void run(string configname)
          //initVisitor.setVx1(fct);
          //initVisitor.setVx1(uLB);
          grid->accept(initVisitor);
-
-         //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         //SPtr<ConnectorFactory> factory(new Block3DConnectorFactory());
-         //ConnectorBlockVisitor setConnsVisitor(comm, nuLB, iProcessor, factory);
-         grid->accept(setConnsVisitor);
-
-         //domain decomposition for threads
-         PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         grid->accept(pqPartVisitor);
 
          //boundary conditions grid
          {
@@ -299,23 +282,17 @@ void run(string configname)
             UBLOG(logINFO, "path = " << pathname);
          }
 
-         rcp.restart((int)restartStep);
+         migCoProcessor->restart((int)restartStep);
          grid->setTimeStep(restartStep);
-
-         SPtr<BCAdapter> velBCAdapter(new VelocityBCAdapter());
-         velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityBCAlgorithm()));
-         //velBCAdapter->setBcAlgorithm(SPtr<BCAlgorithm>(new VelocityWithDensityBCAlgorithm()));
-         bcVisitor.addBC(velBCAdapter);
-         grid->accept(bcVisitor);
-
-         //set connectors
-         InterpolationProcessorPtr iProcessor(new IncompressibleOffsetInterpolationProcessor());
-         //InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
-         grid->accept(setConnsVisitor);
 
          if (myid == 0) UBLOG(logINFO, "Restart - end");
       }
+
+      SPtr<InterpolationProcessor> iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+      dynamicPointerCast<CompressibleOffsetMomentsInterpolationProcessor>(iProcessor)->setBulkViscosity(nuLB, bulckViscosity);
+      SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nuLB, iProcessor);
+      grid->accept(setConnsVisitor);
+
       SPtr<UbScheduler> visSch(new UbScheduler(outTime));
       SPtr<CoProcessor> pp(new WriteMacroscopicQuantitiesCoProcessor(grid, visSch, pathname, WbWriterVtkXmlASCII::getInstance(), conv, comm));
 
@@ -327,6 +304,7 @@ void run(string configname)
       SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
       calculator->addCoProcessor(npr);
       calculator->addCoProcessor(pp);
+      calculator->addCoProcessor(migCoProcessor);
 
       if (myid == 0) UBLOG(logINFO, "Simulation-start");
       calculator->calculate();

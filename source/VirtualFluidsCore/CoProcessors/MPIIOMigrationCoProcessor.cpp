@@ -1752,6 +1752,7 @@ void MPIIOMigrationCoProcessor::readDataSet(int step)
       SPtr<Block3D> block = grid->getBlock(dataSetArray[n].globalID);
       //std::cout << "rank="<<rank<<", dataSetArray[n].globalID=" << dataSetArray[n].globalID << std::endl;
 
+      this->lbmKernel->setBlock(block);
       SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);
