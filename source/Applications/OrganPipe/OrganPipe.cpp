@@ -33,7 +33,6 @@ void run(string configname)
 
       string          opipeGeoFile = "/OrganPipeTransformed.stl";
       string          inletTubeGeoFile = "/tubeTransformed.stl";
-      //string          extendedGeoFile = "/FluteExtension.stl";
 
       double  deltaXfine = 0.0000625;
       const int baseLevel = 0;
@@ -71,12 +70,13 @@ void run(string configname)
       double nu_LB = nuReal * unitConverter.getFactorViscosityWToLb();
       double u_LB = uReal * unitConverter.getFactorVelocityWToLb();
 
+      double offSetOrganPipe = 0.0083; //1.37;
 
       vector<int> blocknx ={ 16, 16, 16 };
 
       if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:start");
       SPtr<GbTriFaceMesh3D> organPipeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + opipeGeoFile, "opipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-      organPipeGeo->translate(1.37, 0.0, 0.0);
+      organPipeGeo->translate(offSetOrganPipe, 0.0, 0.0);
       if (myid == 0) UBLOG(logINFO, "Read organ pipe geometry:end");
       if (myid == 0) GbSystem3D::writeGeoObject(organPipeGeo.get(), pathOut + "/geo/organPipeGeo", WbWriterVtkXmlBinary::getInstance());
 
@@ -132,7 +132,7 @@ void run(string configname)
 
       mu::Parser fct;
       //fct.SetExpr("U");
-      fct.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^19.538))");
+      fct.SetExpr("U*(1-(((((x2-y0)^2+(x3-z0)^2)^0.5)/R)^19.53824))");
       fct.DefineConst("x0", cx1);
       fct.DefineConst("y0", cx2);
       fct.DefineConst("z0", cx3);
@@ -156,7 +156,7 @@ void run(string configname)
 
       //SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulantLBMKernel());
       SPtr<LBMKernel> kernel = SPtr<LBMKernel>(new CompressibleCumulant4thOrderViscosityLBMKernel());
-      double bulckViscosity = 3400.0*nu_LB;
+      double bulckViscosity = 3700*nu_LB;
       dynamicPointerCast<CompressibleCumulant4thOrderViscosityLBMKernel>(kernel)->setBulkViscosity(bulckViscosity);
       kernel->setBCProcessor(bcProc);
       //////////////////////////////////////////////////////////////////////////
@@ -185,10 +185,9 @@ void run(string configname)
          //geometry
          if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:start");
          SPtr<GbTriFaceMesh3D> inletTubeGeo = SPtr<GbTriFaceMesh3D>(GbTriFaceMesh3DCreator::getInstance()->readMeshFromSTLFile2(pathGeo + inletTubeGeoFile, "inPipeGeo", GbTriFaceMesh3D::KDTREE_SAHPLIT, false));
-         inletTubeGeo->translate(1.37, 0.0, 0.0);
+         inletTubeGeo->translate(offSetOrganPipe, 0.0, 0.0);
          if (myid == 0) UBLOG(logINFO, "Read inlet pipe geometry:end");
          if (myid == 0) GbSystem3D::writeGeoObject(inletTubeGeo.get(), pathOut + "/geo/inletTubeGeo", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<Interactor3D> organPipeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(organPipeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID, Interactor3D::EDGES));
          SPtr<Interactor3D> inletTubeInter = SPtr<D3Q27TriFaceMeshInteractor>(new D3Q27TriFaceMeshInteractor(inletTubeGeo, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
@@ -196,39 +195,30 @@ void run(string configname)
          double startX1it = inletTubeGeo->getX1Minimum();
          //////////////////////////////////////////////////////////////////////////
          //refinement
-         //SPtr<GbObject3D> refineBoxL1(new GbCuboid3D(startX1it-0.8, -1.0, -1.0, startX1it + 1.75 + op_offset, 1.0, 1.0));
+        //refinement
+          //SPtr<GbObject3D> refineBoxL1(new GbCuboid3D(startX1it-0.8, -1.0, -1.0, startX1it + 1.75 + op_offset, 1.0, 1.0));
          //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL1.get(), pathOut + "/geo/refineBoxL1", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<GbObject3D> refineBoxL2(new GbCuboid3D(startX1it-0.38, -0.55, -0.55, startX1it+1.25+op_offset, 0.55, 0.55));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL2.get(), pathOut + "/geo/refineBoxL2", WbWriterVtkXmlBinary::getInstance());
-
-         SPtr<GbObject3D> refineBoxL3(new GbCuboid3D(startX1it-0.25, -0.28, -0.28, startX1it+0.8+op_offset, 0.28, 0.28));
+         SPtr<GbObject3D> refineBoxL3(new GbCuboid3D(startX1it-0.25, -0.28, -0.28, startX1it+0.8+op_offset-0.064, 0.28, 0.28));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL3.get(), pathOut + "/geo/refineBoxL3", WbWriterVtkXmlBinary::getInstance());
-
-         SPtr<GbObject3D> refineBoxL4(new GbCuboid3D(startX1it-0.13, -0.15, -0.15, startX1it + 0.52 + op_offset, 0.15, 0.15));
+         SPtr<GbObject3D> refineBoxL4(new GbCuboid3D(startX1it-0.13, -0.15, -0.15, startX1it + 0.52 + op_offset-0.032, 0.15, 0.15));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL4.get(), pathOut + "/geo/refineBoxL4", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<GbObject3D> refineBoxL5(new GbCuboid3D(startX1it-0.0633, -0.08, -0.08, startX1it + 0.3267 + op_offset, 0.08, 0.08));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL5.get(), pathOut + "/geo/refineBoxL5", WbWriterVtkXmlBinary::getInstance());
-
-         SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(startX1it, -0.042, -0.042, startX1it + 0.2634 + op_offset, 0.042, 0.042));
+         SPtr<GbObject3D> refineBoxL6(new GbCuboid3D(startX1it, -0.042, -0.042, startX1it + 0.2634 + op_offset+0.016, 0.042, 0.042));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL6.get(), pathOut + "/geo/refineBoxL6", WbWriterVtkXmlBinary::getInstance());
-
          //SPtr<GbObject3D> refineBoxL62(new GbCuboid3D(startX1it + 0.1016 + op_offset, -0.0165, 0.0165, startX1it + 0.2634 + op_offset, 0.0165, 0.0365));
          //if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL62.get(), pathOut + "/geo/refineBoxL62", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<GbObject3D> refineBoxL7(new GbCuboid3D(startX1it, -0.03, -0.03, startX1it + 0.1516 + op_offset, 0.03, 0.03));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL7.get(), pathOut + "/geo/refineBoxL7", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<GbObject3D> refineBoxL81(new GbCuboid3D(startX1it, -0.005, -0.005, startX1it + 0.02 + op_offset, 0.005, 0.005));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL81.get(), pathOut + "/geo/refineBoxL81", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<GbObject3D> refineBoxL82(new GbCuboid3D(startX1it + 0.02, -0.0165, -0.0165, startX1it + 0.06 + op_offset, 0.0165, 0.0165));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL82.get(), pathOut + "/geo/refineBoxL82", WbWriterVtkXmlBinary::getInstance());
 
          SPtr<GbObject3D> refineBoxL83(new GbCuboid3D(startX1it+0.06, -0.0165, -0.0165, startX1it + 0.1016 + op_offset, 0.0165, 0.024));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL83.get(), pathOut + "/geo/refineBoxL83", WbWriterVtkXmlBinary::getInstance());
-
          SPtr<GbObject3D> refineBoxL9(new GbCuboid3D(startX1it+0.06, -0.0165, 0.01, startX1it + 0.09 + op_offset, 0.0165, 0.013));
          if (myid == 0) GbSystem3D::writeGeoObject(refineBoxL9.get(), pathOut + "/geo/refineBoxL9", WbWriterVtkXmlBinary::getInstance());
          if (refineLevel > 0)
@@ -250,7 +240,6 @@ void run(string configname)
             refineHelper.refine();
             if (myid == 0) UBLOG(logINFO, "Refinement - end");
          }
-
          //////////////////////////////////////////////////////////////////////////
 
          //walls
@@ -279,7 +268,7 @@ void run(string configname)
          SPtr<D3Q27Interactor> inflowIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflow, grid, velBCAdapter, Interactor3D::SOLID));
 
          //GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-deltaXfine*5.0, 0.0, 0.0, startX1it, 0.0, 0.0, diameter_inlet+deltaXfine*6.0));
-         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it - 0.05, 0.0, 0.0, startX1it, 0.0, 0.0, diameter_inlet + deltaXfine*6.0));
+         GbCylinder3DPtr geoInflowCover(new GbCylinder3D(startX1it-0.05, 0.0, 0.0, startX1it, 0.0, 0.0, 0.006));
          if (myid == 0) GbSystem3D::writeGeoObject(geoInflowCover.get(), pathOut + "/geo/geoInflowCover", WbWriterVtkXmlASCII::getInstance());
          SPtr<D3Q27Interactor> inflowCoverIntr = SPtr<D3Q27Interactor>(new D3Q27Interactor(geoInflowCover, grid, noSlipBCAdapter, Interactor3D::SOLID));
 
@@ -441,8 +430,8 @@ void run(string configname)
       SPtr<UbScheduler> stepMV(new UbScheduler(1, 0, 1000000));
       SPtr<MicrophoneArrayCoProcessor> micCoProcessor(new MicrophoneArrayCoProcessor(grid, stepSch, pathOut, comm));
       std::vector<UbTupleFloat3> nodes;
-      micCoProcessor->addMicrophone(Vector3D(1.43865003014, 0.0, organPipeGeo->getX3Maximum()+0.05));
-      nodes.push_back(UbTupleFloat3(float(1.43865003014), float(0.0), float(organPipeGeo->getX3Maximum()+0.05)));
+      micCoProcessor->addMicrophone(Vector3D(organPipeGeo->getX1Minimum()+0.0719, 0.0, organPipeGeo->getX3Maximum()+0.05));
+      nodes.push_back(UbTupleFloat3(float(organPipeGeo->getX1Minimum()+0.0719), float(0.0), float(organPipeGeo->getX3Maximum()+0.05)));
       micCoProcessor->addMicrophone(Vector3D(organPipeGeo->getX1Maximum()+0.05, 0.0, organPipeGeo->getX3Centroid()));
       nodes.push_back(UbTupleFloat3(float(organPipeGeo->getX1Maximum()+0.05), float(0.0), float(organPipeGeo->getX3Centroid())));
       if (myid==0) WbWriterVtkXmlBinary::getInstance()->writeNodes(pathOut+"/geo/mic", nodes);

@@ -12,7 +12,7 @@ class BCArray3D;
 class SetUndefinedNodesBlockVisitor : public Block3DVisitor
 {
 public:
-   SetUndefinedNodesBlockVisitor(bool twoTypeOfConnectorsCheck = true);
+   SetUndefinedNodesBlockVisitor(bool twoTypeOfConnectorsCheck);
 
    virtual ~SetUndefinedNodesBlockVisitor() {}
 

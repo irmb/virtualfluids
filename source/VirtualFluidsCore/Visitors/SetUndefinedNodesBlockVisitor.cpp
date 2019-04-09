@@ -10,7 +10,7 @@
 #include "ILBMKernel.h"
 
 
-SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor(bool twoTypeOfConectorsCheck) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck) 
+SetUndefinedNodesBlockVisitor::SetUndefinedNodesBlockVisitor(bool twoTypeOfConnectorsCheck) : Block3DVisitor(0, Grid3DSystem::MAXLEVEL), twoTypeOfConnectorsCheck(twoTypeOfConnectorsCheck) 
 {
 
 }
