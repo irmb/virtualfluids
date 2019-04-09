@@ -15,6 +15,7 @@
 
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/FlowStateDataConversion.cuh"
+#include "FlowStateData/ThermalDependencies.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
@@ -219,7 +220,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 	    //dataBase.data[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] = updatedConserved.rhoS_1;
 	    //dataBase.data[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] = updatedConserved.rhoS_2;
     }
-    else if (true)
+    else if (false)
     { 
 	    PrimitiveVariables updatedPrimitive;
 	    ConservedVariables updatedConserved;
@@ -305,6 +306,72 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             Z2 = Z - Z1;
 
             //if(Z2 < zero) abort();
+
+            ///////////////////////////////////////////////////////////////////////////////
+
+            dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)] = Z1 * updatedConserved.rho;
+            dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)] = Z2 * updatedConserved.rho;
+
+            dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
+        }
+    }
+    else if (true)
+    { 
+	    PrimitiveVariables updatedPrimitive;
+	    ConservedVariables updatedConserved;
+
+	    updatedConserved.rho    = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ];
+	    updatedConserved.rhoU   = dataBase.data[ RHO_U(cellIndex, dataBase.numberOfCells) ];
+	    updatedConserved.rhoV   = dataBase.data[ RHO_V(cellIndex, dataBase.numberOfCells) ];
+	    updatedConserved.rhoW   = dataBase.data[ RHO_W(cellIndex, dataBase.numberOfCells) ];
+	    updatedConserved.rhoE   = dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ];
+	    updatedConserved.rhoS_1 = dataBase.data[ RHO_S_1(cellIndex, dataBase.numberOfCells) ];
+	    updatedConserved.rhoS_2 = dataBase.data[ RHO_S_2(cellIndex, dataBase.numberOfCells) ];
+	
+	    updatedPrimitive = toPrimitiveVariables(updatedConserved, parameters.K);
+
+        //////////////////////////////////////////////////////////////////////////
+        
+        real Y_F = updatedPrimitive.S_1;
+        real Y_P = updatedPrimitive.S_2;
+
+        real Y_A = one - Y_F - Y_P;
+
+        real M = one / ( Y_A / M_A
+                       + Y_F / M_F
+                       + Y_P / M_P );
+
+        real X_A = Y_A * M / M_A;
+        real X_F = Y_F * M / M_F;
+        real X_P = Y_P * M / M_P;
+
+        ///////////////////////////////////////////////////////////////////////////////
+
+        real X_O2 = 0.21 * X_A;
+
+        ///////////////////////////////////////////////////////////////////////////////
+
+        {
+            real dX_F = fminf( X_F, c1o2 * X_O2 );
+
+            const real heatOfReaction = real(802310.0); // kJ / kmol
+
+            real dn_F = updatedConserved.rho * dX_F / M;
+
+            real releasedHeat = dn_F * heatOfReaction;
+
+            ///////////////////////////////////////////////////////////////////////////////
+
+            //real X_F_new = X_F - dX_F;
+            //real X_P_new = X_P + dX_F;
+            
+            real X_A_new = X_A - two * dX_F / 0.21;
+            real X_F_new = X_F -       dX_F;
+
+            real X_P_new = one - X_A_new - X_F_new;
+
+            real Z1 = X_F_new * M_F / M;
+            real Z2 = X_P_new * M_P / M;
 
             ///////////////////////////////////////////////////////////////////////////////
 
