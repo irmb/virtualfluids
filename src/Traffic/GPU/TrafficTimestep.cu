@@ -326,9 +326,9 @@ __global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neig
 	//////// brake car /////////////////////////////////////////////////////////////////////////
 	//getGapAfterCar
 	uint gap = maxVelocity;
-	int neighbor = neighbors[index];
-	uint currentCell = index;
 	uint idx = 0;
+	int neighbor = neighbors[index];
+	uint currentCell = index;	
 
 	for (uint i = 0; i < (speed + safetyDistance); i++) {
 
