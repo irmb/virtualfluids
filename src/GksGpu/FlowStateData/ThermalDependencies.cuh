@@ -56,70 +56,7 @@
 #define M_P real(0.0276199095022624)
 #define M_F real(0.016)
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//__host__ __device__ inline void getMassFractions( real Z1, real Z2, 
-//                                                  real& Y_O2, 
-//                                                  real& Y_N2, 
-//                                                  real& Y_CH4, 
-//                                                  real& Y_H2O, 
-//                                                  real& Y_CO2,
-//                                                  real& M )
-//{
-//    real M_O2, M_N2, M_CH4, M_H2O, M_CO2;
-//
-//    getMolarMasses(M_O2, M_N2, M_CH4, M_H2O, M_CO2);
-//
-//    const real Y_CH4_Inflow = real(1.0  );
-//    const real Y_N2_ambient = real(0.767);
-//    const real Y_O2_ambient = real(0.233);
-//
-//    //////////////////////////////////////////////////////////////////////////
-//
-//    const real Z = Z1 + Z2;
-//    
-//    Y_CH4 = Y_CH4_Inflow * Z1;
-//    Y_N2  = (one - Z) * Y_N2_ambient;
-//    Y_O2  = (one - Z) * Y_O2_ambient - two  * ( M_O2  / M_CH4 ) * Y_CH4_Inflow * Z2;
-//    Y_H2O =                            two  * ( M_H2O / M_CH4 ) * Y_CH4_Inflow * Z2;
-//    Y_CO2 =                                   ( M_CO2 / M_CH4 ) * Y_CH4_Inflow * Z2;
-//    
-//    M = one / ( Y_O2  / M_O2
-//              + Y_N2  / M_N2
-//              + Y_CH4 / M_CH4
-//              + Y_H2O / M_H2O
-//              + Y_CO2 / M_CO2 );
-//}
-//
-//__host__ __device__ inline void getMassFractions( const ConservedVariables& cons, 
-//                                                  real& Y_O2, 
-//                                                  real& Y_N2, 
-//                                                  real& Y_CH4, 
-//                                                  real& Y_H2O, 
-//                                                  real& Y_CO2,
-//                                                  real& M )
-//{
-//    getMassFractions(cons.rhoS_1 / cons.rho,
-//                     cons.rhoS_2 / cons.rho,
-//                     Y_O2, Y_N2, Y_CH4, Y_H2O, Y_CO2, 
-//                     M);
-//}
-
-//__host__ __device__ inline void getMassFractions( const PrimitiveVariables& prim, 
-//                                                  real& Y_O2, 
-//                                                  real& Y_N2, 
-//                                                  real& Y_CH4, 
-//                                                  real& Y_H2O, 
-//                                                  real& Y_CO2,
-//                                                  real& M )
-//{
-//    getMassFractions(prim.S_1,
-//                     prim.S_2,
-//                     Y_O2, Y_N2, Y_CH4, Y_H2O, Y_CO2, 
-//                     M);
-//}
+#define T_FAKTOR real(100.0)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,25 +143,29 @@ __host__ __device__ inline void getMoleFractions( const PrimitiveVariables& prim
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline real getCp( const real T,
+__host__ __device__ inline real getCp( real T,
                                        const real X_A, 
                                        const real X_F, 
                                        const real X_P )
 {
+    T *= T_FAKTOR;
+
     return X_A * ( CP_FIT_A_A * T * T * T   +   CP_FIT_A_B * T * T   +   CP_FIT_A_C * T   +   CP_FIT_A_D )
          + X_F * ( CP_FIT_F_A * T * T * T   +   CP_FIT_F_B * T * T   +   CP_FIT_F_C * T   +   CP_FIT_F_D )
          + X_P * ( CP_FIT_P_A * T * T * T   +   CP_FIT_P_B * T * T   +   CP_FIT_P_C * T   +   CP_FIT_P_D );
 }
 
-__host__ __device__ inline real getIntegratedCv( const real T,
+__host__ __device__ inline real getIntegratedCv( real T,
                                                  const real X_A, 
                                                  const real X_F, 
                                                  const real X_P )
 {
+    T *= T_FAKTOR;
+
     return X_A * ( CP_INT_FIT_A_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_A_B ) )
          + X_F * ( CP_INT_FIT_F_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_F_B ) )
          + X_P * ( CP_INT_FIT_P_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_P_B ) )
-         + ( T - CP_INT_FIT_T0 )  * R_U;
+         - ( T - CP_INT_FIT_T0 ) * R_U;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -235,7 +176,9 @@ __host__ __device__ inline real getT( const PrimitiveVariables& prim )
 {
     real M = getMolarMass(prim);
 
-    return M / ( two * prim.lambda * R_U );
+    real T = M / ( two * prim.lambda * R_U );
+
+    return T;
 }
 
 __host__ __device__ inline real getT( const ConservedVariables& cons )
@@ -246,6 +189,8 @@ __host__ __device__ inline real getT( const ConservedVariables& cons )
     getMoleFractions(cons, X_A, X_F, X_P, M);
 
     real Eint = ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) / cons.rho; // J / kg
+
+    Eint -= 100000.0;
 
     real a = X_A * CP_INT_FIT_A_A
            + X_P * CP_INT_FIT_P_A
@@ -263,6 +208,8 @@ __host__ __device__ inline real getT( const ConservedVariables& cons )
 
     real T = c1o2 * mp + sqrt( c1o4 * mp * mp - q );
 
+    T /= T_FAKTOR;
+
     return T;
 }
 
@@ -276,6 +223,8 @@ __host__ __device__ inline real getEint( const PrimitiveVariables& prim )
     real T = getT(prim);
 
     real Eint = getIntegratedCv( T, X_A, X_F, X_P ) / M;
+
+    Eint += 100000.0;
 
     return Eint;
 }

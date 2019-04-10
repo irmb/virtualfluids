@@ -32,7 +32,7 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
     {
         bc->runBoundaryConditionKernel( dataBase, parameters, level );
     }
-
+    
     //////////////////////////////////////////////////////////////////////////
     
     if( !dataBase->communicators.empty() )

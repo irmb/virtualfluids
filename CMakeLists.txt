@@ -163,6 +163,8 @@ IF (HULC.BUILD_VF_GKS)
     #add_subdirectory(targets/apps/GKS/Room)
     #add_subdirectory(targets/apps/GKS/RoomMultiGPU)
     
+    add_subdirectory(targets/apps/GKS/RoomFire)
+    
     add_subdirectory(targets/apps/GKS/MultiGPU)
 ELSE()
   MESSAGE( STATUS "exclude Virtual Fluids GKS." )

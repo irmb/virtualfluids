@@ -354,7 +354,8 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         {
             real dX_F = fminf( X_F, c1o2 * X_O2 );
 
-            const real heatOfReaction = real(802310.0); // kJ / kmol
+            //const real heatOfReaction = real(802310.0); // kJ / kmol
+            const real heatOfReaction = real(100000.0); // kJ / kmol
 
             real dn_F = updatedConserved.rho * dX_F / M;
 
@@ -378,7 +379,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)] = Z1 * updatedConserved.rho;
             dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)] = Z2 * updatedConserved.rho;
 
-            dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
+            //dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
         }
     }
 
