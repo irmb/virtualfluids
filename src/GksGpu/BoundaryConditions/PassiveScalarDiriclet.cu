@@ -142,16 +142,18 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         readCellData( domainCellIdx, dataBase, domainCellData );
         domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
 
-        real dS_1 = ( ( 1.0 - domainCellPrim.S_1 ) ) * parameters.dt;
+        real dS_1 = ( boundaryCondition.S_1 * ( 1.0 - domainCellPrim.S_1 ) ) * parameters.dt;
         
         real x = dataBase.cellCenter[VEC_X(ghostCellIdx, dataBase.numberOfCells)];
         real y = dataBase.cellCenter[VEC_Y(ghostCellIdx, dataBase.numberOfCells)];
 
         real r = sqrt( x * x + y * y );
 
-        if( r > 0.25 ) dS_1 *= four * (c1o2 - r);
+        //if( r > 0.25 ) dS_1 *= four * (c1o2 - r);
 
         domainCellPrim.S_1 += dS_1;
+
+        domainCellPrim.S_2 = 1.0 - domainCellPrim.S_1;
 
         domainCellData = toConservedVariables( domainCellPrim, parameters.K );
 

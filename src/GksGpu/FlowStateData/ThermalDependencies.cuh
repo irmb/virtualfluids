@@ -190,7 +190,7 @@ __host__ __device__ inline real getT( const ConservedVariables& cons )
 
     real Eint = ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) / cons.rho; // J / kg
 
-    Eint -= 100000.0;
+    Eint -= real(100000.0);
 
     real a = X_A * CP_INT_FIT_A_A
            + X_P * CP_INT_FIT_P_A
@@ -224,7 +224,7 @@ __host__ __device__ inline real getEint( const PrimitiveVariables& prim )
 
     real Eint = getIntegratedCv( T, X_A, X_F, X_P ) / M;
 
-    Eint += 100000.0;
+    Eint += real(100000.0);
 
     return Eint;
 }

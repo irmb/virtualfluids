@@ -64,7 +64,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real dx = H / real(nx);
 
 
-    real Ra = 1.0e5;
+    real Ra = 1.0e6;
 
     real Ba  = 0.1;
     real eps = 1.2;
@@ -84,7 +84,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.05;
+    real CFL = 0.01;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -104,7 +104,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     parameters.force.x = 0;
     parameters.force.y = 0;
-    parameters.force.z = 0;-g;
+    parameters.force.z = -g;
 
     parameters.dt = dt;
     parameters.dx = dx;
@@ -134,7 +134,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
     VerticalCylinder cylinder( 0.0, 0.0, 0.0, 0.6, 2.0*H );
-    Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.6 );
+    Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 2.0 );
 
     //gridBuilder->addGrid( &refRegion_1, 1);
     //gridBuilder->addGrid( &refRegion_2, 2);
@@ -211,7 +211,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<PassiveScalarDiriclet>( dataBase, 0.1, 0.0 );
+    SPtr<BoundaryCondition> burner = std::make_shared<PassiveScalarDiriclet>( dataBase, 10.0, 0.0 );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
@@ -244,7 +244,7 @@ void thermalCavity( std::string path, std::string simulationName )
         
         real rhoLocal = rho * std::exp( - ( 2.0 * g * H * prim.lambda ) * cellCenter.z / H );
 
-        //prim.rho = rhoLocal;
+        prim.rho = rhoLocal;
 
         real r = sqrt( cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y + cellCenter.z * cellCenter.z );
 
@@ -282,6 +282,11 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
+        //if( iter < 20000 )
+        //{
+        //    std::dynamic_pointer_cast<PassiveScalarDiriclet>(burner)->S_1 = 1.0 * ( real(iter) / 20000.0 );
+        //}
+
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
@@ -294,7 +299,7 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) ||
             //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter >= 0 && iter % 1000 == 0 )
+            ( iter >= 0 && iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
