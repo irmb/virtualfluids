@@ -41,6 +41,6 @@ protected:
 	real slowStartPossibility;
 	uint maxAcceleration = 1;
 
-	//std::vector<real> conc;
+	std::vector<real> conc; //dispConcFromGPU
 };
 

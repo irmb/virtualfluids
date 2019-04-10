@@ -38,7 +38,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	bool useSlowToStart = true;
 	useLogger = true;
 
-	std::string info = "Basel, without writing vtk";
+	std::string info = "Only Traffic, writing vtk";
 	
 
 
@@ -119,7 +119,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
 	simulator->setMaxAcceleration(maxAcceleration);
 	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
-	if(useLogger) simulator->setUseLogger();
+	if (useLogger) simulator->setUseLogger();
 
 
 	//init ConcentrationOutwriter

@@ -95,7 +95,8 @@ void multipleLevel(const std::string& configPath)
             real dx = 1.2;
             real vx = 0.05;
 
-            TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+            //TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+			TriangularMesh* BaselSTL = TriangularMesh::make("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED.stl");
 
             gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
                                         256.0,  256.0,  160.0, dx);  
@@ -115,23 +116,35 @@ void multipleLevel(const std::string& configPath)
 
             //////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
 
-            SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+			std::string path = "C:/Users/hiwi/BaselDokumente/";
+			std::string inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
+			std::string outputPath = path + "Basel_Ergebnisse/";
+			std::string outputFilename = "Basel_Traffic";
+			std::string gridPath = outputPath + "grids/BaselUni/";
+
+			//Gamling
+            SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
+			gridBuilder->writeGridsToVtk(gridPath);
+
+			//Baumbart
+			//SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+			// gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
+			
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			StreetPointFinder finder;
 
-			finder.readStreets("C:/Users/schoen/Desktop/git/MS/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+			finder.readStreets(inputPath + "Streets.txt");
 
-			finder.writeVTK("E:/temp/Basel2019/results/ExampleStreets.vtk");
+			finder.writeVTK(outputPath + outputFilename + ".vtk");
 
 			finder.findIndicesLB(gridBuilder->getGrid(0));
 
-			finder.writeConnectionVTK("E:/temp/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeConnectionVTK(gridPath + "ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 
-			finder.writeSimulationFile("E:/temp/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			finder.writeSimulationFile(gridPath, 1.0, gridBuilder->getNumberOfLevels(), 0);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

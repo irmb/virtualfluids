@@ -22,6 +22,8 @@ TrafficMovement::TrafficMovement(std::shared_ptr<RoadNetworkData> road, const re
 	checkCurrentForSafetyDistance();
 
 	initDawdle(dawdlePossibility);
+
+	//this->road->conc.resize(this->road->roadLength); //dispConcFromGPU
 }
 
 
@@ -165,16 +167,18 @@ void TrafficMovement::loopTroughTimesteps(uint timeSteps)
 
 void TrafficMovement::calculateTimestep(uint step)
 {
-	
+
 	if (useGPU) {
 
 		//GPU
 
 		copiedDevToHost = false;
 		this->gpuCalculation->run(road);
+
+
 	}
 	else {
-
+		
 		//CPU
 
 		if (concWriter != nullptr) concWriter->resetConcentrations();
@@ -190,8 +194,7 @@ void TrafficMovement::calculateTimestep(uint step)
 		calculateSourceStep();
 
 		switchCurrentNext();
-
-		//if (concWriter != nullptr) concWriter->dispCurrentConcentrations();
+		
 	}
 
 
@@ -200,23 +203,17 @@ void TrafficMovement::calculateTimestep(uint step)
 		display->putCurrentIntoResults(step);
 	}
 
+	////disp current road
 	//if (display != nullptr) {
 	//	if (useGPU) copyDevToHost();
 	//	display->dispCurrentRoad();
-
-	//	////dispConcFromGPU
-	//	//for (auto cell : road->conc) {
-	//	//	if (cell > 0)
-	//	//		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-	//	//	else
-	//	//		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-	//	//	std::cout << std::setw(4) << cell;
-	//	//}
-	//	//std::cout << std::endl;
-	//	//SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 	//}
+	
+	////disp current conc
+	//if (useGPU)	dispCurrentConcFromGPU();
+	//else if (concWriter != nullptr) concWriter->dispCurrentConcentrations();
 
-	currentStep += 1;
+	//currentStep += 1;
 }
 
 
@@ -486,6 +483,21 @@ void TrafficMovement::dispResults() {
 }
 
 
+void TrafficMovement::dispCurrentConcFromGPU()
+{
+	//for (auto cell : road->conc) {
+	//	if (cell > 0)
+	//		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+	//	else
+	//		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+	//	std::cout << std::setw(4) << cell;
+	//}
+	//std::cout << std::endl;
+	//SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+
+
 void TrafficMovement::checkCurrentForSafetyDistance()
 {
 	if (road->safetyDistance > 0) {
@@ -499,7 +511,7 @@ void TrafficMovement::checkCurrentForSafetyDistance()
 						break;
 					if ((*(road->pcurrent))[neighbor] > -1) {
 						std::cerr << "timestep 0: safetyDistance was violated: carIndex: " << i << std::endl;
-						if (useLogger) TrafficLogger::writeError("safetyDistance was violated : carIndex: " + i, 0);
+						if (useLogger) TrafficLogger::writeError("safetyDistance was violated : carIndex: " + std::to_string(i), 0);
 						break;
 					}
 					neighbor = road->neighbors[neighbor];
@@ -534,7 +546,7 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 						break;
 					if ((*(road->pcurrent))[neighbor] > -1) {
 						std::cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << std::endl;
-						if (useLogger) TrafficLogger::writeError("safetyDistance was violated : carIndex: " + i, currentStep);
+						if (useLogger)	TrafficLogger::writeError("safetyDistance was violated : carIndex: " + std::to_string(i), currentStep);
 						break;
 					}
 					else

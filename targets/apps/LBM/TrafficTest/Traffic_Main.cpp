@@ -12,18 +12,11 @@
 int main()
 {
 
-	//Basel
+	////Basel
 	{
-		std::clock_t start;
-		double duration;
-
-		start = std::clock();
-
-
-
-		uint numberOfTimesteps = 1000;
-
-		//TrafficLogger
+		uint numberOfTimesteps = 100;
+		
+		//Stephans Logger
 		logging::Logger::addStream(&std::cout);
 		logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
 		logging::Logger::timeStamp(logging::Logger::ENABLE);
@@ -33,6 +26,11 @@ int main()
 		TrafficMovementFactory * factory = new TrafficMovementFactory();
 		std::string path = "C:/Users/hiwi/BaselDokumente/";
 		factory->initTrafficMovement(path);
+
+		//clock
+		std::clock_t start;
+		double duration;
+		start = std::clock();
 
 		for (uint step = 1; step <= numberOfTimesteps; step++) {
 			factory->calculateTimestep(step);
@@ -45,6 +43,8 @@ int main()
 		factory->endSimulation(numberOfTimesteps, duration);
 
 		std::cout << "Dauer: " << duration << '\n';
+
+		//factory->writeTimestep(numberOfTimesteps);
 	
 	}
 
@@ -53,7 +53,7 @@ int main()
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	//Testcases
+	////Testcases
 
 	//{uint numberOfTimesteps = 20;
 

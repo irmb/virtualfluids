@@ -50,7 +50,7 @@ void TrafficLogger::writeSimulationEnd(uint numRoadCells, uint numTimesteps, dou
 
 	std::string durationString = std::to_string(hours) + " h \t" + std::to_string(minutes) + " m \t" + std::to_string(seconds) + " s";
 
-	instance.file << "Simulation finished: Number of Roadcells : \t" << numRoadCells << "\t total number of timesteps: " << numTimesteps;
+	instance.file << "Simulation finished: Number of roadcells : \t" << numRoadCells << "\t total number of timesteps: " << numTimesteps;
 	instance.file << "\t duration: " << duration << " s" << "\t\t => " << durationString << "\n\n";
 	instance.file.close();
 }

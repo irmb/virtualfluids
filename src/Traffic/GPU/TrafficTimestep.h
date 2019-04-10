@@ -63,7 +63,7 @@ private:
 
 	thrust::device_vector<uint> juncInCellIndices;
 	thrust::device_vector<bool> juncCarCanEnter;
-	thrust::device_vector<int> juncCarsOnJunction;	
+	thrust::device_vector<int> juncCarsOnJunction;
 	thrust::device_vector<uint> juncAlreadyMoved;
 	thrust::device_vector<uint> juncOldSpeeds;
 
@@ -85,12 +85,10 @@ private:
 	//concentrations
 	real * pConcArray;
 
-
 	//curandStates
 	curandState *statesJunctions;
 	curandState *statesSources;
 	curandState *statesRoad;
-
 
 
 public:
@@ -102,7 +100,7 @@ public:
 	void copyCurrentDeviceToHost(std::shared_ptr<RoadNetworkData> road);
 
 private:
-;
+	;
 	//timestep
 	void switchCurrentNext();
 	void resetOutCellIsOpen();
@@ -129,7 +127,7 @@ private:
 	void combineSinkBlockedPossibilities(std::vector<std::shared_ptr<Sink>>& sinks);
 
 	void combineSourcePossibilities(std::vector<std::shared_ptr<Source> > &sources);
-	void combineSourceIndices(std::vector<std::shared_ptr<Source> > &sources);	
+	void combineSourceIndices(std::vector<std::shared_ptr<Source> > &sources);
 };
 
 #endif

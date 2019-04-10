@@ -180,6 +180,7 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    trafficFactory = new TrafficMovementFactory();
    std::string path = "C:/Users/hiwi/BaselDokumente/";
    trafficFactory->initTrafficMovement(path, para->getParH(0)->concentration);
+   //trafficFactory->initTrafficMovement(path, para->getParD(0)->concentration);
 
 
    //////////////////////////////////////////////////////////////////////////
@@ -1070,8 +1071,9 @@ void Simulation::run()
 				if (t % 100 == 0)
 				{
 					trafficFactory->calculateTimestep(t / 100);
-					trafficFactory->writeTimestep(t);
 					para->cudaCopyConcFile(0);
+					if (t % 1000 == 0)
+					trafficFactory->writeTimestep(t);					
 				}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

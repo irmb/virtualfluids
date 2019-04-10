@@ -191,8 +191,8 @@ int JunctionRandom::chooseOutCell(int index)
 	else
 		outCellsTemp = data.possibleOutCells;
 
+	if (outCellsTemp.size() == 0) return -1;
 	int random = generateRandomOutCellIndex(castSizeT_Uint(outCellsTemp.size()));
-	if (random < 0) return -1;
 
 	int outCell = outCellsTemp[random];
 	data.possibleOutCells.erase(std::remove(data.possibleOutCells.begin(), data.possibleOutCells.end(), outCell), data.possibleOutCells.end());
@@ -202,20 +202,10 @@ int JunctionRandom::chooseOutCell(int index)
 
 int JunctionRandom::generateRandomOutCellIndex(uint outCellsTempSize)
 {
-	int random = 1000;
+	if (outCellsTempSize == 0)
+		return 0;
 
-	switch (outCellsTempSize) {
-	case 0:
-		random = -1;
-		break;
-	case 1:
-		random = 0;
-		break;
-	default:
-		random = static_cast<int>(std::floor(data.distFloat(data.engine) * outCellsTempSize));
-	}
-
-	return random;
+	return static_cast<int>(std::floor(data.distFloat(data.engine) * outCellsTempSize));
 }
 
 void JunctionRandom::writeConcentrations(TrafficMovement& road)

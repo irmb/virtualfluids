@@ -88,6 +88,7 @@ private:
 
 	//disp
 	void dispResults();
+	void dispCurrentConcFromGPU();
 
 	//pollution
 	void writeConcentration(uint index, uint oldSpeed);
