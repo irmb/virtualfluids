@@ -6,7 +6,7 @@
 
 
 JunctionInReader::JunctionInReader(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell, uint trafficLightSwitchTime = 0) :
-	inCells{ inCells }, outCells{ outCells }, carCanNotEnterThisOutCell{ carCanNotEnterThisOutCell }, trafficLightSwitchTime{trafficLightSwitchTime}
+	inCells{ inCells }, outCells{ outCells }, carCanNotEnterThisOutCell{ carCanNotEnterThisOutCell }, trafficLightSwitchTime{ trafficLightSwitchTime }
 {}
 
 void JunctionReader::readJunctions(std::string filename, StreetPointFinder streetPointFinder)
@@ -22,8 +22,9 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 	file >> numberOfJunctions;
 
 	std::string inOutDummy;
-	int streetIndex;
+	int streetIndex = 0;
 	uint trafficLightTime = 0;
+	bool onlyNeighbors = false;
 
 	file >> inOutDummy;
 
@@ -32,7 +33,7 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 		std::vector<int> carCanNotEnterThisOutCell;
 
 		//inCells
-		file >> inOutDummy;	
+		file >> inOutDummy;
 		while (inOutDummy.compare("out") != 0) {
 			streetIndex = std::stoi(inOutDummy);
 
@@ -44,7 +45,7 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 
 		//outCells
 		file >> inOutDummy;
-		while (inOutDummy.compare("in") != 0 && inOutDummy.compare("end") !=0 && inOutDummy.compare("t") != 0) {
+		while (inOutDummy.compare("in") != 0 && inOutDummy.compare("end") != 0 && inOutDummy.compare("t") != 0 && inOutDummy.compare("c") != 0) {
 			streetIndex = std::stoi(inOutDummy);
 
 			if (streetIndex >= 0) {
@@ -67,8 +68,24 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 		else
 			trafficLightTime = 0;
 
+		// only neighbors (used for curves)
+		if (inOutDummy.compare("c") == 0) {
+			onlyNeighbors = true;
+		}
+
 		//make Junction
-		junctions.push_back(JunctionInReader(inCells, outCells, carCanNotEnterThisOutCell, trafficLightTime));
+		if (onlyNeighbors) {
+			if (inCells.size() == outCells.size()) {
+				specialNeighbors.cells.insert(specialNeighbors.cells.end(), inCells.begin(), inCells.end());
+				std::reverse(outCells.begin(), outCells.end());
+				specialNeighbors.neighbors.insert(specialNeighbors.neighbors.end(), outCells.begin(), outCells.end());
+				onlyNeighbors = false;
+			}
+			else std::cerr << "can't add curve" << std::endl; continue;
+		}
+		else
+			junctions.push_back(JunctionInReader(inCells, outCells, carCanNotEnterThisOutCell, trafficLightTime));
+
 	}
 }
 

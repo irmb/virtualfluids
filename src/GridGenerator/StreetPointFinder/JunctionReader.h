@@ -21,9 +21,18 @@ struct VF_PUBLIC JunctionInReader
 };
 
 
+struct VF_PUBLIC Neighbors
+{
+	std::vector<int> cells;
+	std::vector<int> neighbors;
+};
+
+
+
 struct VF_PUBLIC JunctionReader
 {
 	std::vector<JunctionInReader> junctions;
+	Neighbors specialNeighbors;
 	StreetPointFinder streetPointFinder;
 
 	void readJunctions(std::string filename, StreetPointFinder streetPointFinder);

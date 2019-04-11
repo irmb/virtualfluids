@@ -213,7 +213,7 @@ void TrafficMovement::calculateTimestep(uint step)
 	//if (useGPU)	dispCurrentConcFromGPU();
 	//else if (concWriter != nullptr) concWriter->dispCurrentConcentrations();
 
-	//currentStep += 1;
+	currentStep += 1;
 }
 
 

@@ -34,7 +34,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.3;
 
-	bool useGPU = true;
+	bool useGPU = false;
 	bool useSlowToStart = true;
 	useLogger = true;
 
@@ -113,6 +113,12 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 		junctions[i]->setCellIndexForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
 	}
 	roadNetwork->setJunctions(move(junctions));
+
+
+	//set neighbors for curves
+	for (uint i = 0; i < junctionReader.specialNeighbors.cells.size(); i++) {
+		roadNetwork->setNeighbor(junctionReader.specialNeighbors.cells[i], junctionReader.specialNeighbors.neighbors[i]);
+	}
 
 
 	//init TrafficMovement
