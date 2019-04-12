@@ -15,7 +15,7 @@ int main()
 	//////Basel
 	{
 		uint numberOfTimesteps = 14400;
-		bool useGPU = true;
+		bool useGPU = false;
 		
 
 		//Stephans Logger
@@ -48,7 +48,7 @@ int main()
 		duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 
 		factory->endSimulation(numberOfTimesteps, duration);
-
+         
 		std::cout << "Dauer: " << duration << '\n';
 
 		factory->writeTimestep(numberOfTimesteps);	

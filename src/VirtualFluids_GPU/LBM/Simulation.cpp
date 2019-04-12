@@ -177,12 +177,15 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
-   trafficFactory = new TrafficMovementFactory();
+   this->useTrafficGPU = true;
    std::string path = "C:/Users/hiwi/BaselDokumente/";
+
+   trafficFactory = new TrafficMovementFactory();
+
    if (useTrafficGPU) 
-	   trafficFactory->initTrafficMovement(path, para->getParD(0)->concentration);
+	   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration);
    else
-	   trafficFactory->initTrafficMovement(path, para->getParH(0)->concentration);
+	   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration);
 
    //////////////////////////////////////////////////////////////////////////
    //Allocate Memory for Drag Lift Calculation

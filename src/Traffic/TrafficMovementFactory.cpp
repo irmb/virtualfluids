@@ -35,7 +35,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.3;
 
-	this->useGPU = true;
+	this->useGPU = useGPU;
 	bool useSlowToStart = true;
 	useLogger = true;
 
