@@ -10,15 +10,15 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VF_PUBLIC SinkInReader{
+struct VF_PUBLIC SinkReaderData{
 	uint sinkIndex;
 	float sinkBlockedPossibility;
-	SinkInReader(uint sinkIndex, float sinkBlockedPossibility);
+	SinkReaderData(uint sinkIndex, float sinkBlockedPossibility);
 };
 
 struct VF_PUBLIC SinkReader
 {
-	std::vector<SinkInReader> sinks;
+	std::vector<SinkReaderData> sinks;
 	StreetPointFinder streetPointFinder;
 
 	void readSinks(std::string filename, StreetPointFinder streetPointFinder);

@@ -10,14 +10,14 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VF_PUBLIC JunctionInReader
+struct VF_PUBLIC JunctionReaderData
 {
 	std::vector<uint> inCells;
 	std::vector<uint> outCells;
 	std::vector<int> carCanNotEnterThisOutCell;
 	uint trafficLightSwitchTime;
 
-	JunctionInReader(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell, uint trafficLightSwitchTime);
+	JunctionReaderData(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell, uint trafficLightSwitchTime);
 };
 
 
@@ -31,7 +31,7 @@ struct VF_PUBLIC Neighbors
 
 struct VF_PUBLIC JunctionReader
 {
-	std::vector<JunctionInReader> junctions;
+	std::vector<JunctionReaderData> junctions;
 	Neighbors specialNeighbors;
 	StreetPointFinder streetPointFinder;
 

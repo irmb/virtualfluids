@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-SinkInReader::SinkInReader(uint sinkIndex, float sinkBlockedPossibility) :
+SinkReaderData::SinkReaderData(uint sinkIndex, float sinkBlockedPossibility) :
 	sinkIndex{ sinkIndex }, sinkBlockedPossibility{ sinkBlockedPossibility }
 {}
 
@@ -26,7 +26,7 @@ void SinkReader::readSinks(std::string filename, StreetPointFinder streetPointFi
 
 	for (uint i = 0; i < numberOfSinks; i++) {
 		file >> streetIndex >> sinkBlockedPossibility;
-		sinks.push_back(SinkInReader(getCellIndexEnd(streetIndex), sinkBlockedPossibility));
+		sinks.push_back(SinkReaderData(getCellIndexEnd(streetIndex), sinkBlockedPossibility));
 	}
 }
 

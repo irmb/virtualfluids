@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-SourceInReader::SourceInReader(unsigned int sourceIndex, float sourcePossibility):
+SourceReaderData::SourceReaderData(unsigned int sourceIndex, float sourcePossibility):
 	sourceIndex{sourceIndex}, sourcePossibility{sourcePossibility}
 {}
 
@@ -27,7 +27,7 @@ void SourceReader::readSources(std::string filename, StreetPointFinder streetPoi
 
 	for (uint i = 0; i < numberOfSources; i++) {
 		file >> streetIndex  >> sourcePossibility;
-		sources.push_back(SourceInReader(getCellIndexStart(streetIndex), sourcePossibility));
+		sources.push_back(SourceReaderData(getCellIndexStart(streetIndex), sourcePossibility));
 	}
 }
 

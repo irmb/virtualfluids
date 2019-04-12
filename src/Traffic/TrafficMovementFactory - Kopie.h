@@ -1,12 +1,12 @@
 # pragma once
 
 #include <VirtualFluidsDefinitions.h>
+#include "Core/DataTypes.h"
 
 #include <vector>
 #include <memory>
 
 #include "TrafficMovementFactory.h"
-#include "Core/DataTypes.h"
 #include "GridGenerator/StreetPointFinder/StreetPointFinder.h"
 
 

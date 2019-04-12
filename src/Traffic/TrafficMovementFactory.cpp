@@ -21,6 +21,7 @@ TrafficMovementFactory::TrafficMovementFactory()
 {
 }
 
+
 void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcArray)
 {
 	//Variables
@@ -34,11 +35,11 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.3;
 
-	bool useGPU = false;
+	bool useGPU = true;
 	bool useSlowToStart = true;
 	useLogger = true;
 
-	std::string info = "Only Traffic, writing vtk";
+	std::string info = "Only Traffic, full writing";
 	
 
 
@@ -58,7 +59,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	}
 
 
-	//StreetPointFinder M:\Basel2019  C:\Users\schoen\Desktop\git\MS2
+	//StreetPointFinder M:/Basel2019  C:/Users/schoen/Desktop/git/MS2
 	//finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 	//finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
 	finder.readStreets(inputPath + "Streets.txt");
@@ -110,7 +111,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	std::vector <std::unique_ptr<Junction> > junctions;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
 		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
-		junctions[i]->setCellIndexForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		junctions[i]->setCellIndecesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
 	}
 	roadNetwork->setJunctions(move(junctions));
 

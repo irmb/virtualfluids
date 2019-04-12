@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <iomanip>	//formatting output streams
-#include <windows.h> //for colourful console output
+
+#include "Utilities/ConsoleColor.h"
 
 void ConcentrationOutwriter::resetConcentrations()
 {
@@ -51,16 +52,16 @@ void ConcentrationOutwriter::dispCurrentConcentrations()
 
 
 	std::cout << std::endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-}
 
+	ConsoleColor::setDefaultWhite();
+}
 
 
 void ConcentrationOutwriter::dispSingleConcentration(real conc)
 {
 	if (conc > 0)
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+		ConsoleColor::setBrightRed();
 	else
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+		ConsoleColor::setDarkGrey();
 	std::cout << std::setw(4) << conc;
 }

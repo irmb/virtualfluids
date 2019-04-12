@@ -3,11 +3,11 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>	//formatting output streams
-#include <windows.h> //for colourful console output
 #include <stdexcept>
 
 #include "Utilities/VectorHelper.h"
 #include "Utilities/safe_casting.h"
+#include "Utilities/ConsoleColor.h"
 
 CarDisplay::CarDisplay(std::vector<int> **pcurrent, const uint safetyDistance):
 	safetyDistance{ safetyDistance }
@@ -104,14 +104,14 @@ void CarDisplay::dispResults(const std::vector<int> * neighbors, const std::vect
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // set output default white 7;
+	ConsoleColor::setDefaultWhite();
 }
 
 
 void CarDisplay::dispJunctionsAtCell(uint index, const  std::vector<std::shared_ptr<Junction> > & junctions)  const
 {
 	for (auto& junc : junctions) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // set output default white 7;
+		ConsoleColor::setDefaultWhite();
 		junc->dispJunction(index, roadLength);
 	}
 }
@@ -121,7 +121,7 @@ void CarDisplay::dispSinksAtCell(uint index, const std::vector<std::shared_ptr<S
 {
 	for (auto& sink : sinks) {
 		if (sink->getIndex() == roadLength - index - 1) {
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12); //set output bright green 10, bright red 12
+			ConsoleColor::setBrightRed();
 			std::cout << std::setw(4) << 1 - (sink->getPossibilityBeingBlocked());
 			return;
 		}
@@ -134,7 +134,7 @@ void CarDisplay::dispSourcesAtCell(uint index, const  std::vector<std::shared_pt
 {
 	for (auto& source : sources) {
 		if (source->getIndex() == roadLength - index - 1) {
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); //set output bright green 10, bright red 12
+			ConsoleColor::setBrightRed();
 			std::cout << std::setw(4) << source->getPossibility();
 			return;
 		}

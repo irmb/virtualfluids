@@ -1,5 +1,10 @@
 #include "VectorHelper.h"
 
+#include <iostream>
+#include <iomanip>	//formatting output streams
+
+#include "ConsoleColor.h"
+
 void VectorHelper::fillVector(std::vector<int> &vector, int insertNumber) {
 	fill(vector.begin(), vector.end(), insertNumber);
 }
@@ -36,7 +41,7 @@ void VectorHelper::dispVectorColour(const std::vector<int> &vector)
 		std::cout << std::setw(4) << number;
 	}
 	std::cout << std::endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // set output default white 7;
+	ConsoleColor::setDefaultWhite();
 }
 
 void VectorHelper::dispVectorColour(const std::vector<std::vector<int>>& vector)
@@ -49,23 +54,23 @@ void VectorHelper::dispVectorColour(const std::vector<std::vector<int>>& vector)
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); // set output default white 7;
+	ConsoleColor::setDefaultWhite();
 }
 
 void VectorHelper::makeVectorOutputColourful(int outputNumber)
 {
 	switch (outputNumber) {
 	case -1:
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8); //set output dark grey 8, dark blue 1, black 0;
+		ConsoleColor::setDarkGrey();
 		break;
 	case 0:
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12); //set output bright green 10, bright red 12;
+		ConsoleColor::setBrightRed();
 		break;
 	case -5:
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0); //set output dark grey 8, dark blue 1, black 0;
+		ConsoleColor::setBlack();
 		break;
 	default:
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); //set output bright green 10, bright red 12;
+		ConsoleColor::setBrightGreen();
 	}
 
 }

@@ -4,7 +4,6 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-
 #include "Source/Source.h"
 #include "Sink/Sink.h"
 #include "Junction/Junction.h"

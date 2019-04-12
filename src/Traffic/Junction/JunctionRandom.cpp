@@ -1,6 +1,7 @@
 #include "JunctionRandom.h"
 
 #include <iostream>
+#include <iomanip> //formatting output streams
 #include <algorithm> //used for find()
 #include <math.h> //used for floor()
 
@@ -33,7 +34,7 @@ JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std
 }
 
 
-void JunctionRandom::setCellIndexForNoUTurn(std::vector<int> carCanNotEnterThisOutCell)
+void JunctionRandom::setCellIndecesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell)
 {
 	try {
 

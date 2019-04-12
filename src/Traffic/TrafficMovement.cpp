@@ -9,7 +9,6 @@
 #include "Output/ConcentrationOutwriter.h"
 #include "Output/CarDisplay.h"
 #include "Utilities/Logger.h"
-
 #include "GPU/TrafficTimestep.h"
 
 TrafficMovement::TrafficMovement(std::shared_ptr<RoadNetworkData> road, const real dawdlePossibility)
@@ -532,14 +531,15 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 {
 	if (useGPU) copyDevToHost();
 
-	road->currentWithLongVehicles = *(road->pcurrent);
+	int speed;
 
 	if (road->safetyDistance != 0) {
 		for (uint i = 0; i < road->roadLength; i++) {
-			if ((*(road->pcurrent))[i] > -1) {
+			speed = (*(road->pcurrent))[i];
+			road->currentWithLongVehicles[i] = speed;
+			if (speed > -1) {
 				//checkSpeed((*(road->pcurrent))[i]);
 				int neighbor = road->neighbors[i];
-
 				for (uint j = 1; j <= road->safetyDistance; j++) {
 
 					if (neighbor <= -1000)
@@ -550,8 +550,9 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 						break;
 					}
 					else
-						(road->currentWithLongVehicles)[neighbor] = (*(road->pcurrent))[i];
+						(road->currentWithLongVehicles)[neighbor] = speed;					
 					neighbor = road->neighbors[neighbor];
+					i++;
 				}
 			}
 		}

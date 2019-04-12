@@ -2,6 +2,9 @@
 
 #include "SourceRandom.h"
 
+#include <iostream>
+
+#include "Utilities/invalidInput_error.h"
 
 SourceRandom::SourceRandom(const uint sourceIndex, const real sourcePossibility, uint maxVelocity) 
 {

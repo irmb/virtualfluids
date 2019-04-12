@@ -16,7 +16,6 @@ private:
 public:	
 	TrafficLogger() {};
 	TrafficLogger(const TrafficLogger& logger) {}
-	//	TrafficLogger& operator = (const TrafficLogger& logger) {};
 	static void startLogger(std::string filename);
 
 	static void writeSimulationStart(std::string info, bool useGPU);

@@ -10,15 +10,15 @@
 
 #include <VirtualFluidsDefinitions.h>
 
-struct VF_PUBLIC SourceInReader {
+struct VF_PUBLIC SourceReaderData {
 	unsigned int sourceIndex;
 	float sourcePossibility;
-	SourceInReader(unsigned int sourceIndex, float sourcePossibility);
+	SourceReaderData(unsigned int sourceIndex, float sourcePossibility);
 };
 
 struct VF_PUBLIC SourceReader
 {
-	std::vector<SourceInReader> sources;
+	std::vector<SourceReaderData> sources;
 	StreetPointFinder streetPointFinder;
 
 	void readSources(std::string filename, StreetPointFinder streetPointFinder);

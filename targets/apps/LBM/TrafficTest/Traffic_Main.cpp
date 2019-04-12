@@ -12,9 +12,9 @@
 int main()
 {
 
-	////Basel
+	//////Basel
 	{
-		uint numberOfTimesteps = 100;
+		uint numberOfTimesteps = 1000;
 		
 		//Stephans Logger
 		logging::Logger::addStream(&std::cout);

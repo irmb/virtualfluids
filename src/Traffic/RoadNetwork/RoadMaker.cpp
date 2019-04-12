@@ -1,8 +1,11 @@
 #include "RoadMaker.h"
 
+#include <iostream>
+
 #include "Utilities/VectorHelper.h"
 #include "Utilities/invalidInput_error.h"
 #include "Utilities/safe_casting.h"
+
 
 //random vehicle Distribution
 RoadMaker::RoadMaker(const uint roadLength, const uint maxVelocity, uint vehicleLength, const real vehicleDensity)

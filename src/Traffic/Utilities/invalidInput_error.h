@@ -2,7 +2,6 @@
 #include <VirtualFluidsDefinitions.h>
 
 // using standard exceptions
-#include <iostream>
 #include <stdexcept>
 
 class VF_PUBLIC invalidInput_error :

@@ -1,5 +1,7 @@
 #include "SinkRandom.h"
 
+#include <iostream>
+
 #include "Utilities/invalidInput_error.h"
 
 SinkRandom::SinkRandom(uint sinkIndex, real sinkBlockedPossibility)

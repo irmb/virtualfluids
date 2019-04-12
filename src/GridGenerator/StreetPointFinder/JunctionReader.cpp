@@ -5,7 +5,7 @@
 #include <string>
 
 
-JunctionInReader::JunctionInReader(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell, uint trafficLightSwitchTime = 0) :
+JunctionReaderData::JunctionReaderData(std::vector<uint> inCells, std::vector<uint> outCells, std::vector<int> carCanNotEnterThisOutCell, uint trafficLightSwitchTime = 0) :
 	inCells{ inCells }, outCells{ outCells }, carCanNotEnterThisOutCell{ carCanNotEnterThisOutCell }, trafficLightSwitchTime{ trafficLightSwitchTime }
 {}
 
@@ -71,11 +71,13 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 		// only neighbors (used for curves)
 		if (inOutDummy.compare("c") == 0) {
 			onlyNeighbors = true;
+			file >> inOutDummy;
 		}
 
-		//make Junction
+
+		//make Junction or neighbors
 		if (onlyNeighbors) {
-			if (inCells.size() == outCells.size()) {
+			if (inCells.size() == 2 && outCells.size()==2) {
 				specialNeighbors.cells.insert(specialNeighbors.cells.end(), inCells.begin(), inCells.end());
 				std::reverse(outCells.begin(), outCells.end());
 				specialNeighbors.neighbors.insert(specialNeighbors.neighbors.end(), outCells.begin(), outCells.end());
@@ -84,7 +86,7 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder stree
 			else std::cerr << "can't add curve" << std::endl; continue;
 		}
 		else
-			junctions.push_back(JunctionInReader(inCells, outCells, carCanNotEnterThisOutCell, trafficLightTime));
+			junctions.push_back(JunctionReaderData(inCells, outCells, carCanNotEnterThisOutCell, trafficLightTime));
 
 	}
 }

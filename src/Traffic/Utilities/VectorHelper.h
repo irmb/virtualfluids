@@ -1,9 +1,6 @@
 #pragma once
-#include <vector>
-#include <iostream>
 
-#include <windows.h> //for colourful console output
-#include <iomanip>	//formatting output streams
+#include <vector>
 
 #include <VirtualFluidsDefinitions.h>
 #include "Core/DataTypes.h"
@@ -11,7 +8,6 @@
 class VF_PUBLIC VectorHelper
 {
 public:
-
 	static void fillVector(std::vector<int>& vector, int insertNumber);
 	static void fillVector(std::vector<std::vector<int> > &vector, int insertNumber);
 
