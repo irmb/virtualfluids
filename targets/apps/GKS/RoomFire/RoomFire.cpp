@@ -64,7 +64,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real dx = H / real(nx);
 
 
-    real Ra = 1.0e6;
+    real Ra = 1.0e7;
 
     real Ba  = 0.1;
     real eps = 2.0;
@@ -84,7 +84,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.125;
+    real CFL = 0.25;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
