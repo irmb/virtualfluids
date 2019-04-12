@@ -16,9 +16,10 @@ class VF_PUBLIC TrafficMovementFactory
 public:
 	TrafficMovementFactory();
 	~TrafficMovementFactory() {};
-	virtual void initTrafficMovement(std::string path, real * pConcArray = nullptr);
+	virtual void initTrafficMovement(std::string path, bool useGPU, real * pConcArray = nullptr);
 	virtual void calculateTimestep(uint step);
 	virtual void writeTimestep(uint stepForVTK);
+	void writeReducedTimestep(uint stepForVTK);
 	virtual void endSimulation(uint numTimesteps, double duration);
 
 protected:
@@ -29,6 +30,7 @@ protected:
 	std::string outputPath;
 	std::string outputFilename;
 	const std::vector<int>* cars;
-	bool useLogger;
 
+	bool useLogger;
+	bool useGPU;
 };

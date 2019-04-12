@@ -91,6 +91,7 @@ protected:
 	EnstrophyAnalyzer *enstrophyWriter;
 	////////////////////////////////////////////////////////////////////////////
 	TrafficMovementFactory *trafficFactory;
+	bool useTrafficGPU;
 
  };
 #endif

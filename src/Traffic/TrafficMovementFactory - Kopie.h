@@ -15,7 +15,7 @@ class VF_PUBLIC TrafficMovementFactoryTest :
 public:
 	TrafficMovementFactoryTest() {};
 	~TrafficMovementFactoryTest() {};
-	virtual void initTrafficMovement(real * pConcArray = nullptr);
+	virtual void initTrafficMovement(bool useGPU, real * pConcArray = nullptr);
 	virtual void calculateTimestep(uint step, uint stepForVTK);
 	void loopThroughTimesteps(uint timeSteps);
 };

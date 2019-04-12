@@ -22,7 +22,7 @@ TrafficMovementFactory::TrafficMovementFactory()
 }
 
 
-void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcArray)
+void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU,  real * pConcArray)
 {
 	//Variables
 
@@ -35,7 +35,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	real dawdlePossibility = (real) 0.2; //typical value: 0.2
 	real slowToStartPossibility = (real) 0.3;
 
-	bool useGPU = true;
+	this->useGPU = true;
 	bool useSlowToStart = true;
 	useLogger = true;
 
@@ -55,7 +55,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 	//TrafficLogger	
 	if (useLogger) {
 		TrafficLogger::startLogger(logfile);
-		TrafficLogger::writeSimulationStart(info, useGPU);
+		TrafficLogger::writeSimulationStart(info, this->useGPU);
 	}
 
 
@@ -130,7 +130,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 
 
 	//init ConcentrationOutwriter
-	if (!useGPU) {
+	if (!this->useGPU) {
 		std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
 		simulator->setConcentrationOutwriter(move(writer));
 	}
@@ -147,7 +147,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, real * pConcA
 
 
 	//GPU
-	if (useGPU) simulator->setUseGPU(pConcArray);
+	if (this->useGPU) simulator->setUseGPU(pConcArray);
 }
 
 
@@ -163,6 +163,14 @@ void TrafficMovementFactory::writeTimestep(uint stepForVTK)
 	simulator->visualizeVehicleLengthForVTK();
 	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
+
+
+void TrafficMovementFactory::writeReducedTimestep(uint stepForVTK)
+{
+	simulator->visualizeVehicleLengthForVTK();
+	finder.writeReducedVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+}
+
 
 void TrafficMovementFactory::endSimulation(uint numTimesteps, double duration)
 {

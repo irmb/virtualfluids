@@ -14,7 +14,8 @@ int main()
 
 	//////Basel
 	{
-		uint numberOfTimesteps = 1000;
+		uint numberOfTimesteps = 100;
+		bool useGPU = true;
 		
 		//Stephans Logger
 		logging::Logger::addStream(&std::cout);
@@ -22,10 +23,9 @@ int main()
 		logging::Logger::timeStamp(logging::Logger::ENABLE);
 		logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-
 		TrafficMovementFactory * factory = new TrafficMovementFactory();
 		std::string path = "C:/Users/hiwi/BaselDokumente/";
-		factory->initTrafficMovement(path);
+		factory->initTrafficMovement(path, useGPU);
 
 		//clock
 		std::clock_t start;
@@ -44,8 +44,7 @@ int main()
 
 		std::cout << "Dauer: " << duration << '\n';
 
-		//factory->writeTimestep(numberOfTimesteps);
-	
+		//factory->writeTimestep(numberOfTimesteps);	
 	}
 
 
@@ -58,7 +57,7 @@ int main()
 	//{uint numberOfTimesteps = 20;
 
 	//TrafficMovementFactoryTest * factory = new TrafficMovementFactoryTest();
-	//factory->initTrafficMovement();
+	//factory->initTrafficMovement(useGPU);
 	//factory->loopThroughTimesteps(numberOfTimesteps);
 
 	//std::cout << std::endl << std::endl; }

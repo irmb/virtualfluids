@@ -195,19 +195,72 @@ void StreetPointFinder::findIndicesLB(SPtr<Grid> grid)
 void StreetPointFinder::writeVTK(std::string filename, const std::vector<int>& cars)
 {
 	uint numberOfCells = 0;
-	uint numberOfNodes = 0;
-
-	for (auto& street : streets)
-	{
-		numberOfCells += street.numberOfCells;
-		numberOfNodes += street.numberOfCells + 1;
-	}
 
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::writeVTK( " << filename << " )" << "\n";
 
 	std::ofstream file;
 
 	file.open(filename);
+
+	prepareWriteVTK(file, numberOfCells);
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "FIELD Label " << 3 << std::endl;
+
+	//////////////////////////////////////////////////////////////////////////
+
+	writeStreetsVTK(file, numberOfCells);
+
+	writeLengthsVTK(file, numberOfCells);
+
+	writeCarsVTK(file, numberOfCells, cars);
+
+	////////////////////////////////////////////////////////////////////////////
+
+	file.close();
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+
+void StreetPointFinder::writeReducedVTK(std::string filename, const std::vector<int>& cars)
+{
+	uint numberOfCells = 0;
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::writeVTK( " << filename << " )" << "\n";
+
+	std::ofstream file;
+
+	file.open(filename);
+
+	prepareWriteVTK(file, numberOfCells);
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "FIELD Label " << 1 << std::endl;
+
+	//////////////////////////////////////////////////////////////////////////
+
+	writeCarsVTK(file, numberOfCells, cars);
+
+	////////////////////////////////////////////////////////////////////////////
+
+	file.close();
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void StreetPointFinder::prepareWriteVTK(std::ofstream & file, uint & numberOfCells)
+{
+
+	uint numberOfNodes = 0;
+
+	for (auto& street : streets)
+	{
+		numberOfCells += street.numberOfCells;
+		numberOfNodes += street.numberOfCells + 1;
+	}	
 
 	file << "# vtk DataFile Version 3.0\n";
 	file << "by MeshGenerator\n";
@@ -251,11 +304,11 @@ void StreetPointFinder::writeVTK(std::string filename, const std::vector<int>& c
 	//////////////////////////////////////////////////////////////////////////
 
 	file << "\nCELL_DATA " << numberOfCells << std::endl;
+}
 
-	file << "FIELD Label " << 3 << std::endl;
 
-	//////////////////////////////////////////////////////////////////////////
-
+void StreetPointFinder::writeStreetsVTK(std::ofstream & file, uint numberOfCells)
+{
 	file << "StreetIndex 1 " << numberOfCells << " int" << std::endl;
 
 	uint streetIndex = 0;
@@ -267,24 +320,12 @@ void StreetPointFinder::writeVTK(std::string filename, const std::vector<int>& c
 		}
 		streetIndex++;
 	}
+}
 
-	//////////////////////////////////////////////////////////////////////////
 
-	file << "length 1 " << numberOfCells << " float" << std::endl;
 
-	for (auto& street : streets)
-	{
-		for (uint i = 0; i < street.numberOfCells; i++)
-		{
-			real length = std::sqrt((street.getCoordinateX(i) - street.getCoordinateX(0)) * (street.getCoordinateX(i) - street.getCoordinateX(0))
-				+ (street.getCoordinateY(i) - street.getCoordinateY(0)) * (street.getCoordinateY(i) - street.getCoordinateY(0)));
-
-			file << length << std::endl;
-		}
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-
+void StreetPointFinder::writeCarsVTK(std::ofstream& file, uint numberOfCells, const std::vector<int>& cars)
+{
 	file << "Cars 1 " << numberOfCells << " float" << std::endl;
 
 	uint index = 0;
@@ -299,12 +340,23 @@ void StreetPointFinder::writeVTK(std::string filename, const std::vector<int>& c
 			index++;
 		}
 	}
+}
 
-	//////////////////////////////////////////////////////////////////////////
 
-	file.close();
+void StreetPointFinder::writeLengthsVTK(std::ofstream & file, uint numberOfCells)
+{
+	file << "length 1 " << numberOfCells << " float" << std::endl;
 
-	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+	for (auto& street : streets)
+	{
+		for (uint i = 0; i < street.numberOfCells; i++)
+		{
+			real length = std::sqrt((street.getCoordinateX(i) - street.getCoordinateX(0)) * (street.getCoordinateX(i) - street.getCoordinateX(0))
+				+ (street.getCoordinateY(i) - street.getCoordinateY(0)) * (street.getCoordinateY(i) - street.getCoordinateY(0)));
+
+			file << length << std::endl;
+		}
+	}
 }
 
 

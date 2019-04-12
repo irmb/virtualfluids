@@ -50,6 +50,16 @@ struct VF_PUBLIC StreetPointFinder
 
 	void writeVTK(std::string filename, const std::vector<int>& cars = std::vector<int>());
 
+	void writeReducedVTK(std::string filename, const std::vector<int>& cars = std::vector<int>());
+
+	void prepareWriteVTK(std::ofstream& file, uint & numberOfCells);
+
+	void writeCarsVTK(std::ofstream& file, uint numberOfCells, const std::vector<int>& cars);
+
+	void writeLengthsVTK(std::ofstream& file, uint numberOfCells);
+
+	void writeStreetsVTK(std::ofstream& file, uint numberOfCells);
+
     void writeConnectionVTK(std::string filename, SPtr<Grid> grid);
 
     void writeSimulationFile( std::string gridPath, real concentration, uint numberOfLevels, uint level );
