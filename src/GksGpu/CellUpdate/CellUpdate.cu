@@ -315,7 +315,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
         }
     }
-    else if (false)
+    else if (true)
     { 
 	    PrimitiveVariables updatedPrimitive;
 	    ConservedVariables updatedConserved;
@@ -379,7 +379,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)] = Z1 * updatedConserved.rho;
             dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)] = Z2 * updatedConserved.rho;
 
-            dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
+            //dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
         }
     }
 

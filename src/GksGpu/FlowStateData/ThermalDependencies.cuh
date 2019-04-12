@@ -143,30 +143,30 @@ __host__ __device__ inline void getMoleFractions( const PrimitiveVariables& prim
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline real getCp( real T,
-                                       const real X_A, 
-                                       const real X_F, 
-                                       const real X_P )
-{
-    T *= T_FAKTOR;
-
-    return X_A * ( CP_FIT_A_A * T * T * T   +   CP_FIT_A_B * T * T   +   CP_FIT_A_C * T   +   CP_FIT_A_D )
-         + X_F * ( CP_FIT_F_A * T * T * T   +   CP_FIT_F_B * T * T   +   CP_FIT_F_C * T   +   CP_FIT_F_D )
-         + X_P * ( CP_FIT_P_A * T * T * T   +   CP_FIT_P_B * T * T   +   CP_FIT_P_C * T   +   CP_FIT_P_D );
-}
-
-__host__ __device__ inline real getIntegratedCv( real T,
-                                                 const real X_A, 
-                                                 const real X_F, 
-                                                 const real X_P )
-{
-    T *= T_FAKTOR;
-
-    return X_A * ( CP_INT_FIT_A_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_A_B ) )
-         + X_F * ( CP_INT_FIT_F_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_F_B ) )
-         + X_P * ( CP_INT_FIT_P_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_P_B ) )
-         - ( T - CP_INT_FIT_T0 ) * R_U;
-}
+//__host__ __device__ inline real getCp( real T,
+//                                       const real X_A, 
+//                                       const real X_F, 
+//                                       const real X_P )
+//{
+//    T *= T_FAKTOR;
+//
+//    return X_A * ( CP_FIT_A_A * T * T * T   +   CP_FIT_A_B * T * T   +   CP_FIT_A_C * T   +   CP_FIT_A_D )
+//         + X_F * ( CP_FIT_F_A * T * T * T   +   CP_FIT_F_B * T * T   +   CP_FIT_F_C * T   +   CP_FIT_F_D )
+//         + X_P * ( CP_FIT_P_A * T * T * T   +   CP_FIT_P_B * T * T   +   CP_FIT_P_C * T   +   CP_FIT_P_D );
+//}
+//
+//__host__ __device__ inline real getIntegratedCv( real T,
+//                                                 const real X_A, 
+//                                                 const real X_F, 
+//                                                 const real X_P )
+//{
+//    T *= T_FAKTOR;
+//
+//    return X_A * ( CP_INT_FIT_A_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_A_B ) )
+//         + X_F * ( CP_INT_FIT_F_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_F_B ) )
+//         + X_P * ( CP_INT_FIT_P_A * ( T - CP_INT_FIT_T0 ) * ( T - CP_INT_FIT_P_B ) )
+//         - ( T - CP_INT_FIT_T0 ) * R_U;
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,101 +174,103 @@ __host__ __device__ inline real getIntegratedCv( real T,
 
 __host__ __device__ inline real getT( const PrimitiveVariables& prim )
 {
-    real M = getMolarMass(prim);
+    //real M = getMolarMass(prim);
+    real M = M_A;
 
     real T = M / ( two * prim.lambda * R_U );
 
     return T;
 }
 
-__host__ __device__ inline real getT( const ConservedVariables& cons )
-{
-    real X_A, X_F, X_P;
-    real M;
-
-    getMoleFractions(cons, X_A, X_F, X_P, M);
-
-    real Eint = ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) / cons.rho; // J / kg
-
-    Eint -= real(100000.0);
-
-    real a = X_A * CP_INT_FIT_A_A
-           + X_P * CP_INT_FIT_P_A
-           + X_F * CP_INT_FIT_F_A;
-
-    real mp = ( X_A * CP_INT_FIT_A_A * ( CP_INT_FIT_T0 + CP_INT_FIT_A_B )
-              + X_P * CP_INT_FIT_P_A * ( CP_INT_FIT_T0 + CP_INT_FIT_P_B )
-              + X_F * CP_INT_FIT_F_A * ( CP_INT_FIT_T0 + CP_INT_FIT_F_B ) 
-              + R_U ) / a;
-
-    real q  = ( X_A * CP_INT_FIT_T0 * CP_INT_FIT_A_A * CP_INT_FIT_A_B
-              + X_P * CP_INT_FIT_T0 * CP_INT_FIT_P_A * CP_INT_FIT_P_B
-              + X_F * CP_INT_FIT_T0 * CP_INT_FIT_F_A * CP_INT_FIT_F_B
-              - Eint * M + CP_INT_FIT_T0 * R_U ) / a;
-
-    real T = c1o2 * mp + sqrt( c1o4 * mp * mp - q );
-
-    T /= T_FAKTOR;
-
-    return T;
-}
-
-__host__ __device__ inline real getEint( const PrimitiveVariables& prim )
-{
-    real X_A, X_F, X_P;
-    real M;
-
-    getMoleFractions(prim, X_A, X_F, X_P, M);
-
-    real T = getT(prim);
-
-    real Eint = getIntegratedCv( T, X_A, X_F, X_P ) / M;
-
-    Eint += real(100000.0);
-
-    return Eint;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-__host__ __device__ inline real getK( const real T,
-                                      const real X_A, 
-                                      const real X_F, 
-                                      const real X_P )
-{
-    return two * getCp( T, X_A, X_F, X_P ) / R_U - five;
-}
-
-__host__ __device__ inline real getK( const ConservedVariables& cons )
-{
-    real T = getT(cons);
-
-    real X_A, X_F, X_P;
-    real M;
-
-    getMoleFractions(cons, X_A, X_F, X_P, M);
-
-    return getK(T, X_A, X_F, X_P);
-}
+//__host__ __device__ inline real getT( const ConservedVariables& cons )
+//{
+//    real X_A, X_F, X_P;
+//    real M;
+//
+//    getMoleFractions(cons, X_A, X_F, X_P, M);
+//
+//    real Eint = ( cons.rhoE - c1o2 * ( cons.rhoU * cons.rhoU + cons.rhoV * cons.rhoV + cons.rhoW * cons.rhoW ) / cons.rho ) / cons.rho; // J / kg
+//
+//    Eint -= real(100000.0);
+//
+//    real a = X_A * CP_INT_FIT_A_A
+//           + X_P * CP_INT_FIT_P_A
+//           + X_F * CP_INT_FIT_F_A;
+//
+//    real mp = ( X_A * CP_INT_FIT_A_A * ( CP_INT_FIT_T0 + CP_INT_FIT_A_B )
+//              + X_P * CP_INT_FIT_P_A * ( CP_INT_FIT_T0 + CP_INT_FIT_P_B )
+//              + X_F * CP_INT_FIT_F_A * ( CP_INT_FIT_T0 + CP_INT_FIT_F_B ) 
+//              + R_U ) / a;
+//
+//    real q  = ( X_A * CP_INT_FIT_T0 * CP_INT_FIT_A_A * CP_INT_FIT_A_B
+//              + X_P * CP_INT_FIT_T0 * CP_INT_FIT_P_A * CP_INT_FIT_P_B
+//              + X_F * CP_INT_FIT_T0 * CP_INT_FIT_F_A * CP_INT_FIT_F_B
+//              - Eint * M + CP_INT_FIT_T0 * R_U ) / a;
+//
+//    real T = c1o2 * mp + sqrt( c1o4 * mp * mp - q );
+//
+//    T /= T_FAKTOR;
+//
+//    return T;
+//}
+//
+//__host__ __device__ inline real getEint( const PrimitiveVariables& prim )
+//{
+//    real X_A, X_F, X_P;
+//    real M;
+//
+//    getMoleFractions(prim, X_A, X_F, X_P, M);
+//
+//    real T = getT(prim);
+//
+//    real Eint = getIntegratedCv( T, X_A, X_F, X_P ) / M;
+//
+//    Eint += real(100000.0);
+//
+//    return Eint;
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-__host__ __device__ inline real getlambda( const ConservedVariables& cons )
-{
-    real M = getMolarMass(cons);
+//__host__ __device__ inline real getK( const real T,
+//                                      const real X_A, 
+//                                      const real X_F, 
+//                                      const real X_P )
+//{
+//    return two * getCp( T, X_A, X_F, X_P ) / R_U - five;
+//}
+//
+//__host__ __device__ inline real getK( const ConservedVariables& cons )
+//{
+//    real T = getT(cons);
+//
+//    real X_A, X_F, X_P;
+//    real M;
+//
+//    getMoleFractions(cons, X_A, X_F, X_P, M);
+//
+//    return getK(T, X_A, X_F, X_P);
+//}
 
-    real T = getT(cons);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    return M / ( two * T * R_U );
-}
+//__host__ __device__ inline real getlambda( const ConservedVariables& cons )
+//{
+//    real M = getMolarMass(cons);
+//
+//    real T = getT(cons);
+//
+//    return M / ( two * T * R_U );
+//}
 
 __host__ __device__ inline void setLambdaFromT( PrimitiveVariables& prim, real T )
 {
-    real M = getMolarMass(prim);
+    //real M = getMolarMass(prim);
+    real M = M_A;
 
     prim.lambda =  M / ( two * T * R_U );
 }
