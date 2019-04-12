@@ -69,7 +69,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real rho = 1.2;
     
     real p = 101325.0;
-    real T = 298.0;
+    real T = 298.0 / T_FAKTOR;
 
     real mu = 1.0e-1;
 
@@ -78,7 +78,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //real CFL = 0.8;
 
-    real dt  = 0.5e-5; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
+    real dt  = 0.25e-5; //CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     //*logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
@@ -114,13 +114,13 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx, -0.5*dx,  
-                                0.5*L,  0.5*dx,  0.5*dx, dx);
+    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx, -0.5*dx,  
+    //                            0.5*L,  0.5*dx,  0.5*dx, dx);
 
-    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  -0.5*L,  
-    //                            0.5*L,  0.5*L,   0.5*L, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.125*L,  -0.125*L,  
+                                0.5*L,  0.125*L,   0.125*L, dx);
 
-    gridBuilder->setPeriodicBoundaryCondition(true, true, true);
+    gridBuilder->setPeriodicBoundaryCondition(true, false, false);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -140,7 +140,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(0);
+    CudaUtility::setCudaDevice(1);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -151,10 +151,9 @@ void thermalCavity( std::string path, std::string simulationName )
     
     //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambdaCold );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<Pressure>( dataBase, 0.5 * rho / lambdaCold );
 
     SPtr<BoundaryCondition> bcMX = std::make_shared<Periodic>( dataBase );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Periodic>( dataBase );
@@ -164,35 +163,37 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
+
     //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
     //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
 
-    //bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
-    //bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
+    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.125*L; } );
+    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.125*L; } );
 
-    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
-    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
+    //bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
+    //bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
 
     //////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot, false );
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
 
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
+    //SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
     
-    //bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
-    //bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.125*L; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.125*L; } );
 
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*dx; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*dx; } );
+    //bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*dx; } );
+    //bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*dx; } );
 
     //////////////////////////////////////////////////////////////////////////
     

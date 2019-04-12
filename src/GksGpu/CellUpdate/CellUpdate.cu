@@ -315,7 +315,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
         }
     }
-    else if (true)
+    else if (false)
     { 
 	    PrimitiveVariables updatedPrimitive;
 	    ConservedVariables updatedConserved;
@@ -354,8 +354,8 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         {
             real dX_F = fminf( X_F, c1o2 * X_O2 );
 
-            //const real heatOfReaction = real(802310.0); // kJ / kmol
-            const real heatOfReaction = real(200000.0); // kJ / kmol
+            const real heatOfReaction = real(802310.0); // kJ / kmol
+            //const real heatOfReaction = real(200000.0); // kJ / kmol
 
             real dn_F = updatedConserved.rho * dX_F / M;
 

@@ -53,13 +53,13 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 64;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real L = 4.0;
     real H = 4.0;
-    real W = 0.5;
+    real W = 0.125;
 
     real dx = H / real(nx);
 
@@ -67,7 +67,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real Ra = 1.0e6;
 
     real Ba  = 0.1;
-    real eps = 1.2;
+    real eps = 2.0;
     real Pr  = 0.71;
     real K   = 2.0;
     
@@ -77,14 +77,14 @@ void thermalCavity( std::string path, std::string simulationName )
     //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, 0.02884 / ( 2.0 * 300 * 8.314 ) );
 
-    setLambdaFromT( prim, 3.0 );
+    setLambdaFromT( prim, 300.0 / T_FAKTOR );
     
     real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.01;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -127,8 +127,8 @@ void thermalCavity( std::string path, std::string simulationName )
     //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
     //                            0.5*L,  0.5*L,  H  , dx);
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*W,  0.0,  
-                                0.5*L,  0.5*W,  H  , dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx,  0.0,  
+                                0.5*L,  0.5*dx,  H  , dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -143,7 +143,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     gridBuilder->setNumberOfLayers(4,10);
     
-    gridBuilder->addGrid( &box, 2 );
+    //gridBuilder->addGrid( &box, 2 );
     //gridBuilder->addGrid( &sphere, 2 );
     //gridBuilder->addGrid( &cylinder, 2 );
 
@@ -194,8 +194,8 @@ void thermalCavity( std::string path, std::string simulationName )
     //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
     //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
 
-    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*W; } );
-    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*W; } );
+    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
+    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
     //bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
     //bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
 
@@ -211,7 +211,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> burner = std::make_shared<PassiveScalarDiriclet>( dataBase, 10.0, 0.0 );
+    SPtr<BoundaryCondition> burner = std::make_shared<PassiveScalarDiriclet>( dataBase, 1.0, 0.0 );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
@@ -282,10 +282,14 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        //if( iter < 20000 )
-        //{
-        //    std::dynamic_pointer_cast<PassiveScalarDiriclet>(burner)->S_1 = 1.0 * ( real(iter) / 20000.0 );
-        //}
+        if( iter < 40000 )
+        {
+            //std::dynamic_pointer_cast<PassiveScalarDiriclet>(burner)->S_1 = 10.0 * ( real(iter) / 20000.0 );
+
+            //parameters.mu = mu + 0.01 * ( 1.0 - ( real(iter) / 20000.0 ) );
+
+            parameters.dt = 0.2 * dt + ( dt - 0.2 * dt ) * ( real(iter) / 40000.0 );
+        }
 
         cupsAnalyzer.run( iter );
 

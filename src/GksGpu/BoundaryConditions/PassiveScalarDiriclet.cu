@@ -83,71 +83,29 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
                                                           const uint index)
 {
 #ifdef USE_PASSIVE_SCALAR
-    uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
-    uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //real ghostCell_rhoS_1;
-    //real ghostCell_rhoS_2;
-
-    //PrimitiveVariables ghostCellPrim;
-    //{
-    //    PrimitiveVariables domainCellPrim;
-    //    PrimitiveVariables secondCellPrim;
-
-    //    {
-    //        ConservedVariables domainCellData;
-    //        readCellData( domainCellIdx, dataBase, domainCellData );
-    //        domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
-    //    }
-
-    //    real rho = dataBase.data[RHO__(ghostCellIdx, dataBase.numberOfCells)];
-
-    //    ghostCell_rhoS_1 = rho * ( two * boundaryCondition.S_1 - domainCellPrim.S_1 );
-    //    ghostCell_rhoS_2 = rho * ( two * boundaryCondition.S_2 - domainCellPrim.S_2 );
-
-    //    //ghostCell_rhoS_1 = rho * domainCellPrim.S_1;
-    //    //ghostCell_rhoS_2 = rho * domainCellPrim.S_2;
-    //}
-
-    //{
-    //    real x = dataBase.cellCenter[VEC_X(ghostCellIdx, dataBase.numberOfCells)];
-    //    real y = dataBase.cellCenter[VEC_Y(ghostCellIdx, dataBase.numberOfCells)];
-
-    //    real r = sqrt( x * x + y * y );
-
-    //    if( r > 0.25 )
-    //    {
-    //        ghostCell_rhoS_1 *= four * (c1o2 - r);
-    //        ghostCell_rhoS_2 *= four * (c1o2 - r);
-    //    }
-    //}
-
-    //{
-    //    dataBase.data[RHO_S_1(ghostCellIdx, dataBase.numberOfCells)] = ghostCell_rhoS_1;
-    //    dataBase.data[RHO_S_2(ghostCellIdx, dataBase.numberOfCells)] = ghostCell_rhoS_2;
-    //}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    {
+    if(false){
+        uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
+        uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
+
         PrimitiveVariables domainCellPrim;
 
         ConservedVariables domainCellData;
         readCellData( domainCellIdx, dataBase, domainCellData );
         domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
 
+        //////////////////////////////////////////////////////////////////////////
+
         real dS_1 = ( boundaryCondition.S_1 * ( 1.0 - domainCellPrim.S_1 ) ) * parameters.dt;
         
-        real x = dataBase.cellCenter[VEC_X(ghostCellIdx, dataBase.numberOfCells)];
-        real y = dataBase.cellCenter[VEC_Y(ghostCellIdx, dataBase.numberOfCells)];
+        //real x = dataBase.cellCenter[VEC_X(ghostCellIdx, dataBase.numberOfCells)];
+        //real y = dataBase.cellCenter[VEC_Y(ghostCellIdx, dataBase.numberOfCells)];
 
-        real r = sqrt( x * x + y * y );
+        //real r = sqrt( x * x + y * y );
 
         //if( r > 0.25 ) dS_1 *= four * (c1o2 - r);
 
@@ -155,9 +113,68 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         domainCellPrim.S_2 = 1.0 - domainCellPrim.S_1;
 
-        domainCellData = toConservedVariables( domainCellPrim, parameters.K );
+        //////////////////////////////////////////////////////////////////////////
 
+        domainCellData = toConservedVariables( domainCellPrim, parameters.K );
         writeCellData(domainCellIdx, dataBase, domainCellData);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    if(true){
+        uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
+        uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
+        uint secondCellIdx = boundaryCondition.secondCells[ startIndex + index ];
+
+        PrimitiveVariables ghostCellPrim;
+        PrimitiveVariables domainCellPrim;
+        PrimitiveVariables secondCellPrim;
+
+        {
+            ConservedVariables domainCellData;
+            readCellData( domainCellIdx, dataBase, domainCellData );
+            domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
+
+            ConservedVariables secondCellData;
+            if( secondCellIdx != INVALID_INDEX ){
+                readCellData( secondCellIdx, dataBase, secondCellData );
+                secondCellPrim = toPrimitiveVariables( secondCellData, parameters.K );
+            }
+        }
+
+        ghostCellPrim.U      = - domainCellPrim.U;
+        ghostCellPrim.V      = - domainCellPrim.V;
+        ghostCellPrim.W      = - domainCellPrim.W;
+    #ifdef USE_PASSIVE_SCALAR
+        ghostCellPrim.S_1    = two * boundaryCondition.S_1 - domainCellPrim.S_1;
+        ghostCellPrim.S_2    = two * boundaryCondition.S_2 - domainCellPrim.S_2;
+    #endif // USE_PASSIVE_SCALAR
+
+        //////////////////////////////////////////////////////////////////////////
+
+        real T = getT(domainCellPrim);
+
+        setLambdaFromT(ghostCellPrim, T);
+
+        //////////////////////////////////////////////////////////////////////////
+
+        if( secondCellIdx != INVALID_INDEX ){
+            real p1 = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
+            real p2 = c1o2 * secondCellPrim.rho / secondCellPrim.lambda;
+
+            ghostCellPrim.rho = two * ( two * p1 - p2 ) * ghostCellPrim.lambda;
+        }
+        else{
+            real p = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
+
+            ghostCellPrim.rho = two * p * ghostCellPrim.lambda;
+        }
+
+        ConservedVariables ghostCons = toConservedVariables( ghostCellPrim, parameters.K );
+
+        writeCellData( ghostCellIdx, dataBase, ghostCons );
     }
 
 
@@ -178,6 +195,6 @@ bool PassiveScalarDiriclet::isWall()
 
 bool PassiveScalarDiriclet::secondCellsNeeded()
 {
-    return false;
+    return true;
 }
 
