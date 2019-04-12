@@ -39,7 +39,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	bool useSlowToStart = true;
 	useLogger = true;
 
-	std::string info = "Only Traffic, full writing";
+	std::string info = "Only Traffic";
 	
 
 
