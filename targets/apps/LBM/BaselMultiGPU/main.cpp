@@ -59,8 +59,8 @@
 void multipleLevel(const std::string& configPath)
 {
     //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    logging::Logger::addStream(&logFile);
+    //std::ofstream logFile( "grid/gridGeneratorLog.txt" );
+    //logging::Logger::addStream(&logFile);
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -87,116 +87,103 @@ void multipleLevel(const std::string& configPath)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	const uint generatePart = comm->getPID();
 
-    bool useGridGenerator = false;
+    std::ofstream logFile2;
+    logFile2.open(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/gridGeneratorLog.txt" );
+
+	logging::Logger::addStream(&logFile2);
+
+    bool useGridGenerator = true;
 
     if(useGridGenerator){
+        real dx = 1.0;
+        real vx = 0.05;
 
-            real dx = 1.2;
-            real vx = 0.05;
+        TriangularMesh* BaselSTL;
 
-<<<<<<< HEAD
-            //TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
-			TriangularMesh* BaselSTL = TriangularMesh::make("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED.stl");
-=======
-            //TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
-			TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
->>>>>>> origin/development/Martin
+		if (generatePart == 0)
+			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		if (generatePart == 1)
+			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl");
+		if (generatePart == 2)
+			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl");
+		if (generatePart == 3)
+			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl");
 
-            gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
-                                        256.0,  256.0,  160.0, dx);  
+		real lengthInXDirection = 512.0;
+		real lengthInYDirection = 512.0;
+		real lengthInXDirectionOverlap = 520.0;
+		real lengthInYDirectionOverlap = 520.0;
+		real centerInX;
+		real centerInY;
 
-            gridBuilder->addGeometry(BaselSTL);
+		if (generatePart == 0){	centerInX =    0.0;	centerInY =   0.0;}
+		if (generatePart == 1){	centerInX = -512.0;	centerInY =   0.0;}
+		if (generatePart == 2){	centerInX = -512.0;	centerInY = 512.0;}
+		if (generatePart == 3){	centerInX =    0.0;	centerInY = 512.0;}
 
-			//Forcing
-			//gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-			//no Forcing
-			//gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-			//Merged for Wind in X Direction
-			gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+		gridBuilder->addCoarseGrid( (centerInX - lengthInXDirectionOverlap * 0.5), (centerInY - lengthInYDirectionOverlap * 0.5), -8.0,
+									(centerInX + lengthInXDirectionOverlap * 0.5), (centerInY + lengthInYDirectionOverlap * 0.5),  160.0, dx);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+        gridBuilder->addGeometry(BaselSTL);
 
-            //////////////////////////////////////////////////////////////////////////
+		gridBuilder->setSubDomainBox(std::make_shared<BoundingBox>( (centerInX - lengthInXDirection * 0.5), (centerInX + lengthInXDirection * 0.5),
+																	(centerInY - lengthInYDirection * 0.5), (centerInY + lengthInYDirection * 0.5),
+																	-200.0, 200.0));
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+		gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+        gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
-			//no forcing
-			gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
-			gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
+		//////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
+		uint xNeighborRank, yNeighborRank;
+		if (generatePart == 0) { xNeighborRank = 1; yNeighborRank = 3; }
+		if (generatePart == 1) { xNeighborRank = 0; yNeighborRank = 2; }
+		if (generatePart == 2) { xNeighborRank = 3; yNeighborRank = 1; }
+		if (generatePart == 3) { xNeighborRank = 2; yNeighborRank = 0; }
 
-			std::string path = "C:/Users/hiwi/BaselDokumente/";
-			std::string inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
-			std::string outputPath = path + "Basel_Ergebnisse/";
-			std::string outputFilename = "Basel_Traffic";
-			std::string gridPath = outputPath + "grids/BaselUni/";
+		gridBuilder->findCommunicationIndices(CommunicationDirections::PX);
+		gridBuilder->setCommunicationProcess (CommunicationDirections::PX, xNeighborRank);
+		gridBuilder->findCommunicationIndices(CommunicationDirections::MX);
+		gridBuilder->setCommunicationProcess (CommunicationDirections::MX, xNeighborRank);
+		gridBuilder->findCommunicationIndices(CommunicationDirections::PY);
+		gridBuilder->setCommunicationProcess (CommunicationDirections::PY, yNeighborRank);
+		gridBuilder->findCommunicationIndices(CommunicationDirections::MY);
+		gridBuilder->setCommunicationProcess (CommunicationDirections::MY, yNeighborRank);
 
-			//Gamling
-            SimulationFileWriter::write(gridPath, gridBuilder, FILEFORMAT::BINARY);
-			gridBuilder->writeGridsToVtk(gridPath);
+		//////////////////////////////////////////////////////////////////////////
 
-			//Baumbart
-			//SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
-			// gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
-			
-=======
-			gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-			gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
+        gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
 
-			//////////////////////////////////////////////////////////////////////////
-			//Forcing
-			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
-            //SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
-			//no Forcing
-			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid");
-			//SimulationFileWriter::write("M:/Basel2019/grids/BaselUniNoForcing/", gridBuilder, FILEFORMAT::BINARY);
-			//Merged for Wind in X Direction
-			gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid");
-			SimulationFileWriter::write("M:/Basel2019/grids/BaselUniMergedX/", gridBuilder, FILEFORMAT::BINARY);
->>>>>>> origin/development/Martin
+        gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (generatePart == 0 || generatePart == 3) gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+		if (generatePart == 1 || generatePart == 2)	gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+		if (generatePart == 2 || generatePart == 3) gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
+		if (generatePart == 0 || generatePart == 1) gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
+		//////////////////////////////////////////////////////////////////////////
+
+		gridBuilder->writeGridsToVtk(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/Basel_Grid");
+		SimulationFileWriter::write(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart )+ "/", gridBuilder, FILEFORMAT::BINARY);
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		if (generatePart == 0) {
 			StreetPointFinder finder;
-
-<<<<<<< HEAD
-			finder.readStreets(inputPath + "Streets.txt");
-
-			finder.writeVTK(outputPath + outputFilename + ".vtk");
-
-			finder.findIndicesLB(gridBuilder->getGrid(0));
-
-			finder.writeConnectionVTK(gridPath + "ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-
-			finder.writeSimulationFile(gridPath, 1.0, gridBuilder->getNumberOfLevels(), 0);
-
-=======
 			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
-
-			finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
-
+			//finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
 			finder.findIndicesLB(gridBuilder->getGrid(0));
+			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeSimulationFile(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			//Forcing
-			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-			//no Forcing
-			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUniNoForcing/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-			//Merged for Wind in X Direction
-			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			finder.writeSimulationFile("M:/Basel2019/grids/BaselUniMergedX/", 1.0, gridBuilder->getNumberOfLevels(), 0);
->>>>>>> origin/development/Martin
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		return;
 
-			return;
-
-            gridGenerator = GridGenerator::make(gridBuilder, para);
+        gridGenerator = GridGenerator::make(gridBuilder, para);
 
     }
     else
@@ -205,7 +192,7 @@ void multipleLevel(const std::string& configPath)
         //gridGenerator = GridReader::make(FileFormat::ASCII, para);
     }
 
-    logFile.close();
+    logFile2.close();
 
     //return;
 
@@ -258,9 +245,8 @@ int main( int argc, char* argv[])
             try
             {
 				//multipleLevel("E:/temp/Basel2019/config/configBasel.txt"); //Tesla03
-				//multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
+				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
-				multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt"); //Gamling
             }
             catch (const std::exception& e)
             {
