@@ -3,13 +3,9 @@
 
 #include <vector>
 #include <memory>
-#include <random>
-#include <thrust/device_vector.h>
 
+#include <thrust/device_vector.h>
 #include <curand_kernel.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
-#include <helper_cuda.h>
 
 #include <VirtualFluidsDefinitions.h>
 #include "Core/PointerDefinitions.h"

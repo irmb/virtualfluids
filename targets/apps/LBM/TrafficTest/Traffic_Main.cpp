@@ -14,7 +14,7 @@ int main()
 
 	//////Basel
 	{
-		uint numberOfTimesteps = 14400;
+		uint numberOfTimesteps = 1000;
 		bool useGPU = false;
 		
 
@@ -40,9 +40,8 @@ int main()
 		//loop through timestep
 		for (uint step = 1; step <= numberOfTimesteps; step++) {
 			factory->calculateTimestep(step);
-			//factory->writeTimestep(step);
-		}
-		
+			factory->writeTimestep(step);
+		}		
 
 		//end simulation
 		duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;

@@ -531,12 +531,12 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 {
 	if (useGPU) copyDevToHost();
 
+	road->currentWithLongVehicles = *(road->pcurrent);
 	int speed;
 
 	if (road->safetyDistance != 0) {
 		for (uint i = 0; i < road->roadLength; i++) {
 			speed = (*(road->pcurrent))[i];
-			road->currentWithLongVehicles[i] = speed;
 			if (speed > -1) {
 				//checkSpeed((*(road->pcurrent))[i]);
 				int neighbor = road->neighbors[i];
@@ -546,13 +546,13 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 						break;
 					if ((*(road->pcurrent))[neighbor] > -1) {
 						std::cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << std::endl;
+						std::cin.get();
 						if (useLogger)	TrafficLogger::writeError("safetyDistance was violated : carIndex: " + std::to_string(i), currentStep);
 						break;
 					}
 					else
 						(road->currentWithLongVehicles)[neighbor] = speed;					
 					neighbor = road->neighbors[neighbor];
-					i++;
 				}
 			}
 		}

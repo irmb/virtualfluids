@@ -4,14 +4,10 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 
-
 #include <cmath>
 #include <sstream>
 
-#include <thrust/device_vector.h>
 #include <thrust/reduce.h>
-#include <thrust/device_ptr.h>
-#include <thrust/host_vector.h>
 
 #include <iomanip>
 
