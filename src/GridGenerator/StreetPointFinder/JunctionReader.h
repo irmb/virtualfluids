@@ -33,9 +33,9 @@ struct VF_PUBLIC JunctionReader
 {
 	std::vector<JunctionReaderData> junctions;
 	Neighbors specialNeighbors;
-	StreetPointFinder streetPointFinder;
+	StreetPointFinder* streetPointFinder;
 
-	void readJunctions(std::string filename, StreetPointFinder streetPointFinder);
+	void readJunctions(std::string filename, StreetPointFinder* streetPointFinder);
 
 
 private:

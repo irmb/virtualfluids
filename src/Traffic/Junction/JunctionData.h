@@ -22,6 +22,7 @@ public:
 	std::vector<uint> oldSpeeds;
 
 	uint trafficLightSwitchTime; //no TrafficLight: 0
+	uint halfNumStreets;
 
 	std::mt19937 engine = RandomHelper::make_engine();
 	std::uniform_real_distribution<float> distFloat{ 0.0, 1.0 };

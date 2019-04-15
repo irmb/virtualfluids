@@ -49,9 +49,9 @@ private:
 	int chooseOutCell(int index);
 	int generateRandomOutCellIndex(uint outCellsTempSize);
 
-	void generateRedTrafficLights(uint currentTimestep);
-	void turnFirstHalfRed(uint currentTimestep, uint halfNumStreets);
-	void turnSecondHalfRed(uint currentTimestep, uint halfNumStreets);
+	void calculateTrafficLightTimeStep(uint currentTimestep);
+	void turnFirstHalfRed(uint currentTimestep);
+	void turnSecondHalfRed(uint currentTimestep);
 
 
 	void writeConcentrations(TrafficMovement &road);

@@ -14,8 +14,6 @@
 
 JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices, uint trafficLightSwitchTime)
 {
-	this->data.trafficLightSwitchTime = trafficLightSwitchTime;
-
 	data.inCellIndices = inCellIndices;
 	data.outCellIndices = outCellIndices;
 
@@ -31,6 +29,9 @@ JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std
 	std::fill(data.alreadyMoved.begin(), data.alreadyMoved.end(), 0);
 
 	data.oldSpeeds.resize(inRoads);
+
+	this->data.trafficLightSwitchTime = trafficLightSwitchTime;
+	data.halfNumStreets = static_cast<uint>(std::floor(static_cast<float>(data.inCellIndices.size()) * 0.5f));
 }
 
 
@@ -99,40 +100,38 @@ void JunctionRandom::calculateTimeStep(TrafficMovement& road, uint currentTimest
 	}
 	writeConcentrations(road);
 
-	generateRedTrafficLights(currentTimestep);
+	calculateTrafficLightTimeStep(currentTimestep);
 }
 
 
-void JunctionRandom::generateRedTrafficLights(uint currentTimestep)
+void JunctionRandom::calculateTrafficLightTimeStep(uint currentTimestep)
 {
 	if (data.trafficLightSwitchTime > 0) {
-		uint halfNumStreets = static_cast<uint>(std::floor(static_cast<float>(data.inCellIndices.size()) * 0.5f));
-
 		if (static_cast<uint>(std::floor(static_cast<float>(currentTimestep) / static_cast<float>(data.trafficLightSwitchTime))) % 2 == 0)
-			turnFirstHalfRed(currentTimestep, halfNumStreets);
+			turnFirstHalfRed(currentTimestep);
 		else
-			turnSecondHalfRed(currentTimestep, halfNumStreets);
+			turnSecondHalfRed(currentTimestep);
 	}
 }
 
-void JunctionRandom::turnFirstHalfRed(uint currentTimestep, uint halfNumStreets)
+void JunctionRandom::turnFirstHalfRed(uint currentTimestep)
 {
-	for (uint i = 0; i < halfNumStreets; i++)
+	for (uint i = 0; i < data.halfNumStreets; i++)
 		data.carCanEnter[i] = false;
 
 	if (currentTimestep % data.trafficLightSwitchTime == 0) //first timestep with green light --> open the streets that were closed before
-		for (uint i = halfNumStreets; i < data.inCellIndices.size(); i++)
+		for (uint i = data.halfNumStreets; i < data.inCellIndices.size(); i++)
 			if (data.carsOnJunction[i] == -1)
 				data.carCanEnter[i] = true;
 }
 
-void JunctionRandom::turnSecondHalfRed(uint currentTimestep, uint halfNumStreets)
+void JunctionRandom::turnSecondHalfRed(uint currentTimestep)
 {
-	for (uint i = halfNumStreets; i < data.inCellIndices.size(); i++)
+	for (uint i = data.halfNumStreets; i < data.inCellIndices.size(); i++)
 		data.carCanEnter[i] = false;
 
 	if (currentTimestep % data.trafficLightSwitchTime == 0) //first timestep with green light --> open the streets that were closed before
-		for (uint i = 0; i < halfNumStreets; i++)
+		for (uint i = 0; i < data.halfNumStreets; i++)
 			if (data.carsOnJunction[i] == -1)
 				data.carCanEnter[i] = true;
 }

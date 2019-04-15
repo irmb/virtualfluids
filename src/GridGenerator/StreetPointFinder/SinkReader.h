@@ -19,9 +19,9 @@ struct VF_PUBLIC SinkReaderData{
 struct VF_PUBLIC SinkReader
 {
 	std::vector<SinkReaderData> sinks;
-	StreetPointFinder streetPointFinder;
+	StreetPointFinder* streetPointFinder;
 
-	void readSinks(std::string filename, StreetPointFinder streetPointFinder);
+	void readSinks(std::string filename, StreetPointFinder* streetPointFinder);
 
 private:
 	unsigned int getCellIndexEnd(unsigned int streetIndex);

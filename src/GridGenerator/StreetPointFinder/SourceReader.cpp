@@ -8,7 +8,7 @@ SourceReaderData::SourceReaderData(unsigned int sourceIndex, float sourcePossibi
 {}
 
 
-void SourceReader::readSources(std::string filename, StreetPointFinder streetPointFinder)
+void SourceReader::readSources(std::string filename, StreetPointFinder* streetPointFinder)
 {
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::readSources( " << filename << " )" << "\n";
 
@@ -37,7 +37,7 @@ unsigned int SourceReader::getCellIndexStart(unsigned int streetIndex)
 	uint i = 0;
 	unsigned int cellIndex = 0;
 	while (i < streetIndex) {
-		cellIndex += streetPointFinder.streets[i].numberOfCells;
+		cellIndex += streetPointFinder->streets[i].numberOfCells;
 		++i;
 	}
 	return cellIndex;

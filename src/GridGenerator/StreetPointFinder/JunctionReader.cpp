@@ -9,7 +9,7 @@ JunctionReaderData::JunctionReaderData(std::vector<uint> inCells, std::vector<ui
 	inCells{ inCells }, outCells{ outCells }, carCanNotEnterThisOutCell{ carCanNotEnterThisOutCell }, trafficLightSwitchTime{ trafficLightSwitchTime }
 {}
 
-void JunctionReader::readJunctions(std::string filename, StreetPointFinder streetPointFinder)
+void JunctionReader::readJunctions(std::string filename, StreetPointFinder* streetPointFinder)
 {
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::readJunctions( " << filename << " )" << "\n";
 
@@ -97,10 +97,10 @@ unsigned int JunctionReader::getCellIndex(unsigned int streetIndex, char startOr
 	uint i = 0;
 	unsigned int cellIndex = 0;
 	while (i < streetIndex) {
-		cellIndex += streetPointFinder.streets[i].numberOfCells;
+		cellIndex += streetPointFinder->streets[i].numberOfCells;
 		++i;
 	}
 	if (startOrEnd == 's') 	return cellIndex;
-	return cellIndex + streetPointFinder.streets[streetIndex].numberOfCells - 1;
+	return cellIndex + streetPointFinder->streets[streetIndex].numberOfCells - 1;
 }
 

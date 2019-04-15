@@ -68,17 +68,17 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	JunctionReader junctionReader;
 	//junctionReader.readJunctions("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Junctions.txt", finder);
-	junctionReader.readJunctions(inputPath + "Junctions.txt", finder);
+	junctionReader.readJunctions(inputPath + "Junctions.txt", &finder);
 
 
 	SinkReader sinkReader;
 	//sinkReader.readSinks("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Sinks.txt", finder);
-	sinkReader.readSinks(inputPath + "Sinks.txt", finder);
+	sinkReader.readSinks(inputPath + "Sinks.txt", &finder);
 
 
 	SourceReader sourceReader;
 	//sourceReader.readSources("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Sources.txt", finder);
-	sourceReader.readSources(inputPath + "Sources.txt", finder);
+	sourceReader.readSources(inputPath + "Sources.txt", &finder);
 
 
 	//calculate RoadLength

@@ -19,9 +19,9 @@ struct VF_PUBLIC SourceReaderData {
 struct VF_PUBLIC SourceReader
 {
 	std::vector<SourceReaderData> sources;
-	StreetPointFinder streetPointFinder;
+	StreetPointFinder* streetPointFinder;
 
-	void readSources(std::string filename, StreetPointFinder streetPointFinder);
+	void readSources(std::string filename, StreetPointFinder* streetPointFinder);
 
 private:
 	unsigned int getCellIndexStart(unsigned int streetIndex);
