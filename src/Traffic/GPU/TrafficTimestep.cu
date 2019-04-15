@@ -5,11 +5,6 @@
 #include <helper_cuda.h>
 
 #include <cmath>
-#include <sstream>
-
-#include <thrust/reduce.h>
-
-#include <iomanip>
 
 #include "RoadNetwork/RoadNetworkData.h"
 #include "Junction/Junction.h"

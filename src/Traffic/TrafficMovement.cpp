@@ -546,7 +546,6 @@ void TrafficMovement::visualizeVehicleLengthForVTK()
 						break;
 					if ((*(road->pcurrent))[neighbor] > -1) {
 						std::cerr << "safetyDistance was violated: timestep: " << currentStep << "\t carIndex: " << i << std::endl;
-						std::cin.get();
 						if (useLogger)	TrafficLogger::writeError("safetyDistance was violated : carIndex: " + std::to_string(i), currentStep);
 						break;
 					}
