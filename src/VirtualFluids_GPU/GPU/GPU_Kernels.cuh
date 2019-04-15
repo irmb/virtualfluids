@@ -1512,6 +1512,19 @@ extern "C" __global__ void QADPress27( int inx,
                                        unsigned int size_Mat, 
                                        bool evenOrOdd);
 
+extern "C" __global__ void QADPressNEQNeighbor27(
+												 real* DD,
+												 real* DD27,
+												 int* k_Q,
+												 int* k_N,
+												 int kQ,
+												 unsigned int* neighborX,
+												 unsigned int* neighborY,
+												 unsigned int* neighborZ,
+												 unsigned int size_Mat,
+												 bool evenOrOdd
+												);
+
 extern "C" __global__ void QNoSlipADincomp7( int inx,
 											 int iny,
 											 real* DD, 

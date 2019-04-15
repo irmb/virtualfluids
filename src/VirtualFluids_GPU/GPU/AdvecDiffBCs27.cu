@@ -981,6 +981,441 @@ extern "C" __global__ void QADPress27( int inx,
 
 
 //////////////////////////////////////////////////////////////////////////////
+extern "C" __global__ void QADPressNEQNeighbor27(
+													real* DD,
+													real* DD27,
+													int* k_Q,
+													int* k_N,
+													int kQ,
+													unsigned int* neighborX,
+													unsigned int* neighborY,
+													unsigned int* neighborZ,
+													unsigned int size_Mat,
+													bool evenOrOdd
+												)
+{
+	Distributions27 D;
+	if (evenOrOdd == true)
+	{
+		D.f[dirE] = &DD[dirE   *size_Mat];
+		D.f[dirW] = &DD[dirW   *size_Mat];
+		D.f[dirN] = &DD[dirN   *size_Mat];
+		D.f[dirS] = &DD[dirS   *size_Mat];
+		D.f[dirT] = &DD[dirT   *size_Mat];
+		D.f[dirB] = &DD[dirB   *size_Mat];
+		D.f[dirNE] = &DD[dirNE  *size_Mat];
+		D.f[dirSW] = &DD[dirSW  *size_Mat];
+		D.f[dirSE] = &DD[dirSE  *size_Mat];
+		D.f[dirNW] = &DD[dirNW  *size_Mat];
+		D.f[dirTE] = &DD[dirTE  *size_Mat];
+		D.f[dirBW] = &DD[dirBW  *size_Mat];
+		D.f[dirBE] = &DD[dirBE  *size_Mat];
+		D.f[dirTW] = &DD[dirTW  *size_Mat];
+		D.f[dirTN] = &DD[dirTN  *size_Mat];
+		D.f[dirBS] = &DD[dirBS  *size_Mat];
+		D.f[dirBN] = &DD[dirBN  *size_Mat];
+		D.f[dirTS] = &DD[dirTS  *size_Mat];
+		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirTNE] = &DD[dirTNE *size_Mat];
+		D.f[dirTSW] = &DD[dirTSW *size_Mat];
+		D.f[dirTSE] = &DD[dirTSE *size_Mat];
+		D.f[dirTNW] = &DD[dirTNW *size_Mat];
+		D.f[dirBNE] = &DD[dirBNE *size_Mat];
+		D.f[dirBSW] = &DD[dirBSW *size_Mat];
+		D.f[dirBSE] = &DD[dirBSE *size_Mat];
+		D.f[dirBNW] = &DD[dirBNW *size_Mat];
+	}
+	else
+	{
+		D.f[dirW] = &DD[dirE   *size_Mat];
+		D.f[dirE] = &DD[dirW   *size_Mat];
+		D.f[dirS] = &DD[dirN   *size_Mat];
+		D.f[dirN] = &DD[dirS   *size_Mat];
+		D.f[dirB] = &DD[dirT   *size_Mat];
+		D.f[dirT] = &DD[dirB   *size_Mat];
+		D.f[dirSW] = &DD[dirNE  *size_Mat];
+		D.f[dirNE] = &DD[dirSW  *size_Mat];
+		D.f[dirNW] = &DD[dirSE  *size_Mat];
+		D.f[dirSE] = &DD[dirNW  *size_Mat];
+		D.f[dirBW] = &DD[dirTE  *size_Mat];
+		D.f[dirTE] = &DD[dirBW  *size_Mat];
+		D.f[dirTW] = &DD[dirBE  *size_Mat];
+		D.f[dirBE] = &DD[dirTW  *size_Mat];
+		D.f[dirBS] = &DD[dirTN  *size_Mat];
+		D.f[dirTN] = &DD[dirBS  *size_Mat];
+		D.f[dirTS] = &DD[dirBN  *size_Mat];
+		D.f[dirBN] = &DD[dirTS  *size_Mat];
+		D.f[dirZERO] = &DD[dirZERO*size_Mat];
+		D.f[dirTNE] = &DD[dirBSW *size_Mat];
+		D.f[dirTSW] = &DD[dirBNE *size_Mat];
+		D.f[dirTSE] = &DD[dirBNW *size_Mat];
+		D.f[dirTNW] = &DD[dirBSE *size_Mat];
+		D.f[dirBNE] = &DD[dirTSW *size_Mat];
+		D.f[dirBSW] = &DD[dirTNE *size_Mat];
+		D.f[dirBSE] = &DD[dirTNW *size_Mat];
+		D.f[dirBNW] = &DD[dirTSE *size_Mat];
+	}
+
+	Distributions27 D27;
+	if (evenOrOdd == true)
+	{
+		D27.f[dirE] = &DD27[dirE   *size_Mat];
+		D27.f[dirW] = &DD27[dirW   *size_Mat];
+		D27.f[dirN] = &DD27[dirN   *size_Mat];
+		D27.f[dirS] = &DD27[dirS   *size_Mat];
+		D27.f[dirT] = &DD27[dirT   *size_Mat];
+		D27.f[dirB] = &DD27[dirB   *size_Mat];
+		D27.f[dirNE] = &DD27[dirNE  *size_Mat];
+		D27.f[dirSW] = &DD27[dirSW  *size_Mat];
+		D27.f[dirSE] = &DD27[dirSE  *size_Mat];
+		D27.f[dirNW] = &DD27[dirNW  *size_Mat];
+		D27.f[dirTE] = &DD27[dirTE  *size_Mat];
+		D27.f[dirBW] = &DD27[dirBW  *size_Mat];
+		D27.f[dirBE] = &DD27[dirBE  *size_Mat];
+		D27.f[dirTW] = &DD27[dirTW  *size_Mat];
+		D27.f[dirTN] = &DD27[dirTN  *size_Mat];
+		D27.f[dirBS] = &DD27[dirBS  *size_Mat];
+		D27.f[dirBN] = &DD27[dirBN  *size_Mat];
+		D27.f[dirTS] = &DD27[dirTS  *size_Mat];
+		D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+		D27.f[dirTNE] = &DD27[dirTNE *size_Mat];
+		D27.f[dirTSW] = &DD27[dirTSW *size_Mat];
+		D27.f[dirTSE] = &DD27[dirTSE *size_Mat];
+		D27.f[dirTNW] = &DD27[dirTNW *size_Mat];
+		D27.f[dirBNE] = &DD27[dirBNE *size_Mat];
+		D27.f[dirBSW] = &DD27[dirBSW *size_Mat];
+		D27.f[dirBSE] = &DD27[dirBSE *size_Mat];
+		D27.f[dirBNW] = &DD27[dirBNW *size_Mat];
+	}
+	else
+	{
+		D27.f[dirW] = &DD27[dirE   *size_Mat];
+		D27.f[dirE] = &DD27[dirW   *size_Mat];
+		D27.f[dirS] = &DD27[dirN   *size_Mat];
+		D27.f[dirN] = &DD27[dirS   *size_Mat];
+		D27.f[dirB] = &DD27[dirT   *size_Mat];
+		D27.f[dirT] = &DD27[dirB   *size_Mat];
+		D27.f[dirSW] = &DD27[dirNE  *size_Mat];
+		D27.f[dirNE] = &DD27[dirSW  *size_Mat];
+		D27.f[dirNW] = &DD27[dirSE  *size_Mat];
+		D27.f[dirSE] = &DD27[dirNW  *size_Mat];
+		D27.f[dirBW] = &DD27[dirTE  *size_Mat];
+		D27.f[dirTE] = &DD27[dirBW  *size_Mat];
+		D27.f[dirTW] = &DD27[dirBE  *size_Mat];
+		D27.f[dirBE] = &DD27[dirTW  *size_Mat];
+		D27.f[dirBS] = &DD27[dirTN  *size_Mat];
+		D27.f[dirTN] = &DD27[dirBS  *size_Mat];
+		D27.f[dirTS] = &DD27[dirBN  *size_Mat];
+		D27.f[dirBN] = &DD27[dirTS  *size_Mat];
+		D27.f[dirZERO] = &DD27[dirZERO*size_Mat];
+		D27.f[dirTNE] = &DD27[dirBSW *size_Mat];
+		D27.f[dirTSW] = &DD27[dirBNE *size_Mat];
+		D27.f[dirTSE] = &DD27[dirBNW *size_Mat];
+		D27.f[dirTNW] = &DD27[dirBSE *size_Mat];
+		D27.f[dirBNE] = &DD27[dirTSW *size_Mat];
+		D27.f[dirBSW] = &DD27[dirTNE *size_Mat];
+		D27.f[dirBSE] = &DD27[dirTNW *size_Mat];
+		D27.f[dirBNW] = &DD27[dirTSE *size_Mat];
+	}
+	////////////////////////////////////////////////////////////////////////////////
+	const unsigned  x = threadIdx.x;  // Globaler x-Index 
+	const unsigned  y = blockIdx.x;   // Globaler y-Index 
+	const unsigned  z = blockIdx.y;   // Globaler z-Index 
+
+	const unsigned nx = blockDim.x;
+	const unsigned ny = gridDim.x;
+
+	const unsigned k = nx*(ny*z + y) + x;
+	//////////////////////////////////////////////////////////////////////////
+
+	if (k < kQ)
+	{
+		////////////////////////////////////////////////////////////////////////////////
+		//Fluid - BC Nodes
+		////////////////////////////////////////////////////////////////////////////////
+		//index
+		unsigned int KQK = k_Q[k];
+		unsigned int kzero = KQK;
+		unsigned int ke = KQK;
+		unsigned int kw = neighborX[KQK];
+		unsigned int kn = KQK;
+		unsigned int ks = neighborY[KQK];
+		unsigned int kt = KQK;
+		unsigned int kb = neighborZ[KQK];
+		unsigned int ksw = neighborY[kw];
+		unsigned int kne = KQK;
+		unsigned int kse = ks;
+		unsigned int knw = kw;
+		unsigned int kbw = neighborZ[kw];
+		unsigned int kte = KQK;
+		unsigned int kbe = kb;
+		unsigned int ktw = kw;
+		unsigned int kbs = neighborZ[ks];
+		unsigned int ktn = KQK;
+		unsigned int kbn = kb;
+		unsigned int kts = ks;
+		unsigned int ktse = ks;
+		unsigned int kbnw = kbw;
+		unsigned int ktnw = kw;
+		unsigned int kbse = kbs;
+		unsigned int ktsw = ksw;
+		unsigned int kbne = kb;
+		unsigned int ktne = KQK;
+		unsigned int kbsw = neighborZ[ksw];
+		////////////////////////////////////////////////////////////////////////////////
+		//distributions
+		real f_W =    (D.f[dirE])[ke];
+		real f_E =    (D.f[dirW])[kw];
+		real f_S =    (D.f[dirN])[kn];
+		real f_N =    (D.f[dirS])[ks];
+		real f_B =    (D.f[dirT])[kt];
+		real f_T =    (D.f[dirB])[kb];
+		real f_SW =   (D.f[dirNE])[kne];
+		real f_NE =   (D.f[dirSW])[ksw];
+		real f_NW =   (D.f[dirSE])[kse];
+		real f_SE =   (D.f[dirNW])[knw];
+		real f_BW =   (D.f[dirTE])[kte];
+		real f_TE =   (D.f[dirBW])[kbw];
+		real f_TW =   (D.f[dirBE])[kbe];
+		real f_BE =   (D.f[dirTW])[ktw];
+		real f_BS =   (D.f[dirTN])[ktn];
+		real f_TN =   (D.f[dirBS])[kbs];
+		real f_TS =   (D.f[dirBN])[kbn];
+		real f_BN =   (D.f[dirTS])[kts];
+		real f_ZERO = (D.f[dirZERO])[kzero];
+		real f_BSW =  (D.f[dirTNE])[ktne];
+		real f_BNE =  (D.f[dirTSW])[ktsw];
+		real f_BNW =  (D.f[dirTSE])[ktse];
+		real f_BSE =  (D.f[dirTNW])[ktnw];
+		real f_TSW =  (D.f[dirBNE])[kbne];
+		real f_TNE =  (D.f[dirBSW])[kbsw];
+		real f_TNW =  (D.f[dirBSE])[kbse];
+		real f_TSE =  (D.f[dirBNW])[kbnw];
+		////////////////////////////////////////////////////////////////////////////////
+		//macroscopic values
+		real rho0 = 
+			(f_TNE + f_BSW) + (f_TSW + f_BNE) + (f_TSE + f_BNW) + (f_TNW + f_BSE) + 
+			(f_NE  + f_SW ) + (f_NW  + f_SE ) + (f_TE  + f_BW ) + (f_BE  + f_TW ) + 
+			(f_TN  + f_BS ) + (f_BN  + f_TS ) + 
+			(f_E   + f_W  ) + (f_N   + f_S  ) + (f_T   + f_B  ) +  f_ZERO;
+		real rho = rho0 + one;
+		real OORho = one / rho;
+
+		real vx1 = 
+			OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_TSE - f_BNW) + (f_BSE - f_TNW) + 
+			(f_NE - f_SW) + (f_SE - f_NW) + (f_TE - f_BW) + (f_BE - f_TW) + (f_E - f_W));
+		real vx2 = 
+			OORho*((f_TNE - f_BSW) + (f_BNE - f_TSW) + (f_BNW - f_TSE) + (f_TNW - f_BSE) + 
+			(f_NE - f_SW) + (f_NW - f_SE) + (f_TN - f_BS) + (f_BN - f_TS) + (f_N - f_S));
+		real vx3 = 
+			OORho*((f_TNE - f_BSW) + (f_TSW - f_BNE) + (f_TSE - f_BNW) + (f_TNW - f_BSE) + 
+			(f_TE - f_BW) + (f_TW - f_BE) + (f_TN - f_BS) + (f_TS - f_BN) + (f_T - f_B));
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//AD - BC Nodes
+		////////////////////////////////////////////////////////////////////////////////
+		//distributions
+		real f27_W =    (D27.f[dirE])[ke];
+		real f27_E =    (D27.f[dirW])[kw];
+		real f27_S =    (D27.f[dirN])[kn];
+		real f27_N =    (D27.f[dirS])[ks];
+		real f27_B =    (D27.f[dirT])[kt];
+		real f27_T =    (D27.f[dirB])[kb];
+		real f27_SW =   (D27.f[dirNE])[kne];
+		real f27_NE =   (D27.f[dirSW])[ksw];
+		real f27_NW =   (D27.f[dirSE])[kse];
+		real f27_SE =   (D27.f[dirNW])[knw];
+		real f27_BW =   (D27.f[dirTE])[kte];
+		real f27_TE =   (D27.f[dirBW])[kbw];
+		real f27_TW =   (D27.f[dirBE])[kbe];
+		real f27_BE =   (D27.f[dirTW])[ktw];
+		real f27_BS =   (D27.f[dirTN])[ktn];
+		real f27_TN =   (D27.f[dirBS])[kbs];
+		real f27_TS =   (D27.f[dirBN])[kbn];
+		real f27_BN =   (D27.f[dirTS])[kts];
+		real f27_ZERO = (D27.f[dirZERO])[kzero];
+		real f27_BSW =  (D27.f[dirTNE])[ktne];
+		real f27_BNE =  (D27.f[dirTSW])[ktsw];
+		real f27_BNW =  (D27.f[dirTSE])[ktse];
+		real f27_BSE =  (D27.f[dirTNW])[ktnw];
+		real f27_TSW =  (D27.f[dirBNE])[kbne];
+		real f27_TNE =  (D27.f[dirBSW])[kbsw];
+		real f27_TNW =  (D27.f[dirBSE])[kbse];
+		real f27_TSE =  (D27.f[dirBNW])[kbnw];
+		////////////////////////////////////////////////////////////////////////////////
+		real cusq = c3o2*(vx1*vx1 + vx2*vx2 + vx3*vx3);
+		////////////////////////////////////////////////////////////////////////////////
+		//concentration
+		real ConcD = 
+			(f27_TNE + f27_BSW) + (f27_TSW + f27_BNE) + (f27_TSE + f27_BNW) + (f27_TNW + f27_BSE) + 
+			(f27_NE  + f27_SW ) + (f27_NW  + f27_SE ) + (f27_TE  + f27_BW ) + (f27_BE  + f27_TW ) + 
+			(f27_TN  + f27_BS ) + (f27_BN  + f27_TS ) +   						
+			(f27_E   + f27_W  ) + (f27_N   + f27_S  ) + (f27_T   + f27_B  ) +  f27_ZERO;
+		////////////////////////////////////////////////////////////////////////////////
+		//calculate non-equilibrium
+		f27_ZERO  -=  c8over27* (ConcD-(ConcD+one)*cusq);
+		f27_E     -=  c2over27* (ConcD+(ConcD+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
+		f27_W     -=  c2over27* (ConcD+(ConcD+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
+		f27_N     -=  c2over27* (ConcD+(ConcD+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
+		f27_S     -=  c2over27* (ConcD+(ConcD+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
+		f27_T     -=  c2over27* (ConcD+(ConcD+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
+		f27_B     -=  c2over27* (ConcD+(ConcD+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
+		f27_NE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+		f27_SW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+		f27_SE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+		f27_NW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+		f27_TE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+		f27_BW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+		f27_BE    -=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+		f27_TW    -=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+		f27_TN    -=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+		f27_BS    -=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+		f27_BN    -=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+		f27_TS    -=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+		f27_TNE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+		f27_BSW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+		f27_BNE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+		f27_TSW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+		f27_TSE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+		f27_BNW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+		f27_BSE   -=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+		f27_TNW   -=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+		////////////////////////////////////////////////////////////////////////////////
+		ConcD = zero;
+		////////////////////////////////////////////////////////////////////////////////
+		//add BC equilibrium
+		f27_ZERO  +=  c8over27* (ConcD-(ConcD+one)*cusq);
+		f27_E     +=  c2over27* (ConcD+(ConcD+one)*(three*( vx1        )+c9over2*( vx1        )*( vx1        )-cusq));
+		f27_W     +=  c2over27* (ConcD+(ConcD+one)*(three*(-vx1        )+c9over2*(-vx1        )*(-vx1        )-cusq));
+		f27_N     +=  c2over27* (ConcD+(ConcD+one)*(three*(    vx2     )+c9over2*(     vx2    )*(     vx2    )-cusq));
+		f27_S     +=  c2over27* (ConcD+(ConcD+one)*(three*(   -vx2     )+c9over2*(    -vx2    )*(    -vx2    )-cusq));
+		f27_T     +=  c2over27* (ConcD+(ConcD+one)*(three*(         vx3)+c9over2*(         vx3)*(         vx3)-cusq));
+		f27_B     +=  c2over27* (ConcD+(ConcD+one)*(three*(        -vx3)+c9over2*(        -vx3)*(        -vx3)-cusq));
+		f27_NE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1+vx2    )+c9over2*( vx1+vx2    )*( vx1+vx2    )-cusq));
+		f27_SW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1-vx2    )+c9over2*(-vx1-vx2    )*(-vx1-vx2    )-cusq));
+		f27_SE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1-vx2    )+c9over2*( vx1-vx2    )*( vx1-vx2    )-cusq));
+		f27_NW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1+vx2    )+c9over2*(-vx1+vx2    )*(-vx1+vx2    )-cusq));
+		f27_TE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    +vx3)+c9over2*( vx1    +vx3)*( vx1    +vx3)-cusq));
+		f27_BW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    -vx3)+c9over2*(-vx1    -vx3)*(-vx1    -vx3)-cusq));
+		f27_BE    +=  c1over54* (ConcD+(ConcD+one)*(three*( vx1    -vx3)+c9over2*( vx1    -vx3)*( vx1    -vx3)-cusq));
+		f27_TW    +=  c1over54* (ConcD+(ConcD+one)*(three*(-vx1    +vx3)+c9over2*(-vx1    +vx3)*(-vx1    +vx3)-cusq));
+		f27_TN    +=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2+vx3)+c9over2*(     vx2+vx3)*(     vx2+vx3)-cusq));
+		f27_BS    +=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2-vx3)+c9over2*(    -vx2-vx3)*(    -vx2-vx3)-cusq));
+		f27_BN    +=  c1over54* (ConcD+(ConcD+one)*(three*(     vx2-vx3)+c9over2*(     vx2-vx3)*(     vx2-vx3)-cusq));
+		f27_TS    +=  c1over54* (ConcD+(ConcD+one)*(three*(    -vx2+vx3)+c9over2*(    -vx2+vx3)*(    -vx2+vx3)-cusq));
+		f27_TNE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2+vx3)+c9over2*( vx1+vx2+vx3)*( vx1+vx2+vx3)-cusq));
+		f27_BSW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2-vx3)+c9over2*(-vx1-vx2-vx3)*(-vx1-vx2-vx3)-cusq));
+		f27_BNE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1+vx2-vx3)+c9over2*( vx1+vx2-vx3)*( vx1+vx2-vx3)-cusq));
+		f27_TSW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1-vx2+vx3)+c9over2*(-vx1-vx2+vx3)*(-vx1-vx2+vx3)-cusq));
+		f27_TSE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2+vx3)+c9over2*( vx1-vx2+vx3)*( vx1-vx2+vx3)-cusq));
+		f27_BNW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2-vx3)+c9over2*(-vx1+vx2-vx3)*(-vx1+vx2-vx3)-cusq));
+		f27_BSE   +=  c1over216*(ConcD+(ConcD+one)*(three*( vx1-vx2-vx3)+c9over2*( vx1-vx2-vx3)*( vx1-vx2-vx3)-cusq));
+		f27_TNW   +=  c1over216*(ConcD+(ConcD+one)*(three*(-vx1+vx2+vx3)+c9over2*(-vx1+vx2+vx3)*(-vx1+vx2+vx3)-cusq));
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        __syncthreads();
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//Neighbors of BC Nodes
+		////////////////////////////////////////////////////////////////////////////////
+		//index neighbor
+		unsigned int KNQK = k_N[k];
+		unsigned int kNzero = KNQK;
+		unsigned int kNe = KNQK;
+		unsigned int kNw = neighborX[KNQK];
+		unsigned int kNn = KNQK;
+		unsigned int kNs = neighborY[KNQK];
+		unsigned int kNt = KNQK;
+		unsigned int kNb = neighborZ[KNQK];
+		unsigned int kNsw = neighborY[kNw];
+		unsigned int kNne = KNQK;
+		unsigned int kNse = kNs;
+		unsigned int kNnw = kNw;
+		unsigned int kNbw = neighborZ[kNw];
+		unsigned int kNte = KNQK;
+		unsigned int kNbe = kNb;
+		unsigned int kNtw = kNw;
+		unsigned int kNbs = neighborZ[kNs];
+		unsigned int kNtn = KNQK;
+		unsigned int kNbn = kNb;
+		unsigned int kNts = kNs;
+		unsigned int kNtse = kNs;
+		unsigned int kNbnw = kNbw;
+		unsigned int kNtnw = kNw;
+		unsigned int kNbse = kNbs;
+		unsigned int kNtsw = kNsw;
+		unsigned int kNbne = kNb;
+		unsigned int kNtne = KNQK;
+		unsigned int kNbsw = neighborZ[kNsw];
+		////////////////////////////////////////////////////////////////////////////////
+		//update distributions at neighbor nodes
+        (D27.f[dirE   ])[kNe   ] = f27_W   ;  
+        (D27.f[dirW   ])[kNw   ] = f27_E   ;	
+        (D27.f[dirN   ])[kNn   ] = f27_S   ;	
+        (D27.f[dirS   ])[kNs   ] = f27_N   ;	
+        (D27.f[dirT   ])[kNt   ] = f27_B   ;	
+        (D27.f[dirB   ])[kNb   ] = f27_T   ;	
+        (D27.f[dirNE  ])[kNne  ] = f27_SW  ;	
+        (D27.f[dirSW  ])[kNsw  ] = f27_NE  ;	
+        (D27.f[dirSE  ])[kNse  ] = f27_NW  ;	
+        (D27.f[dirNW  ])[kNnw  ] = f27_SE  ;	
+        (D27.f[dirTE  ])[kNte  ] = f27_BW  ;	
+        (D27.f[dirBW  ])[kNbw  ] = f27_TE  ;	
+        (D27.f[dirBE  ])[kNbe  ] = f27_TW  ;	
+        (D27.f[dirTW  ])[kNtw  ] = f27_BE  ;	
+        (D27.f[dirTN  ])[kNtn  ] = f27_BS  ;	
+        (D27.f[dirBS  ])[kNbs  ] = f27_TN  ;	
+        (D27.f[dirBN  ])[kNbn  ] = f27_TS  ;	
+        (D27.f[dirTS  ])[kNts  ] = f27_BN  ;	
+        (D27.f[dirZERO])[kNzero] = f27_ZERO;	
+        (D27.f[dirTNE ])[kNtne ] = f27_BSW ;	
+        (D27.f[dirTSW ])[kNtsw ] = f27_BNE ;	
+        (D27.f[dirTSE ])[kNtse ] = f27_BNW ;	
+        (D27.f[dirTNW ])[kNtnw ] = f27_BSE ;	
+        (D27.f[dirBNE ])[kNbne ] = f27_TSW ;	
+        (D27.f[dirBSW ])[kNbsw ] = f27_TNE ;	
+        (D27.f[dirBSE ])[kNbse ] = f27_TNW ;	
+        (D27.f[dirBNW ])[kNbnw ] = f27_TSE ;       
+	}
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
 extern "C" __global__ void QADVel7( int inx,
                                     int iny,
                                     real* DD, 

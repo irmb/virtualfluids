@@ -95,14 +95,20 @@ void multipleLevel(const std::string& configPath)
             real dx = 1.2;
             real vx = 0.05;
 
-            TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+            //TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+			TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 
             gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
                                         256.0,  256.0,  160.0, dx);  
 
             gridBuilder->addGeometry(BaselSTL);
 
-            gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+			//Forcing
+			//gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+			//no Forcing
+			//gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+			//Merged for Wind in X Direction
+			gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
             gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
@@ -113,26 +119,43 @@ void multipleLevel(const std::string& configPath)
 
             gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
-            //////////////////////////////////////////////////////////////////////////
+			//no forcing
+			gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
+			gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
-            gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
+			gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+			gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
 
-            SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+			//////////////////////////////////////////////////////////////////////////
+			//Forcing
+			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
+            //SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+			//no Forcing
+			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid");
+			//SimulationFileWriter::write("M:/Basel2019/grids/BaselUniNoForcing/", gridBuilder, FILEFORMAT::BINARY);
+			//Merged for Wind in X Direction
+			gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid");
+			SimulationFileWriter::write("M:/Basel2019/grids/BaselUniMergedX/", gridBuilder, FILEFORMAT::BINARY);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			StreetPointFinder finder;
 
-			finder.readStreets("C:/Users/schoen/Desktop/git/MS/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 
-			finder.writeVTK("E:/temp/Basel2019/results/ExampleStreets.vtk");
+			finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
 
 			finder.findIndicesLB(gridBuilder->getGrid(0));
 
-			finder.writeConnectionVTK("E:/temp/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-
-			finder.writeSimulationFile("E:/temp/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-
+			//Forcing
+			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			//no Forcing
+			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUniNoForcing/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			//Merged for Wind in X Direction
+			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeSimulationFile("M:/Basel2019/grids/BaselUniMergedX/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			return;

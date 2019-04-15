@@ -1619,6 +1619,20 @@ extern "C" void QADPressDev27(unsigned int numberOfThreads,
                               unsigned int size_Mat, 
                               bool evenOrOdd);
 
+extern "C" void QADPressNEQNeighborDev27(
+											unsigned int numberOfThreads,
+											real* DD,
+											real* DD27,
+											int* k_Q,
+											int* k_N,
+											int kQ,
+											unsigned int* neighborX,
+											unsigned int* neighborY,
+											unsigned int* neighborZ,
+											unsigned int size_Mat,
+											bool evenOrOdd
+										);
+
 extern "C" void QNoSlipADincompDev7(unsigned int numberOfThreads,
 									int nx,
 									int ny,
