@@ -95,13 +95,11 @@ void multipleLevel(const std::string& configPath)
             real dx = 1.2;
             real vx = 0.05;
 
-<<<<<<< HEAD
+
             //TriangularMesh* BaselSTL = TriangularMesh::make("E:/temp/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
 			TriangularMesh* BaselSTL = TriangularMesh::make("C:/Users/hiwi/BaselDokumente/VirtualFluidsGPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED.stl");
-=======
             //TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
-			TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
->>>>>>> origin/development/Martin
+//			TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 
             gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
                                         256.0,  256.0,  160.0, dx);  
@@ -128,7 +126,6 @@ void multipleLevel(const std::string& configPath)
 			gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
 			gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
-<<<<<<< HEAD
 
 			std::string path = "C:/Users/hiwi/BaselDokumente/";
 			std::string inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
@@ -144,7 +141,6 @@ void multipleLevel(const std::string& configPath)
 			//SimulationFileWriter::write("E:/temp/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
 			// gridBuilder->writeGridsToVtk("E:/temp/Basel2019/grids/BaselUni/Basel_Grid");
 			
-=======
 			gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
 			gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
 
@@ -158,13 +154,11 @@ void multipleLevel(const std::string& configPath)
 			//Merged for Wind in X Direction
 			gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid");
 			SimulationFileWriter::write("M:/Basel2019/grids/BaselUniMergedX/", gridBuilder, FILEFORMAT::BINARY);
->>>>>>> origin/development/Martin
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			StreetPointFinder finder;
 
-<<<<<<< HEAD
 			finder.readStreets(inputPath + "Streets.txt");
 
 			finder.writeVTK(outputPath + outputFilename + ".vtk");
@@ -175,7 +169,7 @@ void multipleLevel(const std::string& configPath)
 
 			finder.writeSimulationFile(gridPath, 1.0, gridBuilder->getNumberOfLevels(), 0);
 
-=======
+
 			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
 
 			finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
@@ -191,7 +185,7 @@ void multipleLevel(const std::string& configPath)
 			//Merged for Wind in X Direction
 			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 			finder.writeSimulationFile("M:/Basel2019/grids/BaselUniMergedX/", 1.0, gridBuilder->getNumberOfLevels(), 0);
->>>>>>> origin/development/Martin
+
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			return;

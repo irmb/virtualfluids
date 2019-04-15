@@ -26,7 +26,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 {
 	//Variables
 
-	real vehicleDensity = 0.01f;
+	real vehicleDensity = 0.03f;
 
 	uint vehicleLength = 7;
 	uint maxVelocity = 14;
@@ -39,7 +39,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	bool useSlowToStart = true;
 	useLogger = true;
 
-	std::string info = "Only Traffic";
+	std::string info = "Only Traffic, full writing";
 	
 
 

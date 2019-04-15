@@ -345,7 +345,7 @@ void StreetPointFinder::writeCarsVTK(std::ofstream& file, uint numberOfCells, co
 
 void StreetPointFinder::writeLengthsVTK(std::ofstream & file, uint numberOfCells)
 {
-	file << "length 1 " << numberOfCells << " float" << std::endl;
+	file << "StreetLength 1 " << numberOfCells << " float" << std::endl;
 
 	for (auto& street : streets)
 	{
