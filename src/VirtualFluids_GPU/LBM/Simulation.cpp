@@ -1077,7 +1077,7 @@ void Simulation::run()
 					trafficFactory->calculateTimestep(t / 100);
 					if(!useTrafficGPU)	para->cudaCopyConcFile(0);
 					if (t % 1000 == 0)
-					trafficFactory->writeTimestep(t);					
+					trafficFactory->writeReducedTimestep(t);					
 				}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
