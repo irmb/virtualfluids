@@ -126,11 +126,11 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             PrimitiveVariables updatedPrimitive;
             ConservedVariables updatedConserved;
 
-            updatedConserved.rho = dataBase.data[RHO__(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoU = dataBase.data[RHO_U(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoV = dataBase.data[RHO_V(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoW = dataBase.data[RHO_W(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoE = dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)];
+            updatedConserved.rho    = dataBase.data[RHO__(cellIndex, dataBase.numberOfCells)];
+            updatedConserved.rhoU   = dataBase.data[RHO_U(cellIndex, dataBase.numberOfCells)];
+            updatedConserved.rhoV   = dataBase.data[RHO_V(cellIndex, dataBase.numberOfCells)];
+            updatedConserved.rhoW   = dataBase.data[RHO_W(cellIndex, dataBase.numberOfCells)];
+            updatedConserved.rhoE   = dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)];
             updatedConserved.rhoS_1 = dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)];
             updatedConserved.rhoS_2 = dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)];
 
@@ -144,8 +144,8 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             real Y_A = one - Y_F - Y_P;
 
             real M = one / (Y_A / M_A
-                + Y_F / M_F
-                + Y_P / M_P);
+                          + Y_F / M_F
+                          + Y_P / M_P);
 
             real X_A = Y_A * M / M_A;
             real X_F = Y_F * M / M_F;
@@ -160,8 +160,11 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             {
                 real dX_F = fminf(X_F, c1o2 * X_O2);
 
+                //if( dX_F < zero ) dX_F = zero;
+
                 // Limit the combustion
                 real dX_F_max = parameters.dt / real(0.0001) * real(0.0001);
+                //real dX_F_max = real(0.0001);
                 dX_F = fminf(dX_F_max, dX_F);
 
                 //const real heatOfReaction = real(802310.0); // kJ / kmol
@@ -183,6 +186,14 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
                 real Z1 = X_F_new * M_F / M;
                 real Z2 = X_P_new * M_P / M;
+
+                //////////////////////////////////////////////////////////////////////////
+
+                //if( Z1 < zero ) { Z2 -= Z1; Z1 = zero; }
+                //if( Z2 < zero ) { Z1 -= Z2; Z2 = zero; }
+
+                //if( Z1 > one  ) { Z2 += Z1 - one; Z1 = one; }
+                //if( Z2 > one  ) { Z1 += Z2 - one; Z2 = one; }
 
                 ///////////////////////////////////////////////////////////////////////////////
 

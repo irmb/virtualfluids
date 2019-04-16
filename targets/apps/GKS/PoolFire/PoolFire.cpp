@@ -40,6 +40,8 @@
 #include "GksGpu/BoundaryConditions/Pressure.h"
 #include "GksGpu/BoundaryConditions/AdiabaticWall.h"
 #include "GksGpu/BoundaryConditions/PassiveScalarDiriclet.h"
+#include "GksGpu/BoundaryConditions/InflowComplete.h"
+#include "GksGpu/BoundaryConditions/Open.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -66,7 +68,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real Ra = 1.0e8;
 
-    real Ba  = 0.1;
+    real U = 0.1;
+
     real eps = 2.0;
     real Pr  = 0.71;
     real K   = 2.0;
@@ -74,15 +77,13 @@ void thermalCavity( std::string path, std::string simulationName )
     real g   = 9.81;
     real rho = 1.2;
 
-    //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
-    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, 0.02884 / ( 2.0 * 300 * 8.314 ) );
+    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
     setLambdaFromT( prim, 30.0 / T_FAKTOR );
     
     real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
-    real U   = sqrt( Ra ) * mu / ( rho * L );
 
     real CFL = 0.25;
 
@@ -180,34 +181,24 @@ void thermalCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
+    SPtr<BoundaryCondition> bcMY = std::make_shared<Open>( dataBase );
+    SPtr<BoundaryCondition> bcPY = std::make_shared<Open>( dataBase );
 
-    //bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
-    //bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
     bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
     bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
@@ -215,7 +206,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //////////////////////////////////////////////////////////////////////////
 
     //SPtr<BoundaryCondition> burner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
-    SPtr<BoundaryCondition> burner = std::make_shared<PassiveScalarDiriclet>( dataBase, 1.0, 0.0 );
+    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 0.0, 0.0) );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
@@ -286,9 +277,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        if( iter < 40000 )
+        if( iter > 10000 && iter < 30000 )
         {
-            //std::dynamic_pointer_cast<PassiveScalarDiriclet>(burner)->S_1 = 10.0 * ( real(iter) / 20000.0 );
+            //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.S_1 = 1.0 * ( real(iter-10000) / 20000.0 );
 
             //parameters.mu = mu + 0.01 * ( 1.0 - ( real(iter) / 20000.0 ) );
 
@@ -307,7 +298,7 @@ void thermalCavity( std::string path, std::string simulationName )
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) ||
             //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter >= 0 && iter % 10000 == 0 )
+            ( iter >= 0 && iter % 1000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -333,12 +324,12 @@ int main( int argc, char* argv[])
 {
 
 #ifdef _WIN32
-    std::string path( "F:/Work/Computations/out/RoomFire/" );
+    std::string path( "F:/Work/Computations/out/PoolFire/" );
 #else
     std::string path( "out/" );
 #endif
 
-    std::string simulationName ( "RoomFire" );
+    std::string simulationName ( "PoolFire" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
