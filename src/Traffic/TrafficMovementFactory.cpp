@@ -39,7 +39,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	bool useSlowToStart = true;
 	useLogger = true;
 
-	std::string info = "Only Traffic, full writing";
+	std::string info = "Only Traffic, no writing";
 	
 
 
@@ -118,7 +118,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//set neighbors for curves
 	for (uint i = 0; i < junctionReader.specialNeighbors.cells.size(); i++) {
-		roadNetwork->setNeighbor(junctionReader.specialNeighbors.cells[i], junctionReader.specialNeighbors.neighbors[i]);
+		roadNetwork->setNeighborForCurve(junctionReader.specialNeighbors.cells[i], junctionReader.specialNeighbors.neighbors[i]);
 	}
 
 

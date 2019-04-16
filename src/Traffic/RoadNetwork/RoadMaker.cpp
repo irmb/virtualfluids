@@ -274,6 +274,16 @@ void RoadMaker::setNeighbor(uint index, uint neighbor)
 	this->neighbors[index] = neighbor;
 }
 
+void RoadMaker::setNeighborForCurve(uint index, uint neighbor)
+{
+	this->neighbors[index] = neighbor;
+	for (uint i = 0; i < this->vehicleLength; i++) {
+		if (neighbor < 0) break;
+		this->current[neighbor] = -1;		
+		neighbor = neighbors[neighbor];
+	}
+}
+
 
 uint RoadMaker::getMaxVelocity()
 {
