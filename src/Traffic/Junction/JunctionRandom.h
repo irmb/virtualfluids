@@ -20,7 +20,7 @@ public:
 	JunctionRandom(const std::vector<uint> &inCellIndices, const std::vector<uint> &outCellIndices, uint trafficLightSwitchTime = 0);
 	~JunctionRandom() {};
 
-	virtual void setCellIndecesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell);
+	virtual void setCellIndicesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell);
 
 	virtual bool acceptsCar(uint cellIndex); //determines if a car can enter the junction
 	virtual void registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved,  uint speed, uint oldSpeed); //registers all cars entering the junction

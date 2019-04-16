@@ -111,7 +111,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	std::vector <std::unique_ptr<Junction> > junctions;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
 		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
-		junctions[i]->setCellIndecesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		junctions[i]->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
 	}
 	roadNetwork->setJunctions(move(junctions));
 

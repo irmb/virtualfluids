@@ -13,7 +13,7 @@ class VF_PUBLIC Junction
 public:
 	virtual void checkOutCellIndices(const uint roadLength) const = 0;
 
-	virtual void setCellIndecesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell) = 0;
+	virtual void setCellIndicesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell) = 0;
 
 	virtual bool acceptsCar(uint cellIndex) = 0; //determines if a car can enter the junction
 	virtual void registerCar(uint cellIndex, uint numberOfCellsAlreadyMoved, uint speed, uint oldSpeed) = 0; //registers all cars entering the junction

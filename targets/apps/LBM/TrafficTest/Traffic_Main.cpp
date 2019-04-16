@@ -14,9 +14,9 @@ int main()
 
 	//////Basel
 	{
-		uint numberOfTimesteps = 1000;
-		bool useGPU = false;
-		
+		uint numberOfTimesteps = 100000;
+		bool useGPU = true;		
+
 
 		//Stephans Logger
 		logging::Logger::addStream(&std::cout);
@@ -40,8 +40,9 @@ int main()
 		//loop through timestep
 		for (uint step = 1; step <= numberOfTimesteps; step++) {
 			factory->calculateTimestep(step);
-			factory->writeTimestep(step);
+			//factory->writeReducedTimestep(step);
 		}		
+
 
 		//end simulation
 		duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
