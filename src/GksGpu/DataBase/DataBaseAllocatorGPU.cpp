@@ -128,6 +128,8 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
             setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_WALL ); 
         if( adapter.cells[ cellIdx ].isGhostCell )
             setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_GHOST ); 
+        if( adapter.cells[ cellIdx ].isFineGhostCell() )
+            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_FINE_GHOST ); 
 
     }
 

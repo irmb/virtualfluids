@@ -107,6 +107,8 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
             setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_WALL ); 
         if( adapter.cells[ cellIdx ].isGhostCell )
             setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_GHOST );
+        if( adapter.cells[ cellIdx ].isFineGhostCell() )
+            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_FINE_GHOST );
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )
