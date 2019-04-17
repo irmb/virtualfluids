@@ -74,12 +74,12 @@ void thermalCavity( std::string path, std::string simulationName )
     real Pr  = 0.71;
     real K   = 2.0;
     
-    real g   = 9.81;
+    real g   = 0.0;//9.81;
     real rho = 1.2;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
-    setLambdaFromT( prim, 30.0 / T_FAKTOR );
+    setLambdaFromT( prim, 3.0 / T_FAKTOR );
     
     real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
 
@@ -91,6 +91,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "cs = " << cs << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
     //////////////////////////////////////////////////////////////////////////
@@ -136,8 +137,8 @@ void thermalCavity( std::string path, std::string simulationName )
     Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
     Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.25 );
 
-    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 0.7, 1.0 );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 0.9, 4.0 );
+    VerticalCylinder cylinder( 0.0, 0.0, 0.0,  0.9, 1.0 );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1, 4.0 );
 
     //gridBuilder->addGrid( &refRegion_1, 1);
     //gridBuilder->addGrid( &refRegion_2, 2);
@@ -149,7 +150,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //gridBuilder->addGrid( &box, 2 );
     //gridBuilder->addGrid( &sphere, 2 );
     gridBuilder->addGrid( &cylinder2, 1 );
-    gridBuilder->addGrid( &cylinder, 2 );
+    gridBuilder->addGrid( &cylinder,  2 );
 
     //gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -197,8 +198,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
@@ -206,7 +207,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //////////////////////////////////////////////////////////////////////////
 
     //SPtr<BoundaryCondition> burner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
-    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 0.0, 0.0) );
+    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 0.0) );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
@@ -236,16 +237,16 @@ void thermalCavity( std::string path, std::string simulationName )
     CudaUtility::printCudaMemoryUsage();
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
-        
-        real rhoLocal = rho * std::exp( - ( 2.0 * g * H * prim.lambda ) * cellCenter.z / H );
 
-        prim.rho = rhoLocal;
+        PrimitiveVariables primLocal = prim;
+        
+        //primLocal.rho = rho * std::exp( - ( 2.0 * g * H * prim.lambda ) * cellCenter.z / H );
 
         real r = sqrt( cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y + cellCenter.z * cellCenter.z );
 
-        //if( r < 0.55 ) prim.S_2 = 1.0;
+        /*if( r < 0.6 ) */primLocal.S_1 = 1.0;
 
-        return toConservedVariables( prim, parameters.K );
+        return toConservedVariables( primLocal, parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -277,9 +278,12 @@ void thermalCavity( std::string path, std::string simulationName )
 
     for( uint iter = 1; iter <= 100000000; iter++ )
     {
-        if( iter > 10000 && iter < 30000 )
+        if( iter < 20000 )
         {
-            //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.S_1 = 1.0 * ( real(iter-10000) / 20000.0 );
+            //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.S_1 =       1.0 * ( real(iter) / 20000.0 );
+            //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.S_2 = 1.0 - 1.0 * ( real(iter) / 20000.0 );
+
+            //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.W = U * ( real(iter) / 20000.0 );
 
             //parameters.mu = mu + 0.01 * ( 1.0 - ( real(iter) / 20000.0 ) );
 

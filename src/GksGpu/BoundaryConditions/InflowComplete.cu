@@ -95,14 +95,24 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
             domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
         }
 
-        ghostCellPrim.rho    = two * boundaryCondition.prim.rho    - domainCellPrim.rho;
-        ghostCellPrim.U      = two * boundaryCondition.prim.U      - domainCellPrim.U;
-        ghostCellPrim.V      = two * boundaryCondition.prim.V      - domainCellPrim.V;
-        ghostCellPrim.W      = two * boundaryCondition.prim.W      - domainCellPrim.W;
-        ghostCellPrim.lambda = /*two * boundaryCondition.prim.lambda -*/ domainCellPrim.lambda;
+    //    ghostCellPrim.rho    = two * boundaryCondition.prim.rho    - domainCellPrim.rho;
+    //    ghostCellPrim.U      = two * boundaryCondition.prim.U      - domainCellPrim.U;
+    //    ghostCellPrim.V      = two * boundaryCondition.prim.V      - domainCellPrim.V;
+    //    ghostCellPrim.W      = two * boundaryCondition.prim.W      - domainCellPrim.W;
+    //    ghostCellPrim.lambda = /*two * boundaryCondition.prim.lambda -*/ domainCellPrim.lambda;
+    //#ifdef USE_PASSIVE_SCALAR
+    //    ghostCellPrim.S_1    = two * boundaryCondition.prim.S_1    - domainCellPrim.S_1;
+    //    ghostCellPrim.S_2    = two * boundaryCondition.prim.S_2    - domainCellPrim.S_2;
+    //#endif // USE_PASSIVE_SCALAR
+
+        ghostCellPrim.rho    = boundaryCondition.prim.rho;
+        ghostCellPrim.U      = boundaryCondition.prim.U;
+        ghostCellPrim.V      = boundaryCondition.prim.V;
+        ghostCellPrim.W      = boundaryCondition.prim.W;
+        ghostCellPrim.lambda = boundaryCondition.prim.lambda;
     #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S_1    = two * boundaryCondition.prim.S_1    - domainCellPrim.S_1;
-        ghostCellPrim.S_2    = two * boundaryCondition.prim.S_2    - domainCellPrim.S_2;
+        ghostCellPrim.S_1    = boundaryCondition.prim.S_1;
+        ghostCellPrim.S_2    = boundaryCondition.prim.S_2;
     #endif // USE_PASSIVE_SCALAR
 
         real y = dataBase.cellCenter[ VEC_Y(ghostCellIdx, dataBase.numberOfCells) ];
@@ -110,7 +120,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         real r = sqrt( y*y + x*x );
 
-        //ghostCellPrim.W *= one - four*r*r;
+        ghostCellPrim.W = ghostCellPrim.W * (one - four*r*r);
     }
 
     {

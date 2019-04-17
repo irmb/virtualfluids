@@ -238,7 +238,9 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             if( isCellProperties( negCellProperties, CELL_PROPERTIES_WALL ) || 
                 isCellProperties( posCellProperties, CELL_PROPERTIES_WALL ) )
             {
-                flux.rho = zero;
+                flux.rho    = zero;
+                flux.rhoS_1 = zero;
+                flux.rhoS_2 = zero;
             }
 
             uint negCellParentIdx = dataBase.parentCell[ negCellIdx ];

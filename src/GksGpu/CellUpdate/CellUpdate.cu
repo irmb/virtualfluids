@@ -168,7 +168,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
                 dX_F = fminf(dX_F_max, dX_F);
 
                 //const real heatOfReaction = real(802310.0); // kJ / kmol
-                const real heatOfReaction = real(8000.0); // kJ / kmol
+                const real heatOfReaction = real(800.0); // kJ / kmol
 
                 real dn_F = updatedConserved.rho * dX_F / M;
 
