@@ -24,6 +24,7 @@ public:
 	void addSource(std::unique_ptr<Source> & source);
 
 	void setNeighbor(uint index, uint neighbor); // don't use it for setting sinks or junctions!
+	void setNeighborForCurve(uint index, uint neighbor);
 
 	uint getMaxVelocity();
 

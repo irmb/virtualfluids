@@ -35,7 +35,7 @@ JunctionRandom::JunctionRandom(const std::vector<uint> &inCellIndices, const std
 }
 
 
-void JunctionRandom::setCellIndecesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell)
+void JunctionRandom::setCellIndicesForNoUTurn(std::vector<int> carCanNotEnterThisOutCell)
 {
 	try {
 

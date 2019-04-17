@@ -5,11 +5,6 @@
 #include <helper_cuda.h>
 
 #include <cmath>
-#include <sstream>
-
-#include <thrust/reduce.h>
-
-#include <iomanip>
 
 #include "RoadNetwork/RoadNetworkData.h"
 #include "Junction/Junction.h"
@@ -78,8 +73,6 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * p
 	this->roadNext.resize(size_roads);
 	thrust::fill(roadNext.begin(), roadNext.end(), -1);
 
-	switchCurrentNext();
-
 	//prepare junctions
 	combineJuncInCellIndices(road->junctions);
 	combineJuncOutCellIndices(road->junctions);
@@ -127,12 +120,15 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * p
 }
 
 
-void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
+void TrafficTimestep::calculateTimestep(std::shared_ptr<RoadNetworkData> road)
 {
 	switchCurrentNext();
 
 	//reset Junction open outcells
 	resetOutCellIsOpen();
+
+	//resetNext
+	resetNext();
 
 	callTrafficTimestepKernel();
 	getLastCudaError("trafficTimestepKernel execution failed");
@@ -149,8 +145,16 @@ void TrafficTimestep::run(std::shared_ptr<RoadNetworkData> road)
 
 void TrafficTimestep::switchCurrentNext()
 {
-	if (timestepIsEven) timestepIsEven = false;
-	else timestepIsEven = true;
+	if (timestepIsEven) {
+		timestepIsEven = false;
+		pRoadCurrent = roadCurrent.data().get();
+		pRoadNext = roadNext.data().get();
+	}
+	else {
+		timestepIsEven = true;
+		pRoadCurrent = roadNext.data().get();
+		pRoadNext = roadCurrent.data().get();
+	}
 }
 
 
@@ -173,18 +177,6 @@ void TrafficTimestep::cleanUp()
 
 void TrafficTimestep::callTrafficTimestepKernel()
 {
-	int* pRoadCurrent = roadCurrent.data().get();
-	int* pRoadNext = roadNext.data().get();
-	if (!timestepIsEven) {
-		pRoadCurrent = roadNext.data().get();
-		pRoadNext = roadCurrent.data().get();
-	}
-
-	resetNext << < gridRoad, threadsRoads >> > (
-		pRoadNext,
-		size_roads
-		);
-
 	trafficTimestepKernel << < gridRoad, threadsRoads >> > (
 		pRoadCurrent,
 		pRoadNext,
@@ -210,13 +202,6 @@ void TrafficTimestep::callTrafficTimestepKernel()
 
 void TrafficTimestep::callSourceTimestepKernel()
 {
-	int*pRoadCurrent = roadCurrent.data().get();
-	int*pRoadNext = roadNext.data().get();
-	if (!timestepIsEven) {
-		pRoadCurrent = roadNext.data().get();
-		pRoadNext = roadCurrent.data().get();
-	}
-
 	sourceTimestepKernel << < gridSources, threadsSources >> > (
 		pRoadCurrent,
 		pRoadNext,
@@ -234,13 +219,6 @@ void TrafficTimestep::callSourceTimestepKernel()
 
 void TrafficTimestep::callJunctionTimestepKernel()
 {
-	int*pRoadCurrent = roadCurrent.data().get();
-	int*pRoadNext = roadNext.data().get();
-	if (!timestepIsEven) {
-		pRoadCurrent = roadNext.data().get();
-		pRoadNext = roadCurrent.data().get();
-	}
-
 	junctionTimestepKernel << < gridJunctions, threadsJunctions >> > (
 		juncCarsOnJunction.data().get(),
 		juncInCellIndices.data().get(),
@@ -324,7 +302,7 @@ __global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neig
 	uint gap = speed;
 	uint idx = 0;
 	int neighbor = neighbors[index];
-	uint currentCell = index;	
+	uint currentCell = index;
 
 	for (uint i = 0; i < (speed + safetyDistance); i++) {
 
@@ -515,7 +493,7 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, uint* juncInCell
 				//// calc numberOfPossibleOutCells ////////////////////////////////////////////////////////////////
 				uint numberOfPossibleOutCells = 0;
 
-				for (uint outCellIndex = firstOutCellIndex; outCellIndex < firstOutCellIndex + outCellSize; outCellIndex++) 
+				for (uint outCellIndex = firstOutCellIndex; outCellIndex < firstOutCellIndex + outCellSize; outCellIndex++)
 					if (juncCarCanNotEnterThisOutCell[inCellVectorIndex] != juncOutCellIndices[outCellIndex] && juncOutCellIsOpen[outCellIndex] == true)
 						numberOfPossibleOutCells++;
 
@@ -823,6 +801,14 @@ uint TrafficTimestep::getNumCarsOnJunctions()
 void TrafficTimestep::resetOutCellIsOpen()
 {
 	thrust::fill(juncOutCellIsOpen.begin(), juncOutCellIsOpen.end(), true);
+}
+
+void TrafficTimestep::resetNext()
+{
+	if (timestepIsEven)
+		thrust::fill(roadCurrent.begin(), roadCurrent.end(), -1);
+	else
+		thrust::fill(roadNext.begin(), roadNext.end(), -1);
 }
 
 

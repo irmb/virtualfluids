@@ -39,7 +39,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	bool useSlowToStart = true;
 	useLogger = true;
 
-	std::string info = "Only Traffic, full writing";
+	std::string info = "Only Traffic, no writing";
 	
 
 
@@ -111,14 +111,14 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	std::vector <std::unique_ptr<Junction> > junctions;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
 		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
-		junctions[i]->setCellIndecesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		junctions[i]->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
 	}
 	roadNetwork->setJunctions(move(junctions));
 
 
 	//set neighbors for curves
 	for (uint i = 0; i < junctionReader.specialNeighbors.cells.size(); i++) {
-		roadNetwork->setNeighbor(junctionReader.specialNeighbors.cells[i], junctionReader.specialNeighbors.neighbors[i]);
+		roadNetwork->setNeighborForCurve(junctionReader.specialNeighbors.cells[i], junctionReader.specialNeighbors.neighbors[i]);
 	}
 
 

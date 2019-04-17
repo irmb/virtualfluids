@@ -11,48 +11,52 @@
 
 int main()
 {
-
+	 
 	//////Basel
-	{
-		uint numberOfTimesteps = 1000;
-		bool useGPU = false;
-		
 
-		//Stephans Logger
-		logging::Logger::addStream(&std::cout);
-		logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-		logging::Logger::timeStamp(logging::Logger::ENABLE);
-		logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+	for (uint i = 0; i < 2; i++) {
+
+		{
+			uint numberOfTimesteps = 1000*1000;
+			bool useGPU = false;
 
 
-		//init TrafficMovement
-		TrafficMovementFactory * factory = new TrafficMovementFactory();
-		std::string path = "C:/Users/hiwi/BaselDokumente/";
-		factory->initTrafficMovement(path, useGPU);
+			//Stephans Logger
+			logging::Logger::addStream(&std::cout);
+			logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+			logging::Logger::timeStamp(logging::Logger::ENABLE);
+			logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
 
-		//clock
-		std::clock_t start;
-		double duration;
-		start = std::clock();
+			//init TrafficMovement
+			TrafficMovementFactory * factory = new TrafficMovementFactory();
+			std::string path = "C:/Users/hiwi/BaselDokumente/";
+			factory->initTrafficMovement(path, useGPU);
 
 
-		//loop through timestep
-		for (uint step = 1; step <= numberOfTimesteps; step++) {
-			factory->calculateTimestep(step);
-			factory->writeTimestep(step);
-		}		
+			//clock
+			std::clock_t start;
+			double duration;
+			start = std::clock();
 
-		//end simulation
-		duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 
-		factory->endSimulation(numberOfTimesteps, duration);
-         
-		std::cout << "Dauer: " << duration << '\n';
+			//loop through timestep
+			for (uint step = 1; step <= numberOfTimesteps; step++) {
+				factory->calculateTimestep(step);
+				factory->writeReducedTimestep(step);
+			}
 
-		factory->writeTimestep(numberOfTimesteps);	
+
+			//end simulation
+			duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+
+			factory->endSimulation(numberOfTimesteps, duration);
+
+			std::cout << "Dauer: " << duration << '\n';
+
+			factory->writeTimestep(numberOfTimesteps);
+		}
 	}
-
 
 
 
