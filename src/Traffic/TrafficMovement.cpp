@@ -77,8 +77,6 @@ void TrafficMovement::setUseGPU(real * pConcArray)
 {
 	std::cout << "usingGPU for calculation" << std::endl;
 	this->useGPU = true;
-	this->road->oldSpeeds.resize(this->road->roadLength);
-	VectorHelper::fillVector(this->road->oldSpeeds, -1);
 	this->gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road, pConcArray));
 }
 
@@ -172,7 +170,7 @@ void TrafficMovement::calculateTimestep(uint step)
 		//GPU
 
 		copiedDevToHost = false;
-		this->gpuCalculation->run(road);
+		this->gpuCalculation->calculateTimestep(road);
 
 
 	}

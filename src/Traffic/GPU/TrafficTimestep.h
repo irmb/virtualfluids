@@ -19,10 +19,11 @@ class Source;
 class VF_PUBLIC TrafficTimestep
 {
 private:
+
 	bool timestepIsEven = true;
 	uint numTimestep = 0;
 
-	uint size_roads;
+
 	uint maxVelocity;
 	uint safetyDistance;
 	real dawdlePossibility;
@@ -32,6 +33,7 @@ private:
 
 
 	//sizes
+	uint size_roads;
 	uint size_junctions;
 	uint size_juncInCells;
 	uint size_juncOutCells;
@@ -69,6 +71,7 @@ private:
 	thrust::device_vector<uint> juncStartInIncells;
 	thrust::device_vector<uint> juncStartInOutcells;
 
+
 	//sinks
 	thrust::device_vector<real> sinkCarBlockedPossibilities;;
 
@@ -81,47 +84,55 @@ private:
 	//concentrations
 	real * pConcArray;
 
+
 	//curandStates
 	curandState *statesJunctions;
 	curandState *statesSources;
 	curandState *statesRoad;
 
+	int* pRoadCurrent;
+	int* pRoadNext;
 
 public:
 
 	TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * pConcArray);
-	void run(std::shared_ptr<RoadNetworkData> road);
+	void calculateTimestep(std::shared_ptr<RoadNetworkData> road);
 	void cleanUp();
 	uint getNumCarsOnJunctions(); //only used for debugging
 	void copyCurrentDeviceToHost(std::shared_ptr<RoadNetworkData> road);
 
 private:
-	;
+	
 	//timestep
 	void switchCurrentNext();
 	void resetOutCellIsOpen();
+	void resetNext();
 
+	//kernel calls
 	void callTrafficTimestepKernel();
 	void callSourceTimestepKernel();
 	void callJunctionTimestepKernel();
 
-	//init
+	//init grids
 	void calculateTrafficTimestepKernelDimensions();
 	void calculateJunctionKernelDimensions();
 	void calculateSourceKernelDimensions();
 
+	//init junctions
 	void combineJuncInCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
 	void combineJuncOutCellIndices(std::vector<std::shared_ptr<Junction> > &junctions);
 	void combineJuncCarCanNotEnterThisOutCell(std::vector<std::shared_ptr<Junction> > &junctions);
+	void combineUseTrafficLights(std::vector<std::shared_ptr<Junction>>& junctions);
 	void initjuncOutCellIsOpen();
 	void initJuncCarCanEnter();
 	void initJuncCarsOnJunction();
 	void initJuncAlreadyMoved();
 	void initJuncOldSpeeds();
-	void combineUseTrafficLights(std::vector<std::shared_ptr<Junction>>& junctions);
-
+	
+	//init sinks
 	void combineSinkBlockedPossibilities(std::vector<std::shared_ptr<Sink>>& sinks);
 
+	//init sources
 	void combineSourcePossibilities(std::vector<std::shared_ptr<Source> > &sources);
 	void combineSourceIndices(std::vector<std::shared_ptr<Source> > &sources);
 };
