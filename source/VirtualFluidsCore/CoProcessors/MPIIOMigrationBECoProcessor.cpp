@@ -333,6 +333,7 @@ void MPIIOMigrationBECoProcessor::writeBlocks(int step)
          block3dArray[ic].interpolationFlagFC = block->getCollectionOfInterpolationFlagFC();
          block3dArray[ic].counter = block->getMaxGlobalID();
          block3dArray[ic].active = block->isActive();
+
          ic++;
       }
    }
@@ -393,6 +394,9 @@ void MPIIOMigrationBECoProcessor::writeDataSet(int step)
    int rank, size;
    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+  if (comm->isRoot())
+	std::cout << "size = "<<size<<std::endl;
 
    int blocksCount = 0; // quantity of blocks, that belong to this process 
 
@@ -1394,15 +1398,22 @@ void MPIIOMigrationBECoProcessor::readBlocks(int step)
    }
 
    // clear the grid
-   std::vector<SPtr<Block3D>> blocksVector[25];
-   int minInitLevel = this->grid->getCoarsestInitializedLevel();
-   int maxInitLevel = this->grid->getFinestInitializedLevel();
-   for (int level = minInitLevel; level <= maxInitLevel; level++)
+   //int bcou = this->grid->getNumberOfBlocks();
+   //std::cout << "readBlocks1   getNumberOfBlocks= " <<bcou << std::endl;
+   if(this->grid->getNumberOfBlocks() > 0)
    {
-      grid->getBlocks(level, rank, blocksVector[level]);
-      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
-         grid->deleteBlock(block);
+	   std::vector<SPtr<Block3D>> blocksVector[25];
+	   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+	   int maxInitLevel = this->grid->getFinestInitializedLevel();
+	   for (int level = minInitLevel; level <= maxInitLevel; level++)
+	   {
+		  grid->getBlocks(level,/* rank,*/ blocksVector[level]);
+		  for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+			 grid->deleteBlock(block);
+	   }
    }
+   //bcou = this->grid->getNumberOfBlocks();
+   //std::cout << "readBlocks2   getNumberOfBlocks= " <<bcou << std::endl;
 
    // restore the grid
    SPtr<CoordinateTransformation3D> trafo(new CoordinateTransformation3D());
@@ -1506,6 +1517,8 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    for (int ind = indexB - indexB; ind < indexE - indexB; ind++)
    {
       tempBlock = grid->getBlock(indexB + ind);
+      if(!tempBlock)  throw UbException(UB_EXARGS,"MPIIOMigrationBECoProcessor::blocksExchange -- null block pointer!!!" );
+
       tempRank = tempBlock->getRank();
 
       if (tempRank == rank) // no need to send data, the process already has it
@@ -1583,6 +1596,9 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
 
+  if (comm->isRoot())
+	std::cout << "size = "<<size<<std::endl;
+
    dataSetParam dataSetParamStr1, dataSetParamStr2, dataSetParamStr3;
 
    int blocksCountAll = grid->getNumberOfBlocks(); // quantity of all blocks in the grid
@@ -1614,7 +1630,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
       dataSetParamStr3.nx[0] * dataSetParamStr3.nx[1] * dataSetParamStr3.nx[2] * dataSetParamStr3.nx[3];
    std::vector<double> doubleValuesArray(myBlocksCount * doubleCountInBlock); // double-values in all blocks 
 
-   MPI_Offset read_offset = (MPI_Offset)(3 * sizeof(dataSetParam)) + (MPI_Offset)(indexB) * (MPI_Offset)(doubleCountInBlock) * (MPI_Offset)(sizeof(double));
+   MPI_Offset read_offset = (MPI_Offset)(3 * sizeof(dataSetParam)) + (MPI_Offset)(indexB * doubleCountInBlock * sizeof(double));
    MPI_File_read_at(file_handler, read_offset, &doubleValuesArray[0], myBlocksCount * doubleCountInBlock, MPI_DOUBLE, MPI_STATUS_IGNORE);
 
    MPI_File_close(&file_handler);
@@ -1635,7 +1651,78 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
    }
 
    blocksExchange(MESSAGE_TAG, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
+/*
+   std::vector<double>* rawDataSend = new std::vector<double>[size];
+   for (int r = 0; r < size; r++)
+   {
+      rawDataSend[r].resize(0);
+      rawDataSend[r].push_back(0);
+   }
 
+   SPtr<Block3D> tempBlock;
+   int tempRank;
+   for (int ind = indexB - indexB; ind < indexE - indexB; ind++)
+   {
+      tempBlock = grid->getBlock(indexB + ind);
+      if(!tempBlock)  throw UbException(UB_EXARGS,"MPIIOMigrationBECoProcessor::readDataSet -- null block pointer!!!" );
+
+      tempRank = tempBlock->getRank();
+      if (tempRank == rank) // no need to send data, the process already has it
+      {
+         rawDataReceive[tempRank][0]++;
+         rawDataReceive[tempRank].push_back(double(indexB + ind));
+         rawDataReceive[tempRank].insert(rawDataReceive[tempRank].end(), doubleValuesArray.begin() + ind * doubleCountInBlock,
+            doubleValuesArray.begin() + ind * doubleCountInBlock + doubleCountInBlock);
+      }
+      else  // we must send data to other processes
+      {
+         rawDataSend[tempRank][0]++;
+         rawDataSend[tempRank].push_back(double(indexB + ind));
+         rawDataSend[tempRank].insert(rawDataSend[tempRank].end(), doubleValuesArray.begin() + ind * doubleCountInBlock,
+            doubleValuesArray.begin() + ind * doubleCountInBlock + doubleCountInBlock);
+      }
+ }
+
+   MPI_Request* requests = new MPI_Request[size * 2]; // send + receive
+   int requestCount = 0;
+   MPI_Status status;
+   int quant;
+   int doubleBlockCount;
+   int rds;
+
+   for (int r = 0; r < size; r++)
+   {
+      if (r != rank)
+      {
+		 rds = rawDataSend[r].size();
+         doubleBlockCount = (int)(rds / SEND_BLOCK_SIZE);
+         if (doubleBlockCount * SEND_BLOCK_SIZE < rds)
+            doubleBlockCount += 1;
+
+	     for (int i = rds; i < doubleBlockCount * SEND_BLOCK_SIZE; i++)
+	         rawDataSend[r].push_back(0);
+
+         MPI_Isend(&rawDataSend[r][0], doubleBlockCount, sendBlockDoubleType, r, MESSAGE_TAG, MPI_COMM_WORLD, &requests[requestCount]);
+        //MPI_Isend(&rawDataSend[r][0], rawDataSend[r].size(), MPI_DOUBLE, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
+         requestCount++;
+      }
+   }
+
+   for (int r = 0; r < size; r++)
+   {
+      if (r != rank)
+      {
+         MPI_Probe(r, MESSAGE_TAG, MPI_COMM_WORLD, &status);
+         MPI_Get_count(&status, sendBlockDoubleType, &quant);
+         rawDataReceive[r].resize(quant * SEND_BLOCK_SIZE);
+         MPI_Irecv(&rawDataReceive[r][0], quant, sendBlockDoubleType, r, MESSAGE_TAG, MPI_COMM_WORLD, &requests[requestCount]);
+         requestCount++;
+      }
+   }
+
+   MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);//statuses);
+*/
+//
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
@@ -1694,7 +1781,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
          block->setKernel(kernel);
       }
    }
-   
+
    if (comm->isRoot())
    {
       UBLOG(logINFO, "MPIIOMigrationBECoProcessor::readDataSet end of restore of data, rank = " << rank);

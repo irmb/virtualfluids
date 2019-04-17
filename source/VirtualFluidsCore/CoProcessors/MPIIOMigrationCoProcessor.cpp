@@ -379,8 +379,7 @@ void MPIIOMigrationCoProcessor::writeBlocks(int step)
    // }
 
    double start, finish;
-   //MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(int));
+   MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
 
    if (comm->isRoot())
    {
@@ -1534,8 +1533,7 @@ void MPIIOMigrationCoProcessor::readBlocks(int step)
    GridParam* gridParameters = new GridParam;
 
    // calculate the read offset
-   //MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(int));
+   MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
 
    // read parameters of the grid
    MPI_File_read_at(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
@@ -1551,6 +1549,10 @@ void MPIIOMigrationCoProcessor::readBlocks(int step)
    {
       finish = MPI_Wtime();
       UBLOG(logINFO, "MPIIOMigrationCoProcessor::readBlocks time: " << finish - start << " s");
+   }
+
+   if (comm->isRoot())
+   {
       UBLOG(logINFO, "MPIIOMigrationCoProcessor::readBlocks start of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }

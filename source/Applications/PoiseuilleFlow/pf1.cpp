@@ -11,13 +11,13 @@ void pf1()
    int myid = comm->getProcessID();
 
    //parameters
-   string          pathOut = "d:/temp/pflow_pipe_forcing";
+   string          pathOut = "/gfs1/work/niikonst/pflow_pipe_forcing";
    int             numOfThreads = 1;
    int             blocknx[3] ={ 10,10,10 };
-   double          endTime = 200;
-   double          cpStart = 100;
-   double          cpStep = 100;
-   double          outTime = 100;
+   double          endTime = 10;
+   double          cpStart = 10;
+   double          cpStep = 10;
+   double          outTime = 10;
    double          availMem = 8e9;
    double          deltax = 1;
    double          rhoLB = 0.0;
@@ -27,12 +27,12 @@ void pf1()
 
    //simulation bounding box
    double g_minX1 = 0.0;
-   double g_minX2 = -5.0;
-   double g_minX3 = -5.0;
+   double g_minX2 = -50.0;
+   double g_minX3 = -50.0;
 
-   double g_maxX1 = 80;
-   double g_maxX2 = 5;
-   double g_maxX3 = 5;
+   double g_maxX1 = 2000;
+   double g_maxX2 = 50;
+   double g_maxX3 = 50;
 
    //Sleep(15000);
 
@@ -84,7 +84,7 @@ void pf1()
    //write data for visualization of block grid
    SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
    ppblocks->process(0);
-   ppblocks.reset();
+   //ppblocks.reset();
 
    unsigned long long numberOfBlocks = (unsigned long long)grid->getNumberOfBlocks();
    int ghostLayer = 3;
@@ -150,10 +150,10 @@ void pf1()
    migCoProcessor->setLBMKernel(kernel);
    migCoProcessor->setBCProcessor(bcProc);*/
 
-   SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
-   migCoProcessor->setLBMKernel(kernel);
-   migCoProcessor->setBCProcessor(bcProc);
-   migCoProcessor->setNu(nuLB);
+   //SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
+   //migCoProcessor->setLBMKernel(kernel);
+   //migCoProcessor->setBCProcessor(bcProc);
+   //migCoProcessor->setNu(nuLB);
 
    //SPtr<UtilConvertor> convertProcessor(new UtilConvertor(grid, pathOut, comm));
    //convertProcessor->convert(300, 4);
@@ -168,9 +168,15 @@ void pf1()
    
    if (myid == 0) UBLOG(logINFO, "Preprocess - end");
 
+   //grid=SPtr<Grid3D>(new Grid3D(comm));
    //restartCoProcessor->restart(200);
-   migCoProcessor->restart(200);
-   //grid->setTimeStep(100);
+   SPtr<MPIIOMigrationBECoProcessor> migCoProcessor(new MPIIOMigrationBECoProcessor(grid, mSch, pathOut + "/mig", comm));
+   migCoProcessor->setLBMKernel(kernel);
+   migCoProcessor->setBCProcessor(bcProc);
+   migCoProcessor->setNu(nuLB);
+   migCoProcessor->restart(10);
+
+   ppblocks->process(1);
 
    //write data for visualization of macroscopic quantities
    SPtr<UbScheduler> visSch(new UbScheduler(outTime));
@@ -182,7 +188,7 @@ void pf1()
    SPtr<NUPSCounterCoProcessor> npr(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
    //start simulation 
-   omp_set_num_threads(numOfThreads);
+   //omp_set_num_threads(numOfThreads);
    SPtr<UbScheduler> stepGhostLayer(new UbScheduler(outTime));
    SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
    calculator->addCoProcessor(npr);
@@ -193,6 +199,8 @@ void pf1()
    if (myid == 0) UBLOG(logINFO, "Simulation-start");
    calculator->calculate();
    if (myid == 0) UBLOG(logINFO, "Simulation-end");
+   
+   ppblocks->process(10);
 }
 
 

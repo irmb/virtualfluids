@@ -4,8 +4,6 @@
 #include "Block3D.h"
 #include <mpi.h>
 
-//int RenumberGridVisitor::counter = 0;
-
 RenumberGridVisitor::RenumberGridVisitor()
 {
 }
@@ -15,7 +13,7 @@ void RenumberGridVisitor::visit(SPtr<Grid3D> grid)
 {
    int counter = 0;
 
-   UBLOG(logDEBUG5, "RenumberGridVisitor::visit() - start");
+   //UBLOG(logDEBUG5, "RenumberGridVisitor::visit() - start");
    std::vector<SPtr<Block3D>> blocks;
    int gridRank = grid->getRank();
    int size;
@@ -24,7 +22,7 @@ void RenumberGridVisitor::visit(SPtr<Grid3D> grid)
    int minInitLevel = grid->getCoarsestInitializedLevel();
    int maxInitLevel = grid->getFinestInitializedLevel();
 
-   Grid3D::BlockIDMap blockIdMap = grid->getBlockIDs();
+   Grid3D::BlockIDMap& blockIdMap = grid->getBlockIDs();
    blockIdMap.clear();
 
    for(int rank = 0; rank < size; rank++)
@@ -45,5 +43,5 @@ void RenumberGridVisitor::visit(SPtr<Grid3D> grid)
       }
    }
 
-   UBLOG(logDEBUG5, "RenumberGridVisitor::visit() - end");
+   //UBLOG(logDEBUG5, "RenumberGridVisitor::visit() - end");
 }

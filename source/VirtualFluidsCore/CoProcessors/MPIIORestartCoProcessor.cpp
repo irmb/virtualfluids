@@ -380,15 +380,14 @@ void MPIIORestartCoProcessor::writeBlocks(int step)
    // }
 
    double start, finish;
-   //MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
-   MPI_Offset write_offset = (MPI_Offset)(sizeof(int));
+   MPI_Offset write_offset = (MPI_Offset)(size * sizeof(int));
 
    if (comm->isRoot())
    {
       start = MPI_Wtime();
 
       // each process writes the quantity of it's blocks
-      MPI_File_write_at(file_handler, 0/*(MPI_Offset)(rank * sizeof(int))*/, &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
+      MPI_File_write_at(file_handler, (MPI_Offset)(rank * sizeof(int)), &blocksCount, 1, MPI_INT, MPI_STATUS_IGNORE);
       // each process writes parameters of the grid
       MPI_File_write_at(file_handler, write_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
       // each process writes it's blocks
@@ -1707,8 +1706,7 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    Block3d* block3dArray = new Block3d[blocksCount];
 
    // calculate the read offset
-   //MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
-   MPI_Offset read_offset = (MPI_Offset)(sizeof(int));
+   MPI_Offset read_offset = (MPI_Offset)(size * sizeof(int));
 
    GridParam* gridParameters = new GridParam;
 
@@ -1726,6 +1724,10 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    {
       finish = MPI_Wtime();
       UBLOG(logINFO, "MPIIORestartCoProcessor::readBlocks time: " << finish - start << " s");
+   }
+
+   if (comm->isRoot())
+   {
       UBLOG(logINFO, "MPIIORestartCoProcessor::readBlocks start of restore of data, rank = " << rank);
       UBLOG(logINFO, "Physical Memory currently used by current process: " << Utilities::getPhysMemUsedByMe() / 1073741824.0 << " GB");
    }
