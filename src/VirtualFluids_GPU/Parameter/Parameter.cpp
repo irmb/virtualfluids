@@ -2788,6 +2788,14 @@ void Parameter::cudaCopyConcFile(int lev)
 	checkCudaErrors( cudaMemcpy(parD[lev]->concIndex,     parH[lev]->concIndex,     mem_size_int,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->concentration, parH[lev]->concentration, mem_size_real, cudaMemcpyHostToDevice));
 }
+
+void Parameter::cudaCopyConcs(int lev)
+{
+	unsigned int mem_size_real = sizeof(real)         * parH[lev]->numberOfPointsConc;
+
+	checkCudaErrors(cudaMemcpy(parD[lev]->concentration, parH[lev]->concentration, mem_size_real, cudaMemcpyHostToDevice));
+}
+
 void Parameter::cudaFreeConcFile(int lev)
 {
 	checkCudaErrors( cudaFreeHost(parH[lev]->concIndex     ));

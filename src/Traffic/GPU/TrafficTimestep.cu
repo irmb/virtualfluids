@@ -33,7 +33,7 @@ __global__ void resetNext(int* roadNext, uint size_road);
 //device functions for movement
 __device__ inline uint getJunctionInCellsVectorIndex(uint * juncInCellIndices, uint size_juncInCells, uint cell);
 
-__device__ inline uint getGapAfterOutCell(int* roadCurrent, int* neighbors, real* sinkCarBlockedPossibilities, int sourceIndex, uint speed, uint safetyDistance, curandState* state);
+__device__ uint getGapAfterOutCell(int* roadCurrent, int* neighbors, real* sinkCarBlockedPossibilities, int sourceIndex, uint speed, uint safetyDistance, curandState* state);
 
 __device__ inline void carStaysOnJunction(int* juncCarsOnJunction, uint* juncInCellIndices, uint* juncAlreadyMoved, uint*juncOldSpeeds, real* pConcArray, uint inCellVectorIndex);
 
