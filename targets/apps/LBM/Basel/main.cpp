@@ -222,9 +222,9 @@ int main( int argc, char* argv[])
             try
             {
 				//multipleLevel("E:/temp/Basel2019/config/configBasel.txt"); //Tesla03
-				//multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
+				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
-				multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt"); //Gamling
+				//multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt"); //Gamling
             }
             catch (const std::exception& e)
             {
