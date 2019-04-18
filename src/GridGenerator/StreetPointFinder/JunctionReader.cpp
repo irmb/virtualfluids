@@ -79,7 +79,16 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder* stre
 		if (onlyNeighbors) {
 			if (inCells.size() == 2 && outCells.size()==2) {
 				specialNeighbors.cells.insert(specialNeighbors.cells.end(), inCells.begin(), inCells.end());
-				std::reverse(outCells.begin(), outCells.end());
+				//
+				//std::reverse(outCells.begin(), outCells.end()); //C++17
+				// new implementation based on https://en.cppreference.com/w/cpp/algorithm/reverse
+				{
+					auto first = outCells.begin();
+					auto last  = outCells.end();
+					while ((first != last) && (first != --last)) {
+						std::iter_swap(first++, last);
+					}
+				}
 				specialNeighbors.neighbors.insert(specialNeighbors.neighbors.end(), outCells.begin(), outCells.end());
 				onlyNeighbors = false;
 			}
