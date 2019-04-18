@@ -41,15 +41,15 @@ void ConcBySpeedAndAcceleration::calculateConcForJunctionCar(uint index, uint ol
 real ConcBySpeedAndAcceleration::chooseConc(uint oldSpeed, uint speed)
 {
 	if (oldSpeed == 0 && speed > 0) //Start
-		return 1.0f;
+		return 0.833f;
 	else if (oldSpeed == 0 && speed == 0) //Idle
-		return 0.25f;
+		return 0.069f;
 	else if (speed == oldSpeed) //Drive
-		return 0.5f;
+		return 0.221f;
 	else if (speed > oldSpeed) //Accelerate
-		return 0.75f;
+		return 0.625f;
 	else if (speed < oldSpeed) //Brake
-		return 0.45f;
+		return 0.379f;
 	else
 		std::cerr << "couldn't choose driving state in ConcentrationBySpeedAndAcceleration::chooseConc" << std::endl;
 	return -1.0f;

@@ -77,10 +77,11 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder* stre
 
 		//make Junction or neighbors
 		if (onlyNeighbors) {
-			if (inCells.size() == 2 && outCells.size()==2) {
+			if (inCells.size() == 2 && outCells.size() == 2) {
 				specialNeighbors.cells.insert(specialNeighbors.cells.end(), inCells.begin(), inCells.end());
-				std::reverse(outCells.begin(), outCells.end());
-				specialNeighbors.neighbors.insert(specialNeighbors.neighbors.end(), outCells.begin(), outCells.end());
+				specialNeighbors.neighbors.push_back(outCells[1]);
+				specialNeighbors.neighbors.push_back(outCells[0]);
+
 				onlyNeighbors = false;
 			}
 			else std::cerr << "can't add curve" << std::endl; continue;
