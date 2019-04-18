@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include "Core/DataTypes.h"
+#include <climits>
 
 
 static uint castSizeT_Uint(size_t number) {
