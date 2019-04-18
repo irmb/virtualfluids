@@ -153,7 +153,7 @@ IF (HULC.BUILD_VF_GKS)
     #add_subdirectory(targets/apps/GKS/ThermalCavityMultiGPU)
     #add_subdirectory(targets/apps/GKS/DrivenCavityMultiGPU)
 
-    #add_subdirectory(targets/apps/GKS/SalinasVazquez)
+    add_subdirectory(targets/apps/GKS/SalinasVazquez)
     #add_subdirectory(targets/apps/GKS/BoundaryJet)
 
     #add_subdirectory(targets/apps/GKS/PropaneFlame)

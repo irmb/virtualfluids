@@ -8,6 +8,7 @@
 #include <fstream>
 #include <memory>
 #include <thread>
+#include <sstream>
 
 #include "Core/Timer/Timer.h"
 #include "Core/PointerDefinitions.h"
@@ -32,6 +33,8 @@
 #include "GksGpu/Parameters/Parameters.h"
 #include "GksGpu/Initializer/Initializer.h"
 
+#include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
@@ -40,6 +43,7 @@
 #include "GksGpu/BoundaryConditions/SalinasVazquez.h"
 
 #include "GksGpu/Communication/Communicator.h"
+#include "GksGpu/Communication/MpiUtility.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -52,12 +56,15 @@
 //uint deviceMap [2] = {2,3};
 uint deviceMap [2] = {0,1};
 
-void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, SPtr<Parameters> parameters, std::string path, std::string simulationName )
+void simulation( std::string path, std::string simulationName )
 {
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -97,21 +104,27 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     //////////////////////////////////////////////////////////////////////////
 
-    parameters->K  = K;
-    parameters->Pr = Pr;
-    parameters->mu = mu;
+    Parameters parameters;
 
-    parameters->force.x = 0;
-    parameters->force.y = -g;
-    parameters->force.z = 0;
+    parameters.K  = K;
+    parameters.Pr = Pr;
+    parameters.mu = mu;
 
-    parameters->dt = dt;
-    parameters->dx = dx;
+    parameters.force.x = 0;
+    parameters.force.y = 0;
+    parameters.force.z = -g;
 
-    parameters->lambdaRef = lambda;
+    parameters.dt = dt;
+    parameters.dx = dx;
 
-    parameters->viscosityModel = ViscosityModel::sutherlandsLaw;
+    parameters.lambdaRef = lambda;
 
+    parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                M e s h    G e n e r a t i o n
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto gridFactory = GridFactory::make();
@@ -122,73 +135,87 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Conglomerate refRegion_1;
-    Conglomerate refRegion_2;
-    Conglomerate refRegion_3;
-    Conglomerate refRegion_4;
+    real startX, endX;
+    real startY, endY;
+    real startZ, endZ;
 
-    real L_1 = 0.35;
-    real L_2 = 0.45;
-    real L_3 = 0.475;
-    real L_4 = 0.495;
+    if( rank % 2 == 0 ) startX = -0.5 * L;
+    else                startX = -3.0 * dx;
+    if( rank % 2 == 0 ) endX   =  3.0 * dx;
+    else                endX   =  0.5 * L;
 
-    if( threadIndex == 0 ) gridBuilder->addCoarseGrid(-0.5*L , -0.5*L, -0.5*H,  
-                                                       3.0*dx,  0.5*L,  0.5*H, dx);
+    startY =   rank/2         * H - 3.0 * dx;
+    endY   = ( rank/2 + 1.0 ) * H + 3.0 * dx;
 
-    if( threadIndex == 1 ) gridBuilder->addCoarseGrid(-3.0*dx, -0.5*L, -0.5*H,  
-                                                       0.5*L ,  0.5*L,  0.5*H, dx);
+    startZ = -0.5 * L;
+    endZ   =  0.5 * L;
 
-    if( threadIndex == 0 ) refRegion_1.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_1,  1.0,  1.0 ) );
+    gridBuilder->addCoarseGrid(startX, startY, startZ,  
+                               endX  , endY  , endZ  , dx);
 
-    if( threadIndex == 1 ) refRegion_1.add( new Cuboid ( L_1, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
+    //////////////////////////////////////////////////////////////////////////
 
-    if( threadIndex == 0 ) refRegion_2.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_2,  1.0,  1.0 ) );
-
-    if( threadIndex == 1 ) refRegion_2.add( new Cuboid ( L_2, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
-
-    if( threadIndex == 0 ) refRegion_3.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_3,  1.0,  1.0 ) );
-
-    if( threadIndex == 1 ) refRegion_3.add( new Cuboid ( L_3, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
-
-    if( threadIndex == 0 ) refRegion_4.add( new Cuboid (-1.0, -1.0, -1.0, 
-                                                        -L_4,  1.0,  1.0 ) );
-
-    if( threadIndex == 1 ) refRegion_4.add( new Cuboid ( L_4, -1.0, -1.0, 
-                                                         1.0,  1.0,  1.0 ) );
+    real refL[4] = { 0.35, 0.45, 0.475, 0.495 };
 
     gridBuilder->setNumberOfLayers(6,6);
-    gridBuilder->addGrid( &refRegion_1, 1);
-    gridBuilder->addGrid( &refRegion_2, 2);
-    gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
 
-    if( threadIndex == 0 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( -1.0, 0.0, 
-                                                                                        -1.0, 1.0, 
-                                                                                        -1.0, 1.0 ) );
+    uint numberOfRefinements = 3;
 
-    if( threadIndex == 1 ) gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>(  0.0, 1.0, 
-                                                                                        -1.0, 1.0, 
-                                                                                        -1.0, 1.0 ) );
+    for( uint ref = 0; ref < numberOfRefinements; ref++ )
+    {
+        Cuboid* refRegion;
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, true);
+        if( rank % 2 == 0 ) refRegion = new Cuboid (-100.0,     -100.0, -100.0, 
+                                                    -refL[ref],  100.0,  100.0 );
+        else                refRegion = new Cuboid ( refL[ref], -100.0, -100.0, 
+                                                     100.0,      100.0,  100.0 );
+
+        gridBuilder->addGrid( refRegion, ref + 1);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    if( rank % 2 == 0 ) startX = -100.0;
+    else                startX =    0.0;
+    if( rank % 2 == 0 ) endX   =    0.0;
+    else                endX   =  100.0;
+
+    startY =   rank/2         * H;
+    endY   = ( rank/2 + 1.0 ) * H;
+
+    startZ = -100.0;
+    endZ   =  100.0;
+
+    gridBuilder->setSubDomainBox( std::make_shared<BoundingBox>( startX, endX, 
+                                                                 startY, endY, 
+                                                                 startZ, endZ ) );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(GKS, false);
             
-    if( threadIndex == 0 ){
-        gridBuilder->findCommunicationIndices(CommunicationDirections::PX, GKS);
-    }
-            
-    if( threadIndex == 1 ){
-        gridBuilder->findCommunicationIndices(CommunicationDirections::MX, GKS);
+    //////////////////////////////////////////////////////////////////////////
+
+    if( rank%2 == 0 ) gridBuilder->findCommunicationIndices( CommunicationDirections::PX, GKS );
+    else              gridBuilder->findCommunicationIndices( CommunicationDirections::MX, GKS );
+
+    if( rank%2 == 0 ) gridBuilder->setCommunicationProcess ( CommunicationDirections::PX, rank + 1 );
+    else              gridBuilder->setCommunicationProcess ( CommunicationDirections::MX, rank - 1 );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    if( mpiWorldSize > 2 )
+    {
+        gridBuilder->findCommunicationIndices(CommunicationDirections::PY, GKS);
+        gridBuilder->findCommunicationIndices(CommunicationDirections::MY, GKS);
+
+        gridBuilder->setCommunicationProcess(CommunicationDirections::PY, (rank + 2 + mpiWorldSize) % mpiWorldSize);
+        gridBuilder->setCommunicationProcess(CommunicationDirections::MY, (rank - 2 + mpiWorldSize) % mpiWorldSize);
     }
 
-    //gridBuilder->writeGridsToVtk(path + "grid/Grid_" + std::to_string( threadIndex ) + "_lev_");
+    //gridBuilder->writeGridsToVtk(path + "/Grid_rank_" + std::to_string(rank) + "_lev_");     
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -203,12 +230,15 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
     //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces_" + std::to_string( threadIndex ) + ".vtk" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    auto dataBase = std::make_shared<DataBase>( "GPU" );
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                 B o u n d a r y    C o n d i t i o n s
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
     SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaHot , false );
     SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold, false );
 
@@ -217,21 +247,25 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     //////////////////////////////////////////////////////////////////////////
 
-    SPtr<BoundaryCondition> bcMY = std::make_shared<SalinasVazquez>( dataBase, lambdaHot, lambdaCold, 0.3371, -0.2642,  0.5301, -2.6438, true );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<SalinasVazquez>( dataBase, lambdaHot, lambdaCold, 0.6559, -0.2037, -0.5420, -2.7318, true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<SalinasVazquez>( dataBase, lambdaHot, lambdaCold, 0.3371, -0.2642,  0.5301, -2.6438, true );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<SalinasVazquez>( dataBase, lambdaHot, lambdaCold, 0.6559, -0.2037, -0.5420, -2.7318, true );
 
-    bcMY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y < -0.5*L; } );
-    bcPY->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.y >  0.5*L; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*L; } );
+    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*L; } );
 
     //////////////////////////////////////////////////////////////////////////
-    
-    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0) );
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Periodic>( dataBase );
-    
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < -0.5*H; } );
-    bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
+
+    if( mpiWorldSize == 2 )
+    {
+        SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>(dataBase);
+        SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>(dataBase);
+
+        bcMX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y < startY; });
+        bcPX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y > endY; });
+
+        dataBase->boundaryConditions.push_back(bcMY);
+        dataBase->boundaryConditions.push_back(bcPY);
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -240,27 +274,16 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
 
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
-    
-    dataBase->boundaryConditions.push_back( bcMY );
-    dataBase->boundaryConditions.push_back( bcPY );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    if( threadIndex == 0 )
-        communicator->initialize( meshAdapter, 1 );
-    
-    if( threadIndex == 1 )
-        communicator->initialize( meshAdapter, 0 );
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                 I n i t i a l    C o n d i t i o n s
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     dataBase->setMesh( meshAdapter );
+
+    dataBase->setCommunicators( meshAdapter );
 
     CudaUtility::printCudaMemoryUsage();
 
@@ -271,38 +294,22 @@ void init( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communi
         real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
         real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters->K );
+        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
 
     Initializer::initializeDataUpdate(dataBase);
 
-    //writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communicator, SPtr<Parameters> parameters, std::string path, std::string simulationName )
-{
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    CudaUtility::setCudaDevice(deviceMap[threadIndex]);
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //                  R u n
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
 
-    writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( 0 ) );
+    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0 );
 
@@ -316,7 +323,7 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
 
     for( uint iter = 1; iter <= 1000000; iter++ )
     {
-        TimeStepping::nestedTimeStep(dataBase, *parameters, communicator, 0);
+        TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
             //( iter < 10     && iter % 1     == 0 ) ||
@@ -328,7 +335,9 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
         {
             dataBase->copyDataDeviceToHost();
 
-            writeVtkXML( dataBase, *parameters, 0, path + simulationName + "_" + std::to_string( threadIndex ) + "_" + std::to_string( iter ) );
+            if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
+
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
         cupsAnalyzer.run( iter );
@@ -352,13 +361,56 @@ void run( uint threadIndex, SPtr<DataBase> dataBase, SPtr<Communicator> communic
 
 int main( int argc, char* argv[])
 {
-    //std::string path( "F:/Work/Computations/out/" );
+    //////////////////////////////////////////////////////////////////////////
+
+    int rank         = MpiUtility::getMpiRankBeforeInit();
+    int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
+
+    if( mpiWorldSize < 2 || mpiWorldSize%2 != 0 )
+    {
+        *logging::out << logging::Logger::INFO_HIGH << "Error: MpiWolrdSize must be multiple of 2!\n";
+        return 1;
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+
+#ifdef _WIN32
+    std::string path( "F:/Work/Computations/out/SalinazVasques/" );
+#else
     std::string path( "out/" );
+#endif
+
     std::string simulationName ( "SalinasVazquez" );
 
+    //////////////////////////////////////////////////////////////////////////
+
     logging::Logger::addStream(&std::cout);
+    
+    std::ofstream logFile( path + simulationName + "_rank_" + std::to_string(rank) + ".log" );
+    logging::Logger::addStream(&logFile);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    // Important: for Cuda-Aware MPI the device must be set before MPI_Init()
+    int deviceCount = CudaUtility::getCudaDeviceCount();
+
+    if(deviceCount == 0)
+    {
+        std::stringstream msg;
+        msg << "No devices devices found!" << std::endl;
+        *logging::out << logging::Logger::WARNING << msg.str(); msg.str("");
+    }
+
+    CudaUtility::setCudaDevice( rank % deviceCount );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    MPI_Init(&argc, &argv);
+
+    //////////////////////////////////////////////////////////////////////////
 
     if( sizeof(real) == 4 )
         *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
@@ -367,36 +419,7 @@ int main( int argc, char* argv[])
 
     try
     {
-        auto dataBase_0 = std::make_shared<DataBase>( "GPU" );
-        auto dataBase_1 = std::make_shared<DataBase>( "GPU" );
-
-        auto communicator_0 = std::make_shared<Communicator>( dataBase_0 );
-        auto communicator_1 = std::make_shared<Communicator>( dataBase_1 );
-
-        communicator_0->opposingCommunicator = communicator_1;
-        communicator_1->opposingCommunicator = communicator_0;
-
-        auto parameters_0 = std::make_shared<Parameters>();
-        auto parameters_1 = std::make_shared<Parameters>();
-
-        {
-            std::thread thread_0(init, 0, dataBase_0, communicator_0, parameters_0, path, simulationName);
-            std::thread thread_1(init, 1, dataBase_1, communicator_1, parameters_1, path, simulationName);
-
-            thread_0.join();
-            thread_1.join();
-        }
-
-        {
-            std::thread thread_0(run, 0, dataBase_0, communicator_0, parameters_0, path, simulationName);
-            std::thread thread_1(run, 1, dataBase_1, communicator_1, parameters_1, path, simulationName);
-
-            thread_0.join();
-            thread_1.join();
-        }
-
-        //writeVtkXML( dataBase_0, *parameters_0, 0, path + simulationName + "_" + std::to_string( 0 ) + "_" + std::to_string( 1 ) );
-        //writeVtkXML( dataBase_1, *parameters_1, 0, path + simulationName + "_" + std::to_string( 1 ) + "_" + std::to_string( 1 ) );
+        simulation(path, simulationName);
     }
     catch (const std::exception& e)
     {     
@@ -411,5 +434,9 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
 
-   return 0;
+    logFile.close();
+
+    MPI_Finalize();
+
+    return 0;
 }

@@ -20,6 +20,7 @@
 #include "FluxComputation/ExpansionCoefficients.cuh"
 #include "FluxComputation/AssembleFlux.cuh"
 #include "FluxComputation/ApplyFlux.cuh"
+#include "FluxComputation/Smagorinsky.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
@@ -174,6 +175,9 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         computeExpansionCoefficients(facePrim, gradN , K, ax);
         computeExpansionCoefficients(facePrim, gradT1, K, ay);
         computeExpansionCoefficients(facePrim, gradT2, K, az);
+
+        //parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
+        //parameters.D   = parameters.mu;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -239,8 +243,10 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
                 isCellProperties( posCellProperties, CELL_PROPERTIES_WALL ) )
             {
                 flux.rho    = zero;
+            #ifdef USE_PASSIVE_SCALAR
                 flux.rhoS_1 = zero;
                 flux.rhoS_2 = zero;
+            #endif //USE_PASSIVE_SCALAR
             }
 
             uint negCellParentIdx = dataBase.parentCell[ negCellIdx ];

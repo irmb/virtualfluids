@@ -56,7 +56,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 {
     uint cellIndex = startIndex + index;
 
-    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real cellVolume = parameters.dx * parameters.dx * parameters.dx;
 
@@ -74,7 +74,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     dataBase.dataUpdate[ RHO_W(cellIndex, dataBase.numberOfCells) ] = zero;
     dataBase.dataUpdate[ RHO_E(cellIndex, dataBase.numberOfCells) ] = zero;
 
-    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real rho = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho;
 
@@ -91,7 +91,24 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
     dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
 
-    //////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //real rho = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho - parameters.rhoRef;
+
+    //Vec3 force = parameters.force;
+
+    //update.rhoU += force.x * parameters.dt * rho ;
+    //update.rhoV += force.y * parameters.dt * rho ;
+    //update.rhoW += force.z * parameters.dt * rho ;
+    //update.rhoE += force.x * dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx )
+    //             + force.y * dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx ) 
+    //             + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx );
+
+    //dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
+    //dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
+    //dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] += update.rho ;
     dataBase.data[ RHO_U(cellIndex, dataBase.numberOfCells) ] += update.rhoU;
@@ -158,17 +175,40 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
             ///////////////////////////////////////////////////////////////////////////////
 
             {
+                //const real heatOfReaction = real(802310.0); // kJ / kmol
+                const real heatOfReaction = real(800.0); // kJ / kmol
+                //const real heatOfReaction = two * real(4000.0); // kJ / kmol
+
+                //////////////////////////////////////////////////////////////////////////
+
+                PrimitiveVariables limitPrim = updatedPrimitive;
+
+                real r = 1.001;
+
+                limitPrim.lambda /= r;
+
+                ConservedVariables limitCons = toConservedVariables(limitPrim, parameters.K);
+
+                real maxHeatRelease = limitCons.rhoE - updatedConserved.rhoE;
+
+                real dX_F_max = maxHeatRelease * M / updatedConserved.rho / heatOfReaction;
+
+                //////////////////////////////////////////////////////////////////////////
+
                 real dX_F = fminf(X_F, c1o2 * X_O2);
+
+                //////////////////////////////////////////////////////////////////////////
 
                 //if( dX_F < zero ) dX_F = zero;
 
                 // Limit the combustion
-                real dX_F_max = parameters.dt / real(0.0001) * real(0.0001);
+                //real dX_F_max = parameters.dt / real(0.0001) * real(0.0001);
+
                 //real dX_F_max = real(0.0001);
+
                 dX_F = fminf(dX_F_max, dX_F);
 
-                //const real heatOfReaction = real(802310.0); // kJ / kmol
-                const real heatOfReaction = real(800.0); // kJ / kmol
+                //////////////////////////////////////////////////////////////////////////
 
                 real dn_F = updatedConserved.rho * dX_F / M;
 

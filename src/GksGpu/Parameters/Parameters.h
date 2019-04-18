@@ -28,6 +28,8 @@ struct  VF_PUBLIC Parameters
 
     real lambdaRef = 1.0;
 
+    real rhoRef = 1.0;
+
     ViscosityModel viscosityModel = ViscosityModel::constant;
 
     real boussinesqT0   = 1.0;
