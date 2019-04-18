@@ -88,7 +88,15 @@ void CarDisplay::dispResults(const std::vector<int> * neighbors, const std::vect
 	writeResultsToFile();
 
 	visualizeSafetyDistanceForConsole(neighbors);
-	reverse(results.begin(), results.end());
+	//reverse(results.begin(), results.end());
+	// new implementation based on https://en.cppreference.com/w/cpp/algorithm/reverse
+	{
+		auto first = results.begin();
+		auto last = results.end();
+		while ((first != last) && (first != --last)) {
+			std::iter_swap(first++, last);
+		}
+	}
 
 	for (uint i = 0; i < results.size(); i++) {
 
