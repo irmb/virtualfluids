@@ -10,9 +10,13 @@
 #include "RoadNetwork/RoadNetworkData.h"
 #include "Utilities/RandomHelper.h"
 
+#include "Output/ConcentrationOutwriter.h"
+#include "Output/CarDisplay.h"
+
+
 class TrafficLogger;
-class ConcentrationOutwriter;
-class CarDisplay;
+//class ConcentrationOutwriter;
+//class CarDisplay;
 class TrafficTimestep;
 
 class VF_PUBLIC TrafficMovement

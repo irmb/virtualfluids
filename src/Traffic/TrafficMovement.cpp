@@ -6,8 +6,6 @@
 #include "Utilities/invalidInput_error.h"
 #include "Utilities/VectorHelper.h"
 #include "Utilities/RandomHelper.h"
-#include "Output/ConcentrationOutwriter.h"
-#include "Output/CarDisplay.h"
 #include "Utilities/Logger.h"
 #include "GPU/TrafficTimestep.h"
 
