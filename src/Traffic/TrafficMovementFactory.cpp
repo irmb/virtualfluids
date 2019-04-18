@@ -22,7 +22,7 @@ TrafficMovementFactory::TrafficMovementFactory()
 }
 
 
-void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU,  real * pConcArray)
+void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, real * pConcArray)
 {
 	//Variables
 
@@ -40,7 +40,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	useLogger = true;
 
 	std::string info = "Only Traffic";
-	
+
 
 
 	//Paths
@@ -94,26 +94,28 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 
 	//Sources
-	std::vector< std::shared_ptr<Source> > sources;
-	for (uint i = 0; i < sourceReader.sources.size(); i++)
-	sources.push_back(std::make_shared <SourceRandom>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity()));
-	roadNetwork->setSources(sources);
+	std::shared_ptr<Source> source;
+	for (uint i = 0; i < sourceReader.sources.size(); i++) {
+		source = std::make_shared <SourceRandom>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity());
+		roadNetwork->addSource(source);
+	}	
 
 
 	//Sinks
-	std::vector< std::shared_ptr<Sink> > sinks;
-	for (uint i = 0; i < sinkReader.sinks.size(); i++)
-		sinks.push_back(std::make_shared <SinkRandom>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility));
-	roadNetwork->setSinks(sinks);
+	std::shared_ptr<Sink>  sink;
+		for (uint i = 0; i < sinkReader.sinks.size(); i++) {
+			sink = std::make_shared <SinkRandom>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility);
+			roadNetwork->addSink(sink);
+		}
 
 
 	//Junctions
-	std::vector <std::shared_ptr<Junction> > junctions;
+	std::shared_ptr<Junction> junction;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
-		junctions.push_back(std::make_shared <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
-		junctions[i]->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		junction = std::make_shared <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime);
+		junction->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		roadNetwork->addJunction(junction);
 	}
-	roadNetwork->setJunctions(junctions);
 
 
 	//set neighbors for curves
@@ -133,7 +135,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	if (!this->useGPU) {
 		simulator->setConcentrationOutwriter(simulator->getRoadLength(), pConcArray);
 	}
-	
+
 
 	//prepare writing to vtk
 	//this->outputPath = "M:/Basel2019/results/";
