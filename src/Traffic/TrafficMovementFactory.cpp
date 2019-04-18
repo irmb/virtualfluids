@@ -90,30 +90,30 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 
 	//make RoadNetwork
-	auto roadNetwork = std::make_unique<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
+	auto roadNetwork = std::make_shared<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
 
 
 	//Sources
-	std::vector< std::unique_ptr<Source> > sources;
+	std::vector< std::shared_ptr<Source> > sources;
 	for (uint i = 0; i < sourceReader.sources.size(); i++)
-		sources.push_back(std::make_unique <SourceRandom>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity()));
-	roadNetwork->setSources(move(sources));
+	sources.push_back(std::make_shared <SourceRandom>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity()));
+	roadNetwork->setSources(sources);
 
 
 	//Sinks
-	std::vector< std::unique_ptr<Sink> > sinks;
+	std::vector< std::shared_ptr<Sink> > sinks;
 	for (uint i = 0; i < sinkReader.sinks.size(); i++)
-		sinks.push_back(std::make_unique <SinkRandom>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility));
-	roadNetwork->setSinks(move(sinks));
+		sinks.push_back(std::make_shared <SinkRandom>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility));
+	roadNetwork->setSinks(sinks);
 
 
 	//Junctions
-	std::vector <std::unique_ptr<Junction> > junctions;
+	std::vector <std::shared_ptr<Junction> > junctions;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
-		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
+		junctions.push_back(std::make_shared <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
 		junctions[i]->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
 	}
-	roadNetwork->setJunctions(move(junctions));
+	roadNetwork->setJunctions(junctions);
 
 
 	//set neighbors for curves
@@ -123,7 +123,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 
 	//init TrafficMovement
-	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
+	this->simulator = std::make_shared<TrafficMovement>(roadNetwork, dawdlePossibility);
 	simulator->setMaxAcceleration(maxAcceleration);
 	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
 	if (useLogger) simulator->setUseLogger();
@@ -131,10 +131,9 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//init ConcentrationOutwriter
 	if (!this->useGPU) {
-		std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
-		simulator->setConcentrationOutwriter(move(writer));
+		simulator->setConcentrationOutwriter(simulator->getRoadLength(), pConcArray);
 	}
-
+	
 
 	//prepare writing to vtk
 	//this->outputPath = "M:/Basel2019/results/";

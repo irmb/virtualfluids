@@ -79,7 +79,7 @@ void JunctionReader::readJunctions(std::string filename, StreetPointFinder* stre
 		if (onlyNeighbors) {
 			if (inCells.size() == 2 && outCells.size() == 2) {
 				specialNeighbors.cells.insert(specialNeighbors.cells.end(), inCells.begin(), inCells.end());
-				specialNeighbors.neighbors.push_back(outCells[1]);
+				specialNeighbors.neighbors.push_back(outCells[1]);     
 				specialNeighbors.neighbors.push_back(outCells[0]);
 
 				onlyNeighbors = false;
