@@ -134,14 +134,14 @@ void multipleLevel(const std::string& configPath)
 			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid");
 			//SimulationFileWriter::write("M:/Basel2019/grids/BaselUniNoForcing/", gridBuilder, FILEFORMAT::BINARY);
 			//Merged for Wind in X Direction
-			gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid");
-			SimulationFileWriter::write("M:/Basel2019/grids/BaselUniMergedX/", gridBuilder, FILEFORMAT::BINARY);
+			gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid");
+			SimulationFileWriter::write("M:/Basel2019/grids/BaselUniMergedXAllStreets/", gridBuilder, FILEFORMAT::BINARY);
 
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			StreetPointFinder finder;
 
-			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Streets.txt");
 
 			finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
 
@@ -154,8 +154,8 @@ void multipleLevel(const std::string& configPath)
 			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUniNoForcing/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 			//Merged for Wind in X Direction
-			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			finder.writeSimulationFile("M:/Basel2019/grids/BaselUniMergedX/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+			finder.writeSimulationFile("M:/Basel2019/grids/BaselUniMergedXAllStreets/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			return;

@@ -177,15 +177,15 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
-   //this->useTrafficGPU = true;
-   //std::string path = "C:/Users/hiwi/BaselDokumente/";
+   this->useTrafficGPU = true;
+   std::string path = "M:/Basel2019/";
 
-   //trafficFactory = new TrafficMovementFactory();
+   trafficFactory = new TrafficMovementFactory();
 
-   //if (useTrafficGPU) 
-	  // trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration);
-   //else
-	  // trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration);
+   if (useTrafficGPU) 
+	   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration);
+   else
+	   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration);
 
    //////////////////////////////////////////////////////////////////////////
    //Allocate Memory for Drag Lift Calculation
@@ -1071,14 +1071,14 @@ void Simulation::run()
 
 
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				////Calculate Traffic by Anna
-				//if (t % 100 == 0)
-				//{
-				//	trafficFactory->calculateTimestep(t / 100);
-				//	if(!useTrafficGPU)	para->cudaCopyConcFile(0);
-				//	if (t % 1000 == 0)
-				//	trafficFactory->writeReducedTimestep(t);					
-				//}
+				//Calculate Traffic by Anna
+				if (t % 100 == 0)
+				{
+					trafficFactory->calculateTimestep(t / 100);
+					if(!useTrafficGPU)	para->cudaCopyConcFile(0);
+					if (t % 1000 == 0)
+					trafficFactory->writeReducedTimestep(t);					
+				}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

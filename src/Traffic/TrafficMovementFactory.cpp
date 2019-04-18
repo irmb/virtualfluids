@@ -37,7 +37,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	this->useGPU = useGPU;
 	bool useSlowToStart = true;
-	useLogger = true;
+	useLogger = false;
 
 	std::string info = "Only Traffic, no writing";
 	
@@ -45,8 +45,10 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//Paths
 
-	inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
-	outputPath = path + "Basel_Ergebnisse/";
+	inputPath = "C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/";
+	outputPath = path + "results/";
+	//inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
+	//outputPath = path + "Basel_Ergebnisse/";
 	outputFilename = "Basel_Traffic";
 	std::string logfile = outputPath + "TrafficLog.txt";
 
