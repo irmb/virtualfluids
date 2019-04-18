@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <time.h>
+#include <cmath>
 
 TrafficLogger TrafficLogger::instance;
 
