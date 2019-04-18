@@ -1548,7 +1548,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
    {
       if (r != rank)
       {
-		   rds = rawDataSend[r].size();
+		 rds = rawDataSend[r].size();
          doubleBlockCount = (int)(rds / SEND_BLOCK_SIZE);
          if (doubleBlockCount * SEND_BLOCK_SIZE < rds)
             doubleBlockCount += 1;
@@ -1557,7 +1557,6 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
 	         rawDataSend[r].push_back(0);
 
          MPI_Isend(&rawDataSend[r][0], doubleBlockCount, sendBlockDoubleType, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
-        //MPI_Isend(&rawDataSend[r][0], rawDataSend[r].size(), MPI_DOUBLE, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
          requestCount++;
       }
    }
@@ -1574,7 +1573,7 @@ void MPIIOMigrationBECoProcessor::blocksExchange(int tagN, int ind1, int ind2, i
       }
    }
 
-   MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);//statuses);
+   MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);
 }
 
 void MPIIOMigrationBECoProcessor::readDataSet(int step)
@@ -1651,78 +1650,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
    }
 
    blocksExchange(MESSAGE_TAG, indexB, indexE, doubleCountInBlock, doubleValuesArray, rawDataReceive);
-/*
-   std::vector<double>* rawDataSend = new std::vector<double>[size];
-   for (int r = 0; r < size; r++)
-   {
-      rawDataSend[r].resize(0);
-      rawDataSend[r].push_back(0);
-   }
 
-   SPtr<Block3D> tempBlock;
-   int tempRank;
-   for (int ind = indexB - indexB; ind < indexE - indexB; ind++)
-   {
-      tempBlock = grid->getBlock(indexB + ind);
-      if(!tempBlock)  throw UbException(UB_EXARGS,"MPIIOMigrationBECoProcessor::readDataSet -- null block pointer!!!" );
-
-      tempRank = tempBlock->getRank();
-      if (tempRank == rank) // no need to send data, the process already has it
-      {
-         rawDataReceive[tempRank][0]++;
-         rawDataReceive[tempRank].push_back(double(indexB + ind));
-         rawDataReceive[tempRank].insert(rawDataReceive[tempRank].end(), doubleValuesArray.begin() + ind * doubleCountInBlock,
-            doubleValuesArray.begin() + ind * doubleCountInBlock + doubleCountInBlock);
-      }
-      else  // we must send data to other processes
-      {
-         rawDataSend[tempRank][0]++;
-         rawDataSend[tempRank].push_back(double(indexB + ind));
-         rawDataSend[tempRank].insert(rawDataSend[tempRank].end(), doubleValuesArray.begin() + ind * doubleCountInBlock,
-            doubleValuesArray.begin() + ind * doubleCountInBlock + doubleCountInBlock);
-      }
- }
-
-   MPI_Request* requests = new MPI_Request[size * 2]; // send + receive
-   int requestCount = 0;
-   MPI_Status status;
-   int quant;
-   int doubleBlockCount;
-   int rds;
-
-   for (int r = 0; r < size; r++)
-   {
-      if (r != rank)
-      {
-		 rds = rawDataSend[r].size();
-         doubleBlockCount = (int)(rds / SEND_BLOCK_SIZE);
-         if (doubleBlockCount * SEND_BLOCK_SIZE < rds)
-            doubleBlockCount += 1;
-
-	     for (int i = rds; i < doubleBlockCount * SEND_BLOCK_SIZE; i++)
-	         rawDataSend[r].push_back(0);
-
-         MPI_Isend(&rawDataSend[r][0], doubleBlockCount, sendBlockDoubleType, r, MESSAGE_TAG, MPI_COMM_WORLD, &requests[requestCount]);
-        //MPI_Isend(&rawDataSend[r][0], rawDataSend[r].size(), MPI_DOUBLE, r, tagN, MPI_COMM_WORLD, &requests[requestCount]);
-         requestCount++;
-      }
-   }
-
-   for (int r = 0; r < size; r++)
-   {
-      if (r != rank)
-      {
-         MPI_Probe(r, MESSAGE_TAG, MPI_COMM_WORLD, &status);
-         MPI_Get_count(&status, sendBlockDoubleType, &quant);
-         rawDataReceive[r].resize(quant * SEND_BLOCK_SIZE);
-         MPI_Irecv(&rawDataReceive[r][0], quant, sendBlockDoubleType, r, MESSAGE_TAG, MPI_COMM_WORLD, &requests[requestCount]);
-         requestCount++;
-      }
-   }
-
-   MPI_Waitall(requestCount, &requests[0], MPI_STATUSES_IGNORE);//statuses);
-*/
-//
    if (comm->isRoot())
    {
       finish = MPI_Wtime();
