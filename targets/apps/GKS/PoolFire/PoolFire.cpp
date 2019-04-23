@@ -68,7 +68,7 @@ void thermalCavity( std::string path, std::string simulationName )
     real U = 0.1;
 
     real eps = 2.0;
-    real Pr  = 0.5;
+    real Pr  = 0.05;
     real K   = 2.0;
     
     real g   = 9.81;
@@ -115,6 +115,8 @@ void thermalCavity( std::string path, std::string simulationName )
     //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     parameters.viscosityModel = ViscosityModel::constant;
 
+    *logging::out << logging::Logger::INFO_HIGH << "Pr = " << parameters.Pr << "\n";
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto gridFactory = GridFactory::make();
@@ -143,22 +145,26 @@ void thermalCavity( std::string path, std::string simulationName )
     Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
     Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.25 );
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.1, 4.0 );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 0.9, 3.5 );
-    VerticalCylinder cylinder3( 0.0, 0.0, 0.0, 0.7, 3.0 );
+    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.1, 4.0   );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 0.9, 3.5   );
+    VerticalCylinder cylinder3( 0.0, 0.0, 0.0, 0.7, 0.0625 );
+    VerticalCylinder cylinder4( 0.0, 0.0, 0.0, 0.7, 0.0625*0.5 );
+    VerticalCylinder cylinder5( 0.0, 0.0, 0.0, 0.7, 0.0625*0.25 );
 
     //gridBuilder->addGrid( &refRegion_1, 1);
     //gridBuilder->addGrid( &refRegion_2, 2);
     //gridBuilder->addGrid( &refRegion_3, 3);
     //gridBuilder->addGrid( &refRegion_4, 4);
 
-    gridBuilder->setNumberOfLayers(4,10);
+    gridBuilder->setNumberOfLayers(4,2);
     
     //gridBuilder->addGrid( &box, 2 );
     //gridBuilder->addGrid( &sphere, 2 );
-    gridBuilder->addGrid( &cylinder1, 1 );
+    //gridBuilder->addGrid( &cylinder1, 1 );
     gridBuilder->addGrid( &cylinder2, 2 );
-    //gridBuilder->addGrid( &cylinder3, 3 );
+    gridBuilder->addGrid( &cylinder3, 3 );
+    //gridBuilder->addGrid( &cylinder4, 4 );
+    //gridBuilder->addGrid( &cylinder5, 5 );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -220,7 +226,11 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, true );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 0.0, prim.lambda, 0.0, 0.0) );
+    //SPtr<BoundaryCondition> bcMZ = std::make_shared<Open>( dataBase );
+
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
@@ -320,12 +330,8 @@ void thermalCavity( std::string path, std::string simulationName )
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter < 10     && iter % 1     == 0 ) ||
-            //( iter < 100    && iter % 10    == 0 ) ||
-            //( iter < 1000   && iter % 100   == 0 ) ||
-            //( iter < 10000  && iter % 1000  == 0 ) ||
-            //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter >= 0 && iter % 10 == 0 )
+            //( iter >= 10200 && iter % 10 == 0 ) || 
+            ( iter % 1000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();

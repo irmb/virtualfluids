@@ -106,8 +106,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     //#endif // USE_PASSIVE_SCALAR
 
         ghostCellPrim.rho    = boundaryCondition.prim.rho;
-        ghostCellPrim.U      = boundaryCondition.prim.U;
-        ghostCellPrim.V      = boundaryCondition.prim.V;
+        ghostCellPrim.U      = two * boundaryCondition.prim.U - domainCellPrim.U;
+        ghostCellPrim.V      = two * boundaryCondition.prim.V - domainCellPrim.V;
         ghostCellPrim.W      = boundaryCondition.prim.W;
         ghostCellPrim.lambda = boundaryCondition.prim.lambda;
     #ifdef USE_PASSIVE_SCALAR
@@ -120,7 +120,9 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         real r = sqrt( y*y + x*x );
 
-        ghostCellPrim.W = ghostCellPrim.W * (one - four*r*r);
+        ghostCellPrim.W   *= (one - four*r*r);
+        ghostCellPrim.S_1 *=       (one - four*r*r);
+        ghostCellPrim.S_2 = one - ghostCellPrim.S_1;
     }
 
     {

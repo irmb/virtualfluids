@@ -76,24 +76,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real rho = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho;
-
-    Vec3 force = parameters.force;
-
-    update.rhoU += force.x * parameters.dt * rho ;
-    update.rhoV += force.y * parameters.dt * rho ;
-    update.rhoW += force.z * parameters.dt * rho ;
-    update.rhoE += force.x * dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx )
-                 + force.y * dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx ) 
-                 + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx );
-
-    dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //real rho = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho - parameters.rhoRef;
+    //real rho = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho;
 
     //Vec3 force = parameters.force;
 
@@ -107,6 +90,41 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
     //dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
     //dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
     //dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ConservedVariables cons;
+
+    cons.rho  = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho;
+
+    cons.rhoU = dataBase.data[ RHO_U(cellIndex, dataBase.numberOfCells) ] + update.rhoU;
+    cons.rhoV = dataBase.data[ RHO_V(cellIndex, dataBase.numberOfCells) ] + update.rhoV;
+    cons.rhoW = dataBase.data[ RHO_W(cellIndex, dataBase.numberOfCells) ] + update.rhoW;
+    cons.rhoE = dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] + update.rhoE;
+
+    PrimitiveVariables updatedPrim = toPrimitiveVariables(cons, parameters.K);
+
+    //real lambda = updatedPrim.lambda;
+
+    Vec3 force = parameters.force;
+
+    update.rhoU += force.x * parameters.dt * ( cons.rho - parameters.rhoRef );
+    update.rhoV += force.y * parameters.dt * ( cons.rho - parameters.rhoRef );
+    update.rhoW += force.z * parameters.dt * ( cons.rho - parameters.rhoRef );
+
+    //updatedPrim = toPrimitiveVariables(cons, parameters.K);
+
+    //updatedPrim.lambda = lambda;
+
+    //cons = toConservedVariables( updatedPrim, parameters.K );
+
+    update.rhoE += force.x * parameters.dt * ( cons.rho - parameters.rhoRef ) * updatedPrim.U
+                 + force.y * parameters.dt * ( cons.rho - parameters.rhoRef ) * updatedPrim.V 
+                 + force.z * parameters.dt * ( cons.rho - parameters.rhoRef ) * updatedPrim.W;
+
+    dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
+    dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
+    dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -234,6 +252,12 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
                 //if( Z1 > one  ) { Z2 += Z1 - one; Z1 = one; }
                 //if( Z2 > one  ) { Z1 += Z2 - one; Z2 = one; }
+
+                if( Z1 < zero ) Z1 = zero;
+                if( Z2 < zero ) Z2 = zero;
+
+                if( Z1 > one  ) Z1 = one;
+                if( Z2 > one  ) Z2 = one;
 
                 ///////////////////////////////////////////////////////////////////////////////
 

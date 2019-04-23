@@ -116,20 +116,25 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     //////////////////////////////////////////////////////////////////////////
 
-    //{   // SpongeLayer
-    //    real x = dataBase.faceCenter[ VEC_X(faceIndex, dataBase.numberOfFaces) ];
+    {   // SpongeLayer
+        real x = dataBase.faceCenter[ VEC_X(faceIndex, dataBase.numberOfFaces) ];
+        real z = dataBase.faceCenter[ VEC_Z(faceIndex, dataBase.numberOfFaces) ];
 
-    //    real muNew = parameters.mu;
+        real muNew = parameters.mu;
 
-    //    if( x > three )
-    //    {
-    //        muNew += ( x - three ) / three * ten * parameters.mu;
-    //    }
+        if( fabsf(x) > c3o2 )
+        {
+            muNew += ( fabsf(x) - c3o2 ) * ten * parameters.mu;
+        }
+        if( fabsf(z) > three )
+        {
+            muNew += ( fabs(z) - three ) * ten * parameters.mu;
+        }
 
-    //    parameters.Pr = muNew / parameters.mu;
+        //parameters.Pr = muNew / parameters.mu;
 
-    //    parameters.mu = muNew;
-    //}
+        parameters.mu = muNew;
+    }
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -176,8 +181,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         computeExpansionCoefficients(facePrim, gradT1, K, ay);
         computeExpansionCoefficients(facePrim, gradT2, K, az);
 
-        //parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
-        //parameters.D   = parameters.mu;
+        parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
+        parameters.D   = parameters.mu;
     }
 
     //////////////////////////////////////////////////////////////////////////
