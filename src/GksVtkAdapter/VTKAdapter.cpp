@@ -504,6 +504,64 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
     *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
+void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase> dataBase, std::shared_ptr<TurbulenceAnalyzer> turbulenceAnalyzer,Parameters parameters, std::string filename, uint mpiWorldSize)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Write " << filename << ".pvtu" << " ... \n";
+
+    vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
+    
+    //////////////////////////////////////////////////////////////////////////
+
+    const auto filenameWithoutPath=filename.substr( filename.find_last_of('/') + 1 );
+
+    std::ofstream file;
+
+    file.open( filename + ".pvtu" );
+
+    //////////////////////////////////////////////////////////////////////////
+    
+    file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\" byte_order=\"LittleEndian\" header_type=\"UInt64\">" << std::endl;
+    file << "  <PUnstructuredGrid GhostLevel=\"1\">" << std::endl;
+
+    file << "    <PCellData>" << std::endl;
+
+        file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "CellIdx"   << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "GhostCell" << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "U"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "V"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float32" << "\" Name=\"" << "W"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UU"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "WW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "T"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "p"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+
+    file << "    </PCellData>" << std::endl;
+
+    file << "    <PPoints>" << std::endl;
+    file << "      <PDataArray type=\"Float32\" Name=\"Points\" NumberOfComponents=\"3\"/>" << std::endl;
+    file << "    </PPoints>" << std::endl;
+
+    for( uint rank = 0; rank < mpiWorldSize; rank++ )
+    {
+        file << "    <Piece Source=\"" << filenameWithoutPath << "_rank_" << rank << ".vtu\"/>" << std::endl;
+    }
+
+    file << "  </PUnstructuredGrid>" << std::endl;
+    file << "</VTKFile>" << std::endl;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
 void mapFlowField(std::shared_ptr<DataBase> base, std::shared_ptr<DataBase> target)
 {
     vtkGridPtr gridBase   = getVtkUnstructuredOctGrid(base,   true);

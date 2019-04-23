@@ -101,6 +101,8 @@ void simulation( std::string path, std::string simulationName )
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " s\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -315,13 +317,14 @@ void simulation( std::string path, std::string simulationName )
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 200000 );
+    //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 200 );
 
     //////////////////////////////////////////////////////////////////////////
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 1000000; iter++ )
+    for( uint iter = 1; iter <= 10000000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
@@ -330,28 +333,31 @@ void simulation( std::string path, std::string simulationName )
             //( iter < 100    && iter % 10    == 0 ) ||
             //( iter < 1000   && iter % 100   == 0 ) ||
             //( iter < 10000  && iter % 1000  == 0 ) 
-            ( iter < 10000000 && iter % 10000 == 0 )
+            ( iter < 10000000 && iter % 50000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
 
             if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
 
-        //turbulenceAnalyzer->run( iter, *parameters );
+        turbulenceAnalyzer->run( iter, parameters );
 
-        //if( iter % 50000 == 0 )
-        //{
-        //    turbulenceAnalyzer->download();
+        if( iter % 100000 == 0 )
+        //if( iter % 400 == 0 )
+        {
+            turbulenceAnalyzer->download();
 
-        //    writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ));
-        //}
+            if( rank == 0 ) writeTurbulenceVtkXMLParallelSummaryFile( dataBase, turbulenceAnalyzer, parameters, path + simulationName + "_Turbulence_" + std::to_string( iter ), mpiWorldSize );
+
+            writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank));
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
