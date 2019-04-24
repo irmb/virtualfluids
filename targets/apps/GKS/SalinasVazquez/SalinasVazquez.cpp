@@ -340,7 +340,7 @@ void simulation( std::string path, std::string simulationName )
 
             if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( iter ), mpiWorldSize );
 
-            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+            writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
 
         cupsAnalyzer.run( iter );
@@ -349,14 +349,13 @@ void simulation( std::string path, std::string simulationName )
 
         turbulenceAnalyzer->run( iter, parameters );
 
-        if( iter % 100000 == 0 )
-        //if( iter % 400 == 0 )
+        if( iter > 200000 && iter % 100000 == 0 )
         {
             turbulenceAnalyzer->download();
 
             if( rank == 0 ) writeTurbulenceVtkXMLParallelSummaryFile( dataBase, turbulenceAnalyzer, parameters, path + simulationName + "_Turbulence_" + std::to_string( iter ), mpiWorldSize );
 
-            writeTurbulenceVtkXML(dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank));
+            writeTurbulenceVtkXML( dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
         }
     }
 
