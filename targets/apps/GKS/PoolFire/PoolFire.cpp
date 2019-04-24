@@ -43,6 +43,7 @@
 #include "GksGpu/BoundaryConditions/InflowComplete.h"
 #include "GksGpu/BoundaryConditions/Open.h"
 
+#include "GksGpu/Interface/Interface.h"
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
@@ -162,7 +163,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //gridBuilder->addGrid( &sphere, 2 );
     //gridBuilder->addGrid( &cylinder1, 1 );
     gridBuilder->addGrid( &cylinder2, 2 );
-    gridBuilder->addGrid( &cylinder3, 3 );
+    //gridBuilder->addGrid( &cylinder3, 3 );
     //gridBuilder->addGrid( &cylinder4, 4 );
     //gridBuilder->addGrid( &cylinder5, 5 );
 
@@ -334,6 +335,16 @@ void thermalCavity( std::string path, std::string simulationName )
             ( iter % 1000 == 0 )
           )
         {
+            for( uint level = 0; level < dataBase->numberOfLevels; level++ )
+               Interface::runFineToCoarse(dataBase, level);
+
+            for( auto bc : dataBase->boundaryConditions ) 
+                for( uint level = 0; level < dataBase->numberOfLevels; level++ )
+                    bc->runBoundaryConditionKernel( dataBase, parameters, level );
+
+            for( uint level = 0; level < dataBase->numberOfLevels; level++ )
+               Interface::runCoarseToFine(dataBase, level);
+
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );

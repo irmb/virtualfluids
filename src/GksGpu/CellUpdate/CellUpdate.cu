@@ -16,6 +16,9 @@
 #include "FlowStateData/FlowStateData.cuh"
 #include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/ThermalDependencies.cuh"
+#include "FlowStateData/AccessDeviceData.cuh"
+
+#include "CellUpdate/Reaction.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
 
@@ -60,214 +63,57 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     real cellVolume = parameters.dx * parameters.dx * parameters.dx;
 
-    ConservedVariables update;
-
-    update.rho  = dataBase.dataUpdate[ RHO__(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-    update.rhoU = dataBase.dataUpdate[ RHO_U(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-    update.rhoV = dataBase.dataUpdate[ RHO_V(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-    update.rhoW = dataBase.dataUpdate[ RHO_W(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-    update.rhoE = dataBase.dataUpdate[ RHO_E(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-
-    dataBase.dataUpdate[ RHO__(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_U(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_V(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_W(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_E(cellIndex, dataBase.numberOfCells) ] = zero;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //real rho = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho;
-
-    //Vec3 force = parameters.force;
-
-    //update.rhoU += force.x * parameters.dt * rho ;
-    //update.rhoV += force.y * parameters.dt * rho ;
-    //update.rhoW += force.z * parameters.dt * rho ;
-    //update.rhoE += force.x * dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx )
-    //             + force.y * dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx ) 
-    //             + force.z * dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] / ( six * parameters.dx * parameters.dx );
-
-    //dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
-    //dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
-    //dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     ConservedVariables cons;
 
-    cons.rho  = dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] + update.rho;
-
-    cons.rhoU = dataBase.data[ RHO_U(cellIndex, dataBase.numberOfCells) ] + update.rhoU;
-    cons.rhoV = dataBase.data[ RHO_V(cellIndex, dataBase.numberOfCells) ] + update.rhoV;
-    cons.rhoW = dataBase.data[ RHO_W(cellIndex, dataBase.numberOfCells) ] + update.rhoW;
-    cons.rhoE = dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] + update.rhoE;
-
-    PrimitiveVariables updatedPrim = toPrimitiveVariables(cons, parameters.K);
-
-    //real lambda = updatedPrim.lambda;
-
-    Vec3 force = parameters.force;
-
-    update.rhoU += force.x * parameters.dt * ( cons.rho - parameters.rhoRef );
-    update.rhoV += force.y * parameters.dt * ( cons.rho - parameters.rhoRef );
-    update.rhoW += force.z * parameters.dt * ( cons.rho - parameters.rhoRef );
-
-    //updatedPrim = toPrimitiveVariables(cons, parameters.K);
-
-    //updatedPrim.lambda = lambda;
-
-    //cons = toConservedVariables( updatedPrim, parameters.K );
-
-    update.rhoE += force.x * parameters.dt * ( cons.rho - parameters.rhoRef ) * updatedPrim.U
-                 + force.y * parameters.dt * ( cons.rho - parameters.rhoRef ) * updatedPrim.V 
-                 + force.z * parameters.dt * ( cons.rho - parameters.rhoRef ) * updatedPrim.W;
-
-    dataBase.massFlux[ VEC_X(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.massFlux[ VEC_Y(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.massFlux[ VEC_Z(cellIndex, dataBase.numberOfCells) ] = zero;
+    readCellData      (cellIndex, dataBase, cons);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    dataBase.data[ RHO__(cellIndex, dataBase.numberOfCells) ] += update.rho ;
-    dataBase.data[ RHO_U(cellIndex, dataBase.numberOfCells) ] += update.rhoU;
-    dataBase.data[ RHO_V(cellIndex, dataBase.numberOfCells) ] += update.rhoV;
-    dataBase.data[ RHO_W(cellIndex, dataBase.numberOfCells) ] += update.rhoW;
-    dataBase.data[ RHO_E(cellIndex, dataBase.numberOfCells) ] += update.rhoE;
-
-#ifdef USE_PASSIVE_SCALAR
-	update.rhoS_1 = dataBase.dataUpdate[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-	update.rhoS_2 = dataBase.dataUpdate[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] / cellVolume;
-
-    dataBase.dataUpdate[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] = zero;
-    dataBase.dataUpdate[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] = zero;
-
-    dataBase.data[ RHO_S_1(cellIndex, dataBase.numberOfCells) ] += update.rhoS_1;
-    dataBase.data[ RHO_S_2(cellIndex, dataBase.numberOfCells) ] += update.rhoS_2;
-#endif // USE_PASSIVE_SCALAR
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef USE_PASSIVE_SCALAR
-    if (true)
     {
-        CellProperties cellProperties = dataBase.cellProperties[ cellIndex ];
+        ConservedVariables update, zeroCons;
+        readCellDataUpdate(cellIndex, dataBase, update);
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons);
 
-        if( !isCellProperties( cellProperties, CELL_PROPERTIES_FINE_GHOST ) )
-        {
-            PrimitiveVariables updatedPrimitive;
-            ConservedVariables updatedConserved;
-
-            updatedConserved.rho    = dataBase.data[RHO__(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoU   = dataBase.data[RHO_U(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoV   = dataBase.data[RHO_V(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoW   = dataBase.data[RHO_W(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoE   = dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoS_1 = dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)];
-            updatedConserved.rhoS_2 = dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)];
-
-            updatedPrimitive = toPrimitiveVariables(updatedConserved, parameters.K);
-
-            //////////////////////////////////////////////////////////////////////////
-
-            real Y_F = updatedPrimitive.S_1;
-            real Y_P = updatedPrimitive.S_2;
-
-            real Y_A = one - Y_F - Y_P;
-
-            real M = one / (Y_A / M_A
-                          + Y_F / M_F
-                          + Y_P / M_P);
-
-            real X_A = Y_A * M / M_A;
-            real X_F = Y_F * M / M_F;
-            real X_P = Y_P * M / M_P;
-
-            ///////////////////////////////////////////////////////////////////////////////
-
-            real X_O2 = real(0.21) * X_A;
-
-            ///////////////////////////////////////////////////////////////////////////////
-
-            {
-                //const real heatOfReaction = real(802310.0); // kJ / kmol
-                const real heatOfReaction = real(800.0); // kJ / kmol
-                //const real heatOfReaction = two * real(4000.0); // kJ / kmol
-
-                //////////////////////////////////////////////////////////////////////////
-
-                PrimitiveVariables limitPrim = updatedPrimitive;
-
-                real r = 1.001;
-
-                limitPrim.lambda /= r;
-
-                ConservedVariables limitCons = toConservedVariables(limitPrim, parameters.K);
-
-                real maxHeatRelease = limitCons.rhoE - updatedConserved.rhoE;
-
-                real dX_F_max = maxHeatRelease * M / updatedConserved.rho / heatOfReaction;
-
-                //////////////////////////////////////////////////////////////////////////
-
-                real dX_F = fminf(X_F, c1o2 * X_O2);
-
-                //////////////////////////////////////////////////////////////////////////
-
-                //if( dX_F < zero ) dX_F = zero;
-
-                // Limit the combustion
-                //real dX_F_max = parameters.dt / real(0.0001) * real(0.0001);
-
-                //real dX_F_max = real(0.0001);
-
-                dX_F = fminf(dX_F_max, dX_F);
-
-                //////////////////////////////////////////////////////////////////////////
-
-                real dn_F = updatedConserved.rho * dX_F / M;
-
-                real releasedHeat = dn_F * heatOfReaction;
-
-                ///////////////////////////////////////////////////////////////////////////////
-
-                //real X_F_new = X_F - dX_F;
-                //real X_P_new = X_P + dX_F;
-
-                real X_A_new = X_A - two * dX_F / real(0.21);
-                real X_F_new = X_F - dX_F;
-
-                real X_P_new = one - X_A_new - X_F_new;
-
-                real Z1 = X_F_new * M_F / M;
-                real Z2 = X_P_new * M_P / M;
-
-                //////////////////////////////////////////////////////////////////////////
-
-                //if( Z1 < zero ) { Z2 -= Z1; Z1 = zero; }
-                //if( Z2 < zero ) { Z1 -= Z2; Z2 = zero; }
-
-                //if( Z1 > one  ) { Z2 += Z1 - one; Z1 = one; }
-                //if( Z2 > one  ) { Z1 += Z2 - one; Z2 = one; }
-
-                if( Z1 < zero ) Z1 = zero;
-                if( Z2 < zero ) Z2 = zero;
-
-                if( Z1 > one  ) Z1 = one;
-                if( Z2 > one  ) Z2 = one;
-
-                ///////////////////////////////////////////////////////////////////////////////
-
-                dataBase.data[RHO_S_1(cellIndex, dataBase.numberOfCells)] = Z1 * updatedConserved.rho;
-                dataBase.data[RHO_S_2(cellIndex, dataBase.numberOfCells)] = Z2 * updatedConserved.rho;
-
-                dataBase.data[RHO_E(cellIndex, dataBase.numberOfCells)]   = updatedConserved.rhoE + releasedHeat;
-            }
-        }
+        cons = cons + (one / cellVolume) * update;
     }
 
-#endif // USE_PASSIVE_SCALAR
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if(false)
+    {
+        // consistent source term treatment of Tian et al. (2007)
+        cons.rhoU += parameters.force.x * parameters.dt * cons.rho;
+        cons.rhoV += parameters.force.y * parameters.dt * cons.rho;
+        cons.rhoW += parameters.force.z * parameters.dt * cons.rho;
+        cons.rhoE += parameters.force.x * dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
+                   + parameters.force.y * dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
+                   + parameters.force.z * dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx);
+
+        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = zero;
+        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = zero;
+        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
+    }
+
+    if(true)
+    {
+        // forcing only on density variation
+        cons.rhoU += parameters.force.x * parameters.dt * ( cons.rho - parameters.rhoRef );
+        cons.rhoV += parameters.force.y * parameters.dt * ( cons.rho - parameters.rhoRef );
+        cons.rhoW += parameters.force.z * parameters.dt * ( cons.rho - parameters.rhoRef );
+        cons.rhoE += parameters.force.x * dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
+                   + parameters.force.y * dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx)
+                   + parameters.force.z * dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] / (six * parameters.dx * parameters.dx);
+
+        dataBase.massFlux[VEC_X(cellIndex, dataBase.numberOfCells)] = zero;
+        dataBase.massFlux[VEC_Y(cellIndex, dataBase.numberOfCells)] = zero;
+        dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    chemicalReaction(dataBase, parameters, cellIndex, cons);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    writeCellData(cellIndex, dataBase, cons);
 }

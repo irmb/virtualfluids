@@ -181,8 +181,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         computeExpansionCoefficients(facePrim, gradT1, K, ay);
         computeExpansionCoefficients(facePrim, gradT2, K, az);
 
-        parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
-        parameters.D   = parameters.mu;
+        //parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
+        //parameters.D   = parameters.mu;
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -257,7 +257,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             uint negCellParentIdx = dataBase.parentCell[ negCellIdx ];
             uint posCellParentIdx = dataBase.parentCell[ posCellIdx ];
 
-            if( !( negCellParentIdx != INVALID_INDEX ) != !( posCellParentIdx != INVALID_INDEX ) ) // XOR
+            //if( !( negCellParentIdx != INVALID_INDEX ) != !( posCellParentIdx != INVALID_INDEX ) ) // XOR
+            if( ( negCellParentIdx == INVALID_INDEX ) != ( posCellParentIdx == INVALID_INDEX ) ) // XOR
             {
                 if( !isCellProperties( negCellProperties, CELL_PROPERTIES_GHOST ) && 
                     !isCellProperties( posCellProperties, CELL_PROPERTIES_GHOST ) )
