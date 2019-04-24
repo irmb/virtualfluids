@@ -17,6 +17,7 @@
 #include "Definitions/PassiveScalar.h"
 
 #include "FlowStateData/FlowStateData.cuh"
+#include "FlowStateData/FlowStateDataConversion.cuh"
 #include "FlowStateData/AccessDeviceData.cuh"
 
 #include "CudaUtility/CudaRunKernel.hpp"
@@ -82,14 +83,47 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
 
-    ConservedVariables domainCellData;
+    ConservedVariables domainCellData, ghostCellData;
     readCellData ( domainCellIdx, dataBase, domainCellData );
-    writeCellData( ghostCellIdx , dataBase, domainCellData );
+
+    PrimitiveVariables domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
+    
+    real xGhostCell  = dataBase.cellCenter[ VEC_X(ghostCellIdx, dataBase.numberOfCells) ];
+    real yGhostCell  = dataBase.cellCenter[ VEC_Y(ghostCellIdx, dataBase.numberOfCells) ];
+    real zGhostCell  = dataBase.cellCenter[ VEC_Z(ghostCellIdx, dataBase.numberOfCells) ];
+    
+    real xDomainCell = dataBase.cellCenter[ VEC_X(domainCellIdx, dataBase.numberOfCells) ];
+    real yDomainCell = dataBase.cellCenter[ VEC_Y(domainCellIdx, dataBase.numberOfCells) ];
+    real zDomainCell = dataBase.cellCenter[ VEC_Z(domainCellIdx, dataBase.numberOfCells) ];
+
+    real dx = xGhostCell - xDomainCell;
+    real dy = yGhostCell - yDomainCell;
+    real dz = zGhostCell - zDomainCell;
+
+    real sign = domainCellPrim.U * dx 
+              + domainCellPrim.V * dy 
+              + domainCellPrim.W * dz;
+
+    if( sign > zero )
+        ghostCellData = domainCellData;
+    else
+    {
+        PrimitiveVariables ghostCellPrim  = boundaryCondition.prim;
+
+        ghostCellPrim.U = domainCellPrim.U;
+        ghostCellPrim.V = domainCellPrim.V;
+        ghostCellPrim.W = domainCellPrim.W;
+
+        ghostCellData = toConservedVariables(ghostCellPrim, parameters.K);
+    }
+
+    writeCellData(ghostCellIdx, dataBase, ghostCellData);
 }
 
-Open::Open(SPtr<DataBase> dataBase)
+Open::Open(SPtr<DataBase> dataBase, PrimitiveVariables prim)
     : BoundaryCondition( dataBase )
 {
+    this->prim = prim;
 }
 
 bool Open::isWall()

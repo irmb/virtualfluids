@@ -9,6 +9,8 @@
 #include "Core/DataTypes.h"
 #include "Core/VectorTypes.h"
 
+#include "FlowStateData/FlowStateData.cuh"
+
 #include "BoundaryConditions/BoundaryCondition.h"
 
 struct OpenStruct
@@ -18,11 +20,15 @@ struct OpenStruct
     uint* ghostCells;
     uint* domainCells;
     uint* secondCells;
+
+    PrimitiveVariables prim;
 };
 
 struct VF_PUBLIC Open : public BoundaryCondition //, public IsothermalWallStruct
 {
-    Open( SPtr<DataBase> dataBase );
+    PrimitiveVariables prim;
+
+    Open( SPtr<DataBase> dataBase, PrimitiveVariables prim );
 
     virtual bool isWall() override;
 
@@ -41,6 +47,8 @@ struct VF_PUBLIC Open : public BoundaryCondition //, public IsothermalWallStruct
         boundaryCondition.ghostCells    = this->ghostCells;
         boundaryCondition.domainCells   = this->domainCells;
         boundaryCondition.secondCells   = this->secondCells;
+
+        boundaryCondition.prim          = prim;
 
         return boundaryCondition;
     }

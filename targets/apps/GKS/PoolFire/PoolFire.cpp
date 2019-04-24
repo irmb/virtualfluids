@@ -128,7 +128,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = false;
+    bool threeDimensional = true;
 
     if( threeDimensional )
     {
@@ -197,8 +197,10 @@ void thermalCavity( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
@@ -210,8 +212,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
     if( threeDimensional )
     {
-        bcMY = std::make_shared<Open>( dataBase );
-        bcPY = std::make_shared<Open>( dataBase );
+        bcMY = std::make_shared<Open>( dataBase, prim );
+        bcPY = std::make_shared<Open>( dataBase, prim );
 
         bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
         bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
@@ -232,7 +234,7 @@ void thermalCavity( std::string path, std::string simulationName )
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 0.0, prim.lambda, 0.0, 0.0) );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<Open>( dataBase );
 
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase, prim );
     
     bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
@@ -331,7 +333,7 @@ void thermalCavity( std::string path, std::string simulationName )
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 10200 && iter % 10 == 0 ) || 
+            //( iter >= 5000 && iter % 10 == 0 ) || 
             ( iter % 1000 == 0 )
           )
         {
