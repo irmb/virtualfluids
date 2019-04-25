@@ -114,6 +114,15 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         ghostCellPrim.V = domainCellPrim.V;
         ghostCellPrim.W = domainCellPrim.W;
 
+        real velocity = sqrt( ghostCellPrim.U * ghostCellPrim.U + ghostCellPrim.V * ghostCellPrim.V + ghostCellPrim.W * ghostCellPrim.W );
+
+        if( velocity > ten  )
+        {
+            ghostCellPrim.U *= ten / velocity;
+            ghostCellPrim.V *= ten / velocity;
+            ghostCellPrim.W *= ten / velocity;
+        }
+
         ghostCellData = toConservedVariables(ghostCellPrim, parameters.K);
     }
 

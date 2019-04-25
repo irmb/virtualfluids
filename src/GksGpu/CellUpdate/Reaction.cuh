@@ -57,14 +57,14 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
             {
                 //const real heatOfReaction = real(802310.0); // kJ / kmol
-                const real heatOfReaction = real(800.0); // kJ / kmol
+                const real heatOfReaction = real(8000.0); // kJ / kmol
                 //const real heatOfReaction = two * real(1000.0); // kJ / kmol
 
                 //////////////////////////////////////////////////////////////////////////
 
                 PrimitiveVariables limitPrim = prim;
 
-                real r = 1.01;
+                real r = 1.001;
 
                 limitPrim.lambda /= r;
 
@@ -119,9 +119,26 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
                 ///////////////////////////////////////////////////////////////////////////////
 
-                cons.rhoS_1 =  Z1 * cons.rho;
-                cons.rhoS_2 =  Z2 * cons.rho;
-                cons.rhoE   += releasedHeat;
+                ConservedVariables testCons = cons;
+
+                testCons.rhoE += releasedHeat;
+
+                PrimitiveVariables testPrim = toPrimitiveVariables(testCons, parameters.K);
+
+                //////////////////////////////////////////////////////////////////////////
+
+                if( getT( testPrim ) < 20 )
+                {
+                    cons.rhoS_1 = Z1 * cons.rho;
+                    cons.rhoS_2 = Z2 * cons.rho;
+                    cons.rhoE += releasedHeat;
+                }
+
+                if( cons.rhoS_1 < zero ) cons.rhoS_1 = zero;
+                if( cons.rhoS_2 < zero ) cons.rhoS_2 = zero;
+
+                if( cons.rhoS_1 > cons.rho  ) cons.rhoS_1 = cons.rho;
+                if( cons.rhoS_2 > cons.rho  ) cons.rhoS_2 = cons.rho;
             }
         }
     }
