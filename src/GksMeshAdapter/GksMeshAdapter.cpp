@@ -775,6 +775,9 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
     {
         SPtr<Grid> grid = this->gridBuilder->getGrid(level);
 
+        if( !grid->getPeriodicityX() && !grid->getPeriodicityY() && !grid->getPeriodicityZ() )
+            throw std::runtime_error( "GksMeshAdapter::findPeriodicBoundaryNeighbors() failed, because no periodic direction is set!" );
+
         uint startIdx = startOfCellsPerLevel[ level ] + numberOfBulkCellsPerLevel[ level ];
 
         uint endIdx   = startOfCellsPerLevel[ level ] + numberOfCellsPerLevel[ level ];
@@ -808,11 +811,11 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
                                                             cell.cellCenter.y + delta.y,
                                                             cell.cellCenter.z + delta.z );
             
-            if( neighborGridIdx == INVALID_INDEX ) throw std::runtime_error( std::string("No periodic cell found! 1") );
+            if( neighborGridIdx == INVALID_INDEX ) throw std::runtime_error( std::string("No periodic cell found!") );
 
             uint neighborIdx = this->gridToMesh[ level ][ neighborGridIdx ];
 
-            if( neighborIdx == cellIdx ) neighborIdx == INVALID_INDEX;
+            //if( neighborIdx == cellIdx ) neighborIdx == INVALID_INDEX;
 
             if( neighborIdx == INVALID_INDEX )
             {

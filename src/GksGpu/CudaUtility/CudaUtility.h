@@ -27,6 +27,8 @@ public:
     static int getCudaDeviceCount();
 
     static void setCudaDevice( int device );
+
+    static int getCudaDevice(  );
 };
 
 #endif

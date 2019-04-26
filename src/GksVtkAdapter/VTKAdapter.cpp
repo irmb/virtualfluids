@@ -493,6 +493,10 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
         return turbulenceAnalyzer->h_T[ cellIdx ];
     });
 
+    addScalarRealCellData(grid, dataBase->numberOfCells, "TT", [&](uint cellIdx) {
+        return turbulenceAnalyzer->h_TT[ cellIdx ];
+    });
+
     addScalarRealCellData(grid, dataBase->numberOfCells, "p", [&](uint cellIdx) {
         return turbulenceAnalyzer->h_p[ cellIdx ];
     });
@@ -530,7 +534,7 @@ void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase
 
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "U"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "V"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
-        file << "      <PDataArray type=\"" << "Float32" << "\" Name=\"" << "W"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "W"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
 
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UU"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
@@ -541,6 +545,7 @@ void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
         
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "T"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "TT"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "p"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
 
     file << "    </PCellData>" << std::endl;

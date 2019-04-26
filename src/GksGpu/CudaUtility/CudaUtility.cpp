@@ -49,3 +49,14 @@ void CudaUtility::setCudaDevice(int device)
 
     *logging::out << logging::Logger::INFO_HIGH << "Set device " << device << ": " << prop.name << "\n";
 }
+
+int CudaUtility::getCudaDevice()
+{
+    int device;
+    checkCudaErrors( cudaGetDevice( &device ) );
+
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, device);
+
+    *logging::out << logging::Logger::INFO_HIGH << "The current device " << device << ": " << prop.name << "\n";
+}

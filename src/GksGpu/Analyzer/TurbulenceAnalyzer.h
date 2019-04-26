@@ -32,6 +32,8 @@ struct TurbulenceAnalyzerStruct
     real* VW;
     
     real* T ;
+    real* TT;
+
     real* p ;
 };
 
@@ -56,6 +58,7 @@ private:
     real* VW;
 
     real* T ;
+    real* TT;
     real* p ;
 
 public:
@@ -75,6 +78,7 @@ public:
     std::vector<real> h_VW;
 
     std::vector<real> h_T ;
+    std::vector<real> h_TT;
     std::vector<real> h_p ;
 
 public:

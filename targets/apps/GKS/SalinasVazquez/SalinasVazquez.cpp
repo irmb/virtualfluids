@@ -146,8 +146,16 @@ void simulation( std::string path, std::string simulationName )
     if( rank % 2 == 0 ) endX   =  3.0 * dx;
     else                endX   =  0.5 * L;
 
-    startY =   rank/2         * H - 3.0 * dx;
-    endY   = ( rank/2 + 1.0 ) * H + 3.0 * dx;
+    if( mpiWorldSize == 2 )
+    {
+        startY =   real(rank/2)         * H;
+        endY   = ( real(rank/2) + 1.0 ) * H;
+    }
+    else
+    {
+        startY =  rank / 2        * H - 3.0 * dx;
+        endY   = (rank / 2 + 1.0) * H + 3.0 * dx;
+    }
 
     startZ = -0.5 * L;
     endZ   =  0.5 * L;
@@ -161,7 +169,7 @@ void simulation( std::string path, std::string simulationName )
 
     gridBuilder->setNumberOfLayers(6,6);
 
-    uint numberOfRefinements = 3;
+    uint numberOfRefinements = 2;//3;
 
     for( uint ref = 0; ref < numberOfRefinements; ref++ )
     {
@@ -182,8 +190,16 @@ void simulation( std::string path, std::string simulationName )
     if( rank % 2 == 0 ) endX   =    0.0;
     else                endX   =  100.0;
 
-    startY =   rank/2         * H;
-    endY   = ( rank/2 + 1.0 ) * H;
+    if( mpiWorldSize == 2 )
+    {
+        startY = -100.0;
+        endY   =  100.0;
+    }
+    else
+    {
+        startY =   real(rank/2)         * H;
+        endY   = ( real(rank/2) + 1.0 ) * H;
+    }
 
     startZ = -100.0;
     endZ   =  100.0;
@@ -194,7 +210,8 @@ void simulation( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    if( mpiWorldSize == 2 ) gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
+    else                    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
 
     gridBuilder->buildGrids(GKS, false);
             
@@ -262,8 +279,8 @@ void simulation( std::string path, std::string simulationName )
         SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>(dataBase);
         SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>(dataBase);
 
-        bcMX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y < startY; });
-        bcPX->findBoundaryCells(meshAdapter, true, [&](Vec3 center) { return center.y > endY; });
+        bcMY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y < 0; });
+        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y > H; });
 
         dataBase->boundaryConditions.push_back(bcMY);
         dataBase->boundaryConditions.push_back(bcPY);
@@ -368,19 +385,27 @@ int main( int argc, char* argv[])
 {
     //////////////////////////////////////////////////////////////////////////
 
+#ifdef _WIN32
+    MPI_Init(&argc, &argv);
+    int rank = 0;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int mpiWorldSize = 1;
+    MPI_Comm_size(MPI_COMM_WORLD, &mpiWorldSize);
+#else
     int rank         = MpiUtility::getMpiRankBeforeInit();
     int mpiWorldSize = MpiUtility::getMpiWorldSizeBeforeInit();
+#endif
 
     if( mpiWorldSize < 2 || mpiWorldSize%2 != 0 )
     {
-        *logging::out << logging::Logger::INFO_HIGH << "Error: MpiWolrdSize must be multiple of 2!\n";
+        std::cerr << "Error: MpiWolrdSize must be multiple of 2!\n";
         return 1;
     }
 
     //////////////////////////////////////////////////////////////////////////
 
 #ifdef _WIN32
-    std::string path( "F:/Work/Computations/out/SalinazVasques/" );
+    std::string path( "F:/Work/Computations/out/SalinasVazquez/" );
 #else
     std::string path( "out/" );
 #endif
@@ -413,7 +438,9 @@ int main( int argc, char* argv[])
 
     //////////////////////////////////////////////////////////////////////////
 
+#ifndef _WIN32
     MPI_Init(&argc, &argv);
+#endif
 
     //////////////////////////////////////////////////////////////////////////
 

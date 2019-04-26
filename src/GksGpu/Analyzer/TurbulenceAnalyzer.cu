@@ -90,7 +90,8 @@ __host__ __device__ void turbulenceFunction(DataBaseStruct dataBase, TurbulenceA
     turbulenceAnalyzer.UW[ cellIndex ] += prim.U * prim.W;
     turbulenceAnalyzer.VW[ cellIndex ] += prim.V * prim.W;
 
-    turbulenceAnalyzer.T [ cellIndex ] += one / prim.lambda;
+    turbulenceAnalyzer.T [ cellIndex ] +=   one / prim.lambda;
+    turbulenceAnalyzer.TT[ cellIndex ] += ( one / prim.lambda ) * ( one / prim.lambda );
     turbulenceAnalyzer.p [ cellIndex ] += c1o2 * prim.rho / prim.lambda;
 
     //////////////////////////////////////////////////////////////////////////
@@ -110,6 +111,7 @@ TurbulenceAnalyzer::~TurbulenceAnalyzer()
     checkCudaErrors( cudaFree ( this->UW ) );
     checkCudaErrors( cudaFree ( this->VW ) );
     checkCudaErrors( cudaFree ( this->T  ) );
+    checkCudaErrors( cudaFree ( this->TT ) );
     checkCudaErrors( cudaFree ( this->p  ) );
 }
 
@@ -124,6 +126,7 @@ TurbulenceAnalyzer::TurbulenceAnalyzer(SPtr<DataBase> dataBase, uint analyzeStar
       UW( nullptr ),
       VW( nullptr ),
       T ( nullptr ),
+      TT( nullptr ),
       p ( nullptr )
 {
     this->dataBase = dataBase;
@@ -142,6 +145,7 @@ TurbulenceAnalyzer::TurbulenceAnalyzer(SPtr<DataBase> dataBase, uint analyzeStar
     checkCudaErrors( cudaMalloc ( &this->UW, sizeof(real) * dataBase->numberOfCells ) );
     checkCudaErrors( cudaMalloc ( &this->VW, sizeof(real) * dataBase->numberOfCells ) );
     checkCudaErrors( cudaMalloc ( &this->T , sizeof(real) * dataBase->numberOfCells ) );
+    checkCudaErrors( cudaMalloc ( &this->TT, sizeof(real) * dataBase->numberOfCells ) );
     checkCudaErrors( cudaMalloc ( &this->p , sizeof(real) * dataBase->numberOfCells ) );
 
     h_U.resize ( dataBase->numberOfCells );
@@ -154,6 +158,7 @@ TurbulenceAnalyzer::TurbulenceAnalyzer(SPtr<DataBase> dataBase, uint analyzeStar
     h_UW.resize( dataBase->numberOfCells );
     h_VW.resize( dataBase->numberOfCells );
     h_T.resize ( dataBase->numberOfCells );
+    h_TT.resize( dataBase->numberOfCells );
     h_p.resize ( dataBase->numberOfCells );
 }
 
@@ -179,6 +184,7 @@ TurbulenceAnalyzerStruct TurbulenceAnalyzer::toStruct()
     turbulenceAnalyzer.VW = this->VW;
 
     turbulenceAnalyzer.T  = this->T;
+    turbulenceAnalyzer.TT = this->TT;
     turbulenceAnalyzer.p  = this->p;
 
     return turbulenceAnalyzer;
@@ -196,6 +202,7 @@ void TurbulenceAnalyzer::download()
     checkCudaErrors( cudaMemcpy( this->h_UW.data(), this->UW, sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     checkCudaErrors( cudaMemcpy( this->h_VW.data(), this->VW, sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     checkCudaErrors( cudaMemcpy( this->h_T.data() , this->T , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
+    checkCudaErrors( cudaMemcpy( this->h_TT.data(), this->TT, sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
     checkCudaErrors( cudaMemcpy( this->h_p.data() , this->p , sizeof(real) * dataBase->numberOfCells, cudaMemcpyDeviceToHost ) );
 
     for( uint cellIndex = 0; cellIndex < dataBase->numberOfCells; cellIndex++ )
@@ -210,6 +217,7 @@ void TurbulenceAnalyzer::download()
         this->h_UW[ cellIndex ] /= real(this->counter);
         this->h_VW[ cellIndex ] /= real(this->counter);
         this->h_T [ cellIndex ] /= real(this->counter);
+        this->h_TT[ cellIndex ] /= real(this->counter);
         this->h_p [ cellIndex ] /= real(this->counter);
 
         this->h_UU[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_U[ cellIndex ];
@@ -219,6 +227,8 @@ void TurbulenceAnalyzer::download()
         this->h_UV[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_V[ cellIndex ];
         this->h_UW[ cellIndex ] -= this->h_U[ cellIndex ] * this->h_W[ cellIndex ];
         this->h_VW[ cellIndex ] -= this->h_V[ cellIndex ] * this->h_W[ cellIndex ];
+        
+        this->h_TT[ cellIndex ] -= this->h_T[ cellIndex ] * this->h_T[ cellIndex ];
     }
 }
 
