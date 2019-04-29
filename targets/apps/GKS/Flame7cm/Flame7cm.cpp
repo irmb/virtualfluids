@@ -60,22 +60,20 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 8.0;
-    real H = 8.0;
-    real W = 0.125;
+    real L = 0.4;
+    real H = 0.4;
 
     real dx = H / real(nx);
 
-    real U = 0.1;
+    real U = 0.0314;
 
-    real eps = 2.0;
-    real Pr  = 0.25;
-    real K   = 2.0;
+    real Pr  = 0.05;
+    real K   = 3.0;
     
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 1.0e-2;
+    real mu = 1.5e-4;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -83,7 +81,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.5;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -146,33 +144,16 @@ void thermalCavity( std::string path, std::string simulationName )
     Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
     Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.25 );
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.3, 4.0   );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1, 3.5   );
-    VerticalCylinder cylinder3( 0.0, 0.0, 0.0, 0.7, 0.0625 );
-    VerticalCylinder cylinder4( 0.0, 0.0, 0.0, 0.7, 0.0625*0.5 );
-    VerticalCylinder cylinder5( 0.0, 0.0, 0.0, 0.7, 0.0625*0.25 );
-
-    //gridBuilder->addGrid( &refRegion_1, 1);
-    //gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
-
-    gridBuilder->setNumberOfLayers(0,20);
+    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 0.05, 0.03   );
     
     Conglomerate refRing;
+    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 0.5 * 0.08, 0.03 ) );
+    refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.5 * 0.06, 1.0    ) );
 
-    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 0.6, 0.125 ) );
-    refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.4, 1.0    ) );
+    gridBuilder->setNumberOfLayers(0,40);
 
-    //gridBuilder->addGrid( &box, 2 );
-    //gridBuilder->addGrid( &sphere, 2 );
-    //gridBuilder->addGrid( &cylinder1, 1 );
-    gridBuilder->addGrid( &cylinder2, 2 );
-    //gridBuilder->addGrid( &cylinder3, 3 );
-    //gridBuilder->addGrid( &cylinder4, 4 );
-    //gridBuilder->addGrid( &cylinder5, 5 );
-
-    gridBuilder->addGrid( &refRing, 3 );
+    gridBuilder->addGrid( &cylinder1, 3 );
+    //gridBuilder->addGrid( &refRing, 1 );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -195,7 +176,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CudaUtility::setCudaDevice(0);
+    CudaUtility::setCudaDevice(1);
 
     auto dataBase = std::make_shared<DataBase>( "GPU" );
 
@@ -206,14 +187,14 @@ void thermalCavity( std::string path, std::string simulationName )
     
     SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
-    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
-    SPtr<BoundaryCondition> bcPX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
+    //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
+    //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
 
-    bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 0.5; } );
-    bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 0.5; } );
+    //bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 0.5; } );
+    //bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 0.5; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -258,7 +239,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5*0.071;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -349,7 +330,7 @@ void thermalCavity( std::string path, std::string simulationName )
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 7000 && iter % 10 == 0 ) || 
+            //( iter >= 2000 && iter % 100 == 0 ) || 
             ( iter % 1000 == 0 )
           )
         {
@@ -386,12 +367,12 @@ int main( int argc, char* argv[])
 {
 
 #ifdef _WIN32
-    std::string path( "F:/Work/Computations/out/PoolFire/" );
+    std::string path( "F:/Work/Computations/out/Flame7cm/" );
 #else
     std::string path( "out/" );
 #endif
 
-    std::string simulationName ( "PoolFire" );
+    std::string simulationName ( "Flame" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);

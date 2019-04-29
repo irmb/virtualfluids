@@ -121,8 +121,10 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         real r = sqrt( y*y + x*x );
 
         ghostCellPrim.W   *= (one - four*r*r);
+    #ifdef USE_PASSIVE_SCALAR
         ghostCellPrim.S_1 *= (one - four*r*r);
         ghostCellPrim.S_2 = one - ghostCellPrim.S_1;
+    #endif // USE_PASSIVE_SCALAR
     }
 
     {

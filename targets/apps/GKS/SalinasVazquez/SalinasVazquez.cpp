@@ -169,7 +169,7 @@ void simulation( std::string path, std::string simulationName )
 
     gridBuilder->setNumberOfLayers(6,6);
 
-    uint numberOfRefinements = 2;//3;
+    uint numberOfRefinements = 3;
 
     for( uint ref = 0; ref < numberOfRefinements; ref++ )
     {
@@ -242,7 +242,7 @@ void simulation( std::string path, std::string simulationName )
 
     meshAdapter.inputGrid();
 
-    meshAdapter.findPeriodicBoundaryNeighbors();    
+    if( mpiWorldSize == 2 ) meshAdapter.findPeriodicBoundaryNeighbors();    
 
     meshAdapter.getCommunicationIndices();
 

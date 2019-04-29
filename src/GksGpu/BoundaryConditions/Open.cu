@@ -82,12 +82,17 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 {
     uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
+    uint secondCellIdx = boundaryCondition.secondCells[ startIndex + index ];
 
-    ConservedVariables domainCellData, ghostCellData;
+    ConservedVariables domainCellData, secondCellData, ghostCellData;
     readCellData ( domainCellIdx, dataBase, domainCellData );
+    readCellData ( secondCellIdx, dataBase, domainCellData );
 
     PrimitiveVariables domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
+    PrimitiveVariables secondCellPrim = toPrimitiveVariables( secondCellData, parameters.K );
     
+    //////////////////////////////////////////////////////////////////////////
+
     real xGhostCell  = dataBase.cellCenter[ VEC_X(ghostCellIdx, dataBase.numberOfCells) ];
     real yGhostCell  = dataBase.cellCenter[ VEC_Y(ghostCellIdx, dataBase.numberOfCells) ];
     real zGhostCell  = dataBase.cellCenter[ VEC_Z(ghostCellIdx, dataBase.numberOfCells) ];
@@ -104,7 +109,15 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
               + domainCellPrim.V * dy 
               + domainCellPrim.W * dz;
 
-    if( sign > zero )
+    //////////////////////////////////////////////////////////////////////////
+
+    real p1 = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
+    real p2 = c1o2 * secondCellPrim.rho / secondCellPrim.lambda;
+
+    //////////////////////////////////////////////////////////////////////////
+
+    //if( sign > zero )
+    if( p2 > p1 )
         ghostCellData = domainCellData;
     else
     {
@@ -142,6 +155,6 @@ bool Open::isWall()
 
 bool Open::secondCellsNeeded()
 {
-    return false;
+    return true;
 }
 
