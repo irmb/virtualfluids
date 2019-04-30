@@ -177,15 +177,21 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    //////////////////////////////////////////////////////////////////////////
    //Init Traffic by Anna
    //////////////////////////////////////////////////////////////////////////
-   this->useTrafficGPU = true;
-   std::string path = "M:/Basel2019/";
+   //if (para->getMyID() == 0)
+   //{
+	  // this->useTrafficGPU = true;
+	  // //Phoenix
+	  // //std::string path = "/work/marschoe/Basel4GPU/";
+	  // //Baumbart
+	  // std::string path = "M:/Basel2019/";
 
-   trafficFactory = new TrafficMovementFactory();
+	  // trafficFactory = new TrafficMovementFactory();
 
-   if (useTrafficGPU) 
-	   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration);
-   else
-	   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration);
+	  // if (useTrafficGPU)
+		 //  trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration);
+	  // else
+		 //  trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration);
+   //}
 
    //////////////////////////////////////////////////////////////////////////
    //Allocate Memory for Drag Lift Calculation
@@ -1071,14 +1077,14 @@ void Simulation::run()
 
 
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				//Calculate Traffic by Anna
-				if (t % 100 == 0)
-				{
-					trafficFactory->calculateTimestep(t / 100);
-					if(!useTrafficGPU)	para->cudaCopyConcFile(0);
-					if (t % 1000 == 0)
-					trafficFactory->writeReducedTimestep(t);					
-				}
+				////Calculate Traffic by Anna
+				//int numberOfTimestepsPerSecond = 50;
+				//if ((t % numberOfTimestepsPerSecond == 0) && (para->getMyID() == 0))
+				//{
+				//	trafficFactory->calculateTimestep(t / numberOfTimestepsPerSecond);
+				//	if(!useTrafficGPU)				para->cudaCopyConcFile(0);
+				//	if (t % para->getTOut() == 0)	trafficFactory->writeReducedTimestep(t);					
+				//}
 			  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1106,13 +1112,16 @@ void Simulation::run()
                getLastCudaError("QADBBDev27 execution failed");
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //Street Manhattan - never use again, please
-               QADDirichletDev27( para->getParD(0)->numberofthreads,      para->getParD(0)->nx,					para->getParD(0)->ny,
-								  para->getParD(0)->d0SP.f[0],            para->getParD(0)->d27.f[0],           para->getParD(0)->concentration, //para->getParD(0)->TempVel.tempPulse,
-								  para->getParD(0)->diffusivity,          para->getParD(0)->concIndex,			para->getParD(0)->QGeom.q27[0], 
-								  para->getParD(0)->QGeom.kQ,             para->getParD(0)->numberOfPointsConc, para->getParD(0)->omega,
-								  para->getParD(0)->neighborX_SP,         para->getParD(0)->neighborY_SP,		para->getParD(0)->neighborZ_SP,
-								  para->getParD(0)->size_Mat_SP,          para->getParD(0)->evenOrOdd);
-               getLastCudaError("QADDirichletDev27 execution failed");
+			   if (para->getMyID() == 0)
+			   {
+				   QADDirichletDev27( para->getParD(0)->numberofthreads,      para->getParD(0)->nx,					para->getParD(0)->ny,
+									  para->getParD(0)->d0SP.f[0],            para->getParD(0)->d27.f[0],           para->getParD(0)->concentration, //para->getParD(0)->TempVel.tempPulse,
+									  para->getParD(0)->diffusivity,          para->getParD(0)->concIndex,			para->getParD(0)->QGeom.q27[0], 
+									  para->getParD(0)->QGeom.kQ,             para->getParD(0)->numberOfPointsConc, para->getParD(0)->omega,
+									  para->getParD(0)->neighborX_SP,         para->getParD(0)->neighborY_SP,		para->getParD(0)->neighborZ_SP,
+									  para->getParD(0)->size_Mat_SP,          para->getParD(0)->evenOrOdd);
+				   getLastCudaError("QADDirichletDev27 execution failed");
+			   }
       //         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //         //advection diffusion + velocity boundary condition
 			   //if (t>400000 && t<415580)//(t>100000 && t<103895)//(t>1600000 && t<1662317)//(t>500000 && t<515580)//(t<1000)//(t<15580)//(t>400000 && t<415580)//

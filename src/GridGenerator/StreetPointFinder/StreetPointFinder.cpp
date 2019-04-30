@@ -49,19 +49,20 @@ real Street::getCoordinateY(int cellIndex)
 	return yStart + real(cellIndex) / real(numberOfCells - 1) * (yEnd - yStart);
 }
 
-void Street::findIndicesLB(SPtr<Grid> grid)
+void Street::findIndicesLB(SPtr<Grid> grid, real initialSearchHeight)
 {
 	for (uint i = 0; i < numberOfCells; i++)
 	{
 		real x = getCoordinateX(i);
 		real y = getCoordinateY(i);
 
-		uint matrixIndex = grid->transCoordToIndex(x, y, 10.0);
+		uint matrixIndex = grid->transCoordToIndex(x, y, initialSearchHeight);
 
 		real xLB, yLB, zLB;
 		grid->transIndexToCoords(matrixIndex, xLB, yLB, zLB);
 
-		while (grid->getFieldEntry(matrixIndex) != BC_SOLID)
+		while (grid->getFieldEntry(matrixIndex) != BC_SOLID ||
+			   grid->getFieldEntry(grid->transCoordToIndex(xLB, yLB, zLB-grid->getDelta())) != STOPPER_SOLID)
 		{
 			zLB -= grid->getDelta();
 			matrixIndex = grid->transCoordToIndex(xLB, yLB, zLB);
@@ -71,7 +72,7 @@ void Street::findIndicesLB(SPtr<Grid> grid)
 
 
 		msg << "( " << x << ", " << y << " )" << "  ==>  ";
-		msg << "( " << xLB << ", " << yLB << ", " << zLB << " ) [" << (int)grid->getFieldEntry(matrixIndex) << "] \n";
+		msg << "( " << xLB << ", " << yLB << ", " << zLB << " ), type = [" << (int)grid->getFieldEntry(matrixIndex) << "], z = " << zLB << " \n";
 
 		*logging::out << logging::Logger::INFO_LOW << msg.str();
 
@@ -183,11 +184,11 @@ void StreetPointFinder::readStreets(std::string filename)
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
 
-void StreetPointFinder::findIndicesLB(SPtr<Grid> grid)
+void StreetPointFinder::findIndicesLB(SPtr<Grid> grid, real initialSearchHeight)
 {
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::findIndicesLB()\n";
 
-	for (auto& street : streets) street.findIndicesLB(grid);
+	for (auto& street : streets) street.findIndicesLB(grid, initialSearchHeight);
 
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }

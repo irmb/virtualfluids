@@ -2,7 +2,7 @@
 
 #include "CumulantAll4CompSP27_Device.cuh"
 
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 
 std::shared_ptr<Kernel> CumulantAll4CompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)
 {

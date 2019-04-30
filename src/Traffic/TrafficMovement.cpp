@@ -9,6 +9,10 @@
 #include "Utilities/Logger.h"
 #include "GPU/TrafficTimestep.h"
 
+#include "Output/ConcBySpeedAndAcceleration.h"
+#include "Output/ConcentrationByPosition.h"
+
+
 TrafficMovement::TrafficMovement(std::shared_ptr<RoadNetworkData> road, const real dawdlePossibility)
 {
 	this->road = std::move(road);
@@ -83,9 +87,9 @@ void TrafficMovement::setMaxAcceleration(uint maxAcceleration)
 	this->road->maxAcceleration = maxAcceleration;
 }
 
-void TrafficMovement::setConcentrationOutwriter(std::unique_ptr<ConcentrationOutwriter> writer)
+void TrafficMovement::setConcentrationOutwriter(uint roadlength, real* concArrayStart)
 {
-	this->concWriter = std::move(writer);
+	this->concWriter = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(roadlength, concArrayStart));
 }
 
 

@@ -11,7 +11,7 @@ BoundaryValues::BoundaryValues(std::string path)
 	file.open(path.c_str(), std::ios::in);
 
 	if (!file) {
-		std::cerr << "error can not open value file" << std::endl;
+		std::cerr << "error can not open value file:" << path << std::endl;
 		exit(1);
 	}
 	init();
@@ -20,7 +20,7 @@ BoundaryValues::BoundaryValues(std::string path)
 BoundaryValues::BoundaryValues(std::string path, std::shared_ptr<Parameter> para, std::string str)
 {
 	if (!file) {
-		std::cerr << "error can not open value file" << std::endl;
+		std::cerr << "error can not open value file:" << path << std::endl;
 		exit(1);
 	}
 

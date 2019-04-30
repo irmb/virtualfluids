@@ -32,7 +32,7 @@ struct VF_PUBLIC Street
     real getCoordinateX( int cellIndex );
     real getCoordinateY( int cellIndex );
 
-    void findIndicesLB( SPtr<Grid> grid );
+    void findIndicesLB( SPtr<Grid> grid, real initialSearchHeight);
 };
 
 struct VF_PUBLIC StreetPointFinder
@@ -46,7 +46,7 @@ struct VF_PUBLIC StreetPointFinder
 
     void readStreets(std::string filename);
 
-    void findIndicesLB( SPtr<Grid> grid );
+    void findIndicesLB( SPtr<Grid> grid, real initialSearchHeight );
 
 	void writeVTK(std::string filename, const std::vector<int>& cars = std::vector<int>());
 

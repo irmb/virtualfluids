@@ -10,7 +10,7 @@
 #include <curand_kernel.h>
 
 #include <DataTypes.h>
-#include "LBM\LB.h"
+#include "LBM/LB.h"
 
 
 //////////////////////////////////////////////////////////////////////////

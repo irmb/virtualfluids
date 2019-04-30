@@ -33,7 +33,7 @@ __global__ void resetNext(int* roadNext, uint size_road);
 //device functions for movement
 __device__ inline uint getJunctionInCellsVectorIndex(uint * juncInCellIndices, uint size_juncInCells, uint cell);
 
-__device__ inline uint getGapAfterOutCell(int* roadCurrent, int* neighbors, real* sinkCarBlockedPossibilities, int sourceIndex, uint speed, uint safetyDistance, curandState* state);
+__device__ uint getGapAfterOutCell(int* roadCurrent, int* neighbors, real* sinkCarBlockedPossibilities, int sourceIndex, uint speed, uint safetyDistance, curandState* state);
 
 __device__ inline void carStaysOnJunction(int* juncCarsOnJunction, uint* juncInCellIndices, uint* juncAlreadyMoved, uint*juncOldSpeeds, real* pConcArray, uint inCellVectorIndex);
 
@@ -669,15 +669,15 @@ __device__ real calcConcentration(uint oldSpeed, uint newSpeed)
 {
 	//printf("newIndex %d ", newIndex );
 	if (oldSpeed == 0 && newSpeed > 0) //Start
-		return 1.0f;
+		return 0.833f;
 	else if (oldSpeed == 0 && newSpeed == 0) //Idle
-		return 0.25f;
+		return 0.069f;
 	else if (newSpeed == oldSpeed) //Drive
-		return 0.5f;
+		return 0.221f;
 	else if (newSpeed > oldSpeed) //Accelerate
-		return 0.75f;
+		return 0.625f;
 	else if (newSpeed < oldSpeed) //Brake
-		return 0.45f;
+		return 0.379f;
 	else
 		printf("couldn't choose driving state in calcConcentration");
 	return -1;

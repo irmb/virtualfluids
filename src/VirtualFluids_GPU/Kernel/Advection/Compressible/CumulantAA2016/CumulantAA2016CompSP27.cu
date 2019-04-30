@@ -1,6 +1,6 @@
 #include "CumulantAA2016CompSP27.h"
 
-#include "Parameter\Parameter.h"
+#include "Parameter/Parameter.h"
 #include "CumulantAA2016CompSP27_Device.cuh"
 
 std::shared_ptr<Kernel> CumulantAA2016CompSP27::getNewInstance(std::shared_ptr<Parameter> para, int level)

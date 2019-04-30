@@ -16,12 +16,12 @@ public:
 
 	~RoadMaker();
 
-	void setJunctions( std::vector<std::unique_ptr<Junction> > & junctions); //max 999 junctions
-	void addJunction(std::unique_ptr<Junction> & junction);
-	void setSinks(std::vector< std::unique_ptr<Sink> > & sinks); //max 999 sinks
-	void addSink(std::unique_ptr<Sink> & sink);
-	void setSources(std::vector< std::unique_ptr<Source> > & sources);
-	void addSource(std::unique_ptr<Source> & source);
+	void setJunctions( std::vector<std::shared_ptr<Junction> > & junctions); //max 999 junctions
+	void addJunction(std::shared_ptr<Junction> & junction);
+	void setSinks(std::vector< std::shared_ptr<Sink> > & sinks); //max 999 sinks
+	void addSink(std::shared_ptr<Sink> & sink);
+	void setSources(std::vector< std::shared_ptr<Source> > & sources);
+	void addSource(std::shared_ptr<Source> & source);
 
 	void setNeighbor(uint index, uint neighbor); // don't use it for setting sinks or junctions!
 	void setNeighborForCurve(uint index, uint neighbor);
@@ -43,8 +43,8 @@ private:
 	void initVehicleLength(const uint vehicleLength);
 	int randomSpeed();
 
-	void setJunctionAsNeighbor(std::unique_ptr<Junction> & junction);
-	void setSinkAsNeighbor(std::unique_ptr<Sink> & sink);
+	void setJunctionAsNeighbor(std::shared_ptr<Junction> & junction);
+	void setSinkAsNeighbor(std::shared_ptr<Sink> & sink);
 
 };
 

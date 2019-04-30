@@ -148,20 +148,20 @@ void RoadMaker::initVehicleLength(const uint vehicleLength)
 }
 
 
-void RoadMaker::setJunctions(std::vector<std::unique_ptr<Junction> > & junctions)
+void RoadMaker::setJunctions(std::vector<std::shared_ptr<Junction> > & junctions)
 {
 	for (auto& junc : junctions)
-		addJunction(move(junc));
+		addJunction(junc);
 }
 
 
-void RoadMaker::addJunction(std::unique_ptr<Junction>& junction)
+void RoadMaker::addJunction(std::shared_ptr<Junction>& junction)
 {
 	try {
 
 		junction->checkOutCellIndices(roadLength);
 		setJunctionAsNeighbor(junction);
-		this->junctions.push_back(move(junction));
+		this->junctions.push_back(junction);
 
 		if (junctions.size() > 999) throw std::runtime_error("too many junctions");
 
@@ -174,7 +174,7 @@ void RoadMaker::addJunction(std::unique_ptr<Junction>& junction)
 }
 
 
-void RoadMaker::setJunctionAsNeighbor(std::unique_ptr<Junction> & junction)
+void RoadMaker::setJunctionAsNeighbor(std::shared_ptr<Junction> & junction)
 {
 	//set the junction as neighbor of the incoming cells
 
@@ -200,20 +200,20 @@ void RoadMaker::setJunctionAsNeighbor(std::unique_ptr<Junction> & junction)
 }
 
 
-void RoadMaker::setSinks(std::vector<std::unique_ptr<Sink> > & sinks)
+void RoadMaker::setSinks(std::vector<std::shared_ptr<Sink> > & sinks)
 {
 	for (auto& sink : sinks)
-		addSink(move(sink));
+		addSink(sink);
 }
 
 
-void RoadMaker::addSink(std::unique_ptr<Sink>& sink)
+void RoadMaker::addSink(std::shared_ptr<Sink>& sink)
 {
 
 	try {
 
 		setSinkAsNeighbor(sink);
-		this->sinks.push_back(move(sink));
+		this->sinks.push_back(sink);
 		if (sinks.size() > 999) throw std::runtime_error("too many sinks");
 
 
@@ -227,7 +227,7 @@ void RoadMaker::addSink(std::unique_ptr<Sink>& sink)
 }
 
 
-void RoadMaker::setSinkAsNeighbor(std::unique_ptr<Sink> & sink)
+void RoadMaker::setSinkAsNeighbor(std::shared_ptr<Sink> & sink)
 {
 	//set the sink as neighbor of the incoming cell
 
@@ -247,18 +247,18 @@ void RoadMaker::setSinkAsNeighbor(std::unique_ptr<Sink> & sink)
 
 
 
-void RoadMaker::setSources(std::vector< std::unique_ptr<Source> > & sources)
+void RoadMaker::setSources(std::vector< std::shared_ptr<Source> > & sources)
 {
 	for (auto& source : sources)
-		addSource(move(source));
+		addSource(source);
 }
 
 
-void RoadMaker::addSource(std::unique_ptr<Source>& source)
+void RoadMaker::addSource(std::shared_ptr<Source>& source)
 {
 	try {
 		if (source->getIndex() >= roadLength) throw invalidInput_error("Source index is greater than roadlength");
-		this->sources.push_back(move(source));
+		this->sources.push_back(source);
 	}
 
 	catch (const std::exception& e) {

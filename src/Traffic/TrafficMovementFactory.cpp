@@ -22,7 +22,7 @@ TrafficMovementFactory::TrafficMovementFactory()
 }
 
 
-void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU,  real * pConcArray)
+void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, real * pConcArray)
 {
 	//Variables
 
@@ -39,14 +39,19 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	bool useSlowToStart = true;
 	useLogger = false;
 
-	std::string info = "Only Traffic, no writing";
-	
+	std::string info = "Only Traffic";
+
 
 
 	//Paths
 
+	//Phoenix
+	//inputPath = path + "source/git/targets/apps/LBM/Basel/resources/";
+	//outputPath = path + "results/";
+	//Baumbart
 	inputPath = "C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/";
 	outputPath = path + "results/";
+	//Gamling
 	//inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
 	//outputPath = path + "Basel_Ergebnisse/";
 	outputFilename = "Basel_Traffic";
@@ -92,30 +97,32 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 
 	//make RoadNetwork
-	auto roadNetwork = std::make_unique<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
+	auto roadNetwork = std::make_shared<RoadMaker>(roadLength, maxVelocity, vehicleLength, vehicleDensity);
 
 
 	//Sources
-	std::vector< std::unique_ptr<Source> > sources;
-	for (uint i = 0; i < sourceReader.sources.size(); i++)
-		sources.push_back(std::make_unique <SourceRandom>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity()));
-	roadNetwork->setSources(move(sources));
+	std::shared_ptr<Source> source;
+	for (uint i = 0; i < sourceReader.sources.size(); i++) {
+		source = std::make_shared <SourceRandom>(sourceReader.sources[i].sourceIndex, sourceReader.sources[i].sourcePossibility, roadNetwork->getMaxVelocity());
+		roadNetwork->addSource(source);
+	}	
 
 
 	//Sinks
-	std::vector< std::unique_ptr<Sink> > sinks;
-	for (uint i = 0; i < sinkReader.sinks.size(); i++)
-		sinks.push_back(std::make_unique <SinkRandom>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility));
-	roadNetwork->setSinks(move(sinks));
+	std::shared_ptr<Sink>  sink;
+		for (uint i = 0; i < sinkReader.sinks.size(); i++) {
+			sink = std::make_shared <SinkRandom>(sinkReader.sinks[i].sinkIndex, sinkReader.sinks[i].sinkBlockedPossibility);
+			roadNetwork->addSink(sink);
+		}
 
 
 	//Junctions
-	std::vector <std::unique_ptr<Junction> > junctions;
+	std::shared_ptr<Junction> junction;
 	for (uint i = 0; i < junctionReader.junctions.size(); i++) {
-		junctions.push_back(std::make_unique <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime));
-		junctions[i]->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		junction = std::make_shared <JunctionRandom>(junctionReader.junctions[i].inCells, junctionReader.junctions[i].outCells, junctionReader.junctions[i].trafficLightSwitchTime);
+		junction->setCellIndicesForNoUTurn(junctionReader.junctions[i].carCanNotEnterThisOutCell);
+		roadNetwork->addJunction(junction);
 	}
-	roadNetwork->setJunctions(move(junctions));
 
 
 	//set neighbors for curves
@@ -125,7 +132,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 
 	//init TrafficMovement
-	this->simulator = std::make_shared<TrafficMovement>(move(roadNetwork), dawdlePossibility);
+	this->simulator = std::make_shared<TrafficMovement>(roadNetwork, dawdlePossibility);
 	simulator->setMaxAcceleration(maxAcceleration);
 	if (useSlowToStart) simulator->setSlowToStart(slowToStartPossibility);
 	if (useLogger) simulator->setUseLogger();
@@ -133,8 +140,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//init ConcentrationOutwriter
 	if (!this->useGPU) {
-		std::unique_ptr<ConcentrationOutwriter> writer = std::make_unique<ConcBySpeedAndAcceleration>(ConcBySpeedAndAcceleration(simulator->getRoadLength(), pConcArray));
-		simulator->setConcentrationOutwriter(move(writer));
+		simulator->setConcentrationOutwriter(simulator->getRoadLength(), pConcArray);
 	}
 
 

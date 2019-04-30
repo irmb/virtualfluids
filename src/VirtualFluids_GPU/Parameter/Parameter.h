@@ -392,6 +392,7 @@ public:
 
 	void cudaAllocConcFile(int lev);
 	void cudaCopyConcFile(int lev);
+	void cudaCopyConcs(int lev);
 	void cudaFreeConcFile(int lev);
 
 	void cudaAllocInlet(int lev);

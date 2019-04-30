@@ -13,15 +13,15 @@
 
 std::shared_ptr<GridProvider> GridReader::make(FileFormat format, std::shared_ptr<Parameter> para)
 {
-    return std::make_shared<GridReader>(format, para);
+	return std::make_shared<GridReader>(format, para);
 }
 
 GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para)
 {
-    this->para = para;
-    this->cudaMemoryManager = CudaMemoryManager::make(para);
+	this->para = para;
+	this->cudaMemoryManager = CudaMemoryManager::make(para);
 
-	this->binaer=binaer;
+	this->binaer = binaer;
 	channelDirections.resize(6);
 	channelBoundaryConditions.resize(6);
 	BC_Values.resize(6);
@@ -36,28 +36,28 @@ GridReader::GridReader(bool binaer, std::shared_ptr<Parameter> para)
 
 GridReader::GridReader(FileFormat format, std::shared_ptr<Parameter> para)
 {
-    this->para = para;
-    this->cudaMemoryManager = CudaMemoryManager::make(para);
+	this->para = para;
+	this->cudaMemoryManager = CudaMemoryManager::make(para);
 
-    this->format = format;
-    switch(format)
-    {
-    case FileFormat::ASCII:
-        binaer = false; break;
-    case FileFormat::BINARY:
-        binaer = true; break;
-    }
+	this->format = format;
+	switch (format)
+	{
+	case FileFormat::ASCII:
+		binaer = false; break;
+	case FileFormat::BINARY:
+		binaer = true; break;
+	}
 
-    channelDirections.resize(6);
-    channelBoundaryConditions.resize(6);
-    BC_Values.resize(6);
+	channelDirections.resize(6);
+	channelBoundaryConditions.resize(6);
+	BC_Values.resize(6);
 
-    channelDirections[0] = "inlet";
-    channelDirections[1] = "outlet";
-    channelDirections[2] = "front";
-    channelDirections[3] = "back";
-    channelDirections[4] = "top";
-    channelDirections[5] = "bottom";
+	channelDirections[0] = "inlet";
+	channelDirections[1] = "outlet";
+	channelDirections[2] = "front";
+	channelDirections[3] = "back";
+	channelDirections[4] = "top";
+	channelDirections[5] = "bottom";
 }
 
 GridReader::~GridReader()
@@ -68,20 +68,20 @@ GridReader::~GridReader()
 
 void rearrangeGeometry(Parameter* para, int lev)
 {
-    for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
-    {
-        if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
-        {
-            para->getParH(lev)->geoSP[index] = GEO_FLUID;
-        }
-    }
+	for (uint index = 0; index < para->getParH(lev)->size_Mat_SP; index++)
+	{
+		if (para->getParH(lev)->geoSP[index] == GEO_FLUID_OLD)
+		{
+			para->getParH(lev)->geoSP[index] = GEO_FLUID;
+		}
+	}
 }
 
 void GridReader::allocArrays_CoordNeighborGeo()
 {
 	std::cout << "-----Config Arrays Coord, Neighbor, Geo------" << std::endl;
 
-    // Lenz: The first parameter in the CoordNeighborGeoV constructur is the file
+	// Lenz: The first parameter in the CoordNeighborGeoV constructur is the file
 	CoordNeighborGeoV coordX(para->getcoordX(), binaer, true);
 	CoordNeighborGeoV coordY(para->getcoordY(), binaer, true);
 	CoordNeighborGeoV coordZ(para->getcoordZ(), binaer, true);
@@ -96,25 +96,25 @@ void GridReader::allocArrays_CoordNeighborGeo()
 	int numberOfNodesGlobal = 0;
 	std::cout << "Number of Nodes: " << std::endl;
 
-	for (int level = 0; level <= maxLevel; level++) 
-	{		
+	for (int level = 0; level <= maxLevel; level++)
+	{
 		int numberOfNodesPerLevel = coordX.getSize(level) + 1;
 		numberOfNodesGlobal += numberOfNodesPerLevel;
 		std::cout << "Level " << level << " = " << numberOfNodesPerLevel << " Nodes" << std::endl;
 
 		setNumberOfNodes(numberOfNodesPerLevel, level);
 
-        cudaMemoryManager->cudaAllocCoord(level);
+		cudaMemoryManager->cudaAllocCoord(level);
 		cudaMemoryManager->cudaAllocSP(level);
 		para->cudaAllocF3SP(level);
 		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
-        if (para->getCalcMedian())
-            para->cudaAllocMedianSP(level);
-        if (para->getCalcParticle() || para->getUseWale())
-            para->cudaAllocNeighborWSB(level);
-        if (para->getUseWale())
-            para->cudaAllocTurbulentViscosity(level);
+		if (para->getCalcMedian())
+			para->cudaAllocMedianSP(level);
+		if (para->getCalcParticle() || para->getUseWale())
+			para->cudaAllocNeighborWSB(level);
+		if (para->getUseWale())
+			para->cudaAllocTurbulentViscosity(level);
 
 		coordX.initalCoords(para->getParH(level)->coordX_SP, level);
 		coordY.initalCoords(para->getParH(level)->coordY_SP, level);
@@ -125,20 +125,20 @@ void GridReader::allocArrays_CoordNeighborGeo()
 		neighWSB->initalNeighbors(para->getParH(level)->neighborWSB_SP, level);
 		geoV.initalNeighbors(para->getParH(level)->geoSP, level);
 
-        rearrangeGeometry(para.get(), level);
+		rearrangeGeometry(para.get(), level);
 		setInitalNodeValues(numberOfNodesPerLevel, level);
-        
-        cudaMemoryManager->cudaCopyNeighborWSB(level);
-        cudaMemoryManager->cudaCopySP(level);
-        cudaMemoryManager->cudaCopyCoord(level);
+
+		cudaMemoryManager->cudaCopyNeighborWSB(level);
+		cudaMemoryManager->cudaCopySP(level);
+		cudaMemoryManager->cudaCopyCoord(level);
 	}
 	std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
-	std::cout << "-----finish Coord, Neighbor, Geo------" <<std::endl;
+	std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;
 }
 
 void GridReader::allocArrays_BoundaryValues()
 {
-	std::cout << "------read BoundaryValues------" <<std::endl;
+	std::cout << "------read BoundaryValues------" << std::endl;
 
 	this->makeReader(para);
 	this->setChannelBoundaryCondition();
@@ -267,12 +267,12 @@ void GridReader::allocArrays_BoundaryValues()
 
 	for (int i = 0; i <= maxLevel; i++) {
 		int temp1 = (int)pressureV[i][0].size();
-        cout << "size pressure level " << i << " : " << temp1 << endl;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(i)->QPress.kQ = temp1;
-        para->getParD(i)->QPress.kQ = temp1;
-        para->getParH(i)->kPressQread = temp1 * para->getD3Qxx();
-        para->getParD(i)->kPressQread = temp1 * para->getD3Qxx();
+		cout << "size pressure level " << i << " : " << temp1 << endl;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		para->getParH(i)->QPress.kQ = temp1;
+		para->getParD(i)->QPress.kQ = temp1;
+		para->getParH(i)->kPressQread = temp1 * para->getD3Qxx();
+		para->getParD(i)->kPressQread = temp1 * para->getD3Qxx();
 		if (temp1 > 1)
 		{
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -345,18 +345,18 @@ void GridReader::allocArrays_BoundaryValues()
 	 //--------------------------------------------------------------------------//
 	for (int i = 0; i <= maxLevel; i++) {
 		int temp2 = (int)velocityV[i][0].size();
-        cout << "size velocity level " << i << " : " << temp2 << endl;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        int blocks = (temp2 / para->getParH(i)->numberofthreads) + 1;
-        para->getParH(i)->Qinflow.kArray = blocks * para->getParH(i)->numberofthreads;
-        para->getParD(i)->Qinflow.kArray = para->getParH(i)->Qinflow.kArray;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(i)->Qinflow.kQ = temp2;
-        para->getParD(i)->Qinflow.kQ = temp2;
-        para->getParH(i)->kInflowQ = temp2;
-        para->getParD(i)->kInflowQ = temp2;
-        para->getParH(i)->kInflowQread = temp2 * para->getD3Qxx();
-        para->getParD(i)->kInflowQread = temp2 * para->getD3Qxx();
+		cout << "size velocity level " << i << " : " << temp2 << endl;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		int blocks = (temp2 / para->getParH(i)->numberofthreads) + 1;
+		para->getParH(i)->Qinflow.kArray = blocks * para->getParH(i)->numberofthreads;
+		para->getParD(i)->Qinflow.kArray = para->getParH(i)->Qinflow.kArray;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		para->getParH(i)->Qinflow.kQ = temp2;
+		para->getParD(i)->Qinflow.kQ = temp2;
+		para->getParH(i)->kInflowQ = temp2;
+		para->getParD(i)->kInflowQ = temp2;
+		para->getParH(i)->kInflowQread = temp2 * para->getD3Qxx();
+		para->getParD(i)->kInflowQread = temp2 * para->getD3Qxx();
 		if (temp2 > 1)
 		{
 
@@ -391,12 +391,12 @@ void GridReader::allocArrays_BoundaryValues()
 				//para->getParH(i)->Qinflow.Vy[m] = para->getParH(i)->Qinflow.Vy[m] / para->getVelocityRatio();
 				//para->getParH(i)->Qinflow.Vz[m] = para->getParH(i)->Qinflow.Vz[m] / para->getVelocityRatio();
 
-                // Lenz: I do not know what this is, but it harms me ... comment out 
-                // ==========================================================================
+				// Lenz: I do not know what this is, but it harms me ... comment out 
+				// ==========================================================================
 				//para->getParH(i)->Qinflow.Vx[m] = 0.0;//para->getVelocity();//0.035;
 				//para->getParH(i)->Qinflow.Vy[m] = 0.0;//para->getVelocity();//0.0;
 				//para->getParH(i)->Qinflow.Vz[m] = 0.0;
-                // ==========================================================================
+				// ==========================================================================
 
 				//if (para->getParH(i)->Qinflow.Vz[m] > 0)
 				//{
@@ -439,12 +439,12 @@ void GridReader::allocArrays_BoundaryValues()
 	 //--------------------------------------------------------------------------//
 	for (int i = 0; i <= maxLevel; i++) {
 		int temp = (int)outflowV[i][0].size();
-        cout << "size outflow level " << i << " : " << temp << endl;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(i)->Qoutflow.kQ = temp;
-        para->getParD(i)->Qoutflow.kQ = temp;
-        para->getParH(i)->kOutflowQread = temp * para->getD3Qxx();
-        para->getParD(i)->kOutflowQread = temp * para->getD3Qxx();
+		cout << "size outflow level " << i << " : " << temp << endl;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		para->getParH(i)->Qoutflow.kQ = temp;
+		para->getParD(i)->Qoutflow.kQ = temp;
+		para->getParH(i)->kOutflowQread = temp * para->getD3Qxx();
+		para->getParD(i)->kOutflowQread = temp * para->getD3Qxx();
 		if (temp > 1)
 		{
 
@@ -489,10 +489,10 @@ void GridReader::allocArrays_BoundaryValues()
 	if (para->getIsGeometryValues()) {
 		for (int i = 0; i <= maxLevel; i++) {
 			int temp4 = obj_geomV->getSize(i);
-            cout << "size obj_geomV, Level " << i << " : " << temp4 << endl;
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            para->getParH(i)->QGeom.kQ = temp4;
-            para->getParD(i)->QGeom.kQ = temp4;
+			cout << "size obj_geomV, Level " << i << " : " << temp4 << endl;
+			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			para->getParH(i)->QGeom.kQ = temp4;
+			para->getParD(i)->QGeom.kQ = temp4;
 			if (temp4 > 0)
 			{
 
@@ -683,13 +683,14 @@ void GridReader::allocArrays_BoundaryValues()
 		//concentration
 		for (int i = 0; i <= maxLevel; i++) {
 			int temp = obj_Conc->getSize(i);
-            cout << "size Concentration, Level " << i << " : " << temp << endl;
-            ////////////////////////////////////////////////////////////////////////////
-            para->getParH(i)->numberOfPointsConc = temp;
-            para->getParD(i)->numberOfPointsConc = temp;
+			cout << "size Concentration, at Level " << i << "and at Rank :" << para->getMyID() << " = " << temp << endl;
+			//cout << "size Concentration, Level " << i << " : " << temp << endl;
+			////////////////////////////////////////////////////////////////////////////
+			para->getParH(i)->numberOfPointsConc = temp;
+			para->getParD(i)->numberOfPointsConc = temp;
 			if (temp > 0)
 			{
-
+				cout << "in if of concentration at Rank:" << para->getMyID() << endl;
 				////////////////////////////////////////////////////////////////////////////
 				para->cudaAllocConcFile(i);
 				////////////////////////////////////////////////////////////////////////////
@@ -1075,80 +1076,80 @@ void GridReader::allocArrays_BoundaryValues()
 
 void GridReader::allocArrays_OffsetScale()
 {
-    cout << "-----Config Arrays OffsetScale------" << endl;
-    OffsetScale *obj_offCF = new OffsetScale(para->getscaleOffsetCF(), true);
-    OffsetScale *obj_offFC = new OffsetScale(para->getscaleOffsetFC(), true);
-    OffsetScale *obj_scaleCFC = new OffsetScale(para->getscaleCFC(), false);
-    OffsetScale *obj_scaleCFF = new OffsetScale(para->getscaleCFF(), false);
-    OffsetScale *obj_scaleFCC = new OffsetScale(para->getscaleFCC(), false);
-    OffsetScale *obj_scaleFCF = new OffsetScale(para->getscaleFCF(), false);
+	cout << "-----Config Arrays OffsetScale------" << endl;
+	OffsetScale *obj_offCF = new OffsetScale(para->getscaleOffsetCF(), true);
+	OffsetScale *obj_offFC = new OffsetScale(para->getscaleOffsetFC(), true);
+	OffsetScale *obj_scaleCFC = new OffsetScale(para->getscaleCFC(), false);
+	OffsetScale *obj_scaleCFF = new OffsetScale(para->getscaleCFF(), false);
+	OffsetScale *obj_scaleFCC = new OffsetScale(para->getscaleFCC(), false);
+	OffsetScale *obj_scaleFCF = new OffsetScale(para->getscaleFCF(), false);
 
-    int maxLevel = obj_offCF->getLevel();
+	int maxLevel = obj_offCF->getLevel();
 
-    int AnzahlKnotenGesCF = 0;
-    int AnzahlKnotenGesFC = 0;
+	int AnzahlKnotenGesCF = 0;
+	int AnzahlKnotenGesFC = 0;
 
-    for (int i = 0; i<maxLevel; i++) {
-        unsigned int tempCF = obj_offCF->getSize(i);
-        cout << "Groesse der Daten CF vom Level " << i << " : " << tempCF << endl;
-        unsigned int tempFC = obj_offFC->getSize(i);
-        cout << "Groesse der Daten FC vom Level " << i << " : " << tempFC << endl;
+	for (int i = 0; i < maxLevel; i++) {
+		unsigned int tempCF = obj_offCF->getSize(i);
+		cout << "Groesse der Daten CF vom Level " << i << " : " << tempCF << endl;
+		unsigned int tempFC = obj_offFC->getSize(i);
+		cout << "Groesse der Daten FC vom Level " << i << " : " << tempFC << endl;
 
-        AnzahlKnotenGesCF += tempCF;
-        AnzahlKnotenGesFC += tempFC;
+		AnzahlKnotenGesCF += tempCF;
+		AnzahlKnotenGesFC += tempFC;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize CF
-        para->getParH(i)->K_CF = tempCF;
-        para->getParD(i)->K_CF = para->getParH(i)->K_CF;
-        para->getParH(i)->intCF.kCF = para->getParH(i)->K_CF;
-        para->getParD(i)->intCF.kCF = para->getParH(i)->K_CF;
-        para->getParH(i)->mem_size_kCF = sizeof(unsigned int)* para->getParH(i)->K_CF;
-        para->getParD(i)->mem_size_kCF = sizeof(unsigned int)* para->getParD(i)->K_CF;
-        para->getParH(i)->mem_size_kCF_off = sizeof(real)* para->getParH(i)->K_CF;
-        para->getParD(i)->mem_size_kCF_off = sizeof(real)* para->getParD(i)->K_CF;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //size + memsize FC
-        para->getParH(i)->K_FC = tempFC;
-        para->getParD(i)->K_FC = para->getParH(i)->K_FC;
-        para->getParH(i)->intFC.kFC = para->getParH(i)->K_FC;
-        para->getParD(i)->intFC.kFC = para->getParH(i)->K_FC;
-        para->getParH(i)->mem_size_kFC = sizeof(unsigned int)* para->getParH(i)->K_FC;
-        para->getParD(i)->mem_size_kFC = sizeof(unsigned int)* para->getParD(i)->K_FC;
-        para->getParH(i)->mem_size_kFC_off = sizeof(real)* para->getParH(i)->K_FC;
-        para->getParD(i)->mem_size_kFC_off = sizeof(real)* para->getParD(i)->K_FC;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //alloc
-        para->cudaAllocInterfaceCF(i);
-        para->cudaAllocInterfaceFC(i);
-        para->cudaAllocInterfaceOffCF(i);
-        para->cudaAllocInterfaceOffFC(i);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //init
-        obj_offCF->initArrayOffset(para->getParH(i)->offCF.xOffCF, para->getParH(i)->offCF.yOffCF, para->getParH(i)->offCF.zOffCF, i);
-        obj_offFC->initArrayOffset(para->getParH(i)->offFC.xOffFC, para->getParH(i)->offFC.yOffFC, para->getParH(i)->offFC.zOffFC, i);
-        obj_scaleCFC->initScale(para->getParH(i)->intCF.ICellCFC, i);
-        obj_scaleCFF->initScale(para->getParH(i)->intCF.ICellCFF, i);
-        obj_scaleFCC->initScale(para->getParH(i)->intFC.ICellFCC, i);
-        obj_scaleFCF->initScale(para->getParH(i)->intFC.ICellFCF, i);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //copy
-        para->cudaCopyInterfaceCF(i);
-        para->cudaCopyInterfaceFC(i);
-        para->cudaCopyInterfaceOffCF(i);
-        para->cudaCopyInterfaceOffFC(i);
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    }
-    cout << "Gesamtanzahl Knoten CF = " << AnzahlKnotenGesCF << endl;
-    cout << "Gesamtanzahl Knoten FC = " << AnzahlKnotenGesFC << endl;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//size + memsize CF
+		para->getParH(i)->K_CF = tempCF;
+		para->getParD(i)->K_CF = para->getParH(i)->K_CF;
+		para->getParH(i)->intCF.kCF = para->getParH(i)->K_CF;
+		para->getParD(i)->intCF.kCF = para->getParH(i)->K_CF;
+		para->getParH(i)->mem_size_kCF = sizeof(unsigned int)* para->getParH(i)->K_CF;
+		para->getParD(i)->mem_size_kCF = sizeof(unsigned int)* para->getParD(i)->K_CF;
+		para->getParH(i)->mem_size_kCF_off = sizeof(real)* para->getParH(i)->K_CF;
+		para->getParD(i)->mem_size_kCF_off = sizeof(real)* para->getParD(i)->K_CF;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//size + memsize FC
+		para->getParH(i)->K_FC = tempFC;
+		para->getParD(i)->K_FC = para->getParH(i)->K_FC;
+		para->getParH(i)->intFC.kFC = para->getParH(i)->K_FC;
+		para->getParD(i)->intFC.kFC = para->getParH(i)->K_FC;
+		para->getParH(i)->mem_size_kFC = sizeof(unsigned int)* para->getParH(i)->K_FC;
+		para->getParD(i)->mem_size_kFC = sizeof(unsigned int)* para->getParD(i)->K_FC;
+		para->getParH(i)->mem_size_kFC_off = sizeof(real)* para->getParH(i)->K_FC;
+		para->getParD(i)->mem_size_kFC_off = sizeof(real)* para->getParD(i)->K_FC;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//alloc
+		para->cudaAllocInterfaceCF(i);
+		para->cudaAllocInterfaceFC(i);
+		para->cudaAllocInterfaceOffCF(i);
+		para->cudaAllocInterfaceOffFC(i);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//init
+		obj_offCF->initArrayOffset(para->getParH(i)->offCF.xOffCF, para->getParH(i)->offCF.yOffCF, para->getParH(i)->offCF.zOffCF, i);
+		obj_offFC->initArrayOffset(para->getParH(i)->offFC.xOffFC, para->getParH(i)->offFC.yOffFC, para->getParH(i)->offFC.zOffFC, i);
+		obj_scaleCFC->initScale(para->getParH(i)->intCF.ICellCFC, i);
+		obj_scaleCFF->initScale(para->getParH(i)->intCF.ICellCFF, i);
+		obj_scaleFCC->initScale(para->getParH(i)->intFC.ICellFCC, i);
+		obj_scaleFCF->initScale(para->getParH(i)->intFC.ICellFCF, i);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//copy
+		para->cudaCopyInterfaceCF(i);
+		para->cudaCopyInterfaceFC(i);
+		para->cudaCopyInterfaceOffCF(i);
+		para->cudaCopyInterfaceOffFC(i);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}
+	cout << "Gesamtanzahl Knoten CF = " << AnzahlKnotenGesCF << endl;
+	cout << "Gesamtanzahl Knoten FC = " << AnzahlKnotenGesFC << endl;
 
-    delete obj_offCF;
-    delete obj_offFC;
-    delete obj_scaleCFC;
-    delete obj_scaleCFF;
-    delete obj_scaleFCC;
-    delete obj_scaleFCF;
-    cout << "-----Ende OffsetScale------" << endl;
+	delete obj_offCF;
+	delete obj_offFC;
+	delete obj_scaleCFC;
+	delete obj_scaleCFF;
+	delete obj_scaleFCC;
+	delete obj_scaleFCF;
+	cout << "-----Ende OffsetScale------" << endl;
 }
 
 
@@ -1157,16 +1158,16 @@ void GridReader::setPressureValues(int channelSide) const
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
 		int sizePerLevel = BC_Values[channelSide]->getSize(level);
-        setPressSizePerLevel(level, sizePerLevel);
+		setPressSizePerLevel(level, sizePerLevel);
 
 		if (sizePerLevel > 0)
 		{
 			std::cout << "size pressure level " << level << " : " << sizePerLevel << std::endl;
 
-            cudaMemoryManager->cudaAllocPress(level);
+			cudaMemoryManager->cudaAllocPress(level);
 
 			setPressRhoBC(sizePerLevel, level, channelSide);
-            cudaMemoryManager->cudaCopyPress(level);
+			cudaMemoryManager->cudaCopyPress(level);
 		}
 	}
 }
@@ -1184,16 +1185,16 @@ void GridReader::setVelocityValues(int channelSide) const
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
 		int sizePerLevel = BC_Values[channelSide]->getSize(level);
-        setVelocitySizePerLevel(level, sizePerLevel);
+		setVelocitySizePerLevel(level, sizePerLevel);
 
 		if (sizePerLevel > 1)
 		{
 			std::cout << "size velocity level " << level << " : " << sizePerLevel << std::endl;
 
-            cudaMemoryManager->cudaAllocVeloBC(level);
+			cudaMemoryManager->cudaAllocVeloBC(level);
 
 			setVelocity(level, sizePerLevel, channelSide);
-            cudaMemoryManager->cudaCopyVeloBC(level);
+			cudaMemoryManager->cudaCopyVeloBC(level);
 		}
 	}
 }
@@ -1219,16 +1220,16 @@ void GridReader::setOutflowValues(int channelSide) const
 	for (unsigned int level = 0; level <= BC_Values[channelSide]->getLevel(); level++)
 	{
 		int sizePerLevel = BC_Values[channelSide]->getSize(level);
-        setOutflowSizePerLevel(level, sizePerLevel);
+		setOutflowSizePerLevel(level, sizePerLevel);
 
 		if (sizePerLevel > 1)
 		{
 			std::cout << "size outflow level " << level << " : " << sizePerLevel << std::endl;
 
-            cudaMemoryManager->cudaAllocOutflowBC(level);
+			cudaMemoryManager->cudaAllocOutflowBC(level);
 
 			setOutflow(level, sizePerLevel, channelSide);
-            cudaMemoryManager->cudaCopyOutflowBC(level);
+			cudaMemoryManager->cudaCopyOutflowBC(level);
 
 		}
 	}
@@ -1254,12 +1255,12 @@ void GridReader::initalValuesDomainDecompostion(int level)
 	{
 		for (int process = 0; process < para->getNumprocs(); process++)
 		{
-			std::shared_ptr<BoundaryValues> pnXsend = std::shared_ptr<BoundaryValues> (new BoundaryValues(process, para, "send", "X"));
-			std::shared_ptr<BoundaryValues> pnYsend = std::shared_ptr<BoundaryValues> (new BoundaryValues(process, para, "send", "Y"));
-			std::shared_ptr<BoundaryValues> pnZsend = std::shared_ptr<BoundaryValues> (new BoundaryValues(process, para, "send", "Z"));
-			std::shared_ptr<BoundaryValues> pnXrecv = std::shared_ptr<BoundaryValues> (new BoundaryValues(process, para, "recv", "X"));
-			std::shared_ptr<BoundaryValues> pnYrecv = std::shared_ptr<BoundaryValues> (new BoundaryValues(process, para, "recv", "Y"));
-			std::shared_ptr<BoundaryValues> pnZrecv = std::shared_ptr<BoundaryValues> (new BoundaryValues(process, para, "recv", "Z"));
+			std::shared_ptr<BoundaryValues> pnXsend = std::shared_ptr<BoundaryValues>(new BoundaryValues(process, para, "send", "X"));
+			std::shared_ptr<BoundaryValues> pnYsend = std::shared_ptr<BoundaryValues>(new BoundaryValues(process, para, "send", "Y"));
+			std::shared_ptr<BoundaryValues> pnZsend = std::shared_ptr<BoundaryValues>(new BoundaryValues(process, para, "send", "Z"));
+			std::shared_ptr<BoundaryValues> pnXrecv = std::shared_ptr<BoundaryValues>(new BoundaryValues(process, para, "recv", "X"));
+			std::shared_ptr<BoundaryValues> pnYrecv = std::shared_ptr<BoundaryValues>(new BoundaryValues(process, para, "recv", "Y"));
+			std::shared_ptr<BoundaryValues> pnZrecv = std::shared_ptr<BoundaryValues>(new BoundaryValues(process, para, "recv", "Z"));
 			if (para->getIsNeighborX())
 			{
 				procNeighborsSendX.push_back(pnXsend);
@@ -1329,13 +1330,13 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->recvProcessNeighborX[j].memsizeFs = sizeof(real)     *tempRecv;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//malloc on host and device
-                    cudaMemoryManager->cudaAllocProcessNeighborX(i, j);
+					cudaMemoryManager->cudaAllocProcessNeighborX(i, j);
 					////////////////////////////////////////////////////////////////////////////////////////
 					//init index arrays
 					procNeighborsSendX[j]->initIndex(para->getParH(i)->sendProcessNeighborX[j].index, i);
 					procNeighborsRecvX[j]->initIndex(para->getParH(i)->recvProcessNeighborX[j].index, i);
 					////////////////////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyProcessNeighborXIndex(i, j);
+					cudaMemoryManager->cudaCopyProcessNeighborXIndex(i, j);
 					////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
@@ -1385,13 +1386,13 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->recvProcessNeighborY[j].memsizeFs = sizeof(real)     *tempRecv;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//malloc on host and device
-                    cudaMemoryManager->cudaAllocProcessNeighborY(i, j);
+					cudaMemoryManager->cudaAllocProcessNeighborY(i, j);
 					////////////////////////////////////////////////////////////////////////////////////////
 					//init index arrays
 					procNeighborsSendY[j]->initIndex(para->getParH(i)->sendProcessNeighborY[j].index, i);
 					procNeighborsRecvY[j]->initIndex(para->getParH(i)->recvProcessNeighborY[j].index, i);
 					////////////////////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyProcessNeighborYIndex(i, j);
+					cudaMemoryManager->cudaCopyProcessNeighborYIndex(i, j);
 					////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
@@ -1441,13 +1442,13 @@ void GridReader::initalValuesDomainDecompostion(int level)
 					para->getParD(i)->recvProcessNeighborZ[j].memsizeFs = sizeof(real)     *tempRecv;
 					////////////////////////////////////////////////////////////////////////////////////////
 					//malloc on host and device
-                    cudaMemoryManager->cudaAllocProcessNeighborZ(i, j);
+					cudaMemoryManager->cudaAllocProcessNeighborZ(i, j);
 					////////////////////////////////////////////////////////////////////////////////////////
 					//init index arrays
 					procNeighborsSendZ[j]->initIndex(para->getParH(i)->sendProcessNeighborZ[j].index, i);
 					procNeighborsRecvZ[j]->initIndex(para->getParH(i)->recvProcessNeighborZ[j].index, i);
 					////////////////////////////////////////////////////////////////////////////////////////
-                    cudaMemoryManager->cudaCopyProcessNeighborZIndex(i, j);
+					cudaMemoryManager->cudaCopyProcessNeighborZIndex(i, j);
 					////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
@@ -1457,7 +1458,7 @@ void GridReader::initalValuesDomainDecompostion(int level)
 
 void GridReader::allocArrays_BoundaryQs()
 {
-	std::cout << "------read BoundaryQs-------" <<std::endl;
+	std::cout << "------read BoundaryQs-------" << std::endl;
 
 	std::vector<std::shared_ptr<BoundaryQs> > BC_Qs(channelDirections.size());
 	this->makeReader(BC_Qs, para);
@@ -1520,11 +1521,11 @@ void GridReader::allocArrays_BoundaryQs()
 	//cout << "7: MyID: " << para->getMyID() << endl;
 
 	for (int i = 0; i < this->channelBoundaryConditions.size(); i++) {
-		if (this->channelBoundaryConditions[i] == "noSlip") {  BC_Qs[i]->getQs(noslipQs);  BC_Qs[i]->getIndices(noslipIndex); }
-		else if (this->channelBoundaryConditions[i] == "velocity") {  BC_Qs[i]->getQs(velocityQs);  BC_Qs[i]->getIndices(velocityIndex); }
-		else if (this->channelBoundaryConditions[i] == "pressure") {  BC_Qs[i]->getQs(pressureQs);  BC_Qs[i]->getIndices(pressureIndex); }
-		else if (this->channelBoundaryConditions[i] == "slip") {  BC_Qs[i]->getQs(slipQs);  BC_Qs[i]->getIndices(slipIndex); }
-		else if (this->channelBoundaryConditions[i] == "outflow") {  BC_Qs[i]->getQs(outflowQs);  BC_Qs[i]->getIndices(outflowIndex); }
+		if (this->channelBoundaryConditions[i] == "noSlip") { BC_Qs[i]->getQs(noslipQs);  BC_Qs[i]->getIndices(noslipIndex); }
+		else if (this->channelBoundaryConditions[i] == "velocity") { BC_Qs[i]->getQs(velocityQs);  BC_Qs[i]->getIndices(velocityIndex); }
+		else if (this->channelBoundaryConditions[i] == "pressure") { BC_Qs[i]->getQs(pressureQs);  BC_Qs[i]->getIndices(pressureIndex); }
+		else if (this->channelBoundaryConditions[i] == "slip") { BC_Qs[i]->getQs(slipQs);  BC_Qs[i]->getIndices(slipIndex); }
+		else if (this->channelBoundaryConditions[i] == "outflow") { BC_Qs[i]->getQs(outflowQs);  BC_Qs[i]->getIndices(outflowIndex); }
 	}
 
 
@@ -1708,7 +1709,7 @@ void GridReader::allocArrays_BoundaryQs()
 				//////////////////////////////////////////////////////////////////////////
 				para->getParH(i)->TempVel.kTemp = temp3;
 				para->getParD(i)->TempVel.kTemp = temp3;
-				cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempPress.kTemp << endl;
+				cout << "Groesse TempVel.kTemp = " << para->getParH(i)->TempVel.kTemp << endl;
 				cout << "getTemperatureInit = " << para->getTemperatureInit() << endl;
 				cout << "getTemperatureBC = " << para->getTemperatureBC() << endl;
 				//////////////////////////////////////////////////////////////////////////
@@ -2039,12 +2040,12 @@ void GridReader::allocArrays_BoundaryQs()
 	 //--------------------------------------------------------------------------//
 	for (int i = 0; i <= level; i++) {
 		int temp2 = (int)slipQs[i][0].size();
-        cout << "size Slip: " << i << " : " << temp2 << endl;
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        para->getParH(i)->QSlip.kQ = temp2;
-        para->getParD(i)->QSlip.kQ = para->getParH(i)->QSlip.kQ;
-        para->getParH(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
-        para->getParD(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
+		cout << "size Slip: " << i << " : " << temp2 << endl;
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		para->getParH(i)->QSlip.kQ = temp2;
+		para->getParD(i)->QSlip.kQ = para->getParH(i)->QSlip.kQ;
+		para->getParH(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
+		para->getParD(i)->kSlipQ = para->getParH(i)->QSlip.kQ;
 		if (temp2 > 0)
 		{
 
@@ -2298,7 +2299,7 @@ void GridReader::allocArrays_BoundaryQs()
 	//if (para->getIsGeo())
 	//	setGeoQs(obj_geomQ);
 
-	std::cout << "-----finish BoundaryQs------" <<std::endl;
+	std::cout << "-----finish BoundaryQs------" << std::endl;
 }
 
 
@@ -2313,7 +2314,7 @@ void GridReader::setPressQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("pressure", boundaryQ, level);
 			this->initalQStruct(para->getParH(level)->QPress, boundaryQ, level);
-            cudaMemoryManager->cudaCopyPress(level);
+			cudaMemoryManager->cudaCopyPress(level);
 		}
 	}
 }
@@ -2326,7 +2327,7 @@ void GridReader::setVelocityQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("velocity", boundaryQ, level);
 			this->initalQStruct(para->getParH(level)->Qinflow, boundaryQ, level);
-            cudaMemoryManager->cudaCopyVeloBC(level);
+			cudaMemoryManager->cudaCopyVeloBC(level);
 		}
 	}
 }
@@ -2339,7 +2340,7 @@ void GridReader::setOutflowQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 		{
 			this->printQSize("outflow", boundaryQ, level);
 			this->initalQStruct(para->getParH(level)->Qoutflow, boundaryQ, level);
-            cudaMemoryManager->cudaCopyOutflowBC(level);
+			cudaMemoryManager->cudaCopyOutflowBC(level);
 		}
 	}
 }
@@ -2353,7 +2354,7 @@ void GridReader::setNoSlipQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 			this->printQSize("no slip", boundaryQ, level);
 			this->setSizeNoSlip(boundaryQ, level);
 			this->initalQStruct(para->getParH(level)->QWall, boundaryQ, level);
-            cudaMemoryManager->cudaCopyWallBC(level);
+			cudaMemoryManager->cudaCopyWallBC(level);
 		}
 	}
 }
@@ -2370,7 +2371,7 @@ void GridReader::setGeoQs(std::shared_ptr<BoundaryQs> boundaryQ) const
 
 			modifyQElement(boundaryQ, level);
 
-            cudaMemoryManager->cudaCopyGeomBC(level);
+			cudaMemoryManager->cudaCopyGeomBC(level);
 		}
 	}
 }
@@ -2442,7 +2443,7 @@ void GridReader::setSizeNoSlip(std::shared_ptr<BoundaryQs> boundaryQ, unsigned i
 	para->getParD(level)->QWall.kQ = para->getParH(level)->QWall.kQ;
 	para->getParH(level)->kQ = para->getParH(level)->QWall.kQ;
 	para->getParD(level)->kQ = para->getParH(level)->QWall.kQ;
-    cudaMemoryManager->cudaAllocWallBC(level);
+	cudaMemoryManager->cudaAllocWallBC(level);
 }
 
 void GridReader::setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
@@ -2450,7 +2451,7 @@ void GridReader::setSizeGeoQs(std::shared_ptr<BoundaryQs> boundaryQ, unsigned in
 	para->getParH(level)->QGeom.kQ = boundaryQ->getSize(level);
 	para->getParD(level)->QGeom.kQ = para->getParH(level)->QGeom.kQ;
 
-    cudaMemoryManager->cudaAllocGeomBC(level);
+	cudaMemoryManager->cudaAllocGeomBC(level);
 }
 
 void GridReader::printQSize(std::string bc, std::shared_ptr<BoundaryQs> boundaryQ, unsigned int level) const
@@ -2521,21 +2522,21 @@ void GridReader::setBoundingBox()
 	para->setMaxCoordZ(maxZ);
 }
 
-void GridReader::initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex,  std::string boundaryCondition)
+void GridReader::initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned int> > > periodV, std::vector<std::vector<unsigned int> > periodIndex, std::string boundaryCondition)
 {
 	std::vector<unsigned int>neighVec;
 	std::vector<unsigned int>indexVec;
-	
+
 	int counter = 0;
 
-	for(unsigned int i=0; i<neighX->getLevel();i++) {
-		if(boundaryCondition =="periodic_y"){
+	for (unsigned int i = 0; i < neighX->getLevel(); i++) {
+		if (boundaryCondition == "periodic_y") {
 			neighVec = neighY->getVec(i);
-		} 
-		else if(boundaryCondition =="periodic_x"){
+		}
+		else if (boundaryCondition == "periodic_x") {
 			neighVec = neighX->getVec(i);
 		}
-		else if(boundaryCondition =="periodic_z"){
+		else if (boundaryCondition == "periodic_z") {
 			neighVec = neighZ->getVec(i);
 		}
 		else {
@@ -2544,21 +2545,21 @@ void GridReader::initPeriodicNeigh(std::vector<std::vector<std::vector<unsigned 
 		}
 
 		for (std::vector<unsigned int>::iterator it = periodIndex[i].begin(); it != periodIndex[i].end(); it++) {
-			if(periodV[i][0][counter] != 0) {
-				neighVec[*it]=periodV[i][0][counter];
+			if (periodV[i][0][counter] != 0) {
+				neighVec[*it] = periodV[i][0][counter];
 			}
 
 			counter++;
 		}
 
 
-		if(boundaryCondition =="periodic_y"){
+		if (boundaryCondition == "periodic_y") {
 			neighY->setVec(i, neighVec);
-		} 
-		else if(boundaryCondition =="periodic_x"){
+		}
+		else if (boundaryCondition == "periodic_x") {
 			neighX->setVec(i, neighVec);
 		}
-		else if(boundaryCondition =="periodic_z"){
+		else if (boundaryCondition == "periodic_z") {
 			neighZ->setVec(i, neighVec);
 		}
 
@@ -2569,12 +2570,12 @@ void GridReader::makeReader(std::shared_ptr<Parameter> para)
 {
 	for (int i = 0; i < BC_Values.size(); i++)
 	{
-		if (channelDirections[i].compare("inlet") == 0){ BC_Values[i]  = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getinletBcValues())); }
-		if (channelDirections[i].compare("outlet") == 0){ BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getoutletBcValues())); }
-		if (channelDirections[i].compare("back") == 0){ BC_Values[i]   = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getbackBcValues())); }
-		if (channelDirections[i].compare("front") == 0){ BC_Values[i]  = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getfrontBcValues())); }
-		if (channelDirections[i].compare("top") == 0){ BC_Values[i]    = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->gettopBcValues())); }
-		if (channelDirections[i].compare("bottom") == 0){ BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getbottomBcValues()));}
+		if (channelDirections[i].compare("inlet") == 0) { BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getinletBcValues())); }
+		if (channelDirections[i].compare("outlet") == 0) { BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getoutletBcValues())); }
+		if (channelDirections[i].compare("back") == 0) { BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getbackBcValues())); }
+		if (channelDirections[i].compare("front") == 0) { BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getfrontBcValues())); }
+		if (channelDirections[i].compare("top") == 0) { BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->gettopBcValues())); }
+		if (channelDirections[i].compare("bottom") == 0) { BC_Values[i] = std::shared_ptr<BoundaryValues>(new BoundaryValues(para->getbottomBcValues())); }
 	}
 }
 
@@ -2582,12 +2583,12 @@ void GridReader::makeReader(std::vector<std::shared_ptr<BoundaryQs> > &BC_Qs, st
 {
 	for (int i = 0; i < BC_Qs.size(); i++)
 	{
-		if (channelDirections[i].compare("inlet") == 0){ BC_Qs[i]  = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getinletBcQs(), false)); }
-		if (channelDirections[i].compare("outlet") == 0){ BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getoutletBcQs(), false)); }
-		if (channelDirections[i].compare("back") == 0){ BC_Qs[i]   = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getbackBcQs(), false)); }
-		if (channelDirections[i].compare("front") == 0){ BC_Qs[i]  = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getfrontBcQs(), false)); }
-		if (channelDirections[i].compare("top") == 0){ BC_Qs[i]    = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->gettopBcQs(), false)); }
-		if (channelDirections[i].compare("bottom") == 0){ BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getbottomBcQs(), false)); }
+		if (channelDirections[i].compare("inlet") == 0) { BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getinletBcQs(), false)); }
+		if (channelDirections[i].compare("outlet") == 0) { BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getoutletBcQs(), false)); }
+		if (channelDirections[i].compare("back") == 0) { BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getbackBcQs(), false)); }
+		if (channelDirections[i].compare("front") == 0) { BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getfrontBcQs(), false)); }
+		if (channelDirections[i].compare("top") == 0) { BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->gettopBcQs(), false)); }
+		if (channelDirections[i].compare("bottom") == 0) { BC_Qs[i] = std::shared_ptr<BoundaryQs>(new BoundaryQs(para->getbottomBcQs(), false)); }
 	}
 }
 

@@ -12,7 +12,7 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
-#include "LBM\LB.h"
+#include "LBM/LB.h"
 
 extern "C" __global__ void LB_Kernel_Casc27(real s9,
                                             unsigned int* bcMatD,

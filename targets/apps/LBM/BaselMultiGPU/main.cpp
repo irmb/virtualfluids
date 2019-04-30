@@ -14,7 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "metis.h"
+//#include "metis.h"
 
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
@@ -90,11 +90,13 @@ void multipleLevel(const std::string& configPath)
 	const uint generatePart = comm->getPID();
 
     std::ofstream logFile2;
-    logFile2.open(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/gridGeneratorLog.txt" );
+	std::string gridpath = "/work/marschoe/Basel4GPU/";
+	logFile2.open(gridpath + std::to_string(generatePart) + "/gridGeneratorLog.txt");//Phoenix
+	//logFile2.open(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/gridGeneratorLog.txt");//Baumbart
 
 	logging::Logger::addStream(&logFile2);
 
-    bool useGridGenerator = true;
+    bool useGridGenerator = false;
 
     if(useGridGenerator){
         real dx = 1.0;
@@ -103,13 +105,17 @@ void multipleLevel(const std::string& configPath)
         TriangularMesh* BaselSTL;
 
 		if (generatePart == 0)
-			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl"); //Phoenix
+			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl"); //Baumbart
 		if (generatePart == 1)
-			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl");
+			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl"); //Phoenix
+			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X.stl"); //Baumbart
 		if (generatePart == 2)
-			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl");
+			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl"); //Phoenix
+			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_X_Y.stl"); //Baumbart
 		if (generatePart == 3)
-			BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl");
+			BaselSTL = TriangularMesh::make("/work/marschoe/Basel4GPU/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl"); //Phoenix
+			//BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND_MIRROR_Y.stl"); //Baumbart
 
 		real lengthInXDirection = 512.0;
 		real lengthInYDirection = 512.0;
@@ -167,17 +173,23 @@ void multipleLevel(const std::string& configPath)
 
 		//////////////////////////////////////////////////////////////////////////
 
-		gridBuilder->writeGridsToVtk(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/Basel_Grid");
-		SimulationFileWriter::write(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart )+ "/", gridBuilder, FILEFORMAT::BINARY);
+		gridBuilder->writeGridsToVtk(gridpath + std::to_string(generatePart) + "/Basel_Grid");
+		SimulationFileWriter::write(gridpath + std::to_string(generatePart )+ "/", gridBuilder, FILEFORMAT::BINARY);
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if (generatePart == 0) {
 			StreetPointFinder finder;
-			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");
+			finder.readStreets("/work/marschoe/Basel4GPU/source/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");//phoenix
+			//finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");//Baumbart
 			//finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
 			finder.findIndicesLB(gridBuilder->getGrid(0));
 			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			finder.writeSimulationFile(std::string("M:/Basel2019/grids4/") + std::to_string(generatePart) + "/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+			finder.writeSimulationFile(gridpath + std::to_string(generatePart) + "/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		}
+		else
+		{
+			StreetPointFinder finder;
+			finder.writeSimulationFile(gridpath + std::to_string(generatePart) + "/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -245,7 +257,8 @@ int main( int argc, char* argv[])
             try
             {
 				//multipleLevel("E:/temp/Basel2019/config/configBasel.txt"); //Tesla03
-				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
+				//multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
+				multipleLevel("/work/marschoe/Basel4GPU/source/configBasel.txt"); //Phoenix
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
             }
             catch (const std::exception& e)

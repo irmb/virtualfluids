@@ -12,12 +12,12 @@
 
 void GridProvider::setNumberOfNodes(const int numberOfNodes, const int level) const
 {
-    para->getParH(level)->size_Mat_SP = numberOfNodes;
-    para->getParD(level)->size_Mat_SP = numberOfNodes;
-    para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->size_Mat_SP;
-    para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->size_Mat_SP;
-    para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
-    para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
+	para->getParH(level)->size_Mat_SP = numberOfNodes;
+	para->getParD(level)->size_Mat_SP = numberOfNodes;
+	para->getParH(level)->mem_size_real_SP = sizeof(real) * para->getParH(level)->size_Mat_SP;
+	para->getParH(level)->mem_size_int_SP = sizeof(uint) * para->getParH(level)->size_Mat_SP;
+	para->getParD(level)->mem_size_real_SP = sizeof(real) * para->getParD(level)->size_Mat_SP;
+	para->getParD(level)->mem_size_int_SP = sizeof(uint) * para->getParD(level)->size_Mat_SP;
 }
 
 void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level) const
@@ -172,66 +172,66 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 	//}
 	////////////////////////////////////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////
-    // Lenz: 3D- Taylor-Green Vortex
-    //////////////////////////////////////////////////////////////////////////
-    //for (int j = 1; j <= numberOfNodes; j++)
-    //{
-    //    const real coordX = para->getParH(level)->coordX_SP[j];
-    //    const real coordY = para->getParH(level)->coordY_SP[j];
-    //    const real coordZ = para->getParH(level)->coordZ_SP[j];
-    //    const real velocity = para->getVelocity();
+	//////////////////////////////////////////////////////////////////////////
+	// Lenz: 3D- Taylor-Green Vortex
+	//////////////////////////////////////////////////////////////////////////
+	//for (int j = 1; j <= numberOfNodes; j++)
+	//{
+	//    const real coordX = para->getParH(level)->coordX_SP[j];
+	//    const real coordY = para->getParH(level)->coordY_SP[j];
+	//    const real coordZ = para->getParH(level)->coordZ_SP[j];
+	//    const real velocity = para->getVelocity();
 
-    //    real A =  1.0;
-    //    real B =  1.0;
-    //    real C = -2.0;
-    //    real a = 2.0 * PI;
-    //    real b = 2.0 * PI;
-    //    real c = 2.0 * PI;
+	//    real A =  1.0;
+	//    real B =  1.0;
+	//    real C = -2.0;
+	//    real a = 2.0 * PI;
+	//    real b = 2.0 * PI;
+	//    real c = 2.0 * PI;
 
-    //    //para->getParH(level)->rho_SP[j] = 0.0;
+	//    //para->getParH(level)->rho_SP[j] = 0.0;
 
-    //    //para->getParH(level)->vx_SP[j] = 0.05 * A * cos( a * coordX ) * sin( b * coordY ) * sin( c * coordZ ) + 0.05;
-    //    //para->getParH(level)->vy_SP[j] = 0.05 * B * sin( a * coordX ) * cos( b * coordY ) * sin( c * coordZ );
-    //    //para->getParH(level)->vz_SP[j] = 0.05 * C * sin( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
+	//    //para->getParH(level)->vx_SP[j] = 0.05 * A * cos( a * coordX ) * sin( b * coordY ) * sin( c * coordZ ) + 0.05;
+	//    //para->getParH(level)->vy_SP[j] = 0.05 * B * sin( a * coordX ) * cos( b * coordY ) * sin( c * coordZ );
+	//    //para->getParH(level)->vz_SP[j] = 0.05 * C * sin( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
 
-    //    para->getParH(level)->rho_SP[j] = 0.0;//1.0 / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 );
+	//    para->getParH(level)->rho_SP[j] = 0.0;//1.0 / 16.0 * ( cos( 2.0 * a * coordX ) + cos( 2.0 * b * coordY ) ) * ( cos( 2.0 * c * coordZ ) + 2.0 );
 
-    //    para->getParH(level)->vx_SP[j] =   0.05 * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
-    //    para->getParH(level)->vy_SP[j] = - 0.05 * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
-    //    para->getParH(level)->vz_SP[j] =   0.0;
+	//    para->getParH(level)->vx_SP[j] =   0.05 * sin( a * coordX ) * cos( b * coordY ) * cos( c * coordZ );
+	//    para->getParH(level)->vy_SP[j] = - 0.05 * cos( a * coordX ) * sin( b * coordY ) * cos( c * coordZ );
+	//    para->getParH(level)->vz_SP[j] =   0.0;
 
-    //   //para->getParH(level)->vx_SP[j] = 0.001;
-    //   //para->getParH(level)->vy_SP[j] = 0.0;
-    //   //para->getParH(level)->vz_SP[j] = 0.001;
-    //   //para->getParH(level)->rho_SP[j] = 0.0;
-    //   //para->getParH(level)->press_SP[j] = 0.0;
+	//   //para->getParH(level)->vx_SP[j] = 0.001;
+	//   //para->getParH(level)->vy_SP[j] = 0.0;
+	//   //para->getParH(level)->vz_SP[j] = 0.001;
+	//   //para->getParH(level)->rho_SP[j] = 0.0;
+	//   //para->getParH(level)->press_SP[j] = 0.0;
 
-    //    if (para->getCalcMedian()) {
-    //        para->getParH(level)->vx_SP_Med[j] = 0.0f;
-    //        para->getParH(level)->vy_SP_Med[j] = 0.0f;
-    //        para->getParH(level)->vz_SP_Med[j] = 0.0f;
-    //        para->getParH(level)->rho_SP_Med[j] = 0.0f;
-    //        para->getParH(level)->press_SP_Med[j] = 0.0f;
-    //    }
-    //    if (para->getUseWale()) {
-    //        para->getParH(level)->turbViscosity[j] = 0.0f;
-    //        //Debug
-    //        para->getParH(level)->gSij[j] = 0.0f;
-    //        para->getParH(level)->gSDij[j] = 0.0f;
-    //        para->getParH(level)->gDxvx[j] = 0.0f;
-    //        para->getParH(level)->gDyvx[j] = 0.0f;
-    //        para->getParH(level)->gDzvx[j] = 0.0f;
-    //        para->getParH(level)->gDxvy[j] = 0.0f;
-    //        para->getParH(level)->gDyvy[j] = 0.0f;
-    //        para->getParH(level)->gDzvy[j] = 0.0f;
-    //        para->getParH(level)->gDxvz[j] = 0.0f;
-    //        para->getParH(level)->gDyvz[j] = 0.0f;
-    //        para->getParH(level)->gDzvz[j] = 0.0f;
-    //    }
+	//    if (para->getCalcMedian()) {
+	//        para->getParH(level)->vx_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->vy_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->vz_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->rho_SP_Med[j] = 0.0f;
+	//        para->getParH(level)->press_SP_Med[j] = 0.0f;
+	//    }
+	//    if (para->getUseWale()) {
+	//        para->getParH(level)->turbViscosity[j] = 0.0f;
+	//        //Debug
+	//        para->getParH(level)->gSij[j] = 0.0f;
+	//        para->getParH(level)->gSDij[j] = 0.0f;
+	//        para->getParH(level)->gDxvx[j] = 0.0f;
+	//        para->getParH(level)->gDyvx[j] = 0.0f;
+	//        para->getParH(level)->gDzvx[j] = 0.0f;
+	//        para->getParH(level)->gDxvy[j] = 0.0f;
+	//        para->getParH(level)->gDyvy[j] = 0.0f;
+	//        para->getParH(level)->gDzvy[j] = 0.0f;
+	//        para->getParH(level)->gDxvz[j] = 0.0f;
+	//        para->getParH(level)->gDyvz[j] = 0.0f;
+	//        para->getParH(level)->gDzvz[j] = 0.0f;
+	//    }
 
-    //}
-    //////////////////////////////////////////////////////////////////////////
+	//}
+	//////////////////////////////////////////////////////////////////////////
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -288,47 +288,47 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 
 void GridProvider::setPressSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->QPress.kQ = sizePerLevel;
-    para->getParD(level)->QPress.kQ = sizePerLevel;
-    para->getParH(level)->kPressQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kPressQread = sizePerLevel * para->getD3Qxx();
+	para->getParH(level)->QPress.kQ = sizePerLevel;
+	para->getParD(level)->QPress.kQ = sizePerLevel;
+	para->getParH(level)->kPressQread = sizePerLevel * para->getD3Qxx();
+	para->getParD(level)->kPressQread = sizePerLevel * para->getD3Qxx();
 }
 
 
 void GridProvider::setVelocitySizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->Qinflow.kQ = sizePerLevel;
-    para->getParD(level)->Qinflow.kQ = sizePerLevel;
-    para->getParH(level)->kInflowQ = sizePerLevel;
-    para->getParD(level)->kInflowQ = sizePerLevel;
-    para->getParH(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
+	para->getParH(level)->Qinflow.kQ = sizePerLevel;
+	para->getParD(level)->Qinflow.kQ = sizePerLevel;
+	para->getParH(level)->kInflowQ = sizePerLevel;
+	para->getParD(level)->kInflowQ = sizePerLevel;
+	para->getParH(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
+	para->getParD(level)->kInflowQread = sizePerLevel * para->getD3Qxx();
 }
 
 void GridProvider::setOutflowSizePerLevel(int level, int sizePerLevel) const
 {
-    para->getParH(level)->Qoutflow.kQ = sizePerLevel;
-    para->getParD(level)->Qoutflow.kQ = sizePerLevel;
-    para->getParH(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
-    para->getParD(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
+	para->getParH(level)->Qoutflow.kQ = sizePerLevel;
+	para->getParD(level)->Qoutflow.kQ = sizePerLevel;
+	para->getParH(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
+	para->getParD(level)->kOutflowQread = sizePerLevel * para->getD3Qxx();
 }
 
 void GridProvider::allocAndCopyForcing()
 {
-    cudaMemoryManager->cudaAllocForcing();
-    cudaMemoryManager->cudaCopyForcingToDevice();
+	cudaMemoryManager->cudaAllocForcing();
+	cudaMemoryManager->cudaCopyForcingToDevice();
 }
 
 void GridProvider::freeMemoryOnHost()
 {
-    for (int level = para->getCoarse(); level <= para->getFine(); level++)
-    {
-        cudaMemoryManager->cudaFreeCoord(level);
-        cudaMemoryManager->cudaFreeSP(level);
-    }
+	for (int level = para->getCoarse(); level <= para->getFine(); level++)
+	{
+		cudaMemoryManager->cudaFreeCoord(level);
+		cudaMemoryManager->cudaFreeSP(level);
+	}
 }
 
 void GridProvider::cudaCopyDataToHost(int level)
 {
-    cudaMemoryManager->cudaCopyDataToHost(level);
+	cudaMemoryManager->cudaCopyDataToHost(level);
 }

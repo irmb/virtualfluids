@@ -1,7 +1,7 @@
 #ifndef CUMULANT_ALL4_COMP_SP27_H
 #define CUMULANT_ALL4_COMP_SP27_H
 
-#include "Kernel\Kernel.h"
+#include "Kernel/Kernel.h"
 
 #include <memory>
 

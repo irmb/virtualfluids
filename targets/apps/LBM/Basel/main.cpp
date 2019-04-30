@@ -4,7 +4,7 @@
 
 #include <mpi.h>
 #if defined( MPI_LOGGING )
-	#include <mpe.h>
+#include <mpe.h>
 #endif
 
 #include <string>
@@ -14,7 +14,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include "metis.h"
+//#include "metis.h"
 
 #include "Core/LbmOrGks.h"
 #include "Core/Input/Input.h"
@@ -58,218 +58,219 @@
 
 void multipleLevel(const std::string& configPath)
 {
-    //std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
-    std::ofstream logFile( "grid/gridGeneratorLog.txt" );
-    logging::Logger::addStream(&logFile);
+	//std::ofstream logFile( "F:/Work/Computations/gridGenerator/grid/gridGeneratorLog.txt" );
+	std::ofstream logFile("F:/Basel2019/log/gridGeneratorLog.txt");
+	logging::Logger::addStream(&logFile);
 
-    logging::Logger::addStream(&std::cout);
-    logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
-    logging::Logger::timeStamp(logging::Logger::ENABLE);
-    logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
+	logging::Logger::addStream(&std::cout);
+	logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
+	logging::Logger::timeStamp(logging::Logger::ENABLE);
+	logging::Logger::enablePrintedRankNumbers(logging::Logger::ENABLE);
 
-    //UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
+	//UbLog::reportingLevel() = UbLog::logLevelFromString("DEBUG5");
 
-    auto gridFactory = GridFactory::make();
-    gridFactory->setGridStrategy(Device::CPU);
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
-    gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
-    //gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
+	auto gridFactory = GridFactory::make();
+	gridFactory->setGridStrategy(Device::CPU);
+	//gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::RAYCASTING);
+	gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_IN_OBJECT);
+	//gridFactory->setTriangularMeshDiscretizationMethod(TriangularMeshDiscretizationMethod::POINT_UNDER_TRIANGLE);
 
-    auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
+	auto gridBuilder = MultipleGridBuilder::makeShared(gridFactory);
 
 	SPtr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance();
 	SPtr<ConfigData> configData = configReader->readConfigFile(configPath);
 	Communicator* comm = Communicator::getInstanz();
 
-    SPtr<Parameter> para = Parameter::make(configData, comm);
-    SPtr<GridProvider> gridGenerator;
+	SPtr<Parameter> para = Parameter::make(configData, comm);
+	SPtr<GridProvider> gridGenerator;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool useGridGenerator = false;
+	bool useGridGenerator = false;
 
-    if(useGridGenerator){
+	if (useGridGenerator) {
 
-            real dx = 1.2;
-            real vx = 0.05;
+		real dx = 1.2;
+		real vx = 0.05;
 
-            //TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
-			TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
+		//TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_All_CLOSED.stl");
+		TriangularMesh* BaselSTL = TriangularMesh::make("M:/Basel2019/stl/BaselUrbanProfile_066_deg_bridge_3_All_CLOSED_WIDE_GROUND.stl");
 
-            gridBuilder->addCoarseGrid(-256.0, -256.0, -  8.0,
-                                        256.0,  256.0,  160.0, dx);  
+		gridBuilder->addCoarseGrid(-256.0, -256.0, -8.0,
+			256.0, 256.0, 160.0, dx);
 
-            gridBuilder->addGeometry(BaselSTL);
+		gridBuilder->addGeometry(BaselSTL);
 
-			//Forcing
-			//gridBuilder->setPeriodicBoundaryCondition(true, true, false);
-			//no Forcing
-			//gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-			//Merged for Wind in X Direction
-			gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+		//Forcing
+		//gridBuilder->setPeriodicBoundaryCondition(true, true, false);
+		//no Forcing
+		//gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+		//Merged for Wind in X Direction
+		gridBuilder->setPeriodicBoundaryCondition(true, true, false);
 
-            gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
+		gridBuilder->buildGrids(LBM, true); // buildGrids() has to be called before setting the BCs!!!!
 
-            //////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx , 0.0, 0.0);
-            gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx , 0.0, 0.0);
+		gridBuilder->setVelocityBoundaryCondition(SideType::PZ, vx, 0.0, 0.0);
+		gridBuilder->setVelocityBoundaryCondition(SideType::MZ, vx, 0.0, 0.0);
 
-            gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
+		gridBuilder->setVelocityBoundaryCondition(SideType::GEOMETRY, 0.0, 0.0, 0.0);
 
-			//no forcing
-			gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
-			gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
+		//no forcing
+		gridBuilder->setPressureBoundaryCondition(SideType::PY, 0.0);
+		gridBuilder->setPressureBoundaryCondition(SideType::MY, 0.0);
 
-			gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
-			gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
+		gridBuilder->setPressureBoundaryCondition(SideType::PX, 0.0);
+		gridBuilder->setPressureBoundaryCondition(SideType::MX, 0.0);
 
-			//////////////////////////////////////////////////////////////////////////
-			//Forcing
-			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
-            //SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
-			//no Forcing
-			//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid");
-			//SimulationFileWriter::write("M:/Basel2019/grids/BaselUniNoForcing/", gridBuilder, FILEFORMAT::BINARY);
-			//Merged for Wind in X Direction
-			gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid");
-			SimulationFileWriter::write("M:/Basel2019/grids/BaselUniMergedXAllStreets/", gridBuilder, FILEFORMAT::BINARY);
+		//////////////////////////////////////////////////////////////////////////
+		//Forcing
+		//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUni/Basel_Grid");
+		//SimulationFileWriter::write("M:/Basel2019/grids/BaselUni/", gridBuilder, FILEFORMAT::BINARY);
+		//no Forcing
+		//gridBuilder->writeGridsToVtk("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid");
+		//SimulationFileWriter::write("M:/Basel2019/grids/BaselUniNoForcing/", gridBuilder, FILEFORMAT::BINARY);
+		//Merged for Wind in X Direction
+		gridBuilder->writeGridsToVtk("F:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid");
+		SimulationFileWriter::write("F:/Basel2019/grids/BaselUniMergedXAllStreets/", gridBuilder, FILEFORMAT::BINARY);
 
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			StreetPointFinder finder;
+		StreetPointFinder finder;
 
-			finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Streets.txt");
+		finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Streets.txt");
 
-			finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
+		finder.writeVTK("F:/Basel2019/results/ExampleStreets.vtk");
 
-			finder.findIndicesLB(gridBuilder->getGrid(0));
+		finder.findIndicesLB(gridBuilder->getGrid(0), 7.0);
 
-			//Forcing
-			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-			//no Forcing
-			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			//finder.writeSimulationFile("M:/Basel2019/grids/BaselUniNoForcing/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-			//Merged for Wind in X Direction
-			finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-			finder.writeSimulationFile("M:/Basel2019/grids/BaselUniMergedXAllStreets/", 1.0, gridBuilder->getNumberOfLevels(), 0);
-			////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//Forcing
+		//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUni/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+		//finder.writeSimulationFile("M:/Basel2019/grids/BaselUni/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		//no Forcing
+		//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniNoForcing/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+		//finder.writeSimulationFile("M:/Basel2019/grids/BaselUniNoForcing/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		//Merged for Wind in X Direction
+		finder.writeConnectionVTK("F:/Basel2019/grids/BaselUniMergedXAllStreets/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
+		finder.writeSimulationFile("F:/Basel2019/grids/BaselUniMergedXAllStreets/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			return;
+		return;
 
-            gridGenerator = GridGenerator::make(gridBuilder, para);
+		gridGenerator = GridGenerator::make(gridBuilder, para);
 
-    }
-    else
-    {
-        gridGenerator = GridReader::make(FileFormat::BINARY, para);
-        //gridGenerator = GridReader::make(FileFormat::ASCII, para);
-    }
+	}
+	else
+	{
+		gridGenerator = GridReader::make(FileFormat::BINARY, para);
+		//gridGenerator = GridReader::make(FileFormat::ASCII, para);
+	}
 
-    logFile.close();
+	logFile.close();
 
-    //return;
+	//return;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    //std::ifstream stream;
-    //stream.open(configPath.c_str(), std::ios::in);
-    //if (stream.fail())
-    //    throw std::runtime_error("can not open config file!");
+	//std::ifstream stream;
+	//stream.open(configPath.c_str(), std::ios::in);
+	//if (stream.fail())
+	//    throw std::runtime_error("can not open config file!");
 
-    //UPtr<input::Input> input = input::Input::makeInput(stream, "config");
+	//UPtr<input::Input> input = input::Input::makeInput(stream, "config");
 
-    Simulation sim;
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
-    sim.init(para, gridGenerator, fileWriter);
-    sim.run();
+	Simulation sim;
+	SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+	sim.init(para, gridGenerator, fileWriter);
+	sim.run();
 	sim.free();
 }
 
 
-int main( int argc, char* argv[])
+int main(int argc, char* argv[])
 {
-     MPI_Init(&argc, &argv);
-    std::string str, str2; 
-    if ( argv != NULL )
-    {
-        str = static_cast<std::string>(argv[0]);
-        if (argc > 1)
-        {
-            str2 = static_cast<std::string>(argv[1]);
-            try
-            {
-                multipleLevel(str2);
-            }
-            catch (const std::exception& e)
-            {
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
-                //MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-            catch (...)
-            {
-                std::cout << "unknown exeption" << std::endl;
-            }
-        }
-        else
-        {
-            try
-            {
+	MPI_Init(&argc, &argv);
+	std::string str, str2;
+	if (argv != NULL)
+	{
+		str = static_cast<std::string>(argv[0]);
+		if (argc > 1)
+		{
+			str2 = static_cast<std::string>(argv[1]);
+			try
+			{
+				multipleLevel(str2);
+			}
+			catch (const std::exception& e)
+			{
+				*logging::out << logging::Logger::ERROR << e.what() << "\n";
+				//MPI_Abort(MPI_COMM_WORLD, -1);
+			}
+			catch (...)
+			{
+				std::cout << "unknown exeption" << std::endl;
+			}
+		}
+		else
+		{
+			try
+			{
 				//multipleLevel("E:/temp/Basel2019/config/configBasel.txt"); //Tesla03
-				multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart
+				//multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart 1
+				multipleLevel("F:/Basel2019/configBasel.txt"); //Baumbart 2
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
 				//multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt"); //Gamling
-            }
-            catch (const std::exception& e)
-            {
-                
-                *logging::out << logging::Logger::ERROR << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
-                //MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-            catch (const std::bad_alloc e)
-            {
-                
-                *logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
-                //std::cout << e.what() << std::flush;
-                //MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-            catch (...)
-            {
-                *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
-                //std::cout << "unknown exeption" << std::endl;
-            }
+			}
+			catch (const std::exception& e)
+			{
 
-            std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
-            //MPI_Abort(MPI_COMM_WORLD, -1);
-        }
-    }
+				*logging::out << logging::Logger::ERROR << e.what() << "\n";
+				//std::cout << e.what() << std::flush;
+				//MPI_Abort(MPI_COMM_WORLD, -1);
+			}
+			catch (const std::bad_alloc e)
+			{
+
+				*logging::out << logging::Logger::ERROR << "Bad Alloc:" << e.what() << "\n";
+				//std::cout << e.what() << std::flush;
+				//MPI_Abort(MPI_COMM_WORLD, -1);
+			}
+			catch (...)
+			{
+				*logging::out << logging::Logger::ERROR << "Unknown exception!\n";
+				//std::cout << "unknown exeption" << std::endl;
+			}
+
+			std::cout << "\nConfiguration file must be set!: lbmgm <config file>" << std::endl << std::flush;
+			//MPI_Abort(MPI_COMM_WORLD, -1);
+		}
+	}
 
 
-   /*
-   MPE_Init_log() & MPE_Finish_log() are NOT needed when
-   liblmpe.a is linked with this program.  In that case,
-   MPI_Init() would have called MPE_Init_log() already.
-   */
+	/*
+	MPE_Init_log() & MPE_Finish_log() are NOT needed when
+	liblmpe.a is linked with this program.  In that case,
+	MPI_Init() would have called MPE_Init_log() already.
+	*/
 #if defined( MPI_LOGGING )
-   MPE_Init_log();
+	MPE_Init_log();
 #endif
 
 #if defined( MPI_LOGGING )
-   if ( argv != NULL )
-      MPE_Finish_log( argv[0] );
-   if ( str != "" )
-      MPE_Finish_log( str.c_str() );
-   else
-      MPE_Finish_log( "TestLog" );
+	if (argv != NULL)
+		MPE_Finish_log(argv[0]);
+	if (str != "")
+		MPE_Finish_log(str.c_str());
+	else
+		MPE_Finish_log("TestLog");
 #endif
 
-   MPI_Finalize();
-   return 0;
+	MPI_Finalize();
+	return 0;
 }

@@ -1,3 +1,10 @@
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//
+//////////////////////////////////////////////////////////////////////////
 #include "Parameter.h"
 
 //#include <cuda_runtime.h>
@@ -2573,6 +2580,7 @@ void Parameter::cudaAllocConc(int lev)
 }
 void Parameter::cudaCopyConcDH(int lev)
 {
+	printf("Rank = %d \n", getMyID());
 	checkCudaErrors( cudaMemcpy(parH[lev]->Conc, parD[lev]->Conc,  parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
 void Parameter::cudaCopyConcHD(int lev)
@@ -2788,6 +2796,14 @@ void Parameter::cudaCopyConcFile(int lev)
 	checkCudaErrors( cudaMemcpy(parD[lev]->concIndex,     parH[lev]->concIndex,     mem_size_int,  cudaMemcpyHostToDevice));
 	checkCudaErrors( cudaMemcpy(parD[lev]->concentration, parH[lev]->concentration, mem_size_real, cudaMemcpyHostToDevice));
 }
+
+void Parameter::cudaCopyConcs(int lev)
+{
+	unsigned int mem_size_real = sizeof(real)         * parH[lev]->numberOfPointsConc;
+
+	checkCudaErrors(cudaMemcpy(parD[lev]->concentration, parH[lev]->concentration, mem_size_real, cudaMemcpyHostToDevice));
+}
+
 void Parameter::cudaFreeConcFile(int lev)
 {
 	checkCudaErrors( cudaFreeHost(parH[lev]->concIndex     ));
