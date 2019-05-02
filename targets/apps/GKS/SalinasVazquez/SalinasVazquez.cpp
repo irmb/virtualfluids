@@ -51,12 +51,14 @@
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
+#include "GksGpu/Restart/Restart.h"
+
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
 //uint deviceMap [2] = {2,3};
 uint deviceMap [2] = {0,1};
 
-void simulation( std::string path, std::string simulationName )
+void simulation( std::string path, std::string simulationName, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -148,8 +150,8 @@ void simulation( std::string path, std::string simulationName )
 
     if( mpiWorldSize == 2 )
     {
-        startY =   real(rank/2)         * H;
-        endY   = ( real(rank/2) + 1.0 ) * H;
+        startY = 0.0;
+        endY   = H;
     }
     else
     {
@@ -300,21 +302,38 @@ void simulation( std::string path, std::string simulationName )
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    uint startIter = 0;
+
     dataBase->setMesh( meshAdapter );
 
     dataBase->setCommunicators( meshAdapter );
 
     CudaUtility::printCudaMemoryUsage();
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
+    if( restartIter == INVALID_INDEX )
+    {
+        Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-        real Th = 1.0 / lambdaHot;
-        real Tc = 1.0 / lambdaCold;
-        real T = Th - (Th - Tc)*( (cellCenter.x + 0.5 * L) / L);
-        real lambdaLocal = 1.0 / T;
+            real Th = 1.0 / lambdaHot;
+            real Tc = 1.0 / lambdaCold;
+            real T = Th - (Th - Tc)*((cellCenter.x + 0.5 * L) / L);
+            real lambdaLocal = 1.0 / T;
 
-        return toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambda ), parameters.K );
-    });
+            return toConservedVariables(PrimitiveVariables(rho, 0.0, 0.0, 0.0, lambda), parameters.K);
+        });
+
+        if (rank == 0) writeVtkXMLParallelSummaryFile(dataBase, parameters, path + simulationName + "_0", mpiWorldSize);
+
+        writeVtkXML(dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank));
+    }
+    else
+    {
+        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ) + "_rank_" + std::to_string(rank), startIter );
+
+        if (rank == 0) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_" + std::to_string( restartIter ) + "_restart", mpiWorldSize );
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( restartIter ) + "_restart" + "_rank_" + std::to_string(rank) );
+    }
 
     dataBase->copyDataHostToDevice();
 
@@ -325,10 +344,6 @@ void simulation( std::string path, std::string simulationName )
     //                  R u n
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    if( rank == 0 ) writeVtkXMLParallelSummaryFile( dataBase, parameters, path + simulationName + "_0", mpiWorldSize );
-
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" + "_rank_" + std::to_string(rank) );
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 300.0 );
 
@@ -341,7 +356,7 @@ void simulation( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 10000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 10000000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
@@ -373,6 +388,13 @@ void simulation( std::string path, std::string simulationName )
             if( rank == 0 ) writeTurbulenceVtkXMLParallelSummaryFile( dataBase, turbulenceAnalyzer, parameters, path + simulationName + "_Turbulence_" + std::to_string( iter ), mpiWorldSize );
 
             writeTurbulenceVtkXML( dataBase, turbulenceAnalyzer, 0, path + simulationName + "_Turbulence_" + std::to_string( iter ) + "_rank_" + std::to_string(rank) );
+        }
+
+        if( iter % 100000 == 0 )
+        {
+            turbulenceAnalyzer->download();
+
+            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ) + "_rank_" + std::to_string(rank), iter );
         }
     }
 
@@ -451,7 +473,11 @@ int main( int argc, char* argv[])
 
     try
     {
-        simulation(path, simulationName);
+        uint restartIter = INVALID_INDEX;
+
+        if( argc > 1 ) restartIter = atoi( argv[1] );
+
+        simulation(path, simulationName, restartIter);
     }
     catch (const std::exception& e)
     {     

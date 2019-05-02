@@ -42,7 +42,7 @@
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 
-#include "Restart/Restart.h"
+#include "GksGpu/Restart/Restart.h"
 
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
@@ -232,10 +232,8 @@ void channelFlow( std::string path, std::string simulationName )
 
             real ULocal = four * (0.25 - cellCenter.y * cellCenter.y) * U;
 
-            return toConservedVariables(PrimitiveVariables(rhoLocal, ULocal, 0.0, 0.0, lambda, 0.0), parameters.K);
+            return toConservedVariables(PrimitiveVariables(rhoLocal, ULocal, 0.0, 0.0, lambda), parameters.K);
         });
-
-        dataBase->copyDataHostToDevice();
 
         writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
     }
@@ -243,10 +241,10 @@ void channelFlow( std::string path, std::string simulationName )
     {
         Restart::readRestart(dataBase, path + simulationName + "_10000.rst", startIter );
 
-        dataBase->copyDataHostToDevice();
-
         writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string(startIter) + "_restart" );
     }
+
+    dataBase->copyDataHostToDevice();
 
     Initializer::initializeDataUpdate(dataBase);
 

@@ -43,6 +43,8 @@ void Restart::writeRestart( SPtr<DataBase> dataBase, std::string filename, uint 
 
 bool Restart::readRestart( SPtr<DataBase> dataBase, std::string filename, uint& iter )
 {
+    filename += ".rst";
+
     *logging::out << logging::Logger::INFO_HIGH << "Reading restart file " << filename << " ... ";
 	
     std::ifstream file;
