@@ -83,7 +83,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.5;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -253,7 +253,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //SPtr<BoundaryCondition> burner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
 
-    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 0.0) );
+    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 1.0) );
     //SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 10.0 * U, prim.lambda, 0.0, 0.0) );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 

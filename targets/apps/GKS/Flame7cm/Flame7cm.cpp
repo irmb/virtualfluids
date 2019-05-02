@@ -83,7 +83,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.125;
+    real CFL = 0.6;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -337,7 +337,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
         if( 
             //( iter >= 2000 && iter % 100 == 0 ) || 
-            ( iter % 10 == 0 )
+            ( iter % 100 == 0 )
           )
         {
             for( uint level = 0; level < dataBase->numberOfLevels; level++ )
