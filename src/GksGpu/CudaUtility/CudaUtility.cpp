@@ -59,4 +59,6 @@ int CudaUtility::getCudaDevice()
     cudaGetDeviceProperties(&prop, device);
 
     *logging::out << logging::Logger::INFO_HIGH << "The current device " << device << ": " << prop.name << "\n";
+
+    return device;
 }

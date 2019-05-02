@@ -59,7 +59,7 @@ void GksMeshAdapter::inputGrid()
     for( uint level = 0; level < this->gridBuilder->getNumberOfGridLevels(); level++ ){
         for( uint gridIdx = 0; gridIdx < grids[level]->getSize(); gridIdx++ ){
             if (grids[level]->getFieldEntry(gridIdx)  != STOPPER_COARSE_UNDER_FINE &&
-                grids[level]->getFieldEntry(gridIdx)  != STOPPER_SOLID &&
+                //grids[level]->getFieldEntry(gridIdx)  != STOPPER_SOLID &&
                 grids[level]->getFieldEntry(gridIdx)  != INVALID_COARSE_UNDER_FINE &&
                 grids[level]->getFieldEntry(gridIdx)  != INVALID_OUT_OF_GRID &&
                 grids[level]->getFieldEntry(gridIdx)  != INVALID_SOLID )
@@ -314,7 +314,7 @@ void GksMeshAdapter::generateNodes()
     
         MeshCell& cell = this->cells[ cellIdx ];
 
-        if( cell.type == STOPPER_SOLID ) continue;
+        //if( cell.type == STOPPER_SOLID ) continue;
 
         real x, y, z;
         grids[cell.level]->transIndexToCoords(cell.gridIdx, x, y, z);
@@ -393,7 +393,7 @@ void GksMeshAdapter::generateFaces()
     
         MeshCell& cell = this->cells[ cellIdx ];
 
-        if( cell.type == BC_SOLID || cell.type == STOPPER_SOLID ) continue;
+        //if( cell.type == BC_SOLID || cell.type == STOPPER_SOLID ) continue;
 
         // generate faces in positive direction
         for( uint neighborIdx = 0; neighborIdx < 6; neighborIdx += 2 ){
@@ -785,6 +785,8 @@ void GksMeshAdapter::findPeriodicBoundaryNeighbors()
         for( uint cellIdx = startIdx; cellIdx < endIdx; cellIdx++ )
         {
             MeshCell cell = this->cells[ cellIdx ];
+
+            if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY && cell.type != STOPPER_SOLID ) continue;
 
             Vec3 gridStart ( grid->getStartX() + c1o2 * grid->getDelta(),
                              grid->getStartY() + c1o2 * grid->getDelta(),

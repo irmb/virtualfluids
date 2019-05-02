@@ -52,7 +52,7 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
 
             if( !boundaryFinder( cell.cellCenter ) ) continue;
 
-            if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY ) continue;
+            if( cell.type != STOPPER_OUT_OF_GRID && cell.type != STOPPER_OUT_OF_GRID_BOUNDARY && cell.type != STOPPER_SOLID ) continue;
 
             // look in all directions
             uint maximalSearchDirection = 27;
@@ -69,7 +69,8 @@ void BoundaryCondition::findBoundaryCells(GksMeshAdapter & adapter, bool allowGh
                 MeshCell& neighborCell = adapter.cells[ neighborCellIdx ];
 
                 bool neighborCellIsFluid = neighborCell.type != STOPPER_OUT_OF_GRID && 
-                                           neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY;
+                                           neighborCell.type != STOPPER_OUT_OF_GRID_BOUNDARY && 
+                                           neighborCell.type != STOPPER_SOLID;
 
                 bool neighborCellIsValidGhostCell = !this->isFluxBC() && allowGhostCells && !boundaryFinder( neighborCell.cellCenter );
 
