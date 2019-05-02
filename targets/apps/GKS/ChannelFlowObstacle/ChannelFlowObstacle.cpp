@@ -42,6 +42,8 @@
 #include "GksGpu/Analyzer/CupsAnalyzer.h"
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 
+#include "Restart/Restart.h"
+
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
 void channelFlow( std::string path, std::string simulationName )
@@ -51,6 +53,8 @@ void channelFlow( std::string path, std::string simulationName )
     uint nx = 32+1;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    uint startIter = 0;
 
     real L = 1.0;
     real H = 1.0;
@@ -121,7 +125,7 @@ void channelFlow( std::string path, std::string simulationName )
 
     gridBuilder->setNumberOfLayers(10,6);
     gridBuilder->addGrid( &cube1, 2);
-    gridBuilder->addGrid( &cube2, 3);
+    //gridBuilder->addGrid( &cube2, 3);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -135,7 +139,7 @@ void channelFlow( std::string path, std::string simulationName )
 
     gridBuilder->buildGrids(GKS, false);
 
-    gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
+    //gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -218,22 +222,33 @@ void channelFlow( std::string path, std::string simulationName )
 
     CudaUtility::printCudaMemoryUsage();
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
+    if( false )
+    {
+        Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-        real rhoLocal = rho;// - cellCenter.x * two * lambda * g;
+            real rhoLocal = rho;// - cellCenter.x * two * lambda * g;
 
-        //real ULocal =0.0;//8.0 * ( ( 0.25 - cellCenter.y * cellCenter.y ) * ( 0.25 - cellCenter.z * cellCenter.z ) ) * U;
+            //real ULocal =0.0;//8.0 * ( ( 0.25 - cellCenter.y * cellCenter.y ) * ( 0.25 - cellCenter.z * cellCenter.z ) ) * U;
 
-        real ULocal = four * ( 0.25 - cellCenter.y * cellCenter.y ) * U;
+            real ULocal = four * (0.25 - cellCenter.y * cellCenter.y) * U;
 
-        return toConservedVariables( PrimitiveVariables( rhoLocal, ULocal, 0.0, 0.0, lambda, 0.0 ), parameters.K );
-    });
+            return toConservedVariables(PrimitiveVariables(rhoLocal, ULocal, 0.0, 0.0, lambda, 0.0), parameters.K);
+        });
 
-    dataBase->copyDataHostToDevice();
+        dataBase->copyDataHostToDevice();
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
+    }
+    else
+    {
+        Restart::readRestart(dataBase, path + simulationName + "_10000.rst", startIter );
+
+        dataBase->copyDataHostToDevice();
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string(startIter) + "_restart" );
+    }
 
     Initializer::initializeDataUpdate(dataBase);
-
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +263,7 @@ void channelFlow( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 2000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
@@ -257,6 +272,8 @@ void channelFlow( std::string path, std::string simulationName )
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+
+            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
 
         cupsAnalyzer.run( iter );
