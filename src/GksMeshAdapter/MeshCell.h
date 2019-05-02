@@ -60,6 +60,8 @@ struct VF_PUBLIC MeshCell{
 
     bool isWall;
 
+    bool isFluxBC;
+
     char type;
 
     MeshCell();

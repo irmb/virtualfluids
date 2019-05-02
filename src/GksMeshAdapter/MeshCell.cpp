@@ -21,6 +21,8 @@ MeshCell::MeshCell(){
     isGhostCell = false;
 
     isWall = false;
+
+    isFluxBC = false;
 }
 
 bool MeshCell::isCoarseGhostCell()

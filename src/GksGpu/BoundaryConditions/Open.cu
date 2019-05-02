@@ -116,8 +116,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     //////////////////////////////////////////////////////////////////////////
 
-    //if( sign > zero )
-    if( p2 > p1 )
+    if( sign < zero )
+    //if( p2 > p1 )
         ghostCellData = domainCellData;
     else
     {
@@ -138,6 +138,14 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         ghostCellData = toConservedVariables(ghostCellPrim, parameters.K);
     }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    //ghostCellData = two * domainCellData + ( - one ) * secondCellData;
+
+    //ghostCellData = domainCellData;
+
+    //////////////////////////////////////////////////////////////////////////
 
     writeCellData(ghostCellIdx, dataBase, ghostCellData);
 }

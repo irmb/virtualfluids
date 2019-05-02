@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <exception>
 #include <fstream>
 #include <memory>
@@ -42,6 +43,7 @@
 #include "GksGpu/BoundaryConditions/PassiveScalarDiriclet.h"
 #include "GksGpu/BoundaryConditions/InflowComplete.h"
 #include "GksGpu/BoundaryConditions/Open.h"
+#include "GksGpu/BoundaryConditions/Inflow.h"
 
 #include "GksGpu/Interface/Interface.h"
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
@@ -187,14 +189,17 @@ void thermalCavity( std::string path, std::string simulationName )
     
     SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
-    //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
-    //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
+
+    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Inflow>( dataBase, Vec3( 100.0*U, 0.0, 0.0), prim.lambda, rho, 1.0, 0.0, 0.0 );
+    SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Inflow>( dataBase, Vec3(-100.0*U, 0.0, 0.0), prim.lambda, rho, 1.0, 0.0, 0.0 );
 
     bcMX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L; } );
     bcPX->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L; } );
 
-    //bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 0.5; } );
-    //bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 0.5; } );
+    bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z < 0.25*H; } );
+    bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z < 0.25*H; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -227,19 +232,20 @@ void thermalCavity( std::string path, std::string simulationName )
 
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase, prim );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0 /*&& std::sqrt(center.x*center.x + center.y*center.y) >= 0.5*0.071*/; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
 
     //SPtr<BoundaryCondition> burner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
 
-    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 0.0) );
+    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 1.0) );
     //SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 10.0 * U, prim.lambda, 0.0, 0.0) );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5*0.071;
+        //return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5*0.071;
+        return center.z < 0.0 && std::sqrt(center.x*center.x) < 0.5*0.071;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -331,7 +337,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
         if( 
             //( iter >= 2000 && iter % 100 == 0 ) || 
-            ( iter % 1000 == 0 )
+            ( iter % 10 == 0 )
           )
         {
             for( uint level = 0; level < dataBase->numberOfLevels; level++ )

@@ -32,6 +32,8 @@ struct VF_PUBLIC InflowComplete : public BoundaryCondition //, public Isothermal
 
     virtual bool isWall() override;
 
+    virtual bool isFluxBC() override;
+
     virtual bool secondCellsNeeded() override;
 
     virtual void runBoundaryConditionKernel(const SPtr<DataBase> dataBase,

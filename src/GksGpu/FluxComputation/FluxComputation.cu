@@ -190,8 +190,6 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
     {
         ConservedVariables flux;
 
-        ConservedVariables faceCons;
-
         {
             real momentU [ NUMBER_OF_MOMENTS ]; 
             real momentV [ NUMBER_OF_MOMENTS ]; 
@@ -243,6 +241,10 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
             CellProperties negCellProperties = dataBase.cellProperties[ negCellIdx ];
             CellProperties posCellProperties = dataBase.cellProperties[ posCellIdx ];
+
+            //if( isCellProperties( negCellProperties, CELL_PROPERTIES_IS_FLUX_BC ) || 
+            //    isCellProperties( posCellProperties, CELL_PROPERTIES_IS_FLUX_BC ) )
+            //    return;
 
             if( isCellProperties( negCellProperties, CELL_PROPERTIES_WALL ) || 
                 isCellProperties( posCellProperties, CELL_PROPERTIES_WALL ) )

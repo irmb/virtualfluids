@@ -14,7 +14,7 @@
 #define CELL_PROPERTIES_GHOST      (1u)
 #define CELL_PROPERTIES_WALL       (2u)
 #define CELL_PROPERTIES_FINE_GHOST (4u)
-#define CELL_PROPERTIES_3          (8u)
+#define CELL_PROPERTIES_IS_FLUX_BC (8u)
 #define CELL_PROPERTIES_4          (16u)
 #define CELL_PROPERTIES_5          (32u)
 #define CELL_PROPERTIES_6          (64u)

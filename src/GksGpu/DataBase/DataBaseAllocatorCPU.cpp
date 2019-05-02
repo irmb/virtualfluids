@@ -105,6 +105,8 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
         dataBase->cellProperties[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
         if( adapter.cells[ cellIdx ].isWall )
             setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_WALL ); 
+        if( adapter.cells[ cellIdx ].isFluxBC )
+            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC ); 
         if( adapter.cells[ cellIdx ].isGhostCell )
             setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_GHOST );
         if( adapter.cells[ cellIdx ].isFineGhostCell() )

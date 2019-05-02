@@ -43,6 +43,8 @@ struct VF_PUBLIC BoundaryCondition : virtual public BoundaryConditionStruct, pub
 
     virtual bool isWall() = 0;
 
+    virtual bool isFluxBC();
+
     virtual bool secondCellsNeeded();
 
     virtual void runBoundaryConditionKernel( const SPtr<DataBase> dataBase,
