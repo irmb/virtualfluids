@@ -453,16 +453,20 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
 
         *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start with Q Computation\n";
 
-        grids[grids.size() - 1]->mesh(solidObject);
+        //for( uint level = 0; level < grids.size(); level++ )
+        uint level = grids.size() - 1;
+        {
+            grids[level]->mesh(solidObject);
 
-        if( enableThinWalls ){
-            grids[grids.size() - 1]->enableFindSolidBoundaryNodes();
-            grids[grids.size() - 1]->findQs(solidObject);
-            grids[grids.size() - 1]->closeNeedleCellsThinWall();
-            grids[grids.size() - 1]->enableComputeQs();
+            if (enableThinWalls) {
+                grids[level]->enableFindSolidBoundaryNodes();
+                grids[level]->findQs(solidObject);
+                grids[level]->closeNeedleCellsThinWall();
+                grids[level]->enableComputeQs();
+            }
+
+            grids[level]->findQs(solidObject);
         }
-
-        grids[grids.size() - 1]->findQs(solidObject);
 
         //for (size_t i = 0; i < grids.size(); i++){
         //    grids[i]->mesh(solidObject);

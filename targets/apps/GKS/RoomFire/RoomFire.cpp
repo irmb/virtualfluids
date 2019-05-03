@@ -18,6 +18,7 @@
 #include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h"
 #include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -33,13 +34,14 @@
 
 #include "GksGpu/FlowStateData/FlowStateData.cuh"
 #include "GksGpu/FlowStateData/FlowStateDataConversion.cuh"
+#include "GksGpu/FlowStateData/ThermalDependencies.cuh"
 
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
 #include "GksGpu/BoundaryConditions/Pressure.h"
 #include "GksGpu/BoundaryConditions/AdiabaticWall.h"
-#include "GksGpu/BoundaryConditions/PassiveScalarDiriclet.h"
+#include "GksGpu/BoundaryConditions/HeatFlux.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -47,9 +49,11 @@
 #include "GksGpu/Analyzer/ConvergenceAnalyzer.h"
 #include "GksGpu/Analyzer/TurbulenceAnalyzer.h"
 
+#include "GksGpu/Restart/Restart.h"
+
 #include "GksGpu/CudaUtility/CudaUtility.h"
 
-void thermalCavity( std::string path, std::string simulationName )
+void thermalCavity( std::string path, std::string simulationName, uint restartIter )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -57,14 +61,14 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 4.0;
-    real H = 4.0;
+    real L = 3.0;
+    real H = 3.0;
     real W = 0.125;
 
     real dx = H / real(nx);
 
 
-    real Ra = 1.0e8;
+    real Ra = 1.0e9;
 
     real Ba  = 0.1;
     real eps = 2.0;
@@ -74,17 +78,17 @@ void thermalCavity( std::string path, std::string simulationName )
     real g   = 9.81;
     real rho = 1.2;
 
-    //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
-    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, 0.02884 / ( 2.0 * 300 * 8.314 ) );
+    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
 
-    setLambdaFromT( prim, 30.0 / T_FAKTOR );
+    //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
+    //setLambdaFromT( prim, 3.0 );
     
     real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.25;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -124,34 +128,53 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
-                                0.5*L,  0.5*L,  H  , dx);
+    bool threeDimensional = true;
 
-    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx,  0.0,  
-    //                            0.5*L,  0.5*dx,  H  , dx);
+    if( threeDimensional )
+        gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
+                                    0.5*L,  0.5*L,  H  , dx);
+    else
+        gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx,  0.0,  
+                                    0.5*L,  0.5*dx,  H  , dx);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
-    Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.25 );
+#ifdef _WIN32
+    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
+    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/UnterzugObstacle.stl");
+#else
+    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
+    TriangularMesh* stl = TriangularMesh::make("inp/UnterzugObstacle.stl");
+#endif
 
-    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 0.7, 1.0 );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 0.9, 4.0 );
+    gridBuilder->addGeometry(stl);
 
-    //gridBuilder->addGrid( &refRegion_1, 1);
-    //gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setNumberOfLayers(4,10);
+    VerticalCylinder cylinder ( 0.0, 0.0, 0.0, 0.7, 2.0 );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1, 3.0 );
+
+    Conglomerate refRegion1, refRegion2;
+
+    //refRegion1.add( &cylinder2 );
+    refRegion1.add( stl );
+
+    //refRegion2.add( &cylinder );
+    //refRegion2.add( stl );
+
+    gridBuilder->setNumberOfLayers(8,20);
     
-    //gridBuilder->addGrid( &box, 2 );
-    //gridBuilder->addGrid( &sphere, 2 );
-    gridBuilder->addGrid( &cylinder2, 1 );
-    gridBuilder->addGrid( &cylinder, 2 );
+    //gridBuilder->addGrid( &refRegion1, 1 );
+    //gridBuilder->addGrid( &refRegion2, 2 );
 
-    //gridBuilder->setPeriodicBoundaryCondition(false, false, false);
-    gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    gridBuilder->addGrid( &refRegion1, 3 );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if( threeDimensional )
+        gridBuilder->setPeriodicBoundaryCondition(false, false, false);
+    else
+        gridBuilder->setPeriodicBoundaryCondition(false, true, false);
 
     gridBuilder->buildGrids(GKS, false);
 
@@ -167,7 +190,8 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //meshAdapter.writeMeshFaceVTK( path + "grid/MeshFaces.vtk" );
 
-    meshAdapter.findPeriodicBoundaryNeighbors();
+    if( !threeDimensional )
+        meshAdapter.findPeriodicBoundaryNeighbors();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -190,17 +214,25 @@ void thermalCavity( std::string path, std::string simulationName )
 
     //////////////////////////////////////////////////////////////////////////
     
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<Periodic>( dataBase );
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<Periodic>( dataBase );
-    SPtr<BoundaryCondition> bcMY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    SPtr<BoundaryCondition> bcPY = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), false );
-    //SPtr<BoundaryCondition> bcMY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
-    //SPtr<BoundaryCondition> bcPY = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, false );
+    SPtr<BoundaryCondition> bcMY;
+    SPtr<BoundaryCondition> bcPY;
 
-    //bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
-    //bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
-    bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*L; } );
-    bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*L; } );
+    if( threeDimensional )
+    {
+        bcMY = std::make_shared<AdiabaticWall>(dataBase, Vec3(0.0, 0.0, 0.0), false);
+        bcPY = std::make_shared<AdiabaticWall>(dataBase, Vec3(0.0, 0.0, 0.0), false);
+
+        bcMY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y < -0.5*L; });
+        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y > 0.5*L; });
+    }
+    else
+    {
+        bcMY = std::make_shared<Periodic>(dataBase);
+        bcPY = std::make_shared<Periodic>(dataBase);
+        
+        bcMY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y < -0.5*dx; } );
+        bcPY->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.y >  0.5*dx; } );
+    }
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -209,17 +241,26 @@ void thermalCavity( std::string path, std::string simulationName )
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.025; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
 
-    //SPtr<BoundaryCondition> burner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
-    SPtr<BoundaryCondition> burner = std::make_shared<PassiveScalarDiriclet>( dataBase, 1.0, 0.0 );
+    //SPtr<BoundaryCondition> bcBurner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
+    SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 100.0 );
 
-    burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
+    bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+        return center.z > 0.25 && center.z < 0.5 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+    } );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    SPtr<BoundaryCondition> bcSolid = std::make_shared<AdiabaticWall>( dataBase, Vec3(0.0, 0.0, 0.0), true );
+
+    bcSolid->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
+
+        return center.z > 2.5 && std::sqrt(center.x*center.x) < 0.15;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -233,29 +274,44 @@ void thermalCavity( std::string path, std::string simulationName )
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
 
-    dataBase->boundaryConditions.push_back( burner );
+    dataBase->boundaryConditions.push_back( bcBurner );
+
+    dataBase->boundaryConditions.push_back( bcSolid );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    uint startIter = 0;
 
     dataBase->setMesh( meshAdapter );
 
     CudaUtility::printCudaMemoryUsage();
+    
+    if( restartIter == INVALID_INDEX )
+    {
+        Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-    Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables{
-        
-        real rhoLocal = rho * std::exp( - ( 2.0 * g * H * prim.lambda ) * cellCenter.z / H );
+            real rhoLocal = rho * std::exp(-(2.0 * g * H * prim.lambda) * cellCenter.z / H);
 
-        prim.rho = rhoLocal;
+            prim.rho = rhoLocal;
 
-        real r = sqrt( cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y + cellCenter.z * cellCenter.z );
+            real r = sqrt(cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y + cellCenter.z * cellCenter.z);
 
-        //if( r < 0.55 ) prim.S_2 = 1.0;
+            //if( r < 0.55 ) prim.S_2 = 1.0;
 
-        return toConservedVariables( prim, parameters.K );
-    });
+            return toConservedVariables(prim, parameters.K);
+        });
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
+    }
+    else
+    {
+        Restart::readRestart( dataBase, path + simulationName + "_" + std::to_string( restartIter ), startIter );
+
+        writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( restartIter ) + "_restart" );
+    }
 
     dataBase->copyDataHostToDevice();
 
@@ -267,8 +323,6 @@ void thermalCavity( std::string path, std::string simulationName )
 
     dataBase->copyDataDeviceToHost();
 
-    writeVtkXML( dataBase, parameters, 0, path + simulationName + "_0" );
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +330,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
 
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
@@ -284,7 +338,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 100000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 100000000; iter++ )
     {
         if( iter < 40000 )
         {
@@ -302,12 +356,8 @@ void thermalCavity( std::string path, std::string simulationName )
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter < 10     && iter % 1     == 0 ) ||
-            //( iter < 100    && iter % 10    == 0 ) ||
-            //( iter < 1000   && iter % 100   == 0 ) ||
-            //( iter < 10000  && iter % 1000  == 0 ) ||
-            //( iter < 10000000 && iter % 100000 == 0 )
-            ( iter >= 0 && iter % 10000 == 0 )
+            //( iter >= 15000 && iter % 10 == 0 )
+            ( iter % 1000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -351,7 +401,11 @@ int main( int argc, char* argv[])
 
     try
     {
-        thermalCavity( path, simulationName );
+        uint restartIter = INVALID_INDEX;
+
+        if( argc > 1 ) restartIter = atoi( argv[1] );
+
+        thermalCavity( path, simulationName, restartIter );
     }
     catch (const std::exception& e)
     {     
