@@ -86,7 +86,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     ConservedVariables domainCellData, secondCellData, ghostCellData;
     readCellData ( domainCellIdx, dataBase, domainCellData );
-    readCellData ( secondCellIdx, dataBase, domainCellData );
+    readCellData ( secondCellIdx, dataBase, secondCellData );
 
     PrimitiveVariables domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
     PrimitiveVariables secondCellPrim = toPrimitiveVariables( secondCellData, parameters.K );
@@ -116,7 +116,7 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     //////////////////////////////////////////////////////////////////////////
 
-    if( sign < zero )
+    if( sign > zero )
     //if( p2 > p1 )
         ghostCellData = domainCellData;
     else

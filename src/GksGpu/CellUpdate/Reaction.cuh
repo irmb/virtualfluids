@@ -64,7 +64,7 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
                 PrimitiveVariables limitPrim = prim;
 
-                real r = 1.01;
+                real r = 1.001;
 
                 limitPrim.lambda /= r;
 
