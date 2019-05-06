@@ -146,6 +146,11 @@ bool AdiabaticWall::isWall()
     return true;
 }
 
+bool AdiabaticWall::isInsulated()
+{
+    return true;
+}
+
 bool AdiabaticWall::secondCellsNeeded()
 {
     return true;

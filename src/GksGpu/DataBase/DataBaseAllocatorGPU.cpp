@@ -124,15 +124,21 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
         cellCenterBuffer[ VEC_Z( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.z;
 
         cellPropertiesBuffer[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
+
         if( adapter.cells[ cellIdx ].isWall )
             setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_WALL ); 
+
         if( adapter.cells[ cellIdx ].isFluxBC )
-            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC ); 
+            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC );
+
+        if( adapter.cells[ cellIdx ].isInsulated )
+            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_IS_INSULATED ); 
+
         if( adapter.cells[ cellIdx ].isGhostCell )
             setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_GHOST ); 
+
         if( adapter.cells[ cellIdx ].isFineGhostCell() )
             setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_FINE_GHOST ); 
-
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )

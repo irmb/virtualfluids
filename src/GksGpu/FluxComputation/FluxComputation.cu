@@ -256,6 +256,12 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             #endif //USE_PASSIVE_SCALAR
             }
 
+            if( isCellProperties( negCellProperties, CELL_PROPERTIES_IS_INSULATED ) || 
+                isCellProperties( posCellProperties, CELL_PROPERTIES_IS_INSULATED ) )
+            {
+                flux.rhoE   = zero;
+            }
+
             uint negCellParentIdx = dataBase.parentCell[ negCellIdx ];
             uint posCellParentIdx = dataBase.parentCell[ posCellIdx ];
 

@@ -34,6 +34,8 @@ struct VF_PUBLIC AdiabaticWall : public BoundaryCondition //, public IsothermalW
 
     virtual bool isWall() override;
 
+    virtual bool isInsulated() override;
+
     virtual bool secondCellsNeeded() override;
 
     virtual void runBoundaryConditionKernel(const SPtr<DataBase> dataBase,

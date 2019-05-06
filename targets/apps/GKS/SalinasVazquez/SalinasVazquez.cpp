@@ -98,7 +98,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
     real cs  = sqrt( ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( 2.0 * lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.5;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 

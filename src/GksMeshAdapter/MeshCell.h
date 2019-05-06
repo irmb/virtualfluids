@@ -62,6 +62,8 @@ struct VF_PUBLIC MeshCell{
 
     bool isFluxBC;
 
+    bool isInsulated;
+
     char type;
 
     MeshCell();

@@ -68,7 +68,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real dx = H / real(nx);
 
 
-    real Ra = 1.0e9;
+    real Ra = 1.0e11;
 
     real Ba  = 0.1;
     real eps = 2.0;
@@ -241,17 +241,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), lambdaCold,  0.0, true );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.025; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.5; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
 
     //SPtr<BoundaryCondition> bcBurner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
-    SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 100.0 );
+    SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 10.0 );
 
     bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z > 0.25 && center.z < 0.5 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+        return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x + center.y*center.y) < 1.6;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -357,7 +357,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( 
             //( iter >= 15000 && iter % 10 == 0 )
-            ( iter % 1000 == 0 )
+            ( iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
