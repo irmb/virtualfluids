@@ -152,6 +152,7 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
         faceCenterBuffer[ VEC_X( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.x;
         faceCenterBuffer[ VEC_Y( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.y;
+        faceCenterBuffer[ VEC_Z( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.z;
 
         faceOrientationBuffer[ faceIdx ] = adapter.faces[ faceIdx ].orientation;
     }

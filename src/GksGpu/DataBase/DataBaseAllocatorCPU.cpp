@@ -131,6 +131,7 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
 
         dataBase->faceCenter[ VEC_X( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.x;
         dataBase->faceCenter[ VEC_Y( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.y;
+        dataBase->faceCenter[ VEC_Z( faceIdx, dataBase->numberOfFaces ) ] = adapter.faces[ faceIdx ].faceCenter.z;
 
         dataBase->faceOrientation[ faceIdx ] = adapter.faces[ faceIdx ].orientation;
     }

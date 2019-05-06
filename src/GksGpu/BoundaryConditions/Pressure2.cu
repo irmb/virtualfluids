@@ -1,4 +1,4 @@
-#include "Pressure.h"
+#include "Pressure2.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -25,13 +25,13 @@
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
-                                                           const PressureStruct boundaryCondition, 
+                                                           const Pressure2Struct boundaryCondition, 
                                                            const Parameters parameters,
                                                            const uint startIndex,
                                                            const uint numberOfEntities );
 
 __host__ __device__ inline void boundaryConditionFunction( const DataBaseStruct& dataBase, 
-                                                           const PressureStruct& boundaryCondition, 
+                                                           const Pressure2Struct& boundaryCondition, 
                                                            const Parameters& parameters,
                                                            const uint startIndex,
                                                            const uint index );
@@ -40,7 +40,7 @@ __host__ __device__ inline void boundaryConditionFunction( const DataBaseStruct&
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-void Pressure::runBoundaryConditionKernel(const SPtr<DataBase> dataBase, 
+void Pressure2::runBoundaryConditionKernel(const SPtr<DataBase> dataBase, 
                                                 const Parameters parameters, 
                                                 const uint level)
 {    
@@ -64,7 +64,7 @@ void Pressure::runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
 //////////////////////////////////////////////////////////////////////////
 
 __global__ void boundaryConditionKernel(const DataBaseStruct dataBase, 
-                                        const PressureStruct boundaryCondition, 
+                                        const Pressure2Struct boundaryCondition, 
                                         const Parameters parameters,
                                         const uint startIndex,
                                         const uint numberOfEntities)
@@ -77,7 +77,7 @@ __global__ void boundaryConditionKernel(const DataBaseStruct dataBase,
 }
 
 __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& dataBase, 
-                                                          const PressureStruct& boundaryCondition, 
+                                                          const Pressure2Struct& boundaryCondition, 
                                                           const Parameters& parameters,
                                                           const uint startIndex,
                                                           const uint index)
@@ -107,7 +107,8 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         ghostCellPrim.U      = two * domainCellPrim.U      - secondCellPrim.U;
         ghostCellPrim.V      = two * domainCellPrim.V      - secondCellPrim.V;
         ghostCellPrim.W      = two * domainCellPrim.W      - secondCellPrim.W;
-        ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
+        //ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
+        ghostCellPrim.lambda = domainCellPrim.lambda;
     #ifdef USE_PASSIVE_SCALAR
         ghostCellPrim.S_1    = two * domainCellPrim.S_1    - secondCellPrim.S_1;
         ghostCellPrim.S_2    = two * domainCellPrim.S_2    - secondCellPrim.S_2;
@@ -119,7 +120,37 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         //real lambda0 = ( c1o2 * ( domainCellPrim.rho + ghostCellPrim.rho  ) * c1o2 / boundaryCondition.p0 );
         //ghostCellPrim.lambda = two * lambda0 - domainCellPrim.lambda;
+    
+        //////////////////////////////////////////////////////////////////////////
+
+        real xGhostCell = dataBase.cellCenter[VEC_X(ghostCellIdx, dataBase.numberOfCells)];
+        real yGhostCell = dataBase.cellCenter[VEC_Y(ghostCellIdx, dataBase.numberOfCells)];
+        real zGhostCell = dataBase.cellCenter[VEC_Z(ghostCellIdx, dataBase.numberOfCells)];
+
+        real xDomainCell = dataBase.cellCenter[VEC_X(domainCellIdx, dataBase.numberOfCells)];
+        real yDomainCell = dataBase.cellCenter[VEC_Y(domainCellIdx, dataBase.numberOfCells)];
+        real zDomainCell = dataBase.cellCenter[VEC_Z(domainCellIdx, dataBase.numberOfCells)];
+
+        real dx = xGhostCell - xDomainCell;
+        real dy = yGhostCell - yDomainCell;
+        real dz = zGhostCell - zDomainCell;
+
+        real sign = domainCellPrim.U * dx
+                  + domainCellPrim.V * dy
+                  + domainCellPrim.W * dz;
+
+        //////////////////////////////////////////////////////////////////////////
+
+        if( sign < zero )
+        {
+            ghostCellPrim.U = - domainCellPrim.U;
+            ghostCellPrim.V = - domainCellPrim.V;
+            ghostCellPrim.W = - domainCellPrim.W;
+        }
     }
+
+    //////////////////////////////////////////////////////////////////////////
+
 
     {
         ConservedVariables ghostCons = toConservedVariables( ghostCellPrim, parameters.K );
@@ -128,18 +159,18 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     }
 }
 
-Pressure::Pressure(SPtr<DataBase> dataBase, real p0)
+Pressure2::Pressure2(SPtr<DataBase> dataBase, real p0)
     : BoundaryCondition( dataBase )
 {
     this->p0 = p0;
 }
 
-bool Pressure::isWall()
+bool Pressure2::isWall()
 {
     return false;
 }
 
-bool Pressure::secondCellsNeeded()
+bool Pressure2::secondCellsNeeded()
 {
     return true;
 }

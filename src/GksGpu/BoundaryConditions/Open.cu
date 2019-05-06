@@ -114,11 +114,22 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     real p1 = c1o2 * domainCellPrim.rho / domainCellPrim.lambda;
     real p2 = c1o2 * secondCellPrim.rho / secondCellPrim.lambda;
 
+    real p0 = c1o2 * boundaryCondition.prim.rho / boundaryCondition.prim.lambda;
+
     //////////////////////////////////////////////////////////////////////////
 
-    if( sign > zero )
+    //if( sign > zero )
     //if( p2 > p1 )
+    if( p1 > p0 )
+    {
         ghostCellData = domainCellData;
+        //ghostCellData = two * domainCellData + ( - one ) * secondCellData;
+
+        
+        ghostCellData.rhoU = zero;
+        ghostCellData.rhoV = zero;
+        ghostCellData.rhoW = zero;
+    }
     else
     {
         PrimitiveVariables ghostCellPrim  = boundaryCondition.prim;
@@ -126,6 +137,14 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
         ghostCellPrim.U = domainCellPrim.U;
         ghostCellPrim.V = domainCellPrim.V;
         ghostCellPrim.W = domainCellPrim.W;
+
+        //ghostCellPrim.U = p0/p1;
+        //ghostCellPrim.V = p0/p1;
+        //ghostCellPrim.W = p0/p1;
+
+        //ghostCellPrim.U = two * domainCellPrim.U - secondCellPrim.U;
+        //ghostCellPrim.V = two * domainCellPrim.V - secondCellPrim.V;
+        //ghostCellPrim.W = two * domainCellPrim.W - secondCellPrim.W;
 
         real velocity = sqrt( ghostCellPrim.U * ghostCellPrim.U + ghostCellPrim.V * ghostCellPrim.V + ghostCellPrim.W * ghostCellPrim.W );
 

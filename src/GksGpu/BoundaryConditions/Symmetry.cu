@@ -1,4 +1,4 @@
-#include "Pressure.h"
+#include "Symmetry.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -25,13 +25,13 @@
 //////////////////////////////////////////////////////////////////////////
 
 __global__                 void boundaryConditionKernel  ( const DataBaseStruct dataBase, 
-                                                           const PressureStruct boundaryCondition, 
+                                                           const SymmetryStruct boundaryCondition, 
                                                            const Parameters parameters,
                                                            const uint startIndex,
                                                            const uint numberOfEntities );
 
 __host__ __device__ inline void boundaryConditionFunction( const DataBaseStruct& dataBase, 
-                                                           const PressureStruct& boundaryCondition, 
+                                                           const SymmetryStruct& boundaryCondition, 
                                                            const Parameters& parameters,
                                                            const uint startIndex,
                                                            const uint index );
@@ -40,9 +40,9 @@ __host__ __device__ inline void boundaryConditionFunction( const DataBaseStruct&
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-void Pressure::runBoundaryConditionKernel(const SPtr<DataBase> dataBase, 
-                                                const Parameters parameters, 
-                                                const uint level)
+void Symmetry::runBoundaryConditionKernel(const SPtr<DataBase> dataBase, 
+                                          const Parameters parameters, 
+                                          const uint level)
 {    
     CudaUtility::CudaGrid grid( this->numberOfCellsPerLevel[ level ], 32 );
 
@@ -54,9 +54,7 @@ void Pressure::runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
                parameters,
                this->startOfCellsPerLevel[ level ] );
 
-    cudaDeviceSynchronize();
-
-    getLastCudaError("Pressure::runBoundaryConditionKernel( const SPtr<DataBase> dataBase, const Parameters parameters, const uint level )");
+    getLastCudaError("IsothermalWall::runBoundaryConditionKernel( const SPtr<DataBase> dataBase, const Parameters parameters, const uint level )");
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -64,7 +62,7 @@ void Pressure::runBoundaryConditionKernel(const SPtr<DataBase> dataBase,
 //////////////////////////////////////////////////////////////////////////
 
 __global__ void boundaryConditionKernel(const DataBaseStruct dataBase, 
-                                        const PressureStruct boundaryCondition, 
+                                        const SymmetryStruct boundaryCondition, 
                                         const Parameters parameters,
                                         const uint startIndex,
                                         const uint numberOfEntities)
@@ -77,70 +75,50 @@ __global__ void boundaryConditionKernel(const DataBaseStruct dataBase,
 }
 
 __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& dataBase, 
-                                                          const PressureStruct& boundaryCondition, 
+                                                          const SymmetryStruct& boundaryCondition, 
                                                           const Parameters& parameters,
                                                           const uint startIndex,
                                                           const uint index)
 {
     uint ghostCellIdx  = boundaryCondition.ghostCells [ startIndex + index ];
     uint domainCellIdx = boundaryCondition.domainCells[ startIndex + index ];
-    uint secondCellIdx = boundaryCondition.secondCells[ startIndex + index ];
 
-    PrimitiveVariables ghostCellPrim;
-    {
-        PrimitiveVariables domainCellPrim;
-        PrimitiveVariables secondCellPrim;
+    //////////////////////////////////////////////////////////////////////////
 
-        {
-            ConservedVariables domainCellData;
-            readCellData( domainCellIdx, dataBase, domainCellData );
-            domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
+    ConservedVariables domainCellData;
+    readCellData ( domainCellIdx, dataBase, domainCellData );
 
-            ConservedVariables secondCellData;
-            if( secondCellIdx != INVALID_INDEX ){
-                readCellData( secondCellIdx, dataBase, secondCellData );
-                secondCellPrim = toPrimitiveVariables( secondCellData, parameters.K );
-            }
-        }
+    //////////////////////////////////////////////////////////////////////////
+    
+    PrimitiveVariables domainCellPrim = toPrimitiveVariables( domainCellData, parameters.K );
+    PrimitiveVariables ghostCellPrim  = toPrimitiveVariables( domainCellData, parameters.K );
 
-        //ghostCellPrim.rho    = two * domainCellPrim.rho    - secondCellPrim.rho;
-        ghostCellPrim.U      = two * domainCellPrim.U      - secondCellPrim.U;
-        ghostCellPrim.V      = two * domainCellPrim.V      - secondCellPrim.V;
-        ghostCellPrim.W      = two * domainCellPrim.W      - secondCellPrim.W;
-        ghostCellPrim.lambda = two * domainCellPrim.lambda - secondCellPrim.lambda;
-    #ifdef USE_PASSIVE_SCALAR
-        ghostCellPrim.S_1    = two * domainCellPrim.S_1    - secondCellPrim.S_1;
-        ghostCellPrim.S_2    = two * domainCellPrim.S_2    - secondCellPrim.S_2;
-    #endif // USE_PASSIVE_SCALAR
+    //////////////////////////////////////////////////////////////////////////
 
+    if( boundaryCondition.direction == 'x' ) ghostCellPrim.U = - domainCellPrim.U;
+    if( boundaryCondition.direction == 'y' ) ghostCellPrim.V = - domainCellPrim.V;
+    if( boundaryCondition.direction == 'z' ) ghostCellPrim.W = - domainCellPrim.W;
 
-        real rho0 = ( two * boundaryCondition.p0 * c1o2 * ( domainCellPrim.lambda + ghostCellPrim.lambda ) );
-        ghostCellPrim.rho = two * rho0 - domainCellPrim.rho;
+    //////////////////////////////////////////////////////////////////////////
 
-        //real lambda0 = ( c1o2 * ( domainCellPrim.rho + ghostCellPrim.rho  ) * c1o2 / boundaryCondition.p0 );
-        //ghostCellPrim.lambda = two * lambda0 - domainCellPrim.lambda;
-    }
+    ConservedVariables ghostCellData = toConservedVariables(ghostCellPrim, parameters.K);
 
-    {
-        ConservedVariables ghostCons = toConservedVariables( ghostCellPrim, parameters.K );
-
-        writeCellData( ghostCellIdx, dataBase, ghostCons );
-    }
+    writeCellData( ghostCellIdx , dataBase, ghostCellData );
 }
 
-Pressure::Pressure(SPtr<DataBase> dataBase, real p0)
+Symmetry::Symmetry(SPtr<DataBase> dataBase, char direction)
     : BoundaryCondition( dataBase )
 {
-    this->p0 = p0;
+    this->direction = direction;
 }
 
-bool Pressure::isWall()
-{
-    return false;
-}
-
-bool Pressure::secondCellsNeeded()
+bool Symmetry::isWall()
 {
     return true;
+}
+
+bool Symmetry::secondCellsNeeded()
+{
+    return false;
 }
 
