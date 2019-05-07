@@ -167,6 +167,7 @@ IF (HULC.BUILD_VF_GKS)
     add_subdirectory(targets/apps/GKS/RoomFire)
     add_subdirectory(targets/apps/GKS/PoolFire)
     add_subdirectory(targets/apps/GKS/Flame7cm)
+    add_subdirectory(targets/apps/GKS/Candle)
     
     add_subdirectory(targets/apps/GKS/MultiGPU)
 ELSE()

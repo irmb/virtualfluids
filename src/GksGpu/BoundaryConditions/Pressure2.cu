@@ -143,9 +143,12 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         if( sign < zero )
         {
-            ghostCellPrim.U = - domainCellPrim.U;
-            ghostCellPrim.V = - domainCellPrim.V;
-            ghostCellPrim.W = - domainCellPrim.W;
+            //ghostCellPrim.U = - domainCellPrim.U;
+            //ghostCellPrim.V = - domainCellPrim.V;
+            //ghostCellPrim.W = - domainCellPrim.W;
+            ghostCellPrim.U = zero;
+            ghostCellPrim.V = zero;
+            ghostCellPrim.W = zero;
         }
     }
 

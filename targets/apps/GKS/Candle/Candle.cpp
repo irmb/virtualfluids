@@ -18,6 +18,7 @@
 #include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h"
 #include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -72,7 +73,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.1;
+    real U = 0.025;
 
     real eps = 2.0;
     real Pr  = 0.25;
@@ -134,7 +135,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = true;
+    bool threeDimensional = false;
 
     if( threeDimensional )
     {
@@ -149,43 +150,31 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
-    Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.25 );
+#ifdef _WIN32
+    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
+    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Candle.stl");
+#else
+    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
+    TriangularMesh* stl = TriangularMesh::make("inp/Candle.stl");
+#endif
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.3, 4.0   );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1, 3.5   );
-    VerticalCylinder cylinder3( 0.0, 0.0, 0.0, 0.7, 0.0625 );
-    VerticalCylinder cylinder4( 0.0, 0.0, 0.0, 0.7, 0.0625*0.5 );
-    VerticalCylinder cylinder5( 0.0, 0.0, 0.0, 0.7, 0.0625*0.25 );
+    gridBuilder->addGeometry(stl);
 
-    //gridBuilder->addGrid( &refRegion_1, 1);
-    //gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setNumberOfLayers(0,20);
-    
-    Conglomerate refRing;
+    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 1.0, 8.0 );
 
-    refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 0.6, 0.125 ) );
-    refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.4, 1.0    ) );
+    gridBuilder->setNumberOfLayers(20,20);
 
-    //gridBuilder->addGrid( &box, 2 );
-    //gridBuilder->addGrid( &sphere, 2 );
-    //gridBuilder->addGrid( &cylinder1, 1 );
-    gridBuilder->addGrid( &cylinder2, 2 );
-    //gridBuilder->addGrid( &cylinder3, 3 );
-    //gridBuilder->addGrid( &cylinder4, 4 );
-    //gridBuilder->addGrid( &cylinder5, 5 );
-
-    gridBuilder->addGrid( &refRing, 3 );
+    gridBuilder->addGrid(&cylinder, 2);
+    gridBuilder->addGrid(stl, 3);
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
 
     gridBuilder->buildGrids(GKS, false);
 
-    //gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
+    //gridBuilder->writeGridsToVtk(path + "Grid_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -268,7 +257,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<Extrapolation>( dataBase );
     SPtr<BoundaryCondition> bcPZ = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0 || ( std::sqrt(center.x*center.x + center.y*center.y) < 0.5 && center.z < 1.0 ); } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -280,7 +269,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+        return center.z > 0.8 && center.z < 1.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.1;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -418,12 +407,12 @@ int main( int argc, char* argv[])
 {
 
 #ifdef _WIN32
-    std::string path( "F:/Work/Computations/out/PoolFire/" );
+    std::string path( "F:/Work/Computations/out/Candle/" );
 #else
     std::string path( "out/" );
 #endif
 
-    std::string simulationName ( "PoolFire" );
+    std::string simulationName ( "Candle" );
 
     logging::Logger::addStream(&std::cout);
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
@@ -436,8 +425,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        //uint restartIter = INVALID_INDEX;
-        uint restartIter = 20000;
+        uint restartIter = INVALID_INDEX;
+        //uint restartIter = 13000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
