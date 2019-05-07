@@ -117,6 +117,14 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
                 if( Z1 > one  ) Z1 = one;
                 if( Z2 > one  ) Z2 = one;
 
+                if( Z1 + Z2 > one )
+                {
+                    real faktor = (Z1 + Z2);
+
+                    Z1 /= faktor;
+                    Z2 /= faktor;
+                }
+
                 ///////////////////////////////////////////////////////////////////////////////
 
                 ConservedVariables testCons = cons;
@@ -127,19 +135,27 @@ __host__ __device__ inline void chemicalReaction(DataBaseStruct dataBase, Parame
 
                 //////////////////////////////////////////////////////////////////////////
 
-                if( getT( testPrim ) < 20 )
+                //if( getT( testPrim ) < 20 )
                 {
                     cons.rhoS_1 = Z1 * cons.rho;
                     cons.rhoS_2 = Z2 * cons.rho;
                     cons.rhoE += releasedHeat;
                 }
-
-                if( cons.rhoS_1 < zero ) cons.rhoS_1 = zero;
-                if( cons.rhoS_2 < zero ) cons.rhoS_2 = zero;
-
-                if( cons.rhoS_1 > cons.rho  ) cons.rhoS_1 = cons.rho;
-                if( cons.rhoS_2 > cons.rho  ) cons.rhoS_2 = cons.rho;
             }
+        }
+
+        if( cons.rhoS_1 < zero ) cons.rhoS_1 = zero;
+        if( cons.rhoS_2 < zero ) cons.rhoS_2 = zero;
+
+        if( cons.rhoS_1 > cons.rho  ) cons.rhoS_1 = cons.rho;
+        if( cons.rhoS_2 > cons.rho  ) cons.rhoS_2 = cons.rho;
+
+        if( cons.rhoS_1 + cons.rhoS_2 > cons.rho )
+        {
+            real faktor = (cons.rhoS_1 + cons.rhoS_2) / cons.rho;
+
+            cons.rhoS_1 /= faktor;
+            cons.rhoS_2 /= faktor;
         }
     }
 

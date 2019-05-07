@@ -148,11 +148,11 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         real velocity = sqrt( ghostCellPrim.U * ghostCellPrim.U + ghostCellPrim.V * ghostCellPrim.V + ghostCellPrim.W * ghostCellPrim.W );
 
-        if( velocity > ten  )
+        if( velocity > two  )
         {
-            ghostCellPrim.U *= ten / velocity;
-            ghostCellPrim.V *= ten / velocity;
-            ghostCellPrim.W *= ten / velocity;
+            ghostCellPrim.U *= two / velocity;
+            ghostCellPrim.V *= two / velocity;
+            ghostCellPrim.W *= two / velocity;
         }
 
         ghostCellData = toConservedVariables(ghostCellPrim, parameters.K);

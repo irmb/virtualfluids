@@ -44,6 +44,8 @@
 #include "GksGpu/BoundaryConditions/Open.h"
 #include "GksGpu/BoundaryConditions/Extrapolation.h"
 #include "GksGpu/BoundaryConditions/Symmetry.h"
+#include "GksGpu/BoundaryConditions/CreepingMassFlux.h"
+#include "GksGpu/BoundaryConditions/MassCompensation.h"
 
 #include "GksGpu/Interface/Interface.h"
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
@@ -74,7 +76,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real eps = 2.0;
     real Pr  = 0.25;
-    real K   = 2.0;
+    real K   = 5.0;
     
     real g   = 9.81;
     real rho = 1.2;
@@ -87,7 +89,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.125;
+    real CFL = 0.5;0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -211,6 +213,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     
     SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
     SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
@@ -271,8 +275,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //SPtr<BoundaryCondition> burner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
 
-    SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 1.0) );
-    //SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 10.0 * U, prim.lambda, 0.0, 0.0) );
+    //SPtr<BoundaryCondition> burner = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, U, prim.lambda, 1.0, 1.0) );
+    SPtr<BoundaryCondition> burner = std::make_shared<CreepingMassFlux>( dataBase, rho, U, prim.lambda );
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
@@ -359,12 +363,16 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     for( uint iter = startIter + 1; iter <= 100000000; iter++ )
     {
-        if( iter < 20000 )
+        uint runUpTime = 10000;
+
+        if( iter < runUpTime )
         {
             //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.S_1 =       1.0 * ( real(iter) / 20000.0 );
             //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.S_2 = 1.0 - 1.0 * ( real(iter) / 20000.0 );
 
             //std::dynamic_pointer_cast<InflowComplete>(burner)->prim.W = U * ( real(iter) / 20000.0 );
+
+            //std::dynamic_pointer_cast<CreepingMassFlux>(burner)->velocity = U * ( real(iter) / runUpTime );
 
             //parameters.mu = mu + 10.0 * mu * ( 1.0 - ( real(iter) / 20000.0 ) );
 
@@ -382,16 +390,6 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             ( iter % 1000 == 0 )
           )
         {
-            for( uint level = 0; level < dataBase->numberOfLevels; level++ )
-               Interface::runFineToCoarse(dataBase, level);
-
-            for( auto bc : dataBase->boundaryConditions ) 
-                for( uint level = 0; level < dataBase->numberOfLevels; level++ )
-                    bc->runBoundaryConditionKernel( dataBase, parameters, level );
-
-            for( uint level = 0; level < dataBase->numberOfLevels; level++ )
-               Interface::runCoarseToFine(dataBase, level);
-
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
@@ -439,7 +437,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 60000;
+        //uint restartIter = 40000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
