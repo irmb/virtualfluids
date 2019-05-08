@@ -63,11 +63,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 8.0;
+    real L = 4.0;
     real H = 8.0;
     real W = 0.125;
 
@@ -76,7 +76,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real U = 0.025;
 
     real eps = 2.0;
-    real Pr  = 0.25;
+    real Pr  = 0.71;
     real K   = 5.0;
     
     real g   = 9.81;
@@ -90,7 +90,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.25;0.125;
+    real CFL = 0.5;0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -135,7 +135,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = false;
+    bool threeDimensional = true;
 
     if( threeDimensional )
     {
@@ -162,12 +162,12 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 1.0, 8.0 );
+    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 0.6, 8.0 );
 
     gridBuilder->setNumberOfLayers(20,20);
 
-    gridBuilder->addGrid(&cylinder, 2);
-    gridBuilder->addGrid(stl, 3);
+    gridBuilder->addGrid(&cylinder, 1);
+    gridBuilder->addGrid(stl, 2);
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -214,13 +214,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
     //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
-    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
-    SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
     //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
 
-    bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 1.0; } );
-    bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 1.0; } );
+    //bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 1.0; } );
+    //bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 1.0; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -269,7 +269,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z > 0.8 && center.z < 1.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.1;
+        return center.z > 0.8 && center.z < 1.5 && std::sqrt(center.x*center.x + center.y*center.y) < 0.1;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -277,8 +277,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
 
-    dataBase->boundaryConditions.push_back( bcMX_2 );
-    dataBase->boundaryConditions.push_back( bcPX_2 );
+    //dataBase->boundaryConditions.push_back( bcMX_2 );
+    //dataBase->boundaryConditions.push_back( bcPX_2 );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
@@ -376,7 +376,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( 
             //( iter >= 7000 && iter % 10 == 0 ) || 
-            ( iter % 1000 == 0 )
+            ( iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -426,7 +426,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 13000;
+        //uint restartIter = 80000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
