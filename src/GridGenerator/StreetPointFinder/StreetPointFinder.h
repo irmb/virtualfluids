@@ -67,6 +67,14 @@ struct VF_PUBLIC StreetPointFinder
     void writeSimulationFileSorted( std::string gridPath, real concentration, uint numberOfLevels, uint level );
 
     void writeMappingFile( std::string gridPath );
+
+	//////////////////////////////////////////////////////////////////////////
+	// Speed hacked by Stephan L.
+	// Not tested!!!
+
+	void write3DVTK(std::string filename, const std::vector<int>& cars = std::vector<int>());
+
+	void prepareWrite3DVTK(std::ofstream& file, uint & numberOfCells, const std::vector<int>& cars);
 };
 
 

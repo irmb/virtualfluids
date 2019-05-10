@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <numeric>
@@ -523,4 +524,179 @@ void StreetPointFinder::writeMappingFile(std::string gridPath)
 
 	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Speed hackend by Stephan Lenz, not tested
+
+void StreetPointFinder::write3DVTK(std::string filename, const std::vector<int>& cars)
+{
+	uint numberOfCells = 0;
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::writeVTK( " << filename << " )" << "\n";
+
+	std::ofstream file;
+
+	file.open(filename);
+
+	prepareWrite3DVTK(file, numberOfCells, cars);
+
+	////////////////////////////////////////////////////////////////////////////
+
+	file.close();
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void StreetPointFinder::prepareWrite3DVTK(std::ofstream & file, uint & numberOfCells, const std::vector<int>& cars)
+{
+
+	uint numberOfNodes = 0;
+
+	for (auto& street : streets)
+	{
+		numberOfCells += street.numberOfCells;
+		numberOfNodes += street.numberOfCells + 1;
+	}
+
+	file << "# vtk DataFile Version 3.0\n";
+	file << "by MeshGenerator\n";
+	file << "ASCII\n";
+	file << "DATASET UNSTRUCTURED_GRID\n";
+
+	uint index = 0;
+	uint numberOfCars = 0;
+
+	std::cout << "Check " << __LINE__ << std::endl;
+
+	for (auto& street : streets)
+	{
+		for (uint i = 0; i < street.numberOfCells; i++)
+		{
+			if (index < cars.size() && cars[index] != -1)
+			{
+				numberOfCars++;
+			}
+
+			index++;
+		}
+	}
+
+	file << "POINTS " << 8 * numberOfCars << " float" << std::endl;
+
+	std::cout << "Check " << __LINE__ << std::endl;
+
+	index = 0;
+	for (auto& street : streets)
+	{
+		for (uint i = 0; i < street.numberOfCells; i++)
+		{
+			if(index < cars.size() && cars[index] != -1 )
+			{
+				real xStart = 0.5 * (street.getCoordinateX(i - 1) + street.getCoordinateX(i));
+				real yStart = 0.5 * (street.getCoordinateY(i - 1) + street.getCoordinateY(i));
+
+				real xEnd = 0.5 * (street.getCoordinateX(i) + street.getCoordinateX(i + 1));
+				real yEnd = 0.5 * (street.getCoordinateY(i) + street.getCoordinateY(i + 1));
+
+				real vecX = xEnd - xStart;
+				real vecY = yEnd - yStart;
+
+				file << xStart + vecY << " " << yStart - vecX << " " << 0.0 << std::endl;
+				file << xStart - vecY << " " << yStart + vecX << " " << 0.0 << std::endl;
+
+				file << xEnd + vecY << " " << yEnd - vecX << " " << 0.0 << std::endl;
+				file << xEnd - vecY << " " << yEnd + vecX << " " << 0.0 << std::endl;
+
+				file << xStart + vecY << " " << yStart - vecX << " " << 1.5 << std::endl;
+				file << xStart - vecY << " " << yStart + vecX << " " << 1.5 << std::endl;
+
+				file << xEnd + vecY << " " << yEnd - vecX << " " << 1.5 << std::endl;
+				file << xEnd - vecY << " " << yEnd + vecX << " " << 1.5 << std::endl;
+			}
+
+			index++;
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "CELLS " << numberOfCars << " " << 9 * numberOfCars << std::endl;
+
+	std::cout << "Check " << __LINE__ << std::endl;
+
+
+	index = 0;
+	uint carIndex = 0;
+	for (auto& street : streets)
+	{
+		for (uint i = 0; i < street.numberOfCells; i++)
+		{
+			if (index < cars.size() && cars[index] != -1)
+			{
+				file << "8 " 
+					 << 8 * carIndex + 0 << " "
+					 << 8 * carIndex + 1 << " "
+					 << 8 * carIndex + 3 << " "
+					 << 8 * carIndex + 2 << " "
+					 << 8 * carIndex + 4 << " "
+					 << 8 * carIndex + 5 << " "
+					 << 8 * carIndex + 7 << " "
+					 << 8 * carIndex + 6 << " "
+					 << std::endl;
+
+				carIndex++;
+			}
+			index++;
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "CELL_TYPES " << numberOfCars << std::endl;
+
+	std::cout << "Check " << __LINE__ << std::endl;
+
+	for (uint i = 0; i < numberOfCars; i++) {
+		file << "12" << std::endl;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "\nCELL_DATA " << numberOfCars << std::endl;
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "FIELD Label " << 1 << std::endl;
+
+	//////////////////////////////////////////////////////////////////////////
+
+	file << "Cars 1 " << numberOfCars << " float" << std::endl;
+
+	std::cout << "Check " << __LINE__ << std::endl;
+
+	index = 0;
+	for (auto& street : streets)
+	{
+		for (uint i = 0; i < street.numberOfCells; i++)
+		{
+			if (index < cars.size() && cars[index] != -1)
+				file << cars[index] << std::endl;
+			
+			index++;
+		}
+	}
+}
+
+
+
 

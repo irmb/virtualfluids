@@ -54,7 +54,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	//Gamling
 	//inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
 	//outputPath = path + "Basel_Ergebnisse/";
-	outputFilename = "Basel_Traffic";
+	outputFilename = "Basel_Traffic_Test";
 	std::string logfile = outputPath + "TrafficLog.txt";
 
 
@@ -71,6 +71,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 	//finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
 	finder.readStreets(inputPath + "Streets.txt");
 	finder.writeVTK(outputPath + outputFilename + ".vtk");
+	finder.write3DVTK(outputPath + outputFilename + ".vtk");
 
 
 	JunctionReader junctionReader;
@@ -151,7 +152,8 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//write initial Timestep
 	simulator->visualizeVehicleLengthForVTK();
-	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
+	//finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
+	finder.write3DVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
 
 
 	//GPU
@@ -169,14 +171,16 @@ void TrafficMovementFactory::calculateTimestep(uint step)
 void TrafficMovementFactory::writeTimestep(uint stepForVTK)
 {
 	simulator->visualizeVehicleLengthForVTK();
-	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	//finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	finder.write3DVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
 
 
 void TrafficMovementFactory::writeReducedTimestep(uint stepForVTK)
 {
 	simulator->visualizeVehicleLengthForVTK();
-	finder.writeReducedVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	//finder.writeReducedVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	finder.write3DVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
 
 
