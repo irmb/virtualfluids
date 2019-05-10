@@ -576,8 +576,6 @@ void StreetPointFinder::prepareWrite3DVTK(std::ofstream & file, uint & numberOfC
 	uint index = 0;
 	uint numberOfCars = 0;
 
-	std::cout << "Check " << __LINE__ << std::endl;
-
 	for (auto& street : streets)
 	{
 		for (uint i = 0; i < street.numberOfCells; i++)
@@ -592,8 +590,6 @@ void StreetPointFinder::prepareWrite3DVTK(std::ofstream & file, uint & numberOfC
 	}
 
 	file << "POINTS " << 8 * numberOfCars << " float" << std::endl;
-
-	std::cout << "Check " << __LINE__ << std::endl;
 
 	index = 0;
 	for (auto& street : streets)
@@ -632,9 +628,6 @@ void StreetPointFinder::prepareWrite3DVTK(std::ofstream & file, uint & numberOfC
 
 	file << "CELLS " << numberOfCars << " " << 9 * numberOfCars << std::endl;
 
-	std::cout << "Check " << __LINE__ << std::endl;
-
-
 	index = 0;
 	uint carIndex = 0;
 	for (auto& street : streets)
@@ -664,8 +657,6 @@ void StreetPointFinder::prepareWrite3DVTK(std::ofstream & file, uint & numberOfC
 
 	file << "CELL_TYPES " << numberOfCars << std::endl;
 
-	std::cout << "Check " << __LINE__ << std::endl;
-
 	for (uint i = 0; i < numberOfCars; i++) {
 		file << "12" << std::endl;
 	}
@@ -681,8 +672,6 @@ void StreetPointFinder::prepareWrite3DVTK(std::ofstream & file, uint & numberOfC
 	//////////////////////////////////////////////////////////////////////////
 
 	file << "Cars 1 " << numberOfCars << " float" << std::endl;
-
-	std::cout << "Check " << __LINE__ << std::endl;
 
 	index = 0;
 	for (auto& street : streets)

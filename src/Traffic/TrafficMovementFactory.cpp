@@ -152,8 +152,8 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//write initial Timestep
 	simulator->visualizeVehicleLengthForVTK();
-	//finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
-	finder.write3DVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
+	finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(0) + ".vtk", *cars);
+	finder.write3DVTK(outputPath + outputFilename + "_3D_" + std::to_string(0) + ".vtk", *cars);
 
 
 	//GPU
@@ -171,16 +171,16 @@ void TrafficMovementFactory::calculateTimestep(uint step)
 void TrafficMovementFactory::writeTimestep(uint stepForVTK)
 {
 	simulator->visualizeVehicleLengthForVTK();
-	//finder.writeVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
-	finder.write3DVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	finder.writeVTK  (outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	finder.write3DVTK(outputPath + outputFilename + "_3D_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
 
 
 void TrafficMovementFactory::writeReducedTimestep(uint stepForVTK)
 {
 	simulator->visualizeVehicleLengthForVTK();
-	//finder.writeReducedVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
-	finder.write3DVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	finder.writeReducedVTK(outputPath + outputFilename + "_" + std::to_string(stepForVTK) + ".vtk", *cars);
+	finder.write3DVTK     (outputPath + outputFilename + "_3D_" + std::to_string(stepForVTK) + ".vtk", *cars);
 }
 
 
