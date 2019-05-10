@@ -2352,6 +2352,56 @@ extern "C" void CalcMedCompSP27(  real* vxD,
       getLastCudaError("LBCalcMedSP27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void CalcMedCompAD27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	real* concD,
+	unsigned int* geoD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	unsigned int numberOfThreads,
+	real* DD,
+	real* DD_AD,
+	bool evenOrOdd)
+{
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LBCalcMedCompAD27 <<< grid, threads >>> (
+		vxD,
+		vyD,
+		vzD,
+		rhoD,
+		pressD,
+		concD,
+		geoD,
+		neighborX,
+		neighborY,
+		neighborZ,
+		size_Mat,
+		DD,
+		DD_AD,
+		evenOrOdd);
+	getLastCudaError("LBCalcMedAD27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void CalcMacMedSP27(  real* vxD,
                                  real* vyD,
                                  real* vzD,
@@ -2430,6 +2480,44 @@ extern "C" void ResetMedianValuesSP27(
 		size_Mat,
 		evenOrOdd);
 	getLastCudaError("LBResetMedianValuesSP27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
+extern "C" void ResetMedianValuesAD27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	real* concD,
+	unsigned int size_Mat,
+	unsigned int numberOfThreads,
+	bool evenOrOdd)
+{
+	int Grid = (size_Mat / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 grid(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	LBResetMedianValuesAD27 << < grid, threads >> > (
+		vxD,
+		vyD,
+		vzD,
+		rhoD,
+		pressD,
+		concD,
+		size_Mat,
+		evenOrOdd);
+	getLastCudaError("LBResetMedianValuesAD27 execution failed");
 }
 //////////////////////////////////////////////////////////////////////////
 extern "C" void Calc2ndMomentsIncompSP27(real* kxyFromfcNEQ,

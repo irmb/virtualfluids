@@ -1,3 +1,10 @@
+//  _    ___      __              __________      _     __        ______________   __
+// | |  / (_)____/ /___  ______ _/ / ____/ /_  __(_)___/ /____   /  ___/ __  / /  / /
+// | | / / / ___/ __/ / / / __ `/ / /_  / / / / / / __  / ___/  / /___/ /_/ / /  / /
+// | |/ / / /  / /_/ /_/ / /_/ / / __/ / / /_/ / / /_/ (__  )  / /_) / ____/ /__/ / 
+// |___/_/_/   \__/\__,_/\__,_/_/_/   /_/\__,_/_/\__,_/____/   \____/_/    \_____/
+//
+//////////////////////////////////////////////////////////////////////////
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
@@ -86,6 +93,8 @@ struct ParameterStruct{
 	//median-macro-values/////
 	real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
 	real *vx_SP_Med_Out, *vy_SP_Med_Out, *vz_SP_Med_Out, *rho_SP_Med_Out, *press_SP_Med_Out;
+	//Advection-Diffusion
+	real *Conc_Med, *Conc_Med_Out;
 
 	//grid////////////////////
 	unsigned int nx, ny, nz;
@@ -301,6 +310,7 @@ public:
 
 	void cudaCopyPrint(int lev);
 	void cudaCopyMedianPrint(int lev);
+	void cudaCopyMedianADPrint(int lev);
 
 	void cudaAllocSP(int lev);
 	void cudaCopySP(int lev);
@@ -320,9 +330,14 @@ public:
 	void cudaAllocMedianSP(int lev);
 	void cudaCopyMedianSP(int lev);
 	void cudaFreeMedianSP(int lev);
-
 	void cudaAllocMedianOut(int lev);
 	void cudaFreeMedianOut(int lev);
+
+	void cudaAllocMedianAD(int lev);
+	void cudaCopyMedianAD(int lev);
+	void cudaFreeMedianAD(int lev);
+	void cudaAllocMedianOutAD(int lev);
+	void cudaFreeMedianOutAD(int lev);
 
 	void cudaAllocInterfaceCF(int lev);
 	void cudaCopyInterfaceCF(int lev);

@@ -974,6 +974,15 @@ void Parameter::cudaCopyMedianPrint(int lev)
 	checkCudaErrors( cudaMemcpy(parH[lev]->rho_SP_Med  , parD[lev]->rho_SP_Med  , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 	checkCudaErrors( cudaMemcpy(parH[lev]->press_SP_Med, parD[lev]->press_SP_Med, parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
 }
+void Parameter::cudaCopyMedianADPrint(int lev)
+{
+	checkCudaErrors( cudaMemcpy(parH[lev]->vx_SP_Med   , parD[lev]->vx_SP_Med   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vy_SP_Med   , parD[lev]->vy_SP_Med   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->vz_SP_Med   , parD[lev]->vz_SP_Med   , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->rho_SP_Med  , parD[lev]->rho_SP_Med  , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->press_SP_Med, parD[lev]->press_SP_Med, parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+	checkCudaErrors( cudaMemcpy(parH[lev]->Conc_Med    , parD[lev]->Conc_Med    , parH[lev]->mem_size_real_SP , cudaMemcpyDeviceToHost));
+}
 //sparse
 void Parameter::cudaAllocSP(int lev)
 {
@@ -1206,6 +1215,66 @@ void Parameter::cudaFreeMedianOut(int lev)
 	checkCudaErrors( cudaFreeHost(parH[lev]->rho_SP_Med_Out  ));
 	checkCudaErrors( cudaFreeHost(parH[lev]->press_SP_Med_Out));
 }
+//median Advection-Diffusion
+void Parameter::cudaAllocMedianAD(int lev)
+{
+	//Host
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->rho_SP_Med),   parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->vx_SP_Med),    parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->vy_SP_Med),    parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->vz_SP_Med),    parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->press_SP_Med), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->Conc_Med),     parH[lev]->mem_size_real_SP));
+	//Device						 
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->rho_SP_Med),       parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->vx_SP_Med),        parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->vy_SP_Med),        parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->vz_SP_Med),        parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->press_SP_Med),     parD[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->Conc_Med),         parD[lev]->mem_size_real_SP));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = 6. * (double)parH[lev]->mem_size_real_SP;
+	setMemsizeGPU(tmp, false);
+}
+void Parameter::cudaCopyMedianAD(int lev)
+{
+	//copy host to device
+	checkCudaErrors(cudaMemcpy(parD[lev]->rho_SP_Med,   parH[lev]->rho_SP_Med,   parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->vx_SP_Med,    parH[lev]->vx_SP_Med,    parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->vy_SP_Med,    parH[lev]->vy_SP_Med,    parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->vz_SP_Med,    parH[lev]->vz_SP_Med,    parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->press_SP_Med, parH[lev]->press_SP_Med, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->Conc_Med,     parH[lev]->Conc_Med,     parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+}
+void Parameter::cudaFreeMedianAD(int lev)
+{
+	checkCudaErrors(cudaFreeHost(parH[lev]->vx_SP_Med));
+	checkCudaErrors(cudaFreeHost(parH[lev]->vy_SP_Med));
+	checkCudaErrors(cudaFreeHost(parH[lev]->vz_SP_Med));
+	checkCudaErrors(cudaFreeHost(parH[lev]->rho_SP_Med));
+	checkCudaErrors(cudaFreeHost(parH[lev]->press_SP_Med));
+	checkCudaErrors(cudaFreeHost(parH[lev]->Conc_Med));
+}
+void Parameter::cudaAllocMedianOutAD(int lev)
+{
+	//Host
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->rho_SP_Med_Out),   parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->vx_SP_Med_Out),    parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->vy_SP_Med_Out),    parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->vz_SP_Med_Out),    parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->press_SP_Med_Out), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->Conc_Med_Out),     parH[lev]->mem_size_real_SP));
+}
+void Parameter::cudaFreeMedianOutAD(int lev)
+{
+	checkCudaErrors(cudaFreeHost(parH[lev]->vx_SP_Med_Out));
+	checkCudaErrors(cudaFreeHost(parH[lev]->vy_SP_Med_Out));
+	checkCudaErrors(cudaFreeHost(parH[lev]->vz_SP_Med_Out));
+	checkCudaErrors(cudaFreeHost(parH[lev]->rho_SP_Med_Out));
+	checkCudaErrors(cudaFreeHost(parH[lev]->press_SP_Med_Out));
+	checkCudaErrors(cudaFreeHost(parH[lev]->Conc_Med_Out));
+}
+
 //Interface CF
 void Parameter::cudaAllocInterfaceCF(int lev)
 {

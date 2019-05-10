@@ -42,6 +42,8 @@ void GridProvider::setInitalNodeValues(const int numberOfNodes, const int level)
 			para->getParH(level)->vz_SP_Med[j] = 0.0f;
 			para->getParH(level)->rho_SP_Med[j] = 0.0f;
 			para->getParH(level)->press_SP_Med[j] = 0.0f;
+			if (para->getDiffOn())
+				para->getParH(level)->Conc_Med[j] = 0.0f;
 		}
 		if (para->getUseWale()) {
 			para->getParH(level)->turbViscosity[j] = 0.0f;

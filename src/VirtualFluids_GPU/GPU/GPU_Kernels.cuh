@@ -692,6 +692,22 @@ extern "C" __global__ void LBCalcMedCompSP27( real* vxD,
 											  real* DD,
 											  bool evenOrOdd);
 
+extern "C" __global__ void LBCalcMedCompAD27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	real* concD,
+	unsigned int* geoD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	real* DD,
+	real* DD_AD,
+	bool evenOrOdd);
+
 extern "C" __global__ void LBCalcMacMedSP27( real* vxD,
                                              real* vyD,
                                              real* vzD,
@@ -714,6 +730,15 @@ extern "C" __global__ void LBResetMedianValuesSP27(
 	unsigned int size_Mat,
 	bool evenOrOdd);
 
+extern "C" __global__ void LBResetMedianValuesAD27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	real* concD,
+	unsigned int size_Mat,
+	bool evenOrOdd);
 
 extern "C" __global__ void LBCalc2ndMomentsIncompSP27(  real* kxyFromfcNEQ,
 														real* kyzFromfcNEQ,

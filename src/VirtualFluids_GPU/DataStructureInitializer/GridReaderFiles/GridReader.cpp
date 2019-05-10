@@ -110,9 +110,12 @@ void GridReader::allocArrays_CoordNeighborGeo()
 		cudaMemoryManager->cudaAllocNeighborWSB(level);
 
 		if (para->getCalcMedian())
-			para->cudaAllocMedianSP(level);
-		if (para->getCalcParticle() || para->getUseWale())
-			para->cudaAllocNeighborWSB(level);
+			if (para->getDiffOn())
+				para->cudaAllocMedianAD(level);
+			else
+				para->cudaAllocMedianSP(level);
+		//if (para->getCalcParticle() || para->getUseWale())
+		//	para->cudaAllocNeighborWSB(level);
 		if (para->getUseWale())
 			para->cudaAllocTurbulentViscosity(level);
 
@@ -131,6 +134,12 @@ void GridReader::allocArrays_CoordNeighborGeo()
 		cudaMemoryManager->cudaCopyNeighborWSB(level);
 		cudaMemoryManager->cudaCopySP(level);
 		cudaMemoryManager->cudaCopyCoord(level);
+
+		if (para->getCalcMedian())
+			if (para->getDiffOn())
+				para->cudaCopyMedianAD(level);
+			else
+				para->cudaCopyMedianSP(level);
 	}
 	std::cout << "Number of Nodes: " << numberOfNodesGlobal << std::endl;
 	std::cout << "-----finish Coord, Neighbor, Geo------" << std::endl;

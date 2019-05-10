@@ -22,6 +22,8 @@ private:
 	//void VF_PUBLIC writeParticle(Parameter* para, unsigned int t);
 	void VF_PUBLIC writeUnstrucuredGridLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
 	void VF_PUBLIC writeUnstrucuredGridLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
+	void VF_PUBLIC writeUnstrucuredGridMedianLT(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
+	void VF_PUBLIC writeUnstrucuredGridMedianLTConc(std::shared_ptr<Parameter> para, int level, std::vector<std::string >& fname);
 	bool VF_PUBLIC isPeriodicCell(std::shared_ptr<Parameter> para, int level, unsigned int number2, unsigned int number1, unsigned int number3, unsigned int number5);
 
 	FileWriter(const FileWriter& fileWriter) {};

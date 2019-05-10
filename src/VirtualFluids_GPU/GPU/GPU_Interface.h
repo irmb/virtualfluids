@@ -761,6 +761,23 @@ extern "C" void CalcMedCompSP27(real* vxD,
 								real* DD,
 								bool evenOrOdd);
 
+extern "C" void CalcMedCompAD27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	real* concD,
+	unsigned int* geoD,
+	unsigned int* neighborX,
+	unsigned int* neighborY,
+	unsigned int* neighborZ,
+	unsigned int size_Mat,
+	unsigned int numberOfThreads,
+	real* DD,
+	real* DD_AD,
+	bool evenOrOdd);
+
 extern "C" void CalcMacMedSP27(  real* vxD,
                                  real* vyD,
                                  real* vzD,
@@ -781,6 +798,17 @@ extern "C" void ResetMedianValuesSP27(
 	real* vzD,
 	real* rhoD,
 	real* pressD,
+	unsigned int size_Mat,
+	unsigned int numberOfThreads,
+	bool evenOrOdd);
+
+extern "C" void ResetMedianValuesAD27(
+	real* vxD,
+	real* vyD,
+	real* vzD,
+	real* rhoD,
+	real* pressD,
+	real* concD,
 	unsigned int size_Mat,
 	unsigned int numberOfThreads,
 	bool evenOrOdd);
