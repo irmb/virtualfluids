@@ -87,7 +87,7 @@ void multipleLevel(const std::string& configPath)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	bool useGridGenerator = true;
+	bool useGridGenerator = false;
 
 	if (useGridGenerator) {
 
@@ -104,12 +104,12 @@ void multipleLevel(const std::string& configPath)
 		//////////////////////////////////////////////////////////////////////////
 
 		Cuboid* refBoxMX = new Cuboid( -300, -300, - 20, 
-			                           -250,  300,  200 );
-		Cuboid* refBoxPX = new Cuboid(  250, -300, - 20, 
+			                           -254,  300,  200 );
+		Cuboid* refBoxPX = new Cuboid(  254, -300, - 20, 
 			                            300,  300,  200 );
 		Cuboid* refBoxMY = new Cuboid( -300, -300, - 20, 
-			                            300, -250,  200 );
-		Cuboid* refBoxPY = new Cuboid( -300,  250, - 20, 
+			                            300, -254,  200 );
+		Cuboid* refBoxPY = new Cuboid( -300,  254, - 20, 
 			                            300,  300,  200 );
 
 		Conglomerate* refRegion = new Conglomerate();
@@ -121,7 +121,7 @@ void multipleLevel(const std::string& configPath)
 
 		refRegion->add(BaselSTL);
 
-		gridBuilder->setNumberOfLayers(8, 8);
+		gridBuilder->setNumberOfLayers(12, 8);
 
 		gridBuilder->addGrid(refRegion, 2);
 
@@ -153,16 +153,17 @@ void multipleLevel(const std::string& configPath)
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		StreetPointFinder finder;
+		uint streetLevel = 2;
 
 		finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/Streets.txt");
 
 		finder.writeVTK("F:/Basel2019NU/results/ExampleStreets.vtk");
 
-		finder.findIndicesLB(gridBuilder->getGrid(0), 7.0);
+		finder.findIndicesLB(gridBuilder->getGrid(streetLevel), 7.0);
 
 		//Merged for Wind in X Direction
-		finder.writeConnectionVTK("F:/Basel2019NU/grids/BaselUniMergedXAllStreets/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
-		finder.writeSimulationFile("F:/Basel2019NU/grids/BaselUniMergedXAllStreets/", 1.0, gridBuilder->getNumberOfLevels(), 0);
+		finder.writeConnectionVTK("F:/Basel2019NU/grids/BaselUniMergedXAllStreets/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(streetLevel));
+		finder.writeSimulationFile("F:/Basel2019NU/grids/BaselUniMergedXAllStreets/", 1.0, gridBuilder->getNumberOfLevels(), streetLevel);
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		return;
@@ -230,7 +231,7 @@ int main(int argc, char* argv[])
 			{
 				//multipleLevel("E:/temp/Basel2019/config/configBasel.txt"); //Tesla03
 				//multipleLevel("C:/Users/schoen/Desktop/bin/ReleaseBasel/configBasel.txt"); //Baumbart 1
-				multipleLevel("F:/Basel2019/configBasel.txt"); //Baumbart 2
+				multipleLevel("F:/Basel2019NU/configBasel.txt"); //Baumbart 2
 				//multipleLevel("F:/Work/Computations/gridGenerator/inp/configTest.txt");
 				//multipleLevel("C:/Users/hiwi/Desktop/configBasel.txt"); //Gamling
 			}

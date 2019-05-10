@@ -182,7 +182,7 @@ void multipleLevel(const std::string& configPath)
 			finder.readStreets("/work/marschoe/Basel4GPU/source/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");//phoenix
 			//finder.readStreets("C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/streetTest/resources/ExampleStreets.txt");//Baumbart
 			//finder.writeVTK("M:/Basel2019/results/ExampleStreets.vtk");
-			finder.findIndicesLB(gridBuilder->getGrid(0));
+			finder.findIndicesLB(gridBuilder->getGrid(0), 7.0);
 			//finder.writeConnectionVTK("M:/Basel2019/grids/BaselUniMergedX/Basel_Grid/ExampleStreetsConnection.vtk", gridBuilder->getGrid(0));
 			finder.writeSimulationFile(gridpath + std::to_string(generatePart) + "/", 1.0, gridBuilder->getNumberOfLevels(), 0);
 		}
