@@ -219,14 +219,22 @@ void addBaseData(vtkGridPtr grid, SPtr<DataBase> dataBase, Parameters parameters
     } );
 
 #ifdef USE_PASSIVE_SCALAR
-	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar_1", [&] (uint cellIdx) {
+	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_F", [&] (uint cellIdx) {
 	    return dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
              / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
 	} );
 
-	addScalarRealCellData( grid, dataBase->numberOfCells, "PassiveScalar_2", [&] (uint cellIdx) {
+	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_P", [&] (uint cellIdx) {
 	    return dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
              / dataBase->dataHost[ RHO__(cellIdx, dataBase->numberOfCells)   ];
+	} );
+
+	addScalarRealCellData( grid, dataBase->numberOfCells, "Y_A", [&] (uint cellIdx) {
+	    return one - dataBase->dataHost[ RHO_S_1(cellIdx, dataBase->numberOfCells) ]
+                   / dataBase->dataHost[ RHO__  (cellIdx, dataBase->numberOfCells) ]
+                   - dataBase->dataHost[ RHO_S_2(cellIdx, dataBase->numberOfCells) ]
+                   / dataBase->dataHost[ RHO__  (cellIdx, dataBase->numberOfCells) ]
+               ;
 	} );
 
 	addScalarRealCellData( grid, dataBase->numberOfCells, "rhoE", [&] (uint cellIdx) {
