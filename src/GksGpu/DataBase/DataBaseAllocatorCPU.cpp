@@ -22,6 +22,8 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
     dataBase.cellToNode.clear();
     dataBase.faceToNode.clear();
 
+    dataBase.cellPropertiesHost.clear();
+
     delete [] dataBase.cellToCell;
 
     delete [] dataBase.faceToCell;
@@ -50,6 +52,8 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
 {
     dataBase->cellToNode.resize( dataBase->numberOfCells );
     dataBase->faceToNode.resize( dataBase->numberOfFaces );
+
+    dataBase->cellPropertiesHost.resize( dataBase->numberOfCells );
 
     dataBase->cellToCell = new uint [ LENGTH_CELL_TO_CELL * dataBase->numberOfCells ];
 
@@ -102,22 +106,22 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
         dataBase->cellCenter[ VEC_Y( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.y;
         dataBase->cellCenter[ VEC_Z( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.z;
 
-        dataBase->cellProperties[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
+        dataBase->cellPropertiesHost[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
 
         if( adapter.cells[ cellIdx ].isWall )
-            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_WALL ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_WALL ); 
 
         if( adapter.cells[ cellIdx ].isFluxBC )
-            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC );
 
         if( adapter.cells[ cellIdx ].isInsulated )
-            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_IS_INSULATED ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_IS_INSULATED ); 
 
         if( adapter.cells[ cellIdx ].isGhostCell )
-            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_GHOST );
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_GHOST ); 
 
         if( adapter.cells[ cellIdx ].isFineGhostCell() )
-            setCellProperties( dataBase->cellProperties[ cellIdx ], CELL_PROPERTIES_FINE_GHOST );
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_FINE_GHOST ); 
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )
@@ -151,6 +155,10 @@ void DataBaseAllocatorCPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
                 = adapter.coarseToFine[idx][connectivityIdx];
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////
+
+    memcpy ( dataBase->cellProperties, dataBase->cellPropertiesHost.data(), sizeof(CellProperties) * dataBase->numberOfCells );
 }
 
 void DataBaseAllocatorCPU::copyDataHostToDevice(SPtr<DataBase> dataBase)

@@ -63,6 +63,8 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     std::vector<uint_8> cellToNode;
     std::vector<uint_4> faceToNode;
 
+    std::vector<CellProperties> cellPropertiesHost;
+
     //////////////////////////////////////////////////////////////////////////
     // Host/Device geometry and connectivity - READ ONLY
     //////////////////////////////////////////////////////////////////////////

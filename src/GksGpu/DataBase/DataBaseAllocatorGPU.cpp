@@ -25,6 +25,8 @@ void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
     dataBase.cellToNode.clear();
     dataBase.faceToNode.clear();
 
+    dataBase.cellPropertiesHost.clear();
+
     checkCudaErrors( cudaFree ( dataBase.cellToCell ) );
 
     checkCudaErrors( cudaFree ( dataBase.faceToCell ) );
@@ -53,6 +55,8 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
 {
     dataBase->cellToNode.resize( dataBase->numberOfCells );
     dataBase->faceToNode.resize( dataBase->numberOfFaces );
+
+    dataBase->cellPropertiesHost.resize( dataBase->numberOfCells );
 
     checkCudaErrors( cudaMalloc ( &dataBase->cellToCell, sizeof(uint) * LENGTH_CELL_TO_CELL * dataBase->numberOfCells ) );
 
@@ -93,8 +97,6 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     std::vector<real> faceCenterBuffer   ( LENGTH_VECTOR * dataBase->numberOfFaces );
     std::vector<real> cellCenterBuffer   ( LENGTH_VECTOR * dataBase->numberOfCells );
 
-    std::vector<CellProperties> cellPropertiesBuffer ( dataBase->numberOfCells );
-
     std::vector<char> faceOrientationBuffer( dataBase->numberOfFaces );
 
     std::vector<uint> fineToCoarseBuffer ( LENGTH_FINE_TO_COARSE * dataBase->numberOfCoarseGhostCells );
@@ -123,22 +125,22 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
         cellCenterBuffer[ VEC_Y( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.y;
         cellCenterBuffer[ VEC_Z( cellIdx, dataBase->numberOfCells ) ] = adapter.cells[ cellIdx ].cellCenter.z;
 
-        cellPropertiesBuffer[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
+        dataBase->cellPropertiesHost[ cellIdx ] = CELL_PROPERTIES_DEFAULT;
 
         if( adapter.cells[ cellIdx ].isWall )
-            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_WALL ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_WALL ); 
 
         if( adapter.cells[ cellIdx ].isFluxBC )
-            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC );
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_IS_FLUX_BC );
 
         if( adapter.cells[ cellIdx ].isInsulated )
-            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_IS_INSULATED ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_IS_INSULATED ); 
 
         if( adapter.cells[ cellIdx ].isGhostCell )
-            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_GHOST ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_GHOST ); 
 
         if( adapter.cells[ cellIdx ].isFineGhostCell() )
-            setCellProperties( cellPropertiesBuffer[ cellIdx ], CELL_PROPERTIES_FINE_GHOST ); 
+            setCellProperties( dataBase->cellPropertiesHost[ cellIdx ], CELL_PROPERTIES_FINE_GHOST ); 
     }
 
     for( uint faceIdx = 0; faceIdx < dataBase->numberOfFaces; faceIdx++ )
@@ -184,7 +186,7 @@ void DataBaseAllocatorGPU::copyMesh(SPtr<DataBase> dataBase, GksMeshAdapter & ad
     checkCudaErrors( cudaMemcpy ( dataBase->faceCenter,     faceCenterBuffer.data(),     sizeof(real) * LENGTH_VECTOR * dataBase->numberOfFaces, cudaMemcpyHostToDevice ) );
     checkCudaErrors( cudaMemcpy ( dataBase->cellCenter,     cellCenterBuffer.data(),     sizeof(real) * LENGTH_VECTOR * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 
-    checkCudaErrors( cudaMemcpy ( dataBase->cellProperties, cellPropertiesBuffer.data(), sizeof(CellProperties) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
+    checkCudaErrors( cudaMemcpy ( dataBase->cellProperties, dataBase->cellPropertiesHost.data(), sizeof(CellProperties) * dataBase->numberOfCells, cudaMemcpyHostToDevice ) );
 
     checkCudaErrors( cudaMemcpy ( dataBase->faceOrientation, faceOrientationBuffer.data(), sizeof(char) * dataBase->numberOfFaces, cudaMemcpyHostToDevice ) );
 

@@ -208,8 +208,10 @@ bool DataBase::isGhostCell(uint cellIdx)
 {
     uint level = this->getCellLevel( cellIdx );
 
-    return cellIdx >= this->perLevelCount[ level ].startOfCells
-                   + this->perLevelCount[ level ].numberOfBulkCells;
+    return ( cellIdx >= this->perLevelCount[ level ].startOfCells + this->perLevelCount[ level ].numberOfBulkCells )
+           ||
+           ( isCellProperties( this->cellPropertiesHost[cellIdx], CELL_PROPERTIES_FINE_GHOST ) );
+
 }
 
 std::string DataBase::getDeviceType()
