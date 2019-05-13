@@ -147,6 +147,8 @@ IF (HULC.BUILD_VF_GKS)
 	add_subdirectory(targets/apps/GKS/ChannelFlowObstacle)
     #add_subdirectory(targets/apps/GKS/ShearWave)
 
+    add_subdirectory(targets/apps/GKS/LiFuXu)
+
 	#add_subdirectory(targets/apps/GKS/TaylorGreen3D)
     #add_subdirectory(targets/apps/GKS/DrivenCavity3D)
     #add_subdirectory(targets/apps/GKS/ThermalCavity)
