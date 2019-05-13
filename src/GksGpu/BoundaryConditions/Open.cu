@@ -148,11 +148,11 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
         real velocity = sqrt( ghostCellPrim.U * ghostCellPrim.U + ghostCellPrim.V * ghostCellPrim.V + ghostCellPrim.W * ghostCellPrim.W );
 
-        if( velocity > c1o2  )
+        if( velocity > boundaryCondition.velocityLimiter  )
         {
-            ghostCellPrim.U *= c1o2 / velocity;
-            ghostCellPrim.V *= c1o2 / velocity;
-            ghostCellPrim.W *= c1o2 / velocity;
+            ghostCellPrim.U *= boundaryCondition.velocityLimiter / velocity;
+            ghostCellPrim.V *= boundaryCondition.velocityLimiter / velocity;
+            ghostCellPrim.W *= boundaryCondition.velocityLimiter / velocity;
         }
 
         ghostCellData = toConservedVariables(ghostCellPrim, parameters.K);
@@ -169,10 +169,12 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
     writeCellData(ghostCellIdx, dataBase, ghostCellData);
 }
 
-Open::Open(SPtr<DataBase> dataBase, PrimitiveVariables prim)
+Open::Open(SPtr<DataBase> dataBase, PrimitiveVariables prim, real velocityLimiter)
     : BoundaryCondition( dataBase )
 {
     this->prim = prim;
+
+    this->velocityLimiter = velocityLimiter;
 }
 
 bool Open::isWall()

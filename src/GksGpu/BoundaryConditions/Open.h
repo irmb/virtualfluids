@@ -22,13 +22,17 @@ struct OpenStruct
     uint* secondCells;
 
     PrimitiveVariables prim;
+
+    real velocityLimiter;
 };
 
 struct VF_PUBLIC Open : public BoundaryCondition //, public IsothermalWallStruct
 {
     PrimitiveVariables prim;
 
-    Open( SPtr<DataBase> dataBase, PrimitiveVariables prim );
+    real velocityLimiter;
+
+    Open( SPtr<DataBase> dataBase, PrimitiveVariables prim, real velocityLimiter );
 
     virtual bool isWall() override;
 
@@ -42,13 +46,15 @@ struct VF_PUBLIC Open : public BoundaryCondition //, public IsothermalWallStruct
     {
         OpenStruct boundaryCondition;
 
-        boundaryCondition.numberOfCells = this->numberOfCells;
+        boundaryCondition.numberOfCells   = this->numberOfCells;
 
-        boundaryCondition.ghostCells    = this->ghostCells;
-        boundaryCondition.domainCells   = this->domainCells;
-        boundaryCondition.secondCells   = this->secondCells;
+        boundaryCondition.ghostCells      = this->ghostCells;
+        boundaryCondition.domainCells     = this->domainCells;
+        boundaryCondition.secondCells     = this->secondCells;
 
-        boundaryCondition.prim          = prim;
+        boundaryCondition.prim            = this->prim;
+
+        boundaryCondition.velocityLimiter = this->velocityLimiter;
 
         return boundaryCondition;
     }

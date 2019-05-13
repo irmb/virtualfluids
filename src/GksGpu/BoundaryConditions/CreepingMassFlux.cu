@@ -103,16 +103,19 @@ __host__ __device__ inline void boundaryConditionFunction(const DataBaseStruct& 
 
     ConservedVariables flux;
 
-    flux.rho  = boundaryCondition.velocity * boundaryCondition.rho;
+    if( boundaryCondition.velocity > 0.0 )
+    {
+        flux.rho = boundaryCondition.velocity * boundaryCondition.rho;
 
-    //flux.rhoE = ( parameters.K + three ) / ( four * boundaryCondition.lambda ) * flux.rho;
-    flux.rhoE = ( parameters.K + three ) / ( four * domainCellPrim.lambda ) * flux.rho;
+        //flux.rhoE = ( parameters.K + three ) / ( four * boundaryCondition.lambda ) * flux.rho;
+        flux.rhoE = (parameters.K + three) / (four * domainCellPrim.lambda) * flux.rho;
 
-    flux.rhoS_1 = flux.rho;
+        flux.rhoS_1 = flux.rho;
 
-    flux = ( parameters.dt * parameters.dx * parameters.dx ) * flux;
+        flux = (parameters.dt * parameters.dx * parameters.dx) * flux;
 
-    applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters.dt);
+        applyFluxToPosCell(dataBase, domainCellIdx, flux, 'z', parameters.dt);
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -127,7 +130,7 @@ CreepingMassFlux::CreepingMassFlux(SPtr<DataBase> dataBase, real rho, real veloc
 
 bool CreepingMassFlux::isWall()
 {
-    return false;
+    return true;
 }
 
 bool CreepingMassFlux::isFluxBC()
