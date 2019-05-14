@@ -18,6 +18,7 @@
 #include "GridGenerator/geometries/Sphere/Sphere.h"
 #include "GridGenerator/geometries/VerticalCylinder/VerticalCylinder.h"
 #include "GridGenerator/geometries/Conglomerate/Conglomerate.h"
+#include "GridGenerator/geometries/TriangularMesh/TriangularMesh.h"
 
 #include "GridGenerator/grid/GridBuilder/LevelGridBuilder.h"
 #include "GridGenerator/grid/GridBuilder/MultipleGridBuilder.h"
@@ -62,26 +63,26 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    real L = 8.0;
+    real L = 4.0;
     real H = 8.0;
     real W = 0.125;
 
     real dx = H / real(nx);
 
-    real U = 0.1;
+    real U = 0.025;
 
     real eps = 2.0;
-    real Pr  = 0.25;
+    real Pr  = 0.71;
     real K   = 5.0;
     
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 5.0e-3;
+    real mu = 5.0e-4;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -89,7 +90,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.25;0.125;
+    real CFL = 0.25;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -122,6 +123,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     parameters.viscosityModel = ViscosityModel::constant;
 
+    parameters.enableReaction = true;
+
     *logging::out << logging::Logger::INFO_HIGH << "Pr = " << parameters.Pr << "\n";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +137,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = true;
+    bool threeDimensional = false;
 
     if( threeDimensional )
     {
@@ -149,36 +152,35 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Sphere           sphere  ( 0.0, 0.0, 0.0, 0.6 );
-    Cuboid           box     ( -0.6, -0.6, -0.6, 0.6, 0.6, 0.25 );
+#ifdef _WIN32
+    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
+    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Ring.stl");
+#else
+    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
+    TriangularMesh* stl = TriangularMesh::make("inp/Ring.stl");
+#endif
 
-    VerticalCylinder cylinder1( 0.0, 0.0, 0.0, 1.3, 4.0   );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1, 3.5   );
-    VerticalCylinder cylinder3( 0.0, 0.0, 0.0, 0.7, 0.0625 );
-    VerticalCylinder cylinder4( 0.0, 0.0, 0.0, 0.7, 0.0625*0.5 );
-    VerticalCylinder cylinder5( 0.0, 0.0, 0.0, 0.7, 0.0625*0.25 );
+    //gridBuilder->addGeometry(stl);
 
-    //gridBuilder->addGrid( &refRegion_1, 1);
-    //gridBuilder->addGrid( &refRegion_2, 2);
-    //gridBuilder->addGrid( &refRegion_3, 3);
-    //gridBuilder->addGrid( &refRegion_4, 4);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    gridBuilder->setNumberOfLayers(0,20);
+    VerticalCylinder cylinder( 0.0, 0.0, 0.0, 1.1, 4.0   );
     
     Conglomerate refRing;
 
     refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 0.6, 0.125 ) );
     refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.4, 1.0    ) );
+    //refRing.add     ( new VerticalCylinder( 0.0, 0.0, 0.0, 0.15, 0.125 ) );
+    //refRing.subtract( new VerticalCylinder( 0.0, 0.0, 0.0, 0.05, 1.0    ) );
 
-    //gridBuilder->addGrid( &box, 2 );
-    //gridBuilder->addGrid( &sphere, 2 );
-    //gridBuilder->addGrid( &cylinder1, 1 );
-    gridBuilder->addGrid( &cylinder2, 2 );
-    //gridBuilder->addGrid( &cylinder3, 3 );
-    //gridBuilder->addGrid( &cylinder4, 4 );
-    //gridBuilder->addGrid( &cylinder5, 5 );
+    gridBuilder->setNumberOfLayers(0,20);
 
-    gridBuilder->addGrid( &refRing, 3 );
+    gridBuilder->addGrid( &cylinder, 1 );
+
+    gridBuilder->setNumberOfLayers(10,20);
+
+    gridBuilder->addGrid( &refRing, 2 );
+    //gridBuilder->addGrid( stl, 2 );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
     else                   gridBuilder->setPeriodicBoundaryCondition(false, true,  false);
@@ -211,8 +213,12 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
+    real openBoundaryVelocityLimiter = 1.0;
+    
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
@@ -225,13 +231,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
     //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
-    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
-    SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
     //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
 
-    bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 1.0; } );
-    bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 1.0; } );
+    //bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 1.0; } );
+    //bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 1.0; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -240,8 +246,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     if( threeDimensional )
     {
-        //bcMY = std::make_shared<Open>( dataBase, prim );
-        //bcPY = std::make_shared<Open>( dataBase, prim );
+        //bcMY = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+        //bcPY = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
         bcMY = std::make_shared<Symmetry>( dataBase, 'y' );
         bcPY = std::make_shared<Symmetry>( dataBase, 'y' );
 
@@ -266,9 +272,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase, prim );
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<Extrapolation>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    //SPtr<BoundaryCondition> bcPZ = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0 || ( std::sqrt(center.x*center.x + center.y*center.y) < 0.6 && center.z < 0.1); } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -288,8 +295,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
 
-    dataBase->boundaryConditions.push_back( bcMX_2 );
-    dataBase->boundaryConditions.push_back( bcPX_2 );
+    //dataBase->boundaryConditions.push_back( bcMX_2 );
+    //dataBase->boundaryConditions.push_back( bcPX_2 );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
@@ -318,9 +325,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
             //primLocal.rho = rho * std::exp( - ( 2.0 * g * H * prim.lambda ) * cellCenter.z / H );
 
-            real r = sqrt(cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y /*+ cellCenter.z * cellCenter.z*/);
+            real r = sqrt(cellCenter.x * cellCenter.x /*+ cellCenter.y * cellCenter.y*/ + cellCenter.z * cellCenter.z);
 
-            //if( r < 0.6 ) primLocal.S_1 = 1.0;
+            //if( r < 0.6 ) primLocal.S_1 = 1.0 - r;
 
             //if( r < 0.5 ) prim.lambda /= (two - four*r*r);
 
@@ -361,7 +368,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     cupsAnalyzer.start();
 
-    for( uint iter = startIter + 1; iter <= 100000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 20010; iter++ )
     {
         uint runUpTime = 10000;
 
@@ -379,6 +386,12 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             //parameters.dt = 0.2 * dt + ( dt - 0.2 * dt ) * ( real(iter) / 40000.0 );
         }
 
+        if( iter == 5001 )
+        {
+            parameters.enableReaction = false;
+            std::dynamic_pointer_cast<CreepingMassFlux>(burner)->velocity = -1.0;
+        }
+
         cupsAnalyzer.run( iter );
 
         convergenceAnalyzer.run( iter );
@@ -386,7 +399,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 7000 && iter % 10 == 0 ) || 
+            ( iter >= 20000 && iter % 1 == 0 ) || 
             ( iter % 1000 == 0 )
           )
         {
@@ -430,14 +443,14 @@ int main( int argc, char* argv[])
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     if( sizeof(real) == 4 )
-        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 
     try
     {
-        //uint restartIter = INVALID_INDEX;
-        uint restartIter = 20000;
+        uint restartIter = INVALID_INDEX;
+        //uint restartIter = 20000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

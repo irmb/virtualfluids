@@ -21,6 +21,11 @@ void TimeStepping::nestedTimeStep( SPtr<DataBase> dataBase,
 
     //////////////////////////////////////////////////////////////////////////
 
+    //set different viscosity on specific levels
+    //if( level >= 3 ) parameters.mu = 1.0e-3;
+
+    //////////////////////////////////////////////////////////////////////////
+
     if( level != dataBase->numberOfLevels - 1 )
     {
         Interface::runFineToCoarse( dataBase, level );

@@ -118,7 +118,7 @@ HeatFlux::HeatFlux(SPtr<DataBase> dataBase, real  HRRPUA)
 
 bool HeatFlux::isWall()
 {
-    return false;
+    return true;
 }
 
 bool HeatFlux::isFluxBC()

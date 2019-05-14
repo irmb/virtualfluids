@@ -57,7 +57,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 64;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,23 +67,21 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
+    real Ra = 1.0e9;
 
-    real Ra = 1.0e11;
-
-    real Ba  = 0.1;
-    real eps = 2.0;
     real Pr  = 0.71;
-    real K   = 2.0;
+    real K   = 5.0;
     
     real g   = 9.81;
     real rho = 1.2;
 
-    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
+    //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
 
-    //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
-    //setLambdaFromT( prim, 3.0 );
+    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
+    setLambdaFromT( prim, 3.0 );
     
-    real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
+    //real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
+    real mu = 1.5e-5;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
@@ -128,7 +126,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = true;
+    bool threeDimensional = false;
 
     if( threeDimensional )
         gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
@@ -247,11 +245,14 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //////////////////////////////////////////////////////////////////////////
 
     //SPtr<BoundaryCondition> bcBurner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
-    SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 10.0 );
+    SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 100.0 );
 
     bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x + center.y*center.y) < 1.6;
+        if( threeDimensional )
+            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 - dx && std::sqrt(center.y*center.y) < 0.5;
+        else
+            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 - dx && std::sqrt(center.y*center.y) < 0.5 * dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -340,11 +341,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     for( uint iter = startIter + 1; iter <= 100000000; iter++ )
     {
-        if( iter < 40000 )
+        if( iter < 10000 )
         {
             //std::dynamic_pointer_cast<PassiveScalarDiriclet>(burner)->S_1 = 10.0 * ( real(iter) / 20000.0 );
 
-            //parameters.mu = mu + 0.01 * ( 1.0 - ( real(iter) / 20000.0 ) );
+            //parameters.mu = mu + 10.0 * mu * ( 1.0 - ( real(iter) / 10000.0 ) );
 
             //parameters.dt = 0.2 * dt + ( dt - 0.2 * dt ) * ( real(iter) / 40000.0 );
         }
@@ -356,13 +357,18 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 15000 && iter % 10 == 0 )
-            ( iter % 10000 == 0 )
+            //( iter >= 350 && iter % 1 == 0 ) ||
+            ( iter % 1000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+        }
+
+        if( iter % 10000 == 0 )
+        {
+            Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
 
         //turbulenceAnalyzer->run( iter, parameters );
@@ -401,7 +407,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
+        //uint restartIter = INVALID_INDEX;
+        uint restartIter = 140000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
@@ -420,5 +427,5 @@ int main( int argc, char* argv[])
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
 
-   return 0;
+    return 0;
 }

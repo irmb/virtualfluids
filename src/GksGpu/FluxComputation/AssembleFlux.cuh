@@ -479,28 +479,64 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 
     //////////////////////////////////////////////////////////////////////////
 
-#ifdef USE_PASSIVE_SCALAR
-	flux_1.rhoS_1 = flux_1.rho * facePrim.S_1;
-	flux_1.rhoS_2 = flux_1.rho * facePrim.S_2;
+//#ifdef USE_PASSIVE_SCALAR
+//	flux_1.rhoS_1 = flux_1.rho * facePrim.S_1;
+//	flux_1.rhoS_2 = flux_1.rho * facePrim.S_2;
+//
+//	flux_2.rhoS_1 = flux_2.rho * facePrim.S_1 
+//				  + ( ax[5] * momentU[1+1]                          
+//				    + ay[5] * momentU[0+1] * momentV[1]             
+//				    + az[5] * momentU[0+1] *              momentW[1]
+//				    ) / (two * facePrim.lambda);
+//
+//	flux_2.rhoS_2 = flux_2.rho * facePrim.S_2 
+//				  + ( ax[6] * momentU[1+1]                          
+//				    + ay[6] * momentU[0+1] * momentV[1]             
+//				    + az[6] * momentU[0+1] *              momentW[1]
+//				    ) / (two * facePrim.lambda);
+//
+//	flux_3.rhoS_1 = flux_3.rho * facePrim.S_1
+//				  + at[5] * momentU[0 + 1]
+//				  / ( two * facePrim.lambda );
+//
+//	flux_3.rhoS_2 = flux_3.rho * facePrim.S_2
+//				  + at[6] * momentU[0 + 1]
+//				  / ( two * facePrim.lambda );
+//
+//    
+//	real tauS = parameters.D * two * facePrim.lambda;
+//
+//	real dt = parameters.dt;
+//
+//    real timeCoefficientsScalar [3];
+//
+//	timeCoefficientsScalar[0] =							dt;
+//	timeCoefficientsScalar[1] =					-tauS * dt;
+//	timeCoefficientsScalar[2] = c1o2 * dt * dt - tauS * dt;
+//
+//    flux.rhoS_1 = ( timeCoefficientsScalar[0] * flux_1.rhoS_1 + timeCoefficientsScalar[1] * flux_2.rhoS_1 + timeCoefficientsScalar[2] * flux_3.rhoS_1 ) * parameters.dx * parameters.dx * facePrim.rho;
+//    flux.rhoS_2 = ( timeCoefficientsScalar[0] * flux_1.rhoS_2 + timeCoefficientsScalar[1] * flux_2.rhoS_2 + timeCoefficientsScalar[2] * flux_3.rhoS_2 ) * parameters.dx * parameters.dx * facePrim.rho;
+//
+//#endif // USE_PASSIVE_SCALAR
 
-	flux_2.rhoS_1 = flux_2.rho * facePrim.S_1 
-				  + ( ax[5] * momentU[1+1]                          
+    //////////////////////////////////////////////////////////////////////////
+
+#ifdef USE_PASSIVE_SCALAR
+
+	flux_2.rhoS_1 = ( ax[5] * momentU[1+1]                          
 				    + ay[5] * momentU[0+1] * momentV[1]             
 				    + az[5] * momentU[0+1] *              momentW[1]
 				    ) / (two * facePrim.lambda);
 
-	flux_2.rhoS_2 = flux_2.rho * facePrim.S_2 
-				  + ( ax[6] * momentU[1+1]                          
+	flux_2.rhoS_2 = ( ax[6] * momentU[1+1]                          
 				    + ay[6] * momentU[0+1] * momentV[1]             
 				    + az[6] * momentU[0+1] *              momentW[1]
 				    ) / (two * facePrim.lambda);
 
-	flux_3.rhoS_1 = flux_3.rho * facePrim.S_1
-				  + at[5] * momentU[0 + 1]
+	flux_3.rhoS_1 = at[5] * momentU[0 + 1]
 				  / ( two * facePrim.lambda );
 
-	flux_3.rhoS_2 = flux_3.rho * facePrim.S_2
-				  + at[6] * momentU[0 + 1]
+	flux_3.rhoS_2 = at[6] * momentU[0 + 1]
 				  / ( two * facePrim.lambda );
 
     
@@ -514,8 +550,8 @@ __host__ __device__ inline void assembleFlux( const PrimitiveVariables& facePrim
 	timeCoefficientsScalar[1] =					-tauS * dt;
 	timeCoefficientsScalar[2] = c1o2 * dt * dt - tauS * dt;
 
-    flux.rhoS_1 = ( timeCoefficientsScalar[0] * flux_1.rhoS_1 + timeCoefficientsScalar[1] * flux_2.rhoS_1 + timeCoefficientsScalar[2] * flux_3.rhoS_1 ) * parameters.dx * parameters.dx * facePrim.rho;
-    flux.rhoS_2 = ( timeCoefficientsScalar[0] * flux_1.rhoS_2 + timeCoefficientsScalar[1] * flux_2.rhoS_2 + timeCoefficientsScalar[2] * flux_3.rhoS_2 ) * parameters.dx * parameters.dx * facePrim.rho;
+    flux.rhoS_1 = flux.rho * facePrim.S_1 + ( timeCoefficientsScalar[1] * flux_2.rhoS_1 + timeCoefficientsScalar[2] * flux_3.rhoS_1 ) * parameters.dx * parameters.dx * facePrim.rho;
+    flux.rhoS_2 = flux.rho * facePrim.S_2 + ( timeCoefficientsScalar[1] * flux_2.rhoS_2 + timeCoefficientsScalar[2] * flux_3.rhoS_2 ) * parameters.dx * parameters.dx * facePrim.rho;
 
 #endif // USE_PASSIVE_SCALAR
 }

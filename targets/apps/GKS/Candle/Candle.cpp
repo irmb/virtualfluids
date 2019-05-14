@@ -73,7 +73,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real dx = H / real(nx);
 
-    real U = 0.025;
+    real U = 0.05;0.025;
 
     real eps = 2.0;
     real Pr  = 0.71;
@@ -82,7 +82,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 5.0e-3;
+    real mu = 5.0e-4;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -200,8 +200,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim );
+    real openBoundaryVelocityLimiter = 0.5;
+
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
@@ -229,8 +231,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     if( threeDimensional )
     {
-        //bcMY = std::make_shared<Open>( dataBase, prim );
-        //bcPY = std::make_shared<Open>( dataBase, prim );
+        //bcMY = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+        //bcPY = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
         bcMY = std::make_shared<Symmetry>( dataBase, 'y' );
         bcPY = std::make_shared<Symmetry>( dataBase, 'y' );
 
@@ -426,7 +428,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 80000;
+        //uint restartIter = 200000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

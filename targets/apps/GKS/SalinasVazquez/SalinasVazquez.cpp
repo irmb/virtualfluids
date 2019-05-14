@@ -123,6 +123,8 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     parameters.lambdaRef = lambda;
 
+    parameters.rhoRef    = rho;
+
     parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,13 +169,31 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     //////////////////////////////////////////////////////////////////////////
 
-    real refL[4] = { 0.35, 0.45, 0.475, 0.495 };
+    real refL[4] = { 0.30, 0.45, 0.49, 0.4975 };
 
-    gridBuilder->setNumberOfLayers(6,6);
+    gridBuilder->setNumberOfLayers(0,6);
 
-    uint numberOfRefinements = 3;
+    Conglomerate coarseRefLevel;
+    
 
-    for( uint ref = 0; ref < numberOfRefinements; ref++ )
+    if( rank % 2 == 0 ) coarseRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                        -refL[0],  100.0,  100.0 ) );
+    else                coarseRefLevel.add( new Cuboid ( refL[0], -100.0, -100.0, 
+                                                         100.0,    100.0,  100.0 ) );
+
+    coarseRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
+                                     100.0,  100.0, -refL[0] ) );
+
+    coarseRefLevel.add( new Cuboid (-100.0, -100.0,  refL[0], 
+                                     100.0,  100.0,  100.0   ) );
+
+    gridBuilder->addGrid( &coarseRefLevel, 1);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    uint numberOfRefinements = 4;
+
+    for( uint ref = 1; ref < numberOfRefinements; ref++ )
     {
         Cuboid* refRegion;
 
@@ -349,7 +369,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 200000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 800000 );
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 200 );
 
     //////////////////////////////////////////////////////////////////////////
@@ -381,7 +401,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
         turbulenceAnalyzer->run( iter, parameters );
 
-        if( iter > 200000 && iter % 100000 == 0 )
+        if( iter > 800000 && iter % 100000 == 0 )
         {
             turbulenceAnalyzer->download();
 
@@ -467,7 +487,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     if( sizeof(real) == 4 )
-        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 

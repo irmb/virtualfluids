@@ -34,6 +34,8 @@ struct  VF_PUBLIC Parameters
 
     real boussinesqT0   = 1.0;
     real boussinesqBeta = 1.0;
+
+    bool enableReaction = false;
 };
 
 #endif
