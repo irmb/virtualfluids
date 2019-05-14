@@ -175,6 +175,27 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
     }
 }
 
+HOSTDEVICE void GridImp::discretize(Object* solidObject, char innerType, char outerType)
+{
+    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start discretizing primitive solid object: \n";
+
+//#pragma omp parallel for
+    for (int index = 0; index < this->size; index++)
+    {
+        this->sparseIndices[index] = index;
+
+        if( this->getFieldEntry(index) == innerType ) continue;
+        
+        real x, y, z;
+        this->transIndexToCoords(index, x, y, z);
+
+        if( solidObject->isPointInObject(x, y, z, 0.0, 0.0) )
+            this->setFieldEntry(index, innerType);
+        //else
+        //    this->setFieldEntry(index, outerType);
+    }
+}
+
 bool GridImp::isInside(const Cell& cell) const
 {
     return object->isCellInObject(cell);
@@ -1071,12 +1092,12 @@ HOST void GridImp::mesh(Object* object)
     if (triangularMesh)
         triangularMeshDiscretizationStrategy->discretize(triangularMesh, this, INVALID_SOLID, FLUID);
     else
-        gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes 
+        //gridStrategy->findInnerNodes(shared_from_this()); //TODO: adds INNERTYPE AND OUTERTYPE to findInnerNodes 
 		//new method for geometric primitives (not cell based) to be implemented
+        this->discretize(object, INVALID_SOLID, FLUID);
 
     this->closeNeedleCells();
 
-	//gridStrategy->findStopperNodes(shared_from_this()); //deprecated
 	gridStrategy->findSolidStopperNodes(shared_from_this());
 	gridStrategy->findBoundarySolidNodes(shared_from_this());
 }

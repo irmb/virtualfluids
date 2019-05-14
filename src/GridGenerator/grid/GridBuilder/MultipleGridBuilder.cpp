@@ -465,7 +465,8 @@ void MultipleGridBuilder::buildGrids( LbmOrGks lbmOrGks, bool enableThinWalls )
                 grids[level]->enableComputeQs();
             }
 
-            grids[level]->findQs(solidObject);
+            if( lbmOrGks == LBM )
+                grids[level]->findQs(solidObject);
         }
 
         //for (size_t i = 0; i < grids.size(); i++){

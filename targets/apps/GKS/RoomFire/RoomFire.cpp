@@ -81,7 +81,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     setLambdaFromT( prim, 3.0 );
     
     //real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
-    real mu = 1.5e-5;
+    real mu = 1.5e-4;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
@@ -126,7 +126,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = false;
+    bool threeDimensional = true;
 
     if( threeDimensional )
         gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
@@ -145,25 +145,33 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     TriangularMesh* stl = TriangularMesh::make("inp/UnterzugObstacle.stl");
 #endif
 
-    gridBuilder->addGeometry(stl);
+    //gridBuilder->addGeometry(stl);
+
+    Cuboid box ( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 );
+
+    Cuboid beam( -0.15, -10.0, 2.6, 0.16, 10.0, 10.0 );
+
+    Conglomerate solid;
+
+    solid.add(&box);
+    solid.add(&beam);
+
+    gridBuilder->addGeometry(&solid);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    VerticalCylinder cylinder ( 0.0, 0.0, 0.0, 0.7, 2.0 );
-    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 1.1, 3.0 );
+    Cuboid boxRef ( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 );
+    Cuboid beamRef( -0.15, -10.0, 2.6, 0.16, 10.0, 10.0 );
 
-    Conglomerate refRegion1, refRegion2;
+    boxRef.scale(0.02);
+    beamRef.scale(0.02);
 
-    //refRegion1.add( &cylinder2 );
-    refRegion1.add( stl );
+    Conglomerate refRegion1;
 
-    //refRegion2.add( &cylinder );
-    //refRegion2.add( stl );
+    refRegion1.add( &boxRef );
+    refRegion1.add( &beamRef );
 
-    gridBuilder->setNumberOfLayers(8,20);
-    
-    //gridBuilder->addGrid( &refRegion1, 1 );
-    //gridBuilder->addGrid( &refRegion2, 2 );
+    gridBuilder->setNumberOfLayers(0,20);
 
     gridBuilder->addGrid( &refRegion1, 3 );
 
@@ -176,7 +184,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->buildGrids(GKS, false);
 
-    //gridBuilder->writeGridsToVtk(path + "grid/Grid_lev_");
+    //gridBuilder->writeGridsToVtk(path + "Grid_lev_");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -407,8 +415,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        //uint restartIter = INVALID_INDEX;
-        uint restartIter = 140000;
+        uint restartIter = INVALID_INDEX;
+        //uint restartIter = 140000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

@@ -139,6 +139,8 @@ public:
 
     HOSTDEVICE void findInnerNode(uint index);
 
+    HOSTDEVICE void discretize(Object* object, char innerType, char outerType);
+
     bool isInside(const Cell& cell) const;
 
     HOSTDEVICE void setInnerBasedOnFinerGrid(const SPtr<Grid> fineGrid);
