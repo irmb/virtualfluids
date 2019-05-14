@@ -21,17 +21,15 @@ inline __host__ __device__ real getTurbulentViscositySmagorinsky(const Parameter
 {
     // See FDS 6 Technical Reference Guide, Section 4.2.8
 
-    real dUdx1 = ( gradX1.rhoU - facePrim.U * gradX1.rho ) / facePrim.rho;
-    real dUdx2 = ( gradX2.rhoU - facePrim.U * gradX2.rho ) / facePrim.rho;
-    real dUdx3 = ( gradX3.rhoU - facePrim.U * gradX3.rho ) / facePrim.rho;
-    
-    real dVdx1 = ( gradX1.rhoV - facePrim.V * gradX1.rho ) / facePrim.rho;
-    real dVdx2 = ( gradX2.rhoV - facePrim.V * gradX2.rho ) / facePrim.rho;
-    real dVdx3 = ( gradX3.rhoV - facePrim.V * gradX3.rho ) / facePrim.rho;
-    
-    real dWdx1 = ( gradX1.rhoW - facePrim.W * gradX1.rho ) / facePrim.rho;
-    real dWdx2 = ( gradX2.rhoW - facePrim.W * gradX2.rho ) / facePrim.rho;
-    real dWdx3 = ( gradX3.rhoW - facePrim.W * gradX3.rho ) / facePrim.rho;
+    real dUdx1 = ( gradX1.rhoU - facePrim.U * gradX1.rho )/* / facePrim.rho*/;
+    real dUdx2 = ( gradX2.rhoU - facePrim.U * gradX2.rho )/* / facePrim.rho*/;
+    real dUdx3 = ( gradX3.rhoU - facePrim.U * gradX3.rho )/* / facePrim.rho*/;
+    real dVdx1 = ( gradX1.rhoV - facePrim.V * gradX1.rho )/* / facePrim.rho*/;
+    real dVdx2 = ( gradX2.rhoV - facePrim.V * gradX2.rho )/* / facePrim.rho*/;
+    real dVdx3 = ( gradX3.rhoV - facePrim.V * gradX3.rho )/* / facePrim.rho*/;
+    real dWdx1 = ( gradX1.rhoW - facePrim.W * gradX1.rho )/* / facePrim.rho*/;
+    real dWdx2 = ( gradX2.rhoW - facePrim.W * gradX2.rho )/* / facePrim.rho*/;
+    real dWdx3 = ( gradX3.rhoW - facePrim.W * gradX3.rho )/* / facePrim.rho*/;
 
     real S11sq = dUdx1*dUdx1;
     real S22sq = dVdx2*dVdx2;

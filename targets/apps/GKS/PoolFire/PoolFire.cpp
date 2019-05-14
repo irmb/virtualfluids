@@ -99,6 +99,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "cs = " << cs << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
+    *logging::out << logging::Logger::INFO_HIGH << "F_rho = " << U * rho * dt * 1000 << " kg/m^3\n";
+
     //////////////////////////////////////////////////////////////////////////
 
     Parameters parameters;
@@ -215,10 +217,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     
     real openBoundaryVelocityLimiter = 1.0;
     
-    //SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
-    //SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
-    SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
-    SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcMX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    SPtr<BoundaryCondition> bcPX = std::make_shared<Open>( dataBase, prim, openBoundaryVelocityLimiter );
+    //SPtr<BoundaryCondition> bcMX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    //SPtr<BoundaryCondition> bcPX = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcPX = std::make_shared<MassCompensation>( dataBase, rho, U, prim.lambda );
     //SPtr<BoundaryCondition> bcMX = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
@@ -272,10 +274,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<Open>( dataBase, prim );
     //SPtr<BoundaryCondition> bcPZ = std::make_shared<Extrapolation>( dataBase );
-    SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
-    //SPtr<BoundaryCondition> bcPZ = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
+    //SPtr<BoundaryCondition> bcPZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcPZ = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     
-    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0 || ( std::sqrt(center.x*center.x + center.y*center.y) < 0.6 && center.z < 0.1); } );
+    bcMZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z < 0.0; } );
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z > H  ; } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -287,7 +289,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+        return center.z < 0.0 && std::sqrt(center.x*center.x) < 0.5 && std::sqrt(center.y*center.y) < 0.5 * dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -368,7 +370,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     cupsAnalyzer.start();
 
-    for( uint iter = startIter + 1; iter <= 20010; iter++ )
+    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
     {
         uint runUpTime = 10000;
 
@@ -386,11 +388,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             //parameters.dt = 0.2 * dt + ( dt - 0.2 * dt ) * ( real(iter) / 40000.0 );
         }
 
-        if( iter == 5001 )
-        {
-            parameters.enableReaction = false;
-            std::dynamic_pointer_cast<CreepingMassFlux>(burner)->velocity = -1.0;
-        }
+        //if( iter == 5001 )
+        //{
+        //    parameters.enableReaction = false;
+        //    std::dynamic_pointer_cast<CreepingMassFlux>(burner)->velocity = -1.0;
+        //}
 
         cupsAnalyzer.run( iter );
 
@@ -399,7 +401,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            ( iter >= 20000 && iter % 1 == 0 ) || 
+            //( iter >= 20000 && iter % 1 == 0 ) || 
             ( iter % 1000 == 0 )
           )
         {
@@ -408,7 +410,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 1000 == 0 )
         {
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
@@ -450,7 +452,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 20000;
+        //uint restartIter = 35000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
