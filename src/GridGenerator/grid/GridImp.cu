@@ -177,9 +177,7 @@ HOSTDEVICE void GridImp::findInnerNode(uint index)
 
 HOSTDEVICE void GridImp::discretize(Object* solidObject, char innerType, char outerType)
 {
-    *logging::out << logging::Logger::INFO_INTERMEDIATE << "Start discretizing primitive solid object: \n";
-
-//#pragma omp parallel for
+#pragma omp parallel for
     for (int index = 0; index < this->size; index++)
     {
         this->sparseIndices[index] = index;
