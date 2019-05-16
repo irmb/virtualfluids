@@ -30,13 +30,6 @@ struct VF_PUBLIC DataBaseStruct
 
     real* data;
     double* dataUpdate;
-    
-    real* dataUpdatePX;
-    real* dataUpdatePY;
-    real* dataUpdatePZ;
-    real* dataUpdateMX;
-    real* dataUpdateMY;
-    real* dataUpdateMZ;
 
     real* massFlux;
 };

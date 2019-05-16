@@ -31,12 +31,6 @@ DataBase::DataBase( std::string type )
           coarseToFine   (nullptr),
           data           (nullptr),
           dataUpdate     (nullptr),
-          dataUpdatePX   (nullptr),
-          dataUpdatePY   (nullptr),
-          dataUpdatePZ   (nullptr),
-          dataUpdateMX   (nullptr),
-          dataUpdateMY   (nullptr),
-          dataUpdateMZ   (nullptr),
           massFlux       (nullptr)
 {
 }
@@ -168,13 +162,6 @@ DataBaseStruct DataBase::toStruct()
 
     dataBase.data                     = this->data;
     dataBase.dataUpdate               = this->dataUpdate;
-
-    dataBase.dataUpdatePX             = this->dataUpdatePX;
-    dataBase.dataUpdatePY             = this->dataUpdatePY;
-    dataBase.dataUpdatePZ             = this->dataUpdatePZ;
-    dataBase.dataUpdateMX             = this->dataUpdateMX;
-    dataBase.dataUpdateMY             = this->dataUpdateMY;
-    dataBase.dataUpdateMZ             = this->dataUpdateMZ;
 
     dataBase.massFlux                 = this->massFlux;
 

@@ -45,13 +45,6 @@ void DataBaseAllocatorGPU::freeMemory( DataBase& dataBase )
 
     checkCudaErrors( cudaFree ( dataBase.data ) );
     checkCudaErrors( cudaFree ( dataBase.dataUpdate ) );
-    
-    checkCudaErrors( cudaFree ( dataBase.dataUpdatePX ) );
-    checkCudaErrors( cudaFree ( dataBase.dataUpdatePY ) );
-    checkCudaErrors( cudaFree ( dataBase.dataUpdatePZ ) );
-    checkCudaErrors( cudaFree ( dataBase.dataUpdateMX ) );
-    checkCudaErrors( cudaFree ( dataBase.dataUpdateMY ) );
-    checkCudaErrors( cudaFree ( dataBase.dataUpdateMZ ) );
 
     checkCudaErrors( cudaFree ( dataBase.massFlux ) );
 
@@ -83,13 +76,6 @@ void DataBaseAllocatorGPU::allocateMemory(SPtr<DataBase> dataBase)
 
     checkCudaErrors( cudaMalloc ( &dataBase->data,       sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
     checkCudaErrors( cudaMalloc ( &dataBase->dataUpdate, sizeof(double) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdatePX, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdatePY, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdatePZ, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdateMX, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdateMY, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
-    checkCudaErrors( cudaMalloc ( &dataBase->dataUpdateMZ, sizeof(real) * LENGTH_CELL_DATA * dataBase->numberOfCells ) );
 
     checkCudaErrors( cudaMalloc ( &dataBase->massFlux ,  sizeof(real) * LENGTH_VECTOR    * dataBase->numberOfCells ) );
 
