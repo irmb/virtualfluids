@@ -53,7 +53,7 @@ void thermalCavity( std::string path, std::string simulationName )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 4;
+    uint nx = 64;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +72,7 @@ void thermalCavity( std::string path, std::string simulationName )
     
     real mu = 5.0e-1;
 
-    PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
+    PrimitiveVariables prim( rho, 0.0, 0.0, 10.0, -1.0 );
 
     setLambdaFromT( prim, 3.0 / T_FAKTOR );
 
@@ -107,6 +107,8 @@ void thermalCavity( std::string path, std::string simulationName )
     //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     parameters.viscosityModel = ViscosityModel::constant;
 
+    parameters.enableReaction = true;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto gridFactory = GridFactory::make();
@@ -117,11 +119,11 @@ void thermalCavity( std::string path, std::string simulationName )
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx, -0.5*dx,  
-    //                            0.5*L,  0.5*dx,  0.5*dx, dx);
+    gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx, -0.5*dx,  
+                                0.5*L,  0.5*dx,  0.5*dx, dx);
 
-    gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*L,  
-                                0.5*L,  0.5*L,  0.5*L, dx);
+    //gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, -0.5*L,  
+    //                            0.5*L,  0.5*L,  0.5*L, dx);
 
     gridBuilder->setPeriodicBoundaryCondition(true, true, true);
 
@@ -268,27 +270,9 @@ void thermalCavity( std::string path, std::string simulationName )
 
         //////////////////////////////////////////////////////////////////////////
 
-        //if( nx > 1 )
-        //{
-        //    double X_F = 0.21 / 2.21;
-        //    double X_A = 1.0 - X_F;
-
-        //    double M = X_F * M_F + X_A * M_A;
-
-        //    double Y_F = X_F * M_F / M;
-        //    double Y_A = X_A * M_A / M;
-
-        //    if (cellCenter.x < 0) prim.S_1 = 0.0;
-        //    else                  prim.S_1 = 2.0 * Y_F;
-
-        //    return toConservedVariables(prim, parameters.K);
-        //}
-
-        //////////////////////////////////////////////////////////////////////////
-
         if( nx > 1 )
         {
-            double X_F = 1.0;
+            double X_F = 0.21 / 2.21;
             double X_A = 1.0 - X_F;
 
             double M = X_F * M_F + X_A * M_A;
@@ -297,13 +281,31 @@ void thermalCavity( std::string path, std::string simulationName )
             double Y_A = X_A * M_A / M;
 
             if (cellCenter.x < 0) prim.S_1 = 0.0;
-            else                  prim.S_1 = Y_F;
-
-            if (cellCenter.x < 0) prim.rho = 1.2;
-            else                  prim.rho = 0.1;
+            else                  prim.S_1 = 2.0 * Y_F;
 
             return toConservedVariables(prim, parameters.K);
         }
+
+        //////////////////////////////////////////////////////////////////////////
+
+        //if( nx > 1 )
+        //{
+        //    double X_F = 1.0;
+        //    double X_A = 1.0 - X_F;
+
+        //    double M = X_F * M_F + X_A * M_A;
+
+        //    double Y_F = X_F * M_F / M;
+        //    double Y_A = X_A * M_A / M;
+
+        //    if (cellCenter.x < 0) prim.S_1 = 0.0;
+        //    else                  prim.S_1 = Y_F;
+
+        //    if (cellCenter.x < 0) prim.rho = 1.2;
+        //    else                  prim.rho = 0.1;
+
+        //    return toConservedVariables(prim, parameters.K);
+        //}
     });
 
     //std::cout << toConservedVariables( PrimitiveVariables( rho, 0.0, 0.0, 0.0, lambdaHot, S_1, S_2 ), parameters.K ).rhoE << std::endl;
@@ -335,7 +337,7 @@ void thermalCavity( std::string path, std::string simulationName )
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 20000; iter++ )
+    for( uint iter = 1; iter <= 10000; iter++ )
     {
         //if( iter < 100000 )
         //{
@@ -385,8 +387,13 @@ void thermalCavity( std::string path, std::string simulationName )
 
 int main( int argc, char* argv[])
 {
+
+#ifdef _WIN32
     std::string path( "F:/Work/Computations/out/ConfinedCombustion/" );
-    //std::string path( "out/" );
+#else
+    std::string path( "out/" );
+#endif
+
     std::string simulationName ( "ConfinedCombustion" );
 
     logging::Logger::addStream(&std::cout);

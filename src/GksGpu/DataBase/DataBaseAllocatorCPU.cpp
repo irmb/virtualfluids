@@ -42,6 +42,13 @@ void DataBaseAllocatorCPU::freeMemory( DataBase& dataBase)
 
     delete [] dataBase.data;
     delete [] dataBase.dataUpdate;
+    
+    delete [] dataBase.dataUpdatePX;
+    delete [] dataBase.dataUpdatePY;
+    delete [] dataBase.dataUpdatePZ;
+    delete [] dataBase.dataUpdateMX;
+    delete [] dataBase.dataUpdateMY;
+    delete [] dataBase.dataUpdateMZ;
 
     delete [] dataBase.massFlux;
 
@@ -72,7 +79,14 @@ void DataBaseAllocatorCPU::allocateMemory(SPtr<DataBase> dataBase)
     dataBase->coarseToFine = new uint [ LENGTH_COARSE_TO_FINE * dataBase->numberOfFineGhostCells   ];
 
     dataBase->data       = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
-    dataBase->dataUpdate = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdate = new double [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    
+    dataBase->dataUpdatePX = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdatePY = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdatePZ = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdateMX = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdateMY = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
+    dataBase->dataUpdateMZ = new real [ LENGTH_CELL_DATA * dataBase->numberOfCells ];
 
     dataBase->massFlux   = new real [ LENGTH_VECTOR    * dataBase->numberOfCells ];
 

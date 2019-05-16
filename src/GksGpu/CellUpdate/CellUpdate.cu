@@ -74,6 +74,22 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         readCellDataUpdate(cellIndex, dataBase, update);
         writeCellDataUpdate(cellIndex, dataBase, zeroCons);
 
+        ConservedVariables updatePX, updatePY, updatePZ, updateMX, updateMY, updateMZ;
+        
+        readCellDataUpdate(cellIndex, dataBase, updatePX, "px");
+        readCellDataUpdate(cellIndex, dataBase, updatePY, "py");
+        readCellDataUpdate(cellIndex, dataBase, updatePZ, "pz");
+        readCellDataUpdate(cellIndex, dataBase, updateMX, "mx");
+        readCellDataUpdate(cellIndex, dataBase, updateMY, "my");
+        readCellDataUpdate(cellIndex, dataBase, updateMZ, "mz");
+        
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons, "px");
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons, "py");
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons, "pz");
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons, "mx");
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons, "my");
+        writeCellDataUpdate(cellIndex, dataBase, zeroCons, "mz");
+
         //////////////////////////////////////////////////////////////////////////
         // dirty fix to exclude viscous heating: Part 1
         //ConservedVariables testCons = cons;
@@ -83,6 +99,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         //////////////////////////////////////////////////////////////////////////
 
         cons = cons + (one / cellVolume) * update;
+        //cons = cons + (one / cellVolume) * ( ( updatePX + updateMX ) + ( updatePY + updateMY ) + ( updatePZ + updateMZ ) );
         
         //////////////////////////////////////////////////////////////////////////
         // dirty fix to exclude viscous heating: Part 2
@@ -109,7 +126,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
 
-    if(true)
+    if(false)
     {
         // forcing only on density variation
         cons.rhoU += parameters.force.x * parameters.dt * ( cons.rho - parameters.rhoRef );
@@ -124,7 +141,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
 
-    if(false)
+    if(true)
     {
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
         real lambda = prim.lambda;

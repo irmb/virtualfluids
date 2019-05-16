@@ -63,12 +63,12 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 256;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     real L = 4.0;
-    real H = 8.0;
+    real H = 4.0;
     real W = 0.125;
 
     real dx = H / real(nx);
@@ -177,11 +177,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,20);
 
-    gridBuilder->addGrid( &cylinder, 1 );
+    //gridBuilder->addGrid( &cylinder, 1 );
 
     gridBuilder->setNumberOfLayers(10,20);
 
-    gridBuilder->addGrid( &refRing, 2 );
+    //gridBuilder->addGrid( &refRing, 2 );
     //gridBuilder->addGrid( stl, 2 );
 
     if( threeDimensional ) gridBuilder->setPeriodicBoundaryCondition(false, false, false);
@@ -289,7 +289,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
-        return center.z < 0.0 && std::sqrt(center.x*center.x) < 0.5 && std::sqrt(center.y*center.y) < 0.5 * dx;
+        if( threeDimensional )
+            return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+        else
+            return center.z < 0.0 && std::sqrt(center.x*center.x) < 0.5 && std::sqrt(center.y*center.y) < 0.5 * dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -370,7 +373,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     cupsAnalyzer.start();
 
-    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
+    for( uint iter = startIter + 1; iter <= 20000; iter++ )
     {
         uint runUpTime = 10000;
 
@@ -410,7 +413,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
-        if( iter % 1000 == 0 )
+        if( iter % 10000 == 0 )
         {
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
@@ -452,7 +455,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 35000;
+        //uint restartIter = 10000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

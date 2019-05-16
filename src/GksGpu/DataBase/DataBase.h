@@ -90,7 +90,14 @@ struct VF_PUBLIC DataBase : public std::enable_shared_from_this<DataBase>
     //////////////////////////////////////////////////////////////////////////
 
     real* data;
-    real* dataUpdate;
+    double* dataUpdate;
+    
+    real* dataUpdatePX;
+    real* dataUpdatePY;
+    real* dataUpdatePZ;
+    real* dataUpdateMX;
+    real* dataUpdateMY;
+    real* dataUpdateMZ;
 
     real* massFlux;
 

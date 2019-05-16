@@ -480,7 +480,7 @@ void GksMeshAdapter::generateFaces()
     }
 }
 
-//#define OLD_SORTING
+#define OLD_SORTING
 #ifdef  OLD_SORTING
 
 void GksMeshAdapter::sortFaces()

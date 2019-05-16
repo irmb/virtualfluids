@@ -29,7 +29,14 @@ struct VF_PUBLIC DataBaseStruct
     char* faceOrientation;
 
     real* data;
-    real* dataUpdate;
+    double* dataUpdate;
+    
+    real* dataUpdatePX;
+    real* dataUpdatePY;
+    real* dataUpdatePZ;
+    real* dataUpdateMX;
+    real* dataUpdateMY;
+    real* dataUpdateMZ;
 
     real* massFlux;
 };
