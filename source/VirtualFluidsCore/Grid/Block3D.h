@@ -4,6 +4,7 @@
 #include <PointerDefinitions.h>
 #include <vector>
 #include <map>
+#include <string>
 
 class Block3DConnector;
 class LBMKernel;
