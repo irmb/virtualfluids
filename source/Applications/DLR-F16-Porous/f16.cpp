@@ -411,8 +411,6 @@ void run(string configname)
             OverlapBlockVisitor overlapVisitor(refineLevel, false);
             grid->accept(overlapVisitor);
 
-            migCoProcessor->writeBlocks(0);
-
             if (myid==0) UBLOG(logINFO, "Refinement - end");
          }
          else if (refineLevel>0 && !writeBlocks)
@@ -563,10 +561,10 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         //if (writeBlocks)
-         //{
-         //   migCoProcessor->writeBlocks(0);
-         //}
+         if (writeBlocks)
+         {
+            migCoProcessor->writeBlocks(0);
+         }
 
          {
             WriteBlocksCoProcessor ppblocks(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm);

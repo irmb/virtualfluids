@@ -1182,7 +1182,7 @@ string WbWriterVtkXmlBinary::writeOctsWithNodeData(const string& filename,vector
    int bytesCellTypes       = 1 /*type of oct   */ * nofCells * sizeof(unsigned char);
    int bytesScalarData      = 1 /*scalar        */ * nofNodes * sizeof(double); 
 
-   int offset = 0;
+   unsigned long long offset = 0;
    //VTK FILE
    out<<"<?xml version=\"2.0\"?>\n";
    out<<"<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\" >"<<"\n";
