@@ -63,7 +63,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 128;
+    uint nx = 256;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -177,7 +177,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,20);
 
-    //gridBuilder->addGrid( &cylinder, 1 );
+    gridBuilder->addGrid( &cylinder, 1 );
 
     gridBuilder->setNumberOfLayers(10,20);
 
@@ -373,7 +373,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     cupsAnalyzer.start();
 
-    for( uint iter = startIter + 1; iter <= 20000; iter++ )
+    for( uint iter = startIter + 1; iter <= 2000000; iter++ )
     {
         uint runUpTime = 10000;
 
@@ -405,7 +405,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( 
             //( iter >= 20000 && iter % 1 == 0 ) || 
-            ( iter % 1000 == 0 )
+            ( iter % 400 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
@@ -454,8 +454,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        uint restartIter = INVALID_INDEX;
-        //uint restartIter = 10000;
+        //uint restartIter = INVALID_INDEX;
+        uint restartIter = 360000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
