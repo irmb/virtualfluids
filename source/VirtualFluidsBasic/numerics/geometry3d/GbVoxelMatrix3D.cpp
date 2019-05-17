@@ -1094,8 +1094,8 @@ void GbVoxelMatrix3D::writeToVTKImageDataAppended(const std::string& fileName)
    fclose(file);
 
    file = fopen(fn.c_str(), "ab");
-   int size = (int)voxelMatrix.getDataVector().size()*sizeof(float);
-   fwrite(&size, sizeof(int), 1, file);
+   unsigned long long size = (unsigned long long)voxelMatrix.getDataVector().size()*sizeof(float);
+   fwrite(&size, sizeof(unsigned long long), 1, file);
    fwrite(voxelMatrix.getStartAdressOfSortedArray(0, 0, 0), sizeof(float), voxelMatrix.getDataVector().size(), file);
    fclose(file);
 

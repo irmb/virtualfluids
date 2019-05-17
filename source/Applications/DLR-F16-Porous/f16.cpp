@@ -475,6 +475,8 @@ void run(string configname)
          origin[1] = 0;
          origin[2] = 0;
 
+         double vmZtranslate = 0.0042 - 0.007587;
+
          SPtr<GbVoxelMatrix3D> voxelMatrix1(new GbVoxelMatrix3D(pmNX[0], pmNX[1], pmNX[2], 0, lthreshold, uthreshold));
          voxelMatrix1->readMatrixFromRawFile<unsigned short>(pathGeoTEvoxel, GbVoxelMatrix3D::BigEndian);
          voxelMatrix1->setVoxelMatrixDelta(voxelDeltaX[0], voxelDeltaX[1], voxelDeltaX[2]);
@@ -484,7 +486,7 @@ void run(string configname)
          voxelMatrix1->rotate90aroundZ();
          voxelMatrix1->rotate90aroundZ();
          voxelMatrix1->rotate90aroundX();
-         voxelMatrix1->translate(0.2813, 0, 0.0042);
+         voxelMatrix1->translate(0.2813, 0, vmZtranslate);
          double offset = ((g_maxX2-g_minX2)/2.0 - voxelMatrix1->getLengthX2())/2.0;
          voxelMatrix1->setVoxelMatrixMinX2(g_minX2+offset);
 
@@ -501,7 +503,7 @@ void run(string configname)
          voxelMatrix2->rotate90aroundZ();
          voxelMatrix2->rotate90aroundZ();
          voxelMatrix2->rotate90aroundX();
-         voxelMatrix2->translate(0.2813, 0, 0.0042);
+         voxelMatrix2->translate(0.2813, 0, vmZtranslate);
          voxelMatrix2->mirrorY();
          voxelMatrix2->setVoxelMatrixMinX2(voxelMatrix1->getX2Maximum());
 
