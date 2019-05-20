@@ -233,13 +233,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
     //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, false );
-    //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
-    //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
+    SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Symmetry>( dataBase, 'x' );
     //SPtr<BoundaryCondition> bcMX_2 = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
     //SPtr<BoundaryCondition> bcPX_2 = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
 
-    //bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > 1.0; } );
-    //bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > 1.0; } );
+    bcMX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x < -0.5*L && center.z > H - 0.5; } );
+    bcPX_2->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ return center.x >  0.5*L && center.z > H - 0.5; } );
 
     //////////////////////////////////////////////////////////////////////////
     
@@ -299,15 +299,15 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
-
-    //dataBase->boundaryConditions.push_back( bcMX_2 );
-    //dataBase->boundaryConditions.push_back( bcPX_2 );
     
     dataBase->boundaryConditions.push_back( bcMY );
     dataBase->boundaryConditions.push_back( bcPY );
 
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
+
+    dataBase->boundaryConditions.push_back( bcMX_2 );
+    dataBase->boundaryConditions.push_back( bcPX_2 );
 
     dataBase->boundaryConditions.push_back( burner );
 
@@ -454,8 +454,8 @@ int main( int argc, char* argv[])
 
     try
     {
-        //uint restartIter = INVALID_INDEX;
-        uint restartIter = 360000;
+        uint restartIter = INVALID_INDEX;
+        //uint restartIter = 420000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
