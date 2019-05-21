@@ -189,7 +189,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
     bcPZ->findBoundaryCells( meshAdapter, true, [&](Vec3 center){ return center.z >  0.5*H; } );
 
     //////////////////////////////////////////////////////////////////////////
-    if( mpiWorldSize > 1 )
+    if( mpiWorldSize == 1 )
     {
         dataBase->boundaryConditions.push_back( bcMX );
         dataBase->boundaryConditions.push_back( bcPX );
@@ -229,7 +229,7 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     Initializer::interpret(dataBase, [&] ( Vec3 cellCenter ) -> ConservedVariables
     {
-        return toConservedVariables( PrimitiveVariables( 1.0, 0.0, 0.0, 0.0, parameters.lambdaRef ), parameters.K );
+        return toConservedVariables( PrimitiveVariables( 1.0, 1.0, 0.0, 0.0, parameters.lambdaRef ), parameters.K );
     });
 
     dataBase->copyDataHostToDevice();
@@ -257,13 +257,13 @@ void performanceTest( std::string path, std::string simulationName, uint decompo
 
     cupsAnalyzer.start();
 
-    for( uint iter = 1; iter <= 100000; iter++ )
+    for( uint iter = 1; iter <= 10000; iter++ )
     {
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         cupsAnalyzer.run( iter );
 
-        if( iter % 100000 == 0 )
+        if( iter % 10000 == 0 )
         {
             dataBase->copyDataDeviceToHost();
 
@@ -299,7 +299,7 @@ int main( int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////
 
     bool strongScaling = false;
-    uint nx = 64;
+    uint nx = 256;
 
     if( argc > 1 ) path += argv[1]; path += "/";
     if( argc > 2 ) nx = atoi( argv[2] );
