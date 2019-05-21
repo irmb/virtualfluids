@@ -411,8 +411,6 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
-
-            cupsAnalyzer.start();
         }
 
         if( iter % 10000 == 0 )

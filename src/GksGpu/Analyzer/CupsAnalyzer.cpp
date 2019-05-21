@@ -32,11 +32,19 @@ void CupsAnalyzer::start()
 {
     this->counter = 0;
     this->timer.start();
+    this->timerRestart.start();
+}
+
+void CupsAnalyzer::restart()
+{
+    this->counter = 0;
+    this->timerRestart.start();
 }
 
 void CupsAnalyzer::run( uint iter )
 {
-    real currentRuntime = this->timer.getCurrentRuntimeInSeconds();
+    real currentRuntime             = this->timer.getCurrentRuntimeInSeconds();
+    real currentRuntimeSinceRestart = this->timerRestart.getCurrentRuntimeInSeconds();
 
     this->counter++;
 
@@ -44,9 +52,11 @@ void CupsAnalyzer::run( uint iter )
     {
         unsigned long long numberOfCellUpdates = this->numberOfCellUpdatesPerTimeStep * (unsigned long long)counter;
 
-        real CUPS = real(numberOfCellUpdates) / currentRuntime;
+        real CUPS = real(numberOfCellUpdates) / currentRuntimeSinceRestart;
 
         this->printCups( iter, currentRuntime, CUPS );
+
+        this->restart();
     }
 
     if( checkOutputPerTime(currentRuntime) )

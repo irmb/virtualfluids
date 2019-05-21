@@ -13,6 +13,7 @@ class VF_PUBLIC CupsAnalyzer
 {
 private:
     Timer timer;
+    Timer timerRestart;
 
     bool outputPerTime;
 
@@ -34,6 +35,8 @@ public:
                   bool outputPerIter = true, uint outputIter = 10000 );
 
     void start();
+
+    void restart();
 
     void run( uint iter );
 
