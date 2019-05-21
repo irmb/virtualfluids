@@ -25,6 +25,8 @@ private:
 
     unsigned long long numberOfCellUpdatesPerTimeStep;
 
+    uint counter;
+
 public:
 
     CupsAnalyzer( SPtr<DataBase> dataBase, 

@@ -63,7 +63,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    uint nx = 256;
+    uint nx = 128;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -365,7 +365,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
 
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
@@ -405,12 +405,14 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
         if( 
             //( iter >= 20000 && iter % 1 == 0 ) || 
-            ( iter % 400 == 0 )
+            ( iter % 10000 == 0 )
           )
         {
             dataBase->copyDataDeviceToHost();
 
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
+
+            cupsAnalyzer.start();
         }
 
         if( iter % 10000 == 0 )

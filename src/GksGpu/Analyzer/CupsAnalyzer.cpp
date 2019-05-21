@@ -17,7 +17,8 @@ CupsAnalyzer::CupsAnalyzer(SPtr<DataBase> dataBase,
       outputTime(outputTime),
       outputPerIter(outputPerIter),
       outputIter(outputIter),
-      outputPerTimeCounter(1)
+      outputPerTimeCounter(1),
+      counter(0)
 {
     this->numberOfCellUpdatesPerTimeStep = 0;
 
@@ -29,6 +30,7 @@ CupsAnalyzer::CupsAnalyzer(SPtr<DataBase> dataBase,
 
 void CupsAnalyzer::start()
 {
+    this->counter = 0;
     this->timer.start();
 }
 
@@ -36,9 +38,11 @@ void CupsAnalyzer::run( uint iter )
 {
     real currentRuntime = this->timer.getCurrentRuntimeInSeconds();
 
+    this->counter++;
+
     if( checkOutputPerTime(currentRuntime) || checkOutputPerIter(iter) )
     {
-        unsigned long long numberOfCellUpdates = this->numberOfCellUpdatesPerTimeStep * (unsigned long long)iter;
+        unsigned long long numberOfCellUpdates = this->numberOfCellUpdatesPerTimeStep * (unsigned long long)counter;
 
         real CUPS = real(numberOfCellUpdates) / currentRuntime;
 
