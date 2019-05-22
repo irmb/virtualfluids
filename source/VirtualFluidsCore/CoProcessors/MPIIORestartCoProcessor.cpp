@@ -1916,6 +1916,7 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetArray[n].x1, dataSetArray[n].x2, dataSetArray[n].x3, dataSetArray[n].level);
+      this->lbmKernel->setBlock(block);
       SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);
