@@ -5,9 +5,10 @@
 vtkDataSet* ReadDataSet(std::string fileName);
 
 //////////////////////////////////////////////////////////////////////////
-template<class TReader> vtkDataSet* ReadAnXMLFile(std::string fileName)
+template<class TReader> 
+vtkDataSet* ReadAnXMLFile(std::string fileName)
 {
-   vtkSmartPointer<TReader> reader = vtkSmartPointer<TReader>::New();
+   TReader* reader = TReader::New();
    reader->SetFileName(fileName.c_str());
    reader->Update();
    reader->GetOutput()->Register(reader);

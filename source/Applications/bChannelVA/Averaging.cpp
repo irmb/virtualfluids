@@ -1,5 +1,7 @@
 #include "Averaging.h"
 #include "UbLogger.h"
+#include "MemoryUtil.h"
+#include "UbSystem.h"
 
 #include "ReadDataSet.h"
 
@@ -22,12 +24,13 @@
 #include <vtkDoubleArray.h>
 #include <vtkXMLUnstructuredGridWriter.h>
 #include <vtkFileOutputWindow.h>
+#include <vtkXMLPUnstructuredGridReader.h>
 
 #include <omp.h>
 #include <mpi.h>
 
 using namespace std;
-void Averaging::createGeoMatrix(std::string dataNameG, double deltax, double geo_origin[3])
+void Averaging::createGeoMatrix(std::string dataNameG)
 {
    UBLOG(logINFO, "createGeoMatrix:start");
 
@@ -40,7 +43,11 @@ void Averaging::createGeoMatrix(std::string dataNameG, double deltax, double geo
 
    UBLOG(logINFO, "read data set from " << dataNameG << ": start");
    timer->StartTimer();
-   vtkSmartPointer<vtkDataSet> dataSetGeo(ReadDataSet(dataNameG.c_str()));
+
+   vtkXMLPUnstructuredGridReader* reader = vtkXMLPUnstructuredGridReader::New();
+   reader->SetFileName(dataNameG.c_str());
+   reader->Update();
+
    UBLOG(logINFO, "read data set from " + dataNameG + ": end");
    timer->StopTimer();
    UBLOG(logINFO, "read data set time: " << UbSystem::toString(timer->GetElapsedTime()) + " s");
@@ -50,28 +57,28 @@ void Averaging::createGeoMatrix(std::string dataNameG, double deltax, double geo
    UBLOG(logINFO, "Perform the solid nodes: start");
    level_interp_timer->StartTimer();
 
-   vtkSmartPointer<vtkThreshold> thrFilter = vtkSmartPointer<vtkThreshold>::New();
-   thrFilter->SetInputData(dataSetGeo);
+   vtkThreshold* thrFilter = vtkThreshold::New();
+   thrFilter->SetInputData(reader->GetOutput());
    thrFilter->SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, "Geometry");
    thrFilter->ThresholdBetween(1, 1);
    thrFilter->Update();
-   vtkSmartPointer<vtkUnstructuredGrid> ugrid = thrFilter->GetOutput();
+   vtkUnstructuredGrid* ugrid = thrFilter->GetOutput();
 
-   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-   vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+   vtkPoints* points = vtkPoints::New();
+   vtkCellArray* cells = vtkCellArray::New();
 
    int numberOfCells = ugrid->GetNumberOfCells();
 
    double x[3];
-   double xMin[3];
-   double xMax[3];
-   int ixMin[3];
-   int ixMax[3];
+   array<double, 3> xMin;
+   array<double, 3> xMax;
+   array<int, 3> ixMin;
+   array<int, 3> ixMax;
    vtkIdType idc = 0;
 
    for (int i = 0; i < numberOfCells; i++)
    {
-      vtkSmartPointer<vtkIdList> plist = vtkSmartPointer<vtkIdList>::New();
+      vtkIdList* plist = vtkIdList::New();
       ugrid->GetCellPoints(i, plist);
       vector <double> x1;
       vector <double> x2;
@@ -91,8 +98,8 @@ void Averaging::createGeoMatrix(std::string dataNameG, double deltax, double geo
       xMax[1] = *max_element(x2.begin(), x2.end());
       xMax[2] = *max_element(x3.begin(), x3.end());
 
-      getNodeIndexes(xMin, ixMin, geo_origin, deltax);
-      getNodeIndexes(xMax, ixMax, geo_origin, deltax);
+      getNodeIndexes(xMin, ixMin);
+      getNodeIndexes(xMax, ixMax);
 
       for (int k = ixMin[2]; k <= ixMax[2]; k++)
       {
@@ -100,14 +107,21 @@ void Averaging::createGeoMatrix(std::string dataNameG, double deltax, double geo
          {
             for (int i = ixMin[0]; i <= ixMax[0]; i++)
             {
-               if (i < dimensions[0] && j < dimensions[1] && k < dimensions[2])
+               if (i >= 0 && i < dimensions[0] && j >= 0 && j < dimensions[1] && k >= 0 && k < dimensions[2])
                {
                   geoMatrix(i, j, k) = 0;
                }
             }
          }
       }
+      plist->Delete();
    }
+
+   reader->Delete();
+   thrFilter->Delete();
+   points->Delete();
+   cells->Delete();
+
    UBLOG(logINFO, "Perform the solid nodes: end");
    level_interp_timer->StopTimer();
    UBLOG(logINFO, "interpolation time: " << UbSystem::toString(level_interp_timer->GetElapsedTime()) << " s");
@@ -117,7 +131,7 @@ void Averaging::createGeoMatrix(std::string dataNameG, double deltax, double geo
    UBLOG(logINFO, "total time: " << UbSystem::toString(timer_total->GetElapsedTime()) << " s");
 }
 //////////////////////////////////////////////////////////////////////////
-void Averaging::writeGeoMatrixToImageFile(std::string output, int geo_extent[6], double geo_origin[3], double geo_spacing[3])
+void Averaging::writeGeoMatrixToImageFile(std::string output)
 {
    vtkSmartPointer<vtkTimerLog> timer_write = vtkSmartPointer<vtkTimerLog>::New();
 
@@ -126,13 +140,13 @@ void Averaging::writeGeoMatrixToImageFile(std::string output, int geo_extent[6],
    UBLOG(logINFO, "write data set to " << vtkfilename << ": start");
    timer_write->StartTimer();
 
-   vtkSmartPointer<vtkImageData> image = vtkImageData::New();
+   vtkImageData* image = vtkImageData::New();
 
-   image->SetExtent(geo_extent);
-   image->SetOrigin(geo_origin);
-   image->SetSpacing(geo_spacing);
+   image->SetExtent(&geo_extent[0]);
+   image->SetOrigin(&geo_origin[0]);
+   image->SetSpacing(&geo_spacing[0]);
 
-   vtkSmartPointer<vtkIntArray> geoArray = vtkIntArray::New();
+   vtkIntArray* geoArray = vtkIntArray::New();
    geoArray->SetNumberOfComponents(1);
    geoArray->SetName("geo");
 
@@ -141,7 +155,7 @@ void Averaging::writeGeoMatrixToImageFile(std::string output, int geo_extent[6],
    geoArray->SetArray(geoMatrix.getStartAdressOfSortedArray(0, 0, 0), size, 1);
    image->GetPointData()->AddArray(geoArray);
 
-   vtkSmartPointer<vtkXMLImageDataWriter> writer = vtkXMLImageDataWriter::New();
+   vtkXMLImageDataWriter* writer = vtkXMLImageDataWriter::New();
    writer->SetInputData(image);
    writer->SetFileName(vtkfilename.c_str());
    //writer->SetDataModeToAscii();
@@ -149,23 +163,23 @@ void Averaging::writeGeoMatrixToImageFile(std::string output, int geo_extent[6],
    writer->SetCompressorTypeToZLib();
    writer->Update();
 
+   image->Delete();
+   geoArray->Delete();
+   writer->Delete();
+
    UBLOG(logINFO, "write data set: end");
    timer_write->StopTimer();
    UBLOG(logINFO, "write data set time: " << UbSystem::toString(timer_write->GetElapsedTime()) << " s");
 }
 //////////////////////////////////////////////////////////////////////////
-void Averaging::getNodeIndexes(double x[3], int ix[3], double origin[3], double deltax)
+void Averaging::getNodeIndexes(std::array<double, 3> x, std::array<int, 3>& ix)
 {
-   //ix[0] = cint((x[0]-origin[0])/deltax);
-   //ix[1] = cint((x[1]-origin[1])/deltax);
-   //ix[2] = cint((x[2]-origin[2])/deltax);
-
-   ix[0] = (int)round((x[0] - origin[0]) / deltax);
-   ix[1] = (int)round((x[1] - origin[1]) / deltax);
-   ix[2] = (int)round((x[2] - origin[2]) / deltax);
+   ix[0] = (int)round((x[0] - geo_origin[0]) / deltax);
+   ix[1] = (int)round((x[1] - geo_origin[1]) / deltax);
+   ix[2] = (int)round((x[2] - geo_origin[2]) / deltax);
 }
 //////////////////////////////////////////////////////////////////////////
-void Averaging::createMQMatrix(std::string dataNameMQ, double deltax, double geo_origin[3])
+void Averaging::createMQMatrix(std::string dataNameMQ)
 {
    UBLOG(logINFO, "createMQMatrix:start");
 
@@ -176,7 +190,11 @@ void Averaging::createMQMatrix(std::string dataNameMQ, double deltax, double geo
 
    UBLOG(logINFO, "read data set from " + dataNameMQ + ": start");
    timer->StartTimer();
-   vtkSmartPointer<vtkDataSet> dataSetMQ(ReadDataSet(dataNameMQ.c_str()));
+
+   vtkXMLPUnstructuredGridReader* reader = vtkXMLPUnstructuredGridReader::New();
+   reader->SetFileName(dataNameMQ.c_str());
+   reader->Update();
+
    UBLOG(logINFO, "read data set from " + dataNameMQ + ": end");
    timer->StopTimer();
    UBLOG(logINFO, "read data set time: " + UbSystem::toString(timer->GetElapsedTime()) + " s");
@@ -189,28 +207,28 @@ void Averaging::createMQMatrix(std::string dataNameMQ, double deltax, double geo
    vzMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
    prMatrix.resize(dimensions[0], dimensions[1], dimensions[2], 0);
 
-   vtkSmartPointer<vtkUnstructuredGrid> ugrid = vtkUnstructuredGrid::SafeDownCast(dataSetMQ);
+   vtkUnstructuredGrid* ugrid = reader->GetOutput(); 
 
-   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-   vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+   vtkPoints* points = vtkPoints::New();
+   vtkCellArray* cells = vtkCellArray::New();
 
    int numberOfCells = ugrid->GetNumberOfCells();
 
-   vtkSmartPointer<vtkDataArray> vxArray = ugrid->GetPointData()->GetArray("Vx");
-   vtkSmartPointer<vtkDataArray> vyArray = ugrid->GetPointData()->GetArray("Vy");
-   vtkSmartPointer<vtkDataArray> vzArray = ugrid->GetPointData()->GetArray("Vz");
-   vtkSmartPointer<vtkDataArray> prArray = ugrid->GetPointData()->GetArray("Rho");
+   vtkDataArray* vxArray = ugrid->GetPointData()->GetArray("Vx");
+   vtkDataArray* vyArray = ugrid->GetPointData()->GetArray("Vy");
+   vtkDataArray* vzArray = ugrid->GetPointData()->GetArray("Vz");
+   vtkDataArray* prArray = ugrid->GetPointData()->GetArray("Rho");
 
    double x[3];
-   double xMin[3];
-   double xMax[3];
-   int ixMin[3];
-   int ixMax[3];
+   array<double, 3> xMin;
+   array<double, 3> xMax;
+   array<int, 3> ixMin;
+   array<int, 3> ixMax;
    vtkIdType idc = 0;
 
    for (int i = 0; i < numberOfCells; i++)
    {
-      vtkSmartPointer<vtkIdList> plist = vtkSmartPointer<vtkIdList>::New();
+      vtkIdList* plist = vtkIdList::New();
       ugrid->GetCellPoints(i, plist);
       vector <double> x1;
       vector <double> x2;
@@ -230,8 +248,8 @@ void Averaging::createMQMatrix(std::string dataNameMQ, double deltax, double geo
       xMax[1] = *max_element(x2.begin(), x2.end());
       xMax[2] = *max_element(x3.begin(), x3.end());
 
-      getNodeIndexes(xMin, ixMin, geo_origin, deltax);
-      getNodeIndexes(xMax, ixMax, geo_origin, deltax);
+      getNodeIndexes(xMin, ixMin);
+      getNodeIndexes(xMax, ixMax);
       int c = 0;
       for (int k = ixMin[2]; k <= ixMax[2]; k++)
       {
@@ -253,14 +271,19 @@ void Averaging::createMQMatrix(std::string dataNameMQ, double deltax, double geo
             }
          }
       }
+      plist->Delete();
    }
+
+   reader->Delete();
+   points->Delete();
+   cells->Delete();
 
    UBLOG(logINFO, "createMQMatrix:end");
    timer_total->StopTimer();
    UBLOG(logINFO, "total time: " + UbSystem::toString(timer_total->GetElapsedTime()) + " s");
 }
 //////////////////////////////////////////////////////////////////////////
-void Averaging::writeMQMatrixToImageFile(std::string output, int geo_extent[6], double geo_origin[3], double geo_spacing[3])
+void Averaging::writeMatrixToImageFile(std::string output, std::array<CbArray3D<double>, 4> matrix)
 {
    vtkSmartPointer<vtkTimerLog> timer_write = vtkSmartPointer<vtkTimerLog>::New();
 
@@ -271,9 +294,9 @@ void Averaging::writeMQMatrixToImageFile(std::string output, int geo_extent[6], 
 
    vtkImageData* image = vtkImageData::New();
 
-   image->SetExtent(geo_extent);
-   image->SetOrigin(geo_origin);
-   image->SetSpacing(geo_spacing);
+   image->SetExtent(&geo_extent[0]);
+   image->SetOrigin(&geo_origin[0]);
+   image->SetSpacing(&geo_spacing[0]);
 
    vtkDoubleArray* vxArray = vtkDoubleArray::New();
    vxArray->SetNumberOfComponents(1);
@@ -293,10 +316,10 @@ void Averaging::writeMQMatrixToImageFile(std::string output, int geo_extent[6], 
 
    int size = dimensions[0] * dimensions[1] * dimensions[2];
 
-   vxArray->SetArray(vxMatrix.getStartAdressOfSortedArray(0, 0, 0), size, 1);
-   vyArray->SetArray(vyMatrix.getStartAdressOfSortedArray(0, 0, 0), size, 1);
-   vzArray->SetArray(vzMatrix.getStartAdressOfSortedArray(0, 0, 0), size, 1);
-   prArray->SetArray(prMatrix.getStartAdressOfSortedArray(0, 0, 0), size, 1);
+   vxArray->SetArray(matrix[0].getStartAdressOfSortedArray(0, 0, 0), size, 1);
+   vyArray->SetArray(matrix[1].getStartAdressOfSortedArray(0, 0, 0), size, 1);
+   vzArray->SetArray(matrix[2].getStartAdressOfSortedArray(0, 0, 0), size, 1);
+   prArray->SetArray(matrix[3].getStartAdressOfSortedArray(0, 0, 0), size, 1);
 
    image->GetPointData()->AddArray(vxArray);
    image->GetPointData()->AddArray(vyArray);
@@ -310,28 +333,43 @@ void Averaging::writeMQMatrixToImageFile(std::string output, int geo_extent[6], 
    writer->SetDataModeToAppended();
    writer->SetCompressorTypeToZLib();
    writer->Update();
-
-   writer->Delete();
+   
    image->Delete();
    vxArray->Delete();
    vyArray->Delete();
    vzArray->Delete();
+   writer->Delete();
 
    UBLOG(logINFO, "write data set: end");
    timer_write->StopTimer();
    UBLOG(logINFO, "write data set time: " + UbSystem::toString(timer_write->GetElapsedTime()) + " s");
 }
+void Averaging::writeMqMatrixToImageFile(std::string output)
+{
+   array < CbArray3D<double>, 4 > matrix = { vxMatrix, vyMatrix, vzMatrix, prMatrix };
+   writeMatrixToImageFile(output, matrix);
+}
+void Averaging::writeVaMatrixToImageFile(std::string output)
+{
+   array < CbArray3D<double>, 4 > matrix = { vaVxMatrix, vaVyMatrix, vaVzMatrix, vaPrMatrix };
+   writeMatrixToImageFile(output, matrix);
+}
+void Averaging::writeVaSumMatrixToImageFile(std::string output)
+{
+   array < CbArray3D<double>, 4 > matrix = { sumVaVxMatrix, sumVaVyMatrix, sumVaVzMatrix, sumVaPrMatrix };
+   writeMatrixToImageFile(output, matrix);
+}
 //////////////////////////////////////////////////////////////////////////
-void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
+void Averaging::volumeAveragingWithMPI(double l_real)
 {
    //////////////////////////////////////////////////////////////////////////
    //DEBUG
    //////////////////////////////////////////////////////////////////////////
-   vaVxMatrix = vxMatrix;
-   vaVyMatrix = vyMatrix;
-   vaVzMatrix = vzMatrix;
-   vaPrMatrix = prMatrix;
-   return;
+   //vaVxMatrix = vxMatrix;
+   //vaVyMatrix = vyMatrix;
+   //vaVzMatrix = vzMatrix;
+   //vaPrMatrix = prMatrix;
+   //return;
    //////////////////////////////////////////////////////////////////////////
 
    vtkSmartPointer<vtkTimerLog> timer_averaging = vtkSmartPointer<vtkTimerLog>::New();
@@ -384,12 +422,12 @@ void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
          for (int x2 = 0; x2 < dimensions[1]; x2++)
             for (int x1 = startX1; x1 < stopX1; x1++)
             {
-               //int ID = omp_get_thread_num();
-               //if (i == 0 && ID == 0)
-               //{
-               //   timer_inloop->StartTimer();
-               //   print("point id = " + UbSystem::toString(i));
-               //}
+               int ID = omp_get_thread_num();
+               if (i == 0 && ID == 0)
+               {
+                  timer_inloop->StartTimer();
+                  UBLOG(logINFO, "point id = " + UbSystem::toString(i));
+               }
                double vx = 0.0;
                double vy = 0.0;
                double vz = 0.0;
@@ -431,62 +469,64 @@ void Averaging::volumeAveragingWithMPI(double l_real, double deltax)
                vaVzMatrix(x1, x2, x3) = vz;
                vaPrMatrix(x1, x2, x3) = pr;
 
-               //if (i%p == 0 && i != 0 && ID == 0)
-               //{
-               //   timer_inloop->StopTimer();
-               //   print("point id = " + UbSystem::toString(i));
-               //   print("time per " + UbSystem::toString(p) + " points: " + UbSystem::toString(timer_inloop->GetElapsedTime()) + " s");
-               //   print("actual memory usage: " + UbSystem::toString(MemoryUtil::getPhysMemUsedByMe() / 1e9) + " GByte");
-               //   timer_inloop->StartTimer();
-               //   print("thread id: "+UbSystem::toString(ID));
-               //   print("Number of treads: "+UbSystem::toString(omp_get_num_threads()));
-               //}
-               //i++;
+               if (i%p == 0 && i != 0 && ID == 0)
+               {
+                  timer_inloop->StopTimer();
+                  UBLOG(logINFO, "point id = " + UbSystem::toString(i));
+                  UBLOG(logINFO, "time per " + UbSystem::toString(p) + " points: " + UbSystem::toString(timer_inloop->GetElapsedTime()) + " s");
+                  UBLOG(logINFO, "actual memory usage: " << UbSystem::toString(Utilities::getPhysMemUsedByMe() / 1e9) << " GByte");
+                  timer_inloop->StartTimer();
+                  UBLOG(logINFO, "thread id: "+UbSystem::toString(ID));
+                  UBLOG(logINFO, "Number of treads: "+UbSystem::toString(omp_get_num_threads()));
+               }
+               i++;
             }
 
    }
 
 
-   //if (PID == 0)
-   //{
-   //   vector<double> receiveBuffer;
-   //   for (int i = 1; i < numprocs; i++)
-   //   {
-   //      int count, lstartX1, lstopX1;
-   //      MPI_Status status;
-   //      MPI_Recv(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-   //      receiveBuffer.resize(count);
-   //      MPI_Recv(&receiveBuffer[0], count, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
-   //      MPI_Recv(&lstartX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-   //      MPI_Recv(&lstopX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
-   //      int c = 0;
-   //      for (int x3 = 0; x3 < dimensions[2]; x3++)
-   //         for (int x2 = 0; x2 < dimensions[1]; x2++)
-   //            for (int x1 = lstartX1; x1 < lstopX1; x1++)
-   //            {
-   //               vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-   //               //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-   //               //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-   //               //vaVxMatrix(x1, x2, x3) = receiveBuffer[c];
-   //               c++;
-   //            }
-   //   }
-   //}
-   //else
-   //{
-   //   vector<double> sendBuffer;
-   //   for (int x3 = 0; x3 < dimensions[2]; x3++)
-   //      for (int x2 = 0; x2 < dimensions[1]; x2++)
-   //         for (int x1 = startX1; x1 < stopX1; x1++)
-   //         {
-   //            sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
-   //         }
-   //   int count = (int)sendBuffer.size();
-   //   MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-   //   MPI_Send(&sendBuffer[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
-   //   MPI_Send(&startX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-   //   MPI_Send(&stopX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-   //}
+   if (PID == 0)
+   {
+      vector<double> receiveBuffer;
+      for (int i = 1; i < numprocs; i++)
+      {
+         int count, lstartX1, lstopX1;
+         MPI_Status status;
+         MPI_Recv(&count, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         receiveBuffer.resize(count);
+         MPI_Recv(&receiveBuffer[0], count, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+         MPI_Recv(&lstartX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         MPI_Recv(&lstopX1, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+         int c = 0;
+         for (int x3 = 0; x3 < dimensions[2]; x3++)
+            for (int x2 = 0; x2 < dimensions[1]; x2++)
+               for (int x1 = lstartX1; x1 < lstopX1; x1++)
+               {
+                  vaVxMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaVyMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaVzMatrix(x1, x2, x3) = receiveBuffer[c++];
+                  vaPrMatrix(x1, x2, x3) = receiveBuffer[c++];
+               }
+      }
+   }
+   else
+   {
+      vector<double> sendBuffer;
+      for (int x3 = 0; x3 < dimensions[2]; x3++)
+         for (int x2 = 0; x2 < dimensions[1]; x2++)
+            for (int x1 = startX1; x1 < stopX1; x1++)
+            {
+               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+            }
+      int count = (int)sendBuffer.size();
+      MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&sendBuffer[0], count, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&startX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+      MPI_Send(&stopX1, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+   }
 
    timer_averaging->StopTimer();
    UBLOG(logINFO, "volume averaging: end");
@@ -501,12 +541,12 @@ void Averaging::readGeoMatrix(string dataNameG)
 
    UBLOG(logINFO, "read data set from " + dataNameG + ": start");
    timer->StartTimer();
-   vtkSmartPointer<vtkDataSet> dataSetGeo(ReadDataSet(dataNameG.c_str()));
+   vtkDataSet* dataSetGeo(ReadDataSet(dataNameG.c_str()));
    UBLOG(logINFO, "read data set from " + dataNameG + ": end");
    timer->StopTimer();
    UBLOG(logINFO, "read data set time: " + UbSystem::toString(timer->GetElapsedTime()) + " s");
 
-   vtkSmartPointer<vtkImageData> image = vtkImageData::SafeDownCast(dataSetGeo);
+   vtkImageData* image = vtkImageData::SafeDownCast(dataSetGeo);
 
    int geo_extent[6];
    double geo_origin[3];
@@ -524,7 +564,7 @@ void Averaging::readGeoMatrix(string dataNameG)
 
    geoMatrix.resize(geo_nx1, geo_nx2, geo_nx3, 0);
 
-   vtkSmartPointer<vtkDataArray> geoArray = dataSetGeo->GetPointData()->GetArray("geo");
+   vtkDataArray* geoArray = dataSetGeo->GetPointData()->GetArray("geo");
 
    int numberOfPoints = dataSetGeo->GetNumberOfPoints();
    int* gm = geoMatrix.getStartAdressOfSortedArray(0, 0, 0);
@@ -532,6 +572,10 @@ void Averaging::readGeoMatrix(string dataNameG)
    {
       gm[i] = (int)geoArray->GetTuple1(i);
    }
+
+   dataSetGeo->Delete();
+   image->Delete();
+   geoArray->Delete();
 
    UBLOG(logINFO, "readGeoMatrix:end");
 }
@@ -814,7 +858,7 @@ void Averaging::meanOfFluctuations(int numberOfTimeSteps)
       MeanFlucPr[i] = SumFlucPr[i] / numberOfTimeSteps;
    }
 }
-void Averaging::SumOfStresses()
+void Averaging::sumOfStresses()
 {
    vector<double>& XXStress = StressXX.getDataVector();
    vector<double>& XYStress = StressXY.getDataVector();
@@ -859,7 +903,7 @@ void Averaging::SumOfStresses()
 
    }
 }
-void Averaging::MeanOfStresses(int numberOfTimeSteps)
+void Averaging::meanOfStresses(int numberOfTimeSteps)
 {
    vector<double>& XXSum = SumStressXX.getDataVector();
    vector<double>& XYSum = SumStressXY.getDataVector();
@@ -903,9 +947,9 @@ void Averaging::MeanOfStresses(int numberOfTimeSteps)
      
    }
 }
-void Averaging::PlanarAveragingMQ(std::array<int, 3> dimensions)
+void Averaging::planarAveragingMQ(std::array<int, 3> dimensions)
 {
-   double numberof_XY_points = dimensions[0] * dimensions[1];
+   double numberof_XY_points = (double)dimensions[0] * (double)dimensions[1];
 
    for (int z = 0; z < dimensions[2]; z++)
    {
@@ -952,7 +996,7 @@ void Averaging::PlanarAveragingMQ(std::array<int, 3> dimensions)
 
    }
 }
-   void Averaging::WriteToCSV(std::string path, double origin, double deltax)
+   void Averaging::writeToCSV(std::string path, double origin, double deltax)
    {
       std::ofstream ostr;
       std::string fname = path + "/av/" + "av" + ".csv";

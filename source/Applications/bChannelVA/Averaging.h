@@ -1,4 +1,5 @@
 #include <array>
+#include <fstream>
 #include "CbArray3D.h"
 #include "UbSystem.h"
 #include <vtkTimerLog.h>
@@ -8,11 +9,14 @@
 class Averaging
 {
 public:
-   void createGeoMatrix(std::string dataNameG, double deltax, double geo_origin[3]);
-   void writeGeoMatrixToImageFile(std::string output, int geo_extent[6], double geo_origin[3], double geo_spacing[3]);
-   void createMQMatrix(std::string dataNameMQ, double deltax, double geo_origin[3]);
-   void writeMQMatrixToImageFile(std::string output, int geo_extent[6], double geo_origin[3], double geo_spacing[3]);
-   void volumeAveragingWithMPI(double l_real, double l);
+   void createGeoMatrix(std::string dataNameG);
+   void writeGeoMatrixToImageFile(std::string output);
+   void createMQMatrix(std::string dataNameMQ);
+   void writeMatrixToImageFile(std::string output, std::array<CbArray3D<double>, 4> matrix);
+   void writeMqMatrixToImageFile(std::string output);
+   void writeVaMatrixToImageFile(std::string output);
+   void writeVaSumMatrixToImageFile(std::string output);
+   void volumeAveragingWithMPI(double l_real);
    void readGeoMatrix(std::string dataNameG);
    void writeGeoMatrixToBinaryFiles(std::string fname);
    void readGeoMatrixFromBinaryFiles(std::string fname);
@@ -34,16 +38,20 @@ public:
    void writeFluctuationsToBinaryFiles(std::string fname, int timeStep);
    void writeStressesToBinaryFiles(std::string fname, int timeStep);
    void meanOfFluctuations(int numberOfTimeSteps);
-   void SumOfStresses();
-   void MeanOfStresses(int numberOfTimeSteps);
-   void PlanarAveragingMQ(std::array<int, 3> dimensions);
-   void WriteToCSV(std::string path, double origin, double deltax);
+   void sumOfStresses();
+   void meanOfStresses(int numberOfTimeSteps);
+   void planarAveragingMQ(std::array<int, 3> dimensions);
+   void writeToCSV(std::string path, double origin, double deltax);
    void readVolumeAveragingValuesFromBinaryFiles(std::string fname, int timeStep);
 
    std::array<int, 3> getDimensions() const { return dimensions; }
    void setDimensions(std::array<int, 3> val) { dimensions = val; }
+   void setExtent(std::array<int, 6> val) { geo_extent = val; }
+   void setOrigin(std::array<double, 3> val) { geo_origin = val; }
+   void setSpacing(std::array<double, 3> val) { geo_spacing = val; }
+   void setDeltaX(double val) { deltax = val; }
 protected:
-   void getNodeIndexes(double x[3], int ix[3], double origin[3], double deltax);
+   void getNodeIndexes(std::array<double, 3> x, std::array<int, 3>& ix);
    double G(double x, double l);
    
    template <class T>
@@ -51,7 +59,12 @@ protected:
    template <class T>
    void readMatrixFromBinaryFiles(std::string fname, std::vector<T> &matrix);
 private:
-   std::array<int,3> dimensions;
+   std::array<int, 3> dimensions;
+   std::array<int, 6> geo_extent;
+   std::array<double, 3> geo_origin;
+   std::array<double, 3> geo_spacing;
+   double deltax;
+ 
    CbArray3D<int> geoMatrix;
 
    CbArray3D<double> vxMatrix;
@@ -145,19 +158,19 @@ template<class T> void Averaging::writeMatrixToBinaryFiles(std::vector<T> &matri
    UBLOG(logINFO,"write matrix to " + fname + ": start");
    timer_write->StartTimer();
 
-
-   FILE *file;
-   file = fopen(fname.c_str(), "wb");
-
-   if (file == NULL)
+   std::ofstream ostr;
+   ostr.open(fname.c_str(), std::fstream::out | std::fstream::binary);
+   
+   if (!ostr)
    {
-      UBLOG(logINFO,"can not open " + fname);
-      return;
+      ostr.clear();
+      std::string path = UbSystem::getPathFromString(fname);
+      if (path.size() > 0) { UbSystem::makeDirectory(path); ostr.open(fname.c_str(), std::ios_base::out | std::fstream::binary); }
+      if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
    }
 
-   fwrite(&matrix[0], sizeof(T), matrix.size(), file);
-
-   fclose(file);
+   ostr.write((char*)&matrix[0], sizeof(T)*matrix.size());
+   ostr.close();
 
    UBLOG(logINFO,"write matrix: end");
    timer_write->StopTimer();
