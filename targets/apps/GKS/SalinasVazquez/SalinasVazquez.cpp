@@ -98,7 +98,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
     real cs  = sqrt( ( ( K + 4.0 ) / ( K + 2.0 ) ) / ( 2.0 * lambda ) );
     real U   = sqrt( Ra ) * mu / ( rho * L );
 
-    real CFL = 0.125;
+    real CFL = 0.25;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -169,9 +169,10 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     //////////////////////////////////////////////////////////////////////////
 
-    real refL[4] = { 0.30, 0.45, 0.49, 0.4975 };
+    //real refL[4] = { 0.30, 0.45, 0.49, 0.4975  };
+    real refL[4] = { 0.30, 0.45, 0.475, 0.495  };
 
-    gridBuilder->setNumberOfLayers(0,6);
+    gridBuilder->setNumberOfLayers(6,6);
 
     Conglomerate coarseRefLevel;
     
@@ -183,7 +184,6 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     coarseRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
                                      100.0,  100.0, -refL[0] ) );
-
     coarseRefLevel.add( new Cuboid (-100.0, -100.0,  refL[0], 
                                      100.0,  100.0,  100.0   ) );
 
@@ -191,19 +191,56 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     //////////////////////////////////////////////////////////////////////////
 
-    uint numberOfRefinements = 4;
+    Conglomerate firstRefLevel;
 
-    for( uint ref = 1; ref < numberOfRefinements; ref++ )
-    {
-        Cuboid* refRegion;
+    if( rank % 2 == 0 ) firstRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                       -refL[1],  100.0,  100.0 ) );
+    else                firstRefLevel.add( new Cuboid ( refL[1], -100.0, -100.0, 
+                                                        100.0,    100.0,  100.0 ) );
 
-        if( rank % 2 == 0 ) refRegion = new Cuboid (-100.0,     -100.0, -100.0, 
-                                                    -refL[ref],  100.0,  100.0 );
-        else                refRegion = new Cuboid ( refL[ref], -100.0, -100.0, 
-                                                     100.0,      100.0,  100.0 );
+    firstRefLevel.add( new Cuboid (-100.0, -100.0, -100.0,   
+                                    100.0,  100.0, -refL[1] ) );
+    firstRefLevel.add( new Cuboid (-100.0, -100.0,  refL[1], 
+                                    100.0,  100.0,  100.0   ) );
 
-        gridBuilder->addGrid( refRegion, ref + 1);
-    }
+    gridBuilder->addGrid( &firstRefLevel, 2);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    Conglomerate secondRefLevel;
+
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0, 
+                                                        -refL[2],  100.0,  100.0 ) );
+    else                secondRefLevel.add( new Cuboid ( refL[2], -100.0, -100.0, 
+                                                         100.0,    100.0,  100.0 ) );
+
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0, -100.0,   
+                                                        -refL[0],  100.0, -refL[2] ) );
+    else                secondRefLevel.add( new Cuboid ( refL[0], -100.0, -100.0,   
+                                                         100.0,    100.0, -refL[2] ) );
+
+    if( rank % 2 == 0 ) secondRefLevel.add( new Cuboid (-100.0,   -100.0,  refL[2], 
+                                                        -refL[0],  100.0,  100.0   ) );
+    else                secondRefLevel.add( new Cuboid ( refL[0], -100.0,  refL[2], 
+                                                         100.0,    100.0,  100.0   ) );
+
+    gridBuilder->addGrid( &secondRefLevel, 3);
+
+    //////////////////////////////////////////////////////////////////////////
+
+    //uint numberOfRefinements = 3;
+
+    //for( uint ref = 2; ref < numberOfRefinements; ref++ )
+    //{
+    //    Cuboid* refRegion;
+
+    //    if( rank % 2 == 0 ) refRegion = new Cuboid (-100.0,     -100.0, -100.0, 
+    //                                                -refL[ref],  100.0,  100.0 );
+    //    else                refRegion = new Cuboid ( refL[ref], -100.0, -100.0, 
+    //                                                 100.0,      100.0,  100.0 );
+
+    //    gridBuilder->addGrid( refRegion, ref + 1);
+    //}
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -369,7 +406,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase );
 
-    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 800000 );
+    auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 500000 );
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 200 );
 
     //////////////////////////////////////////////////////////////////////////
@@ -401,7 +438,7 @@ void simulation( std::string path, std::string simulationName, uint restartIter 
 
         turbulenceAnalyzer->run( iter, parameters );
 
-        if( iter > 800000 && iter % 100000 == 0 )
+        if( iter > 500000 && iter % 100000 == 0 )
         {
             turbulenceAnalyzer->download();
 

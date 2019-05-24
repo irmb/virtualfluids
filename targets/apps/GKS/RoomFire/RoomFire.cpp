@@ -42,6 +42,7 @@
 #include "GksGpu/BoundaryConditions/Pressure.h"
 #include "GksGpu/BoundaryConditions/AdiabaticWall.h"
 #include "GksGpu/BoundaryConditions/HeatFlux.h"
+#include "GksGpu/BoundaryConditions/CreepingMassFlux.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -65,9 +66,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real H = 3.0;
     real W = 0.125;
 
-    real dx = H / real(nx);
+    real LBurner = 1.0;
 
-    real Ra = 1.0e9;
+    real dx = H / real(nx);
 
     real Pr  = 0.71;
     real K   = 5.0;
@@ -75,16 +76,13 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real g   = 9.81;
     real rho = 1.2;
 
-    //PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, Ba / ( 2.0 * g * H ) );
-
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
     setLambdaFromT( prim, 3.0 );
     
-    //real mu = sqrt( Pr * eps * g * H * H * H / Ra ) * rho;
     real mu = 1.5e-4;
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
-    real U   = sqrt( Ra ) * mu / ( rho * L );
+    real U   = 0.0125;
 
     real CFL = 0.125;
 
@@ -93,6 +91,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
+
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rho * LBurner * LBurner * 800000.0 / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -116,6 +116,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //parameters.viscosityModel = ViscosityModel::sutherlandsLaw;
     parameters.viscosityModel = ViscosityModel::constant;
 
+    parameters.enableReaction = true;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     auto gridFactory = GridFactory::make();
@@ -126,7 +128,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = true;
+    bool threeDimensional = false;
 
     if( threeDimensional )
         gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
@@ -146,10 +148,10 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 #endif
 
     //gridBuilder->addGeometry(stl);
-
-    Cuboid box ( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 );
-
-    Cuboid beam( -0.15, -10.0, 2.6, 0.16, 10.0, 10.0 );
+    
+    Cuboid box( -0.5 * LBurner, -0.5 * LBurner, -0.5 * LBurner, 
+                 0.5 * LBurner,  0.5 * LBurner,  0.5 * LBurner );
+    Cuboid beam( -0.15, -10.0, 2.6, 0.15, 10.0, 10.0 );
 
     Conglomerate solid;
 
@@ -160,8 +162,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Cuboid boxRef ( -0.5, -0.5, -0.5, 0.5, 0.5, 0.5 );
-    Cuboid beamRef( -0.15, -10.0, 2.6, 0.16, 10.0, 10.0 );
+    Cuboid boxRef ( -0.5 * LBurner, -0.5 * LBurner, -0.5 * LBurner, 
+                     0.5 * LBurner,  0.5 * LBurner,  0.5 * LBurner );
+    Cuboid beamRef( -0.15, -10.0, 2.6, 0.15, 10.0, 10.0 );
 
     boxRef.scale(0.02);
     beamRef.scale(0.02);
@@ -229,7 +232,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         bcPY = std::make_shared<AdiabaticWall>(dataBase, Vec3(0.0, 0.0, 0.0), false);
 
         bcMY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y < -0.5*L; });
-        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y > 0.5*L; });
+        bcPY->findBoundaryCells(meshAdapter, false, [&](Vec3 center) { return center.y >  0.5*L; });
     }
     else
     {
@@ -253,14 +256,15 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     //////////////////////////////////////////////////////////////////////////
 
     //SPtr<BoundaryCondition> bcBurner = std::make_shared<IsothermalWall>( dataBase, Vec3(0.0, 0.0, 0.0), 0.5*prim.lambda,  0.0, true );
-    SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 100.0 );
+    //SPtr<BoundaryCondition> bcBurner = std::make_shared<HeatFlux>( dataBase, 100.0 );
+    SPtr<BoundaryCondition> bcBurner = std::make_shared<CreepingMassFlux>( dataBase, rho, U, prim.lambda );
 
     bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
         if( threeDimensional )
-            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 - dx && std::sqrt(center.y*center.y) < 0.5;
+            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * LBurner;
         else
-            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 - dx && std::sqrt(center.y*center.y) < 0.5 * dx;
+            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -274,6 +278,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
 
+    dataBase->boundaryConditions.push_back( bcBurner );
+
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
     
@@ -282,8 +288,6 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     dataBase->boundaryConditions.push_back( bcMZ );
     dataBase->boundaryConditions.push_back( bcPZ );
-
-    dataBase->boundaryConditions.push_back( bcBurner );
 
     dataBase->boundaryConditions.push_back( bcSolid );
 
@@ -302,11 +306,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     {
         Initializer::interpret(dataBase, [&](Vec3 cellCenter) -> ConservedVariables {
 
-            real rhoLocal = rho * std::exp(-(2.0 * g * H * prim.lambda) * cellCenter.z / H);
+            //real rhoLocal = rho * std::exp(-(2.0 * g * H * prim.lambda) * cellCenter.z / H);
 
-            prim.rho = rhoLocal;
+            //prim.rho = rhoLocal;
 
-            real r = sqrt(cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y + cellCenter.z * cellCenter.z);
+            //real r = sqrt(cellCenter.x * cellCenter.x + cellCenter.y * cellCenter.y + cellCenter.z * cellCenter.z);
 
             //if( r < 0.55 ) prim.S_2 = 1.0;
 
@@ -337,7 +341,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
+    CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0, true, 1000 );
 
     ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
 
@@ -365,7 +369,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 350 && iter % 1 == 0 ) ||
+            //( iter >= 43130 && iter % 10 == 0 ) ||
             ( iter % 1000 == 0 )
           )
         {
@@ -416,7 +420,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 140000;
+        //uint restartIter = 40000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 

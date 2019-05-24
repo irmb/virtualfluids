@@ -71,9 +71,11 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real H = 4.0;
     real W = 0.125;
 
+    real R = 0.5;
+
     real dx = H / real(nx);
 
-    real U = 0.025;
+    real U = 0.0125;
 
     real eps = 2.0;
     real Pr  = 0.71;
@@ -82,7 +84,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     real g   = 9.81;
     real rho = 1.2;
     
-    real mu = 5.0e-4;
+    real mu = 1.5e-5;
 
     PrimitiveVariables prim( rho, 0.0, 0.0, 0.0, -1.0 );
 
@@ -90,7 +92,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real cs  = sqrt( ( ( K + 5.0 ) / ( K + 3.0 ) ) / ( 2.0 * prim.lambda ) );
 
-    real CFL = 0.25;
+    real CFL = 0.125;
 
     real dt  = CFL * ( dx / ( ( U + cs ) * ( one + ( two * mu ) / ( U * dx * rho ) ) ) );
 
@@ -99,7 +101,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     *logging::out << logging::Logger::INFO_HIGH << "cs = " << cs << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
-    *logging::out << logging::Logger::INFO_HIGH << "F_rho = " << U * rho * dt * 1000 << " kg/m^3\n";
+    *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rho * M_PI * R * R * 800000.0 / 0.016 / 1000.0 << " kW\n";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -139,17 +141,17 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = false;
+    bool threeDimensional = true;
 
     if( threeDimensional )
     {
         gridBuilder->addCoarseGrid(-0.5*L, -0.5*L, 0.0,
-                                    0.5*L, 0.5*L, H, dx);
+                                    0.5*L,  0.5*L, H, dx);
     }
     else
     {
         gridBuilder->addCoarseGrid(-0.5*L, -0.5*dx, 0.0,
-                                    0.5*L, 0.5*dx, H, dx);
+                                    0.5*L,  0.5*dx, H, dx);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,6 +169,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     VerticalCylinder cylinder( 0.0, 0.0, 0.0, 1.1, 4.0   );
+    VerticalCylinder cylinder2( 0.0, 0.0, 0.0, 0.6, 0.25   );
     
     Conglomerate refRing;
 
@@ -177,7 +180,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     gridBuilder->setNumberOfLayers(0,20);
 
-    gridBuilder->addGrid( &cylinder, 1 );
+    gridBuilder->addGrid( &cylinder,  1 );
+    gridBuilder->addGrid( &cylinder2, 3 );
 
     gridBuilder->setNumberOfLayers(10,20);
 
@@ -267,7 +271,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     //////////////////////////////////////////////////////////////////////////
     
-    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), true );
+    SPtr<BoundaryCondition> bcMZ = std::make_shared<AdiabaticWall>( dataBase, Vec3(0, 0, 0), false );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<IsothermalWall>( dataBase, Vec3(0, 0, 0), prim.lambda, true );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<InflowComplete>( dataBase, PrimitiveVariables(rho, 0.0, 0.0, 0.0, prim.lambda, 0.0, 0.0) );
     //SPtr<BoundaryCondition> bcMZ = std::make_shared<Open>( dataBase );
@@ -290,12 +294,14 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     burner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
         if( threeDimensional )
-            return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < 0.5;
+            return center.z < 0.0 && std::sqrt(center.x*center.x + center.y*center.y) < R;
         else
-            return center.z < 0.0 && std::sqrt(center.x*center.x) < 0.5 && std::sqrt(center.y*center.y) < 0.5 * dx;
+            return center.z < 0.0 && std::sqrt(center.x*center.x) < R && std::sqrt(center.y*center.y) < 0.5 * dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
+
+    dataBase->boundaryConditions.push_back( burner );
 
     dataBase->boundaryConditions.push_back( bcMX );
     dataBase->boundaryConditions.push_back( bcPX );
@@ -308,8 +314,6 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     dataBase->boundaryConditions.push_back( bcMX_2 );
     dataBase->boundaryConditions.push_back( bcPX_2 );
-
-    dataBase->boundaryConditions.push_back( burner );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,7 +369,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     CupsAnalyzer cupsAnalyzer( dataBase, true, 30.0 );
 
-    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 10000 );
+    ConvergenceAnalyzer convergenceAnalyzer( dataBase, 1000 );
 
     //auto turbulenceAnalyzer = std::make_shared<TurbulenceAnalyzer>( dataBase, 50000 );
 
@@ -404,7 +408,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 20000 && iter % 1 == 0 ) || 
+            //( iter >= 100 && iter % 10 == 0 ) || 
             ( iter % 10000 == 0 )
           )
         {
@@ -444,6 +448,10 @@ int main( int argc, char* argv[])
     std::string simulationName ( "PoolFire" );
 
     logging::Logger::addStream(&std::cout);
+    
+    std::ofstream logFile( path + simulationName + ".log" );
+    logging::Logger::addStream(&logFile);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
@@ -455,7 +463,7 @@ int main( int argc, char* argv[])
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 420000;
+        //uint restartIter = 33000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
@@ -473,6 +481,8 @@ int main( int argc, char* argv[])
     {
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
+
+    logFile.close();
 
    return 0;
 }

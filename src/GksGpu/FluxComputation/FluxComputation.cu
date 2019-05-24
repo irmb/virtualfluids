@@ -181,12 +181,15 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         computeExpansionCoefficients(facePrim, gradT1, K, ay);
         computeExpansionCoefficients(facePrim, gradT2, K, az);
 
-        //parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
-        //parameters.D   = parameters.mu;
+        if(false)
+        {
+            parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
+            parameters.D   = parameters.mu;
+        }
 
         //////////////////////////////////////////////////////////////////////////
 
-        {
+        if(false){
             real k = parameters.mu / parameters.Pr;
 
             real dUdx1 = ( gradN.rhoU  - facePrim.U * gradN.rho  );
@@ -209,10 +212,12 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             real dTdx2 = dEdx2 - two * facePrim.U * dUdx2 - two * facePrim.V * dVdx2 - two * facePrim.W * dWdx2;
             real dTdx3 = dEdx3 - two * facePrim.U * dUdx3 - two * facePrim.V * dVdx3 - two * facePrim.W * dWdx3;
 
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // this one works for some time
             real S = parameters.dx * parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
-            k += real(0.00002) / real(0.015625) * S;
-
+            //k += real(0.00002) / real(0.015625) * S;
+            k += real(2.0e-3) * S;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
             //real S = parameters.dx * ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
             //k += real(0.00001) * real(0.0025) * S * S;
@@ -220,28 +225,32 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
             //real S = parameters.dx * parameters.dx * ( dTdx1 * dTdx1 + dTdx2 * dTdx2 + dTdx3 * dTdx3 );
             //k += real(0.00001) * real(0.001) * S;
 
-            parameters.Pr = parameters.mu / k;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // this one works for some time
+            //real S = ( fabsf(dTdx1) + fabsf(dTdx2) + fabsf(dTdx3) );
+            //k += real(0.00002) / real(0.015625) * S;
+            //k += real(1.28e-4) * parameters.dx * parameters.dx * parameters.dx * S * S;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            //if( parameters.Pr < 0.1 ) printf("%f\n", S);
+            parameters.Pr = parameters.mu / k;
         }
     }
 
     //////////////////////////////////////////////////////////////////////////
 
+    if(false){
+    #ifdef USE_PASSIVE_SCALAR
+        if( facePrim.S_1 < zero )
+        {
+            parameters.D += - real(0.1) * facePrim.S_1;
+        }
+        if( facePrim.S_1 > one )
+        {
+            parameters.D +=   real(0.1) * ( facePrim.S_1 - one );
+        }
 
-    //{
-    //#ifdef USE_PASSIVE_SCALAR
-    //    if( facePrim.S_1 < zero )
-    //    {
-    //        parameters.D += - real(0.1) * facePrim.S_1;
-    //    }
-    //    if( facePrim.S_1 > one )
-    //    {
-    //        parameters.D +=   real(0.1) * ( facePrim.S_1 - one );
-    //    }
-
-    //#endif // USE_PASSIVE_SCALAR
-    //}
+    #endif // USE_PASSIVE_SCALAR
+    }
 
     //////////////////////////////////////////////////////////////////////////
 

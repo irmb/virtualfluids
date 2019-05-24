@@ -94,7 +94,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if(false)
+    if(true)
     {
         // consistent source term treatment of Tian et al. (2007)
         cons.rhoU += parameters.force.x * parameters.dt * cons.rho;
@@ -124,7 +124,7 @@ __host__ __device__ inline void cellUpdateFunction(DataBaseStruct dataBase, Para
         dataBase.massFlux[VEC_Z(cellIndex, dataBase.numberOfCells)] = zero;
     }
 
-    if(true)
+    if(false)
     {
         PrimitiveVariables prim = toPrimitiveVariables(cons, parameters.K);
         real lambda = prim.lambda;
