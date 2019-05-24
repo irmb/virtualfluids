@@ -98,6 +98,11 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	else
 		this->setConcFile(false);
 	//////////////////////////////////////////////////////////////////////////
+	if (configData->isStreetVelocityFileInConfigFile())
+		this->setStreetVelocityFile(configData->getStreetVelocityFile());
+	else
+		this->setStreetVelocityFile(false);
+	//////////////////////////////////////////////////////////////////////////
 	if (configData->isUseMeasurePointsInConfigFile())
 		this->setUseMeasurePoints(configData->getUseMeasurePoints());
 	else
@@ -332,6 +337,7 @@ Parameter::Parameter(SPtr<ConfigData> configData, Communicator* comm)
 	this->setcpBottom(				gridPath + "cpBottom.dat");
 	this->setcpBottom2(				gridPath + "cpBottom2.dat");
 	this->setConcentration(			gridPath + "conc.dat");
+	this->setStreetVelocity(		gridPath + "streetVector.dat");
 	//////////////////////////////////////////////////////////////////////////
 	//Normals - Geometry
 	this->setgeomBoundaryNormalX(gridPath + "geomBoundaryNormalX.dat");
@@ -2879,6 +2885,44 @@ void Parameter::cudaFreeConcFile(int lev)
 	checkCudaErrors( cudaFreeHost(parH[lev]->concentration ));
 }
 //////////////////////////////////////////////////////////////////////////
+//street X and Y velocity fractions
+void Parameter::cudaAllocStreetVelocityFractions(int lev)
+{
+	unsigned int mem_size_real = sizeof(real) * parH[lev]->numberOfStreetNodes;
+	unsigned int mem_size_int  = sizeof(int)  * parH[lev]->numberOfStreetNodes;
+	//printf("\nnumberOfStreetNodes = %d\n", parH[lev]->numberOfStreetNodes);
+
+	//Host
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->streetFractionXvelocity), mem_size_real));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->streetFractionYvelocity), mem_size_real));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->naschVelocity          ), mem_size_int ));
+
+	//Device
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->streetFractionXvelocity), mem_size_real));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->streetFractionYvelocity), mem_size_real));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->naschVelocity          ), mem_size_int ));
+
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = 2.0 * (double)mem_size_real + (double)mem_size_int;
+	setMemsizeGPU(tmp, false);
+}
+void Parameter::cudaCopyStreetVelocityFractions(int lev)
+{
+	unsigned int mem_size_real = sizeof(real) * parH[lev]->numberOfStreetNodes;
+	unsigned int mem_size_int  = sizeof(int)  * parH[lev]->numberOfStreetNodes;
+
+	checkCudaErrors(cudaMemcpy(parD[lev]->streetFractionXvelocity, parH[lev]->streetFractionXvelocity, mem_size_real, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->streetFractionYvelocity, parH[lev]->streetFractionYvelocity, mem_size_real, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->naschVelocity,           parH[lev]->naschVelocity,           mem_size_int,  cudaMemcpyHostToDevice));
+}
+
+void Parameter::cudaFreeStreetVelocityFractions(int lev)
+{
+	checkCudaErrors(cudaFreeHost(parH[lev]->streetFractionXvelocity));
+	checkCudaErrors(cudaFreeHost(parH[lev]->streetFractionYvelocity));
+	checkCudaErrors(cudaFreeHost(parH[lev]->naschVelocity));
+}
+//////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
 //Process Neighbors
@@ -3527,6 +3571,10 @@ void Parameter::setConcFile(bool concFile)
 {
 	ic.isConc = concFile;
 }
+void Parameter::setStreetVelocityFile(bool streetVelocityFile)
+{
+	ic.streetVelocityFile = streetVelocityFile;
+}
 void Parameter::setUseMeasurePoints(bool useMeasurePoints)
 {
 	ic.isMeasurePoints = useMeasurePoints;
@@ -3870,6 +3918,10 @@ void Parameter::setcpBottom2(std::string cpBottom2)
 void Parameter::setConcentration(std::string concFile)
 {
 	ic.concentration = concFile;
+}
+void Parameter::setStreetVelocity(std::string streetVelocity)
+{
+	ic.streetVelocity = streetVelocity;
 }
 void Parameter::setclockCycleForMP(real clockCycleForMP)
 {
@@ -4780,6 +4832,10 @@ std::string Parameter::getConcentration()
 {
 	return ic.concentration;
 }
+std::string Parameter::getStreetVelocityFilePath()
+{
+	return ic.streetVelocity;
+}
 real Parameter::getclockCycleForMP()
 {
 	return ic.clockCycleForMP;
@@ -4823,6 +4879,10 @@ bool Parameter::getIsCp()
 bool Parameter::getConcFile()
 {
 	return ic.isConc;
+}
+bool Parameter::isStreetVelocityFile()
+{
+	return ic.streetVelocityFile;
 }
 bool Parameter::getUseMeasurePoints()
 {

@@ -89,7 +89,7 @@ typedef struct InitCond{
    std::string periodicBcQs, periodicBcValues;
    std::string numberNodes, LBMvsSI;
    std::string cpTop, cpBottom, cpBottom2;
-   std::string concentration;
+   std::string concentration, streetVelocity;
    std::string geomNormalX, geomNormalY, geomNormalZ, inflowNormalX, inflowNormalY, inflowNormalZ, outflowNormalX, outflowNormalY, outflowNormalZ;
    unsigned int timeStepForMP;
    real clockCycleForMP;
@@ -99,6 +99,7 @@ typedef struct InitCond{
    bool  printFiles, readGeo, doRestart, doCheckPoint, isGeo, isProp, isCp, calcMedian, GeometryValues, isConc, is2ndOrderMoments, is3rdOrderMoments, isHighOrderMoments, isWale, isMeasurePoints;
    bool isGeoNormal, isInflowNormal, isOutflowNormal;
    bool simulatePorousMedia;
+   bool streetVelocityFile;
 } InitCondition;
 
 //Interface Cells

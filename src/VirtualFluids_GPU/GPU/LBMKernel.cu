@@ -4534,6 +4534,52 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
       getLastCudaError("QVeloDeviceEQ27 execution failed"); 
 }
 //////////////////////////////////////////////////////////////////////////
+extern "C" void QVeloStreetDevEQ27(
+	uint  numberOfThreads,
+	real* veloXfraction,
+	real* veloYfraction,
+	int*  naschVelo,
+	real* DD,
+	int*  naschIndex,
+	int   numberOfStreetNodes,
+	real  velocityRatio,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	uint  size_Mat,
+	bool  evenOrOdd)
+{
+	int Grid = (numberOfStreetNodes / numberOfThreads) + 1;
+	int Grid1, Grid2;
+	if (Grid > 512)
+	{
+		Grid1 = 512;
+		Grid2 = (Grid / Grid1) + 1;
+	}
+	else
+	{
+		Grid1 = 1;
+		Grid2 = Grid;
+	}
+	dim3 gridQ(Grid1, Grid2);
+	dim3 threads(numberOfThreads, 1, 1);
+
+	QVeloStreetDeviceEQ27 << < gridQ, threads >> > (
+		veloXfraction,
+		veloYfraction,
+		naschVelo,
+		DD,
+		naschIndex,
+		numberOfStreetNodes,
+		velocityRatio,
+		neighborX,
+		neighborY,
+		neighborZ,
+		size_Mat,
+		evenOrOdd);
+	getLastCudaError("QVeloStreetDeviceEQ27 execution failed");
+}
+//////////////////////////////////////////////////////////////////////////
 extern "C" void QSlipDev27(unsigned int numberOfThreads,
                            real* DD, 
                            int* k_Q, 

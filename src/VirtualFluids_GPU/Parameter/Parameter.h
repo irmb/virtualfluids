@@ -228,6 +228,12 @@ struct ParameterStruct{
 	real *concentration;
 	unsigned int numberOfPointsConc;
 
+	//street X and Y velocity fractions///////
+	real *streetFractionXvelocity;
+	real *streetFractionYvelocity;
+	int *naschVelocity;
+	uint numberOfStreetNodes;
+
 	//deltaPhi
 	real deltaPhi;
 
@@ -409,6 +415,10 @@ public:
 	void cudaCopyConcFile(int lev);
 	void cudaCopyConcs(int lev);
 	void cudaFreeConcFile(int lev);
+
+	void cudaAllocStreetVelocityFractions(int lev);
+	void cudaCopyStreetVelocityFractions(int lev);
+	void cudaFreeStreetVelocityFractions(int lev);
 
 	void cudaAllocInlet(int lev);
 	void cudaCopyInlet(int lev);
@@ -666,6 +676,7 @@ public:
 	void setcpBottom(std::string cpBottom);
 	void setcpBottom2(std::string cpBottom2);
 	void setConcentration(std::string concFile);
+	void setStreetVelocity(std::string streetVelocity);
 	void setPrintFiles(bool printfiles);
 	void setReadGeo(bool readGeo);
 	void setTemperatureInit(real Temp);
@@ -687,6 +698,7 @@ public:
 	void setIsProp(bool isProp);
 	void setIsCp(bool isCp);
 	void setConcFile(bool concFile);
+	void setStreetVelocityFile(bool streetVelocityFile);
 	void setUseMeasurePoints(bool useMeasurePoints);
 	void setUseWale(bool useWale);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
@@ -855,6 +867,7 @@ public:
 	std::string getcpBottom();
 	std::string getcpBottom2();
 	std::string getConcentration();
+	std::string getStreetVelocityFilePath();
 	unsigned int getPressInID();
 	unsigned int getPressOutID();
 	unsigned int getPressInZ();
@@ -922,6 +935,7 @@ public:
 	bool getCalc3rdOrderMoments();
 	bool getCalcHighOrderMoments();
 	bool getConcFile();
+	bool isStreetVelocityFile();
 	bool getUseMeasurePoints();
 	bool getUseWale();
 	bool getSimulatePorousMedia();

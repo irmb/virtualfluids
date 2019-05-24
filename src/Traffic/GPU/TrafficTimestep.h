@@ -73,7 +73,7 @@ private:
 
 
 	//sinks
-	thrust::device_vector<real> sinkCarBlockedPossibilities;;
+	thrust::device_vector<real> sinkCarBlockedPossibilities;
 
 
 	//sources
@@ -84,6 +84,8 @@ private:
 	//concentrations
 	real * pConcArray;
 
+	//nasch velocity to set fluidBC
+	int* naschVelocity;
 
 	//curandStates
 	curandState *statesJunctions;
@@ -95,7 +97,7 @@ private:
 
 public:
 
-	TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * pConcArray);
+	TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * pConcArray, int* naschVelocity);
 	void calculateTimestep(std::shared_ptr<RoadNetworkData> road);
 	void cleanUp();
 	uint getNumCarsOnJunctions(); //only used for debugging
@@ -112,6 +114,7 @@ private:
 	void callTrafficTimestepKernel();
 	void callSourceTimestepKernel();
 	void callJunctionTimestepKernel();
+	void callCalculationOfNaschVelocityForFluidBCKernel();
 
 	//init grids
 	void calculateTrafficTimestepKernelDimensions();

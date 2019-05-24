@@ -1157,6 +1157,20 @@ extern "C" __global__ void QVeloDeviceEQ27(real* VeloX,
                                            unsigned int size_Mat, 
                                            bool evenOrOdd);
 
+extern "C" __global__ void QVeloStreetDeviceEQ27(
+	real* veloXfraction,
+	real* veloYfraction,
+	int*  naschVelo,
+	real* DD,
+	int*  naschIndex,
+	int   numberOfStreetNodes,
+	real  velocityRatio,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	uint  size_Mat,
+	bool  evenOrOdd);
+
 //Slip BCs
 extern "C" __global__ void QSlipDevice27(real* DD, 
                                          int* k_Q, 

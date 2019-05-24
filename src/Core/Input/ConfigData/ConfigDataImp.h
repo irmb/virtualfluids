@@ -26,6 +26,7 @@ public:
 	bool getReadGeo();
 	bool getCalcMedian();
 	bool getConcFile();
+	bool getStreetVelocityFile();
 	bool getUseMeasurePoints();
 	bool getUseWale();
 	bool getSimulatePorousMedia();
@@ -103,6 +104,7 @@ public:
 	void setReadGeo(bool readGeo);
 	void setCalcMedian(bool calcMedian);   
 	void setConcFile(bool concFile);
+	void setStreetVelocityFile(bool streetVelocityFile);
 	void setUseMeasurePoints(bool useMeasurePoints);
 	void setUseWale(bool useWale);
 	void setSimulatePorousMedia(bool simulatePorousMedia);
@@ -181,6 +183,7 @@ public:
 	bool isReadGeoInConfigFile();
 	bool isCalcMedianInConfigFile();
 	bool isConcFileInConfigFile();
+	bool isStreetVelocityFileInConfigFile();
 	bool isUseMeasurePointsInConfigFile();
 	bool isUseWaleInConfigFile();
 	bool isSimulatePorousMediaInConfigFile();
@@ -261,6 +264,7 @@ private:
 	bool readGeo;
 	bool calcMedian;
 	bool concFile;
+	bool streetVelocityFile;
 	bool useMeasurePoints;
 	bool useWale;
 	bool simulatePorousMedia;
@@ -339,6 +343,7 @@ private:
 	bool isReadGeo;
 	bool isCalcMedian;
 	bool isConcFile;
+	bool isStreetVelocityFile;
 	bool isUseMeasurePoints;
 	bool isUseWale;
 	bool isSimulatePorousMedia;

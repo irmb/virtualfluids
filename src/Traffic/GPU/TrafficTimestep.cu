@@ -14,7 +14,7 @@
 #include "Utilities/invalidInput_error.h"
 
 //kernel
-__global__   void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, real * pConcArray, uint* juncInCellIndices, bool* juncCarCanEnter,
+__global__ void trafficTimestepKernel(int* roadCurrent, int* roadNext, int* neighbors, real * pConcArray, uint* juncInCellIndices, bool* juncCarCanEnter,
 	int* juncCarsOnJunction, uint* juncAlreadyMoved, uint* juncOldSpeeds, real* sinkCarBlockedPossibilities,
 	uint size_road, uint size_juncInCells, uint maxVelocity, uint maxAcceleration, uint safetyDistance, bool useSlowToStart, real slowStartPossibility, real dawdlePossibility, curandState *state);
 
@@ -25,6 +25,8 @@ __global__ void junctionTimestepKernel(int* juncCarsOnJunction, uint* juncInCell
 	uint* juncAlreadyMoved, int* juncCarCanNotEnterThisOutCell, bool* juncOutCellIsOpen, uint* juncOldSpeeds, bool* juncCarCanEnter, uint* juncTrafficLightSwitchTime,
 	int* roadCurrent, int* roadNext, int* neighbors, real * pConcArray, real* sinkCarBlockedPossibilities, uint safetyDistance,
 	uint size_juncInCells, uint size_juncOutCells, uint size_junctions, uint numTimestep, curandState *state);
+
+__global__ void calculationOfNaschVelocityForFluidBCKernel(int* roadNext, int* neighbors, int* naschVelocity, uint size_road, uint safetyDistance);
 
 __global__ void randomSetupKernel(curandState *state, uint size);
 
@@ -50,7 +52,7 @@ __device__ inline void addConcToArray(real * pConcArray, uint oldSpeed, uint new
 
 
 
-TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * pConcArray)
+TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * pConcArray, int* naschVelocity)
 {
 	//calculate sizes
 	this->size_roads = road->roadLength;
@@ -114,9 +116,21 @@ TrafficTimestep::TrafficTimestep(std::shared_ptr<RoadNetworkData> road, real * p
 	getLastCudaError("random_setup_kernel for sources execution failed");
 
 	//prepare ConcWriter
-	if (pConcArray == nullptr) checkCudaErrors(cudaMalloc((void **)&this->pConcArray, size_roads * sizeof(real)));
+	if (pConcArray == nullptr) {
+		checkCudaErrors(cudaMalloc((void **)&this->pConcArray, size_roads * sizeof(real)));
+		checkCudaErrors(cudaMemset(this->pConcArray, 0.0, size_t(size_roads) * sizeof(real)));
+		printf("No Pointer for pConcArray!!!");
+	}
 	else this->pConcArray = pConcArray;
-	checkCudaErrors(cudaMemset(this->pConcArray, 0.0, size_t(size_roads) * sizeof(real)));
+
+	//prepare naschVelocity for fluid BC 
+	if (naschVelocity == nullptr) {
+		checkCudaErrors(cudaMalloc((void **)&this->naschVelocity, size_roads * sizeof(int)));
+		checkCudaErrors(cudaMemset(this->naschVelocity, 0, size_t(size_roads) * sizeof(int)));
+		//printf("\nsize_roads = %d\n",size_roads);
+		printf("No Pointer for naschVelocity!!!");
+	}
+	else this->naschVelocity = naschVelocity;
 }
 
 
@@ -138,6 +152,9 @@ void TrafficTimestep::calculateTimestep(std::shared_ptr<RoadNetworkData> road)
 
 	callSourceTimestepKernel();
 	getLastCudaError("sourceTimestepKernel execution failed");
+
+	callCalculationOfNaschVelocityForFluidBCKernel();
+	getLastCudaError("callCalculationOfNaschVelocityForFluidBCKernel execution failed");
 
 	numTimestep++;
 }
@@ -245,6 +262,49 @@ void TrafficTimestep::callJunctionTimestepKernel()
 }
 
 
+void TrafficTimestep::callCalculationOfNaschVelocityForFluidBCKernel()
+{
+	calculationOfNaschVelocityForFluidBCKernel << < gridRoad, threadsRoads >> > (
+		pRoadNext,
+		neighbors.data().get(),
+		naschVelocity,
+		size_roads,
+		safetyDistance);
+}
+
+
+
+__global__ void calculationOfNaschVelocityForFluidBCKernel(int* roadNext, int* neighbors, int* naschVelocity, uint size_road, uint safetyDistance)
+{
+	const uint x = threadIdx.x;  // Globaler x-Index 
+	const uint y = blockIdx.x;   // Globaler y-Index 
+	const uint z = blockIdx.y;   // Globaler z-Index 
+
+	const uint nx = blockDim.x;
+	const uint ny = gridDim.x;
+	const uint index = nx*(ny*z + y) + x;
+
+	if (index >= size_road) return;
+	//////////////////////////////////////////////////////////////////////////
+	//reset
+	naschVelocity[index] = -1;
+	//////////////////////////////////////////////////////////////////////////
+	if (roadNext[index] < 0) return;
+
+	int speed = roadNext[index];
+
+	naschVelocity[index] = speed;
+
+	int neighbor = neighbors[index];
+
+	for (uint j = 1; j <= safetyDistance; j++) {
+		if (neighbor <= -1000)
+			return;
+		else
+			naschVelocity[neighbor] = speed;
+		neighbor = neighbors[neighbor];
+	}
+}
 
 __global__ void resetNext(int * roadNext, uint size_road)
 {

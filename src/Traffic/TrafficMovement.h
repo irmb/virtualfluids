@@ -32,7 +32,7 @@ public:
 	void setMaxAcceleration(uint maxAcceleration);
 	void setConcentrationOutwriter(uint roadlength, real* concArrayStart = 0);
 	void setSaveResultsTrue(uint timeSteps);
-	void setUseGPU(real * pConcArray = nullptr);
+	void setUseGPU(real * pConcArray = nullptr, int* naschVelocity = nullptr);
 	void setUseLogger();
 
 	//timpestep

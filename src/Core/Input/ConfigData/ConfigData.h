@@ -23,6 +23,7 @@ public:
 	virtual bool getReadGeo() = 0;
 	virtual bool getCalcMedian() = 0;
 	virtual bool getConcFile() = 0;
+	virtual bool getStreetVelocityFile() = 0;
 	virtual bool getUseMeasurePoints() = 0;
 	virtual bool getUseWale() = 0;
 	virtual bool getSimulatePorousMedia() = 0;
@@ -100,6 +101,7 @@ public:
 	virtual bool isReadGeoInConfigFile() = 0;
 	virtual bool isCalcMedianInConfigFile() = 0;
 	virtual bool isConcFileInConfigFile() = 0;
+	virtual bool isStreetVelocityFileInConfigFile() = 0;
 	virtual bool isUseMeasurePointsInConfigFile() = 0;
 	virtual bool isUseWaleInConfigFile() = 0;
 	virtual bool isSimulatePorousMediaInConfigFile() = 0;

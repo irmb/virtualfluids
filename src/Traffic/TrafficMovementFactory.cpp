@@ -22,7 +22,7 @@ TrafficMovementFactory::TrafficMovementFactory()
 }
 
 
-void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, real * pConcArray)
+void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, real * pConcArray, int* naschVelocity)
 {
 	//Variables
 
@@ -45,15 +45,18 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 	//Paths
 
-	//Phoenix
-	//inputPath = path + "source/git/targets/apps/LBM/Basel/resources/";
-	//outputPath = path + "results/";
+#ifdef _WIN32
 	//Baumbart
 	inputPath = "C:/Users/schoen/Desktop/git/MS2/git/targets/apps/LBM/Basel/resources/";
 	outputPath = path + "results/";
 	//Gamling
 	//inputPath = path + "VirtualFluidsGPU/git/targets/apps/LBM/Basel/resources/";
 	//outputPath = path + "Basel_Ergebnisse/";
+#else
+	//Phoenix
+	inputPath = "/work/marschoe/Basel4GPU/source/git/targets/apps/LBM/Basel/resources/";
+	outputPath = path + "/traffic/";
+#endif
 	outputFilename = "Basel_Traffic_Test";
 	std::string logfile = outputPath + "TrafficLog.txt";
 
@@ -157,7 +160,7 @@ void TrafficMovementFactory::initTrafficMovement(std::string path, bool useGPU, 
 
 
 	//GPU
-	if (this->useGPU) simulator->setUseGPU(pConcArray);
+	if (this->useGPU) simulator->setUseGPU(pConcArray, naschVelocity);
 }
 
 

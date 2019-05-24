@@ -159,6 +159,11 @@ bool ConfigDataImp::getConcFile()
 	return this->concFile;
 }
 
+bool ConfigDataImp::getStreetVelocityFile()
+{
+	return this->streetVelocityFile;
+}
+
 bool ConfigDataImp::getUseMeasurePoints()
 {
 	return this->useMeasurePoints;
@@ -536,6 +541,12 @@ void ConfigDataImp::setConcFile(bool concFile)
 {
 	this->concFile = concFile;
 	this->isConcFile = true;
+}
+
+void ConfigDataImp::setStreetVelocityFile(bool streetVelocityFile)
+{
+	this->streetVelocityFile = streetVelocityFile;
+	this->isStreetVelocityFile = true;
 }
 
 void ConfigDataImp::setUseMeasurePoints(bool useMeasurePoints)
@@ -926,6 +937,11 @@ bool ConfigDataImp::isCalcMedianInConfigFile()
 bool ConfigDataImp::isConcFileInConfigFile()
 {
 	return this->isConcFile;
+}
+
+bool ConfigDataImp::isStreetVelocityFileInConfigFile()
+{
+	return this->isStreetVelocityFile;
 }
 
 bool ConfigDataImp::isUseMeasurePointsInConfigFile()

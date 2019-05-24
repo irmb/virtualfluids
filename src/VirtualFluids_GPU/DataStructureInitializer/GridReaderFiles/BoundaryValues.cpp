@@ -93,6 +93,8 @@ int BoundaryValues::getNumberOfColumns()
 		return 0;
 	if (boundaryCondition == "concentration")
 		return 0;
+	if (boundaryCondition == "streetVector")
+		return 1;
 	else
 		return -1;
 }
@@ -258,3 +260,14 @@ void BoundaryValues::setOutflowValues(real *RhoBC, int* kN, int level) const
 		}
 	}
 }
+
+void BoundaryValues::setStreetVelocityFractions(real *vxf, real *vyf, int level) const
+{
+	for (int column = 0; column < values[level].size(); column++) {
+		for (int index = 0; index < values[level][column].size(); index++) {
+			if (column == 0) vxf[index] = values[level][column][index];
+			if (column == 1) vyf[index] = values[level][column][index];
+		}
+	}
+}
+

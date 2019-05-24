@@ -76,6 +76,9 @@ VF_PUBLIC std::shared_ptr<ConfigData> ConfigFileReader::readConfigFile(const std
 	if (input->getValue("UseConcFile") != "")
 		data->setConcFile(StringUtil::toBool(input->getValue("UseConcFile")));
 
+	if (input->getValue("UseStreetVelocityFile") != "")
+		data->setStreetVelocityFile(StringUtil::toBool(input->getValue("UseStreetVelocityFile")));
+
 	if (input->getValue("UseMeasurePoints") != "")
 		data->setUseMeasurePoints(StringUtil::toBool(input->getValue("UseMeasurePoints")));
 

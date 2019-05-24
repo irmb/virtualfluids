@@ -50,6 +50,26 @@ real Street::getCoordinateY(int cellIndex)
 	return yStart + real(cellIndex) / real(numberOfCells - 1) * (yEnd - yStart);
 }
 
+real Street::getVectorX()
+{
+	real vecX = this->xEnd - this->xStart;
+	real vecY = this->yEnd - this->yStart;
+
+	real length = sqrt(vecX*vecX + vecY*vecY);
+
+	return vecX / length;
+}
+
+real Street::getVectorY()
+{
+	real vecX = this->xEnd - this->xStart;
+	real vecY = this->yEnd - this->yStart;
+
+	real length = sqrt(vecX*vecX + vecY*vecY);
+
+	return vecY / length;
+}
+
 void Street::findIndicesLB(SPtr<Grid> grid, real initialSearchHeight)
 {
 	for (uint i = 0; i < numberOfCells; i++)
@@ -456,6 +476,50 @@ void StreetPointFinder::writeSimulationFile(std::string gridPath, real concentra
 				{
 					// + 1 for numbering shift between GridGenerator and VF_GPU
 					file << sparseIndexLB + 1 << "\n";
+				}
+			}
+		}
+		else
+		{
+			file << "0\n";
+		}
+	}
+
+	file.close();
+
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "done!\n";
+}
+
+void StreetPointFinder::writeStreetVectorFile(std::string gridPath, real concentration, uint numberOfLevels, uint level)
+{
+	*logging::out << logging::Logger::INFO_INTERMEDIATE << "StreetPointFinder::writeStreetVectorFile( " << gridPath << "streetVector.dat )" << "\n";
+
+	std::ofstream file;
+
+	file.open(gridPath + "streetVector.dat");
+
+	file << "streetVector\n";
+
+	file << numberOfLevels - 1 << "\n";
+
+	for (uint currentLevel = 0; currentLevel < numberOfLevels; currentLevel++)
+	{
+		if (currentLevel == level)
+		{
+			uint numberOfCells = 0;
+			for (auto& street : streets)
+			{
+				numberOfCells += street.numberOfCells;
+			}
+
+			file << numberOfCells << "\n";
+
+			for (auto& street : streets)
+			{
+				for (auto& sparseIndexLB : street.sparseIndicesLB)
+				{
+					// + 1 for numbering shift between GridGenerator and VF_GPU
+					file << street.getVectorX() << " " << street.getVectorY() << "\n";
 				}
 			}
 		}

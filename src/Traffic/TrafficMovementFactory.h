@@ -16,7 +16,7 @@ class VF_PUBLIC TrafficMovementFactory
 public:
 	TrafficMovementFactory();
 	~TrafficMovementFactory() {};
-	virtual void initTrafficMovement(std::string path, bool useGPU, real * pConcArray = nullptr);
+	virtual void initTrafficMovement(std::string path, bool useGPU, real * pConcArray = nullptr, int* naschVelocity = nullptr);
 	virtual void calculateTimestep(uint step);
 	virtual void writeTimestep(uint stepForVTK);
 	void writeReducedTimestep(uint stepForVTK);

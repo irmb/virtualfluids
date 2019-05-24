@@ -75,11 +75,11 @@ void TrafficMovement::setSlowToStart(const real slowStartPossibility)
 	}
 }
 
-void TrafficMovement::setUseGPU(real * pConcArray)
+void TrafficMovement::setUseGPU(real * pConcArray, int* naschVelocity)
 {
 	std::cout << "usingGPU for calculation" << std::endl;
 	this->useGPU = true;
-	this->gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road, pConcArray));
+	this->gpuCalculation = std::make_unique<TrafficTimestep>(TrafficTimestep(this->road, pConcArray, naschVelocity));
 }
 
 void TrafficMovement::setMaxAcceleration(uint maxAcceleration)

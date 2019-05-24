@@ -1242,6 +1242,21 @@ extern "C" void QVeloDevEQ27(unsigned int numberOfThreads,
 							 unsigned int size_Mat, 
 							 bool evenOrOdd);
 
+extern "C" void QVeloStreetDevEQ27(
+	uint  numberOfThreads,
+	real* veloXfraction,
+	real* veloYfraction,
+	int*  naschVelo,
+	real* DD,
+	int*  naschIndex,
+	int   numberOfStreetNodes,
+	real  velocityRatio,
+	uint* neighborX,
+	uint* neighborY,
+	uint* neighborZ,
+	uint  size_Mat,
+	bool  evenOrOdd);
+
 extern "C" void QSlipDev27( unsigned int numberOfThreads,
 							real* DD, 
 							int* k_Q, 

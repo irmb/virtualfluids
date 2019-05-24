@@ -32,6 +32,9 @@ struct VF_PUBLIC Street
     real getCoordinateX( int cellIndex );
     real getCoordinateY( int cellIndex );
 
+	real getVectorX();
+	real getVectorY();
+
     void findIndicesLB( SPtr<Grid> grid, real initialSearchHeight);
 };
 
@@ -62,15 +65,16 @@ struct VF_PUBLIC StreetPointFinder
 
     void writeConnectionVTK(std::string filename, SPtr<Grid> grid);
 
-    void writeSimulationFile( std::string gridPath, real concentration, uint numberOfLevels, uint level );
+	void writeSimulationFile(std::string gridPath, real concentration, uint numberOfLevels, uint level);
+
+	void writeStreetVectorFile(std::string gridPath, real concentration, uint numberOfLevels, uint level);
 
     void writeSimulationFileSorted( std::string gridPath, real concentration, uint numberOfLevels, uint level );
 
     void writeMappingFile( std::string gridPath );
 
 	//////////////////////////////////////////////////////////////////////////
-	// Speed hacked by Stephan L.
-	// Not tested!!!
+	// 3D cars writer hacked by Stephan L.
 
 	void write3DVTK(std::string filename, const std::vector<int>& cars = std::vector<int>());
 
