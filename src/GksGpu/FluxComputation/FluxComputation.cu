@@ -181,6 +181,8 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
         computeExpansionCoefficients(facePrim, gradT1, K, ay);
         computeExpansionCoefficients(facePrim, gradT2, K, az);
 
+        //////////////////////////////////////////////////////////////////////////
+
         if(false)
         {
             parameters.mu += getTurbulentViscositySmagorinsky( parameters, facePrim, gradN, gradT1, gradT2 );
@@ -189,7 +191,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
         //////////////////////////////////////////////////////////////////////////
 
-        if(false){
+        if(true){
             real k = parameters.mu / parameters.Pr;
 
             real dUdx1 = ( gradN.rhoU  - facePrim.U * gradN.rho  );
@@ -238,7 +240,7 @@ __host__ __device__ inline void fluxFunction(DataBaseStruct dataBase, Parameters
 
     //////////////////////////////////////////////////////////////////////////
 
-    if(false){
+    if(true){
     #ifdef USE_PASSIVE_SCALAR
         if( facePrim.S_1 < zero )
         {

@@ -39,10 +39,11 @@
 #include "GksGpu/BoundaryConditions/BoundaryCondition.h"
 #include "GksGpu/BoundaryConditions/IsothermalWall.h"
 #include "GksGpu/BoundaryConditions/Periodic.h"
-#include "GksGpu/BoundaryConditions/Pressure.h"
+#include "GksGpu/BoundaryConditions/Pressure2.h"
 #include "GksGpu/BoundaryConditions/AdiabaticWall.h"
 #include "GksGpu/BoundaryConditions/HeatFlux.h"
 #include "GksGpu/BoundaryConditions/CreepingMassFlux.h"
+#include "GksGpu/BoundaryConditions/Open.h"
 
 #include "GksGpu/TimeStepping/NestedTimeStep.h"
 
@@ -68,6 +69,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     real LBurner = 1.0;
 
+    real HBurner = 0.5;
+
     real dx = H / real(nx);
 
     real Pr  = 0.71;
@@ -90,6 +93,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     *logging::out << logging::Logger::INFO_HIGH << "dt = " << dt << " s\n";
     *logging::out << logging::Logger::INFO_HIGH << "U  = " << U  << " m/s\n";
+    *logging::out << logging::Logger::INFO_HIGH << "cs = " << cs << " m/s\n";
     *logging::out << logging::Logger::INFO_HIGH << "mu = " << mu << " kg/sm\n";
 
     *logging::out << logging::Logger::INFO_HIGH << "HRR = " << U * rho * LBurner * LBurner * 800000.0 / 0.016 / 1000.0 << " kW\n";
@@ -128,7 +132,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    bool threeDimensional = false;
+    bool threeDimensional = true;
 
     if( threeDimensional )
         gridBuilder->addCoarseGrid(-0.5*L, -0.5*L,  0.0,  
@@ -139,18 +143,18 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
-    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/UnterzugObstacle.stl");
-#else
-    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
-    TriangularMesh* stl = TriangularMesh::make("inp/UnterzugObstacle.stl");
-#endif
+//#ifdef _WIN32
+//    //TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/Unterzug.stl");
+//    TriangularMesh* stl = TriangularMesh::make("F:/Work/Computations/inp/UnterzugObstacle.stl");
+//#else
+//    //TriangularMesh* stl = TriangularMesh::make("inp/Unterzug.stl");
+//    TriangularMesh* stl = TriangularMesh::make("inp/UnterzugObstacle.stl");
+//#endif
 
     //gridBuilder->addGeometry(stl);
     
-    Cuboid box( -0.5 * LBurner, -0.5 * LBurner, -0.5 * LBurner, 
-                 0.5 * LBurner,  0.5 * LBurner,  0.5 * LBurner );
+    Cuboid box( -0.5 * LBurner, -0.5 * LBurner, -HBurner, 
+                 0.5 * LBurner,  0.5 * LBurner,  HBurner );
     Cuboid beam( -0.15, -10.0, 2.6, 0.15, 10.0, 10.0 );
 
     Conglomerate solid;
@@ -162,11 +166,27 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Cuboid boxRef ( -0.5 * LBurner, -0.5 * LBurner, -0.5 * LBurner, 
-                     0.5 * LBurner,  0.5 * LBurner,  0.5 * LBurner );
+    Cuboid boxRefCoarse1 ( -0.8 * LBurner, -0.8 * LBurner, -100.0, 
+                            0.8 * LBurner,  0.8 * LBurner,  100.0 );
+    Cuboid boxRefCoarse2 ( -0.8 * LBurner, -100,    2.3, 
+                            0.8 * LBurner,  100,  100.0 );
+
+    Conglomerate refRegionCoarse;
+
+    refRegionCoarse.add( &boxRefCoarse1 );
+    refRegionCoarse.add( &boxRefCoarse2 );
+
+    gridBuilder->setNumberOfLayers(0,20);
+
+    gridBuilder->addGrid( &refRegionCoarse, 1 );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Cuboid boxRef ( -0.5 * LBurner, -0.5 * LBurner, -HBurner, 
+                     0.5 * LBurner,  0.5 * LBurner,  HBurner );
     Cuboid beamRef( -0.15, -10.0, 2.6, 0.15, 10.0, 10.0 );
 
-    boxRef.scale(0.02);
+    boxRef.scale (0.1);
     beamRef.scale(0.02);
 
     Conglomerate refRegion1;
@@ -262,9 +282,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     bcBurner->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
         if( threeDimensional )
-            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * LBurner;
+            return center.z > HBurner - 0.125 * dx && center.z < HBurner && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * LBurner - dx;
         else
-            return center.z > 0.5 - 0.125 * dx && center.z < 0.5 && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * dx;
+            return center.z > HBurner - 0.125 * dx && center.z < HBurner && std::sqrt(center.x*center.x) < 0.5 * LBurner - dx && std::sqrt(center.y*center.y) < 0.5 * dx;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -274,6 +294,22 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     bcSolid->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
 
         return center.z > 2.5 && std::sqrt(center.x*center.x) < 0.15;
+    } );
+
+    //////////////////////////////////////////////////////////////////////////
+
+    SPtr<BoundaryCondition> bcWindowOpen = std::make_shared<Open>( dataBase, prim, 1.0 );
+
+    bcWindowOpen->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
+
+        return center.z > 1.0 && center.z < 2.0 && std::sqrt(center.x*center.x) > 1.5 && std::sqrt(center.y*center.y) < 1.0;
+    } );
+
+    SPtr<BoundaryCondition> bcWindowPressure = std::make_shared<Pressure2>( dataBase, c1o2 * prim.rho / prim.lambda );
+
+    bcWindowPressure->findBoundaryCells( meshAdapter, false, [&](Vec3 center){ 
+
+        return center.z > 2.0 && center.z < 2.8 && std::sqrt(center.x*center.x) > 1.5 && std::sqrt(center.y*center.y) < 1.0;
     } );
 
     //////////////////////////////////////////////////////////////////////////
@@ -290,6 +326,9 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
     dataBase->boundaryConditions.push_back( bcPZ );
 
     dataBase->boundaryConditions.push_back( bcSolid );
+
+    dataBase->boundaryConditions.push_back( bcWindowOpen     );
+    dataBase->boundaryConditions.push_back( bcWindowPressure );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -369,7 +408,8 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
         TimeStepping::nestedTimeStep(dataBase, parameters, 0);
 
         if( 
-            //( iter >= 43130 && iter % 10 == 0 ) ||
+            //( iter >= 34920 && iter % 1 == 0 ) ||
+            //( iter >= 35900 && iter % 10 == 0 ) ||
             ( iter % 1000 == 0 )
           )
         {
@@ -378,7 +418,7 @@ void thermalCavity( std::string path, std::string simulationName, uint restartIt
             writeVtkXML( dataBase, parameters, 0, path + simulationName + "_" + std::to_string( iter ) );
         }
 
-        if( iter % 10000 == 0 )
+        if( iter % 1000 == 0 )
         {
             Restart::writeRestart( dataBase, path + simulationName + "_" + std::to_string( iter ), iter );
         }
@@ -409,18 +449,22 @@ int main( int argc, char* argv[])
     std::string simulationName ( "RoomFire" );
 
     logging::Logger::addStream(&std::cout);
+    
+    std::ofstream logFile( path + simulationName + ".log" );
+    logging::Logger::addStream(&logFile);
+
     logging::Logger::setDebugLevel(logging::Logger::Level::INFO_LOW);
     logging::Logger::timeStamp(logging::Logger::ENABLE);
 
     if( sizeof(real) == 4 )
-        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precison\n";
+        *logging::out << logging::Logger::INFO_HIGH << "Using Single Precision\n";
     else
         *logging::out << logging::Logger::INFO_HIGH << "Using Double Precision\n";
 
     try
     {
         uint restartIter = INVALID_INDEX;
-        //uint restartIter = 40000;
+        //uint restartIter = 35000;
 
         if( argc > 1 ) restartIter = atoi( argv[1] );
 
@@ -438,6 +482,8 @@ int main( int argc, char* argv[])
     {
         *logging::out << logging::Logger::ERROR << "Unknown exception!\n";
     }
+
+    logFile.close();
 
     return 0;
 }
