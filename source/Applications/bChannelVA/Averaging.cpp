@@ -359,6 +359,11 @@ void Averaging::writeVaSumMatrixToImageFile(std::string output)
    array < CbArray3D<double>, 4 > matrix = { sumVaVxMatrix, sumVaVyMatrix, sumVaVzMatrix, sumVaPrMatrix };
    writeMatrixToImageFile(output, matrix);
 }
+void Averaging::writeMeanMatrixToImageFile(std::string output)
+{
+   array < CbArray3D<double>, 4 > matrix = { meanVxMatrix, meanVyMatrix, meanVzMatrix, meanPrMatrix };
+   writeMatrixToImageFile(output, matrix);
+}
 //////////////////////////////////////////////////////////////////////////
 void Averaging::volumeAveragingWithMPI(double l_real)
 {
@@ -451,7 +456,7 @@ void Averaging::volumeAveragingWithMPI(double l_real)
                         if (yy < 0)   yy = dimensions[1] + yy;
                         if (yy >= dimensions[1]) yy = yy - dimensions[1];
 
-                        if (zz < 0)   zz = 0;
+                        if (zz < 0)   zz = dimensions[2] + zz; 
                         if (zz >= dimensions[2]) zz = dimensions[2] - 1;
 
                         double mm = (G((double)x, l)*G((double)y, l)*G((double)z, l)) / lNorm;
@@ -517,9 +522,9 @@ void Averaging::volumeAveragingWithMPI(double l_real)
             for (int x1 = startX1; x1 < stopX1; x1++)
             {
                sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
-               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
-               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
-               sendBuffer.push_back(vaVxMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVyMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaVzMatrix(x1, x2, x3));
+               sendBuffer.push_back(vaPrMatrix(x1, x2, x3));
             }
       int count = (int)sendBuffer.size();
       MPI_Send(&count, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
@@ -581,11 +586,25 @@ void Averaging::readGeoMatrix(string dataNameG)
 }
 void Averaging::writeGeoMatrixToBinaryFiles(std::string fname)
 {
-   writeMatrixToBinaryFiles<int>(geoMatrix.getDataVector(), fname);
+   writeMatrixToBinaryFiles<int>(geoMatrix, fname);
 }
 void Averaging::readGeoMatrixFromBinaryFiles(std::string fname)
 {
-   readMatrixFromBinaryFiles<int>(fname, geoMatrix.getDataVector());
+   readMatrixFromBinaryFiles<int>(fname, geoMatrix);
+}
+void Averaging::writeMqMatrixToBinaryFiles(std::string fname, int timeStep)
+{
+   writeMatrixToBinaryFiles<double>(vxMatrix, fname + "Vx" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(vyMatrix, fname + "Vy" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(vzMatrix, fname + "Vz" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(prMatrix, fname + "Pr" + UbSystem::toString(timeStep) + ".bin");
+}
+void Averaging::readMqMatrixFromBinaryFiles(std::string fname, int timeStep)
+{
+   readMatrixFromBinaryFiles<double>(fname + "Vx" + UbSystem::toString(timeStep) + ".bin", vxMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vy" + UbSystem::toString(timeStep) + ".bin", vyMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vz" + UbSystem::toString(timeStep) + ".bin", vzMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Pr" + UbSystem::toString(timeStep) + ".bin", prMatrix);
 }
 void Averaging::initVolumeAveragingValues()
 {
@@ -708,10 +727,10 @@ void Averaging::sumOfVolumeAveragingValues()
 }
 void Averaging::writeVolumeAveragingValuesToBinaryFiles(std::string ffname, int timeStep)
 {
-   writeMatrixToBinaryFiles<double>(vaVxMatrix.getDataVector(), ffname + "Vx" + UbSystem::toString(timeStep)+".bin");
-   writeMatrixToBinaryFiles<double>(vaVyMatrix.getDataVector(), ffname + "Vy" + UbSystem::toString(timeStep)+".bin");
-   writeMatrixToBinaryFiles<double>(vaVzMatrix.getDataVector(), ffname + "Vz" + UbSystem::toString(timeStep)+".bin");
-   writeMatrixToBinaryFiles<double>(vaPrMatrix.getDataVector(), ffname + "Pr" + UbSystem::toString(timeStep)+".bin");
+   writeMatrixToBinaryFiles<double>(vaVxMatrix, ffname + "Vx" + UbSystem::toString(timeStep)+".bin");
+   writeMatrixToBinaryFiles<double>(vaVyMatrix, ffname + "Vy" + UbSystem::toString(timeStep)+".bin");
+   writeMatrixToBinaryFiles<double>(vaVzMatrix, ffname + "Vz" + UbSystem::toString(timeStep)+".bin");
+   writeMatrixToBinaryFiles<double>(vaPrMatrix, ffname + "Pr" + UbSystem::toString(timeStep)+".bin");
 }
 void Averaging::meanOfVolumeAveragingValues(int numberOfTimeSteps)
 {
@@ -737,10 +756,10 @@ void Averaging::meanOfVolumeAveragingValues(int numberOfTimeSteps)
 }
 void Averaging::writeMeanVolumeAveragingValuesToBinaryFiles(std::string ffname)
 {
-   writeMatrixToBinaryFiles<double>(vaVxMatrix.getDataVector(), ffname + "Vx" + ".bin");
-   writeMatrixToBinaryFiles<double>(vaVyMatrix.getDataVector(), ffname + "Vy" + ".bin");
-   writeMatrixToBinaryFiles<double>(vaVzMatrix.getDataVector(), ffname + "Vz" + ".bin");
-   writeMatrixToBinaryFiles<double>(vaPrMatrix.getDataVector(), ffname + "Pr" + ".bin");
+   writeMatrixToBinaryFiles<double>(vaVxMatrix, ffname + "Vx" + ".bin");
+   writeMatrixToBinaryFiles<double>(vaVyMatrix, ffname + "Vy" + ".bin");
+   writeMatrixToBinaryFiles<double>(vaVzMatrix, ffname + "Vz" + ".bin");
+   writeMatrixToBinaryFiles<double>(vaPrMatrix, ffname + "Pr" + ".bin");
 }
 void Averaging::fluctuationsOfVolumeAveragingValue()
 {
@@ -795,22 +814,22 @@ void Averaging::fluctuationsOfVolumeAveragingValue()
 }
 void Averaging::writeFluctuationsToBinaryFiles(std::string fname, int timeStep)
 {
-   writeMatrixToBinaryFiles<double>(FlucVxMatrix.getDataVector(), fname + "Vx" + UbSystem::toString(timeStep) + ".bin");
-   writeMatrixToBinaryFiles<double>(FlucVyMatrix.getDataVector(), fname + "Vy" + UbSystem::toString(timeStep) + ".bin");
-   writeMatrixToBinaryFiles<double>(FlucVzMatrix.getDataVector(), fname + "Vz" + UbSystem::toString(timeStep) + ".bin");
-   writeMatrixToBinaryFiles<double>(FlucPrMatrix.getDataVector(), fname + "Pr" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(FlucVxMatrix, fname + "Vx" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(FlucVyMatrix, fname + "Vy" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(FlucVzMatrix, fname + "Vz" + UbSystem::toString(timeStep) + ".bin");
+   writeMatrixToBinaryFiles<double>(FlucPrMatrix, fname + "Pr" + UbSystem::toString(timeStep) + ".bin");
 }
 void Averaging::writeStressesToBinaryFiles(std::string fname, int timeStep)
 {
-   writeMatrixToBinaryFiles<double>(StressXX.getDataVector(), fname + UbSystem::toString(timeStep) + "XX" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressXY.getDataVector(), fname + UbSystem::toString(timeStep) + "XY" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressXZ.getDataVector(), fname + UbSystem::toString(timeStep) + "XZ" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressYX.getDataVector(), fname + UbSystem::toString(timeStep) + "YX" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressYY.getDataVector(), fname + UbSystem::toString(timeStep) + "YY" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressYZ.getDataVector(), fname + UbSystem::toString(timeStep) + "YZ" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressZX.getDataVector(), fname + UbSystem::toString(timeStep) + "ZX" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressZY.getDataVector(), fname + UbSystem::toString(timeStep) + "ZY" + ".bin");
-   writeMatrixToBinaryFiles<double>(StressZZ.getDataVector(), fname + UbSystem::toString(timeStep) + "ZZ" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressXX, fname + UbSystem::toString(timeStep) + "XX" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressXY, fname + UbSystem::toString(timeStep) + "XY" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressXZ, fname + UbSystem::toString(timeStep) + "XZ" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressYX, fname + UbSystem::toString(timeStep) + "YX" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressYY, fname + UbSystem::toString(timeStep) + "YY" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressYZ, fname + UbSystem::toString(timeStep) + "YZ" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressZX, fname + UbSystem::toString(timeStep) + "ZX" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressZY, fname + UbSystem::toString(timeStep) + "ZY" + ".bin");
+   writeMatrixToBinaryFiles<double>(StressZZ, fname + UbSystem::toString(timeStep) + "ZZ" + ".bin");
 }
 void Averaging::sumOfFluctuations()
 {
@@ -1023,10 +1042,10 @@ void Averaging::planarAveragingMQ(std::array<int, 3> dimensions)
    }
 void Averaging::readVolumeAveragingValuesFromBinaryFiles(std::string fname, int timeStep)
 {
-   readMatrixFromBinaryFiles<double>(fname + "Vx" + UbSystem::toString(timeStep) + ".bin", vaVxMatrix.getDataVector());
-   readMatrixFromBinaryFiles<double>(fname + "Vy" + UbSystem::toString(timeStep) + ".bin", vaVyMatrix.getDataVector());
-   readMatrixFromBinaryFiles<double>(fname + "Vz" + UbSystem::toString(timeStep) + ".bin", vaVzMatrix.getDataVector());
-   readMatrixFromBinaryFiles<double>(fname + "Pr" + UbSystem::toString(timeStep) + ".bin", vaPrMatrix.getDataVector());
+   readMatrixFromBinaryFiles<double>(fname + "Vx" + UbSystem::toString(timeStep) + ".bin", vaVxMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vy" + UbSystem::toString(timeStep) + ".bin", vaVyMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Vz" + UbSystem::toString(timeStep) + ".bin", vaVzMatrix);
+   readMatrixFromBinaryFiles<double>(fname + "Pr" + UbSystem::toString(timeStep) + ".bin", vaPrMatrix);
 }
 //////////////////////////////////////////////////////////////////////////
 double Averaging::G(double x, double l)

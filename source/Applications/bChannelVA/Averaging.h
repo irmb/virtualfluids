@@ -16,10 +16,13 @@ public:
    void writeMqMatrixToImageFile(std::string output);
    void writeVaMatrixToImageFile(std::string output);
    void writeVaSumMatrixToImageFile(std::string output);
+   void writeMeanMatrixToImageFile(std::string output);
    void volumeAveragingWithMPI(double l_real);
    void readGeoMatrix(std::string dataNameG);
    void writeGeoMatrixToBinaryFiles(std::string fname);
    void readGeoMatrixFromBinaryFiles(std::string fname);
+   void writeMqMatrixToBinaryFiles(std::string fname, int timeStep);
+   void readMqMatrixFromBinaryFiles(std::string fname, int timeStep);
    void initVolumeAveragingValues();
    void initMeanVolumeAveragingValues();
    void initFluctuationsofVolumeAveragingValues();
@@ -55,9 +58,9 @@ protected:
    double G(double x, double l);
    
    template <class T>
-   void writeMatrixToBinaryFiles(std::vector<T> &matrix, std::string fname);
+   void writeMatrixToBinaryFiles(CbArray3D<T>& matrix, std::string fname);
    template <class T>
-   void readMatrixFromBinaryFiles(std::string fname, std::vector<T> &matrix);
+   void readMatrixFromBinaryFiles(std::string fname, CbArray3D<T>& matrix);
 private:
    std::array<int, 3> dimensions;
    std::array<int, 6> geo_extent;
@@ -151,7 +154,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-template<class T> void Averaging::writeMatrixToBinaryFiles(std::vector<T> &matrix, std::string fname)
+template<class T> void Averaging::writeMatrixToBinaryFiles(CbArray3D<T>& matrix, std::string fname)
  {
    vtkSmartPointer<vtkTimerLog> timer_write = vtkSmartPointer<vtkTimerLog>::New();
 
@@ -169,7 +172,9 @@ template<class T> void Averaging::writeMatrixToBinaryFiles(std::vector<T> &matri
       if (!ostr) throw UbException(UB_EXARGS, "couldn't open file " + fname);
    }
 
-   ostr.write((char*)&matrix[0], sizeof(T)*matrix.size());
+   std::vector<T>& vec = matrix.getDataVector();
+
+   ostr.write((char*)& vec[0], sizeof(T)*vec.size());
    ostr.close();
 
    UBLOG(logINFO,"write matrix: end");
@@ -177,7 +182,7 @@ template<class T> void Averaging::writeMatrixToBinaryFiles(std::vector<T> &matri
    UBLOG(logINFO,"write matrix time: " + UbSystem::toString(timer_write->GetElapsedTime()) + " s");
 }
 //////////////////////////////////////////////////////////////////////////
-template<class T> void Averaging::readMatrixFromBinaryFiles(std::string fname, std::vector<T> &matrix)
+template<class T> void Averaging::readMatrixFromBinaryFiles(std::string fname, CbArray3D<T>& matrix)
 {
    vtkSmartPointer<vtkTimerLog> timer_write = vtkSmartPointer<vtkTimerLog>::New();
 
@@ -195,11 +200,14 @@ template<class T> void Averaging::readMatrixFromBinaryFiles(std::string fname, s
    rewind(file);
 
    // allocate memory to contain the whole file:
-   matrix.resize(lSize);
-   if (matrix.size() == 0) { fputs("Memory error", stderr); exit(2); }
+   //matrix.resize(lSize);
+   matrix.resize(dimensions[0], dimensions[1], dimensions[2]);
+   std::vector<T>& vec = matrix.getDataVector();
+
+   if (vec.size() == 0) { fputs("Memory error", stderr); exit(2); }
 
    // copy the file into the buffer:
-   size_t result = fread(&matrix[0], sizeof(T), lSize, file);
+   size_t result = fread(&vec[0], sizeof(T), lSize, file);
    if (result != lSize) { fputs("Reading error", stderr); exit(3); }
 
    fclose(file);

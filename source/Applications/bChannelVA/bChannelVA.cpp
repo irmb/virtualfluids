@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
         int startTimeStep = 60000;
         int timeStep = 1000;
         int numberOfTimeSteps = 61000;
-        int numberOfSamples = numberOfTimeSteps / startTimeStep;
+        int numberOfSamples = (numberOfTimeSteps - startTimeStep)/timeStep + 1;
         int numberOfGridPoints = dimensions[0] * dimensions[1] * dimensions[2];
 
         Averaging av;
@@ -53,19 +53,38 @@ int main(int argc, char* argv[])
         for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
         {
             av.createMQMatrix(pathIn + "/mq/mq" + UbSystem::toString(t) + ".pvtu");
-            av.volumeAveragingWithMPI(real_l);
-            if (myid == 0) av.sumOfVolumeAveragingValues();
-            if (myid == 0) av.writeVolumeAveragingValuesToBinaryFiles(pathOut + "/va/vav/vav", t);
+            if (myid == 0) av.writeMqMatrixToBinaryFiles(pathOut + "/va/mq/mq" + UbSystem::toString(t) + "/mq", t);
+            //av.volumeAveragingWithMPI(real_l);
+            //if (myid == 0)
+            //{
+            //   //av.sumOfVolumeAveragingValues();
+            //   av.writeVolumeAveragingValuesToBinaryFiles(pathOut + "/va/vav/vav", t);
+            //}
         }
 
         //av.writeMqMatrixToImageFile(pathOut + "/va/vav/mq");
-        //av.writeVaMatrixToImageFile(pathOut + "/va/vav/vav");
-        if (myid == 0) av.writeVaSumMatrixToImageFile(pathOut + "/va/vav/vavSum");
-        return 0;
+        //if (myid == 0) av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", 60000);
+        //if (myid == 0) av.writeVaMatrixToImageFile(pathOut + "/va/vav/vav");
+
+        //if (myid == 0)
+        //{
+        //   av.initMeanVolumeAveragingValues();
+        //   av.meanOfVolumeAveragingValues(numberOfSamples);
+        //   av.writeMeanVolumeAveragingValuesToBinaryFiles(pathOut + "/va/mean/mean");
+        //   av.writeMeanMatrixToImageFile(pathOut + "/va/vav/vavMean");
+        //}
+
+        //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
+        //{
+        //   av.readVolumeAveragingValuesFromBinaryFiles(pathOut + "/va/vav/vav", t);
+        //   av.sumOfVolumeAveragingValues();
+        //}
 
         //av.initMeanVolumeAveragingValues();
         //av.meanOfVolumeAveragingValues(numberOfSamples);
         //av.writeMeanVolumeAveragingValuesToBinaryFiles(pathOut + "/va/mean/mean");
+        //av.writeMeanMatrixToImageFile(pathOut + "/va/vav/vavMean");
+
         //av.initFluctuationsofVolumeAveragingValues();
         //av.initSumOfFluctuations();
         //av.initMeanOfFluctuations();
@@ -73,6 +92,7 @@ int main(int argc, char* argv[])
         //av.initSumOfStresses();
         //av.initMeanOfStresses();
         //av.initPlanarAveragingMQ();
+
 
         //for (int t = startTimeStep; t <= numberOfTimeSteps; t += timeStep)
         //{
