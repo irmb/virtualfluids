@@ -445,9 +445,9 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
 
     vtkGridPtr grid = getVtkUnstructuredOctGrid(dataBase);
 
-    addScalarIntCellData( grid, dataBase->numberOfCells, "CellIdx", [&] (uint cellIdx) {
-        return cellIdx;
-    } );
+    //addScalarIntCellData( grid, dataBase->numberOfCells, "CellIdx", [&] (uint cellIdx) {
+    //    return cellIdx;
+    //} );
 
     addScalarIntCellData( grid, dataBase->numberOfCells, "GhostCell", [&] (uint cellIdx) -> int {
         return dataBase->isGhostCell( cellIdx );
@@ -469,13 +469,13 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
 
     //////////////////////////////////////////////////////////////////////////
 
-    addScalarRealCellData(grid, dataBase->numberOfCells, "UU", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_UU[ cellIdx ];
-    });
-
-    addScalarRealCellData(grid, dataBase->numberOfCells, "VV", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_VV[ cellIdx ];
-    });
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "UU", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_UU[ cellIdx ];
+    //});
+    //
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "VV", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_VV[ cellIdx ];
+    //});
 
     addScalarRealCellData(grid, dataBase->numberOfCells, "WW", [&](uint cellIdx) {
         return turbulenceAnalyzer->h_WW[ cellIdx ];
@@ -483,17 +483,17 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
 
     //////////////////////////////////////////////////////////////////////////
 
-    addScalarRealCellData(grid, dataBase->numberOfCells, "UV", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_UV[ cellIdx ];
-    });
-
-    addScalarRealCellData(grid, dataBase->numberOfCells, "UW", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_UW[ cellIdx ];
-    });
-
-    addScalarRealCellData(grid, dataBase->numberOfCells, "VW", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_VW[ cellIdx ];
-    });
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "UV", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_UV[ cellIdx ];
+    //});
+    //
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "UW", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_UW[ cellIdx ];
+    //});
+    //
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "VW", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_VW[ cellIdx ];
+    //});
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -501,13 +501,13 @@ void writeTurbulenceVtkXML(std::shared_ptr<DataBase> dataBase,
         return turbulenceAnalyzer->h_T[ cellIdx ];
     });
 
-    addScalarRealCellData(grid, dataBase->numberOfCells, "TT", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_TT[ cellIdx ];
-    });
-
-    addScalarRealCellData(grid, dataBase->numberOfCells, "p", [&](uint cellIdx) {
-        return turbulenceAnalyzer->h_p[ cellIdx ];
-    });
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "TT", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_TT[ cellIdx ];
+    //});
+    //
+    //addScalarRealCellData(grid, dataBase->numberOfCells, "p", [&](uint cellIdx) {
+    //    return turbulenceAnalyzer->h_p[ cellIdx ];
+    //});
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -537,24 +537,24 @@ void VF_PUBLIC writeTurbulenceVtkXMLParallelSummaryFile(std::shared_ptr<DataBase
 
     file << "    <PCellData>" << std::endl;
 
-        file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "CellIdx"   << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "CellIdx"   << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Int32"   << "\" Name=\"" << "GhostCell" << "\" NumberOfComponents=\"1\"/>" << std::endl;
 
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "U"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "V"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "W"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
 
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UU"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UU"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "WW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
 
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UV"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "UW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "VW"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
         
         file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "T"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "TT"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
-        file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "p"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "TT"        << "\" NumberOfComponents=\"1\"/>" << std::endl;
+        //file << "      <PDataArray type=\"" << "Float64" << "\" Name=\"" << "p"         << "\" NumberOfComponents=\"1\"/>" << std::endl;
 
     file << "    </PCellData>" << std::endl;
 
