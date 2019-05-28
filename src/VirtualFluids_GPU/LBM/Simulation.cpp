@@ -174,28 +174,28 @@ void Simulation::init(SPtr<Parameter> para, SPtr<GridProvider> gridProvider, std
    ////////////////////////////////////////////////////////////////////////////
 
 
-//   //////////////////////////////////////////////////////////////////////////
-//   //Init Traffic by Anna
-//   //////////////////////////////////////////////////////////////////////////
-//   if (para->getMyID() == 0)
-//   {
-//	   this->useTrafficGPU = true;
-//
-//#ifdef _WIN32
-//	   //Baumbart
-//	   std::string path = "F:/Basel2019/";
-//#else
-//	   //Phoenix
-//	   std::string path = para->getOutputPath(); // "/work/marschoe/Basel4GPU/";
-//#endif
-//
-//	   trafficFactory = new TrafficMovementFactory();
-//
-//	   if (useTrafficGPU)
-//		   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration, para->getParD(0)->naschVelocity);
-//	   else
-//		   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration, para->getParH(0)->naschVelocity);
-//   }
+   //////////////////////////////////////////////////////////////////////////
+   //Init Traffic by Anna
+   //////////////////////////////////////////////////////////////////////////
+   if ((para->getConcFile()) && (para->isStreetVelocityFile()) && (para->getMyID() == 0))
+   {
+	   this->useTrafficGPU = true;
+
+#ifdef _WIN32
+	   //Baumbart
+	   std::string path = "F:/Basel2019/";
+#else
+	   //Phoenix
+	   std::string path = para->getOutputPath(); // "/work/marschoe/Basel4GPU/";
+#endif
+
+	   trafficFactory = new TrafficMovementFactory();
+
+	   if (useTrafficGPU)
+		   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParD(0)->concentration, para->getParD(0)->naschVelocity);
+	   else
+		   trafficFactory->initTrafficMovement(path, useTrafficGPU, para->getParH(0)->concentration, para->getParH(0)->naschVelocity);
+   }
 
    //////////////////////////////////////////////////////////////////////////
    //Allocate Memory for Drag Lift Calculation
@@ -1085,13 +1085,13 @@ void Simulation::run()
 
 
 			  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				////Calculate Traffic by Anna
-				//int numberOfTimestepsPerSecond = 50;
-				//if ((t % numberOfTimestepsPerSecond == 0) && (para->getMyID() == 0))
-				//{
-				//	trafficFactory->calculateTimestep(t / numberOfTimestepsPerSecond);
-				//	if(!useTrafficGPU)				para->cudaCopyConcFile(0);
-				//}
+				//Calculate Traffic by Anna
+				int numberOfTimestepsPerSecond = 50;
+				if ((para->getConcFile()) && (para->isStreetVelocityFile()) && (t % numberOfTimestepsPerSecond == 0) && (para->getMyID() == 0))
+				{
+					trafficFactory->calculateTimestep(t / numberOfTimestepsPerSecond);
+					if(!useTrafficGPU)				para->cudaCopyConcFile(0);
+				}
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1119,7 +1119,7 @@ void Simulation::run()
                getLastCudaError("QADBBDev27 execution failed");
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //Street Manhattan - never use again, please
-			   if (para->getMyID() == 0)
+			   if ((para->getConcFile()) && (para->getMyID() == 0))
 			   {
 				   QADDirichletDev27( para->getParD(0)->numberofthreads,      para->getParD(0)->nx,					para->getParD(0)->ny,
 									  para->getParD(0)->d0SP.f[0],            para->getParD(0)->d27.f[0],           para->getParD(0)->concentration, //para->getParD(0)->TempVel.tempPulse,
@@ -1411,17 +1411,17 @@ void Simulation::run()
 			//////////////////////////////////////////////////////////////////////////////
 
 		  //////////////////////////////////////////////////////////////////////////////////
-		  //// Nasch Velocity BC
-		  //if (para->getParH(level)->numberOfStreetNodes > 0)
-		  //{
-			 // QVeloStreetDevEQ27(para->getParD(level)->numberofthreads,
-				//		         para->getParD(level)->streetFractionXvelocity, para->getParD(level)->streetFractionYvelocity, para->getParD(level)->naschVelocity,
-				//		         para->getParD(level)->d0SP.f[0],               para->getParD(level)->concIndex,
-				//		         para->getParD(level)->numberOfStreetNodes,     para->getVelocityRatio(),
-				//		         para->getParD(level)->neighborX_SP,            para->getParD(level)->neighborY_SP,            para->getParD(level)->neighborZ_SP,
-				//		         para->getParD(level)->size_Mat_SP,             para->getParD(level)->evenOrOdd);
-		  //    getLastCudaError("QVeloStreetDevEQ27 execution failed");
-		  //}
+		  // Nasch Velocity BC
+		  if ((para->isStreetVelocityFile()) && (para->getParH(level)->numberOfStreetNodes > 0))
+		  {
+			  QVeloStreetDevEQ27(para->getParD(level)->numberofthreads,
+						         para->getParD(level)->streetFractionXvelocity, para->getParD(level)->streetFractionYvelocity, para->getParD(level)->naschVelocity,
+						         para->getParD(level)->d0SP.f[0],               para->getParD(level)->concIndex,
+						         para->getParD(level)->numberOfStreetNodes,     para->getVelocityRatio(),
+						         para->getParD(level)->neighborX_SP,            para->getParD(level)->neighborY_SP,            para->getParD(level)->neighborZ_SP,
+						         para->getParD(level)->size_Mat_SP,             para->getParD(level)->evenOrOdd);
+		      getLastCudaError("QVeloStreetDevEQ27 execution failed");
+		  }
 		  //////////////////////////////////////////////////////////////////////////////////
 
 		  
@@ -2565,8 +2565,9 @@ void Simulation::run()
             output << "Dateien schreiben t=" << t << "...";
 			
 			////////////////////////////////////////////////////////////////////////////
-			////Print Traffic by Anna
-			//trafficFactory->writeReducedTimestep(t);					
+			//Print Traffic by Anna
+			if ((para->getConcFile()) && (para->isStreetVelocityFile()))
+				trafficFactory->writeReducedTimestep(t);
 			////////////////////////////////////////////////////////////////////////////
 
 
