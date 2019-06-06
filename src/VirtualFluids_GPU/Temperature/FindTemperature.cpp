@@ -23,18 +23,7 @@ void initTemperatur(Parameter* para, int lev)
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       para->getParD(lev)->evenOrOdd = false;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      InitThS7(para->getParD(lev)->numberofthreads, 
-               para->getParD(lev)->neighborX_SP, 
-               para->getParD(lev)->neighborY_SP, 
-               para->getParD(lev)->neighborZ_SP, 
-               para->getParD(lev)->geoSP,       
-               para->getParD(lev)->Conc, 
-               para->getParD(lev)->vx_SP, 
-               para->getParD(lev)->vy_SP, 
-               para->getParD(lev)->vz_SP, 
-               para->getParD(lev)->size_Mat_SP, 
-               para->getParD(lev)->d7.f[0],
-               para->getParD(lev)->evenOrOdd); 
+      //InitThS7(); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //printf("nach InitThS7 1\n");
@@ -42,18 +31,7 @@ void initTemperatur(Parameter* para, int lev)
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       para->getParD(lev)->evenOrOdd = true;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      InitThS7(para->getParD(lev)->numberofthreads, 
-               para->getParD(lev)->neighborX_SP, 
-               para->getParD(lev)->neighborY_SP, 
-               para->getParD(lev)->neighborZ_SP, 
-               para->getParD(lev)->geoSP,       
-               para->getParD(lev)->Conc, 
-               para->getParD(lev)->vx_SP, 
-               para->getParD(lev)->vy_SP, 
-               para->getParD(lev)->vz_SP, 
-               para->getParD(lev)->size_Mat_SP, 
-               para->getParD(lev)->d7.f[0],
-               para->getParD(lev)->evenOrOdd); 
+      //InitThS7(); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	  //printf("nach InitThS7 2\n");
@@ -77,36 +55,14 @@ void initTemperatur(Parameter* para, int lev)
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       para->getParD(lev)->evenOrOdd = false;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      InitThS27(  para->getParD(lev)->numberofthreads, 
-                  para->getParD(lev)->neighborX_SP, 
-                  para->getParD(lev)->neighborY_SP, 
-                  para->getParD(lev)->neighborZ_SP, 
-                  para->getParD(lev)->geoSP,       
-                  para->getParD(lev)->Conc, 
-                  para->getParD(lev)->vx_SP, 
-                  para->getParD(lev)->vy_SP, 
-                  para->getParD(lev)->vz_SP, 
-                  para->getParD(lev)->size_Mat_SP, 
-                  para->getParD(lev)->d27.f[0],
-                  para->getParD(lev)->evenOrOdd); 
+      //InitThS27( ); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       para->getParD(lev)->evenOrOdd = true;
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      InitThS27(  para->getParD(lev)->numberofthreads, 
-                  para->getParD(lev)->neighborX_SP, 
-                  para->getParD(lev)->neighborY_SP, 
-                  para->getParD(lev)->neighborZ_SP, 
-                  para->getParD(lev)->geoSP,       
-                  para->getParD(lev)->Conc, 
-                  para->getParD(lev)->vx_SP, 
-                  para->getParD(lev)->vy_SP, 
-                  para->getParD(lev)->vz_SP, 
-                  para->getParD(lev)->size_Mat_SP, 
-                  para->getParD(lev)->d27.f[0],
-                  para->getParD(lev)->evenOrOdd); 
+      //InitThS27(  ); 
       getLastCudaError("Kernel execution failed"); 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

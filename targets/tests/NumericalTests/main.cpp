@@ -104,6 +104,7 @@ static void validateTestSuite()
 static void startNumericalTests(const std::string &configFile)
 {
 	std::shared_ptr<ConfigFileReader> configReader = ConfigFileReader::getNewInstance(configFile);
+	configReader->readConfigFile();
 
 	std::shared_ptr<NumericalTestFactoryImp> numericalTestFactory = NumericalTestFactoryImp::getNewInstance(configReader->getConfigData());
 

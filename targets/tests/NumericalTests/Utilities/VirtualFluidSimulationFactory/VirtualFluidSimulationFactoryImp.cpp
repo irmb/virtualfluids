@@ -8,6 +8,8 @@
 #include "Utilities/VirtualFluidSimulation/VirtualFluidSimulationImp.h"
 
 #include "VirtualFluids_GPU/Parameter/Parameter.h"
+#include "VirtualFluids_GPU/Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "VirtualFluids_GPU/PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
 
 std::shared_ptr<VirtualFluidSimulationFactory> VirtualFluidSimulationFactoryImp::getNewInstance()
 {
@@ -103,7 +105,7 @@ std::shared_ptr<Parameter> VirtualFluidSimulationFactoryImp::makeParameter(std::
 	para->setMainKernel(simPara->getKernelConfiguration()->getMainKernel());
 	para->setMultiKernelOn(simPara->getKernelConfiguration()->getMultiKernelOn());
 	para->setMultiKernelLevel(simPara->getKernelConfiguration()->getMultiKernelLevel());
-	para->setMultiKernelName(simPara->getKernelConfiguration()->getMultiKernelName());
+	para->setMultiKernel(simPara->getKernelConfiguration()->getMultiKernel());
 
 	return para;
 }
@@ -123,6 +125,9 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 {
 	std::vector<std::shared_ptr<VirtualFluidSimulation> > vfSimulations;
 
+	std::shared_ptr<KernelFactoryImp> kernelFactory = KernelFactoryImp::getInstance();
+	std::shared_ptr<PreProcessorFactoryImp> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+
 	for (int i = 0; i < testSim.size(); i++) {
 		std::shared_ptr<VirtualFluidSimulationImp> vfSim = VirtualFluidSimulationImp::getNewInstance();
 		
@@ -137,6 +142,10 @@ std::vector<std::shared_ptr<VirtualFluidSimulation> > VirtualFluidSimulationFact
 		vfSim->setDataWriter(testSim.at(i)->getDataWriter());
 		vfSim->setNumericalTestSuite(testSim.at(i));
 		vfSim->setTimeTracking(testSim.at(i)->getTimeTracking());
+
+		vfSim->setKernelFactory(kernelFactory);
+		vfSim->setPreProcessorFactory(preProcessorFactory);
+
 		vfSimulations.push_back(vfSim);		
 	}
 

@@ -5,15 +5,17 @@
 
 #include "Utilities/Structs/GridInformationStruct.h"
 
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
+
 #include <sstream>
 
-std::shared_ptr<SimulationParameter> ShearWaveSimulationParameter::getNewInstance(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
+std::shared_ptr<SimulationParameter> ShearWaveSimulationParameter::getNewInstance(KernelType kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
 {
-	return std::shared_ptr<SimulationParameter>(new ShearWaveSimulationParameter(kernelName, viscosity, parameterStruct, gridInfo));
+	return std::shared_ptr<SimulationParameter>(new ShearWaveSimulationParameter(kernel, viscosity, parameterStruct, gridInfo));
 }
 
-ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
-:SimulationParameterImp(kernelName, viscosity, parameterStruct->basicSimulationParameter, gridInfo)
+ShearWaveSimulationParameter::ShearWaveSimulationParameter(KernelType kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> parameterStruct, std::shared_ptr<GridInformationStruct> gridInfo)
+:SimulationParameterImp(kernel, viscosity, parameterStruct->basicSimulationParameter, gridInfo)
 {
 	this->timeStepLength = parameterStruct->basicTimeStepLength * (gridInfo->lx / l0)*(gridInfo->lx / l0);
 
@@ -22,6 +24,9 @@ ShearWaveSimulationParameter::ShearWaveSimulationParameter(std::string kernelNam
 	else
 		this->maxVelocity = parameterStruct->uz / (lx / l0);
  
+	std::shared_ptr<KernelMapper> myKernelMapper = KernelMapper::getInstance();
+	std::string kernelName = myKernelMapper->getString(kernel);
+
 	std::ostringstream oss;
 	oss << parameterStruct->vtkFilePath << "/ShearWave/Viscosity_" << viscosity << "/ux_" << parameterStruct->ux << "_uz_" << parameterStruct->uz << "/" << kernelName << "/grid" << lx;
 	generateFileDirectionInMyStystem(oss.str());

@@ -17,6 +17,8 @@
 #include "core/PointerDefinitions.h"
 #include "VirtualFluidsDefinitions.h"
 
+#include "Kernel//Utilities/KernelType.h"
+
 //struct
 struct ParameterStruct{
 	bool evenOrOdd;
@@ -79,6 +81,9 @@ struct ParameterStruct{
 	real *vx,    *vy,    *vz,    *rho;
 	real *vx_SP, *vy_SP, *vz_SP, *rho_SP, *press_SP;
 	real vis, omega;
+
+	//derivations for iso test
+	real *dxxUx, *dyyUy, *dzzUz;
 
 	//median-macro-values/////
 	real *vx_SP_Med, *vy_SP_Med, *vz_SP_Med, *rho_SP_Med, *press_SP_Med;
@@ -446,6 +451,11 @@ public:
 	void cudaCopyForcingToHost();
 	void cudaFreeForcing();
 
+	void cudaAlloc2ndOrderDerivitivesIsoTest(int lev);
+	void cudaCopy2ndOrderDerivitivesIsoTestDH(int lev);
+	void cudaCopy2ndOrderDerivitivesIsoTestHD(int lev);
+	void cudaFree2ndOrderDerivitivesIsoTest(int lev);
+
 	//////////////////////////////////////////////////////////////////////////
 	//Particles
 	void cudaAllocParticles(int lev);
@@ -733,10 +743,12 @@ public:
 	void setOutflowBoundaryNormalY(std::string outflowNormalY);
 	void setOutflowBoundaryNormalZ(std::string outflowNormalZ);
 	//Kernel
-	void setMainKernel(std::string kernelName);
+	void setMainKernel(KernelType kernel);
 	void setMultiKernelOn(bool isOn);
 	void setMultiKernelLevel(std::vector< int> kernelLevel);
-	void setMultiKernelName(std::vector< std::string> kernelName);
+	void setMultiKernel(std::vector< KernelType> kernel);
+
+	void setADKernel(ADKernelType adKernel);
 
 	//getter
 	double* getForcesDouble();
@@ -932,10 +944,12 @@ public:
 	//CUDA random number
 	curandState* getRandomState();
 	//Kernel
-	std::string getMainKernelName();
+	KernelType getMainKernel();
 	bool getMultiKernelOn();
 	std::vector< int> getMultiKernelLevel();
-	std::vector< std::string> getMultiKernelName();
+	std::vector< KernelType> getMultiKernel();
+
+	ADKernelType getADKernel();
 
 	~Parameter();
 
@@ -959,10 +973,12 @@ private:
 	unsigned int outputCount;
 
 	//Kernel
-	std::string mainKernelName;
+	KernelType mainKernel;
 	bool multiKernelOn;
 	std::vector< int> multiKernelLevel;
-	std::vector< std::string> multiKernelName;
+	std::vector< KernelType> multiKernel;
+
+	ADKernelType adKernel;
 
 	//////////////////////////////////////////////////////////////////////////
 	//particles

@@ -14,6 +14,8 @@ class KernelConfiguration;
 class TestSimulation;
 class TimeTracking;
 class NumericalTestSuite;
+class KernelFactory;
+class PreProcessorFactory;
 
 class VirtualFluidSimulationImp : public VirtualFluidSimulation
 {
@@ -28,6 +30,9 @@ public:
 	void setNumericalTestSuite(std::shared_ptr<NumericalTestSuite> numericalTestSuite);
 	void setTimeTracking(std::shared_ptr<TimeTracking> timeTracking);
 
+	void setKernelFactory(std::shared_ptr<KernelFactory> kernelFactory);
+	void setPreProcessorFactory(std::shared_ptr<PreProcessorFactory> preProcessorFactory);
+
 protected:
 	VirtualFluidSimulationImp() {};
 		
@@ -38,5 +43,8 @@ private:
 	std::shared_ptr<DataWriter> dataWriter;
 	std::shared_ptr<NumericalTestSuite> numericalTestSuite;
 	std::shared_ptr<TimeTracking> timeTracking;
+
+	std::shared_ptr<KernelFactory> kernelFactory;
+	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
 };
 #endif

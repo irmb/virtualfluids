@@ -4,7 +4,8 @@
 #include "core/PointerDefinitions.h"
 
 class Parameter;
+class PreProcessor;
 
-void initLattice(SPtr<Parameter> para);
+void initLattice(SPtr<Parameter> para, SPtr<PreProcessor> preProcessor);
 
 #endif

@@ -7,6 +7,6 @@
 #include "Communication/Communicator.h"
 #include "Calculation/PorousMedia.h"
 
-extern "C" void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int level, int max_level, unsigned int t);
+extern "C" void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t);
 
 #endif

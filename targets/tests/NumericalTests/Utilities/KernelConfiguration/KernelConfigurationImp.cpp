@@ -1,8 +1,8 @@
 #include "KernelConfigurationImp.h"
 
-std::string KernelConfigurationImp::getMainKernel()
+KernelType KernelConfigurationImp::getMainKernel()
 {
-	return mainKernelName;
+	return mainKernel;
 }
 
 bool KernelConfigurationImp::getMultiKernelOn()
@@ -15,33 +15,33 @@ std::vector<int> KernelConfigurationImp::getMultiKernelLevel()
 	return multiKernelLevel;
 }
 
-std::vector<std::string> KernelConfigurationImp::getMultiKernelName()
+std::vector<KernelType> KernelConfigurationImp::getMultiKernel()
 {
-	return multiKernelName;
+	return multiKernel;
 }
 
-std::shared_ptr<KernelConfigurationImp> KernelConfigurationImp::getNewInstance(std::string kernelName)
+std::shared_ptr<KernelConfigurationImp> KernelConfigurationImp::getNewInstance(KernelType kernelName)
 {
 	return std::shared_ptr<KernelConfigurationImp>(new KernelConfigurationImp(kernelName));
 }
 
-std::shared_ptr<KernelConfigurationImp> KernelConfigurationImp::getNewInstance(std::string kernelName, std::vector<int> multiKernelLevel, std::vector<std::string> multiKernelName)
+std::shared_ptr<KernelConfigurationImp> KernelConfigurationImp::getNewInstance(KernelType kernel, std::vector<int> multiKernelLevel, std::vector<KernelType> multiKernelName)
 {
-	return std::shared_ptr<KernelConfigurationImp>(new KernelConfigurationImp(kernelName, multiKernelLevel, multiKernelName));
+	return std::shared_ptr<KernelConfigurationImp>(new KernelConfigurationImp(kernel, multiKernelLevel, multiKernelName));
 }
 
-KernelConfigurationImp::KernelConfigurationImp(std::string kernelName)
+KernelConfigurationImp::KernelConfigurationImp(KernelType kernel)
 {
-	this->mainKernelName = kernelName;
+	this->mainKernel = kernel;
 	multiKernelOn = false;
 	multiKernelLevel.resize(0);
-	multiKernelName.resize(0);
+	multiKernel.resize(0);
 }
 
-KernelConfigurationImp::KernelConfigurationImp(std::string mainKernelName, std::vector<int> multiKernelLevel, std::vector<std::string> multiKernelName)
+KernelConfigurationImp::KernelConfigurationImp(KernelType mainKernel, std::vector<int> multiKernelLevel, std::vector<KernelType> multiKernel)
 {
-	this->mainKernelName = mainKernelName;
+	this->mainKernel = mainKernel;
 	multiKernelOn = true;
 	this->multiKernelLevel = multiKernelLevel;
-	this->multiKernelName = multiKernelName;
+	this->multiKernel = multiKernel;
 }

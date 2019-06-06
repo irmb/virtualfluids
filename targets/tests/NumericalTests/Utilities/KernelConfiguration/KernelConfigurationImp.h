@@ -8,22 +8,22 @@
 class KernelConfigurationImp : public KernelConfiguration
 {
 public:
-	std::string getMainKernel();
+	KernelType getMainKernel();
 	bool getMultiKernelOn();
 	std::vector<int> getMultiKernelLevel();
-	std::vector<std::string> getMultiKernelName();
+	std::vector<KernelType> getMultiKernel();
 
-	static std::shared_ptr<KernelConfigurationImp> getNewInstance(std::string kernelName);
-	static std::shared_ptr<KernelConfigurationImp> getNewInstance(std::string mainKernelName, std::vector<int> multiKernelLevel, std::vector<std::string> multiKernelName);
+	static std::shared_ptr<KernelConfigurationImp> getNewInstance(KernelType kernel);
+	static std::shared_ptr<KernelConfigurationImp> getNewInstance(KernelType kernel, std::vector<int> multiKernelLevel, std::vector<KernelType> multiKernel);
 
 private:
-	KernelConfigurationImp(std::string kernelName);
-	KernelConfigurationImp(std::string kernelName, std::vector<int> multiKernelLevel, std::vector<std::string> multiKernelName);
+	KernelConfigurationImp(KernelType kernel);
+	KernelConfigurationImp(KernelType kernel, std::vector<int> multiKernelLevel, std::vector<KernelType> multiKernel);
 	KernelConfigurationImp() {};
 
-	std::string mainKernelName;
+	KernelType mainKernel;
 	bool multiKernelOn;
 	std::vector<int> multiKernelLevel;
-	std::vector<std::string> multiKernelName;
+	std::vector<KernelType> multiKernel;
 };
 #endif 

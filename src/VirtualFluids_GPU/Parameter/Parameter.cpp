@@ -2677,6 +2677,43 @@ void Parameter::cudaFreeProcessNeighborADZ(int lev, unsigned int processNeighbor
 	checkCudaErrors( cudaFreeHost(parH[lev]->recvProcessNeighborADZ[processNeighbor].index  ));
 	checkCudaErrors( cudaFreeHost(parH[lev]->recvProcessNeighborADZ[processNeighbor].f[0]     ));
 }
+void Parameter::cudaAlloc2ndOrderDerivitivesIsoTest(int lev)
+{
+	//Host
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->dxxUx), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->dyyUy), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMallocHost((void**) &(parH[lev]->dzzUz), parH[lev]->mem_size_real_SP));
+	//Device (spinning ship)
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->dxxUx), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->dyyUy), parH[lev]->mem_size_real_SP));
+	checkCudaErrors(cudaMalloc((void**) &(parD[lev]->dzzUz), parH[lev]->mem_size_real_SP));
+	//////////////////////////////////////////////////////////////////////////
+	double tmp = 3. * (double)parH[lev]->mem_size_real_SP;
+	setMemsizeGPU(tmp, false);
+	//printf("Coord = %f MB",tmp/1000000.);  
+}
+void Parameter::cudaCopy2ndOrderDerivitivesIsoTestDH(int lev)
+{
+	//copy device to host
+	checkCudaErrors(cudaMemcpy(parH[lev]->dxxUx, parD[lev]->dxxUx, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->dyyUy, parD[lev]->dyyUy, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+	checkCudaErrors(cudaMemcpy(parH[lev]->dzzUz, parD[lev]->dzzUz, parH[lev]->mem_size_real_SP, cudaMemcpyDeviceToHost));
+}
+void Parameter::cudaCopy2ndOrderDerivitivesIsoTestHD(int lev)
+{
+	//copy host to device
+	checkCudaErrors(cudaMemcpy(parD[lev]->dxxUx, parH[lev]->dxxUx, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->dyyUy, parH[lev]->dyyUy, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy(parD[lev]->dzzUz, parH[lev]->dzzUz, parH[lev]->mem_size_real_SP, cudaMemcpyHostToDevice));
+
+}
+void Parameter::cudaFree2ndOrderDerivitivesIsoTest(int lev)
+{
+	checkCudaErrors(cudaFreeHost(parH[lev]->dxxUx));
+	checkCudaErrors(cudaFreeHost(parH[lev]->dyyUy));
+	checkCudaErrors(cudaFreeHost(parH[lev]->dzzUz));
+
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -3541,9 +3578,9 @@ void Parameter::setOutflowBoundaryNormalZ(std::string outflowNormalZ)
 {
 	ic.outflowNormalZ = outflowNormalZ;
 }
-void Parameter::setMainKernel(std::string kernelName)
+void Parameter::setMainKernel(KernelType kernel)
 {
-	this->mainKernelName = kernelName;
+	this->mainKernel = kernel;
 }
 void Parameter::setMultiKernelOn(bool isOn)
 {
@@ -3553,9 +3590,13 @@ void Parameter::setMultiKernelLevel(std::vector< int> kernelLevel)
 {
 	this->multiKernelLevel = multiKernelLevel;
 }
-void Parameter::setMultiKernelName(std::vector< std::string> kernelName)
+void Parameter::setMultiKernel(std::vector< KernelType> kernel)
 {
-	this->multiKernelName = kernelName;
+	this->multiKernel = kernel;
+}
+void Parameter::setADKernel(ADKernelType adKernel)
+{
+	this->adKernel = adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4428,9 +4469,9 @@ curandState* Parameter::getRandomState()
 	return this->devState;
 }
 
-std::string Parameter::getMainKernelName()
+KernelType Parameter::getMainKernel()
 {
-	return mainKernelName;
+	return mainKernel;
 }
 bool Parameter::getMultiKernelOn()
 {
@@ -4440,9 +4481,13 @@ std::vector< int> Parameter::getMultiKernelLevel()
 {
 	return multiKernelLevel;
 }
-std::vector< std::string> Parameter::getMultiKernelName()
+std::vector< KernelType> Parameter::getMultiKernel()
 {
-	return multiKernelName;
+	return multiKernel;
+}
+ADKernelType Parameter::getADKernel()
+{
+	return adKernel;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

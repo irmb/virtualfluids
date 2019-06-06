@@ -7,10 +7,10 @@
 
 #include <experimental/filesystem>
 
-SimulationParameterImp::SimulationParameterImp(std::string kernelName, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
+SimulationParameterImp::SimulationParameterImp(KernelType kernel, double viscosity, std::shared_ptr<BasicSimulationParameterStruct> basicSimPara, std::shared_ptr<GridInformationStruct> gridInfo)
 	: viscosity(viscosity)
 {
-	kernelConfig = KernelConfigurationImp::getNewInstance(kernelName);
+	kernelConfig = KernelConfigurationImp::getNewInstance(kernel);
 
 	devices = basicSimPara->devices;
 	numberOfTimeSteps = basicSimPara->numberOfTimeSteps;

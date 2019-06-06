@@ -3,6 +3,8 @@
 
 #include "NumericalTestFactory.h"
 
+#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
+
 struct ConfigDataStruct;
 struct GridInformationStruct;
 struct L2NormTestParameterStruct;
@@ -59,19 +61,19 @@ private:
 
 	void init(std::shared_ptr<ConfigDataStruct> configFileData);
 
-	std::shared_ptr<NumericalTestStruct> makeNumericalTestStruct(std::shared_ptr<ConfigDataStruct> configFileData, std::shared_ptr<SimulationDataStruct> simDataStruct, std::string kernel, double viscosity, int basicTimeStepLength);
+	std::shared_ptr<NumericalTestStruct> makeNumericalTestStruct(std::shared_ptr<ConfigDataStruct> configFileData, std::shared_ptr<SimulationDataStruct> simDataStruct, KernelType kernel, double viscosity, int basicTimeStepLength);
 	void addNumericalTestStruct(std::shared_ptr<NumericalTestStruct> numericalTestStruct);
 
-	std::shared_ptr<SimulationDataStruct> makeTaylorGreenUxSimulationData(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
-	std::shared_ptr<SimulationDataStruct> makeTaylorGreenUzSimulationData(std::string kernelName, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
-	std::shared_ptr<SimulationDataStruct> makeShearWaveSimulationData(std::string kernelName, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+	std::shared_ptr<SimulationDataStruct> makeTaylorGreenUxSimulationData(KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUxParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+	std::shared_ptr<SimulationDataStruct> makeTaylorGreenUzSimulationData(KernelType kernel, double viscosity, std::shared_ptr<TaylorGreenVortexUzParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
+	std::shared_ptr<SimulationDataStruct> makeShearWaveSimulationData(KernelType kernel, double viscosity, std::shared_ptr<ShearWaveParameterStruct> simParaStruct, std::vector<std::shared_ptr<GridInformationStruct> > gridInfoStruct);
 
 	std::vector<std::shared_ptr<TestSimulationImp> > makeTestSimulations(std::vector<std::shared_ptr<TestSimulationDataStruct> > testSimDataStruct, std::shared_ptr<VectorWriterInformationStruct> vectorWriterInfo, unsigned int ySliceForCalculation);
 
 	std::shared_ptr<TestStruct> makePhiTestsStructs(std::shared_ptr<PhiTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations, double viscosity);
 	std::shared_ptr<TestStruct> makeNyTestsStructs(std::shared_ptr<NyTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations, double viscosity);
 	std::shared_ptr<TestStruct> makeL2NormTestsStructs(std::shared_ptr<L2NormTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSimumlations);
-	std::shared_ptr<TestStruct> makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::string kernelName);
+	std::shared_ptr<TestStruct> makeL2NormTestsBetweenKernelsStructs(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, KernelType kernel);
 	
 	std::vector<std::shared_ptr<PhiTest> > makePhiTests(std::shared_ptr<PhiTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<PhiTestPostProcessingStrategy> > phiAndNuPostProStrategy, double viscosity, std::string dataToCalculate);
 	std::vector<std::shared_ptr<NyTest> > makeNyTests(std::shared_ptr<NyTestParameterStruct> testParameter, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<NyTestPostProcessingStrategy> > phiAndNuPostProStrategy, double viscosity, std::string dataToCalculate);
@@ -79,7 +81,7 @@ private:
 	std::vector<std::vector<std::shared_ptr<L2NormTestBetweenKernels> > > makeL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
 	std::vector<std::shared_ptr<L2NormTestBetweenKernels> > linkL2NormTestsBetweenKernels(std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testPara, std::vector<std::shared_ptr<TestSimulationImp> > testSim, std::vector<std::shared_ptr<L2NormBetweenKernelPostProcessingStrategy> > postProcessingStrategies);
 
-	std::shared_ptr<LogFileWriter> makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<SimulationInfo> > simInfo, std::string kernelName, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo);
+	std::shared_ptr<LogFileWriter> makeLogFileWriter(std::vector<std::shared_ptr<TestLogFileInformation> > testLogFiles, std::shared_ptr<SimulationLogFileInformation> simLogInfo, std::vector<std::shared_ptr<SimulationInfo> > simInfo, KernelType kernel, double viscosity, int basicTimeStepLength, std::shared_ptr<LogFileParameterStruct> logFilePara, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo);
 
 	void initTestStruct(std::shared_ptr<TestStruct> testStruct, std::shared_ptr<NumericalTestStruct> numericalTestStruct, std::vector<std::shared_ptr<TestLogFileInformation> > &testLogFileInfo, std::shared_ptr<BasicTestLogFileInformation> basicTestLogFileInfo);
 

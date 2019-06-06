@@ -11,6 +11,7 @@ void VirtualFluidSimulationImp::run()
 {
 	numericalTestSuite->makeSimulationHeadOutput();
 	Simulation sim;
+	sim.setFactories(kernelFactory, preProcessorFactory);
 	sim.init(para, grid, dataWriter);
 
 	timeTracking->setSimulationStartTime();
@@ -50,4 +51,14 @@ void VirtualFluidSimulationImp::setNumericalTestSuite(std::shared_ptr<NumericalT
 void VirtualFluidSimulationImp::setTimeTracking(std::shared_ptr<TimeTracking> timeTracking)
 {
 	this->timeTracking = timeTracking;
+}
+
+void VirtualFluidSimulationImp::setKernelFactory(std::shared_ptr<KernelFactory> kernelFactory)
+{
+	this->kernelFactory = kernelFactory;
+}
+
+void VirtualFluidSimulationImp::setPreProcessorFactory(std::shared_ptr<PreProcessorFactory> preProcessorFactory)
+{
+	this->preProcessorFactory = preProcessorFactory;
 }

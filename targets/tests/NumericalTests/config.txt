@@ -6,7 +6,7 @@ Devices="1"
 ##################################################
 #	       Basic Simulation Parameter			 #
 ##################################################
-KernelsToTest="BGKCompSP27 BGKPlusCompSP27 CumulantOneCompSP27 CumulantAA2016CompSP27 CumulantF3CompSP27"
+KernelsToTest="CumulantAA2016CompSP27"
 #BGKCompSP27 BGKPlusCompSP27 CumulantAA2016CompSP27 CumulantOneCompSP27 CumulantF3CompSP27 CumulantF32018CompSP27 CumulantAll4CompSP27
 NumberOfTimeSteps=20
 Viscosity="0.001"
@@ -53,7 +53,7 @@ EndTimeStepCalculation_Phi=20
 ##################################################
 #			Ny Test Parameter					 #
 ##################################################
-NyTest=true
+NyTest=false
 
 MinOrderOfAccuracy_Ny=1.95
 StartTimeStepCalculation_Ny=11
@@ -62,7 +62,7 @@ EndTimeStepCalculation_Ny=20
 ##################################################
 #			L2-Norm Test Parameter				 #
 ##################################################
-L2NormTest=true
+L2NormTest=false
 
 NormalizeData_L2Norm="Amplitude BasicData"
 MaxL2NormDiff="4.5 0.5"
@@ -82,8 +82,8 @@ NormalizeWith=amplitude
 ##################################################
 #			Simulation To Perform				 #
 ##################################################
-TaylorGreenVortexUx32=false
-TaylorGreenVortexUx64=false
+TaylorGreenVortexUx32=true
+TaylorGreenVortexUx64=true
 TaylorGreenVortexUx128=false
 TaylorGreenVortexUx256=false
 TaylorGreenVortexUx512=false
@@ -94,10 +94,10 @@ TaylorGreenVortexUz128=false
 TaylorGreenVortexUz256=false
 TaylorGreenVortexUz512=false
 
-ShearWave32=true
-ShearWave64=true
-ShearWave128=true
-ShearWave256=true
+ShearWave32=false
+ShearWave64=false
+ShearWave128=false
+ShearWave256=false
 ShearWave512=false
 
 ##################################################

@@ -36,6 +36,10 @@
 #include "Output/FileWriter.h"
 
 
+#include "Kernel/Utilities/KernelFactory/KernelFactoryImp.h"
+#include "PreProcessor/PreProcessorFactory/PreProcessorFactoryImp.h"
+
+
 std::string getGridPath(std::shared_ptr<Parameter> para, std::string Gridpath)
 {
     if (para->getNumprocs() == 1)
@@ -344,7 +348,12 @@ void multipleLevel(const std::string& configPath)
     setParameters(para, input);
 
     Simulation sim;
-    SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
+    
+	SPtr<KernelFactory> kernelFactory = KernelFactoryImp::getInstance();
+	SPtr<PreProcessorFactory> preProcessorFactory = PreProcessorFactoryImp::getInstance();
+	sim.setFactories(kernelFactory, preProcessorFactory);
+
+	SPtr<FileWriter> fileWriter = SPtr<FileWriter>(new FileWriter());
     sim.init(para, gridGenerator, fileWriter);
     sim.run();
 	sim.free();

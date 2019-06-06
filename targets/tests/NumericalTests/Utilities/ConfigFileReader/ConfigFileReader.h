@@ -1,26 +1,30 @@
 #ifndef CONFIG_FILE_READER_H
 #define CONFIG_FILE_READER_H
 
+#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
+
 #include "Utilities/input/Input.h"
 #include "Utilities/Structs/ConfigDataStruct.h"
 
 #include <memory>
 #include <string>
 
+class KernelMapper;
+
 class ConfigFileReader
 {
 public:
 	static std::shared_ptr<ConfigFileReader> getNewInstance(const std::string aFilePath);
 	std::shared_ptr<ConfigDataStruct> getConfigData();
+	void readConfigFile();
 	
 private:
 	ConfigFileReader() {};
 	ConfigFileReader(const std::string aFilePath);
-	void readConfigFile(const std::string aFilePath);
-
+	
 	std::ifstream openConfigFile(const std::string aFilePath);
 	bool checkConfigFile(std::shared_ptr<input::Input> input);
-	std::vector<std::string> readKernelList(std::shared_ptr<input::Input> input);
+	std::vector<KernelType> readKernelList(std::shared_ptr<input::Input> input);
 
 	int calcNumberOfSimulations(std::shared_ptr<input::Input> input);
 	int calcNumberOfSimulationGroup(std::shared_ptr<input::Input> input, std::string simName);
@@ -41,6 +45,9 @@ private:
 	std::shared_ptr<VectorWriterInformationStruct> makeVectorWriterInformationStruct(std::shared_ptr<input::Input> input);
 	std::shared_ptr<LogFileParameterStruct> makeLogFilePara(std::shared_ptr<input::Input> input);
 	
+
+	const std::string myFilePath;
 	std::shared_ptr<ConfigDataStruct> configData;
+	std::shared_ptr<KernelMapper> myKernelMapper;
 };
 #endif

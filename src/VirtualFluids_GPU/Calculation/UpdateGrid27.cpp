@@ -10,7 +10,7 @@
 
 
 
-void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int level, int max_level, unsigned int t)
+void updateGrid27(Parameter* para, Communicator* comm, std::vector<std::shared_ptr<PorousMedia>> pm, int level, int max_level, unsigned int t)
 {
    if ( level == para->getFine() )
    {
@@ -237,58 +237,58 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 		 {
 			 //////////////////////////////////////////////////////////////////////////
 			 //Porous Media 0
-			 KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
-									para->getParD(level)->omega,
-									para->getParD(level)->neighborX_SP,
-									para->getParD(level)->neighborY_SP,
-									para->getParD(level)->neighborZ_SP,
-									para->getParD(level)->d0SP.f[0],
-									para->getParD(level)->size_Mat_SP,
-									level,
-									para->getForcesDev(),
-									pm[0]->getPorosity(),
-									pm[0]->getDarcyLBM(),
-									pm[0]->getForchheimerLBM(),
-									pm[0]->getSizePM(),
-									pm[0]->getHostNodeIDsPM(),
-									para->getParD(level)->evenOrOdd);
-			 getLastCudaError("KernelPMCumOneCompSP27 execution failed");
+			 //KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
+			//						para->getParD(level)->omega,
+			//						para->getParD(level)->neighborX_SP,
+			//						para->getParD(level)->neighborY_SP,
+			//						para->getParD(level)->neighborZ_SP,
+			//						para->getParD(level)->d0SP.f[0],
+			//						para->getParD(level)->size_Mat_SP,
+			//						level,
+			//						para->getForcesDev(),
+			//						pm[0]->getPorosity(),
+			//						pm[0]->getDarcyLBM(),
+			//						pm[0]->getForchheimerLBM(),
+			//						pm[0]->getSizePM(),
+			//						pm[0]->getHostNodeIDsPM(),
+			//						para->getParD(level)->evenOrOdd);
+			 //getLastCudaError("KernelPMCumOneCompSP27 execution failed");
 			 //////////////////////////////////////////////////////////////////////////
 			 //Porous Media 1
-			 KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
-									para->getParD(level)->omega,
-									para->getParD(level)->neighborX_SP,
-									para->getParD(level)->neighborY_SP,
-									para->getParD(level)->neighborZ_SP,
-									para->getParD(level)->d0SP.f[0],
-									para->getParD(level)->size_Mat_SP,
-									level,
-									para->getForcesDev(),
-									pm[1]->getPorosity(),
-									pm[1]->getDarcyLBM(),
-									pm[1]->getForchheimerLBM(),
-									pm[1]->getSizePM(),
-									pm[1]->getHostNodeIDsPM(),
-									para->getParD(level)->evenOrOdd);
-			 getLastCudaError("KernelPMCumOneCompSP27 execution failed");
+			 //KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
+			//						para->getParD(level)->omega,
+			//						para->getParD(level)->neighborX_SP,
+			//						para->getParD(level)->neighborY_SP,
+			//						para->getParD(level)->neighborZ_SP,
+			//						para->getParD(level)->d0SP.f[0],
+			//						para->getParD(level)->size_Mat_SP,
+			//						level,
+			//						para->getForcesDev(),
+			//						pm[1]->getPorosity(),
+			//						pm[1]->getDarcyLBM(),
+			//						pm[1]->getForchheimerLBM(),
+			//						pm[1]->getSizePM(),
+			//						pm[1]->getHostNodeIDsPM(),
+			//						para->getParD(level)->evenOrOdd);
+			 //getLastCudaError("KernelPMCumOneCompSP27 execution failed");
 			 //////////////////////////////////////////////////////////////////////////
 			 //Porous Media 2
-			 KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
-									para->getParD(level)->omega,
-									para->getParD(level)->neighborX_SP,
-									para->getParD(level)->neighborY_SP,
-									para->getParD(level)->neighborZ_SP,
-									para->getParD(level)->d0SP.f[0],
-									para->getParD(level)->size_Mat_SP,
-									level,
-									para->getForcesDev(),
-									pm[2]->getPorosity(),
-									pm[2]->getDarcyLBM(),
-									pm[2]->getForchheimerLBM(),
-									pm[2]->getSizePM(),
-									pm[2]->getHostNodeIDsPM(),
-									para->getParD(level)->evenOrOdd);
-			 getLastCudaError("KernelPMCumOneCompSP27 execution failed");
+			 //KernelPMCumOneCompSP27(para->getParD(level)->numberofthreads,
+			//						para->getParD(level)->omega,
+			//						para->getParD(level)->neighborX_SP,
+			//						para->getParD(level)->neighborY_SP,
+			//						para->getParD(level)->neighborZ_SP,
+			//						para->getParD(level)->d0SP.f[0],
+			//						para->getParD(level)->size_Mat_SP,
+			//						level,
+			//						para->getForcesDev(),
+			//						pm[2]->getPorosity(),
+			//						pm[2]->getDarcyLBM(),
+			//						pm[2]->getForchheimerLBM(),
+			//						pm[2]->getSizePM(),
+			//						pm[2]->getHostNodeIDsPM(),
+			//						para->getParD(level)->evenOrOdd);
+			 //getLastCudaError("KernelPMCumOneCompSP27 execution failed");
 		 }
 		 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
          if (para->getDiffOn())
@@ -300,11 +300,11 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			   // incomp
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion kernel
-               KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
-							   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-							   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
-							   para->getParD(level)->evenOrOdd); 
-			   getLastCudaError("KernelADincomp7 execution failed");
+               //KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+				//			   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+				//			   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
+				//			   para->getParD(level)->evenOrOdd); 
+			   //getLastCudaError("KernelADincomp7 execution failed");
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion boundary condition
                QNoSlipADincompDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
@@ -461,17 +461,17 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			   //// comp
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion kernel
-               KernelThS27(para->getParD(level)->numberofthreads,
-                           para->getParD(level)->diffusivity, 
-                           para->getParD(level)->geoSP, 
-                           para->getParD(level)->neighborX_SP, 
-                           para->getParD(level)->neighborY_SP, 
-                           para->getParD(level)->neighborZ_SP,
-                           para->getParD(level)->d0SP.f[0],    
-                           para->getParD(level)->d27.f[0],    
-                           para->getParD(level)->size_Mat_SP,  
-                           para->getParD(level)->evenOrOdd); 
-               ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+               //KernelThS27(para->getParD(level)->numberofthreads,
+               //            para->getParD(level)->diffusivity, 
+               //            para->getParD(level)->geoSP, 
+               //            para->getParD(level)->neighborX_SP, 
+               //            para->getParD(level)->neighborY_SP, 
+               //            para->getParD(level)->neighborZ_SP,
+               //            para->getParD(level)->d0SP.f[0],    
+               //            para->getParD(level)->d27.f[0],    
+               //            para->getParD(level)->size_Mat_SP,  
+               //            para->getParD(level)->evenOrOdd); 
+               //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion boundary condition
                QADBBDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
                           para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  
@@ -1207,11 +1207,11 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			   // incomp
 			   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion kernel
-               KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
-							   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
-							   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
-							   para->getParD(level)->evenOrOdd); 
-			   getLastCudaError("KernelADincomp7 execution failed");
+              //KernelADincomp7(para->getParD(level)->numberofthreads,    para->getParD(level)->diffusivity,  para->getParD(level)->geoSP, 
+				//			   para->getParD(level)->neighborX_SP,       para->getParD(level)->neighborY_SP, para->getParD(level)->neighborZ_SP,
+				//			   para->getParD(level)->d0SP.f[0],          para->getParD(level)->d7.f[0],      para->getParD(level)->size_Mat_SP,  
+				//			   para->getParD(level)->evenOrOdd); 
+			  //getLastCudaError("KernelADincomp7 execution failed");
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion boundary condition
                QNoSlipADincompDev7( para->getParD(level)->numberofthreads,       para->getParD(level)->nx,           para->getParD(level)->ny,
@@ -1368,17 +1368,17 @@ void updateGrid27(Parameter* para, Communicator* comm, PorousMedia** pm, int lev
 			   //// comp
                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion kernel
-               KernelThS27(para->getParD(level)->numberofthreads,
-                           para->getParD(level)->diffusivity, 
-                           para->getParD(level)->geoSP, 
-                           para->getParD(level)->neighborX_SP, 
-                           para->getParD(level)->neighborY_SP, 
-                           para->getParD(level)->neighborZ_SP,
-                           para->getParD(level)->d0SP.f[0],    
-                           para->getParD(level)->d27.f[0],    
-                           para->getParD(level)->size_Mat_SP,  
-                           para->getParD(level)->evenOrOdd); 
-               ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+              //KernelThS27(para->getParD(level)->numberofthreads,
+              //            para->getParD(level)->diffusivity, 
+              //            para->getParD(level)->geoSP, 
+              //            para->getParD(level)->neighborX_SP, 
+              //            para->getParD(level)->neighborY_SP, 
+              //            para->getParD(level)->neighborZ_SP,
+              //            para->getParD(level)->d0SP.f[0],    
+              //            para->getParD(level)->d27.f[0],    
+              //            para->getParD(level)->size_Mat_SP,  
+              //            para->getParD(level)->evenOrOdd); 
+              //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                //advection diffusion boundary condition
                QADBBDev27(para->getParD(level)->numberofthreads,      para->getParD(level)->nx,           para->getParD(level)->ny,
                           para->getParD(level)->d0SP.f[0],            para->getParD(level)->d27.f[0],     para->getParD(level)->Temp.temp,  

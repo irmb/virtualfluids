@@ -2,6 +2,7 @@
 #define _SIMULATION_H_
 
 #include <memory>
+#include <vector>
 #include <core/PointerDefinitions.h>
 
 #include <VirtualFluidsDefinitions.h>
@@ -19,7 +20,10 @@ class RestartPostprocessor;
 class ForceCalculations;
 class DataWriter;
 class Kernel;
-
+class ADKernel;
+class KernelFactory;
+class PreProcessor;
+class PreProcessorFactory;
 
 class VF_PUBLIC Simulation
 {
@@ -31,9 +35,14 @@ public:
 	void free();
 	void bulk();
 	void porousMedia();
-	void definePMarea(PorousMedia* pm);
+	void definePMarea(std::shared_ptr<PorousMedia> pm);
+
+	void setFactories(std::shared_ptr<KernelFactory> kernelFactory, std::shared_ptr<PreProcessorFactory> preProcessorFactory);
 
 protected:
+	std::shared_ptr<KernelFactory> kernelFactory;
+	std::shared_ptr<PreProcessorFactory> preProcessorFactory;
+
 	Buffer2D <real> sbuf_t; 
 	Buffer2D <real> rbuf_t;
 	Buffer2D <real> sbuf_b;
@@ -52,6 +61,8 @@ protected:
     SPtr<GridProvider> gridProvider;
     SPtr<DataWriter> dataWriter;
 	std::vector < SPtr< Kernel>> kernels;
+	std::vector < SPtr< ADKernel>> adKernels;
+	std::shared_ptr<PreProcessor> preProcessor;
 
 	//Restart object
 	RestartObject* restObj;
@@ -61,7 +72,7 @@ protected:
 	ForceCalculations* forceCalculator;
 
 	//Porous Media
-	PorousMedia** pm = new PorousMedia *[3];
+	std::vector<std::shared_ptr<PorousMedia>> pm;
 	//PorousMedia* pm0;
 	//PorousMedia* pm1;
 	//PorousMedia* pm2;

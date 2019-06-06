@@ -3,6 +3,8 @@
 
 #include "SimulationInfo.h"
 
+#include "VirtualFluids_GPU/Kernel//Utilities/KernelType.h"
+
 #include <memory>
 
 class TimeInfo;
@@ -24,7 +26,7 @@ public:
 
 protected:
 	SimulationInfoImp() {};
-	SimulationInfoImp(int simID, std::string kernelName, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests);
+	SimulationInfoImp(int simID, KernelType kernel, double viscosity, int lx, int numberOfSimulations, std::string simulationName, std::vector<std::string> dataToCalcTests);
 
 	double viscosity;
 	std::string kernelName;

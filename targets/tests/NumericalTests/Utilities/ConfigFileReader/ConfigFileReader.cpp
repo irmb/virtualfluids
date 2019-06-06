@@ -3,6 +3,8 @@
 #include "utilities/input/Input.h"
 #include "utilities/StringUtil/StringUtil.h"
 
+#include "VirtualFluids_GPU/Kernel/Utilities/Mapper/KernelMapper/KernelMapper.h"
+
 #include <fstream>
 
 std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::string aFilePath)
@@ -10,15 +12,15 @@ std::shared_ptr<ConfigFileReader> ConfigFileReader::getNewInstance(const std::st
 	return std::shared_ptr<ConfigFileReader>(new ConfigFileReader(aFilePath));
 }
 
-ConfigFileReader::ConfigFileReader(const std::string aFilePath)
+ConfigFileReader::ConfigFileReader(const std::string aFilePath) : myFilePath(aFilePath)
 {
-	readConfigFile(aFilePath);
+	myKernelMapper = KernelMapper::getInstance();
 }
 
-void ConfigFileReader::readConfigFile(const std::string aFilePath)
+void ConfigFileReader::readConfigFile()
 {
 	configData = std::shared_ptr<ConfigDataStruct>(new ConfigDataStruct);
-	std::ifstream stream = openConfigFile(aFilePath);
+	std::ifstream stream = openConfigFile(myFilePath);
 
 	std::shared_ptr<input::Input> input = input::Input::makeInput(stream, "config");
 
@@ -236,7 +238,7 @@ std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> ConfigFileReader::makeL
 
 	std::shared_ptr<L2NormTestBetweenKernelsParameterStruct> testParameter = std::shared_ptr<L2NormTestBetweenKernelsParameterStruct>(new L2NormTestBetweenKernelsParameterStruct);
 	testParameter->basicTestParameter = basicTestParameter;
-	testParameter->basicKernel = StringUtil::toString(input->getValue("BasicKernel_L2NormBetweenKernels"));
+	testParameter->basicKernel = myKernelMapper->getEnum(StringUtil::toString(input->getValue("BasicKernel_L2NormBetweenKernels")));
 	testParameter->kernelsToTest = readKernelList(input);
 	testParameter->timeSteps = StringUtil::toIntVector(input->getValue("Timesteps_L2NormBetweenKernels"));
 	testParameter->normalizeData = StringUtil::toStringVector(input->getValue("NormalizeData_L2Norm"));
@@ -318,7 +320,7 @@ std::shared_ptr<LogFileParameterStruct> ConfigFileReader::makeLogFilePara(std::s
 	return logFilePara;
 }
 
-std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input::Input> input)
+std::vector<KernelType> ConfigFileReader::readKernelList(std::shared_ptr<input::Input> input)
 {
 	if (StringUtil::toBool(input->getValue("L2NormBetweenKernelsTest"))) {
 		std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue("KernelsToTest"));
@@ -331,17 +333,24 @@ std::vector<std::string> ConfigFileReader::readKernelList(std::shared_ptr<input:
 		if (!basicKernelInKernelList)
 			kernelList.push_back(beginnKernel);
 
-		std::vector<std::string> kernels = kernelList;
+		std::vector<std::string> kernelNames = kernelList;
 
-		while (kernels.at(0) != beginnKernel) {
-			kernels.push_back(kernels.at(0));
-			std::vector<std::string>::iterator it = kernels.begin();
-			kernels.erase(it);
+		while (kernelNames.at(0) != beginnKernel) {
+			kernelNames.push_back(kernelNames.at(0));
+			std::vector<std::string>::iterator it = kernelNames.begin();
+			kernelNames.erase(it);
 		}
+		std::vector<KernelType> kernels;
+		for (int i = 0; i < kernelNames.size(); i++)
+			kernels.push_back(myKernelMapper->getEnum(kernelNames.at(i)));
 		return kernels;
 	}else {
 		std::vector<std::string> kernelList = StringUtil::toStringVector(input->getValue("KernelsToTest"));
-		return kernelList;
+		std::vector<KernelType> kernels;
+		for (int i = 0; i < kernelList.size(); i++)
+			kernels.push_back(myKernelMapper->getEnum(kernelList.at(i)));
+
+		return kernels;
 	}	
 }
 
