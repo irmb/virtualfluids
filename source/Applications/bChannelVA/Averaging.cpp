@@ -456,7 +456,7 @@ void Averaging::volumeAveragingWithMPI(double l_real)
                         if (yy < 0)   yy = dimensions[1] + yy;
                         if (yy >= dimensions[1]) yy = yy - dimensions[1];
 
-                        if (zz < 0)   zz = dimensions[2] + zz; 
+                        if (zz < 0)   zz = 0; 
                         if (zz >= dimensions[2]) zz = dimensions[2] - 1;
 
                         double mm = (G((double)x, l)*G((double)y, l)*G((double)z, l)) / lNorm;
@@ -966,7 +966,7 @@ void Averaging::meanOfStresses(int numberOfTimeSteps)
      
    }
 }
-void Averaging::planarAveragingMQ(std::array<int, 3> dimensions)
+void Averaging::planarAveragingMQ()
 {
    double numberof_XY_points = (double)dimensions[0] * (double)dimensions[1];
 
@@ -1047,12 +1047,3 @@ void Averaging::readVolumeAveragingValuesFromBinaryFiles(std::string fname, int 
    readMatrixFromBinaryFiles<double>(fname + "Vz" + UbSystem::toString(timeStep) + ".bin", vaVzMatrix);
    readMatrixFromBinaryFiles<double>(fname + "Pr" + UbSystem::toString(timeStep) + ".bin", vaPrMatrix);
 }
-//////////////////////////////////////////////////////////////////////////
-double Averaging::G(double x, double l)
-{
-   if (fabs(x) <= l)
-      return l - fabs(x);
-   else
-      return 0.0;
-}
-//////////////////////////////////////////////////////////////////////////

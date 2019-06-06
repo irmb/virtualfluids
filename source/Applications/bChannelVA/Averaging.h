@@ -43,7 +43,7 @@ public:
    void meanOfFluctuations(int numberOfTimeSteps);
    void sumOfStresses();
    void meanOfStresses(int numberOfTimeSteps);
-   void planarAveragingMQ(std::array<int, 3> dimensions);
+   void planarAveragingMQ();
    void writeToCSV(std::string path, double origin, double deltax);
    void readVolumeAveragingValuesFromBinaryFiles(std::string fname, int timeStep);
 
@@ -215,5 +215,13 @@ template<class T> void Averaging::readMatrixFromBinaryFiles(std::string fname, C
    UBLOG(logINFO,"read matrix: end");
    timer_write->StopTimer();
    UBLOG(logINFO,"read matrix time: " + UbSystem::toString(timer_write->GetElapsedTime()) + " s");
+}
+//////////////////////////////////////////////////////////////////////////
+inline double Averaging::G(double x, double l)
+{
+   if (fabs(x) <= l)
+      return l - fabs(x);
+   else
+      return 0.0;
 }
 //////////////////////////////////////////////////////////////////////////

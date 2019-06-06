@@ -15,8 +15,21 @@ int main(int argc, char* argv[])
         SPtr<Communicator> comm = MPICommunicator::getInstance();
         int myid = comm->getProcessID();
 
-        //Pheonix        //double deltaX = 1;        //double halfDeltaX = deltaX / 2.0;        //std::array<int, 3> dimensions = { 600 / (int)deltaX, 400 / (int)deltaX, 400 / (int)deltaX };        //std::array<double, 3> geo_origin = { halfDeltaX, halfDeltaX, halfDeltaX };        //std::array<double, 3> geo_spacing = { 1,1,1 };        //std::array<int, 6> geo_extent = { 0, dimensions[0] - 1, 0, dimensions[1] - 1, 0, dimensions[2] - 1 };        //double real_l = 40;        //double l = 40;
-        //int startTimeStep = 600000;        //int timeStep = 10000;        //int numberOfTimeSteps = 610000; //1200000;        //int numberOfSamples = numberOfTimeSteps / startTimeStep;        //int numberOfGridPoints = dimensions[0] * dimensions[1] * dimensions[2];
+        //Pheonix
+        //double deltaX = 1;
+        //double halfDeltaX = deltaX / 2.0;
+        //std::array<int, 3> dimensions = { 600 / (int)deltaX, 400 / (int)deltaX, 400 / (int)deltaX };
+        //std::array<double, 3> geo_origin = { halfDeltaX, halfDeltaX, halfDeltaX };
+        //std::array<double, 3> geo_spacing = { 1,1,1 };
+        //std::array<int, 6> geo_extent = { 0, dimensions[0] - 1, 0, dimensions[1] - 1, 0, dimensions[2] - 1 };
+        //double real_l = 40;
+        //double l = 40;
+
+        //int startTimeStep = 600000;
+        //int timeStep = 10000;
+        //int numberOfTimeSteps = 610000; //1200000;
+        //int numberOfSamples = numberOfTimeSteps / startTimeStep;
+        //int numberOfGridPoints = dimensions[0] * dimensions[1] * dimensions[2];
 
 
         //Bombadil
