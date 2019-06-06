@@ -179,7 +179,7 @@ void run(string configname)
          GbCuboid3DPtr geoOutflow(new GbCuboid3D(g_maxX1, g_minX2-blockLength, g_minX3-blockLength, g_maxX1+blockLength, g_maxX2+blockLength, g_maxX3+blockLength));
          if (myid==0) GbSystem3D::writeGeoObject(geoOutflow.get(), pathOut+"/geo/geoOutflow", WbWriterVtkXmlASCII::getInstance());
 
-         WriteBlocksSPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
+         SPtr<CoProcessor> ppblocks(new WriteBlocksCoProcessor(grid, SPtr<UbScheduler>(new UbScheduler(1)), pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
 
          if (refineLevel>0)
          {
@@ -243,8 +243,7 @@ void run(string configname)
             UBLOG(logINFO, "Available memory per process = "<<availMem<<" bytes");
          }
 
-         //LBMKernel3DPtr kernel(new LBMKernelETD3Q27CCLB(blocknx1, blocknx2, blocknx3, LBMKernelETD3Q27CCLB::NORMAL));
-         SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel(blocknx1, blocknx2, blocknx3, CompressibleCumulantLBMKernel::NORMAL));
+         SPtr<LBMKernel> kernel(new CompressibleCumulantLBMKernel());
 
          SPtr<BCProcessor> bcProc(new BCProcessor());
          kernel->setBCProcessor(bcProc);
@@ -265,22 +264,17 @@ void run(string configname)
          grid->accept(pqPartVisitor);
 
          //initialization of distributions
-         InitDistributionsBlockVisitor initVisitor(nueLB, rhoLB);
+         InitDistributionsBlockVisitor initVisitor;
          initVisitor.setVx1(fct);
          grid->accept(initVisitor);
 
-         //set connectors
-         //D3Q27InterpolationProcessorPtr iProcessor(new D3Q27IncompressibleOffsetInterpolationProcessor());
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
-         grid->accept(setConnsVisitor);
-
+;
          grid->accept(bcVisitor);
 
          //Postrozess
          SPtr<UbScheduler> geoSch(new UbScheduler(1));
-         WriteBoundaryConditionsSPtr<CoProcessor> ppgeo(
-            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
+         SPtr<CoProcessor> ppgeo(
+            new WriteBoundaryConditionsCoProcessor(grid, geoSch, pathOut, WbWriterVtkXmlBinary::getInstance(), comm));
          ppgeo->process(0);
          ppgeo.reset();
 
@@ -291,41 +285,33 @@ void run(string configname)
          rcp.restart((int)restartStep);
          grid->setTimeStep(restartStep);
 
-         //set connectors
-         InterpolationProcessorPtr iProcessor(new CompressibleOffsetInterpolationProcessor());
-         SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
-         grid->accept(setConnsVisitor);
-
-         //domain decomposition
-         //PQueuePartitioningGridVisitor pqPartVisitor(numOfThreads);
-         //grid->accept(pqPartVisitor);
-
-         SetSolidBlockVisitor v(cylinderInt, BlockType::BC);
-         grid->accept(v);
-         cylinderInt->initInteractor();
-
          grid->accept(bcVisitor);
       }
 
-      SPtr<UbScheduler> visSch(new UbScheduler(outTime));
+	  //set connectors
+	  InterpolationProcessorPtr iProcessor(new CompressibleOffsetMomentsInterpolationProcessor());
+	  SetConnectorsBlockVisitor setConnsVisitor(comm, true, D3Q27System::ENDDIR, nueLB, iProcessor);
+	  grid->accept(setConnsVisitor);
 
-      WriteMacroscopicQuantitiesCoProcessor pp(grid, visSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm);
+      SPtr<UbScheduler> stepSch(new UbScheduler(outTime));
 
-      double area = (2.0*radius*H)/(dx*dx);
-      double v    = 4.0*uLB/9.0;
-      CalculateForcesCoProcessor fp(grid, visSch, pathOut + "/results/forces.txt", comm, v, area);
-      fp.addInteractor(cylinderInt);
+	  SPtr<CoProcessor> writeMQCoProcessor(new WriteMacroscopicQuantitiesCoProcessor(grid, stepSch, pathOut, WbWriterVtkXmlBinary::getInstance(), conv, comm));
 
-      SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
-      NUPSCounterCoProcessor npr(grid, nupsSch, numOfThreads, comm);
+      //double area = (2.0*radius*H)/(dx*dx);
+      //double v    = 4.0*uLB/9.0;
+      //CalculateForcesCoProcessor fp(grid, stepSch, pathOut + "/results/forces.txt", comm, v, area);
+      //fp.addInteractor(cylinderInt);
 
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch));
-      //CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, visSch, CalculationManager::MPI));
+	  SPtr<UbScheduler> nupsSch(new UbScheduler(nupsStep[0], nupsStep[1], nupsStep[2]));
+	  std::shared_ptr<CoProcessor> nupsCoProcessor(new NUPSCounterCoProcessor(grid, nupsSch, numOfThreads, comm));
 
-      const SPtr<ConcreteCalculatorFactory> calculatorFactory = std::make_shared<ConcreteCalculatorFactory>(visSch);
-      CalculationManagerPtr calculation(new CalculationManager(grid, numOfThreads, endTime, calculatorFactory, CalculatorType::PREPOSTBC));
+	  omp_set_num_threads(numOfThreads);
+	  SPtr<UbScheduler> stepGhostLayer(new UbScheduler(1));
+	  SPtr<Calculator> calculator(new BasicCalculator(grid, stepGhostLayer, endTime));
+	  calculator->addCoProcessor(nupsCoProcessor);
+	  calculator->addCoProcessor(writeMQCoProcessor);
       if(myid == 0) UBLOG(logINFO,"Simulation-start");
-      calculation->calculate();
+	  calculator->calculate();
       if(myid == 0) UBLOG(logINFO,"Simulation-end");
    }
    catch(std::exception& e)
