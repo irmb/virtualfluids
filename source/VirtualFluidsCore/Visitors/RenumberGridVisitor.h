@@ -9,6 +9,7 @@
 #define RenumberGridVisitor_h
 
 #include "Grid3DVisitor.h"
+#include "Communicator.h"
 
 class Grid3D;
 
@@ -18,13 +19,14 @@ class Grid3D;
 class RenumberGridVisitor : public Grid3DVisitor
 {
 public:
-   RenumberGridVisitor();
+   RenumberGridVisitor(SPtr<Communicator> com);
 
    virtual ~RenumberGridVisitor() {}
 
    void visit(SPtr<Grid3D> grid) override;
 
-//private:
+private:
+    SPtr<Communicator> comm;
 //   static int counter;
 };
 

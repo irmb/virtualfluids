@@ -2,9 +2,10 @@
 #include "Grid3DSystem.h"
 #include "Grid3D.h"
 #include "Block3D.h"
-#include <mpi.h>
+//#include <mpi.h>
 
-RenumberGridVisitor::RenumberGridVisitor()
+RenumberGridVisitor::RenumberGridVisitor(SPtr<Communicator> com)
+ : comm(com)
 {
 }
 
@@ -17,7 +18,8 @@ void RenumberGridVisitor::visit(SPtr<Grid3D> grid)
    std::vector<SPtr<Block3D>> blocks;
    int gridRank = grid->getRank();
    int size;
-   MPI_Comm_size(MPI_COMM_WORLD, &size);
+   //MPI_Comm_size(MPI_COMM_WORLD, &size);
+   size = comm->getNumberOfProcesses();
 
    int minInitLevel = grid->getCoarsestInitializedLevel();
    int maxInitLevel = grid->getFinestInitializedLevel();
