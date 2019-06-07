@@ -1698,6 +1698,7 @@ void MPIIOMigrationBECoProcessor::readDataSet(int step)
 
          // find the nesessary block and fill it
          SPtr<Block3D> block = grid->getBlock(blockID);
+         this->lbmKernel->setBlock(block);
          SPtr<LBMKernel> kernel = this->lbmKernel->clone();
          LBMReal collFactor = LBMSystem::calcCollisionFactor(this->nue, block->getLevel());
          kernel->setCollisionFactor(collFactor);

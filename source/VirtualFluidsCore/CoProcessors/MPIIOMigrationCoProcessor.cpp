@@ -1560,13 +1560,14 @@ void MPIIOMigrationCoProcessor::readBlocks(int step)
    }
 
    // clear the grid
-   std::vector<SPtr<Block3D>> blocksVector;
-   grid->getBlocks(0, blocksVector);
-   int del = 0;
-   for (SPtr<Block3D> block : blocksVector)
+   std::vector<SPtr<Block3D>> blocksVector[25];
+   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+   int maxInitLevel = this->grid->getFinestInitializedLevel();
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      grid->deleteBlock(block);
-      del++;
+      grid->getBlocks(level, blocksVector[level]);
+      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+         grid->deleteBlock(block);
    }
 
    // restore the grid
