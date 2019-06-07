@@ -62,7 +62,7 @@ public:
    int getNumberOfBlocks();
    int getNumberOfBlocks(int level);
    //const Block3DMap& getBlocks(int level);
-   const BlockIDMap& getBlockIDs();
+   BlockIDMap& getBlockIDs();
    void deleteBlockIDs();
    void renumberBlockIDs();
    void updateDistributedBlocks(SPtr<Communicator> comm);

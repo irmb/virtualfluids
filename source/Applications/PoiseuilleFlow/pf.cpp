@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 {
    try
    {
-      pf2();
+      pf1();
       return 0;
    }
    catch (std::exception& e)

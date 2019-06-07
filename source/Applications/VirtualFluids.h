@@ -168,6 +168,7 @@
 #include <CoProcessors/InSituCatalystCoProcessor.h>
 #include <CoProcessors/MPIIORestartCoProcessor.h>
 #include <CoProcessors/MPIIOMigrationCoProcessor.h>
+#include <CoProcessors/MPIIOMigrationBECoProcessor.h>
 #include <CoProcessors/PressureCoefficientCoProcessor.h>
 #include <CoProcessors/LineTimeSeriesCoProcessor.h>
 #include <CoProcessors/MicrophoneArrayCoProcessor.h>

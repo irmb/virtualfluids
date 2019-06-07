@@ -156,7 +156,7 @@ void MPIIORestartCoProcessor::process(double step)
       writeDataSet((int)step);
       writeBoundaryConds((int)step);
 
-      writeCpTimeStep(step);
+      writeCpTimeStep((int)step);
 
       if (comm->isRoot()) UBLOG(logINFO, "Save check point - end");
    }
@@ -1713,7 +1713,10 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    // read parameters of the grid
    MPI_File_read_at(file_handler, read_offset, gridParameters, 1, gridParamType, MPI_STATUS_IGNORE);
    // read all the blocks
-   MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+   if (comm->isRoot())
+      MPI_File_read_at(file_handler, (MPI_Offset)(read_offset + sizeof(GridParam)), &block3dArray[0], blocksCount, block3dType, MPI_STATUS_IGNORE);
+
+   MPI_Bcast(block3dArray, blocksCount, block3dType, comm->getRoot(), MPI_COMM_WORLD);
 
    MPI_File_close(&file_handler);
 
@@ -1730,11 +1733,14 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    }
 
    // clear the grid
-   std::vector<SPtr<Block3D>> blocksVector;
-   grid->getBlocks(0, blocksVector);
-   for (SPtr<Block3D> block : blocksVector)
+   std::vector<SPtr<Block3D>> blocksVector[25];
+   int minInitLevel = this->grid->getCoarsestInitializedLevel();
+   int maxInitLevel = this->grid->getFinestInitializedLevel();
+   for (int level = minInitLevel; level <= maxInitLevel; level++)
    {
-      grid->deleteBlock(block);
+      grid->getBlocks(level, blocksVector[level]);
+      for (SPtr<Block3D> block : blocksVector[level])  //	blocks of the current level
+         grid->deleteBlock(block);
    }
 
    // restore the grid
@@ -1774,7 +1780,6 @@ void MPIIORestartCoProcessor::readBlocks(int step)
    trafo->fromX3factorX2 = gridParameters->trafoParams[30];
    trafo->fromX3factorX3 = gridParameters->trafoParams[31];
    trafo->fromX3delta = gridParameters->trafoParams[32];
-
    trafo->active = gridParameters->active;
    trafo->transformation = gridParameters->transformation;
 
@@ -1916,7 +1921,6 @@ void MPIIORestartCoProcessor::readDataSet(int step)
 
       // find the nesessary block and fill it
       SPtr<Block3D> block = grid->getBlock(dataSetArray[n].x1, dataSetArray[n].x2, dataSetArray[n].x3, dataSetArray[n].level);
-      this->lbmKernel->setBlock(block);
       SPtr<LBMKernel> kernel = this->lbmKernel->clone();
       kernel->setGhostLayerWidth(dataSetArray[n].ghostLayerWidth);
       kernel->setCollisionFactor(dataSetArray[n].collFactor);

@@ -223,7 +223,7 @@ SPtr<Block3D> Grid3D::getBlock(int id) const
 //   return levelSet[level];
 //}
 //////////////////////////////////////////////////////////////////////////
-const Grid3D::BlockIDMap& Grid3D::getBlockIDs()
+Grid3D::BlockIDMap& Grid3D::getBlockIDs()
 {
    return blockIdMap;
 }
